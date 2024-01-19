@@ -1,0 +1,32 @@
+spring:
+  datasource:
+    url: jdbc:log4jdbc:mysql://192.168.0.99:3306/nwTr #jdbc:mysql://192.168.0.99:3306/nwTr #
+    username: trs
+    password: Vtw2023!
+    driver-class-name:  net.sf.log4jdbc.sql.jdbcapi.DriverSpy #com.mysql.cj.jdbc.Driver
+
+mybatis:
+  mapper-locations: /mybatis/mapper/**/*.xml
+  configuration:
+    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    multiple-result-sets-enabled: false
+    map-underscore-to-camel-case: true
+    call-setters-on-nulls: true
+    jdbc-type-for-null: varchar
+    default-fetch-size: 500
+
+logging:
+  level:
+    com:
+      zaxxer:
+        hikari: INFO
+    javax:
+      sql:
+        DataSource: OFF
+    jdbc:
+      audit: OFF # JDBC 트러블슈팅 경우를 제외하고는 사용 권장 X
+      resultset: OFF # ResultSet을 포함한 모든 JDBC 호출 정보를 출력
+      resultsettable: INFO  #SQL 결과 데이터 Table형식으로 출력
+      sqlonly: OFF     #SQL만 로그만 출력
+      sqltiming: INFO    #SQL + 소요시간 출력
+      connection : OFF  # 커넥션 연결/종료 정보 출력
