@@ -20,6 +20,7 @@ const TreRoutes = [
     path: "/project/ProjectAprv",
     name: "ProjectAprv",
     element: React.lazy(() => import("../pages/project/ProjectAprv")),
+  },
   {
     path: "/project/ProjectHrCtAprv",
     name: "ProjectHrCtAprv",
