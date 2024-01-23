@@ -1,0 +1,11 @@
+[
+    { "key": "rownum", "value": "번호" },
+    { "key": "prjctStleCd", "value": "형태" },
+    { "key": "prjctNm", "value": "프로젝트 명" },
+    { "key": "bizFlfmtTyCd", "value": "상태" },
+    { "key": "prjctMngrEmpId", "value": "PM" },
+    { "key": "ctmmnyNo", "value": "고객사" },
+    { "key": "ctrtYmd", "value": "시작일" },
+    { "key": "bizEndYmd", "value": "종료일" },
+    { "key": "prjctId", "value": "구분"}
+]

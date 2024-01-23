@@ -11,9 +11,14 @@ const TreRoutes = [
   },
   // 프로젝트
   {
-    path: "/project/*",
+    path: "/project/ProjectList",
     name: "ProjectList",
     element: React.lazy(() => import("../pages/project/ProjectList")),
+  },
+  {
+    path: "/project/ProjectHrCtAprv",
+    name: "ProjectHrCtAprv",
+    element: React.lazy(() => import("../pages/project/ProjectHrCtAprv")),
   },
 ];
 
