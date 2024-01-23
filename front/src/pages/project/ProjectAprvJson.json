@@ -1,0 +1,10 @@
+[
+  { "key": "rownum", "value": "번호" },
+  { "key": "bizFlfmtTyCd", "value": "유형" },
+  { "key": "prjctNm", "value": "프로젝트 명" },
+  { "key": "", "value": "단계" },
+  { "key": "bizSttsCd", "value": "상태" },
+  { "key": "prjctMngrEmpId", "value": "기안자" },
+  { "key": "atrzDmndSttsCd", "value": "승인일자" },
+  { "key": "", "value": "반려일자" }
+]
