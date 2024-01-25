@@ -14,8 +14,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ProjectBaseController {
 
-    private final ProjectBaseDomain projectBaseDomain = new ProjectBaseDomain();
-
     //프로젝트 초안 생성 후 생성 프로젝트 조회
     @PostMapping(value = "/boot/prjct/prjctMng/prjctBsisInfoReg/prjctBsisInfoReg")
     public Map<String, Object> insertProject(@RequestBody Map<String, Object> projectDto) throws Exception {
