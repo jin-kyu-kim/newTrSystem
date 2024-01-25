@@ -6,7 +6,6 @@ import SearchPrjctSet from "../../../components/composite/SearchPrjctSet";
 import CustomTable from "../../../components/unit/CustomTable";
 import CustomPagination from "../../../components/unit/CustomPagination";
 
-import { Container } from "react-bootstrap";
 import "react-datepicker/dist/react-datepicker.css";
 
 const ProjectList = () => {
@@ -17,6 +16,13 @@ const ProjectList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
+
+  const columns = ProjectJson;
+
+  const condition = {
+    "menuName": "ProjectList",
+    "prjctMngrEmpIdItem": false,
+  };
 
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
@@ -47,12 +53,12 @@ const ProjectList = () => {
   };
   // 폐이지 사이즈 변경
   const handlePageSizeChange = (e) => {
-    setPageSize(e.target.value * 1);
+    setPageSize(e.value * 1);
     setParam({
-      ...param,
-      currentPage: 1,
-      startVal: 0,
-      pageSize: e.target.value * 1,
+        ...param,
+        currentPage: 1,
+        startVal: 0,
+        pageSize: e.value * 1,
     });
   };
 
@@ -72,7 +78,7 @@ const ProjectList = () => {
   };
 
   return (
-    <Container>
+    <div className="container">
       <div
         className="title p-1"
         style={{ marginTop: "20px", marginBottom: "10px" }}
@@ -83,17 +89,18 @@ const ProjectList = () => {
         <span>* 프로젝트를 조회합니다.</span>
       </div>
       <div style={{ marginBottom: "20px" }}>
-        <SearchPrjctSet callBack={searchHandle} />
+        <SearchPrjctSet callBack={searchHandle}  props={condition}/>
       </div>
       <div>검색된 건 수 : {totalItems} 건</div>
-      <CustomTable headers={ProjectJson} tbBody={values} />
+      <CustomTable columns={columns} values={values} pageSize={pageSize}/>
       <CustomPagination
         currentPage={currentPage}
         totalPages={totalPages}
         onChgPage={handlePageChange}
         onSelectChg={handlePageSizeChange}
+        pageSize={pageSize}
       />
-    </Container>
+    </div>
   );
 };
 

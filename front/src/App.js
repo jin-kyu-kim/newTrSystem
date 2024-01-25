@@ -5,6 +5,9 @@ import TreRoutes from "./utils/TrsRoutes.js";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import React, { Suspense } from "react";
 
+import 'devextreme/dist/css/dx.common.css'
+import 'devextreme/dist/css/dx.light.css'
+
 function App() {
   const loading = (
     <div style={{ backgroundColor: "white", height: "1000px" }}></div>

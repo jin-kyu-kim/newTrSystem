@@ -1,5 +1,8 @@
-import { Form } from "react-bootstrap";
-import React, { useEffect, useState } from "react";
+
+import React, { useEffect, useState, } from "react";
+
+import SelectBox from "devextreme-react/select-box";
+
 import cdJson from "../unit/cd.json";
 import ApiRequest from "../../utils/ApiRequest";
 
@@ -39,14 +42,20 @@ const CustomComboBox = ({ param, placeholderText, onSelect, name }) => {
   };
 
   return (
-    <Form.Select size="lg" onChange={onSelect} name={name}>
-      <option value="">{placeholderText}</option>
-      {cdVal.map((option, index) => (
-        <option key={index} value={option.cdValue}>
-          {option.cdNm}
-        </option>
-      ))}
-    </Form.Select>
+    // <div className="dx-field-value">
+      <SelectBox
+        dataSource={cdVal}
+        displayExpr="cdNm"
+        valueExpr="cdValue"
+        placeholder={placeholderText}
+        onValueChanged={(e) => {
+          onSelect({ name, value: e.value });
+        }}
+        searchEnabled={true}
+        width="100%"
+        >
+      </SelectBox>
+    // </div>
   );
 };
 
