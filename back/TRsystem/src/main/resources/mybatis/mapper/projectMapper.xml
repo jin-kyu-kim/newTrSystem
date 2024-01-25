@@ -40,4 +40,41 @@
         </if>
     LIMIT #{startVal}, #{pageSize}
     </select>
+
+    <select id="retrievePrjctAprvList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+        ROW_NUMBER()OVER ()ROWNUM
+        , (SELECT CD_NM FROM CD WHERE CD_VALUE = PRJCT_STLE_CD) AS PRJCT_STLE_CD
+        , PRJCT_ID
+        , PRJCT_NM
+        , (SELECT CD_NM FROM CD WHERE CD_VALUE = BIZ_FLFMT_TY_CD) AS BIZ_FLFMT_TY_CD
+        , (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = PRJCT_MNGR_EMP_ID ) AS PRJCT_MNGR_EMP_ID
+        , CTMMNY_NO
+        , CTRT_YMD
+        , BIZ_END_YMD
+        , COUNT(*) OVER () AS TOTAL_ITEMS
+        FROM PRJCT
+        WHERE 1=1
+        <if test="prjctStleCd != null and !prjctStleCd.equals('')">
+            AND PRJCT_STLE_CD = #{prjctStleCd}
+        </if>
+        <if test="prjctId != null and !prjctId.equals('')">
+            AND PRJCT_ID = #{prjctId}
+        </if>
+        <if test="bizFlfmtTyCd != null and !bizFlfmtTyCd.equals('')">
+            AND BIZ_FLFMT_TY_CD = #{bizFlfmtTyCd}
+        </if>
+        <if test="ctrtYmd != null and bizEndYmd == null">
+            AND CTRT_YMD > #{ctrtYmd}
+        </if>
+        <if test="ctrtYmd == null and bizEndYmd != null">
+            AND BIZ_END_YMD > #{bizEndYmd}
+        </if>
+        <if test="ctrtYmd != null and bizEndYmd != null">
+            <if test="!ctrtYmd.equals('') and !bizEndYmd.equals('')">
+                AND CTRT_YMD BETWEEN #{ctrtYmd} AND #{bizEndYmd}
+            </if>
+        </if>
+        LIMIT #{startVal}, #{pageSize}
+    </select>
 </mapper>
