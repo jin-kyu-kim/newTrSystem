@@ -199,7 +199,6 @@ public class CommonServiceImpl implements CommonService {
                     }
                     queryBuilder.append(" AND ");
                     queryBuilder.append(keys.get(j).replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase()).append(" = ?");
-
                 }
 
                 PreparedStatement preparedStatement = connection.prepareStatement(queryBuilder.toString());
