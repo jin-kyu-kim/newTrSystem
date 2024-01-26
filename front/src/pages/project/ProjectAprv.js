@@ -18,14 +18,7 @@ const ProjectAprv = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
 
-  const columns = ProjectJson;
-    
-  const condition = {
-      "menuName": "ProjectAprv",
-      "ctmmnyNameItem": false,
-      "prjctDatePickerItem": false,
-      "insertBtnItem": false
-  };
+  const {menuName, queryId, tableColumns, searchParams} = ProjectJson;
 
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
@@ -39,7 +32,7 @@ const ProjectAprv = () => {
     setCurrentPage(1);
     setParam({
       ...initParam,
-      queryId: "projectMapper.retrievePrjctAprvList",
+      queryId: queryId,
       currentPage: currentPage,
       startVal: 0,
       pageSize: pageSize,
@@ -82,6 +75,11 @@ const ProjectAprv = () => {
     }
   };
 
+  const onRowDblClick = () => {
+    
+  }
+
+
   return (
     <div className="container">
       <div
@@ -94,17 +92,10 @@ const ProjectAprv = () => {
         <span>* 프로젝트 승인 내역을 조회 합니다.</span>
       </div>
       <div style={{ marginBottom: "20px" }}>
-        <SearchPrjctSet callBack={searchHandle} props={condition}/>
+        <SearchPrjctSet callBack={searchHandle} props={searchParams}/>
       </div>
       <div>검색된 건 수 : {totalItems} 건</div>
-      <CustomTable columns={columns} values={values} pageSize={pageSize}/>
-      <CustomPagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onChgPage={handlePageChange}
-        onSelectChg={handlePageSizeChange}
-        pageSize={pageSize}
-      />
+      <CustomTable  menuName={menuName} columns={tableColumns} values={values} onRowDblClick={onRowDblClick} pagerVisible={true}/>
     </div>
   );
 };
