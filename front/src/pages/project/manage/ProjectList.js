@@ -75,7 +75,7 @@ const ProjectList = () => {
   };
 
   const onRowDblClick = (e) => {
-    navigate("/project/ProjectListDetail", {state: { id: e.key, prjctNm: e.prjctNm}})
+    navigate("/project/ProjectListDetail", {state: { id: e.key, prjctNm: e.data.prjctNm}})
   };
 
   return (
