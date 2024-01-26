@@ -38,6 +38,5 @@
       AND CTRT_YMD BETWEEN #{ctrtYmd} AND #{bizEndYmd}
             </if>
         </if>
-    LIMIT #{startVal}, #{pageSize}
     </select>
 </mapper>
