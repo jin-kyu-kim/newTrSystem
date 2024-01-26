@@ -2,7 +2,7 @@ import { useCallback, useState, useEffect } from "react";
 import { TabPanel } from 'devextreme-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-import ProjectListDetailBaseInfo from "./ProjectListDetailBaseInfo.js"; //기본정보 탭 정보
+import ProjectBaseInfo from "./ProjectBaseInfo.js"; //기본정보 탭 정보
 import ProjectListDetailExcnPrmpcBill from "./ProjectListDetailExcnPrmpcBill.js";
 
 import 'devextreme/dist/css/dx.common.css';
@@ -50,7 +50,7 @@ const ProjectListDetail = () => {
   const getTabItemComponent = (index) => {
     switch (index) {
       case 0:
-        return ProjectListDetailBaseInfo;
+        return ProjectBaseInfo;
       case 1:
         return ProjectListDetailExcnPrmpcBill;
       case 2:
@@ -63,7 +63,7 @@ const ProjectListDetail = () => {
         return ProjectListDetailExcnPrmpcBill;
     }
   };
-  
+ 
   const handleClick = () => {
     // 이전 페이지로 이동
     navigate(-1);
