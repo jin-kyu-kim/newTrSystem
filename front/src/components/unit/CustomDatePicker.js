@@ -1,45 +1,75 @@
-import React, { useState, forwardRef } from "react";
+import React, { useState, useEffect } from "react";
 
-import DatePicker from "react-datepicker";
-import ko from "date-fns/locale/ko";
+import { DateBox } from "devextreme-react/date-box";
+import Box, {Item} from "devextreme-react/box";
 
-import { Form } from "react-bootstrap";
-import "react-datepicker/dist/react-datepicker.css";
+const CustomDatePicker = ({ onStartDateChange, onEndDateChange }) => {
+  const [selectedStartDate, setSelectedStartDate] = useState(null);
+  const [selectedEndDate, setSelectedEndDate] = useState(null);
 
-const CustomDatePicker = ({ onSelect, placeholderText }) => {
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [showPlaceholder, setShowPlaceholder] = useState(true);
+  const handleStartDateChange = (e) => {
+    const newStartDate = e.value;
 
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-    setShowPlaceholder(false);
-    onSelect(date, placeholderText);
+    // 시작일자가 종료일자보다 크다면 종료일자를 시작일자로 설정
+    const newEndDate = selectedEndDate && newStartDate > selectedEndDate ? newStartDate : selectedEndDate;
+
+    setSelectedStartDate(newStartDate);
+
+    // 부모 컴포넌트로 시작일자 전달
+    onStartDateChange(newStartDate);
+
+    // 종료일자가 변경된 경우 부모 컴포넌트로 종료일자 전달
+    if (newEndDate !== selectedEndDate) {
+      onEndDateChange(newEndDate);
+    }
   };
 
-  const CustomInput = forwardRef(({ value, onClick }, ref) => (
-    <Form.Control
-      ref={ref}
-      type="text"
-      value={value}
-      placeholder={showPlaceholder ? placeholderText : ""}
-      onClick={() => {
-        onClick();
-        setShowPlaceholder(false);
-      }}
-      size="lg"
-      style={{ width: "150px" }}
-      readOnly
-    />
-  ));
+  const handleEndDateChange = (e) => {
+    const newEndDate = e.value;
+
+    // 종료일자가 시작일자보다 작다면 시작일자를 종료일자로 설정
+    const newStartDate = selectedStartDate && newEndDate < selectedStartDate ? newEndDate : selectedStartDate;
+
+    setSelectedEndDate(newEndDate);
+
+    // 부모 컴포넌트로 종료일자 전달
+    onEndDateChange(newEndDate);
+
+    // 시작일자가 변경된 경우 부모 컴포넌트로 시작일자 전달
+    if (newStartDate !== selectedStartDate) {
+      onStartDateChange(newStartDate);
+    }
+  };
 
   return (
-    <DatePicker
-      selected={selectedDate}
-      onChange={handleDateChange}
-      dateFormat="yyyy-MM-dd"
-      locale={ko}
-      customInput={<CustomInput />}
-    />
+    <Box
+      direction="row"
+      width="100%"
+    >
+      <Item ratio={1}>
+        <DateBox
+          value={selectedStartDate}
+          onValueChanged={handleStartDateChange}
+          width="100%"
+          dateSerializationFormat="yyyyMMdd"
+          placeholder="시작 일자"
+          displayFormat="yyyy-MM-dd"
+          type="date"
+        />
+      </Item>
+      <Item ratio={1}>
+        <DateBox
+          value={selectedEndDate}
+          onValueChanged={handleEndDateChange}
+          width="100%'"
+          dateSerializationFormat="yyyyMMdd"
+          placeholder="종료 일자"
+          displayFormat="yyyy-MM-dd"
+          type="date"
+        />
+      </Item>
+    </Box>
   );
 };
+
 export default React.memo(CustomDatePicker);

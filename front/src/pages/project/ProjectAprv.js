@@ -18,6 +18,8 @@ const ProjectAprv = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
 
+  const {menuName, queryId, tableColumns, searchParams} = ProjectJson;
+
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
       pageHandle();
@@ -30,7 +32,7 @@ const ProjectAprv = () => {
     setCurrentPage(1);
     setParam({
       ...initParam,
-      queryId: "projectMapper.retrievePrjctAprvList",
+      queryId: queryId,
       currentPage: currentPage,
       startVal: 0,
       pageSize: pageSize,
@@ -45,14 +47,16 @@ const ProjectAprv = () => {
       startVal: (newPage - 1) * pageSize,
     });
   };
-  // 폐이지 사이즈 변경
+
+  // 페이지 사이즈 변경
   const handlePageSizeChange = (e) => {
-    setPageSize(e.target.value * 1);
+    console.log(e)
+    setPageSize(e.value * 1);
     setParam({
-      ...param,
-      currentPage: 1,
-      startVal: 0,
-      pageSize: e.target.value * 1,
+        ...param,
+        currentPage: 1,
+        startVal: 0,
+        pageSize: e.value * 1,
     });
   };
 
@@ -71,29 +75,28 @@ const ProjectAprv = () => {
     }
   };
 
+  const onRowDblClick = () => {
+    
+  }
+
+
   return (
-    <Container>
+    <div className="container">
       <div
         className="title p-1"
         style={{ marginTop: "20px", marginBottom: "10px" }}
       >
-        <h1 style={{ fontSize: "40px" }}>프로젝트 승인!!!!!!!!!!!!!!!!!!!!!</h1>
+        <h1 style={{ fontSize: "40px" }}>프로젝트 승인</h1>
       </div>
       <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
         <span>* 프로젝트 승인 내역을 조회 합니다.</span>
       </div>
       <div style={{ marginBottom: "20px" }}>
-        <SearchPrjctSet callBack={searchHandle} />
+        <SearchPrjctSet callBack={searchHandle} props={searchParams}/>
       </div>
       <div>검색된 건 수 : {totalItems} 건</div>
-      <CustomTable headers={ProjectJson} tbBody={values} />
-      <CustomPagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onChgPage={handlePageChange}
-        onSelectChg={handlePageSizeChange}
-      />
-    </Container>
+      <CustomTable  menuName={menuName} columns={tableColumns} values={values} onRowDblClick={onRowDblClick} pagerVisible={true}/>
+    </div>
   );
 };
 
