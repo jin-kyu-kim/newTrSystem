@@ -36,7 +36,7 @@ const ProjectListDetail = () => {
   const itemTitleRender = (a) => <span>{a.TabName}</span>;
 
   // 탭 변경시 인덱스 설정
-  const onSelectionChanged = useCallback(    
+  const onSelectionChanged = useCallback(     //selectedIndex값이 변경될때마다 해당 함수를 새로 생성하지 않고 재사용 하기 위해 useCallback 사용
     (args) => {
       if (args.name === 'selectedIndex') {
         setSelectedIndex(args.value); //Index 번호
@@ -78,7 +78,7 @@ const ProjectListDetail = () => {
       >
         <div style={{ marginRight: "20px", marginLeft: "20px"}}>
           <h1 style={{ fontSize: "30px" }}>프로젝트 관리</h1>
-          <div>TR시스템 리뉴얼 프로젝트 두 둥!</div>
+          <div>{location.state.prjctNm}</div>
         </div>
       </div>
       <div className="buttons" align="right" style={{ margin: "20px"}}>
