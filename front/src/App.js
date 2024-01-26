@@ -4,7 +4,7 @@ import Header from "./components/composite/Header.js";
 import TreRoutes from "./utils/TrsRoutes.js";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import React, { Suspense, useState, useEffect } from "react";
-import LoginForm from "./pages/common/LoginFrom.js";
+import LoginForm from "./pages/login/LoginFrom.js";
 import { CookiesProvider, useCookies } from "react-cookie";
 
 import 'devextreme/dist/css/dx.common.css'
@@ -31,7 +31,6 @@ function App() {
     console.log(cookies.userAuth);
   };
 
-  // 로그인된 경우 라우트를 보여주고, 그렇지 않은 경우 로그인 페이지로 리디렉션
   const renderRoutes = () => {
     if (isLoggedIn) {
       return (

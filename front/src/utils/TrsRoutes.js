@@ -13,7 +13,7 @@ const TreRoutes = [
   {
     path: "/LoginFrom",
     name: "LoginFrom",
-    element: React.lazy(() => import("../pages/common/LoginFrom")),
+    element: React.lazy(() => import("../pages/login/LoginFrom")),
   },
   // 프로젝트
   {
