@@ -7,6 +7,7 @@ import CustomTable from "../../../components/unit/CustomTable";
 import CustomPagination from "../../../components/unit/CustomPagination";
 
 import "react-datepicker/dist/react-datepicker.css";
+import { useNavigate } from "react-router-dom";
 
 const ProjectList = () => {
   const [values, setValues] = useState([]);
@@ -17,12 +18,15 @@ const ProjectList = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
 
+  const navigate = useNavigate();
+  
   const columns = ProjectJson;
 
   const condition = {
     "menuName": "ProjectList",
     "prjctMngrEmpIdItem": false,
   };
+  
 
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
@@ -77,6 +81,10 @@ const ProjectList = () => {
     }
   };
 
+  const onRowDblClick = (e) => {
+    navigate("/project/ProjectListDetail", {state: { id: e.key}})
+  };
+
   return (
     <div className="container">
       <div
@@ -92,14 +100,7 @@ const ProjectList = () => {
         <SearchPrjctSet callBack={searchHandle}  props={condition}/>
       </div>
       <div>검색된 건 수 : {totalItems} 건</div>
-      <CustomTable columns={columns} values={values} pageSize={pageSize}/>
-      <CustomPagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onChgPage={handlePageChange}
-        onSelectChg={handlePageSizeChange}
-        pageSize={pageSize}
-      />
+      <CustomTable columns={columns} values={values} onRowDblClick={onRowDblClick} pagerVisible={true}/>
     </div>
   );
 };
