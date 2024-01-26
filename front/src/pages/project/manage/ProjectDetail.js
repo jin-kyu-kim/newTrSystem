@@ -9,7 +9,7 @@ import 'devextreme/dist/css/dx.common.css';
 import 'devextreme/dist/css/dx.light.css';
 import Button from 'devextreme-react/button'; 
 
-const ProjectListDetail = () => {
+const ProjectDetail = () => {
   const location = useLocation();
   const projIdInfo = location.state.id;
   const navigate = useNavigate ();
@@ -129,4 +129,4 @@ const ProjectListDetail = () => {
   );
 };
 
-export default ProjectListDetail;
+export default ProjectDetail;
