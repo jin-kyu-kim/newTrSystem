@@ -1,33 +1,33 @@
 {
 "BaseInfo" :
   [
-    { "key": "bizFlfmtTyCd", "value": "프로젝트 명" },
+    { "key": "prjctNm", "value": "프로젝트 명" },
     { "key": "prjctId", "value": "프로젝트 코드" },
-    { "key": "prjctNm", "value": "소속" },
+    { "key": "deptId", "value": "소속" },
     { "key": "prjctMngrEmpId", "value": "PM" },
-    { "key": "", "value": "프로젝트 형태" },
+    { "key": "prjctStleCd", "value": "프로젝트 형태" },
     { "key": "prjctStleCd", "value": "프로젝트 상태" },
-    { "key": "", "value": "예상발주일" },
-    { "key": "", "value": "사전공고마감" },
-    { "key": "", "value": "제안마감일" },
-    { "key": "", "value": "제안PT일" },
-    { "key": "", "value": "계약일" },
-    { "key": "totalItems", "value": "사업종료일" },
-    { "key": "rownum", "value": "검수일" },
+    { "key": "expectOrderYmd", "value": "예상발주일" },
+    { "key": "beffatPbancDdlnYmd", "value": "사전공고마감" },
+    { "key": "propseDdlnYmd", "value": "제안마감일" },
+    { "key": "propsePrsntnYmd", "value": "제안PT일" },
+    { "key": "ctrtYmd", "value": "계약일" },
+    { "key": "bizEndYmd", "value": "사업종료일" },
+    { "key": "igiYmd", "value": "검수일" },
     { "key": "", "value": "경비사용 종료일(TR입력기간)" }
   ],
   "PicInfo":
   [
-    { "key": "bizFlfmtTyCd", "value": "고객사" },
-    { "key": "", "value": "담당자 성명" },
-    { "key": "prjctMngrEmpId", "value": "담당자 전화번호" },
-    { "key": "deptId", "value": "담당자 이메일" }
+    { "key": "ctmmnyNo", "value": "고객사" },
+    { "key": "picFlnm", "value": "담당자 성명" },
+    { "key": "picTelno", "value": "담당자 전화번호" },
+    { "key": "picEml", "value": "담당자 이메일" }
   ],
   "Cnsrtm":
   [
-    { "key": "", "value": "회사명" },
+    { "key": "cnsrtmCoNm", "value": "회사명" },
     { "key": "", "value": "역할" },
-    { "key": "", "value": "금액" },
+    { "key": "totBgt", "value": "금액" },
     { "key": "bizFlfmtTyCd", "value": "공통경비" }
   ]
 }

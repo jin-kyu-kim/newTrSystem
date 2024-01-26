@@ -50,7 +50,7 @@ const ProjectListDetailBaseInfo = (data) => {
   //Cnsrtm 데이터 
   useEffect(() => {
     const param = [ 
-      { tbNm: "PRJCT" }, 
+      { tbNm: "PRJCT_CNSRTM" }, 
       { 
        prjctId: data.data.projId, 
       }, 

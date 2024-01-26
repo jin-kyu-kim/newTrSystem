@@ -7,9 +7,9 @@ const CustomHorizontalTable = ({ headers, column }) => {
     if (index % 2 === 0) {
       result.push({
         header: header.value,
-        column : column[header.key],
+        column : column?.[header.key] ?? "",
         header1: headers[index + 1]?.value,
-        column1 : column[headers[index + 1]?.key],
+        column1 : column?.[headers[index + 1]?.key] ?? "",
       });
     }
     return result;
