@@ -1,57 +1,49 @@
-import { Pagination, Row, Col, Form } from "react-bootstrap";
+import SelectBox from "devextreme-react/cjs/select-box";
+import Button from "devextreme-react/button"
 
 const CustomPagination = ({
   currentPage,
   totalPages,
   onChgPage,
   onSelectChg,
+  pageSize,
 }) => {
-  const handlePrevClick = (e) => {
-    if (e.target.innerHTML === "‹" || e.target.name === "prev") {
-      console.log(currentPage);
-      onChgPage(currentPage - 1);
-    } else if (e.target.innerHTML === "›" || e.target.name === "next") {
-      onChgPage(currentPage + 1);
-    } else {
-      onChgPage(e.target.name);
-    }
-  };
-
   return (
-    <Row>
-      <Col md={4}>
-        <Pagination className="justify-content-md-center">
-          <Pagination.Prev
-            onClick={handlePrevClick}
-            disabled={currentPage === 1}
-            name="prev"
-          />
-          {[...Array(totalPages).keys()].map((page) => (
-            <Pagination.Item
-              key={page + 1}
-              active={page + 1 == currentPage}
-              onClick={handlePrevClick}
-              name={page + 1}
-            >
-              {page + 1}
-            </Pagination.Item>
-          ))}
-          <Pagination.Next
-            onClick={handlePrevClick}
-            disabled={currentPage === totalPages}
-            name="next"
-          />
-        </Pagination>
-      </Col>
-      <Col md={{ span: 4, offset: 4 }}>
-        <Form.Select onChange={onSelectChg}>
-          <option value="20">20</option>
-          <option value="50">50</option>
-          <option value="80">80</option>
-          <option value="100">100</option>
-        </Form.Select>
-      </Col>
-    </Row>
+    <div className="wrap_pagenation">
+      <div style={{display: 'inline-block', justifyContent: 'space-between', alignItems: 'center'}}>
+        <Button
+          onClick={() => onChgPage(currentPage - 1)}
+          disabled={currentPage === 1}
+          name="prev"
+          >
+          Prev
+        </Button>
+        {[...Array(totalPages).keys()].map((page) => (
+          <Button
+          key={page + 1}
+          onClick={() => onChgPage(page + 1)}
+          disabled={page + 1 === currentPage}
+          name={page + 1}
+          >
+            {page + 1}
+          </Button>
+        ))}
+        <Button
+          onClick={() => onChgPage(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          name="next"
+          >
+          Next
+        </Button>
+      </div>
+      <div style={{display: 'inline-block', justifyContent: 'space-between', alignItems: 'right'}}>
+        <SelectBox
+          dataSource={[20, 50, 80, 100]}
+          value={pageSize}
+          onValueChanged={onSelectChg}
+        />
+      </div>
+    </div>
   );
 };
 

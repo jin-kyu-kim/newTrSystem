@@ -1,13 +1,13 @@
 import ApiRequest from "../../utils/ApiRequest";
 
-import React, { useEffect, useState, useRef } from "react";
-import { Typeahead } from "react-bootstrap-typeahead";
-import "react-bootstrap-typeahead/css/Typeahead.css";
+import React, { useEffect, useState } from "react";
+import SelectBox from 'devextreme-react/select-box';
+import 'devextreme/dist/css/dx.common.css';
+import 'devextreme/dist/css/dx.light.css';
 
-const AutoCompleteProject = ({ placeholderText, onChangeFnc }) => {
+const AutoCompleteProject = ({ placeholderText, onValueChange }) => {
   const [suggestionsData, setSuggestionsData] = useState([]);
   const [valid, setValid] = useState(true);
-  const typeaheadRef = useRef();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,44 +29,33 @@ const AutoCompleteProject = ({ placeholderText, onChangeFnc }) => {
     fetchData();
   }, []);
 
-  const handleInputChange = (input) => {
-    const filteredOptions = suggestionsData.filter((option) =>
-      option.value.toLowerCase().includes(input.toLowerCase())
-    );
+  const handleSelectChange = (e) => {
+    const selectedOption = e.value;
+    console.log(selectedOption)
 
-    return filteredOptions;
-  };
-
-  const handleSelectChange = (selectedOptions) => {
-    if (selectedOptions.length !== 0) {
-      // console.log("Selected key:", option.key);
-      onChangeFnc(selectedOptions[0].key);
+    if (selectedOption) {
+      onValueChange(selectedOption);
       setValid(true);
     } else {
-      onChangeFnc("");
+      onValueChange("");
       setValid(false);
-      // typeaheadRef.current && typeaheadRef.current.clear();
     }
   };
 
-  const handleValid = () => {
-    if (!valid) {
-      typeaheadRef.current && typeaheadRef.current.clear();
-    }
+  const handleBlur = () => {
+    setValid(true); // Ensure that the SelectBox is valid after blur
   };
 
   return (
-    <Typeahead
-      id="input-typeahead"
-      labelKey="value"
-      options={suggestionsData}
-      onChange={handleSelectChange}
-      onBlur={handleValid}
-      onInputChange={(input) => handleInputChange(input)}
+    <SelectBox
+      dataSource={suggestionsData}
+      valueExpr="key"
+      displayExpr="value"
+      onValueChanged={handleSelectChange}
       placeholder={placeholderText}
-      size="lg"
-      style={{ width: "3000px" }}
-      ref={typeaheadRef}
+      searchEnabled={true}
+      stylingMode="underlined"
+      onBlur={handleBlur}
     />
   );
 };

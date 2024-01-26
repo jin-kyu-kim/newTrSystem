@@ -4,10 +4,9 @@ import ProjectJson from "../manage/ProjectListJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
 import SearchPrjctSet from "../../../components/composite/SearchPrjctSet";
 import CustomTable from "../../../components/unit/CustomTable";
-import CustomPagination from "../../../components/unit/CustomPagination";
 
-import { Container } from "react-bootstrap";
 import "react-datepicker/dist/react-datepicker.css";
+import { useNavigate } from "react-router-dom";
 
 const ProjectList = () => {
   const [values, setValues] = useState([]);
@@ -17,6 +16,10 @@ const ProjectList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
+
+  const navigate = useNavigate();
+
+  const {menuName, queryId, tableColumns, searchParams} = ProjectJson;
 
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
@@ -30,7 +33,7 @@ const ProjectList = () => {
     setCurrentPage(1);
     setParam({
       ...initParam,
-      queryId: "projectMapper.retrievePrjctList",
+      queryId: queryId,
       currentPage: currentPage,
       startVal: 0,
       pageSize: pageSize,
@@ -47,12 +50,12 @@ const ProjectList = () => {
   };
   // 폐이지 사이즈 변경
   const handlePageSizeChange = (e) => {
-    setPageSize(e.target.value * 1);
+    setPageSize(e.value * 1);
     setParam({
-      ...param,
-      currentPage: 1,
-      startVal: 0,
-      pageSize: e.target.value * 1,
+        ...param,
+        currentPage: 1,
+        startVal: 0,
+        pageSize: e.value * 1,
     });
   };
 
@@ -71,8 +74,12 @@ const ProjectList = () => {
     }
   };
 
+  const onRowDblClick = (e) => {
+    navigate("/project/ProjectListDetail", {state: { id: e.key, prjctNm: e.data.prjctNm}})
+  };
+
   return (
-    <Container>
+    <div className="container">
       <div
         className="title p-1"
         style={{ marginTop: "20px", marginBottom: "10px" }}
@@ -83,17 +90,11 @@ const ProjectList = () => {
         <span>* 프로젝트를 조회합니다.</span>
       </div>
       <div style={{ marginBottom: "20px" }}>
-        <SearchPrjctSet callBack={searchHandle} />
+        <SearchPrjctSet callBack={searchHandle}  props={searchParams}/>
       </div>
       <div>검색된 건 수 : {totalItems} 건</div>
-      <CustomTable headers={ProjectJson} tbBody={values} />
-      <CustomPagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onChgPage={handlePageChange}
-        onSelectChg={handlePageSizeChange}
-      />
-    </Container>
+      <CustomTable manuName={menuName} columns={tableColumns} values={values} onRowDblClick={onRowDblClick} pagerVisible={true}/>
+    </div>
   );
 };
 
