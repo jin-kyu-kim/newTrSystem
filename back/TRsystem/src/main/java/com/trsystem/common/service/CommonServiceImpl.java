@@ -7,10 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class CommonServiceImpl implements CommonService {
@@ -180,50 +177,65 @@ public class CommonServiceImpl implements CommonService {
         }
     }
 
-    public List<Map<String, Object>> commonSelect(List<Map<String, Object>> params) {//1. 테이블 컬럼명 가져오기
+    public List<Map<String, Object>> commonSelect(List<Map<String, Object>> params) {
         List<Map<String, Object>> resultSet = new ArrayList<>();
         String tbNm = params.get(0).get("tbNm").toString();
 
-        try {
-            Connection connection = DriverManager.getConnection(applicationYamlRead.getUrl(), applicationYamlRead.getUsername(), applicationYamlRead.getPassword());
-                Map<String, Object> insertParam = params.get(1);
-                List<Object> inParams = new ArrayList<>(insertParam.values());
-                List<String> keys = new ArrayList<>(insertParam.keySet());
+        try (Connection connection = DriverManager.getConnection(applicationYamlRead.getUrl(), applicationYamlRead.getUsername(), applicationYamlRead.getPassword())) {
+            Map<String, Object> insertParam = params.get(1);
+            List<Object> inParams = new ArrayList<>(insertParam.values());
+            List<String> keys = new ArrayList<>(insertParam.keySet());
+
+            // SELECT 문을 생성하기 위해 컬럼명을 얻어옴
+            try (Statement statement = connection.createStatement()) {
+                ResultSet resultParamSet = statement.executeQuery("SELECT * FROM " + tbNm + " WHERE 1=0"); // 빈 결과를 가져옴
+                ResultSetMetaData metaData = resultParamSet.getMetaData();
+                int columnCount = metaData.getColumnCount();
 
                 //SELECT문 생성
-                StringBuilder queryBuilder = new StringBuilder("SELECT * FROM ").append(tbNm).append(" WHERE 1=1");
+                StringJoiner queryBuilder = new StringJoiner(", ", "SELECT ", " FROM " + tbNm + " WHERE 1=1");
+
+                for (int i = 1; i <= columnCount; i++) {
+                    if (metaData.getColumnName(i).endsWith("CD")) {
+                        queryBuilder.add("(SELECT CD_NM FROM CD WHERE CD_VALUE = " + metaData.getColumnName(i) + ") AS " + metaData.getColumnName(i) + "_NM");
+                    }
+                    queryBuilder.add(metaData.getColumnName(i));
+                }
 
                 for (int j = 0; j < inParams.size(); j++) {
-                    if(inParams.get(j) == ""){
-                        continue;
+                    if (!inParams.get(j).toString().isEmpty()) {
+                        queryBuilder.add(keys.get(j).replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase() + " = ?");
                     }
-                    queryBuilder.append(" AND ");
-                    queryBuilder.append(keys.get(j).replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase()).append(" = ?");
                 }
 
-                PreparedStatement preparedStatement = connection.prepareStatement(queryBuilder.toString());
-                preparedStatement = querySetter(preparedStatement, inParams);
-                ResultSet result = null;
-                if (preparedStatement != null) {
-                    result = preparedStatement.executeQuery();
-                }
+                try (PreparedStatement preparedStatement = connection.prepareStatement(queryBuilder.toString())) {
+                    preparedStatementSetter(preparedStatement, inParams);
+                    try (ResultSet result = preparedStatement.executeQuery()) {
+                        metaData = result.getMetaData();
+                        columnCount = metaData.getColumnCount();
 
-                ResultSetMetaData metaData = result.getMetaData();
-                int columnCount = metaData.getColumnCount();
-                while (result.next()) {
-                    Map<String, Object> row = new HashMap<>();
-                    for (int k = 1; k <= columnCount; k++) {
-                        String columnName = metaData.getColumnName(k);
-                        Object value = result.getObject(k);
-                        row.put(CaseUtils.toCamelCase(columnName, false, '_'), value);
+                        while (result.next()) {
+                            Map<String, Object> row = new HashMap<>();
+                            for (int k = 1; k <= columnCount; k++) {
+                                String columnName = metaData.getColumnName(k);
+                                Object value = result.getObject(k);
+                                row.put(CaseUtils.toCamelCase(columnName, false, '_'), value);
+                            }
+                            resultSet.add(row);
+                        }
                     }
-                    resultSet.add(row);
                 }
-            connection.close();
-            return resultSet;
+            }
         } catch (SQLException e) {
             e.getStackTrace();
-            return resultSet;
+        }
+
+        return resultSet;
+    }
+
+    private void preparedStatementSetter(PreparedStatement preparedStatement, List<Object> params) throws SQLException {
+        for (int i = 0; i < params.size(); i++) {
+            preparedStatement.setObject(i + 1, params.get(i));
         }
     }
 
