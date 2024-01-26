@@ -14,16 +14,12 @@ const LoginForm = ({ handleLogin }) => {
     auth: "test",
   };
   const userAuth = {
-    empId: "456498765sdf6sd54",
+    userAuth: ["auth1", "auth2", "auth3"],
     empNm: "김진규11",
     auth: "test11",
   };
 
   const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
-
-  //   useEffect(() => {
-  //     handleLogin();
-  //   }, [cookies]);
 
   const handleSetCookie = () => {
     setCookie("userInfo", userInfo);
