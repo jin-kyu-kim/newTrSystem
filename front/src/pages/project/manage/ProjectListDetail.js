@@ -1,44 +1,42 @@
-import { useCallback, useState, Suspense } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { TabPanel } from 'devextreme-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import ProjectListDetailBaseInfo from "./ProjectListDetailBaseInfo.js"; //기본정보 탭 정보
 import ProjectListDetailExcnPrmpcBill from "./ProjectListDetailExcnPrmpcBill.js";
 
+import 'devextreme/dist/css/dx.common.css';
 import 'devextreme/dist/css/dx.light.css';
-import Button from 'devextreme-react/button';
-
-const TabName = [
-  {
-    ID: 1,
-    TabName: '기본정보',
-  },
-  {
-    ID: 2,
-    TabName: "실행원가계산서",
-  },
-  {
-    ID: 3,
-    TabName: '실행원가집행현황',
-  },
-  {
-    ID: 4,
-    TabName: '결재정보',
-  },
-  {
-    ID: 5,
-    TabName: '설정',
-  },
-];
-
-const itemTitleRender = (company) => <span>{company.TabName}</span>;
+import Button from 'devextreme-react/button'; 
 
 const ProjectListDetail = () => {
+  const location = useLocation();
+  const projIdInfo = location.state.id;
   const navigate = useNavigate ();
   const [selectedIndex, setSelectedIndex] = useState(0);
 
+  const TabName = [
+    {
+      TabName: '기본정보', projId: projIdInfo,
+    },
+    {
+      TabName: '실행원가계산서',
+    },
+    {
+      TabName: '실행원가집행현황',
+    },
+    {
+      TabName: '결재정보',
+    },
+    {
+      TabName: '설정',
+    },
+  ];
+
+  const itemTitleRender = (a) => <span>{a.TabName}</span>;
+
   // 탭 변경시 인덱스 설정
-  const onSelectionChanged = useCallback(    
+  const onSelectionChanged = useCallback(     //selectedIndex값이 변경될때마다 해당 함수를 새로 생성하지 않고 재사용 하기 위해 useCallback 사용
     (args) => {
       if (args.name === 'selectedIndex') {
         setSelectedIndex(args.value); //Index 번호
@@ -49,8 +47,8 @@ const ProjectListDetail = () => {
 
   //탭마다 다른 js 랜더링
   //TODO. 각각의 JS 생성 필요.
-  const getTabItemComponent = (type) => {
-    switch (type) {
+  const getTabItemComponent = (index) => {
+    switch (index) {
       case 0:
         return ProjectListDetailBaseInfo;
       case 1:
@@ -78,37 +76,42 @@ const ProjectListDetail = () => {
         className="title p-1"
         style={{ marginTop: "20px", marginBottom: "10px" }}
       >
-        <h1 style={{ fontSize: "30px" }}>프로젝트 관리</h1>
-        <div>어떤 프로젝트 관리 11111</div>
+        <div style={{ marginRight: "20px", marginLeft: "20px"}}>
+          <h1 style={{ fontSize: "30px" }}>프로젝트 관리</h1>
+          <div>{location.state.prjctNm}</div>
+        </div>
       </div>
-      <div align="right">
+      <div className="buttons" align="right" style={{ margin: "20px"}}>
         <Button
-          width={120}
+          width={80}
           text="Contained"
           type="default"
-          // stylingMode="contained"
+          stylingMode="contained"
+          style={{ margin : '2px' }} // 원하는 스타일 직접 지정
         >
           변경원가
         </Button>
         <Button
-          width={120}
+          width={110}
           text="Contained"
           type="default"
-          // stylingMode="contained"
+          stylingMode="contained"
+          style={{ margin : '2px' }} // 원하는 스타일 직접 지정
         >
           프로젝트종료
         </Button>
         <Button
-          width={120}
+          width={50}
           text="Contained"
           type="normal"
-          // stylingMode="contained"
+          stylingMode="outlined"
           onClick={handleClick}
+          style={{ margin : '2px' }} // 원하는 스타일 직접 지정
         >
           목록
         </Button>
       </div>
-      <div>
+      <div style={{ marginTop: "20px", marginBottom: "10px" }}>
       <TabPanel
           height={50}
           dataSource={TabName}
@@ -117,8 +120,8 @@ const ProjectListDetail = () => {
           itemTitleRender={itemTitleRender}
           animationEnabled={true}
           itemComponent={({ data, index }) => {
-            const TabItemComponent = getTabItemComponent(index);
-            return <TabItemComponent/>;
+            const TabItemComponent = getTabItemComponent(index, data);
+            return <TabItemComponent data={data}/>;
           }}
         />
       </div>
