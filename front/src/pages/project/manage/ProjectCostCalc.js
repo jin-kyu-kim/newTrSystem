@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import ApiRequest from '../../../utils/ApiRequest';
 
-const ProjectListDetailExcnPrmpcBill = () => {
+const ProjectCostCalc = () => {
   const [tabData, setTabData] = useState([]);
 
 //   useEffect(() => {
@@ -30,4 +30,4 @@ const ProjectListDetailExcnPrmpcBill = () => {
   );
 };
 
-export default ProjectListDetailExcnPrmpcBill;
+export default ProjectCostCalc;
