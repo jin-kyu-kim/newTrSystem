@@ -38,7 +38,6 @@
       AND CTRT_YMD BETWEEN #{ctrtYmd} AND #{bizEndYmd}
             </if>
         </if>
-    LIMIT #{startVal}, #{pageSize}
     </select>
         
     <select id="retrievePrjctAprvList" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -75,7 +74,6 @@
       AND CTRT_YMD BETWEEN #{ctrtYmd} AND #{bizEndYmd}
             </if>
         </if>
-    LIMIT #{startVal}, #{pageSize}
     </select>
 
 </mapper>
