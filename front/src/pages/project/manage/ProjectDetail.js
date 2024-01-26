@@ -1,18 +1,18 @@
 import { useCallback, useState, useEffect } from "react";
 import { TabPanel } from 'devextreme-react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
-import ProjectListDetailBaseInfo from "./ProjectListDetailBaseInfo.js"; //기본정보 탭 정보
-import ProjectListDetailExcnPrmpcBill from "./ProjectListDetailExcnPrmpcBill.js";
+import ProjectBaseInfo from "./ProjectBaseInfo.js"; //기본정보 탭 정보
+import ProjectCostCalc from "./ProjectCostCalc.js"; //실행원가계산서
 
 import 'devextreme/dist/css/dx.common.css';
 import 'devextreme/dist/css/dx.light.css';
 import Button from 'devextreme-react/button'; 
+import LinkButton from "../../../components/unit/LinkButton.js";
 
-const ProjectListDetail = () => {
+const ProjectDetail = () => {
   const location = useLocation();
   const projIdInfo = location.state.id;
-  const navigate = useNavigate ();
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const TabName = [
@@ -50,25 +50,19 @@ const ProjectListDetail = () => {
   const getTabItemComponent = (index) => {
     switch (index) {
       case 0:
-        return ProjectListDetailBaseInfo;
+        return ProjectBaseInfo;
       case 1:
-        return ProjectListDetailExcnPrmpcBill;
+        return ProjectCostCalc;
       case 2:
-        return ProjectListDetailExcnPrmpcBill;
+        return ProjectCostCalc;
       case 3:
-        return ProjectListDetailExcnPrmpcBill;
+        return ProjectCostCalc;
       case 4:
-        return ProjectListDetailExcnPrmpcBill;
+        return ProjectCostCalc;
       default:
-        return ProjectListDetailExcnPrmpcBill;
+        return ProjectCostCalc;
     }
   };
-  
-  const handleClick = () => {
-    // 이전 페이지로 이동
-    navigate(-1);
-  };
-
 
   return (
     <div>
@@ -100,16 +94,7 @@ const ProjectListDetail = () => {
         >
           프로젝트종료
         </Button>
-        <Button
-          width={50}
-          text="Contained"
-          type="normal"
-          stylingMode="outlined"
-          onClick={handleClick}
-          style={{ margin : '2px' }} // 원하는 스타일 직접 지정
-        >
-          목록
-        </Button>
+        <LinkButton location={-1} name={"목록"} type={"normal"}/> 
       </div>
       <div style={{ marginTop: "20px", marginBottom: "10px" }}>
       <TabPanel
@@ -129,4 +114,4 @@ const ProjectListDetail = () => {
   );
 };
 
-export default ProjectListDetail;
+export default ProjectDetail;

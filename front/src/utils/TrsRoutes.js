@@ -34,9 +34,9 @@ const TreRoutes = [
   },
   // 프로젝트 디테일
   {
-    path: "/project/ProjectListDetail",
-    name: "ProjectListDetail",
-    element: React.lazy(() => import("../pages/project/manage/ProjectListDetail")),
+    path: "/project/ProjectDetail",
+    name: "ProjectDetail",
+    element: React.lazy(() => import("../pages/project/manage/ProjectDetail")),
   },
 ];
 

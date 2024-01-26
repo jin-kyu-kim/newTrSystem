@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 
 import ApiRequest from '../../../utils/ApiRequest';
 import CustomHorizontalTable from '../../../components/unit/CustomHorizontalTable';
-import BaseInfo from '../manage/BaseInfo.json';
+import BaseInfo from './BaseInfo.json';
 
-const ProjectListDetailBaseInfo = (data) => {
+const ProjectBaseInfo = (data) => {
   const [baseInfoData, setBaseInfoData] = useState([]);
   const [picInfoData, setPicInfoData] = useState([]);
   const [CnsrtmData, setCnsrtmData] = useState([]);
@@ -83,4 +83,4 @@ const ProjectListDetailBaseInfo = (data) => {
   );
 };
 
-export default ProjectListDetailBaseInfo;
+export default ProjectBaseInfo;
