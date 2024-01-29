@@ -25,12 +25,12 @@ const TreRoutes = [
   {
     path: "/project/ProjectAprv",
     name: "ProjectAprv",
-    element: React.lazy(() => import("../pages/project/ProjectAprv")),
+    element: React.lazy(() => import("../pages/project/approval/ProjectAprv")),
   },
   {
     path: "/project/ProjectHrCtAprv",
     name: "ProjectHrCtAprv",
-    element: React.lazy(() => import("../pages/project/ProjectHrCtAprv")),
+    element: React.lazy(() => import("../pages/project/approval/ProjectHrCtAprv")),
   },
   // 프로젝트 디테일
   {

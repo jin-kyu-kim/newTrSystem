@@ -119,7 +119,7 @@ const SearchPrjctSet = ({ callBack, props }) => {
           />
         </Item>
         <Item ratio={1} visible={props.insertBtnItem}>
-          <Button text="입력" />
+          <Button text="등록" />
         </Item>
       </Box>
     </div>

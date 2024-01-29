@@ -1,6 +1,7 @@
 {
   "menuName": "ProjectList",
   "queryId": "projectMapper.retrievePrjctList",
+  "keyColumn": "prjctId",
   "tableColumns": [
     { "key": "rownum", "value": "번호", "width": 70, "alignment": "center" },
     { "key": "prjctStleCd", "value": "형태", "width": 100 },

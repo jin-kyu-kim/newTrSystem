@@ -19,7 +19,7 @@ const ProjectList = () => {
 
   const navigate = useNavigate();
 
-  const { menuName, queryId, tableColumns, searchParams } = ProjectJson;
+  const { keyColumn, queryId, tableColumns, searchParams } = ProjectJson;
 
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
@@ -78,6 +78,10 @@ const ProjectList = () => {
     navigate("/project/ProjectDetail", {
       state: { id: e.key, prjctNm: e.data.prjctNm },
     });
+  };
+
+  const onClickInsertBtn = (e) => {
+    console.log("asdasd");
   };
 
   return (
