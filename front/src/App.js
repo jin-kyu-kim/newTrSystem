@@ -7,9 +7,6 @@ import React, { Suspense, useState, useEffect } from "react";
 import LoginForm from "./pages/login/LoginFrom.js";
 import { CookiesProvider, useCookies } from "react-cookie";
 
-import 'devextreme/dist/css/dx.common.css'
-import 'devextreme/dist/css/dx.light.css'
-
 function App() {
   const [isLoggedIn, setLoggedIn] = useState(() => {
     const storedLoginStatus = localStorage.getItem("isLoggedIn");
