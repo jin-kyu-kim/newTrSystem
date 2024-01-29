@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
 
 import projectConsortiumJson from "./ProjectConsortiumJson.json"
-import CustomTable from "../../components/unit/CustomTable";
-import { TextArea } from "devextreme-react";
+import CustomAddTable from "../../../components/unit/CustomAddTable";
 import Box, {Item} from "devextreme-react/box";
-import Button from "devextreme-react/button";
-import ApiRequest from "../../utils/ApiRequest";
+import ApiRequest from "../../../utils/ApiRequest";
 
 const ProjectConsortium = (data) => {
 
@@ -15,10 +13,11 @@ const ProjectConsortium = (data) => {
 
     const param = [
         { tbNm:"PRJCT_CNSRTM" },
-        {prjctId: data.data.projctId},
+        { prjctId: data.data.projId },
     ];
 
-    console.log(data.data)
+    console.log(data.data.projId)
+
     useEffect(() => {
         Cnsrtm();
     }, []);
@@ -30,7 +29,7 @@ const ProjectConsortium = (data) => {
         } catch(error) {
             console.error(error);
         }
-    }
+    }   
 
     return (
         <>
@@ -41,15 +40,16 @@ const ProjectConsortium = (data) => {
                     <Item ratio={1}>
                         <div className="rect demo-dark header">
                             <h5>컨소시엄구성을 입력합니다.</h5>
-                        
-                            <div> * <Button text="수정"/> 버튼을 클릭하여 내용을 입력/수정할 수 있습니다.</div>
+                            <div> * + 버튼을 클릭하여 내용을 입력할 수 있습니다. </div>
+                            <div> * <a className="dx-link dx-link-save dx-icon-save dx-link-icon" style={{textDecoration: 'none'}} /> 버튼을 클릭하여 입력한 내용을 저장할 수 있습니다.</div>
+                            <div> * <a className="dx-link dx-link-edit dx-icon-edit dx-link-icon" style={{textDecoration: 'none'}} /> 버튼을 클릭하여 내용을 수정할 수 있습니다.</div>
                             <div> * 입력/수정 후 저장버튼 클릭 시 자동저장됩니다.</div>
-                            <div> * <Button text="삭제"/> 버튼을 클릭하여 데이터를 삭제할 수 있습니다.</div>
+                            <div> * <a className="dx-link dx-link-delete dx-icon-trash dx-link-icon" style={{textDecoration: 'none'}} /> 버튼을 클릭하여 데이터를 삭제할 수 있습니다.</div>
                         </div>
                     </Item>
                 </Box>
 
-                <CustomTable manuName={manuName} columns={tableColumns} values={values}/>
+                <CustomAddTable manuName={manuName} columns={tableColumns} values={values} projId={data.data.projId}/>
                 </div>
             </div>
         </>
