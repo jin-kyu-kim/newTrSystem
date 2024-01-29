@@ -1,4 +1,4 @@
-import DataGrid, { Column, Pager, Paging, } from "devextreme-react/data-grid";
+import DataGrid, { Column, Editing, Pager, Paging, } from "devextreme-react/data-grid";
 import { Button } from "devextreme-react/button";
 
 const CustomTable = ({ menuName, columns, values, onRowDblClick, pagerVisible  }) => {
@@ -20,7 +20,12 @@ const CustomTable = ({ menuName, columns, values, onRowDblClick, pagerVisible  }
         );
         } else {
           result.push(
-              <Column key={key} dataField={key} caption={value} width={width} alignment={alignment || 'center'}>
+              <Column 
+                key={key} 
+                dataField={key} 
+                caption={value} 
+                width={width} 
+                alignment={alignment || 'center'}>
               </Column>
           );
         }
@@ -33,30 +38,30 @@ const CustomTable = ({ menuName, columns, values, onRowDblClick, pagerVisible  }
       return(
         <Button text="시간비용청구현황"/>
       )
-    }
+    } 
 	}
 
   return (
     <div className="wrap_table">
     <DataGrid
-        keyExpr="prjctId"
-        id={"dataGrid"}
-        className={"table"}
-        dataSource={values}
-        showBorders={true}
-        showColumnLines={false}
-        focusedRowEnabled={true}
-        columnAutoWidth={false}
-        noDataText=""
-        onRowDblClick={onRowDblClick}
-        onCellPrepared={(e) => {
-          if (e.rowType === 'header') {
-            e.cellElement.style.textAlign = 'center';
-            e.cellElement.style.fontWeight = 'bold';
-          }
-        }}
+      keyExpr="prjctId"
+      id={"dataGrid"}
+      className={"table"}
+      dataSource={values}
+      showBorders={true}
+      showColumnLines={false}
+      focusedRowEnabled={true}
+      columnAutoWidth={false}
+      noDataText=""
+      onRowDblClick={onRowDblClick}
+      onCellPrepared={(e) => {
+        if (e.rowType === 'header') {
+          e.cellElement.style.textAlign = 'center';
+          e.cellElement.style.fontWeight = 'bold';
+        }
+      }}
+      
     >
-
       <Paging defaultPageSize={20} />
       <Pager
         displayMode="full"
@@ -69,6 +74,7 @@ const CustomTable = ({ menuName, columns, values, onRowDblClick, pagerVisible  }
 
       {gridRows()}
     </DataGrid>
+    
   </div>
   );
 };
