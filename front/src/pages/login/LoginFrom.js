@@ -31,8 +31,8 @@ const LoginForm = ({ handleLogin }) => {
 
   const handleClick = async () => {
     try {
-      const param = { empId, pswd };
-      const response = await ApiRequest("/boot/trs/sysMng/lgnSkll", param);
+      // const param = { empId, pswd };
+      // const response = await ApiRequest("/boot/trs/sysMng/lgnSkll", param);
 
       handleSetCookie();
       handleLogin();
