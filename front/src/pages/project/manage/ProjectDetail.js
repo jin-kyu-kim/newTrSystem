@@ -10,6 +10,8 @@ import 'devextreme/dist/css/dx.light.css';
 import Button from 'devextreme-react/button'; 
 import LinkButton from "../../../components/unit/LinkButton.js";
 
+import ProjectConsortium from "../etc/ProjectConsortium.js";
+
 const ProjectDetail = () => {
   const location = useLocation();
   const projIdInfo = location.state.id;
@@ -29,7 +31,7 @@ const ProjectDetail = () => {
       TabName: '결재정보',
     },
     {
-      TabName: '설정',
+      TabName: '설정', projId: projIdInfo, // 임시
     },
   ];
 
@@ -58,7 +60,7 @@ const ProjectDetail = () => {
       case 3:
         return ProjectCostCalc;
       case 4:
-        return ProjectCostCalc;
+        return ProjectConsortium; // 임시
       default:
         return ProjectCostCalc;
     }

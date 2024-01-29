@@ -1,6 +1,7 @@
 {
 	"menuName": "ProjectHrCtAprv",
 	"queryId": "projectMapper.retrievePrjctList",
+    "keyColumn": "prjctId",
     "tableColumns": 
 	[
         { "key": "rownum", "value": "번호", "width": 70, "alignment" : "center"},
@@ -11,7 +12,7 @@
         { "key": "ctmmnyNo", "value": "고객사", "width": 100, "alignment" : "left" },
         { "key": "ctrtYmd", "value": "시작일", "width": 100 },
         { "key": "bizEndYmd", "value": "종료일", "width": 100 },
-        { "key": "prjctId", "value": "구분", "width": 100, "button": true}
+        { "key": "prjctId", "value": "구분", "width": 100, "button": "시간비용청구현황"}
 	],
     "searchParams":
 	{
