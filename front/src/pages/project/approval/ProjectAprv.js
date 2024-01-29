@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
 
-import ProjectJson from "../project/ProjectAprvJson.json";
-import ApiRequest from "../../utils/ApiRequest";
-import SearchPrjctSet from "../../components/composite/SearchPrjctSet";
-import CustomTable from "../../components/unit/CustomTable";
-import CustomPagination from "../../components/unit/CustomPagination";
+import ProjectJson from "./ProjectAprvJson.json"
+import ApiRequest from "../../../utils/ApiRequest";
+import SearchPrjctSet from "../../../components/composite/SearchPrjctSet";
+import CustomTable from "../../../components/unit/CustomTable";
 
-import { Container } from "react-bootstrap";
 import "react-datepicker/dist/react-datepicker.css";
 
 const ProjectAprv = () => {
@@ -18,7 +16,7 @@ const ProjectAprv = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
 
-  const {menuName, queryId, tableColumns, searchParams} = ProjectJson;
+  const {keyColumn, queryId, tableColumns, searchParams} = ProjectJson; 
 
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
@@ -95,7 +93,7 @@ const ProjectAprv = () => {
         <SearchPrjctSet callBack={searchHandle} props={searchParams}/>
       </div>
       <div>검색된 건 수 : {totalItems} 건</div>
-      <CustomTable  menuName={menuName} columns={tableColumns} values={values} onRowDblClick={onRowDblClick} pagerVisible={true}/>
+      <CustomTable  keyColumn={keyColumn} columns={tableColumns} values={values} onRowDblClick={onRowDblClick} pagerVisible={true}/>
     </div>
   );
 };

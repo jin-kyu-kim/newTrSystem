@@ -1,7 +1,7 @@
-import DataGrid, { Column, Pager, Paging, } from "devextreme-react/data-grid";
+import DataGrid, { Column, Pager, Paging } from "devextreme-react/data-grid";
 import { Button } from "devextreme-react/button";
 
-const CustomTable = ({ menuName, columns, values, onRowDblClick, pagerVisible  }) => {
+const CustomTable = ({ keyColumn, columns, values, onRowDblClick, pagerVisible }) => {
 
   const gridRows = () => {
     const result = [];
@@ -15,12 +15,17 @@ const CustomTable = ({ menuName, columns, values, onRowDblClick, pagerVisible  }
               caption={value} 
               width={width} 
               alignment={alignment || 'center'}
-              cellRender={(e) => buttonRender(e)}>
+              cellRender={() => buttonRender(button)}>
             </Column>
         );
         } else {
           result.push(
-              <Column key={key} dataField={key} caption={value} width={width} alignment={alignment || 'center'}>
+              <Column 
+                key={key} 
+                dataField={key} 
+                caption={value} 
+                width={width} 
+                alignment={alignment || 'center'}>
               </Column>
           );
         }
@@ -28,18 +33,16 @@ const CustomTable = ({ menuName, columns, values, onRowDblClick, pagerVisible  }
     return result;
   }
 
-  const buttonRender = (e) => {
-    if(menuName === "ProjectHrCtAprv") {
-      return(
-        <Button text="시간비용청구현황"/>
-      )
-    }
+  const buttonRender = (button) => {
+    return(
+      <Button text={button}/>
+    )
 	}
 
   return (
     <div className="wrap_table">
-    <DataGrid
-        keyExpr="prjctId"
+      <DataGrid
+        keyExpr={keyColumn}
         id={"dataGrid"}
         className={"table"}
         dataSource={values}
@@ -55,20 +58,20 @@ const CustomTable = ({ menuName, columns, values, onRowDblClick, pagerVisible  }
             e.cellElement.style.fontWeight = 'bold';
           }
         }}
-    >
 
-      <Paging defaultPageSize={20} />
-      <Pager
-        displayMode="full"
-        showNavigationButtons={true}
-        showInfo={false}
-        showPageSizeSelector={true}
-        visible={pagerVisible}
-        allowedPageSizes={[20, 50, 80, 100]}
-      />
-
-      {gridRows()}
-    </DataGrid>
+      >
+        <Paging defaultPageSize={20} />
+        <Pager
+          displayMode="full"
+          showNavigationButtons={true}
+          showInfo={false}
+          showPageSizeSelector={true}
+          visible={pagerVisible}
+          allowedPageSizes={[20, 50, 80, 100]}
+        />
+        {gridRows()}
+      </DataGrid>
+    
   </div>
   );
 };
