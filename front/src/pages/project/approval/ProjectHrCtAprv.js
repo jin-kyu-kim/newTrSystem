@@ -1,10 +1,9 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, } from "react";
 
-import ApiRequest from "../../utils/ApiRequest";
 import ProjectHrCtAprvJson from "./ProjectHrCtAprvJson.json";
-import CustomTable from "../../components/unit/CustomTable";
-import SearchPrjctSet from "../../components/composite/SearchPrjctSet";
-import CustomPagination from "../../components/unit/CustomPagination";
+import ApiRequest from "../../../utils/ApiRequest";
+import CustomTable from "../../../components/unit/CustomTable";
+import SearchPrjctSet from "../../../components/composite/SearchPrjctSet";
 
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -51,7 +50,6 @@ const ProjectHrCtAprv = () => {
 
     // 페이지 사이즈 변경
     const handlePageSizeChange = (e) => {
-        console.log(e)
         setPageSize(e.value * 1);
         setParam({
             ...param,

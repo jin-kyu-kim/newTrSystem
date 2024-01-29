@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
 
-import ProjectJson from "../project/ProjectAprvJson.json";
-import ApiRequest from "../../utils/ApiRequest";
-import SearchPrjctSet from "../../components/composite/SearchPrjctSet";
-import CustomTable from "../../components/unit/CustomTable";
-import CustomPagination from "../../components/unit/CustomPagination";
+import ProjectJson from "./ProjectAprvJson.json"
+import ApiRequest from "../../../utils/ApiRequest";
+import SearchPrjctSet from "../../../components/composite/SearchPrjctSet";
+import CustomTable from "../../../components/unit/CustomTable";
 
-import { Container } from "react-bootstrap";
 import "react-datepicker/dist/react-datepicker.css";
 
 const ProjectAprv = () => {
