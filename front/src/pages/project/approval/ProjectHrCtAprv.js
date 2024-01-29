@@ -17,7 +17,7 @@ const ProjectHrCtAprv = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [pageSize, setPageSize] = useState(20);
     
-    const {menuName, queryId, tableColumns, searchParams} = ProjectHrCtAprvJson;
+    const {keyColumn, queryId, tableColumns, searchParams} = ProjectHrCtAprvJson;
 
     useEffect(() => {
         if(!Object.values(param).every((value) => value === "")) {
@@ -93,7 +93,7 @@ const ProjectHrCtAprv = () => {
             <div>
                 검색된 건 수 : {totalItems} 건
             </div>
-            <CustomTable menuName={menuName} columns={tableColumns} values={values} pagerVisible={true}/>
+            <CustomTable keyColumn={keyColumn} columns={tableColumns} values={values} pagerVisible={true}/>
         </div>
     );
 };

@@ -1,6 +1,7 @@
 {
 	"menuName": "ProjectAprv",
 	"queryId": "projectMapper.retrievePrjctAprvList",
+    "keyColumn": "prjctId",
     "tableColumns": 
 	[
     { "key": "rownum", "value": "번호" },

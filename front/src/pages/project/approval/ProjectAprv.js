@@ -16,7 +16,7 @@ const ProjectAprv = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
 
-  const {menuName, queryId, tableColumns, searchParams} = ProjectJson;
+  const {keyColumn, queryId, tableColumns, searchParams} = ProjectJson; 
 
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
@@ -93,7 +93,7 @@ const ProjectAprv = () => {
         <SearchPrjctSet callBack={searchHandle} props={searchParams}/>
       </div>
       <div>검색된 건 수 : {totalItems} 건</div>
-      <CustomTable  menuName={menuName} columns={tableColumns} values={values} onRowDblClick={onRowDblClick} pagerVisible={true}/>
+      <CustomTable  keyColumn={keyColumn} columns={tableColumns} values={values} onRowDblClick={onRowDblClick} pagerVisible={true}/>
     </div>
   );
 };
