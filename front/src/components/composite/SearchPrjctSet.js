@@ -5,10 +5,10 @@ import Box, {Item} from "devextreme-react/box"
 import { Button } from "devextreme-react/button";
 
 import CustomDatePicker from "../unit/CustomDatePicker";
-import CustomComboBox from "../unit/CustomComboBox";
+import CustomCdComboBox from "../unit/CustomCdComboBox";
 import AutoCompleteProject from "../unit/AutoCompleteProject";
 
-const SearchPrjctSet = ({ callBack, props }) => {
+const SearchPrjctSet = ({ callBack, props, onClickInsertBtn }) => {
   const [initParam, setInitParam] = useState({
     prjctStleCd: "",
     prjctId: "",
@@ -68,7 +68,7 @@ const SearchPrjctSet = ({ callBack, props }) => {
         height={40}
       >
         <Item className="prjctStleCdItem" ratio={1} visible={props.prjctStleCdItem}>
-          <CustomComboBox
+          <CustomCdComboBox
             param="VTW018"
             placeholderText="[형태]"
             name="prjctStleCd"
@@ -100,7 +100,7 @@ const SearchPrjctSet = ({ callBack, props }) => {
           />
         </Item>
         <Item className="bizFlfmtTyCdItem" ratio={1} visible={props.bizFlfmtTyCdItem}>
-          <CustomComboBox
+          <CustomCdComboBox
             param="VTW004"
             placeholderText="[상태]"
             name="bizFlfmtTyCd"
@@ -119,7 +119,7 @@ const SearchPrjctSet = ({ callBack, props }) => {
           />
         </Item>
         <Item ratio={1} visible={props.insertBtnItem}>
-          <Button text="등록" />
+          <Button text="등록" onClick={onClickInsertBtn} />
         </Item>
       </Box>
     </div>
