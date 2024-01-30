@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import ProjectJson from "pages/project/manage/ProjectListJson.json";
+import ProjectJson from "./ProjectListJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
 import SearchPrjctSet from "../../../components/composite/SearchPrjctSet";
 import CustomTable from "../../../components/unit/CustomTable";
@@ -100,7 +100,7 @@ const ProjectList = () => {
       </div>
       <div>검색된 건 수 : {totalItems} 건</div>
       <CustomTable
-        manuName={menuName}
+        keyColumn={keyColumn}
         columns={tableColumns}
         values={values}
         onRowDblClick={onRowDblClick}
