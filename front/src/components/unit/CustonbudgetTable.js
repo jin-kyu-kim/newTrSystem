@@ -9,9 +9,15 @@ const CustonbudgetTable = ({ headers, column }) => {
         }, {}),
         
       }];
-
-      console.log("data! budget",data);
-      console.log("data! headers",headers);
+    
+    const applyHeaderStyle = (cellElement)=>{
+        cellElement.style.textAlign = 'center';
+        cellElement.style.fontWeight = 'bold';
+        cellElement.style.cursor = 'default';
+        cellElement.style.color ='black'
+        cellElement.style.backgroundColor = '#e9ecef'
+        cellElement.style.pointerEvents = 'none';
+    }
 
   return (
     <DataGrid
@@ -22,27 +28,16 @@ const CustonbudgetTable = ({ headers, column }) => {
         showBorders={true}
         onCellPrepared={(e) => {
         if (e.rowType === 'header') {
-            e.cellElement.style.textAlign = 'center';
-            e.cellElement.style.fontWeight = 'bold';
-            e.cellElement.style.cursor = 'default';
-            e.cellElement.style.color ='black'
-            e.cellElement.style.backgroundColor = '#e9ecef'
-            e.cellElement.style.pointerEvents = 'none';
+            applyHeaderStyle(e.cellElement);
         }
         if (e.rowType === 'data' && e.column.dataField === '') {
-            e.cellElement.style.textAlign = 'center';
-            e.cellElement.style.fontWeight = 'bold';
-            e.cellElement.style.cursor = 'default';
-            e.cellElement.style.color ='black'
-            e.cellElement.style.backgroundColor = '#e9ecef'
-            e.cellElement.style.pointerEvents = 'none';
+            applyHeaderStyle(e.cellElement);
         }
         }}      
-    >
-        <Column dataField={headers[0].key} caption={headers[0].value}/>
-        <Column dataField={headers[1].key} caption={headers[1].value}/>
-        <Column dataField={headers[2].key} caption={headers[2].value} />
-        <Column dataField={headers[3].key} caption={headers[3].value}/>
+    >   
+        {headers.map(header =>(
+            <Column key={header.key} dataField={header.key} caption={header.value} />
+        ))}
   </DataGrid>
   );
 };
