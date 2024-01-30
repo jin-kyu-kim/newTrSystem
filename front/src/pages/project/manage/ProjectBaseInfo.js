@@ -2,22 +2,24 @@ import React, { useEffect, useState } from 'react';
 
 import ApiRequest from '../../../utils/ApiRequest';
 import CustomHorizontalTable from '../../../components/unit/CustomHorizontalTable';
-import BaseInfo from './BaseInfo.json';
+import BaseInfo from './ProjectBaseInfo.json';
 
-const ProjectBaseInfo = (data) => {
+const ProjectBaseInfo = (prjctId) => {
   const [baseInfoData, setBaseInfoData] = useState([]);
   const [picInfoData, setPicInfoData] = useState([]);
   const [CnsrtmData, setCnsrtmData] = useState([]);
 
   //baseInfoData데이터    ----> //prjctId가(백단에서 불러오는 데이터가 or 보내는 파라미터가) 동일하다면 동일한 useEffect 2건은 삭제처리 가능.
   useEffect(() => {
+    console.log("파라미터 확인 ",prjctId.projIdInfo);
     const BaseInfoData = async () => {
       const param = [ 
         { tbNm: "PRJCT" }, 
         { 
-         prjctId: data.data.projId, 
+         prjctId: prjctId.projIdInfo, 
         }, 
      ]; 
+     console.log("param?",param);
       try {
         const response = await ApiRequest("/boot/common/commonSelect", param);
         setBaseInfoData(response[0]);     
@@ -33,7 +35,7 @@ const ProjectBaseInfo = (data) => {
     const param = [ 
       { tbNm: "PRJCT" }, 
       { 
-       prjctId: data.data.projId, 
+       prjctId: prjctId.projIdInfo, 
       }, 
    ]; 
     const PicInfoData = async () => {
@@ -52,7 +54,7 @@ const ProjectBaseInfo = (data) => {
     const param = [ 
       { tbNm: "PRJCT_CNSRTM" }, 
       { 
-       prjctId: data.data.projId, 
+       prjctId: prjctId.projIdInfo, 
       }, 
    ];  
     const Cnsrtm = async () => {
