@@ -1,34 +1,21 @@
 {
-  "menuName": "ProjectList",
-  "queryId": "projectMapper.retrievePrjctList",
-  "keyColumn": "prjctId",
-  "tableColumns": [
-    { "key": "rownum", "value": "번호", "width": 70, "alignment": "center" },
-    { "key": "prjctStleCd", "value": "형태", "width": 100 },
-    { "key": "prjctId", "value": "프로젝트 코드", "alignment": "left" },
-    {
-      "key": "prjctNm",
-      "value": "프로젝트 명",
-      "width": 250,
-      "alignment": "left"
-    },
-    {
-      "key": "bizFlfmtTyCd",
-      "value": "상태",
-      "width": 150,
-      "alignment": "left"
-    },
-    {
-      "key": "prjctMngrEmpId",
-      "value": "PM",
-      "width": 150,
-      "alignment": "left"
-    },
-    { "key": "ctmmnyNo", "value": "고객사", "width": 100, "alignment": "left" },
-    { "key": "ctrtYmd", "value": "시작일", "width": 100 },
-    { "key": "bizEndYmd", "value": "종료일", "width": 100 }
-  ],
-  "searchParams": {
-    "prjctMngrEmpIdItem": false
-  }
+	"menuName": "ProjectList",
+	"queryId": "projectMapper.retrievePrjctList",
+    "keyColumn": "prjctId",
+    "tableColumns": 
+	[
+        { "key": "rownum", "value": "번호", "width": 70, "alignment" : "center" },
+        { "key": "prjctStleCd", "value": "형태", "width": 100  },
+        { "key": "prjctNm", "value": "프로젝트 명", "width": 250, "alignment" : "left" },
+        { "key": "bizFlfmtTyCd", "value": "상태", "width": 150, "alignment" : "left" },
+        { "key": "prjctMngrEmpId", "value": "PM", "width": 150, "alignment" : "left"  },
+        { "key": "ctmmnyNo", "value": "고객사", "width": 100, "alignment" : "left"  },
+        { "key": "ctrtYmd", "value": "시작일", "width": 100  },
+        { "key": "bizEndYmd", "value": "종료일", "width": 100 }
+	],
+    "searchParams":
+	{
+        "prjctMngrEmpIdItem": false,
+        "onClickInsertBtn": "onClickInsertBtn"
+    }
 }

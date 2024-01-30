@@ -33,8 +33,8 @@ const ProjectDetail = () => {
       TabName: "결재정보",
     },
     {
-      TabName: "설정",
-      projId: projIdInfo, // 임시
+
+      TabName: '설정', projId: projIdInfo, // 임시
     },
   ];
 
