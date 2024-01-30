@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import ProjectJson from "../manage/ProjectListJson.json";
+import ProjectJson from "./ProjectListJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
 import SearchPrjctSet from "../../../components/composite/SearchPrjctSet";
 import CustomTable from "../../../components/unit/CustomTable";
@@ -19,7 +19,8 @@ const ProjectList = () => {
 
   const navigate = useNavigate();
 
-  const {keyColumn, queryId, tableColumns, searchParams} = ProjectJson;
+  const { keyColumn, queryId, tableColumns, searchParams } = ProjectJson;
+
 
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
@@ -52,10 +53,10 @@ const ProjectList = () => {
   const handlePageSizeChange = (e) => {
     setPageSize(e.value * 1);
     setParam({
-        ...param,
-        currentPage: 1,
-        startVal: 0,
-        pageSize: e.value * 1,
+      ...param,
+      currentPage: 1,
+      startVal: 0,
+      pageSize: e.value * 1,
     });
   };
 
@@ -75,7 +76,13 @@ const ProjectList = () => {
   };
 
   const onRowDblClick = (e) => {
-    navigate("/project/ProjectDetail", {state: { id: e.key, prjctNm: e.data.prjctNm}})
+    navigate("/project/ProjectDetail", {
+      state: { id: e.key, prjctNm: e.data.prjctNm },
+    });
+  };
+
+  const onClickInsertBtn = (e) => {
+    console.log("asdasd");
   };
 
   const onClickInsertBtn = (e) => {
@@ -94,10 +101,12 @@ const ProjectList = () => {
         <span>* 프로젝트를 조회합니다.</span>
       </div>
       <div style={{ marginBottom: "20px" }}>
-        <SearchPrjctSet callBack={searchHandle}  props={searchParams}/>
+        <SearchPrjctSet callBack={searchHandle} props={searchParams} />
       </div>
       <div>검색된 건 수 : {totalItems} 건</div>
+
       <CustomTable keyColumn={keyColumn} columns={tableColumns} values={values} onRowDblClick={onRowDblClick} pagerVisible={true}/>
+
     </div>
   );
 };
