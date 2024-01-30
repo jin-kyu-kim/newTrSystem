@@ -1,7 +1,7 @@
 import DataGrid, { Column, Pager, Paging } from "devextreme-react/data-grid";
 import { Button } from "devextreme-react/button";
 
-const CustomTable = ({ keyColumn, columns, values, onRowDblClick, pagerVisible }) => {
+const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging }) => {
 
   const gridRows = () => {
     const result = [];
@@ -58,20 +58,17 @@ const CustomTable = ({ keyColumn, columns, values, onRowDblClick, pagerVisible }
             e.cellElement.style.fontWeight = 'bold';
           }
         }}
-
       >
-        <Paging defaultPageSize={20} />
+        <Paging defaultPageSize={pageSize} enabled={paging} />
         <Pager
           displayMode="full"
           showNavigationButtons={true}
           showInfo={false}
           showPageSizeSelector={true}
-          visible={pagerVisible}
           allowedPageSizes={[20, 50, 80, 100]}
         />
         {gridRows()}
       </DataGrid>
-    
   </div>
   );
 };
