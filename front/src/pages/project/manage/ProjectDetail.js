@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 
 import ProjectBaseInfo from "./ProjectBaseInfo.js"; //기본정보 탭 정보
 import ProjectCostCalc from "./ProjectCostCalc.js"; //실행원가계산서
+import MatalCost from "./MatalCost.js";             //실행원가집행현황 > 재료비
 
 import 'devextreme/dist/css/dx.common.css';
 import 'devextreme/dist/css/dx.light.css';
@@ -58,7 +59,7 @@ const ProjectDetail = () => {
       case 2:
         return ProjectCostCalc;
       case 3:
-        return ProjectCostCalc;
+        return MatalCost;
       case 4:
         return ProjectConsortium; // 임시
       default:
