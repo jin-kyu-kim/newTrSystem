@@ -16,6 +16,12 @@
     "searchParams":
 	{
         "prjctMngrEmpIdItem": false,
-        "onClickInsertBtn": "onClickInsertBtn"
+        "popupVisible": "popupVisible"
+    },
+    "popup":
+    {
+        "width": "90%",
+        "height": "90%",
+        "title": "프로젝트 기초정보 등록"
     }
 }
