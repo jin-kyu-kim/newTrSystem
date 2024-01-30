@@ -1,62 +1,51 @@
+import { useState, useEffect } from "react";
 
-import React, { useEffect, useState, } from "react";
-
-import SelectBox from "devextreme-react/select-box";
-
-import cdJson from "../unit/cd.json";
+import SelectBox from "devextreme-react/select-box"
 import ApiRequest from "../../utils/ApiRequest";
 
-const CustomComboBox = ({ param, placeholderText, onSelect, name }) => {
-  const [cdVal, setCdVal] = useState([]);
+const CustomComboBox = ({props, onSelect, placeholder}) => {
 
-  useEffect(() => {
-    setCdVal(cdJson);
-    setCdVal((prevCdVal) => {
-      const updatedCdVal = [...prevCdVal];
-      updatedCdVal[1] = {
-        upCdValue: param,
-      };
-      return updatedCdVal;
-    });
-  }, []);
 
-  useEffect(() => {
-    if (cdVal.length === cdJson.length) {
-      getCode();
-    }
-  }, [cdVal]);
+    const [values, setValues] = useState([]);
 
-  const getCode = async () => {
-    try {
-      const response = await ApiRequest("/boot/common/commonSelect", cdVal);
+    useEffect(() => {
+        // const [name, setName] = useState([]);
+        let param;
 
-      const updatedCdValues = response.map((item) => ({
-        cdValue: item.cdValue,
-        cdNm: item.cdNm,
-      }));
+        console.log(props);
+        if(props) {
+            // setName(props.tbNm);
+            param = [
+                { tbNm: props.tbNm },
+                {},
+            ];
 
-      setCdVal(updatedCdValues);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+            getValues(param);
+        }
+    }, []);
 
-  return (
-    // <div className="dx-field-value">
-      <SelectBox
-        dataSource={cdVal}
-        displayExpr="cdNm"
-        valueExpr="cdValue"
-        placeholder={placeholderText}
-        onValueChanged={(e) => {
-          onSelect({ name, value: e.value });
-        }}
-        searchEnabled={true}
-        width="100%"
-        >
-      </SelectBox>
-    // </div>
-  );
-};
+    const getValues = async (param) => {
+        try {
+            const response = await ApiRequest("/boot/common/commonSelect", param);
+            setValues(response);
+        } catch(error) {
+            console.error(error);
+        }
+    }   
 
-export default React.memo(CustomComboBox);
+    // console.log(values);
+
+    return (
+        <SelectBox
+            dataSource={values}
+            valueExpr={props.valueExpr}
+            displayExpr={props.displayExpr}
+            placeholder={placeholder}
+            onValueChanged={(e)=> {
+                onSelect({name: props.valueExpr, value : e.value});
+            }}
+        />
+    );
+
+}
+export default CustomComboBox;

@@ -93,7 +93,7 @@ const ProjectHrCtAprv = () => {
             <div>
                 검색된 건 수 : {totalItems} 건
             </div>
-            <CustomTable keyColumn={keyColumn} columns={tableColumns} values={values} pagerVisible={true}/>
+            <CustomTable keyColumn={keyColumn} columns={tableColumns} values={values} paging={true}/>
         </div>
     );
 };

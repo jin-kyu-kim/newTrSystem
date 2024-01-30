@@ -1,7 +1,8 @@
-import DataGrid, { Column, Pager, Paging } from "devextreme-react/data-grid";
+import DataGrid, { Column, Pager, Paging, Summary, TotalItem } from "devextreme-react/data-grid";
 import { Button } from "devextreme-react/button";
 
-const CustomTable = ({ keyColumn, columns, values, onRowDblClick, pagerVisible }) => {
+
+const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn}) => {
 
   const gridRows = () => {
     const result = [];
@@ -58,20 +59,32 @@ const CustomTable = ({ keyColumn, columns, values, onRowDblClick, pagerVisible }
             e.cellElement.style.fontWeight = 'bold';
           }
         }}
-
       >
-        <Paging defaultPageSize={20} />
+        <Paging defaultPageSize={pageSize} enabled={paging} />
         <Pager
           displayMode="full"
           showNavigationButtons={true}
           showInfo={false}
           showPageSizeSelector={true}
-          visible={pagerVisible}
           allowedPageSizes={[20, 50, 80, 100]}
         />
         {gridRows()}
+
+        {summary&&
+          <Summary>
+              {summaryColumn.map(item => (
+                    <TotalItem
+                        key={item.key}
+                        column={item.value}
+                        summaryType={item.type}
+                        displayFormat={item.format}
+                        valueFormat={{ type: 'fixedPoint', precision: 0 }} // 천 단위 구분자 설정
+                    />
+                  ))}
+          </Summary>
+        }
+
       </DataGrid>
-    
   </div>
   );
 };

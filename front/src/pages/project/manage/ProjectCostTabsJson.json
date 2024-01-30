@@ -31,7 +31,7 @@
   },
   {
     "TabName": "재료비",
-    "tabId": "ProjectTotCostInfo",
-    "url": "./ProjectList"
+    "tabId": "MatalCost",
+    "url": "./MatalCost"
   }
 ]

@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
-import ProjectJson from "./ProjectListJson.json";
+import ProjectJson from "../manage/ProjectListJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
 import SearchPrjctSet from "../../../components/composite/SearchPrjctSet";
 import CustomTable from "../../../components/unit/CustomTable";
+import ProjectRegist from "./ProjectRegist";
+import CustomPopup from "../../../components/unit/CustomPopup"
 
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
@@ -19,8 +21,24 @@ const ProjectList = () => {
 
   const navigate = useNavigate();
 
-  const { keyColumn, queryId, tableColumns, searchParams } = ProjectJson;
+  const {keyColumn, queryId, tableColumns, searchParams, popup} = ProjectJson;
 
+  const [popupVisible, setPopupVisible] = useState(false);
+
+  // const onClickInsertBtn = useCallback(() => {
+  //   setPopupVisible(true);
+  // }, [setPopupVisible]);
+
+  // console.log(popup)
+
+  const onClickInsertBtn = () => {
+    setPopupVisible(true);
+  };
+
+  const handleClose = () => {
+    setPopupVisible(false);
+    console.log(popupVisible)
+  };
 
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
@@ -53,10 +71,10 @@ const ProjectList = () => {
   const handlePageSizeChange = (e) => {
     setPageSize(e.value * 1);
     setParam({
-      ...param,
-      currentPage: 1,
-      startVal: 0,
-      pageSize: e.value * 1,
+        ...param,
+        currentPage: 1,
+        startVal: 0,
+        pageSize: e.value * 1,
     });
   };
 
@@ -76,17 +94,11 @@ const ProjectList = () => {
   };
 
   const onRowDblClick = (e) => {
-    navigate("/project/ProjectDetail", {
-      state: { id: e.key, prjctNm: e.data.prjctNm },
-    });
+    navigate("/project/ProjectDetail", {state: { id: e.key, prjctNm: e.data.prjctNm}})
   };
 
-  const onClickInsertBtn = (e) => {
-    console.log("asdasd");
-  };
-
-  const onClickInsertBtn = (e) => {
-    console.log("asdasd");
+  const onClick = () => {
+    setPopupVisible(false);
   }
 
   return (
@@ -101,12 +113,14 @@ const ProjectList = () => {
         <span>* 프로젝트를 조회합니다.</span>
       </div>
       <div style={{ marginBottom: "20px" }}>
-        <SearchPrjctSet callBack={searchHandle} props={searchParams} />
+        <SearchPrjctSet callBack={searchHandle}  props={searchParams} onClickInsertBtn={onClickInsertBtn}/>
       </div>
+      <CustomPopup props={popup} visible={popupVisible} handleClose={handleClose}>
+        <ProjectRegist props="asdasdadadas" onClick={onClick}/>
+      </CustomPopup>
+
       <div>검색된 건 수 : {totalItems} 건</div>
-
-      <CustomTable keyColumn={keyColumn} columns={tableColumns} values={values} onRowDblClick={onRowDblClick} pagerVisible={true}/>
-
+      <CustomTable keyColumn={keyColumn} pageSize={pageSize} columns={tableColumns} values={values} onRowDblClick={onRowDblClick} paging={true}/>
     </div>
   );
 };
