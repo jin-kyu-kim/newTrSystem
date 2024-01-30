@@ -19,7 +19,7 @@ const ProjectDetail = () => {
 
   const TabName = [
     {
-      TabName: '기본정보', projId: projIdInfo,
+      TabName: '기본정보',
     },
     {
       TabName: '실행원가계산서',
@@ -108,7 +108,7 @@ const ProjectDetail = () => {
           animationEnabled={true}
           itemComponent={({ data, index }) => {
             const TabItemComponent = getTabItemComponent(index, data);
-            return <TabItemComponent data={data}/>;
+            return <TabItemComponent projIdInfo={projIdInfo}/>;
           }}
         />
       </div>
