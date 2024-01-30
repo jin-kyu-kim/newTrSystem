@@ -15,26 +15,34 @@ const CustomHorizontalTable = ({ headers, column }) => {
     return result;
   }, []);
 
-  const cellRender = (data) => {
-    // 각 셀에 대한 스타일을 설정
-    return (
-      <div style={{ margin: '0', padding: '5px', fontWeight: 'bold' }}>
-        {data.value}
-      </div>
-    );
-  };
-
   return (
     <DataGrid
       dataSource={data}
       showBorders={true}
       showColumnHeaders={false} // 최상단 헤더를 숨기는 설정
       showRowLines={true}       // 로우마다 분할 선을 보이도록 설정
-      showColumnLines={true}    // 컬럼마다 분할 선을 보이도록 설정
+      showColumnLines={false}    // 컬럼마다 분할 선을 보이도록 설정
+      onCellPrepared={(e) => {
+        if (e.columnIndex === 0 || e.columnIndex === 2) {
+          e.cellElement.style.textAlign = 'center';
+          e.cellElement.style.fontWeight = 'bold';
+          e.cellElement.style.cursor = 'default';
+          e.cellElement.style.color ='black'
+          e.cellElement.style.backgroundColor = '#e9ecef'
+        }
+        if (e.columnIndex === 2 && e.value === '') {
+          e.cellElement.style.textAlign = 'center';
+          e.cellElement.style.fontWeight = 'bold';
+          e.cellElement.style.cursor = 'default';
+          e.cellElement.style.color ='black'
+          e.cellElement.style.backgroundColor = 'white'
+          e.cellElement.style.pointerEvents = 'none';
+      }
+      }}   
     >
-      <Column dataField="header" caption="Header" cellRender={cellRender } alignment="center" width={250}/>
+      <Column dataField="header" caption="Header" alignment="center" />
       <Column dataField="column" caption="Column" />
-      <Column dataField="header1" caption="Header1" cellRender={cellRender } alignment="center" width={250}/>
+      <Column dataField="header1" caption="Header1" alignment="center" />
       <Column dataField="column1" caption="Column1" />
     </DataGrid>
   );

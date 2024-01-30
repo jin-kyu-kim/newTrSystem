@@ -119,7 +119,9 @@ const ProjectDetail = () => {
           animationEnabled={true}
           itemComponent={({ data, index }) => {
             const TabItemComponent = getTabItemComponent(index, data);
-            return <TabItemComponent prjctId={projIdInfo} />;
+
+            return <TabItemComponent projIdInfo={projIdInfo}/>;
+
           }}
         />
       </div>
