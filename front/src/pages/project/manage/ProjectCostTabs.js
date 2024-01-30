@@ -1,7 +1,5 @@
 import React, { useCallback, useState, Suspense } from "react";
 import { TabPanel } from "devextreme-react";
-import ProjectList from "./ProjectList";
-import ProjectTotCostInfo from "./ProjectTotCostInfo";
 import ProjectCostTabsJson from "./ProjectCostTabsJson.json";
 
 const ProjectCostTabs = ({ projId }) => {
@@ -9,7 +7,7 @@ const ProjectCostTabs = ({ projId }) => {
 
   const projectCost = ProjectCostTabsJson;
 
-  const onSelectionChanged1 = useCallback(
+  const onSelectionChanged = useCallback(
     (args) => {
       if (args.name === "selectedIndex") {
         setSelectedIndex(args.value);
@@ -33,7 +31,7 @@ const ProjectCostTabs = ({ projId }) => {
       <TabPanel
         dataSource={projectCost}
         selectedIndex={selectedIndex}
-        onOptionChanged={onSelectionChanged1}
+        onOptionChanged={onSelectionChanged}
         itemTitleRender={costTitleRender}
         itemComponent={({ data }) => {
           const Component = React.lazy(() => import(`${data.url}`));

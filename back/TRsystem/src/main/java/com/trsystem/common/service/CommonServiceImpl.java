@@ -193,18 +193,24 @@ public class CommonServiceImpl implements CommonService {
                 int columnCount = metaData.getColumnCount();
 
                 //SELECT문 생성
-                StringJoiner queryBuilder = new StringJoiner(", ", "SELECT ", " FROM " + tbNm + " WHERE 1=1");
+//                StringJoiner queryBuilder = new StringJoiner(", ", "SELECT ", " FROM " + tbNm + " WHERE 1=1");
+                StringBuilder queryBuilder = new StringBuilder("SELECT ");
 
                 for (int i = 1; i <= columnCount; i++) {
                     if (metaData.getColumnName(i).endsWith("CD")) {
-                        queryBuilder.add("(SELECT CD_NM FROM CD WHERE CD_VALUE = " + metaData.getColumnName(i) + ") AS " + metaData.getColumnName(i) + "_NM");
+                        queryBuilder.append("(SELECT CD_NM FROM CD WHERE CD_VALUE = ").append(metaData.getColumnName(i)).append(") AS ").append(metaData.getColumnName(i)).append("_NM").append(" , ");
                     }
-                    queryBuilder.add(metaData.getColumnName(i));
+                    queryBuilder.append(metaData.getColumnName(i));
+                    if(i != columnCount){
+                        queryBuilder.append(" , ");
+                    }
                 }
+                queryBuilder.append(" FROM ").append(tbNm).append(" WHERE ");
 
                 for (int j = 0; j < inParams.size(); j++) {
-                    if (!inParams.get(j).toString().isEmpty()) {
-                        queryBuilder.add(keys.get(j).replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase() + " = ?");
+                    queryBuilder.append(keys.get(j).replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase()).append(" = ?");
+                    if (j != inParams.size() - 1) {
+                        queryBuilder.append(" AND ");
                     }
                 }
 
