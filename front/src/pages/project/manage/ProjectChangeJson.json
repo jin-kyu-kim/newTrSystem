@@ -11,8 +11,8 @@
     },
     {
       "TabName": "컨소시엄",
-      "tabId": "ProjectConsortium",
-      "url": "./ProjectConsortium"
+      "tabId": "ProjectChangeConsortium",
+      "url": "./ProjectChangeConsortium"
     },
     {
       "TabName": "자사인력",
