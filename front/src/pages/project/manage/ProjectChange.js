@@ -8,7 +8,7 @@ import LinkButton from "../../../components/unit/LinkButton.js";
 
 const ProjectChange = () => {
   const location = useLocation();
-  const projIdInfo = location.state.projIdInfo;
+  const projId = location.state.projId;
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const ProjectChange = ProjectChangeJson;
@@ -59,7 +59,7 @@ const ProjectChange = () => {
           return (
             <React.Suspense fallback={<div>Loading...</div>}>
               <Component 
-              projIdInfo={projIdInfo} 
+              projId={projId} 
               />
             </React.Suspense>
           );

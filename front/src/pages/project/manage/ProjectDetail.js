@@ -11,7 +11,7 @@ import LinkButton from "../../../components/unit/LinkButton.js";
 const ProjectDetail = () => {
   const navigate = useNavigate ();
   const location = useLocation();
-  const projIdInfo = location.state.id;
+  const projId = location.state.id;
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const ProjectDetail = ProjectDetailJson;
@@ -50,7 +50,7 @@ const ProjectDetail = () => {
           onClick={(e)=>
             navigate("../project/ProjectChange",
               {
-            state: { projIdInfo: projIdInfo },
+            state: { projId: projId },
             })
           }
         >
@@ -87,7 +87,7 @@ const ProjectDetail = () => {
           const Component = React.lazy(() => import(`${data.url}`));
           return (
             <React.Suspense fallback={<div>Loading...</div>}>
-              <Component projIdInfo={projIdInfo} />
+              <Component projId={projId} />
             </React.Suspense>
           );
         }}
