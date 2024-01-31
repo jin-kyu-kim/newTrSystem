@@ -1,5 +1,6 @@
 {
 	"menuName": "ProjectChangeIngredientCostJson",
+    "keyColumn": "prjctId",
     "tableColumns": 
 	[
         {"key": "cnsrtmSn" ,"value": "재료비"},
