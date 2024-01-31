@@ -59,7 +59,8 @@ const ProjectChange = () => {
           return (
             <React.Suspense fallback={<div>Loading...</div>}>
               <Component 
-              projId={projId} 
+              projId={projId}
+              revise={true}
               />
             </React.Suspense>
           );
