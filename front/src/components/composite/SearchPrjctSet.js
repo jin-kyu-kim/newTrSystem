@@ -20,7 +20,7 @@ const SearchPrjctSet = ({ callBack, props, popup}) => {
     ctrtYmd: "",
     bizEndYmd: "",
   });
-  
+
   const [popupVisible, setPopupVisible] = useState(false);
 
   useEffect(() => {
@@ -91,6 +91,7 @@ const SearchPrjctSet = ({ callBack, props, popup}) => {
             placeholderText="[형태]"
             name="prjctStleCd"
             onSelect={handleChgState}
+            value={initParam.prjctStleCd}
           />
         </Item>
         <Item className="prjctNameItem" ratio={1} visible={props.prjctNameItem}>
@@ -123,6 +124,7 @@ const SearchPrjctSet = ({ callBack, props, popup}) => {
             placeholderText="[상태]"
             name="bizFlfmtTyCd"
             onSelect={handleChgState}
+            value={initParam.bizFlfmtTyCd}
           />
         </Item>
         <Item className="prjctDatePickerItem" ratio={2} visible={props.prjctDatePickerItem}>
