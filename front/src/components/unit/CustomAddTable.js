@@ -48,7 +48,6 @@ const CustomAddTable = ({ keyColumn, menuName, columns, values, onRowDblClick, p
     e.data.prjctId = projId;
 
   }
-  console.log("뭔데요",values);
  
   return (
     <div className="wrap_table">
