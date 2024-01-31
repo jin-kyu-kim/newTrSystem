@@ -1,0 +1,77 @@
+{
+    "menuName": "ProjectRegist",
+    "labelValue" : {
+        "prjctNm": {
+            "label": "프로젝트 명",
+            "required": true,
+            "placeholder": "프로젝트 명", 
+            "type": "TextBox"
+        },
+        "dept": {
+            "type": "ComboBox",
+            "required": true,
+            "label": "프로젝트 소속",
+            "placeholder": "프로젝트 소속",
+            "param": { "tbNm" : "DEPT",
+                        "valueExpr" : "deptId",
+                        "displayExpr": "deptNm"
+                     }
+        },
+        "emp": {
+            "type": "ComboBox",
+            "required": true,
+            "label": "PM",
+            "placeholder": "PM",
+            "param": { "tbNm" : "EMP",
+                        "valueExpr" : "empId",
+                        "displayExpr": "empFlnm"
+                     }
+        },
+        "totBgt": {
+            "label": "총예산",
+            "required": true,
+            "placeholder": "총예산(VAT제외)", 
+            "type": "NumberBox"
+        },
+        "bddprPc": {
+            "label": "투찰가",
+            "required": true,
+            "placeholder": "투찰가", 
+            "type": "NumberBox"
+        },
+        "mmnySlsAm": {
+            "label": "자사매출액",
+            "required": true,
+            "placeholder": "자사매출액", 
+            "type": "NumberBox"
+        },
+        "ctmmnyInfo": {
+            "type": "ComboBox",
+            "required": true,
+            "label": "고객사",
+            "placeholder": "고객사",
+            "param": { "tbNm" : "CTMMNY_INFO",
+                        "valueExpr" : "ctmmnyNo",
+                        "displayExpr": "ctmmnyNm"
+                     }
+        },
+        "picFlnm": {
+            "label": "담당자 성명",
+            "required": true,
+            "placeholder": "담당자 성명", 
+            "type": "TextBox"
+        },
+        "picTelno": {
+            "label": "담당자 전화번호",
+            "required": true,
+            "placeholder": "담당자 전화번호", 
+            "type": "TextBox"
+        },
+        "picEml": {
+            "label": "담당자 이메일",
+            "required": true,
+            "placeholder": "담당자 이메일", 
+            "type": "TextBox"
+        }
+    }
+} 
