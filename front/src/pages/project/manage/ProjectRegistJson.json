@@ -2,10 +2,11 @@
     "menuName": "ProjectRegist",
     "labelValue" : {
         "prjctNm": {
+            "name": "prjctNm",
+            "type": "TextBox",
             "label": "프로젝트 명",
             "required": true,
-            "placeholder": "프로젝트 명", 
-            "type": "TextBox"
+            "placeholder": "프로젝트 명"
         },
         "dept": {
             "type": "ComboBox",
@@ -14,7 +15,8 @@
             "placeholder": "프로젝트 소속",
             "param": { "tbNm" : "DEPT",
                         "valueExpr" : "deptId",
-                        "displayExpr": "deptNm"
+                        "displayExpr": "deptNm",
+                        "name": "deptId"
                      }
         },
         "emp": {
@@ -24,26 +26,30 @@
             "placeholder": "PM",
             "param": { "tbNm" : "EMP",
                         "valueExpr" : "empId",
-                        "displayExpr": "empFlnm"
+                        "displayExpr": "empFlnm",
+                        "name": "prjctMngrEmpId"
                      }
         },
         "totBgt": {
+            "name": "totBgt",
             "label": "총예산",
-            "required": true,
+            "required": false,
             "placeholder": "총예산(VAT제외)", 
             "type": "NumberBox"
         },
         "bddprPc": {
+            "name": "bddprPc",
+            "type": "NumberBox",
             "label": "투찰가",
-            "required": true,
-            "placeholder": "투찰가", 
-            "type": "NumberBox"
+            "required": false,
+            "placeholder": "투찰가"
         },
         "mmnySlsAm": {
+            "name": "mmnySlsAm",
+            "type": "NumberBox",
             "label": "자사매출액",
-            "required": true,
-            "placeholder": "자사매출액", 
-            "type": "NumberBox"
+            "required": false,
+            "placeholder": "자사매출액" 
         },
         "ctmmnyInfo": {
             "type": "ComboBox",
@@ -52,26 +58,87 @@
             "placeholder": "고객사",
             "param": { "tbNm" : "CTMMNY_INFO",
                         "valueExpr" : "ctmmnyNo",
-                        "displayExpr": "ctmmnyNm"
+                        "displayExpr": "ctmmnyNm",
+                        "name" : "ctmmnyNo"
                      }
         },
         "picFlnm": {
+            "name": "picFlnm",
+            "type": "TextBox",
             "label": "담당자 성명",
-            "required": true,
-            "placeholder": "담당자 성명", 
-            "type": "TextBox"
+            "required": false,
+            "placeholder": "담당자 성명"
         },
         "picTelno": {
+            "name": "picTelno",
+            "type": "TextBox",
             "label": "담당자 전화번호",
-            "required": true,
-            "placeholder": "담당자 전화번호", 
-            "type": "TextBox"
+            "required": false,
+            "placeholder": "담당자 전화번호"
         },
         "picEml": {
+            "name": "picEml",
+            "type": "TextBox",
             "label": "담당자 이메일",
+            "required": false,
+            "placeholder": "담당자 이메일"
+        },
+        "beffatPbancDdlnYmd": {
+            "name": "beffatPbancDdlnYmd",
+            "type": "DateBox",
+            "label": "사전공고마감",
+            "required": false,
+            "placeholder": "사전공고마감"
+        },
+        "expectOrderYmd": {
+            "name": "expectOrderYmd",
+            "type": "DateBox",
+            "label": "본공고계시일",
+            "required": false,
+            "placeholder": "본공고계시일"
+        },
+        "propseDdlnYmd": {
+            "name": "propseDdlnYmd",
+            "type": "DateBox",
+            "label": "제안마감일",
+            "required": false,
+            "placeholder": "제안마감일"
+        },
+        "propsePrsntnYmd": {
+            "name": "propsePrsntnYmd",
+            "type": "DateBox",
+            "label": "제안PT일",
+            "required": false,
+            "placeholder": "제안PT일"
+        },
+        "ctrtYmd": {
+            "name": "ctrtYmd",
+            "type": "DateBox",
+            "label": "사업시작일(계약일)",
             "required": true,
-            "placeholder": "담당자 이메일", 
-            "type": "TextBox"
+            "placeholder": "사업시작일(계약일)"
+        },
+        "bizEndYmd": {
+            "name": "bizEndYmd",
+            "type": "DateBox",
+            "label": "사업종료일",
+            "required": false,
+            "placeholder": "사업종료일"
+        },
+        "stbleEndYmd": {
+            "name": "stbleEndYmd",
+            "type": "DateBox",
+            "label": "경비사용종료일(TR입력기간)",
+            "required": true,
+            "placeholder": "경비사용종료일(TR입력기간)"
+        },
+        "igiYmd": {
+            "name": "igiYmd",
+            "type": "DateBox",
+            "label": "검수일",
+            "required": false,
+            "placeholder": "검수일"
         }
+
     }
 } 
