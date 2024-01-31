@@ -205,13 +205,11 @@ public class CommonServiceImpl implements CommonService {
                         queryBuilder.append(" , ");
                     }
                 }
-                queryBuilder.append(" FROM ").append(tbNm).append(" WHERE ");
+                queryBuilder.append(" FROM ").append(tbNm).append(" WHERE 1 = 1");
 
                 for (int j = 0; j < inParams.size(); j++) {
+                    queryBuilder.append(" AND ");
                     queryBuilder.append(keys.get(j).replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase()).append(" = ?");
-                    if (j != inParams.size() - 1) {
-                        queryBuilder.append(" AND ");
-                    }
                 }
 
                 try (PreparedStatement preparedStatement = connection.prepareStatement(queryBuilder.toString())) {
