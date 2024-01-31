@@ -38,6 +38,12 @@ const TreRoutes = [
     name: "ProjectDetail",
     element: React.lazy(() => import("../pages/project/manage/ProjectDetail")),
   },
+  // 프로젝트 변경
+  {
+    path: "/project/ProjectChange",
+    name: "ProjectChange",
+    element: React.lazy(() => import("../pages/project/manage/ProjectChange")),
+  },
 ];
 
 export default TreRoutes;
