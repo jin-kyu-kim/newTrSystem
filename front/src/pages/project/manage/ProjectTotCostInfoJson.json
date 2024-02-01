@@ -10,5 +10,25 @@
   ],
   "searchParams": {
     "prjctMngrEmpIdItem": false
-  }
+  },
+  "params": [
+    {
+      "id": 1,
+      "costKind": "자사인력",
+      "tbCostNm": "MMNY_INPT_MM",
+      "costCol": "EXPECT_MM",
+      "tbExcuteNm": "MMNY_LBRCO_EXCN",
+      "excuteCol": "MM",
+      "queryId": "projectMapper.retrievePrjctCostSummery"
+    },
+    {
+      "id": 2,
+      "costKind": "재료비",
+      "tbCostNm": "MATRL_CT_PRMPC",
+      "costCol": "UNTPC",
+      "tbExcuteNm": "MATRL_CT_EXCN",
+      "excuteCol": "USE_AMT",
+      "queryId": "projectMapper.retrievePrjctCostSummery"
+    }
+  ]
 }

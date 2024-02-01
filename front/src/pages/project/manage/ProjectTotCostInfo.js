@@ -18,28 +18,6 @@ import ApiRequest from "../../../utils/ApiRequest";
 
 const ProjectTotCostInfo = (projIdInfo) => {
   const [data, setData] = useState([]);
-  const params = [
-    {
-      id: 1,
-      costKind: "자사인력",
-      tbCostNm: "MMNY_INPT_MM",
-      costCol: "EXPECT_MM",
-      tbExcuteNm: "MMNY_LBRCO_EXCN",
-      excuteCol: "MM",
-      prjctId: projIdInfo.projIdInfo,
-      queryId: "projectMapper.retrievePrjctCostSummery",
-    },
-    {
-      id: 2,
-      costKind: "재료비",
-      tbCostNm: "MATRL_CT_PRMPC",
-      costCol: "UNTPC",
-      tbExcuteNm: "MATRL_CT_EXCN",
-      excuteCol: "USE_AMT",
-      prjctId: projIdInfo.projIdInfo,
-      queryId: "projectMapper.retrievePrjctCostSummery",
-    },
-  ];
 
   useEffect(() => {
     handelGetData();
@@ -48,9 +26,12 @@ const ProjectTotCostInfo = (projIdInfo) => {
 
   const handelGetData = () => {
     try {
-      params.map(async (item) => {
-        console.log(item);
-        const response = await ApiRequest("/boot/common/queryIdSearch", item);
+      ProjectTotCostInfoJson.params.map(async (item) => {
+        const modifiedItem = { ...item, prjctId: projIdInfo };
+        const response = await ApiRequest(
+          "/boot/common/queryIdSearch",
+          modifiedItem
+        );
         setData((prevData) => [...prevData, ...response]);
       });
     } catch (error) {
@@ -58,8 +39,24 @@ const ProjectTotCostInfo = (projIdInfo) => {
     }
   };
 
-  const customizeGroupHeaderText = (e) => {
-    console.log(e);
+  const test = () => {
+    console.log("test");
+  };
+
+  const gridRows = () => {
+    const result = [];
+    for (let i = 0; i < ProjectTotCostInfoJson.tableColumns.length; i++) {
+      const { key, value } = ProjectTotCostInfoJson.tableColumns[i];
+      result.push(
+        <Column
+          key={key}
+          dataField={key}
+          caption={value}
+          alignment="center"
+        ></Column>
+      );
+    }
+    return result;
   };
 
   return (
@@ -68,13 +65,13 @@ const ProjectTotCostInfo = (projIdInfo) => {
         keyColumn={ProjectTotCostInfoJson.keyColumn}
         columns={ProjectTotCostInfoJson.tableColumns}
         values={data}
-        onRowDblClick={customizeGroupHeaderText}
+        onRowDblClick={test}
         paging={null}
         summary={true}
         summaryColumn={data}
       />
 
-      {/* <DataGrid
+      <DataGrid
         dataSource={data}
         keyExpr="id"
         showBorders={true}
@@ -84,10 +81,7 @@ const ProjectTotCostInfo = (projIdInfo) => {
         }}
       >
         <Grouping allowCollapsing={false} texts="테스트" />
-        <Column dataField="id" caption="ID" width={150} />
-        <Column dataField="name" caption="Name" />
-        <Column dataField="data" caption="Data" />
-        <Column dataField="ver" groupIndex={0} allowGrouping={false} />
+        {gridRows()}
 
         <Summary>
           <TotalItem
@@ -110,12 +104,11 @@ const ProjectTotCostInfo = (projIdInfo) => {
         />
         <GroupItem
           column="ver"
-          customizeText={customizeGroupHeaderText}
           summaryType="sum"
           valueFormat="#,##0"
           displayFormat={`Total data (version {0}): {1}`}
         />
-      </DataGrid> */}
+      </DataGrid>
     </div>
   );
 };
