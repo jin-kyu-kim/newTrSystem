@@ -1,20 +1,17 @@
 import React, { useCallback, useState } from "react";
-import { useNavigate } from 'react-router-dom';
 import { TabPanel } from "devextreme-react";
 import { useLocation } from "react-router-dom";
 
-import ProjectDetailJson from "./ProjectDetailJson.json";
+import ProjectChangeJson from "./ProjectChangeJson.json";
 
-import Button from "devextreme-react/button";
 import LinkButton from "../../../components/unit/LinkButton.js";
 
-const ProjectDetail = () => {
-  const navigate = useNavigate ();
+const ProjectChange = () => {
   const location = useLocation();
-  const projId = location.state.id;
+  const projId = location.state.projId;
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const ProjectDetail = ProjectDetailJson;
+  const ProjectChange = ProjectChangeJson;
 
   // 탭 변경시 인덱스 설정
   const onSelectionChanged = useCallback(
@@ -35,37 +32,11 @@ const ProjectDetail = () => {
         style={{ marginTop: "20px", marginBottom: "10px" }}
       >
         <div style={{ marginRight: "20px", marginLeft: "20px" }}>
-          <h1 style={{ fontSize: "30px" }}>프로젝트 관리</h1>
-          <div>{location.state.prjctNm}</div>
+          <h1 style={{ fontSize: "30px" }}>프로젝트 변경</h1>
         </div>
       </div>
       <div className="buttons" align="right" style={{ margin: "20px" }}>
-        {/* <LinkButton location={"../project/ProjectChange"} name={"변경원가"} type={"default"} stylingMode={"contained"}/> */}
-        <Button
-          width={110}
-          text="Contained"
-          type="default"
-          stylingMode="contained"
-          style={{ margin: "2px" }}
-          onClick={(e)=>
-            navigate("../project/ProjectChange",
-              {
-            state: { projId: projId },
-            })
-          }
-        >
-          변경원가
-        </Button>
-        <Button
-          width={110}
-          text="Contained"
-          type="default"
-          stylingMode="contained"
-          style={{ margin: "2px" }}
-        >
-          프로젝트종료
-        </Button>
-        <LinkButton location={-1} name={"목록"} type={"normal"} stylingMode={"outline"}/>
+        <LinkButton location={-1} name={"이전"} type={"normal"} />
       </div>
       <div
         style={{
@@ -78,7 +49,7 @@ const ProjectDetail = () => {
         <TabPanel
           height="auto"
           width="auto"
-          dataSource={ProjectDetail}
+          dataSource={ProjectChange}
           selectedIndex={selectedIndex}
           onOptionChanged={onSelectionChanged}
           itemTitleRender={itemTitleRender}
@@ -87,7 +58,10 @@ const ProjectDetail = () => {
           const Component = React.lazy(() => import(`${data.url}`));
           return (
             <React.Suspense fallback={<div>Loading...</div>}>
-              <Component projId={projId} />
+              <Component 
+              projId={projId}
+              revise={true}
+              />
             </React.Suspense>
           );
         }}
@@ -97,4 +71,4 @@ const ProjectDetail = () => {
   );
 };
 
-export default ProjectDetail;
+export default ProjectChange;

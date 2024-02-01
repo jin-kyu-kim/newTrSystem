@@ -1,0 +1,15 @@
+{
+	"menuName": "ProjectChangeIngredientCostJson",
+    "keyColumn": "prjctId",
+    "tableColumns": 
+	[
+        {"key": "matrlCtIemCd" ,"value": "재료비", "type":"ComboBox", "cd": "VTW014"} ,
+        {"key": "dlvgdsEntrpsNm", "value": "업체명"},
+        {"key": "prductNm", "value": "제품명"},
+        {"key": "cmmnExpensAmt", "value": "상세스펙"},
+        {"key": "untpc", "value": "단가"},
+        {"key": "qy", "value": "수량"},
+        {"key": "cntrctamount", "value": "계약금액(부가세 별도)"},
+        {"key": "dscntBfeEstmtPc", "value": "견적가(할인전)"}
+	]
+}

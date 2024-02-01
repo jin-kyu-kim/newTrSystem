@@ -1,0 +1,12 @@
+{
+	"menuName": "ProjectConsortiumJson",
+    "keyColumn": "prjctId",
+    "tableColumns": 
+	[
+        {"key": "cnsrtmSn" ,"value": "상태"},
+        {"key": "cnsrtmCoNm", "value": "비용코드", "type": "ComboBox"},
+        {"key": "altmntAmt", "value": "상세내역"},
+        {"key": "cmmnExpensAmt", "value": "총금액"}
+	]
+
+}

@@ -4,11 +4,14 @@ import TextBox from "devextreme-react/text-box";
 import Box, {Item} from "devextreme-react/box"
 import { Button } from "devextreme-react/button";
 
-import CustomDatePicker from "../unit/CustomDatePicker";
+import CustomDateRangeBox from "../unit/CustomDateRangeBox";
 import CustomCdComboBox from "../unit/CustomCdComboBox";
 import AutoCompleteProject from "../unit/AutoCompleteProject";
 
-const SearchPrjctSet = ({ callBack, props, onClickInsertBtn }) => {
+import ProjectRegist from "../../pages/project/manage/ProjectRegist";
+import CustomPopup from "../unit/CustomPopup"
+
+const SearchPrjctSet = ({ callBack, props, popup}) => {
   const [initParam, setInitParam] = useState({
     prjctStleCd: "",
     prjctId: "",
@@ -17,6 +20,8 @@ const SearchPrjctSet = ({ callBack, props, onClickInsertBtn }) => {
     ctrtYmd: "",
     bizEndYmd: "",
   });
+
+  const [popupVisible, setPopupVisible] = useState(false);
 
   useEffect(() => {
     callBack(initParam);
@@ -60,6 +65,19 @@ const SearchPrjctSet = ({ callBack, props, onClickInsertBtn }) => {
     callBack(initParam);
   };
 
+  
+  const onClickInsertBtn = () => {
+    setPopupVisible(true);
+  };
+
+  const handleClose = () => {
+    setPopupVisible(false);
+  };
+
+  const onHide = () => {
+    setPopupVisible(false);
+  }
+
   return (
     <div className="box_search" width="100%">
       <Box
@@ -73,6 +91,7 @@ const SearchPrjctSet = ({ callBack, props, onClickInsertBtn }) => {
             placeholderText="[형태]"
             name="prjctStleCd"
             onSelect={handleChgState}
+            value={initParam.prjctStleCd}
           />
         </Item>
         <Item className="prjctNameItem" ratio={1} visible={props.prjctNameItem}>
@@ -105,10 +124,11 @@ const SearchPrjctSet = ({ callBack, props, onClickInsertBtn }) => {
             placeholderText="[상태]"
             name="bizFlfmtTyCd"
             onSelect={handleChgState}
+            value={initParam.bizFlfmtTyCd}
           />
         </Item>
         <Item className="prjctDatePickerItem" ratio={2} visible={props.prjctDatePickerItem}>
-          <CustomDatePicker
+          <CustomDateRangeBox
             onStartDateChange={handleStartDateChange}
             onEndDateChange={handleEndDateChange}
           />
@@ -122,6 +142,9 @@ const SearchPrjctSet = ({ callBack, props, onClickInsertBtn }) => {
           <Button text="등록" onClick={onClickInsertBtn} />
         </Item>
       </Box>
+      <CustomPopup props={popup} visible={popupVisible} handleClose={handleClose}>
+        <ProjectRegist onHide={onHide}/>
+      </CustomPopup>
     </div>
   );
 };

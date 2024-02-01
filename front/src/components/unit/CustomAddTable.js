@@ -1,43 +1,57 @@
 import DataGrid, { Column, Editing, Pager, Paging, } from "devextreme-react/data-grid";
 import { Button } from "devextreme-react/button";
+import CustomCdComboBox from "./CustomCdComboBox";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-const CustomAddTable = ({ menuName, columns, values, onRowDblClick, pagerVisible, projId }) => {
+const CustomAddTable = ({ keyColumn, menuName, columns, values, onRowDblClick, pagerVisible, projId }) => {
+
+  const [initParam, setInitParam] = useState({
+    ItemCd: "",
+    cnsrtmSn: "",
+    slsAmRfltYn: "",
+    matrlCtIemCd: "",
+  },[]);
+
+  const handleChgState = ({name, value}) => {
+    setInitParam({
+      ...initParam,
+     [name] : value,
+    });
+  };
+  
+  // 콤보박스 셀 렌더 함수
+  const onEditCellRender = (column) => {
+    const columnKey = column.key;
+      return (
+          <CustomCdComboBox
+              param={column.cd}
+              placeholderText="[선택]"
+              name={"matrlCtIemCd"}
+              onSelect={handleChgState}
+              value={initParam.matrlCtIemCd}
+          />
+      );
+    };
 
   const gridRows = () => {
     const result = [];
-    for(let i = 0; i < columns.length; i++) {
-        const { key, value, width, alignment, button } = columns[i];
-        if(button) {
-          result.push(
+        columns.map(column => {
+        result.push(
             <Column 
-              key={key} 
-              dataField={key} 
-              caption={value} 
-              width={width} 
-              alignment={alignment || 'center'}
-              cellRender={(e) => buttonRender(e)}>
+                key={column.key} 
+                dataField={column.key} 
+                caption={column.value} 
+                width={column.width} 
+                alignment={column.alignment || 'center'}
+                editCellRender={column.type=="ComboBox"?()=>onEditCellRender(column):null}
+                >
             </Column>
         );
-        } else {
-          result.push(
-              <Column 
-                key={key} 
-                dataField={key} 
-                caption={value} 
-                width={width} 
-                alignment={alignment || 'center'}>
-              </Column>
-          );
-        }
-    }
+    })
     return result;
   }
 
-  const buttonRender = (e) => {
-
-	}
   
   const btnOnclick = () => {
 
@@ -48,11 +62,11 @@ const CustomAddTable = ({ menuName, columns, values, onRowDblClick, pagerVisible
     e.data.prjctId = projId;
 
   }
-
+ 
   return (
     <div className="wrap_table">
     <DataGrid
-      keyExpr="cnsrtmSn"
+      keyExpr={keyColumn}
       id={"dataGrid"}
       className={"table"}
       dataSource={values}
