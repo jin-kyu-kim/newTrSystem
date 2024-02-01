@@ -6,14 +6,14 @@ import CustomAddTable from "../../../components/unit/CustomAddTable";
 import Box, {Item} from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
 
-const ProjectChangeIngredientCost = (data) => {
+const ProjectChangeIngredientCost = ({projId}) => {
 
     const [values, setValues] = useState([]);
     const { manuName, tableColumns} = ProjectChangeIngredientCostJson;
 
     const param = [
         { tbNm:"MATRL_CT_PRMPC" },
-        { prjctId: data.projId },
+        { prjctId: projId },
     ];
 
     useEffect(() => {
@@ -47,7 +47,7 @@ const ProjectChangeIngredientCost = (data) => {
                     </Item>
                 </Box>
 
-                <CustomAddTable manuName={manuName} columns={tableColumns} values={values} projId={data.projId}/>
+                <CustomAddTable manuName={manuName} columns={tableColumns} values={values} projId={projId}/>
                 </div>
             </div>
         </>

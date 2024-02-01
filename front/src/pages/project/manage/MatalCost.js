@@ -5,7 +5,7 @@ import CustomTable from '../../../components/unit/CustomTable';
 import MatalCostJson from './MatalCostJson.json';
 
 
-const MatalCost = (prjctId) => {
+const MatalCost = ({prjctId}) => {
   const {keyColumn, queryId, tableColumns, summaryColumn} = MatalCostJson;
   const [values, setValues] = useState([]);
 

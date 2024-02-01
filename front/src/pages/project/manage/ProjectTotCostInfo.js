@@ -16,7 +16,7 @@ import ProjectTotCostInfoJson from "./ProjectTotCostInfoJson";
 import CustomTable from "components/unit/CustomTable";
 import ApiRequest from "../../../utils/ApiRequest";
 
-const ProjectTotCostInfo = (projIdInfo) => {
+const ProjectTotCostInfo = ({projId}) => {
   const [data, setData] = useState([]);
   const params = [
     {
@@ -26,7 +26,7 @@ const ProjectTotCostInfo = (projIdInfo) => {
       costCol: "EXPECT_MM",
       tbExcuteNm: "MMNY_LBRCO_EXCN",
       excuteCol: "MM",
-      prjctId: projIdInfo.projIdInfo,
+      prjctId: projId,
       queryId: "projectMapper.retrievePrjctCostSummery",
     },
     {
@@ -36,27 +36,27 @@ const ProjectTotCostInfo = (projIdInfo) => {
       costCol: "UNTPC",
       tbExcuteNm: "MATRL_CT_EXCN",
       excuteCol: "USE_AMT",
-      prjctId: projIdInfo.projIdInfo,
+      prjctId: projId,
       queryId: "projectMapper.retrievePrjctCostSummery",
     },
   ];
 
-  useEffect(() => {
-    handelGetData();
-    console.log(data);
-  }, []);
+  // useEffect(() => {
+  //   handelGetData();
+  //   console.log(data);
+  // }, []);
 
-  const handelGetData = () => {
-    try {
-      params.map(async (item) => {
-        console.log(item);
-        const response = await ApiRequest("/boot/common/queryIdSearch", item);
-        setData((prevData) => [...prevData, ...response]);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const handelGetData = () => {
+  //   try {
+  //     params.map(async (item) => {
+  //       console.log(item);
+  //       const response = await ApiRequest("/boot/common/queryIdSearch", item);
+  //       setData((prevData) => [...prevData, ...response]);
+  //     });
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   const customizeGroupHeaderText = (e) => {
     console.log(e);

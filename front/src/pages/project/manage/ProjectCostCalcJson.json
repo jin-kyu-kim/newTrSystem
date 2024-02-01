@@ -28,9 +28,8 @@
       ],
       "PrmpcAnls":
       [
-        { "key": "cnsrtmCoNm", "value": "회사명" },
-        { "key": "", "value": "역할" },
-        { "key": "totBgt", "value": "금액" },
-        { "key": "bizFlfmtTyCd", "value": "공통경비" }
+        { "key": "", "value": "구분" },
+        { "key": "picEml", "value": "실행예산" },
+        { "key": "totBgt", "value": "비율" }
       ]
     }
