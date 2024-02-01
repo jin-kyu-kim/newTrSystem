@@ -3,7 +3,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import DataGrid, {
   Column,
-  Summary,
+  Summary, 
   GroupItem,
   Grouping,
   TotalItem,
