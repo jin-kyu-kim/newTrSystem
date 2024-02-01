@@ -36,8 +36,8 @@
     },
     {
         "TabName": "일반경비",
-        "tabId": "ProjectConsortium",
-        "url": "./ProjectConsortium"
+        "tabId": "ProjectGeneralBudgetCost",
+        "url": "./ProjectGeneralBudgetCost"
     },
     {
         "TabName": "재료비",
