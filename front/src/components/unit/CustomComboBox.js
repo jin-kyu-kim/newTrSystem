@@ -3,18 +3,14 @@ import { useState, useEffect } from "react";
 import SelectBox from "devextreme-react/select-box"
 import ApiRequest from "../../utils/ApiRequest";
 
-const CustomComboBox = ({props, onSelect, placeholder}) => {
-
+const CustomComboBox = ({props, onSelect, placeholder, value, readOnly}) => {
 
     const [values, setValues] = useState([]);
 
     useEffect(() => {
-        // const [name, setName] = useState([]);
         let param;
 
-        console.log(props);
         if(props) {
-            // setName(props.tbNm);
             param = [
                 { tbNm: props.tbNm },
                 {},
@@ -33,8 +29,6 @@ const CustomComboBox = ({props, onSelect, placeholder}) => {
         }
     }   
 
-    // console.log(values);
-
     return (
         <SelectBox
             dataSource={values}
@@ -42,8 +36,11 @@ const CustomComboBox = ({props, onSelect, placeholder}) => {
             displayExpr={props.displayExpr}
             placeholder={placeholder}
             onValueChanged={(e)=> {
-                onSelect({name: props.valueExpr, value : e.value});
+                onSelect({name: props.name, value : e.value});
             }}
+            searchEnabled={true}
+            value={value}
+            readOnly={readOnly}
         />
     );
 

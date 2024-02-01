@@ -6,7 +6,7 @@ import SelectBox from "devextreme-react/select-box";
 import cdJson from "./cd.json";
 import ApiRequest from "../../utils/ApiRequest";
 
-const CustomCdComboBox = ({ param, placeholderText, onSelect, name, value}) => {
+const CustomCdComboBox = ({ param, placeholderText, onSelect, name, value, readOnly }) => {
   const [cdVal, setCdVal] = useState([]);
 
   useEffect(() => {
@@ -55,7 +55,8 @@ const CustomCdComboBox = ({ param, placeholderText, onSelect, name, value}) => {
         searchEnabled={true}
         width="100%"
         value={value}
-        >
+        readOnly={readOnly}
+      >
       </SelectBox>
     // </div>
   );

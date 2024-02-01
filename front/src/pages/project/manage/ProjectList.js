@@ -4,8 +4,7 @@ import ProjectJson from "../manage/ProjectListJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
 import SearchPrjctSet from "../../../components/composite/SearchPrjctSet";
 import CustomTable from "../../../components/unit/CustomTable";
-import ProjectRegist from "./ProjectRegist";
-import CustomPopup from "../../../components/unit/CustomPopup"
+
 
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
@@ -23,23 +22,6 @@ const ProjectList = () => {
 
   const {keyColumn, queryId, tableColumns, searchParams, popup} = ProjectJson;
 
-  const [popupVisible, setPopupVisible] = useState(false);
-
-  // const onClickInsertBtn = useCallback(() => {
-  //   setPopupVisible(true);
-  // }, [setPopupVisible]);
-
-  // console.log(popup)
-
-  const onClickInsertBtn = () => {
-    setPopupVisible(true);
-  };
-
-  const handleClose = () => {
-    setPopupVisible(false);
-    console.log(popupVisible)
-  };
-
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
       pageHandle();
@@ -56,25 +38,6 @@ const ProjectList = () => {
       currentPage: currentPage,
       startVal: 0,
       pageSize: pageSize,
-    });
-  };
-  // 폐이징 할때
-  const handlePageChange = (newPage) => {
-    setCurrentPage(newPage);
-    setParam({
-      ...param,
-      currentPage: newPage * 1,
-      startVal: (newPage - 1) * pageSize,
-    });
-  };
-  // 폐이지 사이즈 변경
-  const handlePageSizeChange = (e) => {
-    setPageSize(e.value * 1);
-    setParam({
-        ...param,
-        currentPage: 1,
-        startVal: 0,
-        pageSize: e.value * 1,
     });
   };
 
@@ -97,10 +60,6 @@ const ProjectList = () => {
     navigate("/project/ProjectDetail", {state: { id: e.key, prjctNm: e.data.prjctNm}})
   };
 
-  const onClick = () => {
-    setPopupVisible(false);
-  }
-
   return (
     <div className="container">
       <div
@@ -113,11 +72,9 @@ const ProjectList = () => {
         <span>* 프로젝트를 조회합니다.</span>
       </div>
       <div style={{ marginBottom: "20px" }}>
-        <SearchPrjctSet callBack={searchHandle}  props={searchParams} onClickInsertBtn={onClickInsertBtn}/>
+        <SearchPrjctSet callBack={searchHandle}  props={searchParams} popup={popup}/>
       </div>
-      <CustomPopup props={popup} visible={popupVisible} handleClose={handleClose}>
-        <ProjectRegist props="asdasdadadas" onClick={onClick}/>
-      </CustomPopup>
+
 
       <div>검색된 건 수 : {totalItems} 건</div>
       <CustomTable keyColumn={keyColumn} pageSize={pageSize} columns={tableColumns} values={values} onRowDblClick={onRowDblClick} paging={true}/>

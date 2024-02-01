@@ -1,8 +1,8 @@
 [
     {
       "TabName": "프로젝트",
-      "tabId": "ProjectBaseInfo",
-      "url": "pages/project/manage/ProjectBaseInfo"
+      "tabId": "ProjectRegist",
+      "url": "pages/project/manage/ProjectRegist"
     },
     {
       "TabName": "실행원가계산서",
