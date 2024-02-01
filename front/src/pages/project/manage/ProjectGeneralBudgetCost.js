@@ -12,7 +12,7 @@ const ProjectGeneralBudgetCost = (data) => {
 
     const param = [
         { tbNm:"PRJCT_CNSRTM" },
-        { prjctId: data.projId },
+        { prjctId: data.prjctId },
     ];
 
     // useEffect(() => {
@@ -44,7 +44,7 @@ const ProjectGeneralBudgetCost = (data) => {
                         </div>
                     </Item>
                 </Box>
-                <CustomComplexAddTable keyColumn={keyColumn} manuName={manuName} columns={tableColumns} values={values} projId={data.projId} />
+                <CustomComplexAddTable keyColumn={keyColumn} manuName={manuName} columns={tableColumns} values={values} prjctId={data.prjctId} />
                 </div>
             </div>
         </>

@@ -7,7 +7,7 @@ import CostCalc from './ProjectCostCalcJson.json';
 import CustonbudgetTable from '../../../components/unit/CustonbudgetTable';
 import CustomTable from 'components/unit/CustomTable';
 
-const ProjectCostCalc = ({projId}) => {
+const ProjectCostCalc = ({prjctId}) => {
 const [baseInfoData, setBaseInfoData] = useState([]);
 
 useEffect(() => {
@@ -15,7 +15,7 @@ useEffect(() => {
     const param = [ 
       { tbNm: "PRJCT" }, 
       { 
-       prjctId: projId, 
+       prjctId: prjctId, 
       }, 
    ]; 
     try {
