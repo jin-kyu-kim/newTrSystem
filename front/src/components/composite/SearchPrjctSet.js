@@ -73,6 +73,7 @@ const SearchPrjctSet = ({ callBack, props, onClickInsertBtn }) => {
             placeholderText="[형태]"
             name="prjctStleCd"
             onSelect={handleChgState}
+            value={initParam.prjctStleCd}
           />
         </Item>
         <Item className="prjctNameItem" ratio={1} visible={props.prjctNameItem}>
@@ -105,6 +106,7 @@ const SearchPrjctSet = ({ callBack, props, onClickInsertBtn }) => {
             placeholderText="[상태]"
             name="bizFlfmtTyCd"
             onSelect={handleChgState}
+            value={initParam.bizFlfmtTyCd}
           />
         </Item>
         <Item className="prjctDatePickerItem" ratio={2} visible={props.prjctDatePickerItem}>

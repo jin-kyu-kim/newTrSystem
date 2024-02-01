@@ -6,7 +6,7 @@ import SelectBox from "devextreme-react/select-box";
 import cdJson from "./cd.json";
 import ApiRequest from "../../utils/ApiRequest";
 
-const CustomCdComboBox = ({ param, placeholderText, onSelect, name }) => {
+const CustomCdComboBox = ({ param, placeholderText, onSelect, name, value}) => {
   const [cdVal, setCdVal] = useState([]);
 
   useEffect(() => {
@@ -41,6 +41,7 @@ const CustomCdComboBox = ({ param, placeholderText, onSelect, name }) => {
     }
   };
 
+
   return (
     // <div className="dx-field-value">
       <SelectBox
@@ -53,6 +54,7 @@ const CustomCdComboBox = ({ param, placeholderText, onSelect, name }) => {
         }}
         searchEnabled={true}
         width="100%"
+        value={value}
         >
       </SelectBox>
     // </div>

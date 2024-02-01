@@ -3,7 +3,7 @@
     "keyColumn": "prjctId",
     "tableColumns": 
 	[
-        {"key": "cnsrtmSn" ,"value": "재료비"},
+        {"key": "matrlCtIemCd" ,"value": "재료비", "type":"ComboBox", "cd": "VTW014"} ,
         {"key": "dlvgdsEntrpsNm", "value": "업체명"},
         {"key": "prductNm", "value": "제품명"},
         {"key": "cmmnExpensAmt", "value": "상세스펙"},
