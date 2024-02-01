@@ -3,7 +3,7 @@ import { Button } from "devextreme-react/button";
 
 import { useState } from "react";
 
-const CustomAddTable = ({ menuName, columns, values, onRowDblClick, pagerVisible, projId }) => {
+const CustomAddTable = ({ keyColumn, menuName, columns, values, onRowDblClick, pagerVisible, projId }) => {
 
   const gridRows = () => {
     const result = [];
@@ -48,11 +48,11 @@ const CustomAddTable = ({ menuName, columns, values, onRowDblClick, pagerVisible
     e.data.prjctId = projId;
 
   }
-
+ 
   return (
     <div className="wrap_table">
     <DataGrid
-      keyExpr="cnsrtmSn"
+      keyExpr={keyColumn}
       id={"dataGrid"}
       className={"table"}
       dataSource={values}

@@ -1,0 +1,48 @@
+[
+    {
+      "TabName": "프로젝트",
+      "tabId": "ProjectRegist",
+      "url": "pages/project/manage/ProjectRegist"
+    },
+    {
+      "TabName": "실행원가계산서",
+      "tabId": "ProjectCostCalc",
+      "url": "pages/project/manage/ProjectCostCalc"
+    },
+    {
+      "TabName": "컨소시엄",
+      "tabId": "ProjectChangeConsortium",
+      "url": "./ProjectChangeConsortium"
+    },
+    {
+      "TabName": "자사인력",
+      "tabId": "ProjectBaseInfo",
+      "url": "./ProjectBaseInfo"
+    },
+    {
+      "TabName": "외주인력",
+      "tabId": "ProjectConsortium",
+      "url": "./ProjectConsortium"
+    },
+    {
+        "TabName": "외주업체",
+        "tabId": "ProjectConsortium",
+        "url": "./ProjectConsortium"
+    },
+    {
+        "TabName": "통제성경비",
+        "tabId": "ProjectConsortium",
+        "url": "./ProjectConsortium"
+    },
+    {
+        "TabName": "일반경비",
+        "tabId": "ProjectConsortium",
+        "url": "./ProjectConsortium"
+    },
+    {
+        "TabName": "재료비",
+        "tabId": "ProjectChangeIngredientCost",
+        "url": "./ProjectChangeIngredientCost"
+    }
+  ]
+  

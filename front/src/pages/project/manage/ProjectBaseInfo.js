@@ -11,15 +11,13 @@ const ProjectBaseInfo = (prjctId) => {
 
   //baseInfoData데이터    ----> //prjctId가(백단에서 불러오는 데이터가 or 보내는 파라미터가) 동일하다면 동일한 useEffect 2건은 삭제처리 가능.
   useEffect(() => {
-    console.log("파라미터 확인 ",prjctId.projIdInfo);
     const BaseInfoData = async () => {
       const param = [ 
         { tbNm: "PRJCT" }, 
         { 
-         prjctId: prjctId.projIdInfo, 
+         prjctId: prjctId.projId, 
         }, 
      ]; 
-     console.log("param?",param);
       try {
         const response = await ApiRequest("/boot/common/commonSelect", param);
         setBaseInfoData(response[0]);     
@@ -35,7 +33,7 @@ const ProjectBaseInfo = (prjctId) => {
     const param = [ 
       { tbNm: "PRJCT" }, 
       { 
-       prjctId: prjctId.projIdInfo, 
+       prjctId: prjctId.projId, 
       }, 
    ]; 
     const PicInfoData = async () => {
@@ -54,7 +52,7 @@ const ProjectBaseInfo = (prjctId) => {
     const param = [ 
       { tbNm: "PRJCT_CNSRTM" }, 
       { 
-       prjctId: prjctId.projIdInfo, 
+       prjctId: prjctId.projId, 
       }, 
    ];  
     const Cnsrtm = async () => {

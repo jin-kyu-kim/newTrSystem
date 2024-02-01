@@ -1,0 +1,12 @@
+{
+	"menuName": "ProjectConsortiumJson",
+    "keyColumn": "prjctId",
+    "tableColumns": 
+	[
+        {"key": "cnsrtmSn" ,"value": "사업수행유형"},
+        {"key": "cnsrtmCoNm", "value": "회사 명"},
+        {"key": "altmntAmt", "value": "금액"},
+        {"key": "cmmnExpensAmt", "value": "공통경비 금액"},
+        {"key": "slsAmRfltYn", "value": "매출액 반영여부"}
+	]
+}
