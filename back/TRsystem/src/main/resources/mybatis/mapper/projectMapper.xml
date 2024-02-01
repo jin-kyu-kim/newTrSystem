@@ -75,4 +75,14 @@
             </if>
         </if>
     </select>
+
+    <select id="retrievePrjctCostSummery" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT #{id} AS ID,#{costKind} AS COST_KIND,T.COST_AMT, T.USE_AMT, (T.COST_AMT - T.USE_AMT) AS AVAIL_AMT, TRUNCATE(ROUND(T.USE_AMT / T.COST_AMT * 100, 4), 2) AS USE_RATE
+        FROM
+            (SELECT
+                 (SELECT IFNULL(SUM( ${costCol} ),0)  FROM ${tbCostNm} A WHERE PRJCT_ID =#{prjctId}) AS COST_AMT,
+                 (SELECT IFNULL(SUM( ${excuteCol} ),0) FROM ${tbExcuteNm} A WHERE PRJCT_ID =#{prjctId}) AS USE_AMT
+             FROM DUAL
+            ) T
+    </select>
 </mapper>

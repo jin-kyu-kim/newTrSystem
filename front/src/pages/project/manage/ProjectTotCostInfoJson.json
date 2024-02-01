@@ -1,32 +1,12 @@
 {
-  "menuName": "ProjectList",
   "queryId": "projectMapper.retrievePrjctList",
-  "keyColumn": "prjctId",
+  "keyColumn": "id",
   "tableColumns": [
-    { "key": "rownum", "value": "번호", "width": 70, "alignment": "center" },
-    { "key": "prjctStleCd", "value": "형태", "width": 100 },
-    { "key": "prjctId", "value": "프로젝트 코드", "alignment": "left" },
-    {
-      "key": "prjctNm",
-      "value": "프로젝트 명",
-      "width": 250,
-      "alignment": "left"
-    },
-    {
-      "key": "bizFlfmtTyCd",
-      "value": "상태",
-      "width": 150,
-      "alignment": "left"
-    },
-    {
-      "key": "prjctMngrEmpId",
-      "value": "PM",
-      "width": 150,
-      "alignment": "left"
-    },
-    { "key": "ctmmnyNo", "value": "고객사", "width": 100, "alignment": "left" },
-    { "key": "ctrtYmd", "value": "시작일", "width": 100 },
-    { "key": "bizEndYmd", "value": "종료일", "width": 100 }
+    { "key": "costKind", "value": "원가항목" },
+    { "key": "costAmt", "value": "배정예산" },
+    { "key": "useAmt", "value": "누적사용" },
+    { "key": "availAmt", "value": "가용" },
+    { "key": "useRate", "value": "사용비율" }
   ],
   "searchParams": {
     "prjctMngrEmpIdItem": false
