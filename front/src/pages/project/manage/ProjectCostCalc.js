@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 
 import ApiRequest from '../../../utils/ApiRequest';
 import CustomHorizontalTable from '../../../components/unit/CustomHorizontalTable';
-import TableTest from '../../../components/unit/TableTest';
+// import TableTest from '../../../components/unit/TableTest';
 import CostCalc from './ProjectCostCalcJson.json';
 import CustonbudgetTable from '../../../components/unit/CustonbudgetTable';
 import CustomTable from 'components/unit/CustomTable';
@@ -43,7 +43,7 @@ useEffect(() => {
       &nbsp;
       <p><strong>* 원가 분석</strong></p>
       <CustonbudgetTable headers={CostCalc.PrmpcAnls} column={baseInfoData}/>
-      <TableTest headers={CostCalc.PrmpcAnls} column={baseInfoData}/>
+      {/* <TableTest headers={CostCalc.PrmpcAnls} column={baseInfoData}/> */}
     </div>
   </div>
   );
