@@ -4,9 +4,13 @@
     "tableColumns": 
 	[
         {"key": "cnsrtmSn" ,"value": "상태"},
-        {"key": "cnsrtmCoNm", "value": "비용코드", "type": "ComboBox"},
-        {"key": "altmntAmt", "value": "상세내역"},
-        {"key": "cmmnExpensAmt", "value": "총금액"}
-	]
+        {"key": "expensCdNm", "value": "비용코드"},
+        {"key": "dtlDtls", "value": "상세내역"},
+        {"key": "bgtMngOdr", "value": "총금액"}
+	],
+    "summaryColumn":
+    [
+        { "key": "bgtMngOdr", "value": "총금액", "type":"sum", "format":"Total: {0}원"}
+    ]
 
 }

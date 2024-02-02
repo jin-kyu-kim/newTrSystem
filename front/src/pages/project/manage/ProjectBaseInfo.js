@@ -8,7 +8,6 @@ const ProjectBaseInfo = ({prjctId}) => {
   const [baseInfoData, setBaseInfoData] = useState([]);
   const [picInfoData, setPicInfoData] = useState([]);
   const [CnsrtmData, setCnsrtmData] = useState([]);
-  console.log("prjctId".prjctId);
 
   //baseInfoData데이터    ----> //prjctId가(백단에서 불러오는 데이터가 or 보내는 파라미터가) 동일하다면 동일한 useEffect 2건은 삭제처리 가능.
   useEffect(() => {

@@ -8,6 +8,8 @@ import ProjectDetailJson from "./ProjectDetailJson.json";
 import Button from "devextreme-react/button";
 import LinkButton from "../../../components/unit/LinkButton.js";
 
+//TODO. 프로젝트 리스트에서 프로젝트 상태?형태?코드 정보 받아와서 그 정보에따라 변경원가 클릭시 작동 다르게 하기.
+
 const ProjectDetail = () => {
   const navigate = useNavigate ();
   const location = useLocation();
@@ -40,7 +42,26 @@ const ProjectDetail = () => {
         </div>
       </div>
       <div className="buttons" align="right" style={{ margin: "20px" }}>
-        <LinkButton location={"../project/ProjectChange"} name={"변경원가"} type={"default"} stylingMode={"contained"} prjctId={prjctId}/>
+        {/* <LinkButton location={"../project/ProjectChange"} name={"변경원가"} type={"default"} stylingMode={"contained"} prjctId={prjctId}/> */}
+        <Button
+          width={110}
+          text="Contained"
+          type="default"
+          stylingMode="contained"
+          style={{ margin: "2px" }}
+          onClick={(e)=>{
+            const isconfirm = window.confirm("프로젝트 변경을 진행하시겠습니까?");
+            if(isconfirm){
+            navigate("../project/ProjectChange",
+              {
+              state: { prjctId: prjctId },
+              })
+            }
+          }
+      }
+        >
+          변경원가
+        </Button>
         <Button
           width={110}
           text="Contained"
