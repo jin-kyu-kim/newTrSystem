@@ -25,7 +25,7 @@ const ProjectDetail = () => {
     },
     [setSelectedIndex]
   );
-
+  
   const itemTitleRender = (a) => <span>{a.TabName}</span>;
 
   return (
@@ -40,22 +40,7 @@ const ProjectDetail = () => {
         </div>
       </div>
       <div className="buttons" align="right" style={{ margin: "20px" }}>
-        {/* <LinkButton location={"../project/ProjectChange"} name={"변경원가"} type={"default"} stylingMode={"contained"}/> */}
-        <Button
-          width={110}
-          text="Contained"
-          type="default"
-          stylingMode="contained"
-          style={{ margin: "2px" }}
-          onClick={(e)=>
-            navigate("../project/ProjectChange",
-              {
-            state: { prjctId: prjctId },
-            })
-          }
-        >
-          변경원가
-        </Button>
+        <LinkButton location={"../project/ProjectChange"} name={"변경원가"} type={"default"} stylingMode={"contained"} prjctId={prjctId}/>
         <Button
           width={110}
           text="Contained"
