@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, Suspense, lazy } from "react";
 import { TabPanel } from "devextreme-react";
 import { useLocation } from "react-router-dom";
 
@@ -8,7 +8,7 @@ import LinkButton from "../../../components/unit/LinkButton.js";
 
 const ProjectChange = () => {
   const location = useLocation();
-  const prjctId = location.state.prjctId;
+  const prjctId = location.state ? location.state.prjctId : null;
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const ProjectChange = ProjectChangeJson;
@@ -19,8 +19,7 @@ const ProjectChange = () => {
       if (args.name === "selectedIndex") {
         setSelectedIndex(args.value);
       }
-    },
-    [setSelectedIndex]
+    },[]
   );
 
   const itemTitleRender = (a) => <span>{a.TabName}</span>;
@@ -53,16 +52,17 @@ const ProjectChange = () => {
           selectedIndex={selectedIndex}
           onOptionChanged={onSelectionChanged}
           itemTitleRender={itemTitleRender}
-          animationEnabled={true}
+          // animationEnabled={true}
           itemComponent={({ data }) => {
-          const Component = React.lazy(() => import(`${data.url}`));
+          const Component = lazy(() => import(`${data.url}`));
           return (
-            <React.Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<div>Loading...</div>}>
               <Component 
               prjctId={prjctId}
               revise={true}
+              tabId={data.tabId}
               />
-            </React.Suspense>
+            </Suspense>
           );
         }}
         />
