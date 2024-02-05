@@ -2,7 +2,11 @@ import React, { useCallback, useState, Suspense } from "react";
 import { TabPanel } from "devextreme-react";
 import ProjectCostTabsJson from "./ProjectCostTabsJson.json";
 
+<<<<<<< HEAD
+const ProjectCostTabs = ({ projId }) => {
+=======
 const ProjectCostTabs = ({ prjctId }) => {
+>>>>>>> 5541971b518343d668f6eb2f1dc3997b9fa4cbce
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const projectCost = ProjectCostTabsJson;
@@ -37,7 +41,11 @@ const ProjectCostTabs = ({ prjctId }) => {
           const Component = React.lazy(() => import(`${data.url}`));
           return (
             <React.Suspense fallback={<div>Loading...</div>}>
+<<<<<<< HEAD
+              <Component projId={projId} />
+=======
               <Component prjctId={prjctId} />
+>>>>>>> 5541971b518343d668f6eb2f1dc3997b9fa4cbce
             </React.Suspense>
           );
         }}

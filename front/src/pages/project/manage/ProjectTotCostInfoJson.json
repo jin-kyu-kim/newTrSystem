@@ -3,12 +3,76 @@
   "keyColumn": "id",
   "tableColumns": [
     { "key": "costKind", "value": "원가항목" },
-    { "key": "costAmt", "value": "배정예산" },
-    { "key": "useAmt", "value": "누적사용" },
-    { "key": "availAmt", "value": "가용" },
-    { "key": "useRate", "value": "사용비율" }
+    { "key": "costAmt", "value": "배정예산(원)" },
+    { "key": "useAmt", "value": "누적사용(원)" },
+    { "key": "availAmt", "value": "가용(원)" },
+    { "key": "useRate", "value": "사용비율(%)" }
   ],
   "searchParams": {
     "prjctMngrEmpIdItem": false
-  }
+  },
+  "params": [
+    {
+      "id": 1,
+      "costKind": "자사인력",
+      "tbCostNm": "MMNY_INPT_MM",
+      "costCol": "EXPECT_MM",
+      "tbExcuteNm": "MMNY_LBRCO_EXCN",
+      "excuteCol": "MM",
+      "queryId": "projectMapper.retrievePrjctCostSummery",
+      "group": 1
+    },
+    {
+      "id": 2,
+      "costKind": "외주인력",
+      "tbCostNm": "OUTORD_LBRCO_PRMPC_DTL",
+      "costCol": "EXPECT_MM",
+      "tbExcuteNm": "OUTORD_LBRCO_EXCN",
+      "excuteCol": "MM",
+      "queryId": "projectMapper.retrievePrjctCostSummery",
+      "group": 1
+    },
+    {
+      "id": 3,
+      "costKind": "외주업체",
+      "tbCostNm": "OUTORD_ENTRPS_CT_PRMPC_DTL",
+      "costCol": "EXPECT_CT",
+      "tbExcuteNm": "OUTORD_ENTRPS_CT_EXCN",
+      "excuteCol": "GIVE_CT",
+      "queryId": "projectMapper.retrievePrjctCostSummery",
+      "group": 1
+    },
+    {
+      "id": 4,
+      "costKind": "통제성경비",
+      "tbCostNm": "EXPENS_MNBY_PRMPC_DTLS",
+      "costCol": "EXPECT_CT",
+      "tbExcuteNm": "EXPENS_EXCN",
+      "excuteCol": "EXPENS_CT",
+      "queryId": "projectMapper.retrievePrjctCostSummery",
+      "control": "Y",
+      "group": 2
+    },
+    {
+      "id": 5,
+      "costKind": "일반경비",
+      "tbCostNm": "EXPENS_MNBY_PRMPC_DTLS",
+      "costCol": "EXPECT_CT",
+      "tbExcuteNm": "EXPENS_EXCN      ",
+      "excuteCol": "EXPENS_CT",
+      "queryId": "projectMapper.retrievePrjctCostSummery",
+      "general": "Y",
+      "group": 2
+    },
+    {
+      "id": 6,
+      "costKind": "재료비",
+      "tbCostNm": "MATRL_CT_PRMPC",
+      "costCol": "UNTPC",
+      "tbExcuteNm": "MATRL_CT_EXCN",
+      "excuteCol": "USE_AMT",
+      "queryId": "projectMapper.retrievePrjctCostSummery",
+      "group": 3
+    }
+  ]
 }
