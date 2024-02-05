@@ -12,7 +12,7 @@
   {
     "TabName": "외주인건비",
     "tabId": "ProjectTotCostInfo",
-    "url": "../App"
+    "url": "pages/project/manage/ProjectList"
   },
   {
     "TabName": "외주업체비",
