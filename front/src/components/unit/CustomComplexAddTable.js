@@ -4,7 +4,7 @@ import DataGrid, { Column, Editing, Grouping, GroupPanel, SearchPanel} from "dev
 
 import CustomCdComboBox from "./CustomCdComboBox";
 
-const CustomComplexAddTable = ({ keyColumn, manuName, columns, values, projId }) => {
+const CustomComplexAddTable = ({ keyColumn, manuName, columns, values, prjctId }) => {
     const [initParam, setInitParam] = useState({
         priceCd: "",
       });

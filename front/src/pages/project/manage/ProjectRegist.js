@@ -7,7 +7,7 @@ import ProjectRegistJson from "./ProjectRegistJson.json"
 import CustomLabelValue from "../../../components/unit/CustomLabelValue"
 import Button from "devextreme-react/button";
 
-const ProjectRegist = ({projId, onHide, revise}) => {
+const ProjectRegist = ({prjctId, onHide, revise}) => {
     const {labelValue} = ProjectRegistJson;
 
     const [readOnly, setReadOnly] = useState(revise);
@@ -20,7 +20,7 @@ const ProjectRegist = ({projId, onHide, revise}) => {
             const param = [ 
                 { tbNm: "PRJCT" }, 
                 { 
-                prjctId: projId, 
+                prjctId: prjctId, 
                 }, 
             ]; 
             try {

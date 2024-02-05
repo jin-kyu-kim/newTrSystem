@@ -4,7 +4,7 @@ import ApiRequest from '../../../utils/ApiRequest';
 import CustomHorizontalTable from '../../../components/unit/CustomHorizontalTable';
 import BaseInfo from './ProjectBaseInfo.json';
 
-const ProjectBaseInfo = (prjctId) => {
+const ProjectBaseInfo = ({prjctId}) => {
   const [baseInfoData, setBaseInfoData] = useState([]);
   const [picInfoData, setPicInfoData] = useState([]);
   const [CnsrtmData, setCnsrtmData] = useState([]);
@@ -15,7 +15,7 @@ const ProjectBaseInfo = (prjctId) => {
       const param = [ 
         { tbNm: "PRJCT" }, 
         { 
-         prjctId: prjctId.projId, 
+         prjctId: prjctId, 
         }, 
      ]; 
       try {
@@ -33,7 +33,7 @@ const ProjectBaseInfo = (prjctId) => {
     const param = [ 
       { tbNm: "PRJCT" }, 
       { 
-       prjctId: prjctId.projId, 
+       prjctId: prjctId, 
       }, 
    ]; 
     const PicInfoData = async () => {
@@ -52,7 +52,7 @@ const ProjectBaseInfo = (prjctId) => {
     const param = [ 
       { tbNm: "PRJCT_CNSRTM" }, 
       { 
-       prjctId: prjctId.projId, 
+       prjctId: prjctId, 
       }, 
    ];  
     const Cnsrtm = async () => {

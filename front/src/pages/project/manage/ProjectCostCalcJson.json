@@ -5,32 +5,31 @@
             { "key": "", "value": "" },
             { "key": "deptId", "value": "발주처" },
             { "key": "prjctMngrEmpId", "value": "주관부서" },
-            { "key": "prjctStleCd", "value": "PM" },
-            { "key": "prjctStleCd", "value": "작성자" }
+            { "key": "prjctMngrEmpId", "value": "PM" },
+            { "key": "prjctMngrEmpId", "value": "작성자" }
             ],
           "BizSumry2" : [
             { "key": "", "value": "예산" },
-            { "key": "deptId", "value": "총예산(VAT 제외)" },
-            { "key": "prjctNm", "value": "투찰가" },
-            { "key": "prjctStleCd", "value": "자산매출액" }
+            { "key": "totBgt", "value": "총예산(VAT 제외)" },
+            { "key": "bddprPc", "value": "투찰가" },
+            { "key": "mmnySlsAm", "value": "자사매출액" }
           ],
           "BizSumry3" : [
-            { "key": "prjctNm", "value": "사업기간" },
-            { "key": "prjctStleCd", "value": "" }
+            { "key": "", "value": "사업기간" },
+            { "key": "mmnyQotaAmt", "value": "" }
           ]
         },     
       "Cnsrtm":
       [
-        { "key": "ctmmnyNo", "value": "회사명" },
-        { "key": "picFlnm", "value": "역할" },
-        { "key": "picTelno", "value": "금액" },
-        { "key": "picEml", "value": "공통경비" }
+        { "key": "cnsrtmCoNm", "value": "회사명" },
+        { "key": "bizFlfmtTyCdNm", "value": "역할" },
+        { "key": "altmntAmt", "value": "금액" },
+        { "key": "cmmnExpensAmt", "value": "공통경비" }
       ],
       "PrmpcAnls":
       [
-        { "key": "cnsrtmCoNm", "value": "회사명" },
-        { "key": "", "value": "역할" },
-        { "key": "totBgt", "value": "금액" },
-        { "key": "bizFlfmtTyCd", "value": "공통경비" }
+        { "key": "", "value": "구분" },
+        { "key": "picEml", "value": "실행예산" },
+        { "key": "totBgt", "value": "비율" }
       ]
     }
