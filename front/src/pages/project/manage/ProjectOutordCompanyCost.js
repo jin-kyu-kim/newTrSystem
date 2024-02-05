@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 
-import ProjectGeneralBudgetCostJson from "./ProjectGeneralBudgetCostJson.json";
+import ProjectOutordCompanyCostJson from "./ProjectOutordCompanyCostJson.json";
 
 import CustomCostTable from "components/unit/CustomCostTable";
 import Box, { Item } from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
 
-const ProjectGeneralBudgetCost = ({ prjctId }) => {
+const ProjectOutordCompanyCost = ({ prjctId, tabId}) => {
   const [values, setValues] = useState([]);
-  const { manuName, tableColumns, keyColumn, summaryColumn } = ProjectGeneralBudgetCostJson;
+  const { manuName, tableColumns, keyColumn, summaryColumn } = ProjectOutordCompanyCostJson;
 
   const param = [
-    { tbNm: "EXPENS_PRMPC" },
+    { tbNm: "OUTORD_ENTRPS_CT_PRMPC" },
     { prjctId: "d343ff40-b4df-11ee-b259-000c2956283f" }, //TODO. prjctId를 받아와야함 (테스트중 임시값)
   ];
 
@@ -36,7 +36,7 @@ const ProjectGeneralBudgetCost = ({ prjctId }) => {
         <Box direction="col" width="100%" height={150}>
                     <Item ratio={1}>
                         <div className="rect demo-dark header">
-                            <h5>일반경비를 입력합니다.</h5>
+                            <h5>외주업체를 입력합니다.</h5>
                             <div> * + 버튼을 클릭하여 내용을 입력할 수 있습니다. </div>
                             <div> * <a className="dx-link dx-link-save dx-icon-save dx-link-icon" style={{textDecoration: 'none'}} /> 버튼을 클릭하여 입력한 내용을 저장할 수 있습니다.</div>
                             <div> * <a className="dx-link dx-link-edit dx-icon-edit dx-link-icon" style={{textDecoration: 'none'}} /> 버튼을 클릭하여 내용을 수정할 수 있습니다.</div>
@@ -47,7 +47,7 @@ const ProjectGeneralBudgetCost = ({ prjctId }) => {
                 </Box>
           <div>
             <p style={{ textAlign: "right", marginBottom: "0px" }}>
-              검색 (비용코드, 상세내역 등 다양하게 검색가능)
+            검색 (성명, 역할, 등급, 담당업무, 예정일, 맨먼스등 다양하게 검색가능) 
             </p>
             <CustomCostTable
               keyColumn={keyColumn}
@@ -56,6 +56,7 @@ const ProjectGeneralBudgetCost = ({ prjctId }) => {
               values={values}
               prjctId={prjctId}
               summaryColumn={summaryColumn}
+              tabId={tabId}
             />
           </div>
         </div>
@@ -64,4 +65,4 @@ const ProjectGeneralBudgetCost = ({ prjctId }) => {
   );
 };
 
-export default ProjectGeneralBudgetCost;
+export default ProjectOutordCompanyCost;

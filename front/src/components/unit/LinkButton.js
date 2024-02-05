@@ -1,11 +1,14 @@
 import { Button } from "devextreme-react/button";
 import { useNavigate } from 'react-router-dom';
 
-const LinkButton = ({ location, name , type, stylingMode}) => {
+const LinkButton = ({ name , type, stylingMode, location, prjctId}) => {
     const navigate = useNavigate ();
 
     const handleClick = (e) => {
-        navigate(location)
+        navigate(location,
+            {
+        state: { prjctId: prjctId },
+        })
       };
 
 return (

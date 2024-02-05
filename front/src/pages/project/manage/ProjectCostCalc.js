@@ -7,15 +7,16 @@ import CostCalc from './ProjectCostCalcJson.json';
 import CustonbudgetTable from '../../../components/unit/CustonbudgetTable';
 import CustomTable from 'components/unit/CustomTable';
 
-const ProjectCostCalc = ({projId}) => {
+const ProjectCostCalc = ({prjctId}) => {
 const [baseInfoData, setBaseInfoData] = useState([]);
+const [cnsrtmData, setCnsrtmData] = useState([]);
 
 useEffect(() => {
   const BaseInfoData = async () => {
     const param = [ 
       { tbNm: "PRJCT" }, 
       { 
-       prjctId: projId, 
+       prjctId: prjctId, 
       }, 
    ]; 
     try {
@@ -28,6 +29,25 @@ useEffect(() => {
   BaseInfoData();
 }, []);
 
+useEffect(() => {
+  const CnsrtmData = async () => {
+    const param = [ 
+      { tbNm: "PRJCT_CNSRTM" }, 
+      { 
+       prjctId: prjctId, 
+      }, 
+   ]; 
+    try {
+      const response = await ApiRequest("/boot/common/commonSelect", param);
+      setCnsrtmData(response[0]);  
+    } catch (error) {
+      console.error('Error fetching data', error);
+    }
+  };
+  CnsrtmData();
+}, []);
+
+
   return (
     <div style={{padding: '20px'}}>
     <div className='container'>
@@ -39,7 +59,7 @@ useEffect(() => {
       
       &nbsp;
       <p><strong>* 컨소시엄</strong></p>
-      <CustomHorizontalTable headers={CostCalc.Cnsrtm} column={baseInfoData}/>
+      <CustomHorizontalTable headers={CostCalc.Cnsrtm} column={cnsrtmData}/>
       &nbsp;
       <p><strong>* 원가 분석</strong></p>
       <CustonbudgetTable headers={CostCalc.PrmpcAnls} column={baseInfoData}/>

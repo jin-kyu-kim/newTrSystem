@@ -1,0 +1,22 @@
+{
+	"menuName": "ProjectEmpCostJson",
+    "keyColumn": "empId",
+    "tableColumns": 
+	[
+        {"key": "" ,"value": "상태"},
+        {"key": "empId", "value": "성명"},
+        {"key": "hnfRoleCdNm", "value": "역할"},
+        {"key": "", "value": "등급"},
+        {"key": "tkcgJob", "value": "담당업무"},     
+        {"key": "inptPrnmntYmd", "value": "투입예정일"},
+        {"key": "withdrPrnmntYmd", "value": "철수예정일"},
+        {"key": "bgtMngOdr", "value": "총 금액"},
+        {"key": "", "value": "총 투입 MM"}
+
+	],
+    "summaryColumn":
+    [
+        { "key": "bgtMngOdr", "value": "총 금액", "type":"sum", "format":"Total: {0}원"}
+    ]
+
+}

@@ -4,7 +4,7 @@ import CustomCdComboBox from "./CustomCdComboBox";
 
 import { useState, useEffect } from "react";
 
-const CustomAddTable = ({ keyColumn, menuName, columns, values, onRowDblClick, pagerVisible, projId }) => {
+const CustomAddTable = ({ keyColumn, menuName, columns, values, onRowDblClick, pagerVisible, prjctId }) => {
 
   const [initParam, setInitParam] = useState({
     ItemCd: "",
@@ -59,7 +59,7 @@ const CustomAddTable = ({ keyColumn, menuName, columns, values, onRowDblClick, p
   }
 
   const onRowInserted = (e) => {
-    e.data.prjctId = projId;
+    e.data.prjctId = prjctId;
 
   }
  

@@ -16,23 +16,23 @@
     },
     {
       "TabName": "자사인력",
-      "tabId": "ProjectBaseInfo",
-      "url": "./ProjectBaseInfo"
+      "tabId": "ProjectEmpCost",
+      "url": "./ProjectEmpCost"
     },
     {
       "TabName": "외주인력",
-      "tabId": "ProjectConsortium",
-      "url": "./ProjectConsortium"
+      "tabId": "ProjectOutordEmpCost",
+      "url": "./ProjectOutordEmpCost"
     },
     {
         "TabName": "외주업체",
-        "tabId": "ProjectConsortium",
-        "url": "./ProjectConsortium"
+        "tabId": "ProjectOutordCompanyCost",
+        "url": "./ProjectOutordCompanyCost"
     },
     {
         "TabName": "통제성경비",
-        "tabId": "ProjectConsortium",
-        "url": "./ProjectConsortium"
+        "tabId": "ProjectControlBudgetCost",
+        "url": "./ProjectControlBudgetCost"
     },
     {
         "TabName": "일반경비",
