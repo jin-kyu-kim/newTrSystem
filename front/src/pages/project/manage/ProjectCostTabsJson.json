@@ -7,7 +7,7 @@
   {
     "TabName": "자사인건비",
     "tabId": "ProjectTotCostInfo",
-    "url": "pages/project/manage/ProjectList"
+    "url": "pages/project/manage/ProjectEmpCostSearch"
   },
   {
     "TabName": "외주인건비",
