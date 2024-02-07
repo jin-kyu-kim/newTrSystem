@@ -39,7 +39,7 @@
             </if>
         </if>
     </select>
-    
+
     <select id="retrievePrjctAprvList" parameterType="map" resultType="com.trsystem.LowerHashMap">
     SELECT
           ROW_NUMBER()OVER ()ROWNUM
@@ -106,5 +106,35 @@
                  ) AS USE_AMT
              FROM DUAL
             ) T
+    </select>
+    <select id="retrieveprojectEmpCostSearch" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT A.PRJCT_ID
+             , A.EMP_ID
+             , (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = A.EMP_ID) AS EMP_NM
+             , A.HNF_ROLE_CD
+             , (SELECT CD_NM  FROM CD WHERE CD_VALUE = HNF_ROLE_CD)  HNF_ROLE_NM
+             , (SELECT
+                        (SELECT CD_NM  FROM CD WHERE CD_VALUE = JBPS_CD)  GRADE
+                FROM EMP
+                WHERE EMP_ID = A.EMP_ID) AS GRADE
+             , A.TKCG_JOB
+             , A.INPT_PRNMNT_YMD
+             , A.WITHDR_PRNMNT_YMD
+             , B.INPT_YM
+             , B.EXPECT_MM
+        FROM MMNY_LBRCO_PRMPC A , MMNY_INPT_MM B
+       WHERE A.PRJCT_ID = B.PRJCT_ID
+         AND A.BGT_MNG_ODR AND B.BGT_MNG_ODR
+         AND A.EMP_ID = B.EMP_ID
+        <if test="prjctId != null">
+            <if test="!prjctId.equals('')">
+                AND A.PRJCT_ID = #{prjctId}
+            </if>
+        </if>
+        <if test="bgtMngOdr != null">
+            <if test="!bgtMngOdr.equals('')">
+                AND A.BGT_MNG_ODR = #{bgtMngOdr}
+            </if>
+        </if>
     </select>
 </mapper>

@@ -15,17 +15,18 @@ import "devextreme/dist/css/dx.material.blue.light.css";
 import ProjectTotCostInfoJson from "./ProjectTotCostInfoJson";
 import ApiRequest from "../../../utils/ApiRequest";
 
-const ProjectTotCostInfo = (projId) => {
+const ProjectTotCostInfo = (prjctId) => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
     handelGetData();
+    console.log(1);
   }, []);
 
   const handelGetData = async () => {
     try {
       await ProjectTotCostInfoJson.params.map(async (item) => {
-        const modifiedItem = { ...item, prjctId: projId.projId };
+        const modifiedItem = { ...item, prjctId: prjctId.prjctId };
         const response = await ApiRequest(
           "/boot/common/queryIdSearch",
           modifiedItem
@@ -60,7 +61,6 @@ const ProjectTotCostInfo = (projId) => {
         dataSource={data}
         keyExpr="id"
         showBorders={true}
-        showColumnLines={true}
         masterDetail={{
           enabled: false,
         }}
@@ -91,38 +91,65 @@ const ProjectTotCostInfo = (projId) => {
         <Grouping autoExpandAll={true} />
 
         <Summary>
+          <GroupItem
+            column="costAmt"
+            summaryType="sum"
+            valueFormat="#,##0"
+            displayFormat="{0} 원"
+            alignByColumn={true}
+          />
+          <GroupItem
+            column="useAmt"
+            summaryType="sum"
+            valueFormat="#,##0"
+            displayFormat="{0} 원"
+            alignByColumn={true}
+          />
+          <GroupItem
+            column="availAmt"
+            summaryType="sum"
+            valueFormat="#,##0"
+            displayFormat="{0} 원"
+            alignByColumn={true}
+          />
+          <GroupItem
+            column="useRate"
+            summaryType="avg"
+            valueFormat="#,##0.00"
+            displayFormat="{0} %"
+            alignByColumn={true}
+          />
+          <TotalItem
+            column="costKind"
+            customizeText={() => {
+              return "총 계";
+            }}
+          />
           <TotalItem
             column="costAmt"
             summaryType="sum"
             valueFormat="#,##0"
-            displayFormat="{0}"
+            displayFormat="{0} 원"
           />
           <TotalItem
             column="useAmt"
             summaryType="sum"
             valueFormat="#,##0"
-            displayFormat="{0}"
+            displayFormat="{0} 원"
           />
           <TotalItem
             column="availAmt"
             summaryType="sum"
             valueFormat="#,##0"
-            displayFormat="{0}"
+            displayFormat="{0} 원"
           />
           <TotalItem
             column="useRate"
             summaryType="avg"
             valueFormat="#,##0"
-            displayFormat="{0}"
+            displayFormat="{0} %"
           />
         </Summary>
-        <GroupItem
-          column="bind"
-          summaryType="sum"
-          valueFormat="#,##0"
-          displayFormat="{0}"
-          showInGroupFooter={true}
-        />
       </DataGrid>
     </div>
   );

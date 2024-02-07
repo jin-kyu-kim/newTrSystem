@@ -1,0 +1,39 @@
+[
+  {
+    "caption": "직원명",
+    "width": 120,
+    "dataField": "empId",
+    "area": "row",
+    "expanded": true
+  },
+  {
+    "caption": "직급",
+    "dataField": "hnfRoleNm",
+    "width": 100,
+    "area": "row",
+    "expanded": true,
+    "showTotals": false
+  },
+  {
+    "caption": "등급",
+    "dataField": "grade",
+    "width": 100,
+    "area": "row"
+  },
+  {
+    "dataField": "inptYm",
+    "dataType": "inptYm",
+    "format": "YYYY-mm",
+    "groupInterval": "year",
+    "area": "column",
+    "showTotals": false,
+    "expanded": true
+  },
+  {
+    "caption": "Total",
+    "dataField": "expectMm",
+    "dataType": "number",
+    "summaryType": "sum",
+    "area": "data"
+  }
+]
