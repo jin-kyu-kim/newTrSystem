@@ -2,47 +2,56 @@
     {
       "TabName": "프로젝트",
       "tabId": "ProjectRegist",
-      "url": "pages/project/manage/ProjectRegist"
+      "url": "pages/project/manage/ProjectRegist",
+      "index" : 0
     },
     {
       "TabName": "실행원가계산서",
       "tabId": "ProjectCostCalc",
-      "url": "pages/project/manage/ProjectCostCalc"
+      "url": "pages/project/manage/ProjectCostCalc",
+      "index" : 1
     },
     {
       "TabName": "컨소시엄",
       "tabId": "ProjectChangeConsortium",
-      "url": "./ProjectChangeConsortium"
+      "url": "./ProjectChangeConsortium",
+      "index" : 2
     },
     {
       "TabName": "자사인력",
       "tabId": "ProjectEmpCost",
-      "url": "./ProjectEmpCost"
+      "url": "./ProjectEmpCost",
+      "index" : 3
     },
     {
       "TabName": "외주인력",
       "tabId": "ProjectOutordEmpCost",
-      "url": "./ProjectOutordEmpCost"
+      "url": "./ProjectOutordEmpCost",
+      "index" : 4
     },
     {
         "TabName": "외주업체",
         "tabId": "ProjectOutordCompanyCost",
-        "url": "./ProjectOutordCompanyCost"
+        "url": "./ProjectOutordCompanyCost",
+        "index" : 5
     },
     {
         "TabName": "통제성경비",
         "tabId": "ProjectControlBudgetCost",
-        "url": "./ProjectControlBudgetCost"
+        "url": "./ProjectControlBudgetCost",
+        "index" : 6
     },
     {
         "TabName": "일반경비",
         "tabId": "ProjectGeneralBudgetCost",
-        "url": "./ProjectGeneralBudgetCost"
+        "url": "./ProjectGeneralBudgetCost",
+        "index" : 7
     },
     {
         "TabName": "재료비",
         "tabId": "ProjectChangeIngredientCost",
-        "url": "./ProjectChangeIngredientCost"
+        "url": "./ProjectChangeIngredientCost",
+        "index" : 8
     }
   ]
   
