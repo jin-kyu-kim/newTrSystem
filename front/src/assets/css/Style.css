@@ -71,4 +71,12 @@
   width: 50%;
 }
 
+.project-change-content-inner-left {
+  width: 30%;
+}
+
+.project-change-content-inner-right {
+  width: 70%;
+}
+
 .asterisk::after { color: red; content: "*"; font-size: inherit; margin-left: 0.4rem; }

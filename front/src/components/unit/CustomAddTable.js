@@ -7,11 +7,16 @@ import { useState, useEffect } from "react";
 const CustomAddTable = ({ keyColumn, menuName, columns, values, onRowDblClick, pagerVisible, prjctId }) => {
 
   const [initParam, setInitParam] = useState({
-    ItemCd: "",
     cnsrtmSn: "",
     slsAmRfltYn: "",
     matrlCtIemCd: "",
-  },[]);
+  });
+
+  //useEffect를 사용하여 initParam이 변경될 때마다 실행
+  useEffect(() => {
+    console.log("initParam",initParam);
+  }, [initParam]);
+  
 
   const handleChgState = ({name, value}) => {
     setInitParam({
@@ -21,19 +26,21 @@ const CustomAddTable = ({ keyColumn, menuName, columns, values, onRowDblClick, p
   };
   
   // 콤보박스 셀 렌더 함수
+  //TODO :  한 로우에 콤보박스가 2개 이상일 때 axios에러가 뜸
   const onEditCellRender = (column) => {
-    const columnKey = column.key;
+    const dynamicValue = initParam[column.key];
       return (
+        // console.log("column.cd",column.cd),
           <CustomCdComboBox
               param={column.cd}
               placeholderText="[선택]"
-              name={"matrlCtIemCd"}
+              name={column.key}
               onSelect={handleChgState}
-              value={initParam.matrlCtIemCd}
+              value={dynamicValue}
           />
       );
     };
-
+  
   const gridRows = () => {
     const result = [];
         columns.map(column => {

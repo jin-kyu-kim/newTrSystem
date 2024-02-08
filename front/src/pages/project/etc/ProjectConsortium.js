@@ -13,10 +13,10 @@ const ProjectConsortium = (data) => {
 
     const param = [
         { tbNm:"PRJCT_CNSRTM" },
-        { prjctId: data.data.projId },
+        { prjctId: data.data.prjctId },
     ];
 
-    console.log(data.data.projId)
+    console.log(data.data.prjctId)
 
     useEffect(() => {
         Cnsrtm();
@@ -49,7 +49,7 @@ const ProjectConsortium = (data) => {
                     </Item>
                 </Box>
 
-                <CustomAddTable manuName={manuName} columns={tableColumns} values={values} projId={data.data.projId}/>
+                <CustomAddTable manuName={manuName} columns={tableColumns} values={values} prjctId={data.data.prjctId}/>
                 </div>
             </div>
         </>

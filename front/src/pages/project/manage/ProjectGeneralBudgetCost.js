@@ -8,7 +8,7 @@ import ApiRequest from "../../../utils/ApiRequest";
 
 const ProjectGeneralBudgetCost = ({ prjctId }) => {
   const [values, setValues] = useState([]);
-  const { manuName, tableColumns, keyColumn, summaryColumn } = ProjectGeneralBudgetCostJson;
+  // const { manuName, tableColumns, keyColumn, summaryColumn, popup, labelValue } = ProjectGeneralBudgetCostJson;
 
   const param = [
     { tbNm: "EXPENS_PRMPC" },
@@ -23,6 +23,7 @@ const ProjectGeneralBudgetCost = ({ prjctId }) => {
     try {
       const response = await ApiRequest("/boot/common/commonSelect", param);
       setValues(response);
+      console.log("response",response);
     } catch (error) {
       console.error(error);
     }
@@ -50,12 +51,14 @@ const ProjectGeneralBudgetCost = ({ prjctId }) => {
               검색 (비용코드, 상세내역 등 다양하게 검색가능)
             </p>
             <CustomCostTable
-              keyColumn={keyColumn}
-              manuName={manuName}
-              columns={tableColumns}
+              keyColumn={ProjectGeneralBudgetCostJson.keyColumn}
+              manuName={ProjectGeneralBudgetCostJson.manuName}
+              columns={ProjectGeneralBudgetCostJson.tableColumns}
+              popup={ProjectGeneralBudgetCostJson.popup}
               values={values}
               prjctId={prjctId}
-              summaryColumn={summaryColumn}
+              summaryColumn={ProjectGeneralBudgetCostJson.summaryColumn}
+              costTableInfoJson={ProjectGeneralBudgetCostJson}
             />
           </div>
         </div>
