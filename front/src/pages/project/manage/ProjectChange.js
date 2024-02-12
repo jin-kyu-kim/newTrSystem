@@ -1,6 +1,7 @@
 import React, { useCallback, useState, Suspense, lazy } from "react";
 import { TabPanel } from "devextreme-react";
 import { useLocation } from "react-router-dom";
+import { Button } from "devextreme-react/button";
 
 import ProjectChangeJson from "./ProjectChangeJson.json";
 
@@ -23,6 +24,7 @@ const ProjectChange = () => {
   );
 
   const itemTitleRender = (a) => <span>{a.TabName}</span>;
+ 
 
   return (
     <div>
@@ -35,6 +37,7 @@ const ProjectChange = () => {
         </div>
       </div>
       <div className="buttons" align="right" style={{ margin: "20px" }}>
+        <Button>승인요청</Button>
         <LinkButton location={-1} name={"이전"} type={"normal"} />
       </div>
       <div
@@ -52,9 +55,9 @@ const ProjectChange = () => {
           selectedIndex={selectedIndex}
           onOptionChanged={onSelectionChanged}
           itemTitleRender={itemTitleRender}
-          // animationEnabled={true}
           itemComponent={({ data }) => {
           const Component = lazy(() => import(`${data.url}`));
+          if (data.index === selectedIndex){
           return (
             <Suspense fallback={<div>Loading...</div>}>
               <Component 
@@ -64,6 +67,7 @@ const ProjectChange = () => {
               />
             </Suspense>
           );
+          }
         }}
         />
       </div>

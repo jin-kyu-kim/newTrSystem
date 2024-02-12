@@ -76,6 +76,7 @@ const SearchPrjctSet = ({ callBack, props, popup}) => {
 
   const onHide = () => {
     setPopupVisible(false);
+    callBack(initParam);
   }
 
   return (
@@ -143,7 +144,9 @@ const SearchPrjctSet = ({ callBack, props, popup}) => {
         </Item>
       </Box>
       <CustomPopup props={popup} visible={popupVisible} handleClose={handleClose}>
-        <ProjectRegist onHide={onHide}/>
+        {popupVisible ?
+        <ProjectRegist onHide={onHide}/> : <></>
+        }
       </CustomPopup>
     </div>
   );

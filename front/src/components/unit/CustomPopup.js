@@ -4,8 +4,6 @@ import ProjectRegist from "../../pages/project/manage/ProjectRegist";
 
 const CustomPopup = ({ props, children, handleClose, visible }) => {
 
-    // console.log(props)
-
     return (
         <Popup
         width={props.width}
@@ -14,6 +12,7 @@ const CustomPopup = ({ props, children, handleClose, visible }) => {
         onHiding={handleClose}
         showCloseButton={true}
         title={props.title}
+        
         >
             { children }
         </Popup>

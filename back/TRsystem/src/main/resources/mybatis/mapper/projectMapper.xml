@@ -38,6 +38,7 @@
       AND CTRT_YMD BETWEEN #{ctrtYmd} AND #{bizEndYmd}
             </if>
         </if>
+    ORDER BY REG_DT DESC
     </select>
 
     <select id="retrievePrjctAprvList" parameterType="map" resultType="com.trsystem.LowerHashMap">

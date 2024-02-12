@@ -1,11 +1,15 @@
 import { useMemo, useEffect, useState } from "react";
 import CustomCdComboBox from "../../../components/unit/CustomCdComboBox";
-
+import uuid from 'react-uuid'
 import ApiRequest from "../../../utils/ApiRequest";
 
 import ProjectRegistJson from "./ProjectRegistJson.json"
 import CustomLabelValue from "../../../components/unit/CustomLabelValue"
 import Button from "devextreme-react/button";
+
+import { useCookies } from "react-cookie";
+import axios from "axios";
+import { te } from "date-fns/locale";
 
 const ProjectRegist = ({prjctId, onHide, revise}) => {
     const {labelValue} = ProjectRegistJson;
@@ -13,25 +17,47 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
     const [readOnly, setReadOnly] = useState(revise);
 
     const [data, setData] = useState([]);
-    const [param, setParam] = useState([]);
+
+    const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
+    
+    const empId = cookies.userInfo.empId;
+    const deptId = cookies.userInfo.deptId;
 
     useEffect(() => {
-        const BaseInfoData = async () => {
-            const param = [ 
-                { tbNm: "PRJCT" }, 
-                { 
-                prjctId: prjctId, 
-                }, 
-            ]; 
-            try {
-                const response = await ApiRequest("/boot/common/commonSelect", param);
-                setData(response[0]);     
-            } catch (error) {
-                console.error('Error fetching data', error);
-            }
-        };
-        BaseInfoData();
+        if(prjctId != null) {
+            BaseInfoData();
+        } else {
+
+            const date = new Date();
+
+            setData({
+                ...data,
+                prjctId : uuid(),
+                prjctMngrEmpId : empId,
+                deptId : deptId,
+                bizSttsCd: "VTW00401",
+                regDt : date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0]
+            })
+
+        }
+    
     }, []);
+
+
+    const BaseInfoData = async () => {
+        const param = [ 
+            { tbNm: "PRJCT" }, 
+            { 
+            prjctId: prjctId, 
+            }, 
+        ]; 
+        try {
+            const response = await ApiRequest("/boot/common/commonSelect", param);
+            setData(response[0]);     
+        } catch (error) {
+            console.error('Error fetching data', error);
+        }
+    };
 
     const handleChgState = ({name, value}) => {
 
@@ -42,16 +68,29 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
                 [name] : value
             });
             
-            setParam({
-                ...param,
-                [name] : value
-            })
+        }
+    };
+
+    const handleChgStleCd = ({name, value}) => {
+
+        if(!readOnly) {
+
+            setData({
+                ...data,
+                [name] : value,
+                beffatPbancDdlnYmd : null,
+                expectOrderYmd: null,
+                propseDdlnYmd: null,
+                propsePrsntnYmd: null,
+                ctrtYmd: null,
+                bizEndYmd: null,
+                stbleEndYmd: null,
+                igiYmd: null
+            });
         }
     };
 
     const readOnlyChg = () => {
-
-
 
         if(readOnly) {
             setReadOnly(false);
@@ -62,11 +101,34 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
         
     }
 
+    const onClick = () => {
+        
+
+        const isconfirm = window.confirm("프로젝트 등록을 하시겠습니까?");
+        if(isconfirm){
+            insertProject();
+            onHide();
+        }
+
+    }
+
+    const insertProject = async () => {
+        const param = [
+            { tbNm: "PRJCT" },
+            data
+        ];
+        try {
+            const response = await ApiRequest("/boot/common/commonInsert", param);
+            console.log(response);
+        } catch (error) {
+            console.error('Error fetching data', error);
+        }
+    }
 
     const setPrjctCalendar = () => {
         const result = [];
-            if(param.prjctStleCd || data.prjctStleCd) {
-                if(param.prjctStleCd === "VTW01801" || data.prjctStleCd === "VTW01801") {
+            if(data.prjctStleCd) {
+                if(data.prjctStleCd === "VTW01801") {
                     result.push(
                         <div className="project-regist-content">
                             <div className="dx-fieldset">
@@ -80,7 +142,7 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
                             </div>  
                         </div>
                     )
-                } else if(param.prjctStleCd === "VTW01802" || data.prjctStleCd === "VTW01802") {
+                } else if(data.prjctStleCd === "VTW01802") {
                     result.push(
                         <div className="project-regist-content">
                             <div className="dx-fieldset">
@@ -97,7 +159,7 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
                             </div>  
                         </div>
                     )
-                } else if(param.prjctStleCd === "VTW01803" || data.prjctStleCd === "VTW01803") {
+                } else if(data.prjctStleCd === "VTW01803") {
                     result.push(
                         <div className="project-regist-content">
                             <div className="dx-fieldset">
@@ -134,14 +196,14 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
                                     param="VTW018"
                                     placeholderText="프로젝트 형태"
                                     name="prjctStleCd"
-                                    onSelect={handleChgState}
+                                    onSelect={handleChgStleCd}
                                     value={data.prjctStleCd}
                                     readOnly={readOnly}
                                 />
                             </div>
                         </div>
-                        <CustomLabelValue props={labelValue.dept} onSelect={handleChgState} value={data.deptId} readOnly={readOnly}/>
-                        <CustomLabelValue props={labelValue.emp} onSelect={handleChgState} value={data.prjctMngrEmpId} readOnly={readOnly}/>
+                        <CustomLabelValue props={labelValue.dept} onSelect={handleChgState} value={data.deptId} readOnly={readOnly} defaultValue={deptId} />
+                        <CustomLabelValue props={labelValue.emp} onSelect={handleChgState} value={data.prjctMngrEmpId} readOnly={readOnly} defaultValue={empId}/>
                     </div>
                 </div>
                 <div className="project-regist-content-inner">
@@ -154,7 +216,7 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
                             <div className="dx-field-label">사업수행유형</div>
                             <div className="dx-field-value">
                                 <CustomCdComboBox
-                                    param="VTW004"
+                                    param="VTW013"
                                     placeholderText="사업수행유형"
                                     name="bizFlfmtTyCd"
                                     onSelect={handleChgState}
@@ -186,7 +248,7 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
             {readOnly ? <Button text="수정" onClick={readOnlyChg}/> :
                 onHide ? 
                 <div>
-                    <Button text="저장"/>
+                    <Button text="저장" onClick={onClick}/>
                     <Button onClick={onHide} text="취소"/>
                 </div>
                 :
