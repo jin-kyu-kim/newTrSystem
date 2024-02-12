@@ -17,6 +17,35 @@
     "summaryColumn":
     [
         { "key": "bgtMngOdr", "value": "총 금액", "type":"sum", "format":"Total: {0}원"}
-    ]
+    ],
+    "popup":
+    {
+        "width": "90%",
+        "height": "60%",
+        "title": "자사인력"
+    },
+    "labelValue" : {
+        "expensCdNm": {
+            "name": "expensCdNm",
+            "type": "ComboBox",
+            "label": "비용코드명",
+            "required": true,
+            "placeholder": "비용코드명"
+        },
+        "dtlDtls": {
+            "name": "dtlDtls",
+            "type": "TextBox",
+            "label": "상세내역",
+            "required": true,
+            "placeholder": "상세내역"
+        },
+        "bgtMngOdr": {
+            "name": "bgtMngOdr",
+            "type": "NumberBox",
+            "label": "총금액",
+            "required": true,
+            "placeholder": "총금액"
+        }
+    }
 
 }

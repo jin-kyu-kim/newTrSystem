@@ -8,7 +8,7 @@ import ApiRequest from "../../../utils/ApiRequest";
 
 const ProjectEmpCost = ({ prjctId, tabId}) => {
   const [values, setValues] = useState([]);
-  const { manuName, tableColumns, keyColumn, summaryColumn } = ProjectEmpCostJson;
+  const { manuName, tableColumns, keyColumn, summaryColumn, popup} = ProjectEmpCostJson;
 
   const param = [
     { tbNm: "MMNY_LBRCO_PRMPC" },
@@ -57,6 +57,8 @@ const ProjectEmpCost = ({ prjctId, tabId}) => {
               prjctId={prjctId}
               summaryColumn={summaryColumn}
               tabId={tabId}
+              popup={popup}
+              costTableInfoJson={ProjectEmpCostJson}
             />
           </div>
         </div>

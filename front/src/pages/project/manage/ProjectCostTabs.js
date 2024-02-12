@@ -13,7 +13,7 @@ const ProjectCostTabs = ({ prjctId }) => {
         setSelectedIndex(args.value);
       }
     },
-    [selectedIndex]
+    []
   );
 
   const costTitleRender = (a) => <span>{a.TabName}</span>;
