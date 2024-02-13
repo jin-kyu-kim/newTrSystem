@@ -17,6 +17,7 @@
 	{
     "ctmmnyNameItem": false,
     "prjctDatePickerItem": false,
-    "insertBtnItem": false
+    "insertBtnItem": false,
+    "popupVisible" : false
   }
 }
