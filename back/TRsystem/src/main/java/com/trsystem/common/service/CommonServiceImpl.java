@@ -256,7 +256,9 @@ public class CommonServiceImpl implements CommonService {
                     preparedStatement.setInt(i + 1, (Integer) params.get(i));
                 } else if (params.get(i) instanceof Double) {
                     preparedStatement.setDouble(i + 1, (Double) params.get(i));
-                } else {
+                } else if (params.get(i) == null) {
+                	preparedStatement.setString(i + 1, null);
+            	} else {
                     return null;
                 }
             }
