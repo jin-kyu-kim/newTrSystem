@@ -17,7 +17,7 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
     const [readOnly, setReadOnly] = useState(revise);
 
     const [data, setData] = useState([]);
-
+    const [stleCd, setStleCd] = useState();
     const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
     
     const empId = cookies.userInfo.empId;
@@ -40,9 +40,26 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
             })
 
         }
-    
     }, []);
 
+    useEffect(() => {
+
+        if(data.prjctId != null) {
+            setData({
+                ...data,
+                prjctStleCd : stleCd,
+                beffatPbancDdlnYmd : null,
+                expectOrderYmd: null,
+                propseDdlnYmd: null,
+                propsePrsntnYmd: null,
+                ctrtYmd: null,
+                bizEndYmd: null,
+                stbleEndYmd: null,
+                igiYmd: null,
+            })
+        }
+
+    }, [stleCd]);
 
     const BaseInfoData = async () => {
         const param = [ 
@@ -71,22 +88,22 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
         }
     };
 
-    const handleChgStleCd = ({name, value}) => {
+    const handleChgDate = ({name, value}) => {
 
         if(!readOnly) {
 
             setData({
                 ...data,
-                [name] : value,
-                beffatPbancDdlnYmd : null,
-                expectOrderYmd: null,
-                propseDdlnYmd: null,
-                propsePrsntnYmd: null,
-                ctrtYmd: null,
-                bizEndYmd: null,
-                stbleEndYmd: null,
-                igiYmd: null
+                prjctStleCd : stleCd,
+                [name] : value
             });
+        }
+    }
+
+    const handleChgStleCd = ({value}) => {
+
+        if(!readOnly) {
+            setStleCd(value);
         }
     };
 
@@ -103,11 +120,9 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
 
     const onClick = () => {
         
-
         const isconfirm = window.confirm("프로젝트 등록을 하시겠습니까?");
         if(isconfirm){
             insertProject();
-            onHide();
         }
 
     }
@@ -120,6 +135,11 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
         try {
             const response = await ApiRequest("/boot/common/commonInsert", param);
             console.log(response);
+
+            if(response > 0) {
+                onHide();
+            }
+
         } catch (error) {
             console.error('Error fetching data', error);
         }
@@ -132,13 +152,13 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
                     result.push(
                         <div className="project-regist-content">
                             <div className="dx-fieldset">
-                                <CustomLabelValue props={labelValue.beffatPbancDdlnYmd} onSelect={handleChgState} value={data.beffatPbancDdlnYmd} readOnly={readOnly}/>
-                                <CustomLabelValue props={labelValue.expectOrderYmd} onSelect={handleChgState} value={data.expectOrderYmd} readOnly={readOnly}/>
-                                <CustomLabelValue props={labelValue.propseDdlnYmd} onSelect={handleChgState} value={data.propseDdlnYmd} readOnly={readOnly}/>
-                                <CustomLabelValue props={labelValue.propsePrsntnYmd} onSelect={handleChgState} value={data.propsePrsntnYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.beffatPbancDdlnYmd} onSelect={handleChgDate} value={data.beffatPbancDdlnYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.expectOrderYmd} onSelect={handleChgDate} value={data.expectOrderYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.propseDdlnYmd} onSelect={handleChgDate} value={data.propseDdlnYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.propsePrsntnYmd} onSelect={handleChgDate} value={data.propsePrsntnYmd} readOnly={readOnly}/>
                             </div>
                             <div className="dx-fieldset">
-                              <CustomLabelValue props={labelValue.stbleEndYmd} onSelect={handleChgState} value={data.stbleEndYmd} readOnly={readOnly}/>
+                              <CustomLabelValue props={labelValue.stbleEndYmd} onSelect={handleChgDate} value={data.stbleEndYmd} readOnly={readOnly}/>
                             </div>  
                         </div>
                     )
@@ -146,16 +166,16 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
                     result.push(
                         <div className="project-regist-content">
                             <div className="dx-fieldset">
-                                <CustomLabelValue props={labelValue.beffatPbancDdlnYmd} onSelect={handleChgState} value={data.beffatPbancDdlnYmd} readOnly={readOnly}/>
-                                <CustomLabelValue props={labelValue.expectOrderYmd} onSelect={handleChgState} value={data.expectOrderYmd} readOnly={readOnly}/>
-                                <CustomLabelValue props={labelValue.propseDdlnYmd} onSelect={handleChgState} value={data.propseDdlnYmd} readOnly={readOnly}/>
-                                <CustomLabelValue props={labelValue.propsePrsntnYmd} onSelect={handleChgState} value={data.propsePrsntnYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.beffatPbancDdlnYmd} onSelect={handleChgDate} value={data.beffatPbancDdlnYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.expectOrderYmd} onSelect={handleChgDate} value={data.expectOrderYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.propseDdlnYmd} onSelect={handleChgDate} value={data.propseDdlnYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.propsePrsntnYmd} onSelect={handleChgDate} value={data.propsePrsntnYmd} readOnly={readOnly}/>
                             </div>
                             <div className="dx-fieldset">
-                                <CustomLabelValue props={labelValue.ctrtYmd} onSelect={handleChgState} value={data.ctrtYmd} readOnly={readOnly}/>
-                                <CustomLabelValue props={labelValue.bizEndYmd} onSelect={handleChgState} value={data.bizEndYmd} readOnly={readOnly}/>
-                                <CustomLabelValue props={labelValue.stbleEndYmd} onSelect={handleChgState} value={data.stbleEndYmd} readOnly={readOnly}/>
-                                <CustomLabelValue props={labelValue.igiYmd} onSelect={handleChgState} value={data.igiYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.ctrtYmd} onSelect={handleChgDate} value={data.ctrtYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.bizEndYmd} onSelect={handleChgDate} value={data.bizEndYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.stbleEndYmd} onSelect={handleChgDate} value={data.stbleEndYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.igiYmd} onSelect={handleChgDate} value={data.igiYmd} readOnly={readOnly}/>
                             </div>  
                         </div>
                     )
@@ -163,9 +183,9 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
                     result.push(
                         <div className="project-regist-content">
                             <div className="dx-fieldset">
-                                <CustomLabelValue props={labelValue.ctrtYmd} onSelect={handleChgState} value={data.ctrtYmd} readOnly={readOnly}/>
-                                <CustomLabelValue props={labelValue.stbleEndYmd} onSelect={handleChgState} value={data.stbleEndYmd} readOnly={readOnly}/>
-                                <CustomLabelValue props={labelValue.bizEndYmd} onSelect={handleChgState} value={data.bizEndYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.ctrtYmd} onSelect={handleChgDate} value={data.ctrtYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.stbleEndYmd} onSelect={handleChgDate} value={data.stbleEndYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.bizEndYmd} onSelect={handleChgDate} value={data.bizEndYmd} readOnly={readOnly}/>
                             </div>
                         </div>
                     )
