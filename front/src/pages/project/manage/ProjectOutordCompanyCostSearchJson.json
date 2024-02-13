@@ -1,0 +1,27 @@
+{
+  "menuName": "MatalCost",
+  "queryId": "projectMapper.retrievePrjctList",
+  "keyColumn": "prjctId",
+  "tableColumns": [
+    { "key": "prjctStleCd", "value": "번호" },
+    { "key": "bizFlfmtTyCd", "value": "회사명" },
+    { "key": "prjctNm", "value": "업무내용" },
+    { "key": "cntrctamount", "value": "배정예산" },
+    { "key": "totalItems", "value": "누적지급액" },
+    { "key": "rownum", "value": "잔여액" }
+  ],
+  "summaryColumn": [
+    {
+      "key": "totalItems",
+      "value": "누적사용",
+      "type": "max",
+      "format": "Total: {0}원"
+    },
+    {
+      "key": "rownum",
+      "value": "가용",
+      "type": "sum",
+      "format": "Total: {0}원"
+    }
+  ]
+}
