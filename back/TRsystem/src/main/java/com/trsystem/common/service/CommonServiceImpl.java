@@ -248,6 +248,7 @@ public class CommonServiceImpl implements CommonService {
             // for 루프에서 값을 바인딩
             for (int i = 0; i < params.size(); i++) {
                 if(params.get(i) == ""){
+                	System.out.println(params.get(i));
                     continue;
                 }
                 if (params.get(i) instanceof String) {
