@@ -8,8 +8,6 @@ import CustomLabelValue from "../../../components/unit/CustomLabelValue"
 import Button from "devextreme-react/button";
 
 import { useCookies } from "react-cookie";
-import axios from "axios";
-import { te } from "date-fns/locale";
 
 const ProjectRegist = ({prjctId, onHide, revise}) => {
     const {labelValue} = ProjectRegistJson;
