@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { DateBox } from "devextreme-react/date-box";
 import Box, {Item} from "devextreme-react/box";
 
-const CustomDatePicker = ({ onStartDateChange, onEndDateChange }) => {
+const CustomDateRangeBox = ({ onStartDateChange, onEndDateChange }) => {
   const [selectedStartDate, setSelectedStartDate] = useState(null);
   const [selectedEndDate, setSelectedEndDate] = useState(null);
 
@@ -72,4 +72,4 @@ const CustomDatePicker = ({ onStartDateChange, onEndDateChange }) => {
   );
 };
 
-export default React.memo(CustomDatePicker);
+export default React.memo(CustomDateRangeBox);
