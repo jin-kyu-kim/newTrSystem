@@ -31,6 +31,7 @@ const CustomComboBox = ({props, onSelect, placeholder, value, readOnly}) => {
 
     return (
         <SelectBox
+            key={props.label}
             dataSource={values}
             valueExpr={props.valueExpr}
             displayExpr={props.displayExpr}
