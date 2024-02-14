@@ -1,23 +1,51 @@
 {
-  "menuName": "ProjectOutordEmpCostJson",
-  "keyColumn": "outordEmpId",
-  "tableColumns": [
-    { "key": "", "value": "상태" },
-    { "key": "outordEmpId", "value": "성명" },
-    { "key": "hnfRoleCdNm", "value": "역할" },
-    { "key": "hnfGradCd", "value": "등급" },
-    { "key": "tkcgJob", "value": "담당업무" },
-    { "key": "inptPrnmntYmd", "value": "투입예정일" },
-    { "key": "withdrPrnmntYmd", "value": "철수에정일" },
-    { "key": "untpc", "value": "총 금액" },
-    { "key": "", "value": "총 투입 MM" }
-  ],
-  "summaryColumn": [
+	"menuName": "ProjectOutordEmpCostJson",
+    "keyColumn": "outordEmpId",
+    "tableColumns": 
+	[
+        {"key": "" ,"value": "상태"},
+        {"key": "outordEmpId", "value": "성명"},
+        {"key": "hnfRoleCdNm", "value": "역할"},
+        {"key": "hnfGradCd", "value": "등급"},
+        {"key": "tkcgJob", "value": "담당업무"},     
+        {"key": "inptPrnmntYmd", "value": "투입예정일"},
+        {"key": "withdrPrnmntYmd", "value": "철수에정일"},
+        {"key": "untpc", "value": "총 금액"},
+        {"key": "", "value": "총 투입 MM"}
+
+	],
+    "summaryColumn":
+    [
+        { "key": "untpc", "value": "총 금액", "type":"sum", "format":"Total: {0}원"}
+    ],
+    "popup":
     {
-      "key": "untpc",
-      "value": "총 금액",
-      "type": "sum",
-      "format": "Total: {0}원"
-    }
-  ]
+        "width": "90%",
+        "height": "60%",
+        "title": "외주인력"
+    },
+    "labelValue" : {
+        "expensCdNm": {
+            "name": "expensCdNm",
+            "type": "ComboBox",
+            "label": "비용코드명",
+            "required": true,
+            "placeholder": "비용코드명"
+        },
+        "dtlDtls": {
+            "name": "dtlDtls",
+            "type": "TextBox",
+            "label": "상세내역",
+            "required": true,
+            "placeholder": "상세내역"
+        },
+        "bgtMngOdr": {
+            "name": "bgtMngOdr",
+            "type": "NumberBox",
+            "label": "총금액",
+            "required": true,
+            "placeholder": "총금액"
+        }
+    }   
+
 }

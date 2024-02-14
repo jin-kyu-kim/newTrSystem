@@ -8,11 +8,12 @@ const CustomLabelValue = ({props, onSelect, value, readOnly}) => {
 
     const placeholder = props.placeholder
 
-    const test = () => {
+    const labelValue = () => {
         const result = [];
         if(props.type === "TextBox") {
             result.push(
                 <TextBox
+                    key={props.label}
                     placeholder={placeholder}
                     showClearButton={true}
                     value={value}
@@ -69,7 +70,7 @@ const CustomLabelValue = ({props, onSelect, value, readOnly}) => {
             <div className="dx-field-label">{props.label}</div>
             }
             <div className="dx-field-value">
-                {test()}
+                {labelValue()}
             </div>
         </div>
     );

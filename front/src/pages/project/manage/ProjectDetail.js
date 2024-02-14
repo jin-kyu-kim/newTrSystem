@@ -2,6 +2,7 @@ import React, { useCallback, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { TabPanel } from "devextreme-react";
 import { useLocation } from "react-router-dom";
+import ApiRequest from "../../../utils/ApiRequest";
 
 import ProjectDetailJson from "./ProjectDetailJson.json";
 
@@ -14,6 +15,8 @@ const ProjectDetail = () => {
   const navigate = useNavigate ();
   const location = useLocation();
   const prjctId = location.state.id;
+  const totBgt = location.state.totBgt;
+  const bgtMngOdr = location.state.bgtMngOdr;
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const ProjectDetail = ProjectDetailJson;
@@ -29,6 +32,38 @@ const ProjectDetail = () => {
   );
   
   const itemTitleRender = (a) => <span>{a.TabName}</span>;
+
+  const projectChgHandle = () => {
+    const isconfirm = window.confirm("프로젝트 변경을 진행하시겠습니까?");
+    if(isconfirm){
+      addTest();
+
+      navigate("../project/ProjectChange",
+        {
+        state: { prjctId: prjctId },
+        })
+    }
+  }
+
+  const addTest = async () => {
+    const date = new Date();
+
+    const param = [ 
+      { tbNm: "PRJCT_BGT_PRMPC" },
+      { 
+        prjctId: prjctId,
+        totAltmntBgt: totBgt,
+        bgtMngOdr: bgtMngOdr,
+        atrzDmndSttsCd: "VTW03301",
+        regDt : date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0]
+      }, 
+    ]; 
+    try {
+        const response = await ApiRequest("/boot/prjct/insertProjectCostChg", param);
+    } catch (error) {
+        console.error('Error fetching data', error);
+    }
+  }
 
   return (
     <div>
@@ -49,16 +84,7 @@ const ProjectDetail = () => {
           type="default"
           stylingMode="contained"
           style={{ margin: "2px" }}
-          onClick={(e)=>{
-            const isconfirm = window.confirm("프로젝트 변경을 진행하시겠습니까?");
-            if(isconfirm){
-            navigate("../project/ProjectChange",
-              {
-              state: { prjctId: prjctId },
-              })
-            }
-          }
-      }
+          onClick={projectChgHandle}
         >
           변경원가
         </Button>

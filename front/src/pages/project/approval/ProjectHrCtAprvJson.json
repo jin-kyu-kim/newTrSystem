@@ -17,6 +17,7 @@
     "searchParams":
 	{
         "prjctMngrEmpIdItem": false,
-        "insertBtnItem": false
+        "insertBtnItem": false,
+        "popupVisible" : false
     }
 }

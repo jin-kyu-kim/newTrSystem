@@ -35,4 +35,35 @@ public class ProjectBaseController {
     public Map<String, Object> insertExpensPrmpc(@RequestBody List<Map<String, Object>> expensPrmpc) {
         return null;
     }
+    
+    //프로젝트 관리 변경원가 등록 시 프로젝트예산원가 생성 
+    @PostMapping(value = "/boot/prjct/insertProjectCostChg")
+    public int insertProjectCostChg(@RequestBody List<Map<String, Object>> params) {
+    	
+    	// 예산관리 차수 채번
+    	int bgtMngOdr = ProjectBaseDomain.retrieveBgtMngOdr(params);
+    	
+    	// 예산관리 차수 채번 실패 시
+    	if(bgtMngOdr == -1) return -1;
+    	
+    	return ProjectBaseDomain.insertProjectCostChg(params, bgtMngOdr);
+    }
+    
+    
+    @PostMapping(value = "/boot/prjct/insertRegistProjectAprv")
+    public int insertRegistProjectAprv(@RequestBody List<Map<String, Object>> params) {
+    	// front로 부터 받은 params -> 기초적인 정보들 (ex. prjctId, regDt 등)
+    	//조회 로직을 하나 추가하여, 프로젝트 결재선 테이블에 넣을 값들을 조회한 뒤 insert 메소드에 매개변수로 함께 넘겨준다.
+    	
+    	/*
+    	List<Map<String, Object>> empIdParams = new ArrayList<>();
+    	empIdParams = ProjectBaseDomain.retrieveRegEmpId(params.get(1));
+    	
+    	System.out.println(params);
+    	return ProjectBaseDomain.insertRegistProjectAprv(params, empIdParams);
+    	*/
+    	
+    	return ProjectBaseDomain.insertRegistProjectAprv(params);
+    }
+    
 }

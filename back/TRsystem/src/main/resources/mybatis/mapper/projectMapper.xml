@@ -10,13 +10,15 @@
         , (SELECT CD_NM FROM CD WHERE CD_VALUE = PRJCT_STLE_CD) AS PRJCT_STLE_CD
         , PRJCT_ID
         , PRJCT_NM
-        , (SELECT CD_NM FROM CD WHERE CD_VALUE = BIZ_FLFMT_TY_CD) AS BIZ_FLFMT_TY_CD
+        , (SELECT CD_NM FROM CD WHERE CD_VALUE = BIZ_STTS_CD) AS BIZ_STTS_CD
         , (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = PRJCT_MNGR_EMP_ID ) AS PRJCT_MNGR_EMP_ID
         , CTMMNY_NO
         , CTRT_YMD
         , BIZ_END_YMD
+        , TOT_BGT
+        , (SELECT MAX(BGT_MNG_ODR) FROM PRJCT_BGT_PRMPC pbp WHERE pbp.PRJCT_ID = p.PRJCT_ID) AS BGT_MNG_ODR
         , COUNT(*) OVER () AS TOTAL_ITEMS
-     FROM PRJCT
+     FROM PRJCT p
     WHERE 1=1
         <if test="prjctStleCd != null and !prjctStleCd.equals('')">
       AND PRJCT_STLE_CD = #{prjctStleCd}
@@ -38,22 +40,26 @@
       AND CTRT_YMD BETWEEN #{ctrtYmd} AND #{bizEndYmd}
             </if>
         </if>
+    ORDER BY REG_DT DESC
     </select>
     
     <select id="retrievePrjctAprvList" parameterType="map" resultType="com.trsystem.LowerHashMap">
-    SELECT
-          ROW_NUMBER()OVER ()ROWNUM
-        , (SELECT CD_NM FROM CD WHERE CD_VALUE = PRJCT_STLE_CD) AS PRJCT_STLE_CD
-        , PRJCT_ID
-        , PRJCT_NM
-        , (SELECT CD_NM FROM CD WHERE CD_VALUE = BIZ_FLFMT_TY_CD) AS BIZ_FLFMT_TY_CD
-        , (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = PRJCT_MNGR_EMP_ID ) AS PRJCT_MNGR_EMP_ID
-        , CTMMNY_NO
-        , CTRT_YMD
-        , BIZ_END_YMD
-        , COUNT(*) OVER () AS TOTAL_ITEMS
-     FROM PRJCT
+	SELECT          
+		   ROW_NUMBER()OVER ()ROWNUM
+	       , A.PRJCT_ID
+	       , PRJCT_NM
+	       , BIZ_FLFMT_TY_CD
+	       , (SELECT CD_NM FROM CD WHERE CD_VALUE = B.ATRZ_STEP_CD) AS ATRZ_STEP_CD
+	       , (SELECT CD_NM FROM CD WHERE CD_VALUE = B.ATRZ_STTS_CD) AS ATRZ_STTS_CD        
+	       , (SELECT CD_NM FROM CD WHERE CD_VALUE = BIZ_FLFMT_TY_CD) AS BIZ_FLFMT_TY_CD
+	       , (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = PRJCT_MNGR_EMP_ID ) AS PRJCT_MNGR_EMP_ID
+	       , B.APRV_YMD
+	       , B.RJCT_YMD
+	       , COUNT(*) OVER () AS TOTAL_ITEMS
+	  FROM PRJCT A
+	  JOIN PRJCT_ATRZ_LN B ON (A.PRJCT_ID = B.PRJCT_ID)
     WHERE 1=1
+      AND B.APRVR_EMP_ID = #{empId}
         <if test="prjctStleCd != null and !prjctStleCd.equals('')">
       AND PRJCT_STLE_CD = #{prjctStleCd}
         </if>
@@ -139,7 +145,7 @@
             </if>
         </if>
     </select>
-
+  
     <select id="retrieveProjectOutordEmpCostSearch" parameterType="map" resultType="com.trsystem.LowerHashMap">
     SELECT T1.*
              , IFNULL(T2.GIVE_CT, 0) AS GIVE_CT
@@ -377,5 +383,16 @@
                  LEFT OUTER JOIN EXPENS_EXCN T2
                                  ON T1.PRJCT_ID = T2.PRJCT_ID
                                      AND T1.EXPENS_CD = T2.EXPENS_CD
+      </select>
+<select id="retrieveBgtMngOdr" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT MAX(BGT_MNG_ODR) AS BGT_MNG_ODR
+        FROM PRJCT_BGT_PRMPC
+       WHERE 1=1
+       	 AND ATRZ_DMND_STTS_CD = 'VTW03301'
+        <if test="prjctId != null">
+            <if test="!prjctId.equals('')">
+                AND PRJCT_ID = #{prjctId}
+            </if>
+        </if>
     </select>
 </mapper>

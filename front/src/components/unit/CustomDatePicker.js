@@ -1,7 +1,7 @@
 import { DateBox } from "devextreme-react/date-box";
 
 
-const CustomDatePicker2 = ({ onSelect, placeholder, value, name, readOnly }) => {
+const CustomDatePicker = ({ onSelect, placeholder, value, name, readOnly }) => {
     
     
     return (
@@ -18,4 +18,4 @@ const CustomDatePicker2 = ({ onSelect, placeholder, value, name, readOnly }) => 
         />
     );
 }
-export default CustomDatePicker2;
+export default CustomDatePicker;

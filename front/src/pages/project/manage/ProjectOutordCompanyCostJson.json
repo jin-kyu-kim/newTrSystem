@@ -18,6 +18,77 @@
     "summaryColumn":
     [
         { "key": "bgtMngOdr", "value": "총 금액", "type":"sum", "format":"Total: {0}원"}
-    ]
+    ],
+    "popup":
+    {
+        "width": "90%",
+        "height": "80%",
+        "title": "외주업체"
+    },
+    "labelValue" : {
+        "outordEntrpsId": {
+            "name": "outordEntrpsId",
+            "type": "TextBox",
+            "label": "업체명",
+            "required": true,
+            "placeholder": "업체명"
+        },
+        "temp": {
+            "name": "temp",
+            "type": "ComboBox",
+            "label": "역할",
+            "required": true,
+            "placeholder": "역할"
+        },
+        "temp1": {
+            "name": "temp1",
+            "type": "ComboBox",
+            "label": "등급",
+            "required": true,
+            "placeholder": "등급"
+        },
+        "tkcgJob": {
+            "name": "tkcgJob",
+            "type": "TextBox",
+            "label": "담당업무",
+            "required": true,
+            "placeholder": "담당업무"
+        },
+        "temp2": {
+            "name": "temp",
+            "type": "NumberBox",
+            "label": "투입인원",
+            "required": true,
+            "placeholder": "투입인원"
+        },
+        "temp3": {
+            "name": "temp",
+            "type": "NumberBox",
+            "label": "단가",
+            "required": true,
+            "placeholder": "단가"
+        },
+        "bgtMngOdr": {
+            "name": "bgtMngOdr",
+            "type": "NumberBox",
+            "label": "총 금액",
+            "required": true,
+            "placeholder": "총 금액"
+        },
+        "temp4": {
+            "name": "bgtMngOdr",
+            "type": "NumberBox",
+            "label": "투입예정일",
+            "required": true,
+            "placeholder": "투입예정일"
+        },
+        "temp5": {
+            "name": "bgtMngOdr",
+            "type": "NumberBox",
+            "label": "철수에정일",
+            "required": true,
+            "placeholder": "철수에정일"
+        }
+    }
 
 }

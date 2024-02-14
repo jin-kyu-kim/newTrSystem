@@ -11,7 +11,7 @@ import AutoCompleteProject from "../unit/AutoCompleteProject";
 import ProjectRegist from "../../pages/project/manage/ProjectRegist";
 import CustomPopup from "../unit/CustomPopup"
 
-const SearchPrjctSet = ({ callBack, props, popup}) => {
+const SearchPrjctSet = ({ callBack, props, popup }) => {
   const [initParam, setInitParam] = useState({
     prjctStleCd: "",
     prjctId: "",
@@ -75,6 +75,7 @@ const SearchPrjctSet = ({ callBack, props, popup}) => {
   };
 
   const onHide = () => {
+    callBack(initParam);
     setPopupVisible(false);
   }
 
@@ -142,9 +143,12 @@ const SearchPrjctSet = ({ callBack, props, popup}) => {
           <Button text="등록" onClick={onClickInsertBtn} />
         </Item>
       </Box>
-      <CustomPopup props={popup} visible={popupVisible} handleClose={handleClose}>
-        <ProjectRegist onHide={onHide}/>
-      </CustomPopup>
+      {popup ?
+        <CustomPopup props={popup} visible={popupVisible} handleClose={handleClose}>
+          <ProjectRegist onHide={onHide}/> 
+        </CustomPopup>
+        : <></>
+      }
     </div>
   );
 };

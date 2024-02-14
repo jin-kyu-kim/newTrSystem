@@ -6,27 +6,32 @@ import CustomCostTable from "components/unit/CustomCostTable";
 import Box, { Item } from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
 
-const ProjectGeneralBudgetCost = ({ prjctId }) => {
+const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd }) => {
   const [values, setValues] = useState([]);
-  const { manuName, tableColumns, keyColumn, summaryColumn } = ProjectGeneralBudgetCostJson;
+  const [popupVisible, setPopupVisible] = useState(false);
 
   const param = [
     { tbNm: "EXPENS_PRMPC" },
-    { prjctId: "d343ff40-b4df-11ee-b259-000c2956283f" }, //TODO. prjctId를 받아와야함 (테스트중 임시값)
+    { prjctId: prjctId }, 
   ];
 
   useEffect(() => {
-    Cnsrtm();
+    GeneralBudget();
   }, []);
 
-  const Cnsrtm = async () => {
+  const GeneralBudget = async () => {
     try {
       const response = await ApiRequest("/boot/common/commonSelect", param);
       setValues(response);
+      console.log("response",response);
     } catch (error) {
       console.error(error);
     }
   };
+
+  const onHide = () => {
+    setPopupVisible(false);
+  }
 
   return (
     <>
@@ -50,12 +55,17 @@ const ProjectGeneralBudgetCost = ({ prjctId }) => {
               검색 (비용코드, 상세내역 등 다양하게 검색가능)
             </p>
             <CustomCostTable
-              keyColumn={keyColumn}
-              manuName={manuName}
-              columns={tableColumns}
+              keyColumn={ProjectGeneralBudgetCostJson.keyColumn}
+              manuName={ProjectGeneralBudgetCostJson.manuName}
+              columns={ProjectGeneralBudgetCostJson.tableColumns}
+              popup={ProjectGeneralBudgetCostJson.popup}
+              summaryColumn={ProjectGeneralBudgetCostJson.summaryColumn}
+              costTableInfoJson={ProjectGeneralBudgetCostJson}
               values={values}
               prjctId={prjctId}
-              summaryColumn={summaryColumn}
+              ctrtYmd={ctrtYmd}
+              bizEndYmd={bizEndYmd}
+              onHide={onHide}
             />
           </div>
         </div>
