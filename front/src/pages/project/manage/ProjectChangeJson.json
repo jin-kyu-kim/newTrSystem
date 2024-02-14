@@ -1,4 +1,6 @@
-[
+{
+  "tab":
+  [
     {
       "TabName": "프로젝트",
       "tabId": "ProjectRegist",
@@ -53,5 +55,13 @@
         "url": "./ProjectChangeIngredientCost",
         "index" : 8
     }
-  ]
+  ],
+  "popup":
+  {
+      "width": "30%",
+      "height": "40%",
+      "title": "* 승인요청"
+  }
+}
+  
   

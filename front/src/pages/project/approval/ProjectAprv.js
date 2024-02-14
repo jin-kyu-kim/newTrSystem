@@ -6,6 +6,9 @@ import SearchPrjctSet from "../../../components/composite/SearchPrjctSet";
 import CustomTable from "../../../components/unit/CustomTable";
 
 import "react-datepicker/dist/react-datepicker.css";
+import { useNavigate } from "react-router-dom";
+
+import { useCookies } from "react-cookie";
 
 const ProjectAprv = () => {
   const [values, setValues] = useState([]);
@@ -16,7 +19,11 @@ const ProjectAprv = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
 
+  const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
+
   const {keyColumn, queryId, tableColumns, searchParams} = ProjectJson; 
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
@@ -30,31 +37,11 @@ const ProjectAprv = () => {
     setCurrentPage(1);
     setParam({
       ...initParam,
+      empId: cookies.userInfo.empId,
       queryId: queryId,
       currentPage: currentPage,
       startVal: 0,
       pageSize: pageSize,
-    });
-  };
-  // 폐이징 할때
-  const handlePageChange = (newPage) => {
-    setCurrentPage(newPage);
-    setParam({
-      ...param,
-      currentPage: newPage * 1,
-      startVal: (newPage - 1) * pageSize,
-    });
-  };
-
-  // 페이지 사이즈 변경
-  const handlePageSizeChange = (e) => {
-    console.log(e)
-    setPageSize(e.value * 1);
-    setParam({
-        ...param,
-        currentPage: 1,
-        startVal: 0,
-        pageSize: e.value * 1,
     });
   };
 
@@ -73,8 +60,8 @@ const ProjectAprv = () => {
     }
   };
 
-  const onRowDblClick = () => {
-    
+  const onRowDblClick = (e) => {
+  
   }
 
 
