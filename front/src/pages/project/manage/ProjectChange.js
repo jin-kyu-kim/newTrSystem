@@ -40,7 +40,6 @@ const ProjectChange = () => {
   const itemTitleRender = (a) => <span>{a.TabName}</span>;
  
   const onPopup = () => {
-    console.log("팝업");
     setPopupVisible(true);
   }
 
@@ -51,12 +50,9 @@ const ProjectChange = () => {
   const onSubmit = () => {
     handleSubmit();
     setPopupVisible(false);
-    console.log("prjctId", prjctId)
-    console.log("empId",empId)
   }
 
   const handleSubmit = async () => {
-    console.log("승인요청");
     const date = new Date();
     const param = [
       { tbNm: "PRJCT_ATRZ_LN"},
@@ -69,7 +65,6 @@ const ProjectChange = () => {
     ];
     try {
       const response = await ApiRequest("/boot/prjct/insertRegistProjectAprv", param);
-      console.log(response);
 
     } catch (error) {
       console.error('Error fetching data', error);

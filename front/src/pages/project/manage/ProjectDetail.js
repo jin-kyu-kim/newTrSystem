@@ -17,7 +17,6 @@ const ProjectDetail = () => {
   const prjctId = location.state.id;
   const totBgt = location.state.totBgt;
   const bgtMngOdr = location.state.bgtMngOdr;
-  console.log(bgtMngOdr);
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const ProjectDetail = ProjectDetailJson;
@@ -61,7 +60,6 @@ const ProjectDetail = () => {
     ]; 
     try {
         const response = await ApiRequest("/boot/prjct/insertProjectCostChg", param);
-        console.log(response);
     } catch (error) {
         console.error('Error fetching data', error);
     }
