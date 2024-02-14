@@ -16,6 +16,8 @@ import ApiRequest from "utils/ApiRequest";
 const ProjectChange = () => {
   const location = useLocation();
   const prjctId = location.state ? location.state.prjctId : null;
+  const ctrtYmd = location.state ? location.state.ctrtYmd : null;
+  const bizEndYmd = location.state ? location.state.bizEndYmd : null;
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const ProjectChangeTab = ProjectChangeJson.tab;
@@ -107,6 +109,8 @@ const ProjectChange = () => {
             <Suspense fallback={<div>Loading...</div>}>
               <Component 
               prjctId={prjctId}
+              ctrtYmd={ctrtYmd}
+              bizEndYmd={bizEndYmd}
               revise={true}
               tabId={data.tabId}
               />
