@@ -7,11 +7,11 @@
     { "key": "rownum", "value": "번호" },
     { "key": "bizFlfmtTyCd", "value": "유형" },
     { "key": "prjctNm", "value": "프로젝트 명", "alignment" : "left" },
-    { "key": "", "value": "단계", "alignment" : "left" },
-    { "key": "bizSttsCd", "value": "상태", "alignment" : "left" },
+    { "key": "atrzStepCd", "value": "단계", "alignment" : "left" },
+    { "key": "atrzSttsCd", "value": "상태", "alignment" : "left" },
     { "key": "prjctMngrEmpId", "value": "기안자", "alignment" : "left" },
-    { "key": "atrzDmndSttsCd", "value": "승인일자", "alignment" : "left" },
-    { "key": "", "value": "반려일자", "alignment" : "left" }
+    { "key": "aprvYmd", "value": "승인일자", "alignment" : "left" },
+    { "key": "rjctYmd", "value": "반려일자", "alignment" : "left" }
 	],
     "searchParams":
 	{
