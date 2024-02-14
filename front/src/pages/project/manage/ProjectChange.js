@@ -1,18 +1,32 @@
-import React, { useCallback, useState, Suspense, lazy } from "react";
+import React, { useCallback, useState, Suspense, lazy, useMemo } from "react";
 import { TabPanel } from "devextreme-react";
 import { useLocation } from "react-router-dom";
 import { Button } from "devextreme-react/button";
+import TextArea from "devextreme-react/text-area";
+import ToolbarItem from "devextreme-react/popup";
 
 import ProjectChangeJson from "./ProjectChangeJson.json";
 
 import LinkButton from "../../../components/unit/LinkButton.js";
+import CustomPopup from "../../../components/unit/CustomPopup";
+
+import { useCookies } from "react-cookie";
+import ApiRequest from "utils/ApiRequest";
 
 const ProjectChange = () => {
   const location = useLocation();
   const prjctId = location.state ? location.state.prjctId : null;
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const ProjectChange = ProjectChangeJson;
+  const ProjectChangeTab = ProjectChangeJson.tab;
+  const popup = ProjectChangeJson.popup;
+
+  const [popupVisible, setPopupVisible] = useState(false);
+
+  const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
+  const empId = cookies.userInfo.empId;
+  const deptId = cookies.userInfo.deptId;
+
 
   // 탭 변경시 인덱스 설정
   const onSelectionChanged = useCallback(
@@ -25,6 +39,42 @@ const ProjectChange = () => {
 
   const itemTitleRender = (a) => <span>{a.TabName}</span>;
  
+  const onPopup = () => {
+    console.log("팝업");
+    setPopupVisible(true);
+  }
+
+  const handleClose = () => {
+    setPopupVisible(false);
+  };
+
+  const onSubmit = () => {
+    handleSubmit();
+    setPopupVisible(false);
+    console.log("prjctId", prjctId)
+    console.log("empId",empId)
+  }
+
+  const handleSubmit = async () => {
+    console.log("승인요청");
+    const date = new Date();
+    const param = [
+      { tbNm: "PRJCT_ATRZ_LN"},
+      { 
+        prjctId: prjctId,
+        empId: empId,
+        deptId: deptId,
+        regDt : date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0],
+      },
+    ];
+    try {
+      const response = await ApiRequest("/boot/prjct/insertRegistProjectAprv", param);
+      console.log(response);
+
+    } catch (error) {
+      console.error('Error fetching data', error);
+    }
+  }
 
   return (
     <div>
@@ -37,7 +87,7 @@ const ProjectChange = () => {
         </div>
       </div>
       <div className="buttons" align="right" style={{ margin: "20px" }}>
-        <Button>승인요청</Button>
+        <Button onClick={onPopup}>승인요청</Button>
         <LinkButton location={-1} name={"이전"} type={"normal"} />
       </div>
       <div
@@ -51,7 +101,7 @@ const ProjectChange = () => {
         <TabPanel
           height="auto"
           width="auto"
-          dataSource={ProjectChange}
+          dataSource={ProjectChangeTab}
           selectedIndex={selectedIndex}
           onOptionChanged={onSelectionChanged}
           itemTitleRender={itemTitleRender}
@@ -71,6 +121,11 @@ const ProjectChange = () => {
         }}
         />
       </div>
+      <CustomPopup props={popup} visible={popupVisible} handleClose={handleClose}>
+        <TextArea height="50%"/>
+        <Button text="승인요청" onClick={onSubmit}/>
+        <Button text="취소" onClick={handleClose}/>
+      </CustomPopup>
     </div>
   );
 };
