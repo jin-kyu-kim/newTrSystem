@@ -1,0 +1,81 @@
+[
+  {
+    "caption": "성명",
+    "width": 120,
+    "dataField": "outordEmpId",
+    "area": "row",
+    "showTotals": false,
+    "expanded": true
+  },
+  {
+    "caption": "역할",
+    "dataField": "hnfRoleNm",
+    "width": 100,
+    "area": "row",
+    "expanded": true,
+    "showTotals": false
+  },
+  {
+    "caption": "등급",
+    "dataField": "hnfGradNm",
+    "width": 100,
+    "area": "row",
+    "expanded": true,
+    "showTotals": false
+  },
+  {
+    "caption": "담당업무",
+    "dataField": "tkcgJob",
+    "width": 100,
+    "area": "row",
+    "expanded": true,
+    "showTotals": false
+  },
+  {
+    "caption": "투입예정일",
+    "dataField": "inptPrnmntYmd",
+    "width": 100,
+    "area": "row",
+    "expanded": true,
+    "showTotals": false
+  },
+  {
+    "caption": "철수예정일",
+    "dataField": "withdrPrnmntYmd",
+    "width": 100,
+    "area": "row",
+    "expanded": true,
+    "showTotals": false
+  },
+  {
+    "caption": "단가",
+    "dataField": "untpc",
+    "width": 100,
+    "area": "row",
+    "expanded": true,
+    "showTotals": false
+  },
+  {
+    "caption": " ",
+    "dataField": "flag",
+    "area": "row",
+    "expanded": true,
+    "showTotals": false
+  },
+  {
+    "dataField": "inptYm",
+    "dataType": "inptYm",
+    "format": "YYYY-mm",
+    "groupInterval": "year",
+    "area": "column",
+    "showTotals": false,
+    "expanded": true
+  },
+  {
+    "caption": "Total",
+    "dataField": "mm",
+    "dataType": "number",
+    "summaryType": "sum",
+    "area": "data"
+  }
+]

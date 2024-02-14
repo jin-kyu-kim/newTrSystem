@@ -1,0 +1,41 @@
+[
+  {
+    "caption": "비용코드",
+    "width": 120,
+    "dataField": "expensNm",
+    "area": "row",
+    "expanded": true,
+    "showTotals": false
+  },
+  {
+    "caption": "상세내용",
+    "dataField": "dtlDtls",
+    "width": 200,
+    "area": "row",
+    "expanded": true,
+    "showTotals": false
+  },
+  {
+    "caption": " ",
+    "dataField": "flag",
+    "width": 100,
+    "area": "row",
+    "expanded": true,
+    "showTotals": false
+  },
+  {
+    "dataField": "useYm",
+    "dataType": "inptYm",
+    "groupInterval": "year",
+    "area": "column",
+    "showTotals": true,
+    "expanded": true
+  },
+  {
+    "caption": "Total",
+    "dataField": "expensCt",
+    "dataType": "number",
+    "summaryType": "sum",
+    "area": "data"
+  }
+]

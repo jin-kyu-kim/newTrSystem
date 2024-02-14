@@ -4,14 +4,13 @@ import ApiRequest from "../../../utils/ApiRequest";
 import CustomTable from "../../../components/unit/CustomTable";
 import MatalCostJson from "./MatalCostJson.json";
 
-const MatalCost = ({ prjctId }) => {
+const ProjectOutordCompanyCostSearch = (prjctId) => {
   const { keyColumn, queryId, tableColumns, summaryColumn } = MatalCostJson;
   const [values, setValues] = useState([]);
 
   useEffect(() => {
     const param = {
       queryId: queryId,
-      prjctId: prjctId,
     };
     const SetData = async () => {
       try {
@@ -40,4 +39,4 @@ const MatalCost = ({ prjctId }) => {
   );
 };
 
-export default MatalCost;
+export default ProjectOutordCompanyCostSearch;

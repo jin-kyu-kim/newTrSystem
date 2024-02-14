@@ -42,7 +42,7 @@
         </if>
     ORDER BY REG_DT DESC
     </select>
-
+    
     <select id="retrievePrjctAprvList" parameterType="map" resultType="com.trsystem.LowerHashMap">
 	SELECT          
 		   ROW_NUMBER()OVER ()ROWNUM
@@ -113,6 +113,7 @@
              FROM DUAL
             ) T
     </select>
+
     <select id="retrieveprojectEmpCostSearch" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT A.PRJCT_ID
              , A.EMP_ID
@@ -128,10 +129,11 @@
              , A.WITHDR_PRNMNT_YMD
              , B.INPT_YM
              , B.EXPECT_MM
-        FROM MMNY_LBRCO_PRMPC A , MMNY_INPT_MM B
-       WHERE A.PRJCT_ID = B.PRJCT_ID
-         AND A.BGT_MNG_ODR AND B.BGT_MNG_ODR
-         AND A.EMP_ID = B.EMP_ID
+        FROM MMNY_LBRCO_PRMPC A
+           , MMNY_INPT_MM B
+        WHERE A.PRJCT_ID = B.PRJCT_ID
+        AND A.BGT_MNG_ODR AND B.BGT_MNG_ODR
+        AND A.EMP_ID = B.EMP_ID
         <if test="prjctId != null">
             <if test="!prjctId.equals('')">
                 AND A.PRJCT_ID = #{prjctId}
@@ -143,8 +145,246 @@
             </if>
         </if>
     </select>
-    
-    <select id="retrieveBgtMngOdr" parameterType="map" resultType="com.trsystem.LowerHashMap">
+  
+    <select id="retrieveProjectOutordEmpCostSearch" parameterType="map" resultType="com.trsystem.LowerHashMap">
+    SELECT T1.*
+             , IFNULL(T2.GIVE_CT, 0) AS GIVE_CT
+             , T1.EXPECT_MM  AS MM
+             , '계획' AS FLAG
+        FROM (
+                 SELECT A.PRJCT_ID
+                      , A.OUTORD_EMP_ID
+                      , (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = A.OUTORD_EMP_ID) AS EMP_FLNM
+                      , A.HNF_ROLE_CD
+                      , (SELECT CD_NM FROM CD WHERE CD_VALUE = A.HNF_ROLE_CD) AS HNF_ROLE_NM
+                      , A.HNF_GRAD_CD
+                      , (SELECT CD_NM FROM CD WHERE CD_VALUE = A.HNF_GRAD_CD) AS HNF_GRAD_NM
+                      , A.TKCG_JOB
+                      , A.INPT_PRNMNT_YMD
+                      , A.WITHDR_PRNMNT_YMD
+                      , A.UNTPC
+                      , B.INPT_YM
+                      , EXPECT_MM
+                 FROM OUTORD_LBRCO_PRMPC A
+                    , OUTORD_LBRCO_PRMPC_DTL B
+                 WHERE A.PRJCT_ID = B.PRJCT_ID
+                   AND A.BGT_MNG_ODR = B.BGT_MNG_ODR
+                   AND A.OUTORD_EMP_ID = B.OUTORD_EMP_ID
+                <if test="prjctId != null">
+                    <if test="!prjctId.equals('')">
+                        AND A.PRJCT_ID = #{prjctId}
+                    </if>
+                </if>
+                <if test="bgtMngOdr != null">
+                    <if test="!bgtMngOdr.equals('')">
+                        AND A.BGT_MNG_ODR = #{bgtMngOdr}
+                    </if>
+                </if>
+             ) T1
+                 LEFT OUTER JOIN OUTORD_LBRCO_EXCN T2
+                                 ON T1.PRJCT_ID = T2.PRJCT_ID
+                                     AND T1.OUTORD_EMP_ID = T2.OUTORD_EMP_ID
+        UNION ALL
+        SELECT T1.*
+             , IFNULL(T2.GIVE_CT, 0) AS  GIVE_CT
+             , IFNULL(T2.MM, 0) AS MM
+             , '사용' AS FLAG
+        FROM (
+                 SELECT A.PRJCT_ID
+                      , A.OUTORD_EMP_ID
+                      , (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = A.OUTORD_EMP_ID) AS EMP_FLNM
+                      , A.HNF_ROLE_CD
+                      , (SELECT CD_NM FROM CD WHERE CD_VALUE = A.HNF_ROLE_CD) AS HNF_ROLE_NM
+                      , A.HNF_GRAD_CD
+                      , (SELECT CD_NM FROM CD WHERE CD_VALUE = A.HNF_GRAD_CD) AS HNF_GRAD_NM
+                      , A.TKCG_JOB
+                      , A.INPT_PRNMNT_YMD
+                      , A.WITHDR_PRNMNT_YMD
+                      , A.UNTPC
+                      , B.INPT_YM
+                      , EXPECT_MM
+                 FROM OUTORD_LBRCO_PRMPC A
+                    , OUTORD_LBRCO_PRMPC_DTL B
+                 WHERE A.PRJCT_ID = B.PRJCT_ID
+                   AND A.BGT_MNG_ODR = B.BGT_MNG_ODR
+                   AND A.OUTORD_EMP_ID = B.OUTORD_EMP_ID
+                <if test="prjctId != null">
+                    <if test="!prjctId.equals('')">
+                        AND A.PRJCT_ID = #{prjctId}
+                    </if>
+                </if>
+                <if test="bgtMngOdr != null">
+                    <if test="!bgtMngOdr.equals('')">
+                        AND A.BGT_MNG_ODR = #{bgtMngOdr}
+                    </if>
+                </if>
+             ) T1
+                 LEFT OUTER JOIN OUTORD_LBRCO_EXCN T2
+                                 ON T1.PRJCT_ID = T2.PRJCT_ID
+                                     AND T1.OUTORD_EMP_ID = T2.OUTORD_EMP_ID
+        UNION ALL
+        SELECT T1.*
+             , IFNULL(T2.GIVE_CT, 0) AS GIVE_CT
+             , T1.EXPECT_MM - IFNULL(T2.MM, 0) AS mm
+             , '사용가능' AS FLAG
+        FROM (
+                 SELECT A.PRJCT_ID
+                      , A.OUTORD_EMP_ID
+                      , (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = A.OUTORD_EMP_ID) AS EMP_FLNM
+                      , A.HNF_ROLE_CD
+                      , (SELECT CD_NM FROM CD WHERE CD_VALUE = A.HNF_ROLE_CD) AS HNF_ROLE_NM
+                      , A.HNF_GRAD_CD
+                      , (SELECT CD_NM FROM CD WHERE CD_VALUE = A.HNF_GRAD_CD) AS HNF_GRAD_NM
+                      , A.TKCG_JOB
+                      , A.INPT_PRNMNT_YMD
+                      , A.WITHDR_PRNMNT_YMD
+                      , A.UNTPC
+                      , B.INPT_YM
+                      , EXPECT_MM
+                 FROM OUTORD_LBRCO_PRMPC A
+                    , OUTORD_LBRCO_PRMPC_DTL B
+                 WHERE A.PRJCT_ID = B.PRJCT_ID
+                   AND A.BGT_MNG_ODR = B.BGT_MNG_ODR
+                   AND A.OUTORD_EMP_ID = B.OUTORD_EMP_ID
+                <if test="prjctId != null">
+                    <if test="!prjctId.equals('')">
+                        AND A.PRJCT_ID = #{prjctId}
+                    </if>
+                </if>
+                <if test="bgtMngOdr != null">
+                    <if test="!bgtMngOdr.equals('')">
+                        AND A.BGT_MNG_ODR = #{bgtMngOdr}
+                    </if>
+                </if>
+             ) T1
+                 LEFT OUTER JOIN OUTORD_LBRCO_EXCN T2
+                                 ON T1.PRJCT_ID = T2.PRJCT_ID
+                                     AND T1.OUTORD_EMP_ID = T2.OUTORD_EMP_ID
+    </select>
+
+    <select id="retrievePrjctMatrlCt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+    SELECT
+          A.MATRL_CT_SN
+        , A.MATRL_CT_IEM_CD
+        , (SELECT CD_NM FROM CD WHERE CD_VALUE = A.MATRL_CT_IEM_CD) AS MATRL_CT_IEM_NM
+        , A.PRDUCT_NM
+        , A.QY
+        , A.CNTRCTAMOUNT
+        , B.QY  AS USE_AMT
+        , (A.CNTRCTAMOUNT - B.QY) AS AVAIL
+     FROM MATRL_CT_PRMPC A
+        , MATRL_CT_EXCN B
+    WHERE A.PRJCT_ID = B.PRJCT_ID
+    <if test="prjctId != null">
+        <if test="!prjctId.equals('')">
+            AND A.PRJCT_ID = #{prjctId}
+        </if>
+    </if>
+    <if test="bgtMngOdr != null">
+        <if test="!bgtMngOdr.equals('')">
+            AND A.BGT_MNG_ODR = #{bgtMngOdr}
+        </if>
+    </if>
+    </select>
+
+    <select id="retrieveProjectGeneralBudgetCostSearch" parameterType="map" resultType="com.trsystem.LowerHashMap">
+    SELECT T1.*
+             , T1.EXPECT_CT AS EXPENS_CT
+             , '예산' FLAG
+        FROM (
+                 SELECT A.PRJCT_ID, A.DTL_DTLS, A.EXPENS_CD,
+                        (SELECT CD_NM FROM CD WHERE CD_VALUE = A.EXPENS_CD) AS EXPENS_NM ,
+                        B.USE_YM, B.EXPECT_CT
+                 FROM EXPENS_PRMPC A , EXPENS_MNBY_PRMPC_DTLS B
+                 WHERE A.PRJCT_ID = B.PRJCT_ID
+                   AND A.BGT_MNG_ODR = B.BGT_MNG_ODR
+                   AND A.EXPENS_CD = B.EXPENS_CD
+                <if test="prjctId != null">
+                    <if test="!prjctId.equals('')">
+                        AND A.PRJCT_ID = #{prjctId}
+                    </if>
+                </if>
+                <if test="bgtMngOdr != null">
+                    <if test="!bgtMngOdr.equals('')">
+                        AND A.BGT_MNG_ODR = #{bgtMngOdr}
+                    </if>
+                </if>
+                <if test="!costFlag.equals('general')">
+                    AND A.EXPENS_CD BETWEEN 'VTW04501' AND 'VTW04528'
+                </if>
+                <if test="!costFlag.equals('control')">
+                    AND A.EXPENS_CD BETWEEN 'VTW04529' AND 'VTW04535'
+                </if>
+             ) T1
+                 LEFT OUTER JOIN EXPENS_EXCN T2
+                                 ON T1.PRJCT_ID = T2.PRJCT_ID
+                                     AND T1.EXPENS_CD = T2.EXPENS_CD
+        UNION ALL
+        SELECT T1.*
+             , IFNULL(T2.EXPENS_CT,0) AS EXPENS_CT
+             , '사용' FLAG
+        FROM (
+                 SELECT A.PRJCT_ID, A.DTL_DTLS, A.EXPENS_CD,
+                        (SELECT CD_NM FROM CD WHERE CD_VALUE = A.EXPENS_CD) AS EXPENS_NM ,
+                        B.USE_YM, B.EXPECT_CT
+                 FROM EXPENS_PRMPC A , EXPENS_MNBY_PRMPC_DTLS B
+                 WHERE A.PRJCT_ID = B.PRJCT_ID
+                   AND A.BGT_MNG_ODR = B.BGT_MNG_ODR
+                   AND A.EXPENS_CD = B.EXPENS_CD
+                <if test="prjctId != null">
+                    <if test="!prjctId.equals('')">
+                        AND A.PRJCT_ID = #{prjctId}
+                    </if>
+                </if>
+                <if test="bgtMngOdr != null">
+                    <if test="!bgtMngOdr.equals('')">
+                        AND A.BGT_MNG_ODR = #{bgtMngOdr}
+                    </if>
+                </if>
+                <if test="!costFlag.equals('general')">
+                    AND A.EXPENS_CD BETWEEN 'VTW04501' AND 'VTW04528'
+                </if>
+                <if test="!costFlag.equals('control')">
+                    AND A.EXPENS_CD BETWEEN 'VTW04529' AND 'VTW04535'
+                </if>
+             ) T1
+                 LEFT OUTER JOIN EXPENS_EXCN T2
+                                 ON T1.PRJCT_ID = T2.PRJCT_ID
+                                     AND T1.EXPENS_CD = T2.EXPENS_CD
+        UNION ALL
+        SELECT T1.*
+             , T1.EXPECT_CT - IFNULL(T2.EXPENS_CT,0) AS EXPENS_CT
+             , '가용' FLAG
+        FROM (
+                 SELECT A.PRJCT_ID, A.DTL_DTLS, A.EXPENS_CD,
+                        (SELECT CD_NM FROM CD WHERE CD_VALUE = A.EXPENS_CD) AS EXPENS_NM ,
+                        B.USE_YM, B.EXPECT_CT
+                 FROM EXPENS_PRMPC A , EXPENS_MNBY_PRMPC_DTLS B
+                 WHERE A.PRJCT_ID = B.PRJCT_ID
+                   AND A.BGT_MNG_ODR = B.BGT_MNG_ODR
+                   AND A.EXPENS_CD = B.EXPENS_CD
+                <if test="prjctId != null">
+                    <if test="!prjctId.equals('')">
+                        AND A.PRJCT_ID = #{prjctId}
+                    </if>
+                </if>
+                <if test="bgtMngOdr != null">
+                    <if test="!bgtMngOdr.equals('')">
+                        AND A.BGT_MNG_ODR = #{bgtMngOdr}
+                    </if>
+                </if>
+                <if test="!costFlag.equals('general')">
+                    AND A.EXPENS_CD BETWEEN 'VTW04501' AND 'VTW04528'
+                </if>
+                <if test="!costFlag.equals('control')">
+                    AND A.EXPENS_CD BETWEEN 'VTW04529' AND 'VTW04535'
+                </if>
+             ) T1
+                 LEFT OUTER JOIN EXPENS_EXCN T2
+                                 ON T1.PRJCT_ID = T2.PRJCT_ID
+                                     AND T1.EXPENS_CD = T2.EXPENS_CD
+      </select>
+<select id="retrieveBgtMngOdr" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT MAX(BGT_MNG_ODR) AS BGT_MNG_ODR
         FROM PRJCT_BGT_PRMPC
        WHERE 1=1

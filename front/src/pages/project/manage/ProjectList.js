@@ -5,9 +5,9 @@ import ApiRequest from "../../../utils/ApiRequest";
 import SearchPrjctSet from "../../../components/composite/SearchPrjctSet";
 import CustomTable from "../../../components/unit/CustomTable";
 
-
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
+import { Button } from "devextreme-react";
 
 const ProjectList = () => {
   const [values, setValues] = useState([]);
@@ -20,7 +20,7 @@ const ProjectList = () => {
 
   const navigate = useNavigate();
 
-  const {keyColumn, queryId, tableColumns, searchParams, popup} = ProjectJson;
+  const { keyColumn, queryId, tableColumns, searchParams, popup } = ProjectJson;
 
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
@@ -39,6 +39,12 @@ const ProjectList = () => {
       startVal: 0,
       pageSize: pageSize,
     });
+  };
+  const test = async () => {
+    const response = await ApiRequest(
+      "/boot/prjct/prjctMng/prjctBsisInfoReg/prjctBsisInfoReg",
+      param
+    );
   };
 
   const pageHandle = async () => {
@@ -74,12 +80,23 @@ const ProjectList = () => {
         <span>* 프로젝트를 조회합니다.</span>
       </div>
       <div style={{ marginBottom: "20px" }}>
-        <SearchPrjctSet callBack={searchHandle}  props={searchParams} popup={popup}/>
+        <SearchPrjctSet
+          callBack={searchHandle}
+          props={searchParams}
+          popup={popup}
+        />
       </div>
 
-
       <div>검색된 건 수 : {totalItems} 건</div>
-      <CustomTable keyColumn={keyColumn} pageSize={pageSize} columns={tableColumns} values={values} onRowDblClick={onRowDblClick} paging={true}/>
+      <CustomTable
+        keyColumn={keyColumn}
+        pageSize={pageSize}
+        columns={tableColumns}
+        values={values}
+        onRowDblClick={onRowDblClick}
+        paging={true}
+      />
+      <Button onClick={test} />
     </div>
   );
 };
