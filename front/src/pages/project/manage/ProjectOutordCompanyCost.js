@@ -6,13 +6,13 @@ import CustomCostTable from "components/unit/CustomCostTable";
 import Box, { Item } from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
 
-const ProjectOutordCompanyCost = ({ prjctId, tabId}) => {
+const ProjectOutordCompanyCost = ({ prjctId, ctrtYmd, bizEndYmd }) => {
   const [values, setValues] = useState([]);
   const { manuName, tableColumns, keyColumn, summaryColumn, popup } = ProjectOutordCompanyCostJson;
 
   const param = [
     { tbNm: "OUTORD_ENTRPS_CT_PRMPC" },
-    { prjctId: "d343ff40-b4df-11ee-b259-000c2956283f" }, //TODO. prjctId를 받아와야함 (테스트중 임시값)
+    { prjctId: prjctId }, 
   ];
 
   useEffect(() => {
@@ -53,12 +53,13 @@ const ProjectOutordCompanyCost = ({ prjctId, tabId}) => {
               keyColumn={keyColumn}
               manuName={manuName}
               columns={tableColumns}
+              popup={popup}
+              summaryColumn={summaryColumn}
+              costTableInfoJson={ProjectOutordCompanyCostJson}
               values={values}
               prjctId={prjctId}
-              summaryColumn={summaryColumn}
-              tabId={tabId}
-              popup={popup}
-              costTableInfoJson={ProjectOutordCompanyCostJson}
+              ctrtYmd={ctrtYmd}
+              bizEndYmd={bizEndYmd}
             />
           </div>
         </div>

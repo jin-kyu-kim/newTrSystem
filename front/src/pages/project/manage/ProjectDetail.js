@@ -54,7 +54,7 @@ const ProjectDetail = () => {
             if(isconfirm){
             navigate("../project/ProjectChange",
               {
-              state: { prjctId: prjctId },
+              state: { prjctId: prjctId, ctrtYmd: location.state.ctrtYmd, bizEndYmd: location.state.bizEndYmd },
               })
             }
           }
