@@ -4,11 +4,16 @@ import "devextreme/dist/css/dx.common.css";
 import ProjectEmpCostSearchJson from "./ProjectEmpCostSearchJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
 import PivotGridDataSource from "devextreme/ui/pivot_grid/data_source";
+import { Workbook } from "exceljs";
+import { saveAs } from "file-saver";
 import PivotGrid, {
+  Export,
   FieldChooser,
   FieldPanel,
   Scrolling,
 } from "devextreme-react/pivot-grid";
+import { exportPivotGrid } from "devextreme/excel_exporter";
+import { Button } from "devextreme-react";
 
 const ProjectEmpCostSearch = (prjctId) => {
   const [pivotGridConfig, setPivotGridConfig] = useState({
@@ -37,6 +42,26 @@ const ProjectEmpCostSearch = (prjctId) => {
     }
   };
 
+  const onExporting = (e) => {
+    const workbook = new Workbook();
+    const worksheet = workbook.addWorksheet("Sales");
+    exportPivotGrid({
+      component: e.component,
+      worksheet,
+    }).then(() => {
+      workbook.xlsx.writeBuffer().then((buffer) => {
+        saveAs(
+          new Blob([buffer], { type: "application/octet-stream" }),
+          "Sales.xlsx"
+        );
+      });
+    });
+  };
+
+  const test = (e) => {
+    console.log(e);
+  };
+
   const dataSource = new PivotGridDataSource(pivotGridConfig);
 
   return (
@@ -50,6 +75,7 @@ const ProjectEmpCostSearch = (prjctId) => {
         allowFiltering={false}
         allowSorting={false}
         allowExpandAll={false}
+        onExporting={onExporting}
       >
         <FieldPanel
           showRowFields={true}
@@ -63,61 +89,11 @@ const ProjectEmpCostSearch = (prjctId) => {
 
         <FieldChooser enabled={false} />
         <Scrolling mode="virtual" />
+        <Export enabled={true} />
+        <Button onClick={test} />
       </PivotGrid>
     </div>
   );
 };
-
-// const dataSource = new PivotGridDataSource({
-//   fields: [
-//     {
-//       caption: "Region",
-//       width: 120,
-//       dataField: "name",
-//       area: "row",
-//       expanded: true,
-//     },
-//     {
-//       caption: "Country",
-//       dataField: "country",
-//       width: 100,
-//       area: "row",
-//       expanded: true,
-//       showTotals: false,
-//     },
-//     {
-//       caption: "City",
-//       dataField: "city",
-//       width: 100,
-//       area: "row",
-//     },
-//     {
-//       dataField: "date",
-//       dataType: "date",
-//       groupInterval: "year",
-//       area: "column",
-//       showTotals: false,
-//       expanded: true,
-//     },
-//     {
-//       dataField: "date",
-//       dataType: "date",
-//       groupInterval: "month",
-//       area: "column",
-//       format: {
-//         precision: "month",
-//       },
-//     },
-//     {
-//       caption: "Total",
-//       dataField: "amount",
-//       dataType: "number",
-//       summaryType: "sum",
-//       format: "currency",
-//       area: "data",
-//     },
-//   ],
-//   store: ProjectEmpCostSearchJson,
-// });
 
 export default ProjectEmpCostSearch;

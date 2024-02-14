@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import "devextreme/dist/css/dx.common.css";
+
+import ProjectOutordEmpCostSearchJson from "./ProjectOutordEmpCostSearchJson.json";
+import ApiRequest from "../../../utils/ApiRequest";
+import PivotGridDataSource from "devextreme/ui/pivot_grid/data_source";
 import PivotGrid, {
   FieldChooser,
   FieldPanel,
   Scrolling,
 } from "devextreme-react/pivot-grid";
-import PivotGridDataSource from "devextreme/ui/pivot_grid/data_source";
-import ApiRequest from "../../../utils/ApiRequest";
-
-import ProjectEmpCostSearchJson from "./ProjectEmpCostSearchJson.json";
 
 const ProjectOutordEmpCostSearch = (prjctId) => {
   const [pivotGridConfig, setPivotGridConfig] = useState({
-    fields: ProjectEmpCostSearchJson,
+    fields: ProjectOutordEmpCostSearchJson,
     store: [],
   });
 
@@ -19,8 +20,10 @@ const ProjectOutordEmpCostSearch = (prjctId) => {
     Cnsrtm();
   }, []);
 
+  useEffect(() => {}, [pivotGridConfig]);
+
   const param = {
-    queryId: "projectMapper.retrieveprojectEmpCostSearch",
+    queryId: "projectMapper.retrieveProjectOutordEmpCostSearch",
     prjctId: prjctId.prjctId,
   };
 
@@ -36,11 +39,6 @@ const ProjectOutordEmpCostSearch = (prjctId) => {
     }
   };
 
-  const test = (e) => {
-    console.log(e);
-    console.log(dataSource);
-  };
-
   const dataSource = new PivotGridDataSource(pivotGridConfig);
 
   return (
@@ -54,7 +52,6 @@ const ProjectOutordEmpCostSearch = (prjctId) => {
         allowFiltering={false}
         allowSorting={false}
         allowExpandAll={false}
-        onCellClick={test}
       >
         <FieldPanel
           showRowFields={true}

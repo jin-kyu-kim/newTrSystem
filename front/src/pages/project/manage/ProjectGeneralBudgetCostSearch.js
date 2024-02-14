@@ -7,11 +7,11 @@ import PivotGrid, {
 import PivotGridDataSource from "devextreme/ui/pivot_grid/data_source";
 import ApiRequest from "../../../utils/ApiRequest";
 
-import ProjectEmpCostSearchJson from "./ProjectEmpCostSearchJson.json";
+import ProjectGeneralBudgetCostSearchJson from "./ProjectGeneralBudgetCostSearchJson.json";
 
 const ProjectGeneralBudgetCostSearch = (prjctId) => {
   const [pivotGridConfig, setPivotGridConfig] = useState({
-    fields: ProjectEmpCostSearchJson,
+    fields: ProjectGeneralBudgetCostSearchJson,
     store: [],
   });
 
@@ -20,8 +20,9 @@ const ProjectGeneralBudgetCostSearch = (prjctId) => {
   }, []);
 
   const param = {
-    queryId: "projectMapper.retrieveprojectEmpCostSearch",
+    queryId: "projectMapper.retrieveProjectGeneralBudgetCostSearch",
     prjctId: prjctId.prjctId,
+    costFlag: "general",
   };
 
   const Cnsrtm = async () => {

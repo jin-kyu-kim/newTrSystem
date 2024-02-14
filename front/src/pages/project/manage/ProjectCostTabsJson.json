@@ -6,32 +6,32 @@
   },
   {
     "TabName": "자사인건비",
-    "tabId": "ProjectTotCostInfo",
+    "tabId": "ProjectEmpCostSearch",
     "url": "pages/project/manage/ProjectEmpCostSearch"
   },
   {
     "TabName": "외주인건비",
-    "tabId": "ProjectTotCostInfo",
-    "url": "pages/project/manage/ProjectList"
+    "tabId": "ProjectOutordEmpCostSearch",
+    "url": "pages/project/manage/ProjectOutordEmpCostSearch"
   },
   {
     "TabName": "외주업체비",
-    "tabId": "ProjectTotCostInfo",
-    "url": "./ProjectList"
+    "tabId": "ProjectOutordCompanyCostSearch",
+    "url": "pages/project/manage/ProjectOutordCompanyCostSearch"
   },
   {
     "TabName": "통제성경비",
-    "tabId": "ProjectTotCostInfo",
-    "url": "./ProjectList"
+    "tabId": "ProjectControlBudgetCostSearch",
+    "url": "pages/project/manage/ProjectControlBudgetCostSearch"
   },
   {
     "TabName": "일반경비",
-    "tabId": "ProjectTotCostInfo",
-    "url": "./ProjectList"
+    "tabId": "ProjectGeneralBudgetCostSearch",
+    "url": "pages/project/manage/ProjectGeneralBudgetCostSearch"
   },
   {
     "TabName": "재료비",
     "tabId": "MatalCost",
-    "url": "./MatalCost"
+    "url": "pages/project/manage/MatalCost"
   }
 ]

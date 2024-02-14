@@ -1,28 +1,27 @@
 [
-    {
-      "TabName": "기본정보",
-      "tabId": "ProjectBaseInfo",
-      "url": "pages/project/manage/ProjectBaseInfo"
-    },
-    {
-      "TabName": "실행원가계산서",
-      "tabId": "ProjectCostCalc",
-      "url": "pages/project/manage/ProjectCostCalc"
-    },
-    {
-      "TabName": "실행원가집행현황",
-      "tabId": "ProjectCostTabs",
-      "url": "./ProjectCostTabs"
-    },
-    {
-      "TabName": "결재정보",
-      "tabId": "ProjectBaseInfo",
-      "url": "./ProjectBaseInfo"
-    },
-    {
-      "TabName": "설정",
-      "tabId": "ProjectConsortium",
-      "url": "./ProjectConsortium"
-    }
-  ]
-  
+  {
+    "TabName": "기본정보",
+    "tabId": "ProjectBaseInfo",
+    "url": "pages/project/manage/ProjectBaseInfo"
+  },
+  {
+    "TabName": "실행원가계산서",
+    "tabId": "ProjectCostCalc",
+    "url": "pages/project/manage/ProjectCostCalc"
+  },
+  {
+    "TabName": "실행원가집행현황",
+    "tabId": "ProjectCostTabs",
+    "url": "./ProjectCostTabs"
+  },
+  {
+    "TabName": "결재정보",
+    "tabId": "ProjectBaseInfo",
+    "url": "./ProjectBaseInfo"
+  },
+  {
+    "TabName": "설정",
+    "tabId": "ProjectBaseInfo",
+    "url": "./ProjectBaseInfo"
+  }
+]
