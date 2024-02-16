@@ -384,11 +384,34 @@
                                  ON T1.PRJCT_ID = T2.PRJCT_ID
                                      AND T1.EXPENS_CD = T2.EXPENS_CD
       </select>
-<select id="retrieveBgtMngOdr" parameterType="map" resultType="com.trsystem.LowerHashMap">
+      
+	<select id="retrieveBgtMngOdr" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT MAX(BGT_MNG_ODR) AS BGT_MNG_ODR
         FROM PRJCT_BGT_PRMPC
        WHERE 1=1
        	 AND ATRZ_DMND_STTS_CD = 'VTW03301'
+        <if test="prjctId != null">
+            <if test="!prjctId.equals('')">
+                AND PRJCT_ID = #{prjctId}
+            </if>
+        </if>
+    </select>
+    
+    	<select id="retrievePrjctAprvDtl" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT concat(c1.CD_NM, ' (', c2.CD_NM, ')') AS ATRZ_STEP_STTS
+			 , APRVR_EMP_ID
+		 	 , e2.EMP_FLNM AS REG_EMP_FLNM
+			 , e.EMP_FLNM
+			 , pal.ATRZ_OPNN_CN
+			 , (SELECT APRV_YMD FROM PRJCT_ATRZ_LN WHERE ATRZ_STEP_CD = 'VTW00705') AS APRV_YMD
+		 	 , (SELECT RJCT_YMD FROM PRJCT_ATRZ_LN WHERE RJCT_YMD IS NOT NULL) AS RJCT_YMD
+	 	 	 , pal.RJCT_PRVONSH
+		  FROM PRJCT_ATRZ_LN pal 
+		  JOIN CD c1 ON (c1.CD_VALUE = pal.ATRZ_STEP_CD)
+		  JOIN CD c2 ON (c2.CD_VALUE = pal.ATRZ_STTS_CD)
+		  JOIN EMP e ON (pal.APRVR_EMP_ID = e.EMP_ID)
+	      JOIN EMP e2 ON (pal.REG_EMP_ID = e2.EMP_ID)
+		 WHERE 1=1
         <if test="prjctId != null">
             <if test="!prjctId.equals('')">
                 AND PRJCT_ID = #{prjctId}
