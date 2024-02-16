@@ -88,7 +88,6 @@ const CustomCostTable = ({
     return (
       <Button
         onClick={() => showPopup(data)}
-        style={{ height: "100%" }}
         text="수정"
         />
     );
@@ -125,8 +124,8 @@ const CustomCostTable = ({
                 try {
                   const response = await ApiRequest("/boot/common/commonDelete", param);
                     if(response > 0) {
-                      gridInstance.deleteRow(rowIndex);
                       alert('데이터가 성공적으로 삭제되었습니다.');
+                      gridInstance.deleteRow(rowIndex);
                       console.log(response);
                     }
                 }catch (error) {
@@ -134,7 +133,6 @@ const CustomCostTable = ({
                 }               
               }
           }}
-        style={{ height: "100%" }}
         text="삭제"
       />
     );

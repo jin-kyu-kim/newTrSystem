@@ -3,10 +3,15 @@
     "keyColumn": "prjctId",
     "tableColumns": 
 	[
-        {"key": "cnsrtmSn" ,"value": "사업수행유형", "type": "ComboBox", "cd":"VTW013" },
+        {"key": "cnsrtmSn" ,"value": "사업수행유형", "type": "ComboBox", "cd":"VTW013"},
         {"key": "cnsrtmCoNm", "value": "회사 명"},
         {"key": "altmntAmt", "value": "금액"},
         {"key": "cmmnExpensAmt", "value": "공통경비 금액"},
         {"key": "slsAmRfltYn", "value": "매출액 반영여부", "type": "ComboBox", "cd": "VTW039"}
-	]
+	],
+    "comboBox" : 
+    [
+        {"key": "cnsrtmSn" , "cd":"VTW013", "value":"사업수행유형"},
+        {"key": "slsAmRfltYn", "cd":"VTW039", "value":"매출액 반영여부"}
+    ]
 }

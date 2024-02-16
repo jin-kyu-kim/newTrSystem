@@ -6,20 +6,20 @@ import CustomCostTable from "components/unit/CustomCostTable";
 import Box, { Item } from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
 
-const ProjectEmpCost = ({ prjctId, tabId}) => {
+const ProjectEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr }) => {
   const [values, setValues] = useState([]);
   const { manuName, tableColumns, keyColumn, summaryColumn, popup} = ProjectEmpCostJson;
 
   const param = [
     { tbNm: "MMNY_LBRCO_PRMPC" },
-    { prjctId: "d343ff40-b4df-11ee-b259-000c2956283f" }, //TODO. prjctId를 받아와야함 (테스트중 임시값)
+    { prjctId: prjctId }, 
   ];
 
   useEffect(() => {
-    Cnsrtm();
+    EmpCost();
   }, []);
 
-  const Cnsrtm = async () => {
+  const EmpCost = async () => {
     try {
       const response = await ApiRequest("/boot/common/commonSelect", param);
       setValues(response);
@@ -56,9 +56,11 @@ const ProjectEmpCost = ({ prjctId, tabId}) => {
               values={values}
               prjctId={prjctId}
               summaryColumn={summaryColumn}
-              tabId={tabId}
               popup={popup}
               costTableInfoJson={ProjectEmpCostJson}
+              ctrtYmd={ctrtYmd}
+              bizEndYmd={bizEndYmd}
+              bgtMngOdr={bgtMngOdr}
             />
           </div>
         </div>

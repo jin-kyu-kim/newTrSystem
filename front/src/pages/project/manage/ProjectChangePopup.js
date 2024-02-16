@@ -5,19 +5,16 @@ import ApiRequest from 'utils/ApiRequest';
 import CustomLabelValue from '../../../components/unit/CustomLabelValue';
 import CustomCdComboBox from '../../../components/unit/CustomCdComboBox';
 import NumberBox from 'devextreme-react/number-box';
-// import DataGrid, { Column, Editing } from 'devextreme-react/data-grid';
 import Button from "devextreme-react/button";
 
-const ProjectChangePopup = ({selectedItem, period, labelValue, popupInfo, onHide, prjctId, bgtMngOdr, ctrtYmd, bizEndYmd}) => {
-    console.log("selectedItem",selectedItem);
-
+const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr, ctrtYmd, bizEndYmd}) => {
     const navigate = useNavigate();
     const [inputValue, setInputValue] = useState([]); //월별 값 입력을 위한 상태
     const [data, setData] = useState([]);
     const [param, setParam] = useState([]);
     const [contents, setContents] = useState([]);
     const [structuredData, setStructuredData] = useState({});
-
+    console.log("popupInfo",popupInfo);
     //기간 데이터를 받아와서 년도별로 월을 나누어서 배열로 만들어주는 함수
     useEffect(() => {
         const periodData = period.reduce((acc, period) => {
@@ -122,8 +119,11 @@ const ProjectChangePopup = ({selectedItem, period, labelValue, popupInfo, onHide
     const handleSave = async () => {
         delete param.total;
 
+        console.log("popupInfo.table",popupInfo.table);
+        console.log("param",param);
+
         const paramInfo = [ 
-            { tbNm: "EXPENS_PRMPC" },        
+            { tbNm: popupInfo.table },        
                 param , 
         ]; 
 
@@ -142,7 +142,6 @@ const ProjectChangePopup = ({selectedItem, period, labelValue, popupInfo, onHide
       if(data != null){
         if(popupInfo.menuName==="ProjectGeneralBudgetCostJson" || popupInfo.menuName==="ProjectControlBudgetCostJson"){
             setContents(
-                // result.push(
                 <div className="dx-fieldset">
                     <div className="dx-field">
                         <div className="dx-field-label asterisk">비용코드</div>
@@ -162,7 +161,6 @@ const ProjectChangePopup = ({selectedItem, period, labelValue, popupInfo, onHide
             );
         }else if(popupInfo.menuName==="ProjectOutordCompanyCostJson"){
             setContents(
-                // result.push(
                 <div className="dx-fieldset"> 
                 <CustomLabelValue props={popupInfo.labelValue.outordEntrpsId} value={selectedItem != null ? selectedItem.outordEntrpsId : null} onSelect={handleChgState}/>
                     <div className="dx-field">
@@ -196,8 +194,68 @@ const ProjectChangePopup = ({selectedItem, period, labelValue, popupInfo, onHide
                 </div>
             )
         }else if(popupInfo.menuName==="ProjectOutordEmpCostJson"){
+            setContents(
+                <div className="dx-fieldset">
+                    <CustomLabelValue props={popupInfo.labelValue.outordEmpId} value={data.outordEmpId} onSelect={handleChgState}/>
+                    <div className="dx-field">    
+                        <div className="dx-field-label asterisk">역할</div>
+                        <div className="dx-field-value">
+                            <CustomCdComboBox
+                                param="VTW006"
+                                placeholderText="역할"
+                                name="hnfRoleCd"
+                                onSelect={handleChgState}
+                                value={data.hnfRoleCd}
+                            />
+                        </div>
+                    </div>
+                    <div className="dx-field">
+                        <div className="dx-field-label asterisk">등급</div>
+                        <div className="dx-field-value">
+                            <CustomCdComboBox
+                                param="VTW005"
+                                placeholderText="등급"
+                                name="hnfGradCd"
+                                onSelect={handleChgState}
+                                value={data.hnfGradCd}
+                            />
+                        </div>
+                        
+                    </div>
+                    <CustomLabelValue props={popupInfo.labelValue.tkcgJob} value={data.tkcgJob} onSelect={handleChgState}/>
+                    <CustomLabelValue props={popupInfo.labelValue.untpc} value={data.untpc} onSelect={handleChgState}/>
+                    <CustomLabelValue props={popupInfo.labelValue.gramt} value={data.gramt} onSelect={handleChgState}/>
+                    <CustomLabelValue props={popupInfo.labelValue.total} value={data.total} onSelect={handleChgState}/>
+                    <CustomLabelValue props={popupInfo.labelValue.inptPrnmntYmd} value={data.inptPrnmntYmd} onSelect={handleChgState}/>
+                    <CustomLabelValue props={popupInfo.labelValue.withdrPrnmntYmd} value={data.withdrPrnmntYmd} onSelect={handleChgState}/>
+                </div>
+            );
         }else if(popupInfo.menuName==="ProjectEmpCostJson"){
+            setContents(
+                <div className="dx-fieldset">
+                    <CustomLabelValue props={popupInfo.labelValue.empId} value={data.empId} onSelect={handleChgState}/>
+                    <div className="dx-field">    
+                        <div className="dx-field-label asterisk">역할</div>
+                        <div className="dx-field-value">
+                            <CustomCdComboBox
+                                param="VTW006"
+                                placeholderText="역할"
+                                name="hnfRoleCd"
+                                onSelect={handleChgState}
+                                value={data.hnfRoleCd}
+                            />
+                        </div>
+                    </div> 
+                    <CustomLabelValue props={popupInfo.labelValue.tkcgJob} value={data.tkcgJob} onSelect={handleChgState}/>
+                    <CustomLabelValue props={popupInfo.labelValue.temp2} value={data.temp2} onSelect={handleChgState}/> 
+                    <CustomLabelValue props={popupInfo.labelValue.gramt} value={data.gramt} onSelect={handleChgState}/>
+                    <CustomLabelValue props={popupInfo.labelValue.total} value={data.total} onSelect={handleChgState}/>
+                    <CustomLabelValue props={popupInfo.labelValue.inptPrnmntYmd} value={data.inptPrnmntYmd} onSelect={handleChgState}/>
+                    <CustomLabelValue props={popupInfo.labelValue.withdrPrnmntYmd} value={data.withdrPrnmntYmd} onSelect={handleChgState}/>
+                </div>
+            );
         }else{
+            return null;
         }
       }
     }, [popupInfo, data]); 
@@ -234,6 +292,7 @@ const ProjectChangePopup = ({selectedItem, period, labelValue, popupInfo, onHide
                                         <td key={months} style={{width:"50px", padding:"5px"}}>
                                             {months[rowIndex] ? 
                                             (<NumberBox 
+                                            key={months[rowIndex]}
                                             id={`${Object.keys(structuredData)[colIndex]}-${rowIndex+1}`} 
                                             format="#.### 원"
                                             value={inputValue.find(item => item.id === `${Object.keys(structuredData)[colIndex]}-${rowIndex+1}`)?.value || ''}
