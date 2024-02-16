@@ -44,6 +44,12 @@ const TreRoutes = [
     name: "ProjectChange",
     element: React.lazy(() => import("../pages/project/manage/ProjectChange")),
   },
+  // 프로젝트 승인 상세
+  {
+    path: "/project/ProjectAprvDetail",
+    name: "ProjectAprvDetail",
+    element: React.lazy(() => import("../pages/project/approval/ProjectAprvDetail")),
+  }
 ];
 
 export default TreRoutes;
