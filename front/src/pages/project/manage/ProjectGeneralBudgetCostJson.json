@@ -6,11 +6,11 @@
         {"key": "cnsrtmSn" ,"value": "상태"},
         {"key": "expensCdNm", "value": "비용코드명"},
         {"key": "dtlDtls", "value": "상세내역"},
-        {"key": "bgtMngOdr", "value": "총금액"}
+        {"key": "total", "value": "총금액"}
 	],
     "summaryColumn":
     [
-        { "key": "bgtMngOdr", "value": "총금액", "type":"sum", "format":"Total: {0}원"}
+        { "key": "total", "value": "총금액", "type":"sum", "format":"Total: {0}원"}
     ],
     "popup":
     {
@@ -33,8 +33,8 @@
             "required": true,
             "placeholder": "상세내역"
         },
-        "bgtMngOdr": {
-            "name": "bgtMngOdr",
+        "total": {
+            "name": "total",
             "type": "NumberBox",
             "label": "총금액",
             "required": true,

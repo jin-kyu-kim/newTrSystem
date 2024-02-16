@@ -4,13 +4,15 @@ import { useNavigate } from "react-router-dom";
 import ApiRequest from 'utils/ApiRequest';
 import CustomLabelValue from '../../../components/unit/CustomLabelValue';
 import CustomCdComboBox from '../../../components/unit/CustomCdComboBox';
+import NumberBox from 'devextreme-react/number-box';
 // import DataGrid, { Column, Editing } from 'devextreme-react/data-grid';
 import Button from "devextreme-react/button";
 
-const ProjectChangePopup = ({selectedItem, period, labelValue, popupInfo, onHide, prjctId}) => {
+const ProjectChangePopup = ({selectedItem, period, labelValue, popupInfo, onHide, prjctId, bgtMngOdr, ctrtYmd, bizEndYmd}) => {
+    console.log("selectedItem",selectedItem);
 
     const navigate = useNavigate();
-    const [inputValue, setInputValue] = useState({}); //월별 값 입력을 위한 상태
+    const [inputValue, setInputValue] = useState([]); //월별 값 입력을 위한 상태
     const [data, setData] = useState([]);
     const [param, setParam] = useState([]);
     const [contents, setContents] = useState([]);
@@ -29,93 +31,114 @@ const ProjectChangePopup = ({selectedItem, period, labelValue, popupInfo, onHide
         setStructuredData(periodData);
       }, [period]); 
     
+
     //부모창에서 받아온 데이터를 상태에 담아주는 useEffect
     useEffect(() => {
         setData(selectedItem);
     }, [selectedItem]);
 
-    // const handleReload = () => {
-    //     window.location.reload();
-    // };
 
+    //data,param 초기값 지정
     useEffect(() => { 
 
         setData({
             ...data,
-            "prjctId" : prjctId
+            "prjctId" : prjctId,
+            "bgtMngOdr" : bgtMngOdr
         });
 
         setParam({
             ...param,
-            "prjctId" : prjctId
+            "prjctId" : prjctId,
+            "bgtMngOdr" : bgtMngOdr
         });
 
     }, []);
-      
+    
+
+    //좌측 일반 값 담기
     const handleChgState = ({name, value}) => {
 
-            setData({
-                ...data,
+            setData(currentData => ({
+                ...currentData,
                 [name] : value
-            });
+            }));
             
-            setParam({
-                ...param,
+            setParam(currentParam => ({
+                ...currentParam,
                 [name] : value
-            })
+            }));
     };  
 
+
+    //우측 월 값 담기
     const handleInputChange = (e) => {
-        const { id, value } = e.target; // 이벤트에서 id와 value 추출
+        const id = e.element.id;
+        const value = e.component.option('value');
+        const index = inputValue.findIndex(item => item.id === id); // 입력 값 객체의 인덱스 찾기
+        const updatedValues = [...inputValue]; // 상태 변경을 위한 배열 복사
 
-        setInputValue({
-            ...inputValue,
-            [id] : value
-        });
+        if (index >= 0) {
+            // 기존 값 업데이트
+            updatedValues[index] = { ...updatedValues[index], value };
+        } else {
+            // 새로운 값 객체 추가
+            updatedValues.push({ id, value });
+        }
 
-        setParam({
-            ...param,
-            "months" : inputValue
-        })
+        setInputValue(updatedValues); // 업데이트된 배열로 상태 설정
+        
+        // updatedValues를 map함수를 사용하여 각각의 value값에 있는 숫자 sum하기
+        const sum = updatedValues.map(item => item.value).reduce((acc, cur) => acc + cur, 0);
+
+        //총합에 sum값을 넣어주기
+        setData(currentData=>({
+            ...currentData,
+            "total" : sum
+        }));
     };
 
+    //inputValue값이 변경될 때마다 param에 담아주기
+    // useEffect(() => {
+    //     setParam(currentParam => ({...currentParam, "months" : inputValue}));
+    // }, [inputValue]);
+
+
+    //param값이 변경될 때마다 콘솔에 찍어주기
     useEffect(() => {
         console.log("Updated param", param);
     }, [param]); 
 
-    const handleClick = (e) => {
+
+    //취소버튼 클릭시
+    const handleCancel = (e) => {
         navigate("../project/ProjectChange",
             {
-        state: { prjctId: prjctId },
+        state: { prjctId: prjctId, bgtMngOdr: bgtMngOdr, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd},
         })
     };
 
+    //저장버튼 클릭시
     const handleSave = async () => {
+        delete param.total;
 
-        
-        const param = [ 
-            { tbNm: "EXPENS_MNBY_PRMPC_DTLS" }, 
-            { 
-                prjctId: prjctId,
-            }, 
+        const paramInfo = [ 
+            { tbNm: "EXPENS_PRMPC" },        
+                param , 
         ]; 
 
-
         try {
-            const response = await ApiRequest("/boot/prjct/insertExpenNorPrmpc", param);
-            // handleClick();
-            console.log("response",response);    
+            const response = await ApiRequest("/boot/common/commonInsert", paramInfo);
+                if(response > 0) {
+                    handleCancel();
+                }    
         } catch (error) {
             console.error('Error ProjectChangePopup insert', error);
         }
-
-        console.log("저장",param);
     };  
 
-
+    //좌측 데이터 분기
     useEffect(() => {
-    // const contents = () => {
-        // const result = [];
       if(data != null){
         if(popupInfo.menuName==="ProjectGeneralBudgetCostJson" || popupInfo.menuName==="ProjectControlBudgetCostJson"){
             setContents(
@@ -134,7 +157,7 @@ const ProjectChangePopup = ({selectedItem, period, labelValue, popupInfo, onHide
                         </div>
                     </div>
                     <CustomLabelValue props={popupInfo.labelValue.dtlDtls} value={data.dtlDtls} onSelect={handleChgState}/>
-                    <CustomLabelValue props={popupInfo.labelValue.bgtMngOdr} value={data.bgtMngOdr} onSelect={handleChgState}/>
+                    <CustomLabelValue props={popupInfo.labelValue.total} value={data.total} onSelect={handleChgState}/>
                 </div>
             );
         }else if(popupInfo.menuName==="ProjectOutordCompanyCostJson"){
@@ -177,11 +200,7 @@ const ProjectChangePopup = ({selectedItem, period, labelValue, popupInfo, onHide
         }else{
         }
       }
-        // return result;
     }, [popupInfo, data]); 
-
-    
-
 
     return (
         <div className="popup-content">
@@ -211,19 +230,18 @@ const ProjectChangePopup = ({selectedItem, period, labelValue, popupInfo, onHide
                                     <tr key={rowIndex}>
                                         {Object.values(structuredData).map((months, colIndex) => (
                                         <>
-                                        <td key={colIndex} style={{width:"10px", padding:"5px"}}>{months[rowIndex] ? `${months[rowIndex]}월` : ''}</td>
+                                        <td key={colIndex} style={{width:"10px", padding:"5px", textAlign: "center"}}>{months[rowIndex] ? `${months[rowIndex]}월` : ''}</td>
                                         <td key={months} style={{width:"50px", padding:"5px"}}>
                                             {months[rowIndex] ? 
-                                            (
-                                            <input id={`${Object.keys(structuredData)[colIndex]}-${rowIndex+1}`} 
-                                                type='number' 
-                                                value={inputValue[`${Object.keys(structuredData)[colIndex]}-${rowIndex+1}`] || ''} 
-                                                onChange={handleInputChange}/>
-                                            )
-                                            : ''}</td>
+                                            (<NumberBox 
+                                            id={`${Object.keys(structuredData)[colIndex]}-${rowIndex+1}`} 
+                                            format="#.### 원"
+                                            value={inputValue.find(item => item.id === `${Object.keys(structuredData)[colIndex]}-${rowIndex+1}`)?.value || ''}
+                                            onValueChanged={handleInputChange}
+                                            style={{ textAlign: 'right' }}/>   
+                                            ): ''}</td>
                                         </>
                                         ))}
-                                        
                                     </tr>
                                     ))}
                                 </tbody>
@@ -234,8 +252,8 @@ const ProjectChangePopup = ({selectedItem, period, labelValue, popupInfo, onHide
                 </div>
             </div>
             <div className="button-container">
-                <button className="btn btn-primary" onClick={handleSave}>저장</button>
-                <Button text="취소" onClick={handleClick}/>
+                <Button text="저장" type="default" stylingMode="contained" onClick={handleSave}/>
+                <Button text="취소" onClick={handleCancel}/>
             </div>
         </div>
     );

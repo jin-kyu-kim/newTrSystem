@@ -6,7 +6,7 @@ import CustomCostTable from "components/unit/CustomCostTable";
 import Box, { Item } from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
 
-const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd }) => {
+const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr }) => {
   const [values, setValues] = useState([]);
   const [popupVisible, setPopupVisible] = useState(false);
 
@@ -65,6 +65,7 @@ const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd }) => {
               prjctId={prjctId}
               ctrtYmd={ctrtYmd}
               bizEndYmd={bizEndYmd}
+              bgtMngOdr={bgtMngOdr}
               onHide={onHide}
             />
           </div>
