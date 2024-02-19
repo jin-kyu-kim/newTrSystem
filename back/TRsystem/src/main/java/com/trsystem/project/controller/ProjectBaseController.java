@@ -53,17 +53,31 @@ public class ProjectBaseController {
     @PostMapping(value = "/boot/prjct/insertRegistProjectAprv")
     public int insertRegistProjectAprv(@RequestBody List<Map<String, Object>> params) {
     	// front로 부터 받은 params -> 기초적인 정보들 (ex. prjctId, regDt 등)
-    	//조회 로직을 하나 추가하여, 프로젝트 결재선 테이블에 넣을 값들을 조회한 뒤 insert 메소드에 매개변수로 함께 넘겨준다.
-    	
-    	/*
+    	// 조회 로직을 하나 추가하여, 프로젝트 결재선 테이블에 넣을 값들을 조회한 뒤 insert 메소드에 매개변수로 함께 넘겨준다.
+    	System.out.println("@!312312312321");
     	List<Map<String, Object>> empIdParams = new ArrayList<>();
-    	empIdParams = ProjectBaseDomain.retrieveRegEmpId(params.get(1));
     	
-    	System.out.println(params);
-    	return ProjectBaseDomain.insertRegistProjectAprv(params, empIdParams);
-    	*/
+    	int result1 = 0;
+    	int result2 = 0;
     	
-    	return ProjectBaseDomain.insertRegistProjectAprv(params);
+    	// 채번한다
+    	int atrzLnSn = ProjectBaseDomain.retrievePrjctAtrzLnSn(params.get(2));
+    	
+    	if(atrzLnSn < 0) {
+    		return atrzLnSn;
+    	}
+   
+    	// 결재선을 만드는 메소드를 호출한다.
+    	empIdParams = ProjectBaseDomain.retrieveAprvrEmpId(params.get(2));
+    	if(empIdParams.size() > 0) {
+    		    		
+    		params.get(2).put("atrzLnSn", atrzLnSn);
+    		
+    		result1 = ProjectBaseDomain.insertRegistProjectAprv(params);
+    		result2 = ProjectBaseDomain.insertRegistProjectAprvDtl(params, empIdParams);
+    	}
+
+    	return result1 * result2;
     }
     
 }
