@@ -1,5 +1,6 @@
 {
 	"menuName": "ProjectOutordCompanyCostJson",
+    "table": "OUTORD_ENTRPS_CT_PRMPC",
     "keyColumn": "outordEntrpsId",
     "tableColumns": 
 	[

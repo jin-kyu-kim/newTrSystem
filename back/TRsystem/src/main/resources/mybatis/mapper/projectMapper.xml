@@ -306,10 +306,10 @@
                         AND A.BGT_MNG_ODR = #{bgtMngOdr}
                     </if>
                 </if>
-                <if test="!costFlag.equals('general')">
+                <if test="costFlag.equals('general')">
                     AND A.EXPENS_CD BETWEEN 'VTW04501' AND 'VTW04528'
                 </if>
-                <if test="!costFlag.equals('control')">
+                <if test="costFlag.equals('control')">
                     AND A.EXPENS_CD BETWEEN 'VTW04529' AND 'VTW04535'
                 </if>
              ) T1
@@ -338,10 +338,10 @@
                         AND A.BGT_MNG_ODR = #{bgtMngOdr}
                     </if>
                 </if>
-                <if test="!costFlag.equals('general')">
+                <if test="costFlag.equals('general')">
                     AND A.EXPENS_CD BETWEEN 'VTW04501' AND 'VTW04528'
                 </if>
-                <if test="!costFlag.equals('control')">
+                <if test="costFlag.equals('control')">
                     AND A.EXPENS_CD BETWEEN 'VTW04529' AND 'VTW04535'
                 </if>
              ) T1
@@ -370,10 +370,10 @@
                         AND A.BGT_MNG_ODR = #{bgtMngOdr}
                     </if>
                 </if>
-                <if test="!costFlag.equals('general')">
+                <if test="costFlag.equals('general')">
                     AND A.EXPENS_CD BETWEEN 'VTW04501' AND 'VTW04528'
                 </if>
-                <if test="!costFlag.equals('control')">
+                <if test="costFlag.equals('control')">
                     AND A.EXPENS_CD BETWEEN 'VTW04529' AND 'VTW04535'
                 </if>
              ) T1

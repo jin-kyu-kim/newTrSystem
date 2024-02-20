@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef  } from "react";
 import { Button } from "devextreme-react";
 import { parse, format, addMonths } from 'date-fns';
 
+import ApiRequest from "../../utils/ApiRequest";
 import CustomPopup from "../unit/CustomPopup";
 import ProjectChangePopup from "../../pages/project/manage/ProjectChangePopup";
 
@@ -26,6 +27,7 @@ const CustomCostTable = ({
   ctrtYmd,
   bizEndYmd,
   prjctId,
+  bgtMngOdr,
   onHide,
 }) => {
   const [period, setPeriod] = useState([]); //사업시작일, 사업종료일을 받아와서 월별로 나눈 배열을 담을 상태
@@ -33,7 +35,7 @@ const CustomCostTable = ({
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [summaryColumns, setSummaryColumns] = useState(summaryColumn); //월별 합계를 담을 상태
-  
+
   const showPopup = (data) => {
     const gridInstance = dataGridRef.current.instance;
     setIsPopupVisible(true);
@@ -79,41 +81,68 @@ const CustomCostTable = ({
 
   const editColumn = ["수정", "삭제"];
 
+   
+
   const onCellRenderEdit = ({data}) => {
     // console.log("data",data);
     return (
       <Button
         onClick={() => showPopup(data)}
-        style={{ height: "100%" }}
-      >
-        수정
-      </Button>
+        text="수정"
+        />
     );
   };
 
+  //배열에서 특정 키만 추출
+  const pick = (source, keys) => {
+    const result = {};
+    keys.forEach(key => {
+      if (key in source) {
+        result[key] = source[key];
+      }
+    });
+    return result;
+  };
+
+  //행 삭제
   const onCellRenderDelete = (cellInfo) => {
     const gridInstance = dataGridRef.current.instance;
+    const rowIndex = gridInstance.getRowIndexByKey(cellInfo.data.expensCd);
     return (
-      <Button
-        onClick={
-          () => {
-              const rowIndex = gridInstance.getRowIndexByKey(cellInfo.data.expensCd);
+      <Button 
+        onClick={async () => { 
               if (rowIndex >= 0) {
-                gridInstance.deleteRow(rowIndex);
+                const paramInfo = cellInfo.data;
+                const paramInfoNew = pick(paramInfo, ['prjctId', 'expensCd', 'bgtMngOdr']);
+        
+                const param = [
+                  { tbNm: "EXPENS_PRMPC" },
+                  
+                  paramInfoNew
+                ];
+                
+                try {
+                  const response = await ApiRequest("/boot/common/commonDelete", param);
+                    if(response > 0) {
+                      alert('데이터가 성공적으로 삭제되었습니다.');
+                      gridInstance.deleteRow(rowIndex);
+                      console.log(response);
+                    }
+                }catch (error) {
+                  console.error(error);
+                }               
               }
-          }
-        }
-        style={{ height: "100%" }}
-      >
-        삭제
-      </Button>
+          }}
+        text="삭제"
+      />
     );
   };
 
-  const handleAddRow = (data) => {
+  const handleAddRow = () => {
+    // console.log("data",data);
     const gridInstance = dataGridRef.current.instance;
     // gridInstance.addRow();
-    showPopup(data.event.data);
+    showPopup();
     // console.log("data",data.event.data);
     // gridInstance.deselectAll();
   };
@@ -217,7 +246,17 @@ const CustomCostTable = ({
       </DataGrid>
 
       <CustomPopup props={popup} visible={isPopupVisible} handleClose={hidePopup} onHide={onHide}>
-        <ProjectChangePopup selectedItem={selectedItem} period={period} labelValue={labelValue} popupInfo={costTableInfoJson} onHide={onHide} prjctId={prjctId}/>
+        <ProjectChangePopup 
+          selectedItem={selectedItem} 
+          period={period} 
+          labelValue={labelValue} 
+          popupInfo={costTableInfoJson} 
+          onHide={onHide} 
+          prjctId={prjctId} 
+          bgtMngOdr={bgtMngOdr}
+          ctrtYmd={ctrtYmd}
+          bizEndYmd={bizEndYmd}
+          />
        </CustomPopup>   
 
       <div style={{ textAlign: "right" }}>

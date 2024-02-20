@@ -1,12 +1,18 @@
 {
 	"menuName": "ProjectConsortiumJson",
-    "keyColumn": "prjctId",
+    "table": "PRJCT_CNSRTM",
+    "keyColumn": "cnsrtmSn",
     "tableColumns": 
 	[
-        {"key": "cnsrtmSn" ,"value": "사업수행유형", "type": "ComboBox", "cd":"VTW013" },
-        {"key": "cnsrtmCoNm", "value": "회사 명"},
-        {"key": "altmntAmt", "value": "금액"},
-        {"key": "cmmnExpensAmt", "value": "공통경비 금액"},
-        {"key": "slsAmRfltYn", "value": "매출액 반영여부", "type": "ComboBox", "cd": "VTW039"}
-	]
+        {"key": "bizFlfmtTyCdNm" ,"value": "사업수행유형", "validation":"", "type": "ComboBox", "cd":"VTW013"},
+        {"key": "cnsrtmCoNm", "value": "회사 명", "validation":""},
+        {"key": "altmntAmt", "value": "금액", "validation":"", "type": "NumberBox"},
+        {"key": "cmmnExpensAmt", "value": "공통경비 금액", "validation":"", "type": "NumberBox"},
+        {"key": "slsAmRfltYn", "value": "매출액 반영여부", "validation":""}
+	],
+    "slsAmRfltYn" : 
+    [
+        {"ID": "Y", "NAME": "매출액반영"},
+        {"ID": "N", "NAME": "매출액미반영"}
+    ]
 }

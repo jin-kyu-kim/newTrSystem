@@ -17,6 +17,8 @@ const ProjectDetail = () => {
   const prjctId = location.state.id;
   const totBgt = location.state.totBgt;
   const bgtMngOdr = location.state.bgtMngOdr;
+  const ctrtYmd = location.state.ctrtYmd;
+  const bizEndYmd = location.state.bizEndYmd;
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const ProjectDetail = ProjectDetailJson;
@@ -40,7 +42,7 @@ const ProjectDetail = () => {
 
       navigate("../project/ProjectChange",
         {
-        state: { prjctId: prjctId },
+        state: { prjctId: prjctId, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd, bgtMngOdr:bgtMngOdr },
         })
     }
   }
@@ -119,7 +121,7 @@ const ProjectDetail = () => {
           const Component = React.lazy(() => import(`${data.url}`));
           return (
             <React.Suspense fallback={<div>Loading...</div>}>
-              <Component prjctId={prjctId} />
+              <Component prjctId={prjctId} ctrtYmd={ctrtYmd} bizEndYmd={bizEndYmd} bgtMngOdr={bgtMngOdr} />
             </React.Suspense>
           );
         }}

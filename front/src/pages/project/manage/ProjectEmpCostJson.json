@@ -1,22 +1,22 @@
 {
 	"menuName": "ProjectEmpCostJson",
+    "table": "MMNY_LBRCO_PRMPC",
     "keyColumn": "empId",
     "tableColumns": 
 	[
-        {"key": "" ,"value": "상태"},
         {"key": "empId", "value": "성명"},
         {"key": "hnfRoleCdNm", "value": "역할"},
-        {"key": "", "value": "등급"},
         {"key": "tkcgJob", "value": "담당업무"},     
         {"key": "inptPrnmntYmd", "value": "투입예정일"},
         {"key": "withdrPrnmntYmd", "value": "철수예정일"},
-        {"key": "bgtMngOdr", "value": "총 금액"},
-        {"key": "", "value": "총 투입 MM"}
+        {"key": "gramt", "value": "총 금액"},
+        {"key": "total", "value": "총 투입 MM"}
 
 	],
     "summaryColumn":
     [
-        { "key": "bgtMngOdr", "value": "총 금액", "type":"sum", "format":"Total: {0}원"}
+        { "key": "gramt", "value": "총 금액", "type":"sum", "format":"Total: {0}원"},
+        { "key": "total", "value": "총 투입 MM", "type":"sum", "format":"Total: {0}MM"}
     ],
     "popup":
     {
@@ -25,27 +25,61 @@
         "title": "자사인력"
     },
     "labelValue" : {
-        "expensCdNm": {
-            "name": "expensCdNm",
-            "type": "ComboBox",
-            "label": "비용코드명",
-            "required": true,
-            "placeholder": "비용코드명"
-        },
-        "dtlDtls": {
-            "name": "dtlDtls",
+        "empId": {
+            "name": "empId",
             "type": "TextBox",
-            "label": "상세내역",
+            "label": "성명",
             "required": true,
-            "placeholder": "상세내역"
+            "placeholder": "성명"
         },
-        "bgtMngOdr": {
-            "name": "bgtMngOdr",
-            "type": "NumberBox",
-            "label": "총금액",
+        "hnfRoleCdNm": {
+            "name": "hnfRoleCdNm",
+            "type": "ComboBox",
+            "label": "역할",
             "required": true,
-            "placeholder": "총금액"
+            "placeholder": "역할"
+        },
+        "tkcgJob": {
+            "name": "tkcgJob",
+            "type": "TextBox",
+            "label": "담당업무",
+            "required": true,
+            "placeholder": "담당업무"
+        },
+        "temp2": {
+            "name": "temp2",
+            "type": "TextBox",
+            "label": "현재단가",
+            "required": true,
+            "placeholder": "현재단가"
+        },
+        "gramt": {
+            "name": "gramt",
+            "type": "NumberBox",
+            "label": "총 금액",
+            "required": true,
+            "placeholder": "총 금액"
+        },
+        "total": {
+            "name": "total",
+            "type": "NumberBox",
+            "label": "총 투입 MM",
+            "required": true,
+            "placeholder": "총 투입 MM"
+        },
+        "inptPrnmntYmd": {
+            "name": "inptPrnmntYmd",
+            "type": "DateBox",
+            "label": "투입예정일",
+            "required": true,
+            "placeholder": "투입예정일"
+        },
+        "withdrPrnmntYmd": {
+            "name": "withdrPrnmntYmd",
+            "type": "DateBox",
+            "label": "철수예정일",
+            "required": true,
+            "placeholder": "철수예정일"
         }
     }
-
 }

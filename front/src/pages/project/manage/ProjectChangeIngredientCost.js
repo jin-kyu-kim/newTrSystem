@@ -6,7 +6,7 @@ import CustomAddTable from "../../../components/unit/CustomAddTable";
 import Box, {Item} from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
 
-const ProjectChangeIngredientCost = ({prjctId}) => {
+const ProjectChangeIngredientCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr}) => {
 
     const [values, setValues] = useState([]);
     const { manuName, tableColumns} = ProjectChangeIngredientCostJson;
@@ -17,10 +17,10 @@ const ProjectChangeIngredientCost = ({prjctId}) => {
     ];
 
     useEffect(() => {
-        Cnsrtm();
+        IngredientCost();
     }, []);
 
-    const Cnsrtm = async () => {
+    const IngredientCost = async () => {
         try {
             const response = await ApiRequest("/boot/common/commonSelect", param);
             setValues(response);
@@ -47,7 +47,7 @@ const ProjectChangeIngredientCost = ({prjctId}) => {
                     </Item>
                 </Box>
 
-                <CustomAddTable manuName={manuName} columns={tableColumns} values={values} prjctId={prjctId}/>
+                <CustomAddTable manuName={manuName} columns={tableColumns} values={values} prjctId={prjctId} json={ProjectChangeIngredientCostJson} bgtMngOdr={bgtMngOdr}/>
                 </div>
             </div>
         </>

@@ -18,6 +18,7 @@ const ProjectChange = () => {
   const prjctId = location.state ? location.state.prjctId : null;
   const ctrtYmd = location.state ? location.state.ctrtYmd : null;
   const bizEndYmd = location.state ? location.state.bizEndYmd : null;
+  const bgtMngOdr = location.state ? location.state.bgtMngOdr : null;
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const ProjectChangeTab = ProjectChangeJson.tab;
@@ -112,6 +113,7 @@ const ProjectChange = () => {
               prjctId={prjctId}
               ctrtYmd={ctrtYmd}
               bizEndYmd={bizEndYmd}
+              bgtMngOdr={bgtMngOdr}
               revise={true}
               tabId={data.tabId}
               />

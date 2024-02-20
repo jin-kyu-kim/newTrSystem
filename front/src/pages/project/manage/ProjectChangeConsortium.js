@@ -6,20 +6,20 @@ import CustomAddTable from "../../../components/unit/CustomAddTable";
 import Box, {Item} from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
 
-const ProjectConsortium = (data) => {
+const ProjectConsortium = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr }) => {
     const [values, setValues] = useState([]);
     const { manuName, tableColumns} = projectChangeConsortiumJson;
 
     const param = [
         { tbNm:"PRJCT_CNSRTM" },
-        { prjctId: data.prjctId },
+        { prjctId: prjctId },
     ];
 
     useEffect(() => {
-        Cnsrtm();
+        Consortium();
     }, []);
 
-    const Cnsrtm = async () => {
+    const Consortium = async () => {
         try {
             const response = await ApiRequest("/boot/common/commonSelect", param);
             setValues(response);
@@ -45,7 +45,12 @@ const ProjectConsortium = (data) => {
                         </div>
                     </Item>
                 </Box>
-                <CustomAddTable manuName={manuName} columns={tableColumns} values={values} prjctId={data.prjctId}/>
+                <CustomAddTable 
+                    manuName={manuName} 
+                    columns={tableColumns} 
+                    values={values} 
+                    prjctId={prjctId}
+                    json={projectChangeConsortiumJson}/>
                 </div>
             </div>
         </>
