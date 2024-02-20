@@ -6,20 +6,20 @@ import CustomCostTable from "components/unit/CustomCostTable";
 import Box, { Item } from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
 
-const ProjectControlBudgetCost = ({ prjctId }) => {
+const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr }) => {
   const [values, setValues] = useState([]);
   const { manuName, tableColumns, keyColumn, summaryColumn, popup } = ProjectControlBudgetCostJson;
 
   const param = [
     { tbNm: "EXPENS_PRMPC" },
-    { prjctId: "d343ff40-b4df-11ee-b259-000c2956283f" }, //TODO. prjctId를 받아와야함 (테스트중 임시값)
+    { prjctId: prjctId }, 
   ];
 
   useEffect(() => {
-    Cnsrtm();
+    ControlBudget();
   }, []);
 
-  const Cnsrtm = async () => {
+  const ControlBudget = async () => {
     try {
       const response = await ApiRequest("/boot/common/commonSelect", param);
       setValues(response);
@@ -57,6 +57,9 @@ const ProjectControlBudgetCost = ({ prjctId }) => {
               prjctId={prjctId}
               summaryColumn={summaryColumn}
               popup={popup}
+              ctrtYmd={ctrtYmd}
+              bizEndYmd={bizEndYmd}
+              bgtMngOdr={bgtMngOdr}
               costTableInfoJson={ProjectControlBudgetCostJson}
             />
           </div>

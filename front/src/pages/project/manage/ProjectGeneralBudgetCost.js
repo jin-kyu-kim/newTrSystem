@@ -6,9 +6,8 @@ import CustomCostTable from "components/unit/CustomCostTable";
 import Box, { Item } from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
 
-const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd }) => {
+const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr }) => {
   const [values, setValues] = useState([]);
-  const [popupVisible, setPopupVisible] = useState(false);
 
   const param = [
     { tbNm: "EXPENS_PRMPC" },
@@ -23,15 +22,10 @@ const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd }) => {
     try {
       const response = await ApiRequest("/boot/common/commonSelect", param);
       setValues(response);
-      console.log("response",response);
     } catch (error) {
       console.error(error);
     }
   };
-
-  const onHide = () => {
-    setPopupVisible(false);
-  }
 
   return (
     <>
@@ -65,7 +59,7 @@ const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd }) => {
               prjctId={prjctId}
               ctrtYmd={ctrtYmd}
               bizEndYmd={bizEndYmd}
-              onHide={onHide}
+              bgtMngOdr={bgtMngOdr}
             />
           </div>
         </div>

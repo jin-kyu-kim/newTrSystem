@@ -21,7 +21,7 @@ const CustomCdComboBox = ({ param, placeholderText, onSelect, name, value, readO
   }, []);
 
   useEffect(() => {
-    if (cdVal.length === cdJson.length) {
+    if (cdVal[0] === cdJson[0]) {
       getCode();
     }
   }, [cdVal]);
