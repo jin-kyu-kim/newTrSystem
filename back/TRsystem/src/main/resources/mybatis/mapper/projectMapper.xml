@@ -397,7 +397,7 @@
         </if>
     </select>
     
-    	<select id="retrievePrjctAprvDtl" parameterType="map" resultType="com.trsystem.LowerHashMap">
+	<select id="retrievePrjctAprvDtl" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT concat(c1.CD_NM, ' (', c2.CD_NM, ')') AS ATRZ_STEP_STTS
 			 , APRVR_EMP_ID
 		 	 , e2.EMP_FLNM AS REG_EMP_FLNM
@@ -418,4 +418,36 @@
             </if>
         </if>
     </select>
+    
+	<select id="retrieveAprvrEmpId" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		<![CDATA[
+	    WITH RECURSIVE CTE(DEPT_ID, DEPT_NM, UP_DEPT_ID, EMP_ID, DEPTH) AS (
+	        SELECT d1.DEPT_ID, DEPT_NM, UP_DEPT_ID, dh1.EMP_ID, 1
+	        FROM DEPT d1
+	        JOIN DEPT_HNF dh1 ON (d1.DEPT_ID = dh1.DEPT_ID)
+	        WHERE UP_DEPT_ID IS NULL
+	        UNION ALL
+	        SELECT cd.DEPT_ID, cd.DEPT_NM, cd.UP_DEPT_ID, dh2.EMP_ID, DEPTH + 1
+	        FROM DEPT cd
+	        JOIN DEPT_HNF dh2 ON (cd.DEPT_ID = dh2.DEPT_ID)
+	        INNER JOIN CTE B ON (B.DEPT_ID = cd.UP_DEPT_ID)
+	    )
+	    SELECT @r AS DEPT_ID
+	         , (SELECT @r := UP_DEPT_ID FROM CTE WHERE DEPT_ID = @r LIMIT 1) AS UP_DEPT_ID
+	         , dh.EMP_ID
+	         , cte.DEPTH
+	    FROM (SELECT @r := #{deptId}) AS vars, (SELECT * FROM CTE WHERE DEPT_ID != #{deptId}) AS h
+	    JOIN DEPT_HNF dh ON (dh.DEPT_ID = @r)
+	    JOIN CTE cte ON (cte.DEPT_ID = @r)
+	    WHERE @r <> '-'
+	    AND dh.JBTTL_CD = 'VTW01001'
+	    ORDER BY cte.DEPTH ASC
+		]]>
+    </select>
+    
+	<select id="retrievePrjctAtrzLnSn" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT MAX(ATRZ_LN_SN) AS ATRZ_LN_SN
+		  FROM PRJCT_ATRZ_LN
+		 WHERE PRJCT_ID = #{prjctId};
+	</select>
 </mapper>

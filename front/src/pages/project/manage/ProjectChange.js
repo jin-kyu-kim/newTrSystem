@@ -59,6 +59,7 @@ const ProjectChange = () => {
     const date = new Date();
     const param = [
       { tbNm: "PRJCT_ATRZ_LN"},
+      { tbNm: "PRJCT_ATRZ_LN_DTL"},
       { 
         prjctId: prjctId,
         empId: empId,

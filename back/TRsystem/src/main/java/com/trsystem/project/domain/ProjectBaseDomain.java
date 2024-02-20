@@ -94,53 +94,152 @@ public class ProjectBaseDomain {
     
     public static int insertRegistProjectAprv(List<Map<String, Object>> params) {
     	
-    	String atrzSttsCd = "VTW00801";
-    	List<Map<String, Object>> insertParams = new ArrayList<>();
+    	int result = 0;
+
+    	final String PRJCT_ID = (String) params.get(2).get("prjctId");
     	
     	Map<String, Object> param = new HashMap<>();
-
-    	param.put("atrzStepCd", "VTW00704");
-    	param.put("regDt", params.get(1).get("regDt"));
-    	param.put("atrzLnSn", 1);
-    	param.put("atrzSttsCd", atrzSttsCd);
-    	param.put("aprvrEmpId", params.get(1).get("empId"));
-    	param.put("regEmpId", params.get(1).get("empId"));
-    	param.put("prjctId", params.get(1).get("prjctId"));    	
+      	param.put("prjctId", PRJCT_ID);
+      	param.put("atrzLnSn", params.get(2).get("atrzLnSn"));
+    	param.put("regDt", params.get(2).get("regDt"));
+    	param.put("regEmpId", params.get(2).get("empId"));
+      	
+    	if((int)param.get("atrzLnSn") == 1) {
+    		param.put("prmpcInptSeCd", "VTW01502"); // 최초 시 원가 등록(VTW01502)
+    	} else {
+    		param.put("prmpcInptSeCd", "VTW01503"); // 최초가 아닐 시 원가 변경(VTW01503)
+    	}
     	
-    	insertParams.add(0, params.get(0));
-    	insertParams.add(1, param);
+    	param.put("atrzAplyPrvonshCn", params.get(2).get("atrzAplyPrvonshCn"));
     	
     	try {
-    		int result = commonService.insertData(insertParams);
+    		
+        	List<Map<String, Object>> insertParams = new ArrayList<>();
+    		insertParams.add(0, params.get(0));
+    		insertParams.add(1, param);
+    		
+    		System.out.println(insertParams);
+    		
+    		result = commonService.insertData(insertParams);
+    		
+    	} catch(Exception e) {
     		return result;
+    	}
+    	return result;
+    }
+    
+    public static int insertRegistProjectAprvDtl(List<Map<String, Object>> params, List<Map<String, Object>> empIdParams) {
+    	
+    	int result = 0;
+    	
+    	List<Map<String, Object>> insertParams = new ArrayList<>();
+    	
+    	final String PRJCT_ID = (String) params.get(2).get("prjctId");
+    	final String atrzSttsCd = "VTW00801";
+    	String atrzStepCd[] = {"VTW00705", "VTW00704", "VTW00703", "VTW00702", "VTW00701"};
+    	
+    	insertParams.add(0, params.get(1));
+    	
+    	for(int i = 0; i < empIdParams.size(); i++) {
+        	Map<String, Object> param = new HashMap<>();
+        	
+        	// 공통되는 부분
+          	param.put("prjctId", PRJCT_ID);
+        	param.put("atrzLnSn", params.get(2).get("atrzLnSn"));
+        	param.put("regDt", params.get(2).get("regDt"));
+        	param.put("regEmpId", params.get(2).get("empId"));
+        	param.put("atrzSttsCd", atrzSttsCd);
+    		
+        	// 다른 부분
+    		param.put("atrzStepCd", atrzStepCd[i]);
+    		param.put("aprvrEmpId", empIdParams.get(i).get("empId"));
+    		
+    		insertParams.add(i+1, param);
+    	}
+    	
+    	try {
+    		
+    		result = commonService.insertData(insertParams);
     		
     	} catch (Exception e) {
-    		return -1;
+    		return result;
     	}
+    	return result;
+    }
+    
+    
+    /*
+     * 승인 순번 채번 메소드
+     */
+    public static int retrievePrjctAtrzLnSn(Map<String, Object> param) {
+    	
+    	int atrzLnSn = 1;
+    	System.out.println(param);
+    	
+    	List<Map<String, Object>> atrzLnSnResult = new ArrayList<>();
+    	
+      	try {
+      		
+          	Map<String, Object> snParam = new HashMap<String, Object>();
+          	snParam.put("queryId", "projectMapper.retrievePrjctAtrzLnSn");
+          	snParam.put("prjctId", param.get("prjctId"));
+          	
+          	atrzLnSnResult = commonService.queryIdSearch(snParam);
+          	
+          	
+          	if(atrzLnSnResult.get(0) != null) {
+          		atrzLnSn = (int)atrzLnSnResult.get(0).get("atrzLnSn") + 1;
+          	} else {
+          		return atrzLnSn;
+          	}
+          	
+      		return atrzLnSn;
+      	} catch (Exception e) {
+      		e.printStackTrace();
+      		return -1;
+      	}
+      	
     	
     }
     
-    public static List<Map<String, Object>> retrieveRegEmpId(Map<String, Object> params) {
+    public static List<Map<String, Object>> retrieveAprvrEmpId(Map<String, Object> params) {
     	
     	String deptId;
     	
-    	List<Map<String, Object>> temp = new ArrayList<>();
+    	final String queryId = "projectMapper.retrieveAprvrEmpId";
+    	
+    	// 2. deptId로 결재자(팀장급)의 Id를 찾는다.
+    	List<Map<String, Object>> aprvrEmpIdlist = new ArrayList<>();
+    	Map<String, Object> queryIdMap = new HashMap<>();
+    	queryIdMap.put("queryId", queryId);
     	
     	try {
-    		Map<String, Object> param = new HashMap<>();
-    		param.put("tbNm", "DEPT");
-    		param.put("deptId", params.get("deptId"));
+    		// 1. 나의 deptId를 찾는다. 
+    		List<Map<String, Object>> commonSelectParams = new ArrayList<>();
+    		
+    		Map<String, Object> tbNm = new HashMap<>();
+    		tbNm.put("tbNm", "DEPT_HNF");
+
+    		Map<String, Object> condition = new HashMap<>();
+    		condition.put("empId", params.get("empId"));
+    		
+    		commonSelectParams.add(tbNm);
+    		commonSelectParams.add(condition);
+    		
+    		deptId = (String) commonService.commonSelect(commonSelectParams).get(0).get("deptId");
+    		
+    		queryIdMap.put("deptId", deptId);
+    		
+    		// 2. deptId에 해당하는 계층쿼리를 조회한다.
+    		aprvrEmpIdlist = commonService.queryIdSearch(queryIdMap);
     		
     	} catch (Exception e) {
-    	
+    		
     	}
     	
+    	return aprvrEmpIdlist;
     	
-    	List<Map<String, Object>> result = new ArrayList<>();
-    	
-    	
-    
-    	return result;
     }
+    
 
 }
