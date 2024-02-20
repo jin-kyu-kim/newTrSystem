@@ -10,7 +10,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 public class CommonController {  
-
+ 
     private final CommonService commonService;
 
     @PostMapping(value = "/boot/common/commonInsert")
