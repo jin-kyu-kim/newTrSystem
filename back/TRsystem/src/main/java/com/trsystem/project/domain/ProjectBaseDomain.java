@@ -103,7 +103,8 @@ public class ProjectBaseDomain {
       	param.put("atrzLnSn", params.get(2).get("atrzLnSn"));
     	param.put("regDt", params.get(2).get("regDt"));
     	param.put("regEmpId", params.get(2).get("empId"));
-      	
+    	param.put("atrzAplyPrvosnh", params.get(2).get("atrzAplyPrvosnh"));
+
     	if((int)param.get("atrzLnSn") == 1) {
     		param.put("prmpcInptSeCd", "VTW01502"); // 최초 시 원가 등록(VTW01502)
     	} else {
@@ -117,8 +118,6 @@ public class ProjectBaseDomain {
         	List<Map<String, Object>> insertParams = new ArrayList<>();
     		insertParams.add(0, params.get(0));
     		insertParams.add(1, param);
-    		
-    		System.out.println(insertParams);
     		
     		result = commonService.insertData(insertParams);
     		
@@ -174,7 +173,6 @@ public class ProjectBaseDomain {
     public static int retrievePrjctAtrzLnSn(Map<String, Object> param) {
     	
     	int atrzLnSn = 1;
-    	System.out.println(param);
     	
     	List<Map<String, Object>> atrzLnSnResult = new ArrayList<>();
     	
@@ -195,10 +193,8 @@ public class ProjectBaseDomain {
           	
       		return atrzLnSn;
       	} catch (Exception e) {
-      		e.printStackTrace();
       		return -1;
       	}
-      	
     	
     }
     

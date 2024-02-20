@@ -5,30 +5,23 @@ import ApiRequest from '../../../utils/ApiRequest';
 import CustomHorizontalTable from '../../../components/unit/CustomHorizontalTable';
 import AtrzInfo from './ProjectAtrzInfoJson.json';
 
-const ProjectAtrzInfo = ({prjctId}) => {
+const ProjectAtrzInfo = ({prjctId, atrzLnSn}) => {
 const [atrzInfoData, setAtrzInfoData] = useState([]);
 const [atrzDate, setAtrzDate] = useState([]);
 
-const date = [
-  {
-    atrzLnSn: 1,
-    text: "2024-02-15",
-  },
-  {
-    atrzLnSn: 2,
-    text: "2024-02-16",
-  }
-];
-
 useEffect(() => {
-  AtrzDate();
-  AtrzInfoData(1);
+    AtrzDate(atrzLnSn);
+    AtrzInfoData(atrzLnSn);
 }, []);
 
-const AtrzDate = async () => {
+const AtrzDate = async (atrzLnSn) => {
+
   const param = [
     { tbNm: "PRJCT_ATRZ_LN" },
-    { prjctId : prjctId }
+    { 
+      prjctId : prjctId,
+      atrzLnSn : atrzLnSn
+    }
   ]
 
   try {
@@ -38,11 +31,10 @@ const AtrzDate = async () => {
   } catch (error) {
     console.error('Error fetching data', error);
   }
-
 }
 
-
 const AtrzInfoData = async (atrzLnSn) => {
+    if(atrzLnSn === undefined) atrzLnSn = 1;
   const param =
     { 
       queryId: AtrzInfo.queryId,
@@ -53,17 +45,12 @@ const AtrzInfoData = async (atrzLnSn) => {
   try {
     const response = await ApiRequest("/boot/common/queryIdSearch", param);
     setAtrzInfoData(response);
-    console.log(response);
   } catch (error) {
     console.error('Error fetching data', error);
   }
 };
 
 const handleTreeViewSelectionChange = useCallback((e) => {
-  
-  console.log(e)
-  console.log(e.itemData);
-  
   AtrzInfoData(e.itemData.atrzLnSn);
 });
 
@@ -104,26 +91,6 @@ const handleTreeViewSelectionChange = useCallback((e) => {
           }
         </div>
       </div>
-
-{/*       
-      <CustomHorizontalTable headers={AtrzInfo.AtrzSumry.AtrzSumry1} column={atrzInfoData[0]}/>
-      {
-        atrzInfoData.map((item) => {
-          if(item.atrzOpnnCn !== null) {
-            return (
-              <CustomHorizontalTable headers={AtrzInfo.AtrzSumry.AtrzSumry3} column={item}/>
-            );
-          } else if(item.rjctPrvonsh !== null){
-            return (
-              <CustomHorizontalTable headers={AtrzInfo.AtrzSumry.AtrzSumry4} column={item}/>
-            )
-          } else {
-            return (
-              <CustomHorizontalTable headers={AtrzInfo.AtrzSumry.AtrzSumry2} column={item}/>
-            )
-          }
-        })
-      } */}
     </div>
   </div>
   );

@@ -2,7 +2,7 @@ import React, { useCallback, useState, Suspense, lazy, useMemo } from "react";
 import { TabPanel } from "devextreme-react";
 import { useLocation } from "react-router-dom";
 import { Button } from "devextreme-react/button";
-import TextArea from "devextreme-react/text-area";
+import TextArea from 'devextreme-react/text-area';
 import ToolbarItem from "devextreme-react/popup";
 
 import ProjectChangeJson from "./ProjectChangeJson.json";
@@ -20,6 +20,8 @@ const ProjectChange = () => {
   const bizEndYmd = location.state ? location.state.bizEndYmd : null;
   const bgtMngOdr = location.state ? location.state.bgtMngOdr : null;
   const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const [atrzAplyPrvosnh, setAtrzAplyPrvosnh] = useState("");
 
   const ProjectChangeTab = ProjectChangeJson.tab;
   const popup = ProjectChangeJson.popup;
@@ -51,9 +53,16 @@ const ProjectChange = () => {
   };
 
   const onSubmit = () => {
+
     handleSubmit();
     setPopupVisible(false);
   }
+
+  const onTextAreaValueChanged = useCallback((e) => {
+    console.log(e)
+    setAtrzAplyPrvosnh(e.value);
+  }, []);
+  
 
   const handleSubmit = async () => {
     const date = new Date();
@@ -65,6 +74,7 @@ const ProjectChange = () => {
         empId: empId,
         deptId: deptId,
         regDt : date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0],
+        atrzAplyPrvosnh: atrzAplyPrvosnh,
       },
     ];
     try {
@@ -110,12 +120,12 @@ const ProjectChange = () => {
           return (
             <Suspense fallback={<div>Loading...</div>}>
               <Component 
-              prjctId={prjctId}
-              ctrtYmd={ctrtYmd}
-              bizEndYmd={bizEndYmd}
-              bgtMngOdr={bgtMngOdr}
-              revise={true}
-              tabId={data.tabId}
+                prjctId={prjctId}
+                ctrtYmd={ctrtYmd}
+                bizEndYmd={bizEndYmd}
+                bgtMngOdr={bgtMngOdr}
+                revise={true}
+                tabId={data.tabId}
               />
             </Suspense>
           );
@@ -124,7 +134,11 @@ const ProjectChange = () => {
         />
       </div>
       <CustomPopup props={popup} visible={popupVisible} handleClose={handleClose}>
-        <TextArea height="50%"/>
+        <TextArea 
+          height="50%"
+          valueChangeEvent="change"
+          onValueChanged={onTextAreaValueChanged}
+        />
         <Button text="승인요청" onClick={onSubmit}/>
         <Button text="취소" onClick={handleClose}/>
       </CustomPopup>

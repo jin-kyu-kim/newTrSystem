@@ -54,7 +54,6 @@ public class ProjectBaseController {
     public int insertRegistProjectAprv(@RequestBody List<Map<String, Object>> params) {
     	// front로 부터 받은 params -> 기초적인 정보들 (ex. prjctId, regDt 등)
     	// 조회 로직을 하나 추가하여, 프로젝트 결재선 테이블에 넣을 값들을 조회한 뒤 insert 메소드에 매개변수로 함께 넘겨준다.
-    	System.out.println("@!312312312321");
     	List<Map<String, Object>> empIdParams = new ArrayList<>();
     	
     	int result1 = 0;

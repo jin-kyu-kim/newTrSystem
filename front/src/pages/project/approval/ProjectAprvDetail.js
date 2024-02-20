@@ -12,6 +12,7 @@ const ProjectAprvDetail = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const prjctId = location.state.id;
+    const atrzLnSn = location.state.atrzLnSn;
     const totBgt = location.state.totBgt;
     const bgtMngOdr = location.state.bgtMngOdr;
     const ProjectAprvDetail = ProjectAprvDetailJson;
@@ -68,7 +69,7 @@ const ProjectAprvDetail = () => {
                             const Component = React.lazy(() => import(`../${data.url}.js`));
                             return (
                                 <React.Suspense fallback={<div>Loading...</div>}>
-                                    <Component prjctId={prjctId}/>
+                                    <Component prjctId={prjctId} atrzLnSn={atrzLnSn}/>
                                 </React.Suspense>
                             );
                         }
