@@ -9,7 +9,7 @@ import { useCookies } from "react-cookie";
 
 const LoginForm = ({ handleLogin }) => {
   const userInfo = {
-    empId: "456498765sdf6sd54",
+    empId: "202160c6-bf25-11ee-b259-000c2956283f",
     empNm: "김진규",
     auth: "test",
   };
