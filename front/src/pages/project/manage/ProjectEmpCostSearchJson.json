@@ -7,7 +7,7 @@
     "expanded": true
   },
   {
-    "caption": "직급",
+    "caption": "역할",
     "dataField": "hnfRoleNm",
     "width": 100,
     "area": "row",
@@ -15,10 +15,44 @@
     "showTotals": false
   },
   {
-    "caption": "등급",
+    "caption": "직급",
     "dataField": "grade",
     "width": 100,
-    "area": "row"
+    "area": "row",
+    "expanded": true,
+    "showTotals": false
+  },
+  {
+    "caption": "담당업무",
+    "dataField": "tkcgJob",
+    "width": 100,
+    "area": "row",
+    "expanded": true,
+    "showTotals": false
+  },
+  {
+    "caption": "투입예정일",
+    "dataField": "inptPrnmntYmd",
+    "width": 100,
+    "area": "row",
+    "expanded": true,
+    "showTotals": false
+  },
+  {
+    "caption": "철수예정일",
+    "dataField": "withdrPrnmntYmd",
+    "width": 100,
+    "area": "row",
+    "expanded": true,
+    "showTotals": false
+  },
+  {
+    "caption": "FLAG",
+    "dataField": "flag",
+    "width": 100,
+    "area": "row",
+    "expanded": true,
+    "showTotals": false
   },
   {
     "dataField": "inptYm",
@@ -30,8 +64,7 @@
     "expanded": true
   },
   {
-    "caption": "Total",
-    "dataField": "expectMm",
+    "dataField": "mm",
     "dataType": "number",
     "summaryType": "sum",
     "area": "data"
