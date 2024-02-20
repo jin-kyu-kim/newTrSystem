@@ -10,9 +10,6 @@
         {"key": "cmmnExpensAmt", "value": "공통경비 금액", "validation":"", "type": "NumberBox"},
         {"key": "slsAmRfltYn", "value": "매출액 반영여부", "validation":""}
 	],
-    "slsAmRfltYn" : 
-    [
-        {"ID": "Y", "NAME": "매출액반영"},
-        {"ID": "N", "NAME": "매출액미반영"}
-    ]
+    "pkColumns": ["prjctId","cnsrtmSn"],
+    "CdComboboxColumn": "bizFlfmtTyCd"
 }
