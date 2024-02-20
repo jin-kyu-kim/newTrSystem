@@ -13,8 +13,9 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
     const [data, setData] = useState([]);
     const [param, setParam] = useState([]);
     const [contents, setContents] = useState([]);
+    
     const [structuredData, setStructuredData] = useState({});
-    console.log("popupInfo",popupInfo);
+    // console.log("popupInfo",popupInfo);
     //기간 데이터를 받아와서 년도별로 월을 나누어서 배열로 만들어주는 함수
     useEffect(() => {
         const periodData = period.reduce((acc, period) => {
@@ -47,7 +48,8 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
         setParam({
             ...param,
             "prjctId" : prjctId,
-            "bgtMngOdr" : bgtMngOdr
+            "bgtMngOdr" : bgtMngOdr,
+            "expensPrmpcSn" : 1, 
         });
 
     }, []);
@@ -130,6 +132,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
         try {
             const response = await ApiRequest("/boot/common/commonInsert", paramInfo);
                 if(response > 0) {
+                    alert('데이터가 성공적으로 저장되었습니다.');
                     handleCancel();
                 }    
         } catch (error) {
