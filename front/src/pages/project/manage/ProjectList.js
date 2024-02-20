@@ -40,12 +40,6 @@ const ProjectList = () => {
       pageSize: pageSize,
     });
   };
-  const test = async () => {
-    const response = await ApiRequest(
-      "/boot/prjct/prjctMng/prjctBsisInfoReg/prjctBsisInfoReg",
-      param
-    );
-  };
 
   const pageHandle = async () => {
     try {
@@ -96,7 +90,6 @@ const ProjectList = () => {
         onRowDblClick={onRowDblClick}
         paging={true}
       />
-      <Button onClick={test} />
     </div>
   );
 };
