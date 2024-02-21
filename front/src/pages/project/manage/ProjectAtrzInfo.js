@@ -10,8 +10,14 @@ const [atrzInfoData, setAtrzInfoData] = useState([]);
 const [atrzDate, setAtrzDate] = useState([]);
 
 useEffect(() => {
-    AtrzDate(atrzLnSn);
-    AtrzInfoData(atrzLnSn);
+
+  let order = [];
+  const result = AtrzDate(atrzLnSn).then((value) => {
+    order = JSON.parse(JSON.stringify(value));
+    order.reverse();
+    AtrzInfoData(order[0].atrzLnSn);
+  });
+
 }, []);
 
 const AtrzDate = async (atrzLnSn) => {
@@ -27,6 +33,7 @@ const AtrzDate = async (atrzLnSn) => {
   try {
     const response = await ApiRequest("/boot/common/commonSelect", param);
     setAtrzDate(response);
+    return response;
 
   } catch (error) {
     console.error('Error fetching data', error);
@@ -61,7 +68,7 @@ const handleTreeViewSelectionChange = useCallback((e) => {
       <div className='atrz-container'>
         <div className='left-content'>
           <TreeView
-            items={atrzDate}
+            items={atrzDate.reverse()}
             dataStructure="plain"
             selectionMode="single"
             selectByClick={true}

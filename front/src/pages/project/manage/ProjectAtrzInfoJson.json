@@ -15,7 +15,7 @@
           "AtrzSumry3" : [
             { "key" : "atrzStepStts", "value": "단계(상태)" },
             { "key" : "aprvrEmpFlnm", "value": "결재자"}, 
-            { "key": "aprvrOpnnCn", "value": "결재의견" },
+            { "key": "atrzOpnnCn", "value": "결재의견" },
             { "key": "", "value": "" }
           ],
           "AtrzSumry4" : [

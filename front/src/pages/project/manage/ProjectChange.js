@@ -5,6 +5,8 @@ import { Button } from "devextreme-react/button";
 import TextArea from 'devextreme-react/text-area';
 import ToolbarItem from "devextreme-react/popup";
 
+import { useNavigate } from "react-router-dom";
+
 import ProjectChangeJson from "./ProjectChangeJson.json";
 
 import LinkButton from "../../../components/unit/LinkButton.js";
@@ -15,13 +17,14 @@ import ApiRequest from "utils/ApiRequest";
 
 const ProjectChange = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const prjctId = location.state ? location.state.prjctId : null;
   const ctrtYmd = location.state ? location.state.ctrtYmd : null;
   const bizEndYmd = location.state ? location.state.bizEndYmd : null;
   const bgtMngOdr = location.state ? location.state.bgtMngOdr : null;
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const [atrzAplyPrvosnh, setAtrzAplyPrvosnh] = useState("");
+  const [atrzAplyPrvonshCn, setAtrzAplyPrvonshCn] = useState("");
 
   const ProjectChangeTab = ProjectChangeJson.tab;
   const popup = ProjectChangeJson.popup;
@@ -54,13 +57,26 @@ const ProjectChange = () => {
 
   const onSubmit = () => {
 
-    handleSubmit();
-    setPopupVisible(false);
+    // 해당 프로젝트에 승인요청중인 내역이 있는지 확인한다.
+    // 확인 후 있을 경우 -> 승인요청중인 내역이 있습니다. 승인요청을 취소하고 다시 요청해주세요.
+    // 확인 후 없을 경우 -> 승인요청을 진행합니다.
+
+    // 확인 로직
+    const boolean = true;
+
+    if(boolean) {
+      alert("승인요청중인 내역이 있습니다. 승인요청을 취소하고 다시 요청해주세요.");
+      return;
+    } else {
+      const isconfirm = window.confirm("승인요청을 진행합니다. 승인을 요청하시겠습니까?");
+      if(isconfirm){
+        handleSubmit();
+      }
+    }
   }
 
   const onTextAreaValueChanged = useCallback((e) => {
-    console.log(e)
-    setAtrzAplyPrvosnh(e.value);
+    setAtrzAplyPrvonshCn(e.value);
   }, []);
   
 
@@ -74,12 +90,20 @@ const ProjectChange = () => {
         empId: empId,
         deptId: deptId,
         regDt : date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0],
-        atrzAplyPrvosnh: atrzAplyPrvosnh,
+        atrzAplyPrvonshCn: atrzAplyPrvonshCn,
       },
     ];
     try {
       const response = await ApiRequest("/boot/prjct/insertRegistProjectAprv", param);
+      console.log(response)
 
+      if(response > 0) {
+        alert("승인요청이 완료되었습니다.");
+        setPopupVisible(false);
+        navigate("../project/ProjectAprv");
+      } else {
+        alert("승인요청이 실패되었습니다.");
+      }
     } catch (error) {
       console.error('Error fetching data', error);
     }

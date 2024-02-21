@@ -103,15 +103,13 @@ public class ProjectBaseDomain {
       	param.put("atrzLnSn", params.get(2).get("atrzLnSn"));
     	param.put("regDt", params.get(2).get("regDt"));
     	param.put("regEmpId", params.get(2).get("empId"));
-    	param.put("atrzAplyPrvosnh", params.get(2).get("atrzAplyPrvosnh"));
+    	param.put("atrzAplyPrvonshCn", params.get(2).get("atrzAplyPrvonshCn"));
 
     	if((int)param.get("atrzLnSn") == 1) {
     		param.put("prmpcInptSeCd", "VTW01502"); // 최초 시 원가 등록(VTW01502)
     	} else {
     		param.put("prmpcInptSeCd", "VTW01503"); // 최초가 아닐 시 원가 변경(VTW01503)
     	}
-    	
-    	param.put("atrzAplyPrvonshCn", params.get(2).get("atrzAplyPrvonshCn"));
     	
     	try {
     		
