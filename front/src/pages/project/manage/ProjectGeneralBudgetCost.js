@@ -5,23 +5,62 @@ import ProjectGeneralBudgetCostJson from "./ProjectGeneralBudgetCostJson.json";
 import CustomCostTable from "components/unit/CustomCostTable";
 import Box, { Item } from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
+import { parse, format, addMonths } from 'date-fns';
 
 const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr }) => {
   const [values, setValues] = useState([]);
-
-  const param = [
-    { tbNm: "EXPENS_PRMPC" },
-    { prjctId: prjctId }, 
-  ];
+  let groupingDtl = [];
 
   useEffect(() => {
+    const runOrder = async() => {
+    GeneralBudgetDtl();
     GeneralBudget();
+    };
+    runOrder();
   }, []);
 
+  
+  const GeneralBudgetDtl = async () => {
+    const param = [
+      { tbNm: "EXPENS_MNBY_PRMPC_DTLS" },
+      { prjctId: prjctId,
+        bgtMngOdr: bgtMngOdr}, 
+    ];
+
+  try {
+    const response = await ApiRequest("/boot/common/commonSelect", param);
+    // setValues(response);
+    console.log("디테일이요",response);
+    const groupedByExpensPrmpcSn = response.reduce((acc, item) => {
+      // expensPrmpcSn 값으로 그룹화된 객체를 찾거나, 없으면 새로운 배열을 생성합니다.
+      acc[item.useYm] = acc[item.useYm] || [];
+      acc[item.useYm].push(item);
+      groupingDtl = acc;
+      console.log("groupingDtl디테일 ",groupingDtl);
+      return acc;
+    }, {});
+    
+
+  } catch (error) {
+    console.error(error);
+  }
+};
+
   const GeneralBudget = async () => {
+      const param = [
+        { tbNm: "EXPENS_PRMPC" },
+        { prjctId: prjctId, 
+          bgtMngOdr: bgtMngOdr}, 
+      ];
     try {
       const response = await ApiRequest("/boot/common/commonSelect", param);
+        for(let j=0; j<Object.keys(groupingDtl).length; j++){
+          for(let k=0; k<Object.values(groupingDtl)[j].length; k++){
+            response[k][format(Object.values(groupingDtl)[j][k].useYm, 'yyyy년 MM월')] = Object.values(groupingDtl)[j][k].expectCt;
+          }         
+        }
       setValues(response);
+      
     } catch (error) {
       console.error(error);
     }
@@ -54,12 +93,12 @@ const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr }) =>
               columns={ProjectGeneralBudgetCostJson.tableColumns}
               popup={ProjectGeneralBudgetCostJson.popup}
               summaryColumn={ProjectGeneralBudgetCostJson.summaryColumn}
-              costTableInfoJson={ProjectGeneralBudgetCostJson}
               values={values}
               prjctId={prjctId}
               ctrtYmd={ctrtYmd}
               bizEndYmd={bizEndYmd}
               bgtMngOdr={bgtMngOdr}
+              json={ProjectGeneralBudgetCostJson}
             />
           </div>
         </div>

@@ -60,6 +60,7 @@ const ProjectOutordCompanyCost = ({ prjctId, ctrtYmd, bizEndYmd }) => {
               prjctId={prjctId}
               ctrtYmd={ctrtYmd}
               bizEndYmd={bizEndYmd}
+              json={ProjectOutordCompanyCostJson}
             />
           </div>
         </div>

@@ -60,7 +60,7 @@ const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr }) =>
               ctrtYmd={ctrtYmd}
               bizEndYmd={bizEndYmd}
               bgtMngOdr={bgtMngOdr}
-              costTableInfoJson={ProjectControlBudgetCostJson}
+              json={ProjectControlBudgetCostJson}
             />
           </div>
         </div>

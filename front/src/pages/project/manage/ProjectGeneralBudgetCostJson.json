@@ -1,10 +1,12 @@
 {
 	"menuName": "ProjectGeneralBudgetCostJson",
     "table": "EXPENS_PRMPC",
-    "keyColumn": "expensCd",
+    "subTable" : "EXPENS_MNBY_PRMPC_DTLS",
+    "keyColumn": "expensPrmpcSn",
+    "pkColumns": ["prjctId", "bgtMngOdr", "expensPrmpcSn"],
+    "pkColumnsDtl": ["prjctId", "bgtMngOdr", "expensPrmpcSn", "expensCd"],
     "tableColumns": 
 	[
-        {"key": "cnsrtmSn" ,"value": "상태"},
         {"key": "expensCdNm", "value": "비용코드명"},
         {"key": "dtlDtls", "value": "상세내역"},
         {"key": "total", "value": "총금액"}

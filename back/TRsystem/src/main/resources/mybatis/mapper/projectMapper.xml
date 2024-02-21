@@ -462,6 +462,12 @@
 			  FROM MATRL_CT_PRMPC
 			 WHERE PRJCT_ID = #{prjctId}
 			 AND BGT_MNG_ODR = #{bgtMngOdr}
+		</if>
+		<if test="expensPrmpcSn != null">
+			SELECT MAX(EXPENS_PRMPC_SN) AS EXPENS_PRMPC_SN
+			  FROM EXPENS_PRMPC
+			 WHERE PRJCT_ID = #{prjctId}
+			 AND BGT_MNG_ODR = #{bgtMngOdr}
 		</if>		    
 	</select>
 </mapper>
