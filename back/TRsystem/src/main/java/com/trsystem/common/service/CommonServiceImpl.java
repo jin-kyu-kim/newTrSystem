@@ -7,7 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class CommonServiceImpl implements CommonService {
@@ -67,7 +70,7 @@ public class CommonServiceImpl implements CommonService {
                 connection.commit();
                 connection.close();
                 return result;
-            }catch (SQLException e){
+            } catch (SQLException e) {
                 connection.rollback();
                 e.getStackTrace();
                 return result;
@@ -88,41 +91,53 @@ public class CommonServiceImpl implements CommonService {
             // 트랜잭션 시작
             connection.setAutoCommit(false);
             try {
-                    Map<String, Object> updateSet = params.get(1);
-                    List<String> setKeys = new ArrayList<>(updateSet.keySet());
-                    List<Object> setParams = new ArrayList<>(updateSet.values());
-                    Map<String, Object> updateParam = params.get(2);
-                    List<String> whereKeys = new ArrayList<>(updateSet.keySet());
-                    List<Object> setWhere = new ArrayList<>(updateSet.values());
+                Map<String, Object> updateSet = params.get(1);
+                List<String> setKeys = new ArrayList<>(updateSet.keySet());
+                List<Object> setParams = new ArrayList<>(updateSet.values());
+                Map<String, Object> updateParam = params.get(2);
+                List<String> whereKeys = new ArrayList<>(updateParam.keySet());
+                List<Object> whereParams = new ArrayList<>(updateParam.values());
 
-                    // UPDATE문 생성
-                    StringBuilder queryBuilder = new StringBuilder("UPDATE ").append(tbNm).append(" SET ");
+                // UPDATE문 생성
+                StringBuilder queryBuilder = new StringBuilder("UPDATE ").append(tbNm).append(" SET ");
 
-                    for (int j = 0; j < setParams.size(); j++) {
-                        queryBuilder.append(setKeys.get(j).replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase()).append(" = ").append(setParams.get(j));
-                        if(j == setParams.size()-1){
-                            queryBuilder.append(" , ");
-                        }
+                for (int j = 0; j < setKeys.size(); j++) {
+                    queryBuilder.append(setKeys.get(j).replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase()).append(" = ?");
+                    if (j != setKeys.size() - 1) {
+                        queryBuilder.append(" , ");
                     }
-                    for (int j = 0; j < updateParam.size(); j++) {
-                        if(j == 0){
-                            queryBuilder.append(" WHERE ");
-                        }
-                        queryBuilder.append(whereKeys.get(j).replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase()).append(" = ").append(setWhere.get(j));
-                        if(j == setParams.size()-1){
-                            queryBuilder.append(" AND ");
-                        }
+                }
+                for (int j = 0; j < updateParam.size(); j++) {
+                    if (j == 0) {
+                        queryBuilder.append(" WHERE ");
                     }
-                    // Stirng 쿼리 전환
-                    PreparedStatement preparedStatement = connection.prepareStatement(queryBuilder.toString());
-                    preparedStatement = querySetter(preparedStatement, setParams);
-                    if (preparedStatement != null) {
-                        result = preparedStatement.executeUpdate();
+                    queryBuilder.append(whereKeys.get(j).replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase()).append(" = ?");
+                    if (j != whereKeys.size() - 1) {
+                        queryBuilder.append(" AND ");
                     }
+                }
+                String queryString = queryBuilder.toString();
+
+                // Stirng 쿼리 전환
+                try (PreparedStatement preparedStatement = connection.prepareStatement(queryString)) {
+                    // ?에 값 할당
+                    int paramIndex = 1;
+
+                    for (Object setValue : setParams) {
+                        preparedStatement.setObject(paramIndex++, setValue);
+                    }
+
+                    for (Object whereValue : whereParams) {
+                        preparedStatement.setObject(paramIndex++, whereValue);
+                    }
+
+                    result = preparedStatement.executeUpdate();
+                    connection.commit();
+                }
                 connection.commit();
                 connection.close();
                 return result;
-            }catch (SQLException e){
+            } catch (SQLException e) {
                 connection.rollback();
                 e.getStackTrace();
                 return result;
@@ -143,7 +158,7 @@ public class CommonServiceImpl implements CommonService {
         try {
             Connection connection = DriverManager.getConnection(applicationYamlRead.getUrl(), applicationYamlRead.getUsername(), applicationYamlRead.getPassword());
             connection.setAutoCommit(false);
-            try{
+            try {
                 Map<String, Object> insertParam = params.get(1);
                 List<Object> inParams = new ArrayList<>(insertParam.values());
                 List<String> keys = new ArrayList<>(insertParam.keySet());
@@ -163,10 +178,10 @@ public class CommonServiceImpl implements CommonService {
                 if (preparedStatement != null) {
                     result = preparedStatement.executeUpdate();
                 }
-            connection.commit();
-            connection.close();
-            return result;
-            }catch (SQLException e){
+                connection.commit();
+                connection.close();
+                return result;
+            } catch (SQLException e) {
                 connection.rollback();
                 e.getStackTrace();
                 return result;
@@ -192,8 +207,7 @@ public class CommonServiceImpl implements CommonService {
                 ResultSetMetaData metaData = resultParamSet.getMetaData();
                 int columnCount = metaData.getColumnCount();
 
-                //SELECT문 생성
-//                StringJoiner queryBuilder = new StringJoiner(", ", "SELECT ", " FROM " + tbNm + " WHERE 1=1");
+                // SELECT문 생성
                 StringBuilder queryBuilder = new StringBuilder("SELECT ");
 
                 for (int i = 1; i <= columnCount; i++) {
@@ -201,19 +215,45 @@ public class CommonServiceImpl implements CommonService {
                         queryBuilder.append("(SELECT CD_NM FROM CD WHERE CD_VALUE = ").append(metaData.getColumnName(i)).append(") AS ").append(metaData.getColumnName(i)).append("_NM").append(" , ");
                     }
                     queryBuilder.append(metaData.getColumnName(i));
-                    if(i != columnCount){
+                    if (i != columnCount) {
                         queryBuilder.append(" , ");
                     }
                 }
                 queryBuilder.append(" FROM ").append(tbNm).append(" WHERE 1 = 1");
 
                 for (int j = 0; j < inParams.size(); j++) {
+                    Object paramValue = inParams.get(j);
+                    String paramName = keys.get(j);
                     queryBuilder.append(" AND ");
-                    queryBuilder.append(keys.get(j).replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase()).append(" = ?");
+
+                    // 파라미터 값이 문자열이며 '%'를 포함하는 경우, LIKE 절을 사용
+                    if (paramValue instanceof String && ((String) paramValue).contains("%")) {
+                        queryBuilder.append(paramName.replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase()).append(" LIKE ?");
+                    } else if (paramValue instanceof String && ((String) paramValue).contains("&")) {
+                        String[] dateRange = ((String) paramValue).split("&");
+                        if (dateRange.length == 2) {
+                            queryBuilder.append(paramName.replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase())
+                                    .append(" BETWEEN ? AND ?");
+                        } else {
+                            throw new IllegalArgumentException("Invalid date range format");
+                        }
+                    } else {
+                        queryBuilder.append(paramName.replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase()).append(" = ?");
+                    }
+                }
+
+                if (params.size() > 2 && params.get(2).containsKey("orderColumn") && params.get(2).containsKey("orderType")) {
+                    String orderColumn = params.get(2).get("orderColumn").toString();
+                    String orderType = params.get(2).get("orderType").toString();
+                    if (!orderColumn.isEmpty() && ("ASC".equalsIgnoreCase(orderType) || "DESC".equalsIgnoreCase(orderType))) {
+                        queryBuilder.append(" ORDER BY ").append(orderColumn.replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase()).append(" ").append(orderType);
+                    } else {
+                        throw new IllegalArgumentException("Invalid orderColumn or orderType");
+                    }
                 }
 
                 try (PreparedStatement preparedStatement = connection.prepareStatement(queryBuilder.toString())) {
-                    preparedStatementSetter(preparedStatement, inParams);
+                    querySetter(preparedStatement, inParams);
                     try (ResultSet result = preparedStatement.executeQuery()) {
                         metaData = result.getMetaData();
                         columnCount = metaData.getColumnCount();
@@ -231,26 +271,33 @@ public class CommonServiceImpl implements CommonService {
                 }
             }
         } catch (SQLException e) {
-            e.getStackTrace();
+            e.printStackTrace(); // 예외 상세 정보를 출력하거나 기록하는 것이 좋습니다.
         }
 
         return resultSet;
     }
 
-    private void preparedStatementSetter(PreparedStatement preparedStatement, List<Object> params) throws SQLException {
-        for (int i = 0; i < params.size(); i++) {
-            preparedStatement.setObject(i + 1, params.get(i));
-        }
-    }
-
-    private PreparedStatement querySetter(PreparedStatement preparedStatement, List<Object> params){
+    private PreparedStatement querySetter(PreparedStatement preparedStatement, List<Object> params) {
         try {
             // for 루프에서 값을 바인딩
             for (int i = 0; i < params.size(); i++) {
-                if(params.get(i) == ""){
-                	System.out.println(params.get(i));
+                if (params.get(i) == "") {
+                    System.out.println(params.get(i));
                     continue;
                 }
+
+                if (params.get(i) instanceof String && ((String) params.get(i)).contains("&")) {
+                    String[] dateRange = ((String) params.get(i)).split("&");
+                    if (dateRange.length == 2) {
+                        preparedStatement.setObject(i + 1, dateRange[0]);
+                        preparedStatement.setObject(i + 2, dateRange[1]);
+                        i++;
+                        continue;
+                    } else {
+                        throw new IllegalArgumentException("Invalid date range format");
+                    }
+                }
+
                 if (params.get(i) instanceof String) {
                     preparedStatement.setString(i + 1, (String) params.get(i));
                 } else if (params.get(i) instanceof Integer) {
@@ -258,8 +305,8 @@ public class CommonServiceImpl implements CommonService {
                 } else if (params.get(i) instanceof Double) {
                     preparedStatement.setDouble(i + 1, (Double) params.get(i));
                 } else if (params.get(i) == null) {
-                	preparedStatement.setString(i + 1, null);
-            	} else {
+                    preparedStatement.setString(i + 1, null);
+                } else {
                     return null;
                 }
             }
@@ -269,8 +316,8 @@ public class CommonServiceImpl implements CommonService {
         }
     }
 
-    public List<Map<String, Object>> queryIdSearch(Map<String, Object> param){
+    public List<Map<String, Object>> queryIdSearch(Map<String, Object> param) {
         String queryId = param.get("queryId").toString();
-        return sqlSession.selectList("com.trsystem.mybatis.mapper."+queryId, param);
+        return sqlSession.selectList("com.trsystem.mybatis.mapper." + queryId, param);
     }
 }
