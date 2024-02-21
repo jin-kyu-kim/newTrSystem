@@ -471,4 +471,18 @@
 		  FROM PRJCT_ATRZ_LN
 		 WHERE PRJCT_ID = #{prjctId};
 	</select>
+	
+	<select id="retrieveChgPrmpcOdr" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		<if test="cnsrtmSn != null">
+			SELECT MAX(CNSRTM_SN) AS CNSRTM_SN
+			  FROM PRJCT_CNSRTM
+			 WHERE PRJCT_ID = #{prjctId}
+		</if>
+		<if test="matrlCtSn != null">
+			SELECT MAX(MATRL_CT_SN) AS MATRL_CT_SN
+			  FROM MATRL_CT_PRMPC
+			 WHERE PRJCT_ID = #{prjctId}
+			 AND BGT_MNG_ODR = #{bgtMngOdr}
+		</if>		    
+	</select>
 </mapper>

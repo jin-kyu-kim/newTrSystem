@@ -107,13 +107,13 @@ const CustomCostTable = ({
   //행 삭제
   const onCellRenderDelete = (cellInfo) => {
     const gridInstance = dataGridRef.current.instance;
-    const rowIndex = gridInstance.getRowIndexByKey(cellInfo.data.expensCd);
+    const rowIndex = gridInstance.getRowIndexByKey(cellInfo.data.expensCd); //TODO. keyColumn으로 변경해야함
     return (
       <Button 
         onClick={async () => { 
               if (rowIndex >= 0) {
                 const paramInfo = cellInfo.data;
-                const paramInfoNew = pick(paramInfo, ['prjctId', 'expensCd', 'bgtMngOdr']);
+                const paramInfoNew = pick(paramInfo, ['prjctId', 'expensCd', 'bgtMngOdr']); //TODO. 공통으로 쓰는 방법 모색 필요.
         
                 const param = [
                   { tbNm: "EXPENS_PRMPC" },
@@ -122,7 +122,7 @@ const CustomCostTable = ({
                 ];
                 
                 try {
-                  const response = await ApiRequest("/boot/common/commonDelete", param);
+                  const response = await ApiRequest("/boot/common/commonDelete", param); 
                     if(response > 0) {
                       alert('데이터가 성공적으로 삭제되었습니다.');
                       gridInstance.deleteRow(rowIndex);
