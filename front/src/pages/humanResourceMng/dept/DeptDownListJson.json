@@ -1,0 +1,13 @@
+{
+    "menuName": "DeptManage",
+	"queryId2": "deptMapper.retrieveDownDeptList",
+    "keyColumn2": "deptId",
+    "tableColumns2": [
+        { "key": "deptNm", "value": "부서명"},
+        { "key": "deptMngrEmpFlnm", "value": "부서장명"}
+    ],
+    "searchParams":
+	{
+        
+    }
+}
