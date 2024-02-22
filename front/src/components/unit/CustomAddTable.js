@@ -13,12 +13,7 @@ const CustomAddTable = ({ columns, values, onRowDblClick, pagerVisible, prjctId,
   const [value, setValue] = useState([]);
   const [gridColumns, setGridColumns] = useState([]);
   const dataGridRef = useRef(null); // DataGrid 인스턴스에 접근하기 위한 ref
-  const [selectValue, setSelectValue] = useState("");
-  
-  // const test =  [
-  //   {ID : 1, Name : "Y"},
-  //   {ID : 0, Name : "N"}
-  //   ]
+  const [selectValue, setSelectValue] = useState([]);
   
   //useEffect를 사용하여 param이 변경될 때마다 실행 >> TODO.개발완료 후 삭제
   useEffect(() => {
@@ -125,7 +120,7 @@ const CustomAddTable = ({ columns, values, onRowDblClick, pagerVisible, prjctId,
       const response = await ApiRequest("/boot/common/commonInsert", paramInfo);
           if(response > 0) {
             alert('데이터가 성공적으로 저장되었습니다.');
-            reload();
+            reLoad();
             console.log(response);
           }    
     } catch (error) {
@@ -197,7 +192,7 @@ const CustomAddTable = ({ columns, values, onRowDblClick, pagerVisible, prjctId,
     return result;
   };
 
-  const reload = () => {
+const reload = () => {
     navigate("../project/ProjectChange",
         {
     state: { prjctId: prjctId, bgtMngOdr: bgtMngOdr },
@@ -244,7 +239,8 @@ const CustomAddTable = ({ columns, values, onRowDblClick, pagerVisible, prjctId,
         allowedPageSizes={[20, 50, 80, 100]}
       />
 
-      {gridColumns.map(column => (
+      {gridColumns.map((column,index) => (
+        console.log("column",column),
         <Column 
           key={column.key} 
           dataField={column.key} 

@@ -92,74 +92,100 @@ public class ProjectBaseDomain {
     	
     }
     
-    public static int insertRegistProjectAprv(List<Map<String, Object>> params) {
+    public static int insertRegistProjectAprv(List<Map<String, Object>> params, List<Map<String, Object>> empIdParams) {
     	
     	int result = 0;
-
+    	int dtlResult = 0;
+    	
     	final String PRJCT_ID = (String) params.get(2).get("prjctId");
+    	final String atrzSttsCd = "VTW00801";
+    	String atrzStepCd[] = {"VTW00705", "VTW00704", "VTW00703", "VTW00702", "VTW00701"};
     	
-    	Map<String, Object> param = new HashMap<>();
-      	param.put("prjctId", PRJCT_ID);
-      	param.put("atrzLnSn", params.get(2).get("atrzLnSn"));
-    	param.put("regDt", params.get(2).get("regDt"));
-    	param.put("regEmpId", params.get(2).get("empId"));
-      	
-    	if((int)param.get("atrzLnSn") == 1) {
-    		param.put("prmpcInptSeCd", "VTW01502"); // 최초 시 원가 등록(VTW01502)
+    	List<Map<String, Object>> insertParams = new ArrayList<>();		// PRJCT_ATRZ_LN
+    	List<Map<String, Object>> insertDtlParams = new ArrayList<>();	// PRJCT_ATRZ_LN_DTL
+    	
+    	
+    	// PRJCT_ATRZ_LN insert용 parameter 생성
+    	Map<String, Object> aprvParam = new HashMap<>();	
+    	aprvParam.put("prjctId", PRJCT_ID);
+    	aprvParam.put("atrzLnSn", params.get(2).get("atrzLnSn"));
+    	aprvParam.put("regDt", params.get(2).get("regDt"));
+    	aprvParam.put("regEmpId", params.get(2).get("empId"));
+    	aprvParam.put("atrzAplyPrvonshCn", params.get(2).get("atrzAplyPrvonshCn"));
+    	aprvParam.put("nowAtrzStepCd", atrzStepCd[empIdParams.size()-1]); // 최초 생성 시 현재 결재단계는 가장 낮은 단계 등록
+
+    	if((int)aprvParam.get("atrzLnSn") == 1) {
+    		aprvParam.put("prmpcInptSeCd", "VTW01502"); // 최초 시 원가 등록(VTW01502)
     	} else {
-    		param.put("prmpcInptSeCd", "VTW01503"); // 최초가 아닐 시 원가 변경(VTW01503)
+    		aprvParam.put("prmpcInptSeCd", "VTW01503"); // 최초가 아닐 시 원가 변경(VTW01503)
     	}
+
+    	insertParams.add(0, params.get(0));
+    	insertParams.add(1, aprvParam);
     	
-    	param.put("atrzAplyPrvonshCn", params.get(2).get("atrzAplyPrvonshCn"));
+    	
+    	// PRJCT_ATRZ_LN_DTL insert용 parameter 생성
+    	insertDtlParams.add(0, params.get(1));
+    	for(int i = 0; i < empIdParams.size(); i++) {
+        	Map<String, Object> aprvDtlParam = new HashMap<>();
+        	
+        	// 공통되는 부분
+        	aprvDtlParam.put("prjctId", PRJCT_ID);
+        	aprvDtlParam.put("atrzLnSn", params.get(2).get("atrzLnSn"));
+        	aprvDtlParam.put("regDt", params.get(2).get("regDt"));
+        	aprvDtlParam.put("regEmpId", params.get(2).get("empId"));
+        	aprvDtlParam.put("atrzSttsCd", atrzSttsCd);
+    		
+        	// 다른 부분
+        	aprvDtlParam.put("atrzStepCd", atrzStepCd[i]);
+        	aprvDtlParam.put("aprvrEmpId", empIdParams.get(i).get("empId"));
+    		
+    		insertDtlParams.add(i+1, aprvDtlParam);
+    	}
     	
     	try {
     		
-        	List<Map<String, Object>> insertParams = new ArrayList<>();
-    		insertParams.add(0, params.get(0));
-    		insertParams.add(1, param);
-    		
-    		System.out.println(insertParams);
-    		
     		result = commonService.insertData(insertParams);
+    		dtlResult = commonService.insertData(insertDtlParams);
     		
     	} catch(Exception e) {
     		return result;
     	}
-    	return result;
+    	return result * dtlResult;
     }
     
     public static int insertRegistProjectAprvDtl(List<Map<String, Object>> params, List<Map<String, Object>> empIdParams) {
     	
     	int result = 0;
     	
-    	List<Map<String, Object>> insertParams = new ArrayList<>();
+    	List<Map<String, Object>> insertDtlParams = new ArrayList<>();
     	
     	final String PRJCT_ID = (String) params.get(2).get("prjctId");
     	final String atrzSttsCd = "VTW00801";
     	String atrzStepCd[] = {"VTW00705", "VTW00704", "VTW00703", "VTW00702", "VTW00701"};
     	
-    	insertParams.add(0, params.get(1));
+    	insertDtlParams.add(0, params.get(1));
     	
     	for(int i = 0; i < empIdParams.size(); i++) {
-        	Map<String, Object> param = new HashMap<>();
+        	Map<String, Object> aprvDtlParam = new HashMap<>();
         	
         	// 공통되는 부분
-          	param.put("prjctId", PRJCT_ID);
-        	param.put("atrzLnSn", params.get(2).get("atrzLnSn"));
-        	param.put("regDt", params.get(2).get("regDt"));
-        	param.put("regEmpId", params.get(2).get("empId"));
-        	param.put("atrzSttsCd", atrzSttsCd);
+        	aprvDtlParam.put("prjctId", PRJCT_ID);
+        	aprvDtlParam.put("atrzLnSn", params.get(2).get("atrzLnSn"));
+        	aprvDtlParam.put("regDt", params.get(2).get("regDt"));
+        	aprvDtlParam.put("regEmpId", params.get(2).get("empId"));
+        	aprvDtlParam.put("atrzSttsCd", atrzSttsCd);
     		
         	// 다른 부분
-    		param.put("atrzStepCd", atrzStepCd[i]);
-    		param.put("aprvrEmpId", empIdParams.get(i).get("empId"));
+        	aprvDtlParam.put("atrzStepCd", atrzStepCd[i]);
+        	aprvDtlParam.put("aprvrEmpId", empIdParams.get(i).get("empId"));
     		
-    		insertParams.add(i+1, param);
+    		insertDtlParams.add(i+1, aprvDtlParam);
     	}
     	
     	try {
     		
-    		result = commonService.insertData(insertParams);
+    		result = commonService.insertData(insertDtlParams);
     		
     	} catch (Exception e) {
     		return result;
@@ -174,7 +200,6 @@ public class ProjectBaseDomain {
     public static int retrievePrjctAtrzLnSn(Map<String, Object> param) {
     	
     	int atrzLnSn = 1;
-    	System.out.println(param);
     	
     	List<Map<String, Object>> atrzLnSnResult = new ArrayList<>();
     	
@@ -195,10 +220,8 @@ public class ProjectBaseDomain {
           	
       		return atrzLnSn;
       	} catch (Exception e) {
-      		e.printStackTrace();
       		return -1;
       	}
-      	
     	
     }
     

@@ -17,6 +17,7 @@ const CustomHorizontalTable = ({ headers, column }) => {
 
   return (
     <DataGrid
+      key={headers.value}
       dataSource={data}
       showBorders={true}
       showColumnHeaders={false} // 최상단 헤더를 숨기는 설정
@@ -37,7 +38,16 @@ const CustomHorizontalTable = ({ headers, column }) => {
           e.cellElement.style.color ='black'
           e.cellElement.style.backgroundColor = 'white'
           e.cellElement.style.pointerEvents = 'none';
-      }
+        }
+        if(e.columnIndex === 1 && e.values[2] === '' &&  e.values[3] === '') {
+          e.cellElement.colSpan = '3';
+        }
+        if (e.columnIndex === 2 && e.value === '') {
+          e.cellElement.style.display = 'none';
+        }
+        if (e.columnIndex === 3 && e.value === '') {
+          e.cellElement.style.display = 'none';
+        }
       }}   
     >
       <Column dataField="header" caption="Header" alignment="center" />

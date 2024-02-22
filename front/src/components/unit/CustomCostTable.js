@@ -119,6 +119,7 @@ const CustomCostTable = ({
   //행 삭제
   const onCellRenderDelete = (cellInfo) => {
     const gridInstance = dataGridRef.current.instance;
+
     const rowIndex = gridInstance.getRowIndexByKey(cellInfo.data[json.keyColumn]); //TODO. keyColumn으로 변경해야함
     return (
       <Button 
