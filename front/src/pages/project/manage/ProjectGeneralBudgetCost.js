@@ -5,7 +5,7 @@ import ProjectGeneralBudgetCostJson from "./ProjectGeneralBudgetCostJson.json";
 import CustomCostTable from "components/unit/CustomCostTable";
 import Box, { Item } from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
-import { parse, format, addMonths } from 'date-fns';
+import { format } from 'date-fns';
 
 const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr }) => {
   const [values, setValues] = useState([]);
@@ -13,8 +13,8 @@ const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr }) =>
 
   useEffect(() => {
     const runOrder = async() => {
-    GeneralBudgetDtl();
-    GeneralBudget();
+      await GeneralBudgetDtl();
+      await GeneralBudget();
     };
     runOrder();
   }, []);
@@ -24,19 +24,18 @@ const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr }) =>
     const param = [
       { tbNm: "EXPENS_MNBY_PRMPC_DTLS" },
       { prjctId: prjctId,
-        bgtMngOdr: bgtMngOdr}, 
+        bgtMngOdr: bgtMngOdr,
+        expensCd: "VTW04501&VTW04527"
+      }, 
     ];
 
   try {
     const response = await ApiRequest("/boot/common/commonSelect", param);
-    // setValues(response);
-    console.log("디테일이요",response);
-    const groupedByExpensPrmpcSn = response.reduce((acc, item) => {
-      // expensPrmpcSn 값으로 그룹화된 객체를 찾거나, 없으면 새로운 배열을 생성합니다.
-      acc[item.useYm] = acc[item.useYm] || [];
-      acc[item.useYm].push(item);
+    response.reduce((acc, item) => {
+      // expensPrmpcSn 값으로 그룹핑
+      acc[item.expensPrmpcSn] = acc[item.expensPrmpcSn] || [];
+      acc[item.expensPrmpcSn].push(item);
       groupingDtl = acc;
-      console.log("groupingDtl디테일 ",groupingDtl);
       return acc;
     }, {});
     
@@ -50,17 +49,23 @@ const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr }) =>
       const param = [
         { tbNm: "EXPENS_PRMPC" },
         { prjctId: prjctId, 
-          bgtMngOdr: bgtMngOdr}, 
+          bgtMngOdr: bgtMngOdr,
+          expensCd: "VTW04501&VTW04527"
+        }, 
       ];
     try {
       const response = await ApiRequest("/boot/common/commonSelect", param);
+        //월별정보 및 총 합계 response에 추가
         for(let j=0; j<Object.keys(groupingDtl).length; j++){
+          let total = 0;
           for(let k=0; k<Object.values(groupingDtl)[j].length; k++){
-            response[k][format(Object.values(groupingDtl)[j][k].useYm, 'yyyy년 MM월')] = Object.values(groupingDtl)[j][k].expectCt;
-          }         
+            response[j][format(Object.values(groupingDtl)[j][k].useYm, 'yyyy년 MM월')] = Object.values(groupingDtl)[j][k].expectCt;
+            total += Object.values(groupingDtl)[j][k].expectCt;
+          }    
+          response[j].total = total;     
         }
-      setValues(response);
-      
+        setValues(response);
+
     } catch (error) {
       console.error(error);
     }

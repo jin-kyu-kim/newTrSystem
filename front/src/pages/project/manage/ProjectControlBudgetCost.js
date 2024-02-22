@@ -5,24 +5,68 @@ import ProjectControlBudgetCostJson from "./ProjectControlBudgetCostJson.json";
 import CustomCostTable from "components/unit/CustomCostTable";
 import Box, { Item } from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
+import { format } from 'date-fns';
 
 const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr }) => {
   const [values, setValues] = useState([]);
   const { manuName, tableColumns, keyColumn, summaryColumn, popup } = ProjectControlBudgetCostJson;
-
-  const param = [
-    { tbNm: "EXPENS_PRMPC" },
-    { prjctId: prjctId }, 
-  ];
+  let groupingDtl = [];
 
   useEffect(() => {
-    ControlBudget();
+    const runOrder = async() => {
+      await ControlBudgetDtl();
+      await ControlBudget();
+    };
+    runOrder();
   }, []);
 
+  const ControlBudgetDtl = async () => {
+    const param = [
+      { tbNm: "EXPENS_MNBY_PRMPC_DTLS" },
+      { prjctId: prjctId,
+        bgtMngOdr: bgtMngOdr,
+        expensCd: "VTW04528&VTW04535"
+      }, 
+    ];
+
+  try {
+    const response = await ApiRequest("/boot/common/commonSelect", param);
+      response.reduce((acc, item) => {
+        //expensPrmpcSn 값으로 그룹핑
+        acc[item.expensPrmpcSn] = acc[item.expensPrmpcSn] || [];
+        acc[item.expensPrmpcSn].push(item);
+        groupingDtl = acc;
+        return acc;
+    }, {});
+    
+
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+
   const ControlBudget = async () => {
+    const param = [
+      { tbNm: "EXPENS_PRMPC" },
+      { prjctId: prjctId,
+        bgtMngOdr: bgtMngOdr,
+        expensCd: "VTW04528&VTW04535"
+      }, 
+    ];
     try {
       const response = await ApiRequest("/boot/common/commonSelect", param);
+      //월별정보 및 총 합계 response에 추가
+      for(let j=0; j<Object.keys(groupingDtl).length; j++){
+        let total = 0;
+        for(let k=0; k<Object.values(groupingDtl)[j].length; k++){
+          response[j][format(Object.values(groupingDtl)[j][k].useYm, 'yyyy년 MM월')] = Object.values(groupingDtl)[j][k].expectCt;
+          total += Object.values(groupingDtl)[j][k].expectCt;
+        }         
+        response[j].total = total;    
+      }
       setValues(response);
+      
     } catch (error) {
       console.error(error);
     }
