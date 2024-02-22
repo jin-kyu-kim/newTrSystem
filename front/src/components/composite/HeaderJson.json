@@ -113,26 +113,31 @@
     "dropdownItems": [
       {
         "id": 1,
+        "title": "부서관리",
+        "link": "humanResourceMng/dept/DeptManage"
+      },
+      {
+        "id": 2,
         "title": "직원관리",
         "link": "/"
       },
       {
-        "id": 2,
+        "id": 3,
         "title": "휴가배정관리",
         "link": "/"
       },
       {
-        "id": 3,
+        "id": 4,
         "title": "월별휴가정보",
         "link": "humanResourceMng/EmpMonthVacInfo"
       },
       {
-        "id": 4,
+        "id": 5,
         "title": "휴가사용내역",
-        "link": "/"
+        "link": "humanResourceMng/EmpVacUseList"
       },
       {
-        "id": 5,
+        "id": 6,
         "title": "회의실예약관리",
         "link": "humanResourceMng/MeetingRoomManage"
       }

@@ -1,6 +1,6 @@
 import React from 'react';
 import Scheduler from 'devextreme-react/scheduler';
-import { data, } from './data.js';
+import { data, } from './MeetingRoomManageData.js';
 
 const currentDate = new Date(2021, 3, 29);
 const views = ['day', 'week', 'workWeek', 'month'];
