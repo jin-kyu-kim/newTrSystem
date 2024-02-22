@@ -14,7 +14,7 @@ import LinkButton from "../../../components/unit/LinkButton.js";
 const ProjectDetail = () => {
   const navigate = useNavigate ();
   const location = useLocation();
-  const prjctId = location.state.id;
+  const prjctId = location.state.prjctId;
   const totBgt = location.state.totBgt;
   const bgtMngOdr = location.state.bgtMngOdr;
   const ctrtYmd = location.state.ctrtYmd;
@@ -99,7 +99,7 @@ const ProjectDetail = () => {
         >
           프로젝트종료
         </Button>
-        <LinkButton location={-1} name={"목록"} type={"normal"} stylingMode={"outline"}/>
+        <LinkButton location={"../project/ProjectList"} name={"목록"} type={"normal"} stylingMode={"outline"}/>
       </div>
       <div
         style={{

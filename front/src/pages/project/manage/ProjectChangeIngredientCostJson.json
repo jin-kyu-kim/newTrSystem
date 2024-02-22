@@ -4,7 +4,7 @@
     "keyColumn": "matrlCtSn",
     "tableColumns": 
 	[
-        {"key": "matrlCtIemCd" ,"value": "재료비", "type":"ComboBox", "cd": "VTW014"} ,
+        {"key": "matrlCtIemCdNm" ,"value": "재료비", "type":"ComboBox", "cd": "VTW014"} ,
         {"key": "dlvgdsEntrpsNm", "value": "업체명"},
         {"key": "prductNm", "value": "제품명"},
         {"key": "dtlCn", "value": "상세스펙"},
@@ -12,5 +12,8 @@
         {"key": "qy", "value": "수량", "type": "NumberBox"},
         {"key": "cntrctamount", "value": "계약금액(부가세 별도)", "type": "NumberBox"},
         {"key": "dscntBfeEstmtPc", "value": "견적가(할인전)", "type": "NumberBox"}
-	]
+	],
+    "pkColumns": ["prjctId","matrlCtSn","bgtMngOdr"],
+    "CdComboboxColumn": "matrlCtIemCd",
+    "CdComboboxColumnNm": "matrlCtIemCdNm"
 }

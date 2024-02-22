@@ -1,4 +1,4 @@
 [
   { "tbNm": "CD" },
-  { "cdValue": "", "cdNm": "", "upCdValue": "", "indctOrdr": "", "useYn": "" }
+  { "cdValue": "", "cdNm": "", "upCdValue": "", "indctOrdr": "", "useYn": "Y" }
 ]
