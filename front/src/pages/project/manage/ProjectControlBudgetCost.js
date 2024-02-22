@@ -25,7 +25,7 @@ const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr }) =>
       { tbNm: "EXPENS_MNBY_PRMPC_DTLS" },
       { prjctId: prjctId,
         bgtMngOdr: bgtMngOdr,
-        expensCd: "VTW04528&VTW04535"
+        expensCd: ProjectControlBudgetCostJson.cdBetween
       }, 
     ];
 
@@ -66,7 +66,7 @@ const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr }) =>
         response[j].total = total;    
       }
       setValues(response);
-      
+
     } catch (error) {
       console.error(error);
     }

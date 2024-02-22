@@ -50,7 +50,7 @@ const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr }) =>
         { tbNm: "EXPENS_PRMPC" },
         { prjctId: prjctId, 
           bgtMngOdr: bgtMngOdr,
-          expensCd: "VTW04501&VTW04527"
+          expensCd: ProjectGeneralBudgetCostJson.cdBetween
         }, 
       ];
     try {

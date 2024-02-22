@@ -5,6 +5,7 @@
     "keyColumn": "expensPrmpcSn",
     "pkColumns": ["prjctId", "bgtMngOdr", "expensPrmpcSn"],
     "pkColumnsDtl": ["prjctId", "bgtMngOdr", "expensPrmpcSn", "expensCd"],
+    "cdBetween": "VTW04501&VTW04527",
     "tableColumns": 
 	[
         {"key": "expensCdNm", "value": "비용코드명"},

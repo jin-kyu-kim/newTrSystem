@@ -83,9 +83,6 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
         const value  = e.component.option('value');
         const index = inputValue.findIndex(item => item.id === id); // 입력 값 객체의 인덱스 찾기
         const updatedValues = [...inputValue]; // 상태 변경을 위한 배열 복사
-        console.log("e", e);
-        console.log("id", id);
-        console.log("value", value);
 
         if (index >= 0) {
             // 기존 값 업데이트
@@ -94,8 +91,6 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
             // 새로운 값 객체 추가
             updatedValues.push({ id, value });
         }
-
-        console.log("updatedValues", updatedValues);
 
         setInputValue(updatedValues); // 업데이트된 배열로 상태 설정
         
@@ -210,8 +205,6 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
             ...makeParam
         ];
 
-        console.log("디테일 ! paramInfo", paramInfo);
-
         try {
             const response = await ApiRequest("/boot/common/commonInsert", paramInfo);
                 if(response > 0) {
@@ -248,6 +241,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
                                 name="expensCd"
                                 onSelect={handleChgState}
                                 value={data.expensCd}
+                                between={popupInfo.cdBetween}
                             />
                         </div>
                     </div>
