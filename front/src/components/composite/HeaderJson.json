@@ -124,7 +124,7 @@
       {
         "id": 3,
         "title": "월별휴가정보",
-        "link": "/"
+        "link": "humanResourceMng/EmpMonthVacInfo"
       },
       {
         "id": 4,
@@ -134,7 +134,7 @@
       {
         "id": 5,
         "title": "회의실예약관리",
-        "link": "/"
+        "link": "humanResourceMng/MeetingRoomManage"
       }
     ]
   },

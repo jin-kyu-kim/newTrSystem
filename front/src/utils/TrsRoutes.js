@@ -49,7 +49,20 @@ const TreRoutes = [
     path: "/project/ProjectAprvDetail",
     name: "ProjectAprvDetail",
     element: React.lazy(() => import("../pages/project/approval/ProjectAprvDetail")),
+  },
+  // 월별휴가정보
+  {
+    path: "/humanResourceMng/EmpMonthVacInfo",
+    name: "EmpMonthVacInfo",
+    element: React.lazy(() => import("../pages/humanResourceMng/emp/EmpMonthVacInfo")),
+  },
+  // 회의실예약관리
+  {
+    path: "/humanResourceMng/MeetingRoomManage",
+    name: "MeetingRoomManage",
+    element: React.lazy(() => import("../pages/humanResourceMng/emp/MeetingRoomManage")),
   }
+  
 ];
 
 export default TreRoutes;
