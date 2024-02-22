@@ -99,15 +99,19 @@ const ProjectChange = () => {
 
       if(response > 0) {
 
-        // 승인요청 되면 PRJCT_BGT_PRMPC 도 수정해줘야할듯?
         /**
          * VTW03301	임시저장
           VTW03302	결재요청
           VTW03303	결재완료
-
          */
 
+        // 승인요청 되면 PRJCT 수정해주기
+        // BIZ_STTS_CD 컬럼 -> VTW00403(변경중)
+        handlePrjctBizStts();
 
+        // 승인요청 되면 PRJCT_BGT_PRMPC 수정해주기
+        // ATRZ_DMND_STTS_CD 컬럼 -> VTW03302(결재요청)
+        handleBgtPrmpc();
 
         alert("승인요청이 완료되었습니다.");
         setPopupVisible(false);
@@ -136,8 +140,26 @@ const ProjectChange = () => {
       }
     ]
 
+    await ApiRequest("/boot/common/commonUpdate", param);
   }
 
+  const handlePrjctBizStts = async () => {
+    const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
+
+    const param = [
+      { tbNm : "PRJCT" },
+      {
+        bizSttsCd: "VTW00403",
+        mdfcnEmpId: empId,
+        mdfcnDt: mdfcnDt,
+      },
+      {
+        prjctId: prjctId,
+      }
+    ]
+
+    await ApiRequest("/boot/common/commonUpdate", param);
+  }
 
   return (
     <div>

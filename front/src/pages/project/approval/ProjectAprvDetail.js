@@ -17,43 +17,15 @@ const ProjectAprvDetail = () => {
     const prjctId = location.state.id;
     const atrzLnSn = location.state.atrzLnSn;
     const atrzSttsCd = location.state.atrzSttsCd;
+    const atrzStepCd = location.state.atrzStepCd;
     const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
     const ProjectAprvDetail = ProjectAprvDetailJson;
+    const nowAtrzStepCd = location.state.nowAtrzStepCd;
   
     const [aprvPopupVisible, setAprvPopupVisible] = useState(false);
     const [rjctPopupVisible, setRjctPopupVisible] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(0);
-    const [atrzOpnnCn, setAtrzOpnnCn] = useState("");
-    const [rjctPrvonsh, setRjctPrvonsh] = useState("");
     const [opnnCn, setOpnnCn] = useState("");
-
-    useEffect(() => {
-        /**
-         * 39	VTW007	결재단계코드			VTW00701	기안
-            40	VTW007	결재단계코드			VTW00702	검토
-            41	VTW007	결재단계코드			VTW00703	확인
-            42	VTW007	결재단계코드			VTW00704	심사
-            43	VTW007	결재단계코드			VTW00705	승인
-         */
-        // 현재 결재선 단계와 로그인한 사용자의 조회중인 프로젝트 승인단계가 같은지 확인 먼저 하기. 
-        // column 추가된 다음 진행  하기
-    }, [])  
-
-    /**
-     * 현재 프로젝트 승인의 단계와 지금 로그인한 사용자의 결재선 승인 단계가 일치하는지 먼저 확인한다.
-     * 최종 승인일 경우 
-     * 
-     * @returns 
-     */
-
-/**
- *   const result = AtrzDate(atrzLnSn).then((value) => {
-        order = JSON.parse(JSON.stringify(value));
-        order.reverse();
-        AtrzInfoData(order[0].atrzLnSn);
-    });
- * @returns 
- */
 
     // 날짜 생성
     const getToday = () => {
@@ -89,18 +61,67 @@ const ProjectAprvDetail = () => {
                     aprvrEmpId: cookies.userInfo.empId,
                 }
             ]
-            // const response = await ApiRequest("/boot/common/commonUpdate", atrzLnParam);
             
-            const result = await onRequestProcess(atrzLnDtlParam).then((value) => {
-                return value;
+            // const response = await ApiRequest("/boot/common/commonUpdate", atrzLnDtlParam);
+            const result = await requestProcess(atrzLnDtlParam).then((value) => {
+                
+                if(value > 0) {
+                    let nowStep;
+
+                    switch(atrzStepCd) {
+                        case "VTW00701":
+                            nowStep = "VTW00702";
+                            break;
+                        case "VTW00702":
+                            nowStep = "VTW00703";
+                            break;
+                        case "VTW00703":
+                            nowStep = "VTW00704";
+                            break;
+                        case "VTW00704":
+                            nowStep = "VTW00705";
+                            break;
+                    }
+
+                    console.log(nowStep);
+
+                    handleNowAtrzStepCd(nowStep);
+                    // 마지막 결재자일 경우
+                    if(atrzStepCd === "VTW00705") { 
+                        
+                        // PRJCT_BGT_PRMPC 테이블 결재완료로 수정
+                        // ATRZ_DMND_STTS_CD -> VTW03303(결재완료)
+                        handleBgtPrmpc();
+    
+                        // PRJCT 테이블
+                        // BIZ_STTS_CD 컬럼 -> VTW00402(수행)
+                        handlePrjctBizStts();
+                    }
+    
+                    alert("승인요청이 완료되었습니다.");
+                    navigate("../project/ProjectAprv");
+                } else {
+                    alert("승인요청이 실패하였습니다.");
+                    return;
+                }
+            
             });
 
-            if(result > 0) {
+/*
+            if(response > 0) {
 
-                /**
-                 * prjct 테이블 update 실행
-                 * 군데 굳이 이렇게 해야하나?
-                 */
+
+                // 마지막 결재자일 경우
+                if(atrzStepCd === 'VTW00705') { 
+                    
+                    // PRJCT_BGT_PRMPC 테이블 결재완료로 수정
+                    // ATRZ_DMND_STTS_CD -> VTW03303(결재완료)
+                    handleBgtPrmpc();
+
+                    // PRJCT 테이블
+                    // BIZ_STTS_CD 컬럼 -> VTW00402(수행)
+                    handlePrjctBizStts();
+                }
 
 
                 alert("승인요청이 완료되었습니다.");
@@ -109,7 +130,9 @@ const ProjectAprvDetail = () => {
                 alert("승인요청이 실패하였습니다.");
                 return;
             }
+*/
         }
+
     }
 
     /* 
@@ -142,6 +165,12 @@ const ProjectAprvDetail = () => {
             const response = await ApiRequest("/boot/common/commonUpdate", atrzLnDtlParam);
 
             if(response > 0) {
+
+                // 반려되면
+                // PRJCT_BGT_PRMPC 테이블 결재완료로 수정
+                // 컬럼 ATRZ_DMND_STTS_CD -> VTW03303
+                handleBgtPrmpc();
+
                 alert("반려 되었습니다.");
                 navigate("../project/ProjectAprv");
             } else {
@@ -151,13 +180,66 @@ const ProjectAprvDetail = () => {
         }
     }
 
-    const onRequestProcess = async (param) => {
-
-        console.log(param);
+    const requestProcess = async (param) => {
         const response = await ApiRequest("/boot/common/commonUpdate", param);
         return response;
-
+    
     }
+    
+    const handleNowAtrzStepCd = async (nowStep) => {
+        const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
+        const param = [
+            { tbNm: "PRJCT_ATRZ_LN" },
+            { 
+                nowAtrzStepCd: nowStep,
+                mdfcnEmpId: cookies.userInfo.empId,
+                mdfcnDt: mdfcnDt,
+            },
+            {
+                prjctId: prjctId,
+                atrzLnSn: atrzLnSn, 
+            }
+        ]    
+
+        await ApiRequest("/boot/common/commonUpdate", param);
+    }
+
+    const handleBgtPrmpc = async () => {
+        const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
+    
+        const param = [
+          { tbNm : "PRJCT_BGT_PRMPC" },
+          {
+            atrzDmndSttsCd: "VTW03303",
+            mdfcnEmpId: cookies.userInfo.empId,
+            mdfcnDt: mdfcnDt,
+          },
+          {
+            prjctId: prjctId,
+            bgtMngOdr: atrzLnSn,
+          }
+        ]
+    
+        await ApiRequest("/boot/common/commonUpdate", param);
+      }
+    
+      const handlePrjctBizStts = async () => {
+        const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
+    
+        const param = [
+          { tbNm : "PRJCT" },
+          {
+            bizSttsCd: "VTW00402",
+            mdfcnEmpId: cookies.userInfo.empId,
+            mdfcnDt: mdfcnDt,
+          },
+          {
+            prjctId: prjctId,
+          }
+        ]
+    
+        await ApiRequest("/boot/common/commonUpdate", param);
+      }
 
     // 탭 변경 시 인덱스 설정
     const onSelectionChanged = useCallback(
@@ -180,11 +262,16 @@ const ProjectAprvDetail = () => {
     
     // 승인 팝업 Open
     const onAprvPopup = () => {
+
+        if(atrzStepCd !== nowAtrzStepCd) {
+            alert("현재 선행 결재가 완료되지 않았습니다.");
+            return;
+        }
+
         /*
         *  심사중인지 확인한다.
         *  VTW00801 : 심사중, VTW00802 : 승인, VTW00803 : 반려, VTW00804 : 보류, VTW00805 : 취소
         */
-
         if(atrzSttsCd !== 'VTW00801') {
             alert("심사중 상태가 아닙니다.");
             return;
@@ -195,11 +282,16 @@ const ProjectAprvDetail = () => {
 
     // 반려 팝업 Open
     const onRjctPopup = () => {
+
+        if(atrzSttsCd !== nowAtrzStepCd) {
+            alert("현재 선행 결재가 완료되지 않았습니다.");
+            return;
+        }
+
         /*
         *  심사중인지 확인한다.
         *  VTW00801 : 심사중, VTW00802 : 승인, VTW00803 : 반려, VTW00804 : 보류, VTW00805 : 취소
         */
-
         if(atrzSttsCd !== 'VTW00801') {
             alert("심사중 상태가 아닙니다.");
             return;

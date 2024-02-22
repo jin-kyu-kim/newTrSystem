@@ -12,8 +12,6 @@ const [atrzDate, setAtrzDate] = useState([]);
 const navigate = useNavigate();
 
 useEffect(() => {
-  console.log(atrzLnSn)
-
   let order = [];
   const result = AtrzDate(atrzLnSn).then((value) => {
     const order = JSON.parse(JSON.stringify(value));

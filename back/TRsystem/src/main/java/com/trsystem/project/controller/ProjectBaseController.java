@@ -56,8 +56,10 @@ public class ProjectBaseController {
     	// 조회 로직을 하나 추가하여, 프로젝트 결재선 테이블에 넣을 값들을 조회한 뒤 insert 메소드에 매개변수로 함께 넘겨준다.
     	List<Map<String, Object>> empIdParams = new ArrayList<>();
     	
-    	int result1 = 0;
-    	int result2 = 0;
+//    	int result1 = 0;
+//    	int result2 = 0;
+    	
+    	int result = 0;
     	
     	// 채번한다
     	int atrzLnSn = ProjectBaseDomain.retrievePrjctAtrzLnSn(params.get(2));
@@ -72,11 +74,15 @@ public class ProjectBaseController {
     		    		
     		params.get(2).put("atrzLnSn", atrzLnSn);
     		
-    		result1 = ProjectBaseDomain.insertRegistProjectAprv(params);
-    		result2 = ProjectBaseDomain.insertRegistProjectAprvDtl(params, empIdParams);
+    		result = ProjectBaseDomain.insertRegistProjectAprv(params, empIdParams);
+    		
+//    		result1 = ProjectBaseDomain.insertRegistProjectAprv(params);
+//    		result2 = ProjectBaseDomain.insertRegistProjectAprvDtl(params, empIdParams);
     	}
+    	
+    	
 
-    	return result1 * result2;
+    	return result;
     }
     
 }
