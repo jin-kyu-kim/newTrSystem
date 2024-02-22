@@ -20,7 +20,6 @@ const SearchEmpSet = ({ callBack, props, popup }) => {
     hodfSttsNm: "",
   });
 
-  
 
   useEffect(() => {
     callBack(initParam);
@@ -52,12 +51,12 @@ const SearchEmpSet = ({ callBack, props, popup }) => {
 
   
 
-
   return (
     <div className="box_search" width="100%">
       <Box
         direction="row"
         width="100%"
+
         height={40}
       >
         <Item className="prjctMngrEmpIdItem" ratio={1} visible={props.prjctMngrEmpIdItem}>
@@ -78,11 +77,6 @@ const SearchEmpSet = ({ callBack, props, popup }) => {
                 onValueChanged={(e) => handleChgState({ name: e.component.option('name'), value: e.value })}
           />
         </Item>
-        
-
-
-
-
        
         <Item className="prjctNameItem" ratio={1}>
      
@@ -146,7 +140,6 @@ const SearchEmpSet = ({ callBack, props, popup }) => {
         </Item>
         
       </Box>
-      
     </div>
   );
 };

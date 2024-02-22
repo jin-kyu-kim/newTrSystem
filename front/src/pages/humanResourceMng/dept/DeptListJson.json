@@ -1,0 +1,15 @@
+{
+    "menuName": "DeptManage",
+	"queryId": "deptMapper.retrieveDeptList",
+    "keyColumn": "deptId",
+    "tableColumns": [
+        { "key": "rownum", "value": "번호", "width": 70, "alignment" : "center" },
+        { "key": "deptNm", "value": "부서명"},
+        { "key": "upDeptNm", "value": "상위부서명"},
+        { "key": "deptMngrEmpFlnm", "value": "부서장명"}
+    ],
+    "searchParams":
+	{
+        
+    }
+}
