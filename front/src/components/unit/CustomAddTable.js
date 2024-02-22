@@ -135,23 +135,17 @@ const CustomAddTable = ({ columns, values, onRowDblClick, pagerVisible, prjctId,
 
   //데이터 그리드에 로우가 수정될 때마다 실행
   const onRowUpdated = async(e) => {
-    console.log("e.data",e.data);
+    
     const paramInfo = e.data;
     const paramKey = pick(paramInfo, json.pkColumns);
-    // delete paramInfo.matrlCtIemCdNm; >> TODO. cdNm같은 컬럼은 delete처리 해줘야함
-    // delete paramInfo.bgtMngOdr;
-    // delete paramInfo.matrlCtSn;
-    // delete paramInfo.prjctId;
+    delete paramInfo[json.CdComboboxColumnNm]; 
 
-  
     const param = [
       { tbNm: json.table },
         paramInfo,              //수정할 컬럼값
         paramKey                //조건값
     ];
 
-    console.log("update param",param);
-    // alert('수정로직은 주석처리 되어있습니다. 수정하려면 주석을 해제해주세요.');
     try {
       const response = await ApiRequest("/boot/common/commonUpdate", param);
         if(response > 0) {
@@ -184,7 +178,6 @@ const CustomAddTable = ({ columns, values, onRowDblClick, pagerVisible, prjctId,
             if(response > 0) {
               alert('데이터가 성공적으로 삭제되었습니다.');
               reload();
-              // gridInstance.deleteRow(rowIndex);
               console.log(response);
             }
         }catch (error) {

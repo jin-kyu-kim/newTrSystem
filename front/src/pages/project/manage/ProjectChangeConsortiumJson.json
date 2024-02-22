@@ -11,5 +11,6 @@
         {"key": "slsAmRfltYn", "value": "매출액 반영여부", "validation":""}
 	],
     "pkColumns": ["prjctId","cnsrtmSn"],
-    "CdComboboxColumn": "bizFlfmtTyCd"
+    "CdComboboxColumn": "bizFlfmtTyCd",
+    "CdComboboxColumnNm": "bizFlfmtTyCdNm"
 }

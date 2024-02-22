@@ -14,5 +14,6 @@
         {"key": "dscntBfeEstmtPc", "value": "견적가(할인전)", "type": "NumberBox"}
 	],
     "pkColumns": ["prjctId","matrlCtSn","bgtMngOdr"],
-    "CdComboboxColumn": "matrlCtIemCd"
+    "CdComboboxColumn": "matrlCtIemCd",
+    "CdComboboxColumnNm": "matrlCtIemCdNm"
 }
