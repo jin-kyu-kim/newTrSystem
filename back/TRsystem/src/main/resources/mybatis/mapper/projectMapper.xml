@@ -273,8 +273,31 @@
         , B.QY  AS USE_AMT
         , (A.CNTRCTAMOUNT - B.QY) AS AVAIL
      FROM MATRL_CT_PRMPC A
-        , MATRL_CT_EXCN B
-    WHERE A.PRJCT_ID = B.PRJCT_ID
+     LEFT JOIN MATRL_CT_EXCN B ON A.PRJCT_ID = B.PRJCT_ID
+    WHERE 1=1
+    <if test="prjctId != null">
+        <if test="!prjctId.equals('')">
+            AND A.PRJCT_ID = #{prjctId}
+        </if>
+    </if>
+    <if test="bgtMngOdr != null">
+        <if test="!bgtMngOdr.equals('')">
+            AND A.BGT_MNG_ODR = #{bgtMngOdr}
+        </if>
+    </if>
+    UNION
+    SELECT
+          A.MATRL_CT_SN
+        , A.MATRL_CT_IEM_CD
+        , (SELECT CD_NM FROM CD WHERE CD_VALUE = A.MATRL_CT_IEM_CD) AS MATRL_CT_IEM_NM
+        , A.PRDUCT_NM
+        , A.QY
+        , A.CNTRCTAMOUNT
+        , B.QY  AS USE_AMT
+        , (A.CNTRCTAMOUNT - B.QY) AS AVAIL
+     FROM MATRL_CT_PRMPC A
+     RIGHT JOIN MATRL_CT_EXCN B ON A.PRJCT_ID = B.PRJCT_ID
+    WHERE 1=1
     <if test="prjctId != null">
         <if test="!prjctId.equals('')">
             AND A.PRJCT_ID = #{prjctId}
