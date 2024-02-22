@@ -15,7 +15,6 @@ const CustomAddTable = ({ columns, values, onRowDblClick, pagerVisible, prjctId,
   const dataGridRef = useRef(null); // DataGrid 인스턴스에 접근하기 위한 ref
   const [selectValue, setSelectValue] = useState([]);
   
-  
   //useEffect를 사용하여 param이 변경될 때마다 실행 >> TODO.개발완료 후 삭제
   useEffect(() => {
     console.log("param 변경 !!",param);
@@ -130,14 +129,35 @@ const CustomAddTable = ({ columns, values, onRowDblClick, pagerVisible, prjctId,
   }
 
   //데이터 그리드에 로우가 수정될 때마다 실행
-  const onRowUpdated = (e) => {
-    console.log("e.data",e.data);
+  const onRowUpdated = async(e) => {
+    
+    const paramInfo = e.data;
+    const paramKey = pick(paramInfo, json.pkColumns);
+    delete paramInfo[json.CdComboboxColumnNm]; 
+
+    const param = [
+      { tbNm: json.table },
+        paramInfo,              //수정할 컬럼값
+        paramKey                //조건값
+    ];
+
+    try {
+      const response = await ApiRequest("/boot/common/commonUpdate", param);
+        if(response > 0) {
+          alert('데이터가 성공적으로 수정되었습니다.');
+          reload();
+          console.log(response);
+        }
+    }catch (error) {
+      console.error(error);
+    } 
+
   }
 
   //데이터 그리드에 로우가 삭제될 때마다 실행
   const onRowRemoved = async(e) => {
-    const gridInstance = dataGridRef.current.instance;
-    const rowIndex = gridInstance.getRowIndexByKey(e.data[json.keyColumn]);
+    // const gridInstance = dataGridRef.current.instance;
+    // const rowIndex = gridInstance.getRowIndexByKey(e.data[json.keyColumn]);
     //   if (rowIndex >= 0) {
         const paramInfo = e.data;
         const paramInfoNew = pick(paramInfo, json.pkColumns);
@@ -152,7 +172,7 @@ const CustomAddTable = ({ columns, values, onRowDblClick, pagerVisible, prjctId,
           const response = await ApiRequest("/boot/common/commonDelete", param);
             if(response > 0) {
               alert('데이터가 성공적으로 삭제되었습니다.');
-              gridInstance.deleteRow(rowIndex);
+              reload();
               console.log(response);
             }
         }catch (error) {
@@ -172,7 +192,7 @@ const CustomAddTable = ({ columns, values, onRowDblClick, pagerVisible, prjctId,
     return result;
   };
 
-  const reLoad = () => {
+const reload = () => {
     navigate("../project/ProjectChange",
         {
     state: { prjctId: prjctId, bgtMngOdr: bgtMngOdr },
@@ -230,13 +250,16 @@ const CustomAddTable = ({ columns, values, onRowDblClick, pagerVisible, prjctId,
           editCellRender={column.type === "ComboBox" ? () => onEditCellRender(column) : null}
           dataType={column.type ==="NumberBox" ? "number" : "string"}
         >
-          {/* {column.type=="yn"?   
-            <Lookup dataSource={test} valueExpr={"ID"} displayExpr={"Name"} />
-           :null}   */}
-
           {/* <ValidationRule type={column.validation ==="reauired" ? "required" : null} /> */}
         </Column>
     ))}
+    {/* <Column
+          dataField="StateID"
+          caption="State"
+          width={125}
+        >
+          <Lookup dataSource={test} displayExpr="Name" valueExpr="ID" />
+        </Column> */}
     </DataGrid>
   </div>
   );

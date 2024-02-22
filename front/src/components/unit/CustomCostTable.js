@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef  } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "devextreme-react";
 import { parse, format, addMonths } from 'date-fns';
 
@@ -23,18 +24,24 @@ const CustomCostTable = ({
   summaryColumn,
   popup,
   labelValue,
-  costTableInfoJson,
+  json,
   ctrtYmd,
   bizEndYmd,
   prjctId,
   bgtMngOdr,
   onHide,
 }) => {
+  const navigate = useNavigate();
   const [period, setPeriod] = useState([]); //사업시작일, 사업종료일을 받아와서 월별로 나눈 배열을 담을 상태
   const dataGridRef = useRef(null); // DataGrid 인스턴스에 접근하기 위한 ref
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [summaryColumns, setSummaryColumns] = useState(summaryColumn); //월별 합계를 담을 상태
+  
+  // console.log("columns 좌측데이터 ",columns);
+  // console.log("values!! ",values);
+  
+  
 
   const showPopup = (data) => {
     const gridInstance = dataGridRef.current.instance;
@@ -63,14 +70,19 @@ const CustomCostTable = ({
         let periods = [];
         let currentDate = start;
         while (currentDate  <= end) {
-          periods.push(format(currentDate, 'yyyy년 M월'));
+          periods.push(format(currentDate, 'yyyy년 MM월'));
           currentDate = addMonths(currentDate, 1); 
         }
         setPeriod(periods);
+        console.log("periods 월정보",periods);
         updateSummaryColumn(periods);
     };
     getPeriod(ctrtYmd, bizEndYmd);
   }, []);
+
+  useEffect(() => {
+    console.log("period 변경 !!",period);
+  }, [period]);
 
   //gridRows가 실행되는 시점 잡아주기.
   useEffect(() => {
@@ -107,13 +119,14 @@ const CustomCostTable = ({
   //행 삭제
   const onCellRenderDelete = (cellInfo) => {
     const gridInstance = dataGridRef.current.instance;
-    const rowIndex = gridInstance.getRowIndexByKey(cellInfo.data.expensCd); //TODO. keyColumn으로 변경해야함
+
+    const rowIndex = gridInstance.getRowIndexByKey(cellInfo.data[json.keyColumn]); //TODO. keyColumn으로 변경해야함
     return (
       <Button 
         onClick={async () => { 
               if (rowIndex >= 0) {
                 const paramInfo = cellInfo.data;
-                const paramInfoNew = pick(paramInfo, ['prjctId', 'expensCd', 'bgtMngOdr']); //TODO. 공통으로 쓰는 방법 모색 필요.
+                const paramInfoNew = pick(paramInfo, json.pkColumns); //TODO. 공통으로 쓰는 방법 모색 필요.
         
                 const param = [
                   { tbNm: "EXPENS_PRMPC" },
@@ -125,8 +138,9 @@ const CustomCostTable = ({
                   const response = await ApiRequest("/boot/common/commonDelete", param); 
                     if(response > 0) {
                       alert('데이터가 성공적으로 삭제되었습니다.');
-                      gridInstance.deleteRow(rowIndex);
-                      console.log(response);
+                      // gridInstance.deleteRow(rowIndex);
+                      handleCancel();
+                      console.log(response)
                     }
                 }catch (error) {
                   console.error(error);
@@ -145,6 +159,14 @@ const CustomCostTable = ({
     showPopup();
     // console.log("data",data.event.data);
     // gridInstance.deselectAll();
+  };
+
+  //취소버튼 클릭시
+  const handleCancel = () => {
+    navigate("../project/ProjectChange",
+        {
+    state: { prjctId: prjctId, bgtMngOdr: bgtMngOdr, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd},
+    })
   };
 
   //TODO. fixed가 왜 동작하지 않는지...? 후...
@@ -250,7 +272,7 @@ const CustomCostTable = ({
           selectedItem={selectedItem} 
           period={period} 
           labelValue={labelValue} 
-          popupInfo={costTableInfoJson} 
+          popupInfo={json} 
           onHide={onHide} 
           prjctId={prjctId} 
           bgtMngOdr={bgtMngOdr}
