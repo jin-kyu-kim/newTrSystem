@@ -16,6 +16,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.CallableStatement;
 import com.trsystem.common.mapper.CommonMapper;
 import com.trsystem.common.service.ApplicationYamlRead;
 
@@ -53,6 +54,7 @@ public class BatchSkillServiceImpl implements BatchSkillService {
             	connection.commit();
                 connection.close();
                 
+                //execProcedure(empId.get("id").toString(),empId.get("jbps").toString());
                 prmotPrjctSelect(empId.get("id").toString(),empId.get("jbps").toString()); //승진한 직원이 속한 프로젝트 목록 조회
                 
             	return result;
@@ -319,6 +321,37 @@ public class BatchSkillServiceImpl implements BatchSkillService {
         } catch (SQLException e) {
             e.getStackTrace();
             return result;
+        }
+	}
+	
+	public void execProcedure(String empId, String jbpsCd){
+		System.err.println(empId + " "+jbpsCd);
+		
+		try {
+            Connection connection = DriverManager.getConnection(applicationYamlRead.getUrl(), applicationYamlRead.getUsername(), applicationYamlRead.getPassword());
+            // 트랜잭션 시작
+            connection.setAutoCommit(false);
+            
+            String callProcedure = "CALL nwTr.P_PRMOT_PRMPC_CHG(?, ?)";
+            
+            try (CallableStatement callableStatement = connection.prepareCall(callProcedure)){
+            	
+            	callableStatement.setString("v_empId", empId);
+            	callableStatement.setString("v_jbpsCd", jbpsCd);
+            	
+            	callableStatement.executeQuery();
+            	int updateCount = callableStatement.getUpdateCount();
+            	System.err.println(updateCount);
+            	
+            	connection.commit();
+                connection.close();
+            	
+            }catch (SQLException e){
+                e.getStackTrace();
+                connection.rollback();
+            }
+        } catch (SQLException e) {
+            e.getStackTrace();
         }
 	}
 		
