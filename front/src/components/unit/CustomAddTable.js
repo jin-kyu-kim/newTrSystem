@@ -120,7 +120,7 @@ const CustomAddTable = ({ columns, values, onRowDblClick, pagerVisible, prjctId,
       const response = await ApiRequest("/boot/common/commonInsert", paramInfo);
           if(response > 0) {
             alert('데이터가 성공적으로 저장되었습니다.');
-            reLoad();
+            reload();
             console.log(response);
           }    
     } catch (error) {
