@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.trsystem.mybatis.mapper.empMapper">
+    
+	<select id="retrieveEmpVacUseList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+    SELECT
+		 (SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD) AS VCATN_TY_CD  			            
+ 		,(SELECT EMPNO FROM  EMP WHERE EMP_ID IN (SELECT ATRZ_DMND_EMP_ID  FROM ELCTRN_ATRZ ea WHERE ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID ) ) as EMPNO
+ 		,(SELECT EMP_FLNM FROM EMP WHERE EMP_ID IN (SELECT ATRZ_DMND_EMP_ID  FROM ELCTRN_ATRZ ea WHERE ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID  ) ) as EMP_FLNM
+		, VCATN_BGNG_YMD		           
+		, VCATN_END_YMD			           
+		, VCATN_DE_CNT			            
+		, VCATN_PRVONSH
+        , COUNT(*) OVER () AS TOTAL_ITEMS
+     FROM 
+     VCATN_ATRZ va     	 			                                                <!--휴가결재 테이블-->
+ 	 WHERE 1=1
+ 	
+        <if test="vcatnBgngYmd != null and vcatnEndYmd == null">
+      		AND VCATN_BGNG_YMD > #{vcatnBgngYmd}
+        </if>
+        <if test="vcatnBgngYmd == null and vcatnEndYmd != null">
+      		AND VCATN_END_YMD > #{vcatnEndYmd}
+        </if>
+        <if test="vcatnBgngYmd != null and vcatnEndYmd != null">
+           <if test="!vcatnBgngYmd.equals('') and !vcatnEndYmd.equals('')">
+     		AND VCATN_BGNG_YMD BETWEEN #{vcatnBgngYmd} AND #{vcatnEndYmd}
+           </if>
+        </if>
+      <if test="empno !=null and !empno.equals('')">
+     	HAVING
+        EMPNO = #{empno} 
+      </if>
+    </select>
+    
+</mapper>
