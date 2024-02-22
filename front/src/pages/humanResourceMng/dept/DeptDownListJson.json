@@ -5,9 +5,5 @@
     "tableColumns2": [
         { "key": "deptNm", "value": "부서명"},
         { "key": "deptMngrEmpFlnm", "value": "부서장명"}
-    ],
-    "searchParams":
-	{
-        
-    }
+    ]
 }
