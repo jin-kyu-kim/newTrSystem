@@ -15,6 +15,7 @@ mybatis:
     default-fetch-size: 500
 server:
   port: 8090
+  address: 0.0.0.0
 logging:
   level:
     com:
