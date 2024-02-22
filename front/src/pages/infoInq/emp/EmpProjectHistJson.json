@@ -1,0 +1,16 @@
+{
+    "menuName": "EmpProjectHist",
+    "keyColumn": "empId",
+    "tableColumns": 
+	[
+        { "key": "prjctNm", "value": "프로젝트명", "width": 150, "alignment" : "center" },
+        { "key": "prjctBgngYmd", "value": "프로젝트시작일자", "width": 150, "alignment" : "left" },
+        { "key": "prjctEndYmd", "value": "프로젝트종료일자", "width": 150, "alignment" : "left" },
+        { "key": "tkcgJobCn", "value": "담당업무", "width": 150, "alignment" : "left" },
+        { "key": "orderInstNm", "value": "발주처", "width": 150, "alignment" : "left"  },
+        { "key": "jobClCd", "value": "업무분류", "width": 150, "alignment" : "left"  },
+        { "key": "tchnlgyClCd", "value": "기술분류", "width": 150  },
+        { "key": "RM", "value": "비고", "width": 150 }
+	]
+
+}
