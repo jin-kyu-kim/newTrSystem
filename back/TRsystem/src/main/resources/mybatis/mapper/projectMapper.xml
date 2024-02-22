@@ -476,18 +476,18 @@
 	
 	<select id="retrieveChgPrmpcOdr" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		<if test="cnsrtmSn != null">
-			SELECT MAX(CNSRTM_SN) AS CNSRTM_SN
+			SELECT COALESCE(MAX(CNSRTM_SN),0) AS CNSRTM_SN
 			  FROM PRJCT_CNSRTM
 			 WHERE PRJCT_ID = #{prjctId}
 		</if>
 		<if test="matrlCtSn != null">
-			SELECT MAX(MATRL_CT_SN) AS MATRL_CT_SN
+			SELECT COALESCE(MAX(MATRL_CT_SN),0) AS MATRL_CT_SN
 			  FROM MATRL_CT_PRMPC
 			 WHERE PRJCT_ID = #{prjctId}
 			 AND BGT_MNG_ODR = #{bgtMngOdr}
 		</if>
 		<if test="expensPrmpcSn != null">
-			SELECT MAX(EXPENS_PRMPC_SN) AS EXPENS_PRMPC_SN
+			SELECT COALESCE(MAX(EXPENS_PRMPC_SN),0) AS EXPENS_PRMPC_SN
 			  FROM EXPENS_PRMPC
 			 WHERE PRJCT_ID = #{prjctId}
 			 AND BGT_MNG_ODR = #{bgtMngOdr}
