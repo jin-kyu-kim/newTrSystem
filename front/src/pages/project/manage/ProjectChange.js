@@ -62,7 +62,7 @@ const ProjectChange = () => {
     // 확인 후 없을 경우 -> 승인요청을 진행합니다.
 
     // 확인 로직
-    const boolean = true;
+    const boolean = false;
 
     if(boolean) {
       alert("승인요청중인 내역이 있습니다. 승인요청을 취소하고 다시 요청해주세요.");
@@ -70,7 +70,7 @@ const ProjectChange = () => {
     } else {
       const isconfirm = window.confirm("승인요청을 진행합니다. 승인을 요청하시겠습니까?");
       if(isconfirm){
-        handleSubmit();
+        handleAtrzLn();
       }
     }
   }
@@ -80,7 +80,7 @@ const ProjectChange = () => {
   }, []);
   
 
-  const handleSubmit = async () => {
+  const handleAtrzLn = async () => {
     const date = new Date();
     const param = [
       { tbNm: "PRJCT_ATRZ_LN"},
@@ -98,6 +98,17 @@ const ProjectChange = () => {
       console.log(response)
 
       if(response > 0) {
+
+        // 승인요청 되면 PRJCT_BGT_PRMPC 도 수정해줘야할듯?
+        /**
+         * VTW03301	임시저장
+          VTW03302	결재요청
+          VTW03303	결재완료
+
+         */
+
+
+
         alert("승인요청이 완료되었습니다.");
         setPopupVisible(false);
         navigate("../project/ProjectAprv");
@@ -108,6 +119,25 @@ const ProjectChange = () => {
       console.error('Error fetching data', error);
     }
   }
+
+  const handleBgtPrmpc = async () => {
+    const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
+
+    const param = [
+      { tbNm : "PRJCT_BGT_PRMPC" },
+      {
+        atrzDmndSttsCd: "VTW03302",
+        mdfcnEmpId: empId,
+        mdfcnDt: mdfcnDt,
+      },
+      {
+        prjctId: prjctId,
+        bgtMngOdr: bgtMngOdr,
+      }
+    ]
+
+  }
+
 
   return (
     <div>
@@ -162,9 +192,11 @@ const ProjectChange = () => {
           height="50%"
           valueChangeEvent="change"
           onValueChanged={onTextAreaValueChanged}
+          placeholder="승인 요청 사유를 입력해주세요."
         />
+        <br/>
         <Button text="승인요청" onClick={onSubmit}/>
-        <Button text="취소" onClick={handleClose}/>
+        <Button text="요청취소" onClick={handleClose}/>
       </CustomPopup>
     </div>
   );

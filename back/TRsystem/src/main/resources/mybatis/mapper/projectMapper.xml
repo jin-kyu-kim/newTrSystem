@@ -45,38 +45,34 @@
     
     <select id="retrievePrjctAprvList" parameterType="map" resultType="com.trsystem.LowerHashMap">
 	SELECT ROW_NUMBER()OVER ()ROWNUM
-		 , pal.PRJCT_ID
+		 , pal.PRJCT_ID 
 		 , (SELECT CD_NM FROM CD WHERE CD_VALUE = pal.PRMPC_INPT_SE_CD) AS PRMPC_INPT_SE_CD
 		 , p.PRJCT_NM
-		 , (SELECT CD_NM FROM CD WHERE CD_VALUE = pald.ATRZ_STEP_CD) AS ATRZ_STEP_CD
-	 	 , (SELECT CD_NM FROM CD WHERE CD_VALUE = pald.ATRZ_STTS_CD) AS ATRZ_STTS_CD
+		 , (SELECT CD_NM FROM CD WHERE CD_VALUE = pald.ATRZ_STEP_CD) AS ATRZ_STEP_CD_NM
+ 	 	 , pald.ATRZ_STEP_CD
+	 	 , (SELECT CD_NM FROM CD WHERE CD_VALUE = pald.ATRZ_STTS_CD) AS ATRZ_STTS_CD_NM
+	 	 , pald.ATRZ_STTS_CD
 	 	 , e.EMP_FLNM
 		 , pald.APRV_YMD
 		 , pald.RJCT_YMD
 		 , pal.ATRZ_LN_SN
+         , COUNT(*) OVER () AS TOTAL_ITEMS
 	  FROM PRJCT_ATRZ_LN pal
 	  JOIN PRJCT_ATRZ_LN_DTL pald ON(pal.PRJCT_ID = pald.PRJCT_ID AND pal.ATRZ_LN_SN = pald.ATRZ_LN_SN)
 	  JOIN PRJCT p ON (p.PRJCT_ID = pal.PRJCT_ID AND p.PRJCT_ID = pald.PRJCT_ID)
 	  JOIN EMP e  ON (e.EMP_ID = pal.REG_EMP_ID)
 	 WHERE 1=1
-	   AND pal.REG_EMP_ID = '202322f8-bf25-11ee-b259-000c2956283f'
-	   AND ATRZ_STEP_CD = (SELECT ATRZ_STEP_CD 
-	  						 FROM PRJCT_ATRZ_LN_DTL 
-	  						WHERE 1=1 
-	  					   	  AND REG_EMP_ID = '202322f8-bf25-11ee-b259-000c2956283f'
-	  					   	  AND (APRV_YMD IS NULL OR RJCT_YMD IS NOT NULL)
-					   	   ORDER BY ATRZ_STEP_CD ASC
-	  					   	  LIMIT 1
-					   	  )
+	   AND pald.APRVR_EMP_ID = #{empId}
         <if test="prmpcInptSeCd != null and !prmpcInptSeCd.equals('')">
-      AND PRMPC_INPT_SE_CD = #{prmpcInptSeCd}
+       AND PRMPC_INPT_SE_CD = #{prmpcInptSeCd}
         </if>
         <if test="prjctId != null and !prjctId.equals('')">
-      AND PRJCT_ID = #{prjctId}
+       AND PRJCT_ID = #{prjctId}
         </if>
         <if test="bizFlfmtTyCd != null and !bizFlfmtTyCd.equals('')">
-      AND BIZ_FLFMT_TY_CD = #{bizFlfmtTyCd}
+       AND BIZ_FLFMT_TY_CD = #{bizFlfmtTyCd}
         </if>
+     ORDER BY ATRZ_LN_SN DESC
     </select>
 
     <select id="retrievePrjctCostSummery" parameterType="map" resultType="com.trsystem.LowerHashMap">

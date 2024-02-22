@@ -62,7 +62,7 @@ const ProjectAprv = () => {
 
   const onRowDblClick = (e) => {
     navigate("/project/ProjectAprvDetail", 
-      {state: { id: e.data.prjctId, prjctNm: e.data.prjctNm, totBgt: e.data.totBgt, bgtMngOdr: e.data.bgtMngOdr, atrzLnSn: e.data.atrzLnSn } }
+      {state: { id: e.data.prjctId, prjctNm: e.data.prjctNm, bgtMngOdr: e.data.bgtMngOdr, atrzLnSn: e.data.atrzLnSn, atrzSttsCd: e.data.atrzSttsCd, atrzStepCd: e.data.atrzStepCd } }
     );
   }
 
