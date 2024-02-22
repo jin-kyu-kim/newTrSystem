@@ -56,7 +56,7 @@ const SearchCustomersSet = ({ callBack, props, popup }) => {
             placeholder={props.ctmmnyId}
             stylingMode="underlined"
             size="large"
-            name={props.ctmmnyId}
+            name="ctmmnyId"
             onValueChanged={(e) => handleChgState({ name: e.component.option('name'), value: e.value })}
           />
         </Item>

@@ -6,7 +6,7 @@ const TreRoutes = [
     path: "/",
     name: "main",
     element: React.lazy(() =>
-      import("../pages/infoInq/person/personDetail/DetailMain")
+      import("../pages/infoInq/emp/EmpDetailInfo")
     ),
   },
   // 로그인
@@ -56,12 +56,36 @@ const TreRoutes = [
     name: "CustomersList",
     element: React.lazy(() => import("../pages/sysMng/CustomersList")),
   },
-     // 코드 관리
-     {
-      path: "/sysMng/TrsCodeList",
-      name: "TrsCodeList",
-      element: React.lazy(() => import("../pages/sysMng/TrsCodeList")),
-    }
+  // 코드 관리
+  {
+    path: "/sysMng/TrsCodeList",
+    name: "TrsCodeList",
+    element: React.lazy(() => import("../pages/sysMng/TrsCodeList")),
+  },
+      // 공지사항
+  {
+    path: "/infoInq/NoticeList",
+    name: "NoticeList",
+    element: React.lazy(() => import("../pages/infoInq/NoticeList")),
+  },
+  // 공지사항 디테일
+  {
+    path: "/infoInq/NoticeDetail",
+    name: "NoticeDetail",
+    element: React.lazy(() => import("../pages/infoInq/NoticeDetail"))
+  },
+  // 공지사항 등록
+  {
+    path: "/infoInq/NoticeInput",
+    name: "NoticeInput",
+    element: React.lazy(() => import("../pages/infoInq/NoticeInput"))
+  },
+  //직원조회
+  {
+    path: "/infoInq/person/Emp/EmpList",
+    name: "EmpList",
+    element: React.lazy(() => import("../pages/infoInq/person/Emp/EmpList")),
+  }
 ];
 
 export default TreRoutes;
