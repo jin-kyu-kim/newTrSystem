@@ -20,7 +20,7 @@ import com.trsystem.common.mapper.CommonMapper;
 import com.trsystem.common.service.ApplicationYamlRead;
 
 @Service
-public class BatchSkillServiceImpl implements BatchSkillService {
+public class BatchSkillServiceImpl implements BatchSkillService { 
 	private final ApplicationYamlRead applicationYamlRead;
 	
 	private final SqlSession sqlSession;

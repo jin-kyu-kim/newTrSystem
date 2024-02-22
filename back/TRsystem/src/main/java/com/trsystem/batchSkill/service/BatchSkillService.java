@@ -10,6 +10,6 @@ public interface BatchSkillService {
 	public int prmotMaxOdr(String prjctId);
 	public int prmotInsertData(String empId, String prjctId);
 	public List<Map<String, Object>> columnSet(String tbNm, String prjctId);
-	public int mimPrmotInsertData(String empId, String jbpsCd, String prjctId);
+	public int mimPrmotInsertData(String empId, String jbpsCd, String prjctId); 
 
 }

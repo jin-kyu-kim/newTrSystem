@@ -17,7 +17,7 @@ public class BatchSkillController {
 	private final BatchSkillService batchSkillService;
 	
 	//아무 화면에서 테스트용 버튼으로 axios 통신
-/*	//front code
+/*	// front code
 	  const promoTest = (e) => {
 
 	    axios
