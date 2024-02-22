@@ -1,0 +1,15 @@
+{
+	"menuName": "TrsCodeChildList",
+	"queryId": "trsCodeMapper.TrsCodeChildList",
+    "keyColumn": "childCdValue",
+    "tableColumns": 
+	[
+        { "key": "childCdValue", "value": "하위코드", "width": 250, "alignment" : "center" },
+        { "key": "childCdNm", "value": "하위코드명", "width": 350, "alignment" : "left" },
+        { "key": "childCUseYn", "value": "사용여부", "width": 200, "alignment" : "center"  }
+	],
+    "searchParams":
+	{
+        "prjctStleCdItem" : true
+    }
+}

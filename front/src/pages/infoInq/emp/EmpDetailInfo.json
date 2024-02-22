@@ -1,0 +1,37 @@
+[
+    {
+      "TabName": "비밀번호변경",
+      "tabId": "ModifyPwd",
+      "url": "./ModifyPwd"
+    },
+    {
+      "TabName": "직원기본정보",
+      "tabId": "EmpBasicInfo",
+      "url": "./EmpBasicInfo"
+    },
+    {
+      "TabName": "학력",
+      "tabId": "ModifyPwd",
+      "url": "./ModifyPwd"
+    },
+    {
+      "TabName": "외국어능력",
+      "tabId": "ModifyPwd",
+      "url": "./ModifyPwd"
+    },
+    {
+      "TabName": "교육이력",
+      "tabId": "ModifyPwd",
+      "url": "./ModifyPwd"
+    },
+    {
+      "TabName": "경력",
+      "tabId": "ModifyPwd",
+      "url": "./ModifyPwd"
+    },
+    {
+      "TabName": "프로젝트이력",
+      "tabId": "ModifyPwd",
+      "url": "./ModifyPwd"
+    }
+  ]
