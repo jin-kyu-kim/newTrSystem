@@ -4,8 +4,6 @@ spring:
     username: trs
     password: Vtw2023!
     driver-class-name:  net.sf.log4jdbc.sql.jdbcapi.DriverSpy #com.mysql.cj.jdbc.Driver
-server:
-  port: 8080
 mybatis:
   mapper-locations: /mybatis/mapper/**/*.xml
   configuration:
