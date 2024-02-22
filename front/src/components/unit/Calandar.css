@@ -1,0 +1,9 @@
+:root {
+    --fc-border-color: black;
+    --fc-daygrid-event-dot-width: 5px;
+    --fc-today-bg-color: none;
+    --fc-event-bg-color: #ffffff;
+    --fc-event-border-color: #ffffff;
+    --fc-event-text-color: #000000;
+    --fc-event-title : 16px;
+  }
