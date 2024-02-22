@@ -6,8 +6,6 @@ import { Button } from "devextreme-react/button";
 import TextArea from 'devextreme-react/text-area';
 import ToolbarItem from "devextreme-react/popup";
 
-import { useNavigate } from "react-router-dom";
-
 import ProjectChangeJson from "./ProjectChangeJson.json";
 
 import LinkButton from "../../../components/unit/LinkButton.js";
