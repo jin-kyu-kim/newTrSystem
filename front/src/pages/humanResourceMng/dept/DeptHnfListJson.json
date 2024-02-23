@@ -1,0 +1,15 @@
+{
+    "menuName": "DeptManage",
+	"queryId3": "deptMapper.retrieveDeptHnfList",
+    "keyColumn3": "empId",
+    "tableColumns3": [
+        { "key": "empno", "value": "사번"},
+        { "key": "empFlnm", "value": "성명" },
+        { "key": "jbpsNm", "value": "직위"},
+        { "key": "jbttlNm", "value": "직책" }
+    ],
+    "searchParams":
+	{
+        
+    }
+}

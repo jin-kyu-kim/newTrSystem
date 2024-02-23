@@ -86,6 +86,15 @@ const SearchPrjctSet = ({ callBack, props, popup }) => {
         width="100%"
         height={40}
       >
+        <Item className="prmpcInptSeCdItem" ratio={1} visible={props.prmpcInptSeCdItem}>
+          <CustomCdComboBox
+            param="VTW015"
+            placeholderText="[유형]"
+            name="prmpcInptSeCd"
+            onSelect={handleChgState}
+            value={initParam.prmpcInptSeCd}
+          />
+        </Item>
         <Item className="prjctStleCdItem" ratio={1} visible={props.prjctStleCdItem}>
           <CustomCdComboBox
             param="VTW018"

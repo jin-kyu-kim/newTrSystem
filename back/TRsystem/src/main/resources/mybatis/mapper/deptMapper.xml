@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.trsystem.mybatis.mapper.deptMapper">
+
+    <!--부서 목록 조회-->
+  	<select id="retrieveDeptList" parameterType="map" resultType="com.trsystem.LowerHashMap"> 
+	    SELECT
+	          ROW_NUMBER()OVER ()ROWNUM
+	        , DEPT_ID  
+	        , DEPT_NM                                                                                   -- 부서명
+	        , (SELECT d2.DEPT_NM FROM DEPT d2 WHERE d.UP_DEPT_ID = d2.DEPT_ID) AS UP_DEPT_NM            -- 상위부서명
+	        , (SELECT EMP_FLNM
+				FROM (SELECT e.EMP_FLNM
+					         , ROW_NUMBER() OVER (ORDER BY h.JBTTL_CD) AS RN
+					    FROM EMP e
+					    INNER JOIN DEPT_HNF h ON e.EMP_ID = h.EMP_ID
+					    WHERE h.DEPT_ID = d.DEPT_ID) a
+				WHERE RN = 1) AS DEPT_MNGR_EMP_FLNM                                                     -- 부서장명
+	        , DEPT_BGNG_YMD                                                                             -- 부서시작일자
+	        , DEPT_END_YMD                                                                              -- 부서종료일자
+	        , COUNT(*) OVER () AS TOTAL_ITEMS                                                           -- 총건수
+	     FROM DEPT d
+	     WHERE 1=1 
+		<if test="deptNm!= null and !deptNm.equals('')">
+			AND DEPT_NM LIKE CONCAT('%',#{deptNm},'%')
+		</if>
+        <if test="deptMngrEmpFlnm!= null and !deptMngrEmpFlnm.equals('')">
+			AND (SELECT EMP_FLNM
+		           FROM (SELECT e.EMP_FLNM
+		                         , ROW_NUMBER() OVER (ORDER BY h.JBTTL_CD) AS RN
+		                    FROM EMP e
+		                    INNER JOIN DEPT_HNF h ON e.EMP_ID = h.EMP_ID
+		                    WHERE h.DEPT_ID = d.DEPT_ID) a
+		            WHERE RN = 1
+		        ) LIKE CONCAT('%',#{deptMngrEmpFlnm},'%')
+		</if>
+        <if test="deptBgngYmd != null and bizEndYmd == null">
+			AND DEPT_BGNG_YMD > #{deptBgngYmd}
+		</if>
+        <if test="deptBgngYmd == null and deptEndYmd != null">
+			AND DEPT_END_YMD > #{deptEndYmd}
+		</if>
+        <if test="deptBgngYmd != null and deptEndYmd != null">
+			<if test="!deptBgngYmd.equals('') and !deptEndYmd.equals('')">
+				AND DEPT_BGNG_YMD BETWEEN #{deptBgngYmd} AND #{deptEndYmd}
+			</if>
+		</if>
+		ORDER BY REG_DT DESC </select>
+		
+	   <!--부서 상세 조회-->
+  	   <select id="getDeptDetail" parameterType="map" resultType="com.trsystem.LowerHashMap"> 
+	   SELECT d.DEPT_ID  
+	        , d.DEPT_NM                                                                                   -- 부서명
+	        , (SELECT d2.DEPT_NM FROM DEPT d2 WHERE d.UP_DEPT_ID = d2.DEPT_ID) AS UP_DEPT_NM            -- 상위부서명
+	        , (SELECT a.EMP_FLNM
+				FROM (SELECT e.EMP_FLNM
+					         , ROW_NUMBER() OVER (ORDER BY h.JBTTL_CD) AS RN
+					    FROM EMP e
+					    INNER JOIN DEPT_HNF h ON e.EMP_ID = h.EMP_ID
+					    WHERE h.DEPT_ID = d.DEPT_ID) a
+				WHERE RN = 1) AS DEPT_MNGR_EMP_FLNM                                                     -- 부서장명
+	        , d.DEPT_BGNG_YMD                                                                             -- 부서시작일자
+	        , d.DEPT_END_YMD                                                                              -- 부서종료일자
+	     FROM DEPT d
+	     WHERE 1=1 
+	       AND d.DEPT_ID = #{deptId}
+		</select>
+		
+		<!--하위 부서 목록 조회-->
+		<select id="retrieveDownDeptList" parameterType="map" resultType="com.trsystem.LowerHashMap"> 
+			SELECT d.DEPT_ID 
+                 , d.DEPT_NM
+                 , (SELECT EMP_FLNM
+				      FROM (SELECT e.EMP_FLNM
+					             , ROW_NUMBER() OVER (ORDER BY h.JBTTL_CD) AS RN
+					          FROM EMP e
+					         INNER JOIN DEPT_HNF h ON e.EMP_ID = h.EMP_ID
+					         WHERE h.DEPT_ID = d.DEPT_ID) a
+				      WHERE RN = 1) AS DEPT_MNGR_EMP_FLNM  
+              FROM DEPT d     
+             WHERE d.UP_DEPT_ID = #{deptId} 		
+		</select>
+		
+		<!--부서 인력 조회-->
+		<select id="retrieveDeptHnfList" parameterType="map" resultType="com.trsystem.LowerHashMap"> 
+			SELECT e.EMP_ID
+			       , e.EMPNO
+			       , e.EMP_FLNM
+			       , ( SELECT c.CD_NM 
+			             FROM CD c
+                        WHERE c.CD_VALUE = e.JBPS_CD) AS JBPS_NM                                          -- 직위
+                   , ( SELECT c.CD_NM 
+			             FROM CD c
+                        WHERE c.CD_VALUE = h.JBTTL_CD) AS JBTTL_NM                                        -- 직책                          
+		      FROM EMP e
+		     INNER JOIN DEPT_HNF h ON e.EMP_ID = h.EMP_ID
+		     WHERE h.DEPT_ID = #{deptId}
+		</select>
+		
+		
+		
+	
+</mapper>	

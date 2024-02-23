@@ -14,11 +14,12 @@ import LinkButton from "../../../components/unit/LinkButton.js";
 const ProjectDetail = () => {
   const navigate = useNavigate ();
   const location = useLocation();
-  const prjctId = location.state.id;
+  const prjctId = location.state.prjctId;
   const totBgt = location.state.totBgt;
   const bgtMngOdr = location.state.bgtMngOdr;
   const ctrtYmd = location.state.ctrtYmd;
   const bizEndYmd = location.state.bizEndYmd;
+  const bgtMngOdrToBe = location.state.bgtMngOdrToBe;
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const ProjectDetail = ProjectDetailJson;
@@ -36,18 +37,19 @@ const ProjectDetail = () => {
   const itemTitleRender = (a) => <span>{a.TabName}</span>;
 
   const projectChgHandle = () => {
+    console.log(bgtMngOdr)
     const isconfirm = window.confirm("프로젝트 변경을 진행하시겠습니까?");
     if(isconfirm){
-      addTest();
+      handleBgtPrmpc();
 
       navigate("../project/ProjectChange",
         {
-        state: { prjctId: prjctId, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd, bgtMngOdr:bgtMngOdr },
+        state: { prjctId: prjctId, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd, bgtMngOdr:bgtMngOdr, bgtMngOdrToBe: bgtMngOdrToBe, },
         })
     }
   }
 
-  const addTest = async () => {
+  const handleBgtPrmpc = async () => {
     const date = new Date();
 
     const param = [ 
@@ -99,7 +101,7 @@ const ProjectDetail = () => {
         >
           프로젝트종료
         </Button>
-        <LinkButton location={-1} name={"목록"} type={"normal"} stylingMode={"outline"}/>
+        <LinkButton location={"../project/ProjectList"} name={"목록"} type={"normal"} stylingMode={"outline"}/>
       </div>
       <div
         style={{

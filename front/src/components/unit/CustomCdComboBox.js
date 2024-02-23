@@ -6,7 +6,7 @@ import SelectBox from "devextreme-react/select-box";
 import cdJson from "./cd.json";
 import ApiRequest from "../../utils/ApiRequest";
 
-const CustomCdComboBox = ({ param, placeholderText, onSelect, name, value, readOnly }) => {
+const CustomCdComboBox = ({ param, placeholderText, onSelect, name, value, readOnly, between }) => {
   const [cdVal, setCdVal] = useState([]);
 
   useEffect(() => {
@@ -27,6 +27,15 @@ const CustomCdComboBox = ({ param, placeholderText, onSelect, name, value, readO
   }, [cdVal]);
 
   const getCode = async () => {
+
+    //코드값 between이 필요한 경우
+    if(between){
+      cdVal[1] = {
+        ...cdVal[1],
+        cdValue: between,
+      };
+    }
+
     try {
       const response = await ApiRequest("/boot/common/commonSelect", cdVal);
 
