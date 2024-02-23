@@ -206,11 +206,13 @@ const ProjectAprvDetail = () => {
 
     const handleBgtPrmpc = async () => {
         const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
+        const date = getToday();
     
         const param = [
           { tbNm : "PRJCT_BGT_PRMPC" },
           {
             atrzDmndSttsCd: "VTW03303",
+            ATRZ_CMPTN_YMD: date,
             mdfcnEmpId: cookies.userInfo.empId,
             mdfcnDt: mdfcnDt,
           },
