@@ -6,18 +6,18 @@ import { Button } from "devextreme-react/button";
 
 import CustomDateRangeBox from "../unit/CustomDateRangeBox";
 import CustomCdComboBox from "../unit/CustomCdComboBox";
-import AutoCompleteProject from "../unit/AutoCompleteProject";
+import AutoCompleteName from "../unit/AutoCompleteName";
+import ProjectRegist from "../../pages/project/manage/ProjectRegist";
+import CustomPopup from "../unit/CustomPopup";
+import notify from 'devextreme/ui/notify';
 
 
 
-const SearchEmpSet = ({ callBack, props, popup }) => {
+const SearchEmpVacSet = ({ callBack, props, popup }) => {
   const [initParam, setInitParam] = useState({
-    empno: "",
-    empFlnm: "",
-    jbpsNm: "",
-    deptNm: "",
-    telNo: "",
-    hodfSttsNm: "",
+    vcatnBgngYmd: "", //시작일자
+    vcatnEndYmd: "", //끝일자
+    empno: "",  // 사번
   });
 
 
@@ -48,8 +48,11 @@ const SearchEmpSet = ({ callBack, props, popup }) => {
   const handleSubmit = () => {
     callBack(initParam);
   };
+ 
 
-  
+  const exelDwd = () => {
+    notify("휴가사용내역을 다운로드합니다.");
+  }  //엑셀다운로드 함수 수정중
 
   return (
     <div className="box_search" width="100%">
@@ -144,4 +147,4 @@ const SearchEmpSet = ({ callBack, props, popup }) => {
   );
 };
 
-export default SearchEmpSet;
+export default SearchEmpVacSet;

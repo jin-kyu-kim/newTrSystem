@@ -119,7 +119,7 @@
       {
         "id": 2,
         "title": "직원관리",
-        "link": "/"
+        "link": "humanResourceMng/EmpManage"
       },
       {
         "id": 3,
