@@ -13,6 +13,7 @@ import CustomPopup from "../../../components/unit/CustomPopup";
 
 import { useCookies } from "react-cookie";
 import ApiRequest from "utils/ApiRequest";
+import { set } from "date-fns";
 
 const ProjectChange = () => {
   const location = useLocation();
@@ -38,17 +39,35 @@ const ProjectChange = () => {
   const deptId = cookies.userInfo.deptId;
   const buttonState = { prjctId: prjctId, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd, bgtMngOdr:bgtMngOdr, };
   // console.log("buttonState?",buttonState);
+  const [requestBtnVisible, setAprvBtnVisible] = useState(true);
+  const [cancelBtnVisible, setCancelBtnVisible] = useState(false);
 
   console.log(bgtMngOdrTobe)
   console.log(targetOdr);
 
   useEffect(() => {
+    console.log(bgtMngOdrTobe);
+
     // 해당 프로젝트에 승인요청중인 내역이 있는지 확인한다.
     // 확인 후 있을 경우 -> 승인요청중인 내역이 있습니다. 승인요청을 취소하고 다시 요청해주세요.
     // 확인 후 없을 경우 -> 승인요청을 진행합니다.
-    
+    const param = [
+      { tbNm: "PRJCT_BGT_PRMPC" },
+      {
+        prjctId: prjctId,
+        bgtMngOdr: bgtMngOdrTobe,
+      }
+    ]
 
-  
+    const response = ApiRequest("/boot/common/commonSelect", param);
+    response.then((value) => {
+
+      console.log(value[0].atrzDmndSttsCd);
+      if(value[0].atrzDmndSttsCd === "VTW03302") {
+        setAprvBtnVisible(false);
+        setCancelBtnVisible(true);
+      }
+    });
   }, []);
 
 
@@ -148,7 +167,7 @@ const ProjectChange = () => {
       },
       {
         prjctId: prjctId,
-        bgtMngOdr: bgtMngOdr,
+        bgtMngOdr: targetOdr,
       }
     ]
 
@@ -180,7 +199,17 @@ const ProjectChange = () => {
         state: { prjctId: prjctId, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd, bgtMngOdr:bgtMngOdr },
         })
   };
-  
+
+  /**
+   * 승인취소 버튼 클릭
+   */
+  const onAprvCancel = async () => {
+    // 승인 취소를 눌렀을 때 어떤 것이 동작해야하는가?
+    /**
+     * 1. 승인결재선 테이블을 취소로 다 바꾼다. 
+     * 2. 변경중에서 
+     */
+  }
 
   return (
     <div>
@@ -193,7 +222,8 @@ const ProjectChange = () => {
         </div>
       </div>
       <div className="buttons" align="right" style={{ margin: "20px" }}>
-        <Button onClick={onPopup}>승인요청</Button>
+        <Button text="승인요청" onClick={onPopup} visible={requestBtnVisible}></Button>
+        <Button text="승인취소" onClick={onAprvCancel} visible={cancelBtnVisible}/>
         {/* <LinkButton location={-1} name={"이전"} type={"normal"} state={buttonState}/> */}
         <Button text="이전" onClick={toDetail}/>
       </div>
