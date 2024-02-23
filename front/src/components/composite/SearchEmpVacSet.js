@@ -5,12 +5,12 @@ import { Button } from "devextreme-react/button";
 import CustomDateRangeBox from "../unit/CustomDateRangeBox";
 import AutoCompleteName from "../unit/AutoCompleteName";
 import ProjectRegist from "../../pages/project/manage/ProjectRegist";
-import CustomPopup from "../unit/CustomPopup"
-
-
+import CustomPopup from "../unit/CustomPopup";
 import notify from 'devextreme/ui/notify';
 
-const SearchEmpSet = ({ callBack, props, popup }) => {
+
+
+const SearchEmpVacSet = ({ callBack, props, popup }) => {
   const [initParam, setInitParam] = useState({
     vcatnBgngYmd: "", //시작일자
     vcatnEndYmd: "", //끝일자
@@ -70,7 +70,6 @@ const handleChgEmp = (selectedOption) => {
   
   
 
-
   const exelDwd = () => {
     notify("휴가사용내역을 다운로드합니다.");
   }  //엑셀다운로드 함수 수정중
@@ -118,4 +117,4 @@ const handleChgEmp = (selectedOption) => {
   );
 };
 
-export default SearchEmpSet;
+export default SearchEmpVacSet;
