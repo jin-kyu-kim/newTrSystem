@@ -41,8 +41,6 @@ const CustomCostTable = ({
   
   useEffect(() => {
     const deleteArray = [...json.pkColumns, ...json.nomalColumns];
-    console.log("deleteArray",deleteArray);
-    console.log("selectedItem",selectedItem);
 
     let temp = {...selectedItem};
 
