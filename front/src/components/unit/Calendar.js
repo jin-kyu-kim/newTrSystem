@@ -7,21 +7,18 @@ import FullCalendar from '@fullcalendar/react';
 import style from "../unit/Calendar.css"
 
 const Calandar = ({values}) => {
-    const replaveValues = [];
-    
-    for(let i = 0; i < values.length; i++){
-        console.log("values[i] : ", values[i]);
-        replaveValues.push(values[i]);
+    const replaceData = [
+        { "key": "empFlnm", "value": "성명" },
+        { "key": "cdNm", "value": "휴가코드명" },
+        { "key": "bgngDay", "value": "휴가시작일자" },
+        { "key": "endDay", "value": "휴가종료일자" },
+        { "key": "vcatnMonth", "value": "휴가월" },
+        { "key": "vcatnDeCnt", "value": "휴가일자" },
+        { "key": "elctrnAtrzId", "value": "전자결재ID" }
+    ]
 
+    for (let i = 0; i < values.length; i++){
         if(values[i].vcatnDeCnt > 1){
-            // replaveValues.push(values[i].empFlnm);
-            // replaveValues.push(values[i].cdNm);
-            // replaveValues.push(values[i].bgngDay);
-            // replaveValues.push(values[i].endDay);
-            // replaveValues.push(values[i].vcatnMonth);
-            // replaveValues.push(values[i].vcatnDeCnt);
-            // replaveValues.push(values[i].elctrnAtrzId);
-            // console.log("1일이상");
         }
     }
 
