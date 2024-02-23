@@ -3,7 +3,7 @@ import { useEffect, useState, } from "react";
 import EmpVacUseListJson from "./EmpVacUseListJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
 import CustomTable from "../../../components/unit/CustomTable";
-import SearchEmpSet from "../../../components/composite/SearchEmpSet";
+import SearchEmpVacSet from "../../../components/composite/SearchEmpVacSet";
 import "react-datepicker/dist/react-datepicker.css";
 
 const EmpVacUseList = () => {
@@ -92,7 +92,7 @@ const EmpVacUseList = () => {
             </div>
             <div className="wrap_search" style={{ marginBottom: "20px" }}>
            
-            <SearchEmpSet callBack={searchHandle} props={searchParams} />
+            <SearchEmpVacSet callBack={searchHandle} props={searchParams} />
         
             </div>
             <div>

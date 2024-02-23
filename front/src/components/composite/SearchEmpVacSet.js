@@ -14,7 +14,7 @@ const SearchEmpSet = ({ callBack, props, popup }) => {
   const [initParam, setInitParam] = useState({
     vcatnBgngYmd: "", //시작일자
     vcatnEndYmd: "", //끝일자
-    empno: "",  // 직원이름(이름에 맞는 코드 불러오기 이름 같아도 상관없는듯)
+    empno: "",  // 사번
   });
 
   const [popupVisible, setPopupVisible] = useState(false);
