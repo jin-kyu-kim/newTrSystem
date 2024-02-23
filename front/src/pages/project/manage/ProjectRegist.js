@@ -113,6 +113,9 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
         } else {
             setReadOnly(true);
         }
+    }
+
+    const onPopup = () => {
         
     }
 
@@ -221,7 +224,7 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
                             </div>
                         </div>
                         <CustomLabelValue props={labelValue.dept} onSelect={handleChgState} value={data.deptId} readOnly={readOnly} defaultValue={deptId} />
-                        <CustomLabelValue props={labelValue.emp} onSelect={handleChgState} value={data.prjctMngrEmpId} readOnly={readOnly} defaultValue={empId}/>
+                        <CustomLabelValue props={labelValue.emp} onSelect={handleChgState} value={data.prjctMngrEmpId} readOnly={true} defaultValue={empId}/>
                     </div>
                 </div>
                 <div className="project-regist-content-inner">
@@ -263,7 +266,7 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
                     </div>
                 </div>
             </div>
-            {readOnly ? <Button text="수정" onClick={readOnlyChg}/> :
+            {readOnly ? <><Button text="수정" onClick={readOnlyChg}/> <Button text="팝업" onClick={onPopup}/></>:
                 onHide ? 
                 <div>
                     <Button text="저장" onClick={onClick}/>

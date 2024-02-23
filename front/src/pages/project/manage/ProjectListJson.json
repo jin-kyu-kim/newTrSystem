@@ -16,6 +16,7 @@
     "searchParams":
 	{
         "prjctMngrEmpIdItem": false,
+        "prmpcInptSeCdItem": false,
         "popupVisible": true
     },
     "popup":

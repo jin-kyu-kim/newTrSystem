@@ -16,8 +16,8 @@
   },
   {
     "TabName": "결재정보",
-    "tabId": "ProjectBaseInfo",
-    "url": "./ProjectBaseInfo"
+    "tabId": "ProjectAtrzInfo",
+    "url": "./ProjectAtrzInfo"
   },
   {
     "TabName": "설정",

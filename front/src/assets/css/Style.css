@@ -80,3 +80,62 @@
 }
 
 .asterisk::after { color: red; content: "*"; font-size: inherit; margin-left: 0.4rem; }
+
+/* NoticeInput.css */
+.notice-table {
+  width: 100%;
+  margin-bottom: 30px;
+  border-collapse: collapse;
+  border: 2px solid #ddd;
+}
+.notice-table th, .notice-table td {
+  border: 2px solid #ddd;
+  padding: 10px;
+}
+.input-column {
+  background-color: rgb(244, 242, 242);
+  text-align: center;
+  font-weight: bold;
+}
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  margin: 5px;
+}
+.checkbox-label {
+  flex: 0 0 auto; /* 너비 자동으로 설정 */
+  margin-right: 10px; /* 오른쪽 마진 추가 */
+}
+.checkSpace{
+  margin-right: 10px;
+}
+.inputFormBtn{
+  text-align: center;
+  margin-bottom: 100px;
+}
+
+
+.atrz-container {
+  position: relative;
+}
+
+.atrz-container,
+.left-content {
+  min-height: 530px;
+}
+
+.left-content {
+  display: inline-block;
+  width: 180px;
+  padding: 0 10px 10px;
+  /* background-color: rgba(191, 191, 191, 0.15); */
+  /* box-shadow: -5px 0 14px -8px rgba(0, 0, 0, 0.25) inset; */
+}
+
+.right-content {
+  position: absolute;
+  right: 0;
+  left: 220px;
+  top: 0;
+  height: 100%;
+}

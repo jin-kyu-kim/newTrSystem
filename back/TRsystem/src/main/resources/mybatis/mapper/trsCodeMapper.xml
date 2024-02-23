@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.trsystem.mybatis.mapper.trsCodeMapper">
+   <select id="TrsCodeList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT 
+		    COUNT(*) OVER () AS TOTAL_ITEMS,
+		    PARENT.CD_VALUE AS PARENT_CD_VALUE,
+		    PARENT.CD_NM AS PARENT_CD_NM,
+		    PARENT.USE_YN AS PARENT_USE_YN
+		FROM 
+		    CD PARENT
+		WHERE 
+		    UP_CD_VALUE IS NULL;
+	</select>
+	<select id="TrsCodeChidList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT 
+		    COUNT(*) OVER () AS TOTAL_ITEMS,
+			CHILD.CD_VALUE AS CHILD_CD_VALUE,
+			CHILD.CD_NM AS CHILD_CD_NM,
+			CHILD.USE_YN AS CHILD_USE_YN
+		FROM 
+		    CD CHILD
+		WHERE 1=1
+		<if test="ctmmnyNm != null and !ctmmnyNm.equals('')">
+			AND UP_CD_VALUE = #{upCdValue}
+		</if>
+	</select>
+</mapper>
