@@ -221,7 +221,7 @@ const ProjectChange = () => {
                 prjctId={prjctId}
                 ctrtYmd={ctrtYmd}
                 bizEndYmd={bizEndYmd}
-                bgtMngOdr={bgtMngOdrTobe}
+                bgtMngOdrTobe={bgtMngOdrTobe}
                 revise={true}
                 tabId={data.tabId}
               />
