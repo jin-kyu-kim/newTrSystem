@@ -1,4 +1,4 @@
-import React, { useCallback, useState, Suspense, lazy, useMemo } from "react";
+import React, { useCallback, useState, Suspense, lazy, useMemo, useEffect } from "react";
 import { TabPanel } from "devextreme-react";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
@@ -22,6 +22,8 @@ const ProjectChange = () => {
   const ctrtYmd = location.state ? location.state.ctrtYmd : null;
   const bizEndYmd = location.state ? location.state.bizEndYmd : null;
   const bgtMngOdr = location.state ? location.state.bgtMngOdr : null;
+  const bgtMngOdrTobe = location.state ? location.state.bgtMngOdrTobe : null;
+  const targetOdr = location.state ? location.state.targetOdr : null;
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const [atrzAplyPrvonshCn, setAtrzAplyPrvonshCn] = useState("");
@@ -34,8 +36,20 @@ const ProjectChange = () => {
   const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
   const empId = cookies.userInfo.empId;
   const deptId = cookies.userInfo.deptId;
-  const buttonState = { prjctId: prjctId, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd, bgtMngOdr:bgtMngOdr };
+  const buttonState = { prjctId: prjctId, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd, bgtMngOdr:bgtMngOdr, };
   // console.log("buttonState?",buttonState);
+
+  console.log(bgtMngOdrTobe)
+  console.log(targetOdr);
+
+  useEffect(() => {
+    // 해당 프로젝트에 승인요청중인 내역이 있는지 확인한다.
+    // 확인 후 있을 경우 -> 승인요청중인 내역이 있습니다. 승인요청을 취소하고 다시 요청해주세요.
+    // 확인 후 없을 경우 -> 승인요청을 진행합니다.
+    
+
+  
+  }, []);
 
 
   // 탭 변경시 인덱스 설정
@@ -58,10 +72,6 @@ const ProjectChange = () => {
   };
 
   const onSubmit = () => {
-
-    // 해당 프로젝트에 승인요청중인 내역이 있는지 확인한다.
-    // 확인 후 있을 경우 -> 승인요청중인 내역이 있습니다. 승인요청을 취소하고 다시 요청해주세요.
-    // 확인 후 없을 경우 -> 승인요청을 진행합니다.
 
     // 확인 로직
     const boolean = false;
@@ -211,7 +221,7 @@ const ProjectChange = () => {
                 prjctId={prjctId}
                 ctrtYmd={ctrtYmd}
                 bizEndYmd={bizEndYmd}
-                bgtMngOdr={bgtMngOdr}
+                bgtMngOdr={bgtMngOdrTobe}
                 revise={true}
                 tabId={data.tabId}
               />

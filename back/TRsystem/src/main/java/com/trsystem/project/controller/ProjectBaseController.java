@@ -42,7 +42,6 @@ public class ProjectBaseController {
     	
     	// 예산관리 차수 채번
     	int bgtMngOdr = ProjectBaseDomain.retrieveBgtMngOdr(params);
-    	
     	// 예산관리 차수 채번 실패 시
     	if(bgtMngOdr == -1) return -1;
     	
@@ -55,9 +54,6 @@ public class ProjectBaseController {
     	// front로 부터 받은 params -> 기초적인 정보들 (ex. prjctId, regDt 등)
     	// 조회 로직을 하나 추가하여, 프로젝트 결재선 테이블에 넣을 값들을 조회한 뒤 insert 메소드에 매개변수로 함께 넘겨준다.
     	List<Map<String, Object>> empIdParams = new ArrayList<>();
-    	
-//    	int result1 = 0;
-//    	int result2 = 0;
     	
     	int result = 0;
     	
@@ -76,12 +72,8 @@ public class ProjectBaseController {
     		
     		result = ProjectBaseDomain.insertRegistProjectAprv(params, empIdParams);
     		
-//    		result1 = ProjectBaseDomain.insertRegistProjectAprv(params);
-//    		result2 = ProjectBaseDomain.insertRegistProjectAprvDtl(params, empIdParams);
     	}
     	
-    	
-
     	return result;
     }
     

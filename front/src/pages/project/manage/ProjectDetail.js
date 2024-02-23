@@ -19,7 +19,7 @@ const ProjectDetail = () => {
   const bgtMngOdr = location.state.bgtMngOdr;
   const ctrtYmd = location.state.ctrtYmd;
   const bizEndYmd = location.state.bizEndYmd;
-  const bgtMngOdrToBe = location.state.bgtMngOdrToBe;
+  const bgtMngOdrTobe = location.state.bgtMngOdrTobe;
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const ProjectDetail = ProjectDetailJson;
@@ -36,16 +36,24 @@ const ProjectDetail = () => {
   
   const itemTitleRender = (a) => <span>{a.TabName}</span>;
 
-  const projectChgHandle = () => {
-    console.log(bgtMngOdr)
+  const projectChgHandle = async () => {
+    console.log("bgtMngOdr", bgtMngOdr)
+    console.log("bgtMngOdrTobe", bgtMngOdrTobe)
     const isconfirm = window.confirm("프로젝트 변경을 진행하시겠습니까?");
     if(isconfirm){
-      handleBgtPrmpc();
+
+      let targetOdr;
+      
+      const result = await handleBgtPrmpc().then((value) => {
+        console.log(value);
+
+          targetOdr = value;
+      });
 
       navigate("../project/ProjectChange",
         {
-        state: { prjctId: prjctId, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd, bgtMngOdr:bgtMngOdr, bgtMngOdrToBe: bgtMngOdrToBe, },
-        })
+        state: { prjctId: prjctId, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd, bgtMngOdr:bgtMngOdr, bgtMngOdrTobe: bgtMngOdrTobe, targetOdr: targetOdr},
+      })
     }
   }
 
@@ -64,6 +72,7 @@ const ProjectDetail = () => {
     ]; 
     try {
         const response = await ApiRequest("/boot/prjct/insertProjectCostChg", param);
+        return response;
     } catch (error) {
         console.error('Error fetching data', error);
     }

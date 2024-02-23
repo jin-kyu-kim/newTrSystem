@@ -53,8 +53,6 @@ public class ProjectBaseDomain {
     
     public static int retrieveBgtMngOdr(List<Map<String, Object>> params) {
     	
-    	if(params.get(1).get("bgtMngOdr") == null) return 1;
-    	
     	try {
     		Map<String, Object> param = new HashMap<>();
     		
@@ -63,12 +61,9 @@ public class ProjectBaseDomain {
     		
     		List<Map<String, Object>> result = commonService.queryIdSearch(param);
     		
-    		if(result.size() > 0) {
-    			return (int)result.get(0).get("bgtMngOdr");
-    		} else {
-    			return ((int)result.get(0).get("bgtMngOdr")) + 1;
-    		}
+			return Integer.parseInt(String.valueOf(result.get(0).get("bgtMngOdr")));
     	} catch (Exception e) {
+    		e.printStackTrace();
     		return -1;
     	}
     	
@@ -76,19 +71,30 @@ public class ProjectBaseDomain {
     
     public static int insertProjectCostChg(List<Map<String, Object>> params, int bgtMngOdr) {
     	
-    	if(params.get(1).get("bgtMngOdr") != null && params.get(1).get("bgtMngOdr").equals(bgtMngOdr)) {
-    		return -1;
+    	int targetOdr;
+    	int result = -1;
+    	
+    	// Detail 화면에서 받은 params 에 들어있는 차수와 채번한 차수를 비교한다.
+    	if(params.get(1).get("bgtMngOdr") != null && Integer.parseInt(String.valueOf(params.get(1).get("bgtMngOdr"))) == bgtMngOdr) {
+    		targetOdr = bgtMngOdr + 1;
+    	} else {
+    		targetOdr = bgtMngOdr;
+    		return targetOdr;
     	}
     	
-    	params.get(1).put("bgtMngOdr", bgtMngOdr);
+    	params.get(1).put("bgtMngOdr", targetOdr);
     	
     	try {
-    		int result = commonService.insertData(params);
-    		return result;
+    		result = commonService.insertData(params);
     		
     	} catch (Exception e) {
-    		return -1;
+    		return result;
     	}
+    	
+    	if(result > 0) {
+    		return targetOdr;
+    	} 
+    	return result;
     	
     }
     
@@ -153,46 +159,6 @@ public class ProjectBaseDomain {
     	}
     	return result * dtlResult;
     }
-    
-    public static int insertRegistProjectAprvDtl(List<Map<String, Object>> params, List<Map<String, Object>> empIdParams) {
-    	
-    	int result = 0;
-    	
-    	List<Map<String, Object>> insertDtlParams = new ArrayList<>();
-    	
-    	final String PRJCT_ID = (String) params.get(2).get("prjctId");
-    	final String atrzSttsCd = "VTW00801";
-    	String atrzStepCd[] = {"VTW00705", "VTW00704", "VTW00703", "VTW00702", "VTW00701"};
-    	
-    	insertDtlParams.add(0, params.get(1));
-    	
-    	for(int i = 0; i < empIdParams.size(); i++) {
-        	Map<String, Object> aprvDtlParam = new HashMap<>();
-        	
-        	// 공통되는 부분
-        	aprvDtlParam.put("prjctId", PRJCT_ID);
-        	aprvDtlParam.put("atrzLnSn", params.get(2).get("atrzLnSn"));
-        	aprvDtlParam.put("regDt", params.get(2).get("regDt"));
-        	aprvDtlParam.put("regEmpId", params.get(2).get("empId"));
-        	aprvDtlParam.put("atrzSttsCd", atrzSttsCd);
-    		
-        	// 다른 부분
-        	aprvDtlParam.put("atrzStepCd", atrzStepCd[i]);
-        	aprvDtlParam.put("aprvrEmpId", empIdParams.get(i).get("empId"));
-    		
-    		insertDtlParams.add(i+1, aprvDtlParam);
-    	}
-    	
-    	try {
-    		
-    		result = commonService.insertData(insertDtlParams);
-    		
-    	} catch (Exception e) {
-    		return result;
-    	}
-    	return result;
-    }
-    
     
     /*
      * 승인 순번 채번 메소드
