@@ -79,7 +79,6 @@ public class ProjectBaseDomain {
     		targetOdr = bgtMngOdr + 1;
     	} else {
     		targetOdr = bgtMngOdr;
-    		return targetOdr;
     	}
     	
     	params.get(1).put("bgtMngOdr", targetOdr);
