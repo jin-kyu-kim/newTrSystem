@@ -372,7 +372,6 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
                                     {Array.from({ length: Math.max(...Object.values(structuredData).map(months => months.length)) }).map((_, rowIndex) => (
                                     <tr key={rowIndex}>
                                         {Object.values(structuredData).map((months, colIndex) => (
-                                            // console.log("살려주",inputValue.find(item => item.id === `${Object.keys(structuredData)[colIndex]}-${months[rowIndex]}`)),
                                         <>
                                         <td key={colIndex} style={{width:"10px", padding:"5px", textAlign: "center"}}>{months[rowIndex] ? `${months[rowIndex]}월` : ''}</td>
                                         <td key={months} style={{width:"50px", padding:"5px"}}>
