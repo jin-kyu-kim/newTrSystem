@@ -35,5 +35,35 @@
         EMPNO = #{empno} 
       </if>
     </select>
-    
+
+	<select id="retrieveMnbyVcatnInfo" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            CONCAT(EMP.EMP_FLNM, '(', CD.CD_NM, ')') TITLE
+            ,CD.CD_NM
+            ,VCATN.VCATN_BGNG_YMD DATE
+            ,VCATN_END_YMD
+<!--            ,SUBSTR(VCATN.VCATN_BGNG_YMD, 7, 2)	BGNG_DAY-->
+<!--            ,SUBSTR(VCATN.VCATN_END_YMD, 7, 2)	END_DAY-->
+            ,SUBSTR(VCATN.VCATN_BGNG_YMD, 5, 2)	VCATN_MONTH
+            ,VCATN.VCATN_DE_CNT
+            ,VCATN.ELCTRN_ATRZ_ID
+        FROM
+            VCATN_ATRZ		VCATN
+            ,ELCTRN_ATRZ	ELCTRN
+            ,EMP			EMP
+            ,CD 			CD
+        WHERE VCATN.ELCTRN_ATRZ_ID = ELCTRN.ELCTRN_ATRZ_ID
+        AND	EMP.EMP_ID = ATRZ_DMND_EMP_ID
+        AND VCATN.VCATN_TY_CD = CD.CD_VALUE
+        <if test="vcatnBgngYmd != null and vcatnEndYmd == null">
+            AND SUBSTR(VCATN.VCATN_BGNG_YMD, 1, 4) = #{vcatnYmd}
+        </if>
+        <if test="vcatnBgngYmd == null and vcatnEndYmd != null">
+            AND SUBSTR(VCATN.VCATN_BGNG_YMD, 5, 2) = #{vcatnMonth}
+        </if>
+        <if test="empFlnm !=null and !empFlnm.equals('')">
+            AND EMP.EMP_FLNM LIKE '%' || #{empFlnm} || '%'
+        </if>
+    </select>
+
 </mapper>
