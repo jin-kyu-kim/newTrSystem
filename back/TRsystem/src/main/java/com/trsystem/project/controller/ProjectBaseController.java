@@ -77,4 +77,14 @@ public class ProjectBaseController {
     	return result;
     }
     
+    @PostMapping(value = "/boot/prjct/updateChgPrmpcMdfcn")
+    public List<Map<String, Object>> updateChgPrmpcMdfcn(@RequestBody List<Object> params) {
+    
+    	List<Map<String, Object>> result = ProjectBaseDomain.updateChgPrmpcMdfcn(params);
+    	
+    	return result;
+    }
+   
+    
+    
 }

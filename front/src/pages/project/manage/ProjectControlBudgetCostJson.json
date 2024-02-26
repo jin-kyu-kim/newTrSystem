@@ -4,9 +4,10 @@
     "subTable" : "EXPENS_MNBY_PRMPC_DTLS",
     "keyColumn": "expensPrmpcSn",
     "pkColumns": ["prjctId", "bgtMngOdr", "expensPrmpcSn"],
-    "nomalColumns": ["dtlDtls", "total", "expensCd", "expensCdNm"],
+    "nomalColumns": ["dtlDtls", "expensCd"],
     "pkColumnsDtl": ["prjctId", "bgtMngOdr", "expensPrmpcSn", "expensCd"],
     "cdBetween": "VTW04528&VTW04535",
+    "CdComboboxColumnNm": "expensCdNm",
     "tableColumns": 
 	[
         {"key": "expensCdNm", "value": "비용코드명"},
