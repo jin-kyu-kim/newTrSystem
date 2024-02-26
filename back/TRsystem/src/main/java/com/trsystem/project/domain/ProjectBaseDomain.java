@@ -229,6 +229,32 @@ public class ProjectBaseDomain {
     	return aprvrEmpIdlist;
     	
     }
+
+	public static List<Map<String, Object>> updateChgPrmpcMdfcn(List<Object> params) {
+		List<Map<String, Object>> result = new ArrayList<>();
+		
+		List<Map<String, Object>> updateColumns = (List<Map<String, Object>>) params.get(2);
+		
+		for(int i=0; i < updateColumns.size(); i++) {
+					
+			List<Map<String, Object>> updateParams = new ArrayList<>();
+			Map<String, Object> updateColumn = updateColumns.get(i);
+						
+			updateParams.add(0, (Map<String, Object>) params.get(0));
+			updateParams.add(1, (Map<String, Object>) params.get(1));
+			updateParams.add(2, (Map<String, Object>) updateColumn);
+			updateParams.add(3, (Map<String, Object>) params.get(3));		
+			
+			Map<String, Object> param = new HashMap<>();	//Merge문 던질 파람
+			
+			for (Map<String, Object> currentMap : updateParams) {
+				param.putAll(currentMap);
+			}
+					
+			result = commonService.queryIdSearch(param);		
+		}	
+		return result;
+	}
     
 
 }
