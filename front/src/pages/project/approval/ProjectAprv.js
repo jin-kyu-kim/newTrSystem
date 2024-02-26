@@ -64,7 +64,7 @@ const ProjectAprv = () => {
     navigate("/project/ProjectAprvDetail", 
       {state: { id: e.data.prjctId
               , prjctNm: e.data.prjctNm
-              , bgtMngOdr: e.data.bgtMngOdr
+              , bgtMngOdr: e.data.atrzLnSn
               , atrzLnSn: e.data.atrzLnSn
               , atrzSttsCd: e.data.atrzSttsCd
               , atrzStepCd: e.data.atrzStepCd
