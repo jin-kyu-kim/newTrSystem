@@ -140,5 +140,24 @@
             "placeholder": "검수일"
         }
 
+    },
+    "updateColumns" : {
+        "prjctNm": "",
+        "deptId": "",
+        "totBgt": "",
+        "bddprPc": "",
+        "mmnySlsAm": "",
+        "ctmmnyNo": "",
+        "picFlnm": "",
+        "picTelno": "",
+        "picEml": "",
+        "beffatPbancDdlnYmd": "",
+        "expectOrderYmd": "",
+        "propseDdlnYmd": "",
+        "propsePrsntnYmd": "",
+        "ctrtYmd": "",
+        "bizEndYmd": "",
+        "stbleEndYmd": "",
+        "igiYmd": ""
     }
 } 

@@ -10,13 +10,17 @@ import Button from "devextreme-react/button";
 import { useCookies } from "react-cookie";
 
 const ProjectRegist = ({prjctId, onHide, revise}) => {
-    const {labelValue} = ProjectRegistJson;
+    const labelValue = ProjectRegistJson.labelValue;
+    const updateColumns = ProjectRegistJson.updateColumns;
 
     const [readOnly, setReadOnly] = useState(revise);
 
     const [data, setData] = useState([]);
     const [stleCd, setStleCd] = useState();
     const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
+    const [updateParam, setUpdateParam] = useState([]);
+
+    const [originData, setOriginData] = useState([]);
     
     const empId = cookies.userInfo.empId;
     const deptId = cookies.userInfo.deptId;
@@ -25,7 +29,6 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
         if(prjctId != null) {
             BaseInfoData();
         } else {
-
             const date = new Date();
 
             setData({
@@ -36,13 +39,14 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
                 bizSttsCd: "VTW00401",
                 regDt : date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0]
             })
-
         }
+
+        setUpdateParam(updateColumns);
     }, []);
 
     useEffect(() => {
 
-        if(data.prjctId != null) {
+        if(!revise) {
             setData({
                 ...data,
                 prjctStleCd : stleCd,
@@ -101,22 +105,71 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
     const handleChgStleCd = ({value}) => {
 
         if(!readOnly) {
+            console.log(value)
             setStleCd(value);
         }
     };
 
-    const readOnlyChg = () => {
-
-        if(readOnly) {
+    const onClickUdt = async () => {
+        const isconfirm = window.confirm("프로젝트 기본정보를 수정 하시겠습니까?");
+        if(isconfirm){
+            setStleCd(data.prjctStleCd);
             setReadOnly(false);
+        }
+    }
 
-        } else {
+    // 수정 중 취소 버튼 클릭
+    const onClickUdtCncl = async () => {
+        const isconfirm = window.confirm("프로젝트 기본정보를 수정을 취소 하시겠습니까?");
+        if(isconfirm){
+            BaseInfoData();
             setReadOnly(true);
         }
     }
 
-    const onPopup = () => {
-        
+    const onClickChgSave = async () => {
+        const isconfirm = window.confirm("수정한 내용을 저장 하시겠습니까?");
+        if(isconfirm){
+            updateProject();
+        }
+    }
+
+    const updateProject = async () => {
+        console.log(data);
+        const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
+
+        const colums = {
+            ...updateParam,
+            mdfcnEmpId: empId,
+            mdfcnDt: mdfcnDt
+        };
+
+        // updataParam 안의 key와 data의 key랑 같은 거에 test에 data의 value를 넣어준다.
+        for (const key in data) {
+            if(data.hasOwnProperty(key) && updateParam.hasOwnProperty(key)) {
+                colums[key] = data[key];
+            }
+        }
+
+        const param = [
+            { tbNm: "PRJCT" },
+            colums,
+            {
+                prjctId: prjctId,
+            }
+        ];
+        try {
+            const response = await ApiRequest("/boot/common/commonUpdate", param);
+            console.log(response);
+
+            if(response > 0) {
+                alert('성공적으로 수정되었습니다.');
+                BaseInfoData();
+                setReadOnly(true);
+            }
+        } catch (error) {
+            console.error('Error fetching data', error);
+        }
     }
 
     const onClick = () => {
@@ -266,16 +319,16 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
                     </div>
                 </div>
             </div>
-            {readOnly ? <><Button text="수정" onClick={readOnlyChg}/> <Button text="팝업" onClick={onPopup}/></>:
+            {readOnly ? <Button text="수정" onClick={onClickUdt}/>:
                 onHide ? 
                 <div>
                     <Button text="저장" onClick={onClick}/>
-                    <Button onClick={onHide} text="취소"/>
+                    <Button text="취소" onClick={onHide} />
                 </div>
                 :
                 <div>
-                    <Button text="저장"/>
-                    <Button onClick={readOnlyChg} text="취소"/>
+                    <Button text="저장" onClick={onClickChgSave}/>
+                    <Button text="취소" onClick={onClickUdtCncl} />
                 </div>
             }
         </div>
