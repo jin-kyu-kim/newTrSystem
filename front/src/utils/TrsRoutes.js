@@ -82,9 +82,9 @@ const TreRoutes = [
   },
   //직원조회
   {
-    path: "/infoInq/person/Emp/EmpList",
+    path: "/infoInq/EmpList",
     name: "EmpList",
-    element: React.lazy(() => import("../pages/infoInq/person/Emp/EmpList")),
+    element: React.lazy(() => import("../pages/infoInq/EmpList")),
   },
   // 월별휴가정보
   {
@@ -109,6 +109,18 @@ const TreRoutes = [
     path: "/humanResourceMng/dept/DeptManage",
     name: "DeptManage",
     element: React.lazy(() => import("../pages/humanResourceMng/dept/DeptManage")),
+  },
+ // 법제도
+  {
+    path: "/infoInq/LawRules",
+    name: "LawRules",
+    element: React.lazy(() => import("../pages/infoInq/LawRules")),
+  },
+  //개인정보
+  {
+    path: "/infoInq/emp/EmpDetailInfo",
+    name: "EmpDetailInfo",
+    element: React.lazy(() => import("../pages/infoInq/emp/EmpDetailInfo")),
   }
   
 ];

@@ -1,0 +1,19 @@
+{
+	"menuName": "EmpCareer",
+	"queryId": "empListMapper.retrieveEmpList",
+    "keyColumn": "empno",
+    "tableColumns": 
+	[
+        { "key": "empno", "value": "기간", "width": 120, "alignment" : "center" },
+        { "key": "empFlnm", "value": "근무처", "width": 100 , "alignment" : "center"},
+        { "key": "jbpsNm", "value": "주요경력사항", "width": 200, "alignment" : "center" },
+        { "key": "deptNm", "value": "소재지", "width": 170, "alignment" : "center" },
+        { "key": "telno", "value": "특기사항", "width": 170, "alignment" : "center"  }
+	],
+    "searchParams":
+	{
+    }
+    
+}
+
+						

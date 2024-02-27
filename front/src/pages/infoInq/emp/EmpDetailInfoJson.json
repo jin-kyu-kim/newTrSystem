@@ -11,23 +11,28 @@
     },
     {
       "TabName": "학력",
-      "tabId": "EmpProjectHist",
-      "url": "./EmpProjectHist"
+      "tabId": "EmpDegree",
+      "url": "./EmpDegree"
     },
     {
       "TabName": "외국어능력",
-      "tabId": "EmpProjectHist",
-      "url": "./EmpProjectHist"
+      "tabId": "EmpLanguage",
+      "url": "./EmpLanguage"
+    },
+    {  "TabName": "자격면허",
+    "tabId": "EmpLicense",
+    "url": "./EmpLicense"
+
     },
     {
       "TabName": "교육이력",
-      "tabId": "EmpProjectHist",
-      "url": "./EmpProjectHist"
+      "tabId": "EmpEduHist",
+      "url": "./EmpEduHist"
     },
     {
       "TabName": "경력",
-      "tabId": "EmpProjectHist",
-      "url": "./EmpProjectHist"
+      "tabId": "EmpCareer",
+      "url": "./EmpCareer"
     },
     {
       "TabName": "프로젝트이력",

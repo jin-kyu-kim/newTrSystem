@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import  EmpListJson from "../../../infoInq/person/Emp/EmpListJson.json";
-import ApiRequest from "../../../../utils/ApiRequest";
+import  EmpListJson from "../infoInq/EmpListJson.json";
+import ApiRequest from "../../utils/ApiRequest";
 import { useNavigate } from "react-router-dom";
 import SearchEmpSet from "components/composite/SearchEmpSet";
 import CustomTable from "components/unit/CustomTable";
@@ -42,6 +42,7 @@ function EmpList() {
   const pageHandle = async () => {
     try {
       const response = await ApiRequest("/boot/common/queryIdSearch", param);
+      console.log(response);
       setValues(response);
       if (response.length !== 0) {
         setTotalPages(Math.ceil(response[0].totalItems / pageSize));

@@ -6,12 +6,12 @@
       {
         "id": 1,
         "title": "개인정보관리",
-        "link": "/"
+        "link": "/infoInq/emp/EmpDetailInfo"
       },
       {
         "id": 2,
         "title": "직원조회",
-        "link": "infoInq/person/Emp/EmpList"
+        "link": "infoInq/EmpList"
       },
       {
         "id": 3,
@@ -36,7 +36,7 @@
       {
         "id": 7,
         "title": "법제도",
-        "link": "/"
+        "link": "/infoInq/LawRules"
       },
       {
         "id": 8,

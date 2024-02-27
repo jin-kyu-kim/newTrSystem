@@ -7,8 +7,21 @@ import EmpProjectHistJson from "./EmpProjectHistJson.json";
 import CustomTable from "../../../components/unit/CustomTable";
 import CustomDatePicker from "../../../components/unit/CustomDatePicker";
 import DataGrid, { Column, Editing } from 'devextreme-react/data-grid';
+import TextBox from "devextreme-react/text-box";
+import Box, { Item } from "devextreme-react/box";
+import CustomCdComboBox from "../../../components/unit/CustomCdComboBox";
 
-const EmpProjectHist = () => {
+const EmpProjectHist = (callBack) => {
+    const [initParam, setInitParam] = useState({
+        empno: "",
+        empFlnm: "",
+        jbpsNm: "",
+        deptNm: "",
+        telNo: "",
+        hodfSttsNm: "",
+      });
+
+
     const [projectHist, setProjectHist] = useState([]);
     const [selectProjectHist, setSelectProjectHist] = useState([]);
     const empProjectHistJson = EmpProjectHistJson;
@@ -57,7 +70,17 @@ const EmpProjectHist = () => {
         };
         selectPrjctHist();
     };
+    const handleSubmit = () => {
+        callBack(initParam);
+      };
 
+
+      const handleChgState = ({ name, value }) => {
+        setInitParam({
+          ...initParam,
+          [name]: value,
+        });
+      };
     return (
         <div className = "container">
             <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }}>
@@ -74,6 +97,50 @@ const EmpProjectHist = () => {
             </div>
             <div style = {{ marginBottom: "20px" }}>
             </div>
+            <div style={{ marginBottom: "20px", backgroundColor: "#eeeeee", width: "100%", height: "300px", display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <div style={{ width: "95%", height: "250px", backgroundColor: "#fff" }}>
+          <h5>프로젝트 이력을 입력/수정 합니다.</h5>
+          <Box direction="row" width="50%" height={40}>
+            <Item className="prjctNameItem" ratio={1}>
+              <CustomCdComboBox param="VTW001" placeholderText="프로젝트명" name="deptNm" onSelect={handleChgState} value={initParam.deptNm} />
+            </Item>
+            <Item className="prjctNameItem" ratio={1}>
+              <CustomCdComboBox param="VTW001" placeholderText="시작일" name="deptNm" onSelect={handleChgState} value={initParam.deptNm} />
+            </Item>
+            <Item className="prjctMngrEmpIdItem" ratio={1}>
+              <TextBox placeholder="종료일" stylingMode="filled" size="medium" name="empno" onValueChanged={(e) => handleChgState({ name: e.component.option("name"), value: e.value })} />
+            </Item>
+            
+          </Box>
+          <br />
+          <Box direction="row" width="100%" height={40}>
+            <Item className="prjctNameItem" ratio={1}>
+              <CustomCdComboBox param="VTW001" placeholderText="담당업무" name="jbpsNm" onSelect={handleChgState} value={initParam.jbpsNm} />
+            </Item>
+            <Item className="prjctNameItem" ratio={1}>
+              <CustomCdComboBox param="VTW001" placeholderText="발주처" name="deptNm" onSelect={handleChgState} value={initParam.deptNm} />
+            </Item>
+            <Item className="prjctNameItem" ratio={1}>
+              <CustomCdComboBox param="VTW001" placeholderText="업무분류" name="jbpsNm" onSelect={handleChgState} value={initParam.jbpsNm} />
+            </Item>
+            <Item className="prjctNameItem" ratio={1}>
+              <CustomCdComboBox param="VTW001" placeholderText="기술분류" name="deptNm" onSelect={handleChgState} value={initParam.deptNm} />
+            </Item>
+            <Item className="prjctMngrEmpIdItem" ratio={1}>
+              <TextBox placeholder="비고" stylingMode="filled" size="medium" name="empno" onValueChanged={(e) => handleChgState({ name: e.component.option("name"), value: e.value })} />
+            </Item>
+          </Box>
+          <Box style={{ marginTop: "30px", width: "20%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <Item className="searchBtnItem" ratio={1} style={{ width: "50px" }}>
+              <Button onClick={handleSubmit} text="저장" />
+            </Item>
+            <Item className="searchBtnItem" ratio={1} style={{ width: "50px" }}>
+              <Button onClick={handleSubmit} text="초기화" />
+            </Item>
+          </Box>
+        </div>
+      </div>
+
         </div>
     );
 };

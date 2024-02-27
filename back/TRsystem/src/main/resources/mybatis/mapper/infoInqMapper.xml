@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.trsystem.mybatis.mapper.infoInqMapper">
+	<select id="retrieveEmpList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT
+				E.EMPNO AS EMPNO,
+			E.EMP_FLNM AS EMP_FLNM,
+			C.CD_NM AS JBPS_NM,
+			D.DEPT_NM AS DEPT_NM,
+			E.TELNO AS TELNO,
+			E.EML AS EML,
+			C2.CD_NM AS HODF_STTS_NM
+			, COUNT(*) OVER () AS TOTAL_ITEMS
+			,C3.CD_NM  AS BANK_NM
+			,E.ACTNO   AS ACTNO
+		FROM EMP E
+			LEFT OUTER JOIN CD C ON C.CD_VALUE =E.JBPS_CD
+			LEFT OUTER JOIN DEPT_HNF DF ON E.EMP_ID = DF.EMP_ID
+			LEFT OUTER JOIN DEPT D ON D.DEPT_ID = DF.DEPT_ID
+			LEFT OUTER JOIN CD C2 ON C2.CD_VALUE =E.HDOF_STTS_CD
+			LEFT OUTER JOIN CD C3 ON C3.CD_VALUE =E.BANK_CD 
+			WHERE 1=1
+		   
+						<if test="empno != null and empno !=''">
+							AND E.EMPNO LIKE CONCAT('%', #{empno}, '%')
+						</if>
+						
+						<if test="empFlnm != null and empFlnm !=''">
+							AND E.EMP_FLNM LIKE CONCAT('%', #{empFlnm}, '%')
+						</if>
+						
+						<if test="jbpsNm != null and jbpsNm !=''">
+							AND E.JBPS_CD = #{jbpsNm}
+						</if>
+						
+						
+						<if test="deptNm != null and deptNm !=''">
+							AND D.DEPT_NM = #{deptNm}
+						</if>
+						
+						<if test="telNo != null and telNo !=''">
+							AND E.TELNO LIKE CONCAT('%', #{telNo}, '%')
+						</if>
+						
+						
+						<if test="hodfSttsNm != null and hodfSttsNm !=''">
+							AND C2.CD_VALUE = #{hodfSttsNm}
+						</if>
+				
+	</select>
+	
+	<select id="retrieveEmpAcbg" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT 	
+			C.CD_NM AS ACBG_SE_CD
+			,EA.SCHL_NM AS SCHL_NM 
+			,EA.MAJOR_INTLTSH_NM AS MAJOR_INTLTSH_NM  
+			,C2.CD_NM  AS GRDTN_STTS_CD
+			,CONCAT('(', C3.CD_NM, ')', ' ', EA.SCRE) AS SCRE
+			,EA.MTCLTN_YR AS  MTCLTN_YR 
+			,EA.GRDTN_YR AS  GRDTN_YR 
+		FROM EMP_ACBG EA
+		INNER JOIN CD C ON EA.ACBG_SE_CD = C.CD_VALUE
+		INNER JOIN CD C2 ON EA.GRDTN_STTS_CD = C2.CD_VALUE
+		INNER JOIN CD C3 ON EA.PNT_PSCORE_SE_CD = C3.CD_VALUE
+		WHERE EA.EMP_ID = #{empId}
+		
+	</select>
+	<select id="retrieveFgggAblty" parameterType="map" resultType="com.trsystem.LowerHashMap">
+	SELECT
+		C.CD_NM AS FGGG_KND_NM, 
+		C2.CD_NM AS PICTRS_LEVEL_NM,
+		EFA.ATHRI_TEST_NM AS ATHRI_TEST_NM,
+		EFA.SCORE SCORE
+	FROM
+		EMP_FGGG_ABLTY EFA
+	INNER JOIN CD C ON
+		C.CD_VALUE = EFA. FGGG_KND_CD
+	INNER JOIN CD C2 ON
+		C2.CD_VALUE = EFA.PICTRS_LEVEL_CD
+	WHERE
+		EFA.EMP_ID = #{empId}
+
+	
+	
+	</select>
+	<select id="retrieveEmpQlfcLcns" parameterType="map" resultType="com.trsystem.LowerHashMap">
+				
+		SELECT 
+			QLFC_LCNS_NM ,
+			QLFC_LCNS_ID ,
+			GRAD_NM ,
+			DATE_FORMAT(ACQS_YMD, '%Y-%m-%d') AS ACQS_YMD
+		FROM EMP_QLFC_LCNS
+		WHERE EMP_ID= #{empId}
+
+	</select>
+	
+	<select id="retrieveEmpEduHist" parameterType="map" resultType="com.trsystem.LowerHashMap">
+				
+		SELECT 
+			EDU_INST_NM,
+			EDU_NM,
+			CONCAT(DATE_FORMAT(EDU_BGNG_YMD, '%Y-%m-%d')  , '~', DATE_FORMAT(EDU_END_YMD, '%Y-%m-%d')) AS EDU_YMD ,
+			EDU_CN
+		FROM EMP_EDU 
+		WHERE EMP_ID= #{empId}
+
+	</select>
+</mapper>
+

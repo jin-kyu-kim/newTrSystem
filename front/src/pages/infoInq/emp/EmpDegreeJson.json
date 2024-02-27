@@ -1,0 +1,18 @@
+
+{
+	"menuName": "EmpDegree",
+	"queryId": "infoInqMapper.retrieveEmpAcbg",
+    "keyColumn": "acbgSeCd",
+    "tableColumns" :[
+        { "key": "acbgSeCd", "value": "구분", "width": 150, "alignment" : "center" },
+        { "key": "schlNm", "value": "학교명", "width": 200 , "alignment" : "center"},
+        { "key": "majorIntltshNm", "value": "전공(계열)", "width": 250, "alignment" : "center" },
+        { "key": "grdtnSttsCd", "value": "졸업구분", "width": 100, "alignment" : "center" },
+        { "key": "scre", "value" : "성적", "width" : 170, "alignment" : "center"},
+        { "key": "mtcltnYr", "value": "입학년도", "width": 170, "alignment" : "center"  },
+        { "key": "grdtnYr", "value": "졸업년도", "width": 170, "alignment" : "center"  }
+    ]
+   
+    
+}
+
