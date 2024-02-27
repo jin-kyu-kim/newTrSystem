@@ -7,12 +7,11 @@ import { Button } from "devextreme-react/button";
 
 import CustomCdComboBox from "../unit/CustomCdComboBox";
 
-const SearchNtcSet = ({ callBack }) => {
+const SearchNtcSet = ({ callBack, commonCd }) => {
   const [initParam, setInitParam] = useState({
     searchCnd: "VTW01701",
     searchWrd: ""
   });
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,6 +20,7 @@ const SearchNtcSet = ({ callBack }) => {
 
   // SelectBox 변경
   const handleChgState = ({ name, value }) => {
+    console.log(value)
     setInitParam({
       ...initParam,
       [name]: value,
@@ -48,14 +48,14 @@ const SearchNtcSet = ({ callBack }) => {
       >
         <Item className="commonCdItem" ratio={1}>
           <CustomCdComboBox
-            param="VTW017"
+            param={commonCd}
             name="searchCnd"
             onSelect={handleChgState}
             value={initParam.searchCnd}
           />
         </Item>
 
-        <Item className="searchWord" ratio={1} >
+        <Item className="searchWrdItem" ratio={1} >
           <TextBox
             placeholder="검색어"
             stylingMode="underlined"

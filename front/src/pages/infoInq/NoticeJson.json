@@ -1,50 +1,63 @@
 {
-	"menuName": "NoticeList",
-	"queryId": "noticeMapper.retrieveNoticeList",
+    "menuName": "Notice",
+    "menuKorName": "공지사항",
+    "queryId": "noticeMapper.retrieveNoticeList",
     "keyColumn": "noticeId",
-    "tableColumns": 
-	[
-        { "key": "rownum", "value": "공지번호", "width": 150, "alignment" : "center" },
-        { "key": "noticeTtl", "value": "제목", "width": 450, "alignment" : "left" },
-        { "key": "regEmpId", "value": "작성자", "width": 200, "alignment" : "left" },
-        { "key": "regDt", "value": "작성일", "width": 200, "alignment" : "left" }
-
-	],
+    "tableColumns": [
+      {
+        "key": "rownum",
+        "value": "공지번호",
+        "width": 150,
+        "alignment": "center"
+      },
+      { "key": "noticeTtl", "value": "제목", "width": 450, "alignment": "left" },
+      { "key": "regEmpId", "value": "작성자", "width": 200, "alignment": "left" },
+      { "key": "regDt", "value": "작성일", "width": 200, "alignment": "left" }
+    ],
     "edit": {
-        "columns": [
+      "columns": [
+        {
+          "dataField": "noticeTtl",
+          "name": "ttl",
+          "label": "제목",
+          "placeholder": "제목을 입력하세요"
+        },
+        {
+          "dataField": "dateRange",
+          "name": "setting",
+          "label": "설정",
+          "checkType": [
             {
-                "dataField": "noticeTtl",
-                "label": "제목",
-                "editorType": "dxTextBox",
-                "editorOptions": {
-                    "placeholder": "제목 입력"
-                }
+              "dataField": "imprtnc",
+              "type": {
+                  "startDt": "imprtncNtcBgngYmd",
+                  "endDt": "imprtncNtcEndYmd"
+
+                },
+              "label": "상단공지"
             },
             {
-                "dataField": "noticeCn",
-                "label": "설정",
-                "editorType": "dxTextBox",
-                "editorOptions": {
-                    "placeholder": "설정 입력"
-                }
+              "dataField": "useEndYmd",
+              "checkId": "useYn",
+              "label": "공지 표시여부"
             },
             {
-                "dataField": "noticeCn",
-                "label": "내용",
-                "editorType": "dxHtmlEditor",
-                "editorOptions": {
-                    "placeholder": "내용 입력"
-                }
-            },
-            {
-                "dataField": "uploadFile",
-                "label": "첨부파일",
-                "editorType": "dxFileUploader",
-                "editorOptions": {
-                    "placeholder": "첨부파일 입력"
-                }
+              "dataField": "moveToRefer",
+              "label": "자료실로 이관"
             }
-        ]
+          ]
+        },
+        {
+          "dataField": "noticeCn",
+          "name": "cn",
+          "label": "내용",
+          "placeholder": "내용을 입력하세요"
+        },
+        {
+          "dataField": "uploadFile",
+          "label": "첨부파일"
+        }
+      ]
     }
-        
-}
+  }
+  

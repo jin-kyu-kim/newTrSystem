@@ -1,7 +1,6 @@
 {
     "BaseInfo" :
       [
-        { "key": "empId", "value": "직원ID" },
         { "key": "empno", "value": "사번" },
         { "key": "jbpsCd", "value": "직위코드" },
         { "key": "empFlnm", "value": "성명" },
@@ -10,19 +9,19 @@
       ],
       "DtlInfo":
       [
-        {"key": "chcrtFlnm","value": "한자성명"},
         {"key": "engFlnm","value": "영문성명"},
-        {"key": "sexdstnCd","value": "성별코드"},
+        {"key": "chcrtFlnm","value": "한자성명"},
         {"key": "brdt","value": "생년월일"},
+        {"key": "sexdstnCd","value": "성별코드"},
         {"key": "telno","value": "전화번호"},
         {"key": "eml","value": "이메일"},
         {"key": "bassAddr","value": "기본주소"},
         {"key": "daddr","value": "상세주소"},
-        {"key": "armyExmptnCn","value": "군대면제내용"},
         {"key": "armyKndCd","value": "군대종류코드"},
-        {"key": "mryfrSpcablCn","value": "군사특기내용"},
+        {"key": "armyExmptnCn","value": "군대면제내용"},
         {"key": "srvicBgngYmd","value": "복무시작일자"},
         {"key": "srvicEndYmd","value": "복무종료일자"},
+        {"key": "mryfrSpcablCn","value": "군사특기내용"},
         {"key": "dmblzClssCd","value": "전역계급코드"},
         {"key": "height","value": "키"},
         {"key": "bdwgh","value": "몸무게"},

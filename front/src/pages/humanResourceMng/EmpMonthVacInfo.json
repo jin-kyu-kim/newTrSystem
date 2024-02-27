@@ -1,10 +1,11 @@
 {
 	"menuName": "EmpMonthVacInfo",
-	"queryId": "empMapper.retrieveMnbyVcatnInfo",
+	"queryId": "humanResourceMngMapper.retrieveMnbyVcatnInfo",
     "keyColumn": "elctrnAtrzId",
     "data": 
 	[
         { "key": "empFlnm", "value": "성명" },
+        { "key": "empno", "value": "사번ID" },
         { "key": "cdNm", "value": "휴가코드명" },
         { "key": "bgngDay", "value": "휴가시작일자" },
         { "key": "endDay", "value": "휴가종료일자" },

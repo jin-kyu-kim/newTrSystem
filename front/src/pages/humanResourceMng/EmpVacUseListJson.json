@@ -1,6 +1,6 @@
 {
 	"menuName": "EmpVacUseList",
-	"queryId": "empMapper.retrieveEmpVacUseList",
+	"queryId": "humanResourceMngMapper.retrieveEmpVacUseList",
     "keyColumn": "empno",
     "tableColumns": 
 	[

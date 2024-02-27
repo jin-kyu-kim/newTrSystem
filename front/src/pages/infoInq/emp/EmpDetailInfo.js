@@ -75,7 +75,6 @@ const EmpDetailInfo = () => {
             animationEnabled={true}
             itemComponent={({ data }) => {
             const Component = React.lazy(() => import(`${data.url}`));
-            console.log(data);
             return (
                 <React.Suspense fallback={<div>Loading...</div>}>
                     <Component/>

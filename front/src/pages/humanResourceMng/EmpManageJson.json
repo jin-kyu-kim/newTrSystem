@@ -1,0 +1,18 @@
+{
+   
+        "menuName": "EmpManage",
+        "queryId": "empListMapper.retrieveEmpList",
+        "keyColumn": "empno",
+        "tableColumns": [
+            { "key": "empno", "value": "사번", "width": 100, "alignment" : "center" },
+            { "key": "empFlnm", "value": "성명"},
+            { "key": "jbpsNm", "value": "직위"},
+            { "key": "deptNm", "value": "소속"}
+        ],
+        "searchParams":
+        {
+            
+        }
+ 
+  
+}

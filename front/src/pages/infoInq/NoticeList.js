@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 
 import NoticeJson from "../infoInq/NoticeJson.json";
 import ApiRequest from "../../utils/ApiRequest";
@@ -6,7 +6,6 @@ import CustomTable from "../../components/unit/CustomTable";
 
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
-import { Button } from "devextreme-react";
 import SearchNtcSet from "components/composite/SearchNtcSet";
 
 const NoticeList = () => {
@@ -16,8 +15,7 @@ const NoticeList = () => {
 
     const [totalItems, setTotalItems] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [pageSize, setPageSize] = useState(20);
+    const [pageSize, setPageSize] = useState(10);
 
     const navigate = useNavigate();
 
@@ -31,7 +29,6 @@ const NoticeList = () => {
 
     // 검색으로 조회할 때
     const searchHandle = async (initParam) => {
-        setTotalPages(1);
         setCurrentPage(1);
         setParam({
             ...initParam,
@@ -47,10 +44,8 @@ const NoticeList = () => {
             const response = await ApiRequest("/boot/common/queryIdSearch", param);
             setValues(response);
             if (response.length !== 0) {
-                setTotalPages(Math.ceil(response[0].totalItems / pageSize));
                 setTotalItems(response[0].totalItems);
             } else {
-                setTotalPages(1);
                 setTotalItems(0);
             }
         } catch (error) {
@@ -60,13 +55,7 @@ const NoticeList = () => {
 
     const onRowDblClick = (e) => {
         navigate("/infoInq/NoticeDetail", 
-                  {state: { 
-                    id: e.key,
-                    noticeTtl: e.data.noticeTtl, 
-                    noticeCn: e.data.noticeCn, 
-                    regEmpId: e.data.regEmpId, 
-                    regDt: e.data.regDt
-                }})
+                  {state: { id: e.key }})
       };
 
     return (
@@ -81,7 +70,10 @@ const NoticeList = () => {
                 <span>* 공지사항을 조회합니다.</span>
             </div>
             <div style={{ marginBottom: "20px" }}>
-                <SearchNtcSet callBack={searchHandle} /> 
+                <SearchNtcSet 
+                    callBack={searchHandle}
+                    commonCd='VTW017'
+                /> 
             </div>
 
             <div>검색된 건 수 : {totalItems} 건</div>
