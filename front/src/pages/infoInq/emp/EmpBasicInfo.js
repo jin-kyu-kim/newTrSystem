@@ -7,13 +7,14 @@ import CustomCdComboBox from "../../../components/unit/CustomCdComboBox";
 import Button from "devextreme-react/button";
 import EmpBasicInfoJson from "./EmpBasicInfoJson.json";
 import DataGrid, { Column, Editing } from 'devextreme-react/data-grid';
-import { Form, SimpleItem} from 'devextreme-react/form';
+import { Item, Form, SimpleItem, GroupItem} from 'devextreme-react/form';
 import { useCookies } from "react-cookie";
+import { Group } from 'devextreme-react/cjs/diagram';
 
 const EmpBasicInfo = () => {
     const [baseInfoData, setBaseInfoData] = useState([]);
     const [dtlInfoData, setDtlInfoData] = useState([]);
-    const[data, setData] = useState([]);
+    const [outPutData, setOutPutData] = useState([]);
 
     const empBasicInfoJson = EmpBasicInfoJson;
 
@@ -21,19 +22,19 @@ const EmpBasicInfo = () => {
     const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
     
     const empId = cookies.userInfo.empId;
-    const deptId = cookies.userInfo.deptId;
-
     /* 기본 정보 */
     useEffect(() => {
       const baseData = async () => {
         const param = [
-          {tbNm: "EMP"},
+          {tbNm : "EMP"},
           {
-            empId : "202160c6-bf25-11ee-b259-000c2956283f"
+            empId : empId
           }
         ];
         try{
           const response = await ApiRequest("/boot/common/commonSelect", param);
+          delete response[0].regDt;
+          delete response[0].regEmpId;
           setBaseInfoData(response[0]);
         } catch(error){
           console.error('Error fetching data', error);
@@ -48,11 +49,13 @@ const EmpBasicInfo = () => {
         const param = [
           {tbNm : "EMP_DTL"},
           {
-            empId : "202160c6-bf25-11ee-b259-000c2956283f"
+            empId : empId
           }
         ];
         try{
           const response = await ApiRequest("/boot/common/commonSelect", param);
+          delete response[0].regDt;
+          delete response[0].regEmpId;
           setDtlInfoData(response[0]);
         } catch(error){
           console.error('Error fetching data', error);
@@ -60,49 +63,33 @@ const EmpBasicInfo = () => {
       };
       detailData();
     }, []);
-    
-    /**/
-    useEffect(() => {
-
-    })
-
-    /*리팩토링 예정*/
-    /*태그부분들 리팩토링 예정*/
-    const dtlData = empBasicInfoJson.DtlInfo.reduce((result, header, index) => {
-      if (index % 2 === 0) {
-        result.push({
-          header: header.value,
-          Header: header.key,
-          column : dtlInfoData?.[header.key] ?? "",
-          header1: empBasicInfoJson.DtlInfo[index + 1]?.value,
-          Header1: empBasicInfoJson.DtlInfo[index + 1]?.key,
-          column1 : dtlInfoData?.[empBasicInfoJson.DtlInfo[index + 1]?.key] ?? "",
-        });
-      }
-      return result;
-    }, []);
-    /*리팩토링 예정*/
-
-    /* 데이터 가공 하여 출력하는 함수 만들기*/
-    const dataTransForm = () => {
-
-    }
-
-    /*화면 가공*/
 
     /* 저장 버튼 클릭*/
     const onClick = () => {
       //validationInq();
-      const isconfirm = window.confirm("개인정보를 수정 하시겠습니까?");
-      if(isconfirm){
-        updatePersonInfo();
-      }
+      handleFieldDataChanged();
     }
+
+    /*변경데이터*/
+    const handleFieldDataChanged = (e) => {
+      transFromChgData();
+    };
 
     /* 유효성 검사*/
     const validationInq = () => {
-
+      
     }
+    /*저장 데이터 가공*/
+    const transFromChgData = () => {
+      console.log(outPutData);
+      /*
+      const updateData = () => {
+
+      }
+      */
+    }
+
+
     const updateDataTranform = () => {
       const param = [
         { tbNm: "EMP"},
@@ -119,7 +106,6 @@ const EmpBasicInfo = () => {
       return param;
     }
 
-    /*수정*/ 
     const updatePersonInfo = async () => {
       const param = updateDataTranform();
       console.log("도달");
@@ -133,66 +119,63 @@ const EmpBasicInfo = () => {
       }
     }
 
+
     return (
       <div style={{padding: '20px'}}>
       <div className='container'>
-        <p><strong>* 직원 기본정보</strong></p>
-        <CustomHorizontalTable headers={empBasicInfoJson.BaseInfo} column={baseInfoData}/>
+      <div>
+      <p><strong>* 직원 기본정보 테스트</strong></p>
+        <React.Fragment>
+          <Form colCount={2} FieldDataChanged={handleFieldDataChanged} formData = {outPutData}>
+                <GroupItem>
+                  <GroupItem caption="직원 기본정보01">
+                    <Item label = {{text : '성명'}} dataField="empFlnm" editorOptions={{ value: baseInfoData.empFlnm }}/>
+                    <Item label = {{text : '전화번호'}} dataField="telno" editorOptions={{ value: baseInfoData.telno }}/>
+                  </GroupItem>
+                </GroupItem>
+                <GroupItem>
+                  <GroupItem caption="직원 기본정보02">
+                  <Item label = {{text : '소속'}} dataField="소속" editorOptions={{ value: baseInfoData.telno }}/>
+                  <Item label = {{text : '이메일'}} dataField="eml" editorOptions={{ value: baseInfoData.eml }}/>
+                  </GroupItem>
+                </GroupItem>
+                <GroupItem>
+                  <GroupItem caption="직원 상세정보02">
+                    <Item label = {{text : '영문'}} dataField="engFlnm" editorOptions={{ value: dtlInfoData.engFlnm }}/>
+                    <Item label = {{text : '생년월일'}} dataField="brdt" editorOptions={{ value: dtlInfoData.brdt }}/>
+                    <Item label = {{text : '전화번호'}} dataField="telno" editorOptions={{ value: dtlInfoData.telno }}/>
+                    <Item label = {{text : '기본주소'}} dataField="bassAddr" editorOptions={{ value: dtlInfoData.bassAddr }}/>
+                    <Item label = {{text : '병역'}} dataField="armyKndCd" editorOptions={{ value: dtlInfoData.armyKndCd }}/>
+                    <Item label = {{text : '군별'}} dataField="" editorOptions={{ value: dtlInfoData.telno }}/>
+                    <Item label = {{text : '복무기간'}} dataField="" editorOptions={{ value: dtlInfoData.telno }}/>
+                    <Item label = {{text : '키'}} dataField="height" editorOptions={{ value: dtlInfoData.height }}/>
+                    <Item label = {{text : '혈액형'}} dataField="bdpCd" editorOptions={{ value: dtlInfoData.bdpCd }}/>
+                    <Item label = {{text : '수정직원id'}} dataField="mdfcnEmpId" editorOptions={{ value: dtlInfoData.mdfcnEmpId }}/>
+                  </GroupItem>
+                </GroupItem>
+                <GroupItem>
+                  <GroupItem caption="직원 상세정보03">
+                    <Item label = {{text : '한자'}} dataField="chcrtFlnm" editorOptions={{ value: dtlInfoData.chcrtFlnm }}/>
+                    <Item label = {{text : '성별'}} dataField="sexdstnCd" editorOptions={{ value: dtlInfoData.sexdstnCd }}/>
+                    <Item label = {{text : '이메일'}} dataField="eml" editorOptions={{ value: dtlInfoData.eml }}/>
+                    <Item label = {{text : '상세주소'}} dataField="daddr" editorOptions={{ value: dtlInfoData.daddr }}/>
+                    <Item label = {{text : '면제사유'}} dataField="armyExmptnCn" editorOptions={{ value: dtlInfoData.armyExmptnCn }}/>
+                    <Item label = {{text : '병과'}} dataField="mryfrSpcablCn" editorOptions={{ value: dtlInfoData.mryfrSpcablCn }}/>
+                    <Item label = {{text : '계급'}} dataField="dmblzClssCd" editorOptions={{ value: dtlInfoData.dmblzClssCd }}/>
+                    <Item label = {{text : '몸무게'}} dataField="bdwgh" editorOptions={{ value: dtlInfoData.bdwgh }}/>
+                    <Item label = {{text : '신체특이사항'}} dataField="bdyPartclrCn" editorOptions={{ value: dtlInfoData.bdyPartclrCn }}/>
+                    <Item label = {{text : '수정일시'}} dataField="mdfcnDt" editorOptions={{ value: dtlInfoData.mdfcnDt }}/>
+                  </GroupItem>
+                </GroupItem>
+          </Form>
+            <div style={{ marginTop: '10px' }}>
+              <Button text="저장" onClick={onClick} />
+            </div>
+
+         </React.Fragment>
         &nbsp;
-        <p><strong>* 직원 상세정보</strong></p>
-        <DataGrid
-          dataSource={dtlData}
-          showBorders={true}
-          showColumnHeaders={false} // 최상단 헤더를 숨기는 설정
-          showRowLines={true}       // 로우마다 분할 선을 보이도록 설정
-          showColumnLines={false}    // 컬럼마다 분할 선을 보이도록 설정
-          onCellPrepared={(e) => {
-            if (e.columnIndex === 0 || e.columnIndex === 2) {
-              e.cellElement.style.textAlign = 'center';
-              e.cellElement.style.fontWeight = 'bold';
-              e.cellElement.style.cursor = 'default';
-              e.cellElement.style.color ='black'
-              e.cellElement.style.backgroundColor = '#e9ecef'
-            }
-            if (e.columnIndex === 2 && e.value === '') {
-              e.cellElement.style.textAlign = 'center';
-              e.cellElement.style.fontWeight = 'bold';
-              e.cellElement.style.cursor = 'default';
-              e.cellElement.style.color ='black'
-              e.cellElement.style.backgroundColor = 'white'
-              e.cellElement.style.pointerEvents = 'none';
-          }
-          }}   
-        >
-          <Column dataField="header" caption="Header" alignment="center" />
-          <Column 
-            dataField="column" 
-            caption="Column" 
-            cellTemplate = {(container, options) => {
-              const input = document.createElement('input');
-              input.type = 'text';
-              input.value = options.value;
-              container.appendChild(input);
-            }
-          } 
-          />
-          <Column dataField="header1" caption="Header1" alignment="center" />
-          <Column 
-            dataField="column1" 
-            caption="Column1" 
-            cellTemplate = {(container, options) => {
-              const input = document.createElement('input');
-              input.type = 'text';
-              input.value = options.value;
-              container.appendChild(input);
-            }
-          } 
-          />
-        </DataGrid>
       </div>
-      <div style={{padding: '20px', textAlign : 'center'}}>
-        <Button text="저장" onClick={onClick} textAlign = "center"/>
-      </div>
+    </div>
     </div>
     );
   };
