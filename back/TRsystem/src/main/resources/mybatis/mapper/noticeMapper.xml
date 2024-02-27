@@ -29,15 +29,4 @@
         </if>
         ORDER BY REG_DT DESC
     </select>
-
-    <!-- 첨부파일 INSERT -->
-    <insert id="insertNotice" parameterType="java.util.List" flushCache="true">
-        <foreach collection="list" item="item" index="index" separator=";" open="DECLARE BEGIN" close="; END;" >
-            INSERT INTO ATCHMNFL
-            VALUES (
-                컬럼 = #{item.test}
-            )
-        </foreach>
-    </insert>
-
 </mapper>
