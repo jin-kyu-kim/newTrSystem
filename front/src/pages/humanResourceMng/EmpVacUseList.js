@@ -1,19 +1,18 @@
 import { useEffect, useState, } from "react";
+
 import EmpVacUseListJson from "./EmpVacUseListJson.json";
-import ApiRequest from "../../../utils/ApiRequest";
-import CustomTable from "../../../components/unit/CustomTable";
-import SearchEmpVacSet from "../../../components/composite/SearchEmpVacSet";
+import ApiRequest from "../../utils/ApiRequest";
 import "react-datepicker/dist/react-datepicker.css";
+import { Button } from "devextreme-react/button";
 import DataGrid, { Column, Pager, Paging, Summary, TotalItem, Export} from "devextreme-react/data-grid";
 import { Workbook } from 'exceljs';
 import { saveAs } from 'file-saver';
 import { exportDataGrid } from 'devextreme/excel_exporter';
-import { Button } from "devextreme-react/button";
-import CustomDateRangeBox from "../../../components/unit/CustomDateRangeBox";
-import AutoCompleteName from "../../../components/unit/AutoCompleteName";
-import Box, {Item} from "devextreme-react/box";
+import Box, {Item} from "devextreme-react/box"
+import CustomDateRangeBox from "../../components/unit/CustomDateRangeBox";
+import AutoCompleteName from "../../components/unit/AutoCompleteName";
 
-const EmpVacUseList = ({callback,props}) => {
+const EmpVacUseList = (callBack,props) => {
 
     const [values, setValues] = useState([]);
     const [param, setParam] = useState([]);
@@ -26,7 +25,13 @@ const EmpVacUseList = ({callback,props}) => {
     //=============== JSON데이터 넣어두기=======================================
     const {keyColumn, queryId, tableColumns, searchParams} = EmpVacUseListJson;
 
-    //=============== 최초 렌더링시 조회=======================================
+    //=============== 조회=======================================
+    useEffect(() => {
+      setParam ({
+        queryId : queryId
+      }) 
+    }, []);
+    
     useEffect(() => {
         if(!Object.values(param).every((value) => value === "")) {
             pageHandle();
@@ -34,8 +39,6 @@ const EmpVacUseList = ({callback,props}) => {
         
     }, [param]);
 
-    
-    
     //=============== 검색 조회=======================================
     const searchHandle = async (initParam) => {
         setTotalPages(1);
@@ -48,10 +51,7 @@ const EmpVacUseList = ({callback,props}) => {
             pageSize: pageSize,
         });
     }
-    
-    useEffect(() => {
-        callBack(initParam);
-    }, []);
+
     //=============== 페이징 처리===========================================
     const handlePageChange = (newPage) => {
         setCurrentPage(newPage);
@@ -104,85 +104,97 @@ const EmpVacUseList = ({callback,props}) => {
           });
         });
       };
-    //============== 서치셋 세팅===========================================
-
-    const [initParam, setInitParam] = useState({
-        vcatnBgngYmd: "", //시작일자
-        vcatnEndYmd: "", //끝일자
-        empno: "",  // 사번
-      });
-        //검색 설정
-    const handleSubmit = () => {
-        callBack(initParam);      
-    };
+    //============== 서치셋 세팅============================================
+    const [initParam, setInitParam] = useState({     
+      vcatnBgngYmd: "", //시작일자
+      vcatnEndYmd: "", //끝일자
+      empno: "",  // 사번
+    });
     
     const handleStartDateChange = (newStartDate) => {
-        // 시작일자가 변경될 때 수행할 로직 추가
-        setInitParam({ 
-          ...initParam,
-          vcatnBgngYmd: newStartDate,
-        });
-      };
-    
-      const handleEndDateChange = (newEndDate) => {
-    
-        // 종료일자가 변경될 때 수행할 로직 추가
-        setInitParam({
-          ...initParam,
-          vcatnEndYmd: newEndDate
-        });
-      };
-    
-    // 성명변환
-    const handleChgEmp = (selectedOption) => {
-      setInitParam({
+   
+      // 시작일자가 변경될 때 수행할 로직 추가
+      
+      setInitParam({ 
         ...initParam,
-        empno: selectedOption,
+        vcatnBgngYmd: newStartDate,
       });
     };
-    //============== 테이블 세팅============================================
+    const handleEndDateChange = (newEndDate) => {
+
+      // 종료일자가 변경될 때 수행할 로직 추가
+      
+      setInitParam({
+        ...initParam,
+        vcatnEndYmd: newEndDate
+      });
+    };
+  
+  // 성명변환
+  const handleChgEmp = (selectedOption) => {
+   
+    setInitParam({
+      ...initParam,
+      empno: selectedOption,
+    });
+  };
+  
+    const handleSubmit = () => {
+     
+      setParam({
+        vcatnBgngYmd: initParam.vcatnBgngYmd, //시작일자
+        vcatnEndYmd: initParam.vcatnEndYmd, //끝일자
+        empno: initParam.empno,  // 사번
+        queryId: queryId,
+        currentPage: currentPage,
+      })
+     
+      //callBack(initParam);
+    };
+  
+    
+    //============== 테이블 그리기===========================================
     const gridRows = () => {
-        const result = [];
-        for(let i = 0; i < tableColumns.length; i++) {
-            const { key, value, width, alignment, button } = tableColumns[i];
-            if(button) {
-              result.push(
+      const result = [];
+      for(let i = 0; i < tableColumns.length; i++) {
+          const { key, value, width, alignment, button } = tableColumns[i];
+          if(button) {
+            result.push(
+              <Column 
+                key={key} 
+                dataField={key} 
+                caption={value} 
+                width={width} 
+                alignment={alignment || 'center'}
+                cellRender={() => buttonRender(button)}>
+              </Column>
+          );
+          } else {
+            result.push(
                 <Column 
                   key={key} 
                   dataField={key} 
                   caption={value} 
                   width={width} 
-                  alignment={alignment || 'center'}
-                  cellRender={() => buttonRender(button)}>
+                  alignment={alignment || 'center'}>
                 </Column>
             );
-            } else {
-              result.push(
-                  <Column 
-                    key={key} 
-                    dataField={key} 
-                    caption={value} 
-                    width={width} 
-                    alignment={alignment || 'center'}>
-                  </Column>
-              );
-            }
-        }
-        return result;
+          }
       }
+      return result;
+    }
 
-      const buttonRender = (button) => {
-        return(
-          <Button text={button}/>
-        )
-        }
-    
+    const buttonRender = (button) => {
+      return(
+        <Button text={button}/>
+      )
+      }
     //===========화면 그리는 부분================================================
     return (
         <div className="container">
             <div
                 className="title p-1"
-                style={{ marginTop: "20px", marginBottom: "10px" }}
+                style={{ marginTop: "20px", marginBottom: "10px" }} 
             >
                 <h1 style={{ fontSize: "30px" }}>휴가사용내역</h1>
 
@@ -190,41 +202,44 @@ const EmpVacUseList = ({callback,props}) => {
             <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
             <span>* 직원의 휴가정보를 조회합니다.</span>  
             </div>
-            <div className="wrap_search" style={{ marginBottom: "20px" }}>
+            {/* <div className="wrap_search" style={{ marginBottom: "20px" }}>
              <SearchEmpVacSet callBack={searchHandle} props={searchParams} />
-             <div className="box_search" width="100%">
-      <Box
-        direction="row"
-        width="100%"
-        height={30}
-      >
-        <Item className="prjctDatePickerItem" ratio={2} visible={props.prjctDatePickerItem}>
-          <CustomDateRangeBox
-            onStartDateChange={handleStartDateChange}
-            onEndDateChange={handleEndDateChange}
-          />
-        </Item>
-        <Item className="empnoItem" ratio={1} visible={props.empnoItem}>
-          <AutoCompleteName
-            placeholderText="성명"
-            onValueChange={handleChgEmp}    
-          />
-        </Item>
-       
-        <Item className="searchBtnItem" ratio={1} visible={props.searchBtnItem}>
-          <Button
-            onClick={handleSubmit} text="검색"            
-          />
-        </Item>
-      </Box>
-    </div>
-            </div>
-            <div>
-                검색된 건 수 : {totalItems} 건 
-                
-            </div>
+            </div> */}
             
-            {/* <CustomTable keyColumn={keyColumn} columns={tableColumns} values={values} paging={true}  /> */}
+            {/*----------------서치셋 구간---------------------------------------------------------------- */}
+            <div className="box_search" style={{ marginBottom: "20px" }} width="60%" >
+            <Box
+              direction="row"
+              width="100%"
+              height={30}
+            >
+              <Item className="prjctDatePickerItem" ratio={2} visible={props.prjctDatePickerItem}>
+                <CustomDateRangeBox
+                  onStartDateChange={handleStartDateChange}
+                  onEndDateChange={handleEndDateChange}
+                />
+              </Item>
+
+              <Item className="empnoItem" ratio={1} visible={props.empnoItem}>
+                <AutoCompleteName
+                  placeholderText="성명"
+                  onValueChange={handleChgEmp}    
+                />
+              </Item>
+            
+              <Item className="searchBtnItem" ratio={1} visible={props.searchBtnItem}>
+                <Button
+                  onClick={handleSubmit} text="검색"                 
+                />
+              </Item>
+            </Box>
+            </div>
+            {/*----------------서치셋 구간---------------------------------------------------------------- */}
+            <div>
+                검색된 건 수 : {totalItems} 건
+            </div>
+            {/*----------------테이블 구간---------------------------------------------------------------- */}
+            {/* <CustomTable keyColumn={keyColumn} columns={tableColumns} values={values} paging={true}/> */}
             <div className="wrap_table">
             <DataGrid
                 keyExpr={keyColumn}
@@ -255,7 +270,8 @@ const EmpVacUseList = ({callback,props}) => {
             {gridRows()}
             <Export enabled={true} /> 
             </DataGrid>
-            </div>   
+            </div>
+           {/*----------------테이블 구간---------------------------------------------------------------- */}   
         </div>
     );
 };

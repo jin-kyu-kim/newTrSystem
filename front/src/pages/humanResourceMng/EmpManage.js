@@ -1,28 +1,29 @@
 import { useState, useEffect, useCallback } from "react";
-import ApiRequest from "../../../utils/ApiRequest";
-import CustomTable from "../../../components/unit/CustomTable";
-import EmpListJson from "../emp/EmpListJson.json";
-import DeptDownListJson from "../dept/DeptDownListJson.json";
-import DeptHnfListJson from "../dept/DeptHnfListJson.json";
-import DeptDetailJson from "../dept/DeptDetailJson.json";
-import SearchDeptSet from "components/composite/SearchDeptSet";
+import ApiRequest from "../../utils/ApiRequest";
+import CustomTable from "../../components/unit/CustomTable";
+import EmpManageJson from "./EmpManageJson.json";
+import EmpManageDetailJson from "./EmpManageDetailJson.json";
+import EmpDeptHnfListJson from "./EmpDeptHnfListJson.json";
+import EmpDetailJson from "./EmpDetailJson.json";
+import SearchHumanResoureceMngSet from "components/composite/SearchHumanResoureceMngSet";
 import CustomLabelValue from "components/unit/CustomLabelValue";
+import CustomCdComboBox from "components/unit/CustomCdComboBox";
 import { Button } from "devextreme-react";
 
-const DeptManage = () => {
+const EmpManage = () => {
   const [values, setValues] = useState([]);
   const [values2, setValues2] = useState([]);
   const [values3, setValues3] = useState([]);
   const [param, setParam] = useState({});
 
-  const { keyColumn, queryId, tableColumns, searchParams, popup } = EmpListJson;
-  const { labelValue } = DeptDetailJson;
-  const { keyColumn2, queryId2, tableColumns2 } = DeptDownListJson;
-  const { keyColumn3, queryId3, tableColumns3 } = DeptHnfListJson;
-  const [deptParam2, setDeptParam2] = useState({});
-  const [deptParam3, setDeptParam3] = useState({});
+  const { keyColumn, queryId, tableColumns, searchParams } = EmpManageJson;
+  const { labelValue } = EmpDetailJson;
+  const { keyColumn2, queryId2, tableColumns2 } = EmpManageDetailJson;
+  const { keyColumn3, queryId3, tableColumns3 } = EmpDeptHnfListJson;
+  const [empParam2, setEmpParam2] = useState({});
+  const [empParam3, setEmparam3] = useState({});
 
-  const [deptInfo, setDeptInfo] = useState([]);
+  const [empInfo, setEmpInfo] = useState([]);
   const [data, setData] = useState([]);
 
   const [totalItems, setTotalItems] = useState(0);
@@ -31,33 +32,43 @@ const DeptManage = () => {
   const [pageSize, setPageSize] = useState(20);
   const [hnfPageSize, setHnfPageSize] = useState(20);
   const [downDeptPageSize, setDownDeptPageSize] = useState(20);
+  const [text, setText] = useState("");
 
   const [readOnly, setReadOnly] = useState(false);
-
   //========================테이블 배치
   const tableContainerStyle = {
     display: "flex",
   };
-  const deptListContainerStyle = {
-    width: "40%", // 왼쪽 영역의 너비를 설정
+  const empListContainerStyle = {
+    width: "45%", // 왼쪽 영역의 너비를 설정
     marginTop: "20px",
   };
 
-  const deptListStyle = {
+  const empListStyle = {
     minWidth: "480px",
   };
-  const deptDetailContainerStyle = {
-    width: "60%", // 오른쪽 영역의 너비를 설정
+  const empDetailContainerStyle = {
+    width: "55%", // 오른쪽 영역의 너비를 설정
     display: "flex",
     flexDirection: "column",
   };
 
-  const deptDetailStyle = {
+  const empDetailStyle = {
     flex: "1",
     marginLeft: "20px", // 각 div 사이의 간격을 조절합니다.
     marginTop: "20px",
   };
-
+  const empDetailLeft = {
+    width: "50%", // 기초정보의 왼쪽 영역의 너비를 설정
+    float : "left",
+    marginTop: "30px",
+  };
+  const empDetailRight = {
+    width: "50%", //  기초정보의 오른쪽 영역의 너비를 설정
+    display: "flex",
+    flexDirection: "column",
+    
+  };
   const buttonContainerStyle = {
     display: "flex",
     justifyContent: "flex-end",
@@ -73,6 +84,13 @@ const DeptManage = () => {
 
   //========================직원 목록 조회
   useEffect(() => {
+    console.log("이거찍혀요 :ㅣ???" ,EmpManageJson);
+
+  }, []);
+ 
+  //========================직원 목록 조회
+  useEffect(() => {
+    console.log("직원목록조회용aa:  ", EmpManageJson)
     if (!Object.values(param).every((value) => value === "")) {
       pageHandle();
     }
@@ -107,7 +125,7 @@ const DeptManage = () => {
     }
   };
 
-  //========================부서 상세 정보
+  //========================직원 기초 정보
 
   const readOnlyChg = () => {
     if (readOnly) {
@@ -126,11 +144,11 @@ const DeptManage = () => {
     }
   };
 
-  const deptDownListHandle = async () => {
+  const empDetailListHandle = async () => {
     try {
       const response2 = await ApiRequest(
         "/boot/common/queryIdSearch",
-        deptParam2
+        empParam2
       );
       setValues2(response2);
     } catch (error) {
@@ -138,11 +156,11 @@ const DeptManage = () => {
     }
   };
 
-  const deptHnfListHandle = async () => {
+  const empHnfListHandle = async () => {
     try {
       const response3 = await ApiRequest(
         "/boot/common/queryIdSearch",
-        deptParam3
+        empParam3
       );
       setValues3(response3);
     } catch (error) {
@@ -152,26 +170,30 @@ const DeptManage = () => {
 
   const onRowDblClick = (e) => {
     for (const value of values) {
-      if (value.deptId === e.data.deptId) {
-        setDeptInfo(value);
-        console.log(value);
+      if (value.empno === e.data.empno) {
+        setEmpInfo(value);
+        console.log("더블클릭시 데이터 : " ,value);
         break;
       }
     }
 
-    setDeptParam2({
-      deptId: e.data.deptId,
+    setEmpParam2({
+      empno: e.data.empno,
       queryId: queryId2,
     });
-    deptDownListHandle();
+    empDetailListHandle();
 
-    setDeptParam3({
-      deptId: e.data.deptId,
+    setEmparam3({
+      deptId: e.data.empno,
       queryId: queryId3,
     });
-    deptHnfListHandle();
+    empHnfListHandle();
+  };
+  const onReset = (e) => {
+    setText("");
   };
 
+  
   return (
     <div className="container">
       <div
@@ -182,17 +204,17 @@ const DeptManage = () => {
       </div>
     
       <div style={{ marginBottom: "20px" }}>
-        <SearchDeptSet
+        <SearchHumanResoureceMngSet
           callBack={searchHandle}
           props={searchParams}
-          popup={popup}
+          
         />
       </div>
       <div>검색된 건 수 : {totalItems} 건</div>
 
       <div className="tableContainer" style={tableContainerStyle}>
-        <div className="deptListContainer" style={deptListContainerStyle}>
-          <div className="deptListTable" style={deptListStyle}>
+        <div className="empListContainer" style={empListContainerStyle}>
+          <div className="empListTable" style={empListStyle}>
           <p>
               <strong>* 직원목록 </strong>
             </p>
@@ -211,8 +233,8 @@ const DeptManage = () => {
             />
           </div>
         </div>
-        <div className="deptDetailContainer" style={deptDetailContainerStyle}>
-          <div className="deptDetailTable" style={deptDetailStyle}>
+        <div className="empDetailContainer" style={empDetailContainerStyle}>
+          <div className="empDetailTable" style={empDetailStyle}>
             <p>
               <strong>* 기초정보 </strong>
             </p>
@@ -220,42 +242,68 @@ const DeptManage = () => {
             신규 직원정보를 입력하면 TRS 접속 권한이 생기게 됩니다.<br/>
             신규 직원 사번은 자동 입력됩니다.
             </span>
+            <div className="empDetailLeft" style={empDetailLeft}>
             <CustomLabelValue
-              props={labelValue.deptNm}
+            props={labelValue.empFlnm}
+            onSelect={handleChgState}
+            value={empInfo.empFlnm}
+            readOnly={readOnly}
+            />            
+            <CustomLabelValue
+            props={labelValue.deptMngrEmpFlnm}
+            onSelect={handleChgState}
+            value={empInfo.deptMngrEmpFlnm}
+            readOnly={readOnly}
+            />
+            <CustomLabelValue
+              props={labelValue.telNo}
               onSelect={handleChgState}
-              value={deptInfo.deptNm}
+              value={empInfo.telNo}
               readOnly={readOnly}
             />
             <CustomLabelValue
-              props={labelValue.upDeptNm}
-              onSelect={handleChgState}
-              value={deptInfo.upDeptNm}
-              readOnly={readOnly}
-            />
+            props={labelValue.bankCd}
+            onSelect={handleChgState}
+            value={empInfo.bankCd}
+            readOnly={readOnly}
+            />              
+              
+          </div>
+
+          <div className="empDetailRight" style={empDetailRight}>
             <CustomLabelValue
-              props={labelValue.deptMngrEmpFlnm}
+              props={labelValue.JbpsCd}
               onSelect={handleChgState}
-              value={deptInfo.deptMngrEmpFlnm}
-              readOnly={true}
-            />
-            <CustomLabelValue
-              props={labelValue.deptBgngYmd}
-              onSelect={handleChgState}
-              value={deptInfo.deptBgngYmd}
+              value={empInfo.JbpsCd}
               readOnly={readOnly}
-            />
-            <CustomLabelValue
-              props={labelValue.deptEndYmd}
+              />
+              <CustomLabelValue
+              props={labelValue.hdofSttsCd}
               onSelect={handleChgState}
-              value={deptInfo.deptEndYmd}
+              value={empInfo.hdofSttsCd}
               readOnly={readOnly}
-            />
+              />                         
+             <CustomLabelValue
+              props={labelValue.eml}
+              onSelect={handleChgState}
+              value={empInfo.eml}
+              readOnly={readOnly}
+            />                
+             <CustomLabelValue
+             props={labelValue.actNo}
+            onSelect={handleChgState}
+            value={empInfo.actNo}
+            readOnly={readOnly}
+              />
+           </div>
+            
+
             <div className="buttonContainer" style={buttonContainerStyle}>
-              <Button style={buttonStyle}>직원신규입력</Button>
+              <Button style={buttonStyle} onClick={onReset}> 직원신규입력</Button>
               <Button style={buttonStyle}>기초정보 저장</Button>
             </div>
           </div>
-          <div className="deptDownListTable" style={deptDetailStyle}>
+          <div className="empDownListTable" style={empDetailStyle}>
             <p>
               <strong>* 발령정보 </strong>
             </p>
@@ -263,16 +311,33 @@ const DeptManage = () => {
             주의!! 직위발령을 입력하지 않거나 잘못 입력 할 경우 '프로젝트관리'메뉴에 실행원가 집행현황 자사인력 누적<br/>
             사용금액이 제대로 계산되지 않습니다.
             </span>
-            <CustomTable
-              keyColumn={keyColumn2}
-              pageSize={downDeptPageSize}
-              columns={tableColumns2}
-              values={values2}
-              paging={true}
-              style={deptTableStyle}
+            <div className="empDetailLeft" style={empDetailLeft}>
+            <CustomLabelValue
+              props={labelValue.deptGnfdY}
+              onSelect={handleChgState}
+              value={empInfo.deptGnfdY}
+              readOnly={readOnly}
             />
+            <CustomLabelValue
+              props={labelValue.jbttlCd}
+              onSelect={handleChgState}
+              value={empInfo.jbttlCd}
+              readOnly={readOnly} 
+            />
+            </div>
+            <div className="empDetailRight" style={empDetailRight}>         
+            <CustomLabelValue
+              props={labelValue.deptGnfdMd}
+              onSelect={handleChgState}
+              value={empInfo.deptGnfdMd}
+              readOnly={readOnly}
+            />
+             <div className="buttonContainer" style={buttonContainerStyle}>
+             <Button style={buttonStyle}>발령저장</Button>
+            </div>           
+            </div>
           </div>
-          <div className="deptHnfListTable" style={deptDetailStyle}>
+          <div className="empHnfListTable" style={empDetailStyle}>
             <CustomTable
               keyColumn={keyColumn3}
               pageSize={hnfPageSize}
@@ -288,4 +353,4 @@ const DeptManage = () => {
   );
 };
 
-export default DeptManage;
+export default EmpManage;
