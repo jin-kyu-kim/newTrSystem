@@ -100,8 +100,7 @@ const NoticeInput = () => {
                 'Content-Type': 'multipart/form-data'
               },
             });
-            console.log(response)
-            //if(response === 1) navigate("/infoInq/NoticeList")
+            if(response.data === 1) navigate("/infoInq/NoticeList")
           } catch (error) {
             console.error("API 요청 에러:", error);
             throw error;

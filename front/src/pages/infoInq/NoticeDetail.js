@@ -51,14 +51,14 @@ const NoticeDetail = () => {
                     <h1 style={{ fontSize: "30px" }}>공지사항</h1>
                 </div>
 
-                <div>제목 : {oneData.noticeTtl}</div><hr />
+                <div>제목 : {oneData.noticeTtl}</div>
                 <div>
                     내용:  <div dangerouslySetInnerHTML={{ __html: oneData.noticeCn }} />
-                </div><hr />
-                <div>작성자 : {oneData.regEmpId}</div><hr />
+                </div>
+                <div>작성자 : {oneData.regEmpId}</div>
                 작성일 : {oneData.regDt}
 
-                <hr />첨부파일
+                첨부파일
             </div>
 
             <Button
