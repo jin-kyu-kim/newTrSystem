@@ -54,25 +54,25 @@ const TreRoutes = [
   {
     path: "/humanResourceMng/EmpMonthVacInfo",
     name: "EmpMonthVacInfo",
-    element: React.lazy(() => import("../pages/humanResourceMng/emp/EmpMonthVacInfo")),
+    element: React.lazy(() => import("../pages/humanResourceMng/EmpMonthVacInfo")),
   },
   // 회의실예약관리
   {
     path: "/humanResourceMng/MeetingRoomManage",
     name: "MeetingRoomManage",
-    element: React.lazy(() => import("../pages/humanResourceMng/emp/MeetingRoomManage")),
+    element: React.lazy(() => import("../pages/humanResourceMng/MeetingRoomManage")),
   },
    // 인사관리 휴가사용내역
    {
     path: "/humanResourceMng/EmpVacUseList",
     name: "EmpVacUseList",
-    element: React.lazy(() => import("../pages/humanResourceMng/emp/EmpVacUseList")),
+    element: React.lazy(() => import("../pages/humanResourceMng/EmpVacUseList")),
   },
   //부서 관리
   {
     path: "/humanResourceMng/dept/DeptManage",
     name: "DeptManage",
-    element: React.lazy(() => import("../pages/humanResourceMng/dept/DeptManage")),
+    element: React.lazy(() => import("../pages/humanResourceMng/DeptManage")),
   }
   
 ];

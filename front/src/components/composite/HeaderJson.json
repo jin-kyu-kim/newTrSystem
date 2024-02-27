@@ -114,7 +114,7 @@
       {
         "id": 1,
         "title": "부서관리",
-        "link": "humanResourceMng/dept/DeptManage"
+        "link": "humanResourceMng/DeptManage"
       },
       {
         "id": 2,

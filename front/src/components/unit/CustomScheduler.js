@@ -4,19 +4,10 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-// import "./Calendar.css"
+import listPlugin from '@fullcalendar/list';    // npm install @fullcalendar/list
+// import "./CustomScheduler.css"
 
-const Calandar = ({values, headerToolbar, initialView}) => {
-    // (async () => {
-    //     if (initCssBoolean) {
-    //         if(initCssMenu == "EmpMonthVacInfo"){
-    //             import("../../pages/humanResourceMng/emp/EmpMonthVacInfoCalendar.css");
-    //         } else if(initCssMenu == "MeetingRoomManage"){
-    //             import("../../pages/humanResourceMng/emp/MeetingRoomManageCalendar.css");
-    //         }
-    //     }
-    // })();
-    
+const Calandar = ({values, headerToolbar, initialView, initCssBoolean, initCssMenu /*initCssUrl*/}) => {
     return(
         <>
         <div style={{display:'grid'}}>
@@ -24,10 +15,12 @@ const Calandar = ({values, headerToolbar, initialView}) => {
                 locale="kr"
                 timeZone="Asia/Seoul"
                 height={"auto"}
-                plugins={[dayGridPlugin,timeGridPlugin,interactionPlugin]}
+                plugins={[dayGridPlugin,timeGridPlugin,interactionPlugin,listPlugin]}
                 initialView={initialView}
                 headerToolbar={headerToolbar}
                 events={values}
+                slotMinTime={"08:00"}
+                slotMaxTime={"22:00"}
             />
         </div>
         </>     
