@@ -1,15 +1,15 @@
 {
 	"menuName": "ProjectAprv",
 	"queryId": "projectMapper.retrievePrjctAprvList",
-    "keyColumn": "prjctId",
+    "keyColumn": "atrzLnSn",
     "tableColumns": 
 	[
     { "key": "rownum", "value": "번호" },
-    { "key": "bizFlfmtTyCd", "value": "유형" },
+    { "key": "prmpcInptSeCd", "value": "유형" },
     { "key": "prjctNm", "value": "프로젝트 명", "alignment" : "left" },
-    { "key": "atrzStepCd", "value": "단계", "alignment" : "left" },
-    { "key": "atrzSttsCd", "value": "상태", "alignment" : "left" },
-    { "key": "prjctMngrEmpId", "value": "기안자", "alignment" : "left" },
+    { "key": "atrzStepCdNm", "value": "단계", "alignment" : "left" },
+    { "key": "atrzSttsCdNm", "value": "상태", "alignment" : "left" },
+    { "key": "empFlnm", "value": "기안자", "alignment" : "left" },
     { "key": "aprvYmd", "value": "승인일자", "alignment" : "left" },
     { "key": "rjctYmd", "value": "반려일자", "alignment" : "left" }
 	],
@@ -17,6 +17,7 @@
 	{
     "ctmmnyNameItem": false,
     "prjctDatePickerItem": false,
+    "prjctStleCdItem": false,
     "insertBtnItem": false,
     "popupVisible" : false
   }

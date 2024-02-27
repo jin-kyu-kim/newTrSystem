@@ -9,10 +9,19 @@ import { useCookies } from "react-cookie";
 
 const LoginForm = ({ handleLogin }) => {
   const userInfo = {
-    empId: "202160c6-bf25-11ee-b259-000c2956283f",
+    empId: "20221064-bf25-11ee-b259-000c2956283f",
     empNm: "김진규",
     auth: "test",
+    deptId: "9ec66846-3e7e-48be-aa84-3dc2307dc32b",
   };
+
+  // 기안자: "20221064-bf25-11ee-b259-000c2956283f",
+
+  /*
+  20221064-bf25-11ee-b259-000c2956283f 확인
+  20218103-bf25-11ee-b259-000c2956283f 심사
+  2021c1ed-bf25-11ee-b259-000c2956283f 승인
+  */
   const userAuth = {
     userAuth: ["auth1", "auth2", "auth3"],
     empNm: "김진규11",
