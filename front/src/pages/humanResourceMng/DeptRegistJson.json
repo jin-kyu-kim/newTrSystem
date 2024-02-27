@@ -1,0 +1,46 @@
+{
+    "menuName": "DeptManage",
+    "deptDetailqueryId":"humanResourceMngMapper.getDeptDetail",
+    "labelValue" : {
+        "deptNm": {
+            "name": "deptNm",
+            "type": "TextBox",
+            "label": "부서명",
+            "required": true,
+            "placeholder": "부서명"
+        },
+        "upDeptNm": {
+            "type": "ComboBox",
+            "required": true,
+            "label": "상위부서",
+            "placeholder": "상위부서",
+            "param": { "tbNm" : "DEPT",
+                        "valueExpr" : "deptId",
+                        "displayExpr": "deptNm",
+                        "name": "upDeptId"
+                     }
+        },
+        "deptMngrEmpFlnm": {
+            "type": "TextBox",
+            "required": false,
+            "label": "부서장명",
+            "placeholder": "부서장명"
+        },
+        "deptBgngYmd": {
+            "name": "deptBgngYmd",
+            "type": "DateBox",
+            "label": "부서시작일자",
+            "required": true,
+            "placeholder": "부서시작일자"
+        },
+        "deptEndYmd": {
+            "name": "deptEndYmd",
+            "type": "DateBox",
+            "label": "부서종료일자",
+            "required": false,
+            "placeholder": "부서종료일"
+        }
+    }
+    ,
+    "queryId":""
+} 

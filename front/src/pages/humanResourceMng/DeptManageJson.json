@@ -1,0 +1,35 @@
+{
+    "menuName": "DeptManage",
+    "searchParams":
+	{
+        "popupVisible": true
+    },
+    "popup":
+    {
+        "width": "50%",
+        "height": "auto",
+        "title":  "신규부서 등록"
+    },
+	"listQueryId": "humanResourceMngMapper.retrieveDeptList",
+    "listKeyColumn": "deptId",
+    "listTableColumns": [
+        { "key": "rownum", "value": "번호", "width": 70, "alignment" : "center" },
+        { "key": "deptNm", "value": "부서명"},
+        { "key": "upDeptNm", "value": "상위부서명"},
+        { "key": "deptMngrEmpFlnm", "value": "부서장명"}
+    ],
+    "downDeptQueryId": "humanResourceMngMapper.retrieveDownDeptList",
+    "downDeptTableColumns": [
+        { "key": "deptNm", "value": "부서명"},
+        { "key": "deptMngrEmpFlnm", "value": "부서장명"}
+    ],
+	"hnfQueryId": "humanResourceMngMapper.retrieveDeptHnfList",
+    "hnfKeyColumn": "empId",
+    "hafTableColumns": [
+        { "key": "empno", "value": "사번"},
+        { "key": "empFlnm", "value": "성명" },
+        { "key": "jbpsNm", "value": "직위"},
+        { "key": "jbttlNm", "value": "직책" }
+    ]
+
+}

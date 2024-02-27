@@ -1,6 +1,6 @@
 {
 	"menuName": "EmpMonthVacInfo",
-	"queryId": "empMapper.retrieveMnbyVcatnInfo",
+	"queryId": "humanResourceMngMapper.retrieveMnbyVcatnInfo",
     "keyColumn": "elctrnAtrzId",
     "data": 
 	[

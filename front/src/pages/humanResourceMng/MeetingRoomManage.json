@@ -1,7 +1,7 @@
 {   
     "MtgRoomRsvt":[{
         "menuName": "MeetingRoomManage",
-        "queryId": "empMapper.MtgRoomRsvt",
+        "queryId": "humanResourceMngMapper.MtgRoomRsvt",
         "keyColumn": "mtgRoomRsvt순번",
         "data": 
         [
@@ -16,7 +16,7 @@
     }],
     "MtgRoomRsvtAtdrn":[{
         "menuName": "MeetingRoomManage",
-        "queryId": "empMapper.MtgRoomRsvtAtdrn",
+        "queryId": "humanResourceMngMapper.MtgRoomRsvtAtdrn",
         "keyColumn": "mtgRoomRsvt순번",
         "data": 
         [

@@ -6,7 +6,7 @@ import ApiRequest from "../../utils/ApiRequest";
 import EmpMonthVacInfoJson from "./EmpMonthVacInfo.json"
 import Box, {Item} from "devextreme-react/box"
 import {Button} from "devextreme-react/button";
-import "../../../components/unit/Calendar.css"
+import "../../components/unit/Calendar.css"
 
 const {queryId} = EmpMonthVacInfoJson;
 

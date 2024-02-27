@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
-import CustomScheduler from "../../../components/unit/CustomScheduler"
-import "../../../components/unit/CustomScheduler.css"
+import CustomScheduler from "../../components/unit/CustomScheduler"
+import "../../components/unit/CustomScheduler.css"
 
 // const {queryId} = EmpMonthVacInfoJson;
 
