@@ -72,28 +72,73 @@ public class ProjectBaseDomain {
     public static int insertProjectCostChg(List<Map<String, Object>> params, int bgtMngOdr) {
     	
     	int targetOdr;
-    	int result = -1;
+    	int fail = -1;
     	
-    	// Detail 화면에서 받은 params 에 들어있는 차수와 채번한 차수를 비교한다.
-    	if(params.get(1).get("bgtMngOdr") != null && Integer.parseInt(String.valueOf(params.get(1).get("bgtMngOdr"))) == bgtMngOdr) {
-    		targetOdr = bgtMngOdr + 1;
-    	} else {
-    		targetOdr = bgtMngOdr;
-    	}
+    	List<Map<String, Object>> insertParams = new ArrayList<>();
+    	Map<String, Object> param = new HashMap<>();
+    	param.put("prjctId", params.get(1).get("prjctId"));
+    	param.put("totAltmntBgt", params.get(1).get("totAltmntBgt"));
+    	param.put("atrzDmndSttsCd", params.get(1).get("atrzDmndSttsCd"));
+    	param.put("regDt", params.get(1).get("regDt"));
     	
-    	params.get(1).put("bgtMngOdr", targetOdr);
+    	
+    	insertParams.add(params.get(0));
     	
     	try {
-    		result = commonService.insertData(params);
     		
+	    	if(params.get(1).get("bgtMngOdr") == null) {
+	    		
+	    		if(bgtMngOdr == 0) { // 최초 생성 시 1로 insert
+	    			param.put("bgtMngOdr", 1);
+	    			insertParams.add(param);
+	    			
+	        		commonService.insertData(insertParams);
+	        		return 1;
+	    		} else {
+	    			// 0이 아니란건 일단 insert 되었다는 것. 
+	    			// 삽입하면 안된다.
+	    			return bgtMngOdr;
+	    		}
+	    		
+	    	} else {
+	    		// 승인된 차수가 1개 이상 존재한다는 뜻
+	    		if(Integer.parseInt(String.valueOf(params.get(1).get("bgtMngOdrTobe"))) == bgtMngOdr) {
+	    			bgtMngOdr += 1;
+	    			param.put("bgtMngOdr", bgtMngOdr);
+	    			insertParams.add(param);
+	    			
+	        		commonService.insertData(insertParams);
+	        		return bgtMngOdr;
+	    		} else {
+	    			return bgtMngOdr;
+	    		}
+	    	}
     	} catch (Exception e) {
-    		return result;
+    		return fail;
     	}
     	
-    	if(result > 0) {
-    		return targetOdr;
-    	} 
-    	return result;
+    	
+//    	
+//    	// Detail 화면에서 받은 params 에 들어있는 차수와 채번한 차수를 비교한다.
+//    	if(params.get(1).get("bgtMngOdr") != null && Integer.parseInt(String.valueOf(params.get(1).get("bgtMngOdr"))) == bgtMngOdr) {
+//    		targetOdr = bgtMngOdr + 1;
+//    	} else {
+//    		targetOdr = bgtMngOdr;
+//    	}
+//    	
+//    	params.get(1).put("bgtMngOdr", targetOdr);
+//    	
+//    	try {
+//    		result = commonService.insertData(params);
+//    		
+//    	} catch (Exception e) {
+//    		return result;
+//    	}
+//    	
+//    	if(result > 0) {
+//    		return targetOdr;
+//    	} 
+//    	return result;
     	
     }
     
