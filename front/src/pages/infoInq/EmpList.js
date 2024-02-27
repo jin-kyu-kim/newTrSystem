@@ -1,13 +1,11 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import  EmpListJson from "../infoInq/EmpListJson.json";
 import ApiRequest from "../../utils/ApiRequest";
-import { useNavigate } from "react-router-dom";
-import SearchEmpSet from "components/composite/SearchEmpSet";
+import SearchEmpSet from "components/composite/SearchInfoSet";
 import CustomTable from "components/unit/CustomTable";
 
 function EmpList() {
-
   const [values, setValues] = useState([]);
   const [param, setParam] = useState({});
 
@@ -16,9 +14,7 @@ function EmpList() {
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
 
-  const navigate = useNavigate();
-
-  const { keyColumn, queryId, tableColumns, searchParams, popup } = EmpListJson;
+  const { keyColumn, queryId, tableColumns, popup, searchInfo } = EmpListJson;
 
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
@@ -42,7 +38,6 @@ function EmpList() {
   const pageHandle = async () => {
     try {
       const response = await ApiRequest("/boot/common/queryIdSearch", param);
-      console.log(response);
       setValues(response);
       if (response.length !== 0) {
         setTotalPages(Math.ceil(response[0].totalItems / pageSize));
@@ -55,7 +50,6 @@ function EmpList() {
       console.log(error);
     }
   };
-
 
   return (
     <div className="container">
@@ -71,7 +65,7 @@ function EmpList() {
       <div style={{ marginBottom: "20px" }}>
         <SearchEmpSet
           callBack={searchHandle}
-          props={searchParams}
+          props={searchInfo}
           popup={popup}
         />
       </div>
@@ -86,8 +80,6 @@ function EmpList() {
       />
     </div>
   );
-
 };
-
 
 export default EmpList;

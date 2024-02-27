@@ -2,38 +2,8 @@ import React, { useState, useEffect } from "react";
 import HtmlEditor, { Toolbar, MediaResizing, ImageUpload, Item } from "devextreme-react/html-editor";
 
 const HtmlEditBox = ({ column, data, setData, value }) => {
-  const sizeValues = ["8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt"];
-  const fontValues = [
-    "Arial",
-    "Courier New",
-    "Georgia",
-    "Impact",
-    "Lucida Console",
-    "Tahoma",
-    "Times New Roman",
-    "Verdana",
-  ];
-  const headerValues = [false, 1, 2, 3, 4, 5];
-  const fontSizeOptions = {
-    inputAttr: {
-      "aria-label": "Font size",
-    },
-  };
-  const fontFamilyOptions = {
-    inputAttr: {
-      "aria-label": "Font family",
-    },
-  };
-  const headerOptions = {
-    inputAttr: {
-      "aria-label": "Font family",
-    },
-  };
-
-  // value 상태를 로컬 상태로 설정
   const [editorValue, setEditorValue] = useState(value);
 
-  // 부모 컴포넌트에서 value prop이 변경될 때마다 editorValue 업데이트
   useEffect(() => {
     setEditorValue(value);
   }, [value]);
@@ -88,5 +58,32 @@ const HtmlEditBox = ({ column, data, setData, value }) => {
     </div>
   );
 };
+const sizeValues = ["8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt"];
+  const fontValues = [
+    "Arial",
+    "Courier New",
+    "Georgia",
+    "Impact",
+    "Lucida Console",
+    "Tahoma",
+    "Times New Roman",
+    "Verdana",
+  ];
+  const headerValues = [false, 1, 2, 3, 4, 5];
+  const fontSizeOptions = {
+    inputAttr: {
+      "aria-label": "Font size",
+    },
+  };
+  const fontFamilyOptions = {
+    inputAttr: {
+      "aria-label": "Font family",
+    },
+  };
+  const headerOptions = {
+    inputAttr: {
+      "aria-label": "Font family",
+    },
+  };
 
 export default HtmlEditBox;
