@@ -5,7 +5,7 @@ import EmpInfoJson from "./EmpInfoJson.json";
 import TextBox from "devextreme-react/text-box";
 import Box, { Item } from "devextreme-react/box";
 import { Button } from "devextreme-react/button";
-import CustomCdComboBox from "../../../components/unit/CustomCdComboBox";
+import CustomCdComboBox from "../../components/unit/CustomCdComboBox";
 import ApiRequest from "utils/ApiRequest";
 
 const EmpDegree = () => {

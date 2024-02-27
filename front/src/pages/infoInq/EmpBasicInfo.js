@@ -1,9 +1,9 @@
 
 import React, { useEffect, useState } from 'react';
-import ApiRequest from '../../../utils/ApiRequest';
-import CustomHorizontalTable from "../../../components/unit/CustomHorizontalTable";
+import ApiRequest from '../../utils/ApiRequest';
+import CustomHorizontalTable from "../../components/unit/CustomHorizontalTable";
 //import CustomLabelValue from "../../../components/unit/CustomLabelValue";
-import CustomCdComboBox from "../../../components/unit/CustomCdComboBox";
+import CustomCdComboBox from "../../components/unit/CustomCdComboBox";
 import Button from "devextreme-react/button";
 import EmpInfoJson from "./EmpInfoJson.json";
 import DataGrid, { Column, Editing } from 'devextreme-react/data-grid';

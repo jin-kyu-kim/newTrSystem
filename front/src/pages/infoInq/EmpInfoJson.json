@@ -70,19 +70,16 @@
 
     "EmpCareer":{
         "menuName": "EmpCareer",
-        "queryId": "empListMapper.retrieveEmpList",
-        "keyColumn": "empno",
+        "queryId": "infoInqMapper.retrieveEmpCareer",
+        "keyColumn": "workYmd",
         "tableColumns":
         [
-            { "key": "empno", "value": "기간", "width": 120, "alignment" : "center" },
-            { "key": "empFlnm", "value": "근무처", "width": 100 , "alignment" : "center"},
-            { "key": "jbpsNm", "value": "주요경력사항", "width": 200, "alignment" : "center" },
-            { "key": "deptNm", "value": "소재지", "width": 170, "alignment" : "center" },
-            { "key": "telno", "value": "특기사항", "width": 170, "alignment" : "center"  }
-        ],
-        "searchParams":
-        {
-        }
+            { "key": "workYmd", "value": "기간", "width": 120, "alignment" : "center" },
+            { "key": "wrkplcNm", "value": "근무처", "width": 100 , "alignment" : "center"},
+            { "key": "mainCareerCn", "value": "주요경력사항", "width": 200, "alignment" : "center" },
+            { "key": "lctnAddr", "value": "소재지", "width": 170, "alignment" : "center" },
+            { "key": "rm", "value": "특기사항", "width": 170, "alignment" : "center"  }
+        ]
     },
 
 
@@ -106,17 +103,17 @@
     {
 
     "menuName": "EmpProjectHist",
-    "keyColumn": "empId",
+    "queryId": "infoInqMapper.retrievePrjctHist",
+    "keyColumn": "prjctNm",
     "tableColumns": 
 	[
-        { "key": "prjctNm", "value": "프로젝트명", "width": 150, "alignment" : "center" },
-        { "key": "prjctBgngYmd", "value": "프로젝트시작일자", "width": 150, "alignment" : "left" },
-        { "key": "prjctEndYmd", "value": "프로젝트종료일자", "width": 150, "alignment" : "left" },
-        { "key": "tkcgJobCn", "value": "담당업무", "width": 150, "alignment" : "left" },
-        { "key": "orderInstNm", "value": "발주처", "width": 150, "alignment" : "left"  },
-        { "key": "jobClCd", "value": "업무분류", "width": 150, "alignment" : "left"  },
-        { "key": "tchnlgyClCd", "value": "기술분류", "width": 150  },
-        { "key": "RM", "value": "비고", "width": 150 }
+        { "key": "prjctNm", "value": "프로젝트명", "width": 200, "alignment" : "center" },
+        { "key": "prjctYmd", "value": "참여기간", "width": 300, "alignment" : "center" },
+        { "key": "tkcgJobCn", "value": "담당업무", "width": 150, "alignment" : "center" },
+        { "key": "orderInstNm", "value": "발주처", "width": 150, "alignment" : "center"  },
+        { "key": "jobNm", "value": "업무분류", "width": 150, "alignment" : "center"  },
+        { "key": "tchnlgyNm", "value": "기술분류", "width": 150 ,  "alignment" : "center"  },
+        { "key": "rm", "value": "비고", "width": 100,  "alignment" : "center"  }
 	]
     },
 
@@ -164,7 +161,7 @@
         }
       ],
 
-      
+
       "EmpBasicInfo":{
       "BaseInfo" :
       [

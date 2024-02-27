@@ -2,85 +2,76 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "devextreme-react";
 import { useCookies } from "react-cookie";
-import ApiRequest from '../../../utils/ApiRequest';
 import EmpInfoJson from "./EmpInfoJson.json";
-import CustomTable from "../../../components/unit/CustomTable";
-import CustomDatePicker from "../../../components/unit/CustomDatePicker";
+import CustomTable from "../../components/unit/CustomTable";
+import CustomDatePicker from "../../components/unit/CustomDatePicker";
 import DataGrid, { Column, Editing } from 'devextreme-react/data-grid';
 import TextBox from "devextreme-react/text-box";
 import Box, { Item } from "devextreme-react/box";
-import CustomCdComboBox from "../../../components/unit/CustomCdComboBox";
+import CustomCdComboBox from "../../components/unit/CustomCdComboBox";
+import ApiRequest from "utils/ApiRequest";
 
 const EmpProjectHist = (callBack) => {
-    const [initParam, setInitParam] = useState({
-        empno: "",
-        empFlnm: "",
-        jbpsNm: "",
-        deptNm: "",
-        telNo: "",
-        hodfSttsNm: "",
-      });
+
+  const [param, setParam] = useState({});
+
+  const { queryId, keyColumn, tableColumns } = EmpInfoJson.prjctHist;
+  const [values, setValues] = useState([]);
 
 
-    const [projectHist, setProjectHist] = useState([]);
-    const [selectProjectHist, setSelectProjectHist] = useState([]);
+  
+  useEffect(() => {
+    // if (!Object.values(param).every((value) => value === "")) {
+      // pageHandle();
+    //  }
+    setParam({
+      ...param,
+      queryId: queryId,
+      empId : "202160c6-bf25-11ee-b259-000c2956283f",
+    });
+  }, []);
 
-    const {keyColumn, tableColumns} = EmpInfoJson.prjctHist;
+  const [initParam, setInitParam] = useState({
+    empno: "",
+    empFlnm: "",
+    jbpsNm: "",
+    deptNm: "",
+    telNo: "",
+    hodfSttsNm: "",
+  });
 
-    /*유저세션*/
-    const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
+  const handleSubmit = () => {
+    //callBack(initParam);
+  };
+
+  const handleChgState = ({ name, value }) => {
+    setInitParam({
+      ...initParam,
+    //  [name]: value,
+    });
+
     
-    const empId = cookies.userInfo.empId;
-    const deptId = cookies.userInfo.deptId;
+  setParam({
+    queryId: queryId
+  })
+};
 
-    /* 프로젝트 이력정보 */
-    useEffect(() => {
-        const projectHistData = async()=>{
-        const param = [
-            {tbNm: "EMP_PRJCT_HIST"},
-            {
-                empId : empId
-            }
-        ];
-        try{
-            const response = await ApiRequest("/boot/common/commonSelect", param);
-            setProjectHist(response);
-        } catch(error){
-            console.error('Error fetching data', error);
-        }
-        };
-        projectHistData();
-    }, []);
+const pageHandle = async () => {
+  try {
+    const response =  await ApiRequest("/boot/common/queryIdSearch", param);
+    setValues(response);
+    if (response.length !== 0) {
+    } else {
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-    /* 프로젝트 이력 로우 클릭 시*/
-    const onRowHistClick = (e) => {
-        const selectPrjctHist = async() => {
-            const param = [
-                {tbNm: "EMP_PRJCT_HIST"},
-                {
-                    empId : empId
-                }
-            ];
-            try{
-                const response = await ApiRequest("/boot/common/commonSelect", param);
-                setSelectProjectHist(response);
-            } catch(error){
-                console.error('Error fetching data', error);
-            }
-        };
-        selectPrjctHist();
-    };
-    const handleSubmit = () => {
-        callBack(initParam);
-      };
+useEffect(()=>{
+  pageHandle();
+},[param.empId]);
 
-
-      const handleChgState = ({ name, value }) => {
-        setInitParam({
-          ...initParam,
-          [name]: value,
-        });
-      };
     return (
         <div className = "container">
             <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }}>
@@ -90,9 +81,9 @@ const EmpProjectHist = (callBack) => {
             <CustomTable
                 keyColumn={keyColumn}
                 columns={tableColumns}
-                values={projectHist}
+                values={values}
                 paging={true}
-                onRowDbClick={onRowHistClick}
+               // onRowDbClick={onRowHistClick}
             />
             </div>
             <div style = {{ marginBottom: "20px" }}>

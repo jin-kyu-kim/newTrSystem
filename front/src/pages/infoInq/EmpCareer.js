@@ -1,15 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import CustomTable from "components/unit/CustomTable";
 import EmpInfoJson from "./EmpInfoJson.json";
 import TextBox from "devextreme-react/text-box";
 import Box, { Item } from "devextreme-react/box";
 import { Button } from "devextreme-react/button";
-import CustomCdComboBox from "../../../components/unit/CustomCdComboBox";
+import CustomCdComboBox from "../../components/unit/CustomCdComboBox";
+import ApiRequest from "utils/ApiRequest";
 
 const EmpCareer = ({ callBack, props }) => {
-  const { keyColumn, tableColumns } = EmpInfoJson.EmpCareer;
+
+  const [param, setParam] = useState({});
+
+  const { queryId, keyColumn, tableColumns } = EmpInfoJson.EmpCareer;
   const [values, setValues] = useState([]);
+
+
+  useEffect(() => {
+    // if (!Object.values(param).every((value) => value === "")) {
+      // pageHandle();
+    //  }
+    setParam({
+      ...param,
+      queryId: queryId,
+      empId : "202160c6-bf25-11ee-b259-000c2956283f",
+    });
+  }, []);
 
   const [initParam, setInitParam] = useState({
     empno: "",
@@ -21,15 +37,37 @@ const EmpCareer = ({ callBack, props }) => {
   });
 
   const handleSubmit = () => {
-    callBack(initParam);
+    //callBack(initParam);
   };
 
   const handleChgState = ({ name, value }) => {
     setInitParam({
       ...initParam,
-      [name]: value,
+    //  [name]: value,
     });
-  };
+
+    
+  setParam({
+    queryId: queryId
+  })
+};
+
+const pageHandle = async () => {
+  try {
+    const response =  await ApiRequest("/boot/common/queryIdSearch", param);
+    setValues(response);
+    if (response.length !== 0) {
+    } else {
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+useEffect(()=>{
+  pageHandle();
+},[param.empId]);
+
 
   return (
     <div className="container" style={{ height: "700px" }}>
@@ -40,7 +78,7 @@ const EmpCareer = ({ callBack, props }) => {
         <CustomTable keyColumn={keyColumn} columns={tableColumns} values={values} paging={true} />
       </div>
       <div style={{ marginBottom: "20px", backgroundColor: "#eeeeee", width: "100%", height: "300px", display: "flex", justifyContent: "center", alignItems: "center" }}>
-        <div style={{ width: "95%", height: "250px", backgroundColor: "#fff" }}>
+        <div style={{ width: "95%", height: "250px" }}>
           <h5>경력을 입력/수정 합니다.</h5>
           <Box direction="row" width="50%" height={40}>
             <Item className="prjctNameItem" ratio={1}>

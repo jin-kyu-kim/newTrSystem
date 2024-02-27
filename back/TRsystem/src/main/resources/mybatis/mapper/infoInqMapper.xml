@@ -92,8 +92,8 @@
 			GRAD_NM ,
 			DATE_FORMAT(ACQS_YMD, '%Y-%m-%d') AS ACQS_YMD
 		FROM EMP_QLFC_LCNS
-		WHERE EMP_ID= #{empId}
-
+			WHERE EMP_ID= #{empId}
+	
 	</select>
 	
 	<select id="retrieveEmpEduHist" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -104,8 +104,36 @@
 			CONCAT(DATE_FORMAT(EDU_BGNG_YMD, '%Y-%m-%d')  , '~', DATE_FORMAT(EDU_END_YMD, '%Y-%m-%d')) AS EDU_YMD ,
 			EDU_CN
 		FROM EMP_EDU 
-		WHERE EMP_ID= #{empId}
+			WHERE EMP_ID= #{empId}
 
 	</select>
+	
+	<select id="retrieveEmpCareer" parameterType="map" resultType="com.trsystem.LowerHashMap">
+				
+		SELECT 
+			CONCAT(DATE_FORMAT(WORK_BGNG_YMD, '%Y-%m-%d')  , '~', DATE_FORMAT(WORK_END_YMD, '%Y-%m-%d')) AS WORK_YMD ,
+			WRKPLC_NM,
+			MAIN_CAREER_CN,
+			LCTN_ADDR,
+			RM
+		FROM EMP_CAREER 
+			WHERE EMP_ID= #{empId}
+
+
+	</select>
+		<select id="retrievePrjctHist" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT 
+			EPH.PRJCT_NM AS PRJCT_NM,
+			CONCAT(DATE_FORMAT(EPH.PRJCT_BGNG_YMD, '%Y-%m-%d')  , '~', DATE_FORMAT(EPH.PRJCT_END_YMD, '%Y-%m-%d')) AS PRJCT_YMD ,
+			EPH.TKCG_JOB_CN AS TKCG_JOB_CN , 
+			EPH.ORDER_INST_NM AS ORDER_INST_NM ,
+			C.CD_NM AS JOB_NM,
+			C2.CD_NM AS TCHNLGY_NM,
+			EPH.RM AS RM
+		FROM EMP_PRJCT_HIST EPH 
+			INNER JOIN CD C ON C.CD_VALUE = EPH.JOB_CL_CD
+			INNER JOIN CD C2 ON C2.CD_VALUE = EPH.TCHNLGY_CL_CD 
+			WHERE EPH.EMP_ID = #{empId}
+	</select>	
 </mapper>
 

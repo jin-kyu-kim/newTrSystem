@@ -2,8 +2,8 @@ import Button from "devextreme-react/button";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { TiX } from "react-icons/ti";
-import CustomTable from "../../../components/unit/CustomTable"
-import CustomHorizontalTable from "../../../components/unit/CustomHorizontalTable";
+import CustomTable from "../../components/unit/CustomTable"
+import CustomHorizontalTable from "../../components/unit/CustomHorizontalTable";
 import { BackgroundColor } from "devextreme-react/cjs/chart";
 const thStyle = {
     backgroundColor: '#f5f5f5',

@@ -3,10 +3,10 @@ import React, { lazy } from "react";
 const TreRoutes = [
   // 홈
   {
-    path: "/",
+    path: "/infoInq/EmpDetailInfo",
     name: "main",
     element: React.lazy(() =>
-      import("../pages/infoInq/emp/EmpDetailInfo")
+      import("../pages/infoInq/EmpDetailInfo")
     ),
   },
   // 로그인
@@ -118,9 +118,9 @@ const TreRoutes = [
   },
   //개인정보
   {
-    path: "/infoInq/emp/EmpDetailInfo",
+    path: "/infoInq/EmpDetailInfo",
     name: "EmpDetailInfo",
-    element: React.lazy(() => import("../pages/infoInq/emp/EmpDetailInfo")),
+    element: React.lazy(() => import("../pages/infoInq/EmpDetailInfo")),
   }
   
 ];
