@@ -102,7 +102,7 @@ public class ProjectBaseDomain {
 	    		
 	    	} else {
 	    		// 승인된 차수가 1개 이상 존재한다는 뜻
-	    		if(Integer.parseInt(String.valueOf(params.get(1).get("bgtMngOdrTobe"))) == bgtMngOdr) {
+	    		if(Integer.parseInt(String.valueOf(params.get(1).get("bgtMngOdr"))) == bgtMngOdr) {
 	    			bgtMngOdr += 1;
 	    			param.put("bgtMngOdr", bgtMngOdr);
 	    			insertParams.add(param);
