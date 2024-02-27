@@ -6,8 +6,10 @@
     "pkColumns": ["prjctId", "bgtMngOdr", "expensPrmpcSn"],
     "nomalColumns": ["dtlDtls", "expensCd"],
     "pkColumnsDtl": ["prjctId", "bgtMngOdr", "expensPrmpcSn", "expensCd"],
+    "nomalColumnsDtlYm": "useYm",
+    "nomalColumnsDtlValue": "expectCt",
     "cdBetween": "VTW04528&VTW04535",
-    "CdComboboxColumnNm": "expensCdNm",
+    "CdComboboxColumnNm": ["expensCdNm"],
     "tableColumns": 
 	[
         {"key": "expensCdNm", "value": "비용코드명"},
@@ -24,6 +26,9 @@
         "height": "90%",
         "title": "통제성경비"
     },
+    "popupFormat": "경비",
+    "popupNumberBoxFormat": "#.### 원",
+    "popupStep": 1,
     "labelValue" : {
         "expensCdNm": {
             "name": "expensCdNm",
@@ -46,6 +51,6 @@
             "required": true,
             "placeholder": "총금액"
         }
-    }
-
+    },
+    "format" :"Total: {0}원"
 }
