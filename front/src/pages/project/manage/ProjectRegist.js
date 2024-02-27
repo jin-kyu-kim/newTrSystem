@@ -258,7 +258,7 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
                                 <CustomLabelValue props={labelValue.propsePrsntnYmd} onSelect={handleChgDate} value={propsePrsntnYmd} readOnly={readOnly}/>
                             </div>
                             <div className="dx-fieldset">
-                              <CustomLabelValue props={labelValue.stbleEndYmd} onSelect={handleChgDate} value={date.stbleEndYmd} readOnly={readOnly}/>
+                              <CustomLabelValue props={labelValue.stbleEndYmd} onSelect={handleChgDate} value={stbleEndYmd} readOnly={readOnly}/>
                             </div>  
                         </div>
                     )
