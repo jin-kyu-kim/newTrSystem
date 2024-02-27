@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import CustomTable from "components/unit/CustomTable";
-import EmpLicenseJson from "./EmpLicenseJson";
+import EmpInfoJson from "./EmpInfoJson.json";
 import TextBox from "devextreme-react/text-box";
 import Box, { Item } from "devextreme-react/box";
 import { Button } from "devextreme-react/button";
@@ -11,7 +11,7 @@ import ApiRequest from "utils/ApiRequest";
 const EmpLicense = ({ callBack, props }) => {
   const [param, setParam] = useState({});
 
-  const { queryId,keyColumn, tableColumns } = EmpLicenseJson;
+  const { queryId,keyColumn, tableColumns } = EmpInfoJson.EmpLicense;
   const [values, setValues] = useState([]);
 
   useEffect(() => {

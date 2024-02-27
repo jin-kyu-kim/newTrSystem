@@ -1,7 +1,7 @@
 import React, { useState , useEffect} from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import CustomTable from "components/unit/CustomTable";
-import EmpLanguageJson from "./EmpLanguageJson";
+import EmpInfoJson from "./EmpInfoJson.json";
 import TextBox from "devextreme-react/text-box";
 import Box, { Item } from "devextreme-react/box";
 import { Button } from "devextreme-react/button";
@@ -13,7 +13,7 @@ const EmpLanguage = ({ callBack, props }) => {
 
  const [param, setParam] = useState({});
 
-  const {queryId, keyColumn, tableColumns } = EmpLanguageJson;
+  const {queryId, keyColumn, tableColumns } = EmpInfoJson.EmpLanguage;
   const [values, setValues] = useState([]);
 
   useEffect(() => {

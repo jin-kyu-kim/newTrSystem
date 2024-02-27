@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import CustomTable from "components/unit/CustomTable";
-import EmpCareerJson from "./EmpCareerJson";
+import EmpInfoJson from "./EmpInfoJson.json";
 import TextBox from "devextreme-react/text-box";
 import Box, { Item } from "devextreme-react/box";
 import { Button } from "devextreme-react/button";
 import CustomCdComboBox from "../../../components/unit/CustomCdComboBox";
 
 const EmpCareer = ({ callBack, props }) => {
-  const { keyColumn, tableColumns } = EmpCareerJson;
+  const { keyColumn, tableColumns } = EmpInfoJson.EmpCareer;
   const [values, setValues] = useState([]);
 
   const [initParam, setInitParam] = useState({

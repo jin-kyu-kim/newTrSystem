@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "devextreme-react";
 import { useCookies } from "react-cookie";
 import ApiRequest from '../../../utils/ApiRequest';
-import EmpProjectHistJson from "./EmpProjectHistJson.json";
+import EmpInfoJson from "./EmpInfoJson.json";
 import CustomTable from "../../../components/unit/CustomTable";
 import CustomDatePicker from "../../../components/unit/CustomDatePicker";
 import DataGrid, { Column, Editing } from 'devextreme-react/data-grid';
@@ -24,8 +24,8 @@ const EmpProjectHist = (callBack) => {
 
     const [projectHist, setProjectHist] = useState([]);
     const [selectProjectHist, setSelectProjectHist] = useState([]);
-    const empProjectHistJson = EmpProjectHistJson;
-    const {keyColumn, tableColumns} = EmpProjectHistJson.prjctHist;
+
+    const {keyColumn, tableColumns} = EmpInfoJson.prjctHist;
 
     /*유저세션*/
     const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
