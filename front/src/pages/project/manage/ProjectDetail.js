@@ -20,9 +20,14 @@ const ProjectDetail = () => {
   const ctrtYmd = location.state.ctrtYmd;
   const bizEndYmd = location.state.bizEndYmd;
   const bgtMngOdrTobe = location.state.bgtMngOdrTobe;
+  const bizSttsCd = location.state.bizSttsCd;
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const ProjectDetail = ProjectDetailJson;
+
+  console.log("bgtMngOdrTobe", bgtMngOdrTobe)
+  console.log("bgtMngOdr", bgtMngOdr)
+
 
   // 탭 변경시 인덱스 설정
   const onSelectionChanged = useCallback(
@@ -37,22 +42,22 @@ const ProjectDetail = () => {
   const itemTitleRender = (a) => <span>{a.TabName}</span>;
 
   const projectChgHandle = async () => {
-    console.log("bgtMngOdr", bgtMngOdr)
-    console.log("bgtMngOdrTobe", bgtMngOdrTobe)
     const isconfirm = window.confirm("프로젝트 변경을 진행하시겠습니까?");
     if(isconfirm){
 
       let targetOdr;
       
       const result = await handleBgtPrmpc().then((value) => {
-        console.log(value);
 
+        if(value === -1) {
+          alert("문제가 발생하였습니다. 괸리자에게 문의하세요.");
+          return;
+        }
           targetOdr = value;
       });
-
       navigate("../project/ProjectChange",
         {
-        state: { prjctId: prjctId, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd, bgtMngOdr:bgtMngOdr, bgtMngOdrTobe: bgtMngOdrTobe, targetOdr: targetOdr},
+        state: { prjctId: prjctId, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd, bgtMngOdr:bgtMngOdr, bgtMngOdrTobe: bgtMngOdrTobe, targetOdr: targetOdr, bizSttsCd: bizSttsCd},
       })
     }
   }
@@ -66,12 +71,14 @@ const ProjectDetail = () => {
         prjctId: prjctId,
         totAltmntBgt: totBgt,
         bgtMngOdr: bgtMngOdr,
+        bgtMngOdrTobe: bgtMngOdrTobe,
         atrzDmndSttsCd: "VTW03301",
         regDt : date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0]
       }, 
     ]; 
     try {
         const response = await ApiRequest("/boot/prjct/insertProjectCostChg", param);
+        console.log("response", response);
         return response;
     } catch (error) {
         console.error('Error fetching data', error);
