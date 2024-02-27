@@ -72,7 +72,7 @@ const CustomCostTable = ({
   
   const updateSummaryColumn = (periods) => {
     const newSummaryColumns = periods.map(period => ({
-      key: period, value: period, type: "sum", format: "Total: {0}원"
+      key: period, value: period, type: "sum", format: json.format
     }));
     // 상태 업데이트 함수를 사용하여 summaryColumn 상태 업데이트
     setSummaryColumns(prevSummaryColumns => [...prevSummaryColumns, ...newSummaryColumns]);
@@ -136,7 +136,7 @@ const CustomCostTable = ({
                 const paramInfo = cellInfo.data;
                 const paramInfoNew = pick(paramInfo, json.pkColumns); 
                 const param = [
-                  { tbNm: "EXPENS_PRMPC" },
+                  { tbNm: json.table },
                   paramInfoNew
                 ];
                 
