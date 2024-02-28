@@ -523,13 +523,51 @@
 			  FROM EXPENS_PRMPC
 			 WHERE PRJCT_ID = #{prjctId}
 			 AND BGT_MNG_ODR = #{bgtMngOdr}
-		</if>			    
+		</if>		
+		<if test="outordLbrcoPrmpcSn != null">
+			SELECT COALESCE(MAX(OUTORD_LBRCO_PRMPC_SN),0) AS OUTORD_LBRCO_PRMPC_SN
+			  FROM OUTORD_LBRCO_PRMPC
+			 WHERE PRJCT_ID = #{prjctId}
+			 AND BGT_MNG_ODR = #{bgtMngOdr}
+		</if>		    
 	</select>
 	
 	<select id="updateChgPrmpcMdfcn" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		INSERT INTO EXPENS_MNBY_PRMPC_DTLS (PRJCT_ID, BGT_MNG_ODR,EXPENS_PRMPC_SN,USE_YM,EXPENS_CD,EXPECT_CT) 
-		VALUES(	#{prjctId}, #{bgtMngOdr}, #{expensPrmpcSn},#{useYm},#{expensCd},#{expectCt})
-			ON DUPLICATE KEY UPDATE 
-			EXPECT_CT = #{expectCt}
+		<if test="expensPrmpcSn != null">
+			INSERT INTO EXPENS_MNBY_PRMPC_DTLS (PRJCT_ID, BGT_MNG_ODR,EXPENS_PRMPC_SN,USE_YM,EXPENS_CD,EXPECT_CT) 
+			VALUES(	#{prjctId}, #{bgtMngOdr}, #{expensPrmpcSn},#{useYm},#{expensCd},#{expectCt})
+				ON DUPLICATE KEY UPDATE 
+				EXPECT_CT = #{expectCt}
+		</if>
+		<if test="outordLbrcoPrmpcSn != null">
+			INSERT INTO OUTORD_LBRCO_PRMPC_DTL (PRJCT_ID, BGT_MNG_ODR, OUTORD_LBRCO_PRMPC_SN, INPT_YM, EXPECT_MM)
+			VALUES(	#{prjctId}, #{bgtMngOdr}, #{outordLbrcoPrmpcSn}, #{inptYm}, #{expectMm})
+			   ON DUPLICATE KEY UPDATE 
+			   EXPECT_MM = #{expectMm}
+		</if>
 	</select>
+	
+	
+	<select id="retrieveOutordEntrpsPrmpc" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		  SELECT 
+		    M.OUTORD_ENTRPS_ID, 
+		    N.OUTORD_ENTRPS_NM, 
+		    M.TKCG_JOB, 
+		    M.DTL_DTLS,
+		    M.BGT_MNG_ODR,
+			M.PRJCT_ID, 
+		    C.GIVE_YM, 
+		    C.EXPECT_CT  
+		FROM OUTORD_ENTRPS_CT_PRMPC M
+		JOIN OUTORD_ENTRPS_CT_PRMPC_DTL C 
+			ON M.PRJCT_ID = C.PRJCT_ID 
+			AND M.BGT_MNG_ODR = C.BGT_MNG_ODR 
+			AND M.OUTORD_ENTRPS_CT_PRMPC_SN = C.OUTORD_ENTRPS_CT_PRMPC_SN
+		JOIN  OUTORD_ENTRPS N 
+			ON M.OUTORD_ENTRPS_ID = N.OUTORD_ENTRPS_ID
+		WHERE 1=1
+		 AND  M.PRJCT_ID =#{prjctId}
+		 AND M.BGT_MNG_ODR = #{bgtMngOdr}
+	</select>
+	
 </mapper>
