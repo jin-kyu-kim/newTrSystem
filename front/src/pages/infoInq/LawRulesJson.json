@@ -1,0 +1,16 @@
+{
+	"menuName": "LawRules",
+	"queryId": "empListMapper.LawRules ",
+    "keyColumn": "empno",
+    "tableColumns": 
+	[
+        { "key": "empno", "value": "프로젝트명", "width": 390, "alignment" : "center" },
+        { "key": "empFlnm", "value": "요청일", "width": 300 , "alignment" : "center"},
+        { "key": "jbpsNm", "value": "신청자", "width": 200, "alignment" : "center" },
+        { "key": "deptNm", "value": "상태", "width": 170, "alignment" : "center" }
+	],
+    "searchParams":
+	{
+    }
+    
+}
