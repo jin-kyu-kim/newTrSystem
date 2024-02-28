@@ -340,7 +340,6 @@ public class CommonServiceImpl implements CommonService {
         Map<String, Object> tableMap = new HashMap<>();
         List<Map<String, Object>> atchmnflParam = new ArrayList<>();
         List<Map<String, Object>> insertParam = new ArrayList<>();
-
         tableMap.put("tbNm", tbNm);
 
         //1. parameter 에 첨부파일이 있는지 없는지 확인
@@ -355,7 +354,6 @@ public class CommonServiceImpl implements CommonService {
         try{
             //2. 파일 내부 디렉토리에 업로드
             String uploadDir = "./src/main/resources/upload";
-
             // 2-1 파일일 디렉토리가 없으면 생성
             Path directory = Path.of(uploadDir);
             if (Files.notExists(directory)) {
@@ -365,13 +363,11 @@ public class CommonServiceImpl implements CommonService {
             for(MultipartFile file : attachments){
                 // UUID를 사용하여 서버에 저장될 파일명 생성
                 String storedFileName = UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
-
                 // 파일 저장
                 Path filePath = directory.resolve(storedFileName);
                 Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
                 Instant currentTimestamp = Instant.now();
-
                 //3. 저장경로 및 명칭 지정하여 첨부파일 테이블에 INSERT
                 atchmnflMap.put("atchmnflId", atchmnflId);
                 atchmnflMap.put("atchmnflSn", atchmnflSn++);

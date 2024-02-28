@@ -50,5 +50,6 @@ public class CommonController {
         ObjectMapper mapper = new ObjectMapper();
         Map<String, Object> mapData = mapper.readValue(data,Map.class);
         return commonService.insertFile(tbNm, mapData, attachments);
+
     }
 }

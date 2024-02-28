@@ -11,5 +11,5 @@ public interface CommonService {
     public int deleteData(List<Map<String, Object>> params);
     public List<Map<String, Object>> commonSelect(List<Map<String, Object>> params);
     public List<Map<String, Object>> queryIdSearch(Map<String, Object> param);
-    public int insertFile(String tbNm, Map<String, Object> params, List<MultipartFile> attachments);
+    public int insertFile(String tbNm, Map<String, Object> params,List<MultipartFile> attachments);
 }
