@@ -7,14 +7,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.sql.*;
+import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class CommonServiceImpl implements CommonService {
@@ -308,7 +307,11 @@ public class CommonServiceImpl implements CommonService {
                     preparedStatement.setInt(i + 1, (Integer) params.get(i));
                 } else if (params.get(i) instanceof Double) {
                     preparedStatement.setDouble(i + 1, (Double) params.get(i));
-                } else if (params.get(i) == null) {
+                } else if (params.get(i) instanceof Timestamp) {
+                    preparedStatement.setTimestamp(i + 1, (Timestamp) params.get(i));
+                }  else if (params.get(i) instanceof Instant) {
+                    preparedStatement.setTimestamp(i + 1, Timestamp.from((Instant) params.get(i)));
+                }  else if (params.get(i) == null) {
                     preparedStatement.setString(i + 1, null);
                 } else {
                     return null;
@@ -325,92 +328,82 @@ public class CommonServiceImpl implements CommonService {
         return sqlSession.selectList("com.trsystem.mybatis.mapper." + queryId, param);
     }
 
-    public int insertlongText(List<Map<String, Object>> params, MultipartFile file){
+    @Transactional
+    public int insertFile(String tbNm, Map<String, Object> params, List<MultipartFile> attachments) {
+        int atchResult = 0;//첨부파일 insert결과
         int result = 0;
 
-        if(params.size()>1){
-            String atchmnflId = this.insertFile(params, file);
-            if(atchmnflId.isEmpty()){
-                params.get(1).put(atchmnflId, atchmnflId);
-                params.get(1).remove("attachments");
-                insertData(params);
-            }
+        String atchmnflId = "";
+        int atchmnflSn = 1;
+
+        Map<String, Object> atchmnflMap = new HashMap<>();
+        Map<String, Object> tableMap = new HashMap<>();
+        List<Map<String, Object>> atchmnflParam = new ArrayList<>();
+        List<Map<String, Object>> insertParam = new ArrayList<>();
+
+        tableMap.put("tbNm", tbNm);
+
+        //1. parameter 에 첨부파일이 있는지 없는지 확인
+        if(params.containsKey("atchmnflId") && params.get("atchmnflId").equals("")){
+        // 1-1 없다면 첨부파일 ID 생성 순번은 1부터 시작
+            atchmnflId = UUID.randomUUID().toString();
         }else{
-            throw new IllegalArgumentException("parameter size error");
+        // 1-2 있다면 첨부파일 ID 사용 생성 순번은 1부터 시작
+            atchmnflId = params.get("atchmnflId").toString();
         }
-        return result;
-    }
 
-    private String insertFile(List<Map<String, Object>> params, MultipartFile file) {
-        String atchmnflId = null;
+        try{
+            //2. 파일 내부 디렉토리에 업로드
+            String uploadDir = "./src/main/resources/upload";
 
-        if(params.get(1).containsKey("attachments")) {
-            @SuppressWarnings("unchecked")
-            List<Map<String, MultipartFile>> attachmentsData = (List<Map<String, MultipartFile>>) params.get(1).get("attachments");
-
-            List<MultipartFile> files = attachmentsData.stream()
-                    .map(map -> map.get("file"))
-                    .collect(Collectors.toList());
-            try {
-                if(files.isEmpty()){
-                    return null;
-                }
-                String uploadDir = "./src/main/resources/upload";
-                File directory = new File(uploadDir);
-
-                if (!directory.exists() && !directory.mkdirs()) {
-                    throw new SecurityException("unable to create directory");
-                }
-
-                atchmnflId = "";
-                int atchmnflSn = 1;
-                if (params.get(1).containsKey("atchmnflId") && !params.get(1).get("atchmnflId").equals("")) {
-                    atchmnflId = (String) params.get(1).get("atchmnflId");
-                    atchmnflSn = 1;// 최대값 구하기
-                } else {
-                    atchmnflId = String.valueOf(UUID.randomUUID());
-                }
-                List<Map<String, Object>> insertParam = new ArrayList<>();
-
-                Map<String, Object> tbNm = new HashMap<>();
-                tbNm.put("tbNm", "");
-
-                insertParam.add(tbNm);
-
-                Map<String, Object> insertP = new HashMap<>();
-                insertP.put("atchmnflId", atchmnflId);
-
-                for (Object folder : files) {
-                    MultipartFile inFile = (MultipartFile) folder;
-
-                    Path filePath = Path.of(uploadDir + inFile.getOriginalFilename());
-                    Files.copy(inFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-                    atchmnflSn++;
-
-                    insertP.put("atchmnflSn", atchmnflSn);
-                    insertP.put("strgFileNm", inFile.getName());
-                    insertP.put("realFileNm", inFile.getOriginalFilename());
-                    insertP.put("fileStrgCours", filePath);
-                    insertP.put("regDt", System.currentTimeMillis());
-                    insertP.put("mdfcnDt", System.currentTimeMillis());
-                    if (params.get(1).get("regEmpId") != null) {
-                        insertP.put("regEmpId", (String) params.get(1).get("regEmpId"));
-                        insertP.put("mdfcnEmpId", (String) params.get(1).get("regEmpId"));
-                    }
-
-                    insertParam.add(insertP);
-
-                    this.insertData(insertParam);
-                }
-                return atchmnflId;
-            } catch (IOException e) {
-                // 파일 업로드 실패시 예외 처리
-                e.getStackTrace();
-                return atchmnflId;
+            // 2-1 파일일 디렉토리가 없으면 생성
+            Path directory = Path.of(uploadDir);
+            if (Files.notExists(directory)) {
+                Files.createDirectories(directory);
             }
-        }else{
-            return null;
+
+            for(MultipartFile file : attachments){
+                // UUID를 사용하여 서버에 저장될 파일명 생성
+                String storedFileName = UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
+
+                // 파일 저장
+                Path filePath = directory.resolve(storedFileName);
+                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+                Instant currentTimestamp = Instant.now();
+
+                //3. 저장경로 및 명칭 지정하여 첨부파일 테이블에 INSERT
+                atchmnflMap.put("atchmnflId", atchmnflId);
+                atchmnflMap.put("atchmnflSn", atchmnflSn++);
+                atchmnflMap.put("strgFileNm", storedFileName); // 저장된파일명칭
+                atchmnflMap.put("realFileNm", file.getOriginalFilename());
+                atchmnflMap.put("fileStrgCours", uploadDir); // 파일저장경로
+                atchmnflMap.put("regDt", currentTimestamp);
+                atchmnflMap.put("regEmpId", params.get("regEmpId").toString());
+                atchmnflMap.put("mdfcnDt", currentTimestamp);
+                atchmnflMap.put("mdfcnEmpId", params.get("regEmpId").toString());
+
+                atchmnflParam.clear();
+                tableMap.put("tbNm", "ATCHMNFL");
+                atchmnflParam.add(tableMap);
+                atchmnflParam.add(atchmnflMap);
+
+                atchResult += insertData(atchmnflParam);
+            }
+
+            if(attachments.isEmpty() || atchResult < 1){
+                //4. 입력된 첨부파일 ID를 parameter에 지정
+                params.put("atchmnflId", atchmnflId);
+                tableMap.put("tbNm", tbNm);
+                insertParam.add(tableMap);
+                insertParam.add(params);
+
+                //5. 사용하려는 테이블에 INSERT
+                result = insertData(insertParam);
+            }
+            return result;
+        }catch (IOException e){
+            return result;
         }
     }
 }

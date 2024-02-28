@@ -1,12 +1,14 @@
 package com.trsystem.common.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trsystem.common.service.CommonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -42,14 +44,11 @@ public class CommonController {
         return commonService.queryIdSearch(param);
     }
     @PostMapping(value = "/boot/common/insertlongText", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public int longTextInsert(
-            @RequestPart(value="data") String jsonData,
-            @RequestPart(value="attachments") List<MultipartFile> attachments
-    ) throws JsonProcessingException {
-        // JSON 문자열을 Map 또는 필요한 객체로 변환
-        Map<String, String> data = new ObjectMapper().readValue(jsonData, new TypeReference<Map<String, String>>() {});
+    public int longTextInsert(@RequestPart(required = false) List<MultipartFile> attachments,
+                              @RequestPart String tbNm, @RequestPart String data) throws JsonProcessingException {
 
-        // 여기에 로직 추가
-        return 0;
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> mapData = mapper.readValue(data, Map.class);
+        return commonService.insertFile(tbNm, mapData, attachments);
     }
 }
