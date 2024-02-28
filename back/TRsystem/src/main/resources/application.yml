@@ -1,4 +1,8 @@
 spring:
+  servlet:
+    multipart:
+      max-file-size: 5GB
+      max-request-size: 5GB
   datasource:
     url: jdbc:log4jdbc:mysql://121.65.128.115:33306/nwTr # jdbc:mysql://192.168.0.99:3306/nwTr #
     username: trs
@@ -14,7 +18,7 @@ mybatis:
     jdbc-type-for-null: varchar
     default-fetch-size: 500
 server:
-  port: 8090
+  port: 8080
   address: 0.0.0.0
 logging:
   level:
@@ -32,3 +36,6 @@ logging:
       sqltiming: WARN
       connection : OFF
       log4jdbc.log4j2: ERROR
+
+
+

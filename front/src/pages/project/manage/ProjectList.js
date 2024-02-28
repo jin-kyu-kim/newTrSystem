@@ -8,6 +8,7 @@ import CustomTable from "../../../components/unit/CustomTable";
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
 import { Button } from "devextreme-react";
+import uuid from "react-uuid";
 
 const ProjectList = () => {
   const [values, setValues] = useState([]);
@@ -62,6 +63,16 @@ const ProjectList = () => {
               {state: { prjctId: e.key, prjctNm: e.data.prjctNm, totBgt: e.data.totBgt, bgtMngOdr: e.data.bgtMngOdr, ctrtYmd: e.data.ctrtYmd, bizEndYmd: e.data.bizEndYmd  }})
   };
 
+  const test = async () =>{
+    const param = [
+      {"tbNm":"NOTICE"},
+      {"noticeId": uuid(),
+        "noticeCn":"<p><span style=\"font-size: 36pt; color: rgb(212, 23, 23); font-family: &quot;Times New Roman&quot;; background-color: rgb(59, 227, 129);\">2fqs</span></p>"
+      }
+    ];
+    await ApiRequest("/boot/common/commonInsert", param);
+  }
+
   return (
     <div className="container">
       <div
@@ -90,6 +101,7 @@ const ProjectList = () => {
         onRowDblClick={onRowDblClick}
         paging={true}
       />
+      <Button onClick={test} />
     </div>
   );
 };

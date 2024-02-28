@@ -38,6 +38,9 @@ const NoticeInput = () => {
         regEmpId: empId,
         regDt: date.toISOString().split("T")[0] + " " + date.toTimeString().split(" ")[0],
     });
+    useEffect(() => {
+        console.log(data);
+    }, [data]);
     const { noticeTtl, noticeCn, useEndYmd } = data || {};
     const [noticeTypeChk, setNoticeTypeChk] = useState({
         imprtnc: false,
@@ -87,6 +90,14 @@ const NoticeInput = () => {
             getOneData();
         }        
     }, []);
+
+    const handleChgState = (noticeCn) => {
+        setData({
+            ...data,
+            noticeCn: noticeCn
+        });
+        console.log(noticeCn);
+    };
 
     const insertNotice = async () => {
         const formData = new FormData();
@@ -176,56 +187,54 @@ const NoticeInput = () => {
                                     </td>
                                 ) : column.name === "cn" ? (
                                     <td>
-                                        {/* <HtmlEditBox
-                                            column={column}
-                                            data={data}
-                                            setData={setData}
-                                            value={noticeCn}
-                                        /> */}
-                                        <HtmlEditor
-                                            height="725px"
-                                            id={column.dataField}
-                                            value={noticeCn}
-                                            focusStateEnabled={true}
-                                            onValueChanged={(e) => {
-                                                setData({ ...data, [column.dataField]: e.value });
-                                            }}
-                                        >
-                                            <MediaResizing enabled={true} />
-                                            <ImageUpload fileUploadMode="base64" />
-                                            <Toolbar>
-                                                <Item name="undo" />
-                                                <Item name="redo" />
-                                                <Item name="separator" />
-                                                <Item name="size" acceptedValues={sizeValues} options={fontSizeOptions} />
-                                                <Item name="font" acceptedValues={fontValues} options={fontFamilyOptions} />
-                                                <Item name="separator" />
-                                                <Item name="bold" />
-                                                <Item name="italic" />
-                                                <Item name="strike" />
-                                                <Item name="underline" />
-                                                <Item name="separator" />
-                                                <Item name="alignLeft" />
-                                                <Item name="alignCenter" />
-                                                <Item name="alignRight" />
-                                                <Item name="alignJustify" />
-                                                <Item name="separator" />
-                                                <Item name="orderedList" />
-                                                <Item name="bulletList" />
-                                                <Item name="separator" />
-                                                <Item name="header" acceptedValues={headerValues} options={headerOptions} />
-                                                <Item name="separator" />
-                                                <Item name="color" />
-                                                <Item name="background" />
-                                                <Item name="separator" />
-                                                <Item name="link" />
-                                                <Item name="separator" />
-                                                <Item name="clear" />
-                                                <Item name="codeBlock" />
-                                                <Item name="blockquote" />
-                                                <Item name="separator" />
-                                            </Toolbar>
-                                        </HtmlEditor>
+                                         <HtmlEditBox
+                                             data = {data}
+                                             handler = {handleChgState}
+                                        />
+                                        {/*<HtmlEditor*/}
+                                        {/*    height="725px"*/}
+                                        {/*    id={column.dataField}*/}
+                                        {/*    value={noticeCn}*/}
+                                        {/*    focusStateEnabled={true}*/}
+                                        {/*    onValueChanged={(e) => {*/}
+                                        {/*        setData({ ...data, [column.dataField]: e.value });*/}
+                                        {/*    }}*/}
+                                        {/*>*/}
+                                        {/*    <MediaResizing enabled={true} />*/}
+                                        {/*    <ImageUpload fileUploadMode="base64" />*/}
+                                        {/*    <Toolbar>*/}
+                                        {/*        <Item name="undo" />*/}
+                                        {/*        <Item name="redo" />*/}
+                                        {/*        <Item name="separator" />*/}
+                                        {/*        <Item name="size" acceptedValues={sizeValues} options={fontSizeOptions} />*/}
+                                        {/*        <Item name="font" acceptedValues={fontValues} options={fontFamilyOptions} />*/}
+                                        {/*        <Item name="separator" />*/}
+                                        {/*        <Item name="bold" />*/}
+                                        {/*        <Item name="italic" />*/}
+                                        {/*        <Item name="strike" />*/}
+                                        {/*        <Item name="underline" />*/}
+                                        {/*        <Item name="separator" />*/}
+                                        {/*        <Item name="alignLeft" />*/}
+                                        {/*        <Item name="alignCenter" />*/}
+                                        {/*        <Item name="alignRight" />*/}
+                                        {/*        <Item name="alignJustify" />*/}
+                                        {/*        <Item name="separator" />*/}
+                                        {/*        <Item name="orderedList" />*/}
+                                        {/*        <Item name="bulletList" />*/}
+                                        {/*        <Item name="separator" />*/}
+                                        {/*        <Item name="header" acceptedValues={headerValues} options={headerOptions} />*/}
+                                        {/*        <Item name="separator" />*/}
+                                        {/*        <Item name="color" />*/}
+                                        {/*        <Item name="background" />*/}
+                                        {/*        <Item name="separator" />*/}
+                                        {/*        <Item name="link" />*/}
+                                        {/*        <Item name="separator" />*/}
+                                        {/*        <Item name="clear" />*/}
+                                        {/*        <Item name="codeBlock" />*/}
+                                        {/*        <Item name="blockquote" />*/}
+                                        {/*        <Item name="separator" />*/}
+                                        {/*    </Toolbar>*/}
+                                        {/*</HtmlEditor>*/}
                                     </td>
                                 ) : (
                                     <td>

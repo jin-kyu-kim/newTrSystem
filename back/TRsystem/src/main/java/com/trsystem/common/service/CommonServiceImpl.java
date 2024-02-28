@@ -5,12 +5,16 @@ import org.apache.commons.text.CaseUtils;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CommonServiceImpl implements CommonService {
@@ -286,7 +290,7 @@ public class CommonServiceImpl implements CommonService {
                     continue;
                 }
 
-                if (params.get(i) instanceof String && ((String) params.get(i)).contains("&")) {
+                if (params.get(i) instanceof String && ((String) params.get(i)).contains("&") && !((String) params.get(i)).contains("<p>")) {
                     String[] dateRange = ((String) params.get(i)).split("&");
                     if (dateRange.length == 2) {
                         preparedStatement.setObject(i + 1, dateRange[0]);
@@ -319,5 +323,94 @@ public class CommonServiceImpl implements CommonService {
     public List<Map<String, Object>> queryIdSearch(Map<String, Object> param) {
         String queryId = param.get("queryId").toString();
         return sqlSession.selectList("com.trsystem.mybatis.mapper." + queryId, param);
+    }
+
+    public int insertlongText(List<Map<String, Object>> params, MultipartFile file){
+        int result = 0;
+
+        if(params.size()>1){
+            String atchmnflId = this.insertFile(params, file);
+            if(atchmnflId.isEmpty()){
+                params.get(1).put(atchmnflId, atchmnflId);
+                params.get(1).remove("attachments");
+                insertData(params);
+            }
+        }else{
+            throw new IllegalArgumentException("parameter size error");
+        }
+        return result;
+    }
+
+    private String insertFile(List<Map<String, Object>> params, MultipartFile file) {
+        String atchmnflId = null;
+
+        if(params.get(1).containsKey("attachments")) {
+            @SuppressWarnings("unchecked")
+            List<Map<String, MultipartFile>> attachmentsData = (List<Map<String, MultipartFile>>) params.get(1).get("attachments");
+
+            List<MultipartFile> files = attachmentsData.stream()
+                    .map(map -> map.get("file"))
+                    .collect(Collectors.toList());
+            try {
+                if(files.isEmpty()){
+                    return null;
+                }
+                String uploadDir = "./src/main/resources/upload";
+                File directory = new File(uploadDir);
+
+                if (!directory.exists() && !directory.mkdirs()) {
+                    throw new SecurityException("unable to create directory");
+                }
+
+                atchmnflId = "";
+                int atchmnflSn = 1;
+                if (params.get(1).containsKey("atchmnflId") && !params.get(1).get("atchmnflId").equals("")) {
+                    atchmnflId = (String) params.get(1).get("atchmnflId");
+                    atchmnflSn = 1;// 최대값 구하기
+                } else {
+                    atchmnflId = String.valueOf(UUID.randomUUID());
+                }
+                List<Map<String, Object>> insertParam = new ArrayList<>();
+
+                Map<String, Object> tbNm = new HashMap<>();
+                tbNm.put("tbNm", "");
+
+                insertParam.add(tbNm);
+
+                Map<String, Object> insertP = new HashMap<>();
+                insertP.put("atchmnflId", atchmnflId);
+
+                for (Object folder : files) {
+                    MultipartFile inFile = (MultipartFile) folder;
+
+                    Path filePath = Path.of(uploadDir + inFile.getOriginalFilename());
+                    Files.copy(inFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+                    atchmnflSn++;
+
+                    insertP.put("atchmnflSn", atchmnflSn);
+                    insertP.put("strgFileNm", inFile.getName());
+                    insertP.put("realFileNm", inFile.getOriginalFilename());
+                    insertP.put("fileStrgCours", filePath);
+                    insertP.put("regDt", System.currentTimeMillis());
+                    insertP.put("mdfcnDt", System.currentTimeMillis());
+                    if (params.get(1).get("regEmpId") != null) {
+                        insertP.put("regEmpId", (String) params.get(1).get("regEmpId"));
+                        insertP.put("mdfcnEmpId", (String) params.get(1).get("regEmpId"));
+                    }
+
+                    insertParam.add(insertP);
+
+                    this.insertData(insertParam);
+                }
+                return atchmnflId;
+            } catch (IOException e) {
+                // 파일 업로드 실패시 예외 처리
+                e.getStackTrace();
+                return atchmnflId;
+            }
+        }else{
+            return null;
+        }
     }
 }

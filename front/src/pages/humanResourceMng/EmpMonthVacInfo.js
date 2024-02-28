@@ -6,7 +6,7 @@ import ApiRequest from "../../utils/ApiRequest";
 import EmpMonthVacInfoJson from "./EmpMonthVacInfo.json"
 import Box, {Item} from "devextreme-react/box"
 import {Button} from "devextreme-react/button";
-import "../../components/unit/Calendar.css"
+import Calender from  "../../components/unit/Calendar.css"
 
 const {queryId} = EmpMonthVacInfoJson;
 
@@ -90,6 +90,7 @@ const EmpMonthVacInfo = () => {
                 </Box>
             </div>
             <div className="mx-auto" style={{marginBottom: "20px", marginTop: "30px"}}>
+                <div className="Calender">
                 <Calendar 
                     values={values} 
                     headerToolbar={{
@@ -99,6 +100,7 @@ const EmpMonthVacInfo = () => {
                     }} 
                     initialView="dayGridMonth"
                     />
+                </div>
             </div>
         </div>
     );

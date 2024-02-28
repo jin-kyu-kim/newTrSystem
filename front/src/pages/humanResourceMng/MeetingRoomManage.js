@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import CustomScheduler from "../../components/unit/CustomScheduler"
-import "../../components/unit/CustomScheduler.css"
+import style from "../../components/unit/CustomScheduler.css"
 
 // const {queryId} = EmpMonthVacInfoJson;
 
@@ -18,6 +18,7 @@ const MeetingRoomManage = () => {
                 <span>* 소회의실 - 4인실  | 중회의실 - 10인실  | 대회의실 - 16인실</span>
             </div>
             <div className="mx-auto" style={{ marginBottom: "20px" }}>
+                <div className={style}>
                 <CustomScheduler 
                     values=""
                     headerToolbar={{
@@ -27,6 +28,7 @@ const MeetingRoomManage = () => {
                     }}
                     initialView="timeGridWeek"
                     />
+                </div>
             </div>
     </div>
     );

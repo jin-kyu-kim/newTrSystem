@@ -3,7 +3,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import  EmpListJson from "../../../infoInq/person/Emp/EmpListJson.json";
 import ApiRequest from "../../../../utils/ApiRequest";
 import { useNavigate } from "react-router-dom";
-import SearchEmpSet from "components/composite/SearchEmpSet";
 import CustomTable from "components/unit/CustomTable";
 
 function EmpList() {
@@ -68,11 +67,6 @@ function EmpList() {
         <span>* 직원을 조회합니다.</span>
       </div>
       <div style={{ marginBottom: "20px" }}>
-        <SearchEmpSet
-          callBack={searchHandle}
-          props={searchParams}
-          popup={popup}
-        />
       </div>
 
       <div>검색된 건 수 : {totalItems} 건</div>

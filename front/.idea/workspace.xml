@@ -4,21 +4,67 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="85cc6699-af3e-4faf-b9dc-3b9070f71a4a" name="변경" comment="" />
+    <list default="true" id="85cc6699-af3e-4faf-b9dc-3b9070f71a4a" name="변경" comment="오류 수정">
+      <change afterPath="$PROJECT_DIR$/src/utils/ApiFileRequest.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../back/TRsystem/src/main/java/com/trsystem/common/controller/CommonController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../back/TRsystem/src/main/java/com/trsystem/common/controller/CommonController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../back/TRsystem/src/main/java/com/trsystem/common/service/CommonService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../back/TRsystem/src/main/java/com/trsystem/common/service/CommonService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../back/TRsystem/src/main/java/com/trsystem/common/service/CommonServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/../back/TRsystem/src/main/java/com/trsystem/common/service/CommonServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../back/TRsystem/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../back/TRsystem/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../back/TRsystem/src/main/resources/mybatis/mapper/projectMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../back/TRsystem/src/main/resources/mybatis/mapper/projectMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/unit/Calendar.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/unit/Calendar.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/unit/CustomScheduler.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/unit/CustomScheduler.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/unit/HtmlEditBox.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/unit/HtmlEditBox.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/humanResourceMng/EmpMonthVacInfo.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/humanResourceMng/EmpMonthVacInfo.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/humanResourceMng/MeetingRoomManage.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/humanResourceMng/MeetingRoomManage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/infoInq/NoticeInput.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/infoInq/NoticeInput.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/infoInq/person/Emp/EmpList.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/infoInq/person/Emp/EmpList.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/project/manage/ProjectControlBudgetCostSearch.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/project/manage/ProjectControlBudgetCostSearch.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/project/manage/ProjectCostCalc.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/project/manage/ProjectCostCalc.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/project/manage/ProjectList.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/project/manage/ProjectList.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/setupProxy.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/setupProxy.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$/.." value="humanResourceMng" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;jin-kyu-kim&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="selectedUrlAndAccountId">
+      <UrlAndAccount>
+        <option name="accountId" value="6230678c-e616-4e7b-b3a6-bf859893a8d4" />
+        <option name="url" value="https://github.com/jin-kyu-kim/newTrSystem.git" />
+      </UrlAndAccount>
+    </option>
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 2
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
   <component name="ProjectId" id="2bLUZOKMk7rtJs2PDEKDcqcI7sN" />
   <component name="ProjectViewState">
     <option name="autoscrollFromSource" value="true" />
@@ -28,16 +74,18 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Node.js.App.js.executor": "Run",
+    "Node.js.NoticeInput.js.executor": "Debug",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/workspace/tobeTRSystem/front",
+    "last_opened_file_path": "C:/workspace/react-prac",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\IntelliJ IDEA 2023.2.2\\plugins\\javascript-impl\\jsLanguageServicesImpl\\external",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -52,6 +100,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
+        <option value="jdk-17.0.9-corretto-17.0.9-f644763e9732-ebaef533" />
         <option value="jdk-21.0.2-openjdk-21.0.2-f644763e9732-c0c073db" />
       </set>
     </attachedChunks>
@@ -65,10 +114,25 @@
       <option name="presentableId" value="Default" />
       <updated>1705993907557</updated>
       <workItem from="1705993908641" duration="414000" />
+      <workItem from="1708589511186" duration="7605000" />
+      <workItem from="1708644309285" duration="35675000" />
     </task>
+    <task id="LOCAL-00001" summary="오류 수정">
+      <option name="closed" value="true" />
+      <created>1708644990361</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1708644990361</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="오류 수정" />
+    <option name="LAST_COMMIT_MESSAGE" value="오류 수정" />
   </component>
 </project>

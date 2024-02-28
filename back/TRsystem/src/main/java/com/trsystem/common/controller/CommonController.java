@@ -1,8 +1,13 @@
 package com.trsystem.common.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trsystem.common.service.CommonService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -35,5 +40,16 @@ public class CommonController {
     @PostMapping(value = "/boot/common/queryIdSearch")
     public List<Map<String, Object>> queryIdSearch(@RequestBody Map<String, Object> param){
         return commonService.queryIdSearch(param);
+    }
+    @PostMapping(value = "/boot/common/insertlongText", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public int longTextInsert(
+            @RequestPart(value="data") String jsonData,
+            @RequestPart(value="attachments") List<MultipartFile> attachments
+    ) throws JsonProcessingException {
+        // JSON 문자열을 Map 또는 필요한 객체로 변환
+        Map<String, String> data = new ObjectMapper().readValue(jsonData, new TypeReference<Map<String, String>>() {});
+
+        // 여기에 로직 추가
+        return 0;
     }
 }
