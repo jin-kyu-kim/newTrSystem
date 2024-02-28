@@ -26,9 +26,10 @@ const ProjectChange = () => {
   const bgtMngOdrTobe = location.state ? location.state.bgtMngOdrTobe : null;
   const targetOdr = location.state ? location.state.targetOdr : null;
   const bizSttsCd = location.state ? location.state.bizSttsCd : null;
+  const atrzLnSn = location.state ? location.state.atrzLnSn : null;
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const [atrzAplyPrvonshCn, setAtrzAplyPrvonshCn] = useState("");
+  const [atrzAplyPrvonshCn, setAtrzAplyPrvonshCn] = useState(null);
 
   const ProjectChangeTab = ProjectChangeJson.tab;
   const popup = ProjectChangeJson.popup;
@@ -43,7 +44,6 @@ const ProjectChange = () => {
   const [requestBtnVisible, setAprvBtnVisible] = useState(true);
   const [cancelBtnVisible, setCancelBtnVisible] = useState(false);
 
-  console.log(bgtMngOdrTobe)
   useEffect(() => {
 
     // 해당 프로젝트에 승인요청중인 내역이 있는지 확인한다.
@@ -109,6 +109,9 @@ const ProjectChange = () => {
   
 
   const handleAtrzLn = async () => {
+
+    // 승인요청 눌렀을 때 
+    // * 변수로 해당 차수(targetOdr) 넣어주기.
     const date = new Date();
     const param = [
       { tbNm: "PRJCT_ATRZ_LN"},
@@ -119,11 +122,11 @@ const ProjectChange = () => {
         deptId: deptId,
         regDt : date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0],
         atrzAplyPrvonshCn: atrzAplyPrvonshCn,
+        targetOdr: targetOdr,
       },
     ];
     try {
       const response = await ApiRequest("/boot/prjct/insertRegistProjectAprv", param);
-      console.log(response)
 
       if(response > 0) {
 
@@ -131,18 +134,18 @@ const ProjectChange = () => {
          * VTW03301	임시저장
           VTW03302	결재요청
           VTW03303	결재완료
-         */
+        */
 
         // 승인요청 되면 PRJCT 수정해주기
         // BIZ_STTS_CD 컬럼이 생성중(VTW00401) 이면 그대로 둔다
         // BIZ_STTS_CD 컬럼이 생성중(VTW00401)이 아니면 -> VTW00403(변경중)
         if(bizSttsCd !== "VTW00401") {
-          handlePrjctBizStts();
+          handlePrjctBizStts("VTW00403");
         }
 
         // 승인요청 되면 PRJCT_BGT_PRMPC 수정해주기
         // ATRZ_DMND_STTS_CD 컬럼 -> VTW03302(결재요청)
-        handleBgtPrmpc();
+        handleBgtPrmpc("VTW03302");
 
         alert("승인요청이 완료되었습니다.");
         setPopupVisible(false);
@@ -155,13 +158,17 @@ const ProjectChange = () => {
     }
   }
 
-  const handleBgtPrmpc = async () => {
+  /**
+   * PRJCT_BGT_PRMPC(프로젝트예산변경요청) 테이블의 ATRZ_DMND_STTS_CD(승인요청상태코드)를 변경한다.
+   * @param {"VTW03301", "VTW03302", "VTW03303"} cdValue : ATRZ_DMND_STTS_CD(승인요청상태코드)
+   */
+  const handleBgtPrmpc = async (cdValue) => {
     const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
 
     const param = [
       { tbNm : "PRJCT_BGT_PRMPC" },
       {
-        atrzDmndSttsCd: "VTW03302",
+        atrzDmndSttsCd: cdValue,
         mdfcnEmpId: empId,
         mdfcnDt: mdfcnDt,
       },
@@ -170,27 +177,39 @@ const ProjectChange = () => {
         bgtMngOdr: targetOdr,
       }
     ]
-
-    await ApiRequest("/boot/common/commonUpdate", param);
+    try {
+      await ApiRequest("/boot/common/commonUpdate", param);
+    } catch (error) {
+      console.error('Error fetching data', error);
+    }
   }
 
-  const handlePrjctBizStts = async () => {
+  /**
+   * PRJCT(프로젝트) 테이블의 BIZ_STTS_CD(사업상태코드)를 변경한다.
+   * @param {"VTW00401", "VTW00402", "VTW00403", "VTW00404"} cdValue : BIZ_STTS_CD(사업상태코드)
+   */
+  const handlePrjctBizStts = async (cdValue) => {
     const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
 
     const param = [
       { tbNm : "PRJCT" },
       {
-        bizSttsCd: "VTW00403",
+        bizSttsCd: cdValue,
         mdfcnEmpId: empId,
         mdfcnDt: mdfcnDt,
       },
       {
         prjctId: prjctId,
       }
-    ]
+    ];
 
-    await ApiRequest("/boot/common/commonUpdate", param);
+    try {
+      await ApiRequest("/boot/common/commonUpdate", param);
+    } catch (error) {
+      console.error('Error fetching data', error);
+    }
   }
+
   // console.log("prjctId!! 변경! ", prjctId);
   const toDetail = () => {
     console.log("prjctId!! 변경! ", prjctId);
@@ -204,17 +223,58 @@ const ProjectChange = () => {
    * 승인요청취소 버튼 클릭
    */
   const onAprvCancel = async () => {
-    // 승인 요청 취소를 눌렀을 때 어떤 것이 동작해야하는가?
-    /**
-     * 1. 승인결재선 테이블을 취소로 다 바꾼다. or 삭제한다. 
-     * 2. 변경중에서 이전꺼로 ( 수행 or 생성중 )
-     *   변경중 -> 수행으로 수정
-     *
-     * 언제는 승인 취소가 안될 때가 있지않은가?
-     * 
-     */
+    const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
 
-    console.log("승인취소 버튼 클릭");
+    /**
+     * 승인결재선 테이블을 결재상세코드: 취소(VTW00805)로 수정한다.
+     */
+    const isconfirm = window.confirm("승인요청을 취소하시겠습니까?");
+    if(isconfirm){
+      const param = [
+        { tbNm: "PRJCT_ATRZ_LN_DTL" },
+        {
+          atrzSttsCd: "VTW00805",
+          mdfcnDt: mdfcnDt,
+          mdfcnEmpId: empId,
+        },
+        {
+          prjctId: prjctId,
+          atrzLnSn: atrzLnSn,
+        }
+      ];
+      
+      try {
+        const response = await ApiRequest("/boot/common/commonUpdate", param);
+        console.log(response);
+        if(response > 0) {
+          alert("승인요청이 취소되었습니다.");
+          
+          // 수행으로 수정
+          if(bizSttsCd !== "VTW00401") {
+            handlePrjctBizStts("VTW00403");
+          }
+          
+          // 임시저장으로 수정
+          handleBgtPrmpc("VTW03301");
+          
+        } else {
+          alert("승인요청 취소가 실패되었습니다.");
+        }
+        
+      } catch (error) {
+        console.error('Error fetching data', error);
+      }
+      
+    }
+  }
+
+  /**
+   * 승인요청 취소 시
+   * 결재상태코드 ATRZ_STTS_CD: 결재 취소(VTW00805)로 수정한다.
+   */
+  const handleAtrzLnDtl = async () => {
+    console.log("승인취소");
+    console.log(atrzLnSn)
   }
 
   return (

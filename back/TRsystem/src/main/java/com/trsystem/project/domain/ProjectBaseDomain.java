@@ -117,29 +117,6 @@ public class ProjectBaseDomain {
     		return fail;
     	}
     	
-    	
-//    	
-//    	// Detail 화면에서 받은 params 에 들어있는 차수와 채번한 차수를 비교한다.
-//    	if(params.get(1).get("bgtMngOdr") != null && Integer.parseInt(String.valueOf(params.get(1).get("bgtMngOdr"))) == bgtMngOdr) {
-//    		targetOdr = bgtMngOdr + 1;
-//    	} else {
-//    		targetOdr = bgtMngOdr;
-//    	}
-//    	
-//    	params.get(1).put("bgtMngOdr", targetOdr);
-//    	
-//    	try {
-//    		result = commonService.insertData(params);
-//    		
-//    	} catch (Exception e) {
-//    		return result;
-//    	}
-//    	
-//    	if(result > 0) {
-//    		return targetOdr;
-//    	} 
-//    	return result;
-    	
     }
     
     public static int insertRegistProjectAprv(List<Map<String, Object>> params, List<Map<String, Object>> empIdParams) {
@@ -163,6 +140,7 @@ public class ProjectBaseDomain {
     	aprvParam.put("regEmpId", params.get(2).get("empId"));
     	aprvParam.put("atrzAplyPrvonshCn", params.get(2).get("atrzAplyPrvonshCn"));
     	aprvParam.put("nowAtrzStepCd", atrzStepCd[empIdParams.size()-1]); // 최초 생성 시 현재 결재단계는 가장 낮은 단계 등록
+    	aprvParam.put("bgtMngOdr", params.get(2).get("targetOdr")); // 승인받는 변경차수 
 
     	if((int)aprvParam.get("atrzLnSn") == 1) {
     		aprvParam.put("prmpcInptSeCd", "VTW01502"); // 최초 시 원가 등록(VTW01502)
@@ -235,6 +213,9 @@ public class ProjectBaseDomain {
     	
     }
     
+    /*
+     * 결재자 EmpId 계층 쿼리 조회
+     */
     public static List<Map<String, Object>> retrieveAprvrEmpId(Map<String, Object> params) {
     	
     	String deptId;
