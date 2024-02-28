@@ -6,7 +6,7 @@ import { Button } from "devextreme-react/button";
 
 import CustomCdComboBox from "../unit/CustomCdComboBox";
 
-const SearchEmpSet = ({ callBack, props }) => {
+const SearchInfoSet = ({ callBack, props }) => {
   const navigate = useNavigate();
 
   const { searchParams, firstCd, textBoxItem, selectBoxItem } = props;
@@ -35,7 +35,9 @@ const SearchEmpSet = ({ callBack, props }) => {
   };
 
   const onClickInsertBtn = () => {
-    navigate("/infoInq/NoticeInput")
+    navigate("/infoInq/NoticeInput", {
+      state:{editMode:"create"}
+    })
   };
 
   return (
@@ -85,4 +87,4 @@ const SearchEmpSet = ({ callBack, props }) => {
   );
 };
 
-export default SearchEmpSet;
+export default SearchInfoSet;
