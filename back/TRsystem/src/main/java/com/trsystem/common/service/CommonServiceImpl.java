@@ -206,7 +206,7 @@ public class CommonServiceImpl implements CommonService {
 
             // SELECT 문을 생성하기 위해 컬럼명을 얻어옴
             try (Statement statement = connection.createStatement()) {
-                ResultSet resultParamSet = statement.executeQuery("SELECT * FROM " + tbNm + " WHERE 1=0"); // 빈 결과를 가져옴
+                ResultSet resultParamSet = statement.executeQuery("SELECT * FROM "  + tbNm + " WHERE 1=0"); // 빈 결과를 가져옴
                 ResultSetMetaData metaData = resultParamSet.getMetaData();
                 int columnCount = metaData.getColumnCount();
 

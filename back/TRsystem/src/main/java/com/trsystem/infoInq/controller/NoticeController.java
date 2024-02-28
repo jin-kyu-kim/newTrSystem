@@ -27,12 +27,14 @@ public class NoticeController {
         ObjectMapper mapper = new ObjectMapper();
         Map<String, Object> mapData = mapper.readValue(data, Map.class);
 
+        commonService.insertFile(tbNm, mapData, attachments);
+
         Map<String, Object> tbNmMap = new HashMap<>();
         tbNmMap.put("tbNm",tbNm);
         params.add(tbNmMap);
         params.add(mapData);
 
-        return commonService.insertData(params);
+        return 0;
     }
 
 }
