@@ -8,16 +8,28 @@ import CustomLabelValue from "../../../components/unit/CustomLabelValue"
 import Button from "devextreme-react/button";
 
 import { useCookies } from "react-cookie";
+import { set } from "date-fns";
 
 const ProjectRegist = ({prjctId, onHide, revise}) => {
-    const {labelValue} = ProjectRegistJson;
+    const labelValue = ProjectRegistJson.labelValue;
+    const updateColumns = ProjectRegistJson.updateColumns;
 
     const [readOnly, setReadOnly] = useState(revise);
 
     const [data, setData] = useState([]);
     const [stleCd, setStleCd] = useState();
     const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
-    
+    const [updateParam, setUpdateParam] = useState([]);
+
+    const [beffatPbancDdlnYmd, setBeffatPbancDdlnYmd] = useState();
+    const [expectOrderYmd, setExpectOrderYmd] = useState();
+    const [propseDdlnYmd, setPropseDdlnYmd] = useState();  
+    const [propsePrsntnYmd, setPropsePrsntnYmd] = useState();  
+    const [ctrtYmd, setCtrtYmd] = useState(); 
+    const [bizEndYmd, setBizEndYmd] = useState();
+    const [stbleEndYmd, setStbleEndYmd] = useState();
+    const [igiYmd, setIgiYmd] = useState();
+
     const empId = cookies.userInfo.empId;
     const deptId = cookies.userInfo.deptId;
 
@@ -25,7 +37,6 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
         if(prjctId != null) {
             BaseInfoData();
         } else {
-
             const date = new Date();
 
             setData({
@@ -36,26 +47,31 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
                 bizSttsCd: "VTW00401",
                 regDt : date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0]
             })
-
         }
+
+        setUpdateParam(updateColumns);
     }, []);
 
     useEffect(() => {
+        const date = new Date();
 
-        if(data.prjctId != null) {
             setData({
                 ...data,
                 prjctStleCd : stleCd,
-                beffatPbancDdlnYmd : null,
-                expectOrderYmd: null,
-                propseDdlnYmd: null,
-                propsePrsntnYmd: null,
-                ctrtYmd: null,
-                bizEndYmd: null,
-                stbleEndYmd: null,
-                igiYmd: null,
+                prjctId : uuid(),
+                prjctMngrEmpId : empId,
+                deptId : deptId,
+                bizSttsCd: "VTW00401",
+                regDt : date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0]
             })
-        }
+            setBeffatPbancDdlnYmd(null);
+            setExpectOrderYmd(null);
+            setPropseDdlnYmd(null);
+            setPropsePrsntnYmd(null);
+            setCtrtYmd(null);
+            setBizEndYmd(null);
+            setStbleEndYmd(null);
+            setIgiYmd(null);
 
     }, [stleCd]);
 
@@ -68,7 +84,16 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
         ]; 
         try {
             const response = await ApiRequest("/boot/common/commonSelect", param);
-            setData(response[0]);     
+            setData(response[0]);
+            setBeffatPbancDdlnYmd(response[0].beffatPbancDdlnYmd);
+            setExpectOrderYmd(response[0].expectOrderYmd);
+            setPropseDdlnYmd(response[0].propseDdlnYmd);
+            setPropsePrsntnYmd(response[0].propsePrsntnYmd);
+            setCtrtYmd(response[0].ctrtYmd);
+            setBizEndYmd(response[0].bizEndYmd);
+            setStbleEndYmd(response[0].stbleEndYmd);
+            setIgiYmd(response[0].igiYmd);
+
         } catch (error) {
             console.error('Error fetching data', error);
         }
@@ -82,19 +107,29 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
                 ...data,
                 [name] : value
             });
-            
         }
     };
 
     const handleChgDate = ({name, value}) => {
 
         if(!readOnly) {
-
-            setData({
-                ...data,
-                prjctStleCd : stleCd,
-                [name] : value
-            });
+            if(name === "beffatPbancDdlnYmd") {
+                setBeffatPbancDdlnYmd(value);
+            } else if(name === "expectOrderYmd") {
+                setExpectOrderYmd(value);
+            } else if(name === "propseDdlnYmd") {
+                setPropseDdlnYmd(value);
+            } else if(name === "propsePrsntnYmd") {
+                setPropsePrsntnYmd(value);
+            } else if(name === "ctrtYmd") {
+                setCtrtYmd(value);
+            } else if(name === "bizEndYmd") {
+                setBizEndYmd(value);
+            } else if(name === "stbleEndYmd") {
+                setStbleEndYmd(value);
+            } else if(name === "igiYmd") {
+                setIgiYmd(value);
+            }
         }
     }
 
@@ -105,18 +140,73 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
         }
     };
 
-    const readOnlyChg = () => {
-
-        if(readOnly) {
+    const onClickUdt = async () => {
+        const isconfirm = window.confirm("프로젝트 기본정보를 수정 하시겠습니까?");
+        if(isconfirm){
             setReadOnly(false);
+        }
+    }
 
-        } else {
+    // 수정 중 취소 버튼 클릭
+    const onClickUdtCncl = async () => {
+        const isconfirm = window.confirm("프로젝트 기본정보를 수정을 취소 하시겠습니까?");
+        if(isconfirm){
+            BaseInfoData();
             setReadOnly(true);
         }
     }
 
-    const onPopup = () => {
-        
+    const onClickChgSave = async () => {
+        const isconfirm = window.confirm("수정한 내용을 저장 하시겠습니까?");
+        if(isconfirm){
+            updateProject();
+        }
+    }
+
+    const updateProject = async () => {
+        const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
+
+        const colums = {
+            ...updateParam,
+            mdfcnEmpId: empId,
+            mdfcnDt: mdfcnDt,
+        };
+
+        // updataParam 안의 key와 data의 key랑 같은 거에 test에 data의 value를 넣어준다.
+        for (const key in data) {
+            if(data.hasOwnProperty(key) && updateParam.hasOwnProperty(key)) {
+                colums[key] = data[key];
+            }
+        }
+
+        const param = [
+            { tbNm: "PRJCT" },
+            { 
+                ...colums,
+                beffatPbancDdlnYmd: beffatPbancDdlnYmd,
+                expectOrderYmd: expectOrderYmd,
+                propseDdlnYmd: propseDdlnYmd,
+                propsePrsntnYmd: propsePrsntnYmd,
+                ctrtYmd: ctrtYmd,
+                bizEndYmd: bizEndYmd,
+                stbleEndYmd: stbleEndYmd,
+                igiYmd: igiYmd
+            },
+            {
+                prjctId: prjctId,
+            }
+        ];
+        try {
+            const response = await ApiRequest("/boot/common/commonUpdate", param);
+
+            if(response > 0) {
+                alert('성공적으로 수정되었습니다.');
+                BaseInfoData();
+                setReadOnly(true);
+            }
+        } catch (error) {
+            console.error('Error fetching data', error);
+        }
     }
 
     const onClick = () => {
@@ -131,11 +221,20 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
     const insertProject = async () => {
         const param = [
             { tbNm: "PRJCT" },
-            data
+            {
+                ...data,
+                beffatPbancDdlnYmd: beffatPbancDdlnYmd,
+                expectOrderYmd: expectOrderYmd,
+                propseDdlnYmd: propseDdlnYmd,
+                propsePrsntnYmd: propsePrsntnYmd,
+                ctrtYmd: ctrtYmd,
+                bizEndYmd: bizEndYmd,
+                stbleEndYmd: stbleEndYmd,
+                igiYmd: igiYmd
+            }
         ];
         try {
             const response = await ApiRequest("/boot/common/commonInsert", param);
-            console.log(response);
 
             if(response > 0) {
                 onHide();
@@ -153,13 +252,13 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
                     result.push(
                         <div className="project-regist-content">
                             <div className="dx-fieldset">
-                                <CustomLabelValue props={labelValue.beffatPbancDdlnYmd} onSelect={handleChgDate} value={data.beffatPbancDdlnYmd} readOnly={readOnly}/>
-                                <CustomLabelValue props={labelValue.expectOrderYmd} onSelect={handleChgDate} value={data.expectOrderYmd} readOnly={readOnly}/>
-                                <CustomLabelValue props={labelValue.propseDdlnYmd} onSelect={handleChgDate} value={data.propseDdlnYmd} readOnly={readOnly}/>
-                                <CustomLabelValue props={labelValue.propsePrsntnYmd} onSelect={handleChgDate} value={data.propsePrsntnYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.beffatPbancDdlnYmd} onSelect={handleChgDate} value={beffatPbancDdlnYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.expectOrderYmd} onSelect={handleChgDate} value={expectOrderYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.propseDdlnYmd} onSelect={handleChgDate} value={propseDdlnYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.propsePrsntnYmd} onSelect={handleChgDate} value={propsePrsntnYmd} readOnly={readOnly}/>
                             </div>
                             <div className="dx-fieldset">
-                              <CustomLabelValue props={labelValue.stbleEndYmd} onSelect={handleChgDate} value={data.stbleEndYmd} readOnly={readOnly}/>
+                              <CustomLabelValue props={labelValue.stbleEndYmd} onSelect={handleChgDate} value={stbleEndYmd} readOnly={readOnly}/>
                             </div>  
                         </div>
                     )
@@ -167,16 +266,16 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
                     result.push(
                         <div className="project-regist-content">
                             <div className="dx-fieldset">
-                                <CustomLabelValue props={labelValue.beffatPbancDdlnYmd} onSelect={handleChgDate} value={data.beffatPbancDdlnYmd} readOnly={readOnly}/>
-                                <CustomLabelValue props={labelValue.expectOrderYmd} onSelect={handleChgDate} value={data.expectOrderYmd} readOnly={readOnly}/>
-                                <CustomLabelValue props={labelValue.propseDdlnYmd} onSelect={handleChgDate} value={data.propseDdlnYmd} readOnly={readOnly}/>
-                                <CustomLabelValue props={labelValue.propsePrsntnYmd} onSelect={handleChgDate} value={data.propsePrsntnYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.beffatPbancDdlnYmd} onSelect={handleChgDate} value={beffatPbancDdlnYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.expectOrderYmd} onSelect={handleChgDate} value={expectOrderYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.propseDdlnYmd} onSelect={handleChgDate} value={propseDdlnYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.propsePrsntnYmd} onSelect={handleChgDate} value={propsePrsntnYmd} readOnly={readOnly}/>
                             </div>
                             <div className="dx-fieldset">
-                                <CustomLabelValue props={labelValue.ctrtYmd} onSelect={handleChgDate} value={data.ctrtYmd} readOnly={readOnly}/>
-                                <CustomLabelValue props={labelValue.bizEndYmd} onSelect={handleChgDate} value={data.bizEndYmd} readOnly={readOnly}/>
-                                <CustomLabelValue props={labelValue.stbleEndYmd} onSelect={handleChgDate} value={data.stbleEndYmd} readOnly={readOnly}/>
-                                <CustomLabelValue props={labelValue.igiYmd} onSelect={handleChgDate} value={data.igiYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.ctrtYmd} onSelect={handleChgDate} value={ctrtYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.bizEndYmd} onSelect={handleChgDate} value={bizEndYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.stbleEndYmd} onSelect={handleChgDate} value={stbleEndYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.igiYmd} onSelect={handleChgDate} value={igiYmd} readOnly={readOnly}/>
                             </div>  
                         </div>
                     )
@@ -184,9 +283,9 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
                     result.push(
                         <div className="project-regist-content">
                             <div className="dx-fieldset">
-                                <CustomLabelValue props={labelValue.ctrtYmd} onSelect={handleChgDate} value={data.ctrtYmd} readOnly={readOnly}/>
-                                <CustomLabelValue props={labelValue.stbleEndYmd} onSelect={handleChgDate} value={data.stbleEndYmd} readOnly={readOnly}/>
-                                <CustomLabelValue props={labelValue.bizEndYmd} onSelect={handleChgDate} value={data.bizEndYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.ctrtYmd} onSelect={handleChgDate} value={ctrtYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.stbleEndYmd} onSelect={handleChgDate} value={stbleEndYmd} readOnly={readOnly}/>
+                                <CustomLabelValue props={labelValue.bizEndYmd} onSelect={handleChgDate} value={bizEndYmd} readOnly={readOnly}/>
                             </div>
                         </div>
                     )
@@ -266,16 +365,16 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
                     </div>
                 </div>
             </div>
-            {readOnly ? <><Button text="수정" onClick={readOnlyChg}/> <Button text="팝업" onClick={onPopup}/></>:
+            {readOnly ? <Button text="수정" onClick={onClickUdt}/>:
                 onHide ? 
                 <div>
                     <Button text="저장" onClick={onClick}/>
-                    <Button onClick={onHide} text="취소"/>
+                    <Button text="취소" onClick={onHide} />
                 </div>
                 :
                 <div>
-                    <Button text="저장"/>
-                    <Button onClick={readOnlyChg} text="취소"/>
+                    <Button text="저장" onClick={onClickChgSave}/>
+                    <Button text="취소" onClick={onClickUdtCncl} />
                 </div>
             }
         </div>
