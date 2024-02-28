@@ -7,7 +7,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
   const gridRows = () => {
     const result = [];
     for(let i = 0; i < columns.length; i++) {
-        const { key, value, width, alignment, button } = columns[i];
+        const { key, value, width, alignment, button, visible } = columns[i];
         if(button) {
           result.push(
             <Column 
@@ -18,17 +18,22 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
               alignment={alignment || 'center'}
               cellRender={() => buttonRender(button)}>
             </Column>
+
+
         );
         } else {
-          result.push(
-              <Column 
-                key={key} 
-                dataField={key} 
-                caption={value} 
-                width={width} 
-                alignment={alignment || 'center'}>
-              </Column>
-          );
+            if(!visible){
+              result.push(
+                <Column 
+                  key={key} 
+                  dataField={key} 
+                  caption={value} 
+                  width={width} 
+                  alignment={alignment || 'center'}>
+                </Column>
+            );
+            }
+          
         }
     }
     return result;

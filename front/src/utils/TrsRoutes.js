@@ -3,10 +3,10 @@ import React, { lazy } from "react";
 const TreRoutes = [
   // 홈
   {
-    path: "/",
+    path: "/infoInq/EmpDetailInfo",
     name: "main",
     element: React.lazy(() =>
-      import("../pages/infoInq/emp/EmpDetailInfo")
+      import("../pages/infoInq/EmpDetailInfo")
     ),
   },
   // 로그인
@@ -82,9 +82,9 @@ const TreRoutes = [
   },
   //직원조회
   {
-    path: "/infoInq/person/Emp/EmpList",
+    path: "/infoInq/EmpList",
     name: "EmpList",
-    element: React.lazy(() => import("../pages/infoInq/person/Emp/EmpList")),
+    element: React.lazy(() => import("../pages/infoInq/EmpList")),
   },
   // 월별휴가정보
   {
@@ -106,9 +106,21 @@ const TreRoutes = [
   },
   //부서 관리
   {
-    path: "/humanResourceMng/dept/DeptManage",
+    path: "/humanResourceMng/DeptManage",
     name: "DeptManage",
     element: React.lazy(() => import("../pages/humanResourceMng/DeptManage")),
+  },
+ // 법제도
+  {
+    path: "/infoInq/LawRules",
+    name: "LawRules",
+    element: React.lazy(() => import("../pages/infoInq/LawRules")),
+  },
+  //개인정보
+  {
+    path: "/infoInq/EmpDetailInfo",
+    name: "EmpDetailInfo",
+    element: React.lazy(() => import("../pages/infoInq/EmpDetailInfo")),
   }
   
 ];
