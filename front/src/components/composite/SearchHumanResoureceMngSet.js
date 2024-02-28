@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from "react";
-
 import TextBox from "devextreme-react/text-box";
 import Box, {Item} from "devextreme-react/box"
 import { Button } from "devextreme-react/button";
-
 import CustomDateRangeBox from "../unit/CustomDateRangeBox";
-
-import ProjectRegist from "../../pages/project/manage/ProjectRegist";
+import DeptRegist from "../../pages/humanResourceMng/DeptRegist";
 import CustomPopup from "../unit/CustomPopup"
 
 const SearchDeptSet = ({ callBack, props, popup }) => {
@@ -14,6 +11,7 @@ const SearchDeptSet = ({ callBack, props, popup }) => {
   });
 
   const [popupVisible, setPopupVisible] = useState(false);
+  const [isPopup, setPopup] = useState(false);
 
   useEffect(() => {
     callBack(initParam);
@@ -60,6 +58,7 @@ const SearchDeptSet = ({ callBack, props, popup }) => {
   
   const onClickInsertBtn = () => {
     setPopupVisible(true);
+    setPopup(true);
   };
 
   const handleClose = () => {
@@ -109,10 +108,13 @@ const SearchDeptSet = ({ callBack, props, popup }) => {
             onClick={handleSubmit} text="검색"
           />
         </Item>
+        <Item ratio={1} visible={props.insertBtnItem}>
+          <Button text="등록" onClick={onClickInsertBtn} />
+        </Item>
       </Box>
-      {popup ?
-        <CustomPopup props={popup} visible={popupVisible} handleClose={handleClose}>
-          <ProjectRegist onHide={onHide}/> 
+      {isPopup ?
+        <CustomPopup props={popup} visible={popupVisible} handleClose={handleClose} >
+          <DeptRegist onHide={onHide} isNew={true}/> 
         </CustomPopup>
         : <></>
       }

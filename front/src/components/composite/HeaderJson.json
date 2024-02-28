@@ -114,12 +114,12 @@
       {
         "id": 1,
         "title": "부서관리",
-        "link": "humanResourceMng/dept/DeptManage"
+        "link": "humanResourceMng/DeptManage"
       },
       {
         "id": 2,
         "title": "직원관리",
-        "link": "/"
+        "link": "humanResourceMng/EmpManage"
       },
       {
         "id": 3,

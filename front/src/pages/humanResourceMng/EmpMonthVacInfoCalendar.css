@@ -1,0 +1,47 @@
+:root {
+    --fc-border-color: black;
+    --fc-daygrid-event-dot-width: 5px;
+    --fc-today-bg-color: none;
+    --fc-event-bg-color: none;
+    --fc-event-border-color: none;
+    --fc-event-text-color: #000000;
+}
+
+/* 헤더 css */
+.fc-col-header-cell-cushion{
+  font-size: 16px;
+  color: black;
+  text-decoration: none;
+}
+
+/* 일요일 css */
+.fc-day-sun{
+  background-color: rgb(245, 233, 233);
+}
+
+/* 토요일 css */
+.fc-day-sat{
+  background-color: rgb(237, 240, 245);
+}
+
+/* 숫자날짜 css */
+.fc-daygrid-day-number{
+  color: black;
+  text-align: left;
+  font-size: 15px;
+  text-decoration : none;
+}
+
+/* 숫자날짜 row css */
+.fc .fc-daygrid-day-top {
+  flex-direction: row
+}
+
+.fc-event-title-container{
+  font-size: 10px;
+  margin-left: 2px;
+}
+
+.fc-col-header-cell{
+  background-color: rgb(226, 226, 226);
+}

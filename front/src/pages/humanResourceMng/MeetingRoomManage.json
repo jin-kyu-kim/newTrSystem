@@ -1,0 +1,28 @@
+{   
+    "MtgRoomRsvt":[{
+        "menuName": "MeetingRoomManage",
+        "queryId": "humanResourceMngMapper.MtgRoomRsvt",
+        "keyColumn": "mtgRoomRsvt순번",
+        "data": 
+        [
+            { "key": "mtgRoomRsvt순번", "value": "회의실순번" },
+            { "key": "cdnm", "value": "회의실명" },
+            { "key": "rsvtEmpId", "value": "예악자ID" },
+            { "key": "empFlnm", "value": "예악자명" },
+            { "key": "useBgngHm", "value": "회의실사용시작시간" },
+            { "key": "useEndHm", "value": "회의실사용종료시간" },
+            { "key": "MtgTtl", "value": "회의내용" }
+        ]
+    }],
+    "MtgRoomRsvtAtdrn":[{
+        "menuName": "MeetingRoomManage",
+        "queryId": "humanResourceMngMapper.MtgRoomRsvtAtdrn",
+        "keyColumn": "mtgRoomRsvt순번",
+        "data": 
+        [
+            { "key": "mtgRoomRsvt순번", "value": "회의실순번" },
+            { "key": "atndEmpId", "value": "회의참석자ID" },
+            { "key": "empFlnm", "value": "회의참석자명" }
+        ]
+    }]
+}

@@ -7,14 +7,14 @@ import { Lookup } from "devextreme-react";
 
 import ApiRequest from "utils/ApiRequest";
 
-const CustomAddTable = ({ columns, values, onRowDblClick, pagerVisible, prjctId, json, bgtMngOdr }) => {
+const CustomAddTable = ({ columns, values, onRowDblClick, pagerVisible, prjctId, json, bgtMngOdrTobe }) => {
   const navigate = useNavigate();
   const [param, setParam] = useState([]);
   const [value, setValue] = useState([]);
   const [gridColumns, setGridColumns] = useState([]);
   const dataGridRef = useRef(null); // DataGrid 인스턴스에 접근하기 위한 ref
   const [selectValue, setSelectValue] = useState([]);
-  
+
   //useEffect를 사용하여 param이 변경될 때마다 실행 >> TODO.개발완료 후 삭제
   useEffect(() => {
     console.log("param 변경 !!",param);
@@ -60,7 +60,7 @@ const CustomAddTable = ({ columns, values, onRowDblClick, pagerVisible, prjctId,
     const paramInfo = {
       queryId: "projectMapper.retrieveChgPrmpcOdr",
       prjctId: prjctId,
-      bgtMngOdr: bgtMngOdr,
+      bgtMngOdr: bgtMngOdrTobe,
       [json.keyColumn] : json.keyColumn
     };
 
@@ -83,8 +83,12 @@ const CustomAddTable = ({ columns, values, onRowDblClick, pagerVisible, prjctId,
       }
       order++
 
+      if(json.keyColumn === "matrlCtSn"){ //재료비에서 호출한 경우 차수 추가
+        e.data.bgtMngOdr = bgtMngOdrTobe;
+      }
+
       e.data.prjctId = prjctId;
-      e.data.bgtMngOdr = bgtMngOdr;
+      
       e.data = {  
         ...e.data,
         [json.CdComboboxColumn] : selectValue,
@@ -195,7 +199,7 @@ const CustomAddTable = ({ columns, values, onRowDblClick, pagerVisible, prjctId,
 const reload = () => {
     navigate("../project/ProjectChange",
         {
-    state: { prjctId: prjctId, bgtMngOdr: bgtMngOdr },
+    state: { prjctId: prjctId, bgtMngOdrTobe: bgtMngOdrTobe },
     })
 };
 
@@ -240,7 +244,6 @@ const reload = () => {
       />
 
       {gridColumns.map((column,index) => (
-        console.log("column",column),
         <Column 
           key={column.key} 
           dataField={column.key} 

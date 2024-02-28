@@ -90,24 +90,25 @@ const TreRoutes = [
   {
     path: "/humanResourceMng/EmpMonthVacInfo",
     name: "EmpMonthVacInfo",
-    element: React.lazy(() => import("../pages/humanResourceMng/emp/EmpMonthVacInfo")),
+    element: React.lazy(() => import("../pages/humanResourceMng/EmpMonthVacInfo")),
   },
   // 회의실예약관리
   {
     path: "/humanResourceMng/MeetingRoomManage",
     name: "MeetingRoomManage",
-    element: React.lazy(() => import("../pages/humanResourceMng/emp/MeetingRoomManage")),
+    element: React.lazy(() => import("../pages/humanResourceMng/MeetingRoomManage")),
   },
    // 인사관리 휴가사용내역
    {
     path: "/humanResourceMng/EmpVacUseList",
     name: "EmpVacUseList",
-    element: React.lazy(() => import("../pages/humanResourceMng/emp/EmpVacUseList")),
+    element: React.lazy(() => import("../pages/humanResourceMng/EmpVacUseList")),
   },
   //부서 관리
   {
     path: "/humanResourceMng/dept/DeptManage",
     name: "DeptManage",
+<<<<<<< HEAD
     element: React.lazy(() => import("../pages/humanResourceMng/dept/DeptManage")),
   },
  // 법제도
@@ -121,6 +122,9 @@ const TreRoutes = [
     path: "/infoInq/EmpDetailInfo",
     name: "EmpDetailInfo",
     element: React.lazy(() => import("../pages/infoInq/EmpDetailInfo")),
+=======
+    element: React.lazy(() => import("../pages/humanResourceMng/DeptManage")),
+>>>>>>> 01ec1f79fdfb53f452807a6e29f95cfcad190040
   }
   
 ];
