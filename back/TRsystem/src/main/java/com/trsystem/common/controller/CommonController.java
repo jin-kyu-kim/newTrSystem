@@ -48,7 +48,7 @@ public class CommonController {
                               @RequestPart String tbNm, @RequestPart String data) throws JsonProcessingException {
 
         ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> mapData = mapper.readValue(data, Map.class);
+        Map<String, Object> mapData = mapper.readValue(data,Map.class);
         return commonService.insertFile(tbNm, mapData, attachments);
     }
 }

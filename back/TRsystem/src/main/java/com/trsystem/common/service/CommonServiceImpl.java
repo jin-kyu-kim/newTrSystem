@@ -224,7 +224,7 @@ public class CommonServiceImpl implements CommonService {
                 }
                 queryBuilder.append(" FROM ").append(tbNm).append(" WHERE 1 = 1");
 
-                for (int j = 0; j < inParams.size(); j++) {
+                for (int j = 0; j < inParams.size(); j++ ) {
                     Object paramValue = inParams.get(j);
                     String paramName = keys.get(j);
                     queryBuilder.append(" AND ");
