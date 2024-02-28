@@ -60,7 +60,7 @@
 				  , DATE_FORMAT(pald.RJCT_YMD, '%Y-%m-%d') AS RJCT_YMD
 				  , pal.ATRZ_LN_SN
 				  , pal.NOW_ATRZ_STEP_CD
-				  <!-- 차수 함께 조회하기. -->
+				  , pal.BGT_MNG_ODR
 			      , COUNT(*) OVER () AS TOTAL_ITEMS
 			  FROM PRJCT_ATRZ_LN pal
 			  JOIN PRJCT_ATRZ_LN_DTL pald ON(pal.PRJCT_ID = pald.PRJCT_ID AND pal.ATRZ_LN_SN = pald.ATRZ_LN_SN)
@@ -77,6 +77,7 @@
 		        <if test="bizFlfmtTyCd != null and !bizFlfmtTyCd.equals('')">
 		       AND BIZ_FLFMT_TY_CD = #{bizFlfmtTyCd}
 		        </if>
+    		   AND pald.ATRZ_STTS_CD != 'VTW00805'
 			   ORDER BY pal.REG_DT DESC
 	  ) A
     </select>
@@ -547,6 +548,7 @@
 		</if>
 	</select>
 	
+<<<<<<< HEAD
 	
 	<select id="retrieveOutordEntrpsPrmpc" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		  SELECT 
@@ -570,4 +572,17 @@
 		 AND M.BGT_MNG_ODR = #{bgtMngOdr}
 	</select>
 	
+=======
+	<!-- -->
+	<select id="retrieveRjctAtrz" parameterType="map" resultType="com.trsystem.LowerHashMap">
+	  SELECT pal.PRJCT_ID
+	    FROM PRJCT_ATRZ_LN_DTL pald
+	    JOIN PRJCT_ATRZ_LN pal ON (pal.PRJCT_ID = pald.PRJCT_ID AND pal.ATRZ_LN_SN = pald.ATRZ_LN_SN)
+	   WHERE 1=1
+	     AND pal.PRJCT_ID = #{prjctId}
+	     AND pal.ATRZ_LN_SN = #{atrzLnSn}
+	     AND pald.ATRZ_STTS_CD = 'VTW00803'
+	</select>
+
+>>>>>>> 0722b83d06ebb24011f0ceee348c094573234062
 </mapper>

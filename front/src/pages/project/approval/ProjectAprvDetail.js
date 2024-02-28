@@ -84,8 +84,6 @@ const ProjectAprvDetail = () => {
                             break;
                     }
 
-                    console.log(nowStep);
-
                     handleNowAtrzStepCd(nowStep);
                     // 마지막 결재자일 경우
                     if(atrzStepCd === "VTW00705") { 
@@ -99,41 +97,15 @@ const ProjectAprvDetail = () => {
                         handlePrjctBizStts();
                     }
     
-                    alert("승인요청이 완료되었습니다.");
+                    alert("승인이 완료되었습니다.");
                     navigate("../project/ProjectAprv");
                 } else {
-                    alert("승인요청이 실패하였습니다.");
+                    alert("승인이 실패하였습니다.");
                     return;
                 }
             
             });
-
-/*
-            if(response > 0) {
-
-
-                // 마지막 결재자일 경우
-                if(atrzStepCd === 'VTW00705') { 
-                    
-                    // PRJCT_BGT_PRMPC 테이블 결재완료로 수정
-                    // ATRZ_DMND_STTS_CD -> VTW03303(결재완료)
-                    handleBgtPrmpc();
-
-                    // PRJCT 테이블
-                    // BIZ_STTS_CD 컬럼 -> VTW00402(수행)
-                    handlePrjctBizStts();
-                }
-
-
-                alert("승인요청이 완료되었습니다.");
-                navigate("../project/ProjectAprv");
-            } else {
-                alert("승인요청이 실패하였습니다.");
-                return;
-            }
-*/
         }
-
     }
 
     /* 
@@ -168,8 +140,8 @@ const ProjectAprvDetail = () => {
             if(response > 0) {
 
                 // 반려되면
-                // PRJCT_BGT_PRMPC 테이블 결재완료로 수정
-                // 컬럼 ATRZ_DMND_STTS_CD -> VTW03303
+                // PRJCT_BGT_PRMPC 테이블 결재완료가 아니라 임시저장으로 수정 << todo
+                // 컬럼 ATRZ_DMND_STTS_CD -> VTW03301
                 handleBgtPrmpc();
 
                 alert("반려 되었습니다.");
@@ -205,6 +177,11 @@ const ProjectAprvDetail = () => {
         await ApiRequest("/boot/common/commonUpdate", param);
     }
 
+    /**
+     * 반려 시 PRJCT_BGT_PRMPC 테이블 수정
+     * atrzDmndSttsCd 결재요청상태구분코드: 임시저장(VTW03301) 으로 수정
+     * 승인목록에서 조회한 bgtMngOdr 값으로 수정
+     */
     const handleBgtPrmpc = async () => {
         const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
         const date = getToday();
@@ -212,14 +189,14 @@ const ProjectAprvDetail = () => {
         const param = [
           { tbNm : "PRJCT_BGT_PRMPC" },
           {
-            atrzDmndSttsCd: "VTW03303",
-            ATRZ_CMPTN_YMD: date,
+            atrzDmndSttsCd: "VTW03301",
+            atrzCmptnYmd: date,
             mdfcnEmpId: cookies.userInfo.empId,
             mdfcnDt: mdfcnDt,
           },
           {
             prjctId: prjctId,
-            bgtMngOdr: atrzLnSn,
+            bgtMngOdr: bgtMngOdr,
           }
         ]
     
@@ -295,7 +272,7 @@ const ProjectAprvDetail = () => {
             return;
         }
 
-        if(atrzSttsCd !== nowAtrzStepCd) {
+        if(atrzStepCd !== nowAtrzStepCd) {
             alert("현재 선행 결재가 완료되지 않았습니다.");
             return;
         }

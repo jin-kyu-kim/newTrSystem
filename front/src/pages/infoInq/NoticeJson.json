@@ -58,6 +58,25 @@
           "label": "첨부파일"
         }
       ]
+    },
+    "searchInfo":{
+        "searchParams": {
+        },
+        "firstCd": "VTW01701",
+        "textBoxItem": [
+            {
+                "className": "commonCdItem",
+                "placeholder": "검색어",
+                "name": "searchWrd"
+            }
+        ],
+        "selectBoxItem": [
+            {
+                "isSingleCnd": true,
+                "commonCd": "VTW017",
+                "name": "searchCnd"
+            }
+        ]
     }
   }
   
