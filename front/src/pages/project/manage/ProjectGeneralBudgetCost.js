@@ -7,7 +7,7 @@ import Box, { Item } from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
 import { format } from 'date-fns';
 
-const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr }) => {
+const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
   const [values, setValues] = useState([]);
   let groupingDtl = [];
 
@@ -24,7 +24,7 @@ const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr }) =>
     const param = [
       { tbNm: "EXPENS_MNBY_PRMPC_DTLS" },
       { prjctId: prjctId,
-        bgtMngOdr: bgtMngOdr,
+        bgtMngOdr: bgtMngOdrTobe,
         expensCd: "VTW04501&VTW04527"
       }, 
     ];
@@ -49,7 +49,7 @@ const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr }) =>
       const param = [
         { tbNm: "EXPENS_PRMPC" },
         { prjctId: prjctId, 
-          bgtMngOdr: bgtMngOdr,
+          bgtMngOdr: bgtMngOdrTobe,
           expensCd: ProjectGeneralBudgetCostJson.cdBetween
         }, 
       ];
@@ -102,7 +102,7 @@ const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr }) =>
               prjctId={prjctId}
               ctrtYmd={ctrtYmd}
               bizEndYmd={bizEndYmd}
-              bgtMngOdr={bgtMngOdr}
+              bgtMngOdrTobe={bgtMngOdrTobe}
               json={ProjectGeneralBudgetCostJson}
             />
           </div>

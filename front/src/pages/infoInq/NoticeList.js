@@ -6,20 +6,17 @@ import CustomTable from "../../components/unit/CustomTable";
 
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
-import SearchNtcSet from "components/composite/SearchNtcSet";
+import SearchInfoSet from 'components/composite/SearchInfoSet';
 
 const NoticeList = () => {
-
     const [values, setValues] = useState([]);
     const [param, setParam] = useState({});
-
     const [totalItems, setTotalItems] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
-
     const navigate = useNavigate();
 
-    const { keyColumn, queryId, tableColumns } = NoticeJson;
+    const { keyColumn, queryId, tableColumns, searchInfo } = NoticeJson;
     
     useEffect(() => {
         if (!Object.values(param).every((value) => value === "")) {
@@ -70,9 +67,9 @@ const NoticeList = () => {
                 <span>* 공지사항을 조회합니다.</span>
             </div>
             <div style={{ marginBottom: "20px" }}>
-                <SearchNtcSet 
+                <SearchInfoSet 
+                    props={searchInfo}
                     callBack={searchHandle}
-                    commonCd='VTW017'
                 /> 
             </div>
 

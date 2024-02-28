@@ -10,7 +10,8 @@
         , (SELECT CD_NM FROM CD WHERE CD_VALUE = PRJCT_STLE_CD) AS PRJCT_STLE_CD
         , PRJCT_ID
         , PRJCT_NM
-        , (SELECT CD_NM FROM CD WHERE CD_VALUE = BIZ_STTS_CD) AS BIZ_STTS_CD
+        , (SELECT CD_NM FROM CD WHERE CD_VALUE = BIZ_STTS_CD) AS BIZ_STTS_CD_NM
+        , BIZ_STTS_CD
         , (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = PRJCT_MNGR_EMP_ID ) AS PRJCT_MNGR_EMP_ID
         , CTMMNY_NO
         , CTRT_YMD
@@ -45,36 +46,38 @@
     </select>
     
     <select id="retrievePrjctAprvList" parameterType="map" resultType="com.trsystem.LowerHashMap">
-	SELECT ROW_NUMBER()OVER ()ROWNUM
-		 , pal.PRJCT_ID 
-		 , (SELECT CD_NM FROM CD WHERE CD_VALUE = pal.PRMPC_INPT_SE_CD) AS PRMPC_INPT_SE_CD
-		 , p.PRJCT_NM
-		 , (SELECT CD_NM FROM CD WHERE CD_VALUE = pald.ATRZ_STEP_CD) AS ATRZ_STEP_CD_NM
- 	 	 , pald.ATRZ_STEP_CD
-	 	 , (SELECT CD_NM FROM CD WHERE CD_VALUE = pald.ATRZ_STTS_CD) AS ATRZ_STTS_CD_NM
-	 	 , pald.ATRZ_STTS_CD
-	 	 , e.EMP_FLNM
-		 , pald.APRV_YMD
-		 , pald.RJCT_YMD
-		 , pal.ATRZ_LN_SN
-		 , pal.NOW_ATRZ_STEP_CD
-         , COUNT(*) OVER () AS TOTAL_ITEMS
-	  FROM PRJCT_ATRZ_LN pal
-	  JOIN PRJCT_ATRZ_LN_DTL pald ON(pal.PRJCT_ID = pald.PRJCT_ID AND pal.ATRZ_LN_SN = pald.ATRZ_LN_SN)
-	  JOIN PRJCT p ON (p.PRJCT_ID = pal.PRJCT_ID AND p.PRJCT_ID = pald.PRJCT_ID)
-	  JOIN EMP e  ON (e.EMP_ID = pal.REG_EMP_ID)
-	 WHERE 1=1
-	   AND pald.APRVR_EMP_ID = #{empId}
-        <if test="prmpcInptSeCd != null and !prmpcInptSeCd.equals('')">
-       AND PRMPC_INPT_SE_CD = #{prmpcInptSeCd}
-        </if>
-        <if test="prjctId != null and !prjctId.equals('')">
-       AND PRJCT_ID = #{prjctId}
-        </if>
-        <if test="bizFlfmtTyCd != null and !bizFlfmtTyCd.equals('')">
-       AND BIZ_FLFMT_TY_CD = #{bizFlfmtTyCd}
-        </if>
-     ORDER BY ATRZ_LN_SN DESC
+	SELECT ROW_NUMBER() OVER() ROWNUM, A.*
+	  FROM (
+			 SELECT pal.PRJCT_ID 
+				   , (SELECT CD_NM FROM CD WHERE CD_VALUE = pal.PRMPC_INPT_SE_CD) AS PRMPC_INPT_SE_CD
+				   , p.PRJCT_NM
+				   , (SELECT CD_NM FROM CD WHERE CD_VALUE = pald.ATRZ_STEP_CD) AS ATRZ_STEP_CD_NM
+			 	   , pald.ATRZ_STEP_CD
+				   , (SELECT CD_NM FROM CD WHERE CD_VALUE = pald.ATRZ_STTS_CD) AS ATRZ_STTS_CD_NM
+				   , pald.ATRZ_STTS_CD
+				   , e.EMP_FLNM
+					 , pald.APRV_YMD
+					 , pald.RJCT_YMD
+					 , pal.ATRZ_LN_SN
+					 , pal.NOW_ATRZ_STEP_CD
+			         , COUNT(*) OVER () AS TOTAL_ITEMS
+			  FROM PRJCT_ATRZ_LN pal
+			  JOIN PRJCT_ATRZ_LN_DTL pald ON(pal.PRJCT_ID = pald.PRJCT_ID AND pal.ATRZ_LN_SN = pald.ATRZ_LN_SN)
+			  JOIN PRJCT p ON (p.PRJCT_ID = pal.PRJCT_ID AND p.PRJCT_ID = pald.PRJCT_ID)
+			  JOIN EMP e  ON (e.EMP_ID = pal.REG_EMP_ID)
+			 WHERE 1=1
+			   AND pald.APRVR_EMP_ID = #{empId}
+		        <if test="prmpcInptSeCd != null and !prmpcInptSeCd.equals('')">
+		       AND PRMPC_INPT_SE_CD = #{prmpcInptSeCd}
+		        </if>
+		        <if test="prjctId != null and !prjctId.equals('')">
+		       AND PRJCT_ID = #{prjctId}
+		        </if>
+		        <if test="bizFlfmtTyCd != null and !bizFlfmtTyCd.equals('')">
+		       AND BIZ_FLFMT_TY_CD = #{bizFlfmtTyCd}
+		        </if>
+			   ORDER BY pal.REG_DT DESC
+	  ) A
     </select>
 
     <select id="retrievePrjctCostSummery" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -405,10 +408,9 @@
       </select>
       
 	<select id="retrieveBgtMngOdr" parameterType="map" resultType="com.trsystem.LowerHashMap">
-        SELECT MAX(BGT_MNG_ODR) AS BGT_MNG_ODR
+        SELECT IFNULL(MAX(BGT_MNG_ODR), 0) AS BGT_MNG_ODR
         FROM PRJCT_BGT_PRMPC
        WHERE 1=1
-       	 AND ATRZ_DMND_STTS_CD = 'VTW03301'
         <if test="prjctId != null">
             <if test="!prjctId.equals('')">
                 AND PRJCT_ID = #{prjctId}
@@ -428,6 +430,11 @@
 		                AND ATRZ_LN_SN = #{atrzLnSn}
 		            </if>
 		        </if>
+                <if test="prjctId != null">
+            		<if test="!prjctId.equals('')">
+		                AND PRJCT_ID = #{prjctId}
+		            </if>
+		        </if>
 	 	 	) AS APRV_YMD
 	 	 , (SELECT RJCT_YMD 
 	 	 	  FROM PRJCT_ATRZ_LN_DTL
@@ -435,6 +442,11 @@
 	           <if test="atrzLnSn != null">
 		            <if test="!atrzLnSn.equals('')">
 		                AND ATRZ_LN_SN = #{atrzLnSn}
+		            </if>
+		        </if>
+                <if test="prjctId != null">
+            		<if test="!prjctId.equals('')">
+		                AND PRJCT_ID = #{prjctId}
 		            </if>
 		        </if>
 	 	 	 ) AS RJCT_YMD
@@ -511,6 +523,13 @@
 			  FROM EXPENS_PRMPC
 			 WHERE PRJCT_ID = #{prjctId}
 			 AND BGT_MNG_ODR = #{bgtMngOdr}
-		</if>		    
+		</if>			    
+	</select>
+	
+	<select id="updateChgPrmpcMdfcn" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		INSERT INTO EXPENS_MNBY_PRMPC_DTLS (PRJCT_ID, BGT_MNG_ODR,EXPENS_PRMPC_SN,USE_YM,EXPENS_CD,EXPECT_CT) 
+		VALUES(	#{prjctId}, #{bgtMngOdr}, #{expensPrmpcSn},#{useYm},#{expensCd},#{expectCt})
+			ON DUPLICATE KEY UPDATE 
+			EXPECT_CT = #{expectCt}
 	</select>
 </mapper>

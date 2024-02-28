@@ -5,7 +5,6 @@ import { useCookies } from "react-cookie";
 import uuid from "react-uuid";
 import CheckBox from "devextreme-react/check-box";
 import { FileUploader, Button, TextBox } from "devextreme-react";
-import HtmlEditor, { Toolbar, MediaResizing, ImageUpload, Item } from "devextreme-react/html-editor";
 
 import CustomDateRangeBox from "components/unit/CustomDateRangeBox";
 import "../../assets/css/Style.css";
@@ -28,6 +27,7 @@ const NoticeInput = () => {
     const [attachments, setAttachments] = useState([]);
     const [data, setData] = useState({
         noticeId: uuid(),
+        atchmnflId: null,
         noticeTtl: "",
         noticeCn: "",
         sgnalOrdr: 0, // 기본값 일반공지
@@ -38,9 +38,6 @@ const NoticeInput = () => {
         regEmpId: empId,
         regDt: date.toISOString().split("T")[0] + " " + date.toTimeString().split(" ")[0],
     });
-    useEffect(() => {
-        console.log(data);
-    }, [data]);
     const { noticeTtl, noticeCn, useEndYmd } = data || {};
     const [noticeTypeChk, setNoticeTypeChk] = useState({
         imprtnc: false,
@@ -49,6 +46,10 @@ const NoticeInput = () => {
     });
     const handleAttachmentChange = (e) => {
         setAttachments(e.value);
+        setData({
+            ...data,
+            atchmnflId: uuid()
+        })
     };
     const handleStartDateChange = (newStartDate) => {
         // 상단 중요공지 시작일자
@@ -91,14 +92,6 @@ const NoticeInput = () => {
         }        
     }, []);
 
-    const handleChgState = (noticeCn) => {
-        setData({
-            ...data,
-            noticeCn: noticeCn
-        });
-        console.log(noticeCn);
-    };
-
     const insertNotice = async () => {
         const formData = new FormData();
         formData.append("tbNm", "NOTICE");
@@ -139,6 +132,7 @@ const NoticeInput = () => {
                                     <td>
                                         <TextBox
                                             id={column.dataField}
+                                            name={column.dataField}
                                             value={noticeTtl}
                                             placeholder={column.placeholder}
                                             onValueChanged={(e) => {
@@ -187,54 +181,12 @@ const NoticeInput = () => {
                                     </td>
                                 ) : column.name === "cn" ? (
                                     <td>
-                                         <HtmlEditBox
-                                             data = {data}
-                                             handler = {handleChgState}
+                                        <HtmlEditBox
+                                            column={column}
+                                            data={data}
+                                            setData={setData}
+                                            value={noticeCn}
                                         />
-                                        {/*<HtmlEditor*/}
-                                        {/*    height="725px"*/}
-                                        {/*    id={column.dataField}*/}
-                                        {/*    value={noticeCn}*/}
-                                        {/*    focusStateEnabled={true}*/}
-                                        {/*    onValueChanged={(e) => {*/}
-                                        {/*        setData({ ...data, [column.dataField]: e.value });*/}
-                                        {/*    }}*/}
-                                        {/*>*/}
-                                        {/*    <MediaResizing enabled={true} />*/}
-                                        {/*    <ImageUpload fileUploadMode="base64" />*/}
-                                        {/*    <Toolbar>*/}
-                                        {/*        <Item name="undo" />*/}
-                                        {/*        <Item name="redo" />*/}
-                                        {/*        <Item name="separator" />*/}
-                                        {/*        <Item name="size" acceptedValues={sizeValues} options={fontSizeOptions} />*/}
-                                        {/*        <Item name="font" acceptedValues={fontValues} options={fontFamilyOptions} />*/}
-                                        {/*        <Item name="separator" />*/}
-                                        {/*        <Item name="bold" />*/}
-                                        {/*        <Item name="italic" />*/}
-                                        {/*        <Item name="strike" />*/}
-                                        {/*        <Item name="underline" />*/}
-                                        {/*        <Item name="separator" />*/}
-                                        {/*        <Item name="alignLeft" />*/}
-                                        {/*        <Item name="alignCenter" />*/}
-                                        {/*        <Item name="alignRight" />*/}
-                                        {/*        <Item name="alignJustify" />*/}
-                                        {/*        <Item name="separator" />*/}
-                                        {/*        <Item name="orderedList" />*/}
-                                        {/*        <Item name="bulletList" />*/}
-                                        {/*        <Item name="separator" />*/}
-                                        {/*        <Item name="header" acceptedValues={headerValues} options={headerOptions} />*/}
-                                        {/*        <Item name="separator" />*/}
-                                        {/*        <Item name="color" />*/}
-                                        {/*        <Item name="background" />*/}
-                                        {/*        <Item name="separator" />*/}
-                                        {/*        <Item name="link" />*/}
-                                        {/*        <Item name="separator" />*/}
-                                        {/*        <Item name="clear" />*/}
-                                        {/*        <Item name="codeBlock" />*/}
-                                        {/*        <Item name="blockquote" />*/}
-                                        {/*        <Item name="separator" />*/}
-                                        {/*    </Toolbar>*/}
-                                        {/*</HtmlEditor>*/}
                                     </td>
                                 ) : (
                                     <td>
@@ -277,31 +229,3 @@ const NoticeInput = () => {
     );
 };
 export default NoticeInput;
-
-const sizeValues = ["8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt"];
-const fontValues = [
-    "Arial",
-    "Courier New",
-    "Georgia",
-    "Impact",
-    "Lucida Console",
-    "Tahoma",
-    "Times New Roman",
-    "Verdana",
-];
-const headerValues = [false, 1, 2, 3, 4, 5];
-const fontSizeOptions = {
-    inputAttr: {
-        "aria-label": "Font size",
-    },
-};
-const fontFamilyOptions = {
-    inputAttr: {
-        "aria-label": "Font family",
-    },
-};
-const headerOptions = {
-    inputAttr: {
-        "aria-label": "Font family",
-    },
-};

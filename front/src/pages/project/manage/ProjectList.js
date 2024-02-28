@@ -60,7 +60,14 @@ const ProjectList = () => {
   const onRowDblClick = (e) => {
 
     navigate("/project/ProjectDetail", 
-              {state: { prjctId: e.key, prjctNm: e.data.prjctNm, totBgt: e.data.totBgt, bgtMngOdr: e.data.bgtMngOdr, ctrtYmd: e.data.ctrtYmd, bizEndYmd: e.data.bizEndYmd  }})
+              {state: { prjctId: e.key
+                      , prjctNm: e.data.prjctNm
+                      , totBgt: e.data.totBgt
+                      , bgtMngOdr: e.data.bgtMngOdr
+                      , ctrtYmd: e.data.ctrtYmd
+                      , bizEndYmd: e.data.bizEndYmd
+                      , bgtMngOdrTobe: e.data.bgtMngOdrTobe 
+                      , bizSttsCd: e.data.bizSttsCd}})
   };
 
   const test = async () =>{

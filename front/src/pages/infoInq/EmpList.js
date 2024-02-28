@@ -1,12 +1,11 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import  EmpListJson from "../../../infoInq/person/Emp/EmpListJson.json";
-import ApiRequest from "../../../../utils/ApiRequest";
-import { useNavigate } from "react-router-dom";
+import  EmpListJson from "../infoInq/EmpListJson.json";
+import ApiRequest from "../../utils/ApiRequest";
+import SearchEmpSet from "components/composite/SearchInfoSet";
 import CustomTable from "components/unit/CustomTable";
 
 function EmpList() {
-
   const [values, setValues] = useState([]);
   const [param, setParam] = useState({});
 
@@ -15,9 +14,7 @@ function EmpList() {
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
 
-  const navigate = useNavigate();
-
-  const { keyColumn, queryId, tableColumns, searchParams, popup } = EmpListJson;
+  const { keyColumn, queryId, tableColumns, popup, searchInfo } = EmpListJson;
 
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
@@ -54,7 +51,6 @@ function EmpList() {
     }
   };
 
-
   return (
     <div className="container">
       <div
@@ -67,6 +63,11 @@ function EmpList() {
         <span>* 직원을 조회합니다.</span>
       </div>
       <div style={{ marginBottom: "20px" }}>
+        <SearchEmpSet
+          callBack={searchHandle}
+          props={searchInfo}
+          popup={popup}
+        />
       </div>
 
       <div>검색된 건 수 : {totalItems} 건</div>
@@ -79,8 +80,6 @@ function EmpList() {
       />
     </div>
   );
-
 };
-
 
 export default EmpList;

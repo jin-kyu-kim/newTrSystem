@@ -7,7 +7,7 @@ import Box, { Item } from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
 import { format } from 'date-fns';
 
-const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr }) => {
+const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
   const [values, setValues] = useState([]);
   const { manuName, tableColumns, keyColumn, summaryColumn, popup } = ProjectControlBudgetCostJson;
   let groupingDtl = [];
@@ -24,13 +24,14 @@ const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr }) =>
     const param = [
       { tbNm: "EXPENS_MNBY_PRMPC_DTLS" },
       { prjctId: prjctId,
-        bgtMngOdr: bgtMngOdr,
+        bgtMngOdr: bgtMngOdrTobe,
         expensCd: ProjectControlBudgetCostJson.cdBetween
       }, 
     ];
 
   try {
     const response = await ApiRequest("/boot/common/commonSelect", param);
+    console.log("response!!", response);
       response.reduce((acc, item) => {
         //expensPrmpcSn 값으로 그룹핑
         acc[item.expensPrmpcSn] = acc[item.expensPrmpcSn] || [];
@@ -45,18 +46,18 @@ const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr }) =>
   }
 };
 
-
   const ControlBudget = async () => {
     const param = [
       { tbNm: "EXPENS_PRMPC" },
       { prjctId: prjctId,
-        bgtMngOdr: bgtMngOdr,
+        bgtMngOdr: bgtMngOdrTobe,
         expensCd: "VTW04528&VTW04535"
       }, 
     ];
     try {
       const response = await ApiRequest("/boot/common/commonSelect", param);
       //월별정보 및 총 합계 response에 추가
+              
       for(let j=0; j<Object.keys(groupingDtl).length; j++){
         let total = 0;
         for(let k=0; k<Object.values(groupingDtl)[j].length; k++){
@@ -103,7 +104,7 @@ const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr }) =>
               popup={popup}
               ctrtYmd={ctrtYmd}
               bizEndYmd={bizEndYmd}
-              bgtMngOdr={bgtMngOdr}
+              bgtMngOdrTobe={bgtMngOdrTobe}
               json={ProjectControlBudgetCostJson}
             />
           </div>

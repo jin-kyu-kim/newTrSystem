@@ -1,11 +1,11 @@
 
 import React, { useEffect, useState } from 'react';
-import ApiRequest from '../../../utils/ApiRequest';
-import CustomHorizontalTable from "../../../components/unit/CustomHorizontalTable";
+import ApiRequest from '../../utils/ApiRequest';
+import CustomHorizontalTable from "../../components/unit/CustomHorizontalTable";
 //import CustomLabelValue from "../../../components/unit/CustomLabelValue";
-import CustomCdComboBox from "../../../components/unit/CustomCdComboBox";
+import CustomCdComboBox from "../../components/unit/CustomCdComboBox";
 import Button from "devextreme-react/button";
-import EmpBasicInfoJson from "./EmpBasicInfoJson.json";
+import EmpInfoJson from "./EmpInfoJson.json";
 import DataGrid, { Column, Editing } from 'devextreme-react/data-grid';
 import { Item, Form, SimpleItem, GroupItem} from 'devextreme-react/form';
 import { useCookies } from "react-cookie";
@@ -16,7 +16,7 @@ const EmpBasicInfo = () => {
     const [dtlInfoData, setDtlInfoData] = useState([]);
     const [outPutData, setOutPutData] = useState([]);
 
-    const empBasicInfoJson = EmpBasicInfoJson;
+    const empBasicInfoJson = EmpInfoJson.EmpBasicInfo;
 
     /*유저세션*/
     const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
