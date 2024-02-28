@@ -548,7 +548,6 @@
 		</if>
 	</select>
 	
-<<<<<<< HEAD
 	
 	<select id="retrieveOutordEntrpsPrmpc" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		  SELECT 
@@ -572,7 +571,7 @@
 		 AND M.BGT_MNG_ODR = #{bgtMngOdr}
 	</select>
 	
-=======
+	
 	<!-- -->
 	<select id="retrieveRjctAtrz" parameterType="map" resultType="com.trsystem.LowerHashMap">
 	  SELECT pal.PRJCT_ID
@@ -584,5 +583,4 @@
 	     AND pald.ATRZ_STTS_CD = 'VTW00803'
 	</select>
 
->>>>>>> 0722b83d06ebb24011f0ceee348c094573234062
 </mapper>
