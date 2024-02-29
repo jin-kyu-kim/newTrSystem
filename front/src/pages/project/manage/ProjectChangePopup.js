@@ -444,7 +444,7 @@ const onRowUpdateingMonthData = async() => {
                                             defaultValue={0}
                                             showSpinButtons={true}
                                             step={popupInfo.popupStep}
-                                            showClearButton={true}
+                                            showClearButton={false}
                                             />): ''}</td>
                                         </>
                                         ))}
