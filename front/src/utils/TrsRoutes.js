@@ -106,9 +106,15 @@ const TreRoutes = [
   },
   //부서 관리
   {
-    path: "/humanResourceMng/dept/DeptManage",
+    path: "/humanResourceMng/DeptManage",
     name: "DeptManage",
     element: React.lazy(() => import("../pages/humanResourceMng/DeptManage")),
+  },
+  //직원 관리
+  {
+    path: "humanResourceMng/EmpManage",
+    name: "EmpManage",
+    element: React.lazy(() => import("../pages/humanResourceMng/EmpManage")),
   }
   
 ];
