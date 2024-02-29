@@ -67,6 +67,7 @@ const SearchEmpSet = ({ callBack, props }) => {
                   stylingMode="underlined"
                   size="medium"
                   name={item.name}
+                  showClearButton={true}
                   onValueChanged={(e) => handleChgState({ name: e.component.option('name'), value: e.value })}
                 />
               </Item>
