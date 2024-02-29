@@ -260,6 +260,7 @@ const ProjectChange = () => {
         } else {
           alert("승인요청 취소가 실패되었습니다.");
         }
+        toDetail();
         
       } catch (error) {
         console.error('Error fetching data', error);
