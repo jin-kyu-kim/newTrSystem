@@ -458,6 +458,9 @@
 		 , e1.EMP_FLNM AS APRVR_EMP_FLNM
 		 , pald.ATRZ_OPNN_CN
 	 	 , pald.RJCT_PRVONSH
+ 	 	 , pald.APRV_YMD AS STEP_APRV_YMD
+ 	 	 , pald.RJCT_YMD AS STEP_RJCT_YMD
+ 	 	 , DATE_FORMAT(pald.MDFCN_DT, '%Y.%m.%d %H:%i:%s') AS MDFCN_DT
 	  FROM PRJCT_ATRZ_LN_DTL pald 
 	  JOIN CD c1 ON (c1.CD_VALUE = pald.ATRZ_STEP_CD)
 	  JOIN CD c2 ON (c2.CD_VALUE = pald.ATRZ_STTS_CD)
