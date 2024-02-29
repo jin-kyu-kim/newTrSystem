@@ -1,30 +1,30 @@
 import { useState, useEffect, useCallback } from "react";
-import ApiRequest from "../../utils/ApiRequest";
-import CustomTable from "../../components/unit/CustomTable";
-import EmpManageJson from "./EmpManageJson.json";
-import EmpManageDetailJson from "./EmpManageDetailJson.json";
-import EmpDeptHnfListJson from "./EmpDeptHnfListJson.json";
-import EmpDetailJson from "./EmpDetailJson.json";
-import SearchHumanResoureceMngSet from "components/composite/SearchHumanResoureceMngSet";
-import CustomLabelValue from "components/unit/CustomLabelValue";
-import CustomCdComboBox from "components/unit/CustomCdComboBox";
+import ApiRequest from "utils/ApiRequest";
 import { Button } from "devextreme-react";
+import CustomTable from "components/unit/CustomTable";
+import EmpManageJson from  "./EmpManageJson.json";
+import CustomLabelValue from "components/unit/CustomLabelValue";
+import SearchHumanResoureceMngSet from "components/composite/SearchEmpSet";
+import EmpRegist from "./EmpRegist";
+import Customf from "components/unit/CustomPopup";
 
-const EmpManage = () => {
+
+const EmpManage = ({callBack}) => {
   const [values, setValues] = useState([]);
   const [values2, setValues2] = useState([]);
   const [values3, setValues3] = useState([]);
   const [param, setParam] = useState({});
+  const { listQueryId, searchParams, listKeyColumn, listTableColumns,       //직원목록조회 
+          downDeptQueryId, downDeptTableColumns,                            //하위부서목록
+          hnfQueryId, hnfKeyColumn, hafTableColumns,labelValue,                        //직원발령정보목록,발령용컴포넌트
+          popup } = EmpManageJson; 
+  const [deptParam2, setDeptParam2] = useState({});
+  const [deptParam3, setDeptParam3] = useState({});
 
-  const { keyColumn, queryId, tableColumns, searchParams } = EmpManageJson;
-  const { labelValue } = EmpDetailJson;
-  const { keyColumn2, queryId2, tableColumns2 } = EmpManageDetailJson;
-  const { keyColumn3, queryId3, tableColumns3 } = EmpDeptHnfListJson;
-  const [empParam2, setEmpParam2] = useState({});
-  const [empParam3, setEmparam3] = useState({});
-
-  const [empInfo, setEmpInfo] = useState([]);
-  const [data, setData] = useState([]);
+  const [deptInfo, setDeptInfo] = useState([]);
+  const [isPopup, setPopup] = useState(false);
+  const [popupVisible, setPopupVisible] = useState(false);
+  const [initParam, setInitParam] = useState({});
 
   const [totalItems, setTotalItems] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -32,65 +32,69 @@ const EmpManage = () => {
   const [pageSize, setPageSize] = useState(20);
   const [hnfPageSize, setHnfPageSize] = useState(20);
   const [downDeptPageSize, setDownDeptPageSize] = useState(20);
-  const [text, setText] = useState("");
 
-  const [readOnly, setReadOnly] = useState(false);
+  // const [readOnly, setReadOnly] = useState(true);
+
   //========================테이블 배치
+
+  //화면 전체 배치
   const tableContainerStyle = {
     display: "flex",
   };
+
+  //전체 부서 목록 배치
   const empListContainerStyle = {
-    width: "45%", // 왼쪽 영역의 너비를 설정
+    width: "45%", // 왼쪽 영역의 너비를 반으로 설정
     marginTop: "20px",
   };
 
   const empListStyle = {
     minWidth: "480px",
   };
+
+  //우측 전체 배치
   const empDetailContainerStyle = {
-    width: "55%", // 오른쪽 영역의 너비를 설정
+    width: "55%", // 오른쪽 영역의 너비를 반으로 설정
     display: "flex",
     flexDirection: "column",
+    marginBottom: "20px",
   };
 
+  //각 테이블 배치
   const empDetailStyle = {
     flex: "1",
     marginLeft: "20px", // 각 div 사이의 간격을 조절합니다.
     marginTop: "20px",
   };
-  const empDetailLeft = {
-    width: "50%", // 기초정보의 왼쪽 영역의 너비를 설정
-    float : "left",
-    marginTop: "30px",
-  };
-  const empDetailRight = {
-    width: "50%", //  기초정보의 오른쪽 영역의 너비를 설정
-    display: "flex",
-    flexDirection: "column",
-    
-  };
+
+  //버튼 배치
   const buttonContainerStyle = {
     display: "flex",
     justifyContent: "flex-end",
   };
+  
+  //부서 상세 버튼
+  const editButtonStyle={
+    marginRight:"10px",
+    marginBottom:"10px",
+  }
 
+  const deleteButtonStyle ={
+    marginRight:"20px",
+    marginBottom:"10px",
+  }
+
+  //인력 추가 버튼
+  const addButtonStyle ={
+    marginRight:"10px",
+    marginBottom:"10px",
+  }
   const buttonStyle = {
     marginLeft: "10px",
   };
 
-  const deptTableStyle = {
-    marginBottom: "30px",
-  };
-
   //========================직원 목록 조회
   useEffect(() => {
-    console.log("이거찍혀요 :ㅣ???" ,EmpManageJson);
-
-  }, []);
- 
-  //========================직원 목록 조회
-  useEffect(() => {
-    console.log("직원목록조회용aa:  ", EmpManageJson)
     if (!Object.values(param).every((value) => value === "")) {
       pageHandle();
     }
@@ -101,7 +105,7 @@ const EmpManage = () => {
     setCurrentPage(1);
     setParam({
       ...initParam,
-      queryId: queryId,
+      queryId: listQueryId,
       currentPage: currentPage,
       startVal: 0,
       pageSize: pageSize,
@@ -125,30 +129,48 @@ const EmpManage = () => {
     }
   };
 
-  //========================직원 기초 정보
+  //========================부서 상세 정보
 
-  const readOnlyChg = () => {
-    if (readOnly) {
-      setReadOnly(false);
-    } else {
-      setReadOnly(true);
-    }
+  // useEffect(() => {
+  //   callBack(initParam);
+  // }, []);
+
+  //부서 정보 수정 
+  const editDept = () => {
+    setPopup(true);
   };
 
-  const handleChgState = ({ name, value }) => {
-    if (!readOnly) {
-      setData({
-        ...data,
-        [name]: value,
-      });
-    }
+  const handleClose = () => {
+    setPopupVisible(false);
   };
 
-  const empDetailListHandle = async () => {
+  const onHide = () => {
+    callBack(initParam);
+    setPopupVisible(false);
+  }
+  
+  //부서 삭제
+  const deleteDept = async () => {
+    const isconfirm = window.confirm("이 부서를 삭제하시겠습니까?");
+
+    if (isconfirm) {
+      console.log("부서 삭제 : " + deptInfo.deptId);
+      // if (response > 0) {
+        setDeptInfo([]);
+      // }
+    }
+    
+  };
+
+
+ //========================발령정보 입력 (수정예정)
+
+ 
+  const deptDownListHandle = async () => {
     try {
       const response2 = await ApiRequest(
         "/boot/common/queryIdSearch",
-        empParam2
+        deptParam2
       );
       setValues2(response2);
     } catch (error) {
@@ -156,11 +178,12 @@ const EmpManage = () => {
     }
   };
 
-  const empHnfListHandle = async () => {
+   //========================발령정보 목록 (수정예정)
+  const deptHnfListHandle = async () => {
     try {
       const response3 = await ApiRequest(
         "/boot/common/queryIdSearch",
-        empParam3
+        deptParam3
       );
       setValues3(response3);
     } catch (error) {
@@ -168,31 +191,43 @@ const EmpManage = () => {
     }
   };
 
+
+  //부서목록에서 로우 클릭시 발생하는 이벤트
   const onRowDblClick = (e) => {
+    console.log("클릭이벤트 들어옴e 데이터값",e)
     for (const value of values) {
       if (value.empno === e.data.empno) {
-        setEmpInfo(value);
-        console.log("더블클릭시 데이터 : " ,value);
+        setDeptInfo(value);
+        console.log("데이터 세팅함1", value)
         break;
       }
     }
 
-    setEmpParam2({
-      empno: e.data.empno,
-      queryId: queryId2,
-    });
-    empDetailListHandle();
-
-    setEmparam3({
+    setDeptParam2({
       deptId: e.data.empno,
-      queryId: queryId3,
+      queryId: downDeptQueryId,
     });
-    empHnfListHandle();
-  };
-  const onReset = (e) => {
-    setText("");
+    console.log("데이터 세팅함1-1", deptInfo.empno)
+    setDeptParam3({
+      deptId: e.data.empno,
+      queryId: hnfQueryId,
+    });
+    console.log("데이터 세팅함2", deptParam2)
+    console.log("데이터 세팅함3", deptParam3)
   };
 
+  //setParam 이후에 함수가 실행되도록 하는 useEffect  
+  useEffect(() => {
+    if (deptParam2.empno !== undefined) {
+      deptDownListHandle();
+    }
+  }, [deptParam2]);
+
+  useEffect(() => {
+    if (deptParam3.empno !== undefined) {
+      deptHnfListHandle();
+    }
+  }, [deptParam3]);
   
   return (
     <div className="container">
@@ -202,12 +237,14 @@ const EmpManage = () => {
       >
         <h1 style={{ fontSize: "40px" }}>직원 관리</h1>
       </div>
-    
+      <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
+        <span>* 직원 정보를 조회합니다.</span>
+      </div>
       <div style={{ marginBottom: "20px" }}>
         <SearchHumanResoureceMngSet
           callBack={searchHandle}
           props={searchParams}
-          
+          popup={popup}
         />
       </div>
       <div>검색된 건 수 : {totalItems} 건</div>
@@ -216,7 +253,7 @@ const EmpManage = () => {
         <div className="empListContainer" style={empListContainerStyle}>
           <div className="empListTable" style={empListStyle}>
           <p>
-              <strong>* 직원목록 </strong>
+            <strong>* 직원목록 </strong>
             </p>
             <span style={{ fontSize: 12 }}>
             목록을 선택시 직원의 기초정보를 조회및 수정 할 수 있습니다.<br/>
@@ -224,9 +261,9 @@ const EmpManage = () => {
             아이콘 클릭시 비밀번호 사번으로 초기화<br/>
             </span>
             <CustomTable
-              keyColumn={keyColumn}
+              keyColumn={listKeyColumn}
               pageSize={pageSize}
-              columns={tableColumns}
+              columns={listTableColumns}
               values={values}
               paging={true}
               onRowDblClick={onRowDblClick}
@@ -236,117 +273,68 @@ const EmpManage = () => {
         <div className="empDetailContainer" style={empDetailContainerStyle}>
           <div className="empDetailTable" style={empDetailStyle}>
             <p>
-              <strong>* 기초정보 </strong>
+            <strong>* 기초정보 </strong>
             </p>
             <span style={{ fontSize: 12 }}>
             신규 직원정보를 입력하면 TRS 접속 권한이 생기게 됩니다.<br/>
             신규 직원 사번은 자동 입력됩니다.
             </span>
-            <div className="empDetailLeft" style={empDetailLeft}>
-            <CustomLabelValue
-            props={labelValue.empFlnm}
-            onSelect={handleChgState}
-            value={empInfo.empFlnm}
-            readOnly={readOnly}
-            />            
-            <CustomLabelValue
-            props={labelValue.deptMngrEmpFlnm}
-            onSelect={handleChgState}
-            value={empInfo.deptMngrEmpFlnm}
-            readOnly={readOnly}
-            />
-            <CustomLabelValue
-              props={labelValue.telNo}
-              onSelect={handleChgState}
-              value={empInfo.telNo}
-              readOnly={readOnly}
-            />
-            <CustomLabelValue
-            props={labelValue.bankCd}
-            onSelect={handleChgState}
-            value={empInfo.bankCd}
-            readOnly={readOnly}
-            />              
-              
-          </div>
-
-          <div className="empDetailRight" style={empDetailRight}>
-            <CustomLabelValue
-              props={labelValue.JbpsCd}
-              onSelect={handleChgState}
-              value={empInfo.JbpsCd}
-              readOnly={readOnly}
-              />
-              <CustomLabelValue
-              props={labelValue.hdofSttsCd}
-              onSelect={handleChgState}
-              value={empInfo.hdofSttsCd}
-              readOnly={readOnly}
-              />                         
-             <CustomLabelValue
-              props={labelValue.eml}
-              onSelect={handleChgState}
-              value={empInfo.eml}
-              readOnly={readOnly}
-            />                
-             <CustomLabelValue
-             props={labelValue.actNo}
-            onSelect={handleChgState}
-            value={empInfo.actNo}
-            readOnly={readOnly}
-              />
-           </div>
-            
-
-            <div className="buttonContainer" style={buttonContainerStyle}>
-              <Button style={buttonStyle} onClick={onReset}> 직원신규입력</Button>
-              <Button style={buttonStyle}>기초정보 저장</Button>
+          <div className="detailButtonContainer" style={buttonContainerStyle}>            
+            {deptInfo.deptId != null ? (
+              <div className="buttonContainer" style={buttonContainerStyle}>
+                <Button style={editButtonStyle} onClick={editDept} text="수정" />
+                <Button style={deleteButtonStyle} onClick={deleteDept} text="삭제" />
+              </div>
+            ) : null}
             </div>
+            <EmpRegist 
+              deptInfo={deptInfo} 
+              deptId={deptInfo.empno}
+              isNew={false}
+            />
           </div>
           <div className="empDownListTable" style={empDetailStyle}>
             <p>
               <strong>* 발령정보 </strong>
             </p>
             <span style={{ fontSize: 12 }}>
-            주의!! 직위발령을 입력하지 않거나 잘못 입력 할 경우 '프로젝트관리'메뉴에 실행원가 집행현황 자사인력 누적<br/>
-            사용금액이 제대로 계산되지 않습니다.
+            신규 직원정보를 입력하면 TRS 접속 권한이 생기게 됩니다.<br/>
+            신규 직원 사번은 자동 입력됩니다.
             </span>
-            <div className="empDetailLeft" style={empDetailLeft}>
+            
             <CustomLabelValue
-              props={labelValue.deptGnfdY}
-              onSelect={handleChgState}
-              value={empInfo.deptGnfdY}
-              readOnly={readOnly}
+              props={labelValue.deptGnfdYr}
+              onSelect={editDept}
+              value={labelValue.deptGnfdYr}
             />
-            <CustomLabelValue
-              props={labelValue.jbttlCd}
-              onSelect={handleChgState}
-              value={empInfo.jbttlCd}
-              readOnly={readOnly} 
-            />
-            </div>
-            <div className="empDetailRight" style={empDetailRight}>         
             <CustomLabelValue
               props={labelValue.deptGnfdMd}
-              onSelect={handleChgState}
-              value={empInfo.deptGnfdMd}
-              readOnly={readOnly}
+              onSelect={editDept}
+              value={labelValue.deptGnfdMd}            
+            />
+            <CustomLabelValue
+              props={labelValue.jbpsCd}
+              onSelect={editDept}
+              value={labelValue.jbpsCd}
             />
              <div className="buttonContainer" style={buttonContainerStyle}>
              <Button style={buttonStyle}>발령저장</Button>
-            </div>           
-            </div>
+            </div>    
           </div>
           <div className="empHnfListTable" style={empDetailStyle}>
+            <div className="empHnfButtonContainer" style={buttonContainerStyle}>           
+            {deptInfo.deptId != null ? (
+                <Button style={addButtonStyle} text="관리" />
+            ) : null}
+            </div>
             <CustomTable
-              keyColumn={keyColumn3}
+              keyColumn={hnfKeyColumn}
               pageSize={hnfPageSize}
-              columns={tableColumns3}
+              columns={hafTableColumns}
               values={values3}
               paging={true}
-              style={deptTableStyle}
             />
-          </div>
+          </div>     
         </div>
       </div>
     </div>
