@@ -7,12 +7,12 @@ import org.springframework.stereotype.Component;
 import com.trsystem.batchSkill.service.BatchSkillService;
 
 @Component
-public class SchedulingTest {
+public class BatchSkillScheduling {
 	
 	private final BatchSkillService batchSkillService;
 	
 	@Autowired
-    public SchedulingTest(BatchSkillService batchSkillService) {
+    public BatchSkillScheduling(BatchSkillService batchSkillService) {
         this.batchSkillService = batchSkillService;
     }
 	
