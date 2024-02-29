@@ -12,19 +12,20 @@ import { useCookies } from "react-cookie";
 import { DateBox } from "devextreme-react";
 import NumberBox from "devextreme-react/number-box";
 
+
+
 const EmpDegree = ({ callBack, props }) => {
   const [cookies] = useCookies(["userInfo", "userAuth"]);
- 
+
   const userEmpId = cookies.userInfo.empId;
   const [param, setParam] = useState({});
-  const [data, setData] = useState({empId: userEmpId, mtcltnYr: null, grdtnYr: null});
-// 이 부분은 초기화할 값으로 설정하셔야 합니다.
+  const [data, setData] = useState({ empId: userEmpId, mtcltnYr: null, grdtnYr: null });
 
   const { queryId, keyColumn, tableColumns } = EmpInfoJson.EmpDegree;
   const [values, setValues] = useState([]);
 
   useEffect(() => {
-    console.log("유저정보는?"+userEmpId);
+    console.log("유저정보는?" + userEmpId);
     // if (!Object.values(param).every((value) => value === "")) {
     // pageHandle();
     //  }
@@ -33,12 +34,12 @@ const EmpDegree = ({ callBack, props }) => {
       queryId: queryId,
       //empId: "202160c6-bf25-11ee-b259-000c2956283f",
       empId: data.empId,
-    // });
+      // });
     });
   }, []);
 
   const [initParam, setInitParam] = useState({
-    
+           
     acbgSeCd: "",
     schlNm: "",
     majorIntltshNm: "",
@@ -49,41 +50,6 @@ const EmpDegree = ({ callBack, props }) => {
     grdtnYr: ""
   });
 
-  // const handleStartDateChange = (newStartDate) => {
-
-  //   // 시작일자가 변경될 때 수행할 로직 추가
-  //   setInitParam({
-  //     ...initParam,
-  //     mtcltnYr: newStartDate,
-  //     placeholder: "입학일"
-  //   });
-  //   setData({
-  //     ...data,
-      
-  //     grdtnYr: newStartDate
-      
-
-
-  //   });
-    
-  // };
-
-  // const handleEndDateChange = (newEndDate) => {
-
-  //   // 종료일자가 변경될 때 수행할 로직 추가
-  //   setInitParam({
-  //     ...initParam,
-  //     grdtnYr: newEndDate
-
-
-  //   });
-  //   setData({
-  //     ...data,
-  //     grdtnYr: newEndDate
-
-
-  //   });
-  // };
 
   const handleSubmit = () => {
     //callBack(initParam);
@@ -112,7 +78,7 @@ const EmpDegree = ({ callBack, props }) => {
       queryId: queryId
     })
     setData({
-      empId:userEmpId,
+      empId: userEmpId,
       [name]: value
     })
   };
@@ -133,7 +99,7 @@ const EmpDegree = ({ callBack, props }) => {
   };
 
   const acbgInsert = async () => {
-    console.log("data : "+data.empId)
+    console.log("data : " + data.empId)
     const params = [{ tbNm: "EMP_ACBG" }, data
     ]
     try {
@@ -155,11 +121,11 @@ const EmpDegree = ({ callBack, props }) => {
 
   return (
     <div className="container" style={{ height: "700px" }}>
-      <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }}>
+        <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }}>
         <h1 style={{ fontSize: "40px" }}>학력</h1>
       </div>
       <div style={{ marginBottom: "20px" }}>
-        <CustomTable keyColumn={keyColumn} columns={tableColumns} values={values} paging={true} queryId={queryId} />
+        <CustomTable Button keyColumn={keyColumn} columns={tableColumns} values={values} paging={true} queryId={queryId} />
       </div>
       <div style={{ marginBottom: "20px", backgroundColor: "#eeeeee", width: "100%", height: "300px", display: "flex", justifyContent: "center", alignItems: "center" }}>
         <div style={{ width: "95%", height: "250px" }}>
@@ -187,24 +153,24 @@ const EmpDegree = ({ callBack, props }) => {
               <TextBox placeholder="성적" stylingMode="filled" size="large" name="scre" value={initParam.scre} onValueChanged={(e) => handleChgState({ name: e.component.option("name"), value: e.value })} />
             </Item>
             <Item className="prjctDatePickerItem" ratio={1} >
-            <NumberBox
+              <NumberBox
                 showSpinButtons={true}
                 format="#"
-                name = "mtcltnYr"
+                name="mtcltnYr"
                 min={1900} // 최소 연도
                 max={9999} // 최대 연도 (현재 연도)
                 step={1} // 연도가 1씩 증가/감소하도록 설정
                 value={initParam.mtcltnYr}
                 onValueChanged={(e) => handleChgState({ name: e.component.option("name"), value: e.value })}
                 placeholder="입학년도"
-          />
+              />
             </Item>
-          
+
             <Item className="prjctDatePickerItem" ratio={2} >
-            <NumberBox
+              <NumberBox
                 showSpinButtons={true}
                 format="#"
-                name = "grdtnYr"
+                name="grdtnYr"
                 min={1900} // 최소 연도
                 max={9999} // 최대 연도 (현재 연도)
                 step={1} // 연도가 1씩 증가/감소하도록 설정
@@ -212,7 +178,7 @@ const EmpDegree = ({ callBack, props }) => {
                 onValueChanged={(e) => handleChgState({ name: e.component.option("name"), value: e.value })}
                 placeholder="졸업년도"
                 width="50%"
-          />
+              />
             </Item>
           </Box>
           <Box style={{ marginTop: "30px", width: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
