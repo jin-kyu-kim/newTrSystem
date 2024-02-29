@@ -2,10 +2,10 @@ import React, { useCallback, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { TabPanel } from "devextreme-react";
 import { useLocation } from "react-router-dom";
-import ApiRequest from "../../../utils/ApiRequest";
+import ApiRequest from "../../utils/ApiRequest";
 import { useCookies } from "react-cookie";
 
-import EmpDetailInfoJson from "./EmpDetailInfoJson.json";
+import EmpInfoJson from "./EmpInfoJson.json";
 
 import Button from "devextreme-react/button";
 
@@ -16,7 +16,7 @@ const EmpDetailInfo = () => {
 
     const [selectedIndex, setSelectedIndex] = useState(0);
     
-    const EmpDetailInfo = EmpDetailInfoJson;
+    const EmpDetailInfo = EmpInfoJson.EmpDetailInfo;
 
     /*유저세션*/
     const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
@@ -75,7 +75,6 @@ const EmpDetailInfo = () => {
             animationEnabled={true}
             itemComponent={({ data }) => {
             const Component = React.lazy(() => import(`${data.url}`));
-            console.log(data);
             return (
                 <React.Suspense fallback={<div>Loading...</div>}>
                     <Component/>

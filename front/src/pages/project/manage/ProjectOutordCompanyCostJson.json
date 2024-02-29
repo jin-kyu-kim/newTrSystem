@@ -2,6 +2,8 @@
 	"menuName": "ProjectOutordCompanyCostJson",
     "table": "OUTORD_ENTRPS_CT_PRMPC",
     "keyColumn": "outordEntrpsId",
+    "pkColumns": ["prjctId","bgtMngOdr","outordEntrpsId"],
+    "nomalColumns": ["dtlDtls", "tkcgJob"],
     "tableColumns": 
 	[
         {"key": "" ,"value": "상태"},

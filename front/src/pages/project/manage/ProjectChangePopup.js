@@ -6,23 +6,15 @@ import CustomLabelValue from '../../../components/unit/CustomLabelValue';
 import CustomCdComboBox from '../../../components/unit/CustomCdComboBox';
 import NumberBox from 'devextreme-react/number-box';
 import Button from "devextreme-react/button";
-import { set } from 'date-fns';
 
-const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr, ctrtYmd, bizEndYmd}) => {
+const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdrTobe, ctrtYmd, bizEndYmd, transformedData}) => {
     const navigate = useNavigate();
-    const [inputValue, setInputValue] = useState([]); //월별 값 입력을 위한 상태
+    const [inputValue, setInputValue] = useState(transformedData); //월별 값 입력을 위한 상태
     const [data, setData] = useState([]);
     const [param, setParam] = useState([]);
     const [contents, setContents] = useState([]);   
     const [structuredData, setStructuredData] = useState({});
 
-    //param이 바뀔때마다 콘솔에 찍어주기
-    useEffect(() => {
-        console.log("Updated param", param);
-    }, [param]);
-
-
-    // console.log("popupInfo",popupInfo);
     //기간 데이터를 받아와서 년도별로 월을 나누어서 배열로 만들어주는 함수
     useEffect(() => {
         const periodData = period.reduce((acc, period) => {
@@ -35,47 +27,40 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
         }, {});
         setStructuredData(periodData);
       }, [period]); 
-    
+
 
     //부모창에서 받아온 데이터를 상태에 담아주는 useEffect
     useEffect(() => {
-        setData(selectedItem);
+        if(selectedItem){
+            setData(selectedItem);
+        }
     }, [selectedItem]);
 
+    useEffect(() => {
+        if(transformedData){
+            setInputValue(transformedData);
+        }
+    }, [transformedData]);
 
-    //data,param 초기값 지정
+
+    //data초기값 지정
     useEffect(() => { 
-
-        setData({
-            ...data,
-            "prjctId" : prjctId,
-            "bgtMngOdr" : bgtMngOdr
-        });
-
-        // setParam({
-        //     ...param,
-        //     "prjctId" : prjctId,
-        //     "bgtMngOdr" : bgtMngOdr,
-        //     "expensPrmpcSn" : 2, 
-        // });
-
+        if(!selectedItem){
+            setData({
+                ...data,
+                "prjctId" : prjctId,
+                "bgtMngOdr" : bgtMngOdrTobe
+            });
+        }
     }, []);
     
-
     //좌측 일반 값 담기
     const handleChgState = ({name, value}) => {
-
             setData(currentData => ({
                 ...currentData,
                 [name] : value
             }));
-            
-            // setParam(currentParam => ({
-            //     ...currentParam,
-            //     [name] : value
-            // }));
     };  
-
 
     //우측 월 값 담기
     const handleInputChange = (e) => {
@@ -84,16 +69,16 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
         const index = inputValue.findIndex(item => item.id === id); // 입력 값 객체의 인덱스 찾기
         const updatedValues = [...inputValue]; // 상태 변경을 위한 배열 복사
 
-        if (index >= 0) {
-            // 기존 값 업데이트
-            updatedValues[index] = { ...updatedValues[index], value };
-        } else {
-            // 새로운 값 객체 추가
-            updatedValues.push({ id, value });
+        if (index >= 0 ) {   //변경해야하는 데이터
+            if(e.event){
+                updatedValues[index] = { ...updatedValues[index], value : value };
+            }
+        } else {    //신규 데이터      
+                updatedValues.push({ id, value });    // 새로운 값 객체 추가                 
         }
 
         setInputValue(updatedValues); // 업데이트된 배열로 상태 설정
-        
+
         // updatedValues를 map함수를 사용하여 각각의 value값에 있는 숫자 sum하기
         const sum = updatedValues.map(item => item.value).reduce((acc, cur) => acc + cur, 0);
 
@@ -104,17 +89,11 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
         }));
     };
 
-    //inputValue값이 변경될 때마다 param에 담아주기
-    // useEffect(() => {
-    //     setParam(currentParam => ({...currentParam, "months" : inputValue}));
-    // }, [inputValue]);
-
-
     //취소버튼 클릭시
     const handleCancel = (e) => {
         navigate("../project/ProjectChange",
             {
-        state: { prjctId: prjctId, bgtMngOdr: bgtMngOdr, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd},
+        state: { prjctId: prjctId, bgtMngOdrTobe: bgtMngOdrTobe, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd},
         })
     };
 
@@ -122,7 +101,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
         const paramInfo = {
           queryId: "projectMapper.retrieveChgPrmpcOdr",
           prjctId: prjctId,
-          bgtMngOdr: bgtMngOdr,
+          bgtMngOdr: bgtMngOdrTobe,
           [popupInfo.keyColumn] : popupInfo.keyColumn
         };
     
@@ -138,40 +117,70 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
 
     //저장버튼 클릭시
     const handleSave = () => {
-        let order= 0;
-        const result = getNumber().then((value) => {
-            if(value != null){
-                order = value[popupInfo.keyColumn];
-            }
-            order++
-                
+        //수정일 경우
+        if(data[popupInfo.keyColumn]){
             setParam(currentParam => {
                 const newData = {
                     ...data,
-                    [popupInfo.keyColumn] : order,
-                    "prjctId" : prjctId,
-                    "bgtMngOdr" : bgtMngOdr,
                     }; 
                 delete newData.total; // total 속성 삭제
+                delete newData[popupInfo.CdComboboxColumnNm]; //CdNm 데이터 삭제
                 return {
                     ...currentParam,
                     ...newData,
                 };
             });
-        });
+
+        //신규일 경우
+        }else{
+            let order= 0;
+            const result = getNumber().then((value) => {
+                if(value != null){
+                    order = value[popupInfo.keyColumn];
+                }
+                order++
+                    
+                setParam(currentParam => {
+                    const newData = {
+                        ...data,
+                        [popupInfo.keyColumn] : order,
+                        "prjctId" : prjctId,
+                        "bgtMngOdr" : bgtMngOdrTobe,
+                        }; 
+                    delete newData.total; // total 속성 삭제
+                    return {
+                        ...currentParam,
+                        ...newData,
+                    };
+                });
+            });
+        }
     };  
 
     useEffect(() => {
-        const runOrder = async() => {
-            if(Object.keys(param).length > 0){
-            onRowInserting(); 
-            onRowInsertingMonthData();
-            }};
-        runOrder();
+        if(data[popupInfo.keyColumn]){
+            //수정일 경우
+            const runOrder = async() => {
+                if(Object.keys(param).length > 0){
+                    await onRowUpdateing(); 
+                    await onRowUpdateingMonthData();
+                }};
+            runOrder();
+        }else{
+            //신규일 경우
+            const runOrder = async() => {
+                if(Object.keys(param).length > 0){
+                    await onRowInserting(); 
+                    await onRowInsertingMonthData();
+                }};
+            runOrder();
+        }
       }, [param]);
+    
 
     const onRowInserting = async() => {
-            //api param 설정
+        
+        //api param 설정
         const paramInfo = [
             { tbNm: popupInfo.table },
             param,
@@ -213,6 +222,58 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
         } catch (error) {
             console.error('Error ProjectChangePopup insert', error);
         }
+}
+
+
+const onRowUpdateing = async() => {
+    const paramNor = pick(param, popupInfo.nomalColumns);
+    const paramKey = pick(param, popupInfo.pkColumns);
+        
+    //api param 설정
+    const paramInfo = [
+        { tbNm: popupInfo.table },
+        paramNor,
+        paramKey
+    ];
+
+    try {
+        const response = await ApiRequest("/boot/common/commonUpdate", paramInfo);
+            if(response > 0) {
+            alert('데이터가 성공적으로 수정되었습니다.');
+            handleCancel();
+            console.log(response);
+            }    
+    } catch (error) {
+        console.error('Error ProjectChangePopup insert', error);
+    }
+}
+
+const onRowUpdateingMonthData = async() => {
+
+    const pkColumns = pick(param, popupInfo.pkColumnsDtl);
+
+    const makeParam = inputValue.map(item => ({
+        // ...pkColumns,
+        useYm : item.id,
+        expectCt : item.value
+    }));
+
+    //api param 설정
+    const paramInfo = [
+        {queryId: "projectMapper.updateChgPrmpcMdfcn"},
+        { tbNm: popupInfo.subTable },
+        [...makeParam],
+        pkColumns,
+    ];
+
+    try {
+        const response = await ApiRequest("/boot/prjct/updateChgPrmpcMdfcn", paramInfo);
+            if(response > 0) {
+            console.log(response);
+            }    
+    } catch (error) {
+        console.error('Error ProjectChangePopup insert', error);
+    }
 }
 
     //배열에서 특정 키만 추출

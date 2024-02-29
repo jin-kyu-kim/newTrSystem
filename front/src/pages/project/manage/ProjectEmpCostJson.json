@@ -2,6 +2,8 @@
 	"menuName": "ProjectEmpCostJson",
     "table": "MMNY_LBRCO_PRMPC",
     "keyColumn": "empId",
+    "pkColumns": ["prjctId","bgtMngOdr","empId"],
+    "nomalColumns": ["hnfRoleCd", "tkcgJob","inptPrnmntYmd","withdrPrnmntYmd"],
     "tableColumns": 
 	[
         {"key": "empId", "value": "성명"},
