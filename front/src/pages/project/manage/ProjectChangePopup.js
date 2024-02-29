@@ -14,6 +14,12 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
     const [param, setParam] = useState([]);
     const [contents, setContents] = useState([]);   
     const [structuredData, setStructuredData] = useState({});
+    // let monthDate = [];
+    // let filteredArray = [];
+
+    // useEffect(() => {
+    //     console.log("inputValue",inputValue);  
+    // }, [inputValue]);
 
     //기간 데이터를 받아와서 년도별로 월을 나누어서 배열로 만들어주는 함수
     useEffect(() => {
@@ -39,6 +45,13 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
     useEffect(() => {
         if(transformedData){
             setInputValue(transformedData);
+            // monthDate = [...transformedData];
+            // const categoriesToRemove = ['expensCdNm', 'total'];
+            // filteredArray = monthDate.filter(obj =>
+            //     !categoriesToRemove.includes(obj.id)
+            //   );
+            //   console.log("filteredArray",filteredArray);
+
         }
     }, [transformedData]);
 
@@ -64,20 +77,27 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
 
     //우측 월 값 담기
     const handleInputChange = (e) => {
+        // console.log("e",e);
         const id  = e.element.id;   //사용월
         const value  = e.component.option('value');
         const index = inputValue.findIndex(item => item.id === id); // 입력 값 객체의 인덱스 찾기
-        const updatedValues = [...inputValue]; // 상태 변경을 위한 배열 복사
+        const updatedValues = JSON.parse(JSON.stringify(inputValue)); // 상태 변경을 위한 배열 복사
+
+        // console.log("value",value);
 
         if (index >= 0 ) {   //변경해야하는 데이터
             if(e.event){
-                updatedValues[index] = { ...updatedValues[index], value : value };
+                updatedValues[index] = { ...updatedValues[index], value : value !== null ? value : 0 }; // 변경된 값 객체 업데이트
             }
+
         } else {    //신규 데이터      
                 updatedValues.push({ id, value });    // 새로운 값 객체 추가                 
         }
 
+        // console.log("updatedValues 읭?",updatedValues);
+
         setInputValue(updatedValues); // 업데이트된 배열로 상태 설정
+       
 
         // updatedValues를 map함수를 사용하여 각각의 value값에 있는 숫자 sum하기
         const sum = updatedValues.map(item => item.value).reduce((acc, cur) => acc + cur, 0);
@@ -88,6 +108,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
             "total" : sum
         }));
     };
+
 
     //취소버튼 클릭시
     const handleCancel = (e) => {
@@ -417,12 +438,10 @@ const onRowUpdateingMonthData = async() => {
                                             key={months[rowIndex]}
                                             id={`${Object.keys(structuredData)[colIndex]}-${months[rowIndex]}`} 
                                             format={popupInfo.popupNumberBoxFormat}
-                                            value={inputValue.find(item => item.id === `${Object.keys(structuredData)[colIndex]}-${months[rowIndex]}`)?.value || ''}
+                                            value={inputValue.find(item => item.id === `${Object.keys(structuredData)[colIndex]}-${months[rowIndex]}`)?.value || 0}
                                             onValueChanged={handleInputChange}
                                             style={{ textAlign: 'right' }}
-
-
-                                            defaultValue={0.0}
+                                            defaultValue={0}
                                             showSpinButtons={true}
                                             step={popupInfo.popupStep}
                                             showClearButton={true}

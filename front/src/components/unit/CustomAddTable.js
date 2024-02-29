@@ -58,10 +58,10 @@ const CustomAddTable = ({ columns, values, onRowDblClick, pagerVisible, prjctId,
       return (
         <CustomCdComboBox
             param={column.cd}
-            placeholderText="[선택]"
-            name={column.key}
+            placeholderText={column.value}
+            name={column.key2}
             onSelect={handleChgState}
-            value={selectValue}
+            value={selectValue[column.key2]}  
         />
       );
     }};
@@ -86,54 +86,62 @@ const CustomAddTable = ({ columns, values, onRowDblClick, pagerVisible, prjctId,
 
   //데이터 그리드에 로우가 추가될 때마다 실행
   const onRowInserted = (e) => {
-    //   let order= 0;
-    // const result = getNumber().then((value) => {
-    //   if(value != null){
-    //     order = value[json.keyColumn];
-    //   }
-    //   order++
+    //TODO. 코드정리 필요. 외주업체 부분.
+    if(json.table === "OUTORD_ENTRPS_CT_PRMPC"){
+        e.data.prjctId = prjctId;
+        e.data.bgtMngOdr = bgtMngOdrTobe;
+        
+        e.data = {  
+          ...e.data,
+          ...selectValue
+        }
+      setParam(currentParam => {
+        const newData = { ...e.data };
+        delete newData.__KEY__; // __KEY__ 속성 삭제
+        return {
+          ...currentParam,
+          ...newData,
+        };
+      });
 
-    //   if(json.keyColumn === "matrlCtSn"){ //재료비에서 호출한 경우 차수 추가
-    //     e.data.bgtMngOdr = bgtMngOdrTobe;
-    //   }
+    }else{
 
-    //   e.data.prjctId = prjctId;
-      
-    //   e.data = {  
-    //     ...e.data,
-    //     [json.CdComboboxColumn] : selectValue,
-    //     [json.keyColumn] : order,  
-    //   }
-      
-    //   setParam(currentParam => {
-    //     const newData = { ...e.data };
-    //     delete newData.__KEY__; // __KEY__ 속성 삭제
-    //     return {
-    //       ...currentParam,
-    //       ...newData,
-    //     };
-    //   });
-    // }); 
+      let order= 0;
+    const result = getNumber().then((value) => {
+      if(value != null){
+        order = value[json.keyColumn];
+      }
+      order++
+
+      if(json.keyColumn === "matrlCtSn"){ //재료비에서 호출한 경우 차수 추가
+        e.data.bgtMngOdr = bgtMngOdrTobe;
+      }
+
       e.data.prjctId = prjctId;
-      e.data.bgtMngOdr = bgtMngOdrTobe;
       
       e.data = {  
         ...e.data,
-        ...selectValue
+        ...selectValue,
+        [json.keyColumn] : order,  
       }
-    setParam(currentParam => {
-      const newData = { ...e.data };
-      delete newData.__KEY__; // __KEY__ 속성 삭제
-      return {
-        ...currentParam,
-        ...newData,
-      };
-    });
+      
+      setParam(currentParam => {
+        const newData = { ...e.data };
+        delete newData.__KEY__; // __KEY__ 속성 삭제
+        delete newData[json.CdComboboxColumnNm]; // Nm 속성 삭제
+        return {
+          ...currentParam,
+          ...newData,
+        };
+      });
+    }); 
+  }
   }
 
   useEffect(() => {
     if(Object.keys(param).length > 0){
       onRowInserting();
+      console.log("param 삽입 !!",param);
     }
   }, [param]);
 
@@ -153,22 +161,20 @@ const CustomAddTable = ({ columns, values, onRowDblClick, pagerVisible, prjctId,
         param,
       ];
     }
-    
-    // console.log("paramInfo 삽입 !!",paramInfo);
+    //TODO. 외주업체부분 코드정리 필요,
+    if(json.table === "OUTORD_ENTRPS_CT_PRMPC"){
+      try {
+        const response = await ApiRequest("/boot/prjct/saveOutordEntrpsPrmpc", paramInfo);
+            if(response > 0) {
+              alert('데이터가 성공적으로 저장되었습니다.');
+              reload();
+              console.log(response);
+            }    
+      } catch (error) {
+          console.error('Error CustomAddTable insert', error);
+      }
 
-    // if(json.table === "OUTORD_ENTRPS_CT_PRMPC"){
-    //   try {
-    //     const response = await ApiRequest("/boot/prjct/saveOutordEntrpsPrmpc", paramInfo);
-    //         if(response > 0) {
-    //           alert('데이터가 성공적으로 저장되었습니다.');
-    //           reload();
-    //           console.log(response);
-    //         }    
-    //   } catch (error) {
-    //       console.error('Error CustomAddTable insert', error);
-    //   }
-
-    // }else{
+    }else{
       try {
         const response = await ApiRequest("/boot/common/commonInsert", paramInfo);
             if(response > 0) {
@@ -178,13 +184,14 @@ const CustomAddTable = ({ columns, values, onRowDblClick, pagerVisible, prjctId,
       } catch (error) {
           console.error('Error CustomAddTable insert', error);
       }
-    // }
+    }
   }
 
   //데이터 그리드에 로우가 수정될 때마다 실행
   const onRowUpdated = async(e) => {
-    
-    const paramInfo = e.data;
+
+    const paramInfo = {...e.data, ...selectValue};
+
     const paramKey = pick(paramInfo, json.pkColumns);
     delete paramInfo[json.CdComboboxColumnNm]; 
 
@@ -208,9 +215,6 @@ const CustomAddTable = ({ columns, values, onRowDblClick, pagerVisible, prjctId,
 
   //데이터 그리드에 로우가 삭제될 때마다 실행
   const onRowRemoved = async(e) => {
-    // const gridInstance = dataGridRef.current.instance;
-    // const rowIndex = gridInstance.getRowIndexByKey(e.data[json.keyColumn]);
-    //   if (rowIndex >= 0) {
         const paramInfo = e.data;
         const paramInfoNew = pick(paramInfo, json.pkColumns);
 
@@ -229,7 +233,6 @@ const CustomAddTable = ({ columns, values, onRowDblClick, pagerVisible, prjctId,
         }catch (error) {
           console.error(error);
         } 
-      // }
   }
 
   //배열에서 특정 키만 추출
