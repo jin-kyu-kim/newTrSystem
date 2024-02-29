@@ -21,9 +21,6 @@ const CustomAddTable = ({ columns, values, onRowDblClick, pagerVisible, prjctId,
     console.log("param 변경 !!",param);
   }, [param]);
 
-  // const YN = [{"ID": Y, "Name": "Y"},{"ID": 2, "N": "N"}];
-
-
   //부모창에서 받아온 데이터를 상태에 담아주는 useEffect
   useEffect(() => {
     setValue(values);
@@ -141,7 +138,6 @@ const CustomAddTable = ({ columns, values, onRowDblClick, pagerVisible, prjctId,
   useEffect(() => {
     if(Object.keys(param).length > 0){
       onRowInserting();
-      console.log("param 삽입 !!",param);
     }
   }, [param]);
 
@@ -253,6 +249,20 @@ const reload = () => {
     })
 };
 
+const lookupColumns = () => {
+  if(json.table === "PRJCT_CNSRTM"){
+    return (
+      <Column
+      dataField={json.lookupColumn.key}
+      caption={json.lookupColumn.value}
+      width={"13%"}
+    >
+      <Lookup dataSource={json.lookupInfo} displayExpr="Name" valueExpr="ID" />
+    </Column>
+    )
+  }
+}
+
   return (
     <div className="wrap_table">
     <DataGrid
@@ -308,14 +318,7 @@ const reload = () => {
           {/* <ValidationRule type={column.validation ==="reauired" ? "required" : null} /> */}
         </Column>
     ))}
-      {/* <Column
-          dataField="StateID"
-          caption="State"
-          width={125}
-          // dataType="object"
-        >
-          <Lookup dataSource={test} displayExpr="Name" valueExpr="ID" />
-        </Column> */}
+    {lookupColumns()}
     </DataGrid>
   </div>
   );
