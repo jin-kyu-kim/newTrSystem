@@ -13,7 +13,7 @@ const CustomComboBox = ({props, onSelect, placeholder, value, readOnly}) => {
         if(props) {
             param = [
                 { tbNm: props.tbNm },
-                {},
+                props.condition ? props.condition : {}
             ];
 
             getValues(param);
@@ -31,7 +31,7 @@ const CustomComboBox = ({props, onSelect, placeholder, value, readOnly}) => {
 
     return (
         <SelectBox
-            key={props.label}
+            key={props.name}
             dataSource={values}
             valueExpr={props.valueExpr}
             displayExpr={props.displayExpr}
@@ -42,6 +42,7 @@ const CustomComboBox = ({props, onSelect, placeholder, value, readOnly}) => {
             searchEnabled={true}
             value={value}
             readOnly={readOnly}
+            showClearButton={props.clearButton}
         />
     );
 
