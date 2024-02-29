@@ -7,41 +7,101 @@
     --fc-event-text-color: #000000;
 }
 
+
+/*=====================================================================*/
+/* monthStyle */
+/*=====================================================================*/
+
+.monthStyle .fc-scrollgrid{
+  border : 1px solid rgb(207, 207, 207);
+}
+
+.monthStyle .fc-theme-standard td, .fc-theme-standard th{
+  border : 0.5px solid rgb(207, 207, 207);
+}
+
 /* 헤더 css */
-.fc-col-header-cell-cushion{
+.monthStyle .fc-col-header-cell-cushion{
   font-size: 16px;
   color: black;
   text-decoration: none;
 }
 
 /* 일요일 css */
-.fc-day-sun{
+.monthStyle .fc-day-sun{
   background-color: rgb(245, 233, 233);
 }
 
 /* 토요일 css */
-.fc-day-sat{
-  background-color: rgb(237, 240, 245);
+.monthStyle  .fc-day-sat{
+  background-color: rgb(218, 224, 235);
 }
 
 /* 숫자날짜 css */
-.fc-daygrid-day-number{
+.monthStyle  .fc-daygrid-day-number{
   color: black;
   text-align: left;
-  font-size: 15px;
+  font-size: 17px;
   text-decoration : none;
-}
-
-/* 숫자날짜 row css */
-.fc .fc-daygrid-day-top {
-  flex-direction: row
-}
-
-.fc-event-title-container{
-  font-size: 10px;
   margin-left: 2px;
 }
 
-.fc-col-header-cell{
-  background-color: rgb(226, 226, 226);
+/* 숫자날짜 row css */
+.monthStyle .fc .fc-daygrid-day-top {
+  flex-direction: row
+}
+
+.monthStyle .fc-event-title-container{
+  font-size: 11px;
+  margin-left: 2px;
+}
+
+.monthStyle .fc-col-header-cell{
+  background-color: rgb(245, 245, 245);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*=====================================================================*/
+/* .listStyle */
+/*=====================================================================*/
+
+.listStyle .fc-scrollgrid{
+  border : 0.7px solid rgb(207, 207, 207);
+}
+
+.listStyle .fc-theme-standard td, .fc-theme-standard th{
+  border : 0.5px solid rgb(207, 207, 207);
+}
+
+/* 헤더 css */
+.listStyle .fc-col-header-cell-cushion{
+  font-size: 16px;
+  color: black;
+  text-decoration: none;
+}
+
+.listStyle .fc-event-title-container{
+  font-size: 11px;
+  margin-left: 2px;
+}
+
+.listStyle .fc-col-header-cell{
+  background-color: rgb(245, 245, 245);
+}
+
+.listStyle .fc-event-main{
+  background: rgb(190, 218, 197);
+  font-size: 16px;
 }
