@@ -352,7 +352,7 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
                 <div className="project-regist-content-inner">
                     <h3>* 고객정보</h3>
                     <div className="dx-fieldset">
-                        <CustomLabelValue props={labelValue.ctmmnyInfo} onSelect={handleChgState} value={data.ctmmnyNo} readOnly={readOnly}/>
+                        <CustomLabelValue props={labelValue.ctmmnyInfo} onSelect={handleChgState} value={data.ctmmnyId} readOnly={readOnly}/>
                         <CustomLabelValue props={labelValue.picFlnm} onSelect={handleChgState} value={data.picFlnm} readOnly={readOnly}/>
                         <CustomLabelValue props={labelValue.picTelno} onSelect={handleChgState} value={data.picTelno} readOnly={readOnly}/>
                         <CustomLabelValue props={labelValue.picEml} onSelect={handleChgState} value={data.picEml} readOnly={readOnly}/>
