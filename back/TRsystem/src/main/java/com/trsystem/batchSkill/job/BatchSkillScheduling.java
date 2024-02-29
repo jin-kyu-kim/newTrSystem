@@ -16,9 +16,8 @@ public class BatchSkillScheduling {
         this.batchSkillService = batchSkillService;
     }
 	
-	@Scheduled(cron = "0 0 0 1 ? *") // 매달 1일 0시 0분 프로시저 실행
+	@Scheduled(cron = "0 0 0 1 * ?") // 매달 1일 0시 0분 프로시저 실행
 	public void executeEmpRetirePrcs() {
-		batchSkillService.executeEmpRetirePrcs();
+	    batchSkillService.executeEmpRetirePrcs();
 	}
-
 }
