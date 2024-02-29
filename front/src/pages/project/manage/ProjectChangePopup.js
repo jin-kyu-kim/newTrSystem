@@ -14,6 +14,12 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
     const [param, setParam] = useState([]);
     const [contents, setContents] = useState([]);   
     const [structuredData, setStructuredData] = useState({});
+    // let monthDate = [];
+    // let filteredArray = [];
+
+    // useEffect(() => {
+    //     console.log("inputValue",inputValue);  
+    // }, [inputValue]);
 
     //기간 데이터를 받아와서 년도별로 월을 나누어서 배열로 만들어주는 함수
     useEffect(() => {
@@ -39,6 +45,13 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
     useEffect(() => {
         if(transformedData){
             setInputValue(transformedData);
+            // monthDate = [...transformedData];
+            // const categoriesToRemove = ['expensCdNm', 'total'];
+            // filteredArray = monthDate.filter(obj =>
+            //     !categoriesToRemove.includes(obj.id)
+            //   );
+            //   console.log("filteredArray",filteredArray);
+
         }
     }, [transformedData]);
 
@@ -64,20 +77,27 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
 
     //우측 월 값 담기
     const handleInputChange = (e) => {
+        // console.log("e",e);
         const id  = e.element.id;   //사용월
         const value  = e.component.option('value');
         const index = inputValue.findIndex(item => item.id === id); // 입력 값 객체의 인덱스 찾기
-        const updatedValues = [...inputValue]; // 상태 변경을 위한 배열 복사
+        const updatedValues = JSON.parse(JSON.stringify(inputValue)); // 상태 변경을 위한 배열 복사
+
+        // console.log("value",value);
 
         if (index >= 0 ) {   //변경해야하는 데이터
             if(e.event){
-                updatedValues[index] = { ...updatedValues[index], value : value };
+                updatedValues[index] = { ...updatedValues[index], value : value !== null ? value : 0 }; // 변경된 값 객체 업데이트
             }
+
         } else {    //신규 데이터      
                 updatedValues.push({ id, value });    // 새로운 값 객체 추가                 
         }
 
+        // console.log("updatedValues 읭?",updatedValues);
+
         setInputValue(updatedValues); // 업데이트된 배열로 상태 설정
+       
 
         // updatedValues를 map함수를 사용하여 각각의 value값에 있는 숫자 sum하기
         const sum = updatedValues.map(item => item.value).reduce((acc, cur) => acc + cur, 0);
@@ -88,6 +108,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
             "total" : sum
         }));
     };
+
 
     //취소버튼 클릭시
     const handleCancel = (e) => {
@@ -124,7 +145,9 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
                     ...data,
                     }; 
                 delete newData.total; // total 속성 삭제
-                delete newData[popupInfo.CdComboboxColumnNm]; //CdNm 데이터 삭제
+                popupInfo.CdComboboxColumnNm.forEach((columnName) => {
+                    delete newData[columnName];
+                });
                 return {
                     ...currentParam,
                     ...newData,
@@ -158,6 +181,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
     };  
 
     useEffect(() => {
+
         if(data[popupInfo.keyColumn]){
             //수정일 경우
             const runOrder = async() => {
@@ -177,7 +201,6 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
         }
       }, [param]);
     
-
     const onRowInserting = async() => {
         
         //api param 설정
@@ -191,7 +214,6 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
                 if(response > 0) {
                 alert('데이터가 성공적으로 저장되었습니다.');
                 handleCancel();
-                console.log(response);
                 }    
         } catch (error) {
             console.error('Error ProjectChangePopup insert', error);
@@ -204,8 +226,8 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
 
         const makeParam = inputValue.map(item => ({
             ...pkColumns,
-            useYm : item.id,
-            expectCt : item.value
+            [popupInfo.nomalColumnsDtlYm] : item.id,
+            [popupInfo.nomalColumnsDtlValue] : item.value
         }));
 
         //api param 설정
@@ -241,7 +263,6 @@ const onRowUpdateing = async() => {
             if(response > 0) {
             alert('데이터가 성공적으로 수정되었습니다.');
             handleCancel();
-            console.log(response);
             }    
     } catch (error) {
         console.error('Error ProjectChangePopup insert', error);
@@ -254,8 +275,8 @@ const onRowUpdateingMonthData = async() => {
 
     const makeParam = inputValue.map(item => ({
         // ...pkColumns,
-        useYm : item.id,
-        expectCt : item.value
+        [popupInfo.nomalColumnsDtlYm] : item.id,
+        [popupInfo.nomalColumnsDtlValue] : item.value
     }));
 
     //api param 설정
@@ -268,9 +289,6 @@ const onRowUpdateingMonthData = async() => {
 
     try {
         const response = await ApiRequest("/boot/prjct/updateChgPrmpcMdfcn", paramInfo);
-            if(response > 0) {
-            console.log(response);
-            }    
     } catch (error) {
         console.error('Error ProjectChangePopup insert', error);
     }
@@ -314,34 +332,8 @@ const onRowUpdateingMonthData = async() => {
             setContents(
                 <div className="dx-fieldset"> 
                 <CustomLabelValue props={popupInfo.labelValue.outordEntrpsId} value={selectedItem != null ? selectedItem.outordEntrpsId : null} onSelect={handleChgState}/>
-                    <div className="dx-field">
-                        <div className="dx-field-label asterisk">역할</div>
-                        <div className="dx-field-value">
-                            <CustomCdComboBox
-                                param="VTW006"
-                                placeholderText="역할코드"
-                                name="temp"
-                                onSelect={handleChgState}
-                                value={selectedItem != null ? selectedItem.expensCd : null}
-                            />
-                        </div>
-                    </div>
-                    <div className="dx-field">
-                        <div className="dx-field-label asterisk">등급</div>
-                        <div className="dx-field-value">
-                            <CustomCdComboBox
-                                param="VTW005"
-                                placeholderText="등급코드"
-                                name="temp1"
-                                onSelect={handleChgState}
-                                value={selectedItem != null ? selectedItem.expensCd : null}
-                            />
-                        </div>
-                    </div>
-                    <CustomLabelValue props={popupInfo.labelValue.tkcgJob} value={selectedItem != null ? selectedItem.tkcgJob : null} onSelect={handleChgState}/>
-                    <CustomLabelValue props={popupInfo.labelValue.temp2} value={selectedItem != null ? selectedItem.temp2 : null} onSelect={handleChgState}/>
-                    <CustomLabelValue props={popupInfo.labelValue.temp3} value={selectedItem != null ? selectedItem.temp3 : null} onSelect={handleChgState}/>
-                    <CustomLabelValue props={popupInfo.labelValue.bgtMngOdr} value={selectedItem != null ? selectedItem.bgtMngOdr : null} onSelect={handleChgState}/>
+                <CustomLabelValue props={popupInfo.labelValue.tkcgJob} value={selectedItem != null ? selectedItem.tkcgJob : null} onSelect={handleChgState}/>
+                <CustomLabelValue props={popupInfo.labelValue.total} value={selectedItem != null ? selectedItem.bgtMngOdr : null} onSelect={handleChgState}/>
                 </div>
             )
         }else if(popupInfo.menuName==="ProjectOutordEmpCostJson"){
@@ -429,7 +421,7 @@ const onRowUpdateingMonthData = async() => {
                                     {Object.keys(structuredData).map((year, index) => (
                                         <>
                                         <th key={year} style={{ width: "50px", textAlign: "center" }}> {year}년 </th>
-                                        <th key={index} style={{textAlign:"center"}}> 경비 </th>
+                                        <th key={index} style={{textAlign:"center"}}> {popupInfo.popupFormat} </th>
                                         </>
                                     ))}
                                     </tr>
@@ -445,11 +437,15 @@ const onRowUpdateingMonthData = async() => {
                                             (<NumberBox 
                                             key={months[rowIndex]}
                                             id={`${Object.keys(structuredData)[colIndex]}-${months[rowIndex]}`} 
-                                            format="#.### 원"
-                                            value={inputValue.find(item => item.id === `${Object.keys(structuredData)[colIndex]}-${months[rowIndex]}`)?.value || ''}
+                                            format={popupInfo.popupNumberBoxFormat}
+                                            value={inputValue.find(item => item.id === `${Object.keys(structuredData)[colIndex]}-${months[rowIndex]}`)?.value || 0}
                                             onValueChanged={handleInputChange}
-                                            style={{ textAlign: 'right' }}/>   
-                                            ): ''}</td>
+                                            style={{ textAlign: 'right' }}
+                                            defaultValue={0}
+                                            showSpinButtons={true}
+                                            step={popupInfo.popupStep}
+                                            showClearButton={false}
+                                            />): ''}</td>
                                         </>
                                         ))}
                                     </tr>

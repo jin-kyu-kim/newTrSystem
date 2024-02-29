@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { TabPanel } from "devextreme-react";
 import Button from "devextreme-react/button";
 import { useCookies } from "react-cookie";
+import DataGrid, { Column} from "devextreme-react/data-grid";
+
 
 import ApiRequest from "utils/ApiRequest";
 import ProjectAprvDetailJson from "./ProjectAprvDetailJson.json";
@@ -27,6 +29,28 @@ const ProjectAprvDetail = () => {
     const [rjctPopupVisible, setRjctPopupVisible] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [opnnCn, setOpnnCn] = useState("");
+    const [data, setData] = useState([]);
+
+    const dataS = ProjectAprvDetail.dataSource;
+
+    useEffect(() => {
+        console.log("useEffect")
+        console.log(prjctId)
+        console.log(atrzLnSn)
+        const param = {
+            "queryId": ProjectAprvDetail.queryId,
+            "prjctId": prjctId,
+            "atrzLnSn": atrzLnSn,
+        }
+
+        const response = ApiRequest("/boot/common/queryIdSearch", param).then((response) => {
+        
+            setData(response);
+        });
+        console.log(data)
+
+    },[]);
+
 
     // 날짜 생성
     const getToday = () => {
@@ -84,8 +108,6 @@ const ProjectAprvDetail = () => {
                             break;
                     }
 
-                    console.log(nowStep);
-
                     handleNowAtrzStepCd(nowStep);
                     // 마지막 결재자일 경우
                     if(atrzStepCd === "VTW00705") { 
@@ -99,41 +121,15 @@ const ProjectAprvDetail = () => {
                         handlePrjctBizStts();
                     }
     
-                    alert("승인요청이 완료되었습니다.");
+                    alert("승인이 완료되었습니다.");
                     navigate("../project/ProjectAprv");
                 } else {
-                    alert("승인요청이 실패하였습니다.");
+                    alert("승인이 실패하였습니다.");
                     return;
                 }
             
             });
-
-/*
-            if(response > 0) {
-
-
-                // 마지막 결재자일 경우
-                if(atrzStepCd === 'VTW00705') { 
-                    
-                    // PRJCT_BGT_PRMPC 테이블 결재완료로 수정
-                    // ATRZ_DMND_STTS_CD -> VTW03303(결재완료)
-                    handleBgtPrmpc();
-
-                    // PRJCT 테이블
-                    // BIZ_STTS_CD 컬럼 -> VTW00402(수행)
-                    handlePrjctBizStts();
-                }
-
-
-                alert("승인요청이 완료되었습니다.");
-                navigate("../project/ProjectAprv");
-            } else {
-                alert("승인요청이 실패하였습니다.");
-                return;
-            }
-*/
         }
-
     }
 
     /* 
@@ -168,8 +164,8 @@ const ProjectAprvDetail = () => {
             if(response > 0) {
 
                 // 반려되면
-                // PRJCT_BGT_PRMPC 테이블 결재완료로 수정
-                // 컬럼 ATRZ_DMND_STTS_CD -> VTW03303
+                // PRJCT_BGT_PRMPC 테이블 결재완료가 아니라 임시저장으로 수정 << todo
+                // 컬럼 ATRZ_DMND_STTS_CD -> VTW03301
                 handleBgtPrmpc();
 
                 alert("반려 되었습니다.");
@@ -205,6 +201,11 @@ const ProjectAprvDetail = () => {
         await ApiRequest("/boot/common/commonUpdate", param);
     }
 
+    /**
+     * 반려 시 PRJCT_BGT_PRMPC 테이블 수정
+     * atrzDmndSttsCd 결재요청상태구분코드: 임시저장(VTW03301) 으로 수정
+     * 승인목록에서 조회한 bgtMngOdr 값으로 수정
+     */
     const handleBgtPrmpc = async () => {
         const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
         const date = getToday();
@@ -212,14 +213,14 @@ const ProjectAprvDetail = () => {
         const param = [
           { tbNm : "PRJCT_BGT_PRMPC" },
           {
-            atrzDmndSttsCd: "VTW03303",
-            ATRZ_CMPTN_YMD: date,
+            atrzDmndSttsCd: "VTW03301",
+            atrzCmptnYmd: date,
             mdfcnEmpId: cookies.userInfo.empId,
             mdfcnDt: mdfcnDt,
           },
           {
             prjctId: prjctId,
-            bgtMngOdr: atrzLnSn,
+            bgtMngOdr: bgtMngOdr,
           }
         ]
     
@@ -265,7 +266,7 @@ const ProjectAprvDetail = () => {
     
     // 승인 팝업 Open
     const onAprvPopup = () => {
-
+        console.log(data);
         /*
         *  심사중인지 확인한다.
         *  VTW00801 : 심사중, VTW00802 : 승인, VTW00803 : 반려, VTW00804 : 보류, VTW00805 : 취소
@@ -295,7 +296,7 @@ const ProjectAprvDetail = () => {
             return;
         }
 
-        if(atrzSttsCd !== nowAtrzStepCd) {
+        if(atrzStepCd !== nowAtrzStepCd) {
             alert("현재 선행 결재가 완료되지 않았습니다.");
             return;
         }
@@ -307,22 +308,147 @@ const ProjectAprvDetail = () => {
     const onTextAreaValueChanged = useCallback((e) => {
         setOpnnCn(e.value);
     }, []);
+
+    const DataRow = (rowInfo) => {
+        // console.log(rowInfo)
+        console.log(rowInfo)
+        
+        const result = [];
+
+        const header = [];
+
+        const stts = [];
+
+        const emp = [];
+
+        const ymd = [];
+
+        const defalultHeader = (
+            <>
+                <th className="table-atrzLn-td">
+                    검토
+                </th>
+                <th className="table-atrzLn-td">
+                    확인
+                </th>
+                <th className="table-atrzLn-td">
+                    심사
+                </th>
+                <th className="table-atrzLn-td">
+                    승인
+                </th>
+            </>
+            
+        )
+
+        rowInfo.map((item, index) => {
+
+            header.push(
+                <th className="table-atrzLn-th">
+                    {item.atrzStepNm}
+                </th>
+            );
+
+            stts.push(
+                <td className="table-atrzLn-td">
+                    {item.atrzSttsNm}
+                </td>
+            );
+            emp.push(
+                <td className="table-atrzLn-td">
+                    {item.aprvrEmpFlnm}
+                </td>
+            )
+            if(item.atrzSttsNm === '반려') {
+                ymd.push(
+                    <td className="table-atrzLn-td">
+                        {item.mdfcnDt}
+                    </td>
+                )
+            } else {
+                ymd.push(
+                    <td className="table-atrzLn-td">
+                        {item.mdfcnDt}
+                    </td>
+                )
+            }
+        })
+
+
+        const test = (
+            <table className="table-atrzLn">
+                {/* <colgroup>
+                    <col width="8%"/>
+                    <col width="23%"/>
+                    <col width="23%"/>
+                    <col width="23%"/>
+                    <col width="23%"/>
+                </colgroup> */}
+                <tbody>
+                    <tr>
+                        <th className="table-atrzLn-th" rowspan={4}>결재</th>
+                        {header}
+                        {/* {defalultHeader} */}
+                    </tr>
+                    <tr>
+                        {stts}
+                    </tr>
+                    <tr>
+                        {emp}
+                    </tr>
+                    <tr>
+                        {ymd}
+                    </tr>
+                </tbody>
+            </table>
+        );
+
+        return test;
+    }
           
     return (
         <div>
             <div
-                className="title p-1"
-                style={{ marginTop: "20px", marginBottom: "10px" }}
+                className="title-aprvDetail-container"
+                style={{ marginTop: "20px" }}
             >
-                <div style={{ marginRight: "20px", marginBottom: "10px" }}>
+                <div className="title-aprvDetail title-aprvDetail-left" style={{ marginRight: "20px", marginBottom: "10px", marginLeft: "10%"}}>
                     <h1 style={{ fontSize: "30px" }}>프로젝트 승인 내역</h1>
                     <div>{location.state.prjctNm}</div>
                 </div>
-            </div>
-            <div className="buttons" align="right" style={{ margin: "20px" }}>
-                <Button text="승인" onClick={onAprvPopup}/>
-                <Button text="반려" onClick={onRjctPopup}/>
-                <LinkButton location={-1} name={"목록"} type={"normal"} stylingMode={"outline"}/>
+                <div className="title-aprvDetail-right">
+                    <div className="table-atrzLn-wrapper">
+                        {/* <DataGrid
+                            id="prjctAprvLn"
+                            dataSource={data}
+                            dataRowRender={DataRow}
+                        >
+                            <Column 
+                                caption=""
+                            />
+                            <Column 
+                                caption="검증"
+                                dataField=""
+                            />
+                            <Column 
+                                caption="확인"
+                                dataField="atrzSttsNm"
+                            />
+                             <Column 
+                                caption="심사"
+                            />
+                            <Column 
+                                caption="승인"
+                            />
+                        </DataGrid> */}
+                        {DataRow(data)}
+                    <div className="buttons" align="right" style={{ marginTop: "5px", marginBottom: "5px" }}>
+                        <Button text="승인" onClick={onAprvPopup}/>
+                        <Button text="반려" onClick={onRjctPopup}/>
+                        <LinkButton location={-1} name={"목록"} type={"normal"} stylingMode={"outline"}/>
+                    </div>
+                    </div>
+                </div>
             </div>
             <div
                 style={{

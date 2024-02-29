@@ -85,6 +85,12 @@ public class ProjectBaseController {
     	return result;
     }
    
+    @PostMapping(value = "/boot/prjct/saveOutordEntrpsPrmpc")
+    public int saveOutordEntrpsPrmpc(@RequestBody List<Object> params) {
+   
+    	
+    	return ProjectBaseDomain.saveOutordEntrpsPrmpc(params);
+    }
     
     
 }

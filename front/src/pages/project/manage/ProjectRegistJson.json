@@ -57,9 +57,9 @@
             "label": "고객사",
             "placeholder": "고객사(발주기관)",
             "param": { "tbNm" : "CTMMNY_INFO",
-                        "valueExpr" : "ctmmnyNo",
+                        "valueExpr" : "ctmmnyId",
                         "displayExpr": "ctmmnyNm",
-                        "name" : "ctmmnyNo"
+                        "name" : "ctmmnyId"
                      }
         },
         "picFlnm": {

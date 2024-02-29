@@ -13,9 +13,9 @@
         , (SELECT CD_NM FROM CD WHERE CD_VALUE = BIZ_STTS_CD) AS BIZ_STTS_CD_NM
         , BIZ_STTS_CD
         , (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = PRJCT_MNGR_EMP_ID ) AS PRJCT_MNGR_EMP_ID
-        , CTMMNY_NO
-        , CTRT_YMD
-        , BIZ_END_YMD
+        , (SELECT CTMMNY_NM FROM CTMMNY_INFO ci WHERE ci.CTMMNY_ID = p.CTMMNY_ID) AS CTMMNY_NM
+        , DATE_FORMAT(CTRT_YMD, '%Y-%m-%d') AS CTRT_YMD
+        , DATE_FORMAT(BIZ_END_YMD, '%Y-%m-%d') AS BIZ_END_YMD
         , TOT_BGT
 	    , (SELECT MAX(BGT_MNG_ODR) FROM PRJCT_BGT_PRMPC pbp WHERE pbp.PRJCT_ID = p.PRJCT_ID AND pbp.ATRZ_DMND_STTS_CD = 'VTW03303') AS BGT_MNG_ODR
 	    , (SELECT IFNULL(MAX(BGT_MNG_ODR), 1) FROM PRJCT_BGT_PRMPC pbp WHERE pbp.PRJCT_ID = p.PRJCT_ID) AS BGT_MNG_ODR_TOBE
@@ -49,18 +49,19 @@
 	SELECT ROW_NUMBER() OVER() ROWNUM, A.*
 	  FROM (
 			 SELECT pal.PRJCT_ID 
-				   , (SELECT CD_NM FROM CD WHERE CD_VALUE = pal.PRMPC_INPT_SE_CD) AS PRMPC_INPT_SE_CD
-				   , p.PRJCT_NM
-				   , (SELECT CD_NM FROM CD WHERE CD_VALUE = pald.ATRZ_STEP_CD) AS ATRZ_STEP_CD_NM
-			 	   , pald.ATRZ_STEP_CD
-				   , (SELECT CD_NM FROM CD WHERE CD_VALUE = pald.ATRZ_STTS_CD) AS ATRZ_STTS_CD_NM
-				   , pald.ATRZ_STTS_CD
-				   , e.EMP_FLNM
-					 , pald.APRV_YMD
-					 , pald.RJCT_YMD
-					 , pal.ATRZ_LN_SN
-					 , pal.NOW_ATRZ_STEP_CD
-			         , COUNT(*) OVER () AS TOTAL_ITEMS
+				  , (SELECT CD_NM FROM CD WHERE CD_VALUE = pal.PRMPC_INPT_SE_CD) AS PRMPC_INPT_SE_CD
+				  , p.PRJCT_NM
+				  , (SELECT CD_NM FROM CD WHERE CD_VALUE = pald.ATRZ_STEP_CD) AS ATRZ_STEP_CD_NM
+			 	  , pald.ATRZ_STEP_CD
+				  , (SELECT CD_NM FROM CD WHERE CD_VALUE = pald.ATRZ_STTS_CD) AS ATRZ_STTS_CD_NM
+				  , pald.ATRZ_STTS_CD
+				  , e.EMP_FLNM
+				  , DATE_FORMAT(pald.APRV_YMD, '%Y-%m-%d') AS APRV_YMD
+				  , DATE_FORMAT(pald.RJCT_YMD, '%Y-%m-%d') AS RJCT_YMD
+				  , pal.ATRZ_LN_SN
+				  , pal.NOW_ATRZ_STEP_CD
+				  , pal.BGT_MNG_ODR
+			      , COUNT(*) OVER () AS TOTAL_ITEMS
 			  FROM PRJCT_ATRZ_LN pal
 			  JOIN PRJCT_ATRZ_LN_DTL pald ON(pal.PRJCT_ID = pald.PRJCT_ID AND pal.ATRZ_LN_SN = pald.ATRZ_LN_SN)
 			  JOIN PRJCT p ON (p.PRJCT_ID = pal.PRJCT_ID AND p.PRJCT_ID = pald.PRJCT_ID)
@@ -76,6 +77,7 @@
 		        <if test="bizFlfmtTyCd != null and !bizFlfmtTyCd.equals('')">
 		       AND BIZ_FLFMT_TY_CD = #{bizFlfmtTyCd}
 		        </if>
+    		   AND pald.ATRZ_STTS_CD != 'VTW00805'
 			   ORDER BY pal.REG_DT DESC
 	  ) A
     </select>
@@ -451,9 +453,14 @@
 	 	 	 ) AS RJCT_YMD
 	 	 , pal.ATRZ_APLY_PRVONSH_CN
 	 	 , concat(c1.CD_NM, ' (', c2.CD_NM, ')') AS ATRZ_STEP_STTS
+	 	 , c1.CD_NM AS ATRZ_STEP_NM
+	 	 , c2.CD_NM AS ATRZ_STTS_NM
 		 , e1.EMP_FLNM AS APRVR_EMP_FLNM
 		 , pald.ATRZ_OPNN_CN
 	 	 , pald.RJCT_PRVONSH
+ 	 	 , pald.APRV_YMD AS STEP_APRV_YMD
+ 	 	 , pald.RJCT_YMD AS STEP_RJCT_YMD
+ 	 	 , DATE_FORMAT(pald.MDFCN_DT, '%Y.%m.%d %H:%i:%s') AS MDFCN_DT
 	  FROM PRJCT_ATRZ_LN_DTL pald 
 	  JOIN CD c1 ON (c1.CD_VALUE = pald.ATRZ_STEP_CD)
 	  JOIN CD c2 ON (c2.CD_VALUE = pald.ATRZ_STTS_CD)
@@ -522,13 +529,63 @@
 			  FROM EXPENS_PRMPC
 			 WHERE PRJCT_ID = #{prjctId}
 			 AND BGT_MNG_ODR = #{bgtMngOdr}
-		</if>			    
+		</if>		
+		<if test="outordLbrcoPrmpcSn != null">
+			SELECT COALESCE(MAX(OUTORD_LBRCO_PRMPC_SN),0) AS OUTORD_LBRCO_PRMPC_SN
+			  FROM OUTORD_LBRCO_PRMPC
+			 WHERE PRJCT_ID = #{prjctId}
+			 AND BGT_MNG_ODR = #{bgtMngOdr}
+		</if>		    
 	</select>
 	
 	<select id="updateChgPrmpcMdfcn" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		INSERT INTO EXPENS_MNBY_PRMPC_DTLS (PRJCT_ID, BGT_MNG_ODR,EXPENS_PRMPC_SN,USE_YM,EXPENS_CD,EXPECT_CT) 
-		VALUES(	#{prjctId}, #{bgtMngOdr}, #{expensPrmpcSn},#{useYm},#{expensCd},#{expectCt})
-			ON DUPLICATE KEY UPDATE 
-			EXPECT_CT = #{expectCt}
+		<if test="expensPrmpcSn != null">
+			INSERT INTO EXPENS_MNBY_PRMPC_DTLS (PRJCT_ID, BGT_MNG_ODR,EXPENS_PRMPC_SN,USE_YM,EXPENS_CD,EXPECT_CT) 
+			VALUES(	#{prjctId}, #{bgtMngOdr}, #{expensPrmpcSn},#{useYm},#{expensCd},#{expectCt})
+				ON DUPLICATE KEY UPDATE 
+				EXPECT_CT = #{expectCt}
+		</if>
+		<if test="outordLbrcoPrmpcSn != null">
+			INSERT INTO OUTORD_LBRCO_PRMPC_DTL (PRJCT_ID, BGT_MNG_ODR, OUTORD_LBRCO_PRMPC_SN, INPT_YM, EXPECT_MM)
+			VALUES(	#{prjctId}, #{bgtMngOdr}, #{outordLbrcoPrmpcSn}, #{inptYm}, #{expectMm})
+			   ON DUPLICATE KEY UPDATE 
+			   EXPECT_MM = #{expectMm}
+		</if>
 	</select>
+	
+	
+	<select id="retrieveOutordEntrpsPrmpc" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		  SELECT 
+		    M.OUTORD_ENTRPS_ID, 
+		    N.OUTORD_ENTRPS_NM, 
+		    M.TKCG_JOB, 
+		    M.DTL_DTLS,
+		    M.BGT_MNG_ODR,
+			M.PRJCT_ID, 
+		    C.GIVE_YM, 
+		    C.EXPECT_CT  
+		FROM OUTORD_ENTRPS_CT_PRMPC M
+		JOIN OUTORD_ENTRPS_CT_PRMPC_DTL C 
+			ON M.PRJCT_ID = C.PRJCT_ID 
+			AND M.BGT_MNG_ODR = C.BGT_MNG_ODR 
+			AND M.OUTORD_ENTRPS_CT_PRMPC_SN = C.OUTORD_ENTRPS_CT_PRMPC_SN
+		JOIN  OUTORD_ENTRPS N 
+			ON M.OUTORD_ENTRPS_ID = N.OUTORD_ENTRPS_ID
+		WHERE 1=1
+		 AND  M.PRJCT_ID =#{prjctId}
+		 AND M.BGT_MNG_ODR = #{bgtMngOdr}
+	</select>
+	
+	
+	<!-- -->
+	<select id="retrieveRjctAtrz" parameterType="map" resultType="com.trsystem.LowerHashMap">
+	  SELECT pal.PRJCT_ID
+	    FROM PRJCT_ATRZ_LN_DTL pald
+	    JOIN PRJCT_ATRZ_LN pal ON (pal.PRJCT_ID = pald.PRJCT_ID AND pal.ATRZ_LN_SN = pald.ATRZ_LN_SN)
+	   WHERE 1=1
+	     AND pal.PRJCT_ID = #{prjctId}
+	     AND pal.ATRZ_LN_SN = #{atrzLnSn}
+	     AND pald.ATRZ_STTS_CD = 'VTW00803'
+	</select>
+
 </mapper>

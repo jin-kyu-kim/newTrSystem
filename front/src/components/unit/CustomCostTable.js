@@ -81,8 +81,8 @@ const CustomCostTable = ({
   //파라미터로 받아온 사업시작, 사업종료월을 파라미터로 포함된 월의 갯수를 배열로 반환
   useEffect(() => {
       const getPeriod = (startDate, endDate) => {
-        const start = startDate ? parse(startDate, 'yyyyMMdd', new Date()) : new Date();
-        const end = endDate ? parse(endDate, 'yyyyMMdd', new Date()) : addMonths(start, 15);
+        const start = startDate ? parse(startDate, 'yyyy-MM-dd', new Date()) : new Date();
+        const end = endDate ? parse(endDate, 'yyyy-MM-dd', new Date()) : addMonths(start, 15);
         let periods = [];
         let currentDate = start;
         while (currentDate  <= end) {
