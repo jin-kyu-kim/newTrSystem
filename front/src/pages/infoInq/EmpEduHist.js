@@ -77,7 +77,7 @@ useEffect(()=>{
         <CustomTable keyColumn={keyColumn} columns={tableColumns} values={values} paging={true} />
       </div>
       <div style={{ marginBottom: "20px", backgroundColor: "#eeeeee", width: "100%", height: "300px", display: "flex", justifyContent: "center", alignItems: "center" }}>
-        <div style={{ width: "95%", height: "180px", backgroundColor: "#fff" }}>
+        <div style={{ width: "95%", height: "180px"}}>
           <h5>교육이력을 입력/수정 합니다.</h5>
           <Box direction="row" width="100%" height={40}>
             <Item className="prjctNameItem" ratio={1}>

@@ -134,6 +134,34 @@
 			INNER JOIN CD C ON C.CD_VALUE = EPH.JOB_CL_CD
 			INNER JOIN CD C2 ON C2.CD_VALUE = EPH.TCHNLGY_CL_CD 
 			WHERE EPH.EMP_ID = #{empId}
-	</select>	
+	</select>
+
+	<select id="retrieveNoticeList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT
+		ROW_NUMBER()OVER ()ROWNUM
+		, NOTICE_ID
+		, NOTICE_TTL
+		, SGNAL_ORDR
+		, e.EMP_FLNM AS REG_EMP_ID
+		, n.REG_DT
+		, COUNT(*) OVER () AS TOTAL_ITEMS
+		FROM NOTICE n
+		LEFT JOIN EMP e ON n.REG_EMP_ID = e.EMP_ID
+		WHERE 1=1
+		<if test="searchCnd == 'VTW01701' and searchWrd != null and searchWrd != ''">
+			AND NOTICE_TTL LIKE CONCAT('%',#{searchWrd},'%')
+		</if>
+		<if test="searchCnd == 'VTW01702' and searchWrd != null and searchWrd != ''">
+			AND NOTICE_CN LIKE CONCAT('%',#{searchWrd},'%')
+		</if>
+		<if test="searchCnd == 'VTW01703'">
+			AND (
+			NOTICE_TTL LIKE CONCAT('%',#{searchWrd},'%')
+			OR NOTICE_CN LIKE CONCAT('%',#{searchWrd},'%')
+			)
+		</if>
+		ORDER BY REG_DT DESC
+	</select>
+
 </mapper>
 
