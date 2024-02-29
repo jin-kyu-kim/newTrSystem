@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import HtmlEditor, { Toolbar, MediaResizing, ImageUpload, Item } from "devextreme-react/html-editor";
+import { Validator, RequiredRule } from 'devextreme-react/validator'
 
-const HtmlEditBox = ({ column, data, setData, value }) => {
+const HtmlEditBox = ({ column, data, setData, value, placeholder }) => {
   const [editorValue, setEditorValue] = useState(value);
 
   useEffect(() => {
@@ -14,12 +15,16 @@ const HtmlEditBox = ({ column, data, setData, value }) => {
         height="725px"
         id={column.dataField}
         value={editorValue}
+        placeholder={placeholder}
         focusStateEnabled={true}
         onValueChanged={(e) => {
           setEditorValue(e.value);
           setData({ ...data, [column.dataField]: e.value });
         }}
       >
+        <Validator>
+          <RequiredRule message='내용은 필수입니다'  />
+        </Validator>
         <MediaResizing enabled={true} />
         <ImageUpload fileUploadMode="base64" />
         <Toolbar>
@@ -59,31 +64,31 @@ const HtmlEditBox = ({ column, data, setData, value }) => {
   );
 };
 const sizeValues = ["8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt"];
-  const fontValues = [
-    "Arial",
-    "Courier New",
-    "Georgia",
-    "Impact",
-    "Lucida Console",
-    "Tahoma",
-    "Times New Roman",
-    "Verdana",
-  ];
-  const headerValues = [false, 1, 2, 3, 4, 5];
-  const fontSizeOptions = {
-    inputAttr: {
-      "aria-label": "Font size",
-    },
-  };
-  const fontFamilyOptions = {
-    inputAttr: {
-      "aria-label": "Font family",
-    },
-  };
-  const headerOptions = {
-    inputAttr: {
-      "aria-label": "Font family",
-    },
-  };
+const fontValues = [
+  "Arial",
+  "Courier New",
+  "Georgia",
+  "Impact",
+  "Lucida Console",
+  "Tahoma",
+  "Times New Roman",
+  "Verdana",
+];
+const headerValues = [false, 1, 2, 3, 4, 5];
+const fontSizeOptions = {
+  inputAttr: {
+    "aria-label": "Font size",
+  },
+};
+const fontFamilyOptions = {
+  inputAttr: {
+    "aria-label": "Font family",
+  },
+};
+const headerOptions = {
+  inputAttr: {
+    "aria-label": "Font family",
+  },
+};
 
 export default HtmlEditBox;

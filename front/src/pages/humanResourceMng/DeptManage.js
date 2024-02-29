@@ -3,7 +3,7 @@ import ApiRequest from "utils/ApiRequest";
 import { Button } from "devextreme-react";
 import CustomTable from "components/unit/CustomTable";
 import DeptManageJson from  "./DeptManageJson.json";
-import SearchHumanResoureceMngSet from "components/composite/SearchHumanResoureceMngSet";
+import SearchHumanResourceMngtSet from "components/composite/SearchHumanResoureceMngSet";
 import DeptRegist from "./DeptRegist";
 import CustomPopup from "components/unit/CustomPopup";
 
@@ -231,7 +231,7 @@ const DeptManage = ({callBack}) => {
         <span>* 부서를 조회합니다.</span>
       </div>
       <div style={{ marginBottom: "20px" }}>
-        <SearchHumanResoureceMngSet
+        <SearchHumanResourceMngtSet
           callBack={searchHandle}
           props={searchParams}
           popup={popup}

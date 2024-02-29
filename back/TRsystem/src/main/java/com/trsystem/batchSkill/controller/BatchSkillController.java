@@ -34,7 +34,7 @@ public class BatchSkillController {
 	  }
 */
 	@PostMapping(value = "/boot/batchSkll/empPrmot")
-	public int prmotUpdateJBPS(@RequestBody Map<String, Object> params){
+	public int executeEmpPrmot(@RequestBody Map<String, Object> params){
 		return batchSkillService.prmotUpdateJBPS(params);
 	}
 

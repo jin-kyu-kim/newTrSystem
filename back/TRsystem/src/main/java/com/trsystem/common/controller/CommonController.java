@@ -1,8 +1,15 @@
 package com.trsystem.common.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trsystem.common.service.CommonService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -35,5 +42,14 @@ public class CommonController {
     @PostMapping(value = "/boot/common/queryIdSearch")
     public List<Map<String, Object>> queryIdSearch(@RequestBody Map<String, Object> param){
         return commonService.queryIdSearch(param);
+    }
+    @PostMapping(value = "/boot/common/insertlongText", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public int longTextInsert(@RequestPart(required = false) List<MultipartFile> attachments,
+                              @RequestPart String tbNm, @RequestPart String data) throws JsonProcessingException {
+
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> mapData = mapper.readValue(data,Map.class);
+        return commonService.insertFile(tbNm, mapData, attachments);
+
     }
 }

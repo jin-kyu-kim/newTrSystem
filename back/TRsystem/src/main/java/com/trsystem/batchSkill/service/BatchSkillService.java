@@ -5,6 +5,6 @@ import java.util.Map;
 
 public interface BatchSkillService {
 	public int prmotUpdateJBPS(Map<String, Object> param);
-	public void executeEmpPrmotPrjctPrmpcMng(String empId, String jbpsCd);
-
+	public void executeEmpPrmot(String empId, String jbpsCd);
+	public void executeEmpRetirePrcs();
 }
