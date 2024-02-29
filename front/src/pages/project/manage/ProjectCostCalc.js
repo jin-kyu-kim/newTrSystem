@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 
 import ApiRequest from '../../../utils/ApiRequest';
 import CustomHorizontalTable from '../../../components/unit/CustomHorizontalTable';
-// import TableTest from '../../../components/unit/TableTest';
 import CostCalc from './ProjectCostCalcJson.json';
 import CustonbudgetTable from '../../../components/unit/CustonbudgetTable';
 import CustomTable from 'components/unit/CustomTable';
@@ -39,7 +38,7 @@ useEffect(() => {
    ]; 
     try {
       const response = await ApiRequest("/boot/common/commonSelect", param);
-      setCnsrtmData(response[0]);  
+      setCnsrtmData(response);  
     } catch (error) {
       console.error('Error fetching data', error);
     }
@@ -55,11 +54,12 @@ useEffect(() => {
       <CustomHorizontalTable headers={CostCalc.BizSumry.BizSumry1} column={baseInfoData}/>
       {/* <CustomTable columns={CostCalc.BizSumry.BizSumry2} values={null}/> */}
       <CustonbudgetTable headers={CostCalc.BizSumry.BizSumry2} column={baseInfoData}/>
-      <CustomHorizontalTable headers={CostCalc.BizSumry.BizSumry3} column={baseInfoData}/>
-      
+      <CustomHorizontalTable headers={CostCalc.BizSumry.BizSumry3} column={baseInfoData}/> 
       &nbsp;
       <p><strong>* 컨소시엄</strong></p>
-      <CustomHorizontalTable headers={CostCalc.Cnsrtm} column={cnsrtmData}/>
+      {cnsrtmData.map((data, index) => {
+           return <CustomHorizontalTable key={index} headers={CostCalc.Cnsrtm} column={data}/>
+        })}
       &nbsp;
       <p><strong>* 원가 분석</strong></p>
       <CustonbudgetTable headers={CostCalc.PrmpcAnls} column={baseInfoData}/>

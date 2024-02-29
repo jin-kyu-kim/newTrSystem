@@ -26,8 +26,8 @@
   "Cnsrtm":
   [
     { "key": "cnsrtmCoNm", "value": "회사명" },
-    { "key": "", "value": "역할" },
-    { "key": "totBgt", "value": "금액" },
-    { "key": "bizFlfmtTyCd", "value": "공통경비" }
+    { "key": "bizFlfmtTyCdNm", "value": "역할" },
+    { "key": "altmntAmt", "value": "금액" },
+    { "key": "cmmnExpensAmt", "value": "공통경비" }
   ]
 }
