@@ -1,15 +1,10 @@
 {
     "menuName": "Notice",
     "menuKorName": "공지사항",
-    "queryId": "noticeMapper.retrieveNoticeList",
+    "queryId": "infoInqMapper.retrieveNoticeList",
     "keyColumn": "noticeId",
     "tableColumns": [
-      {
-        "key": "rownum",
-        "value": "공지번호",
-        "width": 150,
-        "alignment": "center"
-      },
+      { "key": "rownum", "value": "공지번호", "width": 150, "alignment": "center" },
       { "key": "noticeTtl", "value": "제목", "width": 450, "alignment": "left" },
       { "key": "regEmpId", "value": "작성자", "width": 200, "alignment": "left" },
       { "key": "regDt", "value": "작성일", "width": 200, "alignment": "left" }
@@ -61,6 +56,7 @@
     },
     "searchInfo":{
         "searchParams": {
+          "resetButton":false
         },
         "firstCd": "VTW01701",
         "textBoxItem": [
