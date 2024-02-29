@@ -54,7 +54,7 @@ public class BatchSkillServiceImpl implements BatchSkillService {
             	connection.commit();
                 connection.close();
                 
-                executeEmpPrmotPrjctPrmpcMng(empId.get("id").toString(),empId.get("jbps").toString()); //프로젝트예산원가 차수 변경
+                executeEmpPrmot(empId.get("id").toString(),empId.get("jbps").toString()); //프로젝트예산원가 차수 변경
                 
             	return result;
             }catch (SQLException e){
@@ -70,7 +70,7 @@ public class BatchSkillServiceImpl implements BatchSkillService {
 	
 	
 	// 승진직원 프로젝트 원가 및 예산관리차수 변경 프로시저 호출
-	public void executeEmpPrmotPrjctPrmpcMng(String empId, String jbpsCd){
+	public void executeEmpPrmot(String empId, String jbpsCd){
 		
 		try {
             Connection connection = DriverManager.getConnection(applicationYamlRead.getUrl(), applicationYamlRead.getUsername(), applicationYamlRead.getPassword());
