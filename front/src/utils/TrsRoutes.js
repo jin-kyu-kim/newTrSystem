@@ -115,6 +115,7 @@ const TreRoutes = [
     path: "humanResourceMng/EmpManage",
     name: "EmpManage",
     element: React.lazy(() => import("../pages/humanResourceMng/EmpManage")),
+  },
  // 법제도
   {
     path: "/infoInq/LawRules",
