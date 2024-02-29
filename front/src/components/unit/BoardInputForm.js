@@ -126,7 +126,7 @@ const BoardInputForm = ({ edit, data, setData, setAttachments }) => {
                                         accept="*/*"
                                         uploadMode="useForm"
                                         onValueChanged={handleAttachmentChange}
-                                        // maxFileSize={10000000}
+                                        maxFileSize={1048576}
                                     />
                                     {/* <span className="note">
                                         {'파일 용량은 '}

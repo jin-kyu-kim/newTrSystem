@@ -23,7 +23,7 @@ const NoticeInput = () => {
     const [attachments, setAttachments] = useState([null]);
     const [data, setData] = useState({
         noticeId: uuid(),
-        atchmnflId: null,
+        atchmnflId: "",
         noticeTtl: "",
         noticeCn: "",
         sgnalOrdr: 0, // 기본값 일반공지
@@ -58,12 +58,21 @@ const NoticeInput = () => {
     }, []);
 
     const validateData = () => {
+        let maxSize = 0;
+        attachments.map((file) => {
+            if (file !== null) {
+                maxSize += file.size;
+            }
+        })
         const errors = [];
         if (!data.noticeTtl || !data.noticeCn) {
-          errors.push('required');
+            errors.push('required');
+        } else if (maxSize !== 0 && maxSize > 1048576) {
+            alert('업로드 가능한 용량보다 큽니다')
+            errors.push('Exceeded size limit');
         }
         return errors.length === 0;
-      };
+    };
 
     const insertNotice = async () => {
         const formData = new FormData();
@@ -78,7 +87,8 @@ const NoticeInput = () => {
                         'Content-Type': 'multipart/form-data'
                     },
                 })
-                if (response.data === 1) navigate("/infoInq/NoticeList")
+                console.log(response.data);
+                if (response.data >= 0) navigate("/infoInq/NoticeList")
             }
         } catch (error) {
             console.error("API 요청 에러:", error);
