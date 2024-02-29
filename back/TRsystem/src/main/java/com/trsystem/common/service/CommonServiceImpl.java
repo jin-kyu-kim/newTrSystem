@@ -343,7 +343,7 @@ public class CommonServiceImpl implements CommonService {
         tableMap.put("tbNm", tbNm);
 
         //1. parameter 에 첨부파일이 있는지 없는지 확인
-        if(params.containsKey("atchmnflId") && params.get("atchmnflId").equals("")){
+        if(!params.containsKey("atchmnflId") || params.get("atchmnflId") == null || params.get("atchmnflId").equals("")){
             // 1-1 없다면 첨부파일 ID 생성 순번은 1부터 시작
             atchmnflId = UUID.randomUUID().toString();
         }else{
@@ -360,43 +360,43 @@ public class CommonServiceImpl implements CommonService {
                 Files.createDirectories(directory);
             }
 
-            for(MultipartFile file : attachments){
-                // UUID를 사용하여 서버에 저장될 파일명 생성
-                String storedFileName = UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
-                // 파일 저장
-                Path filePath = directory.resolve(storedFileName);
-                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            if (attachments != null) {
+                for(MultipartFile file : attachments){
+                    // UUID를 사용하여 서버에 저장될 파일명 생성
+                    String storedFileName = UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
+                    // 파일 저장
+                    Path filePath = directory.resolve(storedFileName);
+                    Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-                Instant currentTimestamp = Instant.now();
-                //3. 저장경로 및 명칭 지정하여 첨부파일 테이블에 INSERT
-                atchmnflMap.put("atchmnflId", atchmnflId);
-                atchmnflMap.put("atchmnflSn", atchmnflSn++);
-                atchmnflMap.put("strgFileNm", storedFileName); // 저장된파일명칭
-                atchmnflMap.put("realFileNm", file.getOriginalFilename());
-                atchmnflMap.put("fileStrgCours", uploadDir); // 파일저장경로
-                atchmnflMap.put("regDt", currentTimestamp);
-                atchmnflMap.put("regEmpId", params.get("regEmpId").toString());
-                atchmnflMap.put("mdfcnDt", currentTimestamp);
-                atchmnflMap.put("mdfcnEmpId", params.get("regEmpId").toString());
+                    Instant currentTimestamp = Instant.now();
+                    //3. 저장경로 및 명칭 지정하여 첨부파일 테이블에 INSERT
+                    atchmnflMap.put("atchmnflId", atchmnflId);
+                    atchmnflMap.put("atchmnflSn", atchmnflSn++);
+                    atchmnflMap.put("strgFileNm", storedFileName); // 저장된파일명칭
+                    atchmnflMap.put("realFileNm", file.getOriginalFilename());
+                    atchmnflMap.put("fileStrgCours", uploadDir); // 파일저장경로
+                    atchmnflMap.put("regDt", currentTimestamp);
+                    atchmnflMap.put("regEmpId", params.get("regEmpId").toString());
+                    atchmnflMap.put("mdfcnDt", currentTimestamp);
+                    atchmnflMap.put("mdfcnEmpId", params.get("regEmpId").toString());
 
-                atchmnflParam.clear();
-                tableMap.put("tbNm", "ATCHMNFL");
-                atchmnflParam.add(tableMap);
-                atchmnflParam.add(atchmnflMap);
+                    atchmnflParam.clear();
+                    tableMap.put("tbNm", "ATCHMNFL");
+                    atchmnflParam.add(tableMap);
+                    atchmnflParam.add(atchmnflMap);
 
-                atchResult += insertData(atchmnflParam);
+                    atchResult += insertData(atchmnflParam);
+                }
             }
 
-            if(attachments.isEmpty() || atchResult < 1){
-                //4. 입력된 첨부파일 ID를 parameter에 지정
-                params.put("atchmnflId", atchmnflId);
-                tableMap.put("tbNm", tbNm);
-                insertParam.add(tableMap);
-                insertParam.add(params);
+            //4. 입력된 첨부파일 ID를 parameter에 지정
+            params.put("atchmnflId", atchmnflId);
+            tableMap.put("tbNm", tbNm);
+            insertParam.add(tableMap);
+            insertParam.add(params);
 
-                //5. 사용하려는 테이블에 INSERT
-                result = insertData(insertParam);
-            }
+            //5. 사용하려는 테이블에 INSERT
+            result = insertData(insertParam);
             return result;
         }catch (IOException e){
             return result;
