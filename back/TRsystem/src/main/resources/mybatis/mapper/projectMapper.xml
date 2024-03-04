@@ -133,7 +133,7 @@
            , MMNY_INPT_MM B
         WHERE A.PRJCT_ID = B.PRJCT_ID
         AND A.BGT_MNG_ODR AND B.BGT_MNG_ODR
-        AND A.EMP_ID = B.EMP_ID
+        AND A.MMNY_LBRCO_PRMPC_SN = B.MMNY_LBRCO_PRMPC_SN
         <if test="prjctId != null">
             <if test="!prjctId.equals('')">
                 AND A.PRJCT_ID = #{prjctId}
@@ -169,7 +169,7 @@
                     , OUTORD_LBRCO_PRMPC_DTL B
                  WHERE A.PRJCT_ID = B.PRJCT_ID
                    AND A.BGT_MNG_ODR = B.BGT_MNG_ODR
-                   AND A.OUTORD_EMP_ID = B.OUTORD_EMP_ID
+                   AND A.OUTORD_LBRCO_PRMPC_SN = B.OUTORD_LBRCO_PRMPC_SN
                 <if test="prjctId != null">
                     <if test="!prjctId.equals('')">
                         AND A.PRJCT_ID = #{prjctId}
@@ -207,7 +207,7 @@
                     , OUTORD_LBRCO_PRMPC_DTL B
                  WHERE A.PRJCT_ID = B.PRJCT_ID
                    AND A.BGT_MNG_ODR = B.BGT_MNG_ODR
-                   AND A.OUTORD_EMP_ID = B.OUTORD_EMP_ID
+                   AND A.OUTORD_LBRCO_PRMPC_SN = B.OUTORD_LBRCO_PRMPC_SN
                 <if test="prjctId != null">
                     <if test="!prjctId.equals('')">
                         AND A.PRJCT_ID = #{prjctId}
@@ -245,7 +245,7 @@
                     , OUTORD_LBRCO_PRMPC_DTL B
                  WHERE A.PRJCT_ID = B.PRJCT_ID
                    AND A.BGT_MNG_ODR = B.BGT_MNG_ODR
-                   AND A.OUTORD_EMP_ID = B.OUTORD_EMP_ID
+                   AND A.OUTORD_LBRCO_PRMPC_SN = B.OUTORD_LBRCO_PRMPC_SN
                 <if test="prjctId != null">
                     <if test="!prjctId.equals('')">
                         AND A.PRJCT_ID = #{prjctId}
