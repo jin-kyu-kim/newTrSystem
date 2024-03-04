@@ -342,14 +342,6 @@ public class CommonServiceImpl implements CommonService {
         List<Map<String, Object>> insertParam = new ArrayList<>();
         tableMap.put("tbNm", tbNm);
 
-        //1. parameter 에 첨부파일이 있는지 없는지 확인
-        if(!params.containsKey("atchmnflId") || params.get("atchmnflId") == null || params.get("atchmnflId").equals("")){
-            // 1-1 없다면 첨부파일 ID 생성 순번은 1부터 시작
-            atchmnflId = UUID.randomUUID().toString();
-        }else{
-            // 1-2 있다면 첨부파일 ID 사용 생성 순번은 1부터 시작
-            atchmnflId = params.get("atchmnflId").toString();
-        }
 
         try{
             //2. 파일 내부 디렉토리에 업로드
@@ -361,6 +353,16 @@ public class CommonServiceImpl implements CommonService {
             }
 
             if (attachments != null) {
+
+                //1. 기존에 채번된 첨부파일 ID가 있는지 확인
+                if(!params.containsKey("atchmnflId") || params.get("atchmnflId") == null || params.get("atchmnflId").equals("")){
+                    // 1-1 없다면 첨부파일 ID 생성 순번은 1부터 시작
+                    atchmnflId = UUID.randomUUID().toString();
+                }else{
+                    // 1-2 있다면 첨부파일 ID 사용 생성 순번은 1부터 시작
+                    atchmnflId = params.get("atchmnflId").toString();
+                }
+
                 for(MultipartFile file : attachments){
                     // UUID를 사용하여 서버에 저장될 파일명 생성
                     String storedFileName = UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
