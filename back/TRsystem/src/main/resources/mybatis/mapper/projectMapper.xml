@@ -19,6 +19,7 @@
         , TOT_BGT
 	    , (SELECT MAX(BGT_MNG_ODR) FROM PRJCT_BGT_PRMPC pbp WHERE pbp.PRJCT_ID = p.PRJCT_ID AND pbp.ATRZ_DMND_STTS_CD = 'VTW03303') AS BGT_MNG_ODR
 	    , (SELECT IFNULL(MAX(BGT_MNG_ODR), 1) FROM PRJCT_BGT_PRMPC pbp WHERE pbp.PRJCT_ID = p.PRJCT_ID) AS BGT_MNG_ODR_TOBE
+	    , PRJCT_CD_IDNTFR
         , COUNT(*) OVER () AS TOTAL_ITEMS
      FROM PRJCT p
     WHERE 1=1
@@ -61,18 +62,19 @@
 				  , pal.ATRZ_LN_SN
 				  , pal.NOW_ATRZ_STEP_CD
 				  , pal.BGT_MNG_ODR
+				  , pald.APRVR_EMP_ID
 			      , COUNT(*) OVER () AS TOTAL_ITEMS
 			  FROM PRJCT_ATRZ_LN pal
-			  JOIN PRJCT_ATRZ_LN_DTL pald ON(pal.PRJCT_ID = pald.PRJCT_ID AND pal.ATRZ_LN_SN = pald.ATRZ_LN_SN)
+			  JOIN PRJCT_ATRZ_LN_DTL pald ON(pal.PRJCT_ID = pald.PRJCT_ID AND pal.ATRZ_LN_SN = pald.ATRZ_LN_SN AND pal.NOW_ATRZ_STEP_CD = pald.ATRZ_STEP_CD)
 			  JOIN PRJCT p ON (p.PRJCT_ID = pal.PRJCT_ID AND p.PRJCT_ID = pald.PRJCT_ID)
 			  JOIN EMP e  ON (e.EMP_ID = pal.REG_EMP_ID)
 			 WHERE 1=1
-			   AND pald.APRVR_EMP_ID = #{empId}
+			   AND (pald.APRVR_EMP_ID = #{empId} OR pal.REG_EMP_ID = #{empId})
 		        <if test="prmpcInptSeCd != null and !prmpcInptSeCd.equals('')">
-		       AND PRMPC_INPT_SE_CD = #{prmpcInptSeCd}
+		       AND pal.PRMPC_INPT_SE_CD = #{prmpcInptSeCd}
 		        </if>
 		        <if test="prjctId != null and !prjctId.equals('')">
-		       AND PRJCT_ID = #{prjctId}
+		       AND pal.PRJCT_ID = #{prjctId}
 		        </if>
 		        <if test="bizFlfmtTyCd != null and !bizFlfmtTyCd.equals('')">
 		       AND BIZ_FLFMT_TY_CD = #{bizFlfmtTyCd}
@@ -587,5 +589,13 @@
 	     AND pal.ATRZ_LN_SN = #{atrzLnSn}
 	     AND pald.ATRZ_STTS_CD = 'VTW00803'
 	</select>
+	
+	<select id="retrievePrjctCdIdntfr" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT IFNULL(LPAD(MAX(SUBSTR(PRJCT_CD_IDNTFR, 5))+1, '4', '0'), '0001') PRJCT_CD_SN
+		  FROM PRJCT
+		 WHERE PRJCT_CD_IDNTFR LIKE CONCAT(#{ctmmnyId},'%')
+	</select>
+	
+	
 
 </mapper>
