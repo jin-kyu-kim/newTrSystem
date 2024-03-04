@@ -1,9 +1,14 @@
 {
 	"menuName": "ProjectEmpCostJson",
     "table": "MMNY_LBRCO_PRMPC",
-    "keyColumn": "empId",
-    "pkColumns": ["prjctId","bgtMngOdr","empId"],
-    "nomalColumns": ["hnfRoleCd", "tkcgJob","inptPrnmntYmd","withdrPrnmntYmd"],
+    "subTable": "MMNY_INPT_MM",
+    "keyColumn": "mmnyLbrcoPrmpcSn",
+    "pkColumns": ["prjctId","bgtMngOdr","mmnyLbrcoPrmpcSn"],
+    "nomalColumns": ["empId","hnfRoleCd", "tkcgJob","inptPrnmntYmd","withdrPrnmntYmd"],
+    "pkColumnsDtl" : ["prjctId","bgtMngOdr","mmnyLbrcoPrmpcSn", "inptYm"],
+    "nomalColumnsDtlYm": "inptYm",
+    "nomalColumnsDtlValue": "expectMm",
+    "CdComboboxColumnNm": ["hnfRoleCdNm"],
     "tableColumns": 
 	[
         {"key": "empId", "value": "성명"},
@@ -23,16 +28,27 @@
     "popup":
     {
         "width": "90%",
-        "height": "60%",
+        "height": "90%",
         "title": "자사인력"
     },
+    "popupFormat": "MM",
+    "popupNumberBoxFormat": "#,##0.00",
+    "popupStep": 0.1,
     "labelValue" : {
         "empId": {
-            "name": "empId",
-            "type": "TextBox",
+            "type": "ComboBox",
             "label": "성명",
             "required": true,
-            "placeholder": "성명"
+            "placeholder": "성명",
+            "param":{ 
+                    "queryId" : {
+                        "queryId" : "projectMapper.retrieveMmnyHnf"
+                        },
+                    "valueExpr" : "empId",
+                    "displayExpr": "empNameJbps",
+                    "name": "empId",
+                    "name2": "userDfnValue"
+                    }
         },
         "hnfRoleCdNm": {
             "name": "hnfRoleCdNm",
@@ -50,7 +66,7 @@
         },
         "temp2": {
             "name": "temp2",
-            "type": "TextBox",
+            "type": "NumberBox",
             "label": "현재단가",
             "required": true,
             "placeholder": "현재단가"
@@ -60,14 +76,16 @@
             "type": "NumberBox",
             "label": "총 금액",
             "required": true,
-            "placeholder": "총 금액"
+            "placeholder": "총 금액",
+            "readOnly": true
         },
         "total": {
             "name": "total",
             "type": "NumberBox",
             "label": "총 투입 MM",
             "required": true,
-            "placeholder": "총 투입 MM"
+            "placeholder": "총 투입 MM",
+            "readOnly": true
         },
         "inptPrnmntYmd": {
             "name": "inptPrnmntYmd",
@@ -83,5 +101,6 @@
             "required": true,
             "placeholder": "철수예정일"
         }
-    }
+    },
+    "format" :"Total: {0}MM"
 }

@@ -6,6 +6,7 @@ import CustomLabelValue from '../../../components/unit/CustomLabelValue';
 import CustomCdComboBox from '../../../components/unit/CustomCdComboBox';
 import NumberBox from 'devextreme-react/number-box';
 import Button from "devextreme-react/button";
+import { TextBox } from 'devextreme-react';
 
 const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdrTobe, ctrtYmd, bizEndYmd, transformedData}) => {
     const navigate = useNavigate();
@@ -14,12 +15,10 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
     const [param, setParam] = useState([]);
     const [contents, setContents] = useState([]);   
     const [structuredData, setStructuredData] = useState({});
-    // let monthDate = [];
-    // let filteredArray = [];
 
-    // useEffect(() => {
-    //     console.log("inputValue",inputValue);  
-    // }, [inputValue]);
+    useEffect(() => {  
+        console.log("data",data);
+    }, [data]);
 
     //기간 데이터를 받아와서 년도별로 월을 나누어서 배열로 만들어주는 함수
     useEffect(() => {
@@ -45,13 +44,6 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
     useEffect(() => {
         if(transformedData){
             setInputValue(transformedData);
-            // monthDate = [...transformedData];
-            // const categoriesToRemove = ['expensCdNm', 'total'];
-            // filteredArray = monthDate.filter(obj =>
-            //     !categoriesToRemove.includes(obj.id)
-            //   );
-            //   console.log("filteredArray",filteredArray);
-
         }
     }, [transformedData]);
 
@@ -77,13 +69,10 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
 
     //우측 월 값 담기
     const handleInputChange = (e) => {
-        // console.log("e",e);
         const id  = e.element.id;   //사용월
         const value  = e.component.option('value');
         const index = inputValue.findIndex(item => item.id === id); // 입력 값 객체의 인덱스 찾기
         const updatedValues = JSON.parse(JSON.stringify(inputValue)); // 상태 변경을 위한 배열 복사
-
-        // console.log("value",value);
 
         if (index >= 0 ) {   //변경해야하는 데이터
             if(e.event){
@@ -94,18 +83,19 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
                 updatedValues.push({ id, value });    // 새로운 값 객체 추가                 
         }
 
-        // console.log("updatedValues 읭?",updatedValues);
-
         setInputValue(updatedValues); // 업데이트된 배열로 상태 설정
        
 
         // updatedValues를 map함수를 사용하여 각각의 value값에 있는 숫자 sum하기
-        const sum = updatedValues.map(item => item.value).reduce((acc, cur) => acc + cur, 0);
+        const sum = updatedValues.filter(item => typeof item.value === 'number')
+        .map(item => item.value)
+        .reduce((acc, cur) => acc + cur, 0);
+        const fixedSum = Number(sum.toFixed(2)); //js의 부동소수 이슈로 인한 자릿수 조정.
 
         //총합에 sum값을 넣어주기
         setData(currentData=>({
             ...currentData,
-            "total" : sum
+            "total" : fixedSum
         }));
     };
 
@@ -308,6 +298,7 @@ const onRowUpdateingMonthData = async() => {
     //좌측 데이터 분기
     useEffect(() => {
       if(data != null){
+        //통제성경비, 일반경비
         if(popupInfo.menuName==="ProjectGeneralBudgetCostJson" || popupInfo.menuName==="ProjectControlBudgetCostJson"){
             setContents(
                 <div className="dx-fieldset">
@@ -328,14 +319,7 @@ const onRowUpdateingMonthData = async() => {
                     <CustomLabelValue props={popupInfo.labelValue.total} value={data.total} onSelect={handleChgState}/>
                 </div>
             );
-        }else if(popupInfo.menuName==="ProjectOutordCompanyCostJson"){
-            setContents(
-                <div className="dx-fieldset"> 
-                <CustomLabelValue props={popupInfo.labelValue.outordEntrpsId} value={selectedItem != null ? selectedItem.outordEntrpsId : null} onSelect={handleChgState}/>
-                <CustomLabelValue props={popupInfo.labelValue.tkcgJob} value={selectedItem != null ? selectedItem.tkcgJob : null} onSelect={handleChgState}/>
-                <CustomLabelValue props={popupInfo.labelValue.total} value={selectedItem != null ? selectedItem.bgtMngOdr : null} onSelect={handleChgState}/>
-                </div>
-            )
+        //외주인력
         }else if(popupInfo.menuName==="ProjectOutordEmpCostJson"){
             setContents(
                 <div className="dx-fieldset">
@@ -373,6 +357,7 @@ const onRowUpdateingMonthData = async() => {
                     <CustomLabelValue props={popupInfo.labelValue.withdrPrnmntYmd} value={data.withdrPrnmntYmd} onSelect={handleChgState}/>
                 </div>
             );
+        //자사인력
         }else if(popupInfo.menuName==="ProjectEmpCostJson"){
             setContents(
                 <div className="dx-fieldset">
@@ -391,8 +376,8 @@ const onRowUpdateingMonthData = async() => {
                     </div> 
                     <CustomLabelValue props={popupInfo.labelValue.tkcgJob} value={data.tkcgJob} onSelect={handleChgState}/>
                     <CustomLabelValue props={popupInfo.labelValue.temp2} value={data.temp2} onSelect={handleChgState}/> 
-                    <CustomLabelValue props={popupInfo.labelValue.gramt} value={data.gramt} onSelect={handleChgState}/>
-                    <CustomLabelValue props={popupInfo.labelValue.total} value={data.total} onSelect={handleChgState}/>
+                    <CustomLabelValue props={popupInfo.labelValue.gramt} value={data.gramt} onSelect={handleChgState} readOnly={popupInfo.labelValue.gramt.readOnly}/>
+                    <CustomLabelValue props={popupInfo.labelValue.total} value={data.total} onSelect={handleChgState} readOnly={popupInfo.labelValue.total.readOnly}/>
                     <CustomLabelValue props={popupInfo.labelValue.inptPrnmntYmd} value={data.inptPrnmntYmd} onSelect={handleChgState}/>
                     <CustomLabelValue props={popupInfo.labelValue.withdrPrnmntYmd} value={data.withdrPrnmntYmd} onSelect={handleChgState}/>
                 </div>
@@ -402,6 +387,22 @@ const onRowUpdateingMonthData = async() => {
         }
       }
     }, [popupInfo, data]); 
+
+    const addInput =(e)=>{
+        if(e === "title"){
+            if(popupInfo.menuName==="ProjectEmpCostJson"){
+                return(
+                    <th style={{textAlign:"center", width: "10px"}}> 단가 </th>
+                )
+            }
+        }else{
+            if(popupInfo.menuName==="ProjectEmpCostJson"){
+                return(
+                    <td style={{width:"20%", padding:"5px"}}><TextBox value={data.userDfnValue}/></td>
+                )
+            }
+        }
+    }
 
     return (
         <div className="popup-content">
@@ -422,6 +423,7 @@ const onRowUpdateingMonthData = async() => {
                                         <>
                                         <th key={year} style={{ width: "50px", textAlign: "center" }}> {year}년 </th>
                                         <th key={index} style={{textAlign:"center"}}> {popupInfo.popupFormat} </th>
+                                        {addInput("title")}
                                         </>
                                     ))}
                                     </tr>
@@ -446,6 +448,7 @@ const onRowUpdateingMonthData = async() => {
                                             step={popupInfo.popupStep}
                                             showClearButton={false}
                                             />): ''}</td>
+                                            {addInput()}
                                         </>
                                         ))}
                                     </tr>
