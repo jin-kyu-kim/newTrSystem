@@ -25,5 +25,21 @@
         </if>
     </select>
 
-
+    <select id="customersList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        select
+        COUNT(*) OVER () AS TOTAL_ITEMS,
+        CTMMNY_ID,
+        CTMMNY_NM ,
+        CTMMNY_ENG_NM,
+        (SELECT CD_NM FROM CD WHERE CD_VALUE = INDUST_CD) AS INDUST_CD,
+        USE_YN
+        FROM nwTr.CTMMNY_INFO
+        WHERE 1=1
+        <if test="ctmmnyNm != null and !ctmmnyNm.equals('')">
+            AND CTMMNY_NM LIKE CONCAT('%', #{ctmmnyNm}, '%')
+        </if>
+        <if test="industCd != null and !industCd.equals('')">
+            AND INDUST_CD = #{industCd}
+        </if>
+    </select>
 </mapper>

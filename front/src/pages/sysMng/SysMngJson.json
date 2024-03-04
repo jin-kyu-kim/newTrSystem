@@ -41,7 +41,7 @@
     },
     "customersJson": {
         "menuName": "CustomersList",
-        "queryId": "customersMapper.customersList",
+        "queryId": "sysMngMapper.customersList",
         "keyColumn": "ctmmnyId",
         "tableColumns": 
         [
