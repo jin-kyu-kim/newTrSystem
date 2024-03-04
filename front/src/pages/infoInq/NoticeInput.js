@@ -36,7 +36,9 @@ const NoticeInput = () => {
     });
 
     const onClick = () => {
-        const isconfirm = window.confirm("등록하시겠습니까?");
+        const isconfirm = editMode === "create" 
+           ? window.confirm("등록하시겠습니까?") 
+           :  window.confirm("수정하시겠습니까?") 
         if (isconfirm) {
             insertNotice();
         }
