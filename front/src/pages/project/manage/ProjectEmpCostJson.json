@@ -5,7 +5,7 @@
     "keyColumn": "mmnyLbrcoPrmpcSn",
     "pkColumns": ["prjctId","bgtMngOdr","mmnyLbrcoPrmpcSn"],
     "nomalColumns": ["empId","hnfRoleCd", "tkcgJob","inptPrnmntYmd","withdrPrnmntYmd"],
-    "pkColumnsDtl" : ["prjctId","bgtMngOdr","mmnyLbrcoPrmpcSn", "inptYm"],
+    "pkColumnsDtl" : ["prjctId","bgtMngOdr","mmnyLbrcoPrmpcSn", "inptYm", "jbpsCd"],
     "nomalColumnsDtlYm": "inptYm",
     "nomalColumnsDtlValue": "expectMm",
     "CdComboboxColumnNm": ["hnfRoleCdNm"],
@@ -33,7 +33,7 @@
     },
     "popupFormat": "MM",
     "popupNumberBoxFormat": "#,##0.00",
-    "popupStep": 0.1,
+    "popupStep": 0.01,
     "labelValue" : {
         "empId": {
             "type": "ComboBox",
@@ -47,7 +47,8 @@
                     "valueExpr" : "empId",
                     "displayExpr": "empNameJbps",
                     "name": "empId",
-                    "name2": "userDfnValue"
+                    "name2": "userDfnValue",
+                    "name3": "jbpsCd"
                     }
         },
         "hnfRoleCdNm": {

@@ -537,7 +537,13 @@
 			  FROM OUTORD_LBRCO_PRMPC
 			 WHERE PRJCT_ID = #{prjctId}
 			 AND BGT_MNG_ODR = #{bgtMngOdr}
-		</if>		    
+		</if>		 
+		<if test="mmnyLbrcoPrmpcSn != null">
+			SELECT COALESCE(MAX(MMNY_LBRCO_PRMPC_SN),0) AS MMNY_LBRCO_PRMPC_SN
+			  FROM MMNY_INPT_MM
+			 WHERE PRJCT_ID = #{prjctId}
+			 AND BGT_MNG_ODR = #{bgtMngOdr}
+		</if>   
 	</select>
 	
 	<select id="updateChgPrmpcMdfcn" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -591,6 +597,7 @@
 	<select id="retrieveMmnyHnf" parameterType="map" resultType="com.trsystem.LowerHashMap">
 	  SELECT e.EMP_ID, 
 	  		 e.EMP_FLNM, 
+	  		 e.JBPS_CD,
 	  		 c.CD_NM,
 	  		 c.USER_DFN_VALUE, 
 			 CONCAT(e.EMP_FLNM, ' - ' , c.CD_NM) as EMP_NAME_JBPS
