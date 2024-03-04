@@ -587,5 +587,20 @@
 	     AND pal.ATRZ_LN_SN = #{atrzLnSn}
 	     AND pald.ATRZ_STTS_CD = 'VTW00803'
 	</select>
+	
+	<select id="retrieveMmnyHnf" parameterType="map" resultType="com.trsystem.LowerHashMap">
+	  SELECT e.EMP_ID, 
+	  		 e.EMP_FLNM, 
+	  		 c.CD_NM,
+	  		 c.USER_DFN_VALUE, 
+			 CONCAT(e.EMP_FLNM, ' - ' , c.CD_NM) as EMP_NAME_JBPS
+		FROM EMP e
+		JOIN CD c 
+		ON e.JBPS_CD = c.CD_VALUE 
+		WHERE 1=1
+		AND e.HDOF_STTS_CD = 'VTW00301' /*재직*/	
+		AND e.EMP_TY_CD !='VTW00203'
+		AND c.USE_YN = 'Y'
+	</select>
 
 </mapper>
