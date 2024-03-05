@@ -1,0 +1,22 @@
+  .dx-switch-container {
+    display: inline-block;
+    width: 100%;
+    vertical-align: middle;
+    margin: 0 -6px 0 0;
+    padding: 0 2px;
+    height: 240px;
+    background: #fff;
+    border: none;
+  }
+
+  .dx-datagrid-rowsview .dx-row-focused.dx-data-row .dx-command-edit .dx-link,
+  .dx-datagrid-rowsview .dx-row-focused.dx-data-row>td:not(.dx-focused):not(.dx-cell-modified):not(.dx-datagrid-invalid) .dx-switch-container {
+    display: inline-block;
+    width: 100%;
+    vertical-align: middle;
+    margin: 0 -6px 0 0;
+    padding: 0 2px;
+    height: 240px;
+    border: none;
+    background: #cdeefd
+  }

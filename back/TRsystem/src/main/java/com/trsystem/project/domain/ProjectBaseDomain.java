@@ -117,29 +117,6 @@ public class ProjectBaseDomain {
     		return fail;
     	}
     	
-    	
-//    	
-//    	// Detail 화면에서 받은 params 에 들어있는 차수와 채번한 차수를 비교한다.
-//    	if(params.get(1).get("bgtMngOdr") != null && Integer.parseInt(String.valueOf(params.get(1).get("bgtMngOdr"))) == bgtMngOdr) {
-//    		targetOdr = bgtMngOdr + 1;
-//    	} else {
-//    		targetOdr = bgtMngOdr;
-//    	}
-//    	
-//    	params.get(1).put("bgtMngOdr", targetOdr);
-//    	
-//    	try {
-//    		result = commonService.insertData(params);
-//    		
-//    	} catch (Exception e) {
-//    		return result;
-//    	}
-//    	
-//    	if(result > 0) {
-//    		return targetOdr;
-//    	} 
-//    	return result;
-    	
     }
     
     public static int insertRegistProjectAprv(List<Map<String, Object>> params, List<Map<String, Object>> empIdParams) {
@@ -163,6 +140,7 @@ public class ProjectBaseDomain {
     	aprvParam.put("regEmpId", params.get(2).get("empId"));
     	aprvParam.put("atrzAplyPrvonshCn", params.get(2).get("atrzAplyPrvonshCn"));
     	aprvParam.put("nowAtrzStepCd", atrzStepCd[empIdParams.size()-1]); // 최초 생성 시 현재 결재단계는 가장 낮은 단계 등록
+    	aprvParam.put("bgtMngOdr", params.get(2).get("targetOdr")); // 승인받는 변경차수 
 
     	if((int)aprvParam.get("atrzLnSn") == 1) {
     		aprvParam.put("prmpcInptSeCd", "VTW01502"); // 최초 시 원가 등록(VTW01502)
@@ -235,6 +213,9 @@ public class ProjectBaseDomain {
     	
     }
     
+    /*
+     * 결재자 EmpId 계층 쿼리 조회
+     */
     public static List<Map<String, Object>> retrieveAprvrEmpId(Map<String, Object> params) {
     	
     	String deptId;
@@ -294,11 +275,67 @@ public class ProjectBaseDomain {
 			for (Map<String, Object> currentMap : updateParams) {
 				param.putAll(currentMap);
 			}
-					
+			System.out.println("param"+param);		
 			result = commonService.queryIdSearch(param);		
 		}	
 		return result;
 	}
+
+
+	public static int saveOutordEntrpsPrmpc(List<Object> params) {
+		int result = 0;
+		int dtlResult = 0;
+
+		Map<String, Object> tableInfo =  (Map<String, Object>) params.get(0);
+		Map<String, Object> insertSet =  (Map<String, Object>) params.get(1);
+		List<Map<String, Object>> insertParams = new ArrayList<>();		// PRJCT_ATRZ_LN
+    	List<Map<String, Object>> insertDtlParams = new ArrayList<>();	// PRJCT_ATRZ_LN_DTL
+    	
+    	
+    	Map<String, Object> mainTable = new HashMap<>();
+    	mainTable.put("tbNm", tableInfo.get("tbNm"));
+    	
+    	Map<String, Object> mainInfo = new HashMap<>();
+    	mainInfo.put("outordEntrpsCtPrmpcSn", 2);
+    	mainInfo.put("prjctId", insertSet.get("prjctId"));
+    	mainInfo.put("bgtMngOdr", insertSet.get("bgtMngOdr"));
+    	mainInfo.put("outordEntrpsId", insertSet.get("outordEntrpsId"));
+    	mainInfo.put("tkcgJob", insertSet.get("tkcgJob"));
+    	mainInfo.put("dtlDtls", insertSet.get("dtlDtls"));
+    	mainInfo.put("dtlDtls", insertSet.get("dtlDtls"));
+    	
+		insertParams.add(0, mainTable);
+		insertParams.add(1, mainInfo);
+		
+		
+    	Map<String, Object> subTable = new HashMap<>();
+    	subTable.put("tbNm", tableInfo.get("subTbNm"));
+    	
+    	Map<String, Object> subInfo = new HashMap<>();
+    	subInfo.put("outordEntrpsCtPrmpcSn", 2);
+    	subInfo.put("prjctId", insertSet.get("prjctId"));
+    	subInfo.put("bgtMngOdr", insertSet.get("bgtMngOdr"));
+    	subInfo.put("giveYm", insertSet.get("giveYm"));
+    	subInfo.put("expectCt", insertSet.get("expectCt"));
+    	
+    	insertDtlParams.add(0,subTable);
+    	insertDtlParams.add(1,subInfo);
+    	
+    	System.out.println("###### insertParams"+ insertParams);
+		System.out.println("###### insertDtlParams"+ insertDtlParams);
+		
+		
+		try {
+    		
+    		result =  commonService.insertData(insertParams);
+    		dtlResult = commonService.insertData(insertDtlParams);
+    		
+    	} catch(Exception e) {
+    		
     
+    	}
+		
+    	return result;
+	}
 
 }

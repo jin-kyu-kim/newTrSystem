@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.trsystem.mybatis.mapper.sysMngMapper">
+
+    <select id="TrsCodeList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            CD_VALUE,
+            CD_NM,
+            USE_YN,
+            COUNT(*) OVER () AS TOTAL_ITEMS
+        FROM CD
+        WHERE 1=1
+            AND UP_CD_VALUE IS NULL
+        <if test="upCdValue != null and upCdValue !=''">
+            AND UP_CD_VALUE = #{upCdValue}
+        </if>
+        <if test="cdValue != null and cdValue !=''">
+            AND CD_VALUE LIKE CONCAT('%', #{cdValue}, '%')
+        </if>
+        <if test="cdNm != null and cdNm !=''">
+            AND CD_NM LIKE CONCAT('%', #{cdNm}, '%')
+        </if>
+    </select>
+
+    <select id="customersList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        select
+        COUNT(*) OVER () AS TOTAL_ITEMS,
+        CTMMNY_ID,
+        CTMMNY_NM ,
+        CTMMNY_ENG_NM,
+        (SELECT CD_NM FROM CD WHERE CD_VALUE = INDUST_CD) AS INDUST_CD,
+        USE_YN
+        FROM nwTr.CTMMNY_INFO
+        WHERE 1=1
+        <if test="ctmmnyNm != null and !ctmmnyNm.equals('')">
+            AND CTMMNY_NM LIKE CONCAT('%', #{ctmmnyNm}, '%')
+        </if>
+        <if test="industCd != null and !industCd.equals('')">
+            AND INDUST_CD = #{industCd}
+        </if>
+    </select>
+</mapper>

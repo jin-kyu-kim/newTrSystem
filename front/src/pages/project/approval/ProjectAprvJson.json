@@ -10,8 +10,8 @@
     { "key": "atrzStepCdNm", "value": "단계", "alignment" : "left" , "width": "60"},
     { "key": "atrzSttsCdNm", "value": "상태", "alignment" : "left" , "width": "80"},
     { "key": "empFlnm", "value": "기안자", "alignment" : "left" , "width": "100"},
-    { "key": "aprvYmd", "value": "승인일자", "alignment" : "left", "width": "100"},
-    { "key": "rjctYmd", "value": "반려일자", "alignment" : "left", "width": "100" }
+    { "key": "aprvYmd", "value": "승인일자", "alignment" : "center", "width": "150"},
+    { "key": "rjctYmd", "value": "반려일자", "alignment" : "center", "width": "150" }
 	],
     "searchParams":
 	{

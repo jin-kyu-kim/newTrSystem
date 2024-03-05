@@ -10,7 +10,7 @@ import PivotGrid, {
   Scrolling,
 } from "devextreme-react/pivot-grid";
 
-const ProjectOutordEmpCostSearch = (prjctId) => {
+const ProjectOutordEmpCostSearch = ({prjctId, bgtMngOdr}) => {
   const [pivotGridConfig, setPivotGridConfig] = useState({
     fields: ProjectOutordEmpCostSearchJson,
     store: [],
@@ -24,7 +24,8 @@ const ProjectOutordEmpCostSearch = (prjctId) => {
 
   const param = {
     queryId: "projectMapper.retrieveProjectOutordEmpCostSearch",
-    prjctId: prjctId.prjctId,
+    prjctId: prjctId,
+    bgtMngOdr: bgtMngOdr
   };
 
   const Cnsrtm = async () => {

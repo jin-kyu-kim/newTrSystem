@@ -57,6 +57,7 @@ const AtrzInfoData = async (atrzLnSn) => {
   try {
     const response = await ApiRequest("/boot/common/queryIdSearch", param);
     setAtrzInfoData(response);
+    console.log(response);
   } catch (error) {
     console.error('Error fetching data', error);
   }
@@ -66,7 +67,7 @@ const handleTreeViewSelectionChange = useCallback((e) => {
   AtrzInfoData(e.itemData.atrzLnSn);
 });
 
-  return (
+  return (  
     <div style={{padding: '20px'}}>
       <div className='container'>
         <p><strong>* 결재정보 </strong></p>
