@@ -1,4 +1,5 @@
 import { useEffect, useState, } from "react";
+import { useNavigate } from "react-router-dom"; 
 
 import ProjectHrCtAprvJson from "./ProjectHrCtAprvJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
@@ -18,6 +19,7 @@ const ProjectHrCtAprv = () => {
     const [pageSize, setPageSize] = useState(20);
     
     const {keyColumn, queryId, tableColumns, searchParams} = ProjectHrCtAprvJson;
+    const navigate = useNavigate ();
 
     useEffect(() => {
         if(!Object.values(param).every((value) => value === "")) {
@@ -38,26 +40,6 @@ const ProjectHrCtAprv = () => {
         });
     }
 
-    // 페이징 처리
-    const handlePageChange = (newPage) => {
-        setCurrentPage(newPage);
-        setParam({
-            ...param,
-            currentPage: newPage + 1,
-            startVal: (newPage - 1) * pageSize,
-        });
-    };
-
-    // 페이지 사이즈 변경
-    const handlePageSizeChange = (e) => {
-        setPageSize(e.value * 1);
-        setParam({
-            ...param,
-            currentPage: 1,
-            startVal: 0,
-            pageSize: e.value * 1,
-        });
-    };
 
     const pageHandle = async () => {
         try {
@@ -75,6 +57,17 @@ const ProjectHrCtAprv = () => {
         }
     };
 
+    const onBtnClick = (e) => {
+        console.log(e.component.option("value").data);
+        navigate("/project/ProjectHrCtAprvDetail", 
+                { state: { 
+                          prjctId: e.component.option("value").data.prjctId,
+                          prjctNm: e.component.option("value").data.prjctNm,
+                          
+                         
+                         } 
+                });
+    }
 
     return (
         <div className="container">
@@ -93,7 +86,7 @@ const ProjectHrCtAprv = () => {
             <div>
                 검색된 건 수 : {totalItems} 건
             </div>
-            <CustomTable keyColumn={keyColumn} columns={tableColumns} values={values} paging={true}/>
+            <CustomTable keyColumn={keyColumn} columns={tableColumns} values={values} paging={true} onBtnClick={onBtnClick}/>
         </div>
     );
 };
