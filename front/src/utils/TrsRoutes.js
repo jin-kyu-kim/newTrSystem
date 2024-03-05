@@ -110,6 +110,12 @@ const TreRoutes = [
     name: "DeptManage",
     element: React.lazy(() => import("../pages/humanResourceMng/DeptManage")),
   },
+  //휴가배정관리
+  {
+    path: "/humanResourceMng/EmpVcatnAltmntMng",
+    name: "EmpVcatnAltmntMng",
+    element: React.lazy(() => import("../pages/humanResourceMng/EmpVcatnAltmntMng")),
+  },
   //직원 관리
   {
     path: "humanResourceMng/EmpManage",
@@ -140,7 +146,6 @@ const TreRoutes = [
     name: "ProjectCostClaimDetail",
     element: React.lazy(() => import("../pages/fnnrMng/prjctCtClm/ProjectCostClaimDetail")),
   }
-  
 ];
 
 export default TreRoutes;

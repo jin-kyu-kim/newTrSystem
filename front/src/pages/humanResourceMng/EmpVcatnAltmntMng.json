@@ -1,0 +1,25 @@
+{
+	"listQueryId": "humanResourceMngMapper.retrieveEmpVcatnInfo",
+    "listKeyColumn": "empno",
+    "listTableColumns": [
+        {"key": "empno", "value": "사번", "width":100},
+        {"key": "empFlnm", "value": "성명"},
+        {"key": "jobNm", "value": "직위"},
+        {"key": "deptNm", "value": "소속", "width": 150},
+        {"key": "vcatnAltmntDaycnt", "value": "배정", "width":60},
+        {"key": "useDaycnt", "value": "사용", "width":60},
+        {"key": "remainDaycnt", "value": "잔여", "width":60},
+        {"key": "hdofSttsNm", "value": "재직상태"},
+        {"key": "", "value": "화면"}
+    ],
+    "labelValue":{
+        "deptNm": {
+            "name": "empFlnm",
+            "type": "TextBox",
+            "label": "부서명",
+            "required": true,
+            "placeholder": "부서명"
+        }
+    }
+
+}

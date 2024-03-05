@@ -83,6 +83,9 @@
 
 .listStyle .fc-theme-standard td, .fc-theme-standard th{
   border : 0.5px solid rgb(207, 207, 207);
+  font-size: 12px;
+  text-align: center;
+  font-family: 'DXIcons';
 }
 
 /* 헤더 css */
@@ -90,6 +93,7 @@
   font-size: 16px;
   color: black;
   text-decoration: none;
+  font-weight: 400;
 }
 
 .listStyle .fc-event-title-container{
@@ -104,4 +108,23 @@
 .listStyle .fc-event-main{
   background: rgb(190, 218, 197);
   font-size: 16px;
+}
+
+.listStyle .fc-direction-ltr .fc-timegrid-slot-label-frame{
+  text-align: center;
+}
+
+.listStyle .fc-direction-ltr .fc-list-day-text, .fc-direction-rtl .fc-list-day-side-text{
+  text-decoration: none;
+  color: black;
+}
+
+.listStyle .fc-direction-ltr .fc-list-day-side-text, .fc-direction-rtl .fc-list-day-text{
+  text-decoration: none;
+  color: black;
+}
+
+.listStyle .fc-v-event .fc-event-title{
+  font-size: 14px;
+  margin-top: 5px;
 }
