@@ -93,9 +93,9 @@
         "expectOrderYmd": {
             "name": "expectOrderYmd",
             "type": "DateBox",
-            "label": "본공고계시일",
+            "label": "본공고개시일",
             "required": false,
-            "placeholder": "본공고계시일"
+            "placeholder": "본공고개시일"
         },
         "propseDdlnYmd": {
             "name": "propseDdlnYmd",
@@ -140,5 +140,24 @@
             "placeholder": "검수일"
         }
 
+    },
+    "updateColumns" : {
+        "prjctNm": "",
+        "deptId": "",
+        "totBgt": "",
+        "bddprPc": "",
+        "mmnySlsAm": "",
+        "ctmmnyNo": "",
+        "picFlnm": "",
+        "picTelno": "",
+        "picEml": "",
+        "beffatPbancDdlnYmd": "",
+        "expectOrderYmd": "",
+        "propseDdlnYmd": "",
+        "propsePrsntnYmd": "",
+        "ctrtYmd": "",
+        "bizEndYmd": "",
+        "stbleEndYmd": "",
+        "igiYmd": ""
     }
 } 

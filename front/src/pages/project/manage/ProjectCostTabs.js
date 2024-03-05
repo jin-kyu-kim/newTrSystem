@@ -2,8 +2,10 @@ import React, { useCallback, useState, lazy, Suspense } from "react";
 import { TabPanel } from "devextreme-react";
 import ProjectCostTabsJson from "./ProjectCostTabsJson.json";
 
-const ProjectCostTabs = ({ prjctId }) => {
+const ProjectCostTabs = ({ prjctId, bgtMngOdr }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
+  console.log(bgtMngOdr)
+  console.log(prjctId)
 
   const projectCost = ProjectCostTabsJson;
 
@@ -42,7 +44,7 @@ const ProjectCostTabs = ({ prjctId }) => {
           if (data === selectedTab) {
             return (
               <Suspense fallback={<div>Loading...</div>}>
-                <LazyLoadedComponent prjctId={prjctId} />
+                <LazyLoadedComponent prjctId={prjctId} bgtMngOdr={bgtMngOdr}/>
               </Suspense>
             );
           } else {

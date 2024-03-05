@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef  } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "devextreme-react";
 import { parse, format, addMonths } from 'date-fns';
@@ -13,7 +13,6 @@ import DataGrid, {
   Scrolling,
   Summary,
   TotalItem,
-  Editing,
   ColumnFixing
 } from "devextreme-react/data-grid";
 
@@ -28,7 +27,7 @@ const CustomCostTable = ({
   ctrtYmd,
   bizEndYmd,
   prjctId,
-  bgtMngOdr,
+  bgtMngOdrTobe,
   onHide,
 }) => {
   const navigate = useNavigate();
@@ -37,26 +36,43 @@ const CustomCostTable = ({
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [summaryColumns, setSummaryColumns] = useState(summaryColumn); //월별 합계를 담을 상태
+  const [transformedData, setTransformedData] = useState([]); //월별 합계를 담을 상태
+  const editColumn = ["수정", "삭제"];
   
-  // console.log("columns 좌측데이터 ",columns);
-  // console.log("values!! ",values);
-  
-  
+  useEffect(() => {
+    const deleteArray = [...json.pkColumns, ...json.nomalColumns];
+
+    let temp = {...selectedItem};
+
+    for (let i = 0; i < deleteArray.length; i++) {
+      delete temp[deleteArray[i]];
+    }
+
+    const transformedData = Object.keys(temp).map((key) => {
+        // 키에서 연도와 월을 분리하고 형식을 변경합니다.
+        const formattedKey = key.replace('년 ', '-').replace('월', '');               
+        return {
+          id: formattedKey,
+          value: temp[key]
+        };
+      });
+      setTransformedData(transformedData);
+
+  }, [selectedItem]);
 
   const showPopup = (data) => {
-    const gridInstance = dataGridRef.current.instance;
     setIsPopupVisible(true);
     setSelectedItem(data); // 팝업에 표시할 데이터 설정
-    // console.log("data",data);
   };
 
   const hidePopup = () => {
     setIsPopupVisible(false);
+    handleCancel();
   };
   
   const updateSummaryColumn = (periods) => {
     const newSummaryColumns = periods.map(period => ({
-      key: period, value: period, type: "sum", format: "Total: {0}원"
+      key: period, value: period, type: "sum", format: json.format
     }));
     // 상태 업데이트 함수를 사용하여 summaryColumn 상태 업데이트
     setSummaryColumns(prevSummaryColumns => [...prevSummaryColumns, ...newSummaryColumns]);
@@ -74,15 +90,10 @@ const CustomCostTable = ({
           currentDate = addMonths(currentDate, 1); 
         }
         setPeriod(periods);
-        console.log("periods 월정보",periods);
         updateSummaryColumn(periods);
     };
     getPeriod(ctrtYmd, bizEndYmd);
   }, []);
-
-  useEffect(() => {
-    console.log("period 변경 !!",period);
-  }, [period]);
 
   //gridRows가 실행되는 시점 잡아주기.
   useEffect(() => {
@@ -91,10 +102,7 @@ const CustomCostTable = ({
     }
   } ,[period]);
 
-  const editColumn = ["수정", "삭제"];
-
-   
-
+  
   const onCellRenderEdit = ({data}) => {
     // console.log("data",data);
     return (
@@ -120,17 +128,15 @@ const CustomCostTable = ({
   const onCellRenderDelete = (cellInfo) => {
     const gridInstance = dataGridRef.current.instance;
 
-    const rowIndex = gridInstance.getRowIndexByKey(cellInfo.data[json.keyColumn]); //TODO. keyColumn으로 변경해야함
+    const rowIndex = gridInstance.getRowIndexByKey(cellInfo.data[json.keyColumn]); 
     return (
       <Button 
-        onClick={async () => { 
+        onClick={ async () => { 
               if (rowIndex >= 0) {
                 const paramInfo = cellInfo.data;
-                const paramInfoNew = pick(paramInfo, json.pkColumns); //TODO. 공통으로 쓰는 방법 모색 필요.
-        
+                const paramInfoNew = pick(paramInfo, json.pkColumns); 
                 const param = [
-                  { tbNm: "EXPENS_PRMPC" },
-                  
+                  { tbNm: json.table },
                   paramInfoNew
                 ];
                 
@@ -138,7 +144,6 @@ const CustomCostTable = ({
                   const response = await ApiRequest("/boot/common/commonDelete", param); 
                     if(response > 0) {
                       alert('데이터가 성공적으로 삭제되었습니다.');
-                      // gridInstance.deleteRow(rowIndex);
                       handleCancel();
                       console.log(response)
                     }
@@ -153,19 +158,14 @@ const CustomCostTable = ({
   };
 
   const handleAddRow = () => {
-    // console.log("data",data);
-    const gridInstance = dataGridRef.current.instance;
-    // gridInstance.addRow();
     showPopup();
-    // console.log("data",data.event.data);
-    // gridInstance.deselectAll();
   };
 
   //취소버튼 클릭시
   const handleCancel = () => {
     navigate("../project/ProjectChange",
         {
-    state: { prjctId: prjctId, bgtMngOdr: bgtMngOdr, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd},
+    state: { prjctId: prjctId, bgtMngOdrTobe: bgtMngOdrTobe, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd},
     })
   };
 
@@ -260,11 +260,6 @@ const CustomCostTable = ({
           ))}
         </Summary>
         <ColumnFixing enabled={true} />
-        {/* <Editing
-          mode="popup"
-          allowUpdating={true}
-          popup={editPopupOptions}
-        /> */}
       </DataGrid>
 
       <CustomPopup props={popup} visible={isPopupVisible} handleClose={hidePopup} onHide={onHide}>
@@ -275,9 +270,10 @@ const CustomCostTable = ({
           popupInfo={json} 
           onHide={onHide} 
           prjctId={prjctId} 
-          bgtMngOdr={bgtMngOdr}
+          bgtMngOdrTobe={bgtMngOdrTobe}
           ctrtYmd={ctrtYmd}
           bizEndYmd={bizEndYmd}
+          transformedData={transformedData}
           />
        </CustomPopup>   
 

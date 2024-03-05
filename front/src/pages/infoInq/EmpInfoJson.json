@@ -1,0 +1,201 @@
+{
+   
+   
+   
+   
+    "EmpDegree":{
+        "menuName": "EmpDegree",
+        "queryId": "infoInqMapper.retrieveEmpAcbg",
+        "keyColumn": "acbgSeCd",
+        "tableColumns" :[
+        { "key": "acbgSeCd", "value": "구분", "width": 150, "alignment" : "center" },
+        { "key": "schlNm", "value": "학교명", "width": 200 , "alignment" : "center"},
+        { "key": "majorIntltshNm", "value": "전공(계열)", "width": 250, "alignment" : "center" },
+        { "key": "grdtnSttsCd", "value": "졸업구분", "width": 100, "alignment" : "center" },
+        { "key": "scre", "value" : "성적", "width" : 170, "alignment" : "center"},
+        { "key": "mtcltnYr", "value": "입학년도", "width": 170, "alignment" : "center"  },
+        { "key": "grdtnYr", "value": "졸업년도", "width": 170, "alignment" : "center"  }
+    ]
+
+
+    }  , 
+    "EmpLanguage":{
+        "menuName": "EmpLanguage",
+        "queryId": "infoInqMapper.retrieveFgggAblty",
+        "keyColumn": "fgggKndNm",
+        "tableColumns": 
+	[
+        { "key": "fgggKndNm", "value": "외국어", "width": 300, "alignment" : "center" },
+        { "key": "pictrsLevelNm", "value": "회화수준", "width": 300 , "alignment" : "center"},
+        { "key": "athriTestNm", "value": "공인시험", "width": 300, "alignment" : "center" },
+        { "key": "score", "value": "점수(등급)", "width": 100, "alignment" : "center" }
+	]
+
+    }, 
+
+
+    "EmpLicense":{
+        "menuName": "EmpLicense",
+        "queryId": "infoInqMapper.retrieveEmpQlfcLcns",
+        "keyColumn": "qlfcLcnsNm",
+        "tableColumns": 
+        [
+            { "key": "qlfcLcnsNm", "value": "자격면허", "width": 300, "alignment" : "center" },
+            { "key": "qlfcLcnsId", "value": "면허코드", "width": 300 , "alignment" : "center"},
+            { "key": "gradNm", "value": "등급", "width": 300, "alignment" : "center" },
+            { "key": "acqsYmd", "value": "취득일", "width": 100, "alignment" : "center" }
+        ],
+        "searchParams":
+        {
+        }
+        
+
+    },
+    "EmpEduHist":{
+        
+        "menuName": "EmpEduHist",
+	"queryId": "infoInqMapper.retrieveEmpEduHist",
+    "keyColumn": "eduInstNm",
+    "tableColumns": 
+	[
+        { "key": "eduInstNm", "value": "교육기관", "width": 250, "alignment" : "center" },
+        { "key": "eduNm", "value": "교육명", "width": 250 , "alignment" : "center"},
+        { "key": "eduYmd", "value": "교육기간", "width": 250, "alignment" : "center" },
+        { "key": "eduCn", "value": "교육내용", "width": 100, "alignment" : "center" }
+	]
+   
+    
+    },
+
+
+    "EmpCareer":{
+        "menuName": "EmpCareer",
+        "queryId": "infoInqMapper.retrieveEmpCareer",
+        "keyColumn": "workYmd",
+        "tableColumns":
+        [
+            { "key": "workYmd", "value": "기간", "width": 120, "alignment" : "center" },
+            { "key": "wrkplcNm", "value": "근무처", "width": 100 , "alignment" : "center"},
+            { "key": "mainCareerCn", "value": "주요경력사항", "width": 200, "alignment" : "center" },
+            { "key": "lctnAddr", "value": "소재지", "width": 170, "alignment" : "center" },
+            { "key": "rm", "value": "특기사항", "width": 170, "alignment" : "center"  }
+        ]
+    },
+
+
+    "EmpDgree":{
+        "menuName": "EmpDegree",
+        "queryId": "infoInqMapper.retrieveEmpAcbg",
+        "keyColumn": "acbgSeCd",
+        "tableColumns" :[
+            { "key": "acbgSeCd", "value": "구분", "width": 150, "alignment" : "center" },
+            { "key": "schlNm", "value": "학교명", "width": 200 , "alignment" : "center"},
+            { "key": "majorIntltshNm", "value": "전공(계열)", "width": 250, "alignment" : "center" },
+            { "key": "grdtnSttsCd", "value": "졸업구분", "width": 100, "alignment" : "center" },
+            { "key": "scre", "value" : "성적", "width" : 170, "alignment" : "center"},
+            { "key": "mtcltnYr", "value": "입학년도", "width": 170, "alignment" : "center"  },
+            { "key": "grdtnYr", "value": "졸업년도", "width": 170, "alignment" : "center"  }
+        ]
+    },
+
+
+    "prjctHist" : 
+    {
+
+    "menuName": "EmpProjectHist",
+    "queryId": "infoInqMapper.retrievePrjctHist",
+    "keyColumn": "prjctNm",
+    "tableColumns": 
+	[
+        { "key": "prjctNm", "value": "프로젝트명", "width": 200, "alignment" : "center" },
+        { "key": "prjctYmd", "value": "참여기간", "width": 300, "alignment" : "center" },
+        { "key": "tkcgJobCn", "value": "담당업무", "width": 150, "alignment" : "center" },
+        { "key": "orderInstNm", "value": "발주처", "width": 150, "alignment" : "center"  },
+        { "key": "jobNm", "value": "업무분류", "width": 150, "alignment" : "center"  },
+        { "key": "tchnlgyNm", "value": "기술분류", "width": 150 ,  "alignment" : "center"  },
+        { "key": "rm", "value": "비고", "width": 100,  "alignment" : "center"  }
+	]
+    },
+
+
+    "EmpDetailInfo":[
+        {
+          "TabName": "비밀번호변경",
+          "tabId": "ModifyPwd",
+          "url": "./ModifyPwd"
+        },
+        {
+          "TabName": "직원기본정보",
+          "tabId": "EmpBasicInfo",
+          "url": "./EmpBasicInfo"
+        },
+        {
+          "TabName": "학력",
+          "tabId": "EmpDegree",
+          "url": "./EmpDegree"
+        },
+        {
+          "TabName": "외국어능력",
+          "tabId": "EmpLanguage",
+          "url": "./EmpLanguage"
+        },
+        {  "TabName": "자격면허",
+        "tabId": "EmpLicense",
+        "url": "./EmpLicense"
+    
+        },
+        {
+          "TabName": "교육이력",
+          "tabId": "EmpEduHist",
+          "url": "./EmpEduHist"
+        },
+        {
+          "TabName": "경력",
+          "tabId": "EmpCareer",
+          "url": "./EmpCareer"
+        },
+        {
+          "TabName": "프로젝트이력",
+          "tabId": "EmpProjectHist",
+          "url": "./EmpProjectHist"
+        }
+      ],
+
+
+      "EmpBasicInfo":{
+      "BaseInfo" :
+      [
+        { "key": "empno", "value": "사번" },
+        { "key": "jbpsCd", "value": "직위코드" },
+        { "key": "empFlnm", "value": "성명" },
+        { "key": "telno", "value": "전화번호" },
+        { "key": "eml", "value": "이메일" }
+      ],
+      "DtlInfo":
+      [
+        {"key": "engFlnm","value": "영문성명"},
+        {"key": "chcrtFlnm","value": "한자성명"},
+        {"key": "brdt","value": "생년월일"},
+        {"key": "sexdstnCd","value": "성별코드"},
+        {"key": "telno","value": "전화번호"},
+        {"key": "eml","value": "이메일"},
+        {"key": "bassAddr","value": "기본주소"},
+        {"key": "daddr","value": "상세주소"},
+        {"key": "armyKndCd","value": "군대종류코드"},
+        {"key": "armyExmptnCn","value": "군대면제내용"},
+        {"key": "srvicBgngYmd","value": "복무시작일자"},
+        {"key": "srvicEndYmd","value": "복무종료일자"},
+        {"key": "mryfrSpcablCn","value": "군사특기내용"},
+        {"key": "dmblzClssCd","value": "전역계급코드"},
+        {"key": "height","value": "키"},
+        {"key": "bdwgh","value": "몸무게"},
+        {"key": "bdpCd","value": "혈액형코드"},
+        {"key": "bdyPartclrCn","value": "신체특이내용"},
+        {"key": "regDt","value": "등록일시"},
+        {"key": "regEmpId","value": "등록직원ID"},
+        {"key": "mdfcnDt","value": "수정일시"},
+        {"key": "mdfcnEmpId","value": "수정직원ID"}
+      ]
+    }
+    
+}

@@ -5,12 +5,15 @@ import org.apache.commons.text.CaseUtils;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.Instant;
+import java.util.*;
 
 @Service
 public class CommonServiceImpl implements CommonService {
@@ -203,7 +206,7 @@ public class CommonServiceImpl implements CommonService {
 
             // SELECT 문을 생성하기 위해 컬럼명을 얻어옴
             try (Statement statement = connection.createStatement()) {
-                ResultSet resultParamSet = statement.executeQuery("SELECT * FROM " + tbNm + " WHERE 1=0"); // 빈 결과를 가져옴
+                ResultSet resultParamSet = statement.executeQuery("SELECT * FROM "  + tbNm + " WHERE 1=0"); // 빈 결과를 가져옴
                 ResultSetMetaData metaData = resultParamSet.getMetaData();
                 int columnCount = metaData.getColumnCount();
 
@@ -221,7 +224,7 @@ public class CommonServiceImpl implements CommonService {
                 }
                 queryBuilder.append(" FROM ").append(tbNm).append(" WHERE 1 = 1");
 
-                for (int j = 0; j < inParams.size(); j++) {
+                for (int j = 0; j < inParams.size(); j++ ) {
                     Object paramValue = inParams.get(j);
                     String paramName = keys.get(j);
                     queryBuilder.append(" AND ");
@@ -286,7 +289,7 @@ public class CommonServiceImpl implements CommonService {
                     continue;
                 }
 
-                if (params.get(i) instanceof String && ((String) params.get(i)).contains("&")) {
+                if (params.get(i) instanceof String && ((String) params.get(i)).contains("&") && !((String) params.get(i)).contains("<p>")) {
                     String[] dateRange = ((String) params.get(i)).split("&");
                     if (dateRange.length == 2) {
                         preparedStatement.setObject(i + 1, dateRange[0]);
@@ -304,7 +307,11 @@ public class CommonServiceImpl implements CommonService {
                     preparedStatement.setInt(i + 1, (Integer) params.get(i));
                 } else if (params.get(i) instanceof Double) {
                     preparedStatement.setDouble(i + 1, (Double) params.get(i));
-                } else if (params.get(i) == null) {
+                } else if (params.get(i) instanceof Timestamp) {
+                    preparedStatement.setTimestamp(i + 1, (Timestamp) params.get(i));
+                }  else if (params.get(i) instanceof Instant) {
+                    preparedStatement.setTimestamp(i + 1, Timestamp.from((Instant) params.get(i)));
+                }  else if (params.get(i) == null) {
                     preparedStatement.setString(i + 1, null);
                 } else {
                     return null;
@@ -319,5 +326,80 @@ public class CommonServiceImpl implements CommonService {
     public List<Map<String, Object>> queryIdSearch(Map<String, Object> param) {
         String queryId = param.get("queryId").toString();
         return sqlSession.selectList("com.trsystem.mybatis.mapper." + queryId, param);
+    }
+
+    @Transactional
+    public int insertFile(String tbNm, Map<String, Object> params, List<MultipartFile> attachments) {
+        int atchResult = 0;//첨부파일 insert결과
+        int result = 0;
+
+        String atchmnflId = "";
+        int atchmnflSn = 1;
+
+        Map<String, Object> atchmnflMap = new HashMap<>();
+        Map<String, Object> tableMap = new HashMap<>();
+        List<Map<String, Object>> atchmnflParam = new ArrayList<>();
+        List<Map<String, Object>> insertParam = new ArrayList<>();
+        tableMap.put("tbNm", tbNm);
+
+        //1. parameter 에 첨부파일이 있는지 없는지 확인
+        if(params.containsKey("atchmnflId") && params.get("atchmnflId").equals("")){
+            // 1-1 없다면 첨부파일 ID 생성 순번은 1부터 시작
+            atchmnflId = UUID.randomUUID().toString();
+        }else{
+            // 1-2 있다면 첨부파일 ID 사용 생성 순번은 1부터 시작
+            atchmnflId = params.get("atchmnflId").toString();
+        }
+
+        try{
+            //2. 파일 내부 디렉토리에 업로드
+            String uploadDir = "./src/main/resources/upload";
+            // 2-1 파일일 디렉토리가 없으면 생성
+            Path directory = Path.of(uploadDir);
+            if (Files.notExists(directory)) {
+                Files.createDirectories(directory);
+            }
+
+            for(MultipartFile file : attachments){
+                // UUID를 사용하여 서버에 저장될 파일명 생성
+                String storedFileName = UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
+                // 파일 저장
+                Path filePath = directory.resolve(storedFileName);
+                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+                Instant currentTimestamp = Instant.now();
+                //3. 저장경로 및 명칭 지정하여 첨부파일 테이블에 INSERT
+                atchmnflMap.put("atchmnflId", atchmnflId);
+                atchmnflMap.put("atchmnflSn", atchmnflSn++);
+                atchmnflMap.put("strgFileNm", storedFileName); // 저장된파일명칭
+                atchmnflMap.put("realFileNm", file.getOriginalFilename());
+                atchmnflMap.put("fileStrgCours", uploadDir); // 파일저장경로
+                atchmnflMap.put("regDt", currentTimestamp);
+                atchmnflMap.put("regEmpId", params.get("regEmpId").toString());
+                atchmnflMap.put("mdfcnDt", currentTimestamp);
+                atchmnflMap.put("mdfcnEmpId", params.get("regEmpId").toString());
+
+                atchmnflParam.clear();
+                tableMap.put("tbNm", "ATCHMNFL");
+                atchmnflParam.add(tableMap);
+                atchmnflParam.add(atchmnflMap);
+
+                atchResult += insertData(atchmnflParam);
+            }
+
+            if(attachments.isEmpty() || atchResult < 1){
+                //4. 입력된 첨부파일 ID를 parameter에 지정
+                params.put("atchmnflId", atchmnflId);
+                tableMap.put("tbNm", tbNm);
+                insertParam.add(tableMap);
+                insertParam.add(params);
+
+                //5. 사용하려는 테이블에 INSERT
+                result = insertData(insertParam);
+            }
+            return result;
+        }catch (IOException e){
+            return result;
+        }
     }
 }

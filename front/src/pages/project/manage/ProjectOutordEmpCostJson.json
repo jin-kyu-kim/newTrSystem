@@ -2,6 +2,8 @@
 	"menuName": "ProjectOutordEmpCostJson",
     "table": "OUTORD_LBRCO_PRMPC",
     "keyColumn": "outordEmpId",
+    "pkColumns": ["prjctId","bgtMngOdr","outordEmpId"],
+    "nomalColumns": ["hnfRoleCd", "tkcgJob","inptPrnmntYmd","withdrPrnmntYmd","untpc","hnfGradCd"],
     "tableColumns": 
 	[
         {"key": "outordEmpId", "value": "성명"},
