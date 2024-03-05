@@ -11,6 +11,7 @@ import ProjectAprvDetailJson from "./ProjectAprvDetailJson.json";
 import LinkButton from "components/unit/LinkButton";
 import CustomPopup from "../../../components/unit/CustomPopup";
 import TextArea from "devextreme-react/text-area";
+import { set } from "date-fns";
 
 const ProjectAprvDetail = () => {
 
@@ -22,6 +23,7 @@ const ProjectAprvDetail = () => {
     const atrzStepCd = location.state.atrzStepCd;
     const nowAtrzStepCd = location.state.nowAtrzStepCd;
     const bgtMngOdr = location.state.bgtMngOdr;
+    const aprvrEmpId = location.state.aprvrEmpId;
     const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
     const ProjectAprvDetail = ProjectAprvDetailJson;
   
@@ -30,13 +32,19 @@ const ProjectAprvDetail = () => {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [opnnCn, setOpnnCn] = useState("");
     const [data, setData] = useState([]);
+    const [btnVisible, setBtnVisible] = useState(false);
 
     const dataS = ProjectAprvDetail.dataSource;
 
+    console.log(bgtMngOdr)
+
     useEffect(() => {
-        console.log("useEffect")
-        console.log(prjctId)
-        console.log(atrzLnSn)
+        console.log(aprvrEmpId)
+        console.log(cookies.userInfo.empId)
+
+        if(aprvrEmpId === cookies.userInfo.empId) handleBtnVisible();
+
+
         const param = {
             "queryId": ProjectAprvDetail.queryId,
             "prjctId": prjctId,
@@ -50,6 +58,10 @@ const ProjectAprvDetail = () => {
         console.log(data)
 
     },[]);
+
+    const handleBtnVisible = () => {
+        setBtnVisible(true);
+    };
 
 
     // 날짜 생성
@@ -114,11 +126,11 @@ const ProjectAprvDetail = () => {
                         
                         // PRJCT_BGT_PRMPC 테이블 결재완료로 수정
                         // ATRZ_DMND_STTS_CD -> VTW03303(결재완료)
-                        handleBgtPrmpc();
+                        handleBgtPrmpc("VTW03303");
     
                         // PRJCT 테이블
                         // BIZ_STTS_CD 컬럼 -> VTW00402(수행)
-                        handlePrjctBizStts();
+                        handlePrjctBizStts("VTW00402");
                     }
     
                     alert("승인이 완료되었습니다.");
@@ -166,7 +178,7 @@ const ProjectAprvDetail = () => {
                 // 반려되면
                 // PRJCT_BGT_PRMPC 테이블 결재완료가 아니라 임시저장으로 수정 << todo
                 // 컬럼 ATRZ_DMND_STTS_CD -> VTW03301
-                handleBgtPrmpc();
+                handleBgtPrmpc("VTW03301");
 
                 alert("반려 되었습니다.");
                 navigate("../project/ProjectAprv");
@@ -206,14 +218,14 @@ const ProjectAprvDetail = () => {
      * atrzDmndSttsCd 결재요청상태구분코드: 임시저장(VTW03301) 으로 수정
      * 승인목록에서 조회한 bgtMngOdr 값으로 수정
      */
-    const handleBgtPrmpc = async () => {
+    const handleBgtPrmpc = async (cdValue) => {
         const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
         const date = getToday();
     
         const param = [
           { tbNm : "PRJCT_BGT_PRMPC" },
           {
-            atrzDmndSttsCd: "VTW03301",
+            atrzDmndSttsCd: cdValue,
             atrzCmptnYmd: date,
             mdfcnEmpId: cookies.userInfo.empId,
             mdfcnDt: mdfcnDt,
@@ -227,13 +239,13 @@ const ProjectAprvDetail = () => {
         await ApiRequest("/boot/common/commonUpdate", param);
       }
     
-      const handlePrjctBizStts = async () => {
+      const handlePrjctBizStts = async (cdValue) => {
         const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
     
         const param = [
           { tbNm : "PRJCT" },
           {
-            bizSttsCd: "VTW00402",
+            bizSttsCd: cdValue,
             mdfcnEmpId: cookies.userInfo.empId,
             mdfcnDt: mdfcnDt,
           },
@@ -443,8 +455,8 @@ const ProjectAprvDetail = () => {
                         </DataGrid> */}
                         {DataRow(data)}
                     <div className="buttons" align="right" style={{ marginTop: "5px", marginBottom: "5px" }}>
-                        <Button text="승인" onClick={onAprvPopup}/>
-                        <Button text="반려" onClick={onRjctPopup}/>
+                        <Button text="승인" visible={btnVisible} onClick={onAprvPopup}/>
+                        <Button text="반려" visible={btnVisible} onClick={onRjctPopup}/>
                         <LinkButton location={-1} name={"목록"} type={"normal"} stylingMode={"outline"}/>
                     </div>
                     </div>
