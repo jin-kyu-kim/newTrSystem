@@ -1,40 +1,50 @@
 import DataGrid, { Column, Pager, Paging, Summary, TotalItem } from "devextreme-react/data-grid";
 import { Button } from "devextreme-react/button";
+import ToggleButton from "../../pages/sysMng/ToggleButton"
 
-
-const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn}) => {
+const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, handleYnVal }) => {
 
   const gridRows = () => {
     const result = [];
-    for(let i = 0; i < columns.length; i++) {
-        const { key, value, width, alignment, button, visible } = columns[i];
-        if(button) {
-          result.push(
-            <Column 
-              key={key} 
-              dataField={key} 
-              caption={value} 
-              width={width} 
-              alignment={alignment || 'center'}
-              cellRender={() => buttonRender(button)}>
-            </Column>
-
-
+    for (let i = 0; i < columns.length; i++) {
+      const { key, value, width, alignment, button, visible, toggle } = columns[i];
+      if (button) {
+        result.push(
+          <Column
+            key={key}
+            dataField={key}
+            caption={value}
+            width={width}
+            alignment={alignment || 'center'}
+            cellRender={() => buttonRender(button)}>
+          </Column>
         );
-        } else {
-            if(!visible){
-              result.push(
-                <Column 
-                  key={key} 
-                  dataField={key} 
-                  caption={value} 
-                  width={width} 
-                  alignment={alignment || 'center'}>
-                </Column>
-            );
-            }
-          
+      } else {
+        if (!visible) {
+          result.push(
+            <Column
+              key={key}
+              dataField={key}
+              caption={value}
+              width={width}
+              alignment={alignment || 'center'}>
+            </Column>
+          );
         }
+        if (toggle) {
+          result.push(
+            <Column
+              key={key}
+              dataField={key}
+              caption={value}
+              width={width}
+              alignment={alignment || 'center'}
+              cellRender={({ data, key }) => (
+                <ToggleButton callback={handleYnVal} data={data} idColumn={key} />
+              )} />
+          );
+        }
+      }
     }
     return result;
   }
@@ -43,7 +53,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
     return(
       <Button text={button}/>
     )
-	}
+  }
 
   return (
     <div className="wrap_table">
@@ -77,20 +87,20 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
 
         {summary&&
           <Summary>
-              {summaryColumn.map(item => (
-                    <TotalItem
-                        key={item.key}
-                        column={item.value}
-                        summaryType={item.type}
-                        displayFormat={item.format}
-                        valueFormat={{ type: 'fixedPoint', precision: 0 }} // 천 단위 구분자 설정
-                    />
-                  ))}
+            {summaryColumn.map(item => (
+              <TotalItem
+                key={item.key}
+                column={item.value}
+                summaryType={item.type}
+                displayFormat={item.format}
+                valueFormat={{ type: 'fixedPoint', precision: 0 }} // 천 단위 구분자 설정
+              />
+            ))}
           </Summary>
         }
 
       </DataGrid>
-  </div>
+    </div>
   );
 };
 

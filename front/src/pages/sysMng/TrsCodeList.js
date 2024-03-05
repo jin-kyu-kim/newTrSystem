@@ -1,43 +1,29 @@
-import { useState, useEffect, useCallback } from "react";
-
-import ApiRequest from '../../utils/ApiRequest';
-import TrsCodeJson from './TrsCodeJson.json';
-//import TrsCodeChildJson from './TrsCodeJson.json';
+import { useState, useEffect } from "react";
+import DataGrid, { Column } from 'devextreme-react/data-grid'
 import CustomTable from "../../components/unit/CustomTable";
-
-
-import "react-datepicker/dist/react-datepicker.css";
-import { useNavigate } from "react-router-dom";
-import { Button } from "devextreme-react";
-import SearchTrsCodeSet from "components/composite/SearchTrsCodeSet"
-
+import SearchInfoSet from "components/composite/SearchInfoSet"
+import ApiRequest from '../../utils/ApiRequest';
+import ToggleButton from './ToggleButton';
+import SysMng from './SysMngJson.json';
 
 const TrsCodeList = () => {
-
     const [values, setValues] = useState([]);
-    const [param, setParam] = useState({});
-    const [childCode, setChildCode] = useState({});
+    const [param, setParam] = useState({}); // cud 전달 객체
+    const [oneData, setOneData] = useState([]); // 특정 상위코드의 하위목록
+    const [selectedRowKey, setSelectedRowKey] = useState(null);
 
     const [totalItems, setTotalItems] = useState(0);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [pageSize, setPageSize] = useState(20);
+    const [currentPage] = useState(1);
+    const [pageSize] = useState(20);
+    const { keyColumn, queryId, tableColumns, childTableColumns, searchInfo } = SysMng.trsCodeJson;
 
-    const navigate = useNavigate();
-
-    const { keyColumn, queryId, tableColumns, searchParams, popup } = TrsCodeJson;
-
-    
     useEffect(() => {
         if (!Object.values(param).every((value) => value === "")) {
             pageHandle();
         }
     }, [param]);
 
-    // 검색으로 조회할 때
     const searchHandle = async (initParam) => {
-        setTotalPages(1);
-        setCurrentPage(1);
         setParam({
             ...initParam,
             queryId: queryId,
@@ -46,42 +32,50 @@ const TrsCodeList = () => {
             pageSize: pageSize,
         });
     };
-    // useEffect(() => {
-    //     const childCodeData = async () => {
-    //       const child = [ 
-    //         { upCdValue: "upCdValue" }, 
-    //      ]; 
-    //       try {
-    //         const response = await ApiRequest("/boot/common/queryIdSearch", param);
-    //         setChildCode(response[0]);     
-    //       } catch (error) {
-    //         console.error('Error fetching data', error);
-    //       }
-    //     };
-    //     childCodeData();
-    //   }, []);
+
     const pageHandle = async () => {
         try {
             const response = await ApiRequest("/boot/common/queryIdSearch", param);
             setValues(response);
             if (response.length !== 0) {
-                setTotalPages(Math.ceil(response[0].totalItems / pageSize));
                 setTotalItems(response[0].totalItems);
             } else {
-                setTotalPages(1);
+                setTotalItems(0);
             }
         } catch (error) {
             console.log(error);
         }
     };
-    
-
-
-     const onRowDblClick = (e) => {
-    //     const clickedCodeValue = e.data.parentCdValue;
-    //     setSelectedCode(clickedCodeValue);
-       };
-
+    const handleYnVal = async (idColumn, useYn) => {
+        const ynParam = [
+            { tbNm: "CD" },
+            { useYn: useYn },
+            { cdValue: idColumn } // index2는 id값
+        ];
+        try {
+            const response = await ApiRequest('/boot/common/commonUpdate', ynParam);
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    const getOneData = async (e) => {
+        const upCd = [
+            { tbNm: "CD" },
+            { upCdValue: e.key }
+        ];
+        try {
+            const response = await ApiRequest('/boot/common/commonSelect', upCd);
+            setOneData(response)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    const onRowClick = (e) => {
+        setSelectedRowKey(e.key);
+        getOneData(e);
+    }
+    const onUpRouUpdate = (e) => {
+    }
     return (
         <div className="container">
             <div
@@ -94,20 +88,39 @@ const TrsCodeList = () => {
                 <span>* 권한코드를 조회합니다.</span>
             </div>
             <div style={{ marginBottom: "20px" }}>
-                <SearchTrsCodeSet callBack={searchHandle} props={searchParams} /> 
+                <SearchInfoSet callBack={searchHandle} props={searchInfo} upCdList={values} />
             </div>
 
             <div>검색된 건 수 : {totalItems} 건</div>
             <CustomTable
                 keyColumn={keyColumn}
-                pageSize={pageSize}
                 columns={tableColumns}
                 values={values}
-                onRowDblClick={onRowDblClick}
+                handleYnVal={handleYnVal}
+                onRowClick={onRowClick}
+                pageSize={pageSize}
                 paging={true}
             />
+            {selectedRowKey && (
+                <DataGrid
+                    keyExpr={keyColumn}
+                    dataSource={oneData}
+                >
+                    {childTableColumns.map((item) => (
+                        item.toggle ?
+                            <Column dataField={item.key} caption={item.value}
+                                alignment={'center'}
+                                cellRender={({ data }) => (
+                                    <ToggleButton callback={handleYnVal} data={data} />
+                                )}
+                            /> :
+                            <Column dataField={item.key} caption={item.value}
+                                alignment={'center'}
+                            />
+                    ))}
+                </DataGrid>
+            )}
         </div>
-        
     );
 }
 export default TrsCodeList;

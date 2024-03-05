@@ -77,7 +77,7 @@ useEffect(()=>{
         <h1 style={{ fontSize: "40px" }}>외국어 능력</h1>
       </div>
       <div style={{ marginBottom: "20px" }}>
-        <CustomTable keyColumn={keyColumn} columns={tableColumns} values={values} paging={true} />
+        <CustomTable  keyColumn={keyColumn} columns={tableColumns} values={values} paging={true} />
       </div>
       <div style={{ marginBottom: "20px", backgroundColor: "#eeeeee", width: "100%", height: "300px", display: "flex", justifyContent: "center", alignItems: "center" }}>
         <div style={{ width: "95%", height: "180px" }}>

@@ -1,78 +1,82 @@
 {
-    "menuName": "Notice",
-    "menuKorName": "공지사항",
-    "queryId": "infoInqMapper.retrieveNoticeList",
-    "keyColumn": "noticeId",
-    "tableColumns": [
-      { "key": "rownum", "value": "공지번호", "width": 150, "alignment": "center" },
-      { "key": "noticeTtl", "value": "제목", "width": 450, "alignment": "left" },
-      { "key": "regEmpId", "value": "작성자", "width": 200, "alignment": "left" },
-      { "key": "regDt", "value": "작성일", "width": 200, "alignment": "left" }
-    ],
-    "edit": {
-      "columns": [
-        {
-          "dataField": "noticeTtl",
-          "name": "ttl",
-          "label": "제목",
-          "placeholder": "제목을 입력하세요"
-        },
-        {
-          "dataField": "dateRange",
-          "name": "setting",
-          "label": "설정",
-          "checkType": [
-            {
-              "dataField": "imprtnc",
-              "type": {
-                  "startDt": "imprtncNtcBgngYmd",
-                  "endDt": "imprtncNtcEndYmd"
-
-                },
-              "label": "상단공지"
+  "menuName": "Notice",
+  "menuKorName": "공지사항",
+  "queryId": "infoInqMapper.retrieveNoticeList",
+  "keyColumn": "noticeId",
+  "tableColumns": [
+    { "key": "rownum", "value": "공지번호", "width": 150, "alignment": "center" },
+    { "key": "noticeTtl", "value": "제목", "width": 450, "alignment": "center" },
+    { "key": "regEmpId", "value": "작성자", "width": 200, "alignment": "center" },
+    { "key": "regDt", "value": "작성일", "width": 200, "alignment": "center" }
+  ],
+  "edit": {
+    "columns": [
+      {
+        "dataField": "noticeTtl",
+        "name": "ttl",
+        "label": "제목",
+        "placeholder": "제목을 입력하세요"
+      },
+      {
+        "dataField": "dateRange",
+        "name": "setting",
+        "label": "설정",
+        "checkType": [
+          {
+            "dataField": "imprtnc",
+            "type": {
+              "startDt": "imprtncNtcBgngYmd",
+              "endDt": "imprtncNtcEndYmd"
             },
-            {
-              "dataField": "useEndYmd",
-              "checkId": "useYn",
-              "label": "공지 표시여부"
-            },
-            {
-              "dataField": "moveToRefer",
-              "label": "자료실로 이관"
-            }
-          ]
-        },
-        {
-          "dataField": "noticeCn",
-          "name": "cn",
-          "label": "내용",
-          "placeholder": "내용을 입력하세요"
-        },
-        {
-          "dataField": "uploadFile",
-          "label": "첨부파일"
-        }
-      ]
-    },
-    "searchInfo":{
-        "searchParams": {
-          "resetButton":false
-        },
-        "firstCd": "VTW01701",
-        "textBoxItem": [
-            {
-                "className": "commonCdItem",
-                "placeholder": "검색어",
-                "name": "searchWrd"
-            }
-        ],
-        "selectBoxItem": [
-            {
-                "isSingleCnd": true,
-                "commonCd": "VTW017",
-                "name": "searchCnd"
-            }
+            "label": "상단공지"
+          },
+          {
+            "dataField": "useEndYmd",
+            "checkId": "useYn",
+            "label": "공지 표시여부"
+          },
+          {
+            "dataField": "moveToRefer",
+            "label": "자료실로 이관"
+          }
         ]
-    }
+      },
+      {
+        "dataField": "noticeCn",
+        "name": "cn",
+        "label": "내용",
+        "placeholder": "내용을 입력하세요"
+      },
+      {
+        "dataField": "uploadFile",
+        "label": "첨부파일"
+      }
+    ]
+  },
+  "detail": {
+    "detailQueryId": "infoInqMapper.retrieveNtcMatterDtl",
+    "buttonGroup": [
+      { "id": 1, "text": "목록", "onClick": "/infoInq/NoticeList" },
+      { "id": 2, "text": "수정", "onClick": "/infoInq/NoticeInput", "state": { "id": "noticeId", "editMode": "update" } },
+      { "id": 3, "text": "삭제", "onClick": "deleteNotice" }
+    ]
+  },
+  "searchInfo": {
+    "searchParams": {
+      "resetButton": false
+    },
+    "firstCd": "VTW01703",
+    "selectBoxItem": [
+      {
+        "commonCd": "VTW017",
+        "name": "searchCnd"
+      }
+    ],
+    "textBoxItem": [
+      {
+        "placeholder": "검색어",
+        "name": "searchWrd"
+      }
+    ]
   }
-  
+}
