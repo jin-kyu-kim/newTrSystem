@@ -127,6 +127,18 @@ const TreRoutes = [
     path: "/infoInq/EmpDetailInfo",
     name: "EmpDetailInfo",
     element: React.lazy(() => import("../pages/infoInq/EmpDetailInfo")),
+  },
+  // 재무 관리 > 프로젝트비용청구현황
+  {
+    path: "/fnnrMng/prjctCtClm/ProjectCostClaimList",
+    name: "ProjectCostClaimList",
+    element: React.lazy(() => import("../pages/fnnrMng/prjctCtClm/ProjectCostClaimList")),
+  },
+  // 재무 관리 > 프로젝트비용청구현황 상세조회
+  {
+    path: "/fnnrMng/prjctCtClm/ProjectCostClaimDetail",
+    name: "ProjectCostClaimDetail",
+    element: React.lazy(() => import("../pages/fnnrMng/prjctCtClm/ProjectCostClaimDetail")),
   }
   
 ];
