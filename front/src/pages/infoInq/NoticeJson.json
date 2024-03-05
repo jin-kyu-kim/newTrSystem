@@ -3,6 +3,9 @@
   "menuKorName": "공지사항",
   "queryId": "infoInqMapper.retrieveNoticeList",
   "keyColumn": "noticeId",
+  "insertUrl": "/boot/common/insertlongText",
+  "updateUrl": "/boot/common/queryIdSearch",
+  "updateQueryId": "infoInqMapper.updateNotice",
   "tableColumns": [
     { "key": "rownum", "value": "공지번호", "width": 150, "alignment": "center" },
     { "key": "noticeTtl", "value": "제목", "width": 450, "alignment": "center" },
@@ -31,8 +34,7 @@
             "label": "상단공지"
           },
           {
-            "dataField": "useEndYmd",
-            "checkId": "useYn",
+            "dataField": "useYn",
             "label": "공지 표시여부"
           },
           {
@@ -56,9 +58,9 @@
   "detail": {
     "detailQueryId": "infoInqMapper.retrieveNtcMatterDtl",
     "buttonGroup": [
-      { "id": 1, "text": "목록", "onClick": "/infoInq/NoticeList" },
-      { "id": 2, "text": "수정", "onClick": "/infoInq/NoticeInput", "state": { "id": "noticeId", "editMode": "update" } },
-      { "id": 3, "text": "삭제", "onClick": "deleteNotice" }
+      { "id": 1, "text": "목록", "onClick": "/infoInq/NoticeList", "type": "normal" },
+      { "id": 2, "text": "수정", "onClick": "/infoInq/NoticeInput", "state": { "id": "noticeId", "editMode": "update" }, "type":"default" },
+      { "id": 3, "text": "삭제", "onClick": "deleteNotice", "type":"danger" }
     ]
   },
   "searchInfo": {

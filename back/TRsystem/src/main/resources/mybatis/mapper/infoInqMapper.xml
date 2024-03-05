@@ -122,12 +122,12 @@
 
 	<select id="retrieveNoticeList" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT
-			ROW_NUMBER()OVER ()ROWNUM
+			ROW_NUMBER() OVER() ROWNUM
 			, NOTICE_ID
 			, NOTICE_TTL
 			, SGNAL_ORDR
 			, e.EMP_FLNM AS REG_EMP_ID
-			, n.REG_DT
+		    , DATE_FORMAT(n.REG_DT, '%Y-%m-%d %H:%i') AS REG_DT
 			, COUNT(*) OVER () AS TOTAL_ITEMS
 		FROM NOTICE n
 		LEFT JOIN EMP e ON n.REG_EMP_ID = e.EMP_ID
@@ -144,20 +144,27 @@
 			OR NOTICE_CN LIKE CONCAT('%',#{searchWrd},'%')
 			)
 		</if>
-		ORDER BY REG_DT DESC
+		ORDER BY
+			CASE
+			    WHEN SGNAL_ORDR = 1 THEN 0
+				ELSE 1
+			END,
+			REG_DT DESC
 	</select>
 
 	<select id="retrieveNtcMatterDtl" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT
-			ROW_NUMBER()OVER ()ROWNUM
+			ROW_NUMBER() OVER() ROWNUM
 			, NOTICE_ID
 			, NOTICE_TTL
 			, NOTICE_CN
 			, SGNAL_ORDR
+			, IMPRTNC_NTC_BGNG_YMD
+			, IMPRTNC_NTC_END_YMD
 			, a.REAL_FILE_NM
 			, a.FILE_STRG_COURS
 			, e.EMP_FLNM AS REG_EMP_ID
-			, n.REG_DT
+			, DATE_FORMAT(n.REG_DT, '%Y-%m-%d %H:%i') AS REG_DT
 			, COUNT(*) OVER () AS TOTAL_ITEMS
 		FROM NOTICE n
 		LEFT JOIN EMP e ON n.REG_EMP_ID = e.EMP_ID
