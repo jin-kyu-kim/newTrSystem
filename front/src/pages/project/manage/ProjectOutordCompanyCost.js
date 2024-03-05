@@ -2,31 +2,36 @@ import { useEffect, useState } from "react";
 
 import ProjectOutordCompanyCostJson from "./ProjectOutordCompanyCostJson.json";
 
-import CustomCostTable from "components/unit/CustomCostTable";
+import CustomAddTable from "../../../components/unit/CustomAddTable";
 import Box, { Item } from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
 
-const ProjectOutordCompanyCost = ({ prjctId, ctrtYmd, bizEndYmd }) => {
+const ProjectOutordCompanyCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr, bgtMngOdrTobe }) => {
   const [values, setValues] = useState([]);
-  const { manuName, tableColumns, keyColumn, summaryColumn, popup } = ProjectOutordCompanyCostJson;
-
-  const param = [
-    { tbNm: "OUTORD_ENTRPS_CT_PRMPC" },
-    { prjctId: prjctId }, 
-  ];
+  const { manuName, tableColumns } = ProjectOutordCompanyCostJson;
 
   useEffect(() => {
-    Cnsrtm();
+    OutordCompany();
   }, []);
 
-  const Cnsrtm = async () => {
+  const OutordCompany = async () => {
+
+    const param = {
+      queryId: "projectMapper.retrieveOutordEntrpsPrmpc",
+      prjctId: prjctId,
+      bgtMngOdr: bgtMngOdrTobe,
+    };
+
+    console.log("param! 봐보래이", param);
+
     try {
-      const response = await ApiRequest("/boot/common/commonSelect", param);
-      setValues(response);
-    } catch (error) {
-      console.error(error);
+        const response = await ApiRequest("/boot/common/queryIdSearch", param);
+        setValues(response);
+    } catch(error) {
+        console.error(error);
     }
-  };
+  }   
+ 
 
   return (
     <>
@@ -49,19 +54,7 @@ const ProjectOutordCompanyCost = ({ prjctId, ctrtYmd, bizEndYmd }) => {
             <p style={{ textAlign: "right", marginBottom: "0px" }}>
             검색 (성명, 역할, 등급, 담당업무, 예정일, 맨먼스등 다양하게 검색가능) 
             </p>
-            <CustomCostTable
-              keyColumn={keyColumn}
-              manuName={manuName}
-              columns={tableColumns}
-              popup={popup}
-              summaryColumn={summaryColumn}
-              costTableInfoJson={ProjectOutordCompanyCostJson}
-              values={values}
-              prjctId={prjctId}
-              ctrtYmd={ctrtYmd}
-              bizEndYmd={bizEndYmd}
-              json={ProjectOutordCompanyCostJson}
-            />
+            <CustomAddTable manuName={manuName} columns={tableColumns} values={values} prjctId={prjctId} json={ProjectOutordCompanyCostJson} bgtMngOdr={bgtMngOdr} bgtMngOdrTobe={bgtMngOdrTobe}/>
           </div>
         </div>
       </div>

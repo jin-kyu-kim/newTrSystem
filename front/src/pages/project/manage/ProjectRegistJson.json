@@ -16,7 +16,8 @@
             "param": { "tbNm" : "DEPT",
                         "valueExpr" : "deptId",
                         "displayExpr": "deptNm",
-                        "name": "deptId"
+                        "name": "deptId",
+                        "clearButton": true
                      }
         },
         "emp": {
@@ -27,7 +28,8 @@
             "param": { "tbNm" : "EMP",
                         "valueExpr" : "empId",
                         "displayExpr": "empFlnm",
-                        "name": "prjctMngrEmpId"
+                        "name": "prjctMngrEmpId",
+                        "clearButton": true
                      }
         },
         "totBgt": {
@@ -57,9 +59,9 @@
             "label": "고객사",
             "placeholder": "고객사(발주기관)",
             "param": { "tbNm" : "CTMMNY_INFO",
-                        "valueExpr" : "ctmmnyNo",
+                        "valueExpr" : "ctmmnyId",
                         "displayExpr": "ctmmnyNm",
-                        "name" : "ctmmnyNo"
+                        "name" : "ctmmnyId"
                      }
         },
         "picFlnm": {
@@ -147,7 +149,7 @@
         "totBgt": "",
         "bddprPc": "",
         "mmnySlsAm": "",
-        "ctmmnyNo": "",
+        "ctmmnyId": "",
         "picFlnm": "",
         "picTelno": "",
         "picEml": "",

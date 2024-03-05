@@ -1,9 +1,14 @@
 {
 	"menuName": "ProjectOutordEmpCostJson",
     "table": "OUTORD_LBRCO_PRMPC",
-    "keyColumn": "outordEmpId",
-    "pkColumns": ["prjctId","bgtMngOdr","outordEmpId"],
-    "nomalColumns": ["hnfRoleCd", "tkcgJob","inptPrnmntYmd","withdrPrnmntYmd","untpc","hnfGradCd"],
+    "subTable" : "OUTORD_LBRCO_PRMPC_DTL",
+    "keyColumn": "outordLbrcoPrmpcSn",
+    "pkColumns": ["prjctId","bgtMngOdr","outordLbrcoPrmpcSn"],
+    "nomalColumns": ["hnfRoleCd", "tkcgJob","inptPrnmntYmd","withdrPrnmntYmd","untpc","hnfGradCd","outordEmpId"],
+    "pkColumnsDtl": ["prjctId", "bgtMngOdr", "outordLbrcoPrmpcSn", "inptYm"],
+    "nomalColumnsDtlYm": "inptYm",
+    "nomalColumnsDtlValue": "expectMm",
+    "CdComboboxColumnNm": ["hnfRoleCdNm","hnfGradCdNm"],
     "tableColumns": 
 	[
         {"key": "outordEmpId", "value": "성명"},
@@ -23,16 +28,23 @@
     "popup":
     {
         "width": "90%",
-        "height": "60%",
+        "height": "90%",
         "title": "외주인력"
     },
+    "popupFormat": "MM",
+    "popupNumberBoxFormat": "#,##0.00",
+    "popupStep": 0.1,
     "labelValue" : {
         "outordEmpId": {
-            "name": "outordEmpId",
-            "type": "TextBox",
+            "type": "ComboBox",
             "label": "성명",
             "required": true,
-            "placeholder": "성명"
+            "placeholder": "성명",
+            "param": { "tbNm" : "OUTORD_EMP",
+                        "valueExpr" : "outordEmpId",
+                        "displayExpr": "outordEmpNm",
+                        "name": "outordEmpId"
+                     }
         },
         "hnfRoleCdNm": {
             "name": "hnfRoleCdNm",
@@ -90,5 +102,6 @@
             "required": true,
             "placeholder": "철수에정일"
         }
-    }   
+    },
+    "format" :"Total: {0}MM"
 }

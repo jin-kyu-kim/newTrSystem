@@ -41,11 +41,12 @@ const CustomHorizontalTable = ({ headers, column }) => {
         }
         if(e.columnIndex === 1 && e.values[2] === '' &&  e.values[3] === '') {
           e.cellElement.colSpan = '3';
+          e.cellElement.style.whiteSpace = 'pre';
         }
-        if (e.columnIndex === 2 && e.value === '') {
+        if (e.columnIndex === 2 && e.values[2] === '' &&  e.values[3] === '') {
           e.cellElement.style.display = 'none';
         }
-        if (e.columnIndex === 3 && e.value === '') {
+        if (e.columnIndex === 3 && e.values[2] === '' &&  e.values[3] === '') {
           e.cellElement.style.display = 'none';
         }
       }}   

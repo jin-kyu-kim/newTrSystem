@@ -5,24 +5,65 @@ import ProjectEmpCostJson from "./ProjectEmpCostJson.json";
 import CustomCostTable from "components/unit/CustomCostTable";
 import Box, { Item } from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
+import { format } from 'date-fns';
 
-const ProjectEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr }) => {
+const ProjectEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
   const [values, setValues] = useState([]);
   const { manuName, tableColumns, keyColumn, summaryColumn, popup} = ProjectEmpCostJson;
-
-  const param = [
-    { tbNm: "MMNY_LBRCO_PRMPC" },
-    { prjctId: prjctId }, 
-  ];
+  let groupingDtl = [];
 
   useEffect(() => {
-    EmpCost();
+    const runOrder = async() => {
+      await EmpCostDtl();
+      await EmpCost();
+    };
+    runOrder();
   }, []);
 
+  const EmpCostDtl = async () => {
+    const param = [
+      { tbNm: "MMNY_INPT_MM" },
+      { prjctId: prjctId,
+        bgtMngOdr: bgtMngOdrTobe,
+      }, 
+    ];
+
+  try {
+    const response = await ApiRequest("/boot/common/commonSelect", param);
+    response.reduce((acc, item) => {
+      // mmnyLbrcoPrmpcSn 값으로 그룹핑
+      acc[item.mmnyLbrcoPrmpcSn] = acc[item.mmnyLbrcoPrmpcSn] || [];
+      acc[item.mmnyLbrcoPrmpcSn].push(item);
+      groupingDtl = acc;
+      return acc;
+    }, {});
+    
+
+  } catch (error) {
+    console.error(error);
+  }
+};
+
   const EmpCost = async () => {
+    const param = [
+      { tbNm: "MMNY_LBRCO_PRMPC" },
+      { prjctId: prjctId, 
+        bgtMngOdr: bgtMngOdrTobe,
+      }, 
+    ];
     try {
       const response = await ApiRequest("/boot/common/commonSelect", param);
-      setValues(response);
+        //월별정보 및 총 합계 response에 추가
+        for(let j=0; j<Object.keys(groupingDtl).length; j++){
+          let total = 0;
+          for(let k=0; k<Object.values(groupingDtl)[j].length; k++){
+            response[j][format(Object.values(groupingDtl)[j][k].inptYm, 'yyyy년 MM월')] = Object.values(groupingDtl)[j][k].expectMm;
+            total += Object.values(groupingDtl)[j][k].expectMm;
+          }    
+          response[j].total = total;     
+        }
+        setValues(response);
+
     } catch (error) {
       console.error(error);
     }
@@ -60,7 +101,7 @@ const ProjectEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr }) => {
               costTableInfoJson={ProjectEmpCostJson}
               ctrtYmd={ctrtYmd}
               bizEndYmd={bizEndYmd}
-              bgtMngOdr={bgtMngOdr}
+              bgtMngOdrTobe={bgtMngOdrTobe}
               json={ProjectEmpCostJson}
             />
           </div>

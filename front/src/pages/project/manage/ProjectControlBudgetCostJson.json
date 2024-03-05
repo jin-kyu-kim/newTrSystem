@@ -27,7 +27,7 @@
         "title": "통제성경비"
     },
     "popupFormat": "경비",
-    "popupNumberBoxFormat": "#.### 원",
+    "popupNumberBoxFormat": "#,##0 원",
     "popupStep": 1,
     "labelValue" : {
         "expensCdNm": {

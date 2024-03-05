@@ -121,6 +121,18 @@ const TreRoutes = [
     path: "humanResourceMng/EmpManage",
     name: "EmpManage",
     element: React.lazy(() => import("../pages/humanResourceMng/EmpManage")),
+  },
+ // 법제도
+  {
+    path: "/infoInq/LawRules",
+    name: "LawRules",
+    element: React.lazy(() => import("../pages/infoInq/LawRules")),
+  },
+  //개인정보
+  {
+    path: "/infoInq/EmpDetailInfo",
+    name: "EmpDetailInfo",
+    element: React.lazy(() => import("../pages/infoInq/EmpDetailInfo")),
   }
 ];
 
