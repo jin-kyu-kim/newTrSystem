@@ -8,9 +8,18 @@
         { "key": "empFlnm", "value": "요청일", "width": 300 , "alignment" : "center"},
         { "key": "jbpsNm", "value": "신청자", "width": 200, "alignment" : "center" },
         { "key": "deptNm", "value": "상태", "width": 170, "alignment" : "center" }
-	],
-    "searchParams":
-	{
-    }
+	],   
+     "LawRulesInfo":[
+        {
+          "TabName": "법제도 투입현황",
+          "tabId": "LawRulesInptStts",
+          "url": "./LawRulesInptStts"
+        },
+        {
+          "TabName": "법제도 요청 목록",
+          "tabId": "LawRulesDmndList",
+          "url": "./LawRulesDmndList"
+        }
+      ]
     
 }

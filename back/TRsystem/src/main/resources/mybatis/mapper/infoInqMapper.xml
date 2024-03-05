@@ -4,41 +4,53 @@
 <mapper namespace="com.trsystem.mybatis.mapper.infoInqMapper">
 	<select id="retrieveEmpList" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT
-			E.EMPNO AS EMPNO,
+				E.EMPNO AS EMPNO,
 			E.EMP_FLNM AS EMP_FLNM,
 			C.CD_NM AS JBPS_NM,
-			D.DEPT_NM AS DEPT_NM,
+			D.DEPT_NM AS DEPT_ID,
 			E.TELNO AS TELNO,
 			E.EML AS EML,
-			C2.CD_NM AS HODF_STTS_NM
+			C2.CD_NM AS HDOF_STTS_NM
 			, COUNT(*) OVER () AS TOTAL_ITEMS
-			,C3.CD_NM AS BANK_NM
-			,E.ACTNO AS ACTNO
+			,C3.CD_NM  AS BANK_NM
+			,E.ACTNO   AS ACTNO
+			,C.CD_VALUE JBPS_CD
+			,C3.CD_VALUE  AS BANK_CD
+			,C2.CD_VALUE AS HDOF_STTS_CD
 		FROM EMP E
-		LEFT OUTER JOIN CD C ON C.CD_VALUE =E.JBPS_CD
-		LEFT OUTER JOIN DEPT_HNF DF ON E.EMP_ID = DF.EMP_ID
-		LEFT OUTER JOIN DEPT D ON D.DEPT_ID = DF.DEPT_ID
-		LEFT OUTER JOIN CD C2 ON C2.CD_VALUE =E.HDOF_STTS_CD
-		LEFT OUTER JOIN CD C3 ON C3.CD_VALUE =E.BANK_CD
-		WHERE 1=1
-		<if test="empno != null and empno !=''">
-			AND E.EMPNO LIKE CONCAT('%', #{empno}, '%')
-		</if>
-		<if test="empFlnm != null and empFlnm !=''">
-			AND E.EMP_FLNM LIKE CONCAT('%', #{empFlnm}, '%')
-		</if>
-		<if test="jbpsNm != null and jbpsNm !=''">
-			AND E.JBPS_CD = #{jbpsNm}
-		</if>
-		<if test="deptNm != null and deptNm !=''">
-			AND D.DEPT_NM = #{deptNm}
-		</if>
-		<if test="telNo != null and telNo !=''">
-			AND E.TELNO LIKE CONCAT('%', #{telNo}, '%')
-		</if>
-		<if test="hodfSttsNm != null and hodfSttsNm !=''">
-			AND C2.CD_VALUE = #{hodfSttsNm}
-		</if>
+			LEFT OUTER JOIN CD C ON C.CD_VALUE =E.JBPS_CD
+			LEFT OUTER JOIN DEPT_HNF DF ON E.EMP_ID = DF.EMP_ID
+			LEFT OUTER JOIN DEPT D ON D.DEPT_ID = DF.DEPT_ID
+			LEFT OUTER JOIN CD C2 ON C2.CD_VALUE =E.HDOF_STTS_CD
+			LEFT OUTER JOIN CD C3 ON C3.CD_VALUE =E.BANK_CD 
+			WHERE 1=1
+		   
+						<if test="empno != null and empno !=''">
+							AND E.EMPNO LIKE CONCAT('%', #{empno}, '%')
+						</if>
+						
+						<if test="empFlnm != null and empFlnm !=''">
+							AND E.EMP_FLNM LIKE CONCAT('%', #{empFlnm}, '%')
+						</if>
+						
+						<if test="jbpsNm != null and jbpsNm !=''">
+							AND E.JBPS_CD = #{jbpsNm}
+						</if>
+						
+						
+						<if test="deptId != null and deptId !=''">
+							AND D.DEPT_ID = #{deptId}
+						</if>
+						
+						<if test="telNo != null and telNo !=''">
+							AND E.TELNO LIKE CONCAT('%', #{telNo}, '%')
+						</if>
+						
+						
+						<if test="hdofSttsNm != null and hdofSttsNm !=''">
+							AND C2.CD_VALUE = #{hdofSttsNm}
+						</if>
+				
 	</select>
 	
 	<select id="retrieveEmpAcbg" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -170,6 +182,25 @@
 		LEFT JOIN EMP e ON n.REG_EMP_ID = e.EMP_ID
 		LEFT JOIN  ATCHMNFL a ON n.ATCHMNFL_ID = a.ATCHMNFL_ID
 		WHERE NOTICE_ID = #{noticeId}
+	</select>
+	
+		
+	<select id="retrieveAcbgSn" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT  
+		  IFNULL(MAX(ACBG_SN), 0) +1 AS ACBG_SN
+		FROM EMP_ACBG
+		WHERE EMP_ID = #{empId}
+	
+	</select>
+	
+	<select id="retriveDeptSearchList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		
+		SELECT 
+			A.DEPT_NM AS DEPT_NM, 
+			B.DEPT_ID AS DEPT_ID 
+		FROM DEPT A 
+		INNER JOIN DEPT_HNF B ON A.DEPT_ID = B.DEPT_ID 
+		
 	</select>
 
 </mapper>

@@ -1,12 +1,12 @@
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import LawRulesJson from "./LawRulesJson.json";
 import ApiRequest from "../../utils/ApiRequest";
 import 'react-tabs/style/react-tabs.css';
 import "react-datepicker/dist/react-datepicker.css";
 import LawRulesTabs from "./LawRulesTabs";
-
+import { TabPanel } from "devextreme-react";
 
 const LawRules = () => {
   const [values, setValues] = useState([]);
@@ -18,6 +18,8 @@ const LawRules = () => {
   const handleTabChange = (index) => {
     setTabIndex(index);
   };
+
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
   const [initParam, setInitParam] = useState({
     empno: "",
@@ -35,6 +37,7 @@ const LawRules = () => {
     });
   };
   const { keyColumn, queryId, tableColumns, searchParams, popup } = LawRulesJson;
+  const LawRulesInfo = LawRulesJson.LawRulesInfo;
 
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
@@ -65,6 +68,17 @@ const LawRules = () => {
       console.log(error);
     }
   };
+//탭 변경시 인덱스 설정 
+const onSelectionChanged = useCallback(
+  (args) => {
+    if (args.name === "selectedIndex") {
+      setSelectedIndex(args.value);
+    }
+  },
+  [setSelectedIndex]
+);
+
+const itemTitleRender = (a) => <span>{a.TabName}</span>;
 
   return (
     <div className="container">
@@ -76,8 +90,34 @@ const LawRules = () => {
       <br></br>
       <span style={{ marginBottom: "540px" }}>* 요청서를 작성 하시면 법제도 관리자가 확인 후 연락 드립니다.</span>
 
-      <div style={{ marginTop: "30px" }}>
-        <LawRulesTabs tabIndex={tabIndex} handleTabChange={setTabIndex} />
+      {/* <div style={{ marginTop: "30px" }}>
+        <LawRulesTabs tabIndex={tabIndex} handleTabChange={setTabIndex} /> */}
+        <div
+          style={{
+            marginTop: "20px",
+            marginBottom: "10px",
+            width: "100%",
+            height: "100%",
+          }}
+        >
+          <TabPanel
+            height="auto"
+            width="auto"
+            dataSource={LawRulesInfo}
+            selectedIndex={selectedIndex}
+            onOptionChanged={onSelectionChanged}
+            itemTitleRender={itemTitleRender}
+            animationEnabled={true}
+            itemComponent={({ data }) => {
+            const Component = React.lazy(() => import(`${data.url}`));
+            return (
+                <React.Suspense fallback={<div>Loading...</div>}>
+                    <Component/>
+                </React.Suspense>
+            );
+          }}
+          />
+        {/* </div> */}
       </div>
     </div>
     {/* 나머지 컴포넌트 코드 */}
