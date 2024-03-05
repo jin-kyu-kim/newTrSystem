@@ -5,7 +5,7 @@
 	{
         "popupVisible": true
     },
-	"listQueryId": "empListMapper.retrieveEmpList",
+	"listQueryId": "infoInqMapper.retrieveEmpList",
     "listKeyColumn": "empno",
     "listTableColumns": [
         { "key": "empno", "value": "사번", "width": 100, "alignment" : "center" },
@@ -13,7 +13,7 @@
         { "key": "jbpsNm", "value": "직위"},
         { "key": "deptNm", "value": "소속"}
     ],
-	"ejhQueryId": "empListMapper.retrieveEmpJbpsHist",
+	"ejhQueryId": "infoInqMapper.retrieveEmpJbpsHist",
     "ejhKeyColumn": "empno",
     "ejhTableColumns": [
         { "key": "empno", "value": "사번"},
