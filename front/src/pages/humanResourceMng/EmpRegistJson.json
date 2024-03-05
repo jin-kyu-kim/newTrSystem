@@ -15,20 +15,23 @@
             "label": "직위",
             "placeholder": "직위",
             "param": { "tbNm" : "CD",
+                        "condition": {
+                            "upCdValue": "VTW001"
+                        },
                         "valueExpr" : "cdValue",
                         "displayExpr": "cdNm",
-                        "upCdValue": "VTW001"
+                        "name": "jbpsCd"
                      }
         },
-        "upDeptNm": {
+        "deptNm": {
             "type": "ComboBox",
             "required": false,
             "label": "소속",
             "placeholder": "소속",
             "param": {  "tbNm" : "DEPT",
-                        "valueExpr" : "deptId",
+                        "valueExpr" : "deptNm",
                         "displayExpr": "deptNm",
-                        "name": "upDeptId"
+                        "name": "deptNm"
                      }
         },
         "hdofSttsCd": {
@@ -38,9 +41,12 @@
             "required": true,
             "placeholder": "재직상태",
             "param": { "tbNm" : "CD",
+                        "condition": {
+                        "upCdValue": "VTW003"
+                         },
                         "valueExpr" : "cdValue",
                         "displayExpr": "cdNm",
-                        "upCdValue": "VTW003"
+                        "name": "hdofSttsCd"
                      }
         },
         "telno": {
@@ -64,13 +70,16 @@
             "required": false,            
             "placeholder": "은행코드",
             "param": { "tbNm" : "CD",
+                        "condition": {
+                        "upCdValue": "VTW035"
+                        },
                         "valueExpr" : "cdValue",
                         "displayExpr": "cdNm",
-                        "upCdValue": "VTW035"
+                        "name": "bankCd"
                      }
         },
-        "actNo": {
-            "name": "actNo",
+        "actno": {
+            "name": "actno",
             "type": "TextBox",
             "label": "계좌번호",
             "required": false,
