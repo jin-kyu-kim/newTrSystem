@@ -6,7 +6,6 @@ import CustomLabelValue from '../../../components/unit/CustomLabelValue';
 import CustomCdComboBox from '../../../components/unit/CustomCdComboBox';
 import NumberBox from 'devextreme-react/number-box';
 import Button from "devextreme-react/button";
-import { TextBox } from 'devextreme-react';
 
 const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdrTobe, ctrtYmd, bizEndYmd, transformedData}) => {
     const navigate = useNavigate();
@@ -14,8 +13,8 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
     const [data, setData] = useState([]);
     const [param, setParam] = useState([]);
     const [contents, setContents] = useState([]);   
-    const [structuredData, setStructuredData] = useState({});
-
+    const [structuredData, setStructuredData] = useState({});   //기간 구조 데이터
+    
     useEffect(() => {  
         console.log("data",data);
     }, [data]);
@@ -76,27 +75,49 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
 
         if (index >= 0 ) {   //변경해야하는 데이터
             if(e.event){
-                updatedValues[index] = { ...updatedValues[index], value : value !== null ? value : 0 }; // 변경된 값 객체 업데이트
+                updatedValues[index] = { ...updatedValues[index],
+                                         value : value !== null ? value : 0 }; // 변경된 값 객체 업데이트                      
             }
 
         } else {    //신규 데이터      
-                updatedValues.push({ id, value });    // 새로운 값 객체 추가                 
+                updatedValues.push({ id, value });    // 새로운 값 객체 추가        
+                // transformedData.push({ [id+"_untpc"] : data.userDfnValue });    // 새로운 값 객체 추가               
         }
-
         setInputValue(updatedValues); // 업데이트된 배열로 상태 설정
        
 
-        // updatedValues를 map함수를 사용하여 각각의 value값에 있는 숫자 sum하기
+        //총 투입 MM 값 구하기
         const sum = updatedValues.filter(item => typeof item.value === 'number')
         .map(item => item.value)
         .reduce((acc, cur) => acc + cur, 0);
         const fixedSum = Number(sum.toFixed(2)); //js의 부동소수 이슈로 인한 자릿수 조정.
-        let multifulSum;
+
+
+        //총 금액 값 구하기.
+        const totalSum = updatedValues.reduce((acc, updatedItem) => {
+            // transformedData에서 대응하는 id+"_untpc"를 찾음
+            const transformedItem = transformedData.find(item => item.id === `${updatedItem.id}_untpc`);
+            
+            //대응하는 항목이 있고, 두 value 모두 숫자 타입인 경우 곱한 값 누적
+            if (transformedItem && typeof updatedItem.value === 'number' && typeof transformedItem.value === 'number') {
+                return acc + (updatedItem.value * transformedItem.value);
+            //대응하는 항목 없을경우 : 신규추가시 userDfnValue로 계산
+            }else{
+                return acc + (updatedItem.value * data.userDfnValue);   
+            }
+          }, 0);
+          
+        // 부동 소수점 문제 해결을 위해 toFixed() 후 숫자로 변환
+        const fixedTotalSum = Number(totalSum.toFixed(2));
+        console.log("fixedTotalSum",fixedTotalSum);
+          
+
+        let multifulSum;   
         if(data.userDfnValue){
-            multifulSum = fixedSum * data.userDfnValue;
+            multifulSum = fixedTotalSum;
         }
 
-        //총합에 sum값을 넣어주기
+        //총합에 sum값을 넣어주기   
         setData(currentData=>({
             ...currentData,
             "total" : fixedSum,
@@ -225,7 +246,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
             ...pkColumns,
             [popupInfo.nomalColumnsDtlYm] : item.id,
             [popupInfo.nomalColumnsDtlValue] : item.value,
-            ...(data.jbpsCd ? { "jbpsCd" : data.jbpsCd } : {}),
+            ...(data.userDfnValue ? { "untpc" : data.userDfnValue } : {}),
         }));
 
         //api param 설정
@@ -272,9 +293,9 @@ const onRowUpdateingMonthData = async() => {
     const pkColumns = pick(param, popupInfo.pkColumnsDtl);
 
     const makeParam = inputValue.map(item => ({
-        // ...pkColumns,
         [popupInfo.nomalColumnsDtlYm] : item.id,
-        [popupInfo.nomalColumnsDtlValue] : item.value
+        [popupInfo.nomalColumnsDtlValue] : item.value,
+        ...(data.userDfnValue ? { "untpc" : data.userDfnValue } : {}),  //TODO. 자사인력 단가 경우의 수 따져봐라
     }));
 
     //api param 설정
@@ -369,7 +390,12 @@ const onRowUpdateingMonthData = async() => {
         }else if(popupInfo.menuName==="ProjectEmpCostJson"){
             setContents(
                 <div className="dx-fieldset">
-                    <CustomLabelValue props={popupInfo.labelValue.empId} value={data.empId} onSelect={handleChgState}/>
+                    <CustomLabelValue 
+                        props={popupInfo.labelValue.empId} 
+                        value={data.empId} 
+                        onSelect={handleChgState}
+                        readOnly={!!selectedItem}
+                         />
                     <div className="dx-field">    
                         <div className="dx-field-label asterisk">역할</div>
                         <div className="dx-field-value">
@@ -383,7 +409,7 @@ const onRowUpdateingMonthData = async() => {
                         </div>
                     </div> 
                     <CustomLabelValue props={popupInfo.labelValue.tkcgJob} value={data.tkcgJob} onSelect={handleChgState}/>
-                    <CustomLabelValue props={popupInfo.labelValue.temp2} value={data.temp2} onSelect={handleChgState}/> 
+                    <CustomLabelValue props={popupInfo.labelValue.userDfnValue} value={data.userDfnValue} onSelect={handleChgState} readOnly={popupInfo.labelValue.gramt.readOnly}/> 
                     <CustomLabelValue props={popupInfo.labelValue.gramt} value={data.gramt} onSelect={handleChgState} readOnly={popupInfo.labelValue.gramt.readOnly}/>
                     <CustomLabelValue props={popupInfo.labelValue.total} value={data.total} onSelect={handleChgState} readOnly={popupInfo.labelValue.total.readOnly}/>
                     <CustomLabelValue props={popupInfo.labelValue.inptPrnmntYmd} value={data.inptPrnmntYmd} onSelect={handleChgState}/>
@@ -395,22 +421,6 @@ const onRowUpdateingMonthData = async() => {
         }
       }
     }, [popupInfo, data]); 
-
-    const addInput =(e)=>{
-        if(e === "title"){
-            if(popupInfo.menuName==="ProjectEmpCostJson"){
-                return(
-                    <th style={{textAlign:"center", width: "10px"}}> 단가 </th>
-                )
-            }
-        }else{
-            if(popupInfo.menuName==="ProjectEmpCostJson"){
-                return(
-                    <td style={{width:"20%", padding:"5px"}}><TextBox value={data.userDfnValue}/></td>
-                )
-            }
-        }
-    }
 
     return (
         <div className="popup-content">
@@ -431,7 +441,9 @@ const onRowUpdateingMonthData = async() => {
                                         <>
                                         <th key={year} style={{ width: "50px", textAlign: "center" }}> {year}년 </th>
                                         <th key={index} style={{textAlign:"center"}}> {popupInfo.popupFormat} </th>
-                                        {addInput("title")}
+                                        { popupInfo.menuName === "ProjectEmpCostJson" &&
+                                            <th style={{textAlign:"center", width: "10px"}}> 단가 </th>
+                                        }
                                         </>
                                     ))}
                                     </tr>
@@ -456,7 +468,16 @@ const onRowUpdateingMonthData = async() => {
                                             step={popupInfo.popupStep}
                                             showClearButton={false}
                                             />): ''}</td>
-                                            {addInput()}
+                                            { popupInfo.menuName === "ProjectEmpCostJson" &&
+                                            <td style={{width:"20%", padding:"5px"}}>
+                                                <NumberBox 
+                                                    // value={data.userDfnValue} 
+                                                    value= {data.mmnyLbrcoPrmpcSn ? 
+                                                            transformedData.find(item => item.id === `${Object.keys(structuredData)[colIndex]}-${months[rowIndex]}_untpc`)?.value || 0 
+                                                            : data.userDfnValue}
+                                                    readOnly={true}/>
+                                            </td>
+                                            }
                                         </>
                                         ))}
                                     </tr>
