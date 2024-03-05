@@ -58,6 +58,7 @@ const ProjectEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
           let total = 0;
           for(let k=0; k<Object.values(groupingDtl)[j].length; k++){
             response[j][format(Object.values(groupingDtl)[j][k].inptYm, 'yyyy년 MM월')] = Object.values(groupingDtl)[j][k].expectMm;
+            response[j][format(Object.values(groupingDtl)[j][k].inptYm, 'yyyy년 MM월') + '_untpc'] = Object.values(groupingDtl)[j][k].untpc;
             total += Object.values(groupingDtl)[j][k].expectMm;
           }    
           response[j].total = total;     

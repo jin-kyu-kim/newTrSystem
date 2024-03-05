@@ -35,12 +35,16 @@ const CustomCostTable = ({
   const dataGridRef = useRef(null); // DataGrid 인스턴스에 접근하기 위한 ref
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [summaryColumns, setSummaryColumns] = useState(summaryColumn); //월별 합계를 담을 상태
-  const [transformedData, setTransformedData] = useState([]); //월별 합계를 담을 상태
+  const [summaryColumns, setSummaryColumns] = useState(summaryColumn); 
+  const [transformedData, setTransformedData] = useState([]);
   const editColumn = ["수정", "삭제"];
-  
+  // console.log("보라 values", values);
+
   useEffect(() => {
-    const deleteArray = [...json.pkColumns, ...json.nomalColumns];
+    const deleteArray = [...json.pkColumns, ...json.nomalColumns, ...json.CdComboboxColumnNm];
+    deleteArray.push("total");
+
+    // console.log("deleteArray", deleteArray);
 
     let temp = {...selectedItem};
 
@@ -50,17 +54,20 @@ const CustomCostTable = ({
 
     const transformedData = Object.keys(temp).map((key) => {
         // 키에서 연도와 월을 분리하고 형식을 변경합니다.
-        const formattedKey = key.replace('년 ', '-').replace('월', '');               
+        const formattedKey = key.replace('년 ', '-').replace('월', '');        
+        console.log("formattedKey???머얄망", formattedKey);       
         return {
           id: formattedKey,
           value: temp[key]
         };
       });
+      
       setTransformedData(transformedData);
 
   }, [selectedItem]);
 
   const showPopup = (data) => {
+    // console.log("popup data!!", data);
     setIsPopupVisible(true);
     setSelectedItem(data); // 팝업에 표시할 데이터 설정
   };
