@@ -172,27 +172,30 @@
     </select>
 
 
-	<!-- 회의실정보 -->
-	<select id="retrieveMtgRoomInfoInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT
-			RSVT.MTG_ROOM_RSVT_SN
-			,CD.CD_NM
-			,RSVT.RSVT_EMP_ID
-			,EMP.EMP_FLNM
-			,CONCAT(USE_YMD, ' ', USE_BGNG_HM)	START
-			,CONCAT(USE_YMD, ' ', USE_END_HM)	END
-			,RSVT.MTG_TTL 			TITLE
-		FROM
-			MTG_ROOM_RSVT			RSVT
-			,EMP					EMP
-			,CD 					CD
-		WHERE RSVT.MTG_ROOM_CD = CD.CD_VALUE
-		AND RSVT.REG_EMP_ID = EMP.EMPNO
-		AND EXISTS (
-					SELECT 1
-					FROM MTG_ROOM_RSVT_ATDRN	ATDRN
-					WHERE RSVT.MTG_ROOM_RSVT_SN = ATDRN.MTG_ROOM_RSVT_SN
-		)
+    <!-- 회의실정보 -->
+    <select id="retrieveMtgRoomInfoInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            RSVT.MTG_ROOM_RSVT_SN
+            ,CD.CD_NM
+            ,RSVT.RSVT_EMP_ID
+            ,EMP.EMP_FLNM
+            ,CONCAT(USE_YMD, ' ', USE_BGNG_HM)  START
+            ,CONCAT(USE_YMD, ' ', USE_END_HM)   END
+            ,RSVT.MTG_TTL                       TITLE
+            ,STR_TO_DATE(CONCAT(USE_YMD, USE_BGNG_HM), '%Y%m%d%H%i%s')  START_DATE
+            ,STR_TO_DATE(CONCAT(USE_YMD, USE_END_HM), '%Y%m%d%H%i%s')   END_DATE
+            ,RSVT.MTG_TTL                       TEXT
+        FROM
+            MTG_ROOM_RSVT           RSVT
+            ,EMP                    EMP
+            ,CD                     CD
+        WHERE RSVT.MTG_ROOM_CD = CD.CD_VALUE
+        AND RSVT.REG_EMP_ID = EMP.EMPNO
+        AND EXISTS (
+                    SELECT 1
+                    FROM MTG_ROOM_RSVT_ATDRN    ATDRN
+                    WHERE RSVT.MTG_ROOM_RSVT_SN = ATDRN.MTG_ROOM_RSVT_SN
+        )
     </select>
 
 
@@ -213,6 +216,24 @@
 		</if>
     </select>
 
-		
+
+
+	<!-- 직원별휴가정보조회 -->
+	<select id="retrieveEmpVcatnInfo" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT
+			EMP.EMPNO
+			,EMP.EMP_FLNM
+			,(SELECT CD_NM FROM CD WHERE EMP.JBPS_CD = CD.CD_VALUE)			JOB_NM
+			,DEPT.DEPT_NM
+			,VMNG.VCATN_ALTMNT_DAYCNT
+			,VMNG.USE_DAYCNT
+			,(VMNG.VCATN_ALTMNT_DAYCNT - VMNG.USE_DAYCNT)					REMAIN_DAYCNT
+			,(SELECT CD_NM FROM CD WHERE EMP.HDOF_STTS_CD = CD.CD_VALUE)	HDOF_STTS_NM
+		FROM VCATN_MNG	VMNG
+		RIGHT JOIN EMP EMP ON EMP.EMPNO = VMNG.EMP_ID
+		LEFT JOIN DEPT_HNF HNF ON HNF.EMPNO = EMP.EMPNO
+		LEFT JOIN DEPT DEPT ON DEPT.DEPT_ID = HNF.DEPT_ID
+		ORDER BY EMP.EMPNO
+	</select>
 	
 </mapper>	
