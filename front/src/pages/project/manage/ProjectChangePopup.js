@@ -91,12 +91,17 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
         .map(item => item.value)
         .reduce((acc, cur) => acc + cur, 0);
         const fixedSum = Number(sum.toFixed(2)); //js의 부동소수 이슈로 인한 자릿수 조정.
+        let multifulSum;
+        if(data.userDfnValue){
+            multifulSum = fixedSum * data.userDfnValue;
+        }
 
         //총합에 sum값을 넣어주기
         setData(currentData=>({
             ...currentData,
-            "total" : fixedSum
-        }));
+            "total" : fixedSum,
+            ...(data.userDfnValue ? { "gramt" : multifulSum } : {}),
+        })); 
     };
 
 
@@ -160,10 +165,12 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
                         "prjctId" : prjctId,
                         "bgtMngOdr" : bgtMngOdrTobe,
                         }; 
-                    delete newData.total; // total 속성 삭제
+                    const pkColumns = pick(newData, popupInfo.pkColumns);
+                    const nomalColumns = pick(newData, popupInfo.nomalColumns);
                     return {
                         ...currentParam,
-                        ...newData,
+                        ...pkColumns,
+                        ...nomalColumns,
                     };
                 });
             });
@@ -217,7 +224,8 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
         const makeParam = inputValue.map(item => ({
             ...pkColumns,
             [popupInfo.nomalColumnsDtlYm] : item.id,
-            [popupInfo.nomalColumnsDtlValue] : item.value
+            [popupInfo.nomalColumnsDtlValue] : item.value,
+            ...(data.jbpsCd ? { "jbpsCd" : data.jbpsCd } : {}),
         }));
 
         //api param 설정
