@@ -67,11 +67,19 @@
     "searchParams": {
       "resetButton": false
     },
-    "firstCd": "VTW01703",
     "selectBoxItem": [
       {
-        "commonCd": "VTW017",
-        "name": "searchCnd"
+        "placeholder": "[전체]",
+        "param":{
+          "tbNm": "CD",
+          "valueExpr": "cdValue",
+          "displayExpr": "cdNm",
+          "name": "searchCnd",
+          "condition": {
+            "upCdValue": "VTW017"
+          },
+          "clearButton": false
+        }
       }
     ],
     "textBoxItem": [

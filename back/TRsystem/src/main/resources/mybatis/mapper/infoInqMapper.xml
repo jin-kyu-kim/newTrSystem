@@ -138,7 +138,7 @@
 		<if test="searchCnd == 'VTW01702' and searchWrd != null">
 			AND NOTICE_CN LIKE CONCAT('%',#{searchWrd},'%')
 		</if>
-		<if test="searchCnd == 'VTW01703' and searchWrd != null">
+		<if test="(searchCnd == null and searchWrd != null) or (searchCnd == 'VTW01703' and searchWrd != null)">
 			AND (
 			NOTICE_TTL LIKE CONCAT('%',#{searchWrd},'%')
 			OR NOTICE_CN LIKE CONCAT('%',#{searchWrd},'%')

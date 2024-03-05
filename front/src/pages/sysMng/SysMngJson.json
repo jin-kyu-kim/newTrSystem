@@ -23,8 +23,15 @@
             "selectBoxItem": [
                 {
                     "placeholder": "[분류명]",
-                    "commonCd": null,
-                    "name": "upCdValue"
+                    "param":{
+                      "queryId": {
+                        "queryId": "sysMngMapper.TrsCodeList"
+                      },
+                      "valueExpr": "cdValue",
+                      "displayExpr": "cdNm",
+                      "name": "cdValue",
+                      "clearButton": false
+                    }
                 }
             ],
             "textBoxItem": [
@@ -71,8 +78,16 @@
             "selectBoxItem": [
                 {
                     "placeholder": "[산업명]",
-                    "commonCd": "VTW016",
-                    "name": "industCd"
+                    "param":{
+                      "tbNm": "CD",
+                      "valueExpr": "cdValue",
+                      "displayExpr": "cdNm",
+                      "name": "industCd",
+                      "condition": {
+                        "upCdValue": "VTW016"
+                      },
+                      "clearButton": false
+                    }
                 }
             ],
             "textBoxItem": [
