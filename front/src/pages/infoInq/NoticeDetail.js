@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useLocation } from "react-router-dom";
-import { Container, Card } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import { Button } from "devextreme-react";
-import Gallery from 'devextreme-react/gallery';
 import ApiRequest from "utils/ApiRequest";
 import NoticeJson from "../infoInq/NoticeJson.json"
 
@@ -31,26 +30,8 @@ const NoticeDetail = () => {
 
     useEffect(() => {
         getOneData();
+        getFiles();
     }, []);
-
-    const DownloadLink = ({ url, fileName }) => {
-        const handleDownload = () => {
-            // 파일 다운로드 로직
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = fileName;
-            link.click();
-        };
-        return (
-            <Button
-                onClick={handleDownload}
-                style={{ marginBottom: '10px' }}
-                icon="download"
-            >
-                {fileName}
-            </Button>
-        );
-    };
 
     const deleteNotice = async () => {
         const params = [{ tbNm: "NOTICE" }, { noticeId: noticeId }]
@@ -63,6 +44,9 @@ const NoticeDetail = () => {
             console.log(error);
         }
     }
+    const getFiles = async () => {
+
+    }
 
     return (
         <div className="container">
@@ -70,55 +54,49 @@ const NoticeDetail = () => {
                 className="title p-1"
                 style={{ marginTop: "20px", marginBottom: "10px" }}
             ></div>
-            <div style={{ marginRight: "20px", marginLeft: "20px" }}>
+            <div style={{ marginRight: "20px", marginLeft: "20px", marginBottom: "50px" }}>
                 <h1 style={{ fontSize: "30px" }}>공지사항</h1>
             </div>
-            <Container>
-                <Card className="mb-4">
-                    <Card.Body>
-                        {oneData.length !== 0 ?
-                            <>
-                                <Card.Title>{oneData[0].noticeTtl}</Card.Title>
-                                <Card.Subtitle className="mb-2 text-muted">
-                                    {oneData[0].regEmpId} | {oneData[0].regDt}
-                                </Card.Subtitle>
-                                <hr />
-                                <Card.Text><div dangerouslySetInnerHTML={{ __html: oneData[0].noticeCn }} /></Card.Text><hr />
-                                <p>첨부 파일:</p>
-                                {oneData.map((data, index) => (
-                                    data.realFileNm && data.fileStrgCours && (
-                                        <>
-                                            {data.realFileNm.match(/\.(jpeg|jpg|png|gif)$/i) ? (
-                                                <div>
-                                                    <img src={data.fileStrgCours} alt="첨부 이미지" className="img-fluid" />
-                                                    <Gallery
-                                                        id={`gallery-${index}`}
-                                                        dataSource={data.fileStrgCours}
-                                                        height={300}
-                                                    />
-                                                </div>
-                                            ) : (
-                                                <DownloadLink url={data.fileStrgCours} fileName={data.realFileNm} />
-                                            )}
-                                        </>
-                                    )
-                                ))}
-                            </>
-                            : <></>
-                        }
-                    </Card.Body>
-                </Card>
-            </Container>
+            <Container style={{ width: '90%', margin: '0 auto' }}>
+                {oneData.length !== 0 ?
+                    <>
+                        <h1 style={{ marginBottom: "20px" }}>{oneData[0].noticeTtl}</h1>
+                        <div>{oneData[0].regEmpId} | {oneData[0].regDt}</div><hr />
 
-            {buttonGroup.map((button, index) => {
-                <Button
-                key={index}
-                id={"button" + button.id}
-                text={button.text}
-                type={button.type}
-                onClick={button.onClick === "deleteNotice" ? deleteNotice : () => navigate(button.onClick, { state: button.state })}
-              />
-            })}
+                        <div dangerouslySetInnerHTML={{ __html: oneData[0].noticeCn }} />
+                        {oneData.map((data, index) => (
+                            data.realFileNm && data.fileStrgCours && (
+                                <div key={index}>
+                                    {data.realFileNm.match(/\.(jpeg|jpg|png|gif)$/i) ? (
+                                        <>
+                                            <div>
+                                                <img src={data.fileStrgCours} alt="첨부 이미지" className="img-fluid" />
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <p>*첨부 파일:</p>
+                                        </>
+                                    )}
+                                </div>
+                            )
+                        ))}<hr />
+                    </>
+                    : <></>
+                }
+            </Container>
+            <div style={{ textAlign: 'center' }}>
+                {buttonGroup.map((button, index) => (
+                    <Button
+                        key={index}
+                        style={{ marginRight: '3px' }}
+                        text={button.text}
+                        type={button.type}
+                        onClick={button.onClick === "deleteNotice" ? deleteNotice : () =>
+                            navigate(button.onClick, { state: button.state ? { ...button.state, id: noticeId } : undefined })}
+                    />
+                ))}
+            </div>
         </div>
     );
 };

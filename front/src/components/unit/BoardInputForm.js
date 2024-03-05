@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import uuid from "react-uuid";
 import { FileUploader, TextBox } from "devextreme-react";
 import { Validator, RequiredRule } from 'devextreme-react/validator'
@@ -11,11 +11,6 @@ import HtmlEditBox from "components/unit/HtmlEditBox";
 
 const BoardInputForm = ({ edit, data, setData, setAttachments }) => {
     const { noticeTtl, noticeCn, useEndYmd } = data || {};
-    const [noticeTypeChk, setNoticeTypeChk] = useState({
-        imprtnc: false,
-        useYn: 'Y',
-        moveToRefer: false,
-    });
     const handleAttachmentChange = (e) => {
         setAttachments(e.value);
         setData({
@@ -23,6 +18,34 @@ const BoardInputForm = ({ edit, data, setData, setAttachments }) => {
             atchmnflId: uuid()
         })
     };
+    const [typeChk, setTypeChk] = useState({
+        imprtnc: false,
+        useYn: true,
+        moveToRefer: false,
+    });
+    
+    const chkSgnalOrdr = () => {
+        if(typeChk.imprtnc && typeChk.moveToRefer) {
+            setData({
+                ...data,
+                sgnalOrdr: 3 // 상단이면서 자료실로 이관
+            })
+        } else if(typeChk.moveToRefer){
+            setData({
+                ...data,
+                sgnalOrdr: 2 // 자료실 -> 2,3
+            })
+        } else if(typeChk.imprtnc){
+            setData({
+                ...data,
+                sgnalOrdr: 1
+            })
+        }
+    }
+    useEffect(() => {
+        chkSgnalOrdr()
+    }, [typeChk])
+
     const handleStartDateChange = (newStartDate) => {
         // 상단 표시 게시글 시작일
         setData({
@@ -78,21 +101,18 @@ const BoardInputForm = ({ edit, data, setData, setAttachments }) => {
                                                 <div className="checkbox-label">{check.label}:</div>
                                                 <CheckBox
                                                     className="checkSpace"
-                                                    defaultValue={
-                                                        check.dataField === "useYn" ? true : false
-                                                    }
+                                                    defaultValue={check.dataField === "useYn" ? true : false}
                                                     onValueChanged={(e) => {
-                                                        setNoticeTypeChk({
-                                                            ...noticeTypeChk,
-                                                            [check.dataField]: e.value,
-                                                        });
+                                                        setTypeChk({
+                                                            ...typeChk,
+                                                            [check.dataField]: e.value
+                                                        })
                                                     }}
                                                 />
                                                 {check.dataField === "moveToRefer" ? (
                                                     <></>
                                                 ) : check.dataField === "imprtnc" ? (
                                                     <CustomDateRangeBox
-                                                        columnId={check.type.endDt}
                                                         onStartDateChange={handleStartDateChange}
                                                         onEndDateChange={handleEndDateChange}
                                                     />

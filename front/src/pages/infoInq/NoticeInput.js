@@ -5,7 +5,6 @@ import { useCookies } from "react-cookie";
 import { Button } from "devextreme-react";
 import uuid from "react-uuid";
 import axios from "axios";
-
 import ApiRequest from "utils/ApiRequest";
 import NoticeJson from "../infoInq/NoticeJson.json";
 import BoardInputForm from 'components/unit/BoardInputForm';
@@ -14,7 +13,7 @@ const NoticeInput = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [cookies] = useCookies(["userInfo", "userAuth"]);
-    const { edit, menuKorName } = NoticeJson;
+    const { edit, menuKorName, insertUrl, updateUrl } = NoticeJson;
     const empId = cookies.userInfo.empId;
     const editMode = location.state.editMode;
     const id = location.state.id;
@@ -23,40 +22,28 @@ const NoticeInput = () => {
     const [attachments, setAttachments] = useState([null]);
     const [data, setData] = useState({
         noticeId: uuid(),
-        atchmnflId: "",
-        noticeTtl: "",
-        noticeCn: "",
         sgnalOrdr: 0, // 기본값 일반공지
         useYn: 'Y', // 공지표시 여부
-        useEndYmd: null,
-        imprtncNtcBgngYmd: null,
-        imprtncNtcEndYmd: null,
         regEmpId: empId,
         regDt: date.toISOString().split("T")[0] + " " + date.toTimeString().split(" ")[0],
     });
-
     const onClick = () => {
-        const isconfirm = editMode === "create" 
-           ? window.confirm("등록하시겠습니까?") 
-           :  window.confirm("수정하시겠습니까?") 
-        if (isconfirm) {
-            insertNotice();
-        }
+        editMode === "create" ? window.confirm("등록하시겠습니까?") : window.confirm("수정하시겠습니까?")
+        insertNotice(editMode);
     };
+
     const getOneData = async () => {
         const param = [{ tbNm: "NOTICE" }, { noticeId: id },]
         try {
             const response = await ApiRequest("/boot/common/commonSelect", param);
-            console.log(response[0])
             setData(response[0]);
+            console.log(response[0])
         } catch (error) {
             console.log(error);
         }
     }
     useEffect(() => {
-        if (editMode === 'update') {
-            getOneData();
-        }
+        if (editMode === 'update') getOneData();
     }, []);
 
     const validateData = () => {
@@ -76,15 +63,16 @@ const NoticeInput = () => {
         return errors.length === 0;
     };
 
-    const insertNotice = async () => {
+    const insertNotice = async (editMode) => {
+        console.log(data)
         const formData = new FormData();
         formData.append("tbNm", "NOTICE");
-        formData.append("data", JSON.stringify(data));
+        formData.append("data", JSON.stringify(data)); 
         Object.values(attachments)
             .forEach((attachment) => formData.append("attachments", attachment));
         try {
             if (validateData()) {
-                const response = await axios.post("/boot/common/insertlongText", formData, {
+                const response = await axios.post(insertUrl, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     },
@@ -97,6 +85,7 @@ const NoticeInput = () => {
             throw error;
         }
     };
+
     return (
         <div className="container">
             <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }}>

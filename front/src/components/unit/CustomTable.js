@@ -1,8 +1,9 @@
-import DataGrid, { Column, Pager, Paging, Summary, TotalItem } from "devextreme-react/data-grid";
+import DataGrid, { Column, Pager, Paging, Summary, TotalItem, Editing, RequiredRule } from "devextreme-react/data-grid";
 import { Button } from "devextreme-react/button";
 import ToggleButton from "../../pages/sysMng/ToggleButton"
 
-const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, handleYnVal }) => {
+const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, 
+                      handleYnVal, editRow, onEditRow }) => {
 
   const gridRows = () => {
     const result = [];
@@ -28,6 +29,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
               caption={value}
               width={width}
               alignment={alignment || 'center'}>
+              {editRow && <RequiredRule message="필수 입력 항목입니다" />}
             </Column>
           );
         }
@@ -68,6 +70,9 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
         columnAutoWidth={false}
         noDataText=""
         onRowDblClick={onRowDblClick}
+        onRowInserted={(e) => onEditRow('insert', e)}
+        onRowUpdating={(e) => onEditRow('update', e)}
+        onRowRemoved={(e) => onEditRow('delete', e)}
         onCellPrepared={(e) => {
           if (e.rowType === 'header') {
             e.cellElement.style.textAlign = 'center';
@@ -75,6 +80,15 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
           }
         }}
       >
+        {editRow &&
+          <Editing
+            mode="row"
+            allowAdding={true}
+            allowDeleting={true}
+            allowUpdating={true}
+          />
+        }
+        
         <Paging defaultPageSize={pageSize} enabled={paging} />
         <Pager
           displayMode="full"
