@@ -1,6 +1,6 @@
 {
     "menuName": "EmpManage",
-    "empDetailqueryId":"empListMapper.retrieveEmpList",
+    "empDetailqueryId":"infoInqMapper.retrieveEmpList",
     "labelValue" : {
         "empFlnm": {
             "name": "empFlnm",
