@@ -1,7 +1,9 @@
 import React, {useState, useEffect} from 'react';
-import Calendar from "../../components/unit/Calendar"
+// import Calendar from "../../components/unit/Calendar"
+import CustomScheduler from "../../components/unit/CustomScheduler"
 import ApiRequest from "../../utils/ApiRequest";
 import EmpMonthVacInfoJson from "../humanResourceMng/MeetingRoomManage.json"
+import { Change } from 'devextreme-react/cjs/data-grid';
 
 const MeetingRoomManage = () => {
     const [mtgRoomRvstParam, setMtgRoomRvstParam] = useState([]);
@@ -40,7 +42,7 @@ const MeetingRoomManage = () => {
     };
       
     return (
-        <div className="container">
+        <div className="" style={{marginLeft:"5%", marginRight:"5%"}}>
             <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
                 <h1 style={{ fontSize: "30px" }}>회의실예약(관리자)</h1>
             </div>
@@ -51,7 +53,7 @@ const MeetingRoomManage = () => {
                 <span>* 소회의실 - 4인실  | 중회의실 - 10인실  | 대회의실 - 16인실</span>
             </div>
             <div className="mx-auto" style={{ marginBottom: "20px", marginTop: "20px"}}>
-                <Calendar 
+                {/* <Calendar 
                     values={mtgRoomRvstValues}
                     headerToolbar={{
                         left: 'prev,next',
@@ -61,7 +63,10 @@ const MeetingRoomManage = () => {
                     initialView="timeGridWeek"
                     initCssValue="listStyle"
                     clickEventValue="true"
-                    />
+                /> */}
+                <CustomScheduler
+                    values={mtgRoomRvstValues}
+                />
             </div>
     </div>
     );
