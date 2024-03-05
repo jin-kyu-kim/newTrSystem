@@ -16,7 +16,8 @@
             "param": { "tbNm" : "DEPT",
                         "valueExpr" : "deptId",
                         "displayExpr": "deptNm",
-                        "name": "deptId"
+                        "name": "deptId",
+                        "clearButton": true
                      }
         },
         "emp": {
@@ -27,7 +28,8 @@
             "param": { "tbNm" : "EMP",
                         "valueExpr" : "empId",
                         "displayExpr": "empFlnm",
-                        "name": "prjctMngrEmpId"
+                        "name": "prjctMngrEmpId",
+                        "clearButton": true
                      }
         },
         "totBgt": {

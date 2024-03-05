@@ -19,6 +19,7 @@
         , TOT_BGT
 	    , (SELECT MAX(BGT_MNG_ODR) FROM PRJCT_BGT_PRMPC pbp WHERE pbp.PRJCT_ID = p.PRJCT_ID AND pbp.ATRZ_DMND_STTS_CD = 'VTW03303') AS BGT_MNG_ODR
 	    , (SELECT IFNULL(MAX(BGT_MNG_ODR), 1) FROM PRJCT_BGT_PRMPC pbp WHERE pbp.PRJCT_ID = p.PRJCT_ID) AS BGT_MNG_ODR_TOBE
+	    , PRJCT_CD_IDNTFR
         , COUNT(*) OVER () AS TOTAL_ITEMS
      FROM PRJCT p
     WHERE 1=1
@@ -61,18 +62,19 @@
 				  , pal.ATRZ_LN_SN
 				  , pal.NOW_ATRZ_STEP_CD
 				  , pal.BGT_MNG_ODR
+				  , pald.APRVR_EMP_ID
 			      , COUNT(*) OVER () AS TOTAL_ITEMS
 			  FROM PRJCT_ATRZ_LN pal
-			  JOIN PRJCT_ATRZ_LN_DTL pald ON(pal.PRJCT_ID = pald.PRJCT_ID AND pal.ATRZ_LN_SN = pald.ATRZ_LN_SN)
+			  JOIN PRJCT_ATRZ_LN_DTL pald ON(pal.PRJCT_ID = pald.PRJCT_ID AND pal.ATRZ_LN_SN = pald.ATRZ_LN_SN AND pal.NOW_ATRZ_STEP_CD = pald.ATRZ_STEP_CD)
 			  JOIN PRJCT p ON (p.PRJCT_ID = pal.PRJCT_ID AND p.PRJCT_ID = pald.PRJCT_ID)
 			  JOIN EMP e  ON (e.EMP_ID = pal.REG_EMP_ID)
 			 WHERE 1=1
-			   AND pald.APRVR_EMP_ID = #{empId}
+			   AND (pald.APRVR_EMP_ID = #{empId} OR pal.REG_EMP_ID = #{empId})
 		        <if test="prmpcInptSeCd != null and !prmpcInptSeCd.equals('')">
-		       AND PRMPC_INPT_SE_CD = #{prmpcInptSeCd}
+		       AND pal.PRMPC_INPT_SE_CD = #{prmpcInptSeCd}
 		        </if>
 		        <if test="prjctId != null and !prjctId.equals('')">
-		       AND PRJCT_ID = #{prjctId}
+		       AND pal.PRJCT_ID = #{prjctId}
 		        </if>
 		        <if test="bizFlfmtTyCd != null and !bizFlfmtTyCd.equals('')">
 		       AND BIZ_FLFMT_TY_CD = #{bizFlfmtTyCd}
@@ -133,7 +135,7 @@
            , MMNY_INPT_MM B
         WHERE A.PRJCT_ID = B.PRJCT_ID
         AND A.BGT_MNG_ODR AND B.BGT_MNG_ODR
-        AND A.EMP_ID = B.EMP_ID
+        AND A.MMNY_LBRCO_PRMPC_SN = B.MMNY_LBRCO_PRMPC_SN
         <if test="prjctId != null">
             <if test="!prjctId.equals('')">
                 AND A.PRJCT_ID = #{prjctId}
@@ -169,7 +171,7 @@
                     , OUTORD_LBRCO_PRMPC_DTL B
                  WHERE A.PRJCT_ID = B.PRJCT_ID
                    AND A.BGT_MNG_ODR = B.BGT_MNG_ODR
-                   AND A.OUTORD_EMP_ID = B.OUTORD_EMP_ID
+                   AND A.OUTORD_LBRCO_PRMPC_SN = B.OUTORD_LBRCO_PRMPC_SN
                 <if test="prjctId != null">
                     <if test="!prjctId.equals('')">
                         AND A.PRJCT_ID = #{prjctId}
@@ -207,7 +209,7 @@
                     , OUTORD_LBRCO_PRMPC_DTL B
                  WHERE A.PRJCT_ID = B.PRJCT_ID
                    AND A.BGT_MNG_ODR = B.BGT_MNG_ODR
-                   AND A.OUTORD_EMP_ID = B.OUTORD_EMP_ID
+                   AND A.OUTORD_LBRCO_PRMPC_SN = B.OUTORD_LBRCO_PRMPC_SN
                 <if test="prjctId != null">
                     <if test="!prjctId.equals('')">
                         AND A.PRJCT_ID = #{prjctId}
@@ -245,7 +247,7 @@
                     , OUTORD_LBRCO_PRMPC_DTL B
                  WHERE A.PRJCT_ID = B.PRJCT_ID
                    AND A.BGT_MNG_ODR = B.BGT_MNG_ODR
-                   AND A.OUTORD_EMP_ID = B.OUTORD_EMP_ID
+                   AND A.OUTORD_LBRCO_PRMPC_SN = B.OUTORD_LBRCO_PRMPC_SN
                 <if test="prjctId != null">
                     <if test="!prjctId.equals('')">
                         AND A.PRJCT_ID = #{prjctId}
@@ -535,7 +537,13 @@
 			  FROM OUTORD_LBRCO_PRMPC
 			 WHERE PRJCT_ID = #{prjctId}
 			 AND BGT_MNG_ODR = #{bgtMngOdr}
-		</if>		    
+		</if>		 
+		<if test="mmnyLbrcoPrmpcSn != null">
+			SELECT COALESCE(MAX(MMNY_LBRCO_PRMPC_SN),0) AS MMNY_LBRCO_PRMPC_SN
+			  FROM MMNY_INPT_MM
+			 WHERE PRJCT_ID = #{prjctId}
+			 AND BGT_MNG_ODR = #{bgtMngOdr}
+		</if>   
 	</select>
 	
 	<select id="updateChgPrmpcMdfcn" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -552,7 +560,6 @@
 			   EXPECT_MM = #{expectMm}
 		</if>
 	</select>
-	
 	
 	<select id="retrieveOutordEntrpsPrmpc" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		  SELECT 
@@ -576,7 +583,6 @@
 		 AND M.BGT_MNG_ODR = #{bgtMngOdr}
 	</select>
 	
-	
 	<!-- -->
 	<select id="retrieveRjctAtrz" parameterType="map" resultType="com.trsystem.LowerHashMap">
 	  SELECT pal.PRJCT_ID
@@ -587,5 +593,29 @@
 	     AND pal.ATRZ_LN_SN = #{atrzLnSn}
 	     AND pald.ATRZ_STTS_CD = 'VTW00803'
 	</select>
+	
+	<select id="retrieveMmnyHnf" parameterType="map" resultType="com.trsystem.LowerHashMap">
+	  SELECT e.EMP_ID, 
+	  		 e.EMP_FLNM, 
+	  		 e.JBPS_CD,
+	  		 c.CD_NM,
+	  		 c.USER_DFN_VALUE, 
+			 CONCAT(e.EMP_FLNM, ' - ' , c.CD_NM) as EMP_NAME_JBPS
+		FROM EMP e
+		JOIN CD c 
+		ON e.JBPS_CD = c.CD_VALUE 
+		WHERE 1=1
+		AND e.HDOF_STTS_CD = 'VTW00301' /*재직*/	
+		AND e.EMP_TY_CD !='VTW00203'
+		AND c.USE_YN = 'Y'
+	</select>
+
+	<select id="retrievePrjctCdIdntfr" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT IFNULL(LPAD(MAX(SUBSTR(PRJCT_CD_IDNTFR, 5))+1, '4', '0'), '0001') PRJCT_CD_SN
+		  FROM PRJCT
+		 WHERE PRJCT_CD_IDNTFR LIKE CONCAT(#{ctmmnyId},'%')
+	</select>
+	
+	
 
 </mapper>

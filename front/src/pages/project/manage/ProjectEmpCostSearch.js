@@ -4,8 +4,8 @@ import "devextreme/dist/css/dx.common.css";
 import ProjectEmpCostSearchJson from "./ProjectEmpCostSearchJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
 import PivotGridDataSource from "devextreme/ui/pivot_grid/data_source";
-import { Workbook } from "exceljs";
-import { saveAs } from "file-saver";
+// import { Workbook } from "exceljs";
+// import { saveAs } from "file-saver";
 import PivotGrid, {
   Export,
   FieldChooser,
@@ -15,19 +15,21 @@ import PivotGrid, {
 import { exportPivotGrid } from "devextreme/excel_exporter";
 import { Button } from "devextreme-react";
 
-const ProjectEmpCostSearch = (prjctId) => {
+const ProjectEmpCostSearch = ({prjctId, bgtMngOdr}) => {
   const [pivotGridConfig, setPivotGridConfig] = useState({
     fields: ProjectEmpCostSearchJson,
     store: [],
   });
 
   useEffect(() => {
-    Cnsrtm();
+    Cnsrtm();                                                                                                                             
   }, []);
-
+  console.log(prjctId)
+  console.log(bgtMngOdr)
   const param = {
     queryId: "projectMapper.retrieveprojectEmpCostSearch",
-    prjctId: prjctId.prjctId,
+    prjctId: prjctId,
+    bgtMngOdr: bgtMngOdr
   };
 
   const Cnsrtm = async () => {
@@ -41,7 +43,7 @@ const ProjectEmpCostSearch = (prjctId) => {
       console.error(error);
     }
   };
-
+/*
   const onExporting = (e) => {
     const workbook = new Workbook();
     const worksheet = workbook.addWorksheet("Sales");
@@ -57,7 +59,7 @@ const ProjectEmpCostSearch = (prjctId) => {
       });
     });
   };
-
+*/
   const test = (e) => {
     console.log(e);
   };
@@ -75,7 +77,7 @@ const ProjectEmpCostSearch = (prjctId) => {
         allowFiltering={false}
         allowSorting={false}
         allowExpandAll={false}
-        onExporting={onExporting}
+        // onExporting={onExporting}
       >
         <FieldPanel
           showRowFields={true}

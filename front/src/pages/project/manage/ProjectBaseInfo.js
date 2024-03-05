@@ -55,17 +55,16 @@ const ProjectBaseInfo = ({prjctId}) => {
        prjctId: prjctId, 
       }, 
    ];  
-    const Cnsrtm = async () => {
+    const Cnsrtm = async () => {  //TODO. 컨소시엄 갯수많큼 테이블 증가해야함.
       try {
         const response = await ApiRequest("/boot/common/commonSelect", param);
-        setCnsrtmData(response[0]);  
+        setCnsrtmData(response);  
       } catch (error) {
         console.error('Error fetching data', error);
       }
     };
     Cnsrtm();
   }, []);
-
 
   return (
     <div style={{padding: '20px'}}>
@@ -77,7 +76,9 @@ const ProjectBaseInfo = ({prjctId}) => {
         <CustomHorizontalTable headers={BaseInfo.PicInfo} column={picInfoData}/>
         &nbsp;
         <p><strong>* 컨소시엄</strong></p>
-        <CustomHorizontalTable headers={BaseInfo.Cnsrtm} column={CnsrtmData}/>
+        {CnsrtmData.map((data, index) => {
+           return <CustomHorizontalTable key={index} headers={BaseInfo.Cnsrtm} column={data}/>
+        })}
       </div>
     </div>
   );
