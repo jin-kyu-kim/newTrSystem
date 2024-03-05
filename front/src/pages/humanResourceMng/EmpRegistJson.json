@@ -1,5 +1,6 @@
 {
     "menuName": "EmpManage",
+    "empDetailqueryId":"empListMapper.retrieveEmpList",
     "labelValue" : {
         "empFlnm": {
             "name": "empFlnm",
@@ -8,44 +9,48 @@
             "required": true,
             "placeholder": "성명"
         },
-        "JbpsCd": {
+        "jbpsCd": {
             "type": "ComboBox",
-            "required": true,           
+            "required": true,
             "label": "직위",
             "placeholder": "직위",
-            "param": { "tbNm" : "CD",     
+            "param": { "tbNm" : "CD",
+                        "condition": {
+                            "upCdValue": "VTW001"
+                        },
                         "valueExpr" : "cdValue",
-                        "displayExpr": "cdNm",                  
-                        "upCdValue": "VTW001"
+                        "displayExpr": "cdNm",
+                        "name": "jbpsCd"
                      }
         },
-        "deptMngrEmpFlnm": {
+        "deptNm": {
             "type": "ComboBox",
             "required": false,
             "label": "소속",
             "placeholder": "소속",
-            "param": { "tbNm" : "DEPT",
-                       "valueExpr" : "deptId",
-                       "displayExpr": "deptNm",
-                       "name": "deptId"
+            "param": {  "tbNm" : "DEPT",
+                        "valueExpr" : "deptNm",
+                        "displayExpr": "deptNm",
+                        "name": "deptNm"
                      }
-            
         },
         "hdofSttsCd": {
             "name": "hdofSttsCd",
             "type": "ComboBox",
             "label": "재직상태",
-            "required": false,
-           
+            "required": true,
             "placeholder": "재직상태",
             "param": { "tbNm" : "CD",
+                        "condition": {
+                        "upCdValue": "VTW003"
+                         },
                         "valueExpr" : "cdValue",
                         "displayExpr": "cdNm",
-                        "upCdValue": "VTW003"
-                    }
+                        "name": "hdofSttsCd"
+                     }
         },
-        "telNo": {
-            "name": "telNo",
+        "telno": {
+            "name": "telno",
             "type": "TextBox",
             "label": "전화번호",
             "required": false,
@@ -65,43 +70,22 @@
             "required": false,            
             "placeholder": "은행코드",
             "param": { "tbNm" : "CD",
+                        "condition": {
+                        "upCdValue": "VTW035"
+                        },
                         "valueExpr" : "cdValue",
                         "displayExpr": "cdNm",
-                        "upCdValue": "VTW035"
+                        "name": "bankCd"
                      }
         },
-        "actNo": {
-            "name": "actNo",
+        "actno": {
+            "name": "actno",
             "type": "TextBox",
             "label": "계좌번호",
             "required": false,
             "placeholder": "계좌번호"
-        },
-        "deptGnfdY": {
-            "name": "deptGnfdY",
-            "type": "TextBox",
-            "label": "발령년도",
-            "required": false,
-            "placeholder": "발령년도"
-        },
-        "deptGnfdMd": {
-            "name": "deptGnfdMd",
-            "type": "TextBox",
-            "label": "발령차수",
-            "required": false,
-            "placeholder": "발령차수"
-        },
-        "jbttlCd": {
-            "name": "jbttlCd",
-            "type": "ComboBox",
-            "label": "발령작위",
-            "required": false,
-            "placeholder": "발령작위",
-            "param": { "tbNm" : "CD",
-                       "valueExpr" : "cdValue",
-                       "displayExpr": "cdNm",
-                       "upCdValue": "VTW001"
-                     }
         }
     }
+    ,
+    "queryId":""
 } 

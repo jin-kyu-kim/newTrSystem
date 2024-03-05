@@ -172,30 +172,30 @@
     </select>
 
 
-	<!-- 회의실정보 -->
-	<select id="retrieveMtgRoomInfoInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT
-			RSVT.MTG_ROOM_RSVT_SN
-			,CD.CD_NM
-			,RSVT.RSVT_EMP_ID
-			,EMP.EMP_FLNM
-<!--			,CONCAT(USE_YMD, ' ', USE_BGNG_HM)	START-->
-<!--			,CONCAT(USE_YMD, ' ', USE_END_HM)	END-->
-<!--			,RSVT.MTG_TTL 						TITLE-->
-			,STR_TO_DATE(CONCAT(USE_YMD, USE_BGNG_HM), '%Y%m%d%H%i%s')	START_DATE
-			,STR_TO_DATE(CONCAT(USE_YMD, USE_END_HM), '%Y%m%d%H%i%s')	END_DATE
-			,RSVT.MTG_TTL 						TEXT
-		FROM
-			MTG_ROOM_RSVT			RSVT
-			,EMP					EMP
-			,CD 					CD
-		WHERE RSVT.MTG_ROOM_CD = CD.CD_VALUE
-		AND RSVT.REG_EMP_ID = EMP.EMPNO
-		AND EXISTS (
-					SELECT 1
-					FROM MTG_ROOM_RSVT_ATDRN	ATDRN
-					WHERE RSVT.MTG_ROOM_RSVT_SN = ATDRN.MTG_ROOM_RSVT_SN
-		)
+    <!-- 회의실정보 -->
+    <select id="retrieveMtgRoomInfoInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            RSVT.MTG_ROOM_RSVT_SN
+            ,CD.CD_NM
+            ,RSVT.RSVT_EMP_ID
+            ,EMP.EMP_FLNM
+            ,CONCAT(USE_YMD, ' ', USE_BGNG_HM)  START
+            ,CONCAT(USE_YMD, ' ', USE_END_HM)   END
+            ,RSVT.MTG_TTL                       TITLE
+            ,STR_TO_DATE(CONCAT(USE_YMD, USE_BGNG_HM), '%Y%m%d%H%i%s')  START_DATE
+            ,STR_TO_DATE(CONCAT(USE_YMD, USE_END_HM), '%Y%m%d%H%i%s')   END_DATE
+            ,RSVT.MTG_TTL                       TEXT
+        FROM
+            MTG_ROOM_RSVT           RSVT
+            ,EMP                    EMP
+            ,CD                     CD
+        WHERE RSVT.MTG_ROOM_CD = CD.CD_VALUE
+        AND RSVT.REG_EMP_ID = EMP.EMPNO
+        AND EXISTS (
+                    SELECT 1
+                    FROM MTG_ROOM_RSVT_ATDRN    ATDRN
+                    WHERE RSVT.MTG_ROOM_RSVT_SN = ATDRN.MTG_ROOM_RSVT_SN
+        )
     </select>
 
 

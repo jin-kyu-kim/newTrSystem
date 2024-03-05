@@ -8,12 +8,12 @@ import { Change } from 'devextreme-react/cjs/data-grid';
 const MeetingRoomManage = () => {
     const [mtgRoomRvstParam, setMtgRoomRvstParam] = useState([]);
     const [mtgRoomRvstValues, setMtgRoomRvstValues] = useState([]);
-    
+   
     const [mtgRoomRvstAtdrnParam, setMtgRoomRvstAtdrnParam] = useState([]);
     const [mtgRoomRvstAtdrnValues, setMtgRoomRvstAtdrnValues] = useState([]);
-
+ 
     const [searchParam, setSearchParam] = useState({empno: ""});
-
+ 
     // 화면 최초로드 시 조회 param 설정
     useEffect(() => {
         setMtgRoomRvstParam({
@@ -23,14 +23,14 @@ const MeetingRoomManage = () => {
             queryId: EmpMonthVacInfoJson.MtgRoomRsvtAtdrn[0].queryId
         });
     },[]);
-
+ 
     // 조회
     useEffect(() => {
         if(!Object.values(mtgRoomRvstParam).every((value) => value === "")) {
             pageHandle(mtgRoomRvstParam);
         };
     }, [mtgRoomRvstParam]);
-
+ 
     // 조회
     const pageHandle = async (initParam) => {
         try {
@@ -40,7 +40,7 @@ const MeetingRoomManage = () => {
             console.log(error);
         }
     };
-      
+     
     return (
         <div className="" style={{marginLeft:"5%", marginRight:"5%"}}>
             <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
@@ -71,5 +71,5 @@ const MeetingRoomManage = () => {
     </div>
     );
 }
-
+ 
 export default MeetingRoomManage;

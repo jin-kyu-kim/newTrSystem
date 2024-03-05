@@ -1,18 +1,65 @@
+
 {
-   
-        "menuName": "EmpManage",
-        "queryId": "empListMapper.retrieveEmpList",
-        "keyColumn": "empno",
-        "tableColumns": [
-            { "key": "empno", "value": "사번", "width": 100, "alignment" : "center" },
-            { "key": "empFlnm", "value": "성명"},
-            { "key": "jbpsNm", "value": "직위"},
-            { "key": "deptNm", "value": "소속"}
-        ],
-        "searchParams":
-        {
-            
+    "menuName": "EmpManage",
+    "searchParams":
+	{
+        "popupVisible": true
+    },
+	"listQueryId": "empListMapper.retrieveEmpList",
+    "listKeyColumn": "empno",
+    "listTableColumns": [
+        { "key": "empno", "value": "사번", "width": 100, "alignment" : "center" },
+        { "key": "empFlnm", "value": "성명"},
+        { "key": "jbpsNm", "value": "직위"},
+        { "key": "deptNm", "value": "소속"}
+    ],
+	"ejhQueryId": "empListMapper.retrieveEmpJbpsHist",
+    "ejhKeyColumn": "empno",
+    "ejhTableColumns": [
+        { "key": "empno", "value": "사번"},
+        { "key": "DeptGnftYmd", "value": "발령차수" },
+        { "key": "jbpsNm", "value": "발령직급"},
+        { "key": "regDt", "value": "입력날짜" },
+        { "key": "regEmpId", "value": "입력사번" },
+        { "key": "jbttlNm", "value": "삭제" }
+    ],
+    "labelValue" : {
+        "deptGnfdYr": {
+            "name": "deptGnfdYr",
+            "type": "ComboBox",
+            "label": "발령년도",
+            "required": true,
+            "placeholder": "발령년도",
+            "param": {
+                        "valueExpr" : "cdValue",
+                        "displayExpr": "cdNm"
+                    }
+        },
+        "deptGnfdMd": {
+            "type": "ComboBox",
+            "required": true,
+            "label": "발령차수",
+            "placeholder": "발령차수",
+            "param": {
+                        "valueExpr" : "cdValue",
+                        "displayExpr": "cdNm"
+                     }
+        },
+        "jbpsCd": {
+            "type": "ComboBox",
+            "required": true,
+            "label": "직위",
+            "placeholder": "직위",
+            "param": { "tbNm" : "CD",
+                        "condition": {
+                            "upCdValue": "VTW001"
+                        },
+                        "valueExpr" : "cdValue",
+                        "displayExpr": "cdNm",
+                        "name": "jbpsCd"
+                     }
         }
- 
-  
+    }
+    
+
 }

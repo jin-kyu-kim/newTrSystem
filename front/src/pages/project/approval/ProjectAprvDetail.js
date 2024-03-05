@@ -18,9 +18,10 @@ const ProjectAprvDetail = () => {
     const atrzLnSn = location.state.atrzLnSn;
     const atrzSttsCd = location.state.atrzSttsCd;
     const atrzStepCd = location.state.atrzStepCd;
+    const nowAtrzStepCd = location.state.nowAtrzStepCd;
+    const bgtMngOdr = location.state.bgtMngOdr;
     const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
     const ProjectAprvDetail = ProjectAprvDetailJson;
-    const nowAtrzStepCd = location.state.nowAtrzStepCd;
   
     const [aprvPopupVisible, setAprvPopupVisible] = useState(false);
     const [rjctPopupVisible, setRjctPopupVisible] = useState(false);
@@ -206,11 +207,13 @@ const ProjectAprvDetail = () => {
 
     const handleBgtPrmpc = async () => {
         const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
+        const date = getToday();
     
         const param = [
           { tbNm : "PRJCT_BGT_PRMPC" },
           {
             atrzDmndSttsCd: "VTW03303",
+            ATRZ_CMPTN_YMD: date,
             mdfcnEmpId: cookies.userInfo.empId,
             mdfcnDt: mdfcnDt,
           },
@@ -263,17 +266,17 @@ const ProjectAprvDetail = () => {
     // 승인 팝업 Open
     const onAprvPopup = () => {
 
-        if(atrzStepCd !== nowAtrzStepCd) {
-            alert("현재 선행 결재가 완료되지 않았습니다.");
-            return;
-        }
-
         /*
         *  심사중인지 확인한다.
         *  VTW00801 : 심사중, VTW00802 : 승인, VTW00803 : 반려, VTW00804 : 보류, VTW00805 : 취소
         */
         if(atrzSttsCd !== 'VTW00801') {
             alert("심사중 상태가 아닙니다.");
+            return;
+        }
+
+        if(atrzStepCd !== nowAtrzStepCd) {
+            alert("현재 선행 결재가 완료되지 않았습니다.");
             return;
         }
 
@@ -283,17 +286,17 @@ const ProjectAprvDetail = () => {
     // 반려 팝업 Open
     const onRjctPopup = () => {
 
-        if(atrzSttsCd !== nowAtrzStepCd) {
-            alert("현재 선행 결재가 완료되지 않았습니다.");
-            return;
-        }
-
         /*
         *  심사중인지 확인한다.
         *  VTW00801 : 심사중, VTW00802 : 승인, VTW00803 : 반려, VTW00804 : 보류, VTW00805 : 취소
         */
         if(atrzSttsCd !== 'VTW00801') {
             alert("심사중 상태가 아닙니다.");
+            return;
+        }
+
+        if(atrzSttsCd !== nowAtrzStepCd) {
+            alert("현재 선행 결재가 완료되지 않았습니다.");
             return;
         }
 
@@ -342,7 +345,7 @@ const ProjectAprvDetail = () => {
                             const Component = React.lazy(() => import(`../${data.url}.js`));
                             return (
                                 <React.Suspense fallback={<div>Loading...</div>}>
-                                    <Component prjctId={prjctId} atrzLnSn={atrzLnSn}/>
+                                    <Component prjctId={prjctId} atrzLnSn={atrzLnSn} bgtMngOdr={bgtMngOdr}/>
                                 </React.Suspense>
                             );
                         }

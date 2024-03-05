@@ -79,7 +79,7 @@ const InitScheduler = ({values}) => {
                 onAppointmentFormOpening={onAppointmentFormOpening}
             />
         </div>
-        </>     
+        </>    
     );
 }
 
