@@ -187,9 +187,10 @@ const CustomCostTable = ({
           caption={column.value}
           alignment={"center"}
           fixed={true}
-          // dataType={column.subType ==="NumberBox" ? "number" : 
-          //           column.subType ==="Date" ? "date" :
-          //            "string"}
+          dataType={column.subType ==="NumberBox" ? "number" : 
+                    column.subType ==="Date" ? "date" :
+                     "string"}
+          format={column.subType === "Date" ? "yyyy-MM-dd" : ""}
         ></Column>     
       );
     });
