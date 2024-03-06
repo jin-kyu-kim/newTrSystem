@@ -262,7 +262,7 @@ const CustomCostTable = ({
               column={item.value}
               summaryType={item.type}
               displayFormat={item.format}
-              valueFormat={{ type: "fixedPoint", precision: 0 }} // 천 단위 구분자 설정
+              valueFormat={{ type: "fixedPoint", precision: 2 }} // 천 단위 구분자 설정
             />
           ))}
         </Summary>
