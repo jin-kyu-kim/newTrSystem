@@ -333,7 +333,7 @@ public class CommonServiceImpl implements CommonService {
         int atchResult = 0;//첨부파일 insert결과
         int result = 0;
 
-        String atchmnflId = "";
+        String atchmnflId = null;
         int atchmnflSn = 1;
 
         Map<String, Object> atchmnflMap = new HashMap<>();
