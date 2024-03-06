@@ -33,7 +33,9 @@
     },
     "popupFormat": "MM",
     "popupNumberBoxFormat": "#,##0.00",
-    "popupStep": 0.1,
+    "popupStep": 0.01,
+    "popupMax" : 1,
+    "popupMin" : 0,
     "labelValue" : {
         "outordEmpId": {
             "type": "ComboBox",

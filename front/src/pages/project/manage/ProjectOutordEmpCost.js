@@ -59,9 +59,11 @@ const ProjectOutordEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) =>
         for(let k=0; k<Object.values(groupingDtl)[j].length; k++){
           response[j][format(Object.values(groupingDtl)[j][k].inptYm, 'yyyy년 MM월')] = Object.values(groupingDtl)[j][k].expectMm;
           total += Object.values(groupingDtl)[j][k].expectMm;
-        }    
-        response[j].total = total;     
+        } 
+        const fixedSum = Number(total.toFixed(2)); //js의 부동소수 이슈로 인한 자릿수 조정.
+        response[j].total = fixedSum;     
       }
+      console.log("response", response);
       setValues(response);
     } catch (error) {
       console.error(error);

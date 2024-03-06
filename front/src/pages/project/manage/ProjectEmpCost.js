@@ -61,7 +61,8 @@ const ProjectEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
             response[j][format(Object.values(groupingDtl)[j][k].inptYm, 'yyyy년 MM월') + '_untpc'] = Object.values(groupingDtl)[j][k].untpc;
             total += Object.values(groupingDtl)[j][k].expectMm;
           }    
-          response[j].total = total;     
+          const fixedSum = Number(total.toFixed(2)); //js의 부동소수 이슈로 인한 자릿수 조정.
+          response[j].total = fixedSum;     
         }
         setValues(response);
 

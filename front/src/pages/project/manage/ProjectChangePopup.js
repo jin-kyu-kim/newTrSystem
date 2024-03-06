@@ -486,6 +486,8 @@ const onRowUpdateingMonthData = async() => {
                                             showSpinButtons={true}
                                             step={popupInfo.popupStep}
                                             showClearButton={false}
+                                            max={popupInfo.popupMax}
+                                            min={popupInfo.popupMin}
                                             />): ''}</td>
                                             { popupInfo.menuName === "ProjectEmpCostJson" &&
                                             <td style={{width:"20%", padding:"5px"}}>
@@ -494,7 +496,8 @@ const onRowUpdateingMonthData = async() => {
                                                     value= {data.mmnyLbrcoPrmpcSn ? 
                                                             transformedData.find(item => item.id === `${Object.keys(structuredData)[colIndex]}-${months[rowIndex]}_untpc`)?.value || 0 
                                                             : data.userDfnValue}
-                                                    readOnly={true}/>
+                                                    readOnly={true}
+                                                    />
                                             </td>
                                             }
                                         </>
