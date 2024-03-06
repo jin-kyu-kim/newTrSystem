@@ -54,8 +54,9 @@
 	</select>
 	
 	<select id="retrieveEmpAcbg" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT 	
-			C.CD_NM AS ACBG_SE_CD
+		SELECT 				
+			EA.ACBG_SN ACBG_SN
+			,C.CD_NM AS ACBG_SE_CD
 			,EA.SCHL_NM AS SCHL_NM 
 			,EA.MAJOR_INTLTSH_NM AS MAJOR_INTLTSH_NM  
 			,C2.CD_NM  AS GRDTN_STTS_CD
@@ -72,6 +73,7 @@
 
 	<select id="retrieveFgggAblty" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT
+			EFA.FGGG_ABLTY_SN AS FGGG_ABLTY_SN,
 			C.CD_NM AS FGGG_KND_NM,
 			C2.CD_NM AS PICTRS_LEVEL_NM,
 			EFA.ATHRI_TEST_NM AS ATHRI_TEST_NM,
@@ -88,6 +90,7 @@
 
 	<select id="retrieveEmpQlfcLcns" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT
+			QLFC_LCNS_SN,
 			QLFC_LCNS_NM ,
 			QLFC_LCNS_ID ,
 			GRAD_NM ,
@@ -98,6 +101,7 @@
 	
 	<select id="retrieveEmpEduHist" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT
+			EDU_SN,
 			EDU_INST_NM,
 			EDU_NM,
 			CONCAT(DATE_FORMAT(EDU_BGNG_YMD, '%Y-%m-%d')  , '~', DATE_FORMAT(EDU_END_YMD, '%Y-%m-%d')) AS EDU_YMD ,
@@ -108,6 +112,7 @@
 	
 	<select id="retrieveEmpCareer" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT
+			CAREER_SN,
 			CONCAT(DATE_FORMAT(WORK_BGNG_YMD, '%Y-%m-%d')  , '~', DATE_FORMAT(WORK_END_YMD, '%Y-%m-%d')) AS WORK_YMD ,
 			WRKPLC_NM,
 			MAIN_CAREER_CN,
@@ -119,6 +124,7 @@
 
 	<select id="retrievePrjctHist" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT 
+			EPH.PRJCT_HIST_SN AS HIST_SN,
 			EPH.PRJCT_NM AS PRJCT_NM,
 			CONCAT(DATE_FORMAT(EPH.PRJCT_BGNG_YMD, '%Y-%m-%d')  , '~', DATE_FORMAT(EPH.PRJCT_END_YMD, '%Y-%m-%d')) AS PRJCT_YMD ,
 			EPH.TKCG_JOB_CN AS TKCG_JOB_CN , 
@@ -148,12 +154,12 @@
 			AND NOTICE_TTL LIKE CONCAT('%',#{searchWrd},'%')
 		</if>
 		<if test="searchCnd == 'VTW01702' and searchWrd != null">
-			AND NOTICE_CN LIKE CONCAT('%',#{searchWrd},'%')
+			AND REGEXP_REPLACE(NOTICE_CN, '&lt;[^&gt;]*&gt;', '') LIKE CONCAT('%', #{searchWrd}, '%')
 		</if>
 		<if test="(searchCnd == null and searchWrd != null) or (searchCnd == 'VTW01703' and searchWrd != null)">
 			AND (
 			NOTICE_TTL LIKE CONCAT('%',#{searchWrd},'%')
-			OR NOTICE_CN LIKE CONCAT('%',#{searchWrd},'%')
+			OR REGEXP_REPLACE(NOTICE_CN, '&lt;[^&gt;]*&gt;', '') LIKE CONCAT('%', #{searchWrd}, '%')
 			)
 		</if>
 		ORDER BY
@@ -185,7 +191,7 @@
 	</select>
 	
 		
-	<select id="retrieveAcbgSn" parameterType="map" resultType="com.trsystem.LowerHashMap">
+	<select id="selectAcbgSn" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT  
 		  IFNULL(MAX(ACBG_SN), 0) +1 AS ACBG_SN
 		FROM EMP_ACBG
@@ -193,14 +199,44 @@
 	
 	</select>
 	
-	<select id="retriveDeptSearchList" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		
-		SELECT 
-			A.DEPT_NM AS DEPT_NM, 
-			B.DEPT_ID AS DEPT_ID 
-		FROM DEPT A 
-		INNER JOIN DEPT_HNF B ON A.DEPT_ID = B.DEPT_ID 
-		
+	<select id="selectFgggSn" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT  
+		  IFNULL(MAX(FGGG_ABLTY_SN), 0) +1 AS FGGG_ABLTY_SN
+		FROM EMP_FGGG_ABLTY
+		WHERE EMP_ID = #{empId}
+	
+	</select>
+	
+	<select id="selectLcnsSn" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT  
+		  IFNULL(MAX(QLFC_LCNS_SN), 0) +1 AS QLFC_LCNS_SN
+		FROM EMP_QLFC_LCNS
+		WHERE EMP_ID = #{empId}
+	
+	</select>
+	
+	<select id="selectEduSn" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT  
+		  IFNULL(MAX(EDU_SN), 0) +1 AS EDU_SN
+		FROM EMP_EDU
+		WHERE EMP_ID = #{empId}
+	
+	</select>
+	
+	<select id="selectCareerSn" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT  
+		  IFNULL(MAX(CAREER_SN), 0) +1 AS CAREER_SN
+		FROM EMP_CAREER
+		WHERE EMP_ID = #{empId}
+	
+	</select>
+	
+	<select id="selectPrjctHistSn" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT  
+		  IFNULL(MAX(PRJCT_HIST_SN), 0) +1 AS PRJCT_HIST_SN
+		FROM EMP_PRJCT_HIST
+		WHERE EMP_ID = #{empId}
+	
 	</select>
 
 </mapper>
