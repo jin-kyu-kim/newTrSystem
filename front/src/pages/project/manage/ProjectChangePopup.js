@@ -303,9 +303,10 @@ const onRowUpdateingMonthData = async() => {
 
     // inputValue를 순회하여 새로운 배열을 생성
     const makeParam = inputValue.map(item => {
+        let untpcValue ;
         if(popupInfo.table ==="MMNY_LBRCO_PRMPC"){
             const idUnptc = `${item.id}_untpc`; // untpc용 ID 생성
-            const untpcValue = transformedDataMap.hasOwnProperty(idUnptc) ? transformedDataMap[idUnptc] : data.userDfnValue; // transformedDataMap에 untpc ID가 있으면 그 값을, 없으면 data.userDfnValue를 사용
+            untpcValue = transformedDataMap.hasOwnProperty(idUnptc) ? transformedDataMap[idUnptc] : data.userDfnValue; // transformedDataMap에 untpc ID가 있으면 그 값을, 없으면 data.userDfnValue를 사용
         }
         return {
             [popupInfo.nomalColumnsDtlYm]: item.id,
