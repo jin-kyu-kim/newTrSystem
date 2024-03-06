@@ -14,6 +14,9 @@
 			, COUNT(*) OVER () AS TOTAL_ITEMS
 			,C3.CD_NM AS BANK_NM
 			,E.ACTNO AS ACTNO
+			,C.CD_VALUE JBPS_CD
+			,C3.CD_VALUE  AS BANK_CD
+			,C2.CD_VALUE AS HDOF_STTS_CD
 		FROM EMP E
 		LEFT OUTER JOIN CD C ON C.CD_VALUE =E.JBPS_CD
 		LEFT OUTER JOIN DEPT_HNF DF ON E.EMP_ID = DF.EMP_ID
@@ -40,7 +43,28 @@
 			AND C2.CD_VALUE = #{hodfSttsNm}
 		</if>
 	</select>
-	
+	<!--직급발령정보 조회-->
+	<select id="retrieveEmpJbpsHist" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT
+        	E.EMP_ID,
+        	E.EMPNO,
+        	C.CD_NM AS JBPS_NM,
+        	E.JBPS_CD,
+        	ROW_NUMBER() OVER (PARTITION BY EMP_ID ORDER BY REG_DT) AS RowNum ,
+        	E.REG_DT,
+        	A.EMPNO AS REG_EMPNO
+    	FROM 
+    		EMP_HIST E
+    		LEFT OUTER JOIN CD C ON C.CD_VALUE =E.JBPS_CD
+    		LEFT OUTER JOIN EMP A ON A.EMP_ID=E.REG_EMP_ID 
+		WHERE 
+			1=1	   
+						<if test="empno != null and empno !=''">
+							AND E.EMPNO LIKE CONCAT('%', #{empno}, '%')
+						</if>
+		ORDER BY 
+			EMP_HIST_SN DESC			
+	</select>	
 	<select id="retrieveEmpAcbg" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT 	
 			C.CD_NM AS ACBG_SE_CD
