@@ -1,0 +1,12 @@
+[
+  {
+    "TabName": "개인별조회",
+    "tabId": "ProjectCostIndividual",
+    "url": "pages/fnnrMng/prjctCtClm/ProjectCostIndividual"
+  },
+  {
+    "TabName": "일자별조회",
+    "tabId": "ProjectCostYMD",
+    "url": "pages/fnnrMng/prjctCtClm/ProjectCostYMD"
+  }
+]

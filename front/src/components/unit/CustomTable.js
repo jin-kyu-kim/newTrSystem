@@ -3,7 +3,7 @@ import { Button } from "devextreme-react/button";
 import ToggleButton from "../../pages/sysMng/ToggleButton"
 
 const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, 
-                      handleYnVal, editRow, onEditRow }) => {
+                      handleYnVal, editRow, onEditRow, onClick }) => {
 
   const gridRows = () => {
     const result = [];
@@ -17,7 +17,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
             caption={value}
             width={width}
             alignment={alignment || 'center'}
-            cellRender={() => buttonRender(button)}>
+            cellRender={({ data }) => buttonRender(button, data)}>
           </Column>
         );
       } else {
@@ -51,9 +51,10 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
     return result;
   }
 
-  const buttonRender = (button) => {
+  const buttonRender = (button, data) => {
     return(
-      <Button text={button}/>
+      <Button text={button} onClick={() => {onClick(data)}}/>
+      
     )
   }
 
