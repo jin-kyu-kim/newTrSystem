@@ -68,7 +68,8 @@ const ProjectAprv = () => {
               , atrzLnSn: e.data.atrzLnSn
               , atrzSttsCd: e.data.atrzSttsCd
               , atrzStepCd: e.data.atrzStepCd
-              , nowAtrzStepCd: e.data.nowAtrzStepCd } }
+              , nowAtrzStepCd: e.data.nowAtrzStepCd
+              , aprvrEmpId : e.data.aprvrEmpId } }
     );
   }
 
