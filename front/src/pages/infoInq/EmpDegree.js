@@ -16,30 +16,23 @@ import NumberBox from "devextreme-react/number-box";
 
 const EmpDegree = ({ callBack, props }) => {
   const [cookies] = useCookies(["userInfo", "userAuth"]);
-
   const userEmpId = cookies.userInfo.empId;
   const [param, setParam] = useState({});
-  const [data, setData] = useState({ empId: userEmpId, mtcltnYr: null, grdtnYr: null });
+  const [acbgSn, setAcbgSn] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [data, setData] = useState({
+    empId: userEmpId
+
+  });
 
   const { queryId, keyColumn, tableColumns } = EmpInfoJson.EmpDegree;
   const [values, setValues] = useState([]);
 
-  useEffect(() => {
-    console.log("유저정보는?" + userEmpId);
-    // if (!Object.values(param).every((value) => value === "")) {
-    // pageHandle();
-    //  }
-    setParam({
-      ...param,
-      queryId: queryId,
-      //empId: "202160c6-bf25-11ee-b259-000c2956283f",
-      empId: data.empId,
-      // });
-    });
-  }, []);
+
+
+
 
   const [initParam, setInitParam] = useState({
-           
     acbgSeCd: "",
     schlNm: "",
     majorIntltshNm: "",
@@ -51,41 +44,28 @@ const EmpDegree = ({ callBack, props }) => {
   });
 
 
-  const handleSubmit = () => {
-    //callBack(initParam);
-  };
-  const handleClear = () => {
-    setInitParam({
-      acbgSeCd: "",
-      schlNm: "",
-      majorIntltshNm: "",
-      grdtnSttsCd: "",
-      pntPscoreSeCd: "",
-      scre: "",
-      mtcltnYr: "",
-      grdtnYr: ""
-    });
-
-  };
+  useEffect(() => {
+    if (!Object.values(param).every((value) => value === "")) {
+      pageHandle();
+    }
+    getSn();
+  }, [param, isSuccess]);
 
   const handleChgState = ({ name, value }) => {
-    setInitParam({
-      ...initParam,
-      [name]: value,
-    });
+    // setInitParam({
+    //   ...initParam,
+    //   [name]: value
+    // });
+    // setData({
+    //   [name]: value
+    // });
+    // setParam({
+    //   queryId: queryId
+    // });
 
-    setParam({
-      queryId: queryId
-    })
-    setData({
-      empId: userEmpId,
-      [name]: value
-    })
   };
 
   const pageHandle = async () => {
-
-
     try {
 
       const response = await ApiRequest("/boot/common/queryIdSearch", param);
@@ -98,30 +78,55 @@ const EmpDegree = ({ callBack, props }) => {
     }
   };
 
-  const acbgInsert = async () => {
-    console.log("data : " + data.empId)
-    const params = [{ tbNm: "EMP_ACBG" }, data
-    ]
-    try {
+  const getSn = async () => {
+    const selectParams = {
+      queryId: "infoInqMapper.retrieveAcbgSn",
+      empId: data.empId
+    };
 
-      const response = await ApiRequest("/boot/common/commonInsert", params);
-      console.log(response);
-      if (response.length !== 0) {
-      } else {
-      }
-    } catch (error) {
-      console.log(error);
+    try {
+      const response = await ApiRequest("/boot/common/queryIdSearch", selectParams);
+      console.log("결과" + response[0].acbgSn);
+
+      console.log(acbgSn);
+
+      setData(() => ({
+        ...data,
+        acbgSn: response[0].acbgSn
+      }));
+
+      console.log("data : " + data.empId);
+
+    } catch(error){
+      console.log(error)
     }
 
   }
 
-  useEffect(() => {
-    pageHandle();
-  }, [param.empId]);
+
+  const acbgInsert = async () => {
+      const params = [{ tbNm: "EMP_ACBG" }, data
+      ]
+      try {
+
+        const response = await ApiRequest("/boot/common/commonInsert", params);
+        console.log(response);
+        if (response === 1) {
+          setIsSuccess(!isSuccess)
+        } else {
+        }
+      } catch (error) {
+        console.log(error);
+      }
+  }
+
+  // useEffect(() => {
+  //    pageHandle();
+  // }, [param.empId]);
 
   return (
     <div className="container" style={{ height: "700px" }}>
-        <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }}>
+      <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }}>
         <h1 style={{ fontSize: "40px" }}>학력</h1>
       </div>
       <div style={{ marginBottom: "20px" }}>
@@ -186,7 +191,7 @@ const EmpDegree = ({ callBack, props }) => {
               <Button onClick={acbgInsert} text="저장" />
             </Item>
             <Item className="searchBtnItem" width="10%" ratio={1} >
-              <Button onClick={handleClear} text="초기화" />
+              <Button text="초기화" />
             </Item>
           </Box>
         </div>

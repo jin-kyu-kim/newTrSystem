@@ -27,10 +27,17 @@ const TreRoutes = [
     name: "ProjectAprv",
     element: React.lazy(() => import("../pages/project/approval/ProjectAprv")),
   },
+  // 프로젝트 시간비용승인
   {
     path: "/project/ProjectHrCtAprv",
     name: "ProjectHrCtAprv",
     element: React.lazy(() => import("../pages/project/approval/ProjectHrCtAprv")),
+  },
+  // 프로젝트 시간비용승인상세
+  {
+    path: "/project/ProjectHrCtAprvDetail",
+    name: "ProjectHrCtAprvDetail",
+    element: React.lazy(() => import("../pages/project/approval/ProjectHrCtAprvDetail")),
   },
   // 프로젝트 디테일
   {

@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import TextBox from "devextreme-react/text-box";
 import Box, { Item } from "devextreme-react/box"
 import { Button } from "devextreme-react/button";
-import CustomCdComboBox from "../unit/CustomCdComboBox";
+import CustomComboBox from 'components/unit/CustomComboBox';
 
 const SearchInfoSet = ({ callBack, props }) => {
   const navigate = useNavigate();
-  const { searchParams, firstCd, textBoxItem, selectBoxItem } = props;
+  const { searchParams, textBoxItem, selectBoxItem } = props;
   const [initParam, setInitParam] = useState({});
 
   useEffect(() => {
@@ -21,18 +21,6 @@ const SearchInfoSet = ({ callBack, props }) => {
       [name]: value,
     });
   };
-
-  const setFirstCd = () => {
-    if(initParam.searchWrd !== null && firstCd !== null) {
-      setInitParam({
-        ...initParam,
-        searchCnd: firstCd,
-      });
-    }
-  }
-  useEffect(() => {
-    setFirstCd()
-  }, [initParam.searchWrd])
 
   const handleSubmit = () => {
     callBack(initParam);
@@ -54,12 +42,11 @@ const SearchInfoSet = ({ callBack, props }) => {
         {selectBoxItem.map((item, index) => {
           return(
             <Item key={index} ratio={1}>
-              <CustomCdComboBox
-                param={item.commonCd}
-                name={item.name}
-                placeholderText={item.placeholder}
+              <CustomComboBox
+                props={item.param}
                 onSelect={handleChgState}
-                value={(initParam.searchCnd === undefined && firstCd) ? firstCd : initParam[item.name]}
+                placeholder={item.placeholder}
+                value={initParam[item.param.name]}
               />
             </Item>
           )

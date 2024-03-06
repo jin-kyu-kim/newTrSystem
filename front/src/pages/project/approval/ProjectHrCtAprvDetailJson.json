@@ -1,0 +1,40 @@
+{
+	"menuName": "ProjectHrCtAprv",
+    "mm": {
+        "queryId": "projectMapper.retrieveMmAply",
+        "keyColumn": "empId",
+        "tableColumns": [
+            { "key": "deptNm", "value": "소속"  },
+            { "key": "empFlnm", "value": "성명" , "width": "100"},
+            { "key": "aplySn", "value": "차수" , "width": "100"},
+            { "key": "expectMm", "value": "배정" , "width": "100"},
+            { "key": "rownum", "value": "누적사용" , "width": "100"},
+            { "key": "rownum", "value": "가용" , "width": "100"},
+            { "key": "rownum", "value": "당차수청구" , "width": "100"},
+            { "key": "empId", "value": "상태" , "width": "140", "button": "승인목록"}
+        ],
+        "summaryColumn": [
+            {
+                "key": "expectMm",
+                "value": "배정",
+                "type"  : "sum",
+                "format:": "{0.#} MM"
+            }
+        ]
+    },
+    "ct": {
+        "queryId": "projectMapper.",
+        "keyColumn": "",
+        "tableColumns": [
+
+        ]
+    },
+
+    "searchParams":
+	{
+        "yearItem": true,
+        "monthItem": true,
+        "aplyOdr": true,
+        "empId": true
+    }
+}
