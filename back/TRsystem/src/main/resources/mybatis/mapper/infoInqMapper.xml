@@ -148,12 +148,12 @@
 			AND NOTICE_TTL LIKE CONCAT('%',#{searchWrd},'%')
 		</if>
 		<if test="searchCnd == 'VTW01702' and searchWrd != null">
-			AND NOTICE_CN LIKE CONCAT('%',#{searchWrd},'%')
+			AND REGEXP_REPLACE(NOTICE_CN, '&lt;[^&gt;]*&gt;', '') LIKE CONCAT('%', #{searchWrd}, '%')
 		</if>
 		<if test="(searchCnd == null and searchWrd != null) or (searchCnd == 'VTW01703' and searchWrd != null)">
 			AND (
 			NOTICE_TTL LIKE CONCAT('%',#{searchWrd},'%')
-			OR NOTICE_CN LIKE CONCAT('%',#{searchWrd},'%')
+			OR REGEXP_REPLACE(NOTICE_CN, '&lt;[^&gt;]*&gt;', '') LIKE CONCAT('%', #{searchWrd}, '%')
 			)
 		</if>
 		ORDER BY
