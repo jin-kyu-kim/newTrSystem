@@ -52,6 +52,7 @@ const CustomLabelValue = ({props, onSelect, value, readOnly}) => {
                     onValueChanged={(e) => {
                         onSelect({name: props.name, value: e.value})
                     }}
+                    format={props.format}
                 >
                     <Validator>{validate()}</Validator>
                 </NumberBox>
