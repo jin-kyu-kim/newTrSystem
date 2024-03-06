@@ -15,8 +15,8 @@
         {"key": "hnfRoleCdNm", "value": "역할"},
         {"key": "hnfGradCdNm", "value": "등급"},
         {"key": "tkcgJob", "value": "담당업무"},     
-        {"key": "inptPrnmntYmd", "value": "투입예정일"},
-        {"key": "withdrPrnmntYmd", "value": "철수에정일"},
+        {"key": "inptPrnmntYmd", "value": "투입예정일", "subType": "Date"},
+        {"key": "withdrPrnmntYmd", "value": "철수에정일", "subType": "Date"},
         {"key": "gramt", "value": "총 금액"},
         {"key": "total", "value": "총 투입 MM"}
 	],
