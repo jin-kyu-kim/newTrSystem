@@ -14,7 +14,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
     const [param, setParam] = useState([]);
     const [contents, setContents] = useState([]);   
     const [structuredData, setStructuredData] = useState({});   //기간 구조 데이터
-    
+
     useEffect(() => {  
         console.log("data",data);
     }, [data]);
@@ -108,9 +108,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
           }, 0);
           
         // 부동 소수점 문제 해결을 위해 toFixed() 후 숫자로 변환
-        const fixedTotalSum = Number(totalSum.toFixed(2));
-        console.log("fixedTotalSum",fixedTotalSum);
-          
+        const fixedTotalSum = Number(totalSum.toFixed(2));       
 
         let multifulSum;   
         if(data.userDfnValue){
@@ -292,11 +290,31 @@ const onRowUpdateingMonthData = async() => {
 
     const pkColumns = pick(param, popupInfo.pkColumnsDtl);
 
-    const makeParam = inputValue.map(item => ({
-        [popupInfo.nomalColumnsDtlYm] : item.id,
-        [popupInfo.nomalColumnsDtlValue] : item.value,
-        ...(data.userDfnValue ? { "untpc" : data.userDfnValue } : {}),  //TODO. 자사인력 단가 경우의 수 따져봐라
-    }));
+    // const makeParam = inputValue.map(item => ({
+    //     [popupInfo.nomalColumnsDtlYm] : item.id,
+    //     [popupInfo.nomalColumnsDtlValue] : item.value,
+    //     ...(data.userDfnValue ? { "untpc" : data.userDfnValue } : {}),  //TODO. 자사인력 단가 경우의 수 따져봐라
+    // }));
+
+    const transformedDataMap = transformedData.reduce((acc, cur) => {
+        acc[cur.id] = cur.value; // 각 항목의 id를 키로, value를 값으로 설정
+        return acc;
+    }, {});
+
+    // inputValue를 순회하여 새로운 배열을 생성
+    const makeParam = inputValue.map(item => {
+        if(popupInfo.table ==="MMNY_LBRCO_PRMPC"){
+            const idUnptc = `${item.id}_untpc`; // untpc용 ID 생성
+            const untpcValue = transformedDataMap.hasOwnProperty(idUnptc) ? transformedDataMap[idUnptc] : data.userDfnValue; // transformedDataMap에 untpc ID가 있으면 그 값을, 없으면 data.userDfnValue를 사용
+        }
+        return {
+            [popupInfo.nomalColumnsDtlYm]: item.id,
+            [popupInfo.nomalColumnsDtlValue]: item.value,
+            ...(untpcValue ? {"untpc": untpcValue} : {}), // 조건에 따른 untpc 값 설정
+        };
+    });
+
+
 
     //api param 설정
     const paramInfo = [
