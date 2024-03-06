@@ -30,7 +30,7 @@ const ProjectConsortium = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr, bgtMngOdrTo
 
     return (
         <>
-            <div className="container">
+            <div className="container" style={{ marginTop: "50px" }}>
                 <div style={{padding:'20px'}}>
 
                 <Box direction="col" width="100%" height={150}>

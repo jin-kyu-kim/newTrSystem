@@ -256,6 +256,7 @@ const lookupColumns = () => {
       dataField={json.lookupColumn.key}
       caption={json.lookupColumn.value}
       width={"13%"}
+      alignment="center"
     >
       <Lookup dataSource={json.lookupInfo} displayExpr="Name" valueExpr="ID" />
     </Column>
@@ -314,6 +315,8 @@ const lookupColumns = () => {
           dataType={column.subType ==="NumberBox" ? "number" : 
                     column.subType ==="Date" ? "date" :
                      "string"}
+          // format="#,### 원"
+          format={column.subType ==="NumberBox" ? column.format : ""}
         >
           {/* <ValidationRule type={column.validation ==="reauired" ? "required" : null} /> */}
         </Column>
