@@ -1,0 +1,25 @@
+{
+    "menuName": "ProjectClaimCost",
+	  "queryId": "financialAffairMapper.retrievePrjctCtClmSttusIndvdlAccto",
+    "keyColumn": "prjctId",
+    "workHourColumns": 
+	[
+        { "key": "prjctId", "value": "소속", "width": 250, "alignment" : "left" },
+        { "key": "prjctId", "value": "성명", "width": 100, "alignment" : "center"  },
+        { "key": "prjctId", "value": "차수", "width": 100, "alignment" : "left" },
+        { "key": "prjctId", "value": "배정", "width": 150, "alignment" : "right" },
+        { "key": "prjctId", "value": "누적사용", "width": 150, "alignment" : "right" },
+        { "key": "prjctId", "value": "가용", "width": 150, "alignment" : "right"  },
+        { "key": "prjctId", "value": "당차수청구", "width": 150, "alignment" : "right"  },
+        { "key": "prjctId", "value": "상태", "width": 200, "button": "비용청구현황", "alignment" : "center" }
+  ],
+  "expensColumns": 
+	[
+        { "key": "prjctId", "value": "소속", "width": 250, "alignment" : "left" },
+        { "key": "prjctId", "value": "성명", "width": 100, "alignment" : "center" },
+        { "key": "prjctId", "value": "차수", "width": 100, "alignment" : "left" },
+        { "key": "prjctId", "value": "누적사용", "width": 300, "alignment" : "right"  },
+        { "key": "prjctId", "value": "당차수청구", "width": 300, "alignment" : "right"   },
+        { "key": "prjctId", "value": "상태", "width": 200, "button": "비용청구현황", "alignment" : "center" }
+  ]
+}

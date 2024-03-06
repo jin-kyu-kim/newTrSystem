@@ -3,7 +3,7 @@ import { Button } from "devextreme-react/button";
 import ToggleButton from "../../pages/sysMng/ToggleButton"
 
 const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, 
-                      handleYnVal, editRow, onEditRow, onClick }) => {
+                      handleYnVal, editRow, onEditRow, onClick, wordWrap }) => {
 
   const gridRows = () => {
     const result = [];
@@ -80,6 +80,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
             e.cellElement.style.fontWeight = 'bold';
           }
         }}
+        wordWrapEnabled={wordWrap}
       >
         {editRow &&
           <Editing
