@@ -45,14 +45,15 @@ const ProjectEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
 };
 
   const EmpCost = async () => {
-    const param = [
-      { tbNm: "MMNY_LBRCO_PRMPC" },
-      { prjctId: prjctId, 
-        bgtMngOdr: bgtMngOdrTobe,
-      }, 
-    ];
+
+    const param = {
+      queryId: "projectMapper.retrieveMmnyHnfPrmpc",
+      prjctId: prjctId,
+      bgtMngOdr: bgtMngOdrTobe,
+    }
+
     try {
-      const response = await ApiRequest("/boot/common/commonSelect", param);
+      const response = await ApiRequest("/boot/common/queryIdSearch", param);
         //월별정보 및 총 합계 response에 추가
         for(let j=0; j<Object.keys(groupingDtl).length; j++){
           let total = 0;

@@ -11,7 +11,7 @@
     "CdComboboxColumnNm": ["hnfRoleCdNm","hnfGradCdNm"],
     "tableColumns": 
 	[
-        {"key": "outordEmpId", "value": "성명"},
+        {"key": "outordEmpNm", "value": "성명"},
         {"key": "hnfRoleCdNm", "value": "역할"},
         {"key": "hnfGradCdNm", "value": "등급"},
         {"key": "tkcgJob", "value": "담당업무"},     
@@ -36,6 +36,7 @@
     "popupStep": 0.01,
     "popupMax" : 1,
     "popupMin" : 0,
+    "precision": 2,
     "labelValue" : {
         "outordEmpId": {
             "type": "ComboBox",

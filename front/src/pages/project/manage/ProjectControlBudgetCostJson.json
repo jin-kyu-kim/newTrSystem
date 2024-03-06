@@ -49,7 +49,8 @@
             "type": "NumberBox",
             "label": "총금액",
             "required": true,
-            "placeholder": "총금액"
+            "placeholder": "총금액",
+            "readOnly": true
         }
     },
     "format" :"Total: {0}원"

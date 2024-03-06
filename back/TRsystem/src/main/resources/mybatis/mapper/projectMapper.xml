@@ -636,7 +636,38 @@
 		   AND pma.PRJCT_ID = #{prjctId}
 		   AND pma.APLY_ODR = #{aplyOdr}
 	</select>
-	
+		
+	<select id="retrieveOutordHnfPrmpc" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT 
+		   O.PRJCT_ID, O.BGT_MNG_ODR, O.OUTORD_LBRCO_PRMPC_SN, O.OUTORD_EMP_ID, O.HNF_ROLE_CD, O.HNF_GRAD_CD, O.TKCG_JOB, O.UNTPC,
+		   E.OUTORD_EMP_NM, 
+		   C.CD_NM AS HNF_ROLE_CD_NM, 
+		   D.CD_NM AS HNF_GRAD_CD_NM,
+		   DATE_FORMAT(STR_TO_DATE(O.INPT_PRNMNT_YMD, '%Y%m%d'), '%Y-%m-%d') AS INPT_PRNMNT_YMD,
+		   DATE_FORMAT(STR_TO_DATE(O.WITHDR_PRNMNT_YMD, '%Y%m%d'), '%Y-%m-%d') AS WITHDR_PRNMNT_YMD
+		FROM OUTORD_LBRCO_PRMPC O
+		JOIN OUTORD_EMP E ON E.OUTORD_EMP_ID = O.OUTORD_EMP_ID 
+		JOIN CD C ON O.HNF_ROLE_CD = C.CD_VALUE
+		JOIN CD D ON O.HNF_GRAD_CD = D.CD_VALUE
+		WHERE 1=1
+		AND PRJCT_ID = #{prjctId}
+		AND BGT_MNG_ODR = #{bgtMngOdr}	
+	</select>
+
+	<select id="retrieveMmnyHnfPrmpc" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT 
+			M.PRJCT_ID, M.BGT_MNG_ODR, M.MMNY_LBRCO_PRMPC_SN, M.EMP_ID, M.HNF_ROLE_CD, M.TKCG_JOB, 
+		    E.EMP_FLNM, 
+		    C.CD_NM AS HNF_ROLE_CD_NM,
+		    DATE_FORMAT(STR_TO_DATE(M.INPT_PRNMNT_YMD, '%Y%m%d'), '%Y-%m-%d') AS INPT_PRNMNT_YMD,
+	   	    DATE_FORMAT(STR_TO_DATE(M.WITHDR_PRNMNT_YMD, '%Y%m%d'), '%Y-%m-%d') AS WITHDR_PRNMNT_YMD
+		FROM MMNY_LBRCO_PRMPC M
+		JOIN EMP E ON M.EMP_ID = E.EMP_ID 
+		JOIN CD C ON M.HNF_ROLE_CD = C.CD_VALUE
+		WHERE 1=1
+		AND PRJCT_ID = #{prjctId}
+		AND BGT_MNG_ODR = #{bgtMngOdr}	
+	</select>
 	
 	
 

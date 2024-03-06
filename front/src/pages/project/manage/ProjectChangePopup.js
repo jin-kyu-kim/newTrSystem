@@ -151,7 +151,8 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
       }
 
     //저장버튼 클릭시
-    const handleSave = () => {
+    const handleSave = (e) => {
+        e.preventDefault();
         //수정일 경우
         if(data[popupInfo.keyColumn]){
             setParam(currentParam => {
@@ -360,11 +361,13 @@ const onRowUpdateingMonthData = async() => {
                                 onSelect={handleChgState}
                                 value={data.expensCd}
                                 between={popupInfo.cdBetween}
+                                required={true}
+                                label={"비용코드"}
                             />
                         </div>
                     </div>
                     <CustomLabelValue props={popupInfo.labelValue.dtlDtls} value={data.dtlDtls} onSelect={handleChgState}/>
-                    <CustomLabelValue props={popupInfo.labelValue.total} value={data.total} onSelect={handleChgState}/>
+                    <CustomLabelValue props={popupInfo.labelValue.total} value={data.total} onSelect={handleChgState} readOnly={popupInfo.labelValue.total.readOnly}/>
                 </div>
             );
         //외주인력
@@ -381,6 +384,8 @@ const onRowUpdateingMonthData = async() => {
                                 name="hnfRoleCd"
                                 onSelect={handleChgState}
                                 value={data.hnfRoleCd}
+                                required={true}
+                                label={"역할"}
                             />
                         </div>
                     </div>
@@ -393,6 +398,8 @@ const onRowUpdateingMonthData = async() => {
                                 name="hnfGradCd"
                                 onSelect={handleChgState}
                                 value={data.hnfGradCd}
+                                required={true}
+                                label={"등급"}
                             />
                         </div>
                         
@@ -424,6 +431,8 @@ const onRowUpdateingMonthData = async() => {
                                 name="hnfRoleCd"
                                 onSelect={handleChgState}
                                 value={data.hnfRoleCd}
+                                required={true}
+                                label={"역할"}
                             />
                         </div>
                     </div> 
@@ -442,6 +451,8 @@ const onRowUpdateingMonthData = async() => {
     }, [popupInfo, data]); 
 
     return (
+        <form onSubmit={handleSave}>
+            
         <div className="popup-content">
             <div className="project-regist-content">
                 <div className="project-change-content-inner-left">
@@ -512,10 +523,12 @@ const onRowUpdateingMonthData = async() => {
                 </div>
             </div>
             <div className="button-container">
-                <Button text="저장" type="default" stylingMode="contained" onClick={handleSave}/>
+
+                <Button text="저장" type="default" stylingMode="contained" useSubmitBehavior={true}/>
                 <Button text="취소" onClick={handleCancel}/>
             </div>
         </div>
+        </form>
     );
 };
 

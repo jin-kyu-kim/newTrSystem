@@ -29,6 +29,7 @@
     "popupFormat": "경비",
     "popupNumberBoxFormat": "#,##0 원",
     "popupStep": 1,
+    "precision": 0,
     "labelValue" : {
         "expensCdNm": {
             "name": "expensCdNm",
@@ -49,7 +50,9 @@
             "type": "NumberBox",
             "label": "총금액",
             "required": true,
-            "placeholder": "총금액"
+            "placeholder": "총금액",
+            "readOnly": true,
+            "format": "#,### 원"
         }
     },
     "format" :"Total: {0}원"

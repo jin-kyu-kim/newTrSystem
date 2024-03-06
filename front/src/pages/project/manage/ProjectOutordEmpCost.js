@@ -45,14 +45,15 @@ const ProjectOutordEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) =>
 };
 
   const OutordEmp = async () => {
-    const param = [
-      { tbNm: "OUTORD_LBRCO_PRMPC" },
-      { prjctId: prjctId,
-        bgtMngOdr: bgtMngOdrTobe,
-      }, 
-    ];
+
+    const param = {
+      queryId: "projectMapper.retrieveOutordHnfPrmpc",
+      prjctId: prjctId,
+      bgtMngOdr: bgtMngOdrTobe,
+    }
+
     try {
-      const response = await ApiRequest("/boot/common/commonSelect", param);
+      const response = await ApiRequest("/boot/common/queryIdSearch", param);
       //월별정보 및 총 합계 response에 추가
       for(let j=0; j<Object.keys(groupingDtl).length; j++){
         let total = 0;
@@ -63,7 +64,6 @@ const ProjectOutordEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) =>
         const fixedSum = Number(total.toFixed(2)); //js의 부동소수 이슈로 인한 자릿수 조정.
         response[j].total = fixedSum;     
       }
-      console.log("response", response);
       setValues(response);
     } catch (error) {
       console.error(error);

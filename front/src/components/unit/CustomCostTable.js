@@ -187,7 +187,10 @@ const CustomCostTable = ({
           caption={column.value}
           alignment={"center"}
           fixed={true}
-        ></Column>
+          // dataType={column.subType ==="NumberBox" ? "number" : 
+          //           column.subType ==="Date" ? "date" :
+          //            "string"}
+        ></Column>     
       );
     });
     period.map((periodItem, index) => {
@@ -199,6 +202,8 @@ const CustomCostTable = ({
           alignment={"center"}
           // visibility={"hidden"}
           fixed={true}
+          format={json.popupNumberBoxFormat}
+
         ></Column>
       );
     });
@@ -262,7 +267,7 @@ const CustomCostTable = ({
               column={item.value}
               summaryType={item.type}
               displayFormat={item.format}
-              valueFormat={{ type: "fixedPoint", precision: 2 }} // 천 단위 구분자 설정
+              valueFormat={{ type: "fixedPoint", precision: json.precision }} // 천 단위 구분자 설정
             />
           ))}
         </Summary>

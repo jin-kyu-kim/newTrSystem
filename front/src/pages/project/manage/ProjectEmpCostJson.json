@@ -11,11 +11,11 @@
     "CdComboboxColumnNm": ["hnfRoleCdNm"],
     "tableColumns": 
 	[
-        {"key": "empId", "value": "성명"},
+        {"key": "empFlnm", "value": "성명"},
         {"key": "hnfRoleCdNm", "value": "역할"},
         {"key": "tkcgJob", "value": "담당업무"},     
-        {"key": "inptPrnmntYmd", "value": "투입예정일"},
-        {"key": "withdrPrnmntYmd", "value": "철수예정일"},
+        {"key": "inptPrnmntYmd", "value": "투입예정일", "subType": "Date"},
+        {"key": "withdrPrnmntYmd", "value": "철수예정일", "subType": "Date"},
         {"key": "gramt", "value": "총 금액"},
         {"key": "total", "value": "총 투입 MM"}
 
@@ -36,6 +36,7 @@
     "popupStep": 0.01,
     "popupMax" : 1,
     "popupMin" : 0,
+    "precision": 2,
     "labelValue" : {
         "empId": {
             "type": "ComboBox",
