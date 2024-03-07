@@ -16,7 +16,7 @@
         {"key": "tkcgJob", "value": "담당업무"},     
         {"key": "inptPrnmntYmd", "value": "투입예정일", "subType": "Date"},
         {"key": "withdrPrnmntYmd", "value": "철수예정일", "subType": "Date"},
-        {"key": "gramt", "value": "총 금액"},
+        {"key": "gramt", "value": "총 금액", "subType":"NumberBox", "format": "#,### 원"},
         {"key": "total", "value": "총 투입 MM"}
 
 	],
