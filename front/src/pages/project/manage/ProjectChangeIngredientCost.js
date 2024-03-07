@@ -9,18 +9,19 @@ import ApiRequest from "../../../utils/ApiRequest";
 const ProjectChangeIngredientCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr, bgtMngOdrTobe}) => {
 
     const [values, setValues] = useState([]);
+    const [cdValues, setCdValues] = useState([]);
     const { manuName, tableColumns} = ProjectChangeIngredientCostJson;
-
-    const param = [
-        { tbNm:"MATRL_CT_PRMPC" },
-        { prjctId: prjctId },
-    ];
 
     useEffect(() => {
         IngredientCost();
+        IngredientCostCd();
     }, []);
 
     const IngredientCost = async () => {
+        const param = [
+            { tbNm:"MATRL_CT_PRMPC" },
+            { prjctId: prjctId },
+        ];
         try {
             const response = await ApiRequest("/boot/common/commonSelect", param);
             setValues(response);
@@ -28,6 +29,21 @@ const ProjectChangeIngredientCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr, b
             console.error(error);
         }
     }   
+
+    const IngredientCostCd = async () => {
+
+        const param = {
+            queryId: "projectMapper.retrievePrjctMatrlCtCd",
+            upCdValue: "VTW014",
+            useYn: "Y"
+        }
+        try {
+            const response = await ApiRequest("/boot/common/queryIdSearch", param);
+            setCdValues(response);
+        } catch(error) {
+            console.error(error);
+        }
+    }
 
     return (
         <>
@@ -47,7 +63,15 @@ const ProjectChangeIngredientCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr, b
                     </Item>
                 </Box>
 
-                <CustomAddTable manuName={manuName} columns={tableColumns} values={values} prjctId={prjctId} json={ProjectChangeIngredientCostJson} bgtMngOdr={bgtMngOdr} bgtMngOdrTobe={bgtMngOdrTobe}/>
+                <CustomAddTable 
+                    manuName={manuName} 
+                    columns={tableColumns} 
+                    values={values} 
+                    prjctId={prjctId} 
+                    json={ProjectChangeIngredientCostJson} 
+                    bgtMngOdr={bgtMngOdr} 
+                    bgtMngOdrTobe={bgtMngOdrTobe}
+                    cdValues={cdValues}/>
                 </div>
             </div>
         </>

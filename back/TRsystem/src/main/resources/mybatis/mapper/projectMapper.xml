@@ -543,7 +543,14 @@
 			  FROM MMNY_INPT_MM
 			 WHERE PRJCT_ID = #{prjctId}
 			 AND BGT_MNG_ODR = #{bgtMngOdr}
-		</if>   
+		</if>
+		<if test="outordEntrpsCtPrmpcSn != null">
+			SELECT COALESCE(MAX(OUTORD_ENTRPS_CT_PRMPC_SN),0) AS OUTORD_ENTRPS_CT_PRMPC_SN
+			  FROM OUTORD_ENTRPS_CT_PRMPC
+			 WHERE PRJCT_ID = #{prjctId}
+			 AND BGT_MNG_ODR = #{bgtMngOdr}
+		</if>      
+		
 	</select>
 	
 	<select id="updateChgPrmpcMdfcn" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -569,20 +576,9 @@
 	</select>
 	
 	<select id="retrieveOutordEntrpsPrmpc" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		  SELECT 
-		    M.OUTORD_ENTRPS_ID, 
-		    N.OUTORD_ENTRPS_NM, 
-		    M.TKCG_JOB, 
-		    M.DTL_DTLS,
-		    M.BGT_MNG_ODR,
-			M.PRJCT_ID, 
-		    C.GIVE_YM, 
-		    C.EXPECT_CT  
+		SELECT
+		  M.*, N.OUTORD_ENTRPS_NM
 		FROM OUTORD_ENTRPS_CT_PRMPC M
-		JOIN OUTORD_ENTRPS_CT_PRMPC_DTL C 
-			ON M.PRJCT_ID = C.PRJCT_ID 
-			AND M.BGT_MNG_ODR = C.BGT_MNG_ODR 
-			AND M.OUTORD_ENTRPS_CT_PRMPC_SN = C.OUTORD_ENTRPS_CT_PRMPC_SN
 		JOIN  OUTORD_ENTRPS N 
 			ON M.OUTORD_ENTRPS_ID = N.OUTORD_ENTRPS_ID
 		WHERE 1=1
@@ -664,6 +660,26 @@
 		AND PRJCT_ID = #{prjctId}
 		AND BGT_MNG_ODR = #{bgtMngOdr}	
 	</select>
+	
+	<select id="retrievePrjctCnsrtmCd" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT CD_VALUE AS BIZ_FLFMT_TY_CD, CD_NM AS BIZ_FLFMT_TY_CD_NM FROM CD 
+		where 1=1
+		and UP_CD_VALUE = #{upCdValue}
+		and USE_YN = #{useYn}
+	</select>
+	
+	<select id="retrievePrjctMatrlCtCd" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT CD_VALUE AS MATRL_CT_IEM_CD, CD_NM AS MATRL_CT_IEM_CD_NM FROM CD 
+		where 1=1
+		and UP_CD_VALUE = #{upCdValue}
+		and USE_YN = #{useYn}
+	</select>
+
+	<select id="retrievePrjctOutordEntrps" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		
+	</select>
+
+	
 	
 	
 

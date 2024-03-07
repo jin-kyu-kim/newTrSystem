@@ -4,15 +4,15 @@
     "keyColumn": "cnsrtmSn",
     "tableColumns": 
 	[
-        {"key": "bizFlfmtTyCdNm","key2":"bizFlfmtTyCd","value": "사업수행유형", "validation":"", "type": "special", "subType":"ComboCdBox", "cd":"VTW013"},
-        {"key": "cnsrtmCoNm", "value": "회사 명", "validation":""},
-        {"key": "altmntAmt", "value": "금액", "validation":"", "subType": "NumberBox", "format": "#,### 원"},
-        {"key": "cmmnExpensAmt", "value": "공통경비 금액", "validation":"", "subType": "NumberBox", "format": "#,### 원"}
-	],
-    "lookupColumn": {"key": "slsAmRfltYn", "value": "매출액 반영여부", "validation":""},
+        {"key": "bizFlfmtTyCd","keyNm":"bizFlfmtTyCdNm","value": "사업수행유형", "type": "combo", "required":"Y"},
+        {"key": "cnsrtmCoNm", "value": "회사 명", "required":"Y"},
+        {"key": "altmntAmt", "value": "금액", "subType": "NumberBox", "format": "#,### 원", "required":"Y"},
+        {"key": "cmmnExpensAmt", "value": "공통경비 금액", "subType": "NumberBox", "format": "#,### 원", "required":"Y"},
+        {"key": "slsAmRfltYn", "keyNm":"slsAmRfltYn", "value": "매출액 반영여부", "type": "comboYn", "required":"Y"}
+    ],
     "pkColumns": ["prjctId","cnsrtmSn"],
     "CdComboboxColumn": "bizFlfmtTyCd",
     "CdComboboxColumnNm": "bizFlfmtTyCdNm",
-    "lookupInfo" : [{"ID": "Y", "Name": "Y"},{"ID": "N", "Name": "N"}]
+    "lookupInfo" : [{"slsAmRfltYn": "Y", "Name": "Y"},{"slsAmRfltYn": "N", "Name": "N"}]
 
 }
