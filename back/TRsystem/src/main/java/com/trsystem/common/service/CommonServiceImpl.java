@@ -31,7 +31,6 @@ public class CommonServiceImpl implements CommonService {
     @Override
     @Transactional
     public int insertData(List<Map<String, Object>> params) {
-
         int result = -1;
         //1. 테이블 컬럼명 가져오기
         String tbNm = params.get(0).get("tbNm").toString();
