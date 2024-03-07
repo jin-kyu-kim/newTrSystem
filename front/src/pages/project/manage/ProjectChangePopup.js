@@ -106,6 +106,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
                 return acc + (updatedItem.value * data.userDfnValue);   
             }
           }, 0);
+
           
         // 부동 소수점 문제 해결을 위해 toFixed() 후 숫자로 변환
         const fixedTotalSum = Number(totalSum.toFixed(2));       
@@ -120,6 +121,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
             ...currentData,
             "total" : fixedSum,
             ...(data.userDfnValue ? { "gramt" : multifulSum } : {}),
+            ...(data.outordEmpId ? { "gramt" : Number((fixedSum * data.untpc).toFixed(0))} : {}),
         })); 
     };
 

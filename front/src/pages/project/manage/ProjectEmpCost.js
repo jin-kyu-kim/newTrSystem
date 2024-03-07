@@ -57,13 +57,16 @@ const ProjectEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
         //월별정보 및 총 합계 response에 추가
         for(let j=0; j<Object.keys(groupingDtl).length; j++){
           let total = 0;
+          let gramt = 0;
           for(let k=0; k<Object.values(groupingDtl)[j].length; k++){
             response[j][format(Object.values(groupingDtl)[j][k].inptYm, 'yyyy년 MM월')] = Object.values(groupingDtl)[j][k].expectMm;
             response[j][format(Object.values(groupingDtl)[j][k].inptYm, 'yyyy년 MM월') + '_untpc'] = Object.values(groupingDtl)[j][k].untpc;
             total += Object.values(groupingDtl)[j][k].expectMm;
+            gramt += (Object.values(groupingDtl)[j][k].untpc)*(Object.values(groupingDtl)[j][k].expectMm);
           }    
           const fixedSum = Number(total.toFixed(2)); //js의 부동소수 이슈로 인한 자릿수 조정.
           response[j].total = fixedSum;     
+          response[j].gramt = gramt;
         }
         setValues(response);
 

@@ -62,7 +62,8 @@ const ProjectOutordEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) =>
           total += Object.values(groupingDtl)[j][k].expectMm;
         } 
         const fixedSum = Number(total.toFixed(2)); //js의 부동소수 이슈로 인한 자릿수 조정.
-        response[j].total = fixedSum;     
+        response[j].total = fixedSum;    
+        response[j].gramt = total * response[j].untpc;
       }
       setValues(response);
     } catch (error) {
