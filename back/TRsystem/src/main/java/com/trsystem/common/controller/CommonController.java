@@ -40,7 +40,7 @@ public class CommonController {
         return commonService.commonSelect(params);
     }
     @PostMapping(value = "/boot/common/commonGetMax")
-    public int commonGetMax(@RequestBody List<Map<String, Object>> params){
+    public int commonGetMax(@RequestBody List<Map<String,Object>> params){
         return commonService.commonGetMax(params);
     }
     @PostMapping(value = "/boot/common/queryIdSearch")

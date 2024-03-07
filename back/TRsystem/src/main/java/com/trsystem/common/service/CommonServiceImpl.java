@@ -35,6 +35,24 @@ public class CommonServiceImpl implements CommonService {
         int result = -1;
         //1. 테이블 컬럼명 가져오기
         String tbNm = params.get(0).get("tbNm").toString();
+        int snMax;
+        if(params.get(0).containsKey("snColumn")){
+            List<Map<String, Object>>maxParam = new ArrayList<>();
+            Map<String, Object> tableMap = new HashMap<>();
+            tableMap.put("tbNm", tbNm);
+            tableMap.put("snColumn", params.get(0).get("snColumn"));
+
+            maxParam.add(tableMap);
+            if(params.get(0).containsKey("snSearch")){
+                maxParam.add((Map<String, Object>) params.get(0).get("snSearch"));
+            }
+
+            snMax = commonGetMax(params);
+            params.get(1).put(params.get(0).get("snColumn").toString(), snMax);
+            for(int i=1; i < params.size(); i++){
+                params.get(i).put(params.get(0).get("snColumn").toString(), ++snMax);
+            }
+        }
         try {
             Connection connection = DriverManager.getConnection(applicationYamlRead.getUrl(), applicationYamlRead.getUsername(), applicationYamlRead.getPassword());
             // 트랜잭션 시작
@@ -287,33 +305,37 @@ public class CommonServiceImpl implements CommonService {
         int value = -1;
 
         try (Connection connection = DriverManager.getConnection(applicationYamlRead.getUrl(), applicationYamlRead.getUsername(), applicationYamlRead.getPassword())) {
-            Map<String, Object> insertParam = params.get(1);
-            List<Object> inParams = new ArrayList<>(insertParam.values());
-            List<String> keys = new ArrayList<>(insertParam.keySet());
+
 
             // SELECT 문을 생성하기 위해 컬럼명을 얻어옴
             try (Statement statement = connection.createStatement()) {
                 // SELECT문 생성
                 StringBuilder queryBuilder = new StringBuilder("SELECT IFNULL(MAX(").append(snColumn).append("), 0)AS MAX FROM ").append(tbNm).append(" WHERE 1 = 1");
+                List<Object> inParams = new ArrayList<>();
 
-                for (int j = 0; j < inParams.size(); j++ ) {
-                    Object paramValue = inParams.get(j);
-                    String paramName = keys.get(j);
-                    queryBuilder.append(" AND ");
+                if(params.size()>1){
+                    Map<String, Object> insertParam = params.get(1);
+                    inParams = new ArrayList<>(insertParam.values());
+                    List<String> keys = new ArrayList<>(insertParam.keySet());
+                    for (int j = 0; j < inParams.size(); j++ ) {
+                        Object paramValue = inParams.get(j);
+                        String paramName = keys.get(j);
+                        queryBuilder.append(" AND ");
 
-                    // 파라미터 값이 문자열이며 '%'를 포함하는 경우, LIKE 절을 사용
-                    if (paramValue instanceof String && ((String) paramValue).contains("%")) {
-                        queryBuilder.append(paramName.replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase()).append(" LIKE ?");
-                    } else if (paramValue instanceof String && ((String) paramValue).contains("&")) {
-                        String[] dateRange = ((String) paramValue).split("&");
-                        if (dateRange.length == 2) {
-                            queryBuilder.append(paramName.replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase())
-                                    .append(" BETWEEN ? AND ?");
+                        // 파라미터 값이 문자열이며 '%'를 포함하는 경우, LIKE 절을 사용
+                        if (paramValue instanceof String && ((String) paramValue).contains("%")) {
+                            queryBuilder.append(paramName.replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase()).append(" LIKE ?");
+                        } else if (paramValue instanceof String && ((String) paramValue).contains("&")) {
+                            String[] dateRange = ((String) paramValue).split("&");
+                            if (dateRange.length == 2) {
+                                queryBuilder.append(paramName.replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase())
+                                        .append(" BETWEEN ? AND ?");
+                            } else {
+                                throw new IllegalArgumentException("Invalid date range format");
+                            }
                         } else {
-                            throw new IllegalArgumentException("Invalid date range format");
+                            queryBuilder.append(paramName.replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase()).append(" = ?");
                         }
-                    } else {
-                        queryBuilder.append(paramName.replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase()).append(" = ?");
                     }
                 }
 
