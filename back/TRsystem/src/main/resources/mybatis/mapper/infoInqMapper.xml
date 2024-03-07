@@ -238,6 +238,16 @@
 		WHERE EMP_ID = #{empId}
 	
 	</select>
+	
+	<select id="retriveDeptSearchList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+    
+    SELECT 
+       A.DEPT_NM AS DEPT_NM, 
+       B.DEPT_ID AS DEPT_ID 
+    FROM DEPT A 
+    INNER JOIN DEPT_HNF B ON A.DEPT_ID = B.DEPT_ID 
+    
+</select>
 
 </mapper>
 
