@@ -20,7 +20,7 @@
         { "key": "DeptGnftYmd", "value": "발령차수" },
         { "key": "jbpsNm", "value": "발령직급"},
         { "key": "regDt", "value": "입력날짜" },
-        { "key": "regEmpId", "value": "입력사번" },
+        { "key": "regEmpno", "value": "입력사번" },
         { "key": "jbttlNm", "value": "삭제" }
     ],
     "labelValue" : {
