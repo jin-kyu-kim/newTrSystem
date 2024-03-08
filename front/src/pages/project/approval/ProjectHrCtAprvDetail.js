@@ -53,7 +53,7 @@ const ProjectHrCtAprvDetail = () => {
     }
 
     const searchHandle = async (initParam) => {
-        if(initParam.year == null || initParam.month == null) {
+        if(initParam.yearItem == null || initParam.monthItem == null) {
 
             const date = new Date();
             const year = date.getFullYear();
@@ -80,7 +80,7 @@ const ProjectHrCtAprvDetail = () => {
             ...param,
             queryId: ProjectHrCtAprvDetailJson.mm.queryId,
             prjctId: prjctId,
-            aplyYm: initParam.year + initParam.month,
+            aplyYm: initParam.yearItem + initParam.monthItem,
             aplyOdr: initParam.aplyOdr,
             empId: initParam.empId,
         })
