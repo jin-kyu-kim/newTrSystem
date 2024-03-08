@@ -7,7 +7,7 @@ import { Validator, RequiredRule, } from "devextreme-react/validator";
 import cdJson from "./cd.json";
 import ApiRequest from "../../utils/ApiRequest";
 
-const CustomCdComboBox = ({ param, placeholderText, onSelect, name, value, readOnly, between, label, required }) => {
+const CustomCdComboBox = ({ param, placeholderText, onSelect, name, value, readOnly, between, label, required, showClearValue }) => {
   const [cdVal, setCdVal] = useState([]);
 
   useEffect(() => {

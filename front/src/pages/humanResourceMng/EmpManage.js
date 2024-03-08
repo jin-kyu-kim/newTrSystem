@@ -6,8 +6,8 @@ import EmpManageJson from  "./EmpManageJson.json";
 import CustomLabelValue from "components/unit/CustomLabelValue";
 import SearchHumanResoureceMngSet from "components/composite/SearchEmpSet";
 import EmpRegist from "./EmpRegist";
-import Customf from "components/unit/CustomPopup";
-import CustomComboBox from "../../components/unit/CustomComboBox";
+import { SelectBox } from "devextreme-react/select-box";
+
 
 const EmpManage = ({callBack}) => {
   const [values, setValues] = useState([]);
@@ -17,7 +17,8 @@ const EmpManage = ({callBack}) => {
   const { listQueryId, searchParams, listKeyColumn, listTableColumns,       //직원목록조회 
           ejhQueryId, ejhKeyColumn, ejhTableColumns,labelValue,            //직원발령정보목록,발령용컴포넌트
         } = EmpManageJson; 
-
+  const [year, setYear] = useState([]);
+  const [month, setMonth] = useState([]);
   const [readOnly, setReadOnly] = useState(true);
   const [empParam2, setEmpParam2] = useState({}); //발령정보 넣어보낼거
   const [empParam3, setEmpParam3] = useState({}); //발령정보 받아올거
@@ -29,7 +30,7 @@ const EmpManage = ({callBack}) => {
   const [pageSize, setPageSize] = useState(20);
   const [hnfPageSize, setHnfPageSize] = useState(20);
 
-  //========================테이블 배치
+  //======================================테이블 배치
 
   //화면 전체 배치
   const tableContainerStyle = {
@@ -72,6 +73,7 @@ const EmpManage = ({callBack}) => {
   };
 
   //=============================직원 목록 조회
+  
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
       pageHandle();
@@ -88,26 +90,53 @@ const EmpManage = ({callBack}) => {
       startVal: 0,
       pageSize: pageSize,
     });
+   
   };
 
   const pageHandle = async () => {
     try {
       const response = await ApiRequest("/boot/common/queryIdSearch", param);
       setValues(response);
-      if (response.length !== 0) {
-        console.log("건수: " + totalItems);
-        setTotalPages(Math.ceil(response[0].totalItems / pageSize));
-        setTotalItems(response[0].totalItems);
-      } else {
-        setTotalItems(0);
-        setTotalPages(1);
-      }
+     
     } catch (error) {
       console.log(error);
     }
   };
+  //=====================발령년도 및 차수 설정
+  const yearList = [];
+  const monthList = [];
+  const odrList = [
+        {
+            "id": "1",
+            "value": "1",
+            "text": "1회차"
+        },
+        {
+            "id": "2",
+            "value": "2",
+            "text": "2회차"
+        }
+    ];
 
-  //======================발령정보 콤보박스 선택 변경시
+useEffect(() => {
+  const EndYear = new Date().getFullYear();
+  const startYear = EndYear -10;
+
+  for(let i = startYear; i <= EndYear; i++) {
+      yearList.push({"id": i, "value": i,"text": i + "년"});
+  }
+  for(let i = 1; i <= 12; i++) {
+    if(i < 10) {
+        i = "0" + i;
+    }
+    monthList.push({"id": i,"value": i,"text": i + "월"})
+}
+  setYear(yearList);
+  setMonth(monthList);
+
+}, []);
+
+  //======================진급정보 콤보박스 선택 변경시
   const handleChgState = ({ name, value }) => {
     console.log("네임 " , name,"벨류",value);
       setEmpParam2({
@@ -116,41 +145,35 @@ const EmpManage = ({callBack}) => {
       });
     
   };
- //========================발령정보 입력 (수정예정)
+ //========================진급정보 입력 (수정예정)
   const deptDownListHandle = async () => {
-    try {
-      const response2 = await ApiRequest(
-        "/boot/common/queryIdSearch",
-        empParam2
-      );
-      setValues2(response2);
-    } catch (error) {
-      console.log(error);
-    }
+    // try {
+    //   const response2 = await ApiRequest("/boot/common/queryIdSearch",empParam2 );
+    //   setValues2(response2);
+    // } catch (error) {
+    //   console.log(error);
+    // }
   };
 
-   //========================발령정보 목록 (수정중)
+   //========================진급정보 목록 (수정중)
   const empJbpsHistHandle = async () => {
     try {
-      const response3 = await ApiRequest(
-        "/boot/common/queryIdSearch",
-        empParam3
-      );
+      const response3 = await ApiRequest("/boot/common/queryIdSearch",empParam3);
       setValues3(response3);
     } catch (error) {
       console.log(error);
     }
   };
-  //===========================발령정보 저장
+  //===========================진급정보 저장
   const onClickHst = () => {
-    if(empInfo.empno === undefined && empInfo.empno === "" ){
-      const isconfirm = window.confirm("발령정보를 입력할 직원을 선택하십시요");
+    if(empInfo.empno === undefined || empInfo.empno === "" ){
+      alert("발령정보를 입력할 직원을 선택하십시요");
       return; 
     }
     else{
     const isconfirm = window.confirm("발령정보를 저장 하시겠습니까?"); 
     if (isconfirm) {
-        //insertDept();
+        //insertEmpHst();
     } else{
       return;
      }
@@ -158,33 +181,29 @@ const EmpManage = ({callBack}) => {
   };
 
   //============================직원목록에서 로우 클릭시 발생하는 이벤트
-  const onRowDblClick = (e) => {
+  const onRowClick = (e) => {
     for (const value of values) {
       if (value.empno === e.data.empno) {
-        setEmpInfo(value);
-        console.log("데이터 세팅함1", value)
+        setEmpInfo(value);  //넘겨줄값
+        setEmpParam2(value); //발령정보 저장용
         break;
       }
     }
-    
-    setEmpParam2({ //발령정보 넣을때 쓸 예졍
-      deptId: e.data.empno,
-    });
-    setEmpParam3({
+    setEmpParam3({            //진급정보 가져오기
       empno: e.data.empno,
       queryId: ejhQueryId,
     });
   };
+  useEffect(()=>{console.log("empinfo qqqq",empInfo)},[empInfo]);
+  useEffect(()=>{console.log("empParam2 qqqq",empParam2)},[empParam2]);
   useEffect(() => {
-    if (empInfo.empno !== undefined && empInfo.empno !== "") {
-        setReadOnly(false);
+    if (empInfo.empId !== undefined && empInfo.empId !== "" && empInfo.empId !== null) {
+        setReadOnly(true);
     }else {
-      setReadOnly(true);
+      setReadOnly(false);
     }
-    setEmpParam2({
 
-    })
-  }, [empInfo.empno]);
+  }, [empInfo.empId]);
 
   //==============================setParam 이후에 함수가 실행되도록 하는 useEffect  
   useEffect(() => {
@@ -198,15 +217,13 @@ const EmpManage = ({callBack}) => {
       empJbpsHistHandle();
     }
   }, [empParam3]);
+
   
 
   //=================================화면 그리는 부분 
   return (
     <div className="container">
-      <div
-        className="title p-1"
-        style={{ marginTop: "20px", marginBottom: "10px" }}
-      >
+      <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }} >
         <h1 style={{ fontSize: "40px" }}>직원 관리</h1>
       </div>
       <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
@@ -233,7 +250,7 @@ const EmpManage = ({callBack}) => {
               columns={listTableColumns}
               values={values}
               paging={true}
-              onRowDblClick={onRowDblClick}
+              onRowClick={onRowClick}
             />
           </div>
         </div>
@@ -244,18 +261,63 @@ const EmpManage = ({callBack}) => {
           신규 직원정보를 입력하면 TRS 접속 권한이 생기게 됩니다.<br/>
           신규 직원 사번은 자동 입력됩니다.
           </span>
-          <EmpRegist empInfo={empInfo} deptId={empInfo.empno} isNew={false} />
+          <EmpRegist empInfo={empInfo} deptId={empInfo.empno} isNew={false} read={readOnly}/>
         </div>
         <div className="empDownListTable" style={empDetailStyle}>
-            <p> <strong>* 발령정보 </strong> </p>
+            <p> <strong>* 진급정보 </strong> </p>
             <span style={{ fontSize: 12 }}>
             신규 직원정보를 입력하면 TRS 접속 권한이 생기게 됩니다.<br/>
             신규 직원 사번은 자동 입력됩니다.
             </span>
-            <CustomLabelValue props={labelValue.deptGnfdYr} onSelect={handleChgState} value={empParam2.deptGnfdYr} readOnly={readOnly}/>
-            <CustomLabelValue props={labelValue.deptGnfdMd} onSelect={handleChgState} value={empParam2.deptGnfdMd} readOnly={readOnly}/>
-            <CustomLabelValue props={labelValue.jbpsCd} onSelect={handleChgState} value={empParam2.jbpsCd} readOnly={readOnly}/>
+            <div className="dx-field">
+            <div className="dx-field-label asterisk">진급발령년도</div>
+            <div className="dx-field-value">
+                    <SelectBox 
+                        items={year}
+                        name="year"
+                        displayExpr="text"
+                        valueExpr="value"
+                        onValueChanged={handleChgState}
+                        placeholder="연도"
+                        style={{margin: "0px 5px 0px 5px"}}
+                        required = {true}
+                        //Value={yearList.value}
+                        //readOnly={readOnly}
+                    />
+              </div>
+              </div>
+            <div className="dx-field">
+            <div className="dx-field-label asterisk">진급발령차수</div>
+            <div className="dx-field-value">
+                    <SelectBox
+                        dataSource={month}
+                        name="month"
+                        displayExpr="text"
+                        valueExpr="value"
+                        onValueChanged={handleChgState}
+                        placeholder="월"
+                        style={{margin: "0px 5px 0px 5px"}}
+                        required = {true}
+                        //value={monthList.value}
+                        //readOnly={readOnly}
+                    />
+                    <SelectBox
+                        dataSource={odrList}
+                        name="aplyOdr"
+                        displayExpr="text"
+                        valueExpr="value"
+                        onValueChanged={handleChgState}
+                        placeholder="차수"
+                        style={{margin: "0px 5px 0px 5px"}}
+                        required = {true}
+                        //value={odrList.aplyOdr}
+                        //readOnly={readOnly}
+                    />
+                </div>
+              </div>
+            <CustomLabelValue props={labelValue.jbpsCd} onSelect={handleChgState} value={labelValue.jbpsCd}/>
         <div className="buttonContainer" style={buttonContainerStyle}>
+            <Button style={buttonStyle}>발령정보업로드</Button>
             <Button style={buttonStyle} onClick={onClickHst}>발령저장</Button>
         </div>    
         </div>

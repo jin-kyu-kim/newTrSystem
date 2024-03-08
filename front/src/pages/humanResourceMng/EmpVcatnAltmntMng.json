@@ -8,9 +8,11 @@
         {"key": "deptNm", "value": "소속", "width": 150},
         {"key": "vcatnAltmntDaycnt", "value": "배정", "width":60},
         {"key": "useDaycnt", "value": "사용", "width":60},
-        {"key": "remainDaycnt", "value": "잔여", "width":60},
-        {"key": "hdofSttsNm", "value": "재직상태"},
-        {"key": "", "value": "화면"}
+        {"key": "vcatnRemndrDaycnt", "value": "잔여", "width":60},
+        {"key": "hdofSttsNm", "value": "재직상태", "width":100},
+        {"key": "workBgngYmd", "value": "근무시작일자", "visible" : "false"},
+        {"key": "flagDate", "value": "휴가배정기준", "visible" : "false"},
+        {"key": "link", "value": "화면", "width":100 }
     ],
     "labelValue":{
         "deptNm": {

@@ -9,38 +9,50 @@ const MeetingRoomManage = () => {
     const [mtgRoomRvstParam, setMtgRoomRvstParam] = useState([]);
     const [mtgRoomRvstValues, setMtgRoomRvstValues] = useState([]);
    
-    const [mtgRoomRvstAtdrnParam, setMtgRoomRvstAtdrnParam] = useState([]);
-    const [mtgRoomRvstAtdrnValues, setMtgRoomRvstAtdrnValues] = useState([]);
- 
-    const [searchParam, setSearchParam] = useState({empno: ""});
+    const [codeParam, setCodeParam] = useState([]);
+    const [codeValues, setCodeValues] = useState([]);
  
     // 화면 최초로드 시 조회 param 설정
     useEffect(() => {
+        // 회의정보 조회조건설정
         setMtgRoomRvstParam({
+            searchType : "data",
             queryId: EmpMonthVacInfoJson.MtgRoomRsvt[0].queryId
         });
-        setMtgRoomRvstAtdrnParam({
-            queryId: EmpMonthVacInfoJson.MtgRoomRsvtAtdrn[0].queryId
+
+        // 회의실코드 조회조건설정
+        setCodeParam({
+            searchType : "code",
+            queryId: EmpMonthVacInfoJson.MeetingRoomList[0].queryId,
+            upCdValue : "VTW042",
+            ctmmnyNm : "search"
         });
     },[]);
  
-    // 조회
+    // 회의정보조회
     useEffect(() => {
         if(!Object.values(mtgRoomRvstParam).every((value) => value === "")) {
             pageHandle(mtgRoomRvstParam);
         };
     }, [mtgRoomRvstParam]);
+    
+    // 회의실코드조회
+    useEffect(() => {
+        if(!Object.values(codeParam).every((value) => value === "")) {
+            pageHandle(codeParam);
+        };
+    }, [codeParam]);
  
     // 조회
     const pageHandle = async (initParam) => {
         try {
-            const response = await ApiRequest("/boot/common/queryIdSearch", initParam);
-            setMtgRoomRvstValues(response);
+            if(initParam.searchType == "data") setMtgRoomRvstValues(await ApiRequest("/boot/common/queryIdSearch", initParam));
+            else if(initParam.searchType == "code") setCodeValues(await ApiRequest("/boot/common/queryIdSearch", initParam));
         } catch (error) {
             console.log(error);
         }
     };
-     
+
     return (
         <div className="" style={{marginLeft:"5%", marginRight:"5%"}}>
             <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
@@ -65,7 +77,8 @@ const MeetingRoomManage = () => {
                     clickEventValue="true"
                 /> */}
                 <CustomScheduler
-                    values={mtgRoomRvstValues}
+                    listValues={mtgRoomRvstValues}
+                    codeValues={codeValues}
                 />
             </div>
     </div>
