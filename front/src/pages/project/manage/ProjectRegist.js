@@ -1,4 +1,6 @@
 import { useMemo, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import CustomCdComboBox from "../../../components/unit/CustomCdComboBox";
 import uuid from 'react-uuid'
 import ApiRequest from "../../../utils/ApiRequest";
@@ -11,10 +13,10 @@ import { useCookies } from "react-cookie";
 import { set } from "date-fns";
 import { TextBox } from "devextreme-react/text-box";
 
-const ProjectRegist = ({prjctId, onHide, revise}) => {
+const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdrTobe}) => {
     const labelValue = ProjectRegistJson.labelValue;
     const updateColumns = ProjectRegistJson.updateColumns;
-
+    const navigate = useNavigate();
     const [readOnly, setReadOnly] = useState(revise);
 
     const [data, setData] = useState([]);
@@ -213,8 +215,15 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
 
             if(response > 0) {
                 alert('성공적으로 수정되었습니다.');
-                BaseInfoData();
-                setReadOnly(true);
+
+                navigate("../project/ProjectChange",
+                {
+                    state: { prjctId: prjctId, 
+                             bgtMngOdrTobe: bgtMngOdrTobe, 
+                             ctrtYmd: ctrtYmd.substr(0, 4) + '-' + ctrtYmd.substr(4, 2) + '-' + ctrtYmd.substr(6, 2), 
+                             bizEndYmd: bizEndYmd.substr(0, 4) + '-' + bizEndYmd.substr(4, 2) + '-' + bizEndYmd.substr(6, 2)},
+                })
+                
             }
         } catch (error) {
             console.error('Error fetching data', error);
