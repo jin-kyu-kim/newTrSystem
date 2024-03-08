@@ -2,7 +2,7 @@
 	"menuName": "ProjectCostClaimList",
 	"queryId": "projectMapper.retrievePrjctList",
     "keyColumn": "prjctId",
-    "wordWrap": "true",
+    "wordWrap": true,
     "tableColumns": 
 	[
         { "key": "rownum", "value": "번호", "width": 70, "alignment" : "center" },

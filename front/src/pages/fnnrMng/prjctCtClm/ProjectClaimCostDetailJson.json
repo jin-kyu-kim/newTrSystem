@@ -1,12 +1,25 @@
-[
+{
+  "menuName": "ProjectHrCtAprv",
+  "searchParams":
   {
-    "TabName": "개인별조회",
-    "tabId": "ProjectClaimCostIndividual",
-    "url": "pages/fnnrMng/prjctCtClm/ProjectClaimCostIndividual"
+    "yearItem": true,
+    "monthItem": true,
+    "aplyOdr": true,
+    "empId": true,
+    "excelDownloadBtn": true
   },
-  {
-    "TabName": "일자별조회",
-    "tabId": "ProjectClaimCostYMD",
-    "url": "pages/fnnrMng/prjctCtClm/ProjectClaimCostYMD"
-  }
-]
+  "tabMenu":
+  [
+    {
+      "TabName": "개인별조회",
+      "tabId": "ProjectClaimCostIndividual",
+      "url": "pages/fnnrMng/prjctCtClm/ProjectClaimCostIndividual"
+    },
+    {
+      "TabName": "일자별조회",
+      "tabId": "ProjectClaimCostYMD",
+      "url": "pages/fnnrMng/prjctCtClm/ProjectClaimCostYMD"
+    }
+  ]
+}
+
