@@ -169,22 +169,26 @@
 
 
 
+<<<<<<< HEAD
 
 	<!-- 월별휴가정보 -->
 		<select id="retrieveEmpVacUseList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+=======
+	<!-- 휴가사용내역 -->
+	<select id="retrieveEmpVacUseList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+>>>>>>> d8b60dafc2d5fcd680304e2e45cd06af2f4ada8a
     SELECT
-		 (SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD) AS VCATN_TY_CD
- 		,(SELECT EMPNO FROM  EMP WHERE EMP_ID IN (SELECT ATRZ_DMND_EMP_ID  FROM ELCTRN_ATRZ ea WHERE ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID ) ) as EMPNO
- 		,(SELECT EMP_FLNM FROM EMP WHERE EMP_ID IN (SELECT ATRZ_DMND_EMP_ID  FROM ELCTRN_ATRZ ea WHERE ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID  ) ) as EMP_FLNM
-		, VCATN_BGNG_YMD
-		, VCATN_END_YMD
-		, VCATN_DE_CNT
-		, VCATN_PRVONSH
+		 (SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD) AS VCATN_TY_CD -- 휴가구분
+ 		,(SELECT EMPNO FROM  EMP WHERE EMP_ID IN (SELECT ATRZ_DMND_EMP_ID  FROM ELCTRN_ATRZ ea WHERE ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID ) ) as EMPNO -- 사원번호
+ 		,(SELECT EMP_FLNM FROM EMP WHERE EMP_ID IN (SELECT ATRZ_DMND_EMP_ID  FROM ELCTRN_ATRZ ea WHERE ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID  ) ) as EMP_FLNM -- 사원명
+		, STR_TO_DATE(VCATN_BGNG_YMD, '%Y%m%d')  VCATN_BGNG_YMD -- 시작일
+		, STR_TO_DATE(VCATN_END_YMD, '%Y%m%d')  VCATN_END_YMD -- 종료일
+		, VCATN_DE_CNT -- 휴가일수
+		, VCATN_PRVONSH -- 휴가사유
         , COUNT(*) OVER () AS TOTAL_ITEMS
      FROM
-     VCATN_ATRZ va     	 			                                                <!--휴가결재 테이블-->
+     VCATN_ATRZ va     	   <!--휴가결재 테이블-->
  	 WHERE 1=1
-
         <if test="vcatnBgngYmd != null and vcatnEndYmd == null">
       		AND VCATN_BGNG_YMD > #{vcatnBgngYmd}
         </if>
@@ -325,6 +329,18 @@
 			AND HDOF_STTS_CD = #{hdofSttsCd}
 		</if>
 		ORDER BY EMPNO
+	</select>
+
+	
+	
+	<!-- 직원별휴가정보조회 (임시사용)-->
+	<select id="retrieveEmpnoMax" parameterType="map" resultType="com.trsystem.LowerHashMap">
+	SELECT 
+		CONCAT(#{empnoChk},LPAD(MAX(substr(empno, 3))+1, '4', '0')) as  EMPNO_CHK
+	FROM 
+		EMP 
+	WHERE  
+		EMPNO LIKE CONCAT(#{empnoChk},'%');
 	</select>
 
 </mapper>	

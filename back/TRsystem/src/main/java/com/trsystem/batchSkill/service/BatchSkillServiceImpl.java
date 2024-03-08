@@ -54,7 +54,7 @@ public class BatchSkillServiceImpl implements BatchSkillService {
             	connection.commit();
                 connection.close();
                 
-                executeEmpPrmotPrjctPrmpcMng(empId.get("id").toString(),empId.get("jbps").toString()); //프로젝트예산원가 차수 변경
+                executeEmpPrmot(empId.get("id").toString(),empId.get("jbps").toString()); //프로젝트예산원가 차수 변경
                 
             	return result;
             }catch (SQLException e){
@@ -70,17 +70,18 @@ public class BatchSkillServiceImpl implements BatchSkillService {
 	
 	
 	// 승진직원 프로젝트 원가 및 예산관리차수 변경 프로시저 호출
-	public void executeEmpPrmotPrjctPrmpcMng(String empId, String jbpsCd){
+	public void executeEmpPrmot(String empId, String jbpsCd){
 		
 		try {
             Connection connection = DriverManager.getConnection(applicationYamlRead.getUrl(), applicationYamlRead.getUsername(), applicationYamlRead.getPassword());
             // 트랜잭션 시작
             connection.setAutoCommit(false);
             
-            String callProcedure = "CALL nwTr.P_PRMOT_PRMPC_CHG(?, ?)";
+            String callProcedure = "CALL nwTr.P_GET_PRJCT_ID(?, ?)";
             
             try (CallableStatement callableStatement = connection.prepareCall(callProcedure)){
             	
+            	// 넘겨주는 파라미터 형식 v_empId : 'ID1, ID2, ID3, ...' / v_jbpsCd : 'CD1, CD2, CD3, ...'
             	callableStatement.setString("v_empId", empId);
             	callableStatement.setString("v_jbpsCd", jbpsCd);
             	callableStatement.executeQuery();
@@ -97,4 +98,31 @@ public class BatchSkillServiceImpl implements BatchSkillService {
         }
 	}
 	
+	// 퇴사한 직원 퇴사일자의 다다음달부터 TRS 로그인과 문체비 지급을 막는 프로시저 호출
+	@Override
+	public void executeEmpRetirePrcs() {
+		
+		try {
+            Connection connection = DriverManager.getConnection(applicationYamlRead.getUrl(), applicationYamlRead.getUsername(), applicationYamlRead.getPassword());
+            // 트랜잭션 시작
+            connection.setAutoCommit(false);
+            
+            String callProcedure = "CALL nwTr.P_EMP_RETIRE_PRCS()";
+            
+            try (CallableStatement callableStatement = connection.prepareCall(callProcedure)){
+            	
+            	callableStatement.executeUpdate();
+            	
+            	connection.commit();
+                connection.close();
+                
+            }catch (SQLException e){
+                e.getStackTrace();
+                connection.rollback();
+            }
+        } catch (SQLException e) {
+            e.getStackTrace();
+        }
+		
+	}
 }

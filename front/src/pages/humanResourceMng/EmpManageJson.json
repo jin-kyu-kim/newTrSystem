@@ -5,7 +5,7 @@
 	{
         "popupVisible": true
     },
-	"listQueryId": "empListMapper.retrieveEmpList",
+	"listQueryId": "infoInqMapper.retrieveEmpList",
     "listKeyColumn": "empno",
     "listTableColumns": [
         { "key": "empno", "value": "사번", "width": 100, "alignment" : "center" },
@@ -13,14 +13,14 @@
         { "key": "jbpsNm", "value": "직위"},
         { "key": "deptNm", "value": "소속"}
     ],
-	"ejhQueryId": "empListMapper.retrieveEmpJbpsHist",
+	"ejhQueryId": "infoInqMapper.retrieveEmpJbpsHist",
     "ejhKeyColumn": "empno",
     "ejhTableColumns": [
         { "key": "empno", "value": "사번"},
         { "key": "DeptGnftYmd", "value": "발령차수" },
         { "key": "jbpsNm", "value": "발령직급"},
         { "key": "regDt", "value": "입력날짜" },
-        { "key": "regEmpId", "value": "입력사번" },
+        { "key": "regEmpno", "value": "입력사번" },
         { "key": "jbttlNm", "value": "삭제" }
     ],
     "labelValue" : {

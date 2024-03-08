@@ -52,8 +52,10 @@ const CustomComboBox = ({props, onSelect, placeholder, value, readOnly}) => {
                     const selectedItem = values.find(item => item[props.name] === e.value);
                     if(selectedItem) {
                         [props.name, props.name2, props.name3].forEach(propName => {
-                            onSelect({name: propName, value: selectedItem[propName]});
-                        });
+                            if(propName){
+                                onSelect({name: propName, value: selectedItem[propName]});
+                            }
+                    });
                     }
                 } else {
                     onSelect({name: props.name, value: e.value});

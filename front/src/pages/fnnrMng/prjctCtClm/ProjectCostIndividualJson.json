@@ -1,0 +1,16 @@
+{
+	"menuName": "ProjectCostIndividual",
+	"queryId": "projectMapper.retrievePrjctList",
+    "keyColumn": "prjctId",
+    "tableColumns": 
+	[
+        { "key": "prjctId", "value": "소속", "width": 70, "alignment" : "center" },
+        { "key": "prjctId", "value": "성명", "width": 100  },
+        { "key": "prjctId", "value": "차수", "width": 250, "alignment" : "left" },
+        { "key": "prjctId", "value": "배정", "width": 150, "alignment" : "left" },
+        { "key": "prjctId", "value": "누적사용", "width": 150, "alignment" : "left"  },
+        { "key": "prjctId", "value": "가용", "width": 100, "alignment" : "left"  },
+        { "key": "prjctId", "value": "당차수청구", "width": 100  },
+        { "key": "prjctId", "value": "상태", "width": 100, "button": "비용청구현황" }
+  ]
+}

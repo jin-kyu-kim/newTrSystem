@@ -9,7 +9,7 @@ import { Button } from "devextreme-react/button";
 import CustomTable from "components/unit/CustomTable";
 import LawRulesJson from "./LawRulesJson.json";
 <style>
-  {`
+  {`-
     .tab_contents1 {
       width: 100%;
       height: 100%;

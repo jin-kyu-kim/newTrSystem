@@ -9,6 +9,7 @@ import Button from "devextreme-react/button";
 
 import { useCookies } from "react-cookie";
 import { set } from "date-fns";
+import { TextBox } from "devextreme-react/text-box";
 
 const ProjectRegist = ({prjctId, onHide, revise}) => {
     const labelValue = ProjectRegistJson.labelValue;
@@ -20,6 +21,8 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
     const [stleCd, setStleCd] = useState();
     const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
     const [updateParam, setUpdateParam] = useState([]);
+    const [prjctCdIdntfr, setPrjctCdIdntfr] = useState();
+    const [ctmmnyId, setCtmmnyId] = useState();
 
     const [beffatPbancDdlnYmd, setBeffatPbancDdlnYmd] = useState();
     const [expectOrderYmd, setExpectOrderYmd] = useState();
@@ -32,6 +35,33 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
 
     const empId = cookies.userInfo.empId;
     const deptId = cookies.userInfo.deptId;
+
+    useEffect(() => {
+        const date = new Date();
+
+            setData({
+                ...data,
+                prjctStleCd : stleCd,
+            })
+            setBeffatPbancDdlnYmd(null);
+            setExpectOrderYmd(null);
+            setPropseDdlnYmd(null);
+            setPropsePrsntnYmd(null);
+            setCtrtYmd(null);
+            setBizEndYmd(null);
+            setStbleEndYmd(null);
+            setIgiYmd(null);
+
+    }, [stleCd]);
+
+    useEffect(() => {
+        createPrjctCdIdntfr(ctmmnyId);
+        setData({
+            ...data,
+            ctmmnyId : ctmmnyId,
+        });
+
+    }, [ctmmnyId]);
 
     useEffect(() => {
         if(prjctId != null) {
@@ -52,29 +82,6 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
         setUpdateParam(updateColumns);
     }, []);
 
-    useEffect(() => {
-        const date = new Date();
-
-            setData({
-                ...data,
-                prjctStleCd : stleCd,
-                prjctId : uuid(),
-                prjctMngrEmpId : empId,
-                deptId : deptId,
-                bizSttsCd: "VTW00401",
-                regDt : date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0]
-            })
-            setBeffatPbancDdlnYmd(null);
-            setExpectOrderYmd(null);
-            setPropseDdlnYmd(null);
-            setPropsePrsntnYmd(null);
-            setCtrtYmd(null);
-            setBizEndYmd(null);
-            setStbleEndYmd(null);
-            setIgiYmd(null);
-
-    }, [stleCd]);
-
     const BaseInfoData = async () => {
         const param = [ 
             { tbNm: "PRJCT" }, 
@@ -93,6 +100,7 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
             setBizEndYmd(response[0].bizEndYmd);
             setStbleEndYmd(response[0].stbleEndYmd);
             setIgiYmd(response[0].igiYmd);
+            setPrjctCdIdntfr(response[0].prjctCdIdntfr);
 
         } catch (error) {
             console.error('Error fetching data', error);
@@ -163,6 +171,9 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
         }
     }
 
+    /**
+     * 프로젝트 수정
+     */
     const updateProject = async () => {
         const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
 
@@ -190,7 +201,8 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
                 ctrtYmd: ctrtYmd,
                 bizEndYmd: bizEndYmd,
                 stbleEndYmd: stbleEndYmd,
-                igiYmd: igiYmd
+                igiYmd: igiYmd,
+                prjctCdIdntfr: prjctCdIdntfr
             },
             {
                 prjctId: prjctId,
@@ -210,14 +222,16 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
     }
 
     const onClick = () => {
-        
+        console.log(data)
         const isconfirm = window.confirm("프로젝트 등록을 하시겠습니까?");
         if(isconfirm){
             insertProject();
         }
-
     }
 
+    /**
+     * 프로젝트 등록
+     */
     const insertProject = async () => {
         const param = [
             { tbNm: "PRJCT" },
@@ -230,7 +244,8 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
                 ctrtYmd: ctrtYmd,
                 bizEndYmd: bizEndYmd,
                 stbleEndYmd: stbleEndYmd,
-                igiYmd: igiYmd
+                igiYmd: igiYmd,
+                prjctCdIdntfr: prjctCdIdntfr
             }
         ];
         try {
@@ -245,6 +260,40 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
         }
     }
 
+    /**
+     * 고객사 정보변경 프로젝트 코드 생성
+     */
+    const handleChgCtmmny = ({value}) => {
+        // 고객사 정보변경에 따른 프로젝트 코드를 생성
+        if(!readOnly) {
+            setCtmmnyId(value);
+        }
+    }
+
+    /**
+     * 고객사 정보변경에 따른 프로젝트 코드를 생성
+     */
+    const createPrjctCdIdntfr = async (value) => {
+        if(value === undefined) return;
+
+        const param = {
+            queryId: "projectMapper.retrievePrjctCdIdntfr",
+            ctmmnyId: value
+        }
+
+        try {
+            await ApiRequest("/boot/common/queryIdSearch", param).then((response) => {
+
+                setPrjctCdIdntfr(value + response[0].prjctCdSn);
+            });
+        } catch (error) {
+            console.error('Error fetching data', error);
+        }
+    }
+
+    /**
+     * 프로젝트 일정
+     */
     const setPrjctCalendar = () => {
         const result = [];
             if(data.prjctStleCd) {
@@ -324,6 +373,12 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
                         </div>
                         <CustomLabelValue props={labelValue.dept} onSelect={handleChgState} value={data.deptId} readOnly={readOnly} defaultValue={deptId} />
                         <CustomLabelValue props={labelValue.emp} onSelect={handleChgState} value={data.prjctMngrEmpId} readOnly={true} defaultValue={empId}/>
+                        <div className="dx-field">
+                            <div className="dx-field-label asterisk">프로젝트 코드</div>
+                            <div className="dx-field-value">
+                            <TextBox value={prjctCdIdntfr} readOnly={true}/>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div className="project-regist-content-inner">
@@ -352,7 +407,7 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
                 <div className="project-regist-content-inner">
                     <h3>* 고객정보</h3>
                     <div className="dx-fieldset">
-                        <CustomLabelValue props={labelValue.ctmmnyInfo} onSelect={handleChgState} value={data.ctmmnyNo} readOnly={readOnly}/>
+                        <CustomLabelValue props={labelValue.ctmmnyInfo} onSelect={handleChgCtmmny} value={data.ctmmnyId} readOnly={readOnly}/>
                         <CustomLabelValue props={labelValue.picFlnm} onSelect={handleChgState} value={data.picFlnm} readOnly={readOnly}/>
                         <CustomLabelValue props={labelValue.picTelno} onSelect={handleChgState} value={data.picTelno} readOnly={readOnly}/>
                         <CustomLabelValue props={labelValue.picEml} onSelect={handleChgState} value={data.picEml} readOnly={readOnly}/>

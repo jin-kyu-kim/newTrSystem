@@ -3,20 +3,12 @@ import { useNavigate } from "react-router-dom";
 import TextBox from "devextreme-react/text-box";
 import Box, { Item } from "devextreme-react/box"
 import { Button } from "devextreme-react/button";
-
-import CustomCdComboBox from "../unit/CustomCdComboBox";
+import CustomComboBox from 'components/unit/CustomComboBox';
 
 const SearchInfoSet = ({ callBack, props }) => {
   const navigate = useNavigate();
-
-  const { searchParams, firstCd, textBoxItem, selectBoxItem } = props;
-  const [initParam, setInitParam] = useState({
-    searchCnd: firstCd ? firstCd : "",
-    searchWrd: "",
-    jbpsNm: "",
-    deptNm: "",
-    hodfSttsNm: "",
-  });
+  const { searchParams, textBoxItem, selectBoxItem } = props;
+  const [initParam, setInitParam] = useState({});
 
   useEffect(() => {
     callBack(initParam);
@@ -47,37 +39,38 @@ const SearchInfoSet = ({ callBack, props }) => {
         width="100%"
         height={40}
       >
-        {selectBoxItem.map((item) => {
+        {selectBoxItem.map((item, index) => {
           return(
-            <Item ratio={1}>
-              <CustomCdComboBox
-                param={item.commonCd}
-                name={item.name}
-                placeholderText={item.placeholderText}
+            <Item key={index} ratio={1}>
+              <CustomComboBox
+                props={item.param}
                 onSelect={handleChgState}
-                value={item.isSingleCnd ? initParam.searchCnd : initParam[item.name]}
+                placeholder={item.placeholder}
+                value={initParam[item.param.name]}
               />
             </Item>
           )
         })}
 
-        {textBoxItem.map((item) => {
+        {textBoxItem.map((item, index) => {
             return(
-              <Item className={item.className} ratio={1} >
+              <Item key={index} ratio={1} >
                 <TextBox
                   placeholder={item.placeholder}
                   stylingMode="underlined"
                   size="medium"
                   name={item.name}
+                  showClearButton={true}
                   onValueChanged={(e) => handleChgState({ name: e.component.option('name'), value: e.value })}
                 />
               </Item>
             )
         })}
 
-        <Item className="searchBtnItem" ratio={1} >
+        <Item ratio={1} >
           <Button onClick={handleSubmit} text="검색" />
         </Item>
+
         <Item ratio={1} visible={searchParams.insertButton}>
           <Button text="입력" onClick={onClickInsertBtn} />
         </Item>
@@ -86,5 +79,4 @@ const SearchInfoSet = ({ callBack, props }) => {
     </div>
   );
 };
-
 export default SearchInfoSet;

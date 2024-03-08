@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-
-import NoticeJson from "../infoInq/NoticeJson.json";
-import ApiRequest from "../../utils/ApiRequest";
-import CustomTable from "../../components/unit/CustomTable";
-
-import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
+import "react-datepicker/dist/react-datepicker.css";
+
+import ApiRequest from "../../utils/ApiRequest";
+import NoticeJson from "../infoInq/NoticeJson.json";
+import CustomTable from "../../components/unit/CustomTable";
 import SearchInfoSet from 'components/composite/SearchInfoSet';
 
 const NoticeList = () => {
@@ -13,7 +12,7 @@ const NoticeList = () => {
     const [param, setParam] = useState({});
     const [totalItems, setTotalItems] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize] = useState(10);
     const navigate = useNavigate();
 
     const { keyColumn, queryId, tableColumns, searchInfo } = NoticeJson;

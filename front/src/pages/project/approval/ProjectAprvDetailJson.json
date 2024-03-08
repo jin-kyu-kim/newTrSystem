@@ -22,14 +22,15 @@
         "url": "manage/ProjectAtrzInfo"
       }
     ],
-    "aprvPopup": {
-      "width": "70%",
-      "height": "50%",
-      "title": "* 승인 의견"
-    },
-    "rjctPopup": {
-      "width": "70%",
-      "height": "50%",
-      "title": "* 반려 사유"
-    }
+  "aprvPopup": {
+    "width": "70%",
+    "height": "50%",
+    "title": "* 승인 의견"
+  },
+  "rjctPopup": {
+    "width": "70%",
+    "height": "50%",
+    "title": "* 반려 사유"
+  },
+  "queryId": "projectMapper.retrievePrjctAprvDtl"
 }

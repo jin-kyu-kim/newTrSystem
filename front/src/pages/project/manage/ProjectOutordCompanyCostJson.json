@@ -1,97 +1,30 @@
 {
 	"menuName": "ProjectOutordCompanyCostJson",
     "table": "OUTORD_ENTRPS_CT_PRMPC",
+    "subTable": "OUTORD_ENTRPS_CT_PRMPC_DTL",
     "keyColumn": "outordEntrpsId",
-    "pkColumns": ["prjctId","bgtMngOdr","outordEntrpsId"],
-    "nomalColumns": ["dtlDtls", "tkcgJob"],
     "tableColumns": 
 	[
-        {"key": "" ,"value": "상태"},
-        {"key": "outordEntrpsId", "value": "업체명"},
-        {"key": "", "value": "역할"},
-        {"key": "", "value": "등급"},
+        {"key": "outordEntrpsNm", "value": "업체명", "type": "special","subType":"ComboBox", "placeholder": "업체명",
+        "param":{  "tbNm" : "OUTORD_ENTRPS",
+                    "valueExpr" : "outordEntrpsId",
+                    "displayExpr": "outordEntrpsNm",
+                    "name": "outordEntrpsId"
+                }
+        },
         {"key": "tkcgJob", "value": "담당업무"},     
-        {"key": "", "value": "투입인원"},
-        {"key": "", "value": "투입예정일"},
-        {"key": "", "value": "철수에정일"},
-        {"key": "bgtMngOdr", "value": "총 금액"},
-        {"key": "", "value": "총 투입 MM"}
-
+        {"key": "dtlDtls", "value": "상세내역"},
+        {"key": "giveYm", "value": "계약연월",  "subType" : "Date",
+        "param":{  "type" : "DateBox",
+                    "label" : "계약연월",
+                    "required": true,
+                    "name": "giveYm",
+                    "placeholder" : "계약연월"
+                }
+        },
+        {"key": "expectCt", "value": "가격", "subType":"NumberBox"}
 	],
-    "summaryColumn":
-    [
-        { "key": "bgtMngOdr", "value": "총 금액", "type":"sum", "format":"Total: {0}원"}
-    ],
-    "popup":
-    {
-        "width": "90%",
-        "height": "80%",
-        "title": "외주업체"
-    },
-    "labelValue" : {
-        "outordEntrpsId": {
-            "name": "outordEntrpsId",
-            "type": "TextBox",
-            "label": "업체명",
-            "required": true,
-            "placeholder": "업체명"
-        },
-        "temp": {
-            "name": "temp",
-            "type": "ComboBox",
-            "label": "역할",
-            "required": true,
-            "placeholder": "역할"
-        },
-        "temp1": {
-            "name": "temp1",
-            "type": "ComboBox",
-            "label": "등급",
-            "required": true,
-            "placeholder": "등급"
-        },
-        "tkcgJob": {
-            "name": "tkcgJob",
-            "type": "TextBox",
-            "label": "담당업무",
-            "required": true,
-            "placeholder": "담당업무"
-        },
-        "temp2": {
-            "name": "temp",
-            "type": "NumberBox",
-            "label": "투입인원",
-            "required": true,
-            "placeholder": "투입인원"
-        },
-        "temp3": {
-            "name": "temp",
-            "type": "NumberBox",
-            "label": "단가",
-            "required": true,
-            "placeholder": "단가"
-        },
-        "bgtMngOdr": {
-            "name": "bgtMngOdr",
-            "type": "NumberBox",
-            "label": "총 금액",
-            "required": true,
-            "placeholder": "총 금액"
-        },
-        "temp4": {
-            "name": "bgtMngOdr",
-            "type": "NumberBox",
-            "label": "투입예정일",
-            "required": true,
-            "placeholder": "투입예정일"
-        },
-        "temp5": {
-            "name": "bgtMngOdr",
-            "type": "NumberBox",
-            "label": "철수에정일",
-            "required": true,
-            "placeholder": "철수에정일"
-        }
-    }
-
+    "pkColumns": ["prjctId","outordEntrpsId","bgtMngOdr"],
+    "CdComboboxColumn": "outordEntrpsId"
+    
 }

@@ -31,10 +31,27 @@ public class CommonServiceImpl implements CommonService {
     @Override
     @Transactional
     public int insertData(List<Map<String, Object>> params) {
-
         int result = -1;
         //1. 테이블 컬럼명 가져오기
         String tbNm = params.get(0).get("tbNm").toString();
+        int snMax;
+        if(params.get(0).containsKey("snColumn")){
+            List<Map<String, Object>>maxParam = new ArrayList<>();
+            Map<String, Object> tableMap = new HashMap<>();
+            tableMap.put("tbNm", tbNm);
+            tableMap.put("snColumn", params.get(0).get("snColumn"));
+
+            maxParam.add(tableMap);
+            if(params.get(0).containsKey("snSearch")){
+                maxParam.add((Map<String, Object>) params.get(0).get("snSearch"));
+            }
+
+            snMax = commonGetMax(params);
+            params.get(1).put(params.get(0).get("snColumn").toString(), snMax);
+            for(int i=1; i < params.size(); i++){
+                params.get(i).put(params.get(0).get("snColumn").toString(), ++snMax);
+            }
+        }
         try {
             Connection connection = DriverManager.getConnection(applicationYamlRead.getUrl(), applicationYamlRead.getUsername(), applicationYamlRead.getPassword());
             // 트랜잭션 시작
@@ -280,6 +297,63 @@ public class CommonServiceImpl implements CommonService {
         return resultSet;
     }
 
+    public int commonGetMax(List<Map<String, Object>> params) {
+        List<Map<String, Object>> resultSet = new ArrayList<>();
+        String tbNm = params.get(0).get("tbNm").toString();
+        String snColumn = params.get(0).get("snColumn").toString();
+        int value = -1;
+
+        try (Connection connection = DriverManager.getConnection(applicationYamlRead.getUrl(), applicationYamlRead.getUsername(), applicationYamlRead.getPassword())) {
+
+
+            // SELECT 문을 생성하기 위해 컬럼명을 얻어옴
+            try (Statement statement = connection.createStatement()) {
+                // SELECT문 생성
+                StringBuilder queryBuilder = new StringBuilder("SELECT IFNULL(MAX(").append(snColumn).append("), 0)AS MAX FROM ").append(tbNm).append(" WHERE 1 = 1");
+                List<Object> inParams = new ArrayList<>();
+
+                if(params.size()>1){
+                    Map<String, Object> insertParam = params.get(1);
+                    inParams = new ArrayList<>(insertParam.values());
+                    List<String> keys = new ArrayList<>(insertParam.keySet());
+                    for (int j = 0; j < inParams.size(); j++ ) {
+                        Object paramValue = inParams.get(j);
+                        String paramName = keys.get(j);
+                        queryBuilder.append(" AND ");
+
+                        // 파라미터 값이 문자열이며 '%'를 포함하는 경우, LIKE 절을 사용
+                        if (paramValue instanceof String && ((String) paramValue).contains("%")) {
+                            queryBuilder.append(paramName.replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase()).append(" LIKE ?");
+                        } else if (paramValue instanceof String && ((String) paramValue).contains("&")) {
+                            String[] dateRange = ((String) paramValue).split("&");
+                            if (dateRange.length == 2) {
+                                queryBuilder.append(paramName.replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase())
+                                        .append(" BETWEEN ? AND ?");
+                            } else {
+                                throw new IllegalArgumentException("Invalid date range format");
+                            }
+                        } else {
+                            queryBuilder.append(paramName.replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase()).append(" = ?");
+                        }
+                    }
+                }
+
+                try (PreparedStatement preparedStatement = connection.prepareStatement(queryBuilder.toString())) {
+                    querySetter(preparedStatement, inParams);
+                    try (ResultSet result = preparedStatement.executeQuery()) {
+                        if (result.next()) {
+                            value = result.getInt("MAX");
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // 예외 상세 정보를 출력하거나 기록하는 것이 좋습니다.
+        }
+
+        return value;
+    }
+
     private PreparedStatement querySetter(PreparedStatement preparedStatement, List<Object> params) {
         try {
             // for 루프에서 값을 바인딩
@@ -333,7 +407,7 @@ public class CommonServiceImpl implements CommonService {
         int atchResult = 0;//첨부파일 insert결과
         int result = 0;
 
-        String atchmnflId = "";
+        String atchmnflId = null;
         int atchmnflSn = 1;
 
         Map<String, Object> atchmnflMap = new HashMap<>();
@@ -342,14 +416,6 @@ public class CommonServiceImpl implements CommonService {
         List<Map<String, Object>> insertParam = new ArrayList<>();
         tableMap.put("tbNm", tbNm);
 
-        //1. parameter 에 첨부파일이 있는지 없는지 확인
-        if(params.containsKey("atchmnflId") && params.get("atchmnflId").equals("")){
-            // 1-1 없다면 첨부파일 ID 생성 순번은 1부터 시작
-            atchmnflId = UUID.randomUUID().toString();
-        }else{
-            // 1-2 있다면 첨부파일 ID 사용 생성 순번은 1부터 시작
-            atchmnflId = params.get("atchmnflId").toString();
-        }
 
         try{
             //2. 파일 내부 디렉토리에 업로드
@@ -360,43 +426,53 @@ public class CommonServiceImpl implements CommonService {
                 Files.createDirectories(directory);
             }
 
-            for(MultipartFile file : attachments){
-                // UUID를 사용하여 서버에 저장될 파일명 생성
-                String storedFileName = UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
-                // 파일 저장
-                Path filePath = directory.resolve(storedFileName);
-                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            if (attachments != null) {
 
-                Instant currentTimestamp = Instant.now();
-                //3. 저장경로 및 명칭 지정하여 첨부파일 테이블에 INSERT
-                atchmnflMap.put("atchmnflId", atchmnflId);
-                atchmnflMap.put("atchmnflSn", atchmnflSn++);
-                atchmnflMap.put("strgFileNm", storedFileName); // 저장된파일명칭
-                atchmnflMap.put("realFileNm", file.getOriginalFilename());
-                atchmnflMap.put("fileStrgCours", uploadDir); // 파일저장경로
-                atchmnflMap.put("regDt", currentTimestamp);
-                atchmnflMap.put("regEmpId", params.get("regEmpId").toString());
-                atchmnflMap.put("mdfcnDt", currentTimestamp);
-                atchmnflMap.put("mdfcnEmpId", params.get("regEmpId").toString());
+                //1. 기존에 채번된 첨부파일 ID가 있는지 확인
+                if(!params.containsKey("atchmnflId") || params.get("atchmnflId") == null || params.get("atchmnflId").equals("")){
+                    // 1-1 없다면 첨부파일 ID 생성 순번은 1부터 시작
+                    atchmnflId = UUID.randomUUID().toString();
+                }else{
+                    // 1-2 있다면 첨부파일 ID 사용 생성 순번은 1부터 시작
+                    atchmnflId = params.get("atchmnflId").toString();
+                }
 
-                atchmnflParam.clear();
-                tableMap.put("tbNm", "ATCHMNFL");
-                atchmnflParam.add(tableMap);
-                atchmnflParam.add(atchmnflMap);
+                for(MultipartFile file : attachments){
+                    // UUID를 사용하여 서버에 저장될 파일명 생성
+                    String storedFileName = UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
+                    // 파일 저장
+                    Path filePath = directory.resolve(storedFileName);
+                    Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-                atchResult += insertData(atchmnflParam);
+                    Instant currentTimestamp = Instant.now();
+                    //3. 저장경로 및 명칭 지정하여 첨부파일 테이블에 INSERT
+                    atchmnflMap.put("atchmnflId", atchmnflId);
+                    atchmnflMap.put("atchmnflSn", atchmnflSn++);
+                    atchmnflMap.put("strgFileNm", storedFileName); // 저장된파일명칭
+                    atchmnflMap.put("realFileNm", file.getOriginalFilename());
+                    atchmnflMap.put("fileStrgCours", uploadDir); // 파일저장경로
+                    atchmnflMap.put("regDt", currentTimestamp);
+                    atchmnflMap.put("regEmpId", params.get("regEmpId").toString());
+                    atchmnflMap.put("mdfcnDt", currentTimestamp);
+                    atchmnflMap.put("mdfcnEmpId", params.get("regEmpId").toString());
+
+                    atchmnflParam.clear();
+                    tableMap.put("tbNm", "ATCHMNFL");
+                    atchmnflParam.add(tableMap);
+                    atchmnflParam.add(atchmnflMap);
+
+                    atchResult += insertData(atchmnflParam);
+                }
             }
 
-            if(attachments.isEmpty() || atchResult < 1){
-                //4. 입력된 첨부파일 ID를 parameter에 지정
-                params.put("atchmnflId", atchmnflId);
-                tableMap.put("tbNm", tbNm);
-                insertParam.add(tableMap);
-                insertParam.add(params);
+            //4. 입력된 첨부파일 ID를 parameter에 지정
+            params.put("atchmnflId", atchmnflId);
+            tableMap.put("tbNm", tbNm);
+            insertParam.add(tableMap);
+            insertParam.add(params);
 
-                //5. 사용하려는 테이블에 INSERT
-                result = insertData(insertParam);
-            }
+            //5. 사용하려는 테이블에 INSERT
+            result = insertData(insertParam);
             return result;
         }catch (IOException e){
             return result;

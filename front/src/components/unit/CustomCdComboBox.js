@@ -65,7 +65,7 @@ const CustomCdComboBox = ({ param, placeholderText, onSelect, name, value, readO
         width="100%"
         value={value}
         readOnly={readOnly}
-        showClearButton={showClearValue}
+        showClearButton={true}
       >
       </SelectBox>
     // </div>
