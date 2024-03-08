@@ -25,5 +25,15 @@
             { "key": "atndEmpId", "value": "회의참석자ID" },
             { "key": "empFlnm", "value": "회의참석자명" }
         ]
+    }],
+    "MeetingRoomList":[{
+        "menuName": "MeetingRoomList",
+        "queryId": "trsCodeMapper.TrsCodeChidList",
+        "keyColumn": "upCdValue",
+        "data": 
+        [
+            { "key": "childCdValue", "value": "코드값" },
+            { "key": "childCdNm", "value": "코드명" }
+        ]
     }]
 }
