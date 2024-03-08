@@ -221,11 +221,22 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
         }
     }
 
-    const onClick = () => {
-        console.log(data)
-        const isconfirm = window.confirm("프로젝트 등록을 하시겠습니까?");
-        if(isconfirm){
-            insertProject();
+    const onClick = (e) => {
+        e.preventDefault();
+
+        if(prjctId != null) {
+            const isconfirm = window.confirm("수정한 내용을 저장 하시겠습니까?");
+            if(isconfirm){
+                updateProject();
+            }
+        } else {
+            const isconfirm = window.confirm("프로젝트 등록을 하시겠습니까?");
+            if(isconfirm){
+                insertProject();
+            } else {
+                console.log("취소");
+                return;
+            }
         }
     }
 
@@ -352,6 +363,7 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
     }
 
     return (
+        <form onSubmit={onClick}>
         <div className="popup-content">
             <div className="project-regist-content">
                 <div className="project-regist-content-inner">
@@ -368,6 +380,8 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
                                     onSelect={handleChgStleCd}
                                     value={data.prjctStleCd}
                                     readOnly={readOnly}
+                                    required={true}
+                                    label="프로젝트 형태"
                                 />
                             </div>
                         </div>
@@ -423,16 +437,17 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
             {readOnly ? <Button text="수정" onClick={onClickUdt}/>:
                 onHide ? 
                 <div>
-                    <Button text="저장" onClick={onClick}/>
+                    <Button text="저장" useSubmitBehavior={true}/>
                     <Button text="취소" onClick={onHide} />
                 </div>
                 :
                 <div>
-                    <Button text="저장" onClick={onClickChgSave}/>
+                    <Button text="저장"useSubmitBehavior={true}/>
                     <Button text="취소" onClick={onClickUdtCncl} />
                 </div>
             }
         </div>
+        </form>
     );
 };
 
