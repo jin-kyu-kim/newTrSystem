@@ -56,7 +56,7 @@ const ProjectList = () => {
     }
   };
 
-  const onRowDblClick = (e) => {
+  const onRowClick = (e) => {
 
     navigate("/project/ProjectDetail", 
               {state: { prjctId: e.key
@@ -94,7 +94,7 @@ const ProjectList = () => {
         pageSize={pageSize}
         columns={tableColumns}
         values={values}
-        onRowDblClick={onRowDblClick}
+        onRowClick={onRowClick}
         paging={true}
       />
     </div>
