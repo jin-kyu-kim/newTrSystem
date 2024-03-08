@@ -5,10 +5,9 @@ import SelectBox from 'devextreme-react/select-box';
 import 'devextreme/dist/css/dx.common.css';
 import 'devextreme/dist/css/dx.light.css';
 
-const AutoCompleteProject = ({ placeholderText, onValueChange }) => {
+const AutoCompleteProject = ({ placeholderText, onValueChange, defaultValue, readOnlyValue}) => {
   const [suggestionsData, setSuggestionsData] = useState([]);
   const [valid, setValid] = useState(true);
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,7 +31,7 @@ const AutoCompleteProject = ({ placeholderText, onValueChange }) => {
 
   const handleSelectChange = (e) => {
     const selectedOption = e.value;
-    console.log(selectedOption)
+    // console.log(selectedOption)
 
     if (selectedOption) {
       onValueChange(selectedOption);
@@ -58,6 +57,8 @@ const AutoCompleteProject = ({ placeholderText, onValueChange }) => {
       stylingMode="underlined"
       onBlur={handleBlur}
       showClearButton={true}
+      value={defaultValue}
+      readOnly={readOnlyValue}
     />
   );
 };

@@ -6,7 +6,7 @@ import SelectBox from "devextreme-react/select-box";
 import cdJson from "./cd.json";
 import ApiRequest from "../../utils/ApiRequest";
 
-const CustomCdComboBox = ({ param, placeholderText, onSelect, name, value, readOnly, between }) => {
+const CustomCdComboBox = ({ param, placeholderText, onSelect, name, value, readOnly, between, showClearValue }) => {
   const [cdVal, setCdVal] = useState([]);
 
   useEffect(() => {
@@ -65,6 +65,7 @@ const CustomCdComboBox = ({ param, placeholderText, onSelect, name, value, readO
         width="100%"
         value={value}
         readOnly={readOnly}
+        showClearButton={showClearValue}
       >
       </SelectBox>
     // </div>
