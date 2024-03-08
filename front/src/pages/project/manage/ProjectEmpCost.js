@@ -5,7 +5,7 @@ import ProjectEmpCostJson from "./ProjectEmpCostJson.json";
 import CustomCostTable from "components/unit/CustomCostTable";
 import Box, { Item } from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
-import { format } from 'date-fns';
+import { format, parse } from 'date-fns';
 
 const ProjectEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
   const [values, setValues] = useState([]);
@@ -37,8 +37,7 @@ const ProjectEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
       groupingDtl = acc;
       return acc;
     }, {});
-    
-
+        
   } catch (error) {
     console.error(error);
   }
@@ -59,8 +58,8 @@ const ProjectEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
           let total = 0;
           let gramt = 0;
           for(let k=0; k<Object.values(groupingDtl)[j].length; k++){
-            response[j][format(Object.values(groupingDtl)[j][k].inptYm, 'yyyy년 MM월')] = Object.values(groupingDtl)[j][k].expectMm;
-            response[j][format(Object.values(groupingDtl)[j][k].inptYm, 'yyyy년 MM월') + '_untpc'] = Object.values(groupingDtl)[j][k].untpc;
+            response[j][format(parse(Object.values(groupingDtl)[j][k].inptYm, 'yyyyMM', new Date()), 'yyyy년 MM월')] = Object.values(groupingDtl)[j][k].expectMm;
+            response[j][format(parse(Object.values(groupingDtl)[j][k].inptYm, 'yyyyMM', new Date()), 'yyyy년 MM월') + '_untpc'] = Object.values(groupingDtl)[j][k].untpc;
             total += Object.values(groupingDtl)[j][k].expectMm;
             gramt += (Object.values(groupingDtl)[j][k].untpc)*(Object.values(groupingDtl)[j][k].expectMm);
           }    

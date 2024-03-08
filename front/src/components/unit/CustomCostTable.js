@@ -51,13 +51,12 @@ const CustomCostTable = ({
 
     const transformedData = Object.keys(temp).map((key) => {
         // 키에서 연도와 월을 분리하고 형식을 변경합니다.
-        const formattedKey = key.replace('년 ', '-').replace('월', '');             
+        const formattedKey = key.replace('년 ', '').replace('월', '');             
         return {
           id: formattedKey,
           value: temp[key]
         };
       });
-      
       setTransformedData(transformedData);
 
   }, [selectedItem]);
@@ -92,18 +91,10 @@ const CustomCostTable = ({
   
     setPeriod(periods);
     updateSummaryColumn(periods);
-  }, [ctrtYmd, bizEndYmd]); // 의존성 배열에 ctrtYmd와 bizEndYmd를 포함하여, 이 값들이 변경될 때마다 useEffect를 다시 실행합니다.
+  }, [ctrtYmd, bizEndYmd]); 
 
-  //gridRows가 실행되는 시점 잡아주기.
-  // useEffect(() => {
-  //   if(period){
-  //     gridRows();
-  //   }
-  // } ,[period]);
 
-  
   const onCellRenderEdit = ({data}) => {
-    // console.log("data",data);
     return (
       <Button
         onClick={() => showPopup(data)}
@@ -182,7 +173,9 @@ const CustomCostTable = ({
           dataType={column.subType ==="NumberBox" ? "number" : 
                     column.subType ==="Date" ? "date" :
                      "string"}
-          format={column.subType === "Date" ? "yyyy-MM-dd" : ""}
+          format={column.subType === "Date" ? "yyyy-MM-dd" : 
+                  column.subType === "NumberBox" ? column.format :
+                  ""}
         ></Column>     
       );
     });
@@ -219,7 +212,6 @@ const CustomCostTable = ({
     });
     return result;
   };
-  
 
   return (
     <div className="">
