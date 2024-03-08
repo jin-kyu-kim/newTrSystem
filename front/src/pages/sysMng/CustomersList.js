@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 
-import CustomHorizontalTable from '../../components/unit/CustomHorizontalTable';
 import SearchInfoSet from 'components/composite/SearchInfoSet';
 import CustomTable from 'components/unit/CustomTable';
 import ApiRequest from '../../utils/ApiRequest';
@@ -9,13 +8,11 @@ import SysMng from './SysMngJson.json';
 
 const CustomersList = () => {
     const [values, setValues] = useState([]);
-    const [oneData, setOneData] = useState([]);
-
-    const [param, setParam] = useState({}); 
+    const [param, setParam] = useState({}); // 검색
     const [totalItems, setTotalItems] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize] = useState(20);
-    const { keyColumn, queryId, tableColumns, Cnsrtm, searchInfo } = SysMng.customersJson;
+    const { keyColumn, queryId, tableColumns, searchInfo } = SysMng.customersJson;
 
     useEffect(() => {
         if (!Object.values(param).every((value) => value === "")) {
@@ -61,6 +58,32 @@ const CustomersList = () => {
         }
     }
 
+    const onEditRow = async (editMode, e) => {
+        const editParam = [{tbNm: "CTMMNY_INFO"}];
+        let editInfo = {};
+        switch (editMode){
+            case 'insert':
+                editParam[1] = e.data;
+                editInfo = {url:'commonInsert', complete:'저장'}
+            break;
+            case 'update':
+                editParam[1] = e.newData;
+                editParam[2] = {ctmmnyId: e.key};
+                editInfo = {url:'commonUpdate', complete:'수정'}
+            break;
+            case 'delete':
+                editParam[1] = {ctmmnyId: e.key};
+                editInfo = {url:'commonDelete', complete:'삭제'}
+            break;
+        }
+        try{
+            const response = await ApiRequest('/boot/common/' + editInfo.url, editParam);
+            response === 1 ? alert(editInfo.complete + "되었습니다.") : alert(editInfo.complete + "에 실패했습니다.")
+        } catch(error){
+            console.log(error)
+        }
+    }
+
     return (
         <div className="container">
             <div
@@ -83,11 +106,11 @@ const CustomersList = () => {
                     columns={tableColumns}
                     values={values}
                     handleYnVal={handleYnVal}
-                    systemPage={true}
+                    editRow={true}
+                    onEditRow={onEditRow}
                     pageSize={pageSize}
                     paging={true}
                 />
-                <CustomHorizontalTable headers={Cnsrtm} column={oneData} />
             </div>
         </div>
     );

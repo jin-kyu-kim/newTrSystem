@@ -27,10 +27,17 @@ const TreRoutes = [
     name: "ProjectAprv",
     element: React.lazy(() => import("../pages/project/approval/ProjectAprv")),
   },
+  // 프로젝트 시간비용승인
   {
     path: "/project/ProjectHrCtAprv",
     name: "ProjectHrCtAprv",
     element: React.lazy(() => import("../pages/project/approval/ProjectHrCtAprv")),
+  },
+  // 프로젝트 시간비용승인상세
+  {
+    path: "/project/ProjectHrCtAprvDetail",
+    name: "ProjectHrCtAprvDetail",
+    element: React.lazy(() => import("../pages/project/approval/ProjectHrCtAprvDetail")),
   },
   // 프로젝트 디테일
   {
@@ -133,6 +140,18 @@ const TreRoutes = [
     path: "/infoInq/EmpDetailInfo",
     name: "EmpDetailInfo",
     element: React.lazy(() => import("../pages/infoInq/EmpDetailInfo")),
+  },
+  // 재무 관리 > 프로젝트비용청구현황
+  {
+    path: "/fnnrMng/prjctCtClm/ProjectCostClaimList",
+    name: "ProjectCostClaimList",
+    element: React.lazy(() => import("../pages/fnnrMng/prjctCtClm/ProjectCostClaimList")),
+  },
+  // 재무 관리 > 프로젝트비용청구현황 상세조회
+  {
+    path: "/fnnrMng/prjctCtClm/ProjectCostClaimDetail",
+    name: "ProjectCostClaimDetail",
+    element: React.lazy(() => import("../pages/fnnrMng/prjctCtClm/ProjectCostClaimDetail")),
   }
 ];
 

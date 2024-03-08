@@ -5,7 +5,7 @@
     "keyColumn": "mmnyLbrcoPrmpcSn",
     "pkColumns": ["prjctId","bgtMngOdr","mmnyLbrcoPrmpcSn"],
     "nomalColumns": ["empId","hnfRoleCd", "tkcgJob","inptPrnmntYmd","withdrPrnmntYmd"],
-    "pkColumnsDtl" : ["prjctId","bgtMngOdr","mmnyLbrcoPrmpcSn", "inptYm", "jbpsCd"],
+    "pkColumnsDtl" : ["prjctId","bgtMngOdr","mmnyLbrcoPrmpcSn", "inptYm"],
     "nomalColumnsDtlYm": "inptYm",
     "nomalColumnsDtlValue": "expectMm",
     "CdComboboxColumnNm": ["hnfRoleCdNm"],
@@ -65,12 +65,13 @@
             "required": true,
             "placeholder": "담당업무"
         },
-        "temp2": {
-            "name": "temp2",
+        "userDfnValue": {
+            "name": "userDfnValue",
             "type": "NumberBox",
             "label": "현재단가",
             "required": true,
-            "placeholder": "현재단가"
+            "placeholder": "현재단가",
+            "readOnly": true
         },
         "gramt": {
             "name": "gramt",

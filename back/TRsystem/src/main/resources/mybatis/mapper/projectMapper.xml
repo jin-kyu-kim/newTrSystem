@@ -559,6 +559,13 @@
 			   ON DUPLICATE KEY UPDATE 
 			   EXPECT_MM = #{expectMm}
 		</if>
+		<if test="mmnyLbrcoPrmpcSn != null">
+			INSERT INTO MMNY_INPT_MM (PRJCT_ID, BGT_MNG_ODR, MMNY_LBRCO_PRMPC_SN, INPT_YM, EXPECT_MM, UNTPC)
+			VALUES(	#{prjctId}, #{bgtMngOdr}, #{mmnyLbrcoPrmpcSn}, #{inptYm}, #{expectMm}, #{untpc})
+			   ON DUPLICATE KEY UPDATE 
+			   EXPECT_MM = #{expectMm},
+			   UNTPC = #{untpc}
+		</if>
 	</select>
 	
 	<select id="retrieveOutordEntrpsPrmpc" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -615,6 +622,21 @@
 		  FROM PRJCT
 		 WHERE PRJCT_CD_IDNTFR LIKE CONCAT(#{ctmmnyId},'%')
 	</select>
+	
+	<select id="retrieveMmAply" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT d.DEPT_NM, e.EMP_FLNM, CONCAT(pma.APLY_YM, '-', pma.APLY_ODR) APLY_SN, mim.EXPECT_MM, pma.EMP_ID
+		  FROM PRJCT_MM_APLY pma
+		  JOIN MMNY_INPT_MM mim ON (pma.PRJCT_ID = mim.PRJCT_ID AND pma.APLY_YM = mim.INPT_YM)
+	   <!--    JOIN MMNY_LBRCO_EXCN mle ON (pma.PRJCT_ID = mim.PRJCT_ID AND pma.APLY_YM = mle.INPT_YM) -->
+		  JOIN EMP e ON (e.EMP_ID = pma.EMP_ID)
+		  JOIN DEPT_HNF dh ON (e.EMP_ID = dh.EMP_ID)
+		  JOIN DEPT d ON (d.DEPT_ID = dh.DEPT_ID)
+		 WHERE 1=1
+		   AND pma.APLY_YM = '202403'
+		   AND pma.PRJCT_ID = #{prjctId}
+		   AND pma.APLY_ODR = #{aplyOdr}
+	</select>
+	
 	
 	
 

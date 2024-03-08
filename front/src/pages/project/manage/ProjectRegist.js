@@ -37,6 +37,33 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
     const deptId = cookies.userInfo.deptId;
 
     useEffect(() => {
+        const date = new Date();
+
+            setData({
+                ...data,
+                prjctStleCd : stleCd,
+            })
+            setBeffatPbancDdlnYmd(null);
+            setExpectOrderYmd(null);
+            setPropseDdlnYmd(null);
+            setPropsePrsntnYmd(null);
+            setCtrtYmd(null);
+            setBizEndYmd(null);
+            setStbleEndYmd(null);
+            setIgiYmd(null);
+
+    }, [stleCd]);
+
+    useEffect(() => {
+        createPrjctCdIdntfr(ctmmnyId);
+        setData({
+            ...data,
+            ctmmnyId : ctmmnyId,
+        });
+
+    }, [ctmmnyId]);
+
+    useEffect(() => {
         if(prjctId != null) {
             BaseInfoData();
         } else {
@@ -54,39 +81,6 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
 
         setUpdateParam(updateColumns);
     }, []);
-
-    useEffect(() => {
-        const date = new Date();
-
-            setData({
-                ...data,
-                prjctStleCd : stleCd,
-                prjctId : uuid(),
-                prjctMngrEmpId : empId,
-                deptId : deptId,
-                bizSttsCd: "VTW00401",
-                regDt : date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0]
-            })
-            setBeffatPbancDdlnYmd(null);
-            setExpectOrderYmd(null);
-            setPropseDdlnYmd(null);
-            setPropsePrsntnYmd(null);
-            setCtrtYmd(null);
-            setBizEndYmd(null);
-            setStbleEndYmd(null);
-            setIgiYmd(null);
-
-    }, [stleCd]);
-
-    useEffect(() => {
-        createPrjctCdIdntfr(ctmmnyId);
-
-        setData({
-            ...data,
-            ctmmnyId : ctmmnyId,
-        });
-
-    }, [ctmmnyId]);
 
     const BaseInfoData = async () => {
         const param = [ 
@@ -208,6 +202,7 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
                 bizEndYmd: bizEndYmd,
                 stbleEndYmd: stbleEndYmd,
                 igiYmd: igiYmd,
+                prjctCdIdntfr: prjctCdIdntfr
             },
             {
                 prjctId: prjctId,
@@ -227,7 +222,7 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
     }
 
     const onClick = () => {
-        
+        console.log(data)
         const isconfirm = window.confirm("프로젝트 등록을 하시겠습니까?");
         if(isconfirm){
             insertProject();

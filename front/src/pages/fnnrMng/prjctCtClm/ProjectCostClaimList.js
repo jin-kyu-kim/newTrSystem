@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import ProjectJson from "./ProjectAprvJson.json"
+import ProjectJson from "../prjctCtClm/ProjectListJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
 import SearchPrjctSet from "../../../components/composite/SearchPrjctSet";
 import CustomTable from "../../../components/unit/CustomTable";
@@ -8,9 +8,7 @@ import CustomTable from "../../../components/unit/CustomTable";
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
 
-import { useCookies } from "react-cookie";
-
-const ProjectAprv = () => {
+const ProjectCostClaimList = () => {
   const [values, setValues] = useState([]);
   const [param, setParam] = useState({});
 
@@ -19,11 +17,9 @@ const ProjectAprv = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
 
-  const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
-
-  const {keyColumn, queryId, tableColumns, searchParams} = ProjectJson; 
-
   const navigate = useNavigate();
+
+  const { keyColumn, queryId, tableColumns, searchParams } = ProjectJson;
 
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
@@ -37,7 +33,6 @@ const ProjectAprv = () => {
     setCurrentPage(1);
     setParam({
       ...initParam,
-      empId: cookies.userInfo.empId,
       queryId: queryId,
       currentPage: currentPage,
       startVal: 0,
@@ -60,38 +55,37 @@ const ProjectAprv = () => {
     }
   };
 
-  const onRowDblClick = (e) => {
-    navigate("/project/ProjectAprvDetail", 
-      {state: { id: e.data.prjctId
-              , prjctNm: e.data.prjctNm
-              , bgtMngOdr: e.data.bgtMngOdr
-              , atrzLnSn: e.data.atrzLnSn
-              , atrzSttsCd: e.data.atrzSttsCd
-              , atrzStepCd: e.data.atrzStepCd
-              , nowAtrzStepCd: e.data.nowAtrzStepCd
-              , aprvrEmpId : e.data.aprvrEmpId } }
-    );
-  }
-
-
+  const onClick = (data) => {
+    navigate("/fnnrMng/prjctCtClm/ProjectCostClaimDetail", 
+             {state: { prjctId: data.prjctId, prjctNm: data.prjctNm }})
+  };
+  
   return (
     <div className="container">
-      <div
-        className="title p-1"
-        style={{ marginTop: "20px", marginBottom: "10px" }}
-      >
-        <h1 style={{ fontSize: "40px" }}>프로젝트 승인</h1>
+      <div className="col-md-10 mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
+            <h1 style={{ fontSize: "30px" }}>프로젝트비용청구현황</h1>
       </div>
       <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
-        <span>* 프로젝트 승인 내역을 조회 합니다.</span>
+        <span>* 프로젝트를 조회합니다.</span>
       </div>
       <div style={{ marginBottom: "20px" }}>
-        <SearchPrjctSet callBack={searchHandle} props={searchParams}/>
+        <SearchPrjctSet
+          callBack={searchHandle}
+          props={searchParams}
+        />
       </div>
+
       <div>검색된 건 수 : {totalItems} 건</div>
-      <CustomTable  keyColumn={keyColumn} columns={tableColumns} values={values} onRowDblClick={onRowDblClick} paging={true}/>
+      <CustomTable
+        keyColumn={keyColumn}
+        pageSize={pageSize}
+        columns={tableColumns}
+        values={values}
+        onClick={onClick}
+        paging={true}
+      />
     </div>
   );
 };
 
-export default ProjectAprv;
+export default ProjectCostClaimList;

@@ -5,48 +5,149 @@ import EmpInfoJson from "./EmpInfoJson.json";
 import TextBox from "devextreme-react/text-box";
 import Box, { Item } from "devextreme-react/box";
 import { Button } from "devextreme-react/button";
-import CustomCdComboBox from "../../components/unit/CustomCdComboBox";
 import ApiRequest from "utils/ApiRequest";
+import { DateBox } from "devextreme-react";
+import { useCookies } from "react-cookie";
 
-const EmpLicense = ({ callBack, props }) => {
+const EmpLicense = () => {
   const [param, setParam] = useState({});
-
+  const [tableKey, setTableKey] = useState(0);
   const { queryId,keyColumn, tableColumns } = EmpInfoJson.EmpLicense;
   const [values, setValues] = useState([]);
 
-  useEffect(() => {
-    // if (!Object.values(param).every((value) => value === "")) {
-      // pageHandle();
-    //  }
-    setParam({
-      ...param,
-      queryId: queryId,
-      empId : "202160c6-bf25-11ee-b259-000c2956283f",
-    });
-  }, []);
+  const [cookies] = useCookies(["userInfo", "userAuth"]);
+  const date = new Date();
+  const userEmpId = cookies.userInfo.empId;
 
-  const [initParam, setInitParam] = useState({
-    empno: "",
-    empFlnm: "",
-    jbpsNm: "",
-    deptNm: "",
-    telNo: "",
-    hodfSttsNm: "",
+  const [data, setData] = useState({
+    empId: userEmpId,
+    regEmpId: userEmpId,
+    regDt: date.toISOString().split("T")[0] + " " + date.toTimeString().split(" ")[0],
   });
 
-  const handleSubmit = () => {
-    //callBack(initParam);
+  const formatDate = (value) => {
+    const year = value.getFullYear();
+    const month = (value.getMonth() + 1).toString().padStart(2, '0');
+    const day = value.getDate().toString().padStart(2, '0');
+
+    return `${year}${month}${day}`;
+  };
+
+  const [validationErrors, setValidationErrors] = useState({});
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  useEffect(() => {
+    pageHandle();
+   
+  setParam({
+    ...param,
+    queryId: queryId,
+    empId : userEmpId,
+  });
+}, []);
+
+useEffect(() => {
+   
+  getSn();
+}, [param, isSuccess]);
+
+  const [initParam, setInitParam] = useState({
+    qlfcLcnsNm: "",
+    qlfcLcnsId: "",
+    gradNm: "",
+    acqsYmd: "",
+  });
+
+  const validateForm = () => {
+    const errors = {};
+
+    if (!initParam.qlfcLcnsNm.trim()) {
+      errors.qlfcLcnsNm = '자격면허를 입력하세요.';
+    }
+    if (!initParam.qlfcLcnsId.trim()) {
+      errors.qlfcLcnsId = '자격면허번호를  입력하세요.';
+    }
+    if (!initParam.gradNm.trim()) {
+      errors.gradNm = '등급 을 입력하세요.';
+    }
+    if (!initParam.acqsYmd) {
+      errors.acqsYmd = '취득일자를 선택하세요.';
+    }
+    
+
+    setValidationErrors(errors);
+
+    return Object.keys(errors).length === 0;
+  };
+
+
+  const getSn = async () => {
+    const selectParams = {
+      queryId: "infoInqMapper.selectLcnsSn",
+      empId: data.empId
+    };
+  
+    try {
+      const response = await ApiRequest("/boot/common/queryIdSearch", selectParams);
+      console.log("response"+response);
+      console.log("response[0]" + response[0].qlfcLcnsSn);
+      setData(() => ({
+        ...data,
+        qlfcLcnsSn: response[0].qlfcLcnsSn
+      }));
+    
+      console.log("data : " + data.empId);
+  
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const lcnsInsert = async() => {
+    const isValidForm = validateForm();
+
+    if (!isValidForm) {
+      window.alert("입력되지 않은 값이 있습니다.")
+      console.log('폼 유효성 검사 실패');
+      return;
+    }
+  
+    const lcnsConfirmResult = window.confirm("자격면허를 등록하시겠습니까?");
+    if (lcnsConfirmResult) {
+      const params = [{ tbNm: "EMP_QLFC_LCNS" }, data];
+      console.log(params);
+      try {
+        const response = await ApiRequest("/boot/common/commonInsert", params);
+        console.log(response);
+  
+        if (response === 1) {
+          window.alert("자격면허 가 등록되었습니다.")
+          setIsSuccess(!isSuccess);
+          setTableKey((prevKey) => prevKey + 1);
+        } else {
+          // 저장 실패 시 처리
+        }
+      } catch (error) {
+        console.log(error);
+        // 저장 실패 시 처리
+      }
+    }
   };
   
 
   const handleChgState = ({ name, value }) => {
     setInitParam({
       ...initParam,
-  //    [name]: value,
+      [name]: value,
+    });
+    setData({
+      ...data,
+      [name]: value
     });
 
     setParam({
-      queryId: queryId
+      queryId: queryId,
+      empId: userEmpId
     })
   };
 
@@ -65,8 +166,30 @@ const pageHandle = async () => {
 
 useEffect(()=>{
   pageHandle();
-},[param.empId]);
+},[param.empId,tableKey]);
 
+const onEditRow = async (editMode, e) => {
+  const editParam = [{tbNm: "EMP_QLFC_LCNS"}];
+  let editInfo = {};
+  switch (editMode){
+      case 'update':
+          editParam[1] = e.newData;
+          editParam[2] = {qlfcLcnsSn: e.key, empId: userEmpId};
+          editInfo = {url:'commonUpdate', complete:'수정'}
+      break;
+      case 'delete':
+          editParam[1] = {qlfcLcnsSn: e.key, empId: userEmpId};
+          editInfo = {url:'commonDelete', complete:'삭제'}
+      break;
+  }
+  try{
+      const response = await ApiRequest('/boot/common/' + editInfo.url, editParam);
+      response === 1 ? alert(editInfo.complete + "되었습니다.") : alert(editInfo.complete + "에 실패했습니다.")
+  } catch(error){
+      console.log(error)
+  }
+}
+  
 
   return (
     <div className="container" style={{ height: "700px" }}>
@@ -74,31 +197,43 @@ useEffect(()=>{
         <h1 style={{ fontSize: "40px" }}>자격 면허</h1>
       </div>
       <div style={{ marginBottom: "20px" }}>
-        <CustomTable keyColumn={keyColumn} columns={tableColumns} values={values} paging={true} />
+        <CustomTable keyColumn={keyColumn} columns={tableColumns} values={values} paging={true} editRow={true} onEditRow={onEditRow}/>
       </div>
       <div style={{ marginBottom: "20px", backgroundColor: "#eeeeee", width: "100%", height: "300px", display: "flex", justifyContent: "center", alignItems: "center" }}>
         <div style={{ width: "95%", height: "180px"}}>
           <h5>자격 면허를 입력/수정 합니다.</h5>
           <Box direction="row" width="100%" height={40}>
             <Item className="prjctNameItem" ratio={1}>
-              <CustomCdComboBox param="VTW001" placeholderText="자격면허" name="jbpsNm" onSelect={handleChgState} value={initParam.jbpsNm} />
+            <TextBox placeholder="자격면허" stylingMode="filled" size="large" name="qlfcLcnsNm" onValueChanged={(e) => handleChgState({ name: e.component.option("name"), value: e.value })} />
+            {validationErrors.qlfcLcnsNm && (
+                <div style={{ color: 'red' }}>{validationErrors.qlfcLcnsNm}</div>
+              )}
             </Item>
             <Item className="prjctNameItem" ratio={1}>
-              <CustomCdComboBox param="VTW002" placeholderText="면허코드" name="deptNm" onSelect={handleChgState} value={initParam.deptNm} />
+            <TextBox placeholder="자격면허번호" stylingMode="filled" size="large" name="qlfcLcnsId" onValueChanged={(e) => handleChgState({ name: e.component.option("name"), value: e.value })} />
+            {validationErrors.qlfcLcnsId && (
+                <div style={{ color: 'red' }}>{validationErrors.qlfcLcnsId}</div>
+              )}
             </Item>
             <Item className="ctmmnyNameItem" ratio={1}>
-              <TextBox placeholder="등급" stylingMode="filled" size="large" name="telNo" onValueChanged={(e) => handleChgState({ name: e.component.option("name"), value: e.value })} />
+              <TextBox placeholder="등급" stylingMode="filled" size="large" name="gradNm" onValueChanged={(e) => handleChgState({ name: e.component.option("name"), value: e.value })} />
+              {validationErrors.gradNm && (
+                <div style={{ color: 'red' }}>{validationErrors.gradNm}</div>
+              )}
             </Item>
             <Item className="prjctNameItem" ratio={1}>
-              <TextBox placeholder="취득일" stylingMode="filled" size="large" name="telNo" onValueChanged={(e) => handleChgState({ name: e.component.option("name"), value: e.value })} />
+              <DateBox   type="date" displayFormat="yyyy-MM-dd"  placeholder="취득일"  name="acqsYmd"  onValueChanged={(e) => handleChgState({ name: e.component.option("name"), value : formatDate(e.value) })} />
+              {validationErrors.acqsYmd && (
+                <div style={{ color: 'red' }}>{validationErrors.acqsYmd}</div>
+              )}
             </Item>
           </Box>
           <Box style={{ marginTop: "30px", width: "20%", display: "flex", justifyContent: "center", alignItems: "center" }}>
             <Item className="searchBtnItem" ratio={1} style={{ width: "50px" }}>
-              <Button onClick={handleSubmit} text="저장" />
+              <Button onClick={lcnsInsert} text="저장" />
             </Item>
             <Item className="searchBtnItem" ratio={1} style={{ width: "50px" }}>
-              <Button onClick={handleSubmit} text="초기화" />
+              <Button onClick={lcnsInsert} text="초기화" />
             </Item>
           </Box>
         </div>
