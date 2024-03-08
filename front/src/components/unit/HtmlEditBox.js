@@ -1,24 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import HtmlEditor, { Toolbar, MediaResizing, ImageUpload, Item } from "devextreme-react/html-editor";
 import { Validator, RequiredRule } from 'devextreme-react/validator'
 
-const HtmlEditBox = ({ column, data, setData, value, placeholder }) => {
-  const [editorValue, setEditorValue] = useState(value);
-
-  useEffect(() => {
-    setEditorValue(value);
-  }, [value]);
+const HtmlEditBox = ({ column, data, setData, placeholder }) => {
 
   return (
     <div>
       <HtmlEditor
         height="725px"
         id={column.dataField}
-        value={editorValue}
         placeholder={placeholder}
         focusStateEnabled={true}
         onValueChanged={(e) => {
-          setEditorValue(e.value);
           setData({ ...data, [column.dataField]: e.value });
         }}
       >
