@@ -55,13 +55,14 @@
 	<!--직급발령정보 조회-->
 	<select id="retrieveEmpJbpsHist" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT
-        	E.EMP_ID,
-        	E.EMPNO,
-        	C.CD_NM AS JBPS_NM,
-        	E.JBPS_CD,
-        	ROW_NUMBER() OVER (PARTITION BY EMP_ID ORDER BY REG_DT) AS RowNum ,
-        	E.REG_DT,
-        	A.EMPNO AS REG_EMPNO
+        	E.EMP_ID,			                                                -- 사원아이디
+        	E.EMPNO, 			                                                -- 사번
+        	E.EMP_INFO_CHG_ODR,                                                 -- 발령차수
+        	C.CD_NM AS JBPS_NM,	                                                -- 직급명
+        	E.JBPS_CD,			                                                -- 직급코드
+        	ROW_NUMBER() OVER (PARTITION BY EMP_ID ORDER BY REG_DT) AS RowNum , -- 비교용 ROWNUM
+        	E.REG_DT,															-- 등록일자
+        	A.EMPNO AS REG_EMPNO											 	-- 등록사번
     	FROM 
     		EMP_HIST E
     		LEFT OUTER JOIN CD C ON C.CD_VALUE =E.JBPS_CD

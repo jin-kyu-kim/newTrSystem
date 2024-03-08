@@ -17,34 +17,13 @@
     "ejhKeyColumn": "empno",
     "ejhTableColumns": [
         { "key": "empno", "value": "사번"},
-        { "key": "DeptGnftYmd", "value": "발령차수" },
+        { "key": "empInfoChgOdr", "value": "발령차수" },
         { "key": "jbpsNm", "value": "발령직급"},
         { "key": "regDt", "value": "입력날짜" },
         { "key": "regEmpno", "value": "입력사번" },
         { "key": "jbttlNm", "value": "삭제" }
     ],
     "labelValue" : {
-        "deptGnfdYr": {
-            "name": "deptGnfdYr",
-            "type": "ComboBox",
-            "label": "발령년도",
-            "required": true,
-            "placeholder": "발령년도",
-            "param": {
-                        "valueExpr" : "cdValue",
-                        "displayExpr": "cdNm"
-                    }
-        },
-        "deptGnfdMd": {
-            "type": "ComboBox",
-            "required": true,
-            "label": "발령차수",
-            "placeholder": "발령차수",
-            "param": {
-                        "valueExpr" : "cdValue",
-                        "displayExpr": "cdNm"
-                     }
-        },
         "jbpsCd": {
             "type": "ComboBox",
             "required": true,
