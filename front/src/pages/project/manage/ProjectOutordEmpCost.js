@@ -5,7 +5,7 @@ import ProjectOutordEmpCostJson from "./ProjectOutordEmpCostJson.json";
 import CustomCostTable from "components/unit/CustomCostTable";
 import Box, { Item } from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
-import { format } from 'date-fns';
+import { format, parse } from 'date-fns';
 
 const ProjectOutordEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
   const [values, setValues] = useState([]);
@@ -45,25 +45,26 @@ const ProjectOutordEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) =>
 };
 
   const OutordEmp = async () => {
-    const param = [
-      { tbNm: "OUTORD_LBRCO_PRMPC" },
-      { prjctId: prjctId,
-        bgtMngOdr: bgtMngOdrTobe,
-      }, 
-    ];
+
+    const param = {
+      queryId: "projectMapper.retrieveOutordHnfPrmpc",
+      prjctId: prjctId,
+      bgtMngOdr: bgtMngOdrTobe,
+    }
+
     try {
-      const response = await ApiRequest("/boot/common/commonSelect", param);
+      const response = await ApiRequest("/boot/common/queryIdSearch", param);
       //월별정보 및 총 합계 response에 추가
       for(let j=0; j<Object.keys(groupingDtl).length; j++){
         let total = 0;
         for(let k=0; k<Object.values(groupingDtl)[j].length; k++){
-          response[j][format(Object.values(groupingDtl)[j][k].inptYm, 'yyyy년 MM월')] = Object.values(groupingDtl)[j][k].expectMm;
+          response[j][format(parse(Object.values(groupingDtl)[j][k].inptYm, 'yyyyMM', new Date()), 'yyyy년 MM월')] = Object.values(groupingDtl)[j][k].expectMm;
           total += Object.values(groupingDtl)[j][k].expectMm;
         } 
         const fixedSum = Number(total.toFixed(2)); //js의 부동소수 이슈로 인한 자릿수 조정.
-        response[j].total = fixedSum;     
+        response[j].total = fixedSum;    
+        response[j].gramt = total * response[j].untpc;
       }
-      console.log("response", response);
       setValues(response);
     } catch (error) {
       console.error(error);

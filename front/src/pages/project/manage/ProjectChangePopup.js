@@ -15,10 +15,6 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
     const [contents, setContents] = useState([]);   
     const [structuredData, setStructuredData] = useState({});   //기간 구조 데이터
 
-    useEffect(() => {  
-        console.log("data",data);
-    }, [data]);
-
     //기간 데이터를 받아와서 년도별로 월을 나누어서 배열로 만들어주는 함수
     useEffect(() => {
         const periodData = period.reduce((acc, period) => {
@@ -81,7 +77,6 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
 
         } else {    //신규 데이터      
                 updatedValues.push({ id, value });    // 새로운 값 객체 추가        
-                // transformedData.push({ [id+"_untpc"] : data.userDfnValue });    // 새로운 값 객체 추가               
         }
         setInputValue(updatedValues); // 업데이트된 배열로 상태 설정
        
@@ -97,7 +92,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
         const totalSum = updatedValues.reduce((acc, updatedItem) => {
             // transformedData에서 대응하는 id+"_untpc"를 찾음
             const transformedItem = transformedData.find(item => item.id === `${updatedItem.id}_untpc`);
-            
+ 
             //대응하는 항목이 있고, 두 value 모두 숫자 타입인 경우 곱한 값 누적
             if (transformedItem && typeof updatedItem.value === 'number' && typeof transformedItem.value === 'number') {
                 return acc + (updatedItem.value * transformedItem.value);
@@ -106,6 +101,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
                 return acc + (updatedItem.value * data.userDfnValue);   
             }
           }, 0);
+
           
         // 부동 소수점 문제 해결을 위해 toFixed() 후 숫자로 변환
         const fixedTotalSum = Number(totalSum.toFixed(2));       
@@ -120,6 +116,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
             ...currentData,
             "total" : fixedSum,
             ...(data.userDfnValue ? { "gramt" : multifulSum } : {}),
+            ...(data.outordEmpId ? { "gramt" : Number((fixedSum * data.untpc).toFixed(0))} : {}),
         })); 
     };
 
@@ -151,7 +148,8 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
       }
 
     //저장버튼 클릭시
-    const handleSave = () => {
+    const handleSave = (e) => {
+        e.preventDefault();
         //수정일 경우
         if(data[popupInfo.keyColumn]){
             setParam(currentParam => {
@@ -197,7 +195,6 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
     };  
 
     useEffect(() => {
-
         if(data[popupInfo.keyColumn]){
             //수정일 경우
             const runOrder = async() => {
@@ -217,8 +214,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
         }
       }, [param]);
     
-    const onRowInserting = async() => {
-        
+    const onRowInserting = async() => {      
         //api param 설정
         const paramInfo = [
             { tbNm: popupInfo.table },
@@ -290,12 +286,6 @@ const onRowUpdateingMonthData = async() => {
 
     const pkColumns = pick(param, popupInfo.pkColumnsDtl);
 
-    // const makeParam = inputValue.map(item => ({
-    //     [popupInfo.nomalColumnsDtlYm] : item.id,
-    //     [popupInfo.nomalColumnsDtlValue] : item.value,
-    //     ...(data.userDfnValue ? { "untpc" : data.userDfnValue } : {}),  //TODO. 자사인력 단가 경우의 수 따져봐라
-    // }));
-
     const transformedDataMap = transformedData.reduce((acc, cur) => {
         acc[cur.id] = cur.value; // 각 항목의 id를 키로, value를 값으로 설정
         return acc;
@@ -314,8 +304,6 @@ const onRowUpdateingMonthData = async() => {
             ...(untpcValue ? {"untpc": untpcValue} : {}), // 조건에 따른 untpc 값 설정
         };
     });
-
-
 
     //api param 설정
     const paramInfo = [
@@ -360,11 +348,13 @@ const onRowUpdateingMonthData = async() => {
                                 onSelect={handleChgState}
                                 value={data.expensCd}
                                 between={popupInfo.cdBetween}
+                                required={true}
+                                label={"비용코드"}
                             />
                         </div>
                     </div>
                     <CustomLabelValue props={popupInfo.labelValue.dtlDtls} value={data.dtlDtls} onSelect={handleChgState}/>
-                    <CustomLabelValue props={popupInfo.labelValue.total} value={data.total} onSelect={handleChgState}/>
+                    <CustomLabelValue props={popupInfo.labelValue.total} value={data.total} onSelect={handleChgState} readOnly={popupInfo.labelValue.total.readOnly}/>
                 </div>
             );
         //외주인력
@@ -381,6 +371,8 @@ const onRowUpdateingMonthData = async() => {
                                 name="hnfRoleCd"
                                 onSelect={handleChgState}
                                 value={data.hnfRoleCd}
+                                required={true}
+                                label={"역할"}
                             />
                         </div>
                     </div>
@@ -393,14 +385,15 @@ const onRowUpdateingMonthData = async() => {
                                 name="hnfGradCd"
                                 onSelect={handleChgState}
                                 value={data.hnfGradCd}
+                                required={true}
+                                label={"등급"}
                             />
                         </div>
-                        
                     </div>
                     <CustomLabelValue props={popupInfo.labelValue.tkcgJob} value={data.tkcgJob} onSelect={handleChgState}/>
                     <CustomLabelValue props={popupInfo.labelValue.untpc} value={data.untpc} onSelect={handleChgState}/>
-                    <CustomLabelValue props={popupInfo.labelValue.gramt} value={data.gramt} onSelect={handleChgState}/>
-                    <CustomLabelValue props={popupInfo.labelValue.total} value={data.total} onSelect={handleChgState}/>
+                    <CustomLabelValue props={popupInfo.labelValue.gramt} value={data.gramt} onSelect={handleChgState} readOnly={popupInfo.labelValue.total.readOnly}/>
+                    <CustomLabelValue props={popupInfo.labelValue.total} value={data.total} onSelect={handleChgState} readOnly={popupInfo.labelValue.total.readOnly}/>
                     <CustomLabelValue props={popupInfo.labelValue.inptPrnmntYmd} value={data.inptPrnmntYmd} onSelect={handleChgState}/>
                     <CustomLabelValue props={popupInfo.labelValue.withdrPrnmntYmd} value={data.withdrPrnmntYmd} onSelect={handleChgState}/>
                 </div>
@@ -424,6 +417,8 @@ const onRowUpdateingMonthData = async() => {
                                 name="hnfRoleCd"
                                 onSelect={handleChgState}
                                 value={data.hnfRoleCd}
+                                required={true}
+                                label={"역할"}
                             />
                         </div>
                     </div> 
@@ -442,12 +437,11 @@ const onRowUpdateingMonthData = async() => {
     }, [popupInfo, data]); 
 
     return (
+        <form onSubmit={handleSave}> 
         <div className="popup-content">
             <div className="project-regist-content">
-                <div className="project-change-content-inner-left">
-                    
+                <div className="project-change-content-inner-left"> 
                     {contents}
-
                 </div>
                 <div className="project-change-content-inner-right">
                     <div className="dx-fieldset">
@@ -477,9 +471,9 @@ const onRowUpdateingMonthData = async() => {
                                             {months[rowIndex] ? 
                                             (<NumberBox 
                                             key={months[rowIndex]}
-                                            id={`${Object.keys(structuredData)[colIndex]}-${months[rowIndex]}`} 
+                                            id={`${Object.keys(structuredData)[colIndex]}${months[rowIndex]}`} 
                                             format={popupInfo.popupNumberBoxFormat}
-                                            value={inputValue.find(item => item.id === `${Object.keys(structuredData)[colIndex]}-${months[rowIndex]}`)?.value || 0}
+                                            value={inputValue.find(item => item.id === `${Object.keys(structuredData)[colIndex]}${months[rowIndex]}`)?.value || 0}
                                             onValueChanged={handleInputChange}
                                             style={{ textAlign: 'right' }}
                                             defaultValue={0}
@@ -492,9 +486,8 @@ const onRowUpdateingMonthData = async() => {
                                             { popupInfo.menuName === "ProjectEmpCostJson" &&
                                             <td style={{width:"20%", padding:"5px"}}>
                                                 <NumberBox 
-                                                    // value={data.userDfnValue} 
                                                     value= {data.mmnyLbrcoPrmpcSn ? 
-                                                            transformedData.find(item => item.id === `${Object.keys(structuredData)[colIndex]}-${months[rowIndex]}_untpc`)?.value || 0 
+                                                            transformedData.find(item => item.id === `${Object.keys(structuredData)[colIndex]}${months[rowIndex]}_untpc`)?.value || 0 
                                                             : data.userDfnValue}
                                                     readOnly={true}
                                                     />
@@ -512,10 +505,11 @@ const onRowUpdateingMonthData = async() => {
                 </div>
             </div>
             <div className="button-container">
-                <Button text="저장" type="default" stylingMode="contained" onClick={handleSave}/>
+                <Button text="저장" type="default" stylingMode="contained" useSubmitBehavior={true}/>
                 <Button text="취소" onClick={handleCancel}/>
             </div>
         </div>
+        </form>
     );
 };
 
