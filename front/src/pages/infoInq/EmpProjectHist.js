@@ -41,7 +41,6 @@ const EmpProjectHist = (callBack) => {
   const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
-    pageHandle();
    
   setParam({
     ...param,
@@ -184,9 +183,11 @@ const pageHandle = async () => {
 };
 
 useEffect(()=>{
-  pageHandle();
-},[param.empId,tableKey]);
-  
+  if (!Object.values(param).every((value) => value === "")) {
+    pageHandle();
+  }
+ 
+},[param,tableKey]);
 const onEditRow = async (editMode, e) => {
   const editParam = [{tbNm: "EMP_PRJCT_HIST"}];
   let editInfo = {};

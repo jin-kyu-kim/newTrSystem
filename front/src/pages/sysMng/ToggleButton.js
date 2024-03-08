@@ -7,7 +7,7 @@ const ToggleButton = ({ data, callback, idColumn }) => {
     return (
         <Switch value={isOn} onValueChanged={() => {
             setIsOn(!isOn);
-            callback(idColumn, !isOn ? "Y" : "N")
+            callback && callback(idColumn, !isOn ? "Y" : "N")
         }}/>
     );
 }

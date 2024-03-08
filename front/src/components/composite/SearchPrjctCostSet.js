@@ -93,25 +93,25 @@ const SearchPrjctCostSet = ({ callBack, props }) => {
                 <Item visible={props.yearItem} ratio={0} baseSize={"120"}>
                     <SelectBox 
                         dataSource={yearData}
-                        name="year"
+                        name="yearItem"
                         displayExpr={"value"}
                         valueExpr={"value"}
                         onValueChanged={(e) => handleChgState({name: e.component.option("name"), value: e.value })}
                         placeholder="[연도]"
                         style={{margin: "0px 5px 0px 5px"}}
-                        value={initParams.year}
+                        value={initParams.yearItem}
                     />
                 </Item>
                 <Item visible={props.monthItem} ratio={0} baseSize={"120"}>
                     <SelectBox
                         dataSource={monthData}
-                        name="month"
+                        name="monthItem"
                         displayExpr={"value"}
                         valueExpr={"value"}
                         onValueChanged={(e) => handleChgState({name: e.component.option("name"), value: e.value })}
                         placeholder="[월]"
                         style={{margin: "0px 5px 0px 5px"}}
-                        value={initParams.month}
+                        value={initParams.monthItem}
                     />
                 </Item>
                 <Item visible={props.aplyOdr} ratio={0} baseSize={"120"}>
@@ -132,7 +132,9 @@ const SearchPrjctCostSet = ({ callBack, props }) => {
                 <Item visible={props.searchBtn} ratio={0} baseSize={"100"}>
                     <Button text="검색" onClick={btnClick}/>
                 </Item>
-                                
+                <Item visible={props.excelDownloadBtn} ratio={0} baseSize={"150"}>
+                    <Button text="엑셀다운로드" onClick={excelDownload}/>
+                </Item>
             </Box>
         </div>
     );

@@ -141,17 +141,15 @@ const BoardInputForm = ({ edit, data, setData, setAttachments }) => {
                                 </td>
                             ) : (
                                 <td>
+                                    <span>* 파일 용량은 1.5GB</span>까지 가능합니다.
                                     <FileUploader
                                         multiple={true}
                                         accept="*/*"
-                                        uploadMode="useForm"
+                                        uploadMode="useButton"
                                         onValueChanged={handleAttachmentChange}
-                                        maxFileSize={1048576}
-                                    />
-                                    {/* <span className="note">
-                                        {'파일 용량은 '}
-                                        <span>10MB</span>까지 가능합니다.
-                                    </span> */}
+                                        maxFileSize={1.5 * 1024 * 1024 * 1024}
+                                    >
+                                    </FileUploader>
                                 </td>
                             )}
                         </tr>

@@ -202,6 +202,7 @@
 			, IMPRTNC_NTC_BGNG_YMD
 			, IMPRTNC_NTC_END_YMD
 			, a.REAL_FILE_NM
+			, a.STRG_FILE_NM
 			, a.FILE_STRG_COURS
 			, e.EMP_FLNM AS REG_EMP_ID
 			, DATE_FORMAT(n.REG_DT, '%Y-%m-%d %H:%i') AS REG_DT
@@ -260,6 +261,22 @@
 		WHERE EMP_ID = #{empId}
 	
 	</select>
+	
+	<select id="retriveDeptSearchList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+    
+    SELECT 
+       A.DEPT_NM AS DEPT_NM, 
+       B.DEPT_ID AS DEPT_ID 
+    FROM DEPT A 
+    INNER JOIN DEPT_HNF B ON A.DEPT_ID = B.DEPT_ID 
+    
+</select>
+	
+	
+	<select id="selectEmpInfoCnt" parameterType="map" resultType="com.trsystem.LowerHashMap">	
+		SELECT COUNT(*) AS CNT FROM EMP_DTL WHERE EMP_ID = #{empId}
+	</select>
+
 
 </mapper>
 
