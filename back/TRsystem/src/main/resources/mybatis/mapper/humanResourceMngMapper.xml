@@ -169,14 +169,10 @@
 
 
 
-<<<<<<< HEAD
 
-	<!-- 월별휴가정보 -->
-		<select id="retrieveEmpVacUseList" parameterType="map" resultType="com.trsystem.LowerHashMap">
-=======
 	<!-- 휴가사용내역 -->
 	<select id="retrieveEmpVacUseList" parameterType="map" resultType="com.trsystem.LowerHashMap">
->>>>>>> d8b60dafc2d5fcd680304e2e45cd06af2f4ada8a
+
     SELECT
 		 (SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD) AS VCATN_TY_CD -- 휴가구분
  		,(SELECT EMPNO FROM  EMP WHERE EMP_ID IN (SELECT ATRZ_DMND_EMP_ID  FROM ELCTRN_ATRZ ea WHERE ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID ) ) as EMPNO -- 사원번호

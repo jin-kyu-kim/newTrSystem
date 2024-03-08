@@ -24,8 +24,8 @@ const ProjectOutordCompanyCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr, bgtM
     };
 
     try {
-        const response = await ApiRequest("/boot/common/queryIdSearch", param);
-        setValues(response);
+        // const response = await ApiRequest("/boot/common/queryIdSearch", param);
+        // setValues(response);
     } catch(error) {
         console.error(error);
     }
