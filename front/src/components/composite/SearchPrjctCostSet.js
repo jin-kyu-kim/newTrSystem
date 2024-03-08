@@ -5,7 +5,7 @@ import { Button } from "devextreme-react/button";
 import CustomComboBox from "components/unit/CustomComboBox";
 import ArrayStore from "devextreme/data/array_store";
 
-const SearchPrjctCostSet = ({ callBack, props }) => {
+const SearchPrjctCostSet = ({ callBack, props, excelDownload }) => {
     const [initParams, setInitParams] = useState([]);
     const [yearData, setYearData] = useState([]);
     const [monthData, setMonthData] = useState([]);
