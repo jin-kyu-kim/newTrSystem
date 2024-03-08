@@ -632,11 +632,50 @@
 		  JOIN DEPT_HNF dh ON (e.EMP_ID = dh.EMP_ID)
 		  JOIN DEPT d ON (d.DEPT_ID = dh.DEPT_ID)
 		 WHERE 1=1
-		   AND pma.APLY_YM = '202403'
 		   AND pma.PRJCT_ID = #{prjctId}
+		   AND pma.APLY_YM = #{aplyYm}
 		   AND pma.APLY_ODR = #{aplyOdr}
+       <if test="empId != null">
+            <if test="!empId.equals('')">
+                AND pma.EMP_ID = #{empId}
+            </if>
+        </if>
 	</select>
 	
+	<select id="retrieveCtAply" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT e.EMP_FlNM, CONCAT(pca.APLY_YM, '-', pca.APLY_ODR) AS APLY_SN, SUM(UTZTN_AMT) AS TOT_APLY_AMT, e.EMP_ID, pca.APLY_YM, pca.APLY_ODR
+		  FROM PRJCT_CT_APLY pca
+		  JOIN EMP e ON (e.EMP_ID = pca.EMP_ID)
+		 WHERE 1=1
+		   AND pca.PRJCT_ID = #{prjctId}
+		   AND pca.APLY_YM = #{aplyYm}
+		   AND pca.APLY_ODR = #{aplyOdr}
+       <if test="empId != null">
+            <if test="!empId.equals('')">
+                AND pma.EMP_ID = #{empId}
+            </if>
+        </if>
+		 GROUP BY e.EMP_ID
+	</select>
+	
+	<select id="retrieveProjectCtAplyDetail" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT CONCAT(CT_PRPOS, ' (' ,UTZTN_AMT, '원)') AS TEXT
+		     , DATE_FORMAT(UTZTN_DT, '%Y-%m-%d %H:%i:%s') AS START_DATE
+		     , DATE_FORMAT(UTZTN_DT, '%Y-%m-%d %H:%i:%s') AS END_DATE
+		     , CONCAT(pca.APLY_YM, '-', pca.APLY_ODR) AS APLY_SN
+		     , e.EMP_FLNM
+		     , pca.UTZTN_AMT
+	         , pca.USE_OFFIC
+     		 , pca.ATDRN
+     		 , pca.CT_PRPOS
+		  FROM PRJCT_CT_APLY pca
+		  JOIN EMP e ON (e.EMP_ID = pca.EMP_ID)
+		 WHERE 1=1
+   		   AND pca.PRJCT_ID = #{prjctId}
+		   AND pca.APLY_YM = #{aplyYm}
+		   AND pca.APLY_ODR = #{aplyOdr}
+		   AND pca.EMP_ID = #{empId}
+	</select>
 	
 	
 
