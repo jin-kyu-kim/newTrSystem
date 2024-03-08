@@ -1,33 +1,28 @@
-import { useEffect, useState, } from "react";
-import { useNavigate } from "react-router-dom"; 
-
-import ProjectHrCtAprvJson from "./ProjectHrCtAprvJson.json";
+import React, { useEffect, useState, } from 'react';
+import SearchPrjctSet from "../../../components/composite/SearchPrjctSet";
 import ApiRequest from "../../../utils/ApiRequest";
 import CustomTable from "../../../components/unit/CustomTable";
-import SearchPrjctSet from "../../../components/composite/SearchPrjctSet";
+import ProjectOutordPersonJson from "./ProjectOutordPersonJson.json";
 
-import "react-datepicker/dist/react-datepicker.css";
-
-const ProjectHrCtAprv = () => {
+const ProjectOutordPerson = () => {
 
     const [values, setValues] = useState([]);
-    const [param, setParam] = useState([]);
-
+    const [param, setParam] = useState({});
+  
     const [totalItems, setTotalItems] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [pageSize, setPageSize] = useState(20);
-    
-    const {keyColumn, queryId, tableColumns, searchParams} = ProjectHrCtAprvJson;
-    const navigate = useNavigate ();
+
+    const { keyColumn, queryId, tableColumns, searchParams, popup } = ProjectOutordPersonJson;
 
     useEffect(() => {
-        if(!Object.values(param).every((value) => value === "")) {
-            pageHandle();
-        };
+            if (!Object.values(param).every((value) => value === "")) {
+                pageHandle();
+            }
     }, [param]);
-
-    // 검색 조회
+    
+    // 검색으로 조회할 때
     const searchHandle = async (initParam) => {
         setTotalPages(1);
         setCurrentPage(1);
@@ -38,35 +33,22 @@ const ProjectHrCtAprv = () => {
             startVal: 0,
             pageSize: pageSize,
         });
-    }
-
+    };
 
     const pageHandle = async () => {
         try {
             const response = await ApiRequest("/boot/common/queryIdSearch", param);
             setValues(response);
-
             if (response.length !== 0) {
                 setTotalPages(Math.ceil(response[0].totalItems / pageSize));
                 setTotalItems(response[0].totalItems);
             } else {
                 setTotalPages(1);
             }
-        } catch (error) {
+        } catch (error) {   
             console.log(error);
         }
     };
-
-    const onBtnClick = (data) => {
-        console.log(data);
-        navigate("/project/ProjectHrCtAprvDetail", 
-                { state: { 
-                          prjctId: data.prjctId,
-                          prjctNm: data.prjctNm,
-                         
-                         } 
-                });
-    }
 
     return (
         <div className="container">
@@ -74,7 +56,7 @@ const ProjectHrCtAprv = () => {
                 className="title p-1"
                 style={{ marginTop: "20px", marginBottom: "10px" }}
             >
-                <h1 style={{ fontSize: "40px" }}>프로젝트시간비용승인</h1>
+                <h1 style={{ fontSize: "40px" }}>외주비용승인</h1>
             </div>
             <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
                 <span>* 프로젝트를 조회합니다.</span>
@@ -85,9 +67,9 @@ const ProjectHrCtAprv = () => {
             <div>
                 검색된 건 수 : {totalItems} 건
             </div>
-            <CustomTable keyColumn={keyColumn} columns={tableColumns} values={values} paging={true} onClick={onBtnClick}/>
+            {/* <CustomTable keyColumn={keyColumn} columns={tableColumns} values={values} paging={true} onClick={onBtnClick}/> */}
         </div>
     );
-};
 
-export default ProjectHrCtAprv;
+}
+export default ProjectOutordPerson;

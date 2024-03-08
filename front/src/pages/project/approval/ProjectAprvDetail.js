@@ -42,8 +42,11 @@ const ProjectAprvDetail = () => {
         console.log(aprvrEmpId)
         console.log(cookies.userInfo.empId)
 
-        if(aprvrEmpId === cookies.userInfo.empId) handleBtnVisible();
 
+
+        if(atrzSttsCd === 'VTW00801') {
+            if(aprvrEmpId === cookies.userInfo.empId) handleBtnVisible();
+        }
 
         const param = {
             "queryId": ProjectAprvDetail.queryId,
@@ -60,6 +63,7 @@ const ProjectAprvDetail = () => {
     },[]);
 
     const handleBtnVisible = () => {
+
         setBtnVisible(true);
     };
 

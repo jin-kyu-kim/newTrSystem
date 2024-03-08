@@ -60,7 +60,7 @@ const ProjectAprv = () => {
     }
   };
 
-  const onRowDblClick = (e) => {
+  const onRowClick = (e) => {
     navigate("/project/ProjectAprvDetail", 
       {state: { id: e.data.prjctId
               , prjctNm: e.data.prjctNm
@@ -72,7 +72,6 @@ const ProjectAprv = () => {
               , aprvrEmpId : e.data.aprvrEmpId } }
     );
   }
-
 
   return (
     <div className="container">
@@ -89,7 +88,7 @@ const ProjectAprv = () => {
         <SearchPrjctSet callBack={searchHandle} props={searchParams}/>
       </div>
       <div>검색된 건 수 : {totalItems} 건</div>
-      <CustomTable  keyColumn={keyColumn} columns={tableColumns} values={values} onRowDblClick={onRowDblClick} paging={true}/>
+      <CustomTable  keyColumn={keyColumn} columns={tableColumns} values={values} onRowClick={onRowClick} paging={true}/>
     </div>
   );
 };

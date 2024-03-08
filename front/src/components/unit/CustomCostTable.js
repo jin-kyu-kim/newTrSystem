@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "devextreme-react";
-import { parse, format, addMonths } from 'date-fns';
+import { parse, format, addMonths, subMonths } from 'date-fns';
 
 import ApiRequest from "../../utils/ApiRequest";
 import CustomPopup from "../unit/CustomPopup";
@@ -38,13 +38,10 @@ const CustomCostTable = ({
   const [summaryColumns, setSummaryColumns] = useState(summaryColumn); 
   const [transformedData, setTransformedData] = useState([]);
   const editColumn = ["수정", "삭제"];
-  // console.log("보라 values", values);
 
   useEffect(() => {
     const deleteArray = [...json.pkColumns, ...json.nomalColumns, ...json.CdComboboxColumnNm];
     deleteArray.push("total");
-
-    // console.log("deleteArray", deleteArray);
 
     let temp = {...selectedItem};
 
@@ -54,20 +51,17 @@ const CustomCostTable = ({
 
     const transformedData = Object.keys(temp).map((key) => {
         // 키에서 연도와 월을 분리하고 형식을 변경합니다.
-        const formattedKey = key.replace('년 ', '-').replace('월', '');        
-        console.log("formattedKey???머얄망", formattedKey);       
+        const formattedKey = key.replace('년 ', '').replace('월', '');             
         return {
           id: formattedKey,
           value: temp[key]
         };
       });
-      
       setTransformedData(transformedData);
 
   }, [selectedItem]);
 
   const showPopup = (data) => {
-    // console.log("popup data!!", data);
     setIsPopupVisible(true);
     setSelectedItem(data); // 팝업에 표시할 데이터 설정
   };
@@ -84,34 +78,23 @@ const CustomCostTable = ({
     // 상태 업데이트 함수를 사용하여 summaryColumn 상태 업데이트
     setSummaryColumns(prevSummaryColumns => [...prevSummaryColumns, ...newSummaryColumns]);
   };
-
-  //파라미터로 받아온 사업시작, 사업종료월을 파라미터로 포함된 월의 갯수를 배열로 반환
-  useEffect(() => {
-      const getPeriod = (startDate, endDate) => {
-        const start = startDate ? parse(startDate, 'yyyy-MM-dd', new Date()) : new Date();
-        const end = endDate ? parse(endDate, 'yyyy-MM-dd', new Date()) : addMonths(start, 15);
-        let periods = [];
-        let currentDate = start;
-        while (currentDate  <= end) {
-          periods.push(format(currentDate, 'yyyy년 MM월'));
-          currentDate = addMonths(currentDate, 1); 
-        }
-        setPeriod(periods);
-        updateSummaryColumn(periods);
-    };
-    getPeriod(ctrtYmd, bizEndYmd);
-  }, []);
-
-  //gridRows가 실행되는 시점 잡아주기.
-  useEffect(() => {
-    if(period){
-      gridRows();
-    }
-  } ,[period]);
-
   
+  //기간 set
+  useEffect(() => {
+    const start = parse(ctrtYmd || format(new Date(), 'yyyy-MM-dd'), 'yyyy-MM-dd', new Date());
+    const end = bizEndYmd ? parse(bizEndYmd, 'yyyy-MM-dd', new Date()) : addMonths(start, 15);
+    const periods = [];
+  
+    for (let currentDate = start; currentDate <= end; currentDate = addMonths(currentDate, 1)) {
+      periods.push(format(currentDate, 'yyyy년 MM월'));
+    }
+  
+    setPeriod(periods);
+    updateSummaryColumn(periods);
+  }, [ctrtYmd, bizEndYmd]); 
+
+
   const onCellRenderEdit = ({data}) => {
-    // console.log("data",data);
     return (
       <Button
         onClick={() => showPopup(data)}
@@ -187,7 +170,13 @@ const CustomCostTable = ({
           caption={column.value}
           alignment={"center"}
           fixed={true}
-        ></Column>
+          dataType={column.subType ==="NumberBox" ? "number" : 
+                    column.subType ==="Date" ? "date" :
+                     "string"}
+          format={column.subType === "Date" ? "yyyy-MM-dd" : 
+                  column.subType === "NumberBox" ? column.format :
+                  ""}
+        ></Column>     
       );
     });
     period.map((periodItem, index) => {
@@ -199,6 +188,8 @@ const CustomCostTable = ({
           alignment={"center"}
           // visibility={"hidden"}
           fixed={true}
+          format={json.popupNumberBoxFormat}
+
         ></Column>
       );
     });
@@ -221,7 +212,6 @@ const CustomCostTable = ({
     });
     return result;
   };
-  
 
   return (
     <div className="">
@@ -262,7 +252,7 @@ const CustomCostTable = ({
               column={item.value}
               summaryType={item.type}
               displayFormat={item.format}
-              valueFormat={{ type: "fixedPoint", precision: 0 }} // 천 단위 구분자 설정
+              valueFormat={{ type: "fixedPoint", precision: json.precision }} // 천 단위 구분자 설정
             />
           ))}
         </Summary>

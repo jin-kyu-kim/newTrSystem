@@ -5,7 +5,6 @@ import ToggleButton from "../../pages/sysMng/ToggleButton"
 const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, 
                       handleYnVal, editRow, onEditRow, onClick, wordWrap,onRowClick }) => {
 
-
   const gridRows = () => {
     const result = [];
     for (let i = 0; i < columns.length; i++) {
@@ -59,6 +58,22 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
     )
   }
 
+  const allowedPageSize = () =>{
+    let pageSizes=[];
+    if(values.length < 20){
+      pageSizes = [5, 10, 'all']
+    }else if(values.length  < 50 ){
+      pageSizes =  [10, 20, 'all']
+    }else if(values.length  < 80) {
+      pageSizes =  [20, 50, 'all']
+    }else if(values.length  < 100){
+      pageSizes =  [20, 50, 80, 'all']
+    }else{
+      pageSizes =  [20, 50, 80, 100]
+    }
+    return pageSizes;
+  }
+
   return (
     <div className="wrap_table">
       <DataGrid
@@ -99,7 +114,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
           showNavigationButtons={true}
           showInfo={false}
           showPageSizeSelector={true}
-          allowedPageSizes={[20, 50, 80, 100]}
+          allowedPageSizes={allowedPageSize()}
         />
         {gridRows()}
 
@@ -111,7 +126,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
                 column={item.value}
                 summaryType={item.type}
                 displayFormat={item.format}
-                valueFormat={{ type: 'fixedPoint', precision: 0 }} // 천 단위 구분자 설정
+                valueFormat={{ type: 'fixedPoint', precision: item.precision }} // 천 단위 구분자 설정
               />
             ))}
           </Summary>

@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 
 import SelectBox from "devextreme-react/select-box"
 import ApiRequest from "../../utils/ApiRequest";
+import { Validator, RequiredRule, } from "devextreme-react/validator";
 
-const CustomComboBox = ({props, onSelect, placeholder, value, readOnly}) => {
+const CustomComboBox = ({props, onSelect, label, placeholder, value, readOnly, required}) => {
 
     const [values, setValues] = useState([]);
 
@@ -38,7 +39,15 @@ const CustomComboBox = ({props, onSelect, placeholder, value, readOnly}) => {
         } catch(error) {
             console.error(error);
         }
-    }   
+    }
+    
+    const validate = () => {
+        if(required) {
+            return (
+                <RequiredRule message={`${label}은 필수 입력 값입니다.`}/>
+            )
+        }
+    }
 
     return (
         <SelectBox
@@ -65,7 +74,9 @@ const CustomComboBox = ({props, onSelect, placeholder, value, readOnly}) => {
             value={value}
             readOnly={readOnly}
             showClearButton={props.clearButton}
-        />
+        >
+            <Validator>{validate()}</Validator>
+        </SelectBox>
     );
 
 }
