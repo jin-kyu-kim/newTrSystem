@@ -8,23 +8,18 @@ import ProjectClaimCostDetailJson from "./ProjectClaimCostDetailJson.json";
 import SearchPrjctCostSet from "../../../components/composite/SearchPrjctCostSet";
 
 const ProjectCostClaimDetail = () => {
-  const navigate = useNavigate ();
   const location = useLocation();
   const prjctId = location.state.prjctId;
-  const totBgt = location.state.totBgt;
   const bgtMngOdr = location.state.bgtMngOdr;
   const ctrtYmd = location.state.ctrtYmd;
   const bizEndYmd = location.state.bizEndYmd;
-  const bgtMngOdrTobe = location.state.bgtMngOdrTobe;
-  const bizSttsCd = location.state.bizSttsCd;
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [atrzLnSn, setAtrzLnSn] = useState();
 
   const ProjectClaimCostDetail = ProjectClaimCostDetailJson.tabMenu;
   const searchParams = ProjectClaimCostDetailJson.searchParams;
+  const [param, setParam] = useState([]);
 
-    const [param, setParam] = useState([]);
-  
   useEffect(() => {
   
     const param = { 

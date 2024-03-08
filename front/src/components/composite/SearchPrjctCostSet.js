@@ -93,25 +93,25 @@ const SearchPrjctCostSet = ({ callBack, props, excelDownload }) => {
                 <Item visible={props.yearItem} ratio={0} baseSize={"120"}>
                     <SelectBox 
                         dataSource={yearData}
-                        name="yearItem"
+                        name="year"
                         displayExpr={"value"}
                         valueExpr={"value"}
                         onValueChanged={(e) => handleChgState({name: e.component.option("name"), value: e.value })}
                         placeholder="[연도]"
                         style={{margin: "0px 5px 0px 5px"}}
-                        value={initParams.yearItem}
+                        value={initParams.year}
                     />
                 </Item>
                 <Item visible={props.monthItem} ratio={0} baseSize={"120"}>
                     <SelectBox
                         dataSource={monthData}
-                        name="monthItem"
+                        name="month"
                         displayExpr={"value"}
                         valueExpr={"value"}
                         onValueChanged={(e) => handleChgState({name: e.component.option("name"), value: e.value })}
                         placeholder="[월]"
                         style={{margin: "0px 5px 0px 5px"}}
-                        value={initParams.monthItem}
+                        value={initParams.month}
                     />
                 </Item>
                 <Item visible={props.aplyOdr} ratio={0} baseSize={"120"}>

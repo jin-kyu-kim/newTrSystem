@@ -4,9 +4,8 @@ import ProjectClaimCostYMDJson from '../prjctCtClm/ProjectClaimCostYMDJson.json'
 import ApiRequest from "../../../utils/ApiRequest";
 
 
-
 const ProjectClaimCostYMD = () => {
-  const { keyColumn, queryId, tableColumns, empCostColumns } = ProjectClaimCostYMDJson;
+  const { keyColumn, queryId } = ProjectClaimCostYMDJson;
   const [empMMData, setEmpMMData] = useState([]);
   const [empCostData, setEmpCostData] = useState([]);
 
@@ -69,47 +68,52 @@ const ProjectClaimCostYMD = () => {
     };
 
     // 날짜 컬럼 데이터 렌더링
-    const claimDateCellRender = (e) => {
-        const generatedDates = generateDates('2024', '03', 2);
+    const claimDateCellRender = (data) => {
+        const generatedDates = generateDates('2024', '03', 1);
+        const currentDate = generatedDates[data.rowIndex];
 
         return (
             <div style={{ display: "flex" }}>
-                    <div>{generatedDates[e.rowIndex]}</div>
+                    <div>{generatedDates[data.rowIndex]}</div>
             </div>
         );
     };
 
     // 수행인력 컬럼 데이터 렌더링
-    const empMMCellRender = (e) => {
-         return(
-             <div className='container'>
-                 {empMMData.map((m) => {
-                     return(
-                         <div style={{display: "flex"}}>
-                             <div><strong>{m.empFlnm}</strong> / </div>
-                             <div>{m.md} / </div>
-                             <div>{m.mmAtrzCmptnYn}</div>
-                         </div>
-                     )
-                 })}
-             </div>
-         )
+    const empMMCellRender = (data) => {
+        const currentDate = data.data.cliamDate; // 현재 날짜 가져오기
+        const filteredEmpMMData = empMMData.filter(m => m.aplyYmd === currentDate);
+
+        return (
+            <div className='container'>
+                {filteredEmpMMData.map((m) => (
+                    <div style={{display: "flex"}}>
+                        <div><strong>{m.empFlnm}</strong> / </div>
+                        <div>{m.md} / </div>
+                        <div>{m.mmAtrzCmptnYn}</div>
+                    </div>
+                ))}
+            </div>
+        );
     }
 
     //경비 컬럼 데이터 렌더링
-    const empCostCellRender = (e) => {
-        return(
+    const empCostCellRender = (data) => {
+        const currentDate = data.data.cliamDate; // 현재 날짜 가져오기
+        const filteredEmpCostData = empCostData.filter(m => m.utztnDt === currentDate);
+
+        return (
             <div className='container'>
-                {empCostData.map((m) => {
-                    return(
+                {filteredEmpCostData.map((m) => {
+                    return (
                         <div style={{display: "flex"}}>
-                            <div><strong>{m.empFlnm}</strong> / </div>
-                            <div>{m.expensCd} / </div>
+                            <div><strong>{m.empFlnm}</strong> /</div>
+                            <div>{m.expensCd} /</div>
                             <div>{m.utztnAmt} / </div>
                             <div>({m.useOffic}) / </div>
                             <div>상세내역 : {m.cdPrpos} / </div>
                             <div>목적 : {m.atdrn} / </div>
-                            <div>{m.ctAtrzCmptnYn}</div>
+                            <div>{m.ctAtrzCmptnYn} </div>
                         </div>
                     )
                 })}
@@ -117,15 +121,16 @@ const ProjectClaimCostYMD = () => {
         )
     }
 
-    const rowData = generateDates('2024', '03', 2 ).map((date) => ({ cliamDate: date }));
+
+    const rowData = generateDates('2024', '03', 1 ).map((date) => ({ cliamDate: date }));
 
     return (
         <div style={{padding: '20px'}}>
             <div className='container'>
                 <DataGrid dataSource={rowData} showBorders={true}>
-                    <Column dataField="cliamDate" caption="날짜" cellRender={(e) => claimDateCellRender(e)}/>
-                    <Column dataField="empMM" caption="수행인력" cellRender={(e) => empMMCellRender(e)}/>
-                    <Column dataField="empCost" caption="경비" cellRender={(e) => empCostCellRender(e)}/>
+                    <Column dataField="cliamDate" caption="날짜" cellRender={(data) => claimDateCellRender(data)}/>
+                    <Column dataField="empMM" caption="수행인력" cellRender={(data) => empMMCellRender(data)}/>
+                    <Column dataField="empCost" caption="경비" cellRender={(data) => empCostCellRender(data)}/>
                 </DataGrid>
             </div>
         </div>

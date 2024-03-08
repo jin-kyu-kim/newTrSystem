@@ -9,9 +9,11 @@
     "tableColumns":
 	[
         { "key": "cliamDate", "value": "날짜" },
+        { "key": "aplyYmd", "value": "신청일자" },
         { "key": "empFlnm", "value": "직원성명" },
         { "key": "md", "value": "ManDay" },
         { "key": "mmAtrzCmptnYn", "value": "MM결재완료여부" },
+        { "key": "utztnDt", "value": "이용일시" },
         { "key": "expensCd", "value": "경비코드" },
         { "key": "utztnAmt", "value": "이용금액" },
         { "key": "useOffic", "value": "사용처" },
