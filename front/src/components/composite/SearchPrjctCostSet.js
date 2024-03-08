@@ -6,10 +6,13 @@ import CustomComboBox from "components/unit/CustomComboBox";
 import ArrayStore from "devextreme/data/array_store";
 
 const SearchPrjctCostSet = ({ callBack, props }) => {
-    const [initParams, setInitParams] = useState({});
+    const [initParams, setInitParams] = useState([]);
+    const [yearData, setYearData] = useState([]);
+    const [monthData, setMonthData] = useState([]);
     
     const yearList = [];
     const monthList = [];
+
     const odrList = [
         {
             "id": "1",
@@ -31,8 +34,11 @@ const SearchPrjctCostSet = ({ callBack, props }) => {
     }
 
     useEffect(() => {
+
         const date = new Date();
         const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
 
 
         const startYear = year - 5;
@@ -50,20 +56,21 @@ const SearchPrjctCostSet = ({ callBack, props }) => {
             monthList.push({"value": i});
         }
 
-    }, [initParams]);
+        let odrVal = day > 15 ? "2" : "1";
+        let monthVal = month < 10 ? "0" + month : month;
 
-    // useEffect(() => {
-    //     callBack(initParams);
-    // });
+        setInitParams({
+            year: year,
+            month: monthVal,
+            aplyOdr: odrVal
+        });
 
-    const yearData = new ArrayStore({
-        data: yearList,
-    });
-    const monthData = new ArrayStore({
-        data: monthList,
-    });
+        setYearData(yearList);
+        setMonthData(monthList);
 
+        callBack(initParams);
 
+    }, []);
 
     const handleChgState = ({ name, value }) => {
         setInitParams({
@@ -122,9 +129,10 @@ const SearchPrjctCostSet = ({ callBack, props }) => {
                 <Item visible={props.empNm} ratio={0} baseSize={"150"}>
                     <CustomComboBox props={empList} onSelect={handleChgState} placeholder="기안자성명" value={initParams.empId}/>
                 </Item>
-                <Item visible={props.searchBtn} ratio={0} baseSize={"50"}>
+                <Item visible={props.searchBtn} ratio={0} baseSize={"100"}>
                     <Button text="검색" onClick={btnClick}/>
-                </Item>                
+                </Item>
+                                
             </Box>
         </div>
     );
