@@ -249,6 +249,12 @@
     INNER JOIN DEPT_HNF B ON A.DEPT_ID = B.DEPT_ID 
     
 </select>
+	
+	
+	<select id="selectEmpInfoCnt" parameterType="map" resultType="com.trsystem.LowerHashMap">	
+		SELECT COUNT(*) AS CNT FROM EMP_DTL WHERE EMP_ID = #{empId}
+	</select>
+
 
 </mapper>
 

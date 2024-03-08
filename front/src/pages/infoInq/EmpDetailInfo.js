@@ -11,9 +11,6 @@ import Button from "devextreme-react/button";
 
 const EmpDetailInfo = () => {
     
-    const navigate = useNavigate();
-    const location = useLocation();
-
     const [selectedIndex, setSelectedIndex] = useState(0);
     
     const EmpDetailInfo = EmpInfoJson.EmpDetailInfo;
