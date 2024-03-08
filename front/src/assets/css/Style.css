@@ -79,7 +79,7 @@
   width: 70%;
 }
 
-.asterisk::after { color: red; content: "*"; font-size: inherit; margin-left: 0.4rem; }
+.asterisk::before { color: red; content: "*"; font-size: inherit; margin-left: 0.4rem; }
 
 /* NoticeInput.css */
 .notice-table {
