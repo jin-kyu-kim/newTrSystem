@@ -55,13 +55,14 @@
 	<!--직급발령정보 조회-->
 	<select id="retrieveEmpJbpsHist" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT
-        	E.EMP_ID,
-        	E.EMPNO,
-        	C.CD_NM AS JBPS_NM,
-        	E.JBPS_CD,
-        	ROW_NUMBER() OVER (PARTITION BY EMP_ID ORDER BY REG_DT) AS RowNum ,
-        	E.REG_DT,
-        	A.EMPNO AS REG_EMPNO
+        	E.EMP_ID,			                                                -- 사원아이디
+        	E.EMPNO, 			                                                -- 사번
+        	E.EMP_INFO_CHG_ODR,                                                 -- 발령차수
+        	C.CD_NM AS JBPS_NM,	                                                -- 직급명
+        	E.JBPS_CD,			                                                -- 직급코드
+        	ROW_NUMBER() OVER (PARTITION BY EMP_ID ORDER BY REG_DT) AS RowNum , -- 비교용 ROWNUM
+        	E.REG_DT,															-- 등록일자
+        	A.EMPNO AS REG_EMPNO											 	-- 등록사번
     	FROM 
     		EMP_HIST E
     		LEFT OUTER JOIN CD C ON C.CD_VALUE =E.JBPS_CD
@@ -201,6 +202,7 @@
 			, IMPRTNC_NTC_BGNG_YMD
 			, IMPRTNC_NTC_END_YMD
 			, a.REAL_FILE_NM
+			, a.STRG_FILE_NM
 			, a.FILE_STRG_COURS
 			, e.EMP_FLNM AS REG_EMP_ID
 			, DATE_FORMAT(n.REG_DT, '%Y-%m-%d %H:%i') AS REG_DT
@@ -259,6 +261,22 @@
 		WHERE EMP_ID = #{empId}
 	
 	</select>
+	
+	<select id="retriveDeptSearchList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+    
+    SELECT 
+       A.DEPT_NM AS DEPT_NM, 
+       B.DEPT_ID AS DEPT_ID 
+    FROM DEPT A 
+    INNER JOIN DEPT_HNF B ON A.DEPT_ID = B.DEPT_ID 
+    
+</select>
+	
+	
+	<select id="selectEmpInfoCnt" parameterType="map" resultType="com.trsystem.LowerHashMap">	
+		SELECT COUNT(*) AS CNT FROM EMP_DTL WHERE EMP_ID = #{empId}
+	</select>
+
 
 </mapper>
 

@@ -5,13 +5,17 @@ import { Container } from 'react-bootstrap';
 import { Button } from "devextreme-react";
 import ApiRequest from "utils/ApiRequest";
 import NoticeJson from "../infoInq/NoticeJson.json"
+import axios from 'axios';
 
 const NoticeDetail = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const noticeId = location.state.id;
     const { detailQueryId, buttonGroup } = NoticeJson.detail;
-    const [oneData, setOneData] = useState([]);
+    
+    const [oneData, setOneData] = useState({});
+    const [fileList, setFileList] = useState([]);
+    const [filesUrl, setFilesUrl] = useState([]);
 
     const getOneData = async () => {
         const params = {
@@ -21,7 +25,13 @@ const NoticeDetail = () => {
         try {
             const response = await ApiRequest("/boot/common/queryIdSearch", params);
             if (response.length !== 0) {
-                setOneData(response);
+                setOneData(response[0]);
+                const tmpFileList = response.map((data) => ({
+                    realFileNm: data.realFileNm,
+                    fileStrgCours: data.fileStrgCours,
+                    strgFileNm: data.strgFileNm
+                }));
+                setFileList(prevFileList => [...prevFileList, ...tmpFileList])
             }
         } catch (error) {
             console.log(error);
@@ -30,8 +40,13 @@ const NoticeDetail = () => {
 
     useEffect(() => {
         getOneData();
-        getFiles();
     }, []);
+
+    useEffect(() => {
+        if (fileList.length !== 0 && filesUrl.length === 0) {
+            getFile();
+        }
+    }, [fileList]);
 
     const deleteNotice = async () => {
         const params = [{ tbNm: "NOTICE" }, { noticeId: noticeId }]
@@ -44,8 +59,26 @@ const NoticeDetail = () => {
             console.log(error);
         }
     }
-    const getFiles = async () => {
+    const getFile = async () => {
+        const newUrls = [];
+        for (let i = 0; i < fileList.length; i++) {
+            try {
+                const response = await axios.post('/boot/common/getFile', fileList[i], {
+                    responseType: 'arraybuffer'
+                });
+                const filename = response.headers['content-disposition'];
+                const extension = filename.match(/filename="(.+)"/);
+                const type = extension ? extension[1] : 'unknown';
 
+                const blob = new Blob([response.data], { type: response.headers['content-type'] });
+                const url = URL.createObjectURL(blob);
+                newUrls.push({ url: url, filename: type });
+
+            } catch (error) {
+                console.error('Error: ', error);
+            }
+        }
+        setFilesUrl(newUrls)
     }
 
     return (
@@ -60,29 +93,26 @@ const NoticeDetail = () => {
             <Container style={{ width: '90%', margin: '0 auto' }}>
                 {oneData.length !== 0 ?
                     <>
-                        <h1 style={{ marginBottom: "20px" }}>{oneData[0].noticeTtl}</h1>
-                        <div>{oneData[0].regEmpId} | {oneData[0].regDt}</div><hr />
+                        <h1 style={{ marginBottom: "20px" }}>{oneData.noticeTtl}</h1>
+                        <div>{oneData.regEmpId} | {oneData.regDt}</div><hr />
+                        <div dangerouslySetInnerHTML={{ __html: oneData.noticeCn }} />
 
-                        <div dangerouslySetInnerHTML={{ __html: oneData[0].noticeCn }} />
-                        {oneData.map((data, index) => (
-                            data.realFileNm && data.fileStrgCours && (
-                                <div key={index}>
-                                    {data.realFileNm.match(/\.(jpeg|jpg|png|gif)$/i) ? (
-                                        <>
-                                            <div>
-                                                <img src={data.fileStrgCours} alt="첨부 이미지" className="img-fluid" />
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <p>*첨부 파일:</p>
-                                        </>
-                                    )}
-                                </div>
-                            )
-                        ))}<hr />
+                        {filesUrl.map((file, index) => (
+                            <div key={index}>
+                                {console.log('file',file)}
+                                {file.filename.endsWith('.jpg') || file.filename.endsWith('.jpeg') || file.filename.endsWith('.png') || file.filename.endsWith('.gif') ? (
+                                    <img src={file.url} alt={file.filename} style={{ width: '100%', marginBottom:'20px' }} />
+                                ) : (
+                                    <>
+                                        <h4>* 첨부파일 </h4>
+                                        <a href={file.url} download={file.filename} style={{fontSize:'24px', color:'green', fontWeight:'bold'}}>{file.filename}</a>
+                                    </>
+                                )}
+                            </div>
+                        ))}
+                        <hr />
                     </>
-                    : <></>
+                    : ''
                 }
             </Container>
             <div style={{ textAlign: 'center' }}>

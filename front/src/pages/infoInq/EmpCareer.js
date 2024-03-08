@@ -41,7 +41,6 @@ const EmpCareer = ({ callBack, props }) => {
   const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
-    pageHandle();
    
   setParam({
     ...param,
@@ -102,15 +101,11 @@ useEffect(() => {
   
     try {
       const response = await ApiRequest("/boot/common/queryIdSearch", selectParams);
-      console.log("response"+response);
-      console.log("response[0]" + response[0].careerSn);
       setData(() => ({
         ...data,
         careerSn: response[0].careerSn
       }));
     
-      console.log("data : " + data.empId);
-  
     } catch (error) {
       console.log(error);
     }
@@ -131,11 +126,8 @@ useEffect(() => {
     const careerConfirmResult = window.confirm("경력을 등록하시겠습니까?");
     if (careerConfirmResult) {
       const params = [{ tbNm: "EMP_CAREER" }, data];
-      console.log(params);
       try {
         const response = await ApiRequest("/boot/common/commonInsert", params);
-        console.log(response);
-  
         if (response === 1) {
           window.alert("경력이 등록되었습니다.")
           setIsSuccess(!isSuccess);
@@ -182,9 +174,11 @@ const pageHandle = async () => {
 };
 
 useEffect(()=>{
-  pageHandle();
-},[param.empId,tableKey]);
-
+  if (!Object.values(param).every((value) => value === "")) {
+    pageHandle();
+  }
+ 
+},[param,tableKey]);
 const onEditRow = async (editMode, e) => {
   const editParam = [{tbNm: "EMP_CAREER"}];
   let editInfo = {};

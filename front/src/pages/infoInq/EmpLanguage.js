@@ -32,7 +32,6 @@ const EmpLanguage = ({ callBack, props }) => {
   const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
-    pageHandle();
    
   setParam({
     ...param,
@@ -44,7 +43,7 @@ const EmpLanguage = ({ callBack, props }) => {
 useEffect(() => {
    
   getSn();
-}, [param, isSuccess]);
+}, [ isSuccess]);
 
 
   const [initParam, setInitParam] = useState({
@@ -121,14 +120,11 @@ const getSn = async () => {
 
   try {
     const response = await ApiRequest("/boot/common/queryIdSearch", selectParams);
-    console.log("response"+response);
-    console.log("response[0]" + response[0].fgggAbltySn);
     setData(() => ({
       ...data,
       fgggAbltySn: response[0].fgggAbltySn
     }));
 
-    console.log("data : " + data.empId);
 
   } catch (error) {
     console.log(error);
@@ -149,10 +145,8 @@ const fgggInsert = async () => {
   const fgggConfirmResult = window.confirm("외국어 능력을 등록하시겠습니까?");
   if (fgggConfirmResult) {
     const params = [{ tbNm: "EMP_FGGG_ABLTY" }, data];
-    console.log(params);
     try {
       const response = await ApiRequest("/boot/common/commonInsert", params);
-      console.log(response);
 
       if (response === 1) {
         window.alert("외국어 능력이 등록되었습니다.")
@@ -170,9 +164,12 @@ const fgggInsert = async () => {
 
 
 useEffect(()=>{
-  pageHandle();
-},[param.empId,tableKey]);
-  
+  if (!Object.values(param).every((value) => value === "")) {
+    pageHandle();
+  }
+ 
+},[param,tableKey]);
+
 const onEditRow = async (editMode, e) => {
   const editParam = [{tbNm: "EMP_FGGG_ABLTY"}];
   let editInfo = {};

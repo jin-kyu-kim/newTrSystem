@@ -65,6 +65,18 @@ const HtmlEditBox = ({ column, data, setData, value, placeholder }) => {
 };
 const sizeValues = ["8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt"];
 const fontValues = [
+  "함초롱바탕",
+  "나눔고딕",
+  "굴림체",
+  "맑은 고딕",
+  "돋움체",
+  "궁서체",
+  "바탕체",
+  "함초롱바탕",
+  "나눔스퀘어",
+  "나눔스퀘어 Bold",
+  "나눔고딕 ExtraBold",
+  "나눔명조 ExtraBold",
   "Arial",
   "Courier New",
   "Georgia",
