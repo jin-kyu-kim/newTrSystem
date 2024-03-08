@@ -1,9 +1,14 @@
 import { useEffect, useState, } from "react";
 import  { useLocation } from "react-router-dom";
 import SearchPrjctCostSet from "../../../components/composite/SearchPrjctCostSet";
-import ProjectHrCtAprvDetailJson from "./ProjectHrCtAprvDetailJson";
+import ProjectHrCtAprvDetailJson from "./ProjectHrCtAprvDetailJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
 import CustomTable from "../../../components/unit/CustomTable";
+import CustomPopup from "components/unit/CustomPopup";
+import ProjectHrCtAprvDetailPop from "./ProjectHtCtAprvDetailPop";
+import { IPopoverOptions, Popover } from 'devextreme-react/popover';
+import { set } from "date-fns";
+import { Popup } from "devextreme-react";
 
 const ProjectHrCtAprvDetail = () => {
 
@@ -14,48 +19,57 @@ const ProjectHrCtAprvDetail = () => {
     
     const [param, setParam] = useState([]);
     const [mmValues, setMmValues] = useState([]);
+    const [ctValues, setCtValues] = useState([]);
+    const [ctPopupVisible, setCtPopupVisible] = useState(false);
+    const [ctDetailParam, setCtDetailParam] = useState([]);
+    const [ctDetailValues, setCtDetailValues] = useState([]);
 
-    // 수행인력 조회
-    useEffect(() => {
-        console.log("useEffect");
-
-
-        
-    },[]);
     
+    // 조회
     useEffect(() => {
-        if(param.length == 0){
-            console.log(param);
-            handleAplyMm();    
+        if(!Object.values(param).every((value) => value === "")) {
+            handleMmAply();
+            handleCtAply();
         }
 
     }, [param])
 
-    // 경비 조회
-    const handleAplyMm = async () => {
-        const param = {
-            queryId: ProjectHrCtAprvDetailJson.mm.queryId,
-            prjctId: prjctId,
-            aplyOdr: 1
+    const handleCtAply = async () => {
+
+        const ctParam = {
+            ...param,
+            queryId: ProjectHrCtAprvDetailJson.ct.queryId,
         }
+
+        const response = await ApiRequest("/boot/common/queryIdSearch", ctParam);
+        setCtValues(response);
+    }
+
+    // 경비 조회
+    const handleMmAply = async () => {
 
         const response = await ApiRequest("/boot/common/queryIdSearch", param);
         setMmValues(response);
-        console.log(response);
     }
 
     const searchHandle = async (initParam) => {
-        console.log("searchHandle");
-        console.log(initParam);
-
-        console.log(initParam.year + initParam.month);
-        console.log(initParam.year)
-
         if(initParam.year == null || initParam.month == null) {
+
+            const date = new Date();
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+
+            let odrVal = day > 15 ? "2" : "1";
+            let monthVal = month < 10 ? "0" + month : month;
+            let aplyYm = year + monthVal;
+
             setParam({
                 ...param,
-                aplyNm: initParam.year + initParam.month,
-                aplyOdr: initParam.aplyOdr,
+                queryId: ProjectHrCtAprvDetailJson.mm.queryId,
+                prjctId: prjctId,
+                aplyYm: aplyYm,
+                aplyOdr: odrVal,
                 empId: initParam.empId,
             })
 
@@ -64,16 +78,46 @@ const ProjectHrCtAprvDetail = () => {
 
         setParam({
             ...param,
-            aplyNm: initParam.year + initParam.month,
+            queryId: ProjectHrCtAprvDetailJson.mm.queryId,
+            prjctId: prjctId,
+            aplyYm: initParam.year + initParam.month,
             aplyOdr: initParam.aplyOdr,
             empId: initParam.empId,
         })
     }
 
-    const onBtnClick = (e) => {
-        console.log(e.component.option("value").data);
+    const onMmBtnClick = (data) => {
+        console.log(data);
     }
 
+    const onCtBtnClick = async (data) => {
+        console.log(data);
+
+        setCtDetailParam({
+            ...ctDetailParam,
+            empId: data.empId,
+        });
+
+        await retrieveProjectCtAplyDetail(data);
+        setCtPopupVisible(true);
+    }
+
+    const retrieveProjectCtAplyDetail = async (data) => {
+
+        const param = {
+            queryId: "projectMapper.retrieveProjectCtAplyDetail",
+            prjctId: prjctId,
+            aplyYm: data.aplyYm,
+            aplyOdr: data.aplyOdr,
+            empId: data.empId
+        }
+        const response = await ApiRequest("/boot/common/queryIdSearch", param);
+        setCtDetailValues(response);
+    }
+
+    const handleClose = () => {
+        setCtPopupVisible(false);
+    };
 
     return (
         <div className="container">
@@ -92,11 +136,16 @@ const ProjectHrCtAprvDetail = () => {
             <div className="" style={{ marginBottom: "10px" }}>
                 <span>* 수행인력</span>
             </div>
-            <CustomTable keyColumn={mm.keyColumn} columns={mm.tableColumns} values={mmValues} paging={true} onBtnClick={onBtnClick} summary={true} summaryColumn={mm.summaryColumn}/>
+            <CustomTable keyColumn={mm.keyColumn} columns={mm.tableColumns} values={mmValues} paging={true} onClick={onMmBtnClick} summary={true} summaryColumn={mm.summaryColumn}/>
             <div className="" style={{ marginBottom: "10px" }}>
                 <span>* 경비</span>
             </div>
+            <CustomTable keyColumn={ct.keyColumn} columns={ct.tableColumns} values={ctValues} paging={true} onClick={onCtBtnClick} summary={true} summaryColumn={ct.summaryColumn}/>
+            <CustomPopup props={ProjectHrCtAprvDetailJson.ctPopup} visible={ctPopupVisible} handleClose={handleClose}>
+                <ProjectHrCtAprvDetailPop props={ctDetailValues} prjctNm={prjctNm} /> 
+            </CustomPopup>
         </div>
+
     );
 
 

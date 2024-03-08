@@ -8,33 +8,70 @@
             { "key": "empFlnm", "value": "성명" , "width": "100"},
             { "key": "aplySn", "value": "차수" , "width": "100"},
             { "key": "expectMm", "value": "배정" , "width": "100"},
-            { "key": "rownum", "value": "누적사용" , "width": "100"},
-            { "key": "rownum", "value": "가용" , "width": "100"},
-            { "key": "rownum", "value": "당차수청구" , "width": "100"},
+            { "key": "excnMm", "value": "누적사용" , "width": "100"},
+            { "key": "a", "value": "가용" , "width": "100"},
+            { "key": "b", "value": "당차수청구" , "width": "100"},
             { "key": "empId", "value": "상태" , "width": "140", "button": "승인목록"}
         ],
         "summaryColumn": [
             {
+                "key": "deptNm",
+                "value": "소속",
+                "type"  : "sum",
+                "format": "계"
+            },
+            {
                 "key": "expectMm",
                 "value": "배정",
                 "type"  : "sum",
-                "format:": "{0.#} MM"
+                "format": "{0} MM",
+                "precision": "1"
             }
         ]
     },
     "ct": {
-        "queryId": "projectMapper.",
-        "keyColumn": "",
+        "queryId": "projectMapper.retrieveCtAply",
+        "keyColumn": "empId",
         "tableColumns": [
-
+            { "key": "deptNm", "value": "소속"  },
+            { "key": "empFlnm", "value": "성명" , "width": "100"},
+            { "key": "aplySn", "value": "차수" , "width": "100"},
+            { "key": "totUtztnAmt", "value": "누적사용" , "width": "200"},
+            { "key": "totAplyAmt", "value": "당차수청구" , "width": "200"},
+            { "key": "empId", "value": "상태" , "width": "140", "button": "승인목록"}
+        ],
+        "summaryColumn": [
+            {
+                "key": "deptNm",
+                "value": "소속",
+                "type"  : "sum",
+                "format": "계"
+            },
+            {
+                "key": "totUtztnAmt",
+                "value": "누적사용",
+                "type"  : "sum",
+                "format": "{0} 원",
+                "precision": "0"
+            },
+            {
+                "key": "totAplyAmt",
+                "value": "당차수청구",
+                "type"  : "sum",
+                "format": "{0} 원",
+                "precision": "0"
+            }
         ]
     },
-
     "searchParams":
 	{
         "yearItem": true,
         "monthItem": true,
         "aplyOdr": true,
         "empId": true
+    },
+    "ctPopup": {
+        "width": "90%",
+        "height": "90%"
     }
 }
