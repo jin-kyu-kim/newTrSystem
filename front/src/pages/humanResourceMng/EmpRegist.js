@@ -8,9 +8,10 @@ import CustomLabelValue from "components/unit/CustomLabelValue";
 import ApiRequest from "utils/ApiRequest";
 import { left, right } from "@popperjs/core";
 
-const EmpRegist = ({ onHide,empInfo, empno, isNew }) => {
+const EmpRegist = ({ onHide,empInfo, empno, isNew , read}) => {
   const {labelValue} = EmpRegistJson;
-  const [readOnly, setReadOnly] = useState(true);
+  //const [readOnly, setReadOnly] = useState(true);
+  const [empMax,setEmpMax] =useState({});
   const [data, setData] = useState([]);
   const [param, setParam] = useState([]);
   const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
@@ -84,17 +85,11 @@ const EmpRegist = ({ onHide,empInfo, empno, isNew }) => {
     if(name === "jbpsCd"){
       if(data.jbpsCd === "VTW00119")
       {
-        setData({
-          ...data,
-          [name]: value,
-          empTyCd : "VTW00202"
-        });
+        setData({ ...data, [name]: value, empTyCd : "VTW00202",});
+        setParam({ ...param, empnoChk : "VM" ,queryId : "humanResourceMngMapper.retrieveEmpnoMax",});
       }else{
-        setData({
-          ...data,
-          [name]: value,
-          empTyCd : "VTW00201"
-        });
+        setData({  ...data, [name]: value, empTyCd : "VTW00201",});
+        setParam({ ...param, empnoChk : "VK" ,queryId : "humanResourceMngMapper.retrieveEmpnoMax", });
       }
     }else{
       setData({
@@ -117,25 +112,41 @@ const EmpRegist = ({ onHide,empInfo, empno, isNew }) => {
     if (isconfirm) {
       if(data.empno !== undefined && data.empno !== ''){
         updateEmp();
-      }else{
-        insertEmp();
+      }else{ 
+        empnoHandle(); //조회하러 이동
+        //insertEmp();
       }       
     } else{
       return;
      }
     
   };
+  //사번 max값 조회용
+  const empnoHandle = async () => {
+    try {
+      const response = await ApiRequest("/boot/common/queryIdSearch", param);
+      setEmpMax(response[0].empnoChk);
+      console.log("이거 어??",response[0].empnoChk)
+      
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    if(empMax !== undefined || empMax !== "" || empMax !== null){
+      insertEmp();
+    }
 
+  }, [empMax]);
 //================기초정보 등록
   const insertEmp = async () => {
-    console.log("insert입니다.")
-    console.log(data);
     const date = new Date();
     const now =  date.toISOString().split("T")[0] +" " +date.toTimeString().split(" ")[0];
     const param =[
       { tbNm: "EMP" },
       {
          empId : uuid(),
+         empno : empMax,
          actno : data.actno,
          bankCd : data.bankCd,
          empTyCd : data.empTyCd,
@@ -153,6 +164,7 @@ const EmpRegist = ({ onHide,empInfo, empno, isNew }) => {
       console.log(response);
 
         if (response > 0) {
+          alert("저장되었습니다."); 
           setData({});
           console.log(data);
         }
@@ -188,6 +200,7 @@ const EmpRegist = ({ onHide,empInfo, empno, isNew }) => {
       console.log(response);
 
         if (response > 0) {
+          alert("저장되었습니다."); 
           setData({});
           console.log(data);
         }
@@ -204,12 +217,12 @@ const EmpRegist = ({ onHide,empInfo, empno, isNew }) => {
         <div className="dept-regist-content-inner" style={popupContentInnerStyle}>
           <div className="dx-fieldset">
           <div className="empDetailLeft" style={empDetailLeftStyle}>
-          <CustomLabelValue props={labelValue.empFlnm} onSelect={handleChgState} value={data.empFlnm} />
+          <CustomLabelValue props={labelValue.empFlnm} onSelect={handleChgState} value={data.empFlnm} readOnly={read}/>
           <CustomLabelValue props={labelValue.telno} onSelect={handleChgState} value={data.telno} />
           <CustomLabelValue props={labelValue.bankCd} onSelect={handleChgState} value={data.bankCd} /> 
           </div>
           <div className="empDetailRight" style={empDetailRightStyle}> 
-          <CustomLabelValue props={labelValue.jbpsCd} onSelect={handleChgState} value={data.jbpsCd} />
+          <CustomLabelValue props={labelValue.jbpsCd} onSelect={handleChgState} value={data.jbpsCd} readOnly={read}/>
           <CustomLabelValue props={labelValue.hdofSttsCd} onSelect={handleChgState} value={data.hdofSttsCd} />
           <CustomLabelValue props={labelValue.eml} onSelect={handleChgState} value={data.eml} />
           <CustomLabelValue props={labelValue.actno} onSelect={handleChgState} value={data.actno} />          
