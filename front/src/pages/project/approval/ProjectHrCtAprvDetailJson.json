@@ -9,8 +9,8 @@
             { "key": "aplySn", "value": "차수" , "width": "100"},
             { "key": "expectMm", "value": "배정" , "width": "100"},
             { "key": "excnMm", "value": "누적사용" , "width": "100"},
-            { "key": "a", "value": "가용" , "width": "100"},
-            { "key": "b", "value": "당차수청구" , "width": "100"},
+            { "key": "a", "value": "가용" , "width": "80"},
+            { "key": "totMd", "value": "당차수청구" , "width": "120"},
             { "key": "empId", "value": "상태" , "width": "140", "button": "승인목록"}
         ],
         "summaryColumn": [
@@ -68,7 +68,8 @@
         "yearItem": true,
         "monthItem": true,
         "aplyOdr": true,
-        "empId": true
+        "empId": true,
+        "excelDownloadBtn": false
     },
     "ctPopup": {
         "width": "90%",

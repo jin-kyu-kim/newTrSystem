@@ -3,7 +3,6 @@ import { SelectBox } from "devextreme-react/select-box";
 import { Box, Item } from "devextreme-react/box";
 import { Button } from "devextreme-react/button";
 import CustomComboBox from "components/unit/CustomComboBox";
-import ArrayStore from "devextreme/data/array_store";
 
 const SearchPrjctCostSet = ({ callBack, props, excelDownload }) => {
     const [initParams, setInitParams] = useState([]);
@@ -60,8 +59,8 @@ const SearchPrjctCostSet = ({ callBack, props, excelDownload }) => {
         let monthVal = month < 10 ? "0" + month : month;
 
         setInitParams({
-            year: year,
-            month: monthVal,
+            yearItem: year,
+            monthItem: monthVal,
             aplyOdr: odrVal
         });
 
