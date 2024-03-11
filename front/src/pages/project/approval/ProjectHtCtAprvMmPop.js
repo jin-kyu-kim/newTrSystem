@@ -1,62 +1,60 @@
 import React, { useEffect, useState } from 'react';
-import ApiRequest from 'utils/ApiRequest';
-import { set } from 'date-fns';
 
 import Scheduler, { Resource } from 'devextreme-react/scheduler';
 
-const ProjectHrCtAprvDetailPop = ({props, prjctNm, data}) => {
+const ProjectHrCtAprvMmPop = ({props, prjctNm, data}) => {
 
-
+    console.log(data)
     const currentDate = new Date();
 
     const showDetails = () => {
 
         const results = [];
 
-        props.map((data) => {
+        const temp = props.filter((data) => data.atrzDmndSttsCd !== "VTW03702");
+
+        temp.map((data) => {
+            
             results.push(
                 <>
                 <hr/>
                 <table>
                     <thead>
                         <tr>
-                            <th>{data.startDate}({data.ctPrpos})</th>
+                            <th>{data.startDate}</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>사용금액: {data.utztnAmt} 원</td>
-                        </tr>
-                        <tr>
-                            <td>상세내역(목적): {data.ctPrpos}</td>
-                        </tr>
-                        <tr>
-                            <td>용도(참석자명단): {data.atdrn}</td>
-                        </tr>
-                        <tr>
-                            <td>사용처: {data.useOffic} | 결재정보_수정예정</td>
+                            <td>{prjctNm} {data.md} hrs. | {data.deptNm} {data.aprvrEmpFlnm} ({data.atrzDmndSttsNm}) </td>
                         </tr>
                     </tbody>
                 </table>
                 </>
             )
         });
-
+            
         return results;
 
     }
+
+    const atrzDmndStts = [
+        {
+            id: 1,
+            text: "요청",
+            color: "#00af2c"
+        }
+    ]
 
 
     return (
         <div className="container">
             <div className="" style={{ marginBottom: "10px" }}>
-                {props.length > 0 &&
                 <>
-                <span>* {prjctNm} ({props[0].aplySn} 차수) 프로젝트 비용 </span>
-                <br/>
-                <span>* {props[0].empFlnm}</span>
+                    <span>* {prjctNm} ({data.aplySn} 차수) 수행인력 </span>
+                    <br/>
+                    <span>* {data.empFlnm}</span>
                 </> 
-                }
             </div>
             <Scheduler
                 timeZone="Asia/Seoul"
@@ -66,6 +64,10 @@ const ProjectHrCtAprvDetailPop = ({props, prjctNm, data}) => {
                 editing={false}
                 views={["month"]}
             >
+                <Resource
+                    dataSource={atrzDmndStts}
+                    fieldExpr="id"
+                />  
             </Scheduler>
             <br/>
             {showDetails()}
@@ -73,4 +75,4 @@ const ProjectHrCtAprvDetailPop = ({props, prjctNm, data}) => {
     );
 
 }
-export default ProjectHrCtAprvDetailPop;
+export default ProjectHrCtAprvMmPop;
