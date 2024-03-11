@@ -25,23 +25,13 @@
       },
       {
         "id": 5,
-        "title": "사내교육영상",
-        "link": "/"
-      },
-      {
-        "id": 6,
         "title": "회의실예약",
         "link": "/"
       },
       {
-        "id": 7,
+        "id": 6,
         "title": "법제도",
         "link": "/infoInq/LawRules"
-      },
-      {
-        "id": 8,
-        "title": "지식관리시스템",
-        "link": "/"
       }
     ]
   },
