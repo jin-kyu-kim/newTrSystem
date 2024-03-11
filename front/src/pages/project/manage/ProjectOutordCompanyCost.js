@@ -24,8 +24,8 @@ const ProjectOutordCompanyCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr, bgtM
     };
 
     try {
-        // const response = await ApiRequest("/boot/common/queryIdSearch", param);
-        // setValues(response);
+        const response = await ApiRequest("/boot/common/queryIdSearch", param);
+        setValues(response);
     } catch(error) {
         console.error(error);
     }
@@ -33,11 +33,6 @@ const ProjectOutordCompanyCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr, bgtM
 
   const OutordCompanyList = async () => {
 
-    // const param = {
-    //     queryId: "projectMapper.retrievePrjctOutordEntrps",
-    //     upCdValue: "VTW013",
-    //     useYn: "Y"
-    // }
     const param = [
       { tbNm:"OUTORD_ENTRPS" },
       {  },
