@@ -49,9 +49,7 @@
                         },
                     "valueExpr" : "empId",
                     "displayExpr": "empNameJbps",
-                    "name": "empId",
-                    "name2": "userDfnValue",
-                    "name3": "jbpsCd"
+                    "values" : ["empId","userDfnValue","jbpsCd"]
                     }
         },
         "hnfRoleCdNm": {
