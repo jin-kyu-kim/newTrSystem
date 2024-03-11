@@ -17,7 +17,7 @@
                 END AS MM_ATRZ_CMPTN_YN
         FROM nwTr.PRJCT_INDVDL_CT_MM a, nwTr.PRJCT_MM_APLY b
         WHERE 1 = 1
-            AND a.PRJCT_ID = b.PRJCT_ID AND a.APLY_YM = b.APLY_YM AND a.APLY_ODR = b.APLY_ODR
+            AND a.PRJCT_ID = b.PRJCT_ID AND a.APLY_YM = b.APLY_YM AND a.APLY_ODR = b.APLY_ODR AND a.EMP_ID = b.EMP_ID
           <if test="prjctId != null and !prjctId.equals('')">
             AND a.PRJCT_ID = #{prjctId}
           </if>
@@ -44,7 +44,7 @@
                     WHEN a.CT_ATRZ_CMPTN_YN = 'N' THEN '반려'
                 END AS CT_ATRZ_CMPTN_YN
         FROM nwTr.PRJCT_INDVDL_CT_MM a, nwTr.PRJCT_CT_APLY b
-        WHERE a.PRJCT_ID = b.PRJCT_ID AND a.APLY_YM = b.APLY_YM AND a.APLY_ODR = b.APLY_ODR
+        WHERE a.PRJCT_ID = b.PRJCT_ID AND a.APLY_YM = b.APLY_YM AND a.APLY_ODR = b.APLY_ODR AND a.EMP_ID = b.EMP_ID
         <if test="prjctId != null and !prjctId.equals('')">
             AND a.PRJCT_ID = #{prjctId}
         </if>
