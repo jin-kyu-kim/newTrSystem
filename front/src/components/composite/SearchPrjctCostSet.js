@@ -4,7 +4,7 @@ import { Box, Item } from "devextreme-react/box";
 import { Button } from "devextreme-react/button";
 import CustomComboBox from "components/unit/CustomComboBox";
 
-const SearchPrjctCostSet = ({ callBack, props, excelDownload }) => {
+const SearchPrjctCostSet = ({ callBack, props }) => {
     const [initParams, setInitParams] = useState([]);
     const [yearData, setYearData] = useState([]);
     const [monthData, setMonthData] = useState([]);
@@ -128,11 +128,8 @@ const SearchPrjctCostSet = ({ callBack, props, excelDownload }) => {
                 <Item visible={props.empNm} ratio={0} baseSize={"150"}>
                     <CustomComboBox props={empList} onSelect={handleChgState} placeholder="기안자성명" value={initParams.empId}/>
                 </Item>
-                <Item visible={props.searchBtn} ratio={0} baseSize={"100"}>
+                <Item visible={props.searchBtn} ratio={0} baseSize={"50"}>
                     <Button text="검색" onClick={btnClick}/>
-                </Item>
-                <Item visible={props.excelDownloadBtn} ratio={0} baseSize={"150"}>
-                    <Button text="엑셀다운로드" onClick={excelDownload}/>
                 </Item>
             </Box>
         </div>
