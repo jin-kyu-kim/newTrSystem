@@ -8,41 +8,44 @@
     <!--프로젝트청구현황일자별 수행인력-->
     <select id="retrievePrjctCtClmSttusYMDAccto" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
-                b.APLY_YMD,
-                (SELECT EMP_FLNM FROM nwTr.EMP emp WHERE EMP_ID = b.EMP_ID) AS EMP_FLNM,
-                FORMAT(b.MD, 1) AS MD,
-                CASE
-                    WHEN a.MM_ATRZ_CMPTN_YN = 'Y' THEN '승인완료'
-                    WHEN a.MM_ATRZ_CMPTN_YN = 'N' THEN '반려'
-                END AS MM_ATRZ_CMPTN_YN
+        b.APLY_YMD,
+        (SELECT EMP_FLNM FROM nwTr.EMP emp WHERE EMP_ID = b.EMP_ID) AS EMP_FLNM,
+        FORMAT(b.MD, 1) AS MD,
+        CASE
+        WHEN a.MM_ATRZ_CMPTN_YN = 'Y' THEN '승인완료'
+        WHEN a.MM_ATRZ_CMPTN_YN = 'N' THEN '반려'
+        END AS MM_ATRZ_CMPTN_YN
         FROM nwTr.PRJCT_INDVDL_CT_MM a, nwTr.PRJCT_MM_APLY b
         WHERE 1 = 1
-            AND a.PRJCT_ID = b.PRJCT_ID AND a.APLY_YM = b.APLY_YM AND a.APLY_ODR = b.APLY_ODR AND a.EMP_ID = b.EMP_ID
-          <if test="prjctId != null and !prjctId.equals('')">
+        AND a.PRJCT_ID = b.PRJCT_ID AND a.APLY_YM = b.APLY_YM AND a.APLY_ODR = b.APLY_ODR AND a.EMP_ID = b.EMP_ID
+        <if test="prjctId != null and !prjctId.equals('')">
             AND a.PRJCT_ID = #{prjctId}
-          </if>
-          <if test="aplyYm != null and !aplyYm.equals('')">
+        </if>
+        <if test="aplyYm != null and !aplyYm.equals('')">
             AND a.APLY_YM = #{aplyYm}
-          </if>
-          <if test="aplyOdr != null and !aplyOdr.equals('')">
+        </if>
+        <if test="aplyOdr != null and !aplyOdr.equals('')">
             AND a.APLY_ODR = #{aplyOdr}
-          </if>
+        </if>
+        <if test="empId != null and !empId.equals('')">
+            AND b.EMP_ID = #{empId}
+        </if>
     </select>
 
     <!--프로젝트청구현황일자별 경비-->
     <select id="retrievePrjctCtClmSttusIndividualAccto" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
-                SUBSTR(b.UTZTN_DT,1,8) AS UTZTN_DT,
-                (SELECT EMP_FLNM FROM nwTr.EMP emp WHERE EMP_ID = b.EMP_ID) AS EMP_FLNM,
-                (SELECT CD_NM FROM nwTr.CD cd WHERE UP_CD_VALUE = 'VTW045' AND CD_VALUE = b.EXPENS_CD) AS CD_NM,
-                b.UTZTN_AMT,
-                b.USE_OFFIC,
-                b.CT_PRPOS,
-                b.ATDRN,
-                CASE
-                    WHEN a.CT_ATRZ_CMPTN_YN = 'Y' THEN '승인완료'
-                    WHEN a.CT_ATRZ_CMPTN_YN = 'N' THEN '반려'
-                END AS CT_ATRZ_CMPTN_YN
+        SUBSTR(b.UTZTN_DT,1,8) AS UTZTN_DT,
+        (SELECT EMP_FLNM FROM nwTr.EMP emp WHERE EMP_ID = b.EMP_ID) AS EMP_FLNM,
+        (SELECT CD_NM FROM nwTr.CD cd WHERE UP_CD_VALUE = 'VTW045' AND CD_VALUE = b.EXPENS_CD) AS CD_NM,
+        b.UTZTN_AMT,
+        b.USE_OFFIC,
+        b.CT_PRPOS,
+        b.ATDRN,
+        CASE
+        WHEN a.CT_ATRZ_CMPTN_YN = 'Y' THEN '승인완료'
+        WHEN a.CT_ATRZ_CMPTN_YN = 'N' THEN '반려'
+        END AS CT_ATRZ_CMPTN_YN
         FROM nwTr.PRJCT_INDVDL_CT_MM a, nwTr.PRJCT_CT_APLY b
         WHERE a.PRJCT_ID = b.PRJCT_ID AND a.APLY_YM = b.APLY_YM AND a.APLY_ODR = b.APLY_ODR AND a.EMP_ID = b.EMP_ID
         <if test="prjctId != null and !prjctId.equals('')">
@@ -53,6 +56,9 @@
         </if>
         <if test="aplyOdr != null and !aplyOdr.equals('')">
             AND a.APLY_ODR = #{aplyOdr}
+        </if>
+        <if test="empId != null and !empId.equals('')">
+            AND b.EMP_ID = #{empId}
         </if>
     </select>
 

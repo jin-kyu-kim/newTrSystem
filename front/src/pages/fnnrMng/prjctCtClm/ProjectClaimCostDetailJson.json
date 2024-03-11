@@ -5,8 +5,7 @@
     "yearItem": true,
     "monthItem": true,
     "aplyOdr": true,
-    "empId": true,
-    "excelDownloadBtn": true
+    "empId": true
   },
   "tabMenu":
   [
@@ -14,6 +13,7 @@
       "TabName": "개인별조회",
       "tabId": "ProjectClaimCostIndividual",
       "url": "pages/fnnrMng/prjctCtClm/ProjectClaimCostIndividual"
+
     },
     {
       "TabName": "일자별조회",

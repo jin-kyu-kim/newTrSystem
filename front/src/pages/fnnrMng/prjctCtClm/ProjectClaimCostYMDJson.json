@@ -5,7 +5,7 @@
       "empCostQueryId": "financialAffairMngMapper.retrievePrjctCtClmSttusIndividualAccto"
     },
 
-    "keyColumn": "prjctId",
+    "keyColumn": "empId",
     "tableColumns":
 	[
         { "key": "cliamDate", "value": "날짜" },
