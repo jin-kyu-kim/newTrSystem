@@ -161,7 +161,7 @@ useEffect(()=>{
     pageHandle();
   }
  
-},[param,tableKey]);
+},[param.empId,tableKey]);
 
 const onEditRow = async (editMode, e) => {
   const editParam = [{tbNm: "EMP_QLFC_LCNS"}];
