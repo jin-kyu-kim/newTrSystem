@@ -1,22 +1,15 @@
 package com.trsystem.batchSkill.service;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.CallableStatement;
 import com.trsystem.common.mapper.CommonMapper;
 import com.trsystem.common.service.ApplicationYamlRead;
 
@@ -124,5 +117,38 @@ public class BatchSkillServiceImpl implements BatchSkillService {
             e.getStackTrace();
         }
 		
+	}
+	
+	/**
+	 * 새로운 변경원가 생성 시 기존 값들을 복사해준다. 
+	 */
+	@Override
+	public void executeModPrjctBgtPrmpc(String prjctId, int bgtMngOdr, int bgtMngOdrTobe) {
+		
+		try {
+			
+            Connection connection = DriverManager.getConnection(applicationYamlRead.getUrl(), applicationYamlRead.getUsername(), applicationYamlRead.getPassword());
+            // 트랜잭션 시작
+            connection.setAutoCommit(false);
+            
+            String callProcedure = "CALL nwTr.P_MOD_PRJCT_BGT_PRMPC(?, ?, ?)";
+            
+            try (CallableStatement callableStatement = connection.prepareCall(callProcedure)) {
+            	
+            	callableStatement.setString("v_prjctId", prjctId);
+            	callableStatement.setInt("v_bgtMngOdr", bgtMngOdr);
+            	callableStatement.setInt("v_bgtMngOdrTobe", bgtMngOdrTobe);
+            	callableStatement.executeQuery();
+            	
+            	connection.commit();
+                connection.close();
+            	
+            } catch (SQLException e) {
+                connection.rollback();
+            }
+            
+		} catch (SQLException e) {
+			return ;
+		}
 	}
 }

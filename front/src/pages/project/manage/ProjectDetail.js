@@ -138,7 +138,7 @@ const ProjectDetail = () => {
         totAltmntBgt: totBgt,
         bgtMngOdr: bgtMngOdr,
         bgtMngOdrTobe: bgtMngOdrTobe,
-        atrzDmndSttsCd: "VTW03301",
+        atrzDmndSttsCd: "VTW03701",
         regDt : date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0]
       }, 
     ]; 
