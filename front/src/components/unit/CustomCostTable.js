@@ -4,8 +4,9 @@ import { Button } from "devextreme-react";
 import { parse, format, addMonths, subMonths } from 'date-fns';
 
 import ApiRequest from "../../utils/ApiRequest";
-import CustomPopup from "../unit/CustomPopup";
+// import CustomPopup from "../unit/CustomPopup";
 import ProjectChangePopup from "../../pages/project/manage/ProjectChangePopup";
+import { Popup } from "devextreme-react";
 
 import DataGrid, {
   Column,
@@ -259,7 +260,14 @@ const CustomCostTable = ({
         <ColumnFixing enabled={true} />
       </DataGrid>
 
-      <CustomPopup props={popup} visible={isPopupVisible} handleClose={hidePopup} onHide={onHide}>
+      {/* <CustomPopup props={popup} visible={isPopupVisible} handleClose={hidePopup} onHide={onHide}> */}
+      <Popup width={popup.width}
+             height={popup.height}
+             visible={isPopupVisible} 
+             onHiding={hidePopup}
+             showCloseButton={true}
+             title={popup.title}
+             >
         <ProjectChangePopup 
           selectedItem={selectedItem} 
           period={period} 
@@ -272,7 +280,8 @@ const CustomCostTable = ({
           bizEndYmd={bizEndYmd}
           transformedData={transformedData}
           />
-       </CustomPopup>   
+       </Popup>
+       {/* </CustomPopup>    */}
 
       <div style={{ textAlign: "right" }}>
         <Button onClick={handleAddRow}>행 추가</Button>
