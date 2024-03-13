@@ -1,5 +1,5 @@
 // npm install @fullcalendar/daygrid @fullcalendar/timegrid @fullcalendar/interaction @fullcalendar/react
-import React from "react";
+import React, {useRef, useState} from "react";
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -13,22 +13,26 @@ import "./Calendar.css"
     initialView : 화면 최초 로드 시 보여질 calendar 유형(리스트, 일별, 주별, 월별)
     initCssValue : FullCalendar css 변경 희망 시 해당 컴포넌트를 묶을 <div> 태그의 className
                    해당값 설정 후 css 파일에 원하는 코드 추가필요
-    clickEventValue : cellClickEvent 사용여부
 */
 
 function dateClick(info) {
     
 }
 
-const Calendar = ({values, headerToolbar, initialView, initCssValue, clickEventValue}) => {
-    if(clickEventValue == "true"){
-        dateClick=(info)=>{
-            alert("회의실정보 수정 팝업 호출")
+const Calendar = ({values, headerToolbar, initialView, initCssValue, searchEvent}) => {
+    const calendarRef = useRef(null);
+
+    if (calendarRef.current && searchEvent.searchBoolean == true) {
+        let searchMonth = "";
+
+        if(String(searchEvent.searchMonth).length == 1) {
+            searchMonth = "0" + String(searchEvent.searchMonth);
+        } else {
+            searchMonth = searchEvent.searchMonth;
         }
-    } else {
-        dateClick=(info)=>{
-            
-        }
+
+        const initialDate = String(searchEvent.searchYear + "-" + searchMonth); // 이동하고자 하는 초기 날짜
+        calendarRef.current.getApi().gotoDate(initialDate);
     }
 
     return(
@@ -37,6 +41,7 @@ const Calendar = ({values, headerToolbar, initialView, initCssValue, clickEventV
             <FullCalendar
                 locale="kr"
                 timeZone="Asia/Seoul"
+                ref={calendarRef}
                 height={"auto"}
                 plugins={[dayGridPlugin,timeGridPlugin,interactionPlugin,listPlugin]}
                 initialView={initialView}
@@ -44,7 +49,6 @@ const Calendar = ({values, headerToolbar, initialView, initCssValue, clickEventV
                 events={values}
                 slotMinTime={"08:00"}
                 slotMaxTime={"22:00"}
-                eventClick={dateClick}
             />
         </div>
         </>     
