@@ -4,16 +4,12 @@ import { useLocation } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
 import { Button } from "devextreme-react/button";
 import TextArea from 'devextreme-react/text-area';
-import ToolbarItem from "devextreme-react/popup";
+import Popup from "devextreme-react/popup";
 
 import ProjectChangeJson from "./ProjectChangeJson.json";
 
-import LinkButton from "../../../components/unit/LinkButton.js";
-import CustomPopup from "../../../components/unit/CustomPopup";
-
 import { useCookies } from "react-cookie";
 import ApiRequest from "utils/ApiRequest";
-import { set } from "date-fns";
 
 const ProjectChange = () => {
   const location = useLocation();
@@ -27,6 +23,7 @@ const ProjectChange = () => {
   const targetOdr = location.state ? location.state.targetOdr : null;
   const bizSttsCd = location.state ? location.state.bizSttsCd : null;
   const atrzLnSn = location.state ? location.state.atrzLnSn : null;
+  const deptId = location.state ? location.state.deptId : null;
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const [atrzAplyPrvonshCn, setAtrzAplyPrvonshCn] = useState(null);
@@ -38,7 +35,6 @@ const ProjectChange = () => {
 
   const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
   const empId = cookies.userInfo.empId;
-  const deptId = cookies.userInfo.deptId;
   const buttonState = { prjctId: prjctId, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd, bgtMngOdr:bgtMngOdr, };
   // console.log("buttonState?",buttonState);
   const [requestBtnVisible, setAprvBtnVisible] = useState(true);
@@ -215,7 +211,7 @@ const ProjectChange = () => {
     console.log("prjctId!! 변경! ", prjctId);
     navigate("../project/ProjectDetail",
         {
-        state: { prjctId: prjctId, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd, bgtMngOdr:bgtMngOdr, bgtMngOdrTobe:bgtMngOdrTobe },
+        state: { prjctId: prjctId, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd, bgtMngOdr:bgtMngOdr, bgtMngOdrTobe:bgtMngOdrTobe, deptId: deptId },
         })
   };
 
@@ -291,7 +287,6 @@ const ProjectChange = () => {
       <div className="buttons" align="right" style={{ margin: "20px" }}>
         <Button text="승인요청" onClick={onPopup} visible={requestBtnVisible}></Button>
         <Button text="승인요청취소" onClick={onAprvCancel} visible={cancelBtnVisible}/>
-        {/* <LinkButton location={-1} name={"이전"} type={"normal"} state={buttonState}/> */}
         <Button text="이전" onClick={toDetail}/>
       </div>
       <div
@@ -328,7 +323,14 @@ const ProjectChange = () => {
         }}
         />
       </div>
-      <CustomPopup props={popup} visible={popupVisible} handleClose={handleClose}>
+      <Popup
+        width={popup.width}
+        height={popup.height}
+        visible={popupVisible} 
+        onHiding={handleClose}
+        showCloseButton={true}
+        title={popup.title}
+      >
         <TextArea 
           height="50%"
           valueChangeEvent="change"
@@ -338,7 +340,7 @@ const ProjectChange = () => {
         <br/>
         <Button text="승인요청" onClick={onSubmit}/>
         <Button text="요청취소" onClick={handleClose}/>
-      </CustomPopup>
+      </Popup>
     </div>
   );
 };
