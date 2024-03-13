@@ -271,11 +271,27 @@
     INNER JOIN DEPT_HNF B ON A.DEPT_ID = B.DEPT_ID 
     
 </select>
+
+	<select id="retrieveEmpBassInfo" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT
+			D.DEPT_NM AS DEPT_NM,
+			EMP_FLNM ,
+			TELNO,
+			EML,
+			BRDT
+		FROM EMP E
+				 LEFT OUTER JOIN DEPT_HNF DH ON DH.EMP_ID = E.EMP_ID
+				 LEFT OUTER JOIN DEPT D ON D.DEPT_ID  = DH.DEPT_ID
+		WHERE E.EMP_ID = #{empId}
+	</select>
 	
 	
-	<select id="selectEmpInfoCnt" parameterType="map" resultType="com.trsystem.LowerHashMap">	
+	<select id="selectEmpInfoCnt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+
 		SELECT COUNT(*) AS CNT FROM EMP_DTL WHERE EMP_ID = #{empId}
 	</select>
+
+
 
 
 </mapper>

@@ -25,7 +25,7 @@ const EmpDetailInfo = () => {
             setSelectedIndex(args.value);
           }
         },
-        [setSelectedIndex]
+        []
       );
 
     const itemTitleRender = (a) => <span>{a.TabName}</span>;
@@ -69,11 +69,14 @@ const EmpDetailInfo = () => {
             animationEnabled={true}
             itemComponent={({ data }) => {
             const Component = React.lazy(() => import(`${data.url}`));
-            return (
+            if(data.index=== selectedIndex){
+              return (
                 <React.Suspense fallback={<div>Loading...</div>}>
                     <Component/>
                 </React.Suspense>
             );
+            }
+            
           }}
           />
         </div>

@@ -8,7 +8,6 @@ import {
   GroupItem,
 } from "devextreme-react/form";
 import { useCookies } from "react-cookie";
-import { Group } from "devextreme-react/cjs/diagram";
 import CustomCdComboBox from "components/unit/CustomCdComboBox";
 import { DateBox, NumberBox, TextBox } from "devextreme-react";
 
@@ -43,44 +42,36 @@ const EmpBasicInfo = () => {
 
     /* 기본 정보 */
     useEffect(() => {
-   
-      baseData();
     
- }, []);
-
-     /* 기본 정보 */
-     useEffect(() => {
-   
-      
-      detailData();
+      baseData();
       empInfoCnt();
  }, []);
 
+ useEffect(() => {
+    
+  detailData();
+}, [baseInfoData]);
+
   const handleChgState = ({ name, value }) => {
-    const updatedData = {
+  
+    setEmpDtlData({
       ...empDtlData,
-      [name]: value,
-    };
-    setEmpDtlData(updatedData);
+      [name]: value
+    });
   };
 
-  
-
-
-
   const baseData = async () => {
-    const param = [
-      { tbNm: "EMP" },
-      {
-        empId: empId,
-      },
-    ];
+    const param = {
+      queryId: "infoInqMapper.retrieveEmpBassInfo",
+      empId: empId,
+    };
+    
     try {
-      const response = await ApiRequest("/boot/common/commonSelect", param);
+      const response = await ApiRequest("/boot/common/queryIdSearch", param);
       delete response[0].regDt;
       delete response[0].regEmpId;
       setBaseInfoData(response[0]);
-     
+    
     } catch (error) {
       console.error("Error fetching data", error);
     }
@@ -112,9 +103,6 @@ const EmpBasicInfo = () => {
     }
   };
 
-
-
-
   const empInfoCnt = async () => {
     const selectParams = {
       queryId: "infoInqMapper.selectEmpInfoCnt",
@@ -135,10 +123,6 @@ const EmpBasicInfo = () => {
     }
   };
 
-  
-  
-
-
   const updateEmpInfo = async () => {
     const dtlConfirmResult = window.confirm("직원정보를 저장하시겠습니까?");
 
@@ -150,7 +134,6 @@ const EmpBasicInfo = () => {
         return;
       }
 
-      console.log("empCnt" + empCnt);
       if (empCnt === 0) {
         const params = [{ tbNm: "EMP_DTL" }, empDtlData];
         try {
@@ -201,37 +184,34 @@ const EmpBasicInfo = () => {
           </p>
           <Form colCount={2}>
             <GroupItem>
-              <GroupItem caption="">
+              <GroupItem >
                 <Item
-                  label={{ text: "성명" }}
-                  dataField="empFlnm"
+                  dataField="성명"
                   editorOptions={{
                     value: baseInfoData.empFlnm,
                     readOnly: true,
                   }}
                 />
                 <Item
-                  label={{ text: "전화번호" }}
-                  dataField="telno"
+                  dataField="전화번호"
                   editorOptions={{ value: baseInfoData.telno, readOnly: true }}
                 />
                 <Item
-                  label={{ text: "생년월일" }}
-                  dataField="brdt"
+              
+                  dataField="생년월일"
                   editorOptions={{ value: baseInfoData.brdt, readOnly: true }}
                 />
               </GroupItem>
             </GroupItem>
 
             <GroupItem>
-              <GroupItem caption="">
+              <GroupItem >
                 <Item
-                  label={{ text: "소속" }}
+              
                   dataField="소속"
-                  editorOptions={{ value: baseInfoData.telno, readOnly: true }}
+                  editorOptions={{ value: baseInfoData.deptNm, readOnly: true }}
                 />
                 <Item
-                  label={{ text: "이메일" }}
                   dataField="eml"
                   editorOptions={{ value: baseInfoData.eml, readOnly: true }}
                 />
@@ -242,9 +222,8 @@ const EmpBasicInfo = () => {
             <strong>* 직원 상세정보</strong>
           </p>
           <Form colCount={2}>
-            <GroupItem>
               <GroupItem>
-                <Item label={{ text: "영문" }} dataField="engFlnm" ratio={1}>
+                <Item dataField="영문" ratio={1}>
                   <TextBox
                     width="100%"
                     placeholder="영문"
@@ -261,8 +240,8 @@ const EmpBasicInfo = () => {
                   />
                 </Item>
                 <Item
-                  label={{ text: "기본주소" }}
-                  dataField="bassAddr"
+                
+                   dataField="기본주소"
                   ratio={1}
                 >
                   <TextBox
@@ -280,9 +259,21 @@ const EmpBasicInfo = () => {
                     }
                   />
                 </Item>
-
                 <Item
-                  label={{ text: "병역" }}
+                  className="prjctNameItem"
+                  dataField="성별"
+                  ratio={1}
+                >
+                  <CustomCdComboBox
+                    param="VTW020"
+                    placeholderText="[성별]"
+                    name="sexdstnCd"
+                    onSelect={handleChgState}
+                    value={empDtlData.sexdstnCd}
+                  />
+                </Item>
+                <Item
+                   dataField="병역"
                   className="prjctNameItem"
                   ratio={1}
                 >
@@ -296,7 +287,7 @@ const EmpBasicInfo = () => {
                 </Item>
 
                 <Item
-                  label={{ text: "군별" }}
+                   dataField="군별"
                   className="prjctNameItem"
                   ratio={1}
                 >
@@ -311,8 +302,135 @@ const EmpBasicInfo = () => {
                   />
                 </Item>
 
+               
+
+                <Item
+                  dataField="계급"
+                  ratio={1}
+                >
+                  <CustomCdComboBox
+                    param="VTW023"
+                    placeholderText="[계급]"
+                    name="dmblzClssCd"
+                    onSelect = {handleChgState}
+                    value={empDtlData.dmblzClssCd}
+                  
+                  />
+                </Item>
+
+                <Item
+                  dataField="혈액형"
+                  ratio={1}
+                >
+                  <CustomCdComboBox
+                    param="VTW024"
+                    placeholderText="[혈액형]"
+                    name="bdpCd"
+                    onSelect={handleChgState}
+                    value={empDtlData.bdpCd}
+                  />
+                </Item>
+
+                <Item
+                  dataField="신체특이사항"
+                  ratio={1}
+                >
+                  <TextBox
+                    width="100%"
+                    placeholder="신체특이사항"
+                    stylingMode="filled"
+                    size="large"
+                    name="bdyPartclrCn"
+                    value={empDtlData.bdyPartclrCn}
+                    onValueChanged={(e) =>
+                      handleChgState({
+                        name: e.component.option("name"),
+                        value: e.value,
+                      })
+                    }
+                  />
+                </Item>
+              
+            </GroupItem>
+            <GroupItem>
+                <Item  dataField="한자" ratio={1}>
+                  <TextBox
+                    width="100%"
+                    placeholder="한자"
+                    stylingMode="filled"
+                    size="large"
+                    name="chcrtFlnm"
+                    value={empDtlData.chcrtFlnm}
+                    onValueChanged={(e) =>
+                      handleChgState({
+                        name: e.component.option("name"),
+                        value: e.value,
+                      })
+                    }
+                  />
+                </Item>
+                                 
+                <Item   dataField="상세주소" ratio={1}>
+                  <TextBox
+                    width="100%"
+                    placeholder="상세주소"
+                    stylingMode="filled"
+                    size="large"
+                    name="daddr"
+                    value={empDtlData.daddr}
+                    onValueChanged={(e) =>
+                      handleChgState({
+                        name: e.component.option("name"),
+                        value: e.value,
+                      })
+                    }
+                  />
+                </Item>
+
+              
+                <Item
+                  dataField="면제사유"
+                  ratio={1}
+                >
+                  <TextBox
+                    width="100%"
+                    placeholder="면제사유"
+                    stylingMode="filled"
+                    size="large"
+                    name="armyExmptnCn"
+                    value={empDtlData.armyExmptnCn}
+                    onValueChanged={(e) =>
+                      handleChgState({
+                        name: e.component.option("name"),
+                        value: e.value,
+                      })
+                    }
+                  />
+                </Item>
+                <Item
+                 
+                  dataField="병과"
+                  ratio={1}
+                >
+                  <TextBox
+                    width="100%"
+                    placeholder="병과"
+                    stylingMode="filled"
+                    size="large"
+                    name="mryfrSpcablCn"
+                    value={empDtlData.mryfrSpcablCn}
+                    onValueChanged={(e) =>
+                      handleChgState({
+                        name: e.component.option("name"),
+                        value: e.value,
+                      })
+                    }
+                  />
+                </Item>
+
                 <Item
                   label={{ text: "복무기간" }}
+                  dataField="복무기간"
                   className="ctmmnyNameItem"
                   ratio={1}
                 >
@@ -347,148 +465,7 @@ const EmpBasicInfo = () => {
                     />
                   </div>
                 </Item>
-
-                <Item
-                  label={{ text: "계급" }}
-                  className="prjctNameItem2"
-                  ratio={1}
-                >
-                  <CustomCdComboBox
-                    param="VTW023"
-                    placeholderText="[계급]"
-                    name="dmblzClssCd"
-                    onSelect = {handleChgState}
-                    value={empDtlData.dmblzClssCd}
-                  
-                  />
-                </Item>
-
-                <Item
-                  label={{ text: "혈액형" }}
-                  className="prjctNameItem3"
-                  ratio={1}
-                >
-                  <CustomCdComboBox
-                    param="VTW024"
-                    placeholderText="[혈액형]"
-                    name="bdpCd"
-                    onSelect={handleChgState}
-                    value={empDtlData.bdpCd}
-                  />
-                </Item>
-
-                <Item
-                  label={{ text: "신체특이사항" }}
-                  dataField="bdyPartclrCn"
-                  ratio={1}
-                >
-                  <TextBox
-                    width="100%"
-                    placeholder="신체특이사항"
-                    stylingMode="filled"
-                    size="large"
-                    name="bdyPartclrCn"
-                    value={empDtlData.bdyPartclrCn}
-                    onValueChanged={(e) =>
-                      handleChgState({
-                        name: e.component.option("name"),
-                        value: e.value,
-                      })
-                    }
-                  />
-                </Item>
-              </GroupItem>
-            </GroupItem>
-            <GroupItem>
-              <GroupItem>
-                <Item label={{ text: "한자" }} dataField="chcrtFlnm" ratio={1}>
-                  <TextBox
-                    width="100%"
-                    placeholder="한자"
-                    stylingMode="filled"
-                    size="large"
-                    name="chcrtFlnm"
-                    value={empDtlData.chcrtFlnm}
-                    onValueChanged={(e) =>
-                      handleChgState({
-                        name: e.component.option("name"),
-                        value: e.value,
-                      })
-                    }
-                  />
-                </Item>
-                <Item label={{ text: "상세주소" }} dataField="daddr" ratio={1}>
-                  <TextBox
-                    width="100%"
-                    placeholder="상세주소"
-                    stylingMode="filled"
-                    size="large"
-                    name="daddr"
-                    value={empDtlData.daddr}
-                    onValueChanged={(e) =>
-                      handleChgState({
-                        name: e.component.option("name"),
-                        value: e.value,
-                      })
-                    }
-                  />
-                </Item>
-
-                <Item
-                  label={{ text: "성별" }}
-                  className="prjctNameItem"
-                  dataField="sexdstnCd"
-                  ratio={1}
-                >
-                  <CustomCdComboBox
-                    param="VTW020"
-                    placeholderText="[성별]"
-                    name="sexdstnCd"
-                    onSelect={handleChgState}
-                    value={empDtlData.sexdstnCd}
-                  />
-                </Item>
-                <Item
-                  label={{ text: "면제사유" }}
-                  dataField="armyExmptnCn"
-                  ratio={1}
-                >
-                  <TextBox
-                    width="100%"
-                    placeholder="면제사유"
-                    stylingMode="filled"
-                    size="large"
-                    name="armyExmptnCn"
-                    value={empDtlData.armyExmptnCn}
-                    onValueChanged={(e) =>
-                      handleChgState({
-                        name: e.component.option("name"),
-                        value: e.value,
-                      })
-                    }
-                  />
-                </Item>
-                <Item
-                  label={{ text: "병과" }}
-                  dataField="mryfrSpcablCn"
-                  ratio={1}
-                >
-                  <TextBox
-                    width="100%"
-                    placeholder="병과"
-                    stylingMode="filled"
-                    size="large"
-                    name="mryfrSpcablCn"
-                    value={empDtlData.mryfrSpcablCn}
-                    onValueChanged={(e) =>
-                      handleChgState({
-                        name: e.component.option("name"),
-                        value: e.value,
-                      })
-                    }
-                  />
-                </Item>
-                <Item label={{ text: "키" }} dataField="height" ratio={1}>
+                <Item  dataField="키" ratio={1}>
                   <div
                     style={{
                       display: "flex",
@@ -513,7 +490,7 @@ const EmpBasicInfo = () => {
                     cm
                   </div>
                 </Item>
-                <Item label={{ text: "몸무게" }} dataField="bdwgh" ratio={1}>
+                <Item  dataField="몸무게" ratio={1}>
                   <div
                     style={{
                       display: "flex",
@@ -539,7 +516,6 @@ const EmpBasicInfo = () => {
                   </div>
                 </Item>
               </GroupItem>
-            </GroupItem>
           </Form>
           <div style={{ marginTop: "10px" }}>
             <Button text="저장" onClick={updateEmpInfo} />

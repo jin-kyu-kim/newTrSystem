@@ -113,55 +113,71 @@
       {
         "TabName": "비밀번호변경",
         "tabId": "ModifyPwd",
-        "url": "./ModifyPwd"
+        "url": "./ModifyPwd",
+        "index" : 0
       },
       {
         "TabName": "직원기본정보",
         "tabId": "EmpBasicInfo",
-        "url": "./EmpBasicInfo"
+        "url": "./EmpBasicInfo",
+        "index" : 1
       },
       {
         "TabName": "학력",
         "tabId": "EmpDegree",
-        "url": "./EmpDegree"
+        "url": "./EmpDegree",
+        "index" : 2
       },
       {
         "TabName": "외국어능력",
         "tabId": "EmpLanguage",
-        "url": "./EmpLanguage"
+        "url": "./EmpLanguage",
+        "index" : 3
       },
       {  "TabName": "자격면허",
       "tabId": "EmpLicense",
-      "url": "./EmpLicense"
+      "url": "./EmpLicense",
+      "index" : 4
   
       },
       {
         "TabName": "교육이력",
         "tabId": "EmpEduHist",
-        "url": "./EmpEduHist"
+        "url": "./EmpEduHist",
+        "index" : 5
       },
       {
         "TabName": "경력",
         "tabId": "EmpCareer",
-        "url": "./EmpCareer"
+        "url": "./EmpCareer",
+        "index" : 6
       },
       {
         "TabName": "프로젝트이력",
         "tabId": "EmpProjectHist",
-        "url": "./EmpProjectHist"
+        "url": "./EmpProjectHist",
+        "index" : 7
+      },
+      {
+        "TabName": "직원조회 테스트",
+        "tabId": "EmpTabTest",
+        "url": "./EmpTabTest",
+        "index" : 8
+        
       }
+
+
     ],
 
 
     "EmpBasicInfo":{
     "BaseInfo" :
     [
-      { "key": "empno", "value": "사번" },
-      { "key": "jbpsCd", "value": "직위코드" },
       { "key": "empFlnm", "value": "성명" },
       { "key": "telno", "value": "전화번호" },
       { "key": "eml", "value": "이메일" },
-      {"key": "brdt","value": "생년월일"}
+      {"key": "brdt","value": "생년월일"},
+      {"key": "deptNm", "value": "부서"}
     ],
     "DtlInfo":
     [
