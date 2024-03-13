@@ -158,6 +158,12 @@ const TreRoutes = [
     path: "/fnnrMng/prjctCtClm/ProjectClaimCostDetail",
     name: "ProjectClaimCostDetail",
     element: React.lazy(() => import("../pages/fnnrMng/prjctCtClm/ProjectClaimCostDetail")),
+  },
+  // 개인 청구 > 문화체력비용
+  {
+    path: "/indvdlClm/CultureHealthCost",
+    name: "CultureHealthCost",
+    element: React.lazy(() => import("../pages/indvdlClm/CultureHealthCost")),
   }
 ];
 
