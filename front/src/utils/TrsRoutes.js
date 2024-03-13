@@ -149,21 +149,21 @@ const TreRoutes = [
   },
   // 재무 관리 > 프로젝트비용청구현황
   {
-    path: "/fnnrMng/ProjectClaimCost",
+    path: "/fnnrMng/prjctCtClm/ProjectClaimCost",
     name: "ProjectClaimCost",
-    element: React.lazy(() => import("../pages/fnnrMng/ProjectClaimCost")),
+    element: React.lazy(() => import("../pages/fnnrMng/prjctCtClm/ProjectClaimCost")),
   },
   // 재무 관리 > 프로젝트비용청구현황 상세조회
   {
-    path: "/fnnrMng/ProjectClaimCostDetail",
+    path: "/fnnrMng/prjctCtClm/ProjectClaimCostDetail",
     name: "ProjectClaimCostDetail",
-    element: React.lazy(() => import("../pages/fnnrMng/ProjectClaimCostDetail")),
-  }
-  // 재무 관리 > 근무시간 승인내역
-  ,{
-    path: "/fnnrMng/EmpTimeAprvList",
-    name: "EmpTimeAprvList",
-    element: React.lazy(() => import("../pages/fnnrMng/EmpTimeAprvList")),
+    element: React.lazy(() => import("../pages/fnnrMng/prjctCtClm/ProjectClaimCostDetail")),
+  },
+  // 개인 청구 > 문화체력비용
+  {
+    path: "/indvdlClm/CultureHealthCost",
+    name: "CultureHealthCost",
+    element: React.lazy(() => import("../pages/indvdlClm/CultureHealthCost")),
   }
 ];
 
