@@ -20,6 +20,7 @@
 	    , (SELECT MAX(BGT_MNG_ODR) FROM PRJCT_BGT_PRMPC pbp WHERE pbp.PRJCT_ID = p.PRJCT_ID AND pbp.ATRZ_DMND_STTS_CD = 'VTW03703') AS BGT_MNG_ODR
 	    , (SELECT IFNULL(MAX(BGT_MNG_ODR), 1) FROM PRJCT_BGT_PRMPC pbp WHERE pbp.PRJCT_ID = p.PRJCT_ID) AS BGT_MNG_ODR_TOBE
 	    , PRJCT_CD_IDNTFR
+	    , DEPT_ID
         , COUNT(*) OVER () AS TOTAL_ITEMS
      FROM PRJCT p
     WHERE 1=1
@@ -44,6 +45,35 @@
             </if>
         </if>
     ORDER BY REG_DT DESC
+    </select>
+    
+    <select id="retrievePrjctBsisInfo" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT PRJCT_NM
+			 , PRJCT_CD_IDNTFR
+			 , d.DEPT_NM
+			 , e.EMP_FLNM AS PRJCT_MNGR_EMP_FLNM
+			 , cd1.CD_NM AS PRJCT_STLE_CD_NM
+			 , cd2.CD_NM AS BIZ_STTS_CD_NM
+			 , DATE_FORMAT(EXPECT_ORDER_YMD, '%Y-%m-%d') AS EXPECT_ORDER_YMD 			-- 예상발주일
+			 , DATE_FORMAT(BEFFAT_PBANC_DDLN_YMD, '%Y-%m-%d') AS BEFFAT_PBANC_DDLN_YMD  -- 사전공고마감일
+			 , DATE_FORMAT(PROPSE_DDLN_YMD, '%Y-%m-%d') AS PROPSE_DDLN_YMD 				-- 제안마감일
+			 , DATE_FORMAT(PROPSE_PRSNTN_YMD, '%Y-%m-%d') AS PROPSE_PRSNTN_YMD 			-- 제안PT일
+			 , DATE_FORMAT(CTRT_YMD, '%Y-%m-%d') AS CTRT_YMD 							-- 계약일
+			 , DATE_FORMAT(BIZ_END_YMD, '%Y-%m-%d') AS BIZ_END_YMD 						-- 사업종료일
+			 , DATE_FORMAT(IGI_YMD, '%Y-%m-%d') AS IGI_YMD 								-- 검수일
+			 , DATE_FORMAT(STBLE_END_YMD, '%Y-%m-%d') AS STBLE_END_YMD 					-- 경비사용종료일
+		 	 , ci.CTMMNY_NM
+			 , p.PIC_FLNM
+			 , p.PIC_TELNO
+			 , p.PIC_EML 
+		  FROM PRJCT p
+		  JOIN DEPT d ON (d.DEPT_ID = p.DEPT_ID)
+		  JOIN EMP e ON (e.EMP_ID = p.PRJCT_MNGR_EMP_ID)
+		  JOIN CD cd1 ON (cd1.CD_VALUE = p.PRJCT_STLE_CD)
+		  JOIN CD cd2 ON (cd2.CD_VALUE = p.BIZ_STTS_CD)
+	      JOIN CTMMNY_INFO ci ON (ci.CTMMNY_ID = p.CTMMNY_ID)
+		 WHERE 1=1
+		   AND PRJCT_ID = #{prjctId}
     </select>
     
     <select id="retrievePrjctAprvList" parameterType="map" resultType="com.trsystem.LowerHashMap">
