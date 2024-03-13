@@ -228,7 +228,7 @@ const ProjectDetail = () => {
           if(data.index === selectedIndex) {
               return (
                 <React.Suspense fallback={<div>Loading...</div>}>
-                <Component prjctId={prjctId} ctrtYmd={ctrtYmd} bizEndYmd={bizEndYmd} bgtMngOdr={bgtMngOdr} />
+                <Component prjctId={prjctId} ctrtYmd={ctrtYmd} bizEndYmd={bizEndYmd} bgtMngOdr={bgtMngOdr} bgtMngOdrTobe={bgtMngOdrTobe} />
               </React.Suspense>
             );
           }
