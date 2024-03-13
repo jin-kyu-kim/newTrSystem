@@ -106,8 +106,8 @@
 		        <if test="prjctId != null and !prjctId.equals('')">
 		       AND pal.PRJCT_ID = #{prjctId}
 		        </if>
-		        <if test="bizFlfmtTyCd != null and !bizFlfmtTyCd.equals('')">
-		       AND BIZ_FLFMT_TY_CD = #{bizFlfmtTyCd}
+		        <if test="atrzSttsCd != null and !atrzSttsCd.equals('')">
+		       AND ATRZ_STTS_CD = #{atrzSttsCd}
 		        </if>
     		   AND pald.ATRZ_STTS_CD != 'VTW00805'
 			   ORDER BY pal.REG_DT DESC
@@ -616,8 +616,9 @@
 		 AND M.BGT_MNG_ODR = #{bgtMngOdr}
 	</select>
 	
-	<!-- -->
-	<select id="retrieveRjctAtrz" parameterType="map" resultType="com.trsystem.LowerHashMap">
+
+	<select id="retrieveTmprRjctBgtOdr" parameterType="map" resultType="com.trsystem.LowerHashMap">
+	<!-- 
 	  SELECT pal.PRJCT_ID
 	    FROM PRJCT_ATRZ_LN_DTL pald
 	    JOIN PRJCT_ATRZ_LN pal ON (pal.PRJCT_ID = pald.PRJCT_ID AND pal.ATRZ_LN_SN = pald.ATRZ_LN_SN)
@@ -625,6 +626,12 @@
 	     AND pal.PRJCT_ID = #{prjctId}
 	     AND pal.ATRZ_LN_SN = #{atrzLnSn}
 	     AND pald.ATRZ_STTS_CD = 'VTW00803'
+	-->
+		SELECT ATRZ_DMND_STTS_CD 
+		  FROM PRJCT_BGT_PRMPC pbp 
+		 WHERE 1=1
+		   AND PRJCT_ID = #{prjctId}
+		   AND BGT_MNG_ODR = #{bgtMngOdr}
 	</select>
 	
 	<select id="retrieveMmnyHnf" parameterType="map" resultType="com.trsystem.LowerHashMap">
