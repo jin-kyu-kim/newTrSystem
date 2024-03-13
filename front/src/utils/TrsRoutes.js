@@ -149,15 +149,15 @@ const TreRoutes = [
   },
   // 재무 관리 > 프로젝트비용청구현황
   {
-    path: "/fnnrMng/prjctCtClm/ProjectClaimCost",
+    path: "/fnnrMng/ProjectClaimCost",
     name: "ProjectClaimCost",
-    element: React.lazy(() => import("../pages/fnnrMng/prjctCtClm/ProjectClaimCost")),
+    element: React.lazy(() => import("../pages/fnnrMng/ProjectClaimCost")),
   },
   // 재무 관리 > 프로젝트비용청구현황 상세조회
   {
-    path: "/fnnrMng/prjctCtClm/ProjectClaimCostDetail",
+    path: "/fnnrMng/ProjectClaimCostDetail",
     name: "ProjectClaimCostDetail",
-    element: React.lazy(() => import("../pages/fnnrMng/prjctCtClm/ProjectClaimCostDetail")),
+    element: React.lazy(() => import("../pages/fnnrMng/ProjectClaimCostDetail")),
   },
   // 개인 청구 > 문화체력비용
   {
