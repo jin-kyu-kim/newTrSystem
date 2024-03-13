@@ -3,7 +3,7 @@ import { Button } from "devextreme-react/button";
 import ToggleButton from "../../pages/sysMng/ToggleButton"
 
 const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, 
-                      handleYnVal, editRow, onEditRow, onClick }) => {
+                      handleYnVal, editRow, onEditRow, onClick,onRowClick }) => {
 
   const gridRows = () => {
     const result = [];
@@ -71,6 +71,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
         columnAutoWidth={false}
         noDataText=""
         onRowDblClick={onRowDblClick}
+        onRowClick={onRowClick}
         onRowInserted={(e) => onEditRow('insert', e)}
         onRowUpdating={(e) => onEditRow('update', e)}
         onRowRemoved={(e) => onEditRow('delete', e)}

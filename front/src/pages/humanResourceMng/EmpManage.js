@@ -3,7 +3,7 @@ import ApiRequest from "utils/ApiRequest";
 import { Button } from "devextreme-react";
 import CustomTable from "components/unit/CustomTable";
 import EmpManageJson from  "./EmpManageJson.json";
-// import CustomLabelValue from "components/unit/CustomLabelValue";
+import CustomLabelValue from "components/unit/CustomLabelValue";
 import SearchHumanResoureceMngSet from "components/composite/SearchEmpSet";
 import EmpRegist from "./EmpRegist";
 import { SelectBox } from "devextreme-react/select-box";
@@ -17,8 +17,8 @@ const EmpManage = ({callBack}) => {
   const { listQueryId, searchParams, listKeyColumn, listTableColumns,       //직원목록조회 
           ejhQueryId, ejhKeyColumn, ejhTableColumns,labelValue,            //직원발령정보목록,발령용컴포넌트
         } = EmpManageJson; 
-  const [yearParam ,setYearParam] = useState([]); // 년도 설정
-  const [monthParam,setMonthParam] = useState([]); // 달 설정
+  const [year, setYear] = useState([]);
+  const [month, setMonth] = useState([]);
   const [readOnly, setReadOnly] = useState(true);
   const [empParam2, setEmpParam2] = useState({}); //발령정보 넣어보낼거
   const [empParam3, setEmpParam3] = useState({}); //발령정보 받아올거
@@ -118,30 +118,25 @@ const EmpManage = ({callBack}) => {
         }
     ];
 
-  useEffect(() => {
+useEffect(() => {
+  const EndYear = new Date().getFullYear();
+  const startYear = EndYear -10;
 
-    const EndYear = new Date().getFullYear();
-    const startYear = EndYear -10;
-
-    for(let i = startYear; i <= EndYear; i++) {
-        yearList.push({"id": i, "value": i,"text": i + "년"});
+  for(let i = startYear; i <= EndYear; i++) {
+      yearList.push({"id": i, "value": i,"text": i + "년"});
+  }
+  for(let i = 1; i <= 12; i++) {
+    if(i < 10) {
+        i = "0" + i;
     }
+    monthList.push({"id": i,"value": i,"text": i + "월"})
+}
+  setYear(yearList);
+  setMonth(monthList);
 
-    for(let i = 1; i <= 12; i++) {
-        if(i < 10) {
-            i = "0" + i;
-        }
-        monthList.push({"id": i,"value": i,"text": i + "월"})
-    }
-      console.log("년도여",yearList);
-      console.log("월이여",monthList);
-      console.log("차수여",odrList);
 }, []);
 
-useEffect(() => {
-  console.log("혹시 이거 가져가시나요???", monthList)
-}, [monthList]);
-  //======================발령정보 콤보박스 선택 변경시
+  //======================진급정보 콤보박스 선택 변경시
   const handleChgState = ({ name, value }) => {
     console.log("네임 " , name,"벨류",value);
       setEmpParam2({
@@ -150,17 +145,17 @@ useEffect(() => {
       });
     
   };
- //========================발령정보 입력 (수정예정)
+ //========================진급정보 입력 (수정예정)
   const deptDownListHandle = async () => {
-    try {
-      const response2 = await ApiRequest("/boot/common/queryIdSearch",empParam2 );
-      setValues2(response2);
-    } catch (error) {
-      console.log(error);
-    }
+    // try {
+    //   const response2 = await ApiRequest("/boot/common/queryIdSearch",empParam2 );
+    //   setValues2(response2);
+    // } catch (error) {
+    //   console.log(error);
+    // }
   };
 
-   //========================발령정보 목록 (수정중)
+   //========================진급정보 목록 (수정중)
   const empJbpsHistHandle = async () => {
     try {
       const response3 = await ApiRequest("/boot/common/queryIdSearch",empParam3);
@@ -169,7 +164,7 @@ useEffect(() => {
       console.log(error);
     }
   };
-  //===========================발령정보 저장
+  //===========================진급정보 저장
   const onClickHst = () => {
     if(empInfo.empno === undefined || empInfo.empno === "" ){
       alert("발령정보를 입력할 직원을 선택하십시요");
@@ -178,7 +173,7 @@ useEffect(() => {
     else{
     const isconfirm = window.confirm("발령정보를 저장 하시겠습니까?"); 
     if (isconfirm) {
-        //insertDept();
+        //insertEmpHst();
     } else{
       return;
      }
@@ -186,32 +181,29 @@ useEffect(() => {
   };
 
   //============================직원목록에서 로우 클릭시 발생하는 이벤트
-  const onRowDblClick = (e) => {
+  const onRowClick = (e) => {
     for (const value of values) {
       if (value.empno === e.data.empno) {
-        setEmpInfo(value);
+        setEmpInfo(value);  //넘겨줄값
+        setEmpParam2(value); //발령정보 저장용
         break;
       }
     }
-    
-    setEmpParam2({ //발령정보 넣을때 쓸 예졍
-      deptId: e.data.empno,
-    });
-    setEmpParam3({
+    setEmpParam3({            //진급정보 가져오기
       empno: e.data.empno,
       queryId: ejhQueryId,
     });
   };
+  useEffect(()=>{console.log("empinfo qqqq",empInfo)},[empInfo]);
+  useEffect(()=>{console.log("empParam2 qqqq",empParam2)},[empParam2]);
   useEffect(() => {
-    if (empInfo.empno !== undefined && empInfo.empno !== "") {
+    if (empInfo.empId !== undefined && empInfo.empId !== "" && empInfo.empId !== null) {
         setReadOnly(true);
     }else {
       setReadOnly(false);
     }
-    setEmpParam2({
 
-    })
-  }, [empInfo.empno]);
+  }, [empInfo.empId]);
 
   //==============================setParam 이후에 함수가 실행되도록 하는 useEffect  
   useEffect(() => {
@@ -258,7 +250,7 @@ useEffect(() => {
               columns={listTableColumns}
               values={values}
               paging={true}
-              onRowDblClick={onRowDblClick}
+              onRowClick={onRowClick}
             />
           </div>
         </div>
@@ -281,14 +273,15 @@ useEffect(() => {
             <div className="dx-field-label asterisk">진급발령년도</div>
             <div className="dx-field-value">
                     <SelectBox 
-                        items={yearList}
+                        items={year}
                         name="year"
-                        displayExpr={yearList.text}
-                        valueExpr={yearList.value}
+                        displayExpr="text"
+                        valueExpr="value"
                         onValueChanged={handleChgState}
-                        placeholder="연도1"
+                        placeholder="연도"
                         style={{margin: "0px 5px 0px 5px"}}
-                        Value={yearList.value}
+                        required = {true}
+                        //Value={yearList.value}
                         //readOnly={readOnly}
                     />
               </div>
@@ -297,14 +290,15 @@ useEffect(() => {
             <div className="dx-field-label asterisk">진급발령차수</div>
             <div className="dx-field-value">
                     <SelectBox
-                        dataSource={monthList}
+                        dataSource={month}
                         name="month"
                         displayExpr="text"
                         valueExpr="value"
                         onValueChanged={handleChgState}
                         placeholder="월"
                         style={{margin: "0px 5px 0px 5px"}}
-                        value={monthList.value}
+                        required = {true}
+                        //value={monthList.value}
                         //readOnly={readOnly}
                     />
                     <SelectBox
@@ -315,14 +309,13 @@ useEffect(() => {
                         onValueChanged={handleChgState}
                         placeholder="차수"
                         style={{margin: "0px 5px 0px 5px"}}
-                        // value={yearParam.aplyOdr}
+                        required = {true}
+                        //value={odrList.aplyOdr}
                         //readOnly={readOnly}
                     />
                 </div>
               </div>
-            {/* <CustomLabelValue props={labelValue.jbpsCd} onSelect={handleChgState} value={empParam2.deptGnfdYr} readOnly={readOnly}/>
-            <CustomLabelValue props={labelValue.jbpsCd} onSelect={handleChgState} value={empParam2.deptGnfdMd} readOnly={readOnly}/> */}
-            {/* <CustomLabelValue props={labelValue.jbpsCd} onSelect={handleChgState} value={empParam2.jbpsCd} readOnly={readOnly}/> */}
+            <CustomLabelValue props={labelValue.jbpsCd} onSelect={handleChgState} value={labelValue.jbpsCd}/>
         <div className="buttonContainer" style={buttonContainerStyle}>
             <Button style={buttonStyle}>발령정보업로드</Button>
             <Button style={buttonStyle} onClick={onClickHst}>발령저장</Button>
