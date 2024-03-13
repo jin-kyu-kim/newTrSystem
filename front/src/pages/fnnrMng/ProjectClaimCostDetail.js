@@ -112,7 +112,7 @@ const ProjectCostClaimDetail = () => {
                         onOptionChanged={onSelectionChanged}
                         itemTitleRender={itemTitleRender}
                         animationEnabled={true}
-                        itemComponent={({ data }) => { console.log(param);
+                        itemComponent={({ data }) => {
                             const Component = React.lazy(() => import(`${data.url}`));
                             return (
                                 <React.Suspense fallback={<div>Loading...</div>}>

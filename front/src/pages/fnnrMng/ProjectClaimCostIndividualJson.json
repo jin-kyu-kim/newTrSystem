@@ -1,25 +1,41 @@
 {
-    "menuName": "ProjectClaimCost",
-	  "queryId": "financialAffairMapper.retrievePrjctCtClmSttusIndvdlMMAccto",
-    "keyColumn": "prjctId",
-    "workHourColumns": 
+    "menuName": "ProjectClaimCostIndvdl",
+	"queryId": {
+      "empMMQueryId": "financialAffairMngMapper.retrievePrjctCtClmSttusIndvdlMMAccto",
+      "empCtQueryId": "financialAffairMngMapper.retrievePrjctCtClmSttusIndvdlCtAccto"
+    },
+    "keyColumn": "empId",
+    "workHourColumns":
 	[
-        { "key": "prjctId", "value": "소속", "width": 250, "alignment" : "left" },
-        { "key": "prjctId", "value": "성명", "width": 100, "alignment" : "center"  },
-        { "key": "prjctId", "value": "차수", "width": 100, "alignment" : "left" },
-        { "key": "prjctId", "value": "배정", "width": 150, "alignment" : "right" },
-        { "key": "prjctId", "value": "누적사용", "width": 150, "alignment" : "right" },
-        { "key": "prjctId", "value": "가용", "width": 150, "alignment" : "right"  },
-        { "key": "prjctId", "value": "당차수청구", "width": 150, "alignment" : "right"  },
-        { "key": "prjctId", "value": "상태", "width": 200, "button": "비용청구현황", "alignment" : "center" }
-  ],
-  "expensColumns": 
+        { "key": "deptNm", "value": "소속", "width": 250, "alignment" : "left" },
+        { "key": "empFlnm", "value": "성명", "width": 80, "alignment" : "center"  },
+        { "key": "aplyOdr", "value": "차수", "width": 100, "alignment" : "left" },
+        { "key": "expectMM", "value": "배정", "width": 150, "alignment" : "right" },
+        { "key": "mm", "value": "누적사용", "width": 150, "alignment" : "right" },
+        { "key": "useMM", "value": "가용", "width": 150, "alignment" : "right"  },
+        { "key": "clmMd", "value": "당차수청구", "width": 150, "alignment" : "right"  },
+        { "key": "empId", "value": "상태", "width": 180, "button": "비용청구현황", "alignment" : "center" }
+    ],
+    "workHourSumColumns": [
+        { "key": "deptNm", "value": "소속", "type"  : "sum", "format": "계" },
+        { "key": "expectMm", "value": "배정", "type"  : "sum", "format": "{0} MM", "precision": "1" },
+        { "key": "mm", "value": "누적사용", "type"  : "sum", "format": "{0} MM", "precision": "1" },
+        { "key": "useMM", "value": "가용", "type"  : "sum", "format": "{0} MM", "precision": "1" },
+        { "key": "clmMd", "value": "당차수청구", "type"  : "sum", "format": "{0} MM", "precision": "0" }
+    ],
+    "expensColumns":
 	[
-        { "key": "prjctId", "value": "소속", "width": 250, "alignment" : "left" },
-        { "key": "prjctId", "value": "성명", "width": 100, "alignment" : "center" },
-        { "key": "prjctId", "value": "차수", "width": 100, "alignment" : "left" },
-        { "key": "prjctId", "value": "누적사용", "width": 300, "alignment" : "right"  },
-        { "key": "prjctId", "value": "당차수청구", "width": 300, "alignment" : "right"   },
-        { "key": "prjctId", "value": "상태", "width": 200, "button": "비용청구현황", "alignment" : "center" }
-  ]
+        { "key": "deptNm", "value": "소속", "width": 250, "alignment" : "left" },
+        { "key": "empFlnm", "value": "성명", "width": 80, "alignment" : "center" },
+        { "key": "aplyOdr", "value": "차수", "width": 100, "alignment" : "left" },
+        { "key": "totalAmtSum", "value": "누적사용", "width": 300, "alignment" : "right"  },
+        { "key": "totalAmt", "value": "당차수청구", "width": 300, "alignment" : "right"   },
+        { "key": "empId", "value": "상태", "width": 180, "button": "비용청구현황", "alignment" : "center" }
+    ],
+    "expensSumColumns": [
+        { "key": "deptNm", "value": "소속", "type"  : "sum", "format": "계" },
+        { "key": "totalAmtSum", "value": "누적사용", "type"  : "sum", "format": "{0} 원", "precision": "0" },
+        { "key": "totalAmt", "value": "당차수청구", "type"  : "sum", "format": "{0} 원", "precision": "0" }
+
+    ]
 }

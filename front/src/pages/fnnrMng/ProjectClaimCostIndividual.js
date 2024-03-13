@@ -5,50 +5,54 @@ import CustomTable from "../../components/unit/CustomTable";
 import ProjectClaimCostIndividual from './ProjectClaimCostIndividualJson.json';
 import { useNavigate } from "react-router-dom";
 
-const ProjectCostIndividual = () => {
+const ProjectCostIndividual = ({ prjctId, prjctNm, year, monthVal, aplyOdr, empId }) => {
+  const { keyColumn, queryId, workHourColumns, expensColumns, workHourSumColumns, expensSumColumns } = ProjectClaimCostIndividual;
   const [workHourData, setWorkHourData] = useState([]);
   const [expensData, setExpensData] = useState([]);
-  const [values, setValues] = useState([]);
 
   const navigate = useNavigate();
 
-  const { keyColumn, queryId, workHourColumns, expensColumns } = ProjectClaimCostIndividual;
 
-  /* useEffect(() => {
-    const WorkHourData = async () => {
-      const param = [ 
-        { tbNm: "PRJCT_MM_APLY" }, 
-        { 
-         prjctId: prjctId,
-        }, 
-     ]; 
-      try {
-        const response = await ApiRequest("/boot/common/commonSelect", param);
-        setWorkHourData(response[0]);     
-      } catch (error) {
-        console.error('Error fetching data', error);
-      }
-    };
-    WorkHourData();
-  }, []);
 
   useEffect(() => {
-    const param = [ 
-      { tbNm: "PRJCT_CT_APLY" }, 
-      { 
-       prjctId: prjctId, 
-      }, 
-   ]; 
-    const ExpensData = async () => {
-      try {
-        const response = await ApiRequest("/boot/common/commonSelect", param);
-        setExpensData(response[0]);  
-      } catch (error) {
-        console.error('Error fetching data', error);
-      }
+      getWorkHourData();
+      getExpensData();
+  }, [year, monthVal, aplyOdr, empId]);
+
+    const getWorkHourData = async () => {
+
+        const param = {
+            queryId: queryId.empMMQueryId,
+            prjctId: prjctId,
+            aplyYm: year+monthVal,
+            aplyOdr: aplyOdr,
+            empId: empId
+        };
+        try{
+            const response = await ApiRequest('/boot/common/queryIdSearch', param);
+            setWorkHourData(response);
+        }catch (error){
+            console.log(error)
+        }
     };
-    ExpensData();
-  }, []); */
+
+    const getExpensData = async () => {
+
+        const param = {
+            queryId: queryId.empCtQueryId,
+            prjctId: prjctId,
+            aplyYm: year+monthVal,
+            aplyOdr: aplyOdr,
+            empId: empId
+        };
+        try{
+            const response = await ApiRequest('/boot/common/queryIdSearch', param);
+            setExpensData(response);
+        }catch (error){
+            console.log(error)
+        }
+    };
+
 
   const onClick = (data) => {
     navigate("/fnnrMng/ProjectClaimCostDetail",
@@ -61,16 +65,20 @@ const ProjectCostIndividual = () => {
         <p><strong>* 수행인력</strong></p>
         <CustomTable
           keyColumn={keyColumn}
-          values={values}
+          values={workHourData}
           columns={workHourColumns}
+          summary={true}
+          summaryColumn={workHourSumColumns}
           onClick={onClick}
       />
         &nbsp;
         <p><strong>* 경비</strong></p>
         <CustomTable
           keyColumn={keyColumn}
-          values={values}
+          values={expensData}
           columns={expensColumns}
+          summary={true}
+          summaryColumn={expensSumColumns}
           onClick={onClick}
       />
       </div>

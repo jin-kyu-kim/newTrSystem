@@ -8,6 +8,7 @@
     <!--프로젝트청구현황개인별 수행인력-->
     <select id="retrievePrjctCtClmSttusIndvdlMMAccto" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
+            pma.EMP_ID,
             d.DEPT_NM,
             e.EMP_FLNM,
             CONCAT(picm.APLY_YM, '-', picm.APLY_ODR) AS APLY_ODR,
@@ -29,16 +30,16 @@
         JOIN DEPT d
             ON d.DEPT_ID = dh.DEPT_ID
         JOIN (
-                SELECT
-                    mlp.EMP_ID,
-                    mim.EXPECT_MM,
-                    mlp.PRJCT_ID,
-                    mim.INPT_YM
-                FROM MMNY_LBRCO_PRMPC mlp
-                JOIN MMNY_INPT_MM mim
-                    ON mlp.PRJCT_ID = mim.PRJCT_ID
-                    AND mlp.BGT_MNG_ODR = mim.BGT_MNG_ODR
-                    AND mlp.MMNY_LBRCO_PRMPC_SN = mim.MMNY_LBRCO_PRMPC_SN
+            SELECT
+                mlp.EMP_ID,
+                mim.EXPECT_MM,
+                mlp.PRJCT_ID,
+                mim.INPT_YM
+            FROM MMNY_LBRCO_PRMPC mlp
+            JOIN MMNY_INPT_MM mim
+                ON mlp.PRJCT_ID = mim.PRJCT_ID
+                AND mlp.BGT_MNG_ODR = mim.BGT_MNG_ODR
+                AND mlp.MMNY_LBRCO_PRMPC_SN = mim.MMNY_LBRCO_PRMPC_SN
         ) mm
             ON mm.PRJCT_ID = picm.PRJCT_ID
             AND mm.EMP_ID = picm.EMP_ID
@@ -59,24 +60,30 @@
         <if test="empId != null and !empId.equals('')">
             AND pma.EMP_ID = #{empId}
         </if>
-        GROUP BY d.DEPT_NM, e.EMP_FLNM, picm.APLY_YM, picm.APLY_ODR, mm.EXPECT_MM, mle.MM
+        GROUP BY pma.EMP_ID, d.DEPT_NM, e.EMP_FLNM, picm.APLY_YM, picm.APLY_ODR, mm.EXPECT_MM, mle.MM
     </select>
 
     <!--프로젝트청구현황개인별 경비-->
     <select id="retrievePrjctCtClmSttusIndvdlCtAccto" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
+            pca.EMP_ID,
             d.DEPT_NM,
             e.EMP_FLNM,
             CONCAT(picm.APLY_YM, '-', picm.APLY_ODR) AS APLY_ODR,
-            SUM(pca.UTZTN_AMT) AS TOTAL_AMT,
-            pca.UTZTN_AMT
+            (
+                SELECT SUM(a.UTZTN_AMT)
+                FROM PRJCT_CT_APLY a
+                WHERE a.EMP_ID = pca.EMP_ID
+                GROUP BY a.EMP_ID
+            ) AS TOTAL_AMT_SUM,
+            SUM(pca.UTZTN_AMT) AS TOTAL_AMT
         FROM PRJCT_CT_APLY pca
         JOIN PRJCT_INDVDL_CT_MM picm
             ON pca.PRJCT_ID = picm.PRJCT_ID
             AND pca.EMP_ID = picm.EMP_ID
             AND pca.APLY_YM = picm.APLY_YM
             AND pca.APLY_ODR = picm.APLY_ODR
-            AND picm.MM_ATRZ_CMPTN_YN = 'Y'
+            AND picm.CT_ATRZ_CMPTN_YN = 'Y'
         JOIN EMP e
             ON e.EMP_ID = picm.EMP_ID
         JOIN DEPT_HNF dh
@@ -96,7 +103,7 @@
         <if test="empId != null and !empId.equals('')">
             AND pca.EMP_ID = #{empId}
         </if>
-        GROUP BY d.DEPT_NM, e.EMP_FLNM, picm.APLY_YM, picm.APLY_ODR, pca.UTZTN_AMT
+        GROUP BY pca.EMP_ID, d.DEPT_NM, e.EMP_FLNM, picm.APLY_YM, picm.APLY_ODR
     </select>
 
     <!--프로젝트청구현황일자별 수행인력-->
