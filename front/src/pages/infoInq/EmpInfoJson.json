@@ -157,14 +157,8 @@
         "tabId": "EmpProjectHist",
         "url": "./EmpProjectHist",
         "index" : 7
-      },
-      {
-        "TabName": "직원조회 테스트",
-        "tabId": "EmpTabTest",
-        "url": "./EmpTabTest",
-        "index" : 8
-        
       }
+      
 
 
     ],
