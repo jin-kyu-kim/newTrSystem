@@ -9,9 +9,6 @@ const ProjectBaseInfo = ({prjctId}) => {
   const [picInfoData, setPicInfoData] = useState([]);
   const [CnsrtmData, setCnsrtmData] = useState([]);
 
-  //baseInfoData 데이터 
-  //picInfoData 데이터
-
   /**
    * 기본정보 데이터 세팅
    * 담당자 정보 데이터 세팅
@@ -46,7 +43,7 @@ const ProjectBaseInfo = ({prjctId}) => {
        prjctId: prjctId, 
       }, 
    ];  
-    const Cnsrtm = async () => {  //TODO. 컨소시엄 갯수많큼 테이블 증가해야함.
+    const Cnsrtm = async () => {  
       try {
         const response = await ApiRequest("/boot/common/commonSelect", param);
         setCnsrtmData(response);  

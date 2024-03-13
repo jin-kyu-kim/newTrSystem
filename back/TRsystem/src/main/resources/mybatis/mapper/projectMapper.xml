@@ -827,5 +827,117 @@
 		  AND pah.ATRZ_DMND_STTS_CD = 'VTW03703'
 	</select>
 	
+	
+	
+	<select id="retrieveExcnPrmpcBill" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT 
+			#{id} AS ID, 
+			<choose>
+				<when test="costKind != null and costKind != ''">
+					#{costKind} AS COST_KIND, 
+				</when>
+				<otherwise>
+					A.CNSRTM_CO_NM AS COST_KIND,
+				</otherwise>
+			</choose>
+			A.CN AS COST_AMT,
+		    ROUND(A.CN / B.TOTAL * 100, 2) AS RATE, 
+			#{group} AS BIND
+		FROM 
+			<if test="tbCostNm == 'PRJCT'">
+			    (SELECT 
+			        TOT_BGT AS CN
+			     FROM 
+			        PRJCT M
+			     WHERE 
+			        M.PRJCT_ID = #{prjctId}
+			    ) A,
+
+            </if>
+            <if test="tbCostNm == 'PRJCT_CNSRTM'">
+			    (SELECT 
+			        CNSRTM_CO_NM, CMMN_EXPENS_AMT AS CN
+			     FROM 
+			        PRJCT_CNSRTM M
+			     WHERE 1=1
+			        AND M.PRJCT_ID = #{prjctId}
+			        AND M.SLS_AM_RFLT_YN = 'Y'	 
+			    ) A,
+            </if>
+            <if test="tbCostNm == 'MMNY_LBRCO_PRMPC'">
+			    (SELECT SUM(T.TOTAL) AS CN
+					FROM (
+					SELECT (S.UNTPC * S.EXPECT_MM)AS TOTAL  FROM MMNY_LBRCO_PRMPC M
+					JOIN MMNY_INPT_MM S
+					ON M.PRJCT_ID = S.PRJCT_ID AND M.BGT_MNG_ODR = S.BGT_MNG_ODR AND M.MMNY_LBRCO_PRMPC_SN = S.MMNY_LBRCO_PRMPC_SN 
+					WHERE 1=1
+					AND M.PRJCT_ID = #{prjctId}
+					AND M.BGT_MNG_ODR = #{bgtMngOdr}
+					)T
+				  ) A ,
+            </if>
+            <if test="tbCostNm == 'OUTORD_LBRCO_PRMPC'">
+			    ( SELECT SUM(T.TOTAL) AS CN
+					FROM (
+					SELECT (M.UNTPC * S.EXPECT_MM)AS TOTAL  FROM OUTORD_LBRCO_PRMPC M
+					JOIN OUTORD_LBRCO_PRMPC_DTL S
+					ON M.PRJCT_ID = S.PRJCT_ID AND M.BGT_MNG_ODR = S.BGT_MNG_ODR AND M.OUTORD_LBRCO_PRMPC_SN = S.OUTORD_LBRCO_PRMPC_SN 
+					WHERE 1=1
+					AND M.PRJCT_ID = #{prjctId}
+					AND M.BGT_MNG_ODR = #{bgtMngOdr}
+					)T
+				  ) A ,
+            </if>
+            <if test="tbCostNm == 'OUTORD_ENTRPS_CT_PRMPC'">
+			    ( SELECT SUM(T.TOTAL) AS CN
+					FROM (
+					SELECT EXPECT_CT AS TOTAL  FROM OUTORD_ENTRPS_CT_PRMPC M
+					WHERE 1=1
+					AND M.PRJCT_ID = #{prjctId}
+					AND M.BGT_MNG_ODR = #{bgtMngOdr}
+					)T
+				  ) A ,
+            </if>
+            <if test="tbCostNm == 'MATRL_CT_PRMPC'">
+			    ( SELECT SUM(T.TOTAL) AS CN
+					FROM (
+					SELECT CNTRCTAMOUNT AS TOTAL  FROM MATRL_CT_PRMPC M
+					WHERE 1=1
+					AND M.PRJCT_ID = #{prjctId}
+					AND M.BGT_MNG_ODR = #{bgtMngOdr}
+					)T
+				  ) A ,
+            </if>
+            <if test="tbCostNm == 'EXPENS_PRMPC'">
+			    ( SELECT SUM(T.TOTAL) AS CN
+					FROM (
+					SELECT EXPECT_CT AS TOTAL  FROM EXPENS_PRMPC M
+					JOIN EXPENS_MNBY_PRMPC_DTLS S
+					ON M.PRJCT_ID = S.PRJCT_ID AND M.BGT_MNG_ODR = S.BGT_MNG_ODR AND M.EXPENS_PRMPC_SN = S.EXPENS_PRMPC_SN 
+					WHERE 1=1
+					<if test="control != null and control != ''">
+						AND M.EXPENS_CD BETWEEN 'VTW04528' AND 'VTW04535'
+					</if>
+					<if test="general != null and general != ''">
+						AND M.EXPENS_CD BETWEEN 'VTW04501' AND 'VTW04527'
+					</if>
+					AND M.PRJCT_ID =  #{prjctId}
+					AND M.BGT_MNG_ODR = #{bgtMngOdr}
+					)T
+				  ) A ,
+            </if> 
+		    (
+			  SELECT (T.TOT_BGT + SUM(T.CMMN_EXPENS_AMT))AS TOTAL
+				FROM
+				(SELECT M.TOT_BGT, M.PRJCT_ID,S.CNSRTM_CO_NM,S.CMMN_EXPENS_AMT FROM PRJCT M
+				JOIN PRJCT_CNSRTM S
+				ON M.PRJCT_ID = S.PRJCT_ID 
+				WHERE 1=1
+				AND M.PRJCT_ID = #{prjctId}
+				AND S.SLS_AM_RFLT_YN  = 'Y') T
+			 )B
+    </select>
+    
+	
 
 </mapper>
