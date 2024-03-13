@@ -114,11 +114,9 @@ const DeptManage = ({callBack}) => {
       setValues(response);
       if (response.length !== 0) {
         console.log("건수: " + totalItems);
-        setTotalPages(Math.ceil(response[0].totalItems / pageSize));
         setTotalItems(response[0].totalItems);
       } else {
         setTotalItems(0);
-        setTotalPages(1);
       }
     } catch (error) {
       console.log(error);
@@ -133,6 +131,7 @@ const DeptManage = ({callBack}) => {
 
   //부서 정보 수정 
   const editDept = () => {
+    setPopupVisible(true);
     setPopup(true);
   };
 
@@ -141,7 +140,7 @@ const DeptManage = ({callBack}) => {
   };
 
   const onHide = () => {
-    callBack(initParam);
+    //callBack(initParam);
     setPopupVisible(false);
   }
   
@@ -151,13 +150,32 @@ const DeptManage = ({callBack}) => {
 
     if (isconfirm) {
       console.log("부서 삭제 : " + deptInfo.deptId);
-      // if (response > 0) {
-        setDeptInfo([]);
-      // }
+      const paramDel =[ { tbNm: "DEPT" },{ deptId: deptInfo.deptId,} ]
+      const paramDelHnf =[ { tbNm: "DEPT_HNF" },{ deptId: deptInfo.deptId,} ]
+      //const paramDelHist =[ { tbNm: "DEPT_HNF_HIST" },{ deptId: deptInfo.deptId,} ]
+      deleteDeptHist(paramDel,paramDelHnf,);
     }
     
   };
+//=============================삭제axios
+const deleteDeptHist = async (paramDel,paramDelHnf) => {
+  try {
+    //const responseDelHist = await ApiRequest("/boot/common/commonDelete", paramDelHist);
+    const responseDelHnf = await ApiRequest("/boot/common/commonDelete", paramDelHnf);
+    const responseDel = await ApiRequest("/boot/common/commonDelete", paramDel);
 
+      if (responseDel > 0 && responseDelHnf > 0 ) {
+        alert("삭제되었습니다.");
+        setDeptInfo([]);
+        pageHandle();
+      }else{
+        alert("특정 프로젝트에 부서가 속해있습니다.\n수정이나 삭제 후 시도하십시요.");
+      }
+  } catch (error) {
+    
+    console.error("Error fetching data", error);
+  }
+};
 
  //========================하위 부서 목록
   const deptDownListHandle = async () => {
@@ -187,14 +205,13 @@ const DeptManage = ({callBack}) => {
 
 
   //부서목록에서 로우 클릭시 발생하는 이벤트
-  const onRowDblClick = (e) => {
+  const onRowClick = (e) => {
     for (const value of values) {
       if (value.deptId === e.data.deptId) {
         setDeptInfo(value);
         break;
       }
     }
-
     setDeptParam2({
       deptId: e.data.deptId,
       queryId: downDeptQueryId,
@@ -248,7 +265,7 @@ const DeptManage = ({callBack}) => {
               columns={listTableColumns}
               values={values}
               paging={true}
-              onRowDblClick={onRowDblClick}
+              onRowClick={onRowClick}
             />
           </div>
         </div>
@@ -265,11 +282,7 @@ const DeptManage = ({callBack}) => {
               </div>
             ) : null}
             </div>
-            <DeptRegist 
-              deptInfo={deptInfo} 
-              deptId={deptInfo.deptId}
-              isNew={false}
-            />
+            <DeptRegist  deptInfo={deptInfo}  deptId={deptInfo.deptId} isNew={false} />
           </div>
           <div className="deptDownListTable" style={deptDetailStyle}>
             <p>
@@ -307,7 +320,8 @@ const DeptManage = ({callBack}) => {
               onHide={onHide}
               deptInfo={deptInfo} 
               deptId={deptInfo.deptId}
-              isNew={false}/> 
+              isNew={true}
+              /> 
            </CustomPopup>
            : <></>
           }
