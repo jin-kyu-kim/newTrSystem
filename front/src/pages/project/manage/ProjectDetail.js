@@ -7,8 +7,6 @@ import ApiRequest from "../../../utils/ApiRequest";
 import ProjectDetailJson from "./ProjectDetailJson.json";
 
 import Button from "devextreme-react/button";
-import LinkButton from "../../../components/unit/LinkButton.js";
-
 //TODO. 프로젝트 리스트에서 프로젝트 상태?형태?코드 정보 받아와서 그 정보에따라 변경원가 클릭시 작동 다르게 하기.
 
 const ProjectDetail = () => {
@@ -160,6 +158,13 @@ const ProjectDetail = () => {
     }
   }
 
+  const handleClick = (e) => {
+    navigate(location,
+        {
+    state: { prjctId: prjctId },
+    })
+  };
+
   return (
     <div>
       <div
@@ -172,7 +177,6 @@ const ProjectDetail = () => {
         </div>
       </div>
       <div className="buttons" align="right" style={{ margin: "20px" }}>
-        {/* <LinkButton location={"../project/ProjectChange"} name={"변경원가"} type={"default"} stylingMode={"contained"} prjctId={prjctId}/> */}
         <Button
           width={110}
           text="Contained"
@@ -192,7 +196,16 @@ const ProjectDetail = () => {
         >
           프로젝트종료
         </Button>
-        <LinkButton location={"../project/ProjectList"} name={"목록"} type={"normal"} stylingMode={"outline"}/>
+        <Button
+          width={50}
+          text="Contained"
+          type="normal"
+          stylingMode="outline"
+          style={{ margin : '2px' }}
+          onClick={handleClick}
+        >
+          목록
+        </Button>
       </div>
       <div
         style={{
