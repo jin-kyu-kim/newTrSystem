@@ -12,13 +12,13 @@
     {
       "TabName": "개인별조회",
       "tabId": "ProjectClaimCostIndividual",
-      "url": "pages/fnnrMng/prjctCtClm/ProjectClaimCostIndividual"
+      "url": "pages/fnnrMng/ProjectClaimCostIndividual"
 
     },
     {
       "TabName": "일자별조회",
       "tabId": "ProjectClaimCostYMD",
-      "url": "pages/fnnrMng/prjctCtClm/ProjectClaimCostYMD"
+      "url": "pages/fnnrMng/ProjectClaimCostYMD"
     }
   ]
 }

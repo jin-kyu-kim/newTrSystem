@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import DataGrid, {Column, Export} from 'devextreme-react/data-grid';
-import ProjectClaimCostYMDJson from '../prjctCtClm/ProjectClaimCostYMDJson.json';
-import ApiRequest from "../../../utils/ApiRequest";
+import ProjectClaimCostYMDJson from './ProjectClaimCostYMDJson.json';
+import ApiRequest from "../../utils/ApiRequest";
 import {Workbook} from "exceljs";
 import {exportDataGrid} from "devextreme/excel_exporter";
 import { saveAs } from 'file-saver';
-import '../../../assets/css/Style.css'
+import '../../assets/css/Style.css'
 
 
 const ProjectClaimCostYMD = ({ prjctId, prjctNm, year, monthVal, aplyOdr, empId }) => {

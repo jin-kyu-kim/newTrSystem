@@ -1,8 +1,8 @@
 {
     "menuName": "ProjectClaimCostYMD",
 	"queryId": {
-      "empMMQueryId": "financialAffairMngMapper.retrievePrjctCtClmSttusYMDAccto",
-      "empCostQueryId": "financialAffairMngMapper.retrievePrjctCtClmSttusIndividualAccto"
+      "empMMQueryId": "financialAffairMngMapper.retrievePrjctCtClmSttusYMDMMAccto",
+      "empCostQueryId": "financialAffairMngMapper.retrievePrjctCtClmSttusYMDCtAccto"
     },
 
     "keyColumn": "empId",

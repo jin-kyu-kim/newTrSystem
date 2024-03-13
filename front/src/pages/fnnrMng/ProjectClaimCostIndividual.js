@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 
-import ApiRequest from '../../../utils/ApiRequest';
-import CustomTable from "../../../components/unit/CustomTable";
-import ProjectClaimCostIndividual from '../prjctCtClm/ProjectClaimCostIndividualJson.json';
+import ApiRequest from '../../utils/ApiRequest';
+import CustomTable from "../../components/unit/CustomTable";
+import ProjectClaimCostIndividual from './ProjectClaimCostIndividualJson.json';
 import { useNavigate } from "react-router-dom";
 
 const ProjectCostIndividual = () => {
@@ -51,7 +51,7 @@ const ProjectCostIndividual = () => {
   }, []); */
 
   const onClick = (data) => {
-    navigate("/fnnrMng/prjctCtClm/ProjectClaimCostDetail", 
+    navigate("/fnnrMng/ProjectClaimCostDetail",
              {state: { prjctId: data.prjctId, prjctNm: data.prjctNm }})
   };
 

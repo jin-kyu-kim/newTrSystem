@@ -1,10 +1,10 @@
 import React, { useCallback, useState, useEffect } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
 import {Button, TabPanel} from "devextreme-react";
-import ApiRequest from "../../../utils/ApiRequest";
+import ApiRequest from "../../utils/ApiRequest";
 
 import ProjectClaimCostDetailJson from "./ProjectClaimCostDetailJson.json";
-import SearchPrjctCostSet from "../../../components/composite/SearchPrjctCostSet";
+import SearchPrjctCostSet from "../../components/composite/SearchPrjctCostSet";
 
 const ProjectCostClaimDetail = () => {
     const location = useLocation();
@@ -25,7 +25,7 @@ const ProjectCostClaimDetail = () => {
     useEffect(() => {
 
         const param = {
-            queryId: "financialAffairMngMapper.retrievePrjctCtClmSttusYMDAccto",
+            queryId: "financialAffairMngMapper.retrievePrjctCtClmSttusYMDMMAccto",
             prjctId: prjctId,
             year: year,
             monthVal: monthVal,
@@ -134,7 +134,7 @@ const ProjectCostClaimDetail = () => {
                 text="목록"
                 className="btn_submit filled_gray"
                 style={{ alignSelf: "center" }}
-                onClick={() => navigate("../fnnrMng/prjctCtClm/ProjectClaimCost")}
+                onClick={() => navigate("../fnnrMng/ProjectClaimCost")}
             />
         </div>
     );

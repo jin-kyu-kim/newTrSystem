@@ -1,6 +1,6 @@
 {
     "menuName": "ProjectClaimCost",
-	  "queryId": "financialAffairMapper.retrievePrjctCtClmSttusIndvdlAccto",
+	  "queryId": "financialAffairMapper.retrievePrjctCtClmSttusIndvdlMMAccto",
     "keyColumn": "prjctId",
     "workHourColumns": 
 	[
