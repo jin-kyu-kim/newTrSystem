@@ -5,19 +5,116 @@
 
 <mapper namespace="com.trsystem.mybatis.mapper.financialAffairMngMapper">
 
-    <!--프로젝트청구현황일자별 수행인력-->
-    <select id="retrievePrjctCtClmSttusYMDAccto" parameterType="map" resultType="com.trsystem.LowerHashMap">
+    <!--프로젝트청구현황개인별 수행인력-->
+    <select id="retrievePrjctCtClmSttusIndvdlMMAccto" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
-        b.APLY_YMD,
-        (SELECT EMP_FLNM FROM nwTr.EMP emp WHERE EMP_ID = b.EMP_ID) AS EMP_FLNM,
-        FORMAT(b.MD, 1) AS MD,
-        CASE
-        WHEN a.MM_ATRZ_CMPTN_YN = 'Y' THEN '승인완료'
-        WHEN a.MM_ATRZ_CMPTN_YN = 'N' THEN '반려'
-        END AS MM_ATRZ_CMPTN_YN
+            d.DEPT_NM,
+            e.EMP_FLNM,
+            CONCAT(picm.APLY_YM, '-', picm.APLY_ODR) AS APLY_ODR,
+            mm.EXPECT_MM,
+            mle.MM,
+            (mm.EXPECT_MM - mle.MM) AS USE_MM,
+            SUM(pma.MD) AS CLM_MD
+        FROM PRJCT_MM_APLY pma
+        JOIN PRJCT_INDVDL_CT_MM picm
+            ON pma.PRJCT_ID = picm.PRJCT_ID
+            AND pma.EMP_ID = picm.EMP_ID
+            AND pma.APLY_YM = picm.APLY_YM
+            AND pma.APLY_ODR = picm.APLY_ODR
+            AND picm.MM_ATRZ_CMPTN_YN = 'Y'
+        JOIN EMP e
+            ON e.EMP_ID = picm.EMP_ID
+        JOIN DEPT_HNF dh
+            ON dh.EMP_ID = picm.EMP_ID
+        JOIN DEPT d
+            ON d.DEPT_ID = dh.DEPT_ID
+        JOIN (
+                SELECT
+                    mlp.EMP_ID,
+                    mim.EXPECT_MM,
+                    mlp.PRJCT_ID,
+                    mim.INPT_YM
+                FROM MMNY_LBRCO_PRMPC mlp
+                JOIN MMNY_INPT_MM mim
+                    ON mlp.PRJCT_ID = mim.PRJCT_ID
+                    AND mlp.BGT_MNG_ODR = mim.BGT_MNG_ODR
+                    AND mlp.MMNY_LBRCO_PRMPC_SN = mim.MMNY_LBRCO_PRMPC_SN
+        ) mm
+            ON mm.PRJCT_ID = picm.PRJCT_ID
+            AND mm.EMP_ID = picm.EMP_ID
+        JOIN MMNY_LBRCO_EXCN mle
+            ON mle.PRJCT_ID = picm.PRJCT_ID
+            AND mle.EMP_ID = picm.EMP_ID
+            AND mle.INPT_YM = mm.INPT_YM
+        WHERE 1 = 1
+        <if test="prjctId != null and !prjctId.equals('')">
+            AND pma.PRJCT_ID = #{prjctId}
+        </if>
+        <if test="aplyYm != null and !aplyYm.equals('')">
+            AND pma.APLY_YM = #{aplyYm}
+        </if>
+        <if test="aplyOdr != null and !aplyOdr.equals('')">
+            AND pma.APLY_ODR = #{aplyOdr}
+        </if>
+        <if test="empId != null and !empId.equals('')">
+            AND pma.EMP_ID = #{empId}
+        </if>
+        GROUP BY d.DEPT_NM, e.EMP_FLNM, picm.APLY_YM, picm.APLY_ODR, mm.EXPECT_MM, mle.MM
+    </select>
+
+    <!--프로젝트청구현황개인별 경비-->
+    <select id="retrievePrjctCtClmSttusIndvdlCtAccto" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            d.DEPT_NM,
+            e.EMP_FLNM,
+            CONCAT(picm.APLY_YM, '-', picm.APLY_ODR) AS APLY_ODR,
+            SUM(pca.UTZTN_AMT) AS TOTAL_AMT,
+            pca.UTZTN_AMT
+        FROM PRJCT_CT_APLY pca
+        JOIN PRJCT_INDVDL_CT_MM picm
+            ON pca.PRJCT_ID = picm.PRJCT_ID
+            AND pca.EMP_ID = picm.EMP_ID
+            AND pca.APLY_YM = picm.APLY_YM
+            AND pca.APLY_ODR = picm.APLY_ODR
+            AND picm.MM_ATRZ_CMPTN_YN = 'Y'
+        JOIN EMP e
+            ON e.EMP_ID = picm.EMP_ID
+        JOIN DEPT_HNF dh
+            ON dh.EMP_ID = picm.EMP_ID
+        JOIN DEPT d
+            ON d.DEPT_ID = dh.DEPT_ID
+        WHERE 1 = 1
+        <if test="prjctId != null and !prjctId.equals('')">
+            AND pca.PRJCT_ID = #{prjctId}
+        </if>
+        <if test="aplyYm != null and !aplyYm.equals('')">
+            AND pca.APLY_YM = #{aplyYm}
+        </if>
+        <if test="aplyOdr != null and !aplyOdr.equals('')">
+            AND pca.APLY_ODR = #{aplyOdr}
+        </if>
+        <if test="empId != null and !empId.equals('')">
+            AND pca.EMP_ID = #{empId}
+        </if>
+        GROUP BY d.DEPT_NM, e.EMP_FLNM, picm.APLY_YM, picm.APLY_ODR, pca.UTZTN_AMT
+    </select>
+
+    <!--프로젝트청구현황일자별 수행인력-->
+    <select id="retrievePrjctCtClmSttusYMDMMAccto" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            b.APLY_YMD,
+            (SELECT EMP_FLNM FROM nwTr.EMP emp WHERE EMP_ID = b.EMP_ID) AS EMP_FLNM,
+            FORMAT(b.MD, 1) AS MD,
+            CASE
+                WHEN a.MM_ATRZ_CMPTN_YN = 'Y' THEN '승인완료'
+            END AS MM_ATRZ_CMPTN_YN
         FROM nwTr.PRJCT_INDVDL_CT_MM a, nwTr.PRJCT_MM_APLY b
         WHERE 1 = 1
-        AND a.PRJCT_ID = b.PRJCT_ID AND a.APLY_YM = b.APLY_YM AND a.APLY_ODR = b.APLY_ODR AND a.EMP_ID = b.EMP_ID
+        AND a.PRJCT_ID = b.PRJCT_ID
+        AND a.APLY_YM = b.APLY_YM
+        AND a.APLY_ODR = b.APLY_ODR
+        AND a.EMP_ID = b.EMP_ID
+        AND a.MM_ATRZ_CMPTN_YN = 'Y'
         <if test="prjctId != null and !prjctId.equals('')">
             AND a.PRJCT_ID = #{prjctId}
         </if>
@@ -33,21 +130,25 @@
     </select>
 
     <!--프로젝트청구현황일자별 경비-->
-    <select id="retrievePrjctCtClmSttusIndividualAccto" parameterType="map" resultType="com.trsystem.LowerHashMap">
+    <select id="retrievePrjctCtClmSttusYMDCtAccto" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
-        SUBSTR(b.UTZTN_DT,1,8) AS UTZTN_DT,
-        (SELECT EMP_FLNM FROM nwTr.EMP emp WHERE EMP_ID = b.EMP_ID) AS EMP_FLNM,
-        (SELECT CD_NM FROM nwTr.CD cd WHERE UP_CD_VALUE = 'VTW045' AND CD_VALUE = b.EXPENS_CD) AS CD_NM,
-        b.UTZTN_AMT,
-        b.USE_OFFIC,
-        b.CT_PRPOS,
-        b.ATDRN,
-        CASE
-        WHEN a.CT_ATRZ_CMPTN_YN = 'Y' THEN '승인완료'
-        WHEN a.CT_ATRZ_CMPTN_YN = 'N' THEN '반려'
-        END AS CT_ATRZ_CMPTN_YN
+            SUBSTR(b.UTZTN_DT,1,8) AS UTZTN_DT,
+            (SELECT EMP_FLNM FROM nwTr.EMP emp WHERE EMP_ID = b.EMP_ID) AS EMP_FLNM,
+            (SELECT CD_NM FROM nwTr.CD cd WHERE UP_CD_VALUE = 'VTW045' AND CD_VALUE = b.EXPENS_CD) AS CD_NM,
+            b.UTZTN_AMT,
+            b.USE_OFFIC,
+            b.CT_PRPOS,
+            b.ATDRN,
+            CASE
+                WHEN a.CT_ATRZ_CMPTN_YN = 'Y' THEN '승인완료'
+            END AS CT_ATRZ_CMPTN_YN
         FROM nwTr.PRJCT_INDVDL_CT_MM a, nwTr.PRJCT_CT_APLY b
-        WHERE a.PRJCT_ID = b.PRJCT_ID AND a.APLY_YM = b.APLY_YM AND a.APLY_ODR = b.APLY_ODR AND a.EMP_ID = b.EMP_ID
+        WHERE 1 = 1
+        AND a.PRJCT_ID = b.PRJCT_ID
+        AND a.APLY_YM = b.APLY_YM
+        AND a.APLY_ODR = b.APLY_ODR
+        AND a.EMP_ID = b.EMP_ID
+        AND a.MM_ATRZ_CMPTN_YN = 'Y'
         <if test="prjctId != null and !prjctId.equals('')">
             AND a.PRJCT_ID = #{prjctId}
         </if>
