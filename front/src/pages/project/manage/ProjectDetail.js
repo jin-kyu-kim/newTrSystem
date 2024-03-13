@@ -19,6 +19,7 @@ const ProjectDetail = () => {
   const bizEndYmd = location.state.bizEndYmd;
   const bgtMngOdrTobe = location.state.bgtMngOdrTobe;
   const bizSttsCd = location.state.bizSttsCd;
+  const deptId = location.state.deptId;
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [atrzLnSn, setAtrzLnSn] = useState();
 
@@ -104,7 +105,15 @@ const ProjectDetail = () => {
       });
       navigate("../project/ProjectChange",
         {
-        state: { prjctId: prjctId, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd, bgtMngOdr:bgtMngOdr, bgtMngOdrTobe: bgtMngOdrTobe, targetOdr: targetOdr, bizSttsCd: bizSttsCd, atrzLnSn: atrzLnSn},
+        state: { prjctId: prjctId
+               , ctrtYmd: ctrtYmd
+               , bizEndYmd: bizEndYmd
+               , bgtMngOdr:bgtMngOdr
+               , bgtMngOdrTobe: bgtMngOdrTobe
+               , targetOdr: targetOdr
+               , bizSttsCd: bizSttsCd
+               , atrzLnSn: atrzLnSn
+               , deptId: deptId},
       })
   }
 
@@ -216,11 +225,13 @@ const ProjectDetail = () => {
           animationEnabled={true}
           itemComponent={({ data }) => {
           const Component = React.lazy(() => import(`${data.url}`));
-          return (
-            <React.Suspense fallback={<div>Loading...</div>}>
-              <Component prjctId={prjctId} ctrtYmd={ctrtYmd} bizEndYmd={bizEndYmd} bgtMngOdr={bgtMngOdr} />
-            </React.Suspense>
-          );
+          if(data.index === selectedIndex) {
+              return (
+                <React.Suspense fallback={<div>Loading...</div>}>
+                <Component prjctId={prjctId} ctrtYmd={ctrtYmd} bizEndYmd={bizEndYmd} bgtMngOdr={bgtMngOdr} />
+              </React.Suspense>
+            );
+          }
         }}
         />
       </div>
