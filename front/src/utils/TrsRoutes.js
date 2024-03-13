@@ -159,6 +159,12 @@ const TreRoutes = [
     name: "ProjectClaimCostDetail",
     element: React.lazy(() => import("../pages/fnnrMng/ProjectClaimCostDetail")),
   }
+  // 재무 관리 > 근무시간 승인내역
+  ,{
+    path: "/fnnrMng/EmpTimeAprvList",
+    name: "EmpTimeAprvList",
+    element: React.lazy(() => import("../pages/fnnrMng/EmpTimeAprvList")),
+  }
 ];
 
 export default TreRoutes;

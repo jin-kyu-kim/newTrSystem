@@ -162,5 +162,25 @@
             AND b.EMP_ID = #{empId}
         </if>
     </select>
+    <!--근무시간 승인 내역 -->
+    <select id="retrievePrjctMmAplyList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            P.PRJCT_ID AS PRJCT_ID,
+            DATE_FORMAT(PMA.APLY_YMD , '%Y-%m-%d') AS APLY_YMD,
+            P.PRJCT_NM AS PRJCT_NM,
+            E.EMP_FLNM AS EMP_FLNM,
+            PMA.MD AS MD
+        FROM PRJCT_MM_APLY PMA
+                 INNER JOIN PRJCT P ON PMA.PRJCT_ID = P.PRJCT_ID
+                 INNER JOIN EMP E ON E.EMP_ID  = PMA.EMP_ID
+                 INNER JOIN PRJCT_INDVDL_CT_MM PICM ON PICM.EMP_ID = PMA.EMP_ID
+        WHERE 1=1
+          AND PICM.MM_ATRZ_CMPTN_YN ='N'
+          AND DATE_FORMAT(PMA.APLY_YMD , '%Y') = '2024'
+          AND DATE_FORMAT(PMA.APLY_YMD , '%m') = '03'
+          AND PMA.APLY_ODR = 1
+    </select>
+
+
 
 </mapper>
