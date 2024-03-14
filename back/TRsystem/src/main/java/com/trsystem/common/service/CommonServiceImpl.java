@@ -357,6 +357,7 @@ public class CommonServiceImpl implements CommonService {
     private PreparedStatement querySetter(PreparedStatement preparedStatement, List<Object> params) {
         try {
             // for 루프에서 값을 바인딩
+            int j = 0;
             for (int i = 0; i < params.size(); i++) {
                 if (params.get(i) == "") {
                     System.out.println(params.get(i));
@@ -366,8 +367,9 @@ public class CommonServiceImpl implements CommonService {
                 if (params.get(i) instanceof String && ((String) params.get(i)).contains("&") && !((String) params.get(i)).contains("<p>")) {
                     String[] dateRange = ((String) params.get(i)).split("&");
                     if (dateRange.length == 2) {
-                        preparedStatement.setObject(i + 1, dateRange[0]);
-                        preparedStatement.setObject(i + 2, dateRange[1]);
+                        preparedStatement.setObject(j+1, dateRange[0]);
+                        preparedStatement.setObject(j+2, dateRange[1]);
+                        j += 2;
                         continue;
                     } else {
                         throw new IllegalArgumentException("Invalid date range format");
@@ -375,20 +377,22 @@ public class CommonServiceImpl implements CommonService {
                 }
 
                 if (params.get(i) instanceof String) {
-                    preparedStatement.setString(i + 1, (String) params.get(i));
+                    preparedStatement.setString(j+1, (String) params.get(i));
                 } else if (params.get(i) instanceof Integer) {
-                    preparedStatement.setInt(i + 1, (Integer) params.get(i));
+                    preparedStatement.setInt(j+1, (Integer) params.get(i));
                 } else if (params.get(i) instanceof Double) {
-                    preparedStatement.setDouble(i + 1, (Double) params.get(i));
+                    preparedStatement.setDouble(j+1, (Double) params.get(i));
                 } else if (params.get(i) instanceof Timestamp) {
-                    preparedStatement.setTimestamp(i + 1, (Timestamp) params.get(i));
+                    preparedStatement.setTimestamp(j+1, (Timestamp) params.get(i));
                 }  else if (params.get(i) instanceof Instant) {
-                    preparedStatement.setTimestamp(i + 1, Timestamp.from((Instant) params.get(i)));
+                    preparedStatement.setTimestamp(j+1, Timestamp.from((Instant) params.get(i)));
                 }  else if (params.get(i) == null) {
-                    preparedStatement.setString(i + 1, null);
+                    preparedStatement.setString(j, null);
                 } else {
+                    j++;
                     return null;
                 }
+                j++;
             }
             return preparedStatement;
         } catch (SQLException e) {
