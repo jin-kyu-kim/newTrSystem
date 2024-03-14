@@ -1,60 +1,93 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 // import Calendar from "../../components/unit/Calendar"
 import CustomScheduler from "../../components/unit/CustomScheduler"
 import ApiRequest from "../../utils/ApiRequest";
-import EmpMonthVacInfoJson from "../humanResourceMng/MeetingRoomManage.json"
-import { Change } from 'devextreme-react/cjs/data-grid';
+import Moment from "moment"
 
 const MeetingRoomManage = () => {
-    const [mtgRoomRvstParam, setMtgRoomRvstParam] = useState([]);
-    const [mtgRoomRvstValues, setMtgRoomRvstValues] = useState([]);
-   
-    const [codeParam, setCodeParam] = useState([]);
-    const [codeValues, setCodeValues] = useState([]);
- 
-    // 화면 최초로드 시 조회 param 설정
-    useEffect(() => {
-        // 회의정보 조회조건설정
-        setMtgRoomRvstParam({
-            searchType : "data",
-            queryId: EmpMonthVacInfoJson.MtgRoomRsvt[0].queryId
-        });
+    // 회의실예약정보조회
+    const [selectMtgRoomValue, setSelectMtgRoomValue] = useState([]);
+    const [searchMtgRoomParam, setSearchMtgRoomParam] = useState({
+        searchType: "mtgRoom",
+        queryId: "humanResourceMngMapper.retrieveMtgRoomInfoInq",
+        changeDate: Moment(new Date()).format('YYYYMMDD')
+    });
 
-        // 회의실코드 조회조건설정
-        setCodeParam({
-            searchType : "code",
-            queryId: EmpMonthVacInfoJson.MeetingRoomList[0].queryId,
-            upCdValue : "VTW042",
-            ctmmnyNm : "search"
-        });
-    },[]);
- 
-    // 회의정보조회
+    // 회의참석자정보조회
+    const [selectMtgRoomRsvtAtdrnValue, setSelectMtgRoomRsvtAtdrnValue] = useState([]);
+    const [searchMtgRoomRsvtAtdrnParam, setSearchMtgRoomRsvtAtdrnParam] = useState({
+        searchType: "mtgRoomRsvtAtdrn",
+        queryId: "humanResourceMngMapper.retrieveMtgAtdrnInq",
+        changeDate: Moment(new Date()).format('YYYYMMDD')
+    });
+
+    // 회의실코드
+    const [searchCodeParam, setSearchCodeParam] = useState({ 
+        queryId: "humanResourceMngMapper.retrieveCodeList", 
+        searchType: "mtgRoomCode", 
+        upCdValue: "VTW042" });
+    const [selectCodeValue, setSelectCodeValue] = useState([]);
+
+    // 직원목록조회
+    const [searchEmpParam, setSearchEmpParam] = useState({ 
+        queryId: "humanResourceMngMapper.retrieveEmpList", 
+        searchType: "empList" });
+    const [selectEmpValue, setSelectEmpValue] = useState([]);
+
+
+    // 회의실예약정보조회
     useEffect(() => {
-        if(!Object.values(mtgRoomRvstParam).every((value) => value === "")) {
-            pageHandle(mtgRoomRvstParam);
+        if (!Object.values(searchMtgRoomParam).every((value) => value === "")) {
+            pageHandle(searchMtgRoomParam);
         };
-    }, [mtgRoomRvstParam]);
-    
+    }, [searchMtgRoomParam]);
+
+    // 회의참석자정보조회
+    useEffect(() => {
+        if (!Object.values(searchMtgRoomRsvtAtdrnParam).every((value) => value === "")) {
+            pageHandle(searchMtgRoomRsvtAtdrnParam);
+        };
+    }, [searchMtgRoomRsvtAtdrnParam]);
+
     // 회의실코드조회
     useEffect(() => {
-        if(!Object.values(codeParam).every((value) => value === "")) {
-            pageHandle(codeParam);
+        if (!Object.values(searchCodeParam).every((value) => value === "")) {
+            pageHandle(searchCodeParam);
         };
-    }, [codeParam]);
- 
+    }, [searchCodeParam])
+
+    // 직원목록조회
+    useEffect(() => {
+        if (!Object.values(searchEmpParam).every((value) => value === "")) {
+            pageHandle(searchEmpParam);
+        };
+    }, [searchEmpParam])
+
     // 조회
     const pageHandle = async (initParam) => {
         try {
-            if(initParam.searchType == "data") setMtgRoomRvstValues(await ApiRequest("/boot/common/queryIdSearch", initParam));
-            else if(initParam.searchType == "code") setCodeValues(await ApiRequest("/boot/common/queryIdSearch", initParam));
+            if (initParam.searchType == "mtgRoom") setSelectMtgRoomValue(await ApiRequest("/boot/common/queryIdSearch", initParam));
+            else if (initParam.searchType == "mtgRoomRsvtAtdrn") setSelectMtgRoomRsvtAtdrnValue(await ApiRequest("/boot/common/queryIdSearch", initParam));
+            else if (initParam.searchType == "mtgRoomCode") setSelectCodeValue(await ApiRequest("/boot/common/queryIdSearch", initParam));
+            else if (initParam.searchType == "empList") setSelectEmpValue(await ApiRequest("/boot/common/queryIdSearch", initParam));
         } catch (error) {
             console.log(error);
         }
     };
 
+    function onOptionChanged(e) {
+        setSearchMtgRoomParam({
+            ...searchMtgRoomParam,
+            changeDate: e,
+        })
+        setSearchMtgRoomRsvtAtdrnParam({
+            ...searchMtgRoomRsvtAtdrnParam,
+            changeDate: e,
+        })
+    }
+
     return (
-        <div className="" style={{marginLeft:"5%", marginRight:"5%"}}>
+        <div className="" style={{ marginLeft: "5%", marginRight: "5%" }}>
             <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
                 <h1 style={{ fontSize: "30px" }}>회의실예약(관리자)</h1>
             </div>
@@ -64,25 +97,17 @@ const MeetingRoomManage = () => {
             <div className="mx-auto" style={{ marginBottom: "10px" }}>
                 <span>* 소회의실 - 4인실  | 중회의실 - 10인실  | 대회의실 - 16인실</span>
             </div>
-            <div className="mx-auto" style={{ marginBottom: "20px", marginTop: "20px"}}>
-                {/* <Calendar 
-                    values={mtgRoomRvstValues}
-                    headerToolbar={{
-                        left: 'prev,next',
-                        center: 'title',
-                        right: 'timeGridDay,timeGridWeek,listWeek'
-                    }}
-                    initialView="timeGridWeek"
-                    initCssValue="listStyle"
-                    clickEventValue="true"
-                /> */}
+            <div className="mx-auto" style={{ marginBottom: "20px", marginTop: "20px" }}>
                 <CustomScheduler
-                    listValues={mtgRoomRvstValues}
-                    codeValues={codeValues}
+                    mtgRoomList={selectMtgRoomValue}
+                    mtgRoomRsvtAtdrnList={selectMtgRoomRsvtAtdrnValue}
+                    mtgCodeList={selectCodeValue}
+                    empList={selectEmpValue}
+                    onOptionChanged={onOptionChanged}
                 />
             </div>
-    </div>
+        </div>
     );
 }
- 
+
 export default MeetingRoomManage;

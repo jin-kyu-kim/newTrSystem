@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 const ProjectCostIndividual = () => {
   const [workHourData, setWorkHourData] = useState([]);
   const [expensData, setExpensData] = useState([]);
+  const [values, setValues] = useState([]);
 
   const navigate = useNavigate();
 
@@ -60,6 +61,7 @@ const ProjectCostIndividual = () => {
         <p><strong>* 수행인력</strong></p>
         <CustomTable
           keyColumn={keyColumn}
+          values={values}
           columns={workHourColumns}
           onClick={onClick}
       />
@@ -67,6 +69,7 @@ const ProjectCostIndividual = () => {
         <p><strong>* 경비</strong></p>
         <CustomTable
           keyColumn={keyColumn}
+          values={values}
           columns={expensColumns}
           onClick={onClick}
       />

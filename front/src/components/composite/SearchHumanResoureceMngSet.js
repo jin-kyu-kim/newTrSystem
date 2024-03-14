@@ -7,9 +7,7 @@ import DeptRegist from "../../pages/humanResourceMng/DeptRegist";
 import CustomPopup from "../unit/CustomPopup"
 
 const SearchDeptSet = ({ callBack, props, popup }) => {
-  const [initParam, setInitParam] = useState({
-  });
-
+  const [initParam, setInitParam] = useState({});
   const [popupVisible, setPopupVisible] = useState(false);
   const [isPopup, setPopup] = useState(false);
 

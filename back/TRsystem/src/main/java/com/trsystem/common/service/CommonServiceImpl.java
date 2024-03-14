@@ -46,7 +46,7 @@ public class CommonServiceImpl implements CommonService {
                 maxParam.add((Map<String, Object>) params.get(0).get("snSearch"));
             }
 
-            snMax = commonGetMax(params);
+            snMax = commonGetMax(maxParam);
             params.get(1).put(params.get(0).get("snColumn").toString(), snMax);
             for(int i=1; i < params.size(); i++){
                 params.get(i).put(params.get(0).get("snColumn").toString(), ++snMax);
@@ -368,7 +368,6 @@ public class CommonServiceImpl implements CommonService {
                     if (dateRange.length == 2) {
                         preparedStatement.setObject(i + 1, dateRange[0]);
                         preparedStatement.setObject(i + 2, dateRange[1]);
-                        i++;
                         continue;
                     } else {
                         throw new IllegalArgumentException("Invalid date range format");
