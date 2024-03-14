@@ -71,7 +71,7 @@
         "empId": true,
         "excelDownloadBtn": false
     },
-    "ctPopup": {
+    "popup": {
         "width": "90%",
         "height": "90%"
     }

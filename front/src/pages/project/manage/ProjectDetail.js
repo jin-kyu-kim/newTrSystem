@@ -72,22 +72,38 @@ const ProjectDetail = () => {
         await projectChgHandle();
       }
     } else {
-      const result = await chkRjctAtrz().then((value) => {
-        console.log(value);
+      const result = await chkBgtOdr().then((value) => {
+        return value;
+      });
 
-        // 반려된 것이 있을 경우 반려 체크
-        if(value.length > 0) {
-          const isconfirm = window.confirm("반려된 요청이 있습니다. 수정을 진행하시겠습니까?");
-          if(isconfirm){
-            projectChgHandle();
+      if(result != null) {
+        if(result === 'VTW03701') {
+          // 임시저장인 경우
+          console.log("임시저장")
+          const isconfirm = window.confirm("임시저장된 내역이 있습니다. 수정을 진행하시겠습니까?");
+          if(isconfirm) {
+            const isconfirm = window.confirm("임시저장된 내역을 지우고 프로젝트 변경을 진행하시겠습니까?");
+            if(isconfirm) {
+              await projectChgHandle();
+            }
+          }
+        } else if (result === 'VTW03704' ) {
+          // 반려인 경우
+          console.log("반려")
+          const isconfirm = window.confirm("기존에 반려된 요청이 존재합니다. 반려된 요청을 수정하시겠습니까?");
+          if(isconfirm) {
+            const isconfirm = window.confirm("기존에 반려된 요청의 변경 사항을 초기화하여 수정하시겠습니까?");
+            if(isconfirm) {
+              await projectChgHandle();
+            }
           }
         } else {
           const isconfirm = window.confirm("프로젝트 변경을 진행하시겠습니까?");
           if(isconfirm){
-            projectChgHandle();
+            await projectChgHandle();
           }
         }
-      });
+      }
     }
   } 
 
@@ -118,21 +134,23 @@ const ProjectDetail = () => {
   }
 
   /**
-   * 반려된 승인요청이 있는지 확인한다.
+   * 변경원가 차수가 반려되거나 임시저장인 차수인지 확인한다.
+   * VTW03701: 임시저장
+   * VTW03704: 반려
    * @returns 
    */
-  const chkRjctAtrz = async () => {
-    console.log("반려여부 확인");
+  const chkBgtOdr = async () => {
+    console.log("반려/임시저장 여부 확인");
 
     const param = {
-      queryId: "projectMapper.retrieveRjctAtrz",
+      queryId: "projectMapper.retrieveTmprRjctBgtOdr",
       prjctId: prjctId,
-      atrzLnSn: atrzLnSn
+      bgtMngOdr: bgtMngOdrTobe
     };
 
     const response = await ApiRequest("/boot/common/queryIdSearch", param);
 
-    return response;
+    return response[0].atrzDmndSttsCd;
   };
 
   const handleBgtPrmpc = async () => {
@@ -157,13 +175,6 @@ const ProjectDetail = () => {
         console.error('Error fetching data', error);
     }
   }
-
-  const handleClick = (e) => {
-    navigate(location,
-        {
-    state: { prjctId: prjctId },
-    })
-  };
 
   return (
     <div>
@@ -202,7 +213,7 @@ const ProjectDetail = () => {
           type="normal"
           stylingMode="outline"
           style={{ margin : '2px' }}
-          onClick={handleClick}
+          onClick={() => navigate("../project/ProjectList")}
         >
           목록
         </Button>

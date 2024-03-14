@@ -58,7 +58,6 @@ const ProjectHrCtAprv = () => {
     };
 
     const onBtnClick = (data) => {
-        console.log(data);
         navigate("/project/ProjectHrCtAprvDetail", 
                 { state: { 
                           prjctId: data.prjctId,

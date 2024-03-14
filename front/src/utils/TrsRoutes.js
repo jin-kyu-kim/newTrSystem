@@ -45,6 +45,12 @@ const TreRoutes = [
     name: "ProjectOutordPerson",
     element: React.lazy(() => import("../pages/project/approval/ProjectOutordPerson")),
   },
+  // 프로젝트 외주비용승인 상세
+  {
+    path: "/project/ProjectOutordPersonDetail",
+    name: "ProjectOutordPersonDetail",
+    element: React.lazy(() => import("../pages/project/approval/ProjectOutordPersonDetail")),
+  },
   // 프로젝트 디테일
   {
     path: "/project/ProjectDetail",
