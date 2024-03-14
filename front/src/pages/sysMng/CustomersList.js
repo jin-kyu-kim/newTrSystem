@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 
 import SearchInfoSet from 'components/composite/SearchInfoSet';
-import CustomTable from 'components/unit/CustomTable';
+import CustomEditTable from 'components/unit/CustomEditTable';
 import ApiRequest from '../../utils/ApiRequest';
 import SysMng from './SysMngJson.json';
 
@@ -12,7 +12,7 @@ const CustomersList = () => {
     const [totalItems, setTotalItems] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize] = useState(20);
-    const { keyColumn, queryId, tableColumns, searchInfo } = SysMng.customersJson;
+    const { keyColumn, queryId, tableColumns, searchInfo, tbNm } = SysMng.customersJson;
 
     useEffect(() => {
         if (!Object.values(param).every((value) => value === "")) {
@@ -58,32 +58,6 @@ const CustomersList = () => {
         }
     }
 
-    const onEditRow = async (editMode, e) => {
-        const editParam = [{tbNm: "CTMMNY_INFO"}];
-        let editInfo = {};
-        switch (editMode){
-            case 'insert':
-                editParam[1] = e.data;
-                editInfo = {url:'commonInsert', complete:'저장'}
-            break;
-            case 'update':
-                editParam[1] = e.newData;
-                editParam[2] = {ctmmnyId: e.key};
-                editInfo = {url:'commonUpdate', complete:'수정'}
-            break;
-            case 'delete':
-                editParam[1] = {ctmmnyId: e.key};
-                editInfo = {url:'commonDelete', complete:'삭제'}
-            break;
-        }
-        try{
-            const response = await ApiRequest('/boot/common/' + editInfo.url, editParam);
-            response === 1 ? alert(editInfo.complete + "되었습니다.") : alert(editInfo.complete + "에 실패했습니다.")
-        } catch(error){
-            console.log(error)
-        }
-    }
-
     return (
         <div className="container">
             <div
@@ -101,15 +75,13 @@ const CustomersList = () => {
 
             <div>검색된 건 수 : {totalItems} 건</div>
             <div style={{ marginBottom: '100px' }}>
-                <CustomTable
+                <CustomEditTable
                     keyColumn={keyColumn}
                     columns={tableColumns}
                     values={values}
                     handleYnVal={handleYnVal}
-                    editRow={true}
-                    onEditRow={onEditRow}
-                    pageSize={pageSize}
-                    paging={true}
+                    tbNm={tbNm}
+                    allowKeyChg={true}
                 />
             </div>
         </div>

@@ -7,41 +7,51 @@ import uuid from "react-uuid";
 import axios from "axios";
 import ApiRequest from "utils/ApiRequest";
 import NoticeJson from "../infoInq/NoticeJson.json";
-import BoardInputForm from 'components/unit/BoardInputForm';
+import BoardInputForm from 'components/composite/BoardInputForm';
+import moment from 'moment';
 
 const NoticeInput = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [cookies] = useCookies(["userInfo", "userAuth"]);
-    const { edit, menuKorName, insertUrl, updateUrl } = NoticeJson;
+    const [attachments, setAttachments] = useState([]);
+    const [deleteFiles, setDeleteFiles] = useState([]);
+    const [newAttachments, setNewAttachments] = useState(attachments);
+    const { edit, menuKorName, insertUrl, updateUrl, detail } = NoticeJson;
+
     const empId = cookies.userInfo.empId;
     const editMode = location.state.editMode;
     const id = location.state.id;
-    const date = new Date();
-
-    const [attachments, setAttachments] = useState([null]);
-    const [data, setData] = useState({
+    const date = moment();
+    const [ data, setData ] = useState({
         noticeId: uuid(),
-        sgnalOrdr: 0, // 기본값 일반공지
-        useYn: 'Y', // 공지표시 여부
         regEmpId: empId,
-        regDt: date.toISOString().split("T")[0] + " " + date.toTimeString().split(" ")[0],
+        regDt: date.format('YYYY-MM-DD HH:mm:ss')
     });
+    
     const onClick = () => {
-        editMode === "create" ? window.confirm("등록하시겠습니까?") : window.confirm("수정하시겠습니까?")
-        insertNotice(editMode);
+        const result = window.confirm(editMode === 'create' ? "등록하시겠습니까?" : "수정하시겠습니까?");
+        if(result) storeNotice(editMode);
     };
 
     const getOneData = async () => {
-        const param = [{ tbNm: "NOTICE" }, { noticeId: id },]
+        const param = { queryId: detail.detailQueryId, noticeId: id }
         try {
-            const response = await ApiRequest("/boot/common/commonSelect", param);
-            setData(response[0]);
-            console.log(response[0])
+            const response = await ApiRequest("/boot/common/queryIdSearch", param);
+            if (response.length !== 0) {
+                setData(response[0]);
+                const tmpFileList = response.map((data) => ({
+                    realFileNm: data.realFileNm,
+                    strgFileNm: data.strgFileNm,
+                    atchmnflSn: data.atchmnflSn
+                }));
+                setAttachments(tmpFileList);
+            }
         } catch (error) {
             console.log(error);
         }
     }
+
     useEffect(() => {
         if (editMode === 'update') getOneData();
     }, []);
@@ -56,33 +66,45 @@ const NoticeInput = () => {
         const errors = [];
         if (!data.noticeTtl || !data.noticeCn) {
             errors.push('required');
-        } else if (maxSize !== 0 && maxSize > 1048576) {
+        } else if (maxSize !== 0 && maxSize > 1.5*1024*1024*1024) {
             alert('업로드 가능한 용량보다 큽니다')
             errors.push('Exceeded size limit');
         }
         return errors.length === 0;
     };
+    
+    const attachFileDelete = (deleteItem) => {
+        setDeleteFiles([...deleteFiles, { atchmnflSn: deleteItem.atchmnflSn }]);
+        setNewAttachments(newAttachments.filter(item => item !== deleteItem));
+    }
 
-    const insertNotice = async (editMode) => {
-        console.log(data)
+    const storeNotice = async (editMode) => {
+        if(editMode === 'update'){
+            setData({
+                ...data,
+                noticeId: id,
+                mdfcnEmpId: empId,
+                mdfcnDt: date.format('YYYY-MM-DD HH:mm:ss')
+            })
+        }
         const formData = new FormData();
         formData.append("tbNm", "NOTICE");
         formData.append("data", JSON.stringify(data)); 
+        Object.values(deleteFiles)
+            .forEach((deleteFiles) => formData.append("deleteFiles", deleteFiles));
         Object.values(attachments)
             .forEach((attachment) => formData.append("attachments", attachment));
         try {
             if (validateData()) {
-                const response = await axios.post(insertUrl, formData, {
+                const response = await axios.post(editMode === 'create' ? insertUrl : updateUrl, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     },
                 })
-                console.log(response.data);
                 if (response.data >= 0) navigate("/infoInq/NoticeList")
             }
         } catch (error) {
             console.error("API 요청 에러:", error);
-            throw error;
         }
     };
 
@@ -98,9 +120,13 @@ const NoticeInput = () => {
                 edit={edit}
                 data={data}
                 setData={setData}
+                editMode={editMode}
+                attachments={attachments}
                 setAttachments={setAttachments}
+                attachFileDelete={attachFileDelete}
+                newAttachments={newAttachments}
+                setNewAttachments={setNewAttachments}
             />
-
             <div className="wrap_btns inputFormBtn">
                 <Button
                     id="button"

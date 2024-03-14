@@ -35,6 +35,7 @@
           },
           {
             "dataField": "useYn",
+            "name": "useEndYmd",
             "label": "공지 표시여부",
             "placeholder": "공지 종료일자"
           },
