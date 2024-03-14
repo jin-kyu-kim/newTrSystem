@@ -65,7 +65,8 @@ public class CommonController {
 
         ObjectMapper mapper = new ObjectMapper();
         Map<String, Object> mapData = mapper.readValue(data,Map.class);
-        return commonService.insertFile(tbNm, mapData, attachments);
+        Map<String, Object> tbNmData = mapper.readValue(tbNm,Map.class);
+        return commonService.insertFile(tbNmData, mapData, attachments);
 
     }
     @PostMapping(value = "/boot/common/getFile")
