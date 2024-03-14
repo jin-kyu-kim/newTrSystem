@@ -321,7 +321,7 @@ const onRowDblClick = (e) => {
           신규 직원정보를 입력하면 TRS 접속 권한이 생기게 됩니다.<br/>
           신규 직원 사번은 자동 입력됩니다.
           </span>
-          <EmpRegist empInfo={empInfo} read={readOnly}/>
+          <EmpRegist empInfo={empInfo} read={readOnly} callBack={pageHandle}/>
         </div>
         <div className="empDownListTable" style={empDetailStyle}>
             <p> <strong>* 진급정보 </strong> </p>

@@ -7,8 +7,8 @@ import { useCookies } from "react-cookie";
 import CustomLabelValue from "components/unit/CustomLabelValue";
 import ApiRequest from "utils/ApiRequest";
 
-const DeptRegist = ({ onHide,deptInfo, deptId, isNew }) => {
-  const {deptDetailqueryId, labelValue, queryId } = DeptRegistJson;
+const DeptRegist = ({callBack, onHide,deptInfo, deptId, isNew }) => {
+  const {labelValue,backQueryId} = DeptRegistJson;
   const [readOnly, setReadOnly] = useState(true);
   const [data, setData] = useState([]);
   const [deptUdt,setDeptUdt] = useState(false)
@@ -18,7 +18,6 @@ const DeptRegist = ({ onHide,deptInfo, deptId, isNew }) => {
   const empId = cookies.userInfo.empId;
   const date = new Date();
   const now =  date.toISOString().split("T")[0] +" " +date.toTimeString().split(" ")[0];
-
   //부서 상세정보 화면 스타일
   const popupContentInnerStyle = {
     overflow:"hidden",
@@ -49,6 +48,7 @@ const DeptRegist = ({ onHide,deptInfo, deptId, isNew }) => {
     } else if(deptId !=null){
       setData(deptInfo);
       setDeptUdt(true);
+      setParam(backQueryId)
     }
   }, [deptId]);
   
@@ -69,6 +69,7 @@ const DeptRegist = ({ onHide,deptInfo, deptId, isNew }) => {
 
   //input박스 데이터 변경시 data에 새로 저장됨
   const handleChgState = ({ name, value }) => {
+    console.log("범인")
     if(!readOnly){
       setData({
         ...data,
@@ -82,16 +83,14 @@ const DeptRegist = ({ onHide,deptInfo, deptId, isNew }) => {
     const isconfirm = window.confirm("부서내역을 등록하시겠습니까?"); 
     if (isconfirm) {
       if(deptUdt){
-        console.log("업데이트요")
+        console.log("업데이트1")
         updateEmp();
       }else{
-        console.log("인서트요")
+        console.log("인서트")
         if(isNew){
-          if(data.deptEndYmd === null){
-            setData({
-                ...data,
-                deptEndYmd : null,
-              });
+          if(data.deptEndYmd === null)
+          {
+            setData({ ...data, deptEndYmd : null, }); 
           }
           insertDept();
         }
@@ -102,24 +101,22 @@ const DeptRegist = ({ onHide,deptInfo, deptId, isNew }) => {
   };
 
   const insertDept = async () => {
- 
     const param = [{ tbNm: "DEPT" }, data];
     try {
       const response = await ApiRequest("/boot/common/commonInsert", param);
       console.log(response);
-
         if (response > 0) {
           setData({});
           console.log(data);
-          onHide();
+          onHide();      
         }
-
     } catch (error) {
       console.error("Error fetching data", error);
     }
   };
  //================부서상세정보 업데이트
  const updateEmp = async () => {
+  console.log("업데이트2")
   const paramUdt =[
     { tbNm: "DEPT" },
     {
@@ -135,15 +132,15 @@ const DeptRegist = ({ onHide,deptInfo, deptId, isNew }) => {
        deptId : data.deptId
     }
 ]
-const paraUdtHnf =[ { tbNm: "DEPT_HNF" },{ deptId: deptInfo.deptId,},{ deptId : data.deptId} ]
   try {
+    console.log("업데이트데이터",paramUdt)
     const response = await ApiRequest("/boot/common/commonUpdate", paramUdt);
-    const responseHnf = await ApiRequest("/boot/common/commonUpdate", paraUdtHnf);
-      if (response > 0 && responseHnf >0 ) {
+      if (response > 0 ) {
         alert("저장되었습니다."); 
-        setData({});
         console.log(data);
-        //onHide();
+        onHide();
+        callBack(param);
+        //setData({});
       }
   } catch (error) {
     console.error("Error fetching data", error);
