@@ -2,11 +2,10 @@ import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import  EmpTimeAprvListJson from "./EmpTimeAprvListJson.json";
 import ApiRequest from "../../utils/ApiRequest";
-import SearchEmpSet from "components/composite/SearchInfoSet";
 import CustomTable from "components/unit/CustomTable";
 import SearchPrjctCostSet from "../../components/composite/SearchPrjctCostSet";
 
-function EmpList() {
+function EmpTimeAprvList() {
   const [values, setValues] = useState([]);
   const [param, setParam] = useState({});
 
@@ -15,7 +14,7 @@ function EmpList() {
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
 
-  const { keyColumn, queryId, tableColumns, searchInfo, searchParams } = EmpTimeAprvListJson;
+  const { keyColumn, queryId, tableColumns, searchParams } = EmpTimeAprvListJson;
 
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
@@ -79,4 +78,4 @@ function EmpList() {
   );
 };
 
-export default EmpList;
+export default EmpTimeAprvList;

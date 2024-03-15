@@ -4,9 +4,13 @@
     "keyColumn": "prjctId",
     "tableColumns": [
         { "key": "aplyYmd", "value": "날짜", "width": 120, "alignment": "center" },
-        { "key": "prjctNm", "value": "프로젝트명", "width": 500, "alignment": "center" },
-        { "key": "empFlnm", "value": "이름", "width": 200, "alignment": "center" },
-        { "key": "md", "value": "시간", "width": 170, "alignment": "center" }
+       
+        { "value": "수행인력",  "subColumns": [
+          { "key": "prjctNm", "value": "프로젝트명", "width": 500, "alignment": "center" },
+          { "key": "empFlnm", "value": "이름", "width": 200, "alignment": "center" },
+          { "key": "md", "value": "시간", "width": 170, "alignment": "center" }
+        ]  }
+       
     ],
 
     "searchParams":
@@ -16,67 +20,8 @@
     "aplyOdr": true,
     "empNm" : false
 
-  },
+  }
 
 
-    "searchInfo": {
-        "searchParams": {
-            "insertButton": false
-        },
-        "commonCd": "VTW001",
-        "selectBoxItem": [
-            {
-                "placeholder": "[재직여부]",
-                "param":{
-                  "tbNm": "CD",
-                  "valueExpr": "cdValue",
-                  "displayExpr": "cdNm",
-                  "name": "hdofSttsNm",
-                  "condition": {
-                    "upCdValue": "VTW003"
-                  },
-                  "clearButton": false
-                }
-            },
-            {
-                "placeholder": "[직위]",
-                "param":{
-                  "tbNm": "CD",
-                  "valueExpr": "cdValue",
-                  "displayExpr": "cdNm",
-                  "name": "jbpsNm",
-                  "condition": {
-                    "upCdValue": "VTW001"
-                  },
-                  "clearButton": false
-                }
-            },
-            {
-                "placeholder": "[소속]",
-                "param":{
-                  "queryId": {
-                    "queryId": "infoInqMapper.retriveDeptSearchList"
-                  },
-                  "valueExpr": "deptId",
-                  "displayExpr": "deptNm",
-                  "name": "deptId",
-                  "clearButton": false
-                }
-            }
-        ],
-        "textBoxItem": [
-            {
-                "placeholder": "사번",
-                "name": "empno"
-            },
-            {
-                "placeholder": "성명",
-                "name": "empFlnm"
-            },
-            {
-                "placeholder": "전화번호",
-                "name": "telNo"
-            }
-        ]
+    
     }
-}
