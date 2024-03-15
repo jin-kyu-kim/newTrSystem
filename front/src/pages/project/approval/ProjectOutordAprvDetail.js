@@ -1,10 +1,10 @@
 import React, { useEffect, useState, } from 'react'
 import CustomTable from '../../../components/unit/CustomTable'
-import ProjectOutordPersonDetailJson from './ProjectOutordPersonDetailJson.json'
+import ProjectOutordAprvDetailJson from './ProjectOutordAprvDetailJson.json'
 
-const ProjectOutordPersonDetail = () => {
+const ProjectOutordAprvDetail = () => {
 
-    const {outordLbrco, outordEntrps, matrl} = ProjectOutordPersonDetailJson;
+    const {outordLbrco, outordEntrps, matrl} = ProjectOutordAprvDetailJson;
     const [outordLbrcoValues, setOutordLbrcoValues] = useState([]);
     useEffect(() => {
 
@@ -38,4 +38,4 @@ const ProjectOutordPersonDetail = () => {
 
 };
 
-export default ProjectOutordPersonDetail;
+export default ProjectOutordAprvDetail;

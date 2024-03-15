@@ -1,5 +1,5 @@
 {
-	"menuName": "ProjectOutordPerson",
+	"menuName": "ProjectOutordAprv",
 	"queryId": "projectMapper.retrievePrjctList",
     "keyColumn": "prjctId",
     "tableColumns": 
