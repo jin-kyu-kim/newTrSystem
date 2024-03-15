@@ -1,4 +1,4 @@
-import { useState, useEffect ,useRef} from "react";
+import { useState, useEffect ,useRef,useCallback } from "react";
 import ApiRequest from "utils/ApiRequest";
 import { Button } from "devextreme-react";
 import CustomTable from "components/unit/CustomTable";
@@ -24,13 +24,9 @@ const EmpManage = ({}) => {
   const [empParam3, setEmpParam3] = useState({}); //발령정보 받아올거
   const [empInfo, setEmpInfo] = useState([]);       //클릭시 직원 기초정보 가지고올것
   const [totalItems, setTotalItems] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
-  const [hnfPageSize, setHnfPageSize] = useState(20);
   const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
   const empId = cookies.userInfo.empId;
   const navigate = useNavigate ();
-  const selRef = useRef(null);
 
   //======================================테이블 배치
 
@@ -85,12 +81,10 @@ const EmpManage = ({}) => {
     setParam({
       ...initParam,
       queryId: listQueryId,
-      currentPage: currentPage,
       startVal: 0,
-      pageSize: pageSize,
     });
   };
-
+ 
   const pageHandle = async () => {
     try {
       const response = await ApiRequest("/boot/common/queryIdSearch", param);
@@ -169,19 +163,16 @@ const onRowClick = (e) => {
         ...empParam2,
         [name]: e.value,
       });
-    
   };
   const handleChgJbps = (e) => {
       setEmpParam2({
         ...empParam2,
         [e.name]: e.value,
-
       });
   };
   //=================================진급정보 저장
   const onClickHst = () => {
     if(empInfo.empId === undefined || empInfo.empId === "" ){
-      selRef.reset();
       alert("진급정보를 입력할 직원을 선택하십시요");
       return; 
     }
@@ -196,6 +187,7 @@ const onRowClick = (e) => {
   };
  //========================진급정보 입력 
   const insertEmpHist = async () => {
+    
     const paramUpd =[
       { tbNm: "EMP" },
       {
@@ -278,14 +270,24 @@ const onRowDblClick = (e) => {
 }
 //===========================ReadOnly 설정용
   useEffect(() => {
-    console.log("read값" ,readOnly);
     if (empInfo.empId !== undefined && empInfo.empId !== "" && empInfo.empId !== null) {
       setReadOnly(true);
     }else {
       setReadOnly(false);
     }
   }, [empInfo.empId]);
-
+ const setReadFalse =()=>{
+    setReadOnly(false);
+ }
+//================================비밀번호 초기화 (개발예정)
+const onClickRestPwd = (data) => {
+  alert("비밀번호를 초기화하시겠습니까?")
+  console.log(data.empId)
+}
+ //===============================발령정보 업로드 (개발예정)
+ const empUpload =()=>{
+  alert("발령정보를 업로드 하시겠습니까?")
+}
   //=================================화면 그리는 부분 
   return (
     <div className="container">
@@ -310,8 +312,8 @@ const onRowDblClick = (e) => {
             직원 성명을 선택시 상세내역 페이지로 이동합니다.<br/>
             아이콘 클릭시 비밀번호 사번으로 초기화<br/>
             </span>
-            <CustomTable keyColumn={listKeyColumn} pageSize={pageSize} columns={listTableColumns} 
-            values={values} paging={true} onRowClick={onRowClick} onRowDblClick={onRowDblClick} />
+            <CustomTable keyColumn={listKeyColumn}columns={listTableColumns} 
+            values={values} paging={true} onRowClick={onRowClick} onRowDblClick={onRowDblClick} onClick={onClickRestPwd}/>
           </div>
         </div>
         <div className="empDetailContainer" style={empDetailContainerStyle}>
@@ -321,7 +323,7 @@ const onRowDblClick = (e) => {
           신규 직원정보를 입력하면 TRS 접속 권한이 생기게 됩니다.<br/>
           신규 직원 사번은 자동 입력됩니다.
           </span>
-          <EmpRegist empInfo={empInfo} read={readOnly} callBack={pageHandle}/>
+          <EmpRegist empInfo={empInfo} read={readOnly} callBack={pageHandle} callBackR={setReadFalse}/>
         </div>
         <div className="empDownListTable" style={empDetailStyle}>
             <p> <strong>* 진급정보 </strong> </p>
@@ -332,55 +334,53 @@ const onRowDblClick = (e) => {
             <div className="dx-field">
             <div className="dx-field-label asterisk">진급발령년도</div>
             <div className="dx-field-value">
-                    <SelectBox
-                        ref={selRef}
-                        id="year" 
-                        dataSource={year}
-                        //name="year"
-                        displayExpr="text"
-                        valueExpr="value"
-                        onValueChanged={(e) => { handleChgState("year", e) }}
-                        placeholder="연도"
-                        style={{margin: "0px 5px 0px 5px"}}
-                        required = {true}
-                    />
+              <SelectBox
+                  dataSource={year}
+                  displayExpr="text"
+                  valueExpr="value"
+                  onValueChanged={(e) => { handleChgState("year", e) }}
+                  placeholder="연도"
+                  style={{margin: "0px 5px 0px 5px"}}
+                  required = {true}
+                  value={empParam2.year}
+              />
               </div>
               </div>
             <div className="dx-field">
             <div className="dx-field-label asterisk">진급발령차수</div>
             <div className="dx-field-value">
-                    <SelectBox
-                        id="month"
-                        dataSource={month}
-                        //name="month"
-                        displayExpr="text"
-                        valueExpr="value"
-                        onValueChanged={(e) => { handleChgState("month", e) }}
-                        placeholder="월"
-                        style={{margin: "0px 5px 0px 5px"}}
-                        required = {true}
-                    />
-                    <SelectBox
-                        id="odr"
-                        dataSource={odrList}
-                        //name="aplyOdr"
-                        displayExpr="text"
-                        valueExpr="value"
-                        onValueChanged={(e) => { handleChgState("aplyOdr", e) }}
-                        placeholder="차수"
-                        style={{margin: "0px 5px 0px 5px"}}
-                        required = {true}
-                    />
+              <SelectBox
+                  id="month"
+                  dataSource={month}
+                  displayExpr="text"
+                  valueExpr="value"
+                  onValueChanged={(e) => { handleChgState("month", e) }}
+                  placeholder="월"
+                  style={{margin: "0px 5px 0px 5px"}}
+                  required = {true}
+                  value={empParam2.month}
+              />
+              <SelectBox
+                  id="odr"
+                  dataSource={odrList}
+                  displayExpr="text"
+                  valueExpr="value"
+                  onValueChanged={(e) => { handleChgState("aplyOdr", e) }}
+                  placeholder="차수"
+                  style={{margin: "0px 5px 0px 5px"}}
+                  required = {true}
+                  value={empParam2.aplyOdr}
+              />
                 </div>
               </div>
           <CustomLabelValue props={labelValue.jbpsCd} onSelect={handleChgJbps} value={empParam2.jbpsCd}/>
         <div className="buttonContainer" style={buttonContainerStyle}>
-            <Button style={buttonStyle}>발령정보업로드</Button>
+            <Button style={buttonStyle} onClick={empUpload}>발령정보업로드 </Button>
             <Button style={buttonStyle} onClick={onClickHst}>발령저장</Button>
         </div>    
         </div>
          <div className="empHnfListTable" style={empDetailStyle}>
-          <CustomTable keyColumn={ejhKeyColumn} pageSize={hnfPageSize} columns={ejhTableColumns} values={histValues} paging={true} onClick={onClickDel} />
+          <CustomTable keyColumn={ejhKeyColumn}  columns={ejhTableColumns} values={histValues} paging={true} onClick={onClickDel} />
         </div>     
         </div>
       </div>

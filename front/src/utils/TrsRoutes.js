@@ -152,7 +152,14 @@ const TreRoutes = [
     path: "/fnnrMng/prjctCtClm/ProjectCostClaimDetail",
     name: "ProjectCostClaimDetail",
     element: React.lazy(() => import("../pages/fnnrMng/prjctCtClm/ProjectCostClaimDetail")),
+  },
+   // 재무 관리 > 근무시간비용 입력현황
+   {
+    path: "/fnnrMng/TimeExpenseInsertSttus",
+    name: "TimeExpenseInsertSttus",
+    element: React.lazy(() => import("../pages/fnnrMng/TimeExpenseInsertSttus")),
   }
+
 ];
 
 export default TreRoutes;

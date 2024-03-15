@@ -8,7 +8,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
   const gridRows = () => {
     const result = [];
     for (let i = 0; i < columns.length; i++) {
-      const { key, value, width, alignment, button, visible, toggle } = columns[i];
+      const { key, value, width, alignment, button, visible, toggle} = columns[i];
       if (button) {
         result.push(
           <Column

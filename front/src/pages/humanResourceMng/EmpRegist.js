@@ -7,9 +7,8 @@ import CustomLabelValue from "components/unit/CustomLabelValue";
 import ApiRequest from "utils/ApiRequest";
 import { left, right } from "@popperjs/core";
 
-const EmpRegist = ({callBack, empInfo, read}) => {
+const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
   const {labelValue,empDetailqueryId} = EmpRegistJson;
-  const [readOnly, setReadOnly] = useState(read);
   const [empMax,setEmpMax] =useState({});
   const [param, setParam] = useState([]);
   const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
@@ -90,7 +89,7 @@ const EmpRegist = ({callBack, empInfo, read}) => {
   //커스텀라벨 초기화버튼 
   const onReset = () =>{
     setData({});
-    setReadOnly(false);
+    callBackR();
   }
   //기초정보 저장 
   const onClick = (e) => {
