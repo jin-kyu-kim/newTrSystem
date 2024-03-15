@@ -162,11 +162,17 @@
 			, NOTICE_TTL
 			, SGNAL_ORDR
 			, e.EMP_FLNM AS REG_EMP_ID
-		    , DATE_FORMAT(n.REG_DT, '%Y-%m-%d %H:%i') AS REG_DT
+			, DATE_FORMAT(n.REG_DT, '%Y-%m-%d %H:%i') AS REG_DT
 			, COUNT(*) OVER () AS TOTAL_ITEMS
 		FROM NOTICE n
 		LEFT JOIN EMP e ON n.REG_EMP_ID = e.EMP_ID
 		WHERE 1=1
+		<if test="type == 'notice'">
+			AND SGNAL_ORDR IN (0, 1)
+		</if>
+		<if test="type == 'refer'">
+			AND SGNAL_ORDR IN (2, 3)
+		</if>
 		<if test="searchCnd == 'VTW01701' and searchWrd != null">
 			AND NOTICE_TTL LIKE CONCAT('%',#{searchWrd},'%')
 		</if>
@@ -180,17 +186,16 @@
 			)
 		</if>
 		ORDER BY
-			CASE
-			    WHEN SGNAL_ORDR = 1 THEN 0
-				ELSE 1
-			END,
-			REG_DT DESC
+		CASE
+		WHEN SGNAL_ORDR = 1 THEN 0
+		ELSE 1
+		END,
+		REG_DT DESC
 	</select>
 
 	<select id="retrieveNtcMatterDtl" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT
-			ROW_NUMBER() OVER() ROWNUM
-			, NOTICE_ID
+			NOTICE_ID
 			, NOTICE_TTL
 			, NOTICE_CN
 			, SGNAL_ORDR
@@ -198,7 +203,7 @@
 			, IMPRTNC_NTC_BGNG_YMD
 			, IMPRTNC_NTC_END_YMD
 			, USE_END_YMD
-			, a.ATCHMNFL_ID
+			, n.ATCHMNFL_ID
 			, a.ATCHMNFL_SN
 			, a.REAL_FILE_NM
 			, a.STRG_FILE_NM
@@ -206,8 +211,8 @@
 			, DATE_FORMAT(n.REG_DT, '%Y-%m-%d %H:%i') AS REG_DT
 			, n.MDFCN_DT
 		FROM NOTICE n
-		LEFT JOIN EMP e ON n.REG_EMP_ID = e.EMP_ID
-		LEFT JOIN  ATCHMNFL a ON n.ATCHMNFL_ID = a.ATCHMNFL_ID
+				 LEFT JOIN EMP e ON n.REG_EMP_ID = e.EMP_ID
+				 LEFT JOIN  ATCHMNFL a ON n.ATCHMNFL_ID = a.ATCHMNFL_ID
 		WHERE NOTICE_ID = #{noticeId}
 	</select>
 	

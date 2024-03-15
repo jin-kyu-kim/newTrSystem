@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import uuid from "react-uuid";
 import { DateBox, DateRangeBox, FileUploader, TextBox } from "devextreme-react";
 import { Validator, RequiredRule } from 'devextreme-react/validator'
-import CheckBox from "devextreme-react/check-box";
-import uuid from "react-uuid";
 import HtmlEditBox from "components/unit/HtmlEditBox";
+import CheckBox from "devextreme-react/check-box";
 import "../../assets/css/Style.css";
 
-const BoardInputForm = ({ edit, data, setData, attachments, setAttachments, attachFileDelete, editMode, newAttachments, setNewAttachments }) => {
+const BoardInputForm = ({ edit, data, setData, attachments, setAttachments, attachFileDelete, typeChk, setTypeChk, editMode, newAttachments, setNewAttachments }) => {
     const handleAttachmentChange = (e) => {
         setAttachments(e.value);
         setData({
@@ -15,36 +15,10 @@ const BoardInputForm = ({ edit, data, setData, attachments, setAttachments, atta
         })
     };
 
-    const [typeChk, setTypeChk] = useState({
-        imprtnc: false,
-        useYn: true,
-        moveToRefer: false,
-    });
-
-    const chkSgnalOrdr = () => {
-        let sgnalOrdr = 0;
-        let useYn = "Y";
-
-        if (typeChk.imprtnc && typeChk.moveToRefer) {
-            sgnalOrdr = 3
-        } else if (typeChk.moveToRefer) {
-            sgnalOrdr = 2
-        } else if (typeChk.imprtnc) {
-            sgnalOrdr = 1
-        }
-        if (!typeChk.useYn) {
-            useYn = "N"
-        }
-        setData({ ...data, sgnalOrdr: sgnalOrdr, useYn: useYn });
-    }
-
-    useEffect(() => {
-        if (typeChk.imprtnc || typeChk.moveToRefer || typeChk.useYn) chkSgnalOrdr();
-    }, [typeChk.imprtnc, typeChk.moveToRefer, typeChk.useYn])
-
     useEffect(() => {
         if (editMode === 'update' && data.noticeTtl !== undefined) {
             setNewAttachments([...attachments]);
+            setAttachments([]); // 수정시에는 새로 첨부한 파일만 받기
         }
     }, [editMode, data.noticeTtl]);
 
@@ -88,19 +62,17 @@ const BoardInputForm = ({ edit, data, setData, attachments, setAttachments, atta
                                 {column.checkType.map((check) => {
                                     return (
                                         <div key={check.dataField} className="checkbox-wrapper">
-                                            <div className="checkbox-label">{check.label}:</div>
-                                            <CheckBox
-                                                className="checkSpace"
-                                                defaultValue={check.dataField === "useYn" ? true : (
-                                                    check.dataField === "imprtnc" && data.imprtncNtcBgngYmd ? true : false)}
-                                                onValueChanged={(e) => {
-                                                    setTypeChk({
-                                                        ...typeChk,
-                                                        [check.dataField]: e.value
-                                                    })
-                                                }}
-                                            />
-                                            {check.dataField === "moveToRefer" ? (
+                                            <div className="checkbox-label">{check.dataField === 'move' ? 
+                                                (data.sgnalOrdr === 0 ? check.noticeLabel : check.referLabel) : check.label}:</div>
+                                                <CheckBox
+                                                    className="checkSpace"
+                                                    value={check.dataField === 'imprtnc' ? typeChk.imprtnc 
+                                                        : check.dataField === 'useYn' ? typeChk.useYn : typeChk.move}
+                                                    onValueChanged={(e) => {
+                                                        setTypeChk({ ...typeChk, [check.dataField]: e.value })
+                                                    }}
+                                                />
+                                                {check.dataField === "move" ? (
                                                 <></>
                                             ) : check.dataField === "imprtnc" ? (
                                                 <DateRangeBox
@@ -148,7 +120,7 @@ const BoardInputForm = ({ edit, data, setData, attachments, setAttachments, atta
                                 {newAttachments[0] !== null && newAttachments.map((item, index) => (
                                     <div key={index}>
                                         {item.realFileNm && (item.realFileNm.endsWith('.jpg') || item.realFileNm.endsWith('.jpeg') || item.realFileNm.endsWith('.png') || item.realFileNm.endsWith('.gif')) ?
-                                            (<img src={`/upload/${item.strgFileNm}`} style={{ width: '20%', marginBottom: '20px' }} alt={item.realFileNm} />)
+                                            (<img src={`/upload/${item.strgFileNm}`} style={{ width: '50%', marginBottom: '20px' }} alt={item.realFileNm} />)
                                         : <span>{item.realFileNm}</span> }
                                         {item.realFileNm && <span onClick={() => attachFileDelete(item)} style={{ fontWeight: 'bold', marginLeft: '10px', color: 'red', cursor: 'pointer' }}>X</span>}
                                     </div>

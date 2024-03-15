@@ -54,10 +54,10 @@
         "keyColumn": "ctmmnyId",
         "tableColumns": 
         [
-            { "key": "ctmmnyId", "value": "고객사ID" },
-            { "key": "ctmmnyNm", "value": "고객사명(한글)" },
+            { "key": "ctmmnyId", "value": "고객사ID", "isRequire": true, "length": 4 },
+            { "key": "ctmmnyNm", "value": "고객사명(한글)", "isRequire": true },
             { "key": "ctmmnyEngNm", "value": "고객사명(영문)" },
-            { "key": "industCd", "value": "산업명", "editType": "selectBox", "comCd": "VTW016" },
+            { "key": "industCd", "value": "산업명", "editType": "selectBox", "comCd": "VTW016", "isRequire": true },
             { "key": "useYn", "value": "사용여부", "editType": "toggle", "button": true }
         ],
         "tbNm": "CTMMNY_INFO",

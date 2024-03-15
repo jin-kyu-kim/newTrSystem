@@ -75,7 +75,7 @@ const TreRoutes = [
     name: "TrsCodeList",
     element: React.lazy(() => import("../pages/sysMng/TrsCodeList")),
   },
-      // 공지사항
+  // 공지사항
   {
     path: "/infoInq/NoticeList",
     name: "NoticeList",
@@ -92,6 +92,24 @@ const TreRoutes = [
     path: "/infoInq/NoticeInput",
     name: "NoticeInput",
     element: React.lazy(() => import("../pages/infoInq/NoticeInput"))
+  },
+  // 자료실
+  {
+    path: "/infoInq/ReferenceList",
+    name: "NoticeList",
+    element: React.lazy(() => import("../pages/infoInq/ReferenceList")),
+  },
+  // 자료실 상세
+  {
+    path: "/infoInq/ReferenceDetail",
+    name: "NoticeDetail",
+    element: React.lazy(() => import("../pages/infoInq/ReferenceDetail"))
+  },
+  // 자료실 등록
+  {
+    path: "/infoInq/ReferenceInput",
+    name: "NoticeInput",
+    element: React.lazy(() => import("../pages/infoInq/ReferenceInput"))
   },
   //직원조회
   {

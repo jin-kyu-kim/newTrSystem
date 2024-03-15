@@ -8,7 +8,7 @@ import SysMng from './SysMngJson.json';
 
 const CustomersList = () => {
     const [values, setValues] = useState([]);
-    const [param, setParam] = useState({}); // 검색
+    const [param, setParam] = useState({});
     const [totalItems, setTotalItems] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize] = useState(20);

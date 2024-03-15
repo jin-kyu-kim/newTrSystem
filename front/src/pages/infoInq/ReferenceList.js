@@ -7,14 +7,14 @@ import NoticeJson from "../infoInq/NoticeJson.json";
 import CustomTable from "../../components/unit/CustomTable";
 import SearchInfoSet from 'components/composite/SearchInfoSet';
 
-const NoticeList = () => {
+const ReferenceList = () => {
     const [values, setValues] = useState([]);
     const [param, setParam] = useState({});
     const [totalItems, setTotalItems] = useState(0);
     const [pageSize] = useState(10);
     const navigate = useNavigate();
 
-    const { keyColumn, queryId, tableColumns, searchInfo, noticeInsertPage } = NoticeJson;
+    const { keyColumn, queryId, tableColumns, searchInfo, referInsertPage } = NoticeJson;
     
     useEffect(() => {
         if (!Object.values(param).every((value) => value === "")) {
@@ -25,7 +25,7 @@ const NoticeList = () => {
     const searchHandle = async (initParam) => {
         setParam({
             ...initParam,
-            type: 'notice',
+            type: 'refer',
             queryId: queryId
         });
     };
@@ -35,7 +35,7 @@ const NoticeList = () => {
             const response = await ApiRequest("/boot/common/queryIdSearch", param);
             setValues(response);
             if (response.length !== 0) {
-                setTotalItems(response[0].totalItems);
+                setTotalItems(response[0].totalItems);               
             } else {
                 setTotalItems(0);
             }
@@ -45,7 +45,7 @@ const NoticeList = () => {
     };
 
     const onRowDblClick = (e) => {
-        navigate("/infoInq/NoticeDetail", 
+        navigate("/infoInq/ReferenceDetail", 
                   {state: { id: e.key }})
       };
 
@@ -55,15 +55,15 @@ const NoticeList = () => {
                 className="title p-1"
                 style={{ marginTop: "20px", marginBottom: "10px" }}
             >
-                <h1 style={{ fontSize: "40px" }}>공지사항</h1>
+                <h1 style={{ fontSize: "40px" }}>자료실</h1>
             </div>
             <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
-                <span>* 공지사항을 조회합니다.</span>
+                <span>* 자료실을 조회합니다.</span>
             </div>
             <div style={{ marginBottom: "20px" }}>
                 <SearchInfoSet 
                     props={searchInfo}
-                    insertPage={noticeInsertPage}
+                    insertPage={referInsertPage}
                     callBack={searchHandle}
                 /> 
             </div>
@@ -80,4 +80,4 @@ const NoticeList = () => {
         </div>
     );
 }
-export default NoticeList;
+export default ReferenceList;

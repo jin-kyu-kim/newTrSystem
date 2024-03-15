@@ -68,30 +68,5 @@ public class CommonController {
         return commonService.insertFile(tbNm, mapData, attachments);
 
     }
-    @PostMapping(value = "/boot/common/getFile")
-    public ResponseEntity<Resource> getFile(@RequestBody Map<String, Object> oneData) {
-        String strgFileNm = (String) oneData.get("strgFileNm");
-        String realFileNm = (String) oneData.get("realFileNm");
-        realFileNm = URLEncoder.encode(realFileNm, StandardCharsets.UTF_8);
-        ClassLoader classLoader = getClass().getClassLoader();
-        URL resources = classLoader.getResource("upload/" + strgFileNm);
-
-        Resource resource;
-        try{
-            resource = new UrlResource(resources.toURI());
-            if(resource.exists() && resource.isReadable()){
-                String contentType = Files.probeContentType(Paths.get(resources.toURI()));
-
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.parseMediaType(contentType));
-                headers.setContentDispositionFormData("attachment", realFileNm);
-
-                return new ResponseEntity<>(resource, headers, HttpStatus.OK);
-            }
-        } catch (IOException | URISyntaxException e){
-            e.printStackTrace();
-        }
-        return ResponseEntity.notFound().build();
-    }
 
 }
