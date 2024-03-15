@@ -945,6 +945,23 @@
 			 )B
     </select>
     
+    <select id="retrieveExcnPrmpcBizSumry" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT P.PRJCT_NM, 
+			   C.CTMMNY_NM, 
+			   P.PIC_FLNM, 
+			   E2.EMP_FLNM AS PRJCT_MNGR_EMP_NM,
+			   E.EMP_FLNM, 
+			   P.TOT_BGT, 
+			   P.BDDPR_PC, 
+			   P.MMNY_SLS_AM, 
+			   CONCAT(DATE_FORMAT(P.CTRT_YMD, '%Y-%m-%d'), ' ~ ', DATE_FORMAT(P.BIZ_END_YMD, '%Y-%m-%d')) AS PRJCT_PERIOD
+		from PRJCT P
+		LEFT JOIN CTMMNY_INFO C ON P.CTMMNY_ID = C.CTMMNY_ID 
+		LEFT JOIN EMP E ON P.REG_EMP_ID = E.REG_EMP_ID 
+		LEFT JOIN EMP E2 ON P.PRJCT_MNGR_EMP_ID = E2.EMP_ID 
+		WHERE 1=1 
+		AND PRJCT_ID = #{prjctId}
+    </select>
 	
 
 </mapper>

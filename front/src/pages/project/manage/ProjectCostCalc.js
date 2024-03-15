@@ -11,7 +11,6 @@ import DataGrid, {
   Grouping,
   TotalItem,
 } from "devextreme-react/data-grid";
-// import PieChart, { Series, Label, Legend, Size, Export, Font, Connector } from 'devextreme-react/pie-chart';
 const ProjectCostCalc = ({prjctId,ctrtYmd, bizEndYmd, bgtMngOdr, bgtMngOdrTobe}) => {
 const [baseInfoData, setBaseInfoData] = useState([]);
 const [cnsrtmData, setCnsrtmData] = useState([]);
@@ -25,14 +24,13 @@ useEffect(() => {
 
 //사업개요 정보
 const BaseInfoData = async () => {
-  const param = [ 
-    { tbNm: "PRJCT" }, 
-    { 
-      prjctId: prjctId, 
-    }, 
-  ]; 
+  const param = {
+    queryId: "projectMapper.retrieveExcnPrmpcBizSumry",
+    prjctId: prjctId,
+  }
+
   try {
-    const response = await ApiRequest("/boot/common/commonSelect", param);
+    const response = await ApiRequest("/boot/common/queryIdSearch", param);
     setBaseInfoData(response[0]);  
   } catch (error) {
     console.error('Error fetching data', error);
@@ -59,7 +57,8 @@ const CnsrtmData = async () => {
 const handelGetData = async () => {
   try {
     await CostCalc.PrmpcAnls.params.map(async (item) => {
-      const modifiedItem = { ...item, prjctId: prjctId, bgtMngOdr: bgtMngOdrTobe};   //TODO. 차수를 detail에서 호출일때와 change에서 호출일때 다르게 해야함.
+      //TODO. 차수를 detail에서 호출일때와 change에서 호출일때 다르게 해야함.
+      const modifiedItem = { ...item, prjctId: prjctId, bgtMngOdr: bgtMngOdrTobe};   
       const response = await ApiRequest(
         "/boot/common/queryIdSearch",
         modifiedItem
