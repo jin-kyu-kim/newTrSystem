@@ -618,15 +618,6 @@
 	
 
 	<select id="retrieveTmprRjctBgtOdr" parameterType="map" resultType="com.trsystem.LowerHashMap">
-	<!-- 
-	  SELECT pal.PRJCT_ID
-	    FROM PRJCT_ATRZ_LN_DTL pald
-	    JOIN PRJCT_ATRZ_LN pal ON (pal.PRJCT_ID = pald.PRJCT_ID AND pal.ATRZ_LN_SN = pald.ATRZ_LN_SN)
-	   WHERE 1=1
-	     AND pal.PRJCT_ID = #{prjctId}
-	     AND pal.ATRZ_LN_SN = #{atrzLnSn}
-	     AND pald.ATRZ_STTS_CD = 'VTW00803'
-	-->
 		SELECT ATRZ_DMND_STTS_CD 
 		  FROM PRJCT_BGT_PRMPC pbp 
 		 WHERE 1=1
