@@ -194,7 +194,7 @@ const SearchPrjctCostSet = ({ callBack, props, excelDownload }) => {
                 }  
                 { props.prjctId &&
                     <Item ratio={0} baseSize={"200"}>
-                        <CustomComboBox props={prjctList} onSelect={handleChgState} placeholder="프로젝트명"/>
+                        <CustomComboBox props={prjctList} value={initParams.prjctId} onSelect={handleChgState} placeholder="프로젝트명" />
                     </Item>
                 }
                 <Item ratio={0} baseSize={"100"}>
