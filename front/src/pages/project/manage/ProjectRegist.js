@@ -73,11 +73,12 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdrTobe}) => {
 
             setData({
                 ...data,
-                prjctId : uuid(),
-                prjctMngrEmpId : empId,
-                deptId : deptId,
+                prjctId: uuid(),
+                prjctMngrEmpId: empId,
+                deptId: deptId,
                 bizSttsCd: "VTW00401",
-                regDt : date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0]
+                regEmpId: empId,
+                regDt: date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0]
             })
         }
 
@@ -163,13 +164,6 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdrTobe}) => {
         if(isconfirm){
             BaseInfoData();
             setReadOnly(true);
-        }
-    }
-
-    const onClickChgSave = async () => {
-        const isconfirm = window.confirm("수정한 내용을 저장 하시겠습니까?");
-        if(isconfirm){
-            updateProject();
         }
     }
 
