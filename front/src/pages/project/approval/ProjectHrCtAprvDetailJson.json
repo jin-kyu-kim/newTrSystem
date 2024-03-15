@@ -68,8 +68,7 @@
         "yearItem": true,
         "monthItem": true,
         "aplyOdr": true,
-        "empId": true,
-        "excelDownloadBtn": false
+        "empId": true
     },
     "popup": {
         "width": "90%",

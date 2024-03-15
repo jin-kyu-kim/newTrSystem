@@ -30,10 +30,6 @@ const ProjectAprvDetail = () => {
     const [data, setData] = useState([]);
     const [btnVisible, setBtnVisible] = useState(false);
 
-    const dataS = ProjectAprvDetail.dataSource;
-
-    console.log(bgtMngOdr)
-
     useEffect(() => {
         console.log(aprvrEmpId)
         console.log(cookies.userInfo.empId)
