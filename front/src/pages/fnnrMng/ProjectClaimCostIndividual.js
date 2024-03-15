@@ -4,22 +4,26 @@ import ApiRequest from '../../utils/ApiRequest';
 import CustomTable from "../../components/unit/CustomTable";
 import ProjectClaimCostIndividual from './ProjectClaimCostIndividualJson.json';
 import { useNavigate } from "react-router-dom";
+import CustomPopup from "../../components/unit/CustomPopup";
+import ProjectClaimCostIndividualCtPop from "./ProjectClaimCostIndividualCtPop";
+import ProjectClaimCostIndividualMmPop from "./ProjectClaimCostIndividualMmPop";
 
 const ProjectCostIndividual = ({ prjctId, prjctNm, year, monthVal, aplyOdr, empId }) => {
-  const { keyColumn, queryId, workHourColumns, expensColumns, workHourSumColumns, expensSumColumns } = ProjectClaimCostIndividual;
-  const [workHourData, setWorkHourData] = useState([]);
-  const [expensData, setExpensData] = useState([]);
-
-  const navigate = useNavigate();
-
-
+  const { keyColumn, queryId, mmColumns, ctColumns, mmSumColumns, ctSumColumns, popup } = ProjectClaimCostIndividual;
+  const [mmData, setMMData] = useState([]);
+  const [ctData, setCtData] = useState([]);
+  const [data, setData] = useState([]);
+  const [mmDetailValues, setMmDetailValues] = useState([]);
+  const [ctDetailValues, setCtDetailValues] = useState([]);
+  const [mmPopupVisible, setMmPopupVisible] = useState(false);
+  const [ctPopupVisible, setCtPopupVisible] = useState(false);
 
   useEffect(() => {
-      getWorkHourData();
-      getExpensData();
+      getMMData();
+      getCtData();
   }, [year, monthVal, aplyOdr, empId]);
 
-    const getWorkHourData = async () => {
+    const getMMData = async () => {
 
         const param = {
             queryId: queryId.empMMQueryId,
@@ -30,13 +34,13 @@ const ProjectCostIndividual = ({ prjctId, prjctNm, year, monthVal, aplyOdr, empI
         };
         try{
             const response = await ApiRequest('/boot/common/queryIdSearch', param);
-            setWorkHourData(response);
+            setMMData(response);
         }catch (error){
             console.log(error)
         }
     };
 
-    const getExpensData = async () => {
+    const getCtData = async () => {
 
         const param = {
             queryId: queryId.empCtQueryId,
@@ -47,17 +51,56 @@ const ProjectCostIndividual = ({ prjctId, prjctNm, year, monthVal, aplyOdr, empI
         };
         try{
             const response = await ApiRequest('/boot/common/queryIdSearch', param);
-            setExpensData(response);
+            setCtData(response);
         }catch (error){
             console.log(error)
         }
     };
 
+    const onMmBtnClick = async (data) => {
+        setData(data);
 
-  const onClick = (data) => {
-    navigate("/fnnrMng/ProjectClaimCostDetail",
-             {state: { prjctId: data.prjctId, prjctNm: data.prjctNm }})
-  };
+        await retrievePrjctCtClmSttusIndvdlMMAcctoDetail(data);
+        setMmPopupVisible(true);
+    }
+
+    const retrievePrjctCtClmSttusIndvdlMMAcctoDetail = async (data) => {
+
+        const param = {
+            queryId: queryId.mmPopupQueryId,
+            prjctId: prjctId,
+            aplyYm: year+monthVal,
+            aplyOdr: aplyOdr,
+            empId: data.empId
+        }
+        const response = await ApiRequest("/boot/common/queryIdSearch", param);
+        setMmDetailValues(response);
+    }
+
+    const onCtBtnClick = async (data) => {
+        setData(data);
+
+        await retrievePrjctCtClmSttusIndvdlCtAcctoDetail(data);
+        setCtPopupVisible(true);
+    }
+
+    const retrievePrjctCtClmSttusIndvdlCtAcctoDetail = async (data) => {
+
+        const param = {
+            queryId: queryId.ctPopupQueryId,
+            prjctId: prjctId,
+            aplyYm: year+monthVal,
+            aplyOdr: aplyOdr,
+            empId: data.empId
+        }
+        const response = await ApiRequest("/boot/common/queryIdSearch", param);
+        setCtDetailValues(response);
+    }
+
+    const handleClose = () => {
+        setCtPopupVisible(false);
+        setMmPopupVisible(false);
+    };
 
   return (
     <div style={{padding: '20px'}}>
@@ -65,22 +108,34 @@ const ProjectCostIndividual = ({ prjctId, prjctNm, year, monthVal, aplyOdr, empI
         <p><strong>* 수행인력</strong></p>
         <CustomTable
           keyColumn={keyColumn}
-          values={workHourData}
-          columns={workHourColumns}
+          values={mmData}
+          columns={mmColumns}
           summary={true}
-          summaryColumn={workHourSumColumns}
-          onClick={onClick}
-      />
+          summaryColumn={mmSumColumns}
+          onClick={onMmBtnClick}
+        />
         &nbsp;
         <p><strong>* 경비</strong></p>
         <CustomTable
           keyColumn={keyColumn}
-          values={expensData}
-          columns={expensColumns}
+          values={ctData}
+          columns={ctColumns}
           summary={true}
-          summaryColumn={expensSumColumns}
-          onClick={onClick}
-      />
+          summaryColumn={ctSumColumns}
+          onClick={onCtBtnClick}
+        />
+          <CustomPopup
+              props={popup}
+              visible={mmPopupVisible}
+              handleClose={handleClose}>
+              <ProjectClaimCostIndividualMmPop props={mmDetailValues} prjctNm={prjctNm} data={data}/>
+          </CustomPopup>
+          <CustomPopup
+              props={popup}
+              visible={ctPopupVisible}
+              handleClose={handleClose}>
+              <ProjectClaimCostIndividualCtPop props={ctDetailValues} prjctNm={prjctNm} data={data}/>
+          </CustomPopup>
       </div>
     </div>
   );
