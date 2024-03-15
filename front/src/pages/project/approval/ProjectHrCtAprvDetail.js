@@ -86,7 +86,7 @@ const ProjectHrCtAprvDetail = () => {
         })
     }
 
-    const onMmBtnClick = async (data) => {
+    const onMmBtnClick = async (button, data) => {
         console.log(data);
         setData(data);
 
@@ -109,7 +109,7 @@ const ProjectHrCtAprvDetail = () => {
     }
 
 
-    const onCtBtnClick = async (data) => {
+    const onCtBtnClick = async (button, data) => {
         console.log(data);
 
         await retrieveProjectCtAplyDetail(data);
