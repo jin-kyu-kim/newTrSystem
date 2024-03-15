@@ -4,9 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import SearchPrjctSet from "../../../components/composite/SearchPrjctSet";
 import ApiRequest from "../../../utils/ApiRequest";
 import CustomTable from "../../../components/unit/CustomTable";
-import ProjectOutordPersonJson from "./ProjectOutordPersonJson.json";
+import ProjectOutordAprvJson from "./ProjectOutordAprvJson.json";
 
-const ProjectOutordPerson = () => {
+const ProjectOutordAprv = () => {
 
     const [values, setValues] = useState([]);
     const [param, setParam] = useState({});
@@ -16,7 +16,7 @@ const ProjectOutordPerson = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [pageSize, setPageSize] = useState(20);
 
-    const { keyColumn, queryId, tableColumns, searchParams, popup } = ProjectOutordPersonJson;
+    const { keyColumn, queryId, tableColumns, searchParams, popup } = ProjectOutordAprvJson;
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -57,7 +57,7 @@ const ProjectOutordPerson = () => {
         console.log(data);
         console.log("onBtnClick");
 
-        navigate("/project/ProjectOutordPersonDetail", { state: {
+        navigate("/project/ProjectOutordAprvDetail", { state: {
             prjctId: data.prjctId,
         }})
     }
@@ -84,4 +84,4 @@ const ProjectOutordPerson = () => {
     );
 
 }
-export default ProjectOutordPerson;
+export default ProjectOutordAprv;

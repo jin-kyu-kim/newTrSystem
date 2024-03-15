@@ -1,14 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { SelectBox } from "devextreme-react/select-box";
 import { Box, Item } from "devextreme-react/box";
 import { Button } from "devextreme-react/button";
 import CustomComboBox from "components/unit/CustomComboBox";
+import ApiRequest from "utils/ApiRequest";
+import { TextBox } from "devextreme-react";
 
 const SearchPrjctCostSet = ({ callBack, props, excelDownload }) => {
     const [initParams, setInitParams] = useState([]);
     const [yearData, setYearData] = useState([]);
     const [monthData, setMonthData] = useState([]);
-    
+
+    const [empData, setEmpData] = useState([]);
+    const [selectedItem, setSelectedItem] = useState([])
+    const [empno, setEmpno] = useState("");
+    const [empnoVisible, setEmpnoVisible] = useState(false);
+
     const yearList = [];
     const monthList = [];
 
@@ -25,11 +32,11 @@ const SearchPrjctCostSet = ({ callBack, props, excelDownload }) => {
         }
     ];
 
-    const empList = {
-        tbNm: "EMP",
-        valueExpr: "empId",
-        displayExpr: "empFlnm",
-        name: "empId",
+    const prjctList = {
+        tbNm: "PRJCT",
+        valueExpr: "prjctId",
+        displayExpr: "prjctNm",
+        name: "prjctId",
     }
 
     useEffect(() => {
@@ -40,8 +47,8 @@ const SearchPrjctCostSet = ({ callBack, props, excelDownload }) => {
         const day = date.getDate();
 
 
-        const startYear = year - 5;
-        const EndYear = year + 5;
+        const startYear = year - 10;
+        const EndYear = year + 1;
 
 
         for(let i = startYear; i <= EndYear; i++) {
@@ -66,10 +73,36 @@ const SearchPrjctCostSet = ({ callBack, props, excelDownload }) => {
 
         setYearData(yearList);
         setMonthData(monthList);
+        retriveEmpList();
 
         callBack(initParams);
 
     }, []);
+
+    const retriveEmpList = async () => {
+        const param = [
+            { tbNm: "EMP" },
+            {}
+        ];
+
+        try {
+            const response = await ApiRequest("/boot/common/commonSelect", param);
+            setEmpData(response);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    const selectionChanged = useCallback((event) => {
+        if(event.selectedItem == null) {
+            setEmpno("");
+            setEmpnoVisible(false);
+        } else {
+            setEmpno(event.selectedItem.empno);
+            setEmpnoVisible(true);
+        }
+        setSelectedItem(event.selectedItem);
+      }, []);
 
     const handleChgState = ({ name, value }) => {
         setInitParams({
@@ -89,51 +122,89 @@ const SearchPrjctCostSet = ({ callBack, props, excelDownload }) => {
                 width={"100%"}
                 height={50}
             >
-                <Item visible={props.yearItem} ratio={0} baseSize={"120"}>
-                    <SelectBox 
-                        dataSource={yearData}
-                        name="yearItem"
-                        displayExpr={"value"}
-                        valueExpr={"value"}
-                        onValueChanged={(e) => handleChgState({name: e.component.option("name"), value: e.value })}
-                        placeholder="[연도]"
-                        style={{margin: "0px 5px 0px 5px"}}
-                        value={initParams.yearItem}
-                    />
+                { props.yearItem &&
+                    <Item ratio={0} baseSize={"120"}>
+                        <SelectBox 
+                            dataSource={yearData}
+                            name="yearItem"
+                            displayExpr={"value"}
+                            valueExpr={"value"}
+                            onValueChanged={(e) => handleChgState({name: e.component.option("name"), value: e.value })}
+                            placeholder="[연도]"
+                            style={{margin: "0px 5px 0px 5px"}}
+                            value={initParams.yearItem}
+                        />
+                    </Item>
+                }
+                { props.monthItem &&
+                    <Item ratio={0} baseSize={"120"}>
+                        <SelectBox
+                            dataSource={monthData}
+                            name="monthItem"
+                            displayExpr={"value"}
+                            valueExpr={"value"}
+                            onValueChanged={(e) => handleChgState({name: e.component.option("name"), value: e.value })}
+                            placeholder="[월]"
+                            style={{margin: "0px 5px 0px 5px"}}
+                            value={initParams.monthItem}
+                        />
+                    </Item>
+                }
+                { props.aplyOdr &&
+                    <Item ratio={0} baseSize={"120"}>
+                        <SelectBox
+                            dataSource={odrList}
+                            name="aplyOdr"
+                            displayExpr={"text"}
+                            valueExpr={"value"}
+                            onValueChanged={(e) => handleChgState({name: e.component.option("name"), value: e.value })}
+                            placeholder="[차수]"
+                            style={{margin: "0px 5px 0px 5px"}}
+                            value={initParams.aplyOdr}
+                        />
+                    </Item>
+                }
+                { props.empId && 
+                    <Item ratio={0} baseSize={"180"}>
+                        <SelectBox
+                            dataSource={empData}
+                            name="empId"
+                            displayExpr={"empFlnm"}
+                            valueExpr={"empId"}
+                            onValueChanged={(e) => handleChgState({name: e.component.option("name"), value: e.value })}
+                            placeholder="사원명"
+                            style={{margin: "0px 5px 0px 5px"}}
+                            value={initParams.empId}
+                            searchEnabled={true}
+                            selectedItem={selectedItem}
+                            onSelectionChanged={selectionChanged}
+                            showClearButton={true}
+                        />
+                    </Item>
+                }
+                { empnoVisible && 
+                    <Item ratio={0} baseSize={"100"}>
+                        <TextBox
+                            readOnly={true}
+                            value={empno}
+                            style={{margin: "0px 5px 0px 5px"}}
+                            visible={empnoVisible}
+                        />
+                    </Item>
+                }  
+                { props.prjctId &&
+                    <Item ratio={0} baseSize={"200"}>
+                        <CustomComboBox props={prjctList} onSelect={handleChgState} placeholder="프로젝트명"/>
+                    </Item>
+                }
+                <Item ratio={0} baseSize={"100"}>
+                    <Button text="검색" onClick={btnClick} style={{margin: "0px 5px 0px 5px"}}/>
                 </Item>
-                <Item visible={props.monthItem} ratio={0} baseSize={"120"}>
-                    <SelectBox
-                        dataSource={monthData}
-                        name="monthItem"
-                        displayExpr={"value"}
-                        valueExpr={"value"}
-                        onValueChanged={(e) => handleChgState({name: e.component.option("name"), value: e.value })}
-                        placeholder="[월]"
-                        style={{margin: "0px 5px 0px 5px"}}
-                        value={initParams.monthItem}
-                    />
-                </Item>
-                <Item visible={props.aplyOdr} ratio={0} baseSize={"120"}>
-                    <SelectBox
-                        dataSource={odrList}
-                        name="aplyOdr"
-                        displayExpr={"text"}
-                        valueExpr={"value"}
-                        onValueChanged={(e) => handleChgState({name: e.component.option("name"), value: e.value })}
-                        placeholder="[차수]"
-                        style={{margin: "0px 5px 0px 5px"}}
-                        value={initParams.aplyOdr}
-                    />
-                </Item>
-                <Item visible={props.empNm} ratio={0} baseSize={"150"}>
-                    <CustomComboBox props={empList} onSelect={handleChgState} placeholder="기안자성명" value={initParams.empId}/>
-                </Item>
-                <Item visible={props.searchBtn} ratio={0} baseSize={"100"}>
-                    <Button text="검색" onClick={btnClick}/>
-                </Item>
-                <Item visible={props.excelDownloadBtn} ratio={0} baseSize={"150"}>
-                    <Button text="엑셀다운로드" onClick={excelDownload}/>
-                </Item>
+                { props.excelDownloadBtn &&
+                    <Item visible={props.excelDownloadBtn} ratio={0} baseSize={"150"}>
+                        <Button text="엑셀다운로드" onClick={excelDownload}/>
+                    </Item>
+                }
             </Box>
         </div>
     );
