@@ -21,15 +21,23 @@ const ProjectEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
   }, []);
 
   const EmpCostDtl = async () => {
+
+    const copyCtrtYmd = JSON.parse(JSON.stringify(ctrtYmd));
+    const copyBizEndYmd = JSON.parse(JSON.stringify(bizEndYmd));
+    const ctrtYmdPrarm = copyCtrtYmd.replace(/-(\d{2})-\d{2}/, '$1');
+    const bizEndYmdPrarm = copyBizEndYmd.replace(/-(\d{2})-\d{2}/, '$1');
+
     const param = [
       { tbNm: "MMNY_INPT_MM" },
       { prjctId: prjctId,
         bgtMngOdr: bgtMngOdrTobe,
-      }, 
+        inptYm : ctrtYmdPrarm+"&"+bizEndYmdPrarm,
+      },    
     ];
 
   try {
     const response = await ApiRequest("/boot/common/commonSelect", param);
+
     response.reduce((acc, item) => {
       // mmnyLbrcoPrmpcSn 값으로 그룹핑
       acc[item.mmnyLbrcoPrmpcSn] = acc[item.mmnyLbrcoPrmpcSn] || [];
@@ -53,6 +61,7 @@ const ProjectEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
 
     try {
       const response = await ApiRequest("/boot/common/queryIdSearch", param);
+ 
         //월별정보 및 총 합계 response에 추가
         for(let j=0; j<Object.keys(groupingDtl).length; j++){
           let total = 0;
@@ -68,6 +77,7 @@ const ProjectEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
           response[j].gramt = gramt;
         }
         setValues(response);
+        
 
     } catch (error) {
       console.error(error);
