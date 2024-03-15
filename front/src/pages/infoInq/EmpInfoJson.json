@@ -8,16 +8,17 @@
       "queryId": "infoInqMapper.retrieveEmpAcbg",
       "keyColumn":  "acbgSn" , 
       "tableColumns" :[
-      { "key": "acbgSn", "value": "구분", "width": 150, "alignment" : "center" ,"visible": true},  
-      { "key": "acbgSeCd", "value": "구분", "width": 150, "alignment" : "center" },
-      { "key": "schlNm", "value": "학교명", "width": 200 , "alignment" : "center"},
-      { "key": "majorIntltshNm", "value": "전공(계열)", "width": 250, "alignment" : "center" },
-      { "key": "grdtnSttsCd", "value": "졸업구분", "width": 100, "alignment" : "center" },
-      { "key": "scre", "value" : "성적", "width" : 170, "alignment" : "center"},
-      { "key": "mtcltnYr", "value": "입학년도", "width": 170, "alignment" : "center"  },
-      { "key": "grdtnYr", "value": "졸업년도", "width": 170, "alignment" : "center"  }
-  ]
 
+      { "key": "acbgSeCd", "value": "구분" ,"editType" : "selectBox", "comCd" : "VTW025" ,"isRequire" : true },
+      { "key": "schlNm", "value": "학교명"},
+      { "key": "majorIntltshNm", "value": "전공(계열)" },
+      { "key": "grdtnSttsCd", "value": "졸업구분" ,"editType" : "selectBox" ,"comCd" : "VTW026" ,"isRequire" : true},
+      { "key": "pntPscoreSeCd", "value": "성적만점" ,"editType" : "selectBox" ,"comCd" :"VTW027" ,"isRequire" : true },
+      { "key": "scre", "value" : "성적" ,"type": "Number" ,"isRequire" : true},
+      { "key": "mtcltnYr", "value": "입학년도", "type": "Number" ,"length" : 4 ,"isRequire" : true},
+      { "key": "grdtnYr", "value": "졸업년도" ,"type": "Number" , "length" : 4 ,"isRequire" : true}
+  ], 
+        "tbNm" :"EMP_ACBG"
 
   }  , 
   "EmpLanguage":{
@@ -26,12 +27,12 @@
       "keyColumn": "fgggAbltySn",
       "tableColumns": 
 [     
-      { "key": "fgggAbltySn", "value": "구분", "width": 150, "alignment" : "center" ,"visible": true},  
-      { "key": "fgggKndNm", "value": "외국어", "width": 300, "alignment" : "center" },
-      { "key": "pictrsLevelNm", "value": "회화수준", "width": 300 , "alignment" : "center"},
-      { "key": "athriTestNm", "value": "공인시험", "width": 300, "alignment" : "center" },
-      { "key": "score", "value": "점수(등급)", "width": 100, "alignment" : "center" }
-]
+      { "key": "fgggKndCd", "value": "외국어" ,"editType" : "selectBox" ,"comCd" : "VTW028" ,"isRequire" : true },
+      { "key": "pictrsLevelCd", "value": "회화수준","editType" : "selectBox" ,"comCd" : "VTW029" ,"isRequire" : true},
+      { "key": "athriTestNm", "value": "공인시험" ,"isRequire" : true },
+      { "key": "score", "value": "점수"  ,"type": "Number" ,"isRequire" : true }
+],
+      "tbNm" : "EMP_FGGG_ABLTY"
 
   }, 
 
@@ -42,15 +43,12 @@
       "keyColumn": "qlfcLcnsSn",
       "tableColumns": 
       [   
-        { "key": "qlfcLcnsSn", "value": "자격면허", "width": 300, "alignment" : "center" ,"visible": true},
-          { "key": "qlfcLcnsNm", "value": "자격면허", "width": 300, "alignment" : "center" },
-          { "key": "qlfcLcnsId", "value": "면허코드", "width": 300 , "alignment" : "center"},
-          { "key": "gradNm", "value": "등급", "width": 300, "alignment" : "center" },
-          { "key": "acqsYmd", "value": "취득일", "width": 100, "alignment" : "center" }
+          { "key": "qlfcLcnsNm", "value": "자격면허" },
+          { "key": "qlfcLcnsId", "value": "면허코드" },
+          { "key": "gradNm", "value": "등급"  },
+          { "key": "acqsYmd", "value": "취득일", "type" : "date" }
       ],
-      "searchParams":
-      {
-      }
+      "tbNm": " EMP_QLFC_LCNS"
       
 
   },
@@ -60,12 +58,13 @@
 "queryId": "infoInqMapper.retrieveEmpEduHist",
   "keyColumn": "eduSn",
   "tableColumns": 
-[     { "key": "eduSn", "value": "자격면허", "width": 300, "alignment" : "center" ,"visible": true},
-      { "key": "eduInstNm", "value": "교육기관", "width": 250, "alignment" : "center" },
-      { "key": "eduNm", "value": "교육명", "width": 250 , "alignment" : "center"},
-      { "key": "eduYmd", "value": "교육기간", "width": 250, "alignment" : "center" },
-      { "key": "eduCn", "value": "교육내용", "width": 100, "alignment" : "center" }
-]
+[   
+      { "key": "eduInstNm", "value": "교육기관" },
+      { "key": "eduNm", "value": "교육명" },
+      { "key": "eduBgngYmd", "value": "교육시작일자" ,"type" : "date" },
+      { "key": "eduEndYmd", "value": "교육종료일자" ,"type" : "date" },
+      { "key": "eduCn", "value": "교육내용" }
+],"tbNm": "EMP_EDU"
  
   
   },

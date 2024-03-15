@@ -24,14 +24,9 @@ function EmpList() {
 
   // 검색으로 조회할 때
   const searchHandle = async (initParam) => {
-    setTotalPages(1);
-    setCurrentPage(1);
     setParam({
       ...initParam,
       queryId: queryId,
-      currentPage: currentPage,
-      startVal: 0,
-      pageSize: pageSize,
     });
   };
 
@@ -40,11 +35,7 @@ function EmpList() {
       const response = await ApiRequest("/boot/common/queryIdSearch", param);
       setValues(response);
       if (response.length !== 0) {
-        setTotalPages(Math.ceil(response[0].totalItems / pageSize));
-        setTotalItems(response[0].totalItems);
       } else {
-        setTotalPages(1);
-        setTotalItems(0);
       }
     } catch (error) {
       console.log(error);

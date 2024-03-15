@@ -77,37 +77,31 @@
 	</select>	
 	<select id="retrieveEmpAcbg" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT 				
-			EA.ACBG_SN ACBG_SN
-			,C.CD_NM AS ACBG_SE_CD
-			,EA.SCHL_NM AS SCHL_NM 
-			,EA.MAJOR_INTLTSH_NM AS MAJOR_INTLTSH_NM  
-			,C2.CD_NM  AS GRDTN_STTS_CD
-			,CONCAT('(', C3.CD_NM, ')', ' ', EA.SCRE) AS SCRE
-			,EA.MTCLTN_YR AS  MTCLTN_YR 
-			,EA.GRDTN_YR AS  GRDTN_YR 
-		FROM EMP_ACBG EA
-		INNER JOIN CD C ON EA.ACBG_SE_CD = C.CD_VALUE
-		INNER JOIN CD C2 ON EA.GRDTN_STTS_CD = C2.CD_VALUE
-		INNER JOIN CD C3 ON EA.PNT_PSCORE_SE_CD = C3.CD_VALUE
+			ACBG_SN
+			,ACBG_SE_CD
+			,SCHL_NM
+			,MAJOR_INTLTSH_NM
+			,GRDTN_STTS_CD
+			,PNT_PSCORE_SE_CD
+			,SCRE AS SCRE
+			,MTCLTN_YR
+			,GRDTN_YR
+		FROM EMP_ACBG
 		WHERE
-		    EA.EMP_ID = #{empId}
+		    EMP_ID = #{empId}
 	</select>
 
 	<select id="retrieveFgggAblty" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT
-			EFA.FGGG_ABLTY_SN AS FGGG_ABLTY_SN,
-			C.CD_NM AS FGGG_KND_NM,
-			C2.CD_NM AS PICTRS_LEVEL_NM,
-			EFA.ATHRI_TEST_NM AS ATHRI_TEST_NM,
-			EFA.SCORE SCORE
+			FGGG_ABLTY_SN,
+			FGGG_KND_CD,
+			PICTRS_LEVEL_CD,
+			ATHRI_TEST_NM ,
+			SCORE
 		FROM
-			EMP_FGGG_ABLTY EFA
-		INNER JOIN CD C ON
-			C.CD_VALUE = EFA. FGGG_KND_CD
-		INNER JOIN CD C2 ON
-			C2.CD_VALUE = EFA.PICTRS_LEVEL_CD
+			EMP_FGGG_ABLTY
 		WHERE
-		EFA.EMP_ID = #{empId}
+		EMP_ID = #{empId}
 	</select>
 
 	<select id="retrieveEmpQlfcLcns" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -116,7 +110,7 @@
 			QLFC_LCNS_NM ,
 			QLFC_LCNS_ID ,
 			GRAD_NM ,
-			DATE_FORMAT(ACQS_YMD, '%Y-%m-%d') AS ACQS_YMD
+			ACQS_YMD
 		FROM EMP_QLFC_LCNS
 			WHERE EMP_ID= #{empId}
 	</select>
@@ -126,7 +120,8 @@
 			EDU_SN,
 			EDU_INST_NM,
 			EDU_NM,
-			CONCAT(DATE_FORMAT(EDU_BGNG_YMD, '%Y-%m-%d')  , '~', DATE_FORMAT(EDU_END_YMD, '%Y-%m-%d')) AS EDU_YMD ,
+			EDU_BGNG_YMD,
+			EDU_END_YMD,
 			EDU_CN
 		FROM EMP_EDU 
 		WHERE EMP_ID= #{empId}
