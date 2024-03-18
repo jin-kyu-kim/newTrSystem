@@ -1,0 +1,49 @@
+{
+    "menuName": "ProjectOutordAprvDetail",
+    "outordLbrco" : {
+        "queryId": "projectMapper",
+        "keyColumn": "empId",
+        "tableColumns": [
+            { "key": "deptNm", "value": "지급처(인력)"  },
+            { "key": "outordEmpId", "value": "성명" , "width": "100"},
+            { "key": "bgtMngOdr", "value": "차수" , "width": "100"},
+            { "key": "expectMm", "value": "배정" , "width": "100"},
+            { "key": "excnMm", "value": "누적사용" , "width": "100"},
+            { "key": "a", "value": "가용" , "width": "80"},
+            { "key": "totMd", "value": "청구금액" , "width": "120"},
+            { "key": "b", "value": "기안문서" , "width": "120"},
+            { "key": "empId", "value": "상태" , "width": "140", "button": "승인목록"}
+        ]
+    },
+    "outordEntrps": {
+        "queryId": "projectMapper",
+        "keyColumn": "empId",
+        "tableColumns": [
+            { "key": "deptNm", "value": "지급처(업체)"  },
+            { "key": "outordEmpId", "value": "성명" , "width": "100"},
+            { "key": "bgtMngOdr", "value": "차수" , "width": "100"},
+            { "key": "expectMm", "value": "배정" , "width": "100"},
+            { "key": "excnMm", "value": "누적사용" , "width": "100"},
+            { "key": "a", "value": "가용" , "width": "80"},
+            { "key": "totMd", "value": "청구금액" , "width": "120"},
+            { "key": "b", "value": "기안문서" , "width": "120"},
+            { "key": "empId", "value": "상태" , "width": "140", "button": "승인목록"}
+        ]
+    },
+    "matrl": {
+        "queryId": "projectMapper",
+        "keyColumn": "empId",
+        "tableColumns": [
+            { "key": "deptNm", "value": "제품명" },
+            { "key": "outordEmpId", "value": "성명" , "width": "100"},
+            { "key": "bgtMngOdr", "value": "차수" , "width": "100"},
+            { "key": "expectMm", "value": "배정" , "width": "100"},
+            { "key": "excnMm", "value": "누적사용" , "width": "100"},
+            { "key": "a", "value": "가용" , "width": "80"},
+            { "key": "totMd", "value": "청구금액" , "width": "120"},
+            { "key": "b", "value": "기안문서" , "width": "120"},
+            { "key": "empId", "value": "상태" , "width": "140", "button": "승인목록"}
+        ]
+    }
+
+}

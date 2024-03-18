@@ -18,14 +18,20 @@ const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }
     };
     runOrder();
   }, []);
+
   
   const GeneralBudgetDtl = async () => {
+    const copyCtrtYmd = JSON.parse(JSON.stringify(ctrtYmd));
+    const copyBizEndYmd = JSON.parse(JSON.stringify(bizEndYmd));
+    const ctrtYmdPrarm = copyCtrtYmd.replace(/-(\d{2})-\d{2}/, '$1');
+    const bizEndYmdPrarm = copyBizEndYmd.replace(/-(\d{2})-\d{2}/, '$1');
+
     const param = [
       { tbNm: "EXPENS_MNBY_PRMPC_DTLS" },
       { prjctId: prjctId,
         bgtMngOdr: bgtMngOdrTobe,
         expensCd: "VTW04501&VTW04527",
-        // useYm : ctrtYmd+"&"+bizEndYmd,  //TODO. 사업시작일, 사업종료일 BETWEEN 조건으로 넣어야함. 
+        useYm : ctrtYmdPrarm+"&"+bizEndYmdPrarm,  
       }, 
     ];
 
@@ -40,7 +46,6 @@ const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }
       return acc;
     }, {});
     
-
   } catch (error) {
     console.error(error);
   }

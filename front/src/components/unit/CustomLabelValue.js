@@ -2,7 +2,7 @@ import { TextBox } from "devextreme-react/text-box";
 import CustomComboBox from "./CustomComboBox";
 import { useEffect } from "react";
 import { NumberBox } from "devextreme-react";
-import CustomDatePicker from "./CustomDatePicker";
+import { DateBox } from "devextreme-react/date-box";
 import { Validator, RequiredRule, } from "devextreme-react/validator";
 
 const CustomLabelValue = ({props, onSelect, value, readOnly}) => {
@@ -60,16 +60,21 @@ const CustomLabelValue = ({props, onSelect, value, readOnly}) => {
             )
         } else if (props.type === "DateBox") {
             result.push(
-                <CustomDatePicker
+                <DateBox 
                     key={props.name}
-                    label={props.label}
-                    placeholder={placeholder}
                     value={value}
-                    name={props.name}
+                    placeholder={props.placeholder}
+                    dateSerializationFormat="yyyyMMdd"
+                    displayFormat="yyyy-MM-dd"
+                    type="date"
+                    onValueChanged={(e) => {
+                        onSelect({name: props.name, value: e.value})
+                    }}
                     readOnly={readOnly}
-                    onSelect={onSelect}
-                    required={required}
-                />
+                >
+                    <Validator>{validate()}</Validator>
+                </DateBox>
+
             )
         }
         return result;

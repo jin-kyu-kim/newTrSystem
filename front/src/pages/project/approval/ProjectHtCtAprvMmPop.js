@@ -4,7 +4,6 @@ import Scheduler, { Resource } from 'devextreme-react/scheduler';
 
 const ProjectHrCtAprvMmPop = ({props, prjctNm, data}) => {
 
-    console.log(data)
     const currentDate = new Date();
 
     const showDetails = () => {

@@ -11,8 +11,14 @@
         { "key": "prjctMngrEmpId", "value": "PM", "width": 120, "alignment" : "left" },
         { "key": "ctmmnyNm", "value": "고객사", "width": 200, "alignment" : "left" },
         { "key": "ctrtYmd", "value": "시작일", "width": 120 },
-        { "key": "bizEndYmd", "value": "종료일", "width": 120 },
-        { "key": "prjctId", "value": "구분", "width": 200, "button": "시간비용청구현황"}
+        { "key": "bizEndYmd", "value": "종료일", "width": 120 , "button": { "text": "버튼1",
+                                                                            "name": "bizEndYmd"
+                                                                          }
+        },
+        { "key": "prjctId", "value": "구분", "width": 200, "button": { "text": "시간비용청구현황",
+                                                                       "name": "prjctId"
+                                                                     }
+        }
 	],
     "searchParams":
 	{

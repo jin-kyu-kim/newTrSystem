@@ -1,15 +1,11 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import  EmpTimeAprvListJson from "./EmpTimeAprvListJson.json";
+import ApiRequest from "../../utils/ApiRequest";
+import CustomTable from "components/unit/CustomTable";
+import SearchPrjctCostSet from "../../components/composite/SearchPrjctCostSet";
 
-import ProjectJson from "../manage/ProjectListJson.json";
-import ApiRequest from "../../../utils/ApiRequest";
-import SearchPrjctSet from "../../../components/composite/SearchPrjctSet";
-import CustomTable from "../../../components/unit/CustomTable";
-
-import "react-datepicker/dist/react-datepicker.css";
-import { useNavigate } from "react-router-dom";
-import { Button } from "devextreme-react";
-
-const ProjectList = () => {
+function EmpTimeAprvList() {
   const [values, setValues] = useState([]);
   const [param, setParam] = useState({});
 
@@ -18,9 +14,7 @@ const ProjectList = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
 
-  const navigate = useNavigate();
-
-  const { keyColumn, queryId, tableColumns, searchParams, popup } = ProjectJson;
+  const { keyColumn, queryId, tableColumns, searchParams } = EmpTimeAprvListJson;
 
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
@@ -50,24 +44,11 @@ const ProjectList = () => {
         setTotalItems(response[0].totalItems);
       } else {
         setTotalPages(1);
+        setTotalItems(0);
       }
     } catch (error) {
       console.log(error);
     }
-  };
-
-  const onRowClick = (e) => {
-
-    navigate("/project/ProjectDetail", 
-              {state: { prjctId: e.key
-                      , prjctNm: e.data.prjctNm
-                      , totBgt: e.data.totBgt
-                      , bgtMngOdr: e.data.bgtMngOdr
-                      , ctrtYmd: e.data.ctrtYmd
-                      , bizEndYmd: e.data.bizEndYmd
-                      , bgtMngOdrTobe: e.data.bgtMngOdrTobe 
-                      , bizSttsCd: e.data.bizSttsCd
-                      , deptId : e.data.deptId}})
   };
 
   return (
@@ -76,30 +57,25 @@ const ProjectList = () => {
         className="title p-1"
         style={{ marginTop: "20px", marginBottom: "10px" }}
       >
-        <h1 style={{ fontSize: "40px" }}>프로젝트 관리</h1>
+        <h1 style={{ fontSize: "40px" }}>근무시간 승인내역 조회</h1>
       </div>
       <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
-        <span>* 프로젝트를 조회합니다.</span>
+        <span>* 근무시간 승인내역을 조회합니다.</span>
       </div>
       <div style={{ marginBottom: "20px" }}>
-        <SearchPrjctSet
-          callBack={searchHandle}
-          props={searchParams}
-          popup={popup}
-        />
+      <SearchPrjctCostSet callBack={searchHandle} props={searchParams} />
       </div>
 
-      <div>검색된 건 수 : {totalItems} 건</div>
       <CustomTable
         keyColumn={keyColumn}
         pageSize={pageSize}
         columns={tableColumns}
         values={values}
-        onRowClick={onRowClick}
         paging={true}
       />
+      
     </div>
   );
 };
 
-export default ProjectList;
+export default EmpTimeAprvList;

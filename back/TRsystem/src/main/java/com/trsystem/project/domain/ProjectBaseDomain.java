@@ -225,7 +225,7 @@ public class ProjectBaseDomain {
      */
     public static List<Map<String, Object>> retrieveAprvrEmpId(Map<String, Object> params) {
     	
-    	String deptId;
+//    	String deptId;
     	
     	final String queryId = "projectMapper.retrieveAprvrEmpId";
     	
@@ -233,25 +233,11 @@ public class ProjectBaseDomain {
     	List<Map<String, Object>> aprvrEmpIdlist = new ArrayList<>();
     	Map<String, Object> queryIdMap = new HashMap<>();
     	queryIdMap.put("queryId", queryId);
+    	queryIdMap.put("deptId", params.get("deptId"));
     	
     	try {
-    		// 1. 나의 deptId를 찾는다. 
-    		List<Map<String, Object>> commonSelectParams = new ArrayList<>();
-    		
-    		Map<String, Object> tbNm = new HashMap<>();
-    		tbNm.put("tbNm", "DEPT_HNF");
-
-    		Map<String, Object> condition = new HashMap<>();
-    		condition.put("empId", params.get("empId"));
-    		
-    		commonSelectParams.add(tbNm);
-    		commonSelectParams.add(condition);
-    		
-    		deptId = (String) commonService.commonSelect(commonSelectParams).get(0).get("deptId");
-    		
-    		queryIdMap.put("deptId", deptId);
-    		
-    		// 2. deptId에 해당하는 계층쿼리를 조회한다.
+    		// 넘겨받은 deptId = 프로젝트가 속한 부서의 deptId.
+    		// deptId에 해당하는 계층쿼리를 조회한다.
     		aprvrEmpIdlist = commonService.queryIdSearch(queryIdMap);
     		
     	} catch (Exception e) {

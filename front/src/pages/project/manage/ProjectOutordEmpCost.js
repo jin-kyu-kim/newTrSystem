@@ -21,10 +21,17 @@ const ProjectOutordEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) =>
   }, []);
 
   const OutordEmpDtl = async () => {
+
+    const copyCtrtYmd = JSON.parse(JSON.stringify(ctrtYmd));
+    const copyBizEndYmd = JSON.parse(JSON.stringify(bizEndYmd));
+    const ctrtYmdPrarm = copyCtrtYmd.replace(/-(\d{2})-\d{2}/, '$1');
+    const bizEndYmdPrarm = copyBizEndYmd.replace(/-(\d{2})-\d{2}/, '$1');
+
     const param = [
       { tbNm: "OUTORD_LBRCO_PRMPC_DTL" },
       { prjctId: prjctId,
         bgtMngOdr: bgtMngOdrTobe,
+        inptYm : ctrtYmdPrarm+"&"+bizEndYmdPrarm,  
       }, 
     ];
 

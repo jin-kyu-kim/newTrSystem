@@ -9,18 +9,23 @@ const ProjectBaseInfo = ({prjctId}) => {
   const [picInfoData, setPicInfoData] = useState([]);
   const [CnsrtmData, setCnsrtmData] = useState([]);
 
-  //baseInfoData데이터    ----> //prjctId가(백단에서 불러오는 데이터가 or 보내는 파라미터가) 동일하다면 동일한 useEffect 2건은 삭제처리 가능.
+  /**
+   * 기본정보 데이터 세팅
+   * 담당자 정보 데이터 세팅
+   */
   useEffect(() => {
     const BaseInfoData = async () => {
-      const param = [ 
-        { tbNm: "PRJCT" }, 
-        { 
-         prjctId: prjctId, 
-        }, 
-     ]; 
+
+      const param = {
+        queryId: "projectMapper.retrievePrjctBsisInfo",
+        prjctId: prjctId
+      };
+
       try {
-        const response = await ApiRequest("/boot/common/commonSelect", param);
-        setBaseInfoData(response[0]);     
+        const response = await ApiRequest("/boot/common/queryIdSearch", param);
+        setBaseInfoData(response[0]);
+        setPicInfoData(response[0]);
+
       } catch (error) {
         console.error('Error fetching data', error);
       }
@@ -28,26 +33,9 @@ const ProjectBaseInfo = ({prjctId}) => {
     BaseInfoData();
   }, []);
 
-  //picInfoData 데이터
-  useEffect(() => {
-    const param = [ 
-      { tbNm: "PRJCT" }, 
-      { 
-       prjctId: prjctId, 
-      }, 
-   ]; 
-    const PicInfoData = async () => {
-      try {
-        const response = await ApiRequest("/boot/common/commonSelect", param);
-        setPicInfoData(response[0]);  
-      } catch (error) {
-        console.error('Error fetching data', error);
-      }
-    };
-    PicInfoData();
-  }, []);
-
-  //Cnsrtm 데이터 
+  /**
+   * 컨소시엄 데이터 세팅
+   */ 
   useEffect(() => {
     const param = [ 
       { tbNm: "PRJCT_CNSRTM" }, 
@@ -55,7 +43,7 @@ const ProjectBaseInfo = ({prjctId}) => {
        prjctId: prjctId, 
       }, 
    ];  
-    const Cnsrtm = async () => {  //TODO. 컨소시엄 갯수많큼 테이블 증가해야함.
+    const Cnsrtm = async () => {  
       try {
         const response = await ApiRequest("/boot/common/commonSelect", param);
         setCnsrtmData(response);  
