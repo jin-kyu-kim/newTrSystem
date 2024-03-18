@@ -180,8 +180,8 @@ const TreRoutes = [
   // 재무 관리 > 프로젝트비용청구현황 상세조회
   {
     path: "/fnnrMng/ProjectClaimCostDetail",
-    name: "ProjectCostClaimDetail",
-    element: React.lazy(() => import("../pages/fnnrMng/prjctCtClm/ProjectCostClaimDetail")),
+    name: "ProjectClaimCostDetail",
+    element: React.lazy(() => import("../pages/fnnrMng/ProjectClaimCostDetail")),
   },
   // 개인청구 > 근무시간
   {

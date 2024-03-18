@@ -5,8 +5,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
 
   const gridRows = () => {
     const result = [];
-    for (let i = 0; i < columns.length; i++) 
-      
+    for (let i = 0; i < columns.length; i++) {
       const { key, value, width, alignment, button, visible, toggle, subColumns } = columns[i];
 
       if (button) {
@@ -44,7 +43,6 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
                   caption={value}
                   width={width}
                   alignment={alignment || 'center'}>
-                  {editRow && <RequiredRule message="필수 입력 항목입니다" />}
                 </Column>
               );
 
