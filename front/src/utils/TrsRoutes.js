@@ -155,6 +155,27 @@ const TreRoutes = [
   },
   // 재무 관리 > 프로젝트비용청구현황 상세조회
   {
+    path: "/fnnrMng/prjctCtClm/ProjectCostClaimDetail",
+    name: "ProjectCostClaimDetail",
+    element: React.lazy(() => import("../pages/fnnrMng/prjctCtClm/ProjectCostClaimDetail")),
+  },
+  // 개인청구 > 근무시간
+  {
+    path: "/indvdlClm/EmpWorkTime",
+    name: "EmpWorkTime",
+    element: React.lazy(() => import("../pages/indvdlClm/EmpWorkTime")),
+  },
+  // 개인청구 > 휴가
+  {
+    path: "/indvdlClm/EmpVacation",
+    name: "EmpVacation",
+    element: React.lazy(() => import("../pages/indvdlClm/EmpVacation")),
+  },
+   // 재무 관리 > 근무시간비용 입력현황
+   {
+    path: "/fnnrMng/TimeExpenseInsertSttus",
+    name: "TimeExpenseInsertSttus",
+    element: React.lazy(() => import("../pages/fnnrMng/TimeExpenseInsertSttus")),
     path: "/fnnrMng/prjctCtClm/ProjectClaimCostDetail",
     name: "ProjectClaimCostDetail",
     element: React.lazy(() => import("../pages/fnnrMng/prjctCtClm/ProjectClaimCostDetail")),
@@ -165,6 +186,7 @@ const TreRoutes = [
     name: "CultureHealthCost",
     element: React.lazy(() => import("../pages/indvdlClm/CultureHealthCost")),
   }
+
 ];
 
 export default TreRoutes;

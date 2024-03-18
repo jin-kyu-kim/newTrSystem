@@ -11,7 +11,8 @@
         { "key": "empno", "value": "사번", "width": 100, "alignment" : "center" },
         { "key": "empFlnm", "value": "성명"},
         { "key": "jbpsNm", "value": "직위"},
-        { "key": "deptId", "value": "소속"}
+        { "key": "deptId", "value": "소속"},
+        { "key": "empId", "value": "", "width": 120, "button": "초기화","alignment" : "center", "icon" : "back"}
     ],
 	"ejhQueryId": "infoInqMapper.retrieveEmpJbpsHist",
     "ejhKeyColumn": "empId",

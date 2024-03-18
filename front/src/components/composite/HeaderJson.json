@@ -42,7 +42,7 @@
       {
         "id": 1,
         "title": "근무시간",
-        "link": "/"
+        "link": "indvdlClm/EmpWorkTime"
       },
       {
         "id": 2,
@@ -52,7 +52,7 @@
       {
         "id": 3,
         "title": "휴가",
-        "link": "/"
+        "link": "indvdlClm/EmpVacation"
       },
       {
         "id": 4,
@@ -165,7 +165,7 @@
       {
         "id": 6,
         "title": "근무시간비용입력현황",
-        "link": "/"
+        "link": "/fnnrMng/TimeExpenseInsertSttus"
       },
       {
         "id": 7,
