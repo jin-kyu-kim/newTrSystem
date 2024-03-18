@@ -10,7 +10,7 @@ import NoticeJson from "../infoInq/NoticeJson.json";
 import BoardInputForm from 'components/composite/BoardInputForm';
 import moment from 'moment';
 
-const NoticeInput = () => {
+const ReferenceInput = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [cookies] = useCookies(["userInfo", "userAuth"]);
@@ -40,7 +40,9 @@ const NoticeInput = () => {
         try {
             const response = await ApiRequest("/boot/common/queryIdSearch", param);
             if (response.length !== 0) {
-                setData(response[0]);
+                const { atchmnflSn, strgFileNm, realFileNm, ...resData } = response[0];
+                console.log('...resData', {...resData})
+                setData({ ...resData });
                 const tmpFileList = response.map((data) => ({
                     realFileNm: data.realFileNm,
                     strgFileNm: data.strgFileNm,
@@ -59,21 +61,21 @@ const NoticeInput = () => {
     }, []);
 
     const [typeChk, setTypeChk] = useState({
-        imprtnc: data.imprtncNtcBgngYmd ? true : false,
+        imprtnc: data.imprtncNtcBgngYmd !== undefined ? true : false,
         useYn: data.useYn === "Y" ? true : false,
         move: false,
     });
 
     const chkSgnalOrdr = () => {
-        let sgnalOrdr = 0;
+        let sgnalOrdr = 2;
         let useYn = "Y";
-        
+
         if (typeChk.imprtnc && typeChk.move) {
-            sgnalOrdr = 3
-        } else if (typeChk.move) {
-            sgnalOrdr = 2
-        } else if (typeChk.imprtnc) {
             sgnalOrdr = 1
+        } else if (typeChk.move) {
+            sgnalOrdr = 0
+        } else if (typeChk.imprtnc) {
+            sgnalOrdr = 3
         }
         if (!typeChk.useYn) useYn = "N"
         setData({ ...data, sgnalOrdr: sgnalOrdr, useYn: useYn });
@@ -82,13 +84,15 @@ const NoticeInput = () => {
     useEffect(() => {
         if (typeChk.imprtnc || typeChk.move || typeChk.useYn) chkSgnalOrdr();
     }, [typeChk.imprtnc, typeChk.move, typeChk.useYn])
-
+    
     const attachFileDelete = (deleteItem) => {
         setDeleteFiles([...deleteFiles, { atchmnflSn: deleteItem.atchmnflSn }]);
         setNewAttachments(newAttachments.filter(item => item !== deleteItem));
     }
 
     const storeNotice = async (editMode) => {
+        console.log('delete파일 배열: ',deleteFiles)
+        
         if(editMode === 'update'){
             setData({
                 ...data,
@@ -97,18 +101,19 @@ const NoticeInput = () => {
                 mdfcnDt: date.format('YYYY-MM-DD HH:mm:ss')
             })
         }
+        console.log('data전체',data)
+        console.log('attachments',attachments)
+        
         const formData = new FormData();
         formData.append("tbNm", "NOTICE");
         formData.append("data", JSON.stringify(data)); 
-        Object.values(deleteFiles)
-            .forEach((deleteFiles) => formData.append("deleteFiles", JSON.stringify(deleteFiles)));
         Object.values(attachments)
             .forEach((attachment) => formData.append("attachments", attachment));
         try {
             const response = await axios.post(insertUrl, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             })
-            if (response.data >= 0) navigate("/infoInq/NoticeList")
+            if (response.data >= 0) navigate("/infoInq/ReferenceList")
         } catch (error) {
             console.error("API 요청 에러:", error);
         }
@@ -118,8 +123,8 @@ const NoticeInput = () => {
         <div className="container">
             <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }}></div>
             <div className="col-md-10 mx-auto" style={{ marginBottom: "30px" }}>
-                <h1 style={{ fontSize: "40px" }}>공지사항</h1>
-                <span>* 공지사항을 {editMode === 'update' ? '수정합니다' : '입력합니다.'}</span>
+                <h1 style={{ fontSize: "40px" }}>자료실</h1>
+                <span>* 자료실을 {editMode === 'update' ? '수정합니다' : '입력합니다.'}</span>
             </div>
             <BoardInputForm
                 edit={edit}
@@ -135,10 +140,10 @@ const NoticeInput = () => {
                 setNewAttachments={setNewAttachments}
             />
             <div className="wrap_btns inputFormBtn">
-                <Button text="목록" onClick={() => navigate("/infoInq/NoticeList")} />
+                <Button text="목록" onClick={() => navigate("/infoInq/ReferenceList")} />
                 <Button text="저장" useSubmitBehavior={true} onClick={onClick} />
             </div>
         </div>
     );
 };
-export default NoticeInput;
+export default ReferenceInput;

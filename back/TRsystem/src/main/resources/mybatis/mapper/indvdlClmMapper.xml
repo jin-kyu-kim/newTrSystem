@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.trsystem.mybatis.mapper.indvdlClmMapper">
+
+    <!-- 휴가목록조회 -->
+    <select id="retrieveVcatnListInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            EMP.EMP_ID						/* 직원ID */
+            ,EMP.EMP_FLNM					/* 직원명 */
+            ,VCATN.VCATN_TY_CD				/* 휴가유형코드 */
+            ,(SELECT CD_NM FROM CD WHERE CD_VALUE = VCATN.VCATN_TY_CD)	VCATN_TY_NM					/* 휴가유형코드명 */
+            ,VCATN.VCATN_BGNG_YMD			/* 휴가시작일자 */
+            ,VCATN.VCATN_END_YMD			/* 휴가종료일자 */
+            ,VCATN.VCATN_DE_CNT				/* 휴가일수 */
+            ,VCATN.VCATN_PRVONSH			/* 휴가사유 */
+            ,ELCTRN.ATRZ_DMND_STTS_CD		/* 결재요청상태코드 */
+            ,(SELECT CD_NM FROM CD WHERE CD_VALUE = ELCTRN.ATRZ_DMND_STTS_CD)	ATRZ_DMND_STTS_NM	/* 결재요청상태코드명 */
+            ,ELCTRN.ELCTRN_ATRZ_ID		    /* 전자결재ID */
+            ,VCATN.ATCHMNFL_ID				/* 첨부파일ID */
+        FROM VCATN_ATRZ		VCATN
+            ,ELCTRN_ATRZ	ELCTRN
+            ,EMP 			EMP
+        WHERE VCATN.ELCTRN_ATRZ_ID = ELCTRN.ELCTRN_ATRZ_ID
+        AND ELCTRN.ATRZ_DMND_EMP_ID = EMP.EMP_ID
+        <if test="empId !=null and !empId.equals('')">
+            AND EMP.EMP_ID = #{empId}
+        </if>
+        <if test="searchYear !=null and !searchYear.equals('')">
+            AND VCATN_BGNG_YMD BETWEEN STR_TO_DATE(CONCAT(#{searchYear}, '0401'), '%Y%m%d') AND STR_TO_DATE(CONCAT(#{searchYear} + 1, '0331'), '%Y%m%d')
+        </if>
+        ORDER BY VCATN.VCATN_BGNG_YMD DESC
+    </select>
+
+
+    <!-- 휴가정보조회 -->
+    <select id="retrieveVcatnInfoInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            EMP.EMP_ID						/* 직원ID */
+            ,EMP.EMP_FLNM					/* 직원명 */
+            ,VMNG.VCATN_YR 					/* 휴가연도 */
+            ,VMNG.VCATN_ALTMNT_DAYCNT 		/* 휴가배정일수 */
+            ,VMNG.USE_DAYCNT 				/* 사용일수 */
+            ,VMNG.VCATN_REMNDR_DAYCNT 		/* 휴가잔여일수 */
+            ,VMNG.NEW_VCATN_ALTMNT_DAYCNT 	/* 신규휴가배정일수 */
+            ,VMNG.NEW_USE_DAYCNT 			/* 신규사용일수 */
+            ,VMNG.NEW_REMNDR_DAYCNT 		/* 신규잔여일수 */
+            ,VMNG.PBLEN_VCATN_USE_DAYCNT 	/* 공적휴가사용일수 */
+            ,VMNG.ALTMNT_BGNG_YMD 			/* 배정시작일자 */
+            ,VMNG.ALTMNT_USE_END_YMD 		/* 배정사용종료일자 */
+        FROM VCATN_MNG 	VMNG
+            ,EMP 		EMP
+        WHERE VMNG.EMP_ID = EMP.EMP_ID
+        <if test="empId !=null and !empId.equals('')">
+            AND EMP.EMP_ID = #{empId}
+        </if>
+        <if test="searchYear !=null and !searchYear.equals('')">
+            AND VMNG.VCATN_YR = #{searchYear}
+        </if>
+    </select>
+
+</mapper>
