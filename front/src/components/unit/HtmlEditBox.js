@@ -2,7 +2,7 @@ import React from "react";
 import HtmlEditor, { Toolbar, MediaResizing, ImageUpload, Item } from "devextreme-react/html-editor";
 import { Validator, RequiredRule } from 'devextreme-react/validator'
 
-const HtmlEditBox = ({ column, data, setData, placeholder }) => {
+const HtmlEditBox = ({ column, data, setData, placeholder, value }) => {
 
   return (
     <div>
@@ -10,7 +10,7 @@ const HtmlEditBox = ({ column, data, setData, placeholder }) => {
         height="725px"
         id={column.dataField}
         placeholder={placeholder}
-        focusStateEnabled={true}
+        value={value}
         onValueChanged={(e) => {
           setData({ ...data, [column.dataField]: e.value });
         }}

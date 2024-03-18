@@ -7,13 +7,13 @@ import CustomLabelValue from "components/unit/CustomLabelValue";
 import ApiRequest from "utils/ApiRequest";
 import { left, right } from "@popperjs/core";
 
-const EmpRegist = ({empInfo, read}) => {
-  const {labelValue} = EmpRegistJson;
-  const [readOnly, setReadOnly] = useState(read);
+const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
+  const {labelValue,empDetailqueryId} = EmpRegistJson;
   const [empMax,setEmpMax] =useState({});
   const [param, setParam] = useState([]);
   const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
   const empId = cookies.userInfo.empId;
+  const query =(empDetailqueryId);
   const [data, setData] = useState({
          empId : "",
          empno : "",
@@ -89,7 +89,7 @@ const EmpRegist = ({empInfo, read}) => {
   //커스텀라벨 초기화버튼 
   const onReset = () =>{
     setData({});
-    setReadOnly(false);
+    callBackR();
   }
   //기초정보 저장 
   const onClick = (e) => {
@@ -148,6 +148,7 @@ const EmpRegist = ({empInfo, read}) => {
           alert("저장되었습니다."); 
           onReset();
           console.log(data);
+          callBack(query);
         }
     } catch (error) {
       console.error("Error fetching data", error);
@@ -180,6 +181,7 @@ const EmpRegist = ({empInfo, read}) => {
         if (response > 0) {
           alert("저장되었습니다."); 
           setData({});
+          callBack(query);
           console.log(data);
         }
     } catch (error) {
