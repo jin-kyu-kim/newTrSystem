@@ -152,6 +152,18 @@ const TreRoutes = [
     path: "/fnnrMng/prjctCtClm/ProjectCostClaimDetail",
     name: "ProjectCostClaimDetail",
     element: React.lazy(() => import("../pages/fnnrMng/prjctCtClm/ProjectCostClaimDetail")),
+  },
+  // 개인청구 > 근무시간
+  {
+    path: "/indvdlClm/EmpWorkTime",
+    name: "EmpWorkTime",
+    element: React.lazy(() => import("../pages/indvdlClm/EmpWorkTime")),
+  },
+  // 개인청구 > 휴가
+  {
+    path: "/indvdlClm/EmpVacation",
+    name: "EmpVacation",
+    element: React.lazy(() => import("../pages/indvdlClm/EmpVacation")),
   }
 ];
 
