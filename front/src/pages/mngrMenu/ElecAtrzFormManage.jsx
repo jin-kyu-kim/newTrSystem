@@ -4,10 +4,12 @@ import Grid from './ElecAtrzFormManageGrid';
 import CustomStore from 'devextreme/data/custom_store';
 import Form, { Item, GroupItem, Label, FormTypes } from 'devextreme-react/form';
 import { Switch } from 'devextreme-react/switch';
+import { useNavigate } from 'react-router-dom';
 
 const ElecAtrzFormManage = ({}) => {
 
     const [test, setTest] = useState([]);
+    const navigate = useNavigate();
 
     const tasksStore = new CustomStore({
     load:() => { 
@@ -52,7 +54,7 @@ return (
             <p> * 서식이 있는 자리에는 변경 할 수 없습니다. 서식을 다른곳으로 옮긴 후 작업해주세요.</p>
         </div>
         <div style={{margin:'20px'}} className="buttons" align="right">
-            <Button text="Contained" type="success" stylingMode="contained">신규 서식 작성</Button>
+            <Button text="Contained" type="success" stylingMode="contained" onClick={(e)=>{navigate("/mngrMenu/ElecAtrzNewForm")}}>신규 서식 작성</Button>
             <Button text="Contained" type="default" stylingMode="contained">서식 위치 저장</Button>
         </div>
 
