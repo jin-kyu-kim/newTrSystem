@@ -4,7 +4,7 @@ import { Box, Item } from "devextreme-react/box";
 import { Button } from "devextreme-react/button";
 import CustomComboBox from "components/unit/CustomComboBox";
 
-const SearchPrjctCostSet = ({ callBack, props, excelDownload }) => {
+const SearchPrjctCostSet = ({ callBack, props }) => {
     const [initParams, setInitParams] = useState([]);
     const [yearData, setYearData] = useState([]);
     const [monthData, setMonthData] = useState([]);
@@ -92,25 +92,25 @@ const SearchPrjctCostSet = ({ callBack, props, excelDownload }) => {
                 <Item visible={props.yearItem} ratio={0} baseSize={"120"}>
                     <SelectBox 
                         dataSource={yearData}
-                        name="yearItem"
+                        name="year"
                         displayExpr={"value"}
                         valueExpr={"value"}
                         onValueChanged={(e) => handleChgState({name: e.component.option("name"), value: e.value })}
                         placeholder="[연도]"
                         style={{margin: "0px 5px 0px 5px"}}
-                        value={initParams.yearItem}
+                        value={initParams.year}
                     />
                 </Item>
                 <Item visible={props.monthItem} ratio={0} baseSize={"120"}>
                     <SelectBox
                         dataSource={monthData}
-                        name="monthItem"
+                        name="month"
                         displayExpr={"value"}
                         valueExpr={"value"}
                         onValueChanged={(e) => handleChgState({name: e.component.option("name"), value: e.value })}
                         placeholder="[월]"
                         style={{margin: "0px 5px 0px 5px"}}
-                        value={initParams.monthItem}
+                        value={initParams.month}
                     />
                 </Item>
                 <Item visible={props.aplyOdr} ratio={0} baseSize={"120"}>
@@ -128,11 +128,8 @@ const SearchPrjctCostSet = ({ callBack, props, excelDownload }) => {
                 <Item visible={props.empNm} ratio={0} baseSize={"150"}>
                     <CustomComboBox props={empList} onSelect={handleChgState} placeholder="기안자성명" value={initParams.empId}/>
                 </Item>
-                <Item visible={props.searchBtn} ratio={0} baseSize={"100"}>
+                <Item visible={props.searchBtn} ratio={0} baseSize={"50"}>
                     <Button text="검색" onClick={btnClick}/>
-                </Item>
-                <Item visible={props.excelDownloadBtn} ratio={0} baseSize={"150"}>
-                    <Button text="엑셀다운로드" onClick={excelDownload}/>
                 </Item>
             </Box>
         </div>

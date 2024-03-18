@@ -140,12 +140,12 @@
       {
         "id": 1,
         "title": "프로젝트비용청구현황",
-        "link": "/fnnrMng/prjctCtClm/ProjectClaimCost"
+        "link": "/fnnrMng/ProjectClaimCost"
       },
       {
         "id": 2,
         "title": "근무시간승인내역",
-        "link": "/"
+        "link": "/fnnrMng/EmpTimeAprvList"
       },
       {
         "id": 3,
@@ -155,7 +155,7 @@
       {
         "id": 4,
         "title": "근무시간,경비통합",
-        "link": "/"
+        "link": "/fnnrMng/EmpTRCostTotal"
       },
       {
         "id": 5,
