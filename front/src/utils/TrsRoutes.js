@@ -164,7 +164,14 @@ const TreRoutes = [
     path: "/indvdlClm/EmpVacation",
     name: "EmpVacation",
     element: React.lazy(() => import("../pages/indvdlClm/EmpVacation")),
+  },
+   // 재무 관리 > 근무시간비용 입력현황
+   {
+    path: "/fnnrMng/TimeExpenseInsertSttus",
+    name: "TimeExpenseInsertSttus",
+    element: React.lazy(() => import("../pages/fnnrMng/TimeExpenseInsertSttus")),
   }
+
 ];
 
 export default TreRoutes;

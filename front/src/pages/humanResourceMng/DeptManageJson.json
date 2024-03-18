@@ -8,7 +8,7 @@
     {
         "width": "50%",
         "height": "auto",
-        "title":  "신규부서 등록"
+        "title":  "부서 등록"
     },
 	"listQueryId": "humanResourceMngMapper.retrieveDeptList",
     "listKeyColumn": "deptId",

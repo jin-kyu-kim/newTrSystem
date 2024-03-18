@@ -1,22 +1,33 @@
-import { useMemo, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import uuid from "react-uuid";
 import EmpRegistJson from "./EmpRegistJson.json";
 import Button from "devextreme-react/button";
-import CustomCdComboBox from "../../components/unit/CustomCdComboBox";
 import { useCookies } from "react-cookie";
 import CustomLabelValue from "components/unit/CustomLabelValue";
 import ApiRequest from "utils/ApiRequest";
 import { left, right } from "@popperjs/core";
 
-const EmpRegist = ({ onHide,empInfo, empno, isNew , read}) => {
-  const {labelValue} = EmpRegistJson;
-  //const [readOnly, setReadOnly] = useState(true);
+const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
+  const {labelValue,empDetailqueryId} = EmpRegistJson;
   const [empMax,setEmpMax] =useState({});
-  const [data, setData] = useState([]);
   const [param, setParam] = useState([]);
   const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
   const empId = cookies.userInfo.empId;
-  
+  const query =(empDetailqueryId);
+  const [data, setData] = useState({
+         empId : "",
+         empno : "",
+         actno : "",
+         bankCd : "",
+         empTyCd : "",
+         eml : "",
+         empFlnm : "",
+         hdofSttsCd : "",
+         jbpsCd : "",
+         telno : "",
+         regEmpId : "",
+         regDt: "",
+                                  });
   //========================= 직원 기초정보 화면 스타일
   const popupContentInnerStyle = {
     overflow:"hidden",
@@ -45,41 +56,16 @@ const EmpRegist = ({ onHide,empInfo, empno, isNew , read}) => {
     flexDirection: "column",
   };
 
-  //==============================deptId 파라미터에 변경이 있을 때 실행되는 함수
-  useEffect(() => {
-    const date = new Date();
-    const now =  date.toISOString().split("T")[0] +" " +date.toTimeString().split(" ")[0];
-
-    if(empno === undefined && isNew){
-        setData({
-        ...data,
-        deptId: uuid(),
-        endYn: "N",
-        regEmpId : empId,
-        regDt: now,
-      });
-    } else if(empno !=null && !isNew){
-        // deptInfoHandle();
-        console.log("확인용1 ",empno)
-        console.log("확인용2 ",empInfo);
-      //setData(deptInfo);
-    }
-  }, [empno]);
-  
   //=================empInfo 값이 변경되고 나서 setData함수가 실행되게 하는 useEffect
   useEffect(() => {
-    if (empInfo.empno !== undefined) {
-      setData(empInfo);    
+   
+    if (empInfo.empId !== undefined) {
+      setData(empInfo);
+      console.log("ㅎㅇㅎㅇ",data)
     }
-    
-  }, [empInfo.empno]);
+  }, [empInfo]);
 
-  useEffect(() => {
-    console.log("DDDDDDD : ", data);
-    
-  }, [data]);
-
-  //input박스 데이터 변경시 data에 새로 저장됨
+  //=================input박스 데이터 변경시 data에 새로 저장됨
   const handleChgState = ({ name, value }) => {
     //if(!readOnly) {
     if(name === "jbpsCd"){
@@ -103,18 +89,17 @@ const EmpRegist = ({ onHide,empInfo, empno, isNew , read}) => {
   //커스텀라벨 초기화버튼 
   const onReset = () =>{
     setData({});
-    console.log("data값입니다", data);
+    callBackR();
   }
   //기초정보 저장 
-  const onClick = () => {
-
+  const onClick = (e) => {
+    //e.preventDefault();
     const isconfirm = window.confirm("기초정보를 저장 하시겠습니까?"); 
     if (isconfirm) {
-      if(data.empno !== undefined && data.empno !== ''){
+      if(data.empId !== undefined && data.empId !== ''){
         updateEmp();
       }else{ 
         empnoHandle(); //조회하러 이동
-        //insertEmp();
       }       
     } else{
       return;
@@ -125,9 +110,7 @@ const EmpRegist = ({ onHide,empInfo, empno, isNew , read}) => {
   const empnoHandle = async () => {
     try {
       const response = await ApiRequest("/boot/common/queryIdSearch", param);
-      setEmpMax(response[0].empnoChk);
-      console.log("이거 어??",response[0].empnoChk)
-      
+      setEmpMax(response[0].empnoChk);    
     } catch (error) {
       console.log(error);
     }
@@ -136,8 +119,8 @@ const EmpRegist = ({ onHide,empInfo, empno, isNew , read}) => {
     if(empMax !== undefined || empMax !== "" || empMax !== null){
       insertEmp();
     }
-
   }, [empMax]);
+
 //================기초정보 등록
   const insertEmp = async () => {
     const date = new Date();
@@ -161,12 +144,11 @@ const EmpRegist = ({ onHide,empInfo, empno, isNew , read}) => {
   ]
     try {
       const response = await ApiRequest("/boot/common/commonInsert", param);
-      console.log(response);
-
         if (response > 0) {
           alert("저장되었습니다."); 
-          setData({});
+          onReset();
           console.log(data);
+          callBack(query);
         }
     } catch (error) {
       console.error("Error fetching data", error);
@@ -174,8 +156,7 @@ const EmpRegist = ({ onHide,empInfo, empno, isNew , read}) => {
   };
   //================기초정보 업데이트
   const updateEmp = async () => {
-    console.log("update입니다.")
-    console.log(data);
+
     const date = new Date();
     const now =  date.toISOString().split("T")[0] +" " +date.toTimeString().split(" ")[0];
     const param =[
@@ -197,14 +178,12 @@ const EmpRegist = ({ onHide,empInfo, empno, isNew , read}) => {
   ]
     try {
       const response = await ApiRequest("/boot/common/commonUpdate", param);
-      console.log(response);
-
         if (response > 0) {
           alert("저장되었습니다."); 
           setData({});
+          callBack(query);
           console.log(data);
         }
-
     } catch (error) {
       console.error("Error fetching data", error);
     }
@@ -213,8 +192,8 @@ const EmpRegist = ({ onHide,empInfo, empno, isNew , read}) => {
 //화면그리는구간//
   return (
     <div className="popup-content" >
-
         <div className="dept-regist-content-inner" style={popupContentInnerStyle}>
+        <form onSubmit={onClick}>
           <div className="dx-fieldset">
           <div className="empDetailLeft" style={empDetailLeftStyle}>
           <CustomLabelValue props={labelValue.empFlnm} onSelect={handleChgState} value={data.empFlnm} readOnly={read}/>
@@ -228,8 +207,8 @@ const EmpRegist = ({ onHide,empInfo, empno, isNew , read}) => {
           <CustomLabelValue props={labelValue.actno} onSelect={handleChgState} value={data.actno} />          
           </div>
           </div>
+          </form>
         </div>
-
       <div className="buttonContainer" style={buttonContainerStyle}>
           <Button style={buttonStyle} onClick={onReset} >직원신규입력</Button>
           <Button style={buttonStyle} onClick={onClick} >기초정보 저장</Button>
