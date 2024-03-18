@@ -7,7 +7,6 @@ import { Button } from "devextreme-react";
 import Box, { Item } from "devextreme-react/box"
 import CustomTable from "components/unit/CustomTable";
 import CustomCdComboBox from "components/unit/CustomCdComboBox";
-import AutoCompleteName from "components/unit/AutoCompleteName"
 import CustomEmpComboBox from "components/unit/CustomEmpComboBox"
 import ApiRequest from "../../utils/ApiRequest";
 import EmpVcatnAltmntMngJson from "../humanResourceMng/EmpVcatnAltmntMng.json"
@@ -298,7 +297,7 @@ const EmpVcatnAltmntMng = () => {
                             keyColumn={listKeyColumn}
                             columns={listTableColumns}
                             values={selectEmpVacValue}
-                            onRowDblClick={onRowDblClick}
+                            onRowClick={onRowDblClick}
                         // onBtnClick={onLinkedVac}
                         // noDataText="조회된 데이터가 없습니다."
                         />

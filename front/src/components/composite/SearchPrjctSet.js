@@ -3,13 +3,13 @@ import React, { useState, useEffect } from "react";
 import TextBox from "devextreme-react/text-box";
 import Box, {Item} from "devextreme-react/box"
 import { Button } from "devextreme-react/button";
+import { Popup } from "devextreme-react/popup";
 
 import CustomDateRangeBox from "../unit/CustomDateRangeBox";
 import CustomCdComboBox from "../unit/CustomCdComboBox";
 import AutoCompleteProject from "../unit/AutoCompleteProject";
 
 import ProjectRegist from "../../pages/project/manage/ProjectRegist";
-import CustomPopup from "../unit/CustomPopup"
 
 const SearchPrjctSet = ({ callBack, props, popup }) => {
   const [initParam, setInitParam] = useState({
@@ -128,6 +128,17 @@ const SearchPrjctSet = ({ callBack, props, popup }) => {
             onValueChanged={(e) => handleChgState({ name: e.component.option('name'), value: e.value })}
           />
         </Item>
+        {props.atrzSttsCdItem &&
+          <Item className="atrzSttsCdItem" ratio={1}>
+            <CustomCdComboBox
+              param="VTW008"
+              placeholderText="[상태]"
+              name="atrzSttsCd"
+              onSelect={handleChgState}
+              value={initParam.atrzSttsCd}
+            />
+          </Item>
+        }
         <Item className="bizFlfmtTyCdItem" ratio={1} visible={props.bizFlfmtTyCdItem}>
           <CustomCdComboBox
             param="VTW004"
@@ -153,9 +164,16 @@ const SearchPrjctSet = ({ callBack, props, popup }) => {
         </Item>
       </Box>
       {popup ?
-        <CustomPopup props={popup} visible={popupVisible} handleClose={handleClose}>
-          <ProjectRegist onHide={onHide}/> 
-        </CustomPopup>
+        <Popup
+          width={popup.width}
+          height={popup.height}
+          visible={popupVisible} 
+          onHiding={handleClose}
+          showCloseButton={true}
+          title={popup.title}
+        >
+          <ProjectRegist onHide={onHide} revise={false}/> 
+        </Popup>
         : <></>
       }
     </div>

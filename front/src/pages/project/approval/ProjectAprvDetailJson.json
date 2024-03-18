@@ -4,22 +4,26 @@
       {
         "TabName": "기본정보",
         "tabId": "ProjectBaseInfo",
-        "url": "manage/ProjectBaseInfo"
+        "url": "manage/ProjectBaseInfo",
+        "index": 0
       },
       {
         "TabName": "실행원가계산서",
         "tabId": "ProjectCostCalc",
-        "url": "manage/ProjectCostCalc"
+        "url": "manage/ProjectCostCalc",
+        "index": 1
       },
       {
         "TabName": "실행원가집행현황",
         "tabId": "ProjectCostTabs",
-        "url": "manage/ProjectCostTabs"
+        "url": "manage/ProjectCostTabs",
+        "index": 2
       },
       {
         "TabName": "결재정보",
         "tabId": "ProjectAtrzInfo",
-        "url": "manage/ProjectAtrzInfo"
+        "url": "manage/ProjectAtrzInfo",
+        "index": 3
       }
     ],
   "aprvPopup": {

@@ -1,6 +1,7 @@
 {
     "menuName": "DeptManage",
     "deptDetailqueryId":"humanResourceMngMapper.getDeptDetail",
+    "backQueryId": "humanResourceMngMapper.retrieveDeptList",
     "labelValue" : {
         "deptNm": {
             "name": "deptNm",

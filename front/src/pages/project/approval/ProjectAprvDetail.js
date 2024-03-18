@@ -3,15 +3,11 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { TabPanel } from "devextreme-react";
 import Button from "devextreme-react/button";
 import { useCookies } from "react-cookie";
-import DataGrid, { Column} from "devextreme-react/data-grid";
-
+import Popup from "devextreme-react/popup";
 
 import ApiRequest from "utils/ApiRequest";
 import ProjectAprvDetailJson from "./ProjectAprvDetailJson.json";
-import LinkButton from "components/unit/LinkButton";
-import CustomPopup from "../../../components/unit/CustomPopup";
 import TextArea from "devextreme-react/text-area";
-import { set } from "date-fns";
 
 const ProjectAprvDetail = () => {
 
@@ -33,10 +29,6 @@ const ProjectAprvDetail = () => {
     const [opnnCn, setOpnnCn] = useState("");
     const [data, setData] = useState([]);
     const [btnVisible, setBtnVisible] = useState(false);
-
-    const dataS = ProjectAprvDetail.dataSource;
-
-    console.log(bgtMngOdr)
 
     useEffect(() => {
         console.log(aprvrEmpId)
@@ -461,7 +453,7 @@ const ProjectAprvDetail = () => {
                     <div className="buttons" align="right" style={{ marginTop: "5px", marginBottom: "5px" }}>
                         <Button text="승인" visible={btnVisible} onClick={onAprvPopup}/>
                         <Button text="반려" visible={btnVisible} onClick={onRjctPopup}/>
-                        <LinkButton location={-1} name={"목록"} type={"normal"} stylingMode={"outline"}/>
+                        <Button text="목록" onClick={() => navigate("../project/ProjectAprv")}/>
                     </div>
                     </div>
                 </div>
@@ -485,37 +477,53 @@ const ProjectAprvDetail = () => {
                     itemComponent = {
                         ({ data }) => {
                             const Component = React.lazy(() => import(`../${data.url}.js`));
-                            return (
-                                <React.Suspense fallback={<div>Loading...</div>}>
-                                    <Component prjctId={prjctId} atrzLnSn={atrzLnSn} bgtMngOdr={bgtMngOdr}/>
-                                </React.Suspense>
-                            );
+                            if(data.index === selectedIndex) {
+                                return (
+                                    <React.Suspense fallback={<div>Loading...</div>}>
+                                        <Component prjctId={prjctId} atrzLnSn={atrzLnSn} bgtMngOdr={bgtMngOdr}/>
+                                    </React.Suspense>
+                                );
+                            }
                         }
                     }
                 />
             </div>
-            <CustomPopup props={ProjectAprvDetail.aprvPopup} visible={aprvPopupVisible} handleClose={handleClose}>
+            <Popup
+                width={ProjectAprvDetail.aprvPopup.width}
+                height={ProjectAprvDetail.aprvPopup.height}
+                visible={aprvPopupVisible}
+                onHiding={handleClose}
+                showCloseButton={true}
+                title={ProjectAprvDetail.aprvPopup.title}
+            >
                 <TextArea 
-                height="50%"
-                valueChangeEvent="change"
-                onValueChanged={onTextAreaValueChanged}
-                placeholder="승인 의견을 입력해주세요."
+                    height="50%"
+                    valueChangeEvent="change"
+                    onValueChanged={onTextAreaValueChanged}
+                    placeholder="승인 의견을 입력해주세요."
                 />
                 <br/>
                 <Button text="승인" onClick={onClickAprv}/>
                 <Button text="취소" onClick={handleClose}/>
-            </CustomPopup>
-            <CustomPopup props={ProjectAprvDetail.rjctPopup} visible={rjctPopupVisible} handleClose={handleClose}>
+            </Popup>
+            <Popup
+                width={ProjectAprvDetail.rjctPopup.width}
+                height={ProjectAprvDetail.rjctPopup.height}
+                visible={rjctPopupVisible}
+                onHiding={handleClose}
+                showCloseButton={true}
+                title={ProjectAprvDetail.rjctPopup.title}
+            >
                 <TextArea 
-                height="50%"
-                valueChangeEvent="change"
-                onValueChanged={onTextAreaValueChanged}
-                placeholder="반려 사유를 입력해주세요."
+                    height="50%"
+                    valueChangeEvent="change"
+                    onValueChanged={onTextAreaValueChanged}
+                    placeholder="반려 사유를 입력해주세요."
                 />
                 <br/>
                 <Button text="반려" onClick={onClickRjct}/>
                 <Button text="취소" onClick={handleClose}/>
-            </CustomPopup>
+            </Popup>
         </div>
     )
 

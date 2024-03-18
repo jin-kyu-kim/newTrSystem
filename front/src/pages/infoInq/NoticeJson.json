@@ -1,73 +1,48 @@
 {
   "menuName": "Notice",
-  "menuKorName": "공지사항",
   "queryId": "infoInqMapper.retrieveNoticeList",
   "keyColumn": "noticeId",
   "insertUrl": "/boot/common/insertlongText",
-  "updateUrl": "/boot/common/queryIdSearch",
-  "updateQueryId": "infoInqMapper.updateNotice",
+  "noticeInsertPage": "/infoInq/NoticeInput",
+  "referInsertPage": "/infoInq/ReferenceInput",
   "tableColumns": [
-    { "key": "rownum", "value": "공지번호", "width": 150, "alignment": "center" },
+    { "key": "rownum", "value": "번호", "width": 150, "alignment": "center" },
     { "key": "noticeTtl", "value": "제목", "width": 450, "alignment": "center" },
     { "key": "regEmpId", "value": "작성자", "width": 200, "alignment": "center" },
     { "key": "regDt", "value": "작성일", "width": 200, "alignment": "center" }
   ],
   "edit": {
     "columns": [
-      {
-        "dataField": "noticeTtl",
-        "name": "ttl",
-        "label": "제목",
-        "placeholder": "제목을 입력하세요"
-      },
-      {
-        "dataField": "dateRange",
-        "name": "setting",
-        "label": "설정",
+      { "dataField": "noticeTtl", "name": "ttl", "label": "제목", "placeholder": "제목을 입력하세요" },
+      { "dataField": "dateRange", "name": "setting", "label": "설정", 
         "checkType": [
-          {
-            "dataField": "imprtnc",
-            "type": {
-              "startDt": "imprtncNtcBgngYmd",
-              "endDt": "imprtncNtcEndYmd"
-            },
+          { "dataField": "imprtnc",
+            "type": { "startDt": "imprtncNtcBgngYmd", "endDt": "imprtncNtcEndYmd" },
             "label": "상단공지"
           },
-          {
-            "dataField": "useYn",
-            "label": "공지 표시여부",
-            "placeholder": "공지 종료일자"
-          },
-          {
-            "dataField": "moveToRefer",
-            "label": "자료실로 이관"
-          }
+          { "dataField": "useYn", "name": "useEndYmd", "label": "표시여부", "placeholder": "공지 종료일자" },
+          { "dataField": "move", "noticeLabel": "자료실로 이관", "referLabel": "공지사항으로 이관" }
         ]
       },
-      {
-        "dataField": "noticeCn",
-        "name": "cn",
-        "label": "내용",
-        "placeholder": "* 사진을 드래그해서 추가 가능합니다.\n  추가된 사진의 크기를 변경할 수 있습니다"
-      },
-      {
-        "dataField": "uploadFile",
-        "label": "첨부파일"
-      }
+      { "dataField": "noticeCn", "name": "cn", "label": "내용", "placeholder": "내용을 입력하세요" },
+      { "dataField": "uploadFile", "label": "첨부파일" }
     ]
   },
   "detail": {
     "detailQueryId": "infoInqMapper.retrieveNtcMatterDtl",
-    "buttonGroup": [
+    "noticeButtonGroup": [
       { "id": 1, "text": "목록", "onClick": "/infoInq/NoticeList", "type": "normal" },
       { "id": 2, "text": "수정", "onClick": "/infoInq/NoticeInput", "state": { "id": "noticeId", "editMode": "update" }, "type":"default" },
       { "id": 3, "text": "삭제", "onClick": "deleteNotice", "type":"danger" }
+    ],
+    "referButtonGroup": [
+      { "id": 1, "text": "목록", "onClick": "/infoInq/ReferenceList", "type": "normal" },
+      { "id": 2, "text": "수정", "onClick": "/infoInq/ReferenceInput", "state": { "id": "noticeId", "editMode": "update" }, "type":"default" },
+      { "id": 3, "text": "삭제", "onClick": "deleteReference", "type":"danger" }
     ]
   },
   "searchInfo": {
-    "searchParams": {
-      "resetButton": false
-    },
+    "searchParams": { "resetButton": false },
     "selectBoxItem": [
       {
         "placeholder": "[전체]",
@@ -84,10 +59,7 @@
       }
     ],
     "textBoxItem": [
-      {
-        "placeholder": "검색어",
-        "name": "searchWrd"
-      }
+      { "placeholder": "검색어", "name": "searchWrd" }
     ]
   }
 }

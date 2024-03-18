@@ -41,9 +41,15 @@ const TreRoutes = [
   },
   // 프로젝트 외주비용승인
   {
-    path: "/project/ProjectOutordPerson",
-    name: "ProjectOutordPerson",
-    element: React.lazy(() => import("../pages/project/approval/ProjectOutordPerson")),
+    path: "/project/ProjectOutordAprv",
+    name: "ProjectOutordAprv",
+    element: React.lazy(() => import("../pages/project/approval/ProjectOutordAprv")),
+  },
+  // 프로젝트 외주비용승인 상세
+  {
+    path: "/project/ProjectOutordAprvDetail",
+    name: "ProjectOutordAprvDetail",
+    element: React.lazy(() => import("../pages/project/approval/ProjectOutordAprvDetail")),
   },
   // 프로젝트 디테일
   {
@@ -75,7 +81,7 @@ const TreRoutes = [
     name: "TrsCodeList",
     element: React.lazy(() => import("../pages/sysMng/TrsCodeList")),
   },
-      // 공지사항
+  // 공지사항
   {
     path: "/infoInq/NoticeList",
     name: "NoticeList",
@@ -92,6 +98,24 @@ const TreRoutes = [
     path: "/infoInq/NoticeInput",
     name: "NoticeInput",
     element: React.lazy(() => import("../pages/infoInq/NoticeInput"))
+  },
+  // 자료실
+  {
+    path: "/infoInq/ReferenceList",
+    name: "NoticeList",
+    element: React.lazy(() => import("../pages/infoInq/ReferenceList")),
+  },
+  // 자료실 상세
+  {
+    path: "/infoInq/ReferenceDetail",
+    name: "NoticeDetail",
+    element: React.lazy(() => import("../pages/infoInq/ReferenceDetail"))
+  },
+  // 자료실 등록
+  {
+    path: "/infoInq/ReferenceInput",
+    name: "NoticeInput",
+    element: React.lazy(() => import("../pages/infoInq/ReferenceInput"))
   },
   //직원조회
   {
@@ -149,15 +173,53 @@ const TreRoutes = [
   },
   // 재무 관리 > 프로젝트비용청구현황
   {
-    path: "/fnnrMng/prjctCtClm/ProjectClaimCost",
+    path: "/fnnrMng/ProjectClaimCost",
     name: "ProjectClaimCost",
-    element: React.lazy(() => import("../pages/fnnrMng/prjctCtClm/ProjectClaimCost")),
+    element: React.lazy(() => import("../pages/fnnrMng/ProjectClaimCost")),
   },
   // 재무 관리 > 프로젝트비용청구현황 상세조회
   {
-    path: "/fnnrMng/prjctCtClm/ProjectClaimCostDetail",
+    path: "/fnnrMng/ProjectClaimCostDetail",
     name: "ProjectClaimCostDetail",
-    element: React.lazy(() => import("../pages/fnnrMng/prjctCtClm/ProjectClaimCostDetail")),
+    element: React.lazy(() => import("../pages/fnnrMng/ProjectClaimCostDetail")),
+  },
+  // 개인청구 > 근무시간
+  {
+    path: "/indvdlClm/EmpWorkTime",
+    name: "EmpWorkTime",
+    element: React.lazy(() => import("../pages/indvdlClm/EmpWorkTime")),
+  },
+  // 개인청구 > 휴가
+  {
+    path: "/indvdlClm/EmpVacation",
+    name: "EmpVacation",
+    element: React.lazy(() => import("../pages/indvdlClm/EmpVacation")),
+  },
+   // 재무 관리 > 근무시간비용 입력현황
+   {
+    path: "/fnnrMng/TimeExpenseInsertSttus",
+    name: "TimeExpenseInsertSttus",
+    element: React.lazy(() => import("../pages/fnnrMng/TimeExpenseInsertSttus")),
+   },
+  // 개인 청구 > 문화체력비용
+  {
+    path: "/indvdlClm/CultureHealthCost",
+    name: "ProjectClaimCostDetail",
+    element: React.lazy(() => import("../pages/fnnrMng/ProjectClaimCostDetail")),
+  },
+
+  // 재무 관리 > 근무시간 승인내역
+  {
+    path: "/fnnrMng/EmpTimeAprvList",
+    name: "EmpTimeAprvList",
+    element: React.lazy(() => import("../pages/fnnrMng/EmpTimeAprvList")),
+  },
+
+   // 재무 관리 > 근무시간, 경비통합
+   {
+    path: "/fnnrMng/EmpTRCostTotal",
+    name: "EmpTRCostTotal",
+    element: React.lazy(() => import("../pages/fnnrMng/EmpTRCostTotal")),
   },
   // 개인 청구 > 문화체력비용
   {

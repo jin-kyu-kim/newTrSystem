@@ -357,6 +357,7 @@ public class CommonServiceImpl implements CommonService {
     private PreparedStatement querySetter(PreparedStatement preparedStatement, List<Object> params) {
         try {
             // for 루프에서 값을 바인딩
+            int j = 0;
             for (int i = 0; i < params.size(); i++) {
                 if (params.get(i) == "") {
                     System.out.println(params.get(i));
@@ -366,9 +367,9 @@ public class CommonServiceImpl implements CommonService {
                 if (params.get(i) instanceof String && ((String) params.get(i)).contains("&") && !((String) params.get(i)).contains("<p>")) {
                     String[] dateRange = ((String) params.get(i)).split("&");
                     if (dateRange.length == 2) {
-                        preparedStatement.setObject(i + 1, dateRange[0]);
-                        preparedStatement.setObject(i + 2, dateRange[1]);
-                        i++;
+                        preparedStatement.setObject(j+1, dateRange[0]);
+                        preparedStatement.setObject(j+2, dateRange[1]);
+                        j += 2;
                         continue;
                     } else {
                         throw new IllegalArgumentException("Invalid date range format");
@@ -376,20 +377,22 @@ public class CommonServiceImpl implements CommonService {
                 }
 
                 if (params.get(i) instanceof String) {
-                    preparedStatement.setString(i + 1, (String) params.get(i));
+                    preparedStatement.setString(j+1, (String) params.get(i));
                 } else if (params.get(i) instanceof Integer) {
-                    preparedStatement.setInt(i + 1, (Integer) params.get(i));
+                    preparedStatement.setInt(j+1, (Integer) params.get(i));
                 } else if (params.get(i) instanceof Double) {
-                    preparedStatement.setDouble(i + 1, (Double) params.get(i));
+                    preparedStatement.setDouble(j+1, (Double) params.get(i));
                 } else if (params.get(i) instanceof Timestamp) {
-                    preparedStatement.setTimestamp(i + 1, (Timestamp) params.get(i));
+                    preparedStatement.setTimestamp(j+1, (Timestamp) params.get(i));
                 }  else if (params.get(i) instanceof Instant) {
-                    preparedStatement.setTimestamp(i + 1, Timestamp.from((Instant) params.get(i)));
+                    preparedStatement.setTimestamp(j+1, Timestamp.from((Instant) params.get(i)));
                 }  else if (params.get(i) == null) {
-                    preparedStatement.setString(i + 1, null);
+                    preparedStatement.setString(j, null);
                 } else {
+                    j++;
                     return null;
                 }
+                j++;
             }
             return preparedStatement;
         } catch (SQLException e) {
@@ -403,7 +406,7 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Transactional
-    public int insertFile(String tbNm, Map<String, Object> params, List<MultipartFile> attachments) {
+    public int insertFile(Map<String, Object> tbData, Map<String, Object> params, List<MultipartFile> attachments) {
         int atchResult = 0;//첨부파일 insert결과
         int result = 0;
 
@@ -414,12 +417,10 @@ public class CommonServiceImpl implements CommonService {
         Map<String, Object> tableMap = new HashMap<>();
         List<Map<String, Object>> atchmnflParam = new ArrayList<>();
         List<Map<String, Object>> insertParam = new ArrayList<>();
-        tableMap.put("tbNm", tbNm);
-
 
         try{
             //2. 파일 내부 디렉토리에 업로드
-            String uploadDir = "./src/main/resources/upload";
+            String uploadDir = "../../front/public/upload";
             // 2-1 파일일 디렉토리가 없으면 생성
             Path directory = Path.of(uploadDir);
             if (Files.notExists(directory)) {
@@ -427,7 +428,6 @@ public class CommonServiceImpl implements CommonService {
             }
 
             if (attachments != null) {
-
                 //1. 기존에 채번된 첨부파일 ID가 있는지 확인
                 if(!params.containsKey("atchmnflId") || params.get("atchmnflId") == null || params.get("atchmnflId").equals("")){
                     // 1-1 없다면 첨부파일 ID 생성 순번은 1부터 시작
@@ -467,8 +467,7 @@ public class CommonServiceImpl implements CommonService {
 
             //4. 입력된 첨부파일 ID를 parameter에 지정
             params.put("atchmnflId", atchmnflId);
-            tableMap.put("tbNm", tbNm);
-            insertParam.add(tableMap);
+            insertParam.add(tbData);
             insertParam.add(params);
 
             //5. 사용하려는 테이블에 INSERT
