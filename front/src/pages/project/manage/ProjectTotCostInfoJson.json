@@ -33,16 +33,6 @@
       "group": 1
     },
     {
-      "id": 3,
-      "costKind": "외주업체",
-      "tbCostNm": "OUTORD_ENTRPS_CT_PRMPC_DTL",
-      "costCol": "EXPECT_CT",
-      "tbExcuteNm": "OUTORD_ENTRPS_CT_EXCN",
-      "excuteCol": "GIVE_CT",
-      "queryId": "projectMapper.retrievePrjctCostSummery",
-      "group": 1
-    },
-    {
       "id": 4,
       "costKind": "통제성경비",
       "tbCostNm": "EXPENS_MNBY_PRMPC_DTLS",

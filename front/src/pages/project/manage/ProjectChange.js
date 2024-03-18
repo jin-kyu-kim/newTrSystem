@@ -60,7 +60,7 @@ const ProjectChange = () => {
     const response = ApiRequest("/boot/common/commonSelect", param);
     response.then((value) => {
 
-      if(value[0].atrzDmndSttsCd === "VTW03302") {
+      if(value[0].atrzDmndSttsCd === "VTW03702") {
         setAprvBtnVisible(false);
         setCancelBtnVisible(true);
       }
@@ -131,9 +131,9 @@ const ProjectChange = () => {
       if(response > 0) {
 
         /**
-         * VTW03301	임시저장
-          VTW03302	결재요청
-          VTW03303	결재완료
+         * VTW03701	임시저장
+          VTW03702	결재요청
+          VTW03703	결재완료
         */
 
         // 승인요청 되면 PRJCT 수정해주기
@@ -144,8 +144,8 @@ const ProjectChange = () => {
         }
 
         // 승인요청 되면 PRJCT_BGT_PRMPC 수정해주기
-        // ATRZ_DMND_STTS_CD 컬럼 -> VTW03302(결재요청)
-        handleBgtPrmpc("VTW03302");
+        // ATRZ_DMND_STTS_CD 컬럼 -> VTW03702(결재요청)
+        handleBgtPrmpc("VTW03702");
 
         alert("승인요청이 완료되었습니다.");
         setPopupVisible(false);
@@ -160,7 +160,7 @@ const ProjectChange = () => {
 
   /**
    * PRJCT_BGT_PRMPC(프로젝트예산변경요청) 테이블의 ATRZ_DMND_STTS_CD(승인요청상태코드)를 변경한다.
-   * @param {"VTW03301", "VTW03302", "VTW03303"} cdValue : ATRZ_DMND_STTS_CD(승인요청상태코드)
+   * @param {"VTW03701", "VTW03702", "VTW03703"} cdValue : ATRZ_DMND_STTS_CD(승인요청상태코드)
    */
   const handleBgtPrmpc = async (cdValue) => {
     const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
@@ -215,7 +215,7 @@ const ProjectChange = () => {
     console.log("prjctId!! 변경! ", prjctId);
     navigate("../project/ProjectDetail",
         {
-        state: { prjctId: prjctId, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd, bgtMngOdr:bgtMngOdr },
+        state: { prjctId: prjctId, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd, bgtMngOdr:bgtMngOdr, bgtMngOdrTobe:bgtMngOdrTobe },
         })
   };
 
@@ -255,7 +255,7 @@ const ProjectChange = () => {
           }
           
           // 임시저장으로 수정
-          handleBgtPrmpc("VTW03301");
+          handleBgtPrmpc("VTW03701");
           
         } else {
           alert("승인요청 취소가 실패되었습니다.");

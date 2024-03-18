@@ -11,13 +11,13 @@
     "CdComboboxColumnNm": ["hnfRoleCdNm","hnfGradCdNm"],
     "tableColumns": 
 	[
-        {"key": "outordEmpId", "value": "성명"},
+        {"key": "outordEmpNm", "value": "성명"},
         {"key": "hnfRoleCdNm", "value": "역할"},
         {"key": "hnfGradCdNm", "value": "등급"},
         {"key": "tkcgJob", "value": "담당업무"},     
-        {"key": "inptPrnmntYmd", "value": "투입예정일"},
-        {"key": "withdrPrnmntYmd", "value": "철수에정일"},
-        {"key": "gramt", "value": "총 금액"},
+        {"key": "inptPrnmntYmd", "value": "투입예정일", "subType": "Date"},
+        {"key": "withdrPrnmntYmd", "value": "철수에정일", "subType": "Date"},
+        {"key": "gramt", "value": "총 금액","subType":"NumberBox", "format":"#,##0원"},
         {"key": "total", "value": "총 투입 MM"}
 	],
     "summaryColumn":
@@ -33,7 +33,10 @@
     },
     "popupFormat": "MM",
     "popupNumberBoxFormat": "#,##0.00",
-    "popupStep": 0.1,
+    "popupStep": 0.01,
+    "popupMax" : 1,
+    "popupMin" : 0,
+    "precision": 2,
     "labelValue" : {
         "outordEmpId": {
             "type": "ComboBox",
@@ -79,14 +82,16 @@
             "type": "NumberBox",
             "label": "총 금액",
             "required": true,
-            "placeholder": "총 금액"
+            "placeholder": "총 금액",
+            "readOnly": true
         },
         "total": {
             "name": "total",
             "type": "NumberBox",
             "label": "총 MM",
             "required": true,
-            "placeholder": "총 MM"
+            "placeholder": "총 MM",
+            "readOnly": true
         },
         "inptPrnmntYmd": {
             "name": "inptPrnmntYmd",

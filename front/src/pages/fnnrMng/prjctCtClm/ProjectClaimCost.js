@@ -19,7 +19,7 @@ const ProjectCostClaimList = () => {
 
   const navigate = useNavigate();
 
-  const { keyColumn, queryId, tableColumns, searchParams } = ProjectJson;
+  const { keyColumn, queryId, tableColumns, searchParams, wordWrap } = ProjectJson;
 
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
@@ -56,7 +56,7 @@ const ProjectCostClaimList = () => {
   };
 
   const onClick = (data) => {
-    navigate("/fnnrMng/prjctCtClm/ProjectCostClaimDetail", 
+    navigate("/fnnrMng/prjctCtClm/ProjectClaimCostDetail", 
              {state: { prjctId: data.prjctId, prjctNm: data.prjctNm }})
   };
   
@@ -83,6 +83,7 @@ const ProjectCostClaimList = () => {
         values={values}
         onClick={onClick}
         paging={true}
+        wordWrap={wordWrap}
       />
     </div>
   );

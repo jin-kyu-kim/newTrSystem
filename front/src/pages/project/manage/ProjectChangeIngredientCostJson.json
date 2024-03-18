@@ -4,14 +4,14 @@
     "keyColumn": "matrlCtSn",
     "tableColumns": 
 	[
-        {"key": "matrlCtIemCdNm", "key2":"matrlCtIemCd","value": "재료비", "type": "special","subType":"ComboCdBox", "cd": "VTW014"} ,
-        {"key": "dlvgdsEntrpsNm", "value": "업체명"},
-        {"key": "prductNm", "value": "제품명"},
-        {"key": "dtlCn", "value": "상세스펙"},
-        {"key": "untpc", "value": "단가", "subType": "NumberBox"},
-        {"key": "qy", "value": "수량", "subType": "NumberBox"},
-        {"key": "cntrctamount", "value": "계약금액(부가세 별도)", "subType": "NumberBox"},
-        {"key": "dscntBfeEstmtPc", "value": "견적가(할인전)", "subType": "NumberBox"}
+        {"key": "matrlCtIemCd", "keyNm":"matrlCtIemCdNm","value": "재료비", "width": "10%", "type": "combo", "required":"Y"} ,
+        {"key": "dlvgdsEntrpsNm", "value": "업체명", "required":"Y"},
+        {"key": "prductNm", "value": "제품명", "required":"Y"},
+        {"key": "dtlCn", "value": "상세스펙", "required":"Y"},
+        {"key": "untpc", "value": "단가", "subType": "NumberBox", "format": "#,### 원", "required":"Y"},
+        {"key": "qy", "value": "수량", "width": "7%","subType": "NumberBox", "required":"Y"},
+        {"key": "cntrctamount", "value": "계약금액(부가세 별도)", "width": "14%", "subType": "NumberBox", "format": "#,### 원", "required":"Y"},
+        {"key": "dscntBfeEstmtPc", "value": "견적가(할인전)", "width": "14%", "subType": "NumberBox", "format": "#,### 원", "required":"Y"}
 	],
     "pkColumns": ["prjctId","matrlCtSn","bgtMngOdr"],
     "CdComboboxColumn": "matrlCtIemCd",

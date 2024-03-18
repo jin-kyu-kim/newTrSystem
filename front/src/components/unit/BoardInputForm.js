@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import uuid from "react-uuid";
 import { FileUploader, TextBox } from "devextreme-react";
 import { Validator, RequiredRule } from 'devextreme-react/validator'
 import CheckBox from "devextreme-react/check-box";
-import "../../assets/css/Style.css";
+import uuid from "react-uuid";
 
 import CustomDateRangeBox from "components/unit/CustomDateRangeBox";
 import CustomDatePicker from "components/unit/CustomDatePicker";
 import HtmlEditBox from "components/unit/HtmlEditBox";
+import "../../assets/css/Style.css";
 
 const BoardInputForm = ({ edit, data, setData, setAttachments }) => {
     const { noticeTtl, noticeCn, useEndYmd } = data || {};
@@ -119,7 +119,7 @@ const BoardInputForm = ({ edit, data, setData, setAttachments }) => {
                                                 ) : (
                                                     <CustomDatePicker
                                                         id={check.dataField}
-                                                        placeholder="공지 종료일자"
+                                                        placeholder={check.placeholder}
                                                         name="useEndYmd"
                                                         value={useEndYmd}
                                                         onSelect={handleUseYnDateChg}
@@ -136,22 +136,20 @@ const BoardInputForm = ({ edit, data, setData, setAttachments }) => {
                                         data={data}
                                         setData={setData}
                                         value={noticeCn}
-                                        placeholder='내용을 입력하세요'
+                                        placeholder={column.placeholder}
                                     />
                                 </td>
                             ) : (
                                 <td>
+                                    <span>* 파일 용량은 1.5GB</span>까지 가능합니다.
                                     <FileUploader
                                         multiple={true}
                                         accept="*/*"
-                                        uploadMode="useForm"
+                                        uploadMode="useButton"
                                         onValueChanged={handleAttachmentChange}
-                                        maxFileSize={1048576}
-                                    />
-                                    {/* <span className="note">
-                                        {'파일 용량은 '}
-                                        <span>10MB</span>까지 가능합니다.
-                                    </span> */}
+                                        maxFileSize={1.5*1024*1024*1024}
+                                    >
+                                    </FileUploader>
                                 </td>
                             )}
                         </tr>
