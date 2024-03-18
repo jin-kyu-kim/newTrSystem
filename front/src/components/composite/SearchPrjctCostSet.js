@@ -200,11 +200,6 @@ const SearchPrjctCostSet = ({ callBack, props }) => {
                 <Item ratio={0} baseSize={"100"}>
                     <Button text="검색" onClick={btnClick} style={{margin: "0px 5px 0px 5px"}}/>
                 </Item>
-                { props.excelDownloadBtn &&
-                    <Item visible={props.excelDownloadBtn} ratio={0} baseSize={"150"}>
-                        <Button text="엑셀다운로드" onClick={excelDownload}/>
-                    </Item>
-                }
             </Box>
         </div>
     );
