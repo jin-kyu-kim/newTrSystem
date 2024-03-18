@@ -132,7 +132,6 @@ const EmpVacUseList = (callBack,props) => {
   
   // 성명변환
   const handleChgEmp = (selectedOption) => {
-   
     setInitParam({
       ...initParam,
       empno: selectedOption,
@@ -140,7 +139,6 @@ const EmpVacUseList = (callBack,props) => {
   };
   
     const handleSubmit = () => {
-     
       setParam({
         vcatnBgngYmd: initParam.vcatnBgngYmd, //시작일자
         vcatnEndYmd: initParam.vcatnEndYmd, //끝일자
@@ -148,7 +146,6 @@ const EmpVacUseList = (callBack,props) => {
         queryId: queryId,
         currentPage: currentPage,
       })
-     
       //callBack(initParam);
     };
   
@@ -223,7 +220,8 @@ const EmpVacUseList = (callBack,props) => {
               <Item className="empnoItem" ratio={1} visible={props.empnoItem}>
                 <AutoCompleteName
                   placeholderText="성명"
-                  onValueChange={handleChgEmp}    
+                  onValueChange={handleChgEmp}
+                  value={initParam.empno}
                 />
               </Item>
             

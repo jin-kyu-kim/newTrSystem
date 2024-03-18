@@ -7,6 +7,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
     const result = [];
     for (let i = 0; i < columns.length; i++) {
       const { key, value, width, alignment, button, visible } = columns[i];
+      
       if (button) {
         result.push(
           <Column

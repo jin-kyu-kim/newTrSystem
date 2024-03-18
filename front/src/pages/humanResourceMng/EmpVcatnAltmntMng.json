@@ -12,7 +12,7 @@
         {"key": "hdofSttsNm", "value": "재직상태", "width":100},
         {"key": "workBgngYmd", "value": "근무시작일자", "visible" : "false"},
         {"key": "flagDate", "value": "휴가배정기준", "visible" : "false"},
-        {"key": "link", "value": "화면", "width":100 }
+        {"key": "link", "value": "화면", "width":100, "button": "이동" }
     ],
     "labelValue":{
         "deptNm": {
@@ -22,6 +22,18 @@
             "required": true,
             "placeholder": "부서명"
         }
-    }
+    },
 
+	"insertQueryId": "humanResourceMngMapper.insertVcatnMng",
+    "insertKeyColumn": "empId",
+    "insertColumns": [
+        {"key": "empId", "value": "직원ID"},
+        {"key": "vcatnYr", "value": "휴가연도"},
+        {"key": "vcatnAltmntDaycnt", "value": "휴가배정일수"},
+        {"key": "newVcatnAltmntDaycnt", "value": "신규휴가배정일수"},
+        {"key": "altmntBgngYmd", "value": "배정시작일자"},
+        {"key": "altmntUseEndYmd", "value": "배정종료일자"},
+        {"key": "regEmpId", "value": "등록지원ID"},
+        {"key": "mdfcnEmpId", "value": "수정직원ID"}
+    ]
 }

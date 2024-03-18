@@ -7,12 +7,12 @@ import { Button } from "devextreme-react";
 import Box, { Item } from "devextreme-react/box"
 import CustomTable from "components/unit/CustomTable";
 import CustomCdComboBox from "components/unit/CustomCdComboBox";
-import AutoCompleteName from "components/unit/AutoCompleteName"
+import CustomEmpComboBox from "components/unit/CustomEmpComboBox"
 import ApiRequest from "../../utils/ApiRequest";
 import EmpVcatnAltmntMngJson from "../humanResourceMng/EmpVcatnAltmntMng.json"
-import Moment from 'moment'     // npm install moment
+import Moment from "moment"     // npm install moment
 
-const { listQueryId, listKeyColumn, listTableColumns } = EmpVcatnAltmntMngJson;
+const { listQueryId, listKeyColumn, listTableColumns, insertQueryId } = EmpVcatnAltmntMngJson;
 
 
 /* ========================= 화면레이아웃  =========================*/
@@ -31,13 +31,13 @@ const textAlign = {
 
 
 /**
- * @param {*} startYear 시작하고싶은 년도
- * @param {number} endYear 시작년도 + endYear 년도
+ * @param {number} startYear 현재년도 기준 화면에 보여줄 (현재년도 - startYear)
+ * @param {number} endYear 현재년도 기준 화면에 보여줄 (현재년도 + endYear)
  * @returns 시작년도부터 시작년도 + endYear 까지의 1차원 배열반환
  */
 function getYearList(startYear, endYear) {
     const yearList = [];
-    let startDate = parseInt(new Date(String(startYear)).getFullYear());
+    let startDate = parseInt(new Date(String(new Date().getFullYear() - startYear)).getFullYear());
     let endDate = parseInt(new Date().getFullYear() + endYear);
 
     for (startDate; startDate <= endDate; startDate++) {
@@ -52,37 +52,42 @@ function getYearList(startYear, endYear) {
  * @description 휴가배정관리 화면을 구현한다
  */
 const EmpVcatnAltmntMng = () => {
-    const [param, setParam] = useState([]);
-    const [listValues, setListValues] = useState([]);
-    const [selectValue, setSelectValue] = useState([]);
+    const [param, setParam] = useState({queryId: listQueryId});
+
+    // 조회조건
     const [searchParam, setSearchParam] = useState({ queryId: "", vcatnYr: "", empno: "", empFlnm: "", jobCd: "", deptCd: "", hdofSttsCd: "" });
 
-    const nowYear = new Date().getFullYear();                                                   // 현재년도 (YYYY)
-    const flagYear = Moment().format('YYYYMMDD') > nowYear + "0401" ? nowYear : nowYear - 1     // 회계년도
+    // 직원목록조회
+    const [selectEmpVacValue, setSelectEmpVacValue] = useState([]);
 
-    // 화면 최초로드 시 조회 param 설정
-    useEffect(() => {
-        setParam({
-            queryId: listQueryId,
-        });
-    }, [])
+    // 직원목록에서 선택된 상세 데이터정보
+    const [selectValue, setSelectValue] = useState([]);
 
-    // param 변경 시 validation 확인 후 조회로직 호출
+    // 저장에 사용될 데이터정보
+    const [insertValue, setInsertValue] = useState([]);
+
+    // 현재년도
+    const nowYear = new Date().getFullYear();
+
+    // 회계년도
+    const flagYear = Moment().format('YYYYMMDD') > nowYear + "0401" ? nowYear : nowYear - 1
+
+
+    // 직원목록조회
     useEffect(() => {
         if (!Object.values(param).every((value) => value === "")) {
             pageHandle(param);
         }
     }, [param]);
 
-    // 조회후 데이터 셋팅
+    // 직원목록조회
     const pageHandle = async (initParam) => {
         try {
-            setListValues(await ApiRequest("/boot/common/queryIdSearch", initParam));
+            setSelectEmpVacValue(await ApiRequest("/boot/common/queryIdSearch", initParam));
         } catch (error) {
             console.log(error);
         }
     };
-
 
     /* ========================= 검색조건  =========================*/
     // CustomCdComboBox 검색조건 설정
@@ -93,10 +98,7 @@ const EmpVcatnAltmntMng = () => {
         });
     };
 
-    /**
-     * @param {string} param 검색조건으로 설정할 key값
-     * @param {*} e 검색조건으로 설정할 value값
-     */
+    // SelectBox & TextBox 검색조건 설정
     function onSearchChg(param, e) {
         setSearchParam({
             ...searchParam,
@@ -104,7 +106,7 @@ const EmpVcatnAltmntMng = () => {
         })
     }
 
-    // 검색버튼
+    // 조회
     const searchHandle = () => {
         setParam({
             ...searchParam,
@@ -115,6 +117,7 @@ const EmpVcatnAltmntMng = () => {
         })
     }
     /* ========================= 검색조건  =========================*/
+
 
 
     // 좌측의 직원목록에서 더블클릭한 행의 데이터 셋팅
@@ -142,7 +145,8 @@ const EmpVcatnAltmntMng = () => {
     function onSelectEmpFlnmChg(e) {
         setSelectValue({
             ...selectValue,
-            empno: e,
+            empno: e[0].empno,
+            empId: e[0].empId,
             visibleCtr: ((e == null || e == "") ? false : true)
         })
     }
@@ -152,22 +156,71 @@ const EmpVcatnAltmntMng = () => {
      * @param {*} e 검색조건으로 설정할 value값
     */
     function onSelectChg(param, e) {
-        if(param == "altmntBgngYmd" || param == "altmntUseEndYmd") e = Moment(e).format('YYYYMMDD');
+        if (param == "altmntBgngYmd" || param == "altmntUseEndYmd") e = Moment(e).format('YYYYMMDD');
         setSelectValue({
             ...selectValue,
             [param]: e
         })
     }
 
+    /**
+     * @param {*} e 
+     * @description 휴가배정정보를 저장한다.
+     */
     function btnSaveClick(e) {
         const isconfirm = window.confirm("휴가정보를 저장 하시겠습니까?");
         if (isconfirm) {
-            // updateVcatn();
+            insertVcatn();
         } else {
             return;
         }
     }
 
+    // 저장
+    function insertVcatn() {
+        setInsertValue({
+            ...selectValue,
+            queryId: insertQueryId,
+            vcatnRemndrDaycnt: selectValue.isNew == false ? selectValue.vcatnAltmntDaycnt - selectValue.useDaycnt : 0,
+            newRemndrDaycnt: selectValue.isNew == false ? selectValue.newVcatnAltmntDaycnt - selectValue.newUseDaycnt : 0,
+            empId: selectValue.empId,
+        })
+    }
+
+    // param 변경 시 validation 확인 후 저장로직 호출
+    useEffect(() => {
+        if (!Object.values(insertValue).every((value) => value === "")) {
+            insertPageHandle(insertValue);
+        }
+    }, [insertValue]);
+
+    // 조회후 데이터 셋팅
+    const insertPageHandle = async (initParam) => {
+        let errorMsg;
+
+        if (!initParam.empId) {
+            errorMsg = "사원을 선택하세요."
+        } else if (!initParam.vcatnYr) {
+            errorMsg = "휴가배정년도를 선택하세요."
+        }
+
+        if (errorMsg) {
+            alert(errorMsg);
+            return;
+        }
+
+        try {
+            const response = await ApiRequest("/boot/common/queryIdSearch", initParam);
+            searchHandle();
+            setSelectValue({
+                ...selectValue
+            })
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    // 초기화
     function btnCancleClick(e) {
         setSelectValue({
             vcatnYr: flagYear,
@@ -175,21 +228,9 @@ const EmpVcatnAltmntMng = () => {
         })
     }
 
-    useEffect(() => {
-        console.log("selectValue : ", selectValue);
-    }, [selectValue])
-
-    // useEffect(() => {
-    //     console.log("searchParam : ", searchParam);
-    // }, [searchParam])
-
-    // useEffect(() => {
-    //     console.log("param : ", param);
-    // }, [param])
-
-    // useEffect(() => {
-    //     console.log("listValues : ", listValues);
-    // }, [listValues])
+    function onLinkedVac(e) {
+        alert("휴가상세화면으로 링크");
+    }
 
     return (
         <div className="" style={{ marginLeft: "7%", marginRight: "7%" }}>
@@ -204,9 +245,9 @@ const EmpVcatnAltmntMng = () => {
                 <Item className="" ratio={1}>
                     <SelectBox
                         placeholder="[년도]"
-                        showClearButton={true}
-                        dataSource={getYearList("2013", 1)}
                         defaultValue={flagYear}
+                        showClearButton={true}
+                        dataSource={getYearList(10, 1)}
                         onValueChange={(e) => { onSearchChg("vcatnYr", e) }} />
                 </Item>
                 <Item className="" ratio={1}>
@@ -223,11 +264,11 @@ const EmpVcatnAltmntMng = () => {
                 </Item>
                 <Item className="" ratio={1}>
                     <CustomCdComboBox
-                        param="VTW001"
                         placeholderText="[직위]"
+                        param="VTW001"
                         name="jobCd"
-                        onSelect={handleChgState}
-                        value={searchParam.jobCd} showClearValue={true} />
+                        value={searchParam.jobCd} showClearValue={true}
+                        onSelect={handleChgState} />
                 </Item>
                 <Item className="" ratio={1}>
                     <SelectBox placeholder="[소속]" />
@@ -235,12 +276,12 @@ const EmpVcatnAltmntMng = () => {
                 </Item>
                 <Item className="" ratio={1}>
                     <CustomCdComboBox
-                        param="VTW003"
                         placeholderText="[재직]"
+                        param="VTW003"
                         name="hdofSttsCd"
-                        onSelect={handleChgState}
                         value={searchParam.hdofSttsCd}
-                        showClearValue={true} />
+                        showClearValue={true}
+                        onSelect={handleChgState} />
                 </Item>
                 <Item className="searchBtnItem" ratio={1}>
                     <Button onClick={searchHandle} text="검색" style={{ height: "48px", width: "50px" }} />
@@ -255,8 +296,10 @@ const EmpVcatnAltmntMng = () => {
                         <CustomTable
                             keyColumn={listKeyColumn}
                             columns={listTableColumns}
-                            values={listValues}
-                            onRowDblClick={onRowDblClick}
+                            values={selectEmpVacValue}
+                            onRowClick={onRowDblClick}
+                        // onBtnClick={onLinkedVac}
+                        // noDataText="조회된 데이터가 없습니다."
                         />
                     </div>
                 </div>
@@ -267,15 +310,16 @@ const EmpVcatnAltmntMng = () => {
                         <div className="row" style={divStyle}>
                             <div className="col-md-2" style={textAlign}>성명</div>
                             <div className="col-md-6">
-                                <AutoCompleteName
-                                    readOnlyValue={selectValue.nameReadOnlyCtr}
-                                    defaultValue={selectValue.empno}
-                                    placeholderText="성명"
-                                    onValueChange={onSelectEmpFlnmChg} />
+                                <CustomEmpComboBox 
+                                    value={selectValue.empId}
+                                    readOnly={selectValue.nameReadOnlyCtr}
+                                    onValueChange={onSelectEmpFlnmChg}
+                                    useEventBoolean={true}
+                                />
                             </div>
                             <div className="col-md-4">
                                 <TextBox
-                                    readOnly={selectValue.readOnlyCtr}
+                                    readOnly={true}
                                     value={selectValue.empno}
                                     visible={selectValue.visibleCtr} />
                             </div>
@@ -284,7 +328,7 @@ const EmpVcatnAltmntMng = () => {
                         <div className="row">
                             <div className="col-md-2" style={textAlign}>사용일수</div>
                             <div className="col-md-4">
-                                <TextBox value={selectValue.useDaycnt} readOnly="true" />
+                                <TextBox value={selectValue.useDaycnt} readOnly={true} />
                             </div>
                             <div className="col-md-2" style={textAlign}>배정일수</div>
                             <div className="col-md-4">
@@ -301,7 +345,7 @@ const EmpVcatnAltmntMng = () => {
                         <div className="row">
                             <div className="col-md-2" style={textAlign}>사용일수</div>
                             <div className="col-md-4">
-                                <TextBox readOnly="true" value={selectValue.newUseDaycnt} />
+                                <TextBox readOnly={true} value={selectValue.newUseDaycnt} />
                             </div>
                             <div className="col-md-2" style={textAlign}>배정일수</div>
                             <div className="col-md-4">
@@ -311,28 +355,29 @@ const EmpVcatnAltmntMng = () => {
                                     showClearButton={true}
                                     value={selectValue.newVcatnAltmntDaycnt}
                                     onValueChange={(e) => { onSelectChg("newVcatnAltmntDaycnt", e) }}
-                            />
+                                />
                             </div>
                         </div>
                         <div className="row" style={divStyle}>
                             <div className="col-md-2" style={textAlign}>사용기한</div>
                             <div className="col-md-4">
-                                <DateBox value={selectValue.altmntBgngYmd} onValueChange={(e) => { onSelectChg("altmntBgngYmd", e) }}/>
+                                <DateBox value={selectValue.altmntBgngYmd} onValueChange={(e) => { onSelectChg("altmntBgngYmd", e) }} />
                             </div>
                             <div className="col-md-2" style={textAlign}>~</div>
                             <div className="col-md-4">
-                                <DateBox value={selectValue.altmntUseEndYmd} onValueChange={(e) => { onSelectChg("altmntUseEndYmd", e) }}/>
+                                <DateBox value={selectValue.altmntUseEndYmd} onValueChange={(e) => { onSelectChg("altmntUseEndYmd", e) }} />
                             </div>
                         </div>
                         <div className="row" style={divStyle}>
-                            <div className="col-md-2" style={{ textAlign: "left", display: "flex", alignItems: "center", fontSize: "14px"}}>휴가배정년도</div>
+                            <div className="col-md-2" style={{ textAlign: "left", display: "flex", alignItems: "center", fontSize: "14px" }}>휴가배정년도</div>
                             <div className="col-md-4">
                                 <SelectBox
                                     placeholder="[년도]"
-                                    showClearButton={true}
+                                    dataSource={getYearList(1, 1)}
                                     value={selectValue.vcatnYr}
-                                    dataSource={getYearList(nowYear - 1, 1)} 
-                                    onValueChange={(e) => { onSelectChg("vcatnYr", e) }}/>
+                                    showClearButton={true}
+                                    readOnly={selectValue.isNew == false ? true : false}
+                                    onValueChange={(e) => { onSelectChg("vcatnYr", e) }} />
                             </div>
                         </div>
                         <div style={{ display: "inline-block", float: "right", marginTop: "25px" }}>

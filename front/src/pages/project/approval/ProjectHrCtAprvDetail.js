@@ -5,10 +5,9 @@ import ProjectHrCtAprvDetailJson from "./ProjectHrCtAprvDetailJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
 import CustomTable from "../../../components/unit/CustomTable";
 import CustomPopup from "components/unit/CustomPopup";
-import ProjectHrCtAprvDetailPop from "./ProjectHtCtAprvDetailPop";
-import { IPopoverOptions, Popover } from 'devextreme-react/popover';
+import ProjectHrCtAprvCtPop from "./ProjectHtCtAprvCtPop";
+import ProjectHrCtAprvMmPop from "./ProjectHtCtAprvMmPop";
 import { set } from "date-fns";
-import { Popup } from "devextreme-react";
 
 const ProjectHrCtAprvDetail = () => {
 
@@ -18,11 +17,13 @@ const ProjectHrCtAprvDetail = () => {
     const { searchParams, mm, ct } = ProjectHrCtAprvDetailJson;
     
     const [param, setParam] = useState([]);
+    const [data, setData] = useState([]);
     const [mmValues, setMmValues] = useState([]);
     const [ctValues, setCtValues] = useState([]);
     const [ctPopupVisible, setCtPopupVisible] = useState(false);
-    const [ctDetailParam, setCtDetailParam] = useState([]);
+    const [mmPopupVisible, setMmPopupVisible] = useState(false);
     const [ctDetailValues, setCtDetailValues] = useState([]);
+    const [mmDetailValues, setMmDetailValues] = useState([]);
 
     
     // 조회
@@ -53,7 +54,7 @@ const ProjectHrCtAprvDetail = () => {
     }
 
     const searchHandle = async (initParam) => {
-        if(initParam.year == null || initParam.month == null) {
+        if(initParam.yearItem == null || initParam.monthItem == null) {
 
             const date = new Date();
             const year = date.getFullYear();
@@ -80,23 +81,37 @@ const ProjectHrCtAprvDetail = () => {
             ...param,
             queryId: ProjectHrCtAprvDetailJson.mm.queryId,
             prjctId: prjctId,
-            aplyYm: initParam.year + initParam.month,
+            aplyYm: initParam.yearItem + initParam.monthItem,
             aplyOdr: initParam.aplyOdr,
             empId: initParam.empId,
         })
     }
 
-    const onMmBtnClick = (data) => {
+    const onMmBtnClick = async (data) => {
         console.log(data);
+        setData(data);
+
+        await retrieveProjectMmAplyDetail(data);
+        setMmPopupVisible(true);
     }
+
+    const retrieveProjectMmAplyDetail = async (data) => {
+
+        const param = {
+            queryId: "projectMapper.retrieveProjectMmAplyDetail",
+            prjctId: prjctId,
+            aplyYm: data.aplyYm,
+            aplyOdr: data.aplyOdr,
+            empId: data.empId
+        }
+        const response = await ApiRequest("/boot/common/queryIdSearch", param);
+        setMmDetailValues(response);
+        console.log(response)
+    }
+
 
     const onCtBtnClick = async (data) => {
         console.log(data);
-
-        setCtDetailParam({
-            ...ctDetailParam,
-            empId: data.empId,
-        });
 
         await retrieveProjectCtAplyDetail(data);
         setCtPopupVisible(true);
@@ -117,6 +132,7 @@ const ProjectHrCtAprvDetail = () => {
 
     const handleClose = () => {
         setCtPopupVisible(false);
+        setMmPopupVisible(false);
     };
 
     return (
@@ -142,7 +158,10 @@ const ProjectHrCtAprvDetail = () => {
             </div>
             <CustomTable keyColumn={ct.keyColumn} columns={ct.tableColumns} values={ctValues} paging={true} onClick={onCtBtnClick} summary={true} summaryColumn={ct.summaryColumn}/>
             <CustomPopup props={ProjectHrCtAprvDetailJson.ctPopup} visible={ctPopupVisible} handleClose={handleClose}>
-                <ProjectHrCtAprvDetailPop props={ctDetailValues} prjctNm={prjctNm} /> 
+                <ProjectHrCtAprvCtPop props={ctDetailValues} prjctNm={prjctNm} data={data}/> 
+            </CustomPopup>
+            <CustomPopup props={ProjectHrCtAprvDetailJson.ctPopup} visible={mmPopupVisible} handleClose={handleClose}>
+                <ProjectHrCtAprvMmPop props={mmDetailValues} prjctNm={prjctNm} data={data}/> 
             </CustomPopup>
         </div>
 

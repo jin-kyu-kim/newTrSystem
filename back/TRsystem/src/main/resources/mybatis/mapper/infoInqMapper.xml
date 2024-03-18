@@ -4,14 +4,16 @@
 <mapper namespace="com.trsystem.mybatis.mapper.infoInqMapper">
 	<select id="retrieveEmpList" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT
-				E.EMPNO AS EMPNO,
-			E.EMP_FLNM AS EMP_FLNM,
-			C.CD_NM AS JBPS_NM,
-			D.DEPT_NM AS DEPT_ID,
-			E.TELNO AS TELNO,
-			E.EML AS EML,
-			C2.CD_NM AS HDOF_STTS_NM
-			, COUNT(*) OVER () AS TOTAL_ITEMS
+			E.EMP_ID AS EMP_ID
+			,E.EMPNO AS EMPNO
+			,E.EMP_FLNM AS EMP_FLNM
+			,E.EMP_TY_CD AS EMP_TY_CD
+			,C.CD_NM AS JBPS_NM
+			,D.DEPT_NM AS DEPT_ID
+			,E.TELNO AS TELNO
+			,E.EML AS EML
+			,C2.CD_NM AS HDOF_STTS_NM
+			,COUNT(*) OVER () AS TOTAL_ITEMS
 			,C3.CD_NM AS BANK_NM
 			,E.ACTNO AS ACTNO
 			,C.CD_VALUE JBPS_CD
@@ -54,26 +56,42 @@
 	</select>
 	<!--직급발령정보 조회-->
 	<select id="retrieveEmpJbpsHist" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT
-        	E.EMP_ID,			                                                -- 사원아이디
-        	E.EMPNO, 			                                                -- 사번
-        	E.EMP_INFO_CHG_ODR,                                                 -- 발령차수
-        	C.CD_NM AS JBPS_NM,	                                                -- 직급명
-        	E.JBPS_CD,			                                                -- 직급코드
-        	ROW_NUMBER() OVER (PARTITION BY EMP_ID ORDER BY REG_DT) AS RowNum , -- 비교용 ROWNUM
-        	E.REG_DT,															-- 등록일자
-        	A.EMPNO AS REG_EMPNO											 	-- 등록사번
-    	FROM 
-    		EMP_HIST E
-    		LEFT OUTER JOIN CD C ON C.CD_VALUE =E.JBPS_CD
-    		LEFT OUTER JOIN EMP A ON A.EMP_ID=E.REG_EMP_ID 
-		WHERE 
-			1=1	   
-						<if test="empno != null and empno !=''">
-							AND E.EMPNO LIKE CONCAT('%', #{empno}, '%')
-						</if>
-		ORDER BY 
-			EMP_HIST_SN DESC			
+	WITH EMP_HIST_RANK AS (
+    SELECT
+       		EMP_ID,
+       	 	JBPS_CD,
+       		EMPNO,
+        	EMP_HIST_SN,
+        	ROW_NUMBER() OVER (PARTITION BY EMP_ID ORDER BY REG_DT) AS RowNum ,
+       		REG_DT,
+        	EMP_INFO_CHG_ODR,
+        	REG_EMP_ID 
+    FROM 
+    		EMP_HIST
+	)
+	SELECT
+		    A.EMP_ID,
+		    A.EMPNO,
+		    B.EMP_INFO_CHG_ODR,
+		    B.EMP_HIST_SN,
+		    B.JBPS_CD AS JBPS_CD,
+		    C.CD_NM AS JBPS_NM,
+		    DATE_FORMAT(B.REG_DT,'%Y-%m-%d') AS REG_DT,
+		    D.EMPNO AS REG_EMPNO
+	FROM 
+		EMP_HIST_RANK A
+		JOIN EMP_HIST_RANK B ON A.EMP_ID = B.EMP_ID AND A.RowNum = B.RowNum - 1
+		LEFT OUTER JOIN CD C ON C.CD_VALUE =A.JBPS_CD
+		LEFT OUTER JOIN EMP D ON D.EMP_ID=A.REG_EMP_ID 
+	WHERE 
+	  	1=1
+	  	AND A.JBPS_CD <![CDATA[<>]]> B.JBPS_CD
+	 	<if test="empId != null and empId !=''">
+		AND A.EMP_ID LIKE CONCAT('%', #{empId}, '%')
+		</if>
+	ORDER BY 
+		EMP_HIST_SN DESC;
+		
 	</select>	
 	<select id="retrieveEmpAcbg" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT 				
