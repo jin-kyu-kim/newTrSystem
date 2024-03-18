@@ -85,8 +85,6 @@ const ProjectDetail = () => {
           const isconfirm = window.confirm("임시저장된 내역이 있습니다. 수정을 진행하시겠습니까?");
           if(isconfirm) {
             await projectChgHandle();
-          if(isconfirm) {
-            await projectChgHandle();
           }
         } else if (result === 'VTW03704' ) {
           // 반려인 경우
@@ -105,7 +103,6 @@ const ProjectDetail = () => {
         }
       }
     }
-  };
   };
 
   const projectChgHandle = async () => {
