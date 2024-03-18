@@ -4,7 +4,6 @@ import { TabPanel } from "devextreme-react";
 import { useLocation } from "react-router-dom";
 import ApiRequest from "../../../utils/ApiRequest";
 import { useCookies } from "react-cookie";
-import { useCookies } from "react-cookie";
 
 import ProjectDetailJson from "./ProjectDetailJson.json";
 
@@ -25,11 +24,8 @@ const ProjectDetail = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [atrzLnSn, setAtrzLnSn] = useState();
   const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
-  const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
 
   const ProjectDetail = ProjectDetailJson;
-
-  const empId = cookies.userInfo.empId;
 
   const empId = cookies.userInfo.empId;
 
@@ -188,7 +184,6 @@ const ProjectDetail = () => {
   const chkBgtOdr = async () => {
     console.log("반려/임시저장 여부 확인");
 
-    const param = { 
     const param = { 
       queryId: "projectMapper.retrieveTmprRjctBgtOdr",
       prjctId: prjctId,
