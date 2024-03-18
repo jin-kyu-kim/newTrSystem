@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import { Popup } from "devextreme-react";
 
 import ApiRequest from '../../utils/ApiRequest';
 import CustomTable from "../../components/unit/CustomTable";
-import ProjectClaimCostIndividual from './ProjectClaimCostIndividualJson.json';
-import { useNavigate } from "react-router-dom";
-import CustomPopup from "../../components/unit/CustomPopup";
+import ProjectClaimCostIndividualJson from './ProjectClaimCostIndividualJson.json';
 import ProjectClaimCostIndividualCtPop from "./ProjectClaimCostIndividualCtPop";
 import ProjectClaimCostIndividualMmPop from "./ProjectClaimCostIndividualMmPop";
 
-const ProjectCostIndividual = ({ prjctId, prjctNm, year, monthVal, aplyOdr, empId }) => {
-  const { keyColumn, queryId, mmColumns, ctColumns, mmSumColumns, ctSumColumns, popup } = ProjectClaimCostIndividual;
+const ProjectClaimCostIndividual = ({ prjctId, prjctNm, year, monthVal, aplyOdr, empId }) => {
+  const { keyColumn, queryId, mmColumns, ctColumns, mmSumColumns, ctSumColumns } = ProjectClaimCostIndividualJson;
   const [mmData, setMMData] = useState([]);
   const [ctData, setCtData] = useState([]);
   const [data, setData] = useState([]);
@@ -57,9 +56,10 @@ const ProjectCostIndividual = ({ prjctId, prjctNm, year, monthVal, aplyOdr, empI
         }
     };
 
-    const onMmBtnClick = async (data) => {
-        setData(data);
-
+    const onMmBtnClick = async (button, data) => {
+        if (button.name === "empId") {
+            setData(data);
+        }
         await retrievePrjctCtClmSttusIndvdlMMAcctoDetail(data);
         setMmPopupVisible(true);
     }
@@ -77,9 +77,10 @@ const ProjectCostIndividual = ({ prjctId, prjctNm, year, monthVal, aplyOdr, empI
         setMmDetailValues(response);
     }
 
-    const onCtBtnClick = async (data) => {
-        setData(data);
-
+    const onCtBtnClick = async (button, data) => {
+        if (button.name === "empId") {
+            setData(data);
+        }
         await retrievePrjctCtClmSttusIndvdlCtAcctoDetail(data);
         setCtPopupVisible(true);
     }
@@ -124,21 +125,27 @@ const ProjectCostIndividual = ({ prjctId, prjctNm, year, monthVal, aplyOdr, empI
           summaryColumn={ctSumColumns}
           onClick={onCtBtnClick}
         />
-          <CustomPopup
-              props={popup}
+          <Popup
+              width="90%"
+              height="90%"
               visible={mmPopupVisible}
-              handleClose={handleClose}>
+              onHiding={handleClose}
+              showCloseButton={true}
+          >
               <ProjectClaimCostIndividualMmPop props={mmDetailValues} prjctNm={prjctNm} data={data}/>
-          </CustomPopup>
-          <CustomPopup
-              props={popup}
+          </Popup>
+          <Popup
+              width="90%"
+              height="90%"
               visible={ctPopupVisible}
-              handleClose={handleClose}>
+              onHiding={handleClose}
+              showCloseButton={true}
+          >
               <ProjectClaimCostIndividualCtPop props={ctDetailValues} prjctNm={prjctNm} data={data}/>
-          </CustomPopup>
+          </Popup>
       </div>
     </div>
   );
 };
 
-export default ProjectCostIndividual;
+export default ProjectClaimCostIndividual;
