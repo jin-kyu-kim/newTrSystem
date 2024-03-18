@@ -9,6 +9,7 @@ import CustomTable from "../../components/unit/CustomTable";
 import {TextBox} from "devextreme-react/text-box";
 import ApiRequest from "../../utils/ApiRequest";
 import {useCookies} from "react-cookie";
+import axios from "axios";
   const thStyle = {
     backgroundColor: '#f5f5f5',
     color: '#666666',
@@ -52,27 +53,34 @@ import {useCookies} from "react-cookie";
 
 const CultureHealthCost = () => {
     const [cookies] = useCookies([]);
-
     const [values, setValues] = useState([]);
+    const [attachments, setAttachments] = useState([null]);
     const [pageSize] = useState(10);
-    var date = new Date();
-    var firstDayOfMonth = new Date( date.getFullYear(), date.getMonth() , 1 );
-    var lastMonth = new Date ( firstDayOfMonth.setDate( firstDayOfMonth.getDate() - 1 ) );
+    var now = new Date();
     const Json = CultureHealthCostJson;
     const [initParam, setInitParam] = useState({
         "clmAmt": 0,
-        "clmYmd": date.getFullYear()+('0' + (date.getMonth() + 1)).slice(-2)+('0' + date.getDate()).slice(-2),
+        "clmYmd": now.getFullYear()+('0' + (now.getMonth() + 1)).slice(-2)+('0' + now.getDate()).slice(-2),
+        "empId": cookies.userInfo.empId,
+        "regEmpId": cookies.userInfo.empId
     });
 
-    const getDate = () => {
-        return date.getFullYear()+"/"+('0' + (date.getMonth() + 1)).slice(-2)+"/"+('0' + date.getDate()).slice(-2)
+    useEffect(() => {
+        searchTable();
+    }, []);
+
+    const getDate = (time) => {
+        return time.getFullYear()+"/"+('0' + (time.getMonth() + 1)).slice(-2)+"/"+('0' + time.getDate()).slice(-2)
     }
 
-    const getMonth = () => {
-        if(1 <= date.getMonth()+1 <= 5){
-            return date.getFullYear()+"/"+('0' + (date.getMonth()+1)).slice(-2);
-        } else if (6 <= date.getMonth()+1){
-            return lastMonth.getFullYear()+"/"+('0' + (lastMonth.getMonth()+1)).slice(-2)+", "+date.getFullYear()+"/"+('0' + (date.getMonth()+1)).slice(-2);
+    const getMonth = (time) => {
+        var firstDayOfMonth = new Date( time.getFullYear(), time.getMonth() , 1 );
+        var lastMonth = new Date ( firstDayOfMonth.setDate( firstDayOfMonth.getDate() - 1 ) );
+        var dateNum = Number(time.getDate());
+        if(dateNum <= 5){
+            return time.getFullYear()+"/"+('0' + (time.getMonth()+1)).slice(-2);
+        } else if (6 <= dateNum){
+            return lastMonth.getFullYear()+"/"+('0' + (lastMonth.getMonth()+1)).slice(-2)+", "+time.getFullYear()+"/"+('0' + (time.getMonth()+1)).slice(-2);
         }
     }
 
@@ -83,29 +91,67 @@ const CultureHealthCost = () => {
         });
     };
 
-    const handleAttachmentChange = ({name, value}) => {
+    const handleAttachmentChange = (e) => {
+        setAttachments(e.value);
         setInitParam({
             ...initParam,
-            atchmnflId: uuid(),
-            empId: cookies.userInfo
+            atchmnflId: uuid()
         });
     };
 
+    const searchTable = async () => {
+        try{
+            const response = await ApiRequest("/boot/common/commonSelect", [
+                { tbNm: "CLTUR_PHSTRN_ACT_CT_REG" }, { empId : cookies.userInfo.empId }
+            ]);
+            response.forEach((element)=>{
+                element.month = element.clmYmd.slice(0,4)+"/"+element.clmYmd.slice(4,6);
+            })
+            setValues(response);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    const validateData = () => {
+        let maxSize = 0;
+        attachments.map((file) => {
+            if (file !== null) {
+                maxSize += file.size;
+            }
+        })
+        const errors = [];
+        if (maxSize !== 0 && maxSize > 1048576) {
+            alert('업로드 가능한 용량보다 큽니다')
+            errors.push('Exceeded size limit');
+        }
+        return errors.length === 0;
+    };
+
     const costInsert = async() => {
-        console.log(initParam);
         const confirmResult = window.confirm("등록하시겠습니까?");
         if (confirmResult) {
-            const params = [{ tbNm: "CLTUR_PHSTRN_ACT_CT_REG" }, initParam];
+            const formData = new FormData();
+            const test = {tbNm: "CLTUR_PHSTRN_ACT_CT_REG", snColumn: "CLTUR_PHSTRN_ACT_CT_SN", snSearch:{empId: cookies.userInfo.empId}}
+            formData.append("tbNm", JSON.stringify(test));
+            formData.append("data", JSON.stringify(initParam));
+            Object.values(attachments)
+                .forEach((attachment) => formData.append("attachments", attachment));
             try {
-                const response = await ApiRequest("/boot/common/commonInsert", params);
-                if (response === 1) {
-                    window.alert("등록되었습니다.")
-                } else {
-                    // 저장 실패 시 처리
+                if (validateData()) {
+                    const response = await axios.post("/boot/common/insertlongText", formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        },
+                    })
+                    if (response === 1) {
+                        searchTable();
+                        window.alert("등록되었습니다.")
+                    }
                 }
             } catch (error) {
-                console.log(error);
-                // 저장 실패 시 처리
+                console.error("API 요청 에러:", error);
+                throw error;
             }
         }
     };
@@ -123,8 +169,8 @@ const CultureHealthCost = () => {
                               <strong>매달 6일부터 말일 : 현재 달 청구 건</strong><br/>
                             <br/>
                                * 현재날짜 : <span
-                                style={{color: "red"}}>{getDate()}</span><br/>
-                            * 입력, 수정 및 삭제 가능한 청구대상 월 : <span style={{color: "red"}}>{getMonth()}</span><br/>
+                                style={{color: "red"}}>{getDate(now)}</span><br/>
+                            * 입력, 수정 및 삭제 가능한 청구대상 월 : <span style={{color: "red"}}>{getMonth(now)}</span><br/>
                         </span>
                         </div>
                         <CustomTable
@@ -160,6 +206,7 @@ const CultureHealthCost = () => {
                             <td style={tdStyle}>
                                 <DateBox
                                     value={initParam?.clmYmd}
+                                    dateSerializationFormat={'yyyyMMdd'}
                                     onValueChanged={(e) => handleChgState({ name: "clmYmd", value: e.value })}
                                     inputAttr={Json.dateLabel}
                                     type="date"
@@ -183,7 +230,7 @@ const CultureHealthCost = () => {
                             <th style={thStyle}>구분</th>
                             <td style={tdStyle}>
                                 <CustomCdComboBox
-                                    param="VTW041"
+                                    param="VTW009"
                                     placeholderText="구분"
                                     name="clturPhstrnSeCd"
                                     onSelect={handleChgState}
