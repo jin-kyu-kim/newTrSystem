@@ -420,7 +420,7 @@ public class CommonServiceImpl implements CommonService {
 
         try{
             //2. 파일 내부 디렉토리에 업로드
-            String uploadDir = "./src/main/resources/upload";
+            String uploadDir = "../../front/public/upload";
             // 2-1 파일일 디렉토리가 없으면 생성
             Path directory = Path.of(uploadDir);
             if (Files.notExists(directory)) {

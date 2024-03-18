@@ -1,21 +1,21 @@
 import { useState, useEffect } from "react";
-import DataGrid, { Column } from 'devextreme-react/data-grid'
-import CustomTable from "../../components/unit/CustomTable";
-import SearchInfoSet from "components/composite/SearchInfoSet"
-import ApiRequest from '../../utils/ApiRequest';
-import ToggleButton from './ToggleButton';
 import SysMng from './SysMngJson.json';
+import ApiRequest from '../../utils/ApiRequest';
+import SearchInfoSet from "components/composite/SearchInfoSet"
+import CustomEditTable from "components/unit/CustomEditTable";
+import { DataGrid } from "devextreme-react";
+import { Column } from "devextreme-react/cjs/data-grid";
+import '../../pages/sysMng/sysMng.css'
 
 const TrsCodeList = () => {
-    const [values, setValues] = useState([]);
-    const [param, setParam] = useState({}); // cud 전달 객체
-    const [oneData, setOneData] = useState([]); // 특정 상위코드의 하위목록
-    const [selectedRowKey, setSelectedRowKey] = useState(null);
+    const [ values, setValues ] = useState([]);
+    const [ param, setParam ] = useState({});
+    const [ childList, setChildList ] = useState([]);
 
     const [totalItems, setTotalItems] = useState(0);
     const [currentPage] = useState(1);
     const [pageSize] = useState(20);
-    const { keyColumn, queryId, tableColumns, childTableColumns, searchInfo } = SysMng.trsCodeJson;
+    const { keyColumn, queryId, tableColumns, childTableColumns, searchInfo, tbNm } = SysMng.trsCodeJson;
 
     useEffect(() => {
         if (!Object.values(param).every((value) => value === "")) {
@@ -28,7 +28,6 @@ const TrsCodeList = () => {
             ...initParam,
             queryId: queryId,
             currentPage: currentPage,
-            startVal: 0,
             pageSize: pageSize,
         });
     };
@@ -39,43 +38,54 @@ const TrsCodeList = () => {
             setValues(response);
             if (response.length !== 0) {
                 setTotalItems(response[0].totalItems);
-            } else {
-                setTotalItems(0);
-            }
+            } else setTotalItems(0);
         } catch (error) {
             console.log(error);
         }
     };
+
     const handleYnVal = async (idColumn, useYn) => {
         const ynParam = [
             { tbNm: "CD" },
             { useYn: useYn },
-            { cdValue: idColumn } // index2는 id값
+            { cdValue: idColumn }
         ];
         try {
             const response = await ApiRequest('/boot/common/commonUpdate', ynParam);
+            setChildList(response)
         } catch (error) {
             console.log(error)
         }
     }
-    const getOneData = async (e) => {
-        const upCd = [
-            { tbNm: "CD" },
-            { upCdValue: e.key }
-        ];
-        try {
-            const response = await ApiRequest('/boot/common/commonSelect', upCd);
-            setOneData(response)
-        } catch (error) {
-            console.log(error)
+    
+    const getChildList = async (id) => {
+        try{
+            const response = await ApiRequest('/boot/common/commonSelect', [
+                { tbNm: "CD" }, { upCdValue: id }
+            ]);
+            setChildList(response)
+        } catch(error){
+            console.log('error', error)
         }
     }
-    const onRowClick = (e) => {
-        setSelectedRowKey(e.key);
-        getOneData(e);
-    }
-    const onUpRouUpdate = (e) => {
-    }
+
+    const masterDetail = (e) => {
+        return (
+            <DataGrid
+                dataSource={''}
+                showBorders={true}
+            >
+                {childTableColumns.map((c) => (
+                    <Column
+                        key={c.key}
+                        dataField={c.key}
+                        caption={c.value}
+                    />
+                ))}
+            </DataGrid>
+        );
+    };
+
     return (
         <div className="container">
             <div
@@ -92,34 +102,14 @@ const TrsCodeList = () => {
             </div>
 
             <div>검색된 건 수 : {totalItems} 건</div>
-            <CustomTable
+            <CustomEditTable
                 keyColumn={keyColumn}
                 columns={tableColumns}
                 values={values}
                 handleYnVal={handleYnVal}
-                onRowClick={onRowClick}
-                pageSize={pageSize}
-                paging={true}
+                tbNm={tbNm}
+                masterDetail={masterDetail}
             />
-            {selectedRowKey && (
-                <DataGrid
-                    keyExpr={keyColumn}
-                    dataSource={oneData}
-                >
-                    {childTableColumns.map((item) => (
-                        item.toggle ?
-                            <Column dataField={item.key} caption={item.value}
-                                alignment={'center'}
-                                cellRender={({ data }) => (
-                                    <ToggleButton callback={handleYnVal} data={data} />
-                                )}
-                            /> :
-                            <Column dataField={item.key} caption={item.value}
-                                alignment={'center'}
-                            />
-                    ))}
-                </DataGrid>
-            )}
         </div>
     );
 }

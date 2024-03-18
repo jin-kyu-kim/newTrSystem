@@ -5,16 +5,17 @@
         "keyColumn": "cdValue",
         "tableColumns": 
         [
-            { "key": "cdValue", "value": "상위코드", "width": 300, "alignment" : "center" },
-            { "key": "cdNm", "value": "상위코드명", "width": 300, "alignment" : "center" },
-            { "key": "useYn", "value": "사용여부", "width": 200, "alignment" : "center", "toggle": true, "visible": true }
+            { "key": "cdValue", "value": "상위코드" },
+            { "key": "cdNm", "value": "상위코드명" },
+            { "key": "useYn", "value": "사용여부", "editType": "toggle", "button": true }
         ],
         "childTableColumns": 
         [
-            { "key": "cdValue", "value": "하위코드", "width": 300, "alignment" : "center" },
-            { "key": "cdNm", "value": "하위코드명", "width": 300, "alignment" : "center" },
-            { "key": "useYn", "value": "사용여부", "width": 200, "alignment" : "center", "toggle": true, "visible": true }
+            { "key": "cdValue", "value": "하위코드" },
+            { "key": "cdNm", "value": "하위코드명" },
+            { "key": "useYn", "value": "사용여부", "toggle": true }
         ],
+        "tbNm": "CD",
         "searchInfo":{
             "searchParams": {
               "insertButton":false,
@@ -27,6 +28,7 @@
                       "queryId": {
                         "queryId": "sysMngMapper.TrsCodeList"
                       },
+                      "values": ["cdValue"],
                       "valueExpr": "cdValue",
                       "displayExpr": "cdNm",
                       "name": "cdValue",
@@ -52,12 +54,13 @@
         "keyColumn": "ctmmnyId",
         "tableColumns": 
         [
-            { "key": "ctmmnyId", "value": "고객사ID", "width": 200, "alignment" : "center" },
-            { "key": "ctmmnyNm", "value": "고객사명(한글)", "width": 300, "alignment" : "center" },
-            { "key": "ctmmnyEngNm", "value": "고객사명(영문)", "width": 300, "alignment" : "center" },
-            { "key": "industCdNm", "value": "산업명", "width": 200, "alignment" : "center"  },
-            { "key": "useYn", "value": "사용여부", "width": 100, "alignment" : "center", "toggle": true, "visible": true }
+            { "key": "ctmmnyId", "value": "고객사ID", "isRequire": true, "length": 4 },
+            { "key": "ctmmnyNm", "value": "고객사명(한글)", "isRequire": true },
+            { "key": "ctmmnyEngNm", "value": "고객사명(영문)" },
+            { "key": "industCd", "value": "산업명", "editType": "selectBox", "comCd": "VTW016", "isRequire": true },
+            { "key": "useYn", "value": "사용여부", "editType": "toggle", "button": true }
         ],
+        "tbNm": "CTMMNY_INFO",
         "searchInfo":{
             "searchParams": {
               "insertButton":false,

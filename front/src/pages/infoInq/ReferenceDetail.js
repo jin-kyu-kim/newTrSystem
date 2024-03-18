@@ -6,11 +6,11 @@ import { Button } from "devextreme-react";
 import ApiRequest from "utils/ApiRequest";
 import NoticeJson from "../infoInq/NoticeJson.json"
 
-const NoticeDetail = () => {
+const ReferenceDetail = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const noticeId = location.state.id;
-    const { detailQueryId, noticeButtonGroup } = NoticeJson.detail;
+    const { detailQueryId, referButtonGroup } = NoticeJson.detail;
 
     const [oneData, setOneData] = useState({});
     const [fileList, setFileList] = useState([]);
@@ -41,7 +41,7 @@ const NoticeDetail = () => {
         getOneData();
     }, []);
 
-    const deleteNotice = async () => {
+    const deleteReference = async () => {
         const result = window.confirm("삭제하시겠습니까?") 
         if(result){
             const params = [{ tbNm: "NOTICE" }, { noticeId: noticeId }]
@@ -65,7 +65,7 @@ const NoticeDetail = () => {
                 style={{ marginTop: "20px", marginBottom: "10px" }}
             ></div>
             <div style={{ marginRight: "20px", marginLeft: "20px", marginBottom: "50px" }}>
-                <h1 style={{ fontSize: "30px" }}>공지사항</h1>
+                <h1 style={{ fontSize: "30px" }}>자료실</h1>
             </div>
             <Container style={{ width: '90%', margin: '0 auto' }}>
                 {oneData.length !== 0 ?
@@ -92,13 +92,13 @@ const NoticeDetail = () => {
                 }
             </Container>
             <div style={{ textAlign: 'center', marginBottom: '100px' }}>
-                {noticeButtonGroup.map((button, index) => (
+                {referButtonGroup.map((button, index) => (
                     <Button
                         key={index}
                         style={{ marginRight: '3px' }}
                         text={button.text}
                         type={button.type}
-                        onClick={button.onClick === "deleteNotice" ? deleteNotice : () =>
+                        onClick={button.onClick === "deleteReference" ? deleteReference : () =>
                             navigate(button.onClick, { state: button.state ? { ...button.state, id: noticeId } : undefined })}
                     />
                 ))}
@@ -106,4 +106,4 @@ const NoticeDetail = () => {
         </div>
     );
 };
-export default NoticeDetail;
+export default ReferenceDetail;

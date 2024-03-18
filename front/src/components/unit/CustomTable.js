@@ -1,14 +1,13 @@
-import DataGrid, { Column, Pager, Paging, Summary, TotalItem, Editing, RequiredRule } from "devextreme-react/data-grid";
+import DataGrid, { Column, Pager, Paging, Summary, TotalItem } from "devextreme-react/data-grid";
 import { Button } from "devextreme-react/button";
-import ToggleButton from "../../pages/sysMng/ToggleButton"
 
-const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, 
-                      handleYnVal, editRow, onEditRow, onClick, wordWrap,onRowClick }) => {
+const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, onClick, wordWrap, onRowClick }) => {
 
   const gridRows = () => {
     const result = [];
     for (let i = 0; i < columns.length; i++) {
-      const { key, value, width, alignment, button, visible, toggle} = columns[i];
+      const { key, value, width, alignment, button, visible } = columns[i];
+      
       if (button) {
         result.push(
           <Column
@@ -29,21 +28,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
               caption={value}
               width={width}
               alignment={alignment || 'center'}>
-              {editRow && <RequiredRule message="필수 입력 항목입니다" />}
             </Column>
-          );
-        }
-        if (toggle) {
-          result.push(
-            <Column
-              key={key}
-              dataField={key}
-              caption={value}
-              width={width}
-              alignment={alignment || 'center'}
-              cellRender={({ data, key }) => (
-                <ToggleButton callback={handleYnVal} data={data} idColumn={key} />
-              )} />
           );
         }
       }
@@ -88,9 +73,6 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
         noDataText=""
         onRowDblClick={onRowDblClick}
         onRowClick={onRowClick}
-        onRowInserted={(e) => onEditRow('insert', e)}
-        onRowUpdating={(e) => onEditRow('update', e)}
-        onRowRemoved={(e) => onEditRow('delete', e)}
         onCellPrepared={(e) => {
           if (e.rowType === 'header') {
             e.cellElement.style.textAlign = 'center';
@@ -99,15 +81,6 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
         }}
         wordWrapEnabled={wordWrap}
       >
-        {editRow &&
-          <Editing
-            mode="row"
-            allowAdding={true}
-            allowDeleting={true}
-            allowUpdating={true}
-          />
-        }
-        
         <Paging defaultPageSize={pageSize} enabled={paging} />
         <Pager
           displayMode="full"
