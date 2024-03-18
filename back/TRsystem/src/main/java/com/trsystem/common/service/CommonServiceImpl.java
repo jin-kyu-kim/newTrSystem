@@ -406,7 +406,7 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Transactional
-    public int insertFile(String tbNm, Map<String, Object> params, List<MultipartFile> attachments) {
+    public int insertFile(Map<String, Object> tbData, Map<String, Object> params, List<MultipartFile> attachments) {
         int atchResult = 0;//첨부파일 insert결과
         int result = 0;
 
@@ -417,12 +417,10 @@ public class CommonServiceImpl implements CommonService {
         Map<String, Object> tableMap = new HashMap<>();
         List<Map<String, Object>> atchmnflParam = new ArrayList<>();
         List<Map<String, Object>> insertParam = new ArrayList<>();
-        tableMap.put("tbNm", tbNm);
-
 
         try{
             //2. 파일 내부 디렉토리에 업로드
-            String uploadDir = "./src/main/resources/upload";
+            String uploadDir = "../../front/public/upload";
             // 2-1 파일일 디렉토리가 없으면 생성
             Path directory = Path.of(uploadDir);
             if (Files.notExists(directory)) {
@@ -430,7 +428,6 @@ public class CommonServiceImpl implements CommonService {
             }
 
             if (attachments != null) {
-
                 //1. 기존에 채번된 첨부파일 ID가 있는지 확인
                 if(!params.containsKey("atchmnflId") || params.get("atchmnflId") == null || params.get("atchmnflId").equals("")){
                     // 1-1 없다면 첨부파일 ID 생성 순번은 1부터 시작
@@ -470,8 +467,7 @@ public class CommonServiceImpl implements CommonService {
 
             //4. 입력된 첨부파일 ID를 parameter에 지정
             params.put("atchmnflId", atchmnflId);
-            tableMap.put("tbNm", tbNm);
-            insertParam.add(tableMap);
+            insertParam.add(tbData);
             insertParam.add(params);
 
             //5. 사용하려는 테이블에 INSERT

@@ -30,6 +30,7 @@ const CustomEmpComboBox = ({value, readOnly, onValueChange, useEventBoolean, sho
             showClearButton={showClearButton}
             displayExpr="listEmpFlnm"
             valueExpr="empId"
+            stylingMode="underlined"
             onValueChange={(e) => {
                 // valueExpr로 필터링 되기때문에 기존 데이터에서 전달할 값 찾아서 추가
                 const selectItemValue = [];

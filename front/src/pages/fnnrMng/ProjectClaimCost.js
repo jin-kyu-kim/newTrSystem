@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 
-import ProjectJson from "../prjctCtClm/ProjectListJson.json";
-import ApiRequest from "../../../utils/ApiRequest";
-import SearchPrjctSet from "../../../components/composite/SearchPrjctSet";
-import CustomTable from "../../../components/unit/CustomTable";
+import ProjectJson from "./ProjectListJson.json";
+import ApiRequest from "../../utils/ApiRequest";
+import SearchPrjctSet from "../../components/composite/SearchPrjctSet";
+import CustomTable from "../../components/unit/CustomTable";
 
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
@@ -56,7 +56,7 @@ const ProjectCostClaimList = () => {
   };
 
   const onClick = (data) => {
-    navigate("/fnnrMng/prjctCtClm/ProjectClaimCostDetail", 
+    navigate("/fnnrMng/ProjectClaimCostDetail",
              {state: { prjctId: data.prjctId, prjctNm: data.prjctNm }})
   };
   

@@ -5,16 +5,15 @@ import Box, { Item } from "devextreme-react/box"
 import { Button } from "devextreme-react/button";
 import CustomComboBox from 'components/unit/CustomComboBox';
 
-const SearchInfoSet = ({ callBack, props }) => {
+const SearchInfoSet = ({ callBack, props, insertPage }) => {
   const navigate = useNavigate();
-  const { searchParams, textBoxItem, selectBoxItem } = props;
   const [initParam, setInitParam] = useState({});
+  const { searchParams, textBoxItem, selectBoxItem } = props;
 
   useEffect(() => {
     callBack(initParam);
   }, []);
 
-  // SelectBox 변경
   const handleChgState = ({ name, value }) => {
     setInitParam({
       ...initParam,
@@ -27,7 +26,7 @@ const SearchInfoSet = ({ callBack, props }) => {
   };
 
   const onClickInsertBtn = () => {
-    navigate("/infoInq/NoticeInput", {
+    navigate(insertPage, {
       state:{editMode:"create"}
     })
   };

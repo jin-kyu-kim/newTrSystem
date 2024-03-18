@@ -32,7 +32,6 @@
             CTMMNY_NM ,
             CTMMNY_ENG_NM,
             INDUST_CD,
-            (SELECT CD_NM FROM CD WHERE CD_VALUE = INDUST_CD) AS INDUST_CD_NM,
             USE_YN
         FROM nwTr.CTMMNY_INFO
         WHERE 1=1

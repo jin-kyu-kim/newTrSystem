@@ -1,8 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { useNavigate } from 'react-router-dom';
 import { TabPanel } from "devextreme-react";
-import { useLocation } from "react-router-dom";
-import ApiRequest from "../../utils/ApiRequest";
 import { useCookies } from "react-cookie";
 
 import EmpInfoJson from "./EmpInfoJson.json";
@@ -18,8 +15,8 @@ const EmpDetailInfo = () => {
     /*유저세션*/
     const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
     
-    const empId = cookies.userInfo.empId;
-    const deptId = cookies.userInfo.deptId;
+    // const empId = cookies.userInfo.empId;
+    // const deptId = cookies.userInfo.deptId;
    
     //탭 변경시 인덱스 설정 
     const onSelectionChanged = useCallback(
@@ -28,7 +25,7 @@ const EmpDetailInfo = () => {
             setSelectedIndex(args.value);
           }
         },
-        [setSelectedIndex]
+        []
       );
 
     const itemTitleRender = (a) => <span>{a.TabName}</span>;
@@ -72,11 +69,14 @@ const EmpDetailInfo = () => {
             animationEnabled={true}
             itemComponent={({ data }) => {
             const Component = React.lazy(() => import(`${data.url}`));
-            return (
+            if(data.index=== selectedIndex){
+              return (
                 <React.Suspense fallback={<div>Loading...</div>}>
                     <Component/>
                 </React.Suspense>
             );
+            }
+            
           }}
           />
         </div>

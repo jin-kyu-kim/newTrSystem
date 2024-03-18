@@ -6,7 +6,7 @@ import CustomComboBox from "components/unit/CustomComboBox";
 import ApiRequest from "utils/ApiRequest";
 import { TextBox } from "devextreme-react";
 
-const SearchPrjctCostSet = ({ callBack, props, excelDownload }) => {
+const SearchPrjctCostSet = ({ callBack, props }) => {
     const [initParams, setInitParams] = useState([]);
     const [yearData, setYearData] = useState([]);
     const [monthData, setMonthData] = useState([]);

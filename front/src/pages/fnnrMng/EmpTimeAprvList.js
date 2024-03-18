@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import  EmpListJson from "../infoInq/EmpListJson.json";
+import  EmpTimeAprvListJson from "./EmpTimeAprvListJson.json";
 import ApiRequest from "../../utils/ApiRequest";
-import SearchEmpSet from "components/composite/SearchInfoSet";
 import CustomTable from "components/unit/CustomTable";
+import SearchPrjctCostSet from "../../components/composite/SearchPrjctCostSet";
 
-function EmpList() {
+function EmpTimeAprvList() {
   const [values, setValues] = useState([]);
   const [param, setParam] = useState({});
 
@@ -14,7 +14,7 @@ function EmpList() {
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
 
-  const { keyColumn, queryId, tableColumns, popup, searchInfo } = EmpListJson;
+  const { keyColumn, queryId, tableColumns, searchParams } = EmpTimeAprvListJson;
 
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
@@ -24,9 +24,14 @@ function EmpList() {
 
   // 검색으로 조회할 때
   const searchHandle = async (initParam) => {
+    setTotalPages(1);
+    setCurrentPage(1);
     setParam({
       ...initParam,
       queryId: queryId,
+      currentPage: currentPage,
+      startVal: 0,
+      pageSize: pageSize,
     });
   };
 
@@ -35,7 +40,11 @@ function EmpList() {
       const response = await ApiRequest("/boot/common/queryIdSearch", param);
       setValues(response);
       if (response.length !== 0) {
+        setTotalPages(Math.ceil(response[0].totalItems / pageSize));
+        setTotalItems(response[0].totalItems);
       } else {
+        setTotalPages(1);
+        setTotalItems(0);
       }
     } catch (error) {
       console.log(error);
@@ -48,20 +57,15 @@ function EmpList() {
         className="title p-1"
         style={{ marginTop: "20px", marginBottom: "10px" }}
       >
-        <h1 style={{ fontSize: "40px" }}>직원 조회</h1>
+        <h1 style={{ fontSize: "40px" }}>근무시간 승인내역 조회</h1>
       </div>
       <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
-        <span>* 직원을 조회합니다.</span>
+        <span>* 근무시간 승인내역을 조회합니다.</span>
       </div>
       <div style={{ marginBottom: "20px" }}>
-        <SearchEmpSet
-          callBack={searchHandle}
-          props={searchInfo}
-          popup={popup}
-        />
+      <SearchPrjctCostSet callBack={searchHandle} props={searchParams} />
       </div>
 
-      <div>검색된 건 수 : {totalItems} 건</div>
       <CustomTable
         keyColumn={keyColumn}
         pageSize={pageSize}
@@ -69,8 +73,9 @@ function EmpList() {
         values={values}
         paging={true}
       />
+      
     </div>
   );
 };
 
-export default EmpList;
+export default EmpTimeAprvList;
