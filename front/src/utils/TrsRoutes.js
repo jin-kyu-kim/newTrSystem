@@ -226,6 +226,12 @@ const TreRoutes = [
     path: "/indvdlClm/CultureHealthCost",
     name: "CultureHealthCost",
     element: React.lazy(() => import("../pages/indvdlClm/CultureHealthCost")),
+  },
+  // 관리자메뉴 > 전자결재서식관리
+  {
+    path: "/mngrMenu/ElecAtrzFormManage",
+    name: "ElecAtrzFormManage",
+    element: React.lazy(() => import("../pages/mngrMenu/ElecAtrzFormManage")),
   }
 ];
 
