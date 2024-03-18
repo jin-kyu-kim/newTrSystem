@@ -1,7 +1,7 @@
 import Button from "devextreme-react/button";
 import DateBox from 'devextreme-react/date-box';
 import CultureHealthCostJson from "./CultureHealthCost.json";
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import CustomCdComboBox from "../../components/unit/CustomCdComboBox";
 import {FileUploader, NumberBox} from "devextreme-react";
 import uuid from "react-uuid";
@@ -43,9 +43,7 @@ import axios from "axios";
       fontSize: 14
   }
   const button = {
-      backgroundColor: '#446E9B',
       borderRadius: '5px',
-      color: '#fff',
       width: '80px',
       marginTop: '20px',
       marginRight: '15px'
@@ -56,6 +54,7 @@ const CultureHealthCost = () => {
     const [values, setValues] = useState([]);
     const [attachments, setAttachments] = useState([null]);
     const [pageSize] = useState(10);
+    const [selectedItem, setSelectedItem] = useState(null);
     var now = new Date();
     const Json = CultureHealthCostJson;
     const [initParam, setInitParam] = useState({
@@ -73,14 +72,22 @@ const CultureHealthCost = () => {
         return time.getFullYear()+"/"+('0' + (time.getMonth() + 1)).slice(-2)+"/"+('0' + time.getDate()).slice(-2)
     }
 
-    const getMonth = (time) => {
+    const getLastMonth = (time) => {
+        if (typeof time === 'string'){
+            time = new Date(time.slice(0,4)+"/"+time.slice(4,6)+"/"+time.slice(6));
+        }
         var firstDayOfMonth = new Date( time.getFullYear(), time.getMonth() , 1 );
         var lastMonth = new Date ( firstDayOfMonth.setDate( firstDayOfMonth.getDate() - 1 ) );
+        return lastMonth.getFullYear()+"/"+('0' + (lastMonth.getMonth()+1)).slice(-2);
+    }
+
+    const getTargetMonth = (time) => {
+        var lastMonth = getLastMonth(time);
         var dateNum = Number(time.getDate());
         if(dateNum <= 5){
             return time.getFullYear()+"/"+('0' + (time.getMonth()+1)).slice(-2);
         } else if (6 <= dateNum){
-            return lastMonth.getFullYear()+"/"+('0' + (lastMonth.getMonth()+1)).slice(-2)+", "+time.getFullYear()+"/"+('0' + (time.getMonth()+1)).slice(-2);
+            return lastMonth+", "+time.getFullYear()+"/"+('0' + (time.getMonth()+1)).slice(-2);
         }
     }
 
@@ -105,7 +112,7 @@ const CultureHealthCost = () => {
                 { tbNm: "CLTUR_PHSTRN_ACT_CT_REG" }, { empId : cookies.userInfo.empId }
             ]);
             response.forEach((element)=>{
-                element.month = element.clmYmd.slice(0,4)+"/"+element.clmYmd.slice(4,6);
+                element.month = getLastMonth(element.clmYmd);
             })
             setValues(response);
         } catch (e) {
@@ -156,6 +163,40 @@ const CultureHealthCost = () => {
         }
     };
 
+    const onRowClick = useCallback((e) => {
+        const selectedRowsData = e.data.clturPhstrnActCtSn;
+        setSelectedItem(selectedRowsData);
+    }, []);
+
+    const onDeleteClick = async() => {
+        const confirmResult = window.confirm("삭제하시겠습니까?");
+        if (confirmResult) {
+            const params = [{ tbNm: "CLTUR_PHSTRN_ACT_CT_REG" }, { clturPhstrnActCtSn: selectedItem }]
+            try {
+                const response = await ApiRequest("/boot/common/commonDelete", params);
+                if (response === 1) {
+                    searchTable();
+                    window.alert("삭제되었습니다.")
+                }
+            } catch (error) {
+                console.error("API 요청 에러:", error);
+                console.log(error);
+            }
+        }
+    };
+
+    function onResetClick() {
+        setInitParam({
+            "clmAmt": 0,
+            "clmYmd": now.getFullYear()+('0' + (now.getMonth() + 1)).slice(-2)+('0' + now.getDate()).slice(-2),
+            "clturPhstrnSeCd": null,
+            "actIem": null,
+            "actPurps": null,
+            "empId": cookies.userInfo.empId,
+            "regEmpId": cookies.userInfo.empId
+        })
+    }
+
     return (
         <div className="container">
             <div style={{display: "flex"}}>
@@ -170,7 +211,7 @@ const CultureHealthCost = () => {
                             <br/>
                                * 현재날짜 : <span
                                 style={{color: "red"}}>{getDate(now)}</span><br/>
-                            * 입력, 수정 및 삭제 가능한 청구대상 월 : <span style={{color: "red"}}>{getMonth(now)}</span><br/>
+                            * 입력, 수정 및 삭제 가능한 청구대상 월 : <span style={{color: "red"}}>{getTargetMonth(now)}</span><br/>
                         </span>
                         </div>
                         <CustomTable
@@ -178,9 +219,12 @@ const CultureHealthCost = () => {
                             pageSize={pageSize}
                             columns={Json.tableColumns}
                             values={values}
-                            // onRowDblClick={onRowDblClick}
                             paging={true}
+                            onRowClick={onRowClick}
                         />
+                    </div>
+                    <div style={{display: "flex", justifyContent: "flex-end"}}>
+                        <Button text="삭제" onClick={onDeleteClick} disabled={!selectedItem} type='danger' style={button}></Button>
                     </div>
                 </div>
                 <form style={empDetailContainerStyle} onSubmit={costInsert}>
@@ -266,8 +310,8 @@ const CultureHealthCost = () => {
                         </tbody>
                     </table>
                     <div style={{display: "flex", justifyContent: "flex-end"}}>
-                        <Button style={button} text="저장" useSubmitBehavior></Button>
-                        <Button style={button} text="초기화"></Button>
+                        <Button style={button} type='default' text="저장" useSubmitBehavior></Button>
+                        <Button style={button} type='default' text="초기화" onClick={onResetClick}></Button>
                     </div>
                     <div>
                     </div>
