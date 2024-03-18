@@ -1,6 +1,6 @@
 {
-	"menuName": "ProjectOutordPerson",
-	"queryId": "projectMapper.retrievePrjctOutordPerson",
+	"menuName": "ProjectOutordAprv",
+	"queryId": "projectMapper.retrievePrjctList",
     "keyColumn": "prjctId",
     "tableColumns": 
 	[
@@ -12,7 +12,7 @@
         { "key": "ctmmnyNm", "value": "고객사", "width": "200", "alignment" : "left"  },
         { "key": "ctrtYmd", "value": "시작일", "width": "120" },
         { "key": "bizEndYmd", "value": "종료일", "width": "120" },
-        { "key": "prjctId", "value": "구분", "width": 200, "button": "시간비용청구현황"}
+        { "key": "prjctId", "value": "구분", "width": 200, "button": "비용청구현황"}
 	],
     "searchParams":
 	{

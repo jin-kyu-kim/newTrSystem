@@ -7,8 +7,6 @@ import ApiRequest from "../../../utils/ApiRequest";
 import ProjectDetailJson from "./ProjectDetailJson.json";
 
 import Button from "devextreme-react/button";
-import LinkButton from "../../../components/unit/LinkButton.js";
-
 //TODO. 프로젝트 리스트에서 프로젝트 상태?형태?코드 정보 받아와서 그 정보에따라 변경원가 클릭시 작동 다르게 하기.
 
 const ProjectDetail = () => {
@@ -21,6 +19,7 @@ const ProjectDetail = () => {
   const bizEndYmd = location.state.bizEndYmd;
   const bgtMngOdrTobe = location.state.bgtMngOdrTobe;
   const bizSttsCd = location.state.bizSttsCd;
+  const deptId = location.state.deptId;
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [atrzLnSn, setAtrzLnSn] = useState();
 
@@ -73,22 +72,38 @@ const ProjectDetail = () => {
         await projectChgHandle();
       }
     } else {
-      const result = await chkRjctAtrz().then((value) => {
-        console.log(value);
+      const result = await chkBgtOdr().then((value) => {
+        return value;
+      });
 
-        // 반려된 것이 있을 경우 반려 체크
-        if(value.length > 0) {
-          const isconfirm = window.confirm("반려된 요청이 있습니다. 수정을 진행하시겠습니까?");
-          if(isconfirm){
-            projectChgHandle();
+      if(result != null) {
+        if(result === 'VTW03701') {
+          // 임시저장인 경우
+          console.log("임시저장")
+          const isconfirm = window.confirm("임시저장된 내역이 있습니다. 수정을 진행하시겠습니까?");
+          if(isconfirm) {
+            const isconfirm = window.confirm("임시저장된 내역을 지우고 프로젝트 변경을 진행하시겠습니까?");
+            if(isconfirm) {
+              await projectChgHandle();
+            }
+          }
+        } else if (result === 'VTW03704' ) {
+          // 반려인 경우
+          console.log("반려")
+          const isconfirm = window.confirm("기존에 반려된 요청이 존재합니다. 반려된 요청을 수정하시겠습니까?");
+          if(isconfirm) {
+            const isconfirm = window.confirm("기존에 반려된 요청의 변경 사항을 초기화하여 수정하시겠습니까?");
+            if(isconfirm) {
+              await projectChgHandle();
+            }
           }
         } else {
           const isconfirm = window.confirm("프로젝트 변경을 진행하시겠습니까?");
           if(isconfirm){
-            projectChgHandle();
+            await projectChgHandle();
           }
         }
-      });
+      }
     }
   } 
 
@@ -106,26 +121,36 @@ const ProjectDetail = () => {
       });
       navigate("../project/ProjectChange",
         {
-        state: { prjctId: prjctId, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd, bgtMngOdr:bgtMngOdr, bgtMngOdrTobe: bgtMngOdrTobe, targetOdr: targetOdr, bizSttsCd: bizSttsCd, atrzLnSn: atrzLnSn},
+        state: { prjctId: prjctId
+               , ctrtYmd: ctrtYmd
+               , bizEndYmd: bizEndYmd
+               , bgtMngOdr:bgtMngOdr
+               , bgtMngOdrTobe: bgtMngOdrTobe
+               , targetOdr: targetOdr
+               , bizSttsCd: bizSttsCd
+               , atrzLnSn: atrzLnSn
+               , deptId: deptId},
       })
   }
 
   /**
-   * 반려된 승인요청이 있는지 확인한다.
+   * 변경원가 차수가 반려되거나 임시저장인 차수인지 확인한다.
+   * VTW03701: 임시저장
+   * VTW03704: 반려
    * @returns 
    */
-  const chkRjctAtrz = async () => {
-    console.log("반려여부 확인");
+  const chkBgtOdr = async () => {
+    console.log("반려/임시저장 여부 확인");
 
     const param = {
-      queryId: "projectMapper.retrieveRjctAtrz",
+      queryId: "projectMapper.retrieveTmprRjctBgtOdr",
       prjctId: prjctId,
-      atrzLnSn: atrzLnSn
+      bgtMngOdr: bgtMngOdrTobe
     };
 
     const response = await ApiRequest("/boot/common/queryIdSearch", param);
 
-    return response;
+    return response[0].atrzDmndSttsCd;
   };
 
   const handleBgtPrmpc = async () => {
@@ -163,7 +188,6 @@ const ProjectDetail = () => {
         </div>
       </div>
       <div className="buttons" align="right" style={{ margin: "20px" }}>
-        {/* <LinkButton location={"../project/ProjectChange"} name={"변경원가"} type={"default"} stylingMode={"contained"} prjctId={prjctId}/> */}
         <Button
           width={110}
           text="Contained"
@@ -183,7 +207,16 @@ const ProjectDetail = () => {
         >
           프로젝트종료
         </Button>
-        <LinkButton location={"../project/ProjectList"} name={"목록"} type={"normal"} stylingMode={"outline"}/>
+        <Button
+          width={50}
+          text="Contained"
+          type="normal"
+          stylingMode="outline"
+          style={{ margin : '2px' }}
+          onClick={() => navigate("../project/ProjectList")}
+        >
+          목록
+        </Button>
       </div>
       <div
         style={{
@@ -203,11 +236,13 @@ const ProjectDetail = () => {
           animationEnabled={true}
           itemComponent={({ data }) => {
           const Component = React.lazy(() => import(`${data.url}`));
-          return (
-            <React.Suspense fallback={<div>Loading...</div>}>
-              <Component prjctId={prjctId} ctrtYmd={ctrtYmd} bizEndYmd={bizEndYmd} bgtMngOdr={bgtMngOdr} />
-            </React.Suspense>
-          );
+          if(data.index === selectedIndex) {
+              return (
+                <React.Suspense fallback={<div>Loading...</div>}>
+                <Component prjctId={prjctId} ctrtYmd={ctrtYmd} bizEndYmd={bizEndYmd} bgtMngOdr={bgtMngOdr} bgtMngOdrTobe={bgtMngOdrTobe} />
+              </React.Suspense>
+            );
+          }
         }}
         />
       </div>

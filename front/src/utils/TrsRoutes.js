@@ -41,9 +41,15 @@ const TreRoutes = [
   },
   // 프로젝트 외주비용승인
   {
-    path: "/project/ProjectOutordPerson",
-    name: "ProjectOutordPerson",
-    element: React.lazy(() => import("../pages/project/approval/ProjectOutordPerson")),
+    path: "/project/ProjectOutordAprv",
+    name: "ProjectOutordAprv",
+    element: React.lazy(() => import("../pages/project/approval/ProjectOutordAprv")),
+  },
+  // 프로젝트 외주비용승인 상세
+  {
+    path: "/project/ProjectOutordAprvDetail",
+    name: "ProjectOutordAprvDetail",
+    element: React.lazy(() => import("../pages/project/approval/ProjectOutordAprvDetail")),
   },
   // 프로젝트 디테일
   {
@@ -221,7 +227,6 @@ const TreRoutes = [
     name: "CultureHealthCost",
     element: React.lazy(() => import("../pages/indvdlClm/CultureHealthCost")),
   }
-
 ];
 
 export default TreRoutes;

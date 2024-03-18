@@ -4,10 +4,9 @@ import SearchPrjctCostSet from "../../../components/composite/SearchPrjctCostSet
 import ProjectHrCtAprvDetailJson from "./ProjectHrCtAprvDetailJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
 import CustomTable from "../../../components/unit/CustomTable";
-import CustomPopup from "components/unit/CustomPopup";
+import Popup from "devextreme-react/popup";
 import ProjectHrCtAprvCtPop from "./ProjectHtCtAprvCtPop";
 import ProjectHrCtAprvMmPop from "./ProjectHtCtAprvMmPop";
-import { set } from "date-fns";
 
 const ProjectHrCtAprvDetail = () => {
 
@@ -87,7 +86,7 @@ const ProjectHrCtAprvDetail = () => {
         })
     }
 
-    const onMmBtnClick = async (data) => {
+    const onMmBtnClick = async (button, data) => {
         console.log(data);
         setData(data);
 
@@ -110,7 +109,7 @@ const ProjectHrCtAprvDetail = () => {
     }
 
 
-    const onCtBtnClick = async (data) => {
+    const onCtBtnClick = async (button, data) => {
         console.log(data);
 
         await retrieveProjectCtAplyDetail(data);
@@ -157,12 +156,25 @@ const ProjectHrCtAprvDetail = () => {
                 <span>* 경비</span>
             </div>
             <CustomTable keyColumn={ct.keyColumn} columns={ct.tableColumns} values={ctValues} paging={true} onClick={onCtBtnClick} summary={true} summaryColumn={ct.summaryColumn}/>
-            <CustomPopup props={ProjectHrCtAprvDetailJson.ctPopup} visible={ctPopupVisible} handleClose={handleClose}>
+            <Popup
+                width={ProjectHrCtAprvDetailJson.popup.width}
+                height={ProjectHrCtAprvDetailJson.popup.height}
+                visible={ctPopupVisible}
+                onHiding={handleClose}
+                showCloseButton={true}
+            >
                 <ProjectHrCtAprvCtPop props={ctDetailValues} prjctNm={prjctNm} data={data}/> 
-            </CustomPopup>
-            <CustomPopup props={ProjectHrCtAprvDetailJson.ctPopup} visible={mmPopupVisible} handleClose={handleClose}>
-                <ProjectHrCtAprvMmPop props={mmDetailValues} prjctNm={prjctNm} data={data}/> 
-            </CustomPopup>
+            </Popup>
+
+            <Popup
+                width={ProjectHrCtAprvDetailJson.popup.width}
+                height={ProjectHrCtAprvDetailJson.popup.height}
+                visible={mmPopupVisible}
+                onHiding={handleClose}
+                showCloseButton={true}
+            >
+                <ProjectHrCtAprvMmPop props={mmDetailValues} prjctNm={prjctNm} data={data}/>
+            </Popup>
         </div>
 
     );
