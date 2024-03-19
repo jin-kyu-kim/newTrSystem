@@ -69,7 +69,10 @@ const ProjectConsortium = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdr, bgtMngOdr
                     json={projectChangeConsortiumJson}
                     bgtMngOdr={bgtMngOdr}
                     bgtMngOdrTobe={bgtMngOdrTobe}
-                    cdValues={cdValues}/>
+                    cdValues={cdValues}
+                    ctrtYmd={ctrtYmd}
+                    stbleEndYmd={stbleEndYmd}
+                    />
                 </div>
             </div>
         </>

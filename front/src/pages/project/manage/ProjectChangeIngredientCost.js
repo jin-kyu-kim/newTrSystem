@@ -73,7 +73,9 @@ const ProjectChangeIngredientCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdr,
                     json={ProjectChangeIngredientCostJson} 
                     bgtMngOdr={bgtMngOdr} 
                     bgtMngOdrTobe={bgtMngOdrTobe}
-                    cdValues={cdValues}/>
+                    cdValues={cdValues}
+                    ctrtYmd={ctrtYmd}
+                    stbleEndYmd={stbleEndYmd}/>
                 </div>
             </div>
         </>

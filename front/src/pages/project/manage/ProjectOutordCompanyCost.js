@@ -77,6 +77,8 @@ const ProjectOutordCompanyCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdr, bg
                 bgtMngOdr={bgtMngOdr} 
                 bgtMngOdrTobe={bgtMngOdrTobe}
                 cdValues={cdValues}
+                ctrtYmd={ctrtYmd}
+                stbleEndYmd={stbleEndYmd}
                 />
           </div>
         </div>
