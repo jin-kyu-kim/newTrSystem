@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import ApiRequest from '../../../utils/ApiRequest';
 import CustomHorizontalTable from '../../../components/unit/CustomHorizontalTable';
 import CostCalc from './ProjectCostCalcJson.json';
-import CustonbudgetTable from '../../../components/unit/CustonbudgetTable';
+import CustombudgetTable from '../../../components/unit/CustombudgetTable';
 import DataGrid, {
   Column,
   Summary,
@@ -132,7 +132,7 @@ const calculateCustomSummary = (options) => {
       <div>
       <p><strong>* 사업개요</strong></p>
       <CustomHorizontalTable headers={CostCalc.BizSumry.BizSumry1} column={baseInfoData}/>
-      <CustonbudgetTable headers={CostCalc.BizSumry.BizSumry2} column={baseInfoData}/>
+      <CustombudgetTable headers={CostCalc.BizSumry.BizSumry2} column={baseInfoData}/>
       <CustomHorizontalTable headers={CostCalc.BizSumry.BizSumry3} column={baseInfoData}/> 
       &nbsp;
       <p><strong>* 컨소시엄</strong></p>
