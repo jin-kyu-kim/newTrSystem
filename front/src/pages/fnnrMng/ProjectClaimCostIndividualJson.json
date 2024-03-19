@@ -16,7 +16,9 @@
         { "key": "mm", "value": "누적사용", "width": 150, "alignment" : "right" },
         { "key": "useMM", "value": "가용", "width": 150, "alignment" : "right"  },
         { "key": "clmMd", "value": "당차수청구", "width": 150, "alignment" : "right"  },
-        { "key": "empId", "value": "상태", "width": 180, "button": "비용청구현황", "alignment" : "center" }
+        { "key": "empId", "value": "상태", "width": 180, "alignment" : "center", "button": { "text": "비용청구현황",
+                                                                                            "name": "empId"
+                                                                                        } }
     ],
     "mmSumColumns": [
         { "key": "deptNm", "value": "소속", "type"  : "sum", "format": "계" },
@@ -32,16 +34,14 @@
         { "key": "aplyOdr", "value": "차수", "width": 100, "alignment" : "left" },
         { "key": "totalAmtSum", "value": "누적사용", "width": 300, "alignment" : "right"  },
         { "key": "totalAmt", "value": "당차수청구", "width": 300, "alignment" : "right"   },
-        { "key": "empId", "value": "상태", "width": 180, "button": "비용청구현황", "alignment" : "center" }
+        { "key": "empId", "value": "상태", "width": 180, "alignment" : "center", "button": { "text": "비용청구현황",
+                                                                                            "name": "empId"
+                                                                                        } }
     ],
     "ctSumColumns": [
         { "key": "deptNm", "value": "소속", "type"  : "sum", "format": "계" },
         { "key": "totalAmtSum", "value": "누적사용", "type"  : "sum", "format": "{0} 원", "precision": "0" },
         { "key": "totalAmt", "value": "당차수청구", "type"  : "sum", "format": "{0} 원", "precision": "0" }
 
-    ],
-    "popup": {
-        "width": "90%",
-        "height": "90%"
-    }
+    ]
 }

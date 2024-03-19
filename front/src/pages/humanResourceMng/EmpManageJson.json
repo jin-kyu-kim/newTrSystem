@@ -12,7 +12,7 @@
         { "key": "empFlnm", "value": "성명"},
         { "key": "jbpsNm", "value": "직위"},
         { "key": "deptId", "value": "소속"},
-        { "key": "empId", "value": "", "width": 120, "button": "초기화","alignment" : "center", "icon" : "back"}
+        { "key": "empId", "value": "초기화", "width": 120, "button": {"text" : "초기화"}}
     ],
 	"ejhQueryId": "infoInqMapper.retrieveEmpJbpsHist",
     "ejhKeyColumn": "empId",

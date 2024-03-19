@@ -6,7 +6,7 @@ import ApiRequest from "../../utils/ApiRequest";
 import ProjectClaimCostDetailJson from "./ProjectClaimCostDetailJson.json";
 import SearchPrjctCostSet from "../../components/composite/SearchPrjctCostSet";
 
-const ProjectCostClaimDetail = () => {
+const ProjectClaimCostDetail = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const prjctId = location.state.prjctId;
@@ -38,7 +38,8 @@ const ProjectCostClaimDetail = () => {
     }, []);
 
     const searchHandle = async (initParam) => {
-        if(initParam.year == null || initParam.month == null) {
+
+        if(initParam.yearItem == null || initParam.monthItem == null) {
 
             const date = new Date();
             const year = date.getFullYear();
@@ -62,11 +63,12 @@ const ProjectCostClaimDetail = () => {
         setParam({
 
             ...param,
-            year: initParam.year,
-            monthVal: initParam.month,
+            year: initParam.yearItem,
+            monthVal: initParam.monthItem,
             aplyOdr: initParam.aplyOdr,
             empId: initParam.empId,
         })
+
     }
 
     // 탭 변경시 인덱스 설정
@@ -140,4 +142,4 @@ const ProjectCostClaimDetail = () => {
     );
 };
 
-export default ProjectCostClaimDetail;
+export default ProjectClaimCostDetail;

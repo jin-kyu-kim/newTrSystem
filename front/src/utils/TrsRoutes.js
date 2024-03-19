@@ -69,6 +69,12 @@ const TreRoutes = [
     name: "ProjectAprvDetail",
     element: React.lazy(() => import("../pages/project/approval/ProjectAprvDetail")),
   },
+  // 권한관리
+  {
+    path: "/sysMng/EmpAuth",
+    name: "EmpAuth",
+    element: React.lazy(() => import("../pages/sysMng/EmpAuth")),
+  },
    // 고객사관리
   {
     path: "/sysMng/CustomersList",
@@ -226,6 +232,24 @@ const TreRoutes = [
     path: "/indvdlClm/CultureHealthCost",
     name: "CultureHealthCost",
     element: React.lazy(() => import("../pages/indvdlClm/CultureHealthCost")),
+  },
+  // 재무 관리 > 경비승인내역
+  {
+    path: "/fnnrMng/EmpExpenseAprvList",
+    name: "EmpExpenseAprvList",
+    element: React.lazy(() => import("../pages/fnnrMng/EmpExpenseAprvList")),
+  },
+  // 관리자메뉴 > 전자결재서식관리
+  {
+    path: "/mngrMenu/ElecAtrzFormManage",
+    name: "ElecAtrzFormManage",
+    element: React.lazy(() => import("../pages/mngrMenu/ElecAtrzFormManage")),
+  },
+  // 관리자메뉴 > 전자결재서식관리 > 신규서식작성
+  {
+    path: "/mngrMenu/ElecAtrzNewForm",
+    name: "ElecAtrzNewForm",
+    element: React.lazy(() => import("../pages/mngrMenu/ElecAtrzNewForm")),
   }
 ];
 

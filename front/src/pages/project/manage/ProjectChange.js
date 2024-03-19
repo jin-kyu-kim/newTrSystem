@@ -17,7 +17,7 @@ const ProjectChange = () => {
 
   const prjctId = location.state ? location.state.prjctId : null;
   const ctrtYmd = location.state ? location.state.ctrtYmd : null;
-  const bizEndYmd = location.state ? location.state.bizEndYmd : null;
+  const stbleEndYmd = location.state ? location.state.stbleEndYmd : null;
   const bgtMngOdr = location.state ? location.state.bgtMngOdr : null;
   const bgtMngOdrTobe = location.state ? location.state.bgtMngOdrTobe : null;
   const targetOdr = location.state ? location.state.targetOdr : null;
@@ -35,7 +35,7 @@ const ProjectChange = () => {
 
   const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
   const empId = cookies.userInfo.empId;
-  const buttonState = { prjctId: prjctId, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd, bgtMngOdr:bgtMngOdr, };
+  const buttonState = { prjctId: prjctId, ctrtYmd: ctrtYmd, stbleEndYmd: stbleEndYmd, bgtMngOdr:bgtMngOdr, };
   // console.log("buttonState?",buttonState);
   const [requestBtnVisible, setAprvBtnVisible] = useState(true);
   const [cancelBtnVisible, setCancelBtnVisible] = useState(false);
@@ -211,7 +211,7 @@ const ProjectChange = () => {
     console.log("prjctId!! 변경! ", prjctId);
     navigate("../project/ProjectDetail",
         {
-        state: { prjctId: prjctId, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd, bgtMngOdr:bgtMngOdr, bgtMngOdrTobe:bgtMngOdrTobe, deptId: deptId },
+        state: { prjctId: prjctId, ctrtYmd: ctrtYmd, stbleEndYmd: stbleEndYmd, bgtMngOdr:bgtMngOdr, bgtMngOdrTobe:bgtMngOdrTobe, deptId: deptId },
         })
   };
 
@@ -312,10 +312,11 @@ const ProjectChange = () => {
               <Component 
                 prjctId={prjctId}
                 ctrtYmd={ctrtYmd}
-                bizEndYmd={bizEndYmd}
+                stbleEndYmd={stbleEndYmd}
                 bgtMngOdrTobe={bgtMngOdrTobe}
                 revise={true}
                 tabId={data.tabId}
+                change={true}
               />
             </Suspense>
           );

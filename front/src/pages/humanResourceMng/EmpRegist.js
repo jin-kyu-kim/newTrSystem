@@ -61,7 +61,6 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
    
     if (empInfo.empId !== undefined) {
       setData(empInfo);
-      console.log("ㅎㅇㅎㅇ",data)
     }
   }, [empInfo]);
 
