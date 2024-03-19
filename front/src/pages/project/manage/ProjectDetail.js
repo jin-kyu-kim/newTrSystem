@@ -17,7 +17,7 @@ const ProjectDetail = () => {
   const totBgt = location.state.totBgt;
   const bgtMngOdr = location.state.bgtMngOdr;
   const ctrtYmd = location.state.ctrtYmd;
-  const bizEndYmd = location.state.bizEndYmd;
+  const stbleEndYmd = location.state.stbleEndYmd;
   const bgtMngOdrTobe = location.state.bgtMngOdrTobe;
   const bizSttsCd = location.state.bizSttsCd;
   const deptId = location.state.deptId;
@@ -121,7 +121,7 @@ const ProjectDetail = () => {
         {
         state: { prjctId: prjctId
                , ctrtYmd: ctrtYmd
-               , bizEndYmd: bizEndYmd
+               , stbleEndYmd: stbleEndYmd
                , bgtMngOdr:bgtMngOdr
                , bgtMngOdrTobe: bgtMngOdrTobe
                , targetOdr: targetOdr
@@ -156,7 +156,7 @@ const ProjectDetail = () => {
         {
         state: { prjctId: prjctId
                , ctrtYmd: ctrtYmd
-               , bizEndYmd: bizEndYmd
+               , stbleEndYmd: stbleEndYmd
                , bgtMngOdr: bgtMngOdr
                , bgtMngOdrTobe: response
                , targetOdr: response
@@ -279,7 +279,7 @@ const ProjectDetail = () => {
           if(data.index === selectedIndex) {
               return (
                 <React.Suspense fallback={<div>Loading...</div>}>
-                <Component prjctId={prjctId} ctrtYmd={ctrtYmd} bizEndYmd={bizEndYmd} bgtMngOdr={bgtMngOdr} bgtMngOdrTobe={bgtMngOdrTobe} />
+                <Component prjctId={prjctId} ctrtYmd={ctrtYmd} stbleEndYmd={stbleEndYmd} bgtMngOdr={bgtMngOdr} bgtMngOdrTobe={bgtMngOdrTobe} />
               </React.Suspense>
             );
           }
