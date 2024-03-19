@@ -67,7 +67,7 @@ const handelGetData = async () => {
       }else{
         order = bgtMngOdr
       }
-      const modifiedItem = { ...item, prjctId: prjctId, bgtMngOdr: bgtMngOdrTobe, ctrtYmd:ctrtYmdPrarm, stbleEndYmd:stbleEndYmdPrarm};   
+      const modifiedItem = { ...item, prjctId: prjctId, bgtMngOdr: order, ctrtYmd:ctrtYmdPrarm, stbleEndYmd:stbleEndYmdPrarm};   
       const response = await ApiRequest(
         "/boot/common/queryIdSearch",
         modifiedItem
