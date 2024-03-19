@@ -270,12 +270,12 @@
                  INNER JOIN PRJCT_INDVDL_CT_MM PICM ON PICM.EMP_ID = PMA.EMP_ID
         WHERE 1=1
           AND PICM.MM_ATRZ_CMPTN_YN ='Y'
-        <if test="year != null and year !=''">
-            AND DATE_FORMAT(PMA.APLY_YMD , '%Y') = #{year}
+        <if test="yearItem != null and yearItem !=''">
+            AND DATE_FORMAT(PMA.APLY_YMD , '%Y') = #{yearItem}
         </if>
 
-        <if test="month != null and month !=''">
-            AND DATE_FORMAT(PMA.APLY_YMD , '%m') = #{month}
+        <if test="monthItem != null and monthItem !=''">
+            AND DATE_FORMAT(PMA.APLY_YMD , '%m') = #{monthItem}
         </if>
 
         <if test="aplyOdr != null and aplyOdr !=''">
