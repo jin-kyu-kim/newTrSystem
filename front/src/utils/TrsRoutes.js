@@ -226,6 +226,12 @@ const TreRoutes = [
     path: "/indvdlClm/CultureHealthCost",
     name: "CultureHealthCost",
     element: React.lazy(() => import("../pages/indvdlClm/CultureHealthCost")),
+  },
+  // 재무 관리 > 경비승인내역
+  {
+    path: "/fnnrMng/EmpExpenseAprvList",
+    name: "EmpExpenseAprvList",
+    element: React.lazy(() => import("../pages/fnnrMng/EmpExpenseAprvList")),
   }
 ];
 
