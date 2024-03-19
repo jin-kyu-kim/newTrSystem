@@ -11,7 +11,7 @@ import DataGrid, {
   Grouping,
   TotalItem,
 } from "devextreme-react/data-grid";
-const ProjectCostCalc = ({prjctId, ctrtYmd, stbleEndYmd, bgtMngOdr, bgtMngOdrTobe}) => {
+const ProjectCostCalc = ({prjctId, ctrtYmd, stbleEndYmd, bgtMngOdr, bgtMngOdrTobe, change}) => {
 const [baseInfoData, setBaseInfoData] = useState([]);
 const [cnsrtmData, setCnsrtmData] = useState([]);
 const [data, setData] = useState([]);
@@ -61,7 +61,12 @@ const CnsrtmData = async () => {
 const handelGetData = async () => {
   try {
     await CostCalc.PrmpcAnls.params.map(async (item) => {
-      //TODO. 차수를 detail에서 호출일때와 change에서 호출일때 다르게 해야함.
+      let order; //detail에서 호출일때와 change에서 호출일때 차수 다르게 조회해옴.
+      if(change){
+        order = bgtMngOdrTobe
+      }else{
+        order = bgtMngOdr
+      }
       const modifiedItem = { ...item, prjctId: prjctId, bgtMngOdr: bgtMngOdrTobe, ctrtYmd:ctrtYmdPrarm, stbleEndYmd:stbleEndYmdPrarm};   
       const response = await ApiRequest(
         "/boot/common/queryIdSearch",

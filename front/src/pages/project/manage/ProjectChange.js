@@ -316,6 +316,7 @@ const ProjectChange = () => {
                 bgtMngOdrTobe={bgtMngOdrTobe}
                 revise={true}
                 tabId={data.tabId}
+                change={true}
               />
             </Suspense>
           );
