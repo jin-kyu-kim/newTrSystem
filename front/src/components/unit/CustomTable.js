@@ -1,7 +1,7 @@
-import DataGrid, { Column, Pager, Paging, Summary, TotalItem } from "devextreme-react/data-grid";
+import DataGrid, { Column, Export, Pager, Paging, Summary, TotalItem } from "devextreme-react/data-grid";
 import { Button } from "devextreme-react/button";
 
-const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, onClick, wordWrap, onRowClick }) => {
+const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, onClick, wordWrap, onRowClick, excel, onExcel }) => {
 
   const gridRows = () => {
     const result = [];
@@ -92,6 +92,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
         noDataText=""
         onRowDblClick={onRowDblClick}
         onRowClick={onRowClick}
+        onExporting={onExcel}
         onCellPrepared={(e) => {
           if (e.rowType === 'header') {
             e.cellElement.style.textAlign = 'center';
@@ -123,7 +124,10 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
             ))}
           </Summary>
         }
-
+      {excel &&
+      <Export enabled={true} >
+      </Export>
+      }
       </DataGrid>
     </div>
   );

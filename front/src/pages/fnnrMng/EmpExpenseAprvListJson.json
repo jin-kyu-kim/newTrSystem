@@ -1,0 +1,24 @@
+{
+  "menuName": "EmpExpenseAprvList",
+  "searchParams":
+  {
+    "yearItem": true,
+    "monthItem": true,
+    "aplyOdr": true,
+    "empNm": false
+  },
+  "tabMenu":
+  [
+    {
+      "TabName": "프로젝트 별",
+      "tabId": "EmpExpenseAprvProject",
+      "url": "pages/fnnrMng/EmpExpenseAprvProject"
+
+    },
+    {
+      "TabName": "개인 별",
+      "tabId": "EmpExpenseAprvIndividual",
+      "url": "pages/fnnrMng/EmpExpenseAprvIndividual"
+    }
+  ]
+}
