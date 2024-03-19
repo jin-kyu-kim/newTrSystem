@@ -42,8 +42,11 @@ const ProjectAprvDetail = () => {
         console.log(aprvrEmpId)
         console.log(cookies.userInfo.empId)
 
-        if(aprvrEmpId === cookies.userInfo.empId) handleBtnVisible();
 
+
+        if(atrzSttsCd === 'VTW00801') {
+            if(aprvrEmpId === cookies.userInfo.empId) handleBtnVisible();
+        }
 
         const param = {
             "queryId": ProjectAprvDetail.queryId,
@@ -60,6 +63,7 @@ const ProjectAprvDetail = () => {
     },[]);
 
     const handleBtnVisible = () => {
+
         setBtnVisible(true);
     };
 
@@ -124,9 +128,9 @@ const ProjectAprvDetail = () => {
                     // 마지막 결재자일 경우
                     if(atrzStepCd === "VTW00705") { 
                         
-                        // PRJCT_BGT_PRMPC 테이블 결재완료로 수정
-                        // ATRZ_DMND_STTS_CD -> VTW03303(결재완료)
-                        handleBgtPrmpc("VTW03303");
+                        // PRJCT_BGT_PRMPC 테이블 승인으로 수정
+                        // ATRZ_DMND_STTS_CD -> VTW03703(승인)
+                        handleBgtPrmpc("VTW03703");
     
                         // PRJCT 테이블
                         // BIZ_STTS_CD 컬럼 -> VTW00402(수행)
@@ -176,9 +180,9 @@ const ProjectAprvDetail = () => {
             if(response > 0) {
 
                 // 반려되면
-                // PRJCT_BGT_PRMPC 테이블 결재완료가 아니라 임시저장으로 수정 << todo
-                // 컬럼 ATRZ_DMND_STTS_CD -> VTW03301
-                handleBgtPrmpc("VTW03301");
+                // PRJCT_BGT_PRMPC 테이블 반려로 수정 << todo
+                // 컬럼 ATRZ_DMND_STTS_CD -> VTW03704
+                handleBgtPrmpc("VTW03704");
 
                 alert("반려 되었습니다.");
                 navigate("../project/ProjectAprv");
@@ -215,7 +219,7 @@ const ProjectAprvDetail = () => {
 
     /**
      * 반려 시 PRJCT_BGT_PRMPC 테이블 수정
-     * atrzDmndSttsCd 결재요청상태구분코드: 임시저장(VTW03301) 으로 수정
+     * atrzDmndSttsCd 결재요청상태구분코드: 임시저장(VTW03701) 으로 수정
      * 승인목록에서 조회한 bgtMngOdr 값으로 수정
      */
     const handleBgtPrmpc = async (cdValue) => {
@@ -501,7 +505,7 @@ const ProjectAprvDetail = () => {
                 <Button text="승인" onClick={onClickAprv}/>
                 <Button text="취소" onClick={handleClose}/>
             </CustomPopup>
-            <CustomPopup props={ProjectAprvDetail.aprvPopup} visible={rjctPopupVisible} handleClose={handleClose}>
+            <CustomPopup props={ProjectAprvDetail.rjctPopup} visible={rjctPopupVisible} handleClose={handleClose}>
                 <TextArea 
                 height="50%"
                 valueChangeEvent="change"

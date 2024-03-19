@@ -2,58 +2,56 @@ import React, { useEffect, useState } from 'react';
 
 import ApiRequest from '../../../utils/ApiRequest';
 import CustomTable from "../../../components/unit/CustomTable";
-import ProjectCostIndividualJson from '../prjctCtClm/ProjectCostIndividualJson.json';
+import ProjectClaimCostIndividual from '../prjctCtClm/ProjectClaimCostIndividualJson.json';
 import { useNavigate } from "react-router-dom";
 
-const ProjectCostIndividual = ({prjctId}) => {
-  const [baseInfoData, setBaseInfoData] = useState([]);
-  const [picInfoData, setPicInfoData] = useState([]);
+const ProjectCostIndividual = () => {
+  const [workHourData, setWorkHourData] = useState([]);
+  const [expensData, setExpensData] = useState([]);
   const [values, setValues] = useState([]);
-  const [param, setParam] = useState({});
 
   const navigate = useNavigate();
 
-  const { keyColumn, queryId, tableColumns, searchParams } = ProjectCostIndividualJson;
+  const { keyColumn, queryId, workHourColumns, expensColumns } = ProjectClaimCostIndividual;
 
-  useEffect(() => {
-    const BaseInfoData = async () => {
+  /* useEffect(() => {
+    const WorkHourData = async () => {
       const param = [ 
-        { tbNm: "PRJCT" }, 
+        { tbNm: "PRJCT_MM_APLY" }, 
         { 
-         prjctId: prjctId, 
+         prjctId: prjctId,
         }, 
      ]; 
       try {
         const response = await ApiRequest("/boot/common/commonSelect", param);
-        setBaseInfoData(response[0]);     
+        setWorkHourData(response[0]);     
       } catch (error) {
         console.error('Error fetching data', error);
       }
     };
-    BaseInfoData();
+    WorkHourData();
   }, []);
 
-  //picInfoData 데이터
   useEffect(() => {
     const param = [ 
-      { tbNm: "PRJCT" }, 
+      { tbNm: "PRJCT_CT_APLY" }, 
       { 
        prjctId: prjctId, 
       }, 
    ]; 
-    const PicInfoData = async () => {
+    const ExpensData = async () => {
       try {
         const response = await ApiRequest("/boot/common/commonSelect", param);
-        setPicInfoData(response[0]);  
+        setExpensData(response[0]);  
       } catch (error) {
         console.error('Error fetching data', error);
       }
     };
-    PicInfoData();
-  }, []);
+    ExpensData();
+  }, []); */
 
   const onClick = (data) => {
-    navigate("/fnnrMng/prjctCtClm/ProjectCostClaimDetail", 
+    navigate("/fnnrMng/prjctCtClm/ProjectClaimCostDetail", 
              {state: { prjctId: data.prjctId, prjctNm: data.prjctNm }})
   };
 
@@ -63,19 +61,17 @@ const ProjectCostIndividual = ({prjctId}) => {
         <p><strong>* 수행인력</strong></p>
         <CustomTable
           keyColumn={keyColumn}
-          columns={tableColumns}
           values={values}
+          columns={workHourColumns}
           onClick={onClick}
-          paging={true}
       />
         &nbsp;
         <p><strong>* 경비</strong></p>
         <CustomTable
           keyColumn={keyColumn}
-          columns={tableColumns}
           values={values}
+          columns={expensColumns}
           onClick={onClick}
-          paging={true}
       />
       </div>
     </div>

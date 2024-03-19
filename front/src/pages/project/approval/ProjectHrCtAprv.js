@@ -57,13 +57,12 @@ const ProjectHrCtAprv = () => {
         }
     };
 
-    const onBtnClick = (e) => {
-        console.log(e.component.option("value").data);
+    const onBtnClick = (data) => {
+        console.log(data);
         navigate("/project/ProjectHrCtAprvDetail", 
                 { state: { 
-                          prjctId: e.component.option("value").data.prjctId,
-                          prjctNm: e.component.option("value").data.prjctNm,
-                          
+                          prjctId: data.prjctId,
+                          prjctNm: data.prjctNm,
                          
                          } 
                 });
@@ -86,7 +85,7 @@ const ProjectHrCtAprv = () => {
             <div>
                 검색된 건 수 : {totalItems} 건
             </div>
-            <CustomTable keyColumn={keyColumn} columns={tableColumns} values={values} paging={true} onBtnClick={onBtnClick}/>
+            <CustomTable keyColumn={keyColumn} columns={tableColumns} values={values} paging={true} onClick={onBtnClick}/>
         </div>
     );
 };

@@ -35,7 +35,8 @@
           },
           {
             "dataField": "useYn",
-            "label": "공지 표시여부"
+            "label": "공지 표시여부",
+            "placeholder": "공지 종료일자"
           },
           {
             "dataField": "moveToRefer",
@@ -47,7 +48,7 @@
         "dataField": "noticeCn",
         "name": "cn",
         "label": "내용",
-        "placeholder": "내용을 입력하세요"
+        "placeholder": "* 사진을 드래그해서 추가 가능합니다.\n  추가된 사진의 크기를 변경할 수 있습니다"
       },
       {
         "dataField": "uploadFile",

@@ -7,9 +7,7 @@ import Box, { Item } from "devextreme-react/box";
 import { Button } from "devextreme-react/button";
 import CustomCdComboBox from "../../components/unit/CustomCdComboBox";
 import ApiRequest from "utils/ApiRequest";
-import CustomDateRangeBox from "components/unit/CustomDateRangeBox";
 import { useCookies } from "react-cookie";
-import { DateBox } from "devextreme-react";
 import NumberBox from "devextreme-react/number-box";
 
 const EmpDegree = ({  }) => {
@@ -74,23 +72,25 @@ const EmpDegree = ({  }) => {
   };
 
   useEffect(() => {
+      
+     if (!Object.values(param).every((value) => value === "")) {
       pageHandle();
+    }
+
      
     setParam({
       ...param,
       queryId: queryId,
-      empId : userEmpId,
+       empId : userEmpId,
     });
   }, []);
 
 
 
   useEffect(() => {
-    // if (!Object.values(param).every((value) => value === "")) {
-    //   pageHandle();
-    // }
+   
     getSn();
-  }, [param, isSuccess]);
+  }, [ isSuccess]);
 
   const handleChgState = ({ name, value }) => {
     setInitParam({
@@ -110,7 +110,6 @@ const EmpDegree = ({  }) => {
   const pageHandle = async () => {
     try {
       const response = await ApiRequest("/boot/common/queryIdSearch", param);
-      console.log(response)
       setValues(response);
       if (response.length !== 0) {
       } else {
@@ -153,11 +152,8 @@ const EmpDegree = ({  }) => {
     const acbgConfirmResult = window.confirm("학력을 등록하시겠습니까?");
     if (acbgConfirmResult) {
       const params = [{ tbNm: "EMP_ACBG" }, data];
-      console.log(params);
       try {
         const response = await ApiRequest("/boot/common/commonInsert", params);
-        console.log(response);
-  
         if (response === 1) {
           window.alert("학력이 등록되었습니다.")
           setIsSuccess(!isSuccess);
@@ -177,7 +173,7 @@ const EmpDegree = ({  }) => {
   useEffect(()=>{
     pageHandle();
    
-  },[param.empId,tableKey]);
+  },[param,tableKey]);
 
   const onEditRow = async (editMode, e) => {
     const editParam = [{tbNm: "EMP_ACBG"}];
@@ -206,7 +202,9 @@ const EmpDegree = ({  }) => {
         <h1 style={{ fontSize: "40px" }}>학력</h1>
       </div>
       <div style={{ marginBottom: "20px" }}>
-        <CustomTable Button keyColumn={keyColumn} columns={tableColumns} values={values} editRow={true}  paging={true} queryId={queryId}  onEditRow={onEditRow} />
+        <CustomTable Button keyColumn={keyColumn} columns={tableColumns} values={values} editRow={true}  paging={true } queryId={queryId}  onEditRow={onEditRow}   allowAdding={false}
+     />
+     
       </div>
       <div style={{ marginBottom: "20px", backgroundColor: "#eeeeee", width: "100%", height: "300px", display: "flex", justifyContent: "center", alignItems: "center" }}>
         <div style={{ width: "95%", height: "250px" }}>

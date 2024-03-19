@@ -178,7 +178,7 @@
 				,VMNG.ALTMNT_USE_END_YMD			/* 배정사용종료일자 */
 				,CASE WHEN DATEDIFF(DATE_FORMAT(NOW(), '%Y%m%d'), DATE_FORMAT(CONCAT(DATE_FORMAT(NOW(), '%Y'), '0401'), '%Y%m%d')) <![CDATA[<]]> 0 THEN DATE_FORMAT(NOW(), '%Y') - 1
 				ELSE DATE_FORMAT(NOW(), '%Y')
-				END FLAG_YEAR					/* 회계년도 */
+				END FLAG_YEAR						/* 회계년도 */
 			FROM VCATN_MNG	VMNG
 			RIGHT JOIN EMP EMP ON EMP.EMP_ID = VMNG.EMP_ID
 			LEFT JOIN DEPT_HNF HNF ON HNF.EMPNO = EMP.EMPNO
@@ -223,7 +223,7 @@
 							WHEN (SELECT MAX(VCATN_ALTMNT_SN) FROM VCATN_MNG WHERE EMP_ID = #{empId}) IS NULL
 								THEN 1
 							END
-				END VCATN_ALTMNT_SN  	/* 휴가배정순번 */
+				END VCATN_ALTMNT_SN  		/* 휴가배정순번 */
 				,#{empId}					/* 직원ID */
 				,#{vcatnYr}					/* 휴가연도 */
 				,#{vcatnAltmntDaycnt}		/* 휴가배정일수 */

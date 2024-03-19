@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.trsystem.batchSkill.service.BatchSkillService;
 import com.trsystem.common.service.CommonService;
 
 import lombok.Data;
@@ -19,10 +20,12 @@ import lombok.NoArgsConstructor;
 public class ProjectBaseDomain {
 	
     private static CommonService commonService;
-	
+	private static BatchSkillService batchSkillService;
+    
     @Autowired
-	public ProjectBaseDomain(CommonService commonService) {
+	public ProjectBaseDomain(CommonService commonService, BatchSkillService batchSkillService) {
 		ProjectBaseDomain.commonService = commonService;
+		ProjectBaseDomain.batchSkillService = batchSkillService;
 	}
 
     public static boolean validMmnyHnfPrmpc(List<Map<String, Object>> mmnyLbrcoPrmpc){
@@ -103,12 +106,16 @@ public class ProjectBaseDomain {
 	    	} else {
 	    		// 승인된 차수가 1개 이상 존재한다는 뜻
 	    		if(Integer.parseInt(String.valueOf(params.get(1).get("bgtMngOdr"))) == bgtMngOdr) {
-	    			bgtMngOdr += 1;
-	    			param.put("bgtMngOdr", bgtMngOdr);
+	    			int bgtMngOdrTobe = bgtMngOdr + 1;
+	    			param.put("bgtMngOdr", bgtMngOdrTobe);
 	    			insertParams.add(param);
 	    			
 	        		commonService.insertData(insertParams);
-	        		return bgtMngOdr;
+	        		
+	        		// bgtMngOdr에 해당하는 차수의 예산 값들을 bgtMngOdrTobe에 copy 해준다.
+	        		batchSkillService.executeModPrjctBgtPrmpc(String.valueOf(params.get(1).get("prjctId")), bgtMngOdr, bgtMngOdrTobe);
+	        		
+	        		return bgtMngOdrTobe;
 	    		} else {
 	    			return bgtMngOdr;
 	    		}

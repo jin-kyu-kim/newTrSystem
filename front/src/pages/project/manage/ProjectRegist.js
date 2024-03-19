@@ -1,4 +1,6 @@
 import { useMemo, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import CustomCdComboBox from "../../../components/unit/CustomCdComboBox";
 import uuid from 'react-uuid'
 import ApiRequest from "../../../utils/ApiRequest";
@@ -11,10 +13,10 @@ import { useCookies } from "react-cookie";
 import { set } from "date-fns";
 import { TextBox } from "devextreme-react/text-box";
 
-const ProjectRegist = ({prjctId, onHide, revise}) => {
+const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdrTobe}) => {
     const labelValue = ProjectRegistJson.labelValue;
     const updateColumns = ProjectRegistJson.updateColumns;
-
+    const navigate = useNavigate();
     const [readOnly, setReadOnly] = useState(revise);
 
     const [data, setData] = useState([]);
@@ -213,19 +215,37 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
 
             if(response > 0) {
                 alert('성공적으로 수정되었습니다.');
-                BaseInfoData();
-                setReadOnly(true);
+
+                navigate("../project/ProjectChange",
+                {
+                    state: { prjctId: prjctId, 
+                             bgtMngOdrTobe: bgtMngOdrTobe, 
+                             ctrtYmd: ctrtYmd.substr(0, 4) + '-' + ctrtYmd.substr(4, 2) + '-' + ctrtYmd.substr(6, 2), 
+                             bizEndYmd: bizEndYmd.substr(0, 4) + '-' + bizEndYmd.substr(4, 2) + '-' + bizEndYmd.substr(6, 2)},
+                })
+                
             }
         } catch (error) {
             console.error('Error fetching data', error);
         }
     }
 
-    const onClick = () => {
-        console.log(data)
-        const isconfirm = window.confirm("프로젝트 등록을 하시겠습니까?");
-        if(isconfirm){
-            insertProject();
+    const onClick = (e) => {
+        e.preventDefault();
+
+        if(prjctId != null) {
+            const isconfirm = window.confirm("수정한 내용을 저장 하시겠습니까?");
+            if(isconfirm){
+                updateProject();
+            }
+        } else {
+            const isconfirm = window.confirm("프로젝트 등록을 하시겠습니까?");
+            if(isconfirm){
+                insertProject();
+            } else {
+                console.log("취소");
+                return;
+            }
         }
     }
 
@@ -352,6 +372,7 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
     }
 
     return (
+        <form onSubmit={onClick}>
         <div className="popup-content">
             <div className="project-regist-content">
                 <div className="project-regist-content-inner">
@@ -368,6 +389,8 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
                                     onSelect={handleChgStleCd}
                                     value={data.prjctStleCd}
                                     readOnly={readOnly}
+                                    required={true}
+                                    label="프로젝트 형태"
                                 />
                             </div>
                         </div>
@@ -423,16 +446,17 @@ const ProjectRegist = ({prjctId, onHide, revise}) => {
             {readOnly ? <Button text="수정" onClick={onClickUdt}/>:
                 onHide ? 
                 <div>
-                    <Button text="저장" onClick={onClick}/>
+                    <Button text="저장" useSubmitBehavior={true}/>
                     <Button text="취소" onClick={onHide} />
                 </div>
                 :
                 <div>
-                    <Button text="저장" onClick={onClickChgSave}/>
+                    <Button text="저장"useSubmitBehavior={true}/>
                     <Button text="취소" onClick={onClickUdtCncl} />
                 </div>
             }
         </div>
+        </form>
     );
 };
 
