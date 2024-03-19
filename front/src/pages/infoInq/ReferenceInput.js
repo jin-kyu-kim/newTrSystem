@@ -105,8 +105,8 @@ const ReferenceInput = () => {
         console.log('attachments',attachments)
         
         const formData = new FormData();
-        formData.append("tbNm", "NOTICE");
-        formData.append("data", JSON.stringify(data)); 
+        formData.append("tbNm", JSON.stringify({tbNm: "NOTICE"}));
+        formData.append("data", JSON.stringify(data));
         Object.values(attachments)
             .forEach((attachment) => formData.append("attachments", attachment));
         try {
