@@ -215,7 +215,7 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdrTobe}) => {
                     state: { prjctId: prjctId, 
                              bgtMngOdrTobe: bgtMngOdrTobe, 
                              ctrtYmd: ctrtYmd.substr(0, 4) + '-' + ctrtYmd.substr(4, 2) + '-' + ctrtYmd.substr(6, 2), 
-                             bizEndYmd: bizEndYmd.substr(0, 4) + '-' + bizEndYmd.substr(4, 2) + '-' + bizEndYmd.substr(6, 2)},
+                             stbleEndYmd: stbleEndYmd.substr(0, 4) + '-' + stbleEndYmd.substr(4, 2) + '-' + stbleEndYmd.substr(6, 2)},
                 })
                 
             }
@@ -263,6 +263,7 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdrTobe}) => {
             }
         ];
         try {
+            console.log(param)
             const response = await ApiRequest("/boot/common/commonInsert", param);
 
             if(response > 0) {
