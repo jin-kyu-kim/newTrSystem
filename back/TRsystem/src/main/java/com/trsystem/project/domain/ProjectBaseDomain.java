@@ -74,7 +74,6 @@ public class ProjectBaseDomain {
     
     public static int insertProjectCostChg(List<Map<String, Object>> params, int bgtMngOdr) {
     	
-    	int targetOdr;
     	int fail = -1;
     	
     	List<Map<String, Object>> insertParams = new ArrayList<>();
@@ -113,7 +112,7 @@ public class ProjectBaseDomain {
 	        		commonService.insertData(insertParams);
 	        		
 	        		// bgtMngOdr에 해당하는 차수의 예산 값들을 bgtMngOdrTobe에 copy 해준다.
-	        		batchSkillService.executeModPrjctBgtPrmpc(String.valueOf(params.get(1).get("prjctId")), bgtMngOdr, bgtMngOdrTobe);
+	        		batchSkillService.executeAddPrjctBgtPrmpc(String.valueOf(params.get(1).get("prjctId")), bgtMngOdr, bgtMngOdrTobe);
 	        		
 	        		return bgtMngOdrTobe;
 	    		} else {
@@ -329,6 +328,55 @@ public class ProjectBaseDomain {
     	}
 		
     	return result;
+	}
+	
+	/**
+	 * 변경차수가 반려일 경우 초기화를 선택하였을 때
+	 * @param params
+	 */
+	public static int resetPrmpc(Map<String, Object> param) {
+		int result = 0;
+		int aprvBgtMngOdr = 0;
+		int bgtMngOdrTobe = Integer.parseInt(String.valueOf(param.get("bgtMngOdrTobe")));
+		
+		// 승인된 차수가 존재하는 경우에 승인된 차수 따로 빼둬서 데이터를 넣을 때 사용한다.
+		if(param.get("bgtMngOdr") != null) {
+			aprvBgtMngOdr = Integer.parseInt(String.valueOf(param.get("bgtMngOdr")));
+		}
+		
+    	List<Map<String, Object>> insertParams = new ArrayList<>();
+    	Map<String, Object> tbParam = new HashMap<>();
+    	Map<String, Object> infoParam = new HashMap<>();
+    	
+    	tbParam.put("tbNm", "PRJCT_BGT_PRMPC");
+    	insertParams.add(0, tbParam);
+    	
+    	infoParam.put("prjctId", param.get("prjctId"));
+    	infoParam.put("totAltmntBgt", param.get("totAltmntBgt"));
+    	infoParam.put("regDt", param.get("regDt"));
+    	infoParam.put("regEmpId", param.get("regEmpId"));
+    	infoParam.put("atrzDmndSttsCd", param.get("atrzDmndSttsCd"));
+    	
+    	// 새로운 차수를 생성하도록 한다.
+		infoParam.put("bgtMngOdr", bgtMngOdrTobe + 1);
+
+		System.out.println(infoParam);
+		try {
+	    	insertParams.add(1, infoParam);
+	    	result = commonService.insertData(insertParams);
+	    	
+	    	// 승인된 차수가 없을 경우 생성 후 마친다.
+	    	if(aprvBgtMngOdr > 0 && result > 0) {
+	    		
+	    		// 승인된 차수의 예산 값들을 새로 만들어진 차수에 copy 해준다.
+	    		batchSkillService.executeAddPrjctBgtPrmpc(String.valueOf(param.get("prjctId")), aprvBgtMngOdr, bgtMngOdrTobe + 1);
+	    	}
+	    	
+	    	return bgtMngOdrTobe + 1;
+		} catch (Exception e) {
+	    	return result;
+		}
+		
 	}
 
 }

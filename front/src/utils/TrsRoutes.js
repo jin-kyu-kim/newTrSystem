@@ -232,6 +232,18 @@ const TreRoutes = [
     path: "/fnnrMng/EmpExpenseAprvList",
     name: "EmpExpenseAprvList",
     element: React.lazy(() => import("../pages/fnnrMng/EmpExpenseAprvList")),
+  },
+  // 관리자메뉴 > 전자결재서식관리
+  {
+    path: "/mngrMenu/ElecAtrzFormManage",
+    name: "ElecAtrzFormManage",
+    element: React.lazy(() => import("../pages/mngrMenu/ElecAtrzFormManage")),
+  },
+  // 관리자메뉴 > 전자결재서식관리 > 신규서식작성
+  {
+    path: "/mngrMenu/ElecAtrzNewForm",
+    name: "ElecAtrzNewForm",
+    element: React.lazy(() => import("../pages/mngrMenu/ElecAtrzNewForm")),
   }
 ];
 
