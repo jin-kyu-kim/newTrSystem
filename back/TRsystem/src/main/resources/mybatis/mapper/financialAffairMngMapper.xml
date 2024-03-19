@@ -289,73 +289,107 @@
     </select>
 
     <!-- 경비 승인내역 프로젝트별-->
-    <select id="retrieveExpensAprvDtls" parameterType="map" resultType="com.trsystem.LowerHashMap">
+    <select id="retrieveExpensAprvDtlsPrjctAccto" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
-            p.PRJCT_NM,
-            (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = pah.APRVR_EMP_ID) AS APRVR_EMP_FLNM,
-            (SELECT CD_NM FROM CD WHERE CD_VALUE = pca.EXPENS_CD) AS EXPENS_CD,
-            e.EMP_FLNM,
-            pca.CT_PRPOS,
-            pca.ATDRN,
-            pca.UTZTN_AMT,
-            SUBSTR(pca.UTZTN_DT, 1, 8) AS UTZTN_DT
+        p.PRJCT_NM,
+        (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = pah.APRVR_EMP_ID) AS APRVR_EMP_FLNM,
+        (SELECT CD_NM FROM CD WHERE CD_VALUE = pca.EXPENS_CD) AS EXPENS_CD,
+        e.EMP_FLNM,
+        pca.CT_PRPOS,
+        pca.ATDRN,
+        pca.UTZTN_AMT,
+        SUBSTR(pca.UTZTN_DT, 1, 8) AS UTZTN_DT,
+        1 AS SORT_ORDER
         FROM PRJCT_CT_APLY pca
-                 JOIN PRJCT_ATRZ_HIST pah
-                      ON pca.PRJCT_ID = pah.PRJCT_ID
-                          AND pca.EMP_ID = pah.EMP_ID
-                          AND pca.APLY_YM = pah.APLY_YM
-                          AND pca.APLY_ODR = pah.APLY_ODR
-                          AND pah.ATRZ_DMND_STTS_CD = 'VTW03703' -- 결재요청상태코드 : 승인
-                          AND pah.PRJCT_APRVR_CD = 'VTW04701' -- 프로젝트결재자코드 : PM
-                 JOIN EMP e
-                      ON pca.EMP_ID = e.EMP_ID
-                 JOIN CD c
-                      ON pah.ATRZ_DMND_STTS_CD = c.CD_VALUE
-                 JOIN PRJCT p
-                      ON pca.PRJCT_ID = p.PRJCT_ID
+        JOIN PRJCT_ATRZ_HIST pah
+        ON pca.PRJCT_ID = pah.PRJCT_ID
+        AND pca.EMP_ID = pah.EMP_ID
+        AND pca.APLY_YM = pah.APLY_YM
+        AND pca.APLY_ODR = pah.APLY_ODR
+        AND pah.ATRZ_DMND_STTS_CD = 'VTW03703' -- 결재요청상태코드 : 승인
+        AND pah.PRJCT_APRVR_CD = 'VTW04701' -- 프로젝트결재자코드 : PM
+        JOIN EMP e
+        ON pca.EMP_ID = e.EMP_ID
+        JOIN CD c
+        ON pah.ATRZ_DMND_STTS_CD = c.CD_VALUE
+        JOIN PRJCT p
+        ON pca.PRJCT_ID = p.PRJCT_ID
         WHERE 1 = 1
+        <if test="prjctId != null and prjctId !=''">
+            AND pca.PRJCT_ID = #{prjctId}
+        </if>
+        <if test="empId != null and !empId.equals('')">
+            AND pca.EMP_ID = #{empId}
+        </if>
+        <if test="(startYmOdr != null and !startYmOdr.equals('')) and (endYmOdr != null and !endYmOdr.equals(''))">
+            AND CONCAT(pca.APLY_YM, pca.APLY_ODR) BETWEEN #{startYmOdr} AND #{endYmOdr}
+        </if>
         UNION ALL
         SELECT
-            p.PRJCT_NM,
-            NULL AS APRVR_EMP_FLNM,
-            (SELECT CD_NM FROM CD WHERE CD_VALUE = pca.EXPENS_CD) AS EXPENS_CD,
-            NULL AS EMP_FLNM,
-            NULL AS CT_PRPOS,
-            NULL AS ATDRN,
-            SUM(pca.UTZTN_AMT) AS UTZTN_AMT,
-            NULL AS UTZTN_DT
+        p.PRJCT_NM,
+        NULL AS APRVR_EMP_FLNM,
+        (SELECT CD_NM FROM CD WHERE CD_VALUE = pca.EXPENS_CD) AS EXPENS_CD,
+        NULL AS EMP_FLNM,
+        NULL AS CT_PRPOS,
+        NULL AS ATDRN,
+        SUM(pca.UTZTN_AMT) AS UTZTN_AMT,
+        NULL AS UTZTN_DT,
+        1 AS SORT_ORDER
         FROM PRJCT_CT_APLY pca
-                 JOIN PRJCT_ATRZ_HIST pah
-                      ON pca.PRJCT_ID = pah.PRJCT_ID
-                          AND pca.EMP_ID = pah.EMP_ID
-                          AND pca.APLY_YM = pah.APLY_YM
-                          AND pca.APLY_ODR = pah.APLY_ODR
-                          AND pah.ATRZ_DMND_STTS_CD = 'VTW03703' -- 결재요청상태코드 : 승인
-                          AND pah.PRJCT_APRVR_CD = 'VTW04701' -- 프로젝트결재자코드 : PM
-                 JOIN PRJCT p
-                      ON pca.PRJCT_ID = p.PRJCT_ID
+        JOIN PRJCT_ATRZ_HIST pah
+        ON pca.PRJCT_ID = pah.PRJCT_ID
+        AND pca.EMP_ID = pah.EMP_ID
+        AND pca.APLY_YM = pah.APLY_YM
+        AND pca.APLY_ODR = pah.APLY_ODR
+        AND pah.ATRZ_DMND_STTS_CD = 'VTW03703' -- 결재요청상태코드 : 승인
+        AND pah.PRJCT_APRVR_CD = 'VTW04701' -- 프로젝트결재자코드 : PM
+        JOIN PRJCT p
+        ON pca.PRJCT_ID = p.PRJCT_ID
+        WHERE 1 = 1
+        <if test="prjctId != null and prjctId !=''">
+            AND pca.PRJCT_ID = #{prjctId}
+        </if>
+        <if test="empId != null and !empId.equals('')">
+            AND pca.EMP_ID = #{empId}
+        </if>
+        <if test="(startYmOdr != null and !startYmOdr.equals('')) and (endYmOdr != null and !endYmOdr.equals(''))">
+            AND CONCAT(pca.APLY_YM, pca.APLY_ODR) BETWEEN #{startYmOdr} AND #{endYmOdr}
+        </if>
         GROUP BY p.PRJCT_NM, pca.EXPENS_CD
         UNION ALL
         SELECT
-            p.PRJCT_NM,
-            NULL AS APRVR_EMP_FLNM,
-            NULL AS EXPENS_CD,
-            NULL AS EMP_FLNM,
-            NULL AS CT_PRPOS,
-            NULL AS ATDRN,
-            SUM(pca.UTZTN_AMT) AS UTZTN_AMT,
-            NULL AS UTZTN_DT
+        p.PRJCT_NM,
+        NULL AS APRVR_EMP_FLNM,
+        NULL AS EXPENS_CD,
+        NULL AS EMP_FLNM,
+        NULL AS CT_PRPOS,
+        NULL AS ATDRN,
+        SUM(pca.UTZTN_AMT) AS UTZTN_AMT,
+        NULL AS UTZTN_DT,
+        2 AS SORT_ORDER
         FROM PRJCT_CT_APLY pca
-                 JOIN PRJCT_ATRZ_HIST pah
-                      ON pca.PRJCT_ID = pah.PRJCT_ID
-                          AND pca.EMP_ID = pah.EMP_ID
-                          AND pca.APLY_YM = pah.APLY_YM
-                          AND pca.APLY_ODR = pah.APLY_ODR
-                          AND pah.ATRZ_DMND_STTS_CD = 'VTW03703' -- 결재요청상태코드 : 승인
-                          AND pah.PRJCT_APRVR_CD = 'VTW04701' -- 프로젝트결재자코드 : PM
-                 JOIN PRJCT p
-                      ON pca.PRJCT_ID = p.PRJCT_ID
+        JOIN PRJCT_ATRZ_HIST pah
+        ON pca.PRJCT_ID = pah.PRJCT_ID
+        AND pca.EMP_ID = pah.EMP_ID
+        AND pca.APLY_YM = pah.APLY_YM
+        AND pca.APLY_ODR = pah.APLY_ODR
+        AND pah.ATRZ_DMND_STTS_CD = 'VTW03703' -- 결재요청상태코드 : 승인
+        AND pah.PRJCT_APRVR_CD = 'VTW04701' -- 프로젝트결재자코드 : PM
+        JOIN PRJCT p
+        ON pca.PRJCT_ID = p.PRJCT_ID
+        WHERE 1 = 1
+        <if test="prjctId != null and prjctId !=''">
+            AND pca.PRJCT_ID = #{prjctId}
+        </if>
+        <if test="empId != null and !empId.equals('')">
+            AND pca.EMP_ID = #{empId}
+        </if>
+        <if test="(startYmOdr != null and !startYmOdr.equals('')) and (endYmOdr != null and !endYmOdr.equals(''))">
+            AND CONCAT(pca.APLY_YM, pca.APLY_ODR) BETWEEN #{startYmOdr} AND #{endYmOdr}
+        </if>
         GROUP BY p.PRJCT_NM
+        ORDER BY PRJCT_NM, SORT_ORDER, EXPENS_CD, UTZTN_DT IS NULL, UTZTN_DT
     </select>
+
 
 </mapper>
