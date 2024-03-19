@@ -15,8 +15,8 @@ const EmpDetailInfo = () => {
     /*유저세션*/
     const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
     
-    // const empId = cookies.userInfo.empId;
-    // const deptId = cookies.userInfo.deptId;
+     const empId = cookies.userInfo.empId;
+     const deptId = cookies.userInfo.deptId;
    
     //탭 변경시 인덱스 설정 
     const onSelectionChanged = useCallback(
