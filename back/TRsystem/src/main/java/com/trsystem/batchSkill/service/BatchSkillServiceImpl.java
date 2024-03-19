@@ -175,7 +175,7 @@ public class BatchSkillServiceImpl implements BatchSkillService {
 	 * 새로운 변경원가 생성 시 기존 값들을 복사해준다. 
 	 */
 	@Override
-	public void executeModPrjctBgtPrmpc(String prjctId, int bgtMngOdr, int bgtMngOdrTobe) {
+	public void executeAddPrjctBgtPrmpc(String prjctId, int bgtMngOdr, int bgtMngOdrTobe) {
 		
 		try {
 			
