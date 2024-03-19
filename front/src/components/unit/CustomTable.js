@@ -5,55 +5,46 @@ import ToggleButton from "../../pages/sysMng/ToggleButton"
 const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, 
                       handleYnVal, editRow, onEditRow, onClick,onRowClick }) => {
 
-  const gridRows = () => {
-    const result = [];
-    for (let i = 0; i < columns.length; i++) {
-      const { key, value, width, alignment, button, visible, toggle} = columns[i];
-      if (button) {
-        result.push(
-          <Column
-            key={key}
-            dataField={key}
-            caption={value}
-            width={width}
-            alignment={alignment || 'center'}
-            cellRender={({ data }) => buttonRender(button, data)}>
-          </Column>
-        );
-      } else {
-        if (!visible) {
-          result.push(
-            <Column
-              key={key}
-              dataField={key}
-              caption={value}
-              width={width}
-              alignment={alignment || 'center'}>
-              {editRow && <RequiredRule message="필수 입력 항목입니다" />}
-            </Column>
-          );
-        }
-        if (toggle) {
-          result.push(
-            <Column
-              key={key}
-              dataField={key}
-              caption={value}
-              width={width}
-              alignment={alignment || 'center'}
-              cellRender={({ data, key }) => (
-                <ToggleButton callback={handleYnVal} data={data} idColumn={key} />
-              )} />
-          );
-        }
-      }
-    }
-    return result;
-  }
+                        const gridRows = () => {
+                          const result = [];
+                          for (let i = 0; i < columns.length; i++) {
+                            const { key, value, width, alignment, button, subColumns } = columns[i];
+                       
+                            if (subColumns && subColumns.length > 0) {
+                              result.push(
+                                <Column key={`${key}_subColumns`} caption={value} alignment={alignment || 'center'}>
+                                  {subColumns.map(subCol => (
+                                    <Column
+                                      key={subCol.key}
+                                      dataField={subCol.key}
+                                      caption={subCol.value}
+                                      width={subCol.width}
+                                      alignment={subCol.alignment || 'center'}
+                                      cellRender={subCol.button ? ({ data }) => buttonRender(subCol.button, data) : null}
+                                    />
+                                  ))}
+                                </Column>
+                              );
+                            } else {
+                              result.push(
+                                <Column
+                                  key={key}
+                                  dataField={key}
+                                  caption={value}
+                                  width={width}
+                                  alignment={alignment || 'center'}
+                                  cellRender= {button ? ({ data }) => buttonRender(button, data) : null}  
+                                >
+                                </Column>
+                              );
+                            }
+                          }
+                          return result;
+                        }
 
   const buttonRender = (button, data) => {
     return(
-      <Button text={button} onClick={() => {onClick(data)}}/>
+      <Button name={button.neme} text={button.text} onClick={(e) => {onClick(button, data)}}/>
       
     )
   }
