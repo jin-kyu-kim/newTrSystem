@@ -226,6 +226,18 @@ const reload = () => {
           format={column.subType ==="NumberBox" ? column.format : 
                   column.subType ==="Date" ? column.format :
                    ""}
+          min={column.subType ==="NumberBox" ? column.min : undefined}
+          max={column.subType ==="NumberBox" ? column.max : undefined}
+          validationRules={[
+            ...(column.subType === "NumberBox" ? [{
+              type: "range",
+              min: column.min,
+              max: column.max,
+              message: `The value must be between ${column.min} and ${column.max}.` 
+            }] : []),
+            ...(column.required === "Y" ? [{ type: "required", message: "This field is required." }] : []),
+            ...(column.type === "string" ? [{ type: "stringLength", min:column.min, max:column.max,  message: `The value must be between ${column.min} and ${column.max}.`  }] : [])
+          ]}
         >
         {column.required === "Y" ? <RequiredRule /> : null}
         {column.type === "combo" ? <Lookup dataSource={cdValues} displayExpr={column.keyNm} valueExpr={column.key} />: 
