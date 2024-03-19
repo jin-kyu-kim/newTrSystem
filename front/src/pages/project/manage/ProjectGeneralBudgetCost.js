@@ -7,7 +7,7 @@ import Box, { Item } from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
 import { format, parse } from 'date-fns';
 
-const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
+const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdrTobe }) => {
   const [values, setValues] = useState([]);
   let groupingDtl = [];
 
@@ -21,17 +21,17 @@ const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }
 
   
   const GeneralBudgetDtl = async () => {
-    const copyCtrtYmd = JSON.parse(JSON.stringify(ctrtYmd));
-    const copyBizEndYmd = JSON.parse(JSON.stringify(bizEndYmd));
+    const copyCtrtYmd = ctrtYmd ? JSON.parse(JSON.stringify(ctrtYmd)) : "";
+    const copyStbleEndYmd = stbleEndYmd ? JSON.parse(JSON.stringify(stbleEndYmd)) : "";
     const ctrtYmdPrarm = copyCtrtYmd.replace(/-(\d{2})-\d{2}/, '$1');
-    const bizEndYmdPrarm = copyBizEndYmd.replace(/-(\d{2})-\d{2}/, '$1');
+    const stbleEndYmdPrarm = copyStbleEndYmd.replace(/-(\d{2})-\d{2}/, '$1');
 
     const param = [
       { tbNm: "EXPENS_MNBY_PRMPC_DTLS" },
       { prjctId: prjctId,
         bgtMngOdr: bgtMngOdrTobe,
         expensCd: "VTW04501&VTW04527",
-        useYm : ctrtYmdPrarm+"&"+bizEndYmdPrarm,  
+        useYm : ctrtYmdPrarm+"&"+stbleEndYmdPrarm,  
       }, 
     ];
 
@@ -107,7 +107,7 @@ const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }
               values={values}
               prjctId={prjctId}
               ctrtYmd={ctrtYmd}
-              bizEndYmd={bizEndYmd}
+              stbleEndYmd={stbleEndYmd}
               bgtMngOdrTobe={bgtMngOdrTobe}
               json={ProjectGeneralBudgetCostJson}
             />

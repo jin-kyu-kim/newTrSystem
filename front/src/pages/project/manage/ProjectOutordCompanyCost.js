@@ -6,7 +6,7 @@ import CustomAddTable from "../../../components/unit/CustomAddTable";
 import Box, { Item } from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
 
-const ProjectOutordCompanyCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr, bgtMngOdrTobe }) => {
+const ProjectOutordCompanyCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdr, bgtMngOdrTobe }) => {
   const [values, setValues] = useState([]);
   const [cdValues, setCdValues] = useState([]);
   const { manuName, tableColumns } = ProjectOutordCompanyCostJson;

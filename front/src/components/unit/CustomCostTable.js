@@ -26,7 +26,7 @@ const CustomCostTable = ({
   labelValue,
   json,
   ctrtYmd,
-  bizEndYmd,
+  stbleEndYmd,
   prjctId,
   bgtMngOdrTobe,
   onHide,
@@ -83,7 +83,7 @@ const CustomCostTable = ({
   //기간 set
   useEffect(() => {
     const start = parse(ctrtYmd || format(new Date(), 'yyyy-MM-dd'), 'yyyy-MM-dd', new Date());
-    const end = bizEndYmd ? parse(bizEndYmd, 'yyyy-MM-dd', new Date()) : addMonths(start, 15);
+    const end = stbleEndYmd ? parse(stbleEndYmd, 'yyyy-MM-dd', new Date()) : addMonths(start, 15);
     const periods = [];
   
     for (let currentDate = start; currentDate <= end; currentDate = addMonths(currentDate, 1)) {
@@ -92,7 +92,7 @@ const CustomCostTable = ({
   
     setPeriod(periods);
     updateSummaryColumn(periods);
-  }, [ctrtYmd, bizEndYmd]); 
+  }, [ctrtYmd, stbleEndYmd]); 
 
 
   const onCellRenderEdit = ({data}) => {
@@ -156,7 +156,7 @@ const CustomCostTable = ({
   const handleCancel = () => {
     navigate("../project/ProjectChange",
         {
-    state: { prjctId: prjctId, bgtMngOdrTobe: bgtMngOdrTobe, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd},
+    state: { prjctId: prjctId, bgtMngOdrTobe: bgtMngOdrTobe, ctrtYmd: ctrtYmd, stbleEndYmd: stbleEndYmd},
     })
   };
 
@@ -277,7 +277,7 @@ const CustomCostTable = ({
           prjctId={prjctId} 
           bgtMngOdrTobe={bgtMngOdrTobe}
           ctrtYmd={ctrtYmd}
-          bizEndYmd={bizEndYmd}
+          stbleEndYmd={stbleEndYmd}
           transformedData={transformedData}
           />
        </Popup>

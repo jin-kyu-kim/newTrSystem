@@ -32,6 +32,9 @@ const ProjectDetail = () => {
   console.log("bgtMngOdrTobe", bgtMngOdrTobe)
   console.log("bgtMngOdr", bgtMngOdr)
   console.log("atrzLnSn",   atrzLnSn)
+  console.log("ctrtYmd",   ctrtYmd)
+  console.log("stbleEndYmd",   stbleEndYmd)
+
   
   useEffect(() => {
   
