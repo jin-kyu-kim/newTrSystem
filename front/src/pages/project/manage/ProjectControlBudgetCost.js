@@ -21,17 +21,22 @@ const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }
   }, []);
 
   const ControlBudgetDtl = async () => {
+    const copyCtrtYmd = JSON.parse(JSON.stringify(ctrtYmd));
+    const copyBizEndYmd = JSON.parse(JSON.stringify(bizEndYmd));
+    const ctrtYmdPrarm = copyCtrtYmd.replace(/-(\d{2})-\d{2}/, '$1');
+    const bizEndYmdPrarm = copyBizEndYmd.replace(/-(\d{2})-\d{2}/, '$1');
+
     const param = [
       { tbNm: "EXPENS_MNBY_PRMPC_DTLS" },
       { prjctId: prjctId,
         bgtMngOdr: bgtMngOdrTobe,
-        expensCd: ProjectControlBudgetCostJson.cdBetween
+        expensCd: ProjectControlBudgetCostJson.cdBetween,
+        useYm : ctrtYmdPrarm+"&"+bizEndYmdPrarm,
       }, 
     ];
 
   try {
     const response = await ApiRequest("/boot/common/commonSelect", param);
-    console.log("response!!", response);
       response.reduce((acc, item) => {
         //expensPrmpcSn 값으로 그룹핑
         acc[item.expensPrmpcSn] = acc[item.expensPrmpcSn] || [];
@@ -39,7 +44,6 @@ const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }
         groupingDtl = acc;
         return acc;
     }, {});
-    
 
   } catch (error) {
     console.error(error);

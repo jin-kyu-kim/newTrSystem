@@ -1,10 +1,12 @@
 import React, { useEffect, useState, } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import SearchPrjctSet from "../../../components/composite/SearchPrjctSet";
 import ApiRequest from "../../../utils/ApiRequest";
 import CustomTable from "../../../components/unit/CustomTable";
-import ProjectOutordPersonJson from "./ProjectOutordPersonJson.json";
+import ProjectOutordAprvJson from "./ProjectOutordAprvJson.json";
 
-const ProjectOutordPerson = () => {
+const ProjectOutordAprv = () => {
 
     const [values, setValues] = useState([]);
     const [param, setParam] = useState({});
@@ -14,7 +16,8 @@ const ProjectOutordPerson = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [pageSize, setPageSize] = useState(20);
 
-    const { keyColumn, queryId, tableColumns, searchParams, popup } = ProjectOutordPersonJson;
+    const { keyColumn, queryId, tableColumns, searchParams, popup } = ProjectOutordAprvJson;
+    const navigate = useNavigate();
 
     useEffect(() => {
             if (!Object.values(param).every((value) => value === "")) {
@@ -49,6 +52,15 @@ const ProjectOutordPerson = () => {
             console.log(error);
         }
     };
+    
+    const onBtnClick = (data) => {
+        console.log(data);
+        console.log("onBtnClick");
+
+        navigate("/project/ProjectOutordAprvDetail", { state: {
+            prjctId: data.prjctId,
+        }})
+    }
 
     return (
         <div className="container">
@@ -67,9 +79,9 @@ const ProjectOutordPerson = () => {
             <div>
                 검색된 건 수 : {totalItems} 건
             </div>
-            {/* <CustomTable keyColumn={keyColumn} columns={tableColumns} values={values} paging={true} onClick={onBtnClick}/> */}
+            <CustomTable keyColumn={keyColumn} columns={tableColumns} values={values} paging={true} onClick={onBtnClick}/>
         </div>
     );
 
 }
-export default ProjectOutordPerson;
+export default ProjectOutordAprv;

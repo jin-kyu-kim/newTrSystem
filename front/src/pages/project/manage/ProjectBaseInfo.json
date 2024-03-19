@@ -3,10 +3,10 @@
   [
     { "key": "prjctNm", "value": "프로젝트 명" },
     { "key": "prjctCdIdntfr", "value": "프로젝트 코드" },
-    { "key": "deptId", "value": "소속" },
+    { "key": "deptNm", "value": "소속" },
     { "key": "prjctMngrEmpFlnm", "value": "PM" },
     { "key": "prjctStleCdNm", "value": "프로젝트 형태" },
-    { "key": "bizFlfmtTyCdNm", "value": "프로젝트 상태" },
+    { "key": "bizSttsCdNm", "value": "프로젝트 상태" },
     { "key": "expectOrderYmd", "value": "예상발주일" },
     { "key": "beffatPbancDdlnYmd", "value": "사전공고마감" },
     { "key": "propseDdlnYmd", "value": "제안마감일" },
@@ -18,12 +18,12 @@
   ],
   "PicInfo":
   [
-    { "key": "ctmmnyNo", "value": "고객사" },
+    { "key": "ctmmnyNm", "value": "고객사" },
     { "key": "picFlnm", "value": "담당자 성명" },
     { "key": "picTelno", "value": "담당자 전화번호" },
     { "key": "picEml", "value": "담당자 이메일" }
   ],
-  "Cnsrtm":
+  "Cnsrtm": 
   [
     { "key": "cnsrtmCoNm", "value": "회사명" },
     { "key": "bizFlfmtTyCdNm", "value": "역할" },

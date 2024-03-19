@@ -10,8 +10,8 @@
             { "key": "expectMm", "value": "배정" , "width": "100"},
             { "key": "excnMm", "value": "누적사용" , "width": "100"},
             { "key": "a", "value": "가용" , "width": "80"},
-            { "key": "totMd", "value": "당차수청구" , "width": "120"},
-            { "key": "empId", "value": "상태" , "width": "140", "button": "승인목록"}
+            { "key": "totMd", "value": "당차수청구" , "width": "120" },
+            { "key": "empId", "value": "상태" , "width": "140", "button": { "text": "승인목록", "name": "empId" }}
         ],
         "summaryColumn": [
             {
@@ -38,7 +38,7 @@
             { "key": "aplySn", "value": "차수" , "width": "100"},
             { "key": "totUtztnAmt", "value": "누적사용" , "width": "200"},
             { "key": "totAplyAmt", "value": "당차수청구" , "width": "200"},
-            { "key": "empId", "value": "상태" , "width": "140", "button": "승인목록"}
+            { "key": "empId", "value": "상태" , "width": "140", "button": { "text": "승인목록", "name": "empId" }}
         ],
         "summaryColumn": [
             {
@@ -68,10 +68,9 @@
         "yearItem": true,
         "monthItem": true,
         "aplyOdr": true,
-        "empId": true,
-        "excelDownloadBtn": false
+        "empId": true
     },
-    "ctPopup": {
+    "popup": {
         "width": "90%",
         "height": "90%"
     }

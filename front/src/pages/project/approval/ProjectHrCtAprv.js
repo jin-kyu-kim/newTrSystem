@@ -57,15 +57,21 @@ const ProjectHrCtAprv = () => {
         }
     };
 
-    const onBtnClick = (data) => {
-        console.log(data);
-        navigate("/project/ProjectHrCtAprvDetail", 
+    const onBtnClick = (button, data) => {
+
+        if(button.name === "prjctId") {
+            navigate("/project/ProjectHrCtAprvDetail", 
                 { state: { 
-                          prjctId: data.prjctId,
-                          prjctNm: data.prjctNm,
-                         
-                         } 
-                });
+                    prjctId: data.prjctId,
+                    prjctNm: data.prjctNm,
+                    
+                } 
+            });
+        }
+
+        if(button.name === "bizEndYmd") {
+            console.log("bizEndYmd")
+        }
     }
 
     return (

@@ -2,8 +2,8 @@
   "menuName": "CultureHealthCost",
   "keyColumn": "clturPhstrnActCtSn",
   "tableColumns": [
-    { "key": "", "value": "대상월", "width": 100, "alignment": "center" },
-    { "key": "clmYmd", "value": "일자", "width": 100, "alignment": "center" },
+    { "key": "month", "value": "대상월", "width": 100, "alignment": "center" },
+    { "key": "clmYmd", "value": "청구일자", "width": 100, "alignment": "center" },
     { "key": "clmAmt", "value": "금액", "width": 100, "alignment": "center" },
     { "key": "actIem", "value": "항목", "width": 100, "alignment": "center" },
     { "key": "actPurps", "value": "목적", "width": 100, "alignment": "center" },

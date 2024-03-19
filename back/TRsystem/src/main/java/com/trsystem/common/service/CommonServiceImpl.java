@@ -217,7 +217,10 @@ public class CommonServiceImpl implements CommonService {
         String tbNm = params.get(0).get("tbNm").toString();
 
         try (Connection connection = DriverManager.getConnection(applicationYamlRead.getUrl(), applicationYamlRead.getUsername(), applicationYamlRead.getPassword())) {
-            Map<String, Object> insertParam = params.get(1);
+            Map<String, Object> insertParam = new HashMap<>();
+            if(params.size()>1){
+                insertParam = params.get(1);
+            }
             List<Object> inParams = new ArrayList<>(insertParam.values());
             List<String> keys = new ArrayList<>(insertParam.keySet());
 
@@ -300,7 +303,7 @@ public class CommonServiceImpl implements CommonService {
     public int commonGetMax(List<Map<String, Object>> params) {
         List<Map<String, Object>> resultSet = new ArrayList<>();
         String tbNm = params.get(0).get("tbNm").toString();
-        String snColumn = params.get(0).get("snColumn").toString();
+        String snColumn = params.get(0).get("snColumn").toString().replaceAll("([a-z])([A-Z]+)", "$1_$2").toUpperCase();
         int value = -1;
 
         try (Connection connection = DriverManager.getConnection(applicationYamlRead.getUrl(), applicationYamlRead.getUsername(), applicationYamlRead.getPassword())) {
@@ -387,7 +390,7 @@ public class CommonServiceImpl implements CommonService {
                 }  else if (params.get(i) instanceof Instant) {
                     preparedStatement.setTimestamp(j+1, Timestamp.from((Instant) params.get(i)));
                 }  else if (params.get(i) == null) {
-                    preparedStatement.setString(j, null);
+                    preparedStatement.setString(j+1, null);
                 } else {
                     j++;
                     return null;
@@ -420,7 +423,7 @@ public class CommonServiceImpl implements CommonService {
 
         try{
             //2. 파일 내부 디렉토리에 업로드
-            String uploadDir = "./src/main/resources/upload";
+            String uploadDir = "../../front/public/upload";
             // 2-1 파일일 디렉토리가 없으면 생성
             Path directory = Path.of(uploadDir);
             if (Files.notExists(directory)) {

@@ -93,4 +93,12 @@ public class ProjectBaseController {
     }
     
     
+    /**
+     * 변경차수가 반려일 경우 초기화를 선택하였을 때
+     */
+    @PostMapping(value = "/boot/prjct/resetPrmpc")
+    public int resetPrmpc(@RequestBody Map<String, Object> param) {
+    	return ProjectBaseDomain.resetPrmpc(param);
+    }
+    
 }

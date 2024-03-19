@@ -20,7 +20,8 @@ const ProjectChangeIngredientCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr, b
     const IngredientCost = async () => {
         const param = [
             { tbNm:"MATRL_CT_PRMPC" },
-            { prjctId: prjctId },
+            { prjctId: prjctId,
+             bgtMngOdr : bgtMngOdrTobe },
         ];
         try {
             const response = await ApiRequest("/boot/common/commonSelect", param);
@@ -44,6 +45,7 @@ const ProjectChangeIngredientCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr, b
             console.error(error);
         }
     }
+
 
     return (
         <>
