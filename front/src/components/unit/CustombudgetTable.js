@@ -1,6 +1,6 @@
 import DataGrid, { Column } from 'devextreme-react/data-grid';
 
-const CustonbudgetTable = ({ headers, column }) => { 
+const CustombudgetTable = ({ headers, column }) => { 
 
     const data = [{
         ...headers.reduce((result, header) => {
@@ -42,4 +42,4 @@ const CustonbudgetTable = ({ headers, column }) => {
   );
 };
 
-export default CustonbudgetTable;
+export default CustombudgetTable;

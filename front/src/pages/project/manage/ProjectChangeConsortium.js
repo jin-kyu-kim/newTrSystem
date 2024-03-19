@@ -6,7 +6,7 @@ import CustomAddTable from "../../../components/unit/CustomAddTable";
 import Box, {Item} from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
 
-const ProjectConsortium = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr, bgtMngOdrTobe }) => {
+const ProjectConsortium = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdr, bgtMngOdrTobe }) => {
     const [values, setValues] = useState([]);
     const [cdValues, setCdValues] = useState([]);
     const { manuName, tableColumns} = projectChangeConsortiumJson;
@@ -69,7 +69,10 @@ const ProjectConsortium = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr, bgtMngOdrTo
                     json={projectChangeConsortiumJson}
                     bgtMngOdr={bgtMngOdr}
                     bgtMngOdrTobe={bgtMngOdrTobe}
-                    cdValues={cdValues}/>
+                    cdValues={cdValues}
+                    ctrtYmd={ctrtYmd}
+                    stbleEndYmd={stbleEndYmd}
+                    />
                 </div>
             </div>
         </>
