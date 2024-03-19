@@ -179,7 +179,7 @@
         FROM (
                  SELECT A.PRJCT_ID
                       , A.OUTORD_EMP_ID
-                      , (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = A.OUTORD_EMP_ID) AS EMP_FLNM
+                      , (SELECT OUTORD_EMP_NM FROM OUTORD_EMP WHERE OUTORD_EMP_ID = A.OUTORD_EMP_ID) AS EMP_FLNM
                       , A.HNF_ROLE_CD
                       , (SELECT CD_NM FROM CD WHERE CD_VALUE = A.HNF_ROLE_CD) AS HNF_ROLE_NM
                       , A.HNF_GRAD_CD
@@ -209,7 +209,7 @@
         FROM (
                  SELECT A.PRJCT_ID
                       , A.OUTORD_EMP_ID
-                      , (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = A.OUTORD_EMP_ID) AS EMP_FLNM
+                      , (SELECT OUTORD_EMP_NM FROM OUTORD_EMP WHERE OUTORD_EMP_ID = A.OUTORD_EMP_ID) AS EMP_FLNM
                       , A.HNF_ROLE_CD
                       , (SELECT CD_NM FROM CD WHERE CD_VALUE = A.HNF_ROLE_CD) AS HNF_ROLE_NM
                       , A.HNF_GRAD_CD
@@ -239,7 +239,7 @@
         FROM (
                  SELECT A.PRJCT_ID
                       , A.OUTORD_EMP_ID
-                      , (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = A.OUTORD_EMP_ID) AS EMP_FLNM
+                      , (SELECT OUTORD_EMP_NM FROM OUTORD_EMP WHERE OUTORD_EMP_ID = A.OUTORD_EMP_ID) AS EMP_FLNM
                       , A.HNF_ROLE_CD
                       , (SELECT CD_NM FROM CD WHERE CD_VALUE = A.HNF_ROLE_CD) AS HNF_ROLE_NM
                       , A.HNF_GRAD_CD
