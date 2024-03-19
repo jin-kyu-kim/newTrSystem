@@ -9,7 +9,6 @@ import { format, parse } from 'date-fns';
 
 const ProjectEmpCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdrTobe }) => {
   const [values, setValues] = useState([]);
-  const { manuName, tableColumns, keyColumn, summaryColumn, popup} = ProjectEmpCostJson;
   let groupingDtl = [];
 
   useEffect(() => {
@@ -106,13 +105,9 @@ const ProjectEmpCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdrTobe }) => {
             검색 (성명, 역할, 등급, 담당업무, 예정일, 맨먼스등 다양하게 검색가능) 
             </p>
             <CustomCostTable
-              keyColumn={keyColumn}
-              manuName={manuName}
-              columns={tableColumns}
+              columns={ProjectEmpCostJson.tableColumns}
               values={values}
               prjctId={prjctId}
-              summaryColumn={summaryColumn}
-              popup={popup}
               costTableInfoJson={ProjectEmpCostJson}
               ctrtYmd={ctrtYmd}
               stbleEndYmd={stbleEndYmd}

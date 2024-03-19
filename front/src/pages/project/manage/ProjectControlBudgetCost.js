@@ -8,8 +8,7 @@ import ApiRequest from "../../../utils/ApiRequest";
 import { format,parse } from 'date-fns';
 
 const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdrTobe }) => {
-  const [values, setValues] = useState([]);
-  const { manuName, tableColumns, keyColumn, summaryColumn, popup } = ProjectControlBudgetCostJson;
+  const [values, setValues] = useState([]); 
   let groupingDtl = [];
 
   useEffect(() => {
@@ -99,13 +98,9 @@ const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdrTobe
               검색 (비용코드, 상세내역 등 다양하게 검색가능)
             </p>
             <CustomCostTable
-              keyColumn={keyColumn}
-              manuName={manuName}
-              columns={tableColumns}
+              columns={ProjectControlBudgetCostJson.tableColumns}
               values={values}
               prjctId={prjctId}
-              summaryColumn={summaryColumn}
-              popup={popup}
               ctrtYmd={ctrtYmd}
               stbleEndYmd={stbleEndYmd}
               bgtMngOdrTobe={bgtMngOdrTobe}

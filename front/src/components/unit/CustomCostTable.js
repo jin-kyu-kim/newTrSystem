@@ -4,7 +4,6 @@ import { Button } from "devextreme-react";
 import { parse, format, addMonths, subMonths } from 'date-fns';
 
 import ApiRequest from "../../utils/ApiRequest";
-// import CustomPopup from "../unit/CustomPopup";
 import ProjectChangePopup from "../../pages/project/manage/ProjectChangePopup";
 import { Popup } from "devextreme-react";
 
@@ -18,25 +17,21 @@ import DataGrid, {
 } from "devextreme-react/data-grid";
 
 const CustomCostTable = ({
-  keyColumn,
   columns,
   values,
-  summaryColumn,
-  popup,
-  labelValue,
   json,
   ctrtYmd,
   stbleEndYmd,
   prjctId,
   bgtMngOdrTobe,
-  onHide,
 }) => {
+
   const navigate = useNavigate();
   const [period, setPeriod] = useState([]); //사업시작일, 사업종료일을 받아와서 월별로 나눈 배열을 담을 상태
   const dataGridRef = useRef(null); // DataGrid 인스턴스에 접근하기 위한 ref
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [summaryColumns, setSummaryColumns] = useState(summaryColumn); 
+  const [summaryColumns, setSummaryColumns] = useState(json.summaryColumn); 
   const [transformedData, setTransformedData] = useState([]);
   const editColumn = ["수정", "삭제"];
 
@@ -218,7 +213,7 @@ const CustomCostTable = ({
     <div className="">
       <DataGrid
         ref={dataGridRef}
-        keyExpr={keyColumn}
+        keyExpr={json.keyColumn}
         id={"dataGrid"}
         className={"table"}
         dataSource={values}
@@ -260,20 +255,17 @@ const CustomCostTable = ({
         <ColumnFixing enabled={true} />
       </DataGrid>
 
-      {/* <CustomPopup props={popup} visible={isPopupVisible} handleClose={hidePopup} onHide={onHide}> */}
-      <Popup width={popup.width}
-             height={popup.height}
+      <Popup width={json.popup.width}
+             height={json.popup.height}
              visible={isPopupVisible} 
              onHiding={hidePopup}
              showCloseButton={true}
-             title={popup.title}
+             title={json.popup.title}
              >
         <ProjectChangePopup 
           selectedItem={selectedItem} 
           period={period} 
-          labelValue={labelValue} 
           popupInfo={json} 
-          onHide={onHide} 
           prjctId={prjctId} 
           bgtMngOdrTobe={bgtMngOdrTobe}
           ctrtYmd={ctrtYmd}
@@ -281,7 +273,6 @@ const CustomCostTable = ({
           transformedData={transformedData}
           />
        </Popup>
-       {/* </CustomPopup>    */}
 
       <div style={{ textAlign: "right" }}>
         <Button onClick={handleAddRow}>행 추가</Button>

@@ -99,11 +99,7 @@ const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdrTobe
               검색 (비용코드, 상세내역 등 다양하게 검색가능)
             </p>
             <CustomCostTable
-              keyColumn={ProjectGeneralBudgetCostJson.keyColumn}
-              manuName={ProjectGeneralBudgetCostJson.manuName}
               columns={ProjectGeneralBudgetCostJson.tableColumns}
-              popup={ProjectGeneralBudgetCostJson.popup}
-              summaryColumn={ProjectGeneralBudgetCostJson.summaryColumn}
               values={values}
               prjctId={prjctId}
               ctrtYmd={ctrtYmd}
