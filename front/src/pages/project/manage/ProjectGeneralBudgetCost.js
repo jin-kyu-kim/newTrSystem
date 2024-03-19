@@ -21,8 +21,8 @@ const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdrTobe
 
   
   const GeneralBudgetDtl = async () => {
-    const copyCtrtYmd = JSON.parse(JSON.stringify(ctrtYmd));
-    const copyStbleEndYmd = JSON.parse(JSON.stringify(stbleEndYmd));
+    const copyCtrtYmd = ctrtYmd ? JSON.parse(JSON.stringify(ctrtYmd)) : "";
+    const copyStbleEndYmd = stbleEndYmd ? JSON.parse(JSON.stringify(stbleEndYmd)) : "";
     const ctrtYmdPrarm = copyCtrtYmd.replace(/-(\d{2})-\d{2}/, '$1');
     const stbleEndYmdPrarm = copyStbleEndYmd.replace(/-(\d{2})-\d{2}/, '$1');
 
