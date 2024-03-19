@@ -872,6 +872,7 @@
 					WHERE 1=1
 					AND M.PRJCT_ID = #{prjctId}
 					AND M.BGT_MNG_ODR = #{bgtMngOdr}
+					AND S.INPT_YM BETWEEN #{ctrtYmd} AND #{stbleEndYmd}
 					)T
 				  ) A ,
             </if>
@@ -884,6 +885,7 @@
 					WHERE 1=1
 					AND M.PRJCT_ID = #{prjctId}
 					AND M.BGT_MNG_ODR = #{bgtMngOdr}
+					AND S.INPT_YM BETWEEN #{ctrtYmd} AND #{stbleEndYmd}
 					)T
 				  ) A ,
             </if>
@@ -922,6 +924,7 @@
 					</if>
 					AND M.PRJCT_ID =  #{prjctId}
 					AND M.BGT_MNG_ODR = #{bgtMngOdr}
+					AND S.USE_YM BETWEEN #{ctrtYmd} AND #{stbleEndYmd}
 					)T
 				  ) A ,
             </if> 

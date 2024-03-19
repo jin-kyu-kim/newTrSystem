@@ -11,10 +11,14 @@ import DataGrid, {
   Grouping,
   TotalItem,
 } from "devextreme-react/data-grid";
-const ProjectCostCalc = ({prjctId,ctrtYmd, stbleEndYmd, bgtMngOdr, bgtMngOdrTobe}) => {
+const ProjectCostCalc = ({prjctId, ctrtYmd, stbleEndYmd, bgtMngOdr, bgtMngOdrTobe}) => {
 const [baseInfoData, setBaseInfoData] = useState([]);
 const [cnsrtmData, setCnsrtmData] = useState([]);
 const [data, setData] = useState([]);
+const copyCtrtYmd = ctrtYmd ? JSON.parse(JSON.stringify(ctrtYmd)): "";
+const copyStbleEndYmd = stbleEndYmd ? JSON.parse(JSON.stringify(stbleEndYmd)) : "";
+const ctrtYmdPrarm = copyCtrtYmd.replace(/-(\d{2})-\d{2}/, '$1');
+const stbleEndYmdPrarm = copyStbleEndYmd.replace(/-(\d{2})-\d{2}/, '$1');
 
 useEffect(() => {
   BaseInfoData();
@@ -58,7 +62,7 @@ const handelGetData = async () => {
   try {
     await CostCalc.PrmpcAnls.params.map(async (item) => {
       //TODO. 차수를 detail에서 호출일때와 change에서 호출일때 다르게 해야함.
-      const modifiedItem = { ...item, prjctId: prjctId, bgtMngOdr: bgtMngOdrTobe};   
+      const modifiedItem = { ...item, prjctId:prjctId, bgtMngOdr:bgtMngOdrTobe, ctrtYmd:ctrtYmdPrarm, stbleEndYmd:stbleEndYmdPrarm  };   
       const response = await ApiRequest(
         "/boot/common/queryIdSearch",
         modifiedItem
