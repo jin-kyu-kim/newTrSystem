@@ -30,3 +30,13 @@
     height: 23px;
     border-radius: 0%;
   }
+  .dx-list-select-all {
+    background-color: rgb(219, 216, 216);
+  }
+  .icon-button .dx-icon {
+    color: red;
+  }
+  .arrowIcon {
+    width: 40px;
+    pointer-events: none;
+  }

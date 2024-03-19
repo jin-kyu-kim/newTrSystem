@@ -69,6 +69,12 @@ const TreRoutes = [
     name: "ProjectAprvDetail",
     element: React.lazy(() => import("../pages/project/approval/ProjectAprvDetail")),
   },
+  // 권한관리
+  {
+    path: "/sysMng/EmpAuth",
+    name: "EmpAuth",
+    element: React.lazy(() => import("../pages/sysMng/EmpAuth")),
+  },
    // 고객사관리
   {
     path: "/sysMng/CustomersList",
