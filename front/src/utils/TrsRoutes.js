@@ -210,8 +210,8 @@ const TreRoutes = [
   // 개인 청구 > 문화체력비용
   {
     path: "/indvdlClm/CultureHealthCost",
-    name: "ProjectClaimCostDetail",
-    element: React.lazy(() => import("../pages/fnnrMng/ProjectClaimCostDetail")),
+    name: "CultureHealthCost",
+    element: React.lazy(() => import("../pages/indvdlClm/CultureHealthCost")),
   },
 
   // 재무 관리 > 근무시간 승인내역
@@ -226,12 +226,6 @@ const TreRoutes = [
     path: "/fnnrMng/EmpTRCostTotal",
     name: "EmpTRCostTotal",
     element: React.lazy(() => import("../pages/fnnrMng/EmpTRCostTotal")),
-  },
-  // 개인 청구 > 문화체력비용
-  {
-    path: "/indvdlClm/CultureHealthCost",
-    name: "CultureHealthCost",
-    element: React.lazy(() => import("../pages/indvdlClm/CultureHealthCost")),
   },
   // 재무 관리 > 경비승인내역
   {
