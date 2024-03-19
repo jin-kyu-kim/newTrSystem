@@ -58,7 +58,7 @@ const handelGetData = async () => {
   try {
     await CostCalc.PrmpcAnls.params.map(async (item) => {
       //TODO. 차수를 detail에서 호출일때와 change에서 호출일때 다르게 해야함.
-      const modifiedItem = { ...item, prjctId: prjctId, bgtMngOdr: bgtMngOdrTobe};   
+      const modifiedItem = { ...item, prjctId: prjctId, bgtMngOdr: bgtMngOdr};   
       const response = await ApiRequest(
         "/boot/common/queryIdSearch",
         modifiedItem
