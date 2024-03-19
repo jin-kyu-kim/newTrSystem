@@ -7,7 +7,7 @@ import Box, { Item } from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
 import { format,parse } from 'date-fns';
 
-const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
+const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdrTobe }) => {
   const [values, setValues] = useState([]);
   const { manuName, tableColumns, keyColumn, summaryColumn, popup } = ProjectControlBudgetCostJson;
   let groupingDtl = [];
@@ -22,16 +22,16 @@ const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }
 
   const ControlBudgetDtl = async () => {
     const copyCtrtYmd = JSON.parse(JSON.stringify(ctrtYmd));
-    const copyBizEndYmd = JSON.parse(JSON.stringify(bizEndYmd));
+    const copyStbleEndYmd = JSON.parse(JSON.stringify(stbleEndYmd));
     const ctrtYmdPrarm = copyCtrtYmd.replace(/-(\d{2})-\d{2}/, '$1');
-    const bizEndYmdPrarm = copyBizEndYmd.replace(/-(\d{2})-\d{2}/, '$1');
+    const stbleEndYmdPrarm = copyStbleEndYmd.replace(/-(\d{2})-\d{2}/, '$1');
 
     const param = [
       { tbNm: "EXPENS_MNBY_PRMPC_DTLS" },
       { prjctId: prjctId,
         bgtMngOdr: bgtMngOdrTobe,
         expensCd: ProjectControlBudgetCostJson.cdBetween,
-        useYm : ctrtYmdPrarm+"&"+bizEndYmdPrarm,
+        useYm : ctrtYmdPrarm+"&"+stbleEndYmdPrarm,
       }, 
     ];
 
@@ -107,7 +107,7 @@ const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }
               summaryColumn={summaryColumn}
               popup={popup}
               ctrtYmd={ctrtYmd}
-              bizEndYmd={bizEndYmd}
+              stbleEndYmd={stbleEndYmd}
               bgtMngOdrTobe={bgtMngOdrTobe}
               json={ProjectControlBudgetCostJson}
             />

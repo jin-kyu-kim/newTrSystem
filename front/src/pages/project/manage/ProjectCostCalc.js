@@ -11,7 +11,7 @@ import DataGrid, {
   Grouping,
   TotalItem,
 } from "devextreme-react/data-grid";
-const ProjectCostCalc = ({prjctId,ctrtYmd, bizEndYmd, bgtMngOdr, bgtMngOdrTobe}) => {
+const ProjectCostCalc = ({prjctId,ctrtYmd, stbleEndYmd, bgtMngOdr, bgtMngOdrTobe}) => {
 const [baseInfoData, setBaseInfoData] = useState([]);
 const [cnsrtmData, setCnsrtmData] = useState([]);
 const [data, setData] = useState([]);

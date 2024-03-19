@@ -7,7 +7,7 @@ import Box, { Item } from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
 import { format, parse } from 'date-fns';
 
-const ProjectOutordEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
+const ProjectOutordEmpCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdrTobe }) => {
   const [values, setValues] = useState([]);
   const { manuName, tableColumns, keyColumn, summaryColumn, popup } = ProjectOutordEmpCostJson;
   let groupingDtl = [];
@@ -23,15 +23,16 @@ const ProjectOutordEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) =>
   const OutordEmpDtl = async () => {
 
     const copyCtrtYmd = JSON.parse(JSON.stringify(ctrtYmd));
-    const copyBizEndYmd = JSON.parse(JSON.stringify(bizEndYmd));
+    const copyStbleEndYmd = JSON.parse(JSON.stringify(stbleEndYmd));
     const ctrtYmdPrarm = copyCtrtYmd.replace(/-(\d{2})-\d{2}/, '$1');
-    const bizEndYmdPrarm = copyBizEndYmd.replace(/-(\d{2})-\d{2}/, '$1');
+    const stbleEndYmdPrarm = copyStbleEndYmd.replace(/-(\d{2})-\d{2}/, '$1');
+
 
     const param = [
       { tbNm: "OUTORD_LBRCO_PRMPC_DTL" },
       { prjctId: prjctId,
         bgtMngOdr: bgtMngOdrTobe,
-        inptYm : ctrtYmdPrarm+"&"+bizEndYmdPrarm,  
+        inptYm : ctrtYmdPrarm+"&"+stbleEndYmdPrarm,  
       }, 
     ];
 
@@ -109,7 +110,7 @@ const ProjectOutordEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) =>
               popup={popup}
               costTableInfoJson={ProjectOutordEmpCostJson}
               ctrtYmd={ctrtYmd}
-              bizEndYmd={bizEndYmd}
+              stbleEndYmd={stbleEndYmd}
               bgtMngOdrTobe={bgtMngOdrTobe}
               json={ProjectOutordEmpCostJson}
             />
