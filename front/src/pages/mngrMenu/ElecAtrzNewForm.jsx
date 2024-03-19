@@ -3,11 +3,16 @@ import React, { useEffect, useState, useCallback, } from 'react';
 import { useNavigate } from 'react-router-dom';
 import vtwPng from "../../assets/img/vtw.png";
 import { Link } from 'react-router-dom';
-import Box, { Item, Form, GroupItem } from 'devextreme-react/form';
+import { Item, Form, GroupItem } from 'devextreme-react/form';
 import HtmlEditBox from "components/unit/HtmlEditBox";
+import CustomCdComboBox from "components/unit/CustomCdComboBox";
 
 const ElecAtrzNewForm = ({}) => {
     const navigate = useNavigate();
+
+    const positions = ['Y', 'N'];
+    const positionEditorOptions = { items: positions, searchEnabled: true, value: '' };
+
     return (
         <div className="container" style={{ marginTop: "30px" }}>
             <div>
@@ -28,56 +33,49 @@ const ElecAtrzNewForm = ({}) => {
                    
                         <Item dataField="문서 사용 여부" 
                               editorType="dxSelectBox" 
-                            //   editorOptions={{ width: 200 }} 
-                              label={{ text: "문서 사용 여부" }} />
+                              label={{ text: "문서 사용 여부" }}
+                              editorOptions ={positionEditorOptions} />
 
                         <Item dataField="화면 표시 여부" 
                               editorType="dxSelectBox" 
-                            //   editorOptions={{ width: 200 }} 
-                              label={{ text: "화면 표시 여부" }} />
+                              label={{ text: "화면 표시 여부" }}
+                              editorOptions ={positionEditorOptions} />
    
                         <Item dataField="양식 구분" 
                               editorType="dxSelectBox" 
-                            //   editorOptions={{ width: 200 }} 
-                              label={{ text: "양식 구분" }} />
+                              label={{ text: "양식 구분" }} 
+                        >
+                            <CustomCdComboBox
+                                param="VTW034"
+                                placeholderText="[양식구분]"
+                                name=""
+                                onSelect={""}
+                                value={""}
+                            />
+                        </Item>
 
                         <Item dataField="결재유형" 
                               editorType="dxSelectBox" 
-                            //   editorOptions={{ width: 200 }} 
-                              label={{ text: "결재유형" }} />
+                              label={{ text: "결재유형" }} >
+                            <CustomCdComboBox
+                                param="VTW049"
+                                placeholderText="[결재유형]"
+                                name=""
+                                onSelect={""}
+                                value={""}
+                            />
+                        </Item>
 
                         <Item dataField="보고서 작성여부" 
                               editorType="dxSelectBox" 
-                            //   editorOptions={{ width: 200 }} 
-                              label={{ text: "보고서 작성여부" }} />
+                              label={{ text: "보고서 작성여부" }}
+                              editorOptions ={positionEditorOptions} />
 
-                        <Item dataField="보고서 문서 양식" 
-                              editorType="dxSelectBox" 
-                            //   editorOptions={{ width: 200 }} 
-                              label={{ text: "보고서 문서 양식" }} />
-
-                        <Item dataField="보안등급" 
-                              editorType="dxSelectBox" 
-                            //   editorOptions={{ width: 500 }} 
-                              label={{ text: "보안등급" }} />
                 </GroupItem>
             </Form>
 
-            <Box direction="col" width="100%" >
-                <Item ratio={1}>
-                    <p><strong> * 1급 </strong>: 문서 내용이 암호화 되기 때문에 데이터 베이스가 유출 되더라도 개인키가 없이 문서를 읽을 수 없습니다.(추후 추가예정)</p>
-                    <p> 개인키 생성은 정보조회 개인정보에서 가능합니다. (추후 추가예정)</p>
-                    <p><strong> * 2급 </strong>: 결재선에 등록된 인원만 확인 가능.</p>
-                    <p><strong> * 3급 </strong>: 2급 문서 확인 가능 인원 + 관리자</p>
-                    <p><strong> * 4급 </strong>: 3급 문서 확인 가능 인원 + 결재시 입력했던 프로젝트 PM 까지 확인 가능.</p>
-                    <p><strong> * 5급 </strong>: 4급 문서 확인 가능 인원 + 결재시 입력했던 프로젝트 맴버까지 확인가능.</p>
-                    <p><strong> * 6급 </strong>: 결재문서 번호를 알고 있는 모든 인원들이 확인 가능.</p>
-                </Item>     
-            </Box>
             <Form labelLocation="left" id="form2" >
                 <Item dataField="양식 제목" 
-                    editorType="dxSelectBox" 
-                //   editorOptions={{ width: 200 }} 
                     label={{ text: "양식 제목" }} />
             </Form>
             <h5 style={{marginTop:'20px'}}>작성 가이드</h5>
