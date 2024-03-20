@@ -102,8 +102,8 @@
       { "key": "prjctEndYmd", "value": "종료일" , "type" : "date" ,"isRequire" : true },
       { "key": "tkcgJobCn", "value": "담당업무"  ,"isRequire" : true},
       { "key": "orderInstNm", "value": "발주처"  ,"isRequire" : true },
-      { "key": "jobClCd", "value": "업무분류" ,"isRequire" : true},
-      { "key": "tchnlgyClCd", "value": "기술분류"  ,"isRequire" : true },
+      { "key": "jobClCd", "value": "업무분류" ,"isRequire" : true ,"editType" : "selectBox" ,"comCd" : "VTW030"},
+      { "key": "tchnlgyClCd", "value": "기술분류"  ,"isRequire" : true ,"editType" : "selectBox" ,"comCd" : "VTW031" },
       { "key": "rm", "value": "비고"  ,"isRequire" : true }
 ], "tbNm": "EMP_PRJCT_HIST"
   },
