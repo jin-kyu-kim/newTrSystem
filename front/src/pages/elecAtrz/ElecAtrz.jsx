@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Button } from 'devextreme-react/button';
-import ElecAtrzNewReq from './ElecAtrzNewReq';
 
 const ElecAtrz = () => {
     const navigate = useNavigate();
@@ -11,7 +10,7 @@ const ElecAtrz = () => {
      * 신규 기안 작성 버튼 클릭 이벤트
      */
     const onNewReq = async () => {
-        navigate("../elecAtrz/elecAtrzNewReq");
+        navigate("../elecAtrz/ElecAtrzForm");
     }
 
     return (

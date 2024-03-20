@@ -1,133 +1,144 @@
-import React, { useEffect, useState, useCallback, } from "react";
-import {useNavigate} from "react-router-dom";
+import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
-import CustomComboBox from "../../components/unit/CustomComboBox";
-
-import Form, {
-    Item, GroupItem, Label, FormTypes,
-  } from 'devextreme-react/form';
+import { Button } from "devextreme-react/button"; 
+import HtmlEditBox from "components/unit/HtmlEditBox";
 
 const ElecAtrzNewReq = () => {
 
+    const location = useLocation();
+    const prjctId = location.state.prjctId;
+    
     const navigate = useNavigate();
 
-    const [prjctId , setPrjctId] = useState("")
-    const prjctList = 
-    {
-        tbNm: "PRJCT",
-        valueExpr: "prjctId",
-        displayExpr: "prjctNm",
-        name: "prjctId",
+    /**
+     * 결재요청 버튼 클릭시 전자결재 요청 함수 실행
+     */
+    const handleElecAtrz = async () => {
+        console.log("전자결재 요청");
     }
 
-    const handleChgState = (e) => {
-        console.log(e)
-        setPrjctId(e.value)
-
+    /**
+     * 결재선 지정 버튼 클릭시 결재선 지정 팝업 호출
+     */
+    const onAtrzLnPopup = async () => {
+        console.log("결재선 지정 팝업 호출");
     }
 
-    const validateForm = useCallback((e) => {
-        e.component.validate();
-    }, []);
-
-    const renderForm = () => {
-
-        const result = [];
-
+    /**
+     * 임시저장 버튼 클릭시 임시저장 함수 실행
+     */
+    const saveTemp = async () => {
+        console.log("임시저장");
     }
 
-    const onDocuClick = async () => {
-        console.log("onDocuClick")
-        console.log(prjctId)
+    /**
+     * 목록 버튼 클릭시 전자결재 서식 목록으로 이동
+     */
+    const toAtrzNewReq = async () => {
+        navigate("../elecAtrz/elecAtrzForm", {state: {prjctId: prjctId}});
     }
 
-    const onExample = async () => {
-        console.log("onExample")
-    }
-
+    const test = "<p><span style=\"color: rgb(68, 68, 68); background-color: rgb(255, 255, 255); font-size: 14px; font-family: &quot;Open Sans&quot;, &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;\">1. 프로젝트 투입 인력의 인사 관련 처리 지원 및 인턴 수배 등의 요청에 대한 품의 양식입니다.</span></p><p><span style=\"color: rgb(68, 68, 68); background-color: rgb(255, 255, 255); font-size: 14px; font-family: &quot;Open Sans&quot;, &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;\">2. 결재선은 PM 또는 팀리더 - [심사자 : 팀장 &gt; 승인자 : 대표이사], 팀장 - [승인자 : 대표이사] 로 지정합니다.</span></p><p><span style=\"color: rgb(68, 68, 68); background-color: rgb(255, 255, 255); font-size: 14px; font-family: &quot;Open Sans&quot;, &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;\">3. 참조자는 CSC 센터장, 인사담장자로 지정합니다. </span></p><p><span style=\"color: rgb(68, 68, 68); background-color: rgb(255, 255, 255); font-size: 14px; font-family: &quot;Open Sans&quot;, &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;\">4. 검토자, 확인자는 지정하지 않습니다.</span></p><p><br></p>"
 
     return (
-        <div className="container">
-            <hr/>
-            <Form
-                onContentReady={validateForm}
-            >
-                <Item
-                >
-                    <div>
-                        <h4>1. 프로젝트 / 팀 선택</h4>
+        <>
+            <div className="container" style={{marginTop:"10px"}}>
+                <div style={{display:"flex", justifyContent:"flex-start"}}>
+                    <div style={{float: "left", marginRight:"auto"}}>로고</div>
+                    <div style={{display: "inline-block"}}>
+                        <Button text="결재요청" onClick={handleElecAtrz}/>
+                        <Button text="결재선지정" onClick={onAtrzLnPopup}/>
+                        <Button text="임시저장" onClick={saveTemp}/>
+                        <Button text="목록" onClick={toAtrzNewReq}/>
                     </div>
-                    <div style={{width: "50%"}}>
-                        <CustomComboBox props={prjctList} value={prjctId} onSelect={handleChgState} label="프로젝트" required={true} placeholder="프로젝트"/>
+                </div>
+                <div style={{textAlign:"center"}}>선택한 기안문서의 명칭</div>
+                <div style={{display:"flex", justifyContent:"flex-start"}}>
+                    <div style={{float: "left", marginRight:"auto"}}>
+                        <table>
+                            <tr>
+                                <td>문서번호</td>
+                                <td> : </td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>프로젝트</td>
+                                <td> : </td>
+                                <td>프로젝트명</td>
+                            </tr>
+                            <tr>
+                                <td>기안자</td>
+                                <td> : </td>
+                                <td>부서 명 / 로그인한 사용자 명</td>
+                            </tr>
+                            <tr>
+                                <td>기안일자</td>
+                                <td> : </td>
+                                <td></td>
+                            </tr>
+                        </table>
                     </div>
-                    <div>
-                        <h4>2. 서식 선택</h4>
+                    <div style={{display: "inline-block"}}>
+                    <table className="table-atrzLn">
+                            <tbody>
+                                <tr>
+                                    <th className="table-atrzLn-th" rowspan={4}>결재</th>
+                                    <th className="table-atrzLn-th">검토</th>
+                                    <th className="table-atrzLn-th">확인</th>
+                                    <th className="table-atrzLn-th">심사</th>
+                                    <th className="table-atrzLn-th">결재</th>
+                                </tr>
+                                <tr>
+                                    <td className="table-atrzLn-td"></td>
+                                    <td className="table-atrzLn-td"></td>
+                                    <td className="table-atrzLn-td"></td>
+                                    <td className="table-atrzLn-td"></td>
+                                </tr>
+                                <tr>
+                                    <td className="table-atrzLn-td"></td>
+                                    <td className="table-atrzLn-td"></td>
+                                    <td className="table-atrzLn-td"></td>
+                                    <td className="table-atrzLn-td"></td>
+                                </tr>
+                                <tr>
+                                    <td className="table-atrzLn-td"></td>
+                                    <td className="table-atrzLn-td"></td>
+                                    <td className="table-atrzLn-td"></td>
+                                    <td className="table-atrzLn-td"></td>
+                                </tr>
+                                <tr>
+                                    <th className="table-atrzLn-th" rowspan={4}>합의</th>
+                                    <th className="table-atrzLn-td" colspan={4}></th>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                </Item>
-                <GroupItem
-                    colCount={4}
-                    caption="※ 계약"
-                >
-                    <Item>
-                        <div style={{minHeight: "100px"}}>
-                            <div 
-                                style={{textAlign: "center"
-                                        , minHeight:"100px"
-                                        , minWidth: "100px"
-                                        , width: "100%"
-                                        , border: "solid black 1px"
-                                        , cursor: "pointer",
-                                        hover: {backgroundColor: "red"}}}   
-                            >
-                                <div style={{textAlign: "left", marginBottom: "20px"}} onClick={onExample}>
-                                    미리보기
-                                </div>
-
-                                <div onClick={onDocuClick}>
-                                    계약서 품의 (외주인력-계약직/계약직업체/프리랜서)
-                                </div>
-                            </div>
-                        </div>
-                    </Item>
-                    <Item>
-                        <div>1</div>
-                    </Item>
-                    <Item>
-                        <div>1</div>
-                    </Item>
-                    <Item>
-                        <div>1</div>
-                    </Item>
-                </GroupItem>
-                <GroupItem
-                    colCount={4}
-                    caption="※ 경비"
-                >
-                    <Item>
-                        <div>1</div>
-                    </Item>
-                    <Item>
-                        <div>1</div>
-                    </Item>
-                    <Item>
-                        <div>1</div>
-                    </Item>
-                    <Item>
-                        <div>1</div>
-                    </Item>
-                    <Item>
-                        <div>1</div>
-                    </Item>
-                </GroupItem>
-                <GroupItem
-                    colCount={4}
-                    caption="※ 지급"
-                >
-
-                </GroupItem>
-            </Form>
-        </div>
+                </div>
+                <div style={{marginTop:"20px"}}>
+                    <table>
+                        <tr>
+                            <td>참조</td>
+                            <td> : </td>
+                        <td>
+                            CSC 김형균 전무;   경영지원팀 이진원 이사보;   경영지원팀 안주리 차장;   경영지원팀 안수민 차장;  부서 이름 직위;
+                        </td>
+                        </tr>
+                        <tr>
+                            <td>제목</td>
+                            <td> : </td>
+                            <td>텍스트 박스</td>
+                        </tr>
+                    </table>
+                </div>
+                <hr/>
+                <div dangerouslySetInnerHTML={{ __html: test }} />
+                {/* <HtmlEditBox 
+                /> */}
+            </div>
+        </>
     );
+
 
 }
 
