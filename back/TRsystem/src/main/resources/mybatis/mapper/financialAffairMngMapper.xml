@@ -287,7 +287,92 @@
         </if>
 
     </select>
-
-
-
+    <!--근무시간비용 입력현황 total조회-->
+	<select id="retrieveTotWorkHrCtInptSttus" parameterType="map" resultType="com.trsystem.LowerHashMap">
+	</select>
+	
+	<select id="retrieveWorkHrCtInptSttus" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		 SELECT 
+		       AA.EMPNO																						<!--사번-->
+		     , AA.EMP_ID																					<!--사원ID-->
+		     , AA.EMP_FLNM																					<!--성명-->
+		     , (SELECT CD_NM FROM CD WHERE CD_VALUE = AA.JBPS_CD) AS JBPS_NM								<!--직위명-->
+		     , (SELECT DEPT_NM
+		          FROM DEPT
+		         WHERE DEPT_ID = (SELECT dh.DEPT_ID  
+		                            FROM DEPT_HNF dh
+		                           WHERE dh.EMP_ID = AA.EMP_ID
+		                           LIMIT 1)
+		       )AS DEPT_NM																					<!--부서명-->
+		      , AA.TELNO																					<!--전화번호-->
+		      ,(SELECT CD_NM FROM CD WHERE CD_VALUE = AA.HDOF_STTS_CD) AS HDOF_STTS_NM						<!--프로젝트비용 총건수-->
+		      ,IFNULL(BB.CNT,0)AS CNT																		<!--프로젝트비용 총건수-->
+		      ,(CASE WHEN BB.ATRZ_DMND_STTS_CD = 'VTW03704' THEN BB.CNT  ELSE 0 END) AS PRJ_REJECT			<!--반려된 프로젝트비용건수-->
+			  ,(CASE WHEN BB.ATRZ_DMND_STTS_CD = 'VTW03703' THEN BB.CNT  ELSE 0 END) AS PRJ_COMPLETE  		<!--승인된 프로젝트비용건수-->
+			  ,IFNULL(CC.SUM,0)AS SUM																		<!--근무시간 총 시간-->
+			  	  ,(CASE WHEN CC.ATRZ_DMND_STTS_CD = 'VTW03704' THEN CC.SUM  ELSE 0 END) AS MM_REJECT		<!--반려된 근무시간--> 
+			  ,(CASE WHEN CC.ATRZ_DMND_STTS_CD = 'VTW03703' THEN CC.SUM  ELSE 0 END) AS MM_COMPLETE			<!--승인된 근무시간--> 
+		FROM EMP AA
+			 LEFT OUTER JOIN
+			 (
+				SELECT T1.PRJCT_ID , T1.EMP_ID , T1.APLY_YM , T1.APLY_ODR ,T2.ATRZ_DMND_STTS_CD, count(1) AS CNT
+				  FROM PRJCT_CT_APLY T1
+				  JOIN (SELECT A.PRJCT_ID , A.EMP_ID , A.APLY_YM , A.APLY_ODR, B.PRJCT_ATRZ_HIST_SN, B.ATRZ_DMND_STTS_CD
+				  FROM PRJCT_INDVDL_CT_MM A
+				  LEFT OUTER JOIN PRJCT_ATRZ_HIST B
+				    ON A.PRJCT_ID = B.PRJCT_ID
+				   AND A.EMP_ID = B.EMP_ID
+				   AND A.APLY_YM = B.APLY_YM
+				   AND A.APLY_ODR = B.APLY_ODR
+				WHERE B.PRJCT_ATRZ_HIST_SN  = (SELECT max(PRJCT_ATRZ_HIST_SN)
+					                              FROM PRJCT_ATRZ_HIST C
+					                             WHERE A.PRJCT_ID = C.PRJCT_ID
+												   AND A.EMP_ID = C.EMP_ID
+												   AND A.APLY_YM = C.APLY_YM
+												   AND A.APLY_ODR = C.APLY_ODR )
+				     ) T2
+				    ON T1.PRJCT_ID = T2.PRJCT_ID
+				   AND T1.EMP_ID  = T2.EMP_ID
+				   AND T1.APLY_YM = T2.APLY_YM
+				   AND T1.APLY_ODR = T2.APLY_ODR
+				   AND T1.APLY_YM = #{aplyYm}
+				   AND T1.APLY_ODR= #{aplyOdr}
+				GROUP BY T1.PRJCT_ID , T1.EMP_ID , T1.APLY_YM , T1.APLY_ODR ,T2.ATRZ_DMND_STTS_CD
+			 ) BB ON BB.EMP_ID = AA.EMP_ID
+			LEFT OUTER JOIN 
+			(
+				SELECT T1.PRJCT_ID , T1.EMP_ID , T1.APLY_YM , T1.APLY_ODR ,T2.ATRZ_DMND_STTS_CD, SUM(T1.MD) AS SUM
+				  FROM PRJCT_MM_APLY T1
+				  JOIN (SELECT A.PRJCT_ID , A.EMP_ID , A.APLY_YM , A.APLY_ODR, B.PRJCT_ATRZ_HIST_SN, B.ATRZ_DMND_STTS_CD
+				  FROM PRJCT_INDVDL_CT_MM A
+				  LEFT OUTER JOIN PRJCT_ATRZ_HIST B
+				    ON A.PRJCT_ID = B.PRJCT_ID
+				   AND A.EMP_ID = B.EMP_ID
+				   AND A.APLY_YM = B.APLY_YM
+				   AND A.APLY_ODR = B.APLY_ODR
+				WHERE B.PRJCT_ATRZ_HIST_SN  = (
+											   SELECT max(PRJCT_ATRZ_HIST_SN)
+					                           FROM PRJCT_ATRZ_HIST C
+					                           WHERE A.PRJCT_ID = C.PRJCT_ID
+												     AND A.EMP_ID = C.EMP_ID
+												     AND A.APLY_YM = C.APLY_YM
+												     AND A.APLY_ODR = C.APLY_ODR 
+											   )
+			     ) T2
+			    ON T1.PRJCT_ID = T2.PRJCT_ID
+			   AND T1.EMP_ID  = T2.EMP_ID
+			   AND T1.APLY_YM = T2.APLY_YM
+			   AND T1.APLY_ODR = T2.APLY_ODR
+			   AND T1.APLY_YM = #{aplyYm}
+			   AND T1.APLY_ODR= #{aplyOdr}
+			  GROUP BY T1.PRJCT_ID , T1.EMP_ID , T1.APLY_YM , T1.APLY_ODR, T2.ATRZ_DMND_STTS_CD
+			 ) CC 
+			ON CC.EMP_ID = AA.EMP_ID 
+		WHERE 
+			1=1
+			AND AA.HDOF_STTS_CD = 'VTW00301'   						<!--재직퇴직 컴포넌트 추가시 수정 예정-->
+			<if test="empId != null and empId !=''">
+			AND AA.EMP_ID LIKE CONCAT('%', #{empId}, '%')
+			</if>
+	</select>	
 </mapper>

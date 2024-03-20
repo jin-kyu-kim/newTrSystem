@@ -1,6 +1,7 @@
 {
 	"menuName": "TimeExpenseInsertSttus",
-	"queryId": "humanResourceMngMapper.retriveTimeExpenseInsertSttus",
+    "totQueryId": "financialAffairMngMapper.retrieveTotWorkHrCtInptSttus",
+	"queryId": "financialAffairMngMapper.retrieveWorkHrCtInptSttus",
     "keyColumn": "empId",
     "tableColumns": 
 	[
@@ -10,14 +11,29 @@
         { "key": "deptNm", "value": "소속", "width": 100, "alignment" : "center" },
         { "key": "telno", "value": "전화번호", "width": 100, "alignment" : "center"  },
         { "key": "hdofSttsNm", "value": "재직상태", "width": 100, "alignment" : "center"  },
-        { "key": "hdofSttsNm", "value": "근무시간", "width": 300 , "button": "시간취소", "name" : "cancel" },
-        { "key": "hdofSttsNm", "value": "프로젝트비용", "width": 300, "button": "비용취소" },
-        { "key": "hdofSttsNm", "value": "회사지불비용", "width": 80, "button": "이동" },
-        { "key": "hdofSttsNm", "value": "출력", "width": 80, "button": "출력" }
+        {"value": "근무시간",
+        "subColumns": [
+            { "value": "입력화면이동", "button": {"text": "이동", "name": "workHrMv"} },
+            { "key": "sum", "value": "입력"},
+            { "key": "mmReject", "value": "반려" },
+            { "key": "mmComplete", "value": "승인"},
+            { "value": "취소", "button": {"text": "시간취소", "name": "hrRtrcn"}}
+        ]},
+        {"value": "프로젝트비용입력",
+        "subColumns": [
+            { "value": "입력화면이동", "button": {"text": "이동", "name": "prjctScrnMv"} },
+            { "key": "cnt", "value": "입력"},
+            { "key": "prjReject", "value": "반려"},
+            { "key": "prjComplete", "value": "승인" },
+            { "value": "취소", "button": {"text": "비용취소", "name": "ctRtrcn"} }
+        ]},
+        {  "value": "회사지불비용", "width": 80, "button": {"text" : "이동", "name" : "companyPrice"} },
+        {  "value": "출력", "width": 80, "button": {"text" : "출력", "name" : "print"} }
   ], "searchParams":
   {
-      "prjctMngrEmpIdItem": false,
-      "prmpcInptSeCdItem": false,
-      "insertBtnItem": false
+    "yearItem": true,
+    "monthItem": true,
+    "aplyOdr": true,
+    "empId": true
   }
 }
