@@ -45,12 +45,13 @@ const NoticeDetail = () => {
         const result = window.confirm("삭제하시겠습니까?") 
         if(result){
             const params = [{ tbNm: "NOTICE" }, { noticeId: noticeId }]
-            const fileInfo = [{ tbNm: "ATCHMNFL" }, { atchmnflId: oneData.atchmnflId }]
+            const fileParams = [{ tbNm: "ATCHMNFL" }, { atchmnflId: oneData.atchmnflId }]
             try {
-                const response = await ApiRequest("/boot/common/commonDelete", params);
-                const fileRes = await ApiRequest("/boot/common/commonDelete", fileInfo);
-                if (response === 1 && fileRes === 1) {
-                    navigate("/infoInq/ReferenceList")
+                const response = await ApiRequest("/boot/common/deleteWithFile", {
+                    params: params, fileParams: fileParams
+                });
+                if (response >= 1) {
+                    navigate("/infoInq/NoticeList")
                 } else { alert('삭제 실패') }
             } catch (error) {
                 console.log(error);
@@ -71,7 +72,7 @@ const NoticeDetail = () => {
                 {oneData.length !== 0 ?
                     <>
                         <h1 style={{ marginBottom: "20px" }}>{oneData.noticeTtl}</h1>
-                        <div>{oneData.regEmpId} | {oneData.regDt}</div><hr />
+                        <div>{oneData.regEmpNm} | {oneData.regDt}</div><hr />
                         <div dangerouslySetInnerHTML={{ __html: oneData.noticeCn }} />
 
                         {fileList.length !== 0 && fileList.filter(file => file.realFileNm !== null && file.realFileNm !== undefined).filter(file => file.realFileNm.endsWith('.jpg') || file.realFileNm.endsWith('.jpeg') || file.realFileNm.endsWith('.png') || file.realFileNm.endsWith('.gif')).map((file, index) => (
