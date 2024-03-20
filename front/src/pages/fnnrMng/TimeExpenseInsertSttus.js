@@ -3,11 +3,12 @@ import DataGrid, { Column,Export,Lookup,Selection,button } from 'devextreme-reac
 import TimeExpenseInsertSttusJson from "./TimeExpenseInsertSttusJson.json";
 import Button from "devextreme-react/button";
 import { useCookies } from "react-cookie";
-import CustomLabelValue from "components/unit/CustomLabelValue";
 import ApiRequest from "utils/ApiRequest";
 import CustomTable from "components/unit/CustomTable";
 import SearchPrjctSet from "../../components/composite/SearchPrjctSet";
+import SearchPrjctCostSet from "../../components/composite/SearchPrjctCostSet";
 import { useNavigate } from "react-router-dom";
+import moment from "moment";
 
 
 const TimeExpenseInsertSttus = ({}) => {
@@ -15,28 +16,40 @@ const TimeExpenseInsertSttus = ({}) => {
 const [values, setValues] = useState([]);
 const [param, setParam] = useState({});
 const [totalItems, setTotalItems] = useState(0);
-const [currentPage, setCurrentPage] = useState(1);
-const [totalPages, setTotalPages] = useState(1);
-const [pageSize, setPageSize] = useState(20);
 const { keyColumn, queryId, tableColumns, searchParams } = TimeExpenseInsertSttusJson;
+const [currentPhase, setCurrentPhase] = useState(''); //차수설정용
 const navigate = useNavigate();
+const nowDate = moment().format('YYYYMM') //현재 년월
+//======================초기차수 설정 ===============================================
+useEffect(() => {
+    // 현재 날짜를 가져오는 함수
+    const getCurrentDate = () => {
+      const now = new Date();
+      const dayOfMonth = now.getDate();
+      return dayOfMonth;
+    };
+    // 현재 날짜를 가져오기
+    const dayOfMonth = getCurrentDate();
+    // 15일을 기준으로 차수를 결정
+    if (dayOfMonth <= 15) {
+      setCurrentPhase('1');
+    } else {
+      setCurrentPhase('2');
+    }
+  }, []);
 //====================초기검색=====================================================
 useEffect(() => {
-  if (!Object.values(param).every((value) => value === "")) {
-    pageHandle();
-  }
-}, [param]);
-
-// 검색으로 조회할 때
+    if (!Object.values(param).every((value) => value === "")) {
+      pageHandle();
+    }
+  }, [param]);
+//=================== 검색으로 조회할 때============================================
 const searchHandle = async (initParam) => {
-  setTotalPages(1);
-  setCurrentPage(1);
   setParam({
     ...initParam,
     queryId: queryId,
-    currentPage: currentPage,
-    startVal: 0,
-    pageSize: pageSize,
+    aplyYm: nowDate,
+    aplyOdr : currentPhase,
   });
 };
 
@@ -45,10 +58,7 @@ const pageHandle = async () => {
     const response = await ApiRequest("/boot/common/queryIdSearch", param);
     setValues(response);
     if (response.length !== 0) {
-      setTotalPages(Math.ceil(response[0].totalItems / pageSize));
       setTotalItems(response[0].totalItems);
-    } else {
-      setTotalPages(1);
     }
   } catch (error) {
     console.log(error);
@@ -56,14 +66,34 @@ const pageHandle = async () => {
 };
 useEffect(()=> {
     console.log("벨류값입니다.", values)
+    console.log("현재입니다.", currentPhase)
 },[values])
-//=======================화면 이동버튼
-const onClick = (e) => {
-    console.log("여기 뭐가지고 오나요?",e)
-    navigate("/fnnrMng/prjctCtClm/ProjectCostClaimDetail", 
-             {state: { empId: values.empId }})
+
+//===========================테이블내 버튼 이벤트======================================
+const onClick = (button,data) => {
+    if(button.name === "companyPrice"){
+        alert("회사비용이동");
+    }
+    if(button.name === "print"){
+        alert("출력!");
+    }
+    if(button.name === "geunmu"){
+        alert("근무시간페이지이동");
+    }
+    if(button.name === "timeCancel"){
+        alert("시간취소!");
+    }
+    if(button.name === "prjtPay"){
+        alert("프로젝트비용이동");
+    }
+    if(button.name === "payCancel"){
+        alert("비용취소");
+    }
+    // navigate("/fnnrMng/prjctCtClm/ProjectCostClaimDetail", 
+    //          {state: { empId: values.empId }})
   };
 
+  //========================화면그리는 구간 ====================================================
     return(
         <div className="container">
         <div className="col-md-10 mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
@@ -73,11 +103,11 @@ const onClick = (e) => {
           <span>* 근무시간비용 입력 현황을 조회합니다..</span>
         </div>
         <div style={{ marginBottom: "20px" }}>
-        <SearchPrjctSet callBack={searchHandle} props={searchParams} />
+        {/* <SearchPrjctSet callBack={searchHandle} props={searchParams} /> */}
+        <SearchPrjctCostSet callBack={searchHandle} props={searchParams} />
       </div>
         <div style={{ marginBottom: "20px" }}>
         <DataGrid keyExpr="ID" showBorders={true}  >
-        <Selection mode="multiple"/>
         <Column caption="전체" alignment="center"/>
         <Column caption="근무시간" alignment="center">
             <Column caption="입력여부" alignment="center"> 
@@ -109,16 +139,9 @@ const onClick = (e) => {
         </Column>
         </DataGrid>
         </div>
-        {/* <div style={{ marginBottom: "20px" }}>
-        <CustomTable
-        keyColumn={keyColumn}
-        pageSize={pageSize}
-        columns={tableColumns}
-        values={values}
-        paging={true}
-        onClick={onClick}
-        />
-        </div> */}
+        <div style={{ marginBottom: "20px" }}>
+        <CustomTable keyColumn={keyColumn}  columns={tableColumns} values={values} paging={true} onClick={onClick} />
+        </div>
         <div style={{ marginBottom: "20px" }}>
         <DataGrid showBorders={true} dataSource={values} >
         <Column caption="사번" alignment="center" dataField="empno" dataType="string" />
@@ -128,16 +151,35 @@ const onClick = (e) => {
         <Column caption="전화번호" alignment="center" dataField="telno"/>
         <Column caption="재직상태" alignment="center" dataField="hdofSttsNm"/>
         <Column caption="근무시간" alignment="center ">
-            <Column caption="입력화면" alignment="center" button={onClick}/> 
-            <Column caption="입력" alignment="center"/> 
-            <Column caption="반려" alignment="center"/> 
-            <Column caption="승인" alignment="center"/> 
+            <Column caption="입력화면" alignment="center"/> 
+            <Column caption="입력" alignment="center" dataField="sumMm"/> 
+            {
+                values.cntCompanion === 0 && values.cntComplete !== undefined
+                ? <Column caption="반려" alignment="center" dataField="0"/>     
+                : <Column caption="반려" alignment="center" dataField="sumMm"/>
+            }
+            {
+                values.cntComplete === 0 && values.cntComplete !== undefined
+                ? <Column caption="승인" alignment="center" value="0"/>     
+                : <Column caption="승인" alignment="center" value="sumMm"/>
+            }
+            <Column caption="취소" alignment="center"/>   
         </Column>
         <Column caption="프로젝트비용" alignment="center">
             <Column caption="입력화면" alignment="center"/>
-            <Column caption="입력" alignment="center"/> 
-            <Column caption="반려" alignment="center"/> 
-            <Column caption="승인" alignment="center"/>  
+            <Column caption="입력" alignment="center" dataField="sumAply"/>
+            {
+                values.cntCompanion === 0 && values.cntComplete !== undefined
+                ? <Column caption="반려" alignment="center" dataField="0"/>     
+                : <Column caption="반려" alignment="center" dataField="sumAply"/>
+            }
+            {
+                values.cntComplete === 0 && values.cntComplete !== undefined
+                ? <Column caption="승인" alignment="center" dataField="0"/>     
+                : <Column caption="승인" alignment="center" dataField="sumAply"/>
+            }
+            {/* <Column caption="승인" alignment="center" dataField="cntComplete"/>  */}
+            <Column caption="취소" alignment="center" button/>   
         </Column>
         <Column caption="회사지불비용" alignment="center"/>
         <Column caption="출력" alignment="center"> </Column>

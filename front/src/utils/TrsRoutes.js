@@ -69,6 +69,12 @@ const TreRoutes = [
     name: "ProjectAprvDetail",
     element: React.lazy(() => import("../pages/project/approval/ProjectAprvDetail")),
   },
+  // 권한관리
+  {
+    path: "/sysMng/EmpAuth",
+    name: "EmpAuth",
+    element: React.lazy(() => import("../pages/sysMng/EmpAuth")),
+  },
    // 고객사관리
   {
     path: "/sysMng/CustomersList",
@@ -204,8 +210,8 @@ const TreRoutes = [
   // 개인 청구 > 문화체력비용
   {
     path: "/indvdlClm/CultureHealthCost",
-    name: "ProjectClaimCostDetail",
-    element: React.lazy(() => import("../pages/fnnrMng/ProjectClaimCostDetail")),
+    name: "CultureHealthCost",
+    element: React.lazy(() => import("../pages/indvdlClm/CultureHealthCost")),
   },
 
   // 재무 관리 > 근무시간 승인내역
@@ -221,11 +227,11 @@ const TreRoutes = [
     name: "EmpTRCostTotal",
     element: React.lazy(() => import("../pages/fnnrMng/EmpTRCostTotal")),
   },
-  // 개인 청구 > 문화체력비용
+  // 재무 관리 > 경비승인내역
   {
-    path: "/indvdlClm/CultureHealthCost",
-    name: "CultureHealthCost",
-    element: React.lazy(() => import("../pages/indvdlClm/CultureHealthCost")),
+    path: "/fnnrMng/EmpExpenseAprvList",
+    name: "EmpExpenseAprvList",
+    element: React.lazy(() => import("../pages/fnnrMng/EmpExpenseAprvList")),
   },
   // 관리자메뉴 > 전자결재서식관리
   {

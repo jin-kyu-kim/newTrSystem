@@ -98,8 +98,8 @@ const NoticeInput = () => {
             })
         }
         const formData = new FormData();
-        formData.append("tbNm", "NOTICE");
-        formData.append("data", JSON.stringify(data)); 
+        formData.append("tbNm", JSON.stringify({tbNm: "NOTICE"}));
+        formData.append("data", JSON.stringify(data));
         Object.values(deleteFiles)
             .forEach((deleteFiles) => formData.append("deleteFiles", JSON.stringify(deleteFiles)));
         Object.values(attachments)

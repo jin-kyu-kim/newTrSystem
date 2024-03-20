@@ -1,12 +1,11 @@
 import { Column, DataGrid, Editing, Lookup, MasterDetail, RequiredRule, StringLengthRule, Pager, Paging } from 'devextreme-react/data-grid';
+import { useCallback, useEffect, useState } from 'react';
 import ToggleButton from 'pages/sysMng/ToggleButton';
 import ApiRequest from 'utils/ApiRequest';
 import '../../pages/sysMng/sysMng.css'
-import { useCallback, useEffect, useState } from 'react';
 
-const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, masterDetail, allowKeyChg, doublePk }) => {
+const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, masterDetail, doublePk }) => {
     const [ cdValList, setCdValList ] = useState({});
-    const [ isStart, setIsStart ] = useState(false);
 
     useEffect(() => {
         getCdVal();
@@ -35,22 +34,22 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
     const onEditRow = async (editMode, e) => {
         const editParam = doublePk ? [{tbNm: tbNm, snColumn: keyColumn}] : [{tbNm: tbNm}];
         let editInfo = {};
-
         let keyInfo = doublePk ? { [keyColumn]: e.key, [doublePk.nm]: doublePk.val } : { [keyColumn]: e.key };
-        if(doublePk !== undefined){
-            Object.assign(e.data, {
-                [doublePk.nm]: doublePk.val,
-                [keyColumn]: ''
-            });
-        }
+        
         switch (editMode) {
             case 'insert':
+                if(doublePk !== undefined){
+                    Object.assign(e.data, {
+                        [doublePk.nm]: doublePk.val
+                    });
+                }
                 editParam[1] = e.data;
                 editInfo = { url: 'commonInsert', complete: '저장' }
                 break;
             case 'update':
                 editParam[1] = e.newData;
                 editParam[2] = keyInfo;
+                console.log('editParam', editParam)
                 editInfo = { url: 'commonUpdate', complete: '수정' }
                 break;
             default:
@@ -58,9 +57,10 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
                 editInfo = { url: 'commonDelete', complete: '삭제' }
                 break;
         }
+        
         try {
             const response = await ApiRequest('/boot/common/' + editInfo.url, editParam);
-            response === 1 ? alert(editInfo.complete + "되었습니다.") : alert(editInfo.complete + "에 실패했습니다.")
+            response === 1 ? alert(editInfo.complete + "되었습니다.") : alert(editInfo.complete + "에 실패했습니다.");
         } catch (error) {
             console.log(error)
         }
@@ -118,7 +118,6 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
                         dataType={col.type}
                         format={col.format}
                         alignment={'center'}
-                        //allowEditing={allowKeyChg && col.key === keyColumn ? false : true}
                         cellRender={col.button ? (e) => buttonRender(e, col) : undefined}
                         editCellRender={col.button ? (e) => buttonRender(e, col) : undefined}
                     >

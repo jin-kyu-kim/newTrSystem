@@ -384,7 +384,42 @@
 			,C.CD_NM AS JBPS_NM
 			,D.DEPT_NM AS DEPT_NM
 			,CONCAT(SUBSTRING(E.TELNO FROM 1 FOR 3),'-',SUBSTRING(E.TELNO FROM 4 FOR 4),'-',SUBSTRING(E.TELNO FROM 8 FOR 4)) AS TELNO
+			,E.TELNO AS TELNO2
 			,C2.CD_NM AS HDOF_STTS_NM
+			,COALESCE((
+						  SELECT COUNT(*) 
+						  FROM 
+						  		PRJCT_CT_APLY prc 
+						  WHERE 
+						  prc.EMP_ID =E.EMP_ID 
+						  AND APLY_YM = #{aplyYm}  
+						  AND APLY_ODR = #{aplyOdr}),0) AS SUM_APLY								<!--근무시간 입력 총시간-->
+			,COALESCE((
+						  SELECT SUM(MD)
+						  FROM 
+						  		PRJCT_MM_APLY prm 
+						  WHERE 
+						  		prm.EMP_ID =E.EMP_ID 
+						  		AND APLY_YM = #{aplyYm} 
+						 		AND APLY_ODR = #{aplyOdr}),0) AS SUM_MM							<!--프로젝트비용 입력 총건수-->
+			,COALESCE ((
+			  			  SELECT COUNT(*)
+						  FROM 
+						  		PRJCT_ATRZ_HIST pah 
+						  WHERE 
+						  		pah.EMP_ID =E.EMP_ID 
+								AND APLY_YM = #{aplyYm}  
+								AND APLY_ODR = #{aplyOdr}
+								AND ATRZ_DMND_STTS_CD= 'VTW03703' ),0) AS CNT_COMPLETE		<!-- 결제 승인 코드 (결제 반려 카운팅)--> 					
+			,COALESCE ((
+						  SELECT COUNT(*)
+					      FROM 
+					      		PRJCT_ATRZ_HIST pah 
+					      WHERE 
+							    pah.EMP_ID =E.EMP_ID 
+							    AND APLY_YM = #{aplyYm} 
+							    AND APLY_ODR = #{aplyOdr}
+							    AND ATRZ_DMND_STTS_CD= 'VTW03704'),0) AS CNT_COMPANION  	<!-- 결제 반려 코드 (결제 반려 카운팅)-->					
 			,COUNT(*) OVER () AS TOTAL_ITEMS
 		FROM EMP E
 			LEFT OUTER JOIN CD C ON C.CD_VALUE =E.JBPS_CD
@@ -395,5 +430,8 @@
 		WHERE 
 			1=1
 			AND E.HDOF_STTS_CD = 'VTW00301' 	
+			<if test="empId != null and empId !=''">
+				AND E.EMP_ID LIKE CONCAT('%', #{empId}, '%')
+			</if>
 	</select>
 </mapper>	

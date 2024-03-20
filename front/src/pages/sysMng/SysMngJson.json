@@ -37,14 +37,8 @@
                 }
             ],
             "textBoxItem": [
-                {
-                    "placeholder": "코드",
-                    "name": "cdValue"
-                },
-                {
-                    "placeholder": "코드명",
-                    "name": "cdNm"
-                }
+                { "placeholder": "코드", "name": "cdValue" },
+                { "placeholder": "코드명", "name": "cdNm" }
             ]
         }
     },
@@ -82,11 +76,14 @@
                 }
             ],
             "textBoxItem": [
-                {
-                    "placeholder": "고객사명",
-                    "name": "ctmmnyNm"
-                }
+                { "placeholder": "고객사명", "name": "ctmmnyNm" }
             ]
         }
+    },
+    "empAuthJson": {
+        "tabMenu": [
+            { "tabName": "기본 권한", "default": true, "displayExpr": "cdNm" },
+            { "tabName": "생성 권한", "displayExpr": "authrtGroupNm" }
+        ]
     }
 }

@@ -2,8 +2,11 @@ import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import  EmpTimeAprvListJson from "./EmpTimeAprvListJson.json";
 import ApiRequest from "../../utils/ApiRequest";
-import CustomTable from "components/unit/CustomTable";
 import SearchPrjctCostSet from "../../components/composite/SearchPrjctCostSet";
+import { Workbook } from "exceljs";
+import { saveAs } from 'file-saver';
+import { exportDataGrid } from 'devextreme/excel_exporter';
+import CustomTable from "components/unit/CustomTable";
 
 function EmpTimeAprvList() {
   const [values, setValues] = useState([]);
@@ -50,6 +53,27 @@ function EmpTimeAprvList() {
       console.log(error);
     }
   };
+  const padNumber = (num) => {
+    return num.toString().padStart(2, '0');
+};
+  const currentDateTime = new Date();
+        const formattedDateTime = `${currentDateTime.getFullYear()}_`+
+            `${padNumber(currentDateTime.getMonth() + 1)}_`+
+            `${padNumber(currentDateTime.getDate())}`
+
+  const onExporting = (e) => {
+    const workbook = new Workbook();
+    const worksheet = workbook.addWorksheet('Main sheet');
+    exportDataGrid({
+      component: e.component,
+      worksheet,
+      autoFilterEnabled: true,
+    }).then(() => {
+      workbook.xlsx.writeBuffer().then((buffer) => {
+        saveAs(new Blob([buffer], { type: 'application/octet-stream' }), '근무시간 승인내역'+formattedDateTime+'.xlsx');
+      });
+    });
+  };
 
   return (
     <div className="container">
@@ -65,13 +89,14 @@ function EmpTimeAprvList() {
       <div style={{ marginBottom: "20px" }}>
       <SearchPrjctCostSet callBack={searchHandle} props={searchParams} />
       </div>
-
       <CustomTable
         keyColumn={keyColumn}
         pageSize={pageSize}
         columns={tableColumns}
         values={values}
         paging={true}
+        excel={true}
+        onExcel={onExporting}
       />
       
     </div>

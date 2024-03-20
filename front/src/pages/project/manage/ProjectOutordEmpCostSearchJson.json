@@ -2,7 +2,7 @@
   {
     "caption": "성명",
     "width": 120,
-    "dataField": "outordEmpId",
+    "dataField": "empFlnm",
     "area": "row",
     "showTotals": false,
     "expanded": true

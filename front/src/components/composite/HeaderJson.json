@@ -150,7 +150,7 @@
       {
         "id": 3,
         "title": "경비승인내역",
-        "link": "/"
+        "link": "/fnnrMng/EmpExpenseAprvList"
       },
       {
         "id": 4,
@@ -186,7 +186,7 @@
       {
         "id": 1,
         "title": "권한관리",
-        "link": "/"
+        "link": "sysMng/EmpAuth"
       },
       {
         "id": 2,

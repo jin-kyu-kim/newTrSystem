@@ -7,9 +7,8 @@ import Box, { Item } from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
 import { format,parse } from 'date-fns';
 
-const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
-  const [values, setValues] = useState([]);
-  const { manuName, tableColumns, keyColumn, summaryColumn, popup } = ProjectControlBudgetCostJson;
+const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdrTobe }) => {
+  const [values, setValues] = useState([]); 
   let groupingDtl = [];
 
   useEffect(() => {
@@ -21,17 +20,17 @@ const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }
   }, []);
 
   const ControlBudgetDtl = async () => {
-    const copyCtrtYmd = JSON.parse(JSON.stringify(ctrtYmd));
-    const copyBizEndYmd = JSON.parse(JSON.stringify(bizEndYmd));
+    const copyCtrtYmd = ctrtYmd ? JSON.parse(JSON.stringify(ctrtYmd)): "";
+    const copyStbleEndYmd = stbleEndYmd ? JSON.parse(JSON.stringify(stbleEndYmd)) : "";
     const ctrtYmdPrarm = copyCtrtYmd.replace(/-(\d{2})-\d{2}/, '$1');
-    const bizEndYmdPrarm = copyBizEndYmd.replace(/-(\d{2})-\d{2}/, '$1');
+    const stbleEndYmdPrarm = copyStbleEndYmd.replace(/-(\d{2})-\d{2}/, '$1');
 
     const param = [
       { tbNm: "EXPENS_MNBY_PRMPC_DTLS" },
       { prjctId: prjctId,
         bgtMngOdr: bgtMngOdrTobe,
         expensCd: ProjectControlBudgetCostJson.cdBetween,
-        useYm : ctrtYmdPrarm+"&"+bizEndYmdPrarm,
+        useYm : ctrtYmdPrarm+"&"+stbleEndYmdPrarm,
       }, 
     ];
 
@@ -99,15 +98,11 @@ const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }
               검색 (비용코드, 상세내역 등 다양하게 검색가능)
             </p>
             <CustomCostTable
-              keyColumn={keyColumn}
-              manuName={manuName}
-              columns={tableColumns}
+              columns={ProjectControlBudgetCostJson.tableColumns}
               values={values}
               prjctId={prjctId}
-              summaryColumn={summaryColumn}
-              popup={popup}
               ctrtYmd={ctrtYmd}
-              bizEndYmd={bizEndYmd}
+              stbleEndYmd={stbleEndYmd}
               bgtMngOdrTobe={bgtMngOdrTobe}
               json={ProjectControlBudgetCostJson}
             />

@@ -16,8 +16,9 @@ const EmpBasicInfo = () => {
   /*유저세션*/
   const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
 
-  // const empId = cookies.userInfo.empId;
-   const empId = '202160c6-bf25-11ee-b259-000c2956283f';
+   const empId = cookies.userInfo.empId;
+ 
+  
   const [empCnt, setEmpCnt] = useState(0);
 
   const [empDtlData, setEmpDtlData] = useState([]);
@@ -144,7 +145,9 @@ const EmpBasicInfo = () => {
           );
 
           if (response === 1) {
+            
             window.alert("직원정보가 저장 되었습니다.");
+            window.scroll(0, 0);
             // empInfoCnt();
           } else {
             // 저장 실패 시 처리
@@ -165,6 +168,7 @@ const EmpBasicInfo = () => {
 
           if (response === 1) {
             window.alert("직원정보가 저장 되었습니다.");
+            window.scroll(0, 0);
           } else {
             // 저장 실패 시 처리
           }
