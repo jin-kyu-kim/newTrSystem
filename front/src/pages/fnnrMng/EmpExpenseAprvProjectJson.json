@@ -1,6 +1,6 @@
 {
   "menuName": "EmpExpenseAprvProject",
-  "queryId": "financialAffairMngMapper.retrieveExpensAprvDtls",
+  "queryId": "financialAffairMngMapper.retrieveExpensAprvDtlsPrjctAccto",
   "keyColumn": "prjctId",
   "tableColumns":
   [

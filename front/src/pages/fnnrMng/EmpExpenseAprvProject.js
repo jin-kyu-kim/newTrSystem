@@ -8,7 +8,7 @@ import { saveAs } from 'file-saver';
 import '../../assets/css/Style.css'
 
 
-const EmpExpenseAprvProject = ({ year, monthVal, aplyOdr }) => {
+const EmpExpenseAprvProject = ({ startYm, startOdr, endYm, endOdr }) => {
 
     const { keyColumn, queryId } = EmpExpenseAprvProjectJson;
     const [expenseAprvData, setExpenstAprvData] = useState([]);
@@ -16,18 +16,19 @@ const EmpExpenseAprvProject = ({ year, monthVal, aplyOdr }) => {
 
     useEffect(() => {
         getExpenseAprvData();
-    }, [year, monthVal, aplyOdr]);
+    }, [startYm, startOdr, endYm, endOdr]);
 
     //경비 승인내역 조회
     const getExpenseAprvData = async () => {
         const param = {
             queryId: queryId,
-            aplyYm: year+monthVal,
-            aplyOdr: aplyOdr
+            startYmOdr: startYm+startOdr,
+            endYmOdr: endYm+endOdr,
         };
         try{
             const response = await ApiRequest('/boot/common/queryIdSearch', param);
             setExpenstAprvData(response);
+            console.log('rrr',response);
         }catch (error){
             console.log(error);
         }
@@ -35,28 +36,28 @@ const EmpExpenseAprvProject = ({ year, monthVal, aplyOdr }) => {
 
     // 엑셀 출력
     const onExporting = (e) => {
-        const currentDateTime = new Date();
-        const formattedDateTime = `${currentDateTime.getFullYear()}`+
-            `${padNumber(currentDateTime.getMonth() + 1)}`+
-            `${padNumber(currentDateTime.getDate())}`+
-            `${padNumber(currentDateTime.getHours())}`+
-            `${padNumber(currentDateTime.getMinutes())}`+
-            `${padNumber(currentDateTime.getSeconds())}`;
-        if (e.component) {
-            const workbook = new Workbook();
-            const worksheet = workbook.addWorksheet(`.${year}${monthVal}-${aplyOdr}_${formattedDateTime.substring(0, 6)}`);
-            exportDataGrid({
-                component: e.component,
-                worksheet,
-                autoFilterEnabled: true,
-            }).then(() => {
-                workbook.xlsx.writeBuffer().then((buffer) => {
-                    saveAs(new Blob([buffer],
-                            { type: 'application/octet-stream' }),
-                        `.${year}${monthVal}-${aplyOdr}_${formattedDateTime}.xlsx`);
-                });
-            });
-        }
+    //     const currentDateTime = new Date();
+    //     const formattedDateTime = `${currentDateTime.getFullYear()}`+
+    //         `${padNumber(currentDateTime.getMonth() + 1)}`+
+    //         `${padNumber(currentDateTime.getDate())}`+
+    //         `${padNumber(currentDateTime.getHours())}`+
+    //         `${padNumber(currentDateTime.getMinutes())}`+
+    //         `${padNumber(currentDateTime.getSeconds())}`;
+    //     if (e.component) {
+    //         const workbook = new Workbook();
+    //         const worksheet = workbook.addWorksheet(`.${year}${monthVal}-${aplyOdr}_${formattedDateTime.substring(0, 6)}`);
+    //         exportDataGrid({
+    //             component: e.component,
+    //             worksheet,
+    //             autoFilterEnabled: true,
+    //         }).then(() => {
+    //             workbook.xlsx.writeBuffer().then((buffer) => {
+    //                 saveAs(new Blob([buffer],
+    //                         { type: 'application/octet-stream' }),
+    //                     `.${year}${monthVal}-${aplyOdr}_${formattedDateTime}.xlsx`);
+    //             });
+    //         });
+    //     }
     };
 
     // 숫자를 두 자릿수로 만들어주는 함수
@@ -66,26 +67,26 @@ const EmpExpenseAprvProject = ({ year, monthVal, aplyOdr }) => {
 
 
 
-    const utztnDtColumns = [...new Set(expenseAprvData.map(item => item.utztnDt))];
+    // const utztnDtColumns = [...new Set(expenseAprvData.map(item => item.utztnDt))];
 
     const columns = [
-        { dataField: 'prjctNm', caption: '프로젝트명', width: '15%' },
-        { dataField: 'expensCd', caption: '비용 코드', width: '15%' },
-        { dataField: 'empFlnm', caption: '이름', width: '15%' },
-        { dataField: 'ctPrpos', caption: '상세내역', width: '15%' },
-        { dataField: 'atdrn', caption: '용도', width: '15%' },
-        { dataField: 'utztnAmt', caption: '금액(소계)', width: '15%' },
-        { dataField: 'bfeClm', caption: '기간외', width: '15%' },
-        ...utztnDtColumns.map(utztnDt => ({
-            dataField: utztnDt,
-            caption: utztnDt,
-            width: '10%',
-            calculateCellValue: rowData => {
-                const matchingRow = expenseAprvData.find(item => item.utztnDt == rowData.utztnDt && item.prjctNm == rowData.prjctNm && item.empFlnm == rowData.empFlnm);
-
-                return matchingRow.utztnDt == utztnDt ? matchingRow.utztnAmt : '';
-            }
-        }))
+        { dataField: 'prjctNm', caption: '프로젝트명', width: '250' },
+        { dataField: 'expensCd', caption: '비용 코드', width: '200' },
+        { dataField: 'empFlnm', caption: '이름', width: '100' },
+        { dataField: 'ctPrpos', caption: '상세내역', width: '200' },
+        { dataField: 'atdrn', caption: '용도', width: '200' },
+        { dataField: 'utztnAmt', caption: '금액(소계)', width: '100' },
+        { dataField: 'bfeClm', caption: '기간외', width: '100' },
+        // ...utztnDtColumns.map(utztnDt => ({
+        //     dataField: utztnDt,
+        //     caption: utztnDt,
+        //     width: '130',
+        //     calculateCellValue: rowData => {
+        //         const matchingRow = expenseAprvData.find(item => item.utztnDt == rowData.utztnDt && item.prjctNm == rowData.prjctNm && item.empFlnm == rowData.empFlnm);
+        //
+        //         return matchingRow.utztnDt == utztnDt ? matchingRow.utztnAmt : '';
+        //     }
+        // }))
     ];
 
     return (
@@ -95,6 +96,7 @@ const EmpExpenseAprvProject = ({ year, monthVal, aplyOdr }) => {
                     dataSource={expenseAprvData}
                     showBorders={true}
                     showColumnLines={true}
+                    wordWrapEnabled={true}
                     onExporting={onExporting}
                     onCellPrepared={(e) => {
                         if (e.rowType === 'header') {
