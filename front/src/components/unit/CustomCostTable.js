@@ -275,7 +275,7 @@ const CustomCostTable = ({
        </Popup>
 
       <div style={{ textAlign: "right" }}>
-        <Button onClick={handleAddRow}>행 추가</Button>
+        <Button onClick={handleAddRow}>{json.AddRowBtn}</Button>
       </div>
     </div>
   );
