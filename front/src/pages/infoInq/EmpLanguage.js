@@ -32,10 +32,7 @@ const EmpLanguage = ({}) => {
   console.log(data);
 }, []);
 
-useEffect(() => {
-  console.log(data);
-  getSn();
-}, [ isSuccess]);
+
 
 const pageHandle = async () => {
   try {
@@ -49,29 +46,9 @@ const pageHandle = async () => {
   }
 };
 
-const getSn = async () => {
-  const selectParams = {
-    queryId: "infoInqMapper.selectFgggSn",
-    empId: data.empId
-  };
-
-  try {
-    const response = await ApiRequest("/boot/common/queryIdSearch", selectParams);
-    setData(() => ({
-      ...data,
-      fgggAbltySn: response[0].fgggAbltySn
-    }));
-
-
-  } catch (error) {
-    console.log(error);
-  }
-}
-
 useEffect(()=>{
  
     pageHandle();
-   console.log(data);
  
 },[param.empId,tableKey]);
 
@@ -96,3 +73,9 @@ useEffect(()=>{
 };
 
 export default EmpLanguage;
+
+
+const param = [
+  {tbNm : "EMP" },
+  {likeTest: "%라이크%", between:"1990&2000"} 
+]

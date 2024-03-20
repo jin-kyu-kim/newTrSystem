@@ -281,8 +281,12 @@ const onRowDblClick = (e) => {
  }
 //================================비밀번호 초기화 (개발예정)
 const onClickRestPwd = (data) => {
-  alert("비밀번호를 초기화하시겠습니까?")
-  console.log(data.empId)
+  const isconfirm = window.confirm("비밀번호를 초기화 하시겠습니까?"); 
+  if (isconfirm) {
+    alert("초기화되었습니다."); //개발예정
+  } else{
+    return;
+   }
 }
  //===============================발령정보 업로드 (개발예정)
  const empUpload =()=>{

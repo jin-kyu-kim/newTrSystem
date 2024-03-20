@@ -4,7 +4,7 @@ import ApiRequest from "../../../utils/ApiRequest";
 import CustomTable from "../../../components/unit/CustomTable";
 import MatalCostJson from "./MatalCostJson.json";
 
-const MatalCost = ({ prjctId }) => {
+const MatalCost = ({ prjctId, bgtMngOdr }) => {
   const { keyColumn, queryId, tableColumns, summaryColumn } = MatalCostJson;
   const [values, setValues] = useState([]);
 
@@ -12,7 +12,9 @@ const MatalCost = ({ prjctId }) => {
     const param = {
       queryId: queryId,
       prjctId: prjctId,
+      bgtMngOdr: bgtMngOdr
     };
+    
     const SetData = async () => {
       try {
         const response = await ApiRequest("/boot/common/queryIdSearch", param);

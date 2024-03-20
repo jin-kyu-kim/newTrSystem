@@ -1,16 +1,13 @@
-import DataGrid, { Column, Pager, Paging, Summary, TotalItem, Editing, RequiredRule, Export } from "devextreme-react/data-grid";
+import DataGrid, { Column, Export, Pager, Paging, Summary, TotalItem } from "devextreme-react/data-grid";
 import { Button } from "devextreme-react/button";
-import ToggleButton from "../../pages/sysMng/ToggleButton"
-import PivotGridDataSource from 'devextreme/ui/pivot_grid/data_source';
-import PivotGrid  from 'devextreme-react/pivot-grid';
-import { Field } from "formik";
-const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, 
-                      handleYnVal, editRow, onEditRow, onClick, wordWrap,onRowClick, excel, onExcel }) => {
+
+const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, onClick, wordWrap, onRowClick, excel, onExcel }) => {
 
   const gridRows = () => {
     const result = [];
     for (let i = 0; i < columns.length; i++) {
       const { key, value, width, alignment, button, visible, toggle, subColumns } = columns[i];
+
       if (button) {
         result.push(
           <Column
@@ -34,7 +31,6 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
                     caption={subCol.value}
                     width={subCol.width}
                     alignment={subCol.alignment || 'center'}
-                    
                   />
                 ))}
               </Column>
@@ -47,25 +43,10 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
                   caption={value}
                   width={width}
                   alignment={alignment || 'center'}>
-                  {editRow && <RequiredRule message="필수 입력 항목입니다" />}
                 </Column>
               );
 
           }
-        }
-        if (toggle) {
-          result.push(
-            <Column
-              key={key}
-              dataField={key}
-              caption={value}
-              width={width}
-              alignment={alignment || 'center'}
-              cellRender={({ data, key }) => (
-                <ToggleButton callback={handleYnVal} data={data} idColumn={key} />
-              )} />
-            
-          );
         }
       }
     }
@@ -74,23 +55,25 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
 
   const buttonRender = (button, data) => {
     return(
-      <Button text={button} onClick={() => {onClick(data)}}/>
+      <Button name={button.name} text={button.text} onClick={(e) => {onClick(button, data)}}/>
       
     )
   }
 
   const allowedPageSize = () =>{
     let pageSizes=[];
-    if(values.length < 20){
-      pageSizes = [5, 10, 'all']
-    }else if(values.length  < 50 ){
-      pageSizes =  [10, 20, 'all']
-    }else if(values.length  < 80) {
-      pageSizes =  [20, 50, 'all']
-    }else if(values.length  < 100){
-      pageSizes =  [20, 50, 80, 'all']
-    }else{
-      pageSizes =  [20, 50, 80, 100]
+    if(values != null) {
+      if(values.length < 20){
+        pageSizes = [5, 10, 'all']
+      }else if(values.length  < 50 ){
+        pageSizes =  [10, 20, 'all']
+      }else if(values.length  < 80) {
+        pageSizes =  [20, 50, 'all']
+      }else if(values.length  < 100){
+        pageSizes =  [20, 50, 80, 'all']
+      }else{
+        pageSizes =  [20, 50, 80, 100]
+      }
     }
     return pageSizes;
   }
@@ -110,9 +93,6 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
         onRowDblClick={onRowDblClick}
         onRowClick={onRowClick}
         onExporting={onExcel}
-        onRowInserted={(e) => onEditRow('insert', e)}
-        onRowUpdating={(e) => onEditRow('update', e)}
-        onRowRemoved={(e) => onEditRow('delete', e)}
         onCellPrepared={(e) => {
           if (e.rowType === 'header') {
             e.cellElement.style.textAlign = 'center';
@@ -121,15 +101,6 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
         }}
         wordWrapEnabled={wordWrap}
       >
-        {editRow &&
-          <Editing
-            mode="row"
-            allowAdding={true}
-            allowDeleting={true}
-            allowUpdating={true}
-          />
-        }
-        
         <Paging defaultPageSize={pageSize} enabled={paging} />
         <Pager
           displayMode="full"
@@ -153,9 +124,10 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
             ))}
           </Summary>
         }
-              {excel &&
-      <Export enabled={true} ></Export>}
-
+      {excel &&
+      <Export enabled={true} >
+      </Export>
+      }
       </DataGrid>
     </div>
   );

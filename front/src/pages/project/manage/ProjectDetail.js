@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { TabPanel } from "devextreme-react";
 import { useLocation } from "react-router-dom";
 import ApiRequest from "../../../utils/ApiRequest";
+import { useCookies } from "react-cookie";
 
 import ProjectDetailJson from "./ProjectDetailJson.json";
 
@@ -16,18 +17,24 @@ const ProjectDetail = () => {
   const totBgt = location.state.totBgt;
   const bgtMngOdr = location.state.bgtMngOdr;
   const ctrtYmd = location.state.ctrtYmd;
-  const bizEndYmd = location.state.bizEndYmd;
+  const stbleEndYmd = location.state.stbleEndYmd;
   const bgtMngOdrTobe = location.state.bgtMngOdrTobe;
   const bizSttsCd = location.state.bizSttsCd;
   const deptId = location.state.deptId;
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [atrzLnSn, setAtrzLnSn] = useState();
+  const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
 
   const ProjectDetail = ProjectDetailJson;
+
+  const empId = cookies.userInfo.empId;
 
   console.log("bgtMngOdrTobe", bgtMngOdrTobe)
   console.log("bgtMngOdr", bgtMngOdr)
   console.log("atrzLnSn",   atrzLnSn)
+  console.log("ctrtYmd",   ctrtYmd)
+  console.log("stbleEndYmd",   stbleEndYmd)
+
   
   useEffect(() => {
   
@@ -64,7 +71,6 @@ const ProjectDetail = () => {
    * 변경원가 버튼 클릭
    */
   const onClikcChngBgt = async () => {
-    console.log(atrzLnSn);
     if(atrzLnSn === undefined) {
       // null이면 check 할 필요가 없다.
       const isconfirm = window.confirm("프로젝트 변경을 진행하시겠습니까?");
@@ -79,22 +85,17 @@ const ProjectDetail = () => {
       if(result != null) {
         if(result === 'VTW03701') {
           // 임시저장인 경우
-          console.log("임시저장")
           const isconfirm = window.confirm("임시저장된 내역이 있습니다. 수정을 진행하시겠습니까?");
           if(isconfirm) {
-            const isconfirm = window.confirm("임시저장된 내역을 지우고 프로젝트 변경을 진행하시겠습니까?");
-            if(isconfirm) {
-              await projectChgHandle();
-            }
+            await projectChgHandle();
           }
         } else if (result === 'VTW03704' ) {
           // 반려인 경우
-          console.log("반려")
           const isconfirm = window.confirm("기존에 반려된 요청이 존재합니다. 반려된 요청을 수정하시겠습니까?");
           if(isconfirm) {
             const isconfirm = window.confirm("기존에 반려된 요청의 변경 사항을 초기화하여 수정하시겠습니까?");
             if(isconfirm) {
-              await projectChgHandle();
+              await resetPrmpc();
             }
           }
         } else {
@@ -105,7 +106,7 @@ const ProjectDetail = () => {
         }
       }
     }
-  } 
+  };
 
   const projectChgHandle = async () => {
 
@@ -123,7 +124,7 @@ const ProjectDetail = () => {
         {
         state: { prjctId: prjctId
                , ctrtYmd: ctrtYmd
-               , bizEndYmd: bizEndYmd
+               , stbleEndYmd: stbleEndYmd
                , bgtMngOdr:bgtMngOdr
                , bgtMngOdrTobe: bgtMngOdrTobe
                , targetOdr: targetOdr
@@ -134,6 +135,47 @@ const ProjectDetail = () => {
   }
 
   /**
+   * 승인이 반려된 차수일 때 이를 초기화 요청 시
+   * 다음차수로 올린 뒤 최종 승인 완료된 값을 넣어준다.
+   */
+  const resetPrmpc = async () => {
+    const date = new Date();
+    
+    const param = {
+      prjctId: prjctId,
+      totAltmntBgt: totBgt,
+      bgtMngOdr: bgtMngOdr,
+      bgtMngOdrTobe: bgtMngOdrTobe,
+      atrzDmndSttsCd: "VTW03701",
+      regDt : date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0],
+      regEmpId: empId
+    };
+
+    try {
+      const response = await ApiRequest("/boot/prjct/resetPrmpc", param);
+      console.log(response);
+      if(response > 0) {
+        navigate("../project/ProjectChange",
+        {
+        state: { prjctId: prjctId
+               , ctrtYmd: ctrtYmd
+               , stbleEndYmd: stbleEndYmd
+               , bgtMngOdr: bgtMngOdr
+               , bgtMngOdrTobe: response
+               , targetOdr: response
+               , bizSttsCd: bizSttsCd
+               , atrzLnSn: atrzLnSn
+               , deptId: deptId},
+        })
+      }
+
+    } catch (error) {
+      console.error('Error fetching data', error);
+    }
+
+  };
+
+  /**
    * 변경원가 차수가 반려되거나 임시저장인 차수인지 확인한다.
    * VTW03701: 임시저장
    * VTW03704: 반려
@@ -142,7 +184,7 @@ const ProjectDetail = () => {
   const chkBgtOdr = async () => {
     console.log("반려/임시저장 여부 확인");
 
-    const param = {
+    const param = { 
       queryId: "projectMapper.retrieveTmprRjctBgtOdr",
       prjctId: prjctId,
       bgtMngOdr: bgtMngOdrTobe
@@ -164,7 +206,8 @@ const ProjectDetail = () => {
         bgtMngOdr: bgtMngOdr,
         bgtMngOdrTobe: bgtMngOdrTobe,
         atrzDmndSttsCd: "VTW03701",
-        regDt : date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0]
+        regDt : date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0],
+        regEmpId: empId
       }, 
     ]; 
     try {
@@ -239,7 +282,7 @@ const ProjectDetail = () => {
           if(data.index === selectedIndex) {
               return (
                 <React.Suspense fallback={<div>Loading...</div>}>
-                <Component prjctId={prjctId} ctrtYmd={ctrtYmd} bizEndYmd={bizEndYmd} bgtMngOdr={bgtMngOdr} bgtMngOdrTobe={bgtMngOdrTobe} />
+                <Component prjctId={prjctId} ctrtYmd={ctrtYmd} stbleEndYmd={stbleEndYmd} bgtMngOdr={bgtMngOdr} bgtMngOdrTobe={bgtMngOdrTobe} />
               </React.Suspense>
             );
           }
