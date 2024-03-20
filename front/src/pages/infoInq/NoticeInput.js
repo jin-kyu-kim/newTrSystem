@@ -15,7 +15,7 @@ const NoticeInput = () => {
     const location = useLocation();
     const [cookies] = useCookies(["userInfo", "userAuth"]);
     const [attachments, setAttachments] = useState([]);
-    const [deleteFiles, setDeleteFiles] = useState([]);
+    const [deleteFiles, setDeleteFiles] = useState([{tbNm: "ATCHMNFL"}]);
     const [newAttachments, setNewAttachments] = useState(attachments);
     const { edit, insertUrl, detail } = NoticeJson;
 
@@ -23,6 +23,7 @@ const NoticeInput = () => {
     const editMode = location.state.editMode;
     const id = location.state.id;
     const date = moment();
+    const [prevData, setPrevData] = useState({});
     const [ data, setData ] = useState({
         noticeId: uuid(),
         regEmpId: empId,
@@ -31,7 +32,7 @@ const NoticeInput = () => {
     });
     
     const onClick = () => {
-        const result = window.confirm(editMode === 'create' ? "등록하시겠습니까?" : "수정하시겠습니까?");
+        const result = window.confirm(editMode !== 'update' ? "등록하시겠습니까?" : "수정하시겠습니까?");
         if(result) storeNotice(editMode);
     };
 
@@ -40,7 +41,9 @@ const NoticeInput = () => {
         try {
             const response = await ApiRequest("/boot/common/queryIdSearch", param);
             if (response.length !== 0) {
-                setData(response[0]);
+                const { atchmnflSn, realFileNm, strgFileNm, regDt, regEmpNm, ...resData } = response[0];
+                setData({ ...resData });
+                setPrevData({ ...resData });
                 const tmpFileList = response.map((data) => ({
                     realFileNm: data.realFileNm,
                     strgFileNm: data.strgFileNm,
@@ -59,7 +62,7 @@ const NoticeInput = () => {
     }, []);
 
     const [typeChk, setTypeChk] = useState({
-        imprtnc: data.imprtncNtcBgngYmd ? true : false,
+        imprtnc: data.imprtncNtcBgngYmd !== undefined ? true : false,
         useYn: data.useYn === "Y" ? true : false,
         move: false,
     });
@@ -84,31 +87,51 @@ const NoticeInput = () => {
     }, [typeChk.imprtnc, typeChk.move, typeChk.useYn])
 
     const attachFileDelete = (deleteItem) => {
-        setDeleteFiles([...deleteFiles, { atchmnflSn: deleteItem.atchmnflSn }]);
+        setDeleteFiles([...deleteFiles, { atchmnflId: data.atchmnflId ,atchmnflSn: deleteItem.atchmnflSn, strgFileNm: deleteItem.strgFileNm }]);
         setNewAttachments(newAttachments.filter(item => item !== deleteItem));
     }
 
+    const validateData = () => {
+        const errors = [];
+        if (!data.noticeTtl || !data.noticeCn) {
+          errors.push('required');
+        }
+        return errors.length === 0;
+    };
+
     const storeNotice = async (editMode) => {
         if(editMode === 'update'){
+            let changedValues = {};
+
+            Object.keys(data).forEach(key => {
+                if(prevData[key] !== data[key]){
+                    changedValues = { ...changedValues, [key]: data[key] }
+                }
+            });
             setData({
-                ...data,
-                noticeId: id,
+                atchmnflId: data.atchmnflId,
+                regEmpId: empId,
                 mdfcnEmpId: empId,
-                mdfcnDt: date.format('YYYY-MM-DD HH:mm:ss')
+                mdfcnDt: date.format('YYYY-MM-DD HH:mm:ss'),
+                changedValues
             })
         }
         const formData = new FormData();
         formData.append("tbNm", JSON.stringify({tbNm: "NOTICE"}));
         formData.append("data", JSON.stringify(data));
-        Object.values(deleteFiles)
-            .forEach((deleteFiles) => formData.append("deleteFiles", JSON.stringify(deleteFiles)));
+        formData.append("deleteFiles", JSON.stringify(deleteFiles));
+        if(editMode === 'update') {
+            formData.append("idColumn", JSON.stringify({noticeId: data.noticeId}));
+        }
         Object.values(attachments)
             .forEach((attachment) => formData.append("attachments", attachment));
         try {
-            const response = await axios.post(insertUrl, formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            })
-            if (response.data >= 0) navigate("/infoInq/NoticeList")
+            if(validateData()){
+                const response = await axios.post(insertUrl, formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                })
+                if (response.data >= 1) navigate("/infoInq/NoticeList")
+            }
         } catch (error) {
             console.error("API 요청 에러:", error);
         }
@@ -126,6 +149,7 @@ const NoticeInput = () => {
                 data={data}
                 typeChk={typeChk}
                 editMode={editMode}
+                editType='notice'
                 attachments={attachments}
                 newAttachments={newAttachments}
                 setData={setData}
