@@ -238,6 +238,18 @@ const TreRoutes = [
     path: "/mngrMenu/ElecAtrzNewForm",
     name: "ElecAtrzNewForm",
     element: React.lazy(() => import("../pages/mngrMenu/ElecAtrzNewForm")),
+  },
+  // 전자결재 
+  {
+    path: "/elecAtrz/ElecAtrz",
+    name: "ElecAtrz",
+    element: React.lazy(() => import("../pages/elecAtrz/ElecAtrz")),
+  },
+  // 전자결재 
+  {
+    path: "/elecAtrz/ElecAtrzNewReq",
+    name: "ElecAtrz",
+    element: React.lazy(() => import("../pages/elecAtrz/ElecAtrzNewReq")),
   }
 ];
 
