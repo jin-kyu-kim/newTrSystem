@@ -1,7 +1,7 @@
 {
   "menuName": "CultureHealthCost",
   "keyColumn": "clturPhstrnActCtSn",
-  "queryId": "infoInqMapper.retrieveClturPhstrnActCtList",
+  "queryId": "cultureHealthCostMapper.retrieveClturPhstrnActCtList",
   "dateLabel": {
     "aria-label": "Date"
   },

@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useState} from "react";
 import Button from "devextreme-react/button";
 import DateBox from 'devextreme-react/date-box';
-import CultureHealthCostJson from "./CultureHealthCost.json";
+import CultureHealthCostJson from "./CultureHealthCostJson.json";
 import CustomCdComboBox from "../../components/unit/CustomCdComboBox";
 import {FileUploader, NumberBox} from "devextreme-react";
 import DataGrid, {Column} from 'devextreme-react/data-grid';
@@ -124,6 +124,7 @@ const CultureHealthCost = () => {
                     if(!tmpList.includes(JSON.stringify(tmpElement))){
                         tmpList.push(JSON.stringify(tmpElement));
                         tmpElement.month = getLastMonth(element.clmYmd);
+                        tmpElement.clmYmd = element.clmYmd;
                         tmpElement.clmAmt = element.clmAmt;
                         tmpElement.actIem = element.actIem;
                         tmpElement.clturPhstrnSeCd = element.clturPhstrnSeCd;
@@ -234,7 +235,7 @@ const CultureHealthCost = () => {
         })
     }
 
-    const test = (e) => {
+    const fileCell = (e) => {
         let atchList = e.data.atchmnfl;
         if (atchList != null) {
             return (<div>
@@ -274,7 +275,7 @@ const CultureHealthCost = () => {
                             <Column dataField='actIem' caption='항목' minWidth={30} />
                             <Column dataField='actPurps' caption='목적' minWidth={30} />
                             <Column dataField='aprvYn' caption='비고' minWidth={100} />
-                            <Column caption='첨부' minWidth={100} cellRender={test} />
+                            <Column caption='첨부' minWidth={100} cellRender={fileCell} />
                         </DataGrid>
                     </div>
                     <div style={{display: "flex", justifyContent: "flex-end"}}>
@@ -321,6 +322,7 @@ const CultureHealthCost = () => {
                                     onValueChanged={(e) => handleChgState({ name: "clmAmt", value: e.value })}
                                     inputAttr={Json.withSpinAndButtonsLabel}
                                     style={{backgroundColor: 'white'}}
+                                    showClearButton={true}
                                 />
                             </td>
                         </tr>
@@ -333,19 +335,32 @@ const CultureHealthCost = () => {
                                     name="clturPhstrnSeCd"
                                     onSelect={handleChgState}
                                     value={initParam?.clturPhstrnSeCd}
+                                    showClearButton={true}
                                 />
                             </td>
                         </tr>
                         <tr>
                             <th style={thStyle}>항목</th>
                             <td style={tdStyle}>
-                                <TextBox style={inputStyle} placeholder="항목" value={initParam?.actIem} onValueChanged={(e) => handleChgState({ name: "actIem", value: e.value })}/>
+                                <TextBox
+                                    style={inputStyle}
+                                    placeholder="항목"
+                                    value={initParam?.actIem}
+                                    onValueChanged={(e) => handleChgState({ name: "actIem", value: e.value })}
+                                    showClearButton={true}
+                                />
                             </td>
                         </tr>
                         <tr>
                             <th style={thStyle}>목적</th>
                             <td style={tdStyle}>
-                                <TextBox style={inputStyle} placeholder="목적" value={initParam?.actPurps} onValueChanged={(e) => handleChgState({ name: "actPurps", value: e.value })}/>
+                                <TextBox
+                                    style={inputStyle}
+                                    placeholder="목적"
+                                    value={initParam?.actPurps}
+                                    onValueChanged={(e) => handleChgState({ name: "actPurps", value: e.value })}
+                                    showClearButton={true}
+                                />
                             </td>
                         </tr>
                         <tr>

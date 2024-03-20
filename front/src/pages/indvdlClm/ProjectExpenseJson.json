@@ -1,0 +1,20 @@
+{
+  "ExpenseInfo":[
+    {
+      "TabName": "개인 지불비용(롯데 개인법인카드) 일괄청구",
+      "tabId": "ProjectExpenseCard",
+      "url": "./ProjectExpenseCard"
+    },
+    {
+      "TabName": "개인 지불비용(현금 및 개인법인카드) 청구",
+      "tabId": "ProjectExpenseCash",
+      "url": "./ProjectExpenseCash"
+    }
+  ],
+  "dateLabel": {
+    "aria-label": "Date"
+  },
+  "withSpinAndButtonsLabel": {
+    "aria-label": "With Spin And Buttons"
+  }
+}
