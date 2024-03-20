@@ -67,7 +67,7 @@ const ElecAtrzNewForm = ({}) => {
         <div className="container" style={{ marginTop: "30px" }}>
             <div>
                 <h1>신규 양식 작성</h1>
-                <p>* <u>양식 구분</u>, <u>결재 유형</u>, <u>보고서 작성여부</u>, <u>보고서 문서양식</u>, <u>보안등급</u>은 저장 후 <strong>수정 및 삭제 할 수 없습니다.</strong></p>
+                <p>* <u>양식 구분</u>, <u>결재 유형</u>, <u>보고서 작성여부</u> 는 저장 후 <strong>수정 및 삭제 할 수 없습니다.</strong></p>
                 <p>* 잘못 작성했을 경우 작성한 양식을 사용하지 않음으로 변경 후 신규 작성 하시기 바랍니다.</p>
             </div>
 
