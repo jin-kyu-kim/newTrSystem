@@ -179,7 +179,7 @@
         FROM (
                  SELECT A.PRJCT_ID
                       , A.OUTORD_EMP_ID
-                      , (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = A.OUTORD_EMP_ID) AS EMP_FLNM
+                      , (SELECT OUTORD_EMP_NM FROM OUTORD_EMP WHERE OUTORD_EMP_ID = A.OUTORD_EMP_ID) AS EMP_FLNM
                       , A.HNF_ROLE_CD
                       , (SELECT CD_NM FROM CD WHERE CD_VALUE = A.HNF_ROLE_CD) AS HNF_ROLE_NM
                       , A.HNF_GRAD_CD
@@ -209,7 +209,7 @@
         FROM (
                  SELECT A.PRJCT_ID
                       , A.OUTORD_EMP_ID
-                      , (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = A.OUTORD_EMP_ID) AS EMP_FLNM
+                      , (SELECT OUTORD_EMP_NM FROM OUTORD_EMP WHERE OUTORD_EMP_ID = A.OUTORD_EMP_ID) AS EMP_FLNM
                       , A.HNF_ROLE_CD
                       , (SELECT CD_NM FROM CD WHERE CD_VALUE = A.HNF_ROLE_CD) AS HNF_ROLE_NM
                       , A.HNF_GRAD_CD
@@ -239,7 +239,7 @@
         FROM (
                  SELECT A.PRJCT_ID
                       , A.OUTORD_EMP_ID
-                      , (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = A.OUTORD_EMP_ID) AS EMP_FLNM
+                      , (SELECT OUTORD_EMP_NM FROM OUTORD_EMP WHERE OUTORD_EMP_ID = A.OUTORD_EMP_ID) AS EMP_FLNM
                       , A.HNF_ROLE_CD
                       , (SELECT CD_NM FROM CD WHERE CD_VALUE = A.HNF_ROLE_CD) AS HNF_ROLE_NM
                       , A.HNF_GRAD_CD
@@ -857,14 +857,14 @@
 				  ) A ,
             </if> 
 		    (
-			  SELECT (T.TOT_BGT + SUM(T.CMMN_EXPENS_AMT))AS TOTAL
+			  SELECT (COALESCE(T.TOT_BGT, 0) + SUM(COALESCE(T.CMMN_EXPENS_AMT, 0))) AS TOTAL
 				FROM
 				(SELECT M.TOT_BGT, M.PRJCT_ID,S.CNSRTM_CO_NM,S.CMMN_EXPENS_AMT FROM PRJCT M
-				JOIN PRJCT_CNSRTM S
-				ON M.PRJCT_ID = S.PRJCT_ID 
+				LEFT JOIN PRJCT_CNSRTM S
+				ON M.PRJCT_ID = S.PRJCT_ID AND S.SLS_AM_RFLT_YN  = 'Y'
 				WHERE 1=1
 				AND M.PRJCT_ID = #{prjctId}
-				AND S.SLS_AM_RFLT_YN  = 'Y') T
+				) T
 			 )B
     </select>
     

@@ -1,5 +1,5 @@
 {
-	"menuName": "ProjectConsortiumJson",
+	"menuName": "ProjectChangeConsortiumJson",
     "table": "PRJCT_CNSRTM",
     "keyColumn": "cnsrtmSn",
     "tableColumns": 
