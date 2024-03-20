@@ -315,14 +315,14 @@
         JOIN PRJCT p
         ON pca.PRJCT_ID = p.PRJCT_ID
         WHERE 1 = 1
-        <if test="prjctId != null and prjctId !=''">
+        <if test="prjctId != null and !prjctId.equals('')">
             AND pca.PRJCT_ID = #{prjctId}
         </if>
-        <if test="empId != null and !empId.equals('')">
-            AND pca.EMP_ID = #{empId}
+        <if test="aplyYm != null and !aplyYm.equals('')">
+            AND pca.APLY_YM = #{aplyYm}
         </if>
-        <if test="(startYmOdr != null and !startYmOdr.equals('')) and (endYmOdr != null and !endYmOdr.equals(''))">
-            AND CONCAT(pca.APLY_YM, pca.APLY_ODR) BETWEEN #{startYmOdr} AND #{endYmOdr}
+        <if test="aplyOdr != null and !aplyOdr.equals('')">
+            AND pca.APLY_ODR = #{aplyOdr}
         </if>
         UNION ALL
         SELECT
@@ -346,14 +346,14 @@
         JOIN PRJCT p
         ON pca.PRJCT_ID = p.PRJCT_ID
         WHERE 1 = 1
-        <if test="prjctId != null and prjctId !=''">
+        <if test="prjctId != null and !prjctId.equals('')">
             AND pca.PRJCT_ID = #{prjctId}
         </if>
-        <if test="empId != null and !empId.equals('')">
-            AND pca.EMP_ID = #{empId}
+        <if test="aplyYm != null and !aplyYm.equals('')">
+            AND pca.APLY_YM = #{aplyYm}
         </if>
-        <if test="(startYmOdr != null and !startYmOdr.equals('')) and (endYmOdr != null and !endYmOdr.equals(''))">
-            AND CONCAT(pca.APLY_YM, pca.APLY_ODR) BETWEEN #{startYmOdr} AND #{endYmOdr}
+        <if test="aplyOdr != null and !aplyOdr.equals('')">
+            AND pca.APLY_ODR = #{aplyOdr}
         </if>
         GROUP BY p.PRJCT_NM, pca.EXPENS_CD
         UNION ALL
@@ -378,14 +378,14 @@
         JOIN PRJCT p
         ON pca.PRJCT_ID = p.PRJCT_ID
         WHERE 1 = 1
-        <if test="prjctId != null and prjctId !=''">
+        <if test="prjctId != null and !prjctId.equals('')">
             AND pca.PRJCT_ID = #{prjctId}
         </if>
-        <if test="empId != null and !empId.equals('')">
-            AND pca.EMP_ID = #{empId}
+        <if test="aplyYm != null and !aplyYm.equals('')">
+            AND pca.APLY_YM = #{aplyYm}
         </if>
-        <if test="(startYmOdr != null and !startYmOdr.equals('')) and (endYmOdr != null and !endYmOdr.equals(''))">
-            AND CONCAT(pca.APLY_YM, pca.APLY_ODR) BETWEEN #{startYmOdr} AND #{endYmOdr}
+        <if test="aplyOdr != null and !aplyOdr.equals('')">
+            AND pca.APLY_ODR = #{aplyOdr}
         </if>
         GROUP BY p.PRJCT_NM
         ORDER BY PRJCT_NM, SORT_ORDER, EXPENS_CD, UTZTN_DT IS NULL, UTZTN_DT
