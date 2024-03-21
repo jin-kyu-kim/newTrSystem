@@ -1,33 +1,8 @@
 import React, {useState} from "react";
-import DateBox from "devextreme-react/date-box";
-import {NumberBox} from "devextreme-react";
 import ProjectExpenseJson from "./ProjectExpenseJson.json"
-import CustomCdComboBox from "../../components/unit/CustomCdComboBox";
-import {TextBox} from "devextreme-react/text-box";
 import AutoCompleteProject from "../../components/unit/AutoCompleteProject";
 import Button from "devextreme-react/button";
-
-const thStyle = {
-    backgroundColor: '#f5f5f5',
-    color: '#666666',
-    fontWeight: 'bold',
-    textAlign: 'center',
-    border : '1px solid #dddddd',
-    fontSize: 14
-};
-
-const tdStyle = {
-    border : '1px solid #dddddd'
-}
-
-const inputStyle = {
-    backgroundColor: 'white',
-    width: '100%',
-    height: '50px',
-    border : '1px solid #dddddd',
-    borderRadius : '5px',
-    fontSize: 14
-}
+import CustomLabelValue from "../../components/unit/CustomLabelValue";
 
 const button = {
     borderRadius: '5px',
@@ -38,6 +13,7 @@ const button = {
 
 const ProjectExpenseCash = (callBack,props) => {
     const Json = ProjectExpenseJson;
+    const {labelValue} = Json;
     const [cashValue, setCashValue] = useState();
     const handleChgValue = ({name, value}) => {
         setCashValue({...cashValue, [name] : value});
@@ -54,112 +30,21 @@ const ProjectExpenseCash = (callBack,props) => {
                 </span>
             </span>
             <form onSubmit={handleSubmit}>
-                <table style={{border: '1px solid #dddddd', marginTop: '15px'}}>
-                    <colgroup>
-                        <col width="25%"/>
-                        <col width="75%"/>
-                    </colgroup>
-                    <tbody>
-                    <tr>
-                        <th style={thStyle}>구분</th>
-                        <td style={tdStyle}>
-                            {/*<CustomCdComboBox*/}
-                            {/*    param="VTW045"*/}
-                            {/*    placeholderText="구분"*/}
-                            {/*    name="expensCd"*/}
-                            {/*    onSelect={handleChgValue}*/}
-                            {/*    value={cashValue?.expensCd}*/}
-                            {/*    showClearButton={true}*/}
-                            {/*/>*/}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th style={thStyle}>사용일시</th>
-                        <td style={tdStyle}>
-                            <DateBox
-                                value={cashValue?.utztnDt}
-                                dateSerializationFormat={'yyyyMMddHHmmSS'}
-                                onValueChanged={(e) => handleChgValue({name: "utztnDt", value: e.value})}
-                                inputAttr={Json.dateLabel}
-                                type="date"
-                                style={{backgroundColor: 'white'}}
-                            />
-                        </td>
-                    </tr>
-                    <tr>
-                        <th style={thStyle}>사용처</th>
-                        <td style={tdStyle}>
-                            <TextBox
-                                style={inputStyle}
-                                placeholder="사용처"
-                                value={cashValue?.useOffic}
-                                onValueChanged={(e) => handleChgValue({name: "useOffic", value: e.value})}
-                                showClearButton={true}
-                            />
-                        </td>
-                    </tr>
-                    <tr>
-                        <th style={thStyle}>금액</th>
-                        <td style={tdStyle}>
-                            <NumberBox
-                                value={cashValue?.utztnAmt}
-                                onValueChanged={(e) => handleChgValue({name: "utztnAmt", value: e.value})}
-                                inputAttr={Json.withSpinAndButtonsLabel}
-                                style={{backgroundColor: 'white'}}
-                                showClearButton={true}
-                            />
-                        </td>
-                    </tr>
-                    <tr>
-                        <th style={thStyle}>프로젝트</th>
-                        <td style={tdStyle}>
-                            <AutoCompleteProject
-                                placeholderText="프로젝트 명"
-                                onValueChange={(e) => handleChgValue({name: "prjctId", value: e.value})}
-                            />
-                        </td>
-                    </tr>
-                    <tr>
-                        <th style={thStyle}>비용코드</th>
-                        <td style={tdStyle}>
-                            <CustomCdComboBox
-                                param="VTW045"
-                                placeholderText="비용코드"
-                                name="expensCd"
-                                onSelect={handleChgValue}
-                                value={cashValue?.expensCd}
-                                showClearButton={true}
-                            />
-                        </td>
-                    </tr>
-                    <tr>
-                        <th style={thStyle}>목적</th>
-                        <td style={tdStyle}>
-                            <TextBox
-                                style={inputStyle}
-                                placeholder="용도"
-                                value={cashValue?.ctPrpos}
-                                onValueChanged={(e) => handleChgValue({name: "ctPrpos", value: e.value})}
-                                showClearButton={true}
-                            />
-                        </td>
-                    </tr>
-                    <tr>
-                        <th style={thStyle}>참석자</th>
-                        <td style={tdStyle}>
-                            <TextBox
-                                style={inputStyle}
-                                placeholder="참석자"
-                                value={cashValue?.ATDRN}
-                                onValueChanged={(e) => handleChgValue({name: "ATDRN", value: e.value})}
-                                showClearButton={true}
-                            />
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+                <div className="dx-fieldset" style={{width: '70%'}}>
+                    <CustomLabelValue props={labelValue.testParameter} onSelect={handleChgValue} value={cashValue?.testParameter}/>
+                    <CustomLabelValue props={labelValue.utztnDt} onSelect={handleChgValue} value={cashValue?.utztnDt}/>
+                    <CustomLabelValue props={labelValue.useOffic} onSelect={handleChgValue} value={cashValue?.useOffic}/>
+                    <CustomLabelValue props={labelValue.utztnAmt} onSelect={handleChgValue} value={cashValue?.utztnAmt}/>
+                    <AutoCompleteProject
+                        placeholderText="프로젝트 명"
+                        onValueChange={(e) => handleChgValue({name: "prjctId", value: e.value})}
+                    />
+                    <CustomLabelValue props={labelValue.expensCd} onSelect={handleChgValue} value={cashValue?.expensCd}/>
+                    <CustomLabelValue props={labelValue.ctPrpos} onSelect={handleChgValue} value={cashValue?.ctPrpos}/>
+                    <CustomLabelValue props={labelValue.ATDRN} onSelect={handleChgValue} value={cashValue?.ATDRN}/>
+                    <Button style={button} type='default' text="저장" useSubmitBehavior></Button>
+                </div>
             </form>
-            <Button style={button} type='default' text="저장" useSubmitBehavior></Button>
         </div>
     );
 };
