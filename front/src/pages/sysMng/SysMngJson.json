@@ -13,7 +13,7 @@
         [
             { "key": "cdValue", "value": "하위코드" },
             { "key": "cdNm", "value": "하위코드명" },
-            { "key": "useYn", "value": "사용여부", "toggle": true }
+            { "key": "useYn", "value": "사용여부", "editType": "toggle", "button": true }
         ],
         "tbNm": "CD",
         "searchInfo":{
@@ -84,6 +84,16 @@
         "tabMenu": [
             { "tabName": "기본 권한", "default": true, "displayExpr": "cdNm" },
             { "tabName": "생성 권한", "displayExpr": "authrtGroupNm" }
+        ],
+        "queryId": "infoInqMapper.retrieveEmpList",
+        "columns": [
+            { "key": "empno", "value": "사번"},
+            { "key": "empFlnm", "value": "성명"},
+            { "key": "jbpsNm", "value": "직위"}
+        ],
+        "formColumn": [
+            {"dataField": "authrtGroupNm", "editorType": "dxTextBox", "caption": "권한명", "message": "권한명은 필수입니다."},
+            {"dataField": "authrtGroupCn", "editorType": "dxTextArea", "caption": "권한설명", "message": "권한설명을 입력해주세요."}
         ]
     }
 }

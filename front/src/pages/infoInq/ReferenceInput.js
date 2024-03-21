@@ -119,9 +119,9 @@ const ReferenceInput = () => {
         const formData = new FormData();
         formData.append("tbNm", JSON.stringify({tbNm: "NOTICE"}));
         formData.append("data", JSON.stringify(data));
-        formData.append("deleteFiles", JSON.stringify(deleteFiles));
         if(editMode === 'update') {
             formData.append("idColumn", JSON.stringify({noticeId: data.noticeId}));
+            formData.append("deleteFiles", JSON.stringify(deleteFiles));
         }
         Object.values(attachments)
             .forEach((attachment) => formData.append("attachments", attachment));
