@@ -49,7 +49,8 @@
                         },
                     "valueExpr" : "empId",
                     "displayExpr": "empNameJbps",
-                    "values" : ["empId","userDfnValue","jbpsCd"]
+                    "values" : ["empId","userDfnValue","jbpsCd"],
+                    "name" : "empId"
                     }
         },
         "hnfRoleCdNm": {
@@ -105,5 +106,6 @@
             "placeholder": "철수예정일"
         }
     },
-    "format" :"Total: {0}MM"
+    "format" :"Total: {0}MM",
+    "AddRowBtn": "인력 추가"
 }

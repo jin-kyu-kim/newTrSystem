@@ -114,11 +114,9 @@ const DeptManage = ({callBack}) => {
       setValues(response);
       if (response.length !== 0) {
         console.log("건수: " + totalItems);
-        setTotalPages(Math.ceil(response[0].totalItems / pageSize));
         setTotalItems(response[0].totalItems);
       } else {
         setTotalItems(0);
-        setTotalPages(1);
       }
     } catch (error) {
       console.log(error);
@@ -133,6 +131,7 @@ const DeptManage = ({callBack}) => {
 
   //부서 정보 수정 
   const editDept = () => {
+    setPopupVisible(true);
     setPopup(true);
   };
 
@@ -141,23 +140,39 @@ const DeptManage = ({callBack}) => {
   };
 
   const onHide = () => {
-    callBack(initParam);
+    //callBack(initParam);
     setPopupVisible(false);
   }
   
   //부서 삭제
   const deleteDept = async () => {
     const isconfirm = window.confirm("이 부서를 삭제하시겠습니까?");
-
     if (isconfirm) {
       console.log("부서 삭제 : " + deptInfo.deptId);
-      // if (response > 0) {
-        setDeptInfo([]);
-      // }
+      const paramDel =[ { tbNm: "DEPT" },{ deptId: deptInfo.deptId,} ]
+      const paramDelHnf =[ { tbNm: "DEPT_HNF" },{ deptId: deptInfo.deptId,} ]
+      const paramDelHist =[ { tbNm: "DEPT_HNF_HIST" },{ deptId: deptInfo.deptId,} ]
+      deleteDeptHist(paramDel,paramDelHnf,paramDelHist);
     }
     
   };
-
+//=============================삭제axios
+const deleteDeptHist = async (paramDel,paramDelHnf,paramDelHist) => {
+  try {
+    const responseDelHist = await ApiRequest("/boot/common/commonDelete", paramDelHist);
+    const responseDelHnf = await ApiRequest("/boot/common/commonDelete", paramDelHnf);
+    const responseDel = await ApiRequest("/boot/common/commonDelete", paramDel);
+      if (responseDel > 0  ) {
+        alert("삭제되었습니다.");
+        setDeptInfo([]);
+        pageHandle();
+      }else{
+        alert("특정 프로젝트에 부서가 속해있습니다.\n수정이나 삭제 후 시도하십시요.");
+      }
+  } catch (error) {
+    console.error("Error fetching data", error);
+  }
+};
 
  //========================하위 부서 목록
   const deptDownListHandle = async () => {
@@ -187,14 +202,13 @@ const DeptManage = ({callBack}) => {
 
 
   //부서목록에서 로우 클릭시 발생하는 이벤트
-  const onRowDblClick = (e) => {
+  const onRowClick = (e) => {
     for (const value of values) {
       if (value.deptId === e.data.deptId) {
         setDeptInfo(value);
         break;
       }
     }
-
     setDeptParam2({
       deptId: e.data.deptId,
       queryId: downDeptQueryId,
@@ -208,12 +222,14 @@ const DeptManage = ({callBack}) => {
 
   //setParam 이후에 함수가 실행되도록 하는 useEffect  
   useEffect(() => {
+    console.log("수정후 어디로가나 5")
     if (deptParam2.deptId !== undefined) {
       deptDownListHandle();
     }
   }, [deptParam2]);
 
   useEffect(() => {
+    console.log("수정후 어디로가나 6")
     if (deptParam3.deptId !== undefined) {
       deptHnfListHandle();
     }
@@ -231,14 +247,9 @@ const DeptManage = ({callBack}) => {
         <span>* 부서를 조회합니다.</span>
       </div>
       <div style={{ marginBottom: "20px" }}>
-        <SearchHumanResourceMngtSet
-          callBack={searchHandle}
-          props={searchParams}
-          popup={popup}
-        />
+        <SearchHumanResourceMngtSet callBack={searchHandle} props={searchParams} popup={popup} />
       </div>
       <div>검색된 건 수 : {totalItems} 건</div>
-
       <div className="tableContainer" style={tableContainerStyle}>
         <div className="deptListContainer" style={deptListContainerStyle}>
           <div className="deptListTable" style={deptListStyle}>
@@ -248,7 +259,7 @@ const DeptManage = ({callBack}) => {
               columns={listTableColumns}
               values={values}
               paging={true}
-              onRowDblClick={onRowDblClick}
+              onRowClick={onRowClick}
             />
           </div>
         </div>
@@ -265,23 +276,13 @@ const DeptManage = ({callBack}) => {
               </div>
             ) : null}
             </div>
-            <DeptRegist 
-              deptInfo={deptInfo} 
-              deptId={deptInfo.deptId}
-              isNew={false}
-            />
+            <DeptRegist  deptInfo={deptInfo}  deptId={deptInfo.deptId} isNew={false} />
           </div>
           <div className="deptDownListTable" style={deptDetailStyle}>
-            <p>
-              <strong>* 하위부서목록 </strong>
-            </p>
-            <CustomTable
-              keyColumn={listKeyColumn}
-              pageSize={downDeptPageSize}
-              columns={downDeptTableColumns}
-              values={values2}
-              paging={true}
-            />
+          <p>
+            <strong>* 하위부서목록 </strong>
+          </p>
+          <CustomTable keyColumn={listKeyColumn} pageSize={downDeptPageSize} columns={downDeptTableColumns} values={values2} paging={true} />
           </div>
           <div className="deptHnfListTable" style={deptDetailStyle}>
             <div className="deptHnfButtonContainer" style={buttonContainerStyle}> 
@@ -289,25 +290,15 @@ const DeptManage = ({callBack}) => {
               <strong>* 부서인력정보 </strong>
             </p>
             {deptInfo.deptId != null ? (
-                <Button style={addButtonStyle} text="관리" />
+              <Button style={addButtonStyle} text="관리" />
             ) : null}
-            </div>
-            <CustomTable
-              keyColumn={hnfKeyColumn}
-              pageSize={hnfPageSize}
-              columns={hafTableColumns}
-              values={values3}
-              paging={true}
-            />
+          </div>
+          <CustomTable keyColumn={hnfKeyColumn} pageSize={hnfPageSize} columns={hafTableColumns} values={values3} paging={true} />
           </div>
           {/* 부서 수정 버튼 클릭시 활성화 되는 팝업 - 개발 필요 */}
           {isPopup ?
            <CustomPopup props={popup} visible={popupVisible} handleClose={handleClose} >
-             <DeptRegist 
-              onHide={onHide}
-              deptInfo={deptInfo} 
-              deptId={deptInfo.deptId}
-              isNew={false}/> 
+             <DeptRegist  onHide={onHide} deptInfo={deptInfo} deptId={deptInfo.deptId} isNew={true} callBack={pageHandle}/> 
            </CustomPopup>
            : <></>
           }

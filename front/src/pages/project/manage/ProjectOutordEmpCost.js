@@ -7,9 +7,8 @@ import Box, { Item } from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
 import { format, parse } from 'date-fns';
 
-const ProjectOutordEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
+const ProjectOutordEmpCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdrTobe }) => {
   const [values, setValues] = useState([]);
-  const { manuName, tableColumns, keyColumn, summaryColumn, popup } = ProjectOutordEmpCostJson;
   let groupingDtl = [];
   
   useEffect(() => {
@@ -21,10 +20,18 @@ const ProjectOutordEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) =>
   }, []);
 
   const OutordEmpDtl = async () => {
+
+    const copyCtrtYmd = ctrtYmd ? JSON.parse(JSON.stringify(ctrtYmd)) : "";
+    const copyStbleEndYmd = stbleEndYmd ? JSON.parse(JSON.stringify(stbleEndYmd)) : "";
+    const ctrtYmdPrarm = copyCtrtYmd.replace(/-(\d{2})-\d{2}/, '$1');
+    const stbleEndYmdPrarm = copyStbleEndYmd.replace(/-(\d{2})-\d{2}/, '$1');
+
+
     const param = [
       { tbNm: "OUTORD_LBRCO_PRMPC_DTL" },
       { prjctId: prjctId,
         bgtMngOdr: bgtMngOdrTobe,
+        inptYm : ctrtYmdPrarm+"&"+stbleEndYmdPrarm,  
       }, 
     ];
 
@@ -93,16 +100,12 @@ const ProjectOutordEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) =>
             검색 (성명, 역할, 등급, 담당업무, 예정일, 맨먼스등 다양하게 검색가능) 
             </p>
             <CustomCostTable
-              keyColumn={keyColumn}
-              manuName={manuName}
-              columns={tableColumns}
+              columns={ProjectOutordEmpCostJson.tableColumns}
               values={values}
               prjctId={prjctId}
-              summaryColumn={summaryColumn}
-              popup={popup}
               costTableInfoJson={ProjectOutordEmpCostJson}
               ctrtYmd={ctrtYmd}
-              bizEndYmd={bizEndYmd}
+              stbleEndYmd={stbleEndYmd}
               bgtMngOdrTobe={bgtMngOdrTobe}
               json={ProjectOutordEmpCostJson}
             />

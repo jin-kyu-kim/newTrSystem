@@ -5,7 +5,6 @@ import LawRulesJson from "./LawRulesJson.json";
 import ApiRequest from "../../utils/ApiRequest";
 import 'react-tabs/style/react-tabs.css';
 import "react-datepicker/dist/react-datepicker.css";
-import LawRulesTabs from "./LawRulesTabs";
 import { TabPanel } from "devextreme-react";
 
 const LawRules = () => {

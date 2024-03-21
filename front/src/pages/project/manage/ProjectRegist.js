@@ -73,11 +73,12 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdrTobe}) => {
 
             setData({
                 ...data,
-                prjctId : uuid(),
-                prjctMngrEmpId : empId,
-                deptId : deptId,
+                prjctId: uuid(),
+                prjctMngrEmpId: empId,
+                deptId: deptId,
                 bizSttsCd: "VTW00401",
-                regDt : date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0]
+                regEmpId: empId,
+                regDt: date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0]
             })
         }
 
@@ -166,13 +167,6 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdrTobe}) => {
         }
     }
 
-    const onClickChgSave = async () => {
-        const isconfirm = window.confirm("수정한 내용을 저장 하시겠습니까?");
-        if(isconfirm){
-            updateProject();
-        }
-    }
-
     /**
      * 프로젝트 수정
      */
@@ -221,7 +215,7 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdrTobe}) => {
                     state: { prjctId: prjctId, 
                              bgtMngOdrTobe: bgtMngOdrTobe, 
                              ctrtYmd: ctrtYmd.substr(0, 4) + '-' + ctrtYmd.substr(4, 2) + '-' + ctrtYmd.substr(6, 2), 
-                             bizEndYmd: bizEndYmd.substr(0, 4) + '-' + bizEndYmd.substr(4, 2) + '-' + bizEndYmd.substr(6, 2)},
+                             stbleEndYmd: stbleEndYmd.substr(0, 4) + '-' + stbleEndYmd.substr(4, 2) + '-' + stbleEndYmd.substr(6, 2)},
                 })
                 
             }
@@ -269,6 +263,7 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdrTobe}) => {
             }
         ];
         try {
+            console.log(param)
             const response = await ApiRequest("/boot/common/commonInsert", param);
 
             if(response > 0) {

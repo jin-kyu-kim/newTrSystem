@@ -1,0 +1,25 @@
+{
+  "menuName": "ProjectClaimCostDetail",
+  "searchParams":
+  {
+    "yearItem": true,
+    "monthItem": true,
+    "aplyOdr": true,
+    "empId": true
+  },
+  "tabMenu":
+  [
+    {
+      "TabName": "개인별조회",
+      "tabId": "ProjectClaimCostIndividual",
+      "url": "pages/fnnrMng/ProjectClaimCostIndividual"
+
+    },
+    {
+      "TabName": "일자별조회",
+      "tabId": "ProjectClaimCostYMD",
+      "url": "pages/fnnrMng/ProjectClaimCostYMD"
+    }
+  ]
+}
+

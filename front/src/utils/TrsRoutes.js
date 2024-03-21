@@ -41,9 +41,15 @@ const TreRoutes = [
   },
   // 프로젝트 외주비용승인
   {
-    path: "/project/ProjectOutordPerson",
-    name: "ProjectOutordPerson",
-    element: React.lazy(() => import("../pages/project/approval/ProjectOutordPerson")),
+    path: "/project/ProjectOutordAprv",
+    name: "ProjectOutordAprv",
+    element: React.lazy(() => import("../pages/project/approval/ProjectOutordAprv")),
+  },
+  // 프로젝트 외주비용승인 상세
+  {
+    path: "/project/ProjectOutordAprvDetail",
+    name: "ProjectOutordAprvDetail",
+    element: React.lazy(() => import("../pages/project/approval/ProjectOutordAprvDetail")),
   },
   // 프로젝트 디테일
   {
@@ -63,6 +69,12 @@ const TreRoutes = [
     name: "ProjectAprvDetail",
     element: React.lazy(() => import("../pages/project/approval/ProjectAprvDetail")),
   },
+  // 권한관리
+  {
+    path: "/sysMng/EmpAuth",
+    name: "EmpAuth",
+    element: React.lazy(() => import("../pages/sysMng/EmpAuth")),
+  },
    // 고객사관리
   {
     path: "/sysMng/CustomersList",
@@ -75,7 +87,7 @@ const TreRoutes = [
     name: "TrsCodeList",
     element: React.lazy(() => import("../pages/sysMng/TrsCodeList")),
   },
-      // 공지사항
+  // 공지사항
   {
     path: "/infoInq/NoticeList",
     name: "NoticeList",
@@ -92,6 +104,24 @@ const TreRoutes = [
     path: "/infoInq/NoticeInput",
     name: "NoticeInput",
     element: React.lazy(() => import("../pages/infoInq/NoticeInput"))
+  },
+  // 자료실
+  {
+    path: "/infoInq/ReferenceList",
+    name: "NoticeList",
+    element: React.lazy(() => import("../pages/infoInq/ReferenceList")),
+  },
+  // 자료실 상세
+  {
+    path: "/infoInq/ReferenceDetail",
+    name: "NoticeDetail",
+    element: React.lazy(() => import("../pages/infoInq/ReferenceDetail"))
+  },
+  // 자료실 등록
+  {
+    path: "/infoInq/ReferenceInput",
+    name: "NoticeInput",
+    element: React.lazy(() => import("../pages/infoInq/ReferenceInput"))
   },
   //직원조회
   {
@@ -149,21 +179,94 @@ const TreRoutes = [
   },
   // 재무 관리 > 프로젝트비용청구현황
   {
-    path: "/fnnrMng/prjctCtClm/ProjectClaimCost",
+    path: "/fnnrMng/ProjectClaimCost",
     name: "ProjectClaimCost",
-    element: React.lazy(() => import("../pages/fnnrMng/prjctCtClm/ProjectClaimCost")),
+    element: React.lazy(() => import("../pages/fnnrMng/ProjectClaimCost")),
   },
   // 재무 관리 > 프로젝트비용청구현황 상세조회
   {
-    path: "/fnnrMng/prjctCtClm/ProjectClaimCostDetail",
+    path: "/fnnrMng/ProjectClaimCostDetail",
     name: "ProjectClaimCostDetail",
-    element: React.lazy(() => import("../pages/fnnrMng/prjctCtClm/ProjectClaimCostDetail")),
+    element: React.lazy(() => import("../pages/fnnrMng/ProjectClaimCostDetail")),
   },
+  // 개인청구 > 근무시간
+  {
+    path: "/indvdlClm/EmpWorkTime",
+    name: "EmpWorkTime",
+    element: React.lazy(() => import("../pages/indvdlClm/EmpWorkTime")),
+  },
+  // 개인청구 > 휴가
+  {
+    path: "/indvdlClm/EmpVacation",
+    name: "EmpVacation",
+    element: React.lazy(() => import("../pages/indvdlClm/EmpVacation")),
+  },
+   // 재무 관리 > 근무시간비용 입력현황
+   {
+    path: "/fnnrMng/TimeExpenseInsertSttus",
+    name: "TimeExpenseInsertSttus",
+    element: React.lazy(() => import("../pages/fnnrMng/TimeExpenseInsertSttus")),
+   },
   // 개인 청구 > 문화체력비용
   {
     path: "/indvdlClm/CultureHealthCost",
     name: "CultureHealthCost",
     element: React.lazy(() => import("../pages/indvdlClm/CultureHealthCost")),
+  },
+  // 개인 청구 > 프로젝트비용
+  {
+    path: "/indvdlClm/ProjectExpense",
+    name: "ProjectExpense",
+    element: React.lazy(() => import("../pages/indvdlClm/ProjectExpense")),
+  },
+  // 재무 관리 > 근무시간 승인내역
+  {
+    path: "/fnnrMng/EmpTimeAprvList",
+    name: "EmpTimeAprvList",
+    element: React.lazy(() => import("../pages/fnnrMng/EmpTimeAprvList")),
+  },
+
+   // 재무 관리 > 근무시간, 경비통합
+   {
+    path: "/fnnrMng/EmpTRCostTotal",
+    name: "EmpTRCostTotal",
+    element: React.lazy(() => import("../pages/fnnrMng/EmpTRCostTotal")),
+  },
+  // 재무 관리 > 경비승인내역
+  {
+    path: "/fnnrMng/EmpExpenseAprvList",
+    name: "EmpExpenseAprvList",
+    element: React.lazy(() => import("../pages/fnnrMng/EmpExpenseAprvList")),
+  },
+  // 관리자메뉴 > 전자결재서식관리
+  {
+    path: "/mngrMenu/ElecAtrzFormManage",
+    name: "ElecAtrzFormManage",
+    element: React.lazy(() => import("../pages/mngrMenu/ElecAtrzFormManage")),
+  },
+  // 관리자메뉴 > 전자결재서식관리 > 신규서식작성
+  {
+    path: "/mngrMenu/ElecAtrzNewForm",
+    name: "ElecAtrzNewForm",
+    element: React.lazy(() => import("../pages/mngrMenu/ElecAtrzNewForm")),
+  },
+  // 전자결재 
+  {
+    path: "/elecAtrz/ElecAtrz",
+    name: "ElecAtrz",
+    element: React.lazy(() => import("../pages/elecAtrz/ElecAtrz")),
+  },
+  // 전자결재 신규기안 작성 
+  {
+    path: "/elecAtrz/ElecAtrzNewReq",
+    name: "ElecAtrzNewReq",
+    element: React.lazy(() => import("../pages/elecAtrz/ElecAtrzNewReq")),
+  },
+  // 전자결재 서식
+  {
+    path: "/elecAtrz/ElecAtrzForm",
+    name: "ElecAtrzForm",
+    element: React.lazy(() => import("../pages/elecAtrz/ElecAtrzForm")),
   }
 ];
 

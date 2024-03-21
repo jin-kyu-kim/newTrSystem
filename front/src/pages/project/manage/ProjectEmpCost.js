@@ -7,9 +7,8 @@ import Box, { Item } from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
 import { format, parse } from 'date-fns';
 
-const ProjectEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
+const ProjectEmpCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdrTobe }) => {
   const [values, setValues] = useState([]);
-  const { manuName, tableColumns, keyColumn, summaryColumn, popup} = ProjectEmpCostJson;
   let groupingDtl = [];
 
   useEffect(() => {
@@ -21,15 +20,23 @@ const ProjectEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
   }, []);
 
   const EmpCostDtl = async () => {
+
+    const copyCtrtYmd = ctrtYmd ? JSON.parse(JSON.stringify(ctrtYmd)): "";
+    const copyStbleEndYmd = stbleEndYmd ? JSON.parse(JSON.stringify(stbleEndYmd)):"";
+    const ctrtYmdPrarm = copyCtrtYmd.replace(/-(\d{2})-\d{2}/, '$1');
+    const stbleEndYmdPrarm = copyStbleEndYmd.replace(/-(\d{2})-\d{2}/, '$1');
+
     const param = [
       { tbNm: "MMNY_INPT_MM" },
       { prjctId: prjctId,
         bgtMngOdr: bgtMngOdrTobe,
-      }, 
+        inptYm : ctrtYmdPrarm+"&"+stbleEndYmdPrarm,
+      },    
     ];
 
   try {
     const response = await ApiRequest("/boot/common/commonSelect", param);
+
     response.reduce((acc, item) => {
       // mmnyLbrcoPrmpcSn 값으로 그룹핑
       acc[item.mmnyLbrcoPrmpcSn] = acc[item.mmnyLbrcoPrmpcSn] || [];
@@ -53,6 +60,7 @@ const ProjectEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
 
     try {
       const response = await ApiRequest("/boot/common/queryIdSearch", param);
+ 
         //월별정보 및 총 합계 response에 추가
         for(let j=0; j<Object.keys(groupingDtl).length; j++){
           let total = 0;
@@ -68,6 +76,7 @@ const ProjectEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
           response[j].gramt = gramt;
         }
         setValues(response);
+        
 
     } catch (error) {
       console.error(error);
@@ -96,16 +105,12 @@ const ProjectEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
             검색 (성명, 역할, 등급, 담당업무, 예정일, 맨먼스등 다양하게 검색가능) 
             </p>
             <CustomCostTable
-              keyColumn={keyColumn}
-              manuName={manuName}
-              columns={tableColumns}
+              columns={ProjectEmpCostJson.tableColumns}
               values={values}
               prjctId={prjctId}
-              summaryColumn={summaryColumn}
-              popup={popup}
               costTableInfoJson={ProjectEmpCostJson}
               ctrtYmd={ctrtYmd}
-              bizEndYmd={bizEndYmd}
+              stbleEndYmd={stbleEndYmd}
               bgtMngOdrTobe={bgtMngOdrTobe}
               json={ProjectEmpCostJson}
             />

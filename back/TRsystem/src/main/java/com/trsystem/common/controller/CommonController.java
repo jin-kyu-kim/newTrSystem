@@ -1,28 +1,17 @@
 package com.trsystem.common.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trsystem.common.service.CommonService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -61,37 +50,25 @@ public class CommonController {
     }
     @PostMapping(value = "/boot/common/insertlongText", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public int longTextInsert(@RequestPart(required = false) List<MultipartFile> attachments,
-                              @RequestPart String tbNm, @RequestPart String data) throws JsonProcessingException {
-
+                              @RequestPart String tbNm, @RequestPart String data,
+                              @RequestPart(required = false) String deleteFiles,
+                              @RequestPart(required = false) String idColumn) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         Map<String, Object> mapData = mapper.readValue(data,Map.class);
-        return commonService.insertFile(tbNm, mapData, attachments);
+        Map<String, Object> tbNmData = mapper.readValue(tbNm,Map.class);
 
-    }
-    @PostMapping(value = "/boot/common/getFile")
-    public ResponseEntity<Resource> getFile(@RequestBody Map<String, Object> oneData) {
-        String strgFileNm = (String) oneData.get("strgFileNm");
-        String realFileNm = (String) oneData.get("realFileNm");
-        realFileNm = URLEncoder.encode(realFileNm, StandardCharsets.UTF_8);
-        ClassLoader classLoader = getClass().getClassLoader();
-        URL resources = classLoader.getResource("upload/" + strgFileNm);
+        Map<String, Object> idData = null;
+        List<Map<String, Object>> deleteFile = null;
 
-        Resource resource;
-        try{
-            resource = new UrlResource(resources.toURI());
-            if(resource.exists() && resource.isReadable()){
-                String contentType = Files.probeContentType(Paths.get(resources.toURI()));
-
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.parseMediaType(contentType));
-                headers.setContentDispositionFormData("attachment", realFileNm);
-
-                return new ResponseEntity<>(resource, headers, HttpStatus.OK);
-            }
-        } catch (IOException | URISyntaxException e){
-            e.printStackTrace();
+        if(idColumn != null){
+            idData = mapper.readValue(idColumn,Map.class);
+            deleteFile = mapper.readValue(deleteFiles, new TypeReference<List<Map<String, Object>>>() {});
         }
-        return ResponseEntity.notFound().build();
+        return commonService.insertFile(tbNmData, mapData, attachments, idData, deleteFile);
     }
 
+    @PostMapping(value = "/boot/common/deleteWithFile")
+    public int deleteWithFile(@RequestBody Map<String, Object> params){
+        return commonService.deleteFile(params);
+    }
 }

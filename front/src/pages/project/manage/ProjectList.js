@@ -64,9 +64,10 @@ const ProjectList = () => {
                       , totBgt: e.data.totBgt
                       , bgtMngOdr: e.data.bgtMngOdr
                       , ctrtYmd: e.data.ctrtYmd
-                      , bizEndYmd: e.data.bizEndYmd
+                      , stbleEndYmd: e.data.stbleEndYmd
                       , bgtMngOdrTobe: e.data.bgtMngOdrTobe 
-                      , bizSttsCd: e.data.bizSttsCd}})
+                      , bizSttsCd: e.data.bizSttsCd
+                      , deptId : e.data.deptId}})
   };
 
   return (

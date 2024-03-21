@@ -7,114 +7,160 @@ import uuid from "react-uuid";
 import axios from "axios";
 import ApiRequest from "utils/ApiRequest";
 import NoticeJson from "../infoInq/NoticeJson.json";
-import BoardInputForm from 'components/unit/BoardInputForm';
+import BoardInputForm from 'components/composite/BoardInputForm';
+import moment from 'moment';
 
 const NoticeInput = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [cookies] = useCookies(["userInfo", "userAuth"]);
-    const { edit, menuKorName, insertUrl, updateUrl } = NoticeJson;
+    const [attachments, setAttachments] = useState([]);
+    const [deleteFiles, setDeleteFiles] = useState([{tbNm: "ATCHMNFL"}]);
+    const [newAttachments, setNewAttachments] = useState(attachments);
+    const { edit, insertUrl, detail } = NoticeJson;
+
     const empId = cookies.userInfo.empId;
     const editMode = location.state.editMode;
     const id = location.state.id;
-    const date = new Date();
-
-    const [attachments, setAttachments] = useState([null]);
-    const [data, setData] = useState({
+    const date = moment();
+    const [prevData, setPrevData] = useState({});
+    const [ data, setData ] = useState({
         noticeId: uuid(),
-        sgnalOrdr: 0, // 기본값 일반공지
-        useYn: 'Y', // 공지표시 여부
         regEmpId: empId,
-        regDt: date.toISOString().split("T")[0] + " " + date.toTimeString().split(" ")[0],
+        useYn: "Y",
+        regDt: date.format('YYYY-MM-DD HH:mm:ss')
     });
+    
     const onClick = () => {
-        editMode === "create" ? window.confirm("등록하시겠습니까?") : window.confirm("수정하시겠습니까?")
-        insertNotice(editMode);
+        const result = window.confirm(editMode !== 'update' ? "등록하시겠습니까?" : "수정하시겠습니까?");
+        if(result) storeNotice(editMode);
     };
 
     const getOneData = async () => {
-        const param = [{ tbNm: "NOTICE" }, { noticeId: id },]
+        const param = { queryId: detail.detailQueryId, noticeId: id }
         try {
-            const response = await ApiRequest("/boot/common/commonSelect", param);
-            setData(response[0]);
-            console.log(response[0])
+            const response = await ApiRequest("/boot/common/queryIdSearch", param);
+            if (response.length !== 0) {
+                const { atchmnflSn, realFileNm, strgFileNm, regDt, regEmpNm, ...resData } = response[0];
+                setData({ ...resData });
+                setPrevData({ ...resData });
+                const tmpFileList = response.map((data) => ({
+                    realFileNm: data.realFileNm,
+                    strgFileNm: data.strgFileNm,
+                    atchmnflSn: data.atchmnflSn
+                }));
+                setTypeChk({...typeChk, imprtnc: data.imprtncNtcBgngYmd !== null ? true : false})
+                setAttachments(tmpFileList);
+            }
         } catch (error) {
             console.log(error);
         }
     }
+
     useEffect(() => {
         if (editMode === 'update') getOneData();
     }, []);
 
+    const [typeChk, setTypeChk] = useState({
+        imprtnc: data.imprtncNtcBgngYmd !== undefined ? true : false,
+        useYn: data.useYn === "Y" ? true : false,
+        move: false,
+    });
+
+    const chkSgnalOrdr = () => {
+        let sgnalOrdr = 0;
+        let useYn = "Y";
+        
+        if (typeChk.imprtnc && typeChk.move) {
+            sgnalOrdr = 3
+        } else if (typeChk.move) {
+            sgnalOrdr = 2
+        } else if (typeChk.imprtnc) {
+            sgnalOrdr = 1
+        }
+        if (!typeChk.useYn) useYn = "N"
+        setData({ ...data, sgnalOrdr: sgnalOrdr, useYn: useYn });
+    }
+
+    useEffect(() => {
+        if (typeChk.imprtnc || typeChk.move || typeChk.useYn) chkSgnalOrdr();
+    }, [typeChk.imprtnc, typeChk.move, typeChk.useYn])
+
+    const attachFileDelete = (deleteItem) => {
+        setDeleteFiles([...deleteFiles, { atchmnflId: data.atchmnflId ,atchmnflSn: deleteItem.atchmnflSn, strgFileNm: deleteItem.strgFileNm }]);
+        setNewAttachments(newAttachments.filter(item => item !== deleteItem));
+    }
+
     const validateData = () => {
-        let maxSize = 0;
-        attachments.map((file) => {
-            if (file !== null) {
-                maxSize += file.size;
-            }
-        })
         const errors = [];
         if (!data.noticeTtl || !data.noticeCn) {
-            errors.push('required');
-        } else if (maxSize !== 0 && maxSize > 1048576) {
-            alert('업로드 가능한 용량보다 큽니다')
-            errors.push('Exceeded size limit');
+          errors.push('required');
         }
         return errors.length === 0;
     };
 
-    const insertNotice = async (editMode) => {
-        console.log(data)
+    const storeNotice = async (editMode) => {
+        if(editMode === 'update'){
+            let changedValues = {};
+
+            Object.keys(data).forEach(key => {
+                if(prevData[key] !== data[key]){
+                    changedValues = { ...changedValues, [key]: data[key] }
+                }
+            });
+            setData({
+                atchmnflId: data.atchmnflId,
+                regEmpId: empId,
+                mdfcnEmpId: empId,
+                mdfcnDt: date.format('YYYY-MM-DD HH:mm:ss'),
+                changedValues
+            })
+        }
         const formData = new FormData();
-        formData.append("tbNm", "NOTICE");
-        formData.append("data", JSON.stringify(data)); 
+        formData.append("tbNm", JSON.stringify({tbNm: "NOTICE"}));
+        formData.append("data", JSON.stringify(data));
+        formData.append("deleteFiles", JSON.stringify(deleteFiles));
+        if(editMode === 'update') {
+            formData.append("idColumn", JSON.stringify({noticeId: data.noticeId}));
+        }
         Object.values(attachments)
             .forEach((attachment) => formData.append("attachments", attachment));
         try {
-            if (validateData()) {
+            if(validateData()){
                 const response = await axios.post(insertUrl, formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    },
+                    headers: { 'Content-Type': 'multipart/form-data' },
                 })
-                console.log(response.data);
-                if (response.data >= 0) navigate("/infoInq/NoticeList")
+                if (response.data >= 1) navigate("/infoInq/NoticeList")
             }
         } catch (error) {
             console.error("API 요청 에러:", error);
-            throw error;
         }
     };
 
     return (
         <div className="container">
-            <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }}>
-                <h1 style={{ fontSize: "40px" }}>{menuKorName}</h1>
-            </div>
-            <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
-                <span>* {menuKorName}을 {editMode === 'update' ? '수정합니다' : '입력합니다.'}</span>
+            <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }}></div>
+            <div className="col-md-10 mx-auto" style={{ marginBottom: "30px" }}>
+                <h1 style={{ fontSize: "40px" }}>공지사항</h1>
+                <span>* 공지사항을 {editMode === 'update' ? '수정합니다' : '입력합니다.'}</span>
             </div>
             <BoardInputForm
                 edit={edit}
                 data={data}
+                typeChk={typeChk}
+                editMode={editMode}
+                editType='notice'
+                attachments={attachments}
+                newAttachments={newAttachments}
                 setData={setData}
+                setTypeChk={setTypeChk}
                 setAttachments={setAttachments}
+                attachFileDelete={attachFileDelete}
+                setNewAttachments={setNewAttachments}
             />
-
             <div className="wrap_btns inputFormBtn">
-                <Button
-                    id="button"
-                    text="목록"
-                    className="btn_submit filled_gray"
-                    onClick={() => navigate("/infoInq/NoticeList")}
-                />
-                <Button
-                    id="button"
-                    text="저장"
-                    className="btn_submit filled_blue"
-                    useSubmitBehavior={true}
-                    onClick={onClick}
-                />
+                <Button text="목록" onClick={() => navigate("/infoInq/NoticeList")} />
+                <Button text="저장" useSubmitBehavior={true} onClick={onClick} />
             </div>
         </div>
     );

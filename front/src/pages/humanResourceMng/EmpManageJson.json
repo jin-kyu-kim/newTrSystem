@@ -11,17 +11,18 @@
         { "key": "empno", "value": "사번", "width": 100, "alignment" : "center" },
         { "key": "empFlnm", "value": "성명"},
         { "key": "jbpsNm", "value": "직위"},
-        { "key": "deptNm", "value": "소속"}
+        { "key": "deptId", "value": "소속"},
+        { "key": "empId", "value": "초기화", "width": 120, "button": {"text" : "초기화"}}
     ],
 	"ejhQueryId": "infoInqMapper.retrieveEmpJbpsHist",
-    "ejhKeyColumn": "empno",
+    "ejhKeyColumn": "empId",
     "ejhTableColumns": [
-        { "key": "empno", "value": "사번"},
-        { "key": "empInfoChgOdr", "value": "발령차수" },
-        { "key": "jbpsNm", "value": "발령직급"},
+        { "key": "empno", "value": "사번", "width" : 100},
+        { "key": "empInfoChgOdr", "value": "발령차수","width" : 90 },
+        { "key": "jbpsNm", "value": "발령직급","width" : 90 },
         { "key": "regDt", "value": "입력날짜" },
-        { "key": "regEmpno", "value": "입력사번" },
-        { "key": "jbttlNm", "value": "삭제" }
+        { "key": "regEmpno", "value": "입력사번","width" : 90 },
+        { "key": "empId", "value": "삭제", "width": 80, "button": "삭제","alignment" : "center"}
     ],
     "labelValue" : {
         "jbpsCd": {

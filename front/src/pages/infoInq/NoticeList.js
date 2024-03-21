@@ -11,11 +11,10 @@ const NoticeList = () => {
     const [values, setValues] = useState([]);
     const [param, setParam] = useState({});
     const [totalItems, setTotalItems] = useState(0);
-    const [currentPage, setCurrentPage] = useState(1);
     const [pageSize] = useState(10);
     const navigate = useNavigate();
 
-    const { keyColumn, queryId, tableColumns, searchInfo } = NoticeJson;
+    const { keyColumn, queryId, tableColumns, searchInfo, noticeInsertPage } = NoticeJson;
     
     useEffect(() => {
         if (!Object.values(param).every((value) => value === "")) {
@@ -23,15 +22,11 @@ const NoticeList = () => {
         }
     }, [param]);
 
-    // 검색으로 조회할 때
     const searchHandle = async (initParam) => {
-        setCurrentPage(1);
         setParam({
             ...initParam,
-            queryId: queryId,
-            currentPage: currentPage,
-            startVal: 0,
-            pageSize: pageSize,
+            type: 'notice',
+            queryId: queryId
         });
     };
 
@@ -68,6 +63,7 @@ const NoticeList = () => {
             <div style={{ marginBottom: "20px" }}>
                 <SearchInfoSet 
                     props={searchInfo}
+                    insertPage={noticeInsertPage}
                     callBack={searchHandle}
                 /> 
             </div>

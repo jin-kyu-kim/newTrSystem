@@ -53,5 +53,6 @@
             "readOnly": true
         }
     },
-    "format" :"Total: {0}원"
+    "format" :"Total: {0}원",
+    "AddRowBtn": "경비 추가"
 }

@@ -1,0 +1,24 @@
+{
+	"menuName": "ProjectOutordAprv",
+	"queryId": "projectMapper.retrievePrjctList",
+    "keyColumn": "prjctId",
+    "tableColumns": 
+	[
+        { "key": "rownum", "value": "번호", "width": "70", "alignment" : "center" },
+        { "key": "prjctStleCd", "value": "형태", "width": "100"  },
+        { "key": "prjctNm", "value": "프로젝트 명", "alignment" : "left" },
+        { "key": "bizSttsCdNm", "value": "상태", "width": "120", "alignment" : "left" },
+        { "key": "prjctMngrEmpId", "value": "PM", "width": "120", "alignment" : "left"  },
+        { "key": "ctmmnyNm", "value": "고객사", "width": "200", "alignment" : "left"  },
+        { "key": "ctrtYmd", "value": "시작일", "width": "120" },
+        { "key": "bizEndYmd", "value": "종료일", "width": "120" },
+        { "key": "prjctId", "value": "구분", "width": 200, "button": "비용청구현황"}
+	],
+    "searchParams":
+	{
+        "prjctMngrEmpIdItem": false,
+        "prmpcInptSeCdItem": false,
+        "insertBtnItem": false,
+        "popupVisible": true
+    }
+}
