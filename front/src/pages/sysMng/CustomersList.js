@@ -49,7 +49,7 @@ const CustomersList = () => {
         const ynParam = [
             { tbNm: "CTMMNY_INFO" },
             { useYn: useYn },
-            { ctmmnyId: idColumn } 
+            { ctmmnyId: idColumn }
         ];
         try {
             const response = await ApiRequest('/boot/common/commonUpdate', ynParam);
@@ -60,10 +60,7 @@ const CustomersList = () => {
 
     return (
         <div className="container">
-            <div
-                className="title p-1"
-                style={{ marginTop: "20px", marginBottom: "10px" }}
-            >
+            <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }} >
                 <h1 style={{ fontSize: "40px" }}>고객사 관리</h1>
             </div>
             <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
@@ -76,13 +73,13 @@ const CustomersList = () => {
             <div>검색된 건 수 : {totalItems} 건</div>
             <div style={{ marginBottom: '100px' }}>
                 <CustomEditTable
+                    tbNm={tbNm}
+                    values={values}
+                    allowEdit={true}
                     keyColumn={keyColumn}
                     columns={tableColumns}
-                    values={values}
                     handleYnVal={handleYnVal}
-                    tbNm={tbNm}
-                    allowKeyChg={true}
-                />
+                  />
             </div>
         </div>
     );
