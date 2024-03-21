@@ -1,52 +1,40 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "devextreme/dist/css/dx.light.css";
 import "devextreme/dist/css/dx.material.blue.light.css"; // Material 테마
 import { Button, TextBox } from "devextreme-react";
 import Vtw from "../../assets/img/logo.png";
 import Slogan from "../../assets/img/slogan.png";
-import ApiRequest from "../../utils/ApiRequest";
-import { useCookies } from "react-cookie";
+import {signIn} from "../../utils/AuthMng"
+import {useCookies} from "react-cookie";
 
 const LoginForm = ({ handleLogin }) => {
-  const userInfo = {
-    empId: "20221064-bf25-11ee-b259-000c2956283f",
-    empNm: "김진규",
-    auth: "test",
-    deptId: "9ec66846-3e7e-48be-aa84-3dc2307dc32b",
-  };
+  const [cookies, setCookie] = useCookies(["userInfo", "userAuth", "deptInfo"]);
 
-  // 기안자: "20221064-bf25-11ee-b259-000c2956283f",
-
-  /*
-  20221064-bf25-11ee-b259-000c2956283f 확인
-  20218103-bf25-11ee-b259-000c2956283f 심사
-  2021c1ed-bf25-11ee-b259-000c2956283f 승인
-  */
-  const userAuth = {
-    userAuth: ["auth1", "auth2", "auth3"],
-    empNm: "김진규11",
-    auth: "test11",
-  };
-
-  const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
-
-  const handleSetCookie = () => {
-    setCookie("userInfo", userInfo);
-    setCookie("userAuth", userAuth);
-  };
-
-  const [empId, setEmpId] = useState("");
+  const [empno, setEmpno] = useState("");
   const [pswd, setPassword] = useState("");
+  const [validationErrors, setValidationErrors] = useState({});
+
+  const validateForm = () => {
+    const errors = {};
+    if (!empno) {
+      errors.empno = '사번을 입력하세요';
+    }
+    if (!pswd) {
+      errors.pswd = '비밀번호를 입력하세요';
+    }
+    setValidationErrors(errors);
+
+    return Object.keys(errors).length === 0;
+  }
 
   const handleClick = async () => {
-    try {
-      // const param = { empId, pswd };
-      // const response = await ApiRequest("/boot/trs/sysMng/lgnSkll", param);
-
-      handleSetCookie();
-      handleLogin();
-    } catch (error) {
-      console.log(error);
+    const valid = validateForm()
+    if(valid){
+      const data = await signIn(empno, pswd);
+      setCookie("userAuth", data.data.userAuth);
+      setCookie("userInfo", data.data.userInfo);
+      setCookie("deptInfo", data.data.deptInfo);
+      handleLogin(data.isOk);
     }
   };
 
@@ -62,10 +50,13 @@ const LoginForm = ({ handleLogin }) => {
         <div className="login-form">
           <div className="input-container">
             <TextBox
-              value={empId}
-              onValueChanged={(e) => setEmpId(e.value)}
+              value={empno}
+              onValueChanged={(e) => setEmpno(e.value)}
               placeholder="사번"
             />
+            {validationErrors.empno && (
+                <div style={{ color: 'red' }}>{validationErrors.empno}</div>
+            )}
           </div>
           <div className="input-container">
             <TextBox
@@ -74,6 +65,9 @@ const LoginForm = ({ handleLogin }) => {
               onValueChanged={(e) => setPassword(e.value)}
               placeholder="비밀번호"
             />
+            {validationErrors.pswd && (
+                <div style={{ color: 'red' }}>{validationErrors.pswd}</div>
+            )}
           </div>
           <div className="button-container">
             <Button text="Login" type="success" onClick={handleClick} />
