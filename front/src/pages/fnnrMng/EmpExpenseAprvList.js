@@ -17,14 +17,47 @@ const EmpExpenseAprvList = () => {
   let monthVal = "";
   let aplyOdr = 0;
 
+    // 날짜 출력 함수
+    const generateDates = (year, monthVal, aplyOdr) => {
+
+        const formattedDates = [];
+
+        if(aplyOdr != ''){ // 차수별 조회일 때
+
+            if(aplyOdr == 1){
+                for (let day = 1; day <= 15; day++) {
+                    const formattedDay = day < 10 ? `0${day}` : `${day}`;
+                    const formattedDate = `${year}${monthVal}${formattedDay}`;
+                    formattedDates.push(formattedDate);
+                }
+            } else if (aplyOdr == 2){
+                const lastDay =  new Date(year, monthVal, 0).getDate();
+                for (let day = 16; day <= lastDay; day++) {
+                    const formattedDay = `${day}`;
+                    const formattedDate = `${year}${monthVal}${formattedDay}`;
+                    formattedDates.push(formattedDate);
+                }
+            }
+
+        } else { // 월별 조회일 때
+            const lastDay =  new Date(year, monthVal, 0).getDate();
+            for (let day =1; day <= lastDay; day++) {
+                const formattedDay = day < 10 ? `0${day}` : `${day}`;
+                const formattedDate = `${year}${monthVal}${formattedDay}`;
+                formattedDates.push(formattedDate);
+            }
+        }
+
+        return formattedDates;
+    };
+
   useEffect(() => {
 
     const param = {
       queryId: "financialAffairMngMapper.retrieveExpensAprvDtlsPrjctAccto",
-      startYm: year+monthVal,
-      startOdr: aplyOdr,
-      endYm: year+monthVal,
-      endOdr: aplyOdr,
+        year: year,
+        monthVal: monthVal,
+        aplyOdr: aplyOdr,
     };
 
     const response = ApiRequest("/boot/common/queryIdSearch", param);
@@ -32,8 +65,8 @@ const EmpExpenseAprvList = () => {
   }, []);
 
   const searchHandle = async (initParam) => {
-      console.log('iii',initParam);
-    if(initParam.year == null || initParam.month == null) {
+
+    if(initParam.yearItem == null || initParam.monthItem == null) {
 
       const date = new Date();
       const year = date.getFullYear();
@@ -43,27 +76,40 @@ const EmpExpenseAprvList = () => {
       let odrVal = day > 15 ? "1" : "2";
       let monthVal = month < 10 ? "0" + month : month;
 
+
+
       setParam({
         ...param,
-          startYm: year+monthVal,
-          startOdr: odrVal,
-          endYm: year+monthVal,
-          endOdr: odrVal,
+          year: year,
+          monthVal: monthVal,
+          aplyOdr: odrVal,
+          dateList: generateDates(year, monthVal, odrVal)
       })
 
       return;
     };
 
-    setParam({
+    if(initParam.inqMthd == "month"){
 
-      ...param,
-        startYm: initParam.startYm,
-        startOdr: initParam.startOdr,
-        endYm: initParam.endYm,
-        endOdr: initParam.endOdr,
-    })
+        setParam({
+            ...param,
+            year: initParam.yearItem,
+            monthVal: initParam.monthItem,
+            aplyOdr: '',
+            dateList: generateDates(initParam.yearItem, initParam.monthItem, '')
+        })
+    } else {
+
+        setParam({
+            ...param,
+            year: initParam.yearItem,
+            monthVal: initParam.monthItem,
+            aplyOdr: initParam.aplyOdr,
+            dateList: generateDates(initParam.yearItem, initParam.monthItem, initParam.aplyOdr)
+        })
+    }
+
   }
-
 
   const onSelectionChanged = useCallback(
       (args) => {
@@ -109,10 +155,10 @@ const EmpExpenseAprvList = () => {
                           const Component = React.lazy(() => import(`${data.url}`));
                           return (
                               <React.Suspense fallback={<div>Loading...</div>}>
-                                  <Component startYm={param.startYm}
-                                             startOdr={param.startOdr}
-                                             endYm={param.endYm}
-                                             endOdr={param.endOdr} />
+                                  <Component year={param.year}
+                                             monthVal={param.monthVal}
+                                             aplyOdr={param.aplyOdr}
+                                             dateList={param.dateList} />
                               </React.Suspense>
                           );
                       }}

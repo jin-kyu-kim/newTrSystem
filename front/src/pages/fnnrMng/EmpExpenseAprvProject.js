@@ -8,7 +8,7 @@ import { saveAs } from 'file-saver';
 import '../../assets/css/Style.css'
 
 
-const EmpExpenseAprvProject = ({ startYm, startOdr, endYm, endOdr }) => {
+const EmpExpenseAprvProject = ({ year, monthVal, aplyOdr, dateList }) => {
 
     const { keyColumn, queryId } = EmpExpenseAprvProjectJson;
     const [expenseAprvData, setExpenstAprvData] = useState([]);
@@ -16,19 +16,18 @@ const EmpExpenseAprvProject = ({ startYm, startOdr, endYm, endOdr }) => {
 
     useEffect(() => {
         getExpenseAprvData();
-    }, [startYm, startOdr, endYm, endOdr]);
+    }, [year, monthVal, aplyOdr]);
 
     //경비 승인내역 조회
     const getExpenseAprvData = async () => {
         const param = {
             queryId: queryId,
-            startYmOdr: startYm+startOdr,
-            endYmOdr: endYm+endOdr,
+            aplyYm: year+monthVal,
+            aplyOdr: aplyOdr,
         };
         try{
             const response = await ApiRequest('/boot/common/queryIdSearch', param);
             setExpenstAprvData(response);
-            console.log('rrr',response);
         }catch (error){
             console.log(error);
         }
@@ -66,9 +65,6 @@ const EmpExpenseAprvProject = ({ startYm, startOdr, endYm, endOdr }) => {
     };
 
 
-
-    // const utztnDtColumns = [...new Set(expenseAprvData.map(item => item.utztnDt))];
-
     const columns = [
         { dataField: 'prjctNm', caption: '프로젝트명', width: '250' },
         { dataField: 'expensCd', caption: '비용 코드', width: '200' },
@@ -77,17 +73,29 @@ const EmpExpenseAprvProject = ({ startYm, startOdr, endYm, endOdr }) => {
         { dataField: 'atdrn', caption: '용도', width: '200' },
         { dataField: 'utztnAmt', caption: '금액(소계)', width: '100' },
         { dataField: 'bfeClm', caption: '기간외', width: '100' },
-        // ...utztnDtColumns.map(utztnDt => ({
-        //     dataField: utztnDt,
-        //     caption: utztnDt,
-        //     width: '130',
-        //     calculateCellValue: rowData => {
-        //         const matchingRow = expenseAprvData.find(item => item.utztnDt == rowData.utztnDt && item.prjctNm == rowData.prjctNm && item.empFlnm == rowData.empFlnm);
-        //
-        //         return matchingRow.utztnDt == utztnDt ? matchingRow.utztnAmt : '';
-        //     }
-        // }))
     ];
+
+    // 날짜에 대한 열 생성
+    const pushDateColumns = () => {
+
+        dateList.forEach(date => {
+            columns.push({
+                dataField: date,
+                caption: date, // 날짜를 열의 캡션으로 사용
+                width: '130',
+                calculateCellValue: rowData => {
+                    return makeReturn();
+                }
+            });
+        });
+
+    }
+
+    pushDateColumns();
+
+    const makeReturn = () => {
+        return 0;
+    }
 
     return (
         <div style={{padding: '20px'}}>

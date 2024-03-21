@@ -191,8 +191,8 @@ const EmpAuth = () => {
                         <SimpleItem dataField="authrtGroupCn" editorType="dxTextArea"><Label text='권한설명'/></SimpleItem>
                     </Form>
                     <div style={{ textAlign: "right", marginTop: "20px" }}>
-                        {selectedItems.length !== 0 && selectedItems[0].authrtGroupId ? <Button text="수정" onClick={newAuthInsert}/> : 
-                        <Button text="등록" onClick={updateAuth}/>}
+                        {selectedItems.length !== 0 && selectedItems[0].authrtGroupId ? <Button text="수정" onClick={updateAuth}/> : 
+                        <Button text="등록" onClick={newAuthInsert}/>}
                     </div>
                 </div>
             </div>

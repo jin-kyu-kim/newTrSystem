@@ -1,6 +1,7 @@
 {
 	"menuName": "TimeExpenseInsertSttus",
-	"queryId": "humanResourceMngMapper.retriveTimeExpenseInsertSttus",
+    "totQueryId": "financialAffairMngMapper.retrieveTotWorkHrCtInptSttus",
+	"queryId": "financialAffairMngMapper.retrieveWorkHrCtInptSttus",
     "keyColumn": "empId",
     "tableColumns": 
 	[
@@ -12,26 +13,27 @@
         { "key": "hdofSttsNm", "value": "재직상태", "width": 100, "alignment" : "center"  },
         {"value": "근무시간",
         "subColumns": [
-            { "key": "empId", "value": "입력화면이동", "button": {"text": "이동", "name": "geunmu"} },
-            { "key": "sumAply", "value": "입력"},
-            { "key": "cntCompanion", "value": "반려" },
-            { "key": "cntComplete", "value": "승인"},
-            { "key": "empId", "value": "취소", "button": {"text": "시간취소", "name": "timeCancel"}}
+            { "value": "입력화면이동", "button": {"text": "이동", "name": "workHrMv"} },
+            { "key": "sum", "value": "입력"},
+            { "key": "mmReject", "value": "반려" },
+            { "key": "mmComplete", "value": "승인"},
+            { "value": "취소", "button": {"text": "시간취소", "name": "hrRtrcn"}}
         ]},
         {"value": "프로젝트비용입력",
         "subColumns": [
-            { "key": "empId", "value": "입력화면이동", "button": {"text": "이동", "name": "prjtPay"} },
-            { "key": "sumMm", "value": "입력"},
-            { "key": "cntCompanion", "value": "반려"},
-            { "key": "cntComplete", "value": "승인" },
-            { "key": "empId", "value": "취소", "button": {"text": "비용취소", "name": "payCancel"} }
+            { "value": "입력화면이동", "button": {"text": "이동", "name": "prjctScrnMv"} },
+            { "key": "cnt", "value": "입력"},
+            { "key": "prjReject", "value": "반려"},
+            { "key": "prjComplete", "value": "승인" },
+            { "value": "취소", "button": {"text": "비용취소", "name": "ctRtrcn"} }
         ]},
-        { "key": "hdofSttsNm", "value": "회사지불비용", "width": 80, "button": {"text" : "이동", "name" : "companyPrice"} },
-        { "key": "hdofSttsNm", "value": "출력", "width": 80, "button": {"text" : "출력", "name" : "print"} }
+        {  "value": "회사지불비용", "width": 80, "button": {"text" : "이동", "name" : "companyPrice"} },
+        {  "value": "출력", "width": 80, "button": {"text" : "출력", "name" : "print"} }
   ], "searchParams":
   {
-      "prjctMngrEmpIdItem": false,
-      "prmpcInptSeCdItem": false,
-      "insertBtnItem": false
+    "yearItem": true,
+    "monthItem": true,
+    "aplyOdr": true,
+    "empId": true
   }
 }

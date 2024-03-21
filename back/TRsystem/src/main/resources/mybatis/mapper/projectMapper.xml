@@ -162,6 +162,10 @@
              , A.WITHDR_PRNMNT_YMD
              , B.INPT_YM
              , B.EXPECT_MM
+          , B.EXPECT_MM * (SELECT
+                    (SELECT USER_DFN_VALUE  FROM CD WHERE CD_VALUE = JBPS_CD) USER_DFN_VALUE
+            FROM EMP
+            WHERE EMP_ID = A.EMP_ID) AS FLAG
         FROM MMNY_LBRCO_PRMPC A
            , MMNY_INPT_MM B
         WHERE A.PRJCT_ID = B.PRJCT_ID
@@ -581,7 +585,7 @@
 			 , e.EMP_FLNM
 			 , CONCAT(pma.APLY_YM, '-', pma.APLY_ODR) APLY_SN
 			 , mmp.EXPECT_MM
-			 , SUM(pma.MD) AS TOT_MD
+			 , SUM(8 * pma.MD) AS TOT_MD
 			 , pma.EMP_ID
 			 , pma.APLY_YM
 			 , pma.APLY_ODR
@@ -700,8 +704,8 @@
 	
 	<select id="retrieveProjectMmAplyDetail" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT 1 AS ID
-		  	 , pma.MD
-			 , CONCAT(pma.MD, ' hrs | ', e1.EMP_FLNM, ' (요청)') AS TEXT
+		  	 , 8 * pma.MD AS MD
+			 , CONCAT(TRUNCATE(8 * MD, 0), ' hrs | ', e1.EMP_FLNM, ' (요청)') AS TEXT
 			 , pah.ATRZ_DMND_STTS_CD
 			 , DATE_FORMAT(pma.APLY_YMD, '%Y-%m-%d') AS START_DATE
 			 , DATE_FORMAT(pma.APLY_YMD, '%Y-%m-%d') AS END_DATE
@@ -727,8 +731,8 @@
          AND pah.ATRZ_DMND_STTS_CD = 'VTW03702'
 		UNION ALL
 		SELECT 2 AS ID
-			 , pma.MD
-			 , CONCAT(pma.MD, ' hrs | ', e2.EMP_FLNM, ' (', cd.CD_NM, ')') AS TEXT
+			 , 8 * pma.MD AS MD
+			 , CONCAT(TRUNCATE(8 * MD, 0), ' hrs | ', e2.EMP_FLNM, ' (', cd.CD_NM, ')') AS TEXT
 			 , pah.ATRZ_DMND_STTS_CD
 			 , DATE_FORMAT(pma.APLY_YMD, '%Y-%m-%d') AS START_DATE
 			 , DATE_FORMAT(pma.APLY_YMD, '%Y-%m-%d') AS END_DATE

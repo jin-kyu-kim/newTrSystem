@@ -249,6 +249,24 @@ const TreRoutes = [
     path: "/mngrMenu/ElecAtrzNewForm",
     name: "ElecAtrzNewForm",
     element: React.lazy(() => import("../pages/mngrMenu/ElecAtrzNewForm")),
+  },
+  // 전자결재 
+  {
+    path: "/elecAtrz/ElecAtrz",
+    name: "ElecAtrz",
+    element: React.lazy(() => import("../pages/elecAtrz/ElecAtrz")),
+  },
+  // 전자결재 신규기안 작성 
+  {
+    path: "/elecAtrz/ElecAtrzNewReq",
+    name: "ElecAtrzNewReq",
+    element: React.lazy(() => import("../pages/elecAtrz/ElecAtrzNewReq")),
+  },
+  // 전자결재 서식
+  {
+    path: "/elecAtrz/ElecAtrzForm",
+    name: "ElecAtrzForm",
+    element: React.lazy(() => import("../pages/elecAtrz/ElecAtrzForm")),
   }
 ];
 
