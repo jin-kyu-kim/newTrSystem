@@ -33,6 +33,7 @@ const EmpAuth = () => {
     useEffect(() => {
         getAuthCd();
         getCreateList();
+        console.log(cookies);
     }, []);
 
     const getAuthCd = async () => {
