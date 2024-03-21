@@ -23,7 +23,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable
-                        ).headers((headerConfig)->headerConfig.frameOptions((HeadersConfigurer.FrameOptionsConfig::disable)))
+                ).headers((headerConfig)->headerConfig.frameOptions((HeadersConfigurer.FrameOptionsConfig::disable)))
                 .authorizeHttpRequests((authorizeRequest)->
                         authorizeRequest
                                 .requestMatchers(allRequestMatcher()).permitAll()
