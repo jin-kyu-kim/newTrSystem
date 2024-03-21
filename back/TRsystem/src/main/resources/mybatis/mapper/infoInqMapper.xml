@@ -263,24 +263,5 @@
 		SELECT COUNT(*) AS CNT FROM EMP_DTL WHERE EMP_ID = #{empId}
 	</select>
 
-	<select id="retrieveClturPhstrnActCtList" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT
-			EMP_ID
-			 , CLTUR_PHSTRN_ACT_CT_SN
-			 , CLM_YMD
-			 , CLM_AMT
-			 , ACT_IEM
-			 , CLTUR_PHSTRN_SE_CD
-			 , ACT_PURPS
-			 , RJCT_PRVONSH
-			 , c.ATCHMNFL_ID
-			 , a.ATCHMNFL_SN
-			 , a.REAL_FILE_NM
-			 , a.STRG_FILE_NM
-		FROM CLTUR_PHSTRN_ACT_CT_REG c
-				 LEFT JOIN  ATCHMNFL a ON c.ATCHMNFL_ID = a.ATCHMNFL_ID
-		WHERE EMP_ID = #{empId}
-	</select>
-
 </mapper>
 
