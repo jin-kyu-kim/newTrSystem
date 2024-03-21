@@ -6,6 +6,8 @@ import {Workbook} from "exceljs";
 import {exportDataGrid} from "devextreme/excel_exporter";
 import { saveAs } from 'file-saver';
 import '../../assets/css/Style.css'
+import CustomPivotGrid from "../../components/unit/CustomPivotGrid";
+import PivotGridDataSource from "devextreme/ui/pivot_grid/data_source";
 
 
 const EmpExpenseAprvProject = ({ year, monthVal, aplyOdr, dateList }) => {
@@ -91,6 +93,49 @@ const EmpExpenseAprvProject = ({ year, monthVal, aplyOdr, dateList }) => {
 
     }
 
+    const dataSource = new PivotGridDataSource({
+        fields: [{
+            caption: '프로젝트명',
+            dataField: 'prjctNm',
+            area: 'row',
+            expanded: true,
+        }, {
+            caption: '비용코드',
+            dataField: 'expensCd',
+            width: 150,
+            area: 'row',
+        }, {
+            caption: '직원명',
+            dataField: 'empFlnm',
+            width: 150,
+            area: 'row',
+        }, {
+            caption: '상세내역',
+            dataField: 'ctPrpos',
+            width: 150,
+            // area: 'row',
+        }, {
+            dataField: 'utztnDt',
+            area: 'column',
+        }, {
+            groupName: 'date',
+            groupInterval: 'year',
+            expanded: true,
+        }, {
+            groupName: 'date',
+            groupInterval: 'month',
+            expanded: true,
+        }, {
+            caption: '금액',
+            dataField: 'utztnAmt',
+            dataType: 'number',
+            summaryType: 'sum',
+            format: 'fixedPoint',
+            area: 'data',
+        }],
+        store: expenseAprvData,
+    });
+
     pushDateColumns();
 
     const makeReturn = () => {
@@ -100,24 +145,9 @@ const EmpExpenseAprvProject = ({ year, monthVal, aplyOdr, dateList }) => {
     return (
         <div style={{padding: '20px'}}>
             <div className='container'>
-                <DataGrid
-                    dataSource={expenseAprvData}
-                    showBorders={true}
-                    showColumnLines={true}
-                    wordWrapEnabled={true}
-                    onExporting={onExporting}
-                    onCellPrepared={(e) => {
-                        if (e.rowType === 'header') {
-                            e.cellElement.style.textAlign = 'center';
-                            e.cellElement.style.fontWeight = 'bold';
-                        }
-                    }}
-                >
-                    {columns.map((column, index) => (
-                        <Column key={index} {...column} />
-                    ))}
-                    <Export enabled={true} />
-                </DataGrid>
+                <CustomPivotGrid
+                    values={dataSource}
+                />
             </div>
         </div>
     );
