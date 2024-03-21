@@ -66,24 +66,19 @@ const CustomPivotGrid = ({ values }) => {
         });
     };
 
-    const onCellPrepared = ({ cell, area, cellElement }: any) => {
+    const onCellPrepared = ({ cell, cellElement }: any) => {
 
-        cell.area = area;
-
-        if (isDataCell(cell) || isTotalCell(cell)) {
-            const appearance = getConditionalAppearance(cell);
-            Object.assign(cellElement.style, getCssStyles(appearance));
+        if (cell.area === 'column') {
+            const date = new Date(cell.text);
+            const dayOfWeek = date.getDay(); // 0: 일요일, 1: 월요일, ..., 6: 토요일
+            console.log(cell.text, dayOfWeek);
+            if (dayOfWeek === 0) { // 일요일
+                cellElement.style.backgroundColor = 'red';
+            } else if (dayOfWeek === 6) { // 토요일
+                cellElement.style.backgroundColor = 'blue';
+            }
         }
     };
-
-    // 확장된 행을 클릭해도 펼치기 / 접기 동작을 막는 함수
-    // const onCellClick = (e) => {
-    //
-    //     if (e.area === 'row' && e.cell && e.cell.expanded === true) {
-    //         e.cancel = true;
-    //     }
-    //
-    // }
 
     return (
         <PivotGrid
@@ -92,12 +87,13 @@ const CustomPivotGrid = ({ values }) => {
             allowFiltering={true}
             allowExpandAll={true}
             showColumnTotals={false}
-            showColumnGrandTotals={false}
+            showColumnGrandTotals={true}
             showRowGrandTotals={false}
             dataSource={values}
             showBorders={true}
             onExporting={onExporting}
             onCellPrepared={onCellPrepared}
+            // onContentReady={applyStyleToAllCellsInColumn}
             // onCellClick={onCellClick}
         >
             <FieldChooser enabled={false} />

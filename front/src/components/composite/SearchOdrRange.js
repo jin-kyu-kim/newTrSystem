@@ -202,12 +202,12 @@ const SearchOdrRange = ({ callBack, props }) => {
                 {/*    />*/}
                 {/*</Item>*/}
                 {/*<Item className="prjctNameItem" ratio={1} visible={props.prjctNameItem}>*/}
-                {/*<Item className="prjctNameItem" ratio={1} visible={true}>*/}
-                {/*    <AutoCompleteProject*/}
-                {/*        placeholderText="프로젝트 명"*/}
-                {/*        onValueChange={handleChgPrjct}*/}
-                {/*    />*/}
-                {/*</Item>*/}
+                <Item className="prjctNameItem" ratio={1} visible={true}>
+                    <AutoCompleteProject
+                        placeholderText="프로젝트 명"
+                        onValueChange={handleChgPrjct}
+                    />
+                </Item>
                 {/*<Item className="empnoItem" ratio={1} visible={props.empnoItem}>*/}
                 {/*<Item className="empnoItem" ratio={1} visible={true}>*/}
                 {/*    <AutoCompleteName*/}

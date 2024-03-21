@@ -10,7 +10,7 @@ import CustomPivotGrid from "../../components/unit/CustomPivotGrid";
 import PivotGridDataSource from "devextreme/ui/pivot_grid/data_source";
 
 
-const EmpExpenseAprvProject = ({ year, monthVal, aplyOdr, dateList }) => {
+const EmpExpenseAprvProject = ({ prjctId, year, monthVal, aplyOdr, dateList }) => {
 
     const { keyColumn, queryId } = EmpExpenseAprvProjectJson;
     const [expenseAprvData, setExpenstAprvData] = useState([]);
@@ -24,6 +24,7 @@ const EmpExpenseAprvProject = ({ year, monthVal, aplyOdr, dateList }) => {
     const getExpenseAprvData = async () => {
         const param = {
             queryId: queryId,
+            prjctId: prjctId,
             aplyYm: year+monthVal,
             aplyOdr: aplyOdr,
         };
@@ -113,9 +114,8 @@ const EmpExpenseAprvProject = ({ year, monthVal, aplyOdr, dateList }) => {
             caption: '상세내역',
             dataField: 'ctPrpos',
             width: 150,
-            // area: 'row',
         }, {
-            dataField: 'utztnDt',
+            dataField: 'pivotDate',
             area: 'column',
         }, {
             groupName: 'date',
