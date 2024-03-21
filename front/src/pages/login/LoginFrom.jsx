@@ -13,6 +13,7 @@ const LoginForm = ({ handleLogin }) => {
   const [empno, setEmpno] = useState("");
   const [pswd, setPassword] = useState("");
   const [validationErrors, setValidationErrors] = useState({});
+  const pwdRef =  React.createRef();
 
   const validateForm = () => {
     const errors = {};
@@ -34,13 +35,19 @@ const LoginForm = ({ handleLogin }) => {
       setCookie("userAuth", data.data.userAuth);
       setCookie("userInfo", data.data.userInfo);
       setCookie("deptInfo", data.data.deptInfo);
-      handleLogin(data.isOk);
+      if(data.isOk){
+        handleLogin(data.isOk);
+      }else {
+        window.alert("비밀번호를 확인해주십시오");
+        setPassword("");
+      }
+
     }
   };
 
   return (
-    <div>
-      <div className="login">
+      <div>
+        <div className="login">
         <h1 className="login-header">
           <img src={Vtw} alt="VTW" />
         </h1>
