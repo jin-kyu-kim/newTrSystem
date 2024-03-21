@@ -14,7 +14,6 @@ function App() {
   });
 
   useEffect(() => {
-    console.log(1);
     sessionStorage.setItem("isLoggedIn", JSON.stringify(isLoggedIn));
   }, [sessionStorage]);
   const loading = (
