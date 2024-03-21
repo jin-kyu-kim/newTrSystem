@@ -16,9 +16,10 @@ const AutoCompleteProject = ({ placeholderText, onValueChange }) => {
           { tbNm: "PRJCT" },
           {},
         ]);
-        const processedData = response.map(({ prjctId, prjctNm }) => ({
+        const processedData = response.map(({ prjctId, prjctNm, prjctMngrEmpId }) => ({
           key: prjctId,
           value: prjctNm,
+          prjctMngrEmpId: prjctMngrEmpId,
         }));
         setSuggestionsData(processedData);
       } catch (error) {
@@ -30,8 +31,7 @@ const AutoCompleteProject = ({ placeholderText, onValueChange }) => {
   }, []);
 
   const handleSelectChange = (e) => {
-    const selectedOption = e.value;
-    console.log(selectedOption)
+    const selectedOption = e;
 
     if (selectedOption) {
       onValueChange(selectedOption);
@@ -51,7 +51,25 @@ const AutoCompleteProject = ({ placeholderText, onValueChange }) => {
       dataSource={suggestionsData}
       valueExpr="key"
       displayExpr="value"
-      onValueChanged={handleSelectChange}
+      // onValueChanged={handleSelectChange(e)}
+      onValueChange={(e) => {
+        const selectItemValue = [];
+        const selectedItem = suggestionsData.find(item => item.key === e);
+        if (selectedItem) {
+          selectItemValue.push({
+            prjctId: selectedItem.key,
+            prjctNm: selectedItem.value,
+            prjctMngrEmpId: selectedItem.prjctMngrEmpId,
+          });
+        } else {
+          selectItemValue.push({
+            prjctId: "",
+            prjctNm: "",
+            prjctMngrEmpId: ""
+          });
+        }
+        handleSelectChange(selectItemValue)
+      }}
       placeholder={placeholderText}
       searchEnabled={true}
       stylingMode="underlined"

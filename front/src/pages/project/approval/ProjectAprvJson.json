@@ -16,6 +16,7 @@
     "searchParams":
 	{
         "ctmmnyNameItem": false,
+        "prjctStleCdItem": false,
         "prjctDatePickerItem": false,
         "atrzSttsCdItem": true,
         "bizFlfmtTyCdItem": false,

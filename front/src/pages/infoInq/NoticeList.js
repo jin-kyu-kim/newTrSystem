@@ -44,7 +44,7 @@ const NoticeList = () => {
         }
     };
 
-    const onRowDblClick = (e) => {
+    const onRowClick = (e) => {
         navigate("/infoInq/NoticeDetail", 
                   {state: { id: e.key }})
       };
@@ -74,7 +74,7 @@ const NoticeList = () => {
                 pageSize={pageSize}
                 columns={tableColumns}
                 values={values}
-                onRowDblClick={onRowDblClick}
+                onRowClick={onRowClick}
                 paging={true}
             />
         </div>
