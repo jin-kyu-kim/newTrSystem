@@ -23,62 +23,6 @@ function reorderItem(array, fromIdx, toIdx) {
   return insertItem(result, item, toIdx);
 }
 
-//Card 컴포넌트
-const Card = ({ task, switchUseYn, switchEprssYn }) => ( //TODO.우선순위에 따라 카드색깔 변경  >> 이걸 서식 종류에 따라 색깔 바꾸게 하면 될듯
-  <div className="card dx-card dx-theme-text-color dx-theme-background-color">
-    <div className={`card-priority priority-${task.Task_Priority}`}></div>  
-    <div className="card-subject">{task.gnrlAtrzTtl}</div>
-    <Button text='수정' 
-    onClick={(e)=>{
-      alert("수정화면으로 이동!!!!!!!!!");
-      }}
-      >
-    </Button> 
-    <div style={{display:'flex', alignSelf:'center', marginTop:'10px'}}>
-      <div className='switch-name'>서식사용</div> 
-      <Switch 
-        value={switchUseYn} 
-        onValueChanged={()=>{}}/>
-      <div className='switch-name'style={{ marginLeft:'20px'}}>화면표시</div> 
-      <Switch 
-        value={switchEprssYn} 
-        onValueChanged={()=>{}}/>
-    </div>
-  </div>
-); 
-
-//List 컴포넌트
-const List = ({
-  title, index, tasks, onTaskDrop,
-}) => (
-  <div className="list">
-    <div className="list-title dx-theme-text-color">{title}</div>
-    <ScrollView
-      className="scrollable-list"
-      direction="vertical"
-      showScrollbar="always"
-    >
-      <Sortable
-        className="sortable-cards"
-        group="cardsGroup"
-        data={index}
-        onReorder={onTaskDrop}
-        onAdd={onTaskDrop}
-      >
-        {tasks.map((task) => (
-          console.log("task",task),
-          <Card
-            key={task.atrzFormDocSn}
-            task={task}
-            switchUseYn={task.useYn === 'Y' ? true : false}
-            switchEprssYn={task.eprssYn === 'Y' ? true : false}
-          ></Card>
-        ))}
-      </Sortable>
-    </ScrollView>
-  </div>
-);
-
 
 // 화면에 리스트를 보여주는 컴포넌트
 const  ElecAtrzFormManage = ({}) => {
@@ -105,10 +49,6 @@ const  ElecAtrzFormManage = ({}) => {
   useEffect(() => {
     console.log("formList",formList);
   }, [formList]);
-
-  useEffect(() => {
-    console.log("statuses",statuses);
-  }, [statuses]);
 
   useEffect(() => {
     console.log("lists",lists);
@@ -153,10 +93,64 @@ const  ElecAtrzFormManage = ({}) => {
       updatedLists[fromData] = removeItem(updatedLists[fromData], fromIndex);
       updatedLists[toData] = insertItem(updatedLists[toData], item, toIndex);
       setLists(updatedLists);
-      // console.log("updatedLists",updatedLists);
     },
     [lists],
   );
+
+  //Card 컴포넌트
+const Card = ({ task, switchUseYn, switchEprssYn }) => ( //TODO.우선순위에 따라 카드색깔 변경  >> 이걸 서식 종류에 따라 색깔 바꾸게 하면 될듯
+<div className="card dx-card dx-theme-text-color dx-theme-background-color">
+  <div className={`card-priority priority-${task.Task_Priority}`}></div>  
+  <div className="card-subject">{task.gnrlAtrzTtl}</div>
+  <Button text='수정' 
+  onClick={(e)=>{
+    navigate("/mngrMenu/ElecAtrzNewForm", {state : task});
+    }}
+    >
+  </Button> 
+  <div style={{display:'flex', alignSelf:'center', marginTop:'10px'}}>
+    <div className='switch-name'>서식사용</div> 
+    <Switch 
+      value={switchUseYn} 
+      onValueChanged={()=>{}}/>
+    <div className='switch-name'style={{ marginLeft:'20px'}}>화면표시</div> 
+    <Switch 
+      value={switchEprssYn} 
+      onValueChanged={()=>{}}/>
+  </div>
+</div>
+); 
+
+//List 컴포넌트
+const List = ({
+title, index, tasks, onTaskDrop,
+}) => (
+<div className="list">
+  <div className="list-title dx-theme-text-color">{title}</div>
+  <ScrollView
+    className="scrollable-list"
+    direction="vertical"
+    showScrollbar="always"
+  >
+    <Sortable
+      className="sortable-cards"
+      group="cardsGroup"
+      data={index}
+      onReorder={onTaskDrop}
+      onAdd={onTaskDrop}
+    >
+      {tasks.map((task) => (
+        <Card
+          key={task.atrzFormDocSn}
+          task={task}
+          switchUseYn={task.useYn === 'Y' ? true : false}
+          switchEprssYn={task.eprssYn === 'Y' ? true : false}
+        ></Card>
+      ))}
+    </Sortable>
+  </ScrollView>
+</div>
+);
 
   return (
     <div className="container" style={{ marginTop: "30px" }}>
