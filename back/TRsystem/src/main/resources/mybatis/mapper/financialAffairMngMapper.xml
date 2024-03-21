@@ -263,7 +263,11 @@
             DATE_FORMAT(PMA.APLY_YMD , '%Y-%m-%d') AS APLY_YMD,
             P.PRJCT_NM AS PRJCT_NM,
             E.EMP_FLNM AS EMP_FLNM,
-            PMA.MD AS MD
+        CASE
+        WHEN PMA.MD = 1 THEN 8
+        WHEN PMA.MD = 0.5 THEN 4
+        ELSE 0
+        END AS MD
         FROM PRJCT_MM_APLY PMA
                  INNER JOIN PRJCT P ON PMA.PRJCT_ID = P.PRJCT_ID
                  INNER JOIN EMP E ON E.EMP_ID  = PMA.EMP_ID
