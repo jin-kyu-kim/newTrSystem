@@ -75,6 +75,12 @@ const TreRoutes = [
     name: "EmpAuth",
     element: React.lazy(() => import("../pages/sysMng/EmpAuth")),
   },
+  // 권한부여관리
+  {
+    path: "/sysMng/EmpAuthorization",
+    name: "EmpAuth",
+    element: React.lazy(() => import("../pages/sysMng/EmpAuthorization")),
+  },
    // 고객사관리
   {
     path: "/sysMng/CustomersList",
