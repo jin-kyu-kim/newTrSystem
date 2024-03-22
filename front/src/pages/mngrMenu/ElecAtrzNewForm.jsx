@@ -25,6 +25,7 @@ const ElecAtrzNewForm = ({}) => {
     });
     const mdfStts = location.state? 'U' : 'I'; //수정인지 신규인지 확인
 
+    //TODO. 개발편의 위한 console.log > 삭제예정.
     useEffect(() => {
         console.log("formData", formData);
     }, [formData]);
@@ -34,6 +35,7 @@ const ElecAtrzNewForm = ({}) => {
         if(mdfStts =='U') setFormData(location.state); 
     }, [location]);
 
+    //입력값 변경시 formData에 저장
     const handleChange = useCallback(({ name, value }) => { 
         setFormData(prev => ({
             ...prev, 
@@ -44,20 +46,41 @@ const ElecAtrzNewForm = ({}) => {
     const onClickSave = async(e) => {
         //폼 밸리데이션 체크
         if (formRef.current.instance.validate().isValid) {
-
             const result = window.confirm("저장하시겠습니까?");
             if(result){
-                const param = [{tbNm: "ELCTRN_ATRZ_DOC_FORM", snColumn: "ATRZ_FORM_DOC_SN"},
-                                formData ]
+
+                let param = [];
+                let request = "";
+
+                //신규, 수정 구분에 따라 param, request 값 설정
+                if(mdfStts =='I'){
+                    param = [{tbNm: "ELCTRN_ATRZ_DOC_FORM", snColumn: "ATRZ_FORM_DOC_SN"},
+                                    formData ]
+                    request = "/boot/common/commonInsert";
+                }else{
+                    const modifiedData = {...formData,
+                        mdfcnEmpId: empId, 
+                        mdfcnDt: date.format('YYYY-MM-DD HH:mm:ss')};
+                    delete modifiedData["elctrnAtrzTySeCdNm"];
+                    delete modifiedData["docSeCdNm"];
+                                            
+                    param = [{tbNm: "ELCTRN_ATRZ_DOC_FORM"},
+                            modifiedData,
+                            {"ATRZ_FORM_DOC_SN" : formData.atrzFormDocSn}]
+                    request = "/boot/common/commonUpdate";
+                }
+                
+                //서버와 통신
                 try {
-                    const response = await ApiRequest("/boot/common/commonInsert", param);
+                    const response = await ApiRequest(request, param);
                     if(response > 0) {
                         alert("저장되었습니다.");
                         navigate("/mngrMenu/ElecAtrzFormManage");
                     }
                 } catch (error) {
                     console.log(error);
-                }              
+                }  
+                  
             }else{
                 return false;
             }
@@ -207,9 +230,6 @@ const ElecAtrzNewForm = ({}) => {
                 />
             </div>
     </div>
-        
-
-
     )
 }
 
