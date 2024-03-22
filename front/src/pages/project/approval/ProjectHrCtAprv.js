@@ -1,6 +1,8 @@
 import { useEffect, useState, } from "react";
 import { useNavigate } from "react-router-dom"; 
 
+import {Button} from "devextreme-react/button"
+
 import ProjectHrCtAprvJson from "./ProjectHrCtAprvJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
 import CustomTable from "../../../components/unit/CustomTable";
@@ -59,19 +61,31 @@ const ProjectHrCtAprv = () => {
 
     const onBtnClick = (button, data) => {
 
-        if(button.name === "prjctId") {
-            navigate("/project/ProjectHrCtAprvDetail", 
-                { state: { 
-                    prjctId: data.prjctId,
-                    prjctNm: data.prjctNm,
-                    
-                } 
-            });
+        navigate("/project/ProjectHrCtAprvDetail", 
+            { state: { 
+                prjctId: data.prjctId,
+                prjctNm: data.prjctNm,
+                
+            } 
+        });
+    }
+
+    const buttonRender = (button, data) => {
+        /**
+         * 예시)
+         */
+        console.log(data);
+        let render = true;
+        if(data.prjctStleCd === "실행") {
+            render = false
         }
 
-        if(button.name === "bizEndYmd") {
-            console.log("bizEndYmd")
-        }
+        return(
+            render && <Button name={button.name} text={button.text} onClick={(e) => onBtnClick(button, data)} />
+        );
+        // return(
+        //     <Button name={button.name} text={button.text} onClick={(e) => onBtnClick(button, data)} />
+        // );
     }
 
     return (
@@ -91,7 +105,7 @@ const ProjectHrCtAprv = () => {
             <div>
                 검색된 건 수 : {totalItems} 건
             </div>
-            <CustomTable keyColumn={keyColumn} columns={tableColumns} values={values} paging={true} onClick={onBtnClick}/>
+            <CustomTable keyColumn={keyColumn} columns={tableColumns} values={values} paging={true} buttonRender={buttonRender} onClick={onBtnClick}/>
         </div>
     );
 };
