@@ -15,30 +15,30 @@ const LoginForm = ({ handleLogin }) => {
   const [validationErrors, setValidationErrors] = useState({});
   const pwdRef =  React.createRef();
 
-  const userInfo = {
-    empId: "20221064-bf25-11ee-b259-000c2956283f",
-    empNm: "김진규",
-    auth: "test",
-    deptId: "9ec66846-3e7e-48be-aa84-3dc2307dc32b",
-  };
-
-  // 기안자: "20221064-bf25-11ee-b259-000c2956283f",
-
-  /*
-  20221064-bf25-11ee-b259-000c2956283f 확인
-  20218103-bf25-11ee-b259-000c2956283f 심사
-  2021c1ed-bf25-11ee-b259-000c2956283f 승인
-  */
-  const userAuth = {
-    userAuth: ["auth1", "auth2", "auth3"],
-    empNm: "김진규11",
-    auth: "test11",
-  };
-
-  const handleSetCookie = () => {
-    setCookie("userInfo", userInfo);
-    setCookie("userAuth", userAuth);
-  };
+  // const userInfo = {
+  //   empId: "20221064-bf25-11ee-b259-000c2956283f",
+  //   empNm: "김진규",
+  //   auth: "test",
+  //   deptId: "9ec66846-3e7e-48be-aa84-3dc2307dc32b",
+  // };
+  //
+  // // 기안자: "20221064-bf25-11ee-b259-000c2956283f",
+  //
+  // /*
+  // 20221064-bf25-11ee-b259-000c2956283f 확인
+  // 20218103-bf25-11ee-b259-000c2956283f 심사
+  // 2021c1ed-bf25-11ee-b259-000c2956283f 승인
+  // */
+  // const userAuth = {
+  //   userAuth: ["auth1", "auth2", "auth3"],
+  //   empNm: "김진규11",
+  //   auth: "test11",
+  // };
+  //
+  // const handleSetCookie = () => {
+  //   setCookie("userInfo", userInfo);
+  //   setCookie("userAuth", userAuth);
+  // };
 
   const validateForm = () => {
     const errors = {};
@@ -54,27 +54,28 @@ const LoginForm = ({ handleLogin }) => {
   }
 
   const handleClick = async () => {
-    // const valid = validateForm()
-    // if(valid){
-    //   const data = await signIn(empno, pswd);
-    //   setCookie("userAuth", data.data.userAuth);
-    //   setCookie("userInfo", data.data.userInfo);
-    //   setCookie("deptInfo", data.data.deptInfo);
-    //   if(data.isOk){
-    //     handleLogin(data.isOk);
-    //   }else {
-    //     window.alert("비밀번호를 확인해주십시오");
-    //     setPassword("");
-    //   }
-    // }
-    try {
-      // const param = { empId, pswd };
-      // const response = await ApiRequest("/boot/trs/sysMng/lgnSkll", param);
-      handleSetCookie();
-      handleLogin(true);
-    } catch (error) {
-      console.log(error);
+    const valid = validateForm()
+    if(valid){
+      const data = await signIn(empno, pswd);
+      setCookie("userAuth", data.data.userAuth);
+      setCookie("userInfo", data.data.userInfo);
+      setCookie("deptInfo", data.data.deptInfo);
+      if(data.isOk){
+        handleLogin(data.isOk);
+      }else {
+        window.alert("비밀번호를 확인해주십시오");
+        setPassword("");
+      }
     }
+    // try {
+    //   // const param = { empId, pswd };
+    //   // const response = await ApiRequest("/boot/trs/sysMng/lgnSkll", param);
+    //
+    //   handleSetCookie();
+    //   handleLogin();
+    // } catch (error) {
+    //   console.log(error);
+    // }
 
   };
 

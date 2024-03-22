@@ -9,18 +9,19 @@ import { CookiesProvider } from "react-cookie";
 
 function App() {
   const [isLoggedIn, setLoggedIn] = useState(() => {
-    const storedLoginStatus = sessionStorage.getItem("isLoggedIn");
+    const storedLoginStatus = localStorage.getItem("isLoggedIn"); //sessionStorage
     return storedLoginStatus ? JSON.parse(storedLoginStatus) : false;
   });
 
   useEffect(() => {
-    sessionStorage.setItem("isLoggedIn", JSON.stringify(isLoggedIn));
-  }, [sessionStorage]);
+    localStorage.setItem("isLoggedIn", JSON.stringify(isLoggedIn));
+  }, [localStorage]);
   const loading = (
     <div style={{ backgroundColor: "white", height: "1000px" }}></div>
   );
 
   const handleLogin = (isOk) => {
+    console.log(isOk)
     setLoggedIn(isOk);
   };
 
