@@ -889,6 +889,36 @@
 		WHERE 1=1 
 		AND PRJCT_ID = #{prjctId}
     </select>
+    
+     <select id="retrievePrjctOutordEntrpsCt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		 SELECT
+	          A.OUTORD_ENTRPS_CT_PRMPC_SN
+	        , A.OUTORD_ENTRPS_ID
+	        , A.TKCG_JOB
+	        , A.INPT_PRNMNT_HNF_CNT
+	        , A.EXPECT_CT
+	        , B.GIVE_CT  AS USE_AMT
+	        , (A.EXPECT_CT - B.GIVE_CT) AS AVAIL
+	     FROM OUTORD_ENTRPS_CT_PRMPC A
+	     LEFT JOIN OUTORD_LBRCO_EXCN B ON A.PRJCT_ID = B.PRJCT_ID
+	    WHERE 1=1
+	      AND A.PRJCT_ID = #{prjctId}
+	      AND A.BGT_MNG_ODR = #{bgtMngOdr}
+	     UNION ALL 
+	     SELECT
+	          A.OUTORD_ENTRPS_CT_PRMPC_SN
+	        , A.OUTORD_ENTRPS_ID
+	        , A.TKCG_JOB
+	        , A.INPT_PRNMNT_HNF_CNT
+	        , A.EXPECT_CT
+	        , B.GIVE_CT  AS USE_AMT
+	        , (A.EXPECT_CT - B.GIVE_CT) AS AVAIL
+	     FROM OUTORD_ENTRPS_CT_PRMPC A
+	     RIGHT JOIN OUTORD_LBRCO_EXCN B ON A.PRJCT_ID = B.PRJCT_ID
+	    WHERE 1=1
+	      AND A.PRJCT_ID = #{prjctId}
+	      AND A.BGT_MNG_ODR = #{bgtMngOdr}
+	</select>
 	
 
 </mapper>
