@@ -296,7 +296,7 @@
     <select id="retrieveExpensAprvDtlsPrjctAccto" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
         PIVOT_DATE,
-        COALESCE(b.PRJCT_NM, 'null_project') AS PRJCT_NM,
+        COALESCE(b.PRJCT_NM) AS PRJCT_NM,
         COALESCE(b.EXPENS_CD, '') AS EXPENS_CD,
         COALESCE(b.EMP_FLNM, '') AS EMP_FLNM,
         COALESCE(b.CT_PRPOS, '') AS CT_PRPOS,
