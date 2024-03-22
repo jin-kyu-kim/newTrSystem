@@ -66,16 +66,29 @@ const CustomPivotGrid = ({ values }) => {
         });
     };
 
-    const onCellPrepared = ({ cell, cellElement }: any) => {
+    const pivotGridOptions = {
+        dataSource: values,
+        onCellPrepared: function(e) {
 
-        if (cell.area === 'column') {
-            const date = new Date(cell.text);
-            const dayOfWeek = date.getDay(); // 0: 일요일, 1: 월요일, ..., 6: 토요일
-            console.log(cell.text, dayOfWeek);
-            if (dayOfWeek === 0) { // 일요일
-                cellElement.style.backgroundColor = 'red';
-            } else if (dayOfWeek === 6) { // 토요일
-                cellElement.style.backgroundColor = 'blue';
+            // 토, 일요일 컬럼 색칠
+            if (e.area === 'column'){
+                const date = new Date(e.cell.text);
+                const dayOfWeek = date.getDay(); // 0: 일요일, 1: 월요일, ..., 6: 토요일
+
+                if (dayOfWeek === 0) { // 일요일
+                    e.cellElement.style.backgroundColor = '#F6CECE';
+                } else if (dayOfWeek === 6) { // 토요일
+                    e.cellElement.style.backgroundColor = '#A9E2F3';
+                }
+            } else if (e.area === 'data' && e.cell.rowType !== 'T'){
+                const date = new Date(e.cell.columnPath[0]);
+                const dayOfWeek = date.getDay(); // 0: 일요일, 1: 월요일, ..., 6: 토요일
+
+                if (dayOfWeek === 0) { // 일요일
+                    e.cellElement.style.backgroundColor = '#F6CECE';
+                } else if (dayOfWeek === 6) { // 토요일
+                    e.cellElement.style.backgroundColor = '#A9E2F3';
+                }
             }
         }
     };
@@ -92,9 +105,7 @@ const CustomPivotGrid = ({ values }) => {
             dataSource={values}
             showBorders={true}
             onExporting={onExporting}
-            onCellPrepared={onCellPrepared}
-            // onContentReady={applyStyleToAllCellsInColumn}
-            // onCellClick={onCellClick}
+            {...pivotGridOptions}
         >
             <FieldChooser enabled={false} />
             <Export enabled={true} />

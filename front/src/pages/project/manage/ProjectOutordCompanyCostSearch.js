@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 
 import ApiRequest from "../../../utils/ApiRequest";
 import CustomTable from "../../../components/unit/CustomTable";
-import MatalCostJson from "./MatalCostJson.json";
+import ProjectOutordCompanyCostSearchJson from "./ProjectOutordCompanyCostSearchJson.json";
 
 const ProjectOutordCompanyCostSearch = (prjctId, bgtMngOdr) => {
-  const { keyColumn, queryId, tableColumns, summaryColumn } = MatalCostJson;
+  const { keyColumn, queryId, tableColumns, summaryColumn } = ProjectOutordCompanyCostSearchJson;
   const [values, setValues] = useState([]);
 
   useEffect(() => {
