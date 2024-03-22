@@ -76,8 +76,6 @@ const EmpExpenseAprvList = () => {
       let odrVal = day > 15 ? "1" : "2";
       let monthVal = month < 10 ? "0" + month : month;
 
-
-
       setParam({
         ...param,
           year: year,
@@ -89,11 +87,15 @@ const EmpExpenseAprvList = () => {
       return;
     };
 
+    let prjctId = '';
+    if(initParam.prjctId != null)
+        prjctId = initParam.prjctId[0].prjctId;
+
     if(initParam.inqMthd == "month"){
 
         setParam({
             ...param,
-            prjctId: initParam.prjctId,
+            prjctId: prjctId,
             year: initParam.yearItem,
             monthVal: initParam.monthItem,
             aplyOdr: '',
@@ -103,7 +105,7 @@ const EmpExpenseAprvList = () => {
 
         setParam({
             ...param,
-            prjctId: initParam.prjctId,
+            prjctId: prjctId,
             year: initParam.yearItem,
             monthVal: initParam.monthItem,
             aplyOdr: initParam.aplyOdr,
@@ -131,10 +133,9 @@ const EmpExpenseAprvList = () => {
                   <h1 style={{fontSize: "30px"}}>경비 승인내역</h1>
               </div>
               <div className="col-md-10 mx-auto" style={{marginBottom: "10px"}}>
-                  <span>* 일자 선택 시 해당 일자가 속한 차수 기준 검색</span>
+                  <span>* 차수별, 월별 검색</span>
               </div>
               <div className="wrap_search" style={{marginBottom: "20px"}}>
-                  {/*<SearchPrjctCostSet callBack={searchHandle} props={searchParams}/>*/}
                   <SearchOdrRange callBack={searchHandle} props={searchParams}/>
               </div>
               <div
@@ -160,8 +161,7 @@ const EmpExpenseAprvList = () => {
                                   <Component prjctId={param.prjctId}
                                              year={param.year}
                                              monthVal={param.monthVal}
-                                             aplyOdr={param.aplyOdr}
-                                             dateList={param.dateList} />
+                                             aplyOdr={param.aplyOdr} />
                               </React.Suspense>
                           );
                       }}
