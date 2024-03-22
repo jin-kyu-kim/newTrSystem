@@ -93,6 +93,7 @@ const EmpExpenseAprvList = () => {
 
         setParam({
             ...param,
+            prjctId: initParam.prjctId,
             year: initParam.yearItem,
             monthVal: initParam.monthItem,
             aplyOdr: '',
@@ -102,6 +103,7 @@ const EmpExpenseAprvList = () => {
 
         setParam({
             ...param,
+            prjctId: initParam.prjctId,
             year: initParam.yearItem,
             monthVal: initParam.monthItem,
             aplyOdr: initParam.aplyOdr,
@@ -155,7 +157,8 @@ const EmpExpenseAprvList = () => {
                           const Component = React.lazy(() => import(`${data.url}`));
                           return (
                               <React.Suspense fallback={<div>Loading...</div>}>
-                                  <Component year={param.year}
+                                  <Component prjctId={param.prjctId}
+                                             year={param.year}
                                              monthVal={param.monthVal}
                                              aplyOdr={param.aplyOdr}
                                              dateList={param.dateList} />

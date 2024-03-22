@@ -209,3 +209,12 @@
   font-family: Roboto, RobotoFallback, "Noto Kufi Arabic", Helvetica, Arial, sans-serif;
 }
 
+.elecAtrz-from-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.elecAtrz-from-container-box {
+  width: 23%;
+  margin: 10px;
+}
