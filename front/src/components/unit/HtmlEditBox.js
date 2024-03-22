@@ -1,8 +1,16 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import HtmlEditor, { Toolbar, MediaResizing, ImageUpload, Item } from "devextreme-react/html-editor";
 import { Validator, RequiredRule } from 'devextreme-react/validator'
 
 const HtmlEditBox = ({ column, data, setData, placeholder, value }) => {
+  const [valueContent, setValueContent] = useState(value);
+  
+  const valueChanged = useCallback(
+    (e) => {
+      setValueContent(e.value);
+    },
+    [valueContent],
+  );
 
   return (
     <div>
@@ -10,9 +18,10 @@ const HtmlEditBox = ({ column, data, setData, placeholder, value }) => {
         height="725px"
         id={column.dataField}
         placeholder={placeholder}
-        value={value}
-        onValueChanged={(e) => {
-          setData({ ...data, [column.dataField]: e.value });
+        value={valueContent? valueContent : value}
+        onValueChanged={valueChanged}
+        onFocusOut={(e) => {
+          setData({ ...data, [column.dataField]: valueContent });
         }}
       >
         <Validator>
