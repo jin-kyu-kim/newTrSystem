@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
 import SelectBox from 'devextreme-react/select-box';
 import { Button } from "devextreme-react";
 import List from 'devextreme-react/list';
@@ -7,6 +8,7 @@ import CustomEditTable from 'components/unit/CustomEditTable';
 import empListJson from "../infoInq/EmpListJson.json";
 import sysMngJson from "./SysMngJson.json";
 import ApiRequest from "utils/ApiRequest";
+import moment from 'moment';
 import './sysMng.css'
 
 const EmpAuthorization = () => {
@@ -17,6 +19,10 @@ const EmpAuthorization = () => {
     const [ createAuthList, setCreateAuthList ] = useState([]);
     const [ basicAuthList, setBasicAuthList ] = useState([]);
     const [ selectedList, setSelectedList ] = useState([]);
+    const [ selectedAuthId, setSelectedAuthId ] = useState('');
+    const [cookies] = useCookies(["userInfo", "userAuth"]);
+    const sessionId = cookies.userInfo.empId;
+    const date = moment();
 
     useEffect(() => {
         if (!Object.values(param).every((value) => value === "")) {
@@ -62,13 +68,30 @@ const EmpAuthorization = () => {
                 authrtGroupId: item.authrtGroupNm
             }));
             setBasicAuthList(auth);
+            setSelectedAuthId(e.itemData.authrtGroupId);
         } catch(error){
             console.log('error', error);
         }
     }
+    const onSelection = (e) => { setSelectedList(e.selectedRowsData) }
 
-    const onSelection = (e) => {
-        setSelectedList(e.selectedRowsData)
+    const addEmp = async() => {
+        const params = selectedList.map(emp => ([{tbNm: "LGN_USER_AUTHRT"},
+        {
+            empId: emp.empId,
+            authrtGroupId: selectedAuthId,
+            regEmpId: sessionId,
+            regDt: date.format('YYYY-MM-DD HH:mm:ss')
+        }]));
+        try {
+            let response;
+            for(let i=0; i<params.length; i++){
+                response = await ApiRequest('/boot/common/commonInsert', params[i]);
+            }
+            if(response >= 1) alert('저장되었습니다.')
+        } catch (error) {
+            console.log('API 요청 에러', error);
+        }
     }
 
     const authRender = (e) => {
@@ -85,7 +108,7 @@ const EmpAuthorization = () => {
             <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }} ></div>
             <div className="col-md-10 mx-auto" style={{ marginBottom: "30px" }}>
                 <h1 style={{ fontSize: "40px" }}>권한부여 관리</h1>
-                <span>* 사용자 부여 권한을 관리합니다.</span>
+                <span>*사용자 권한을 관리합니다.</span>
             </div>
             <div style={{ marginBottom: "30px" }}>
                 <SearchInfoSet props={searchInfo} callBack={searchHandle} />
@@ -101,11 +124,9 @@ const EmpAuthorization = () => {
                         onSelection={onSelection}
                     />
                 </div>
-
                 <div style={{ display: "flex", alignItems: "center" }}>
                     <Button icon="arrowright" stylingMode="text" className="arrowIcon" />
                 </div>
-
                 <div style={{ flex: 1, border: "1px solid #ccc", height: '1100px' }}>
                     <SelectBox
                         dataSource={createAuthList}
@@ -114,6 +135,7 @@ const EmpAuthorization = () => {
                         showClearButton={true}
                         itemRender={authRender}
                         onItemClick={getCodeList}
+                        height={60}
                     />
                     {basicAuthList.length !== 0 &&
                     <div className='authNmArea'>
@@ -140,6 +162,9 @@ const EmpAuthorization = () => {
                                     </div>
                                 )}
                             />
+                            <div style={{textAlign: 'right'}}>
+                                <Button text='등록' type='default' onClick={addEmp}/>
+                            </div>
                         </div> }
                     </div>}
                 </div>
