@@ -64,7 +64,7 @@ const Header = () => {
           ))}
         </ul>
         <div className="ml-auto">
-          {/*<Button onClick={signOut}>로그아웃</Button>*/}
+          <Button onClick={signOut}>로그아웃</Button>
         </div>
       </div>
     </nav>

@@ -6,6 +6,7 @@ export async function signIn(empno, password) {
         const param = {empno:empno, password:password};
         const response = await ApiRequest("/boot/sysMng/lgnSkll", param);
             if(!response.fail){
+                localStorage.setItem("isLoggedIn", true);
                 return {
                     isOk: true,
                     data: response
@@ -28,7 +29,8 @@ export async function signIn(empno, password) {
 export async function signOut() {
     try {
         // const response = await ApiRequest("/boot/sysMng/lgnOut");
-        sessionStorage.clear();
+        // sessionStorage.clear();
+        localStorage.clear();
         window.location.href = "/login";
         //
         // if(!response.fail){
