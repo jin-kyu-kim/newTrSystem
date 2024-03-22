@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import CustomDateRangeBox from "../../components/unit/CustomDateRangeBox";
 import Box, {Item} from "devextreme-react/box";
 import {Button} from "devextreme-react/button";
@@ -9,6 +9,7 @@ import DataGrid, {
 } from 'devextreme-react/data-grid';
 import {TextBox} from "devextreme-react";
 import AutoCompleteProject from "../../components/unit/AutoCompleteProject";
+import {useCookies} from "react-cookie";
 
 const button = {
     borderRadius: '5px',
@@ -19,13 +20,10 @@ const button = {
 const fontSize = {
     fontSize: 14
 }
-const ProjectExpenseCard = (callBack,props) => {
+const ProjectExpenseCard = (props) => {
     const [searchParam, setSearchParam] = useState();
-    const [cardValue, setCardValue] = useState([{
-        "utztnDt": "20240315000000",
-        "useOffic": "죠우",
-        "utztnAmt": "33000"
-    }]);
+    const [cardValue, setCardValue] = useState();
+    const [cookies] = useCookies([]);
 
     const handleStartDateChange = (value) => {
         setSearchParam({...searchParam, bgngYmd: value});
@@ -33,12 +31,33 @@ const ProjectExpenseCard = (callBack,props) => {
     const handleEndDateChange = (value) => {
         setSearchParam({...searchParam, endYmd: value});
     };
-    const handleChgState = ({name, value}) => {
+    const handleSrchValue = ({name, value}) => {
         setSearchParam({...searchParam, [name] : value});
     };
     const handleChgValue = ({name, value}) => {
         setCardValue({...searchParam, [name] : value});
     };
+
+    useEffect(() => {
+        const jsonValue = props.excel;
+        const list = [];
+        for(let i = 1; i < jsonValue?.length; i++){
+            const data = {
+                "utztnDt" : "",
+                "useOffic" : jsonValue[i].__EMPTY_6,
+                "utztnAmt" : "",
+                "lotteCardSn" : "",
+                "regEmpId" : cookies.userInfo.empId,
+                "empId" : cookies.userInfo.empId,
+                "aplyYm" : "",
+                "aplyOdr" : "",
+                "ctAtrzSeCd" : ""
+            };
+            list.push(data);
+        }
+        setCardValue(list);
+    }, []);
+
     const handleSubmit = () => {
 
     };
@@ -91,14 +110,14 @@ const ProjectExpenseCard = (callBack,props) => {
                             param="VTW011"
                             placeholderText="[이용시간별 조회]"
                             name="useTime"
-                            onSelect={handleChgState}
+                            onSelect={handleSrchValue}
                             value={searchParam?.useTime}
                             showClearButton={true}
                         />
                     </Item>
                     <Item ratio={2}>
                         <TextBox
-                            onValueChanged={(e) => handleChgState({name: "useOffic", value: e.value})}
+                            onValueChanged={(e) => handleSrchValue({name: "useOffic", value: e.value})}
                             placeholder='이용가맹점'
                             showClearButton={true}
                         ></TextBox>

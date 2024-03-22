@@ -22,6 +22,7 @@ const ProjectExpenseCash = (callBack,props) => {
         "empId": cookies.userInfo.empId,
         "regEmpId": cookies.userInfo.empId
     });
+    const [dateValue, setDateValue] = useState();
     let aplyDate = null;
     let now = new Date();
 
@@ -48,6 +49,11 @@ const ProjectExpenseCash = (callBack,props) => {
 
     const handleChgValue = ({name, value}) => {
         setCashValue({...cashValue, [name] : value});
+    };
+
+    const handleChgDate = ({name, value}) => {
+        setDateValue({...dateValue, [name] : value});
+        setCashValue({...cashValue, [name] : value + "000000"});
     };
 
     const handleSubmit = async() => {
@@ -109,8 +115,8 @@ const ProjectExpenseCash = (callBack,props) => {
             </span>
             <form onSubmit={handleSubmit}>
                 <div className="dx-fieldset" style={{width: '70%'}}>
-                    {/*<CustomLabelValue props={labelValue.testParameter} onSelect={handleChgValue} value={cashValue?.testParameter}/>*/}
-                    <CustomLabelValue props={labelValue.utztnDt} onSelect={handleChgValue} value={cashValue?.utztnDt}/>
+                    <CustomLabelValue props={labelValue.ctAtrzSeCd} onSelect={handleChgValue} value={cashValue?.ctAtrzSeCd}/>
+                    <CustomLabelValue props={labelValue.utztnDt} onSelect={handleChgDate} value={dateValue?.utztnDt}/>
                     <CustomLabelValue props={labelValue.useOffic} onSelect={handleChgValue} value={cashValue?.useOffic}/>
                     <CustomLabelValue props={labelValue.utztnAmt} onSelect={handleChgValue} value={cashValue?.utztnAmt}/>
                     <AutoCompleteProject

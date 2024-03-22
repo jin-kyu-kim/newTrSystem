@@ -5,14 +5,15 @@ import ProjectExpenseJson from "./ProjectExpenseJson.json"
 const ProjectExpense = () => {
   const ExpenseInfo = ProjectExpenseJson.ExpenseInfo;
   const [selectedIndex, setSelectedIndex] = useState(0);
-    const onSelectionChanged = useCallback(
-        (args) => {
-            if (args.name === "selectedIndex") {
-                setSelectedIndex(args.value);
-            }
-        },
-        [setSelectedIndex]
-    );
+  const onSelectionChanged = useCallback(
+      (args) => {
+          if (args.name === "selectedIndex") {
+              setSelectedIndex(args.value);
+          }
+      },
+      [setSelectedIndex]
+  );
+  const [excel, setExcel] = useState();
   const itemTitleRender = (a) => <span>{a.TabName}</span>;
 
   return (
@@ -29,7 +30,7 @@ const ProjectExpense = () => {
                   const Component = React.lazy(() => import(`${data.url}`));
                   return (
                       <React.Suspense fallback={<div>Loading...</div>}>
-                          <Component/>
+                          <Component excel={excel} setExcel={setExcel} />
                       </React.Suspense>
                   );
               }}
