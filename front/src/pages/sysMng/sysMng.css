@@ -9,6 +9,12 @@
     border: none;
   }
 
+  /* List delete toggle 버튼 */
+  .dx-list-item-before-bag .dx-icon-toggle-delete {
+    width: 15px; 
+    height: 15px; 
+  }
+
   .dx-datagrid-rowsview .dx-row-focused.dx-data-row .dx-command-edit .dx-link,
   .dx-datagrid-rowsview .dx-row-focused.dx-data-row>td:not(.dx-focused):not(.dx-cell-modified):not(.dx-datagrid-invalid) .dx-switch-container {
     display: inline-block;
@@ -39,4 +45,34 @@
   .arrowIcon {
     width: 40px;
     pointer-events: none;
+  }
+  .dx-datagrid .dx-header-row {
+    background-color: #f0f0f0; 
+  }
+  .dx-header-row>td>.dx-datagrid-text-content {
+    font-weight: bolder;
+    font-size: medium;
+    color: black;
+  }
+  
+  .authNmArea {
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 5px;
+    background-color: #f5f7fe;
+  }
+  
+  .authTitle {
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .authNameItem {
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+    background-color: #e0e0e0;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }

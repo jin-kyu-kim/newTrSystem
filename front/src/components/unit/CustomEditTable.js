@@ -1,10 +1,11 @@
-import { Column, DataGrid, Editing, Lookup, MasterDetail, RequiredRule, StringLengthRule, Pager, Paging } from 'devextreme-react/data-grid';
+import { Column, DataGrid, Editing, Lookup, MasterDetail, Selection, RequiredRule, StringLengthRule, Pager, Paging } from 'devextreme-react/data-grid';
 import { useCallback, useEffect, useState } from 'react';
 import ToggleButton from 'pages/sysMng/ToggleButton';
 import ApiRequest from 'utils/ApiRequest';
 import '../../pages/sysMng/sysMng.css'
 
-const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, masterDetail, doublePk }) => {
+const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, masterDetail, doublePk, 
+    allowEdit, onSelection, getChildList, removeAdd }) => {
     const [ cdValList, setCdValList ] = useState({});
 
     useEffect(() => {
@@ -49,7 +50,6 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
             case 'update':
                 editParam[1] = e.newData;
                 editParam[2] = keyInfo;
-                console.log('editParam', editParam)
                 editInfo = { url: 'commonUpdate', complete: '수정' }
                 break;
             default:
@@ -84,6 +84,8 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
                 columnAutoWidth={true}
                 wordWrapEnabled={true}
                 repaintChangesOnly={true}
+                onRowClick={masterDetail && getChildList}
+                onSelectionChanged={onSelection && ((e) => onSelection(e))}
                 onRowInserted={(e) => onEditRow('insert', e)}
                 onRowUpdating={(e) => onEditRow('update', e)}
                 onRowRemoving={(e) => onEditRow('delete', e)}
@@ -91,25 +93,27 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
                     if (e.rowType === 'header') {
                         e.cellElement.style.textAlign = 'center';
                         e.cellElement.style.fontWeight = 'bold';
-                }}}
+                    }}}
                 >
                 {masterDetail && 
                 <MasterDetail
+                    style={{backgroundColor: 'lightBlue'}}    
                     enabled={true}
-                    component={masterDetail}
+                    render={masterDetail}
                  />}
-
-                <Editing
+                {allowEdit && 
+                    <Editing
                     mode="form"
-                    allowAdding={true}
+                    allowAdding={removeAdd ? false : true}
                     allowDeleting={true}
                     allowUpdating={true}
                     refreshMode='reshape'
                     texts={{
                         saveRowChanges: '저장',
                         cancelRowChanges: '취소'
-                    }}
-                />
+                    }} />
+                }
+                {onSelection && <Selection mode="multiple" selectAllMode="page"/>}
                 {columns.map((col) => (
                     <Column
                         key={col.key}
