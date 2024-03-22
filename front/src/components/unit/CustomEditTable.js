@@ -5,7 +5,7 @@ import ApiRequest from 'utils/ApiRequest';
 import '../../pages/sysMng/sysMng.css'
 
 const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, masterDetail, doublePk, 
-    allowEdit, onSelection, getChildList, removeAdd }) => {
+    noEdit, onSelection, getChildList, removeAdd }) => {
     const [ cdValList, setCdValList ] = useState({});
 
     useEffect(() => {
@@ -84,6 +84,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
                 columnAutoWidth={true}
                 wordWrapEnabled={true}
                 repaintChangesOnly={true}
+                noDataText=''
                 onRowClick={masterDetail && getChildList}
                 onSelectionChanged={onSelection && ((e) => onSelection(e))}
                 onRowInserted={(e) => onEditRow('insert', e)}
@@ -101,7 +102,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
                     enabled={true}
                     render={masterDetail}
                  />}
-                {allowEdit && 
+                {!noEdit && 
                     <Editing
                     mode="form"
                     allowAdding={removeAdd ? false : true}

@@ -72,7 +72,6 @@ const TrsCodeList = () => {
             <CustomEditTable
                 tbNm={tbNm}
                 values={childList}
-                allowEdit={true}
                 keyColumn={keyColumn}
                 removeAdd={true}
                 columns={childTableColumns}

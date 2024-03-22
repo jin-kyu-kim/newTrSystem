@@ -44,7 +44,7 @@ const EmpAuthorization = () => {
     const getCreateAuth = async () => {
         try {
             const response = await ApiRequest('/boot/common/commonSelect', [
-                { tbNm: "AUTHRT_GROUP" }, { regEmpId: '20221064-bf25-11ee-b259-000c2956283f' }
+                { tbNm: "AUTHRT_GROUP" }
             ]);
             setCreateAuthList(response);
         } catch (error) {
@@ -73,7 +73,7 @@ const EmpAuthorization = () => {
 
     const authRender = (e) => {
         return(
-            <div style={{display: 'flex',  marginLeft: '20px', borderBottom: '1px solid #ccc', padding: '10px'}}>
+            <div className='selectBoxRender'>
                 <div style={{ width: '40%', borderRight: '4px solid #ccc' }}>{e.authrtGroupNm}</div>
                 <div style={{ width: '60%', marginLeft: '20px'}}>{e.authrtGroupCn}</div>
             </div>
@@ -97,6 +97,7 @@ const EmpAuthorization = () => {
                         keyColumn={keyColumn}
                         values={empList}
                         columns={columns}
+                        noEdit={true}
                         onSelection={onSelection}
                     />
                 </div>
@@ -117,19 +118,29 @@ const EmpAuthorization = () => {
                     {basicAuthList.length !== 0 &&
                     <div className='authNmArea'>
                         <h5 className='authTitle'>* 포함된 권한 목록</h5>
-                        <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '50px'}}>
                             {basicAuthList.map((auth, index) => (
                             <div key={index} className="authNameItem" >{auth.cdNm}</div>
                             ))}
-                        </div>
-                    
-                    {selectedList && 
-                        <List
-                            dataSource={selectedList}
-                            allowItemDeleting={true}
-                            itemDeleteMode='toggle'
-                        />
-                    }
+                        </div><hr/>
+
+                        <span>- 해당 권한을 부여할 직원을 선택해주세요.</span>
+                        {selectedList.length !== 0 && 
+                        <div style={{marginTop: '20px'}}>
+                            <List
+                                displayExpr='empFlnm'
+                                dataSource={selectedList}
+                                allowItemDeleting={true}
+                                itemDeleteMode='toggle'
+                                itemRender={(e) => (
+                                    <div>
+                                        <span style={{marginRight: '30px'}}>{e.empFlnm}</span>
+                                        <span style={{marginRight: '30px'}}>{e.jbpsNm}</span>
+                                        <span style={{marginRight: '30px'}}>{e.deptId}</span>
+                                    </div>
+                                )}
+                            />
+                        </div> }
                     </div>}
                 </div>
             </div>

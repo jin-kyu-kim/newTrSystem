@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useCookies } from 'react-cookie';
 import { Button } from "devextreme-react";
-import List from "devextreme-react/list";
 import { TabPanel } from "devextreme-react/tab-panel";
 import Form, { Label, RequiredRule, SimpleItem } from "devextreme-react/form";
+import List from "devextreme-react/list";
 import sysMngJson from "./SysMngJson.json";
 import ApiRequest from 'utils/ApiRequest';
 import uuid from "react-uuid";
@@ -21,6 +21,7 @@ const EmpAuth = () => {
     const [newAuthList, setNewAuthList] = useState([]);
     const [selectedItems, setSelectedItems] = useState([]);
     const [selectedIndex, setSelectedIndex] = useState(0);
+    const [groupId, setGroupId] = useState('');
     const [data, setData] = useState(initData);
     const formRef = useRef(null);
 
@@ -49,14 +50,13 @@ const EmpAuth = () => {
     const getCreateList = async () => {
         try {
             const response = await ApiRequest('/boot/common/commonSelect', [
-                { tbNm: "AUTHRT_GROUP" }, {regEmpId: '20221064-bf25-11ee-b259-000c2956283f'}
+                { tbNm: "AUTHRT_GROUP" }
             ]);
             if (response.length !== 0) setNewAuthList(response);
         } catch (error) {
             console.log('error', error);
         }
     };
-
     const onItemClick = (e) => {
         const newItem = e.itemData;
         if (!selectedItems.some((item) => item.authrtCd === newItem.cdValue)) {
@@ -66,6 +66,7 @@ const EmpAuth = () => {
 
     const newAuthClick = async (e) => {
         setSelectedItems([]);
+        setGroupId(e.itemData.authrtGroupId);
         setData({
             authrtGroupNm: e.itemData.authrtGroupNm,
             authrtGroupCn: e.itemData.authrtGroupCn
@@ -79,22 +80,25 @@ const EmpAuth = () => {
             console.error("API 요청 에러", error);
         }
     };
-
-    const newAuthStore = async () => {
+    
+    const newAuthStore = async (editMode) => {
         if (formRef.current.instance.validate().isValid) {
             const cdParam = [{ tbNm: "AUTHRT_MAPNG" }].concat(
                 selectedItems.map((item) => ({
-                    authrtGroupId: data.authrtGroupId, 
+                    authrtGroupId: editMode === 'insert' ? data.authrtGroupId : groupId, 
                     authrtCd: item.authrtCd,
                     regDt: data.regDt,
                     regEmpId: data.regEmpId
                 }))
             );
-            const params = { dataParam: [{ tbNm: "AUTHRT_GROUP" }, data], cdParam: cdParam }
+            const storeData = editMode === 'insert' ? [{ tbNm: "AUTHRT_GROUP" }, data]
+                        : [{ tbNm: "AUTHRT_GROUP" }, data, {authrtGroupId: groupId}];
+
+            const params = { dataParam: storeData, cdParam: cdParam }
             try {
                 const response = await ApiRequest('/boot/sysMng/insertAuth', params);
                 if(response >= 1) {
-                    alert('등록되었습니다.')
+                    alert(editMode === 'insert' ? '등록되었습니다.' : '수정되었습니다.')
                     getCreateList();
                     setData(initData);
                     setSelectedItems([]);
@@ -107,7 +111,7 @@ const EmpAuth = () => {
             alert('필수 항목을 입력해주세요')
         }
     };
- 
+
     const deleteNewAuth = async (e) => {
         const result = window.confirm("삭제하시겠습니까?");
         if (result) {
@@ -127,7 +131,8 @@ const EmpAuth = () => {
         setSelectedItems(selectedItems.filter((item) => item.authrtCd !== authrtCd));
     };
     const clickCancelBtn = () => {
-        setSelectedItems([])
+        setSelectedItems([]);
+        setData(initData);
         if (formRef.current) formRef.current.instance.reset();
     }
 
@@ -183,15 +188,15 @@ const EmpAuth = () => {
                     </div>
 
                     <Form formData={data} ref={formRef}>
-                        {formColumn.map((col) => (
-                            <SimpleItem dataField={col.dataField} editorType={col.editorType}><Label text={col.caption}/>
+                        {formColumn.map((col, index) => (
+                            <SimpleItem key={index} dataField={col.dataField} editorType={col.editorType}><Label text={col.caption}/>
                                 <RequiredRule message={col.message} />
                             </SimpleItem> ))}
                     </Form>
                     <div style={{ textAlign: "right", marginTop: "20px" }}>
-                        {selectedItems.length !== 0 ? (selectedItems[0].authrtGroupId !== undefined ? 
-                        <><Button text="수정" type='default' onClick={newAuthStore} style={{marginRight: '5px'}}/><Button text='취소' onClick={clickCancelBtn}/></> : 
-                        <><Button text="등록" type='success' onClick={newAuthStore} style={{marginRight: '5px'}}/><Button text='취소' onClick={clickCancelBtn}/></>)
+                        {selectedItems.length !== 0 ? (data.authrtGroupNm ? 
+                        <><Button text="수정" type='default' onClick={() => newAuthStore('update')} style={{marginRight: '5px'}}/><Button text='취소' onClick={clickCancelBtn}/></> : 
+                        <><Button text="등록" type='success' onClick={() => newAuthStore('insert')} style={{marginRight: '5px'}}/><Button text='취소' onClick={clickCancelBtn}/></>)
                         : ''} 
                     </div>
                 </div>
