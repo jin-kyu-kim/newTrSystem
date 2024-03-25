@@ -5,8 +5,9 @@ import CustomDateRangeBox from "../unit/CustomDateRangeBox";
 import AutoCompleteProject from "../unit/AutoCompleteProject";
 import AutoCompleteName from "../unit/AutoCompleteName";
 import {SelectBox} from "devextreme-react/select-box";
+import CustomCdComboBox from "../unit/CustomCdComboBox";
 
-const SearchOdrRange = ({ callBack, props }) => {
+const SearchOdrRange = ({ callBack, props, searchItems }) => {
 
     const [initParam, setInitParam] = useState([]);
     const [yearData, setYearData] = useState([]);
@@ -109,7 +110,7 @@ const SearchOdrRange = ({ callBack, props }) => {
     const handleChgEmp = (selectedOption) => {
         setInitParam({
             ...initParam,
-            empId: selectedOption,
+            empNo: selectedOption,
         });
     };
 
@@ -117,8 +118,7 @@ const SearchOdrRange = ({ callBack, props }) => {
         setInitParam({
             ...initParam,
             [name]: value
-        })
-
+        });
     }
 
     // 조회방식이 월별인 경우 차수 selectbox를 숨김
@@ -201,21 +201,28 @@ const SearchOdrRange = ({ callBack, props }) => {
                 {/*        onEndDateChange={handleEndDateChange}*/}
                 {/*    />*/}
                 {/*</Item>*/}
-                {/*<Item className="prjctNameItem" ratio={1} visible={props.prjctNameItem}>*/}
-                <Item className="prjctNameItem" ratio={1} visible={true}>
+                <Item className="prjctNameItem" ratio={1} visible={searchItems.prjctNameItem}>
                     <AutoCompleteProject
                         placeholderText="프로젝트 명"
                         onValueChange={handleChgPrjct}
                     />
                 </Item>
-                {/*<Item className="empnoItem" ratio={1} visible={props.empnoItem}>*/}
-                {/*<Item className="empnoItem" ratio={1} visible={true}>*/}
-                {/*    <AutoCompleteName*/}
-                {/*        placeholderText="이름"*/}
-                {/*        onValueChange={handleChgEmp}*/}
-                {/*        value={initParam.empId}*/}
-                {/*    />*/}
-                {/*</Item>*/}
+                <Item className="empnoItem" ratio={1} visible={searchItems.empnoItem}>
+                    <AutoCompleteName
+                        placeholderText="이름"
+                        onValueChange={handleChgEmp}
+                        value={initParam.empNo}
+                    />
+                </Item>
+                <Item className="expensCdItem" ratio={1} visible={searchItems.expensCdItem}>
+                    <CustomCdComboBox
+                        param="VTW045"
+                        placeholderText="비용코드"
+                        name="expensCd"
+                        onSelect={(e) => handleChgState({name: "expensCd", value: e.value })}
+                        value={initParam.expensCd}
+                    />
+                </Item>
                 <Item className="searchBtnItem" ratio={1} visible={true}>
                     <Button onClick={handleSubmit} text="검색" />
                 </Item>
