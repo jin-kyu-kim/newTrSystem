@@ -8,9 +8,9 @@ import DataGrid, {
     Selection
 } from 'devextreme-react/data-grid';
 import {TextBox} from "devextreme-react";
-import AutoCompleteProject from "../../components/unit/AutoCompleteProject";
-import {useCookies} from "react-cookie";
 import ProjectExpenseSubmit from "./ProjectExpenseSubmit";
+import SelectBox from "devextreme-react/select-box";
+import ApiRequest from "../../utils/ApiRequest";
 
 const button = {
     borderRadius: '5px',
@@ -22,10 +22,41 @@ const fontSize = {
     fontSize: 14
 }
 const ProjectExpenseCard = (props) => {
+    const [cdVal, setCdVal] = useState([]);
+    const [suggestionsData, setSuggestionsData] = useState([]);
     const [searchParam, setSearchParam] = useState();
-    const [cardValue, setCardValue] = useState();
-    const [cookies] = useCookies([]);
     const [selectedItem, setSelectedItem] = useState();
+
+    useEffect(() => {
+        getCode();
+        fetchData();
+    }, []);
+
+    const getCode = async () => {
+        try {
+            const response = await ApiRequest("/boot/common/commonSelect", [{ tbNm: "CD" }, { upCdValue: "VTW045"}]);
+            const updatedCdValues = response.map((item) => ({
+                cdValue: item.cdValue,
+                cdNm: item.cdNm,
+            }));
+            setCdVal(updatedCdValues);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const fetchData = async () => {
+        try {
+            const response = await ApiRequest("/boot/common/commonSelect", [{ tbNm: "PRJCT" }, {}]);
+            const processedData = response.map(({ prjctId, prjctNm }) => ({
+                key: prjctId,
+                value: prjctNm,
+            }));
+            setSuggestionsData(processedData);
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     const handleStartDateChange = (value) => {
         setSearchParam({...searchParam, bgngYmd: value});
@@ -36,84 +67,58 @@ const ProjectExpenseCard = (props) => {
     const handleSrchValue = ({name, value}) => {
         setSearchParam({...searchParam, [name] : value});
     };
-    const handleChgValue = ({name, value}) => {
-        setCardValue({...searchParam, [name] : value});
+    const handleChgValue = (e) => {
+        let copyValue = [...props.cardValue];
+        let copyData = e.data;
+        copyData[e.name] = e.value;
+        copyValue[e.rowIndex] = copyData;
+        props.setCardValue(copyValue);
     };
-
-    useEffect(() => {
-        let aplyDate = null;
-        let now = new Date();
-        let dateNum = Number(now.getDate());
-        if(dateNum <= 15){
-            let firstDayOfMonth = new Date( now.getFullYear(), now.getMonth() , 1 );
-            let lastMonth = new Date ( firstDayOfMonth.setDate( firstDayOfMonth.getDate() - 1 ) );
-            aplyDate = {
-                "aplyYm": lastMonth.getFullYear()+('0' + (lastMonth.getMonth()+1)).slice(-2),
-                "aplyOdr": 2
-            }
-        } else if (16 <= dateNum){
-            aplyDate = {
-                "aplyYm": now.getFullYear()+('0' + (now.getMonth()+1)).slice(-2),
-                "aplyOdr": 1
-            }
-        }
-
-        const jsonValue = props.excel;
-        const list = [];
-        for(let i = 1; i < jsonValue?.length; i++){
-            const date = jsonValue[i].__EMPTY_4;
-            const time = jsonValue[i].__EMPTY_5;
-            const data = {
-                "utztnDt" : date.substring(2,4)+date.substring(5,7)+date.substring(8,10)+time.substring(0,2)+time.substring(3,5)+time.substring(6,8),
-                "useOffic" : jsonValue[i].__EMPTY_6,
-                "utztnAmt" : jsonValue[i].__EMPTY_7,
-                "lotteCardSn" : jsonValue[i].__EMPTY_1,
-                "regEmpId" : cookies.userInfo.empId,
-                "empId" : cookies.userInfo.empId,
-                "aplyYm" : aplyDate.aplyYm,
-                "aplyOdr" : aplyDate.aplyOdr,
-                "ctAtrzSeCd" : "VTW01903"
-            };
-            list.push(data);
-        }
-        setCardValue(list);
-    }, []);
 
     const onSelectionChanged = useCallback((e) => {
         const selectedRowsData = e.selectedRowsData;
         setSelectedItem(selectedRowsData);
     }, []);
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
 
     };
 
-    const projectCell = (e) => {
-        return (<AutoCompleteProject
+    const projectCell = (cell) => {
+        return (<SelectBox
+            dataSource={suggestionsData}
+            valueExpr="key"
+            displayExpr="value"
             placeholderText="프로젝트 명"
-            onValueChange={(e) => handleChgValue({name: "prjctId", value: e.value})}
-        />);
-    }
-    const expanseCell = (e) => {
-        return (<CustomCdComboBox
-            param="VTW045"
-            placeholderText="[비용코드 선택]"
-            name="expensCd"
-            onSelect={handleChgValue}
-            value={searchParam?.expensCd}
+            onValueChanged={(e) => handleChgValue({name: "prjctId", rowIndex: cell.rowIndex, data: cell.data, value: e.value})}
+            value={cell.data.prjctId}
             showClearButton={true}
         />);
     }
-    const purposeCell = (e) => {
+
+    const expanseCell = (cell) => {
+        return (<SelectBox
+            dataSource={cdVal}
+            displayExpr="cdNm"
+            valueExpr="cdValue"
+            placeholderText="[비용코드 선택]"
+            onValueChanged={(e) => handleChgValue({name: "expensCd", rowIndex: cell.rowIndex, data: cell.data, value: e.value})}
+            value={cell.data.expensCd}
+            showClearButton={true}
+        />);
+    }
+    const purposeCell = (cell) => {
         return (<TextBox
-            onValueChanged={(e) => handleChgValue({name: "ctPrpos", value: e.value})}
+            value={cell.data.ctPrpos}
+            onValueChanged={(e) => handleChgValue({name: "ctPrpos", rowIndex: cell.rowIndex, data: cell.data, value: e.value})}
             placeholder='용도'
             showClearButton={true}
         ></TextBox>);
     }
-    const attendCell = (e) => {
+    const attendCell = (cell) => {
         return (<TextBox
-            onValueChanged={(e) => handleChgValue({name: "ATDRN", value: e.value})}
+            value={cell.data.ATDRN}
+            onValueChanged={(e) => handleChgValue({name: "ATDRN", rowIndex: cell.rowIndex, data: cell.data, value: e.value})}
             placeholder='참석자'
             showClearButton={true}
         ></TextBox>);
@@ -166,15 +171,15 @@ const ProjectExpenseCard = (props) => {
                     </span>
                 </p>
             </div>
-            <DataGrid dataSource={cardValue} onSelectionChanged={onSelectionChanged} showBorders={true} style={{width: "100%"}}>
+            <DataGrid dataSource={props.cardValue} onSelectionChanged={onSelectionChanged} showBorders={true} style={{width: "100%"}}>
                 <Selection mode="multiple" />
-                <Column dataField="utztnDt" caption="사용일시" minwidth={130} />
-                <Column dataField="useOffic" caption="사용처" minwidth={120}/>
-                <Column dataField="utztnAmt" caption="금액" minwidth={120}/>
-                <Column caption="프로젝트" cellRender={projectCell}/>
-                <Column caption="경비코드" cellRender={expanseCell}/>
+                <Column dataField="utztnDt" caption="사용일시" />
+                <Column dataField="useOffic" caption="사용처"/>
+                <Column dataField="utztnAmt" caption="금액"/>
+                <Column caption="프로젝트" cellRender={projectCell}  width={250}/>
+                <Column caption="경비코드" cellRender={expanseCell} width={200}/>
                 <Column caption="용도" cellRender={purposeCell}/>
-                <Column caption="참석자" cellRender={attendCell}/>
+                <Column caption="참석자" cellRender={attendCell} width={250}/>
             </DataGrid>
         </div>
     );
