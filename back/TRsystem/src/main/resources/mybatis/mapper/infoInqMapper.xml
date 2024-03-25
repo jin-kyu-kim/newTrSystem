@@ -3,23 +3,23 @@
 
 <mapper namespace="com.trsystem.mybatis.mapper.infoInqMapper">
 	<select id="retrieveEmpList" parameterType="map" resultType="com.trsystem.LowerHashMap">
-	            SELECT
-	            E.EMP_ID AS EMP_ID
-	            ,E.EMPNO AS EMPNO
-	            ,E.EMP_FLNM AS EMP_FLNM
-	            ,E.EMP_TY_CD AS EMP_TY_CD
-	            ,C.CD_NM AS JBPS_NM
-	            ,GROUP_CONCAT(D.DEPT_NM) AS DEPT_ID
-	            ,E.TELNO AS TELNO
-	            ,E.EML AS EML
-	            ,C2.CD_NM AS HDOF_STTS_NM
-	            ,COUNT(*) OVER () AS TOTAL_ITEMS
-	            ,C3.CD_NM AS BANK_NM
-	            ,E.ACTNO AS ACTNO
-	            ,C.CD_VALUE JBPS_CD
-	            ,C3.CD_VALUE  AS BANK_CD
-	            ,C2.CD_VALUE AS HDOF_STTS_CD
-	        FROM EMP E
+	       SELECT
+	              E.EMP_ID AS EMP_ID
+	            , E.EMPNO AS EMPNO
+	            , E.EMP_FLNM AS EMP_FLNM
+	            , E.EMP_TY_CD AS EMP_TY_CD
+	            , C.CD_NM AS JBPS_NM
+	            , GROUP_CONCAT(D.DEPT_NM) AS DEPT_ID
+	            , E.TELNO AS TELNO
+	            , E.EML AS EML
+	            , C2.CD_NM AS HDOF_STTS_NM
+	            , COUNT(*) OVER () AS TOTAL_ITEMS
+	            , C3.CD_NM AS BANK_NM
+	            , E.ACTNO AS ACTNO
+	            , C.CD_VALUE JBPS_CD
+	            , C3.CD_VALUE  AS BANK_CD
+	            , C2.CD_VALUE AS HDOF_STTS_CD
+	         FROM EMP E
 	            LEFT OUTER JOIN CD C ON C.CD_VALUE =E.JBPS_CD
 	            LEFT OUTER JOIN DEPT_HNF DF ON E.EMP_ID = DF.EMP_ID
 	            LEFT OUTER JOIN DEPT D ON D.DEPT_ID = DF.DEPT_ID
