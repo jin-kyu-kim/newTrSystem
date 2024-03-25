@@ -5,7 +5,7 @@ import ApiRequest from 'utils/ApiRequest';
 import '../../pages/sysMng/sysMng.css'
 
 const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, masterDetail, doublePk, 
-    allowEdit, onSelection, getChildList, removeAdd }) => {
+    noEdit, onSelection, onRowClick, removeAdd }) => {
     const [ cdValList, setCdValList ] = useState({});
 
     useEffect(() => {
@@ -84,7 +84,8 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
                 columnAutoWidth={true}
                 wordWrapEnabled={true}
                 repaintChangesOnly={true}
-                onRowClick={masterDetail && getChildList}
+                noDataText=''
+                onRowClick={onRowClick}
                 onSelectionChanged={onSelection && ((e) => onSelection(e))}
                 onRowInserted={(e) => onEditRow('insert', e)}
                 onRowUpdating={(e) => onEditRow('update', e)}
@@ -94,6 +95,11 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
                         e.cellElement.style.textAlign = 'center';
                         e.cellElement.style.fontWeight = 'bold';
                     }}}
+                onRowPrepared={(e) => {
+                    if (e.rowType === 'data' && [1, 3].includes(e.data.sgnalOrdr)) {
+                        e.rowElement.style.backgroundColor = 'rgb(255, 253, 203)';
+                    }
+                }}
                 >
                 {masterDetail && 
                 <MasterDetail
@@ -101,7 +107,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
                     enabled={true}
                     render={masterDetail}
                  />}
-                {allowEdit && 
+                {!noEdit && 
                     <Editing
                     mode="form"
                     allowAdding={removeAdd ? false : true}

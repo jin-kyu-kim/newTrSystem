@@ -75,7 +75,6 @@ const CustomersList = () => {
                 <CustomEditTable
                     tbNm={tbNm}
                     values={values}
-                    allowEdit={true}
                     keyColumn={keyColumn}
                     columns={tableColumns}
                     handleYnVal={handleYnVal}
