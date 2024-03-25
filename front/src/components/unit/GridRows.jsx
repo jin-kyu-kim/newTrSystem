@@ -7,6 +7,8 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
       const { key, value, width, alignment, button, visible, toggle, subColumns } = columns[i];      
       if(subColumns){
         /*===============헤더 하위 뎁스 컬럼 설정===================*/
+        //columns 서브컬럼 단위로 재설정
+        const columns = subColumns;
           result.push(
             <Column
               key={key}
@@ -14,8 +16,8 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
               caption={value}
               width={width}
               alignment={alignment}
-            >
-                {GridRows(subColumns)}
+            > 
+                {GridRows({columns})}
             </Column>
         );
       } else if(button){
