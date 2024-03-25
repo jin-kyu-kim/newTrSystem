@@ -15,7 +15,7 @@ const EmpExpenseAprvProject = ({ prjctId, year, monthVal, aplyOdr }) => {
     //경비 승인내역 조회
     const getExpenseAprvData = async () => {
         const param = {
-            queryId: 'financialAffairMngMapper.retrieveExpensAprvDtlsPrjctAccto',
+            queryId: 'financialAffairMngMapper.retrieveExpensAprvDtls',
             prjctId: prjctId,
             aplyYm: year+monthVal,
             aplyOdr: aplyOdr,
@@ -42,8 +42,8 @@ const EmpExpenseAprvProject = ({ prjctId, year, monthVal, aplyOdr }) => {
             area: 'row',
             expanded: true,
         }, {
-            caption: '직원명',
-            dataField: 'empFlnm',
+            caption: '상세내역',
+            dataField: 'prjctDetail',
             width: 350,
             area: 'row',
         }, {
@@ -71,13 +71,6 @@ const EmpExpenseAprvProject = ({ prjctId, year, monthVal, aplyOdr }) => {
     });
 
     const makeExcelFileName = () => {
-        const currentDateTime = new Date();
-        const formattedDateTime = `${currentDateTime.getFullYear()}`+
-            `${padNumber(currentDateTime.getMonth() + 1)}`+
-            `${padNumber(currentDateTime.getDate())}`+
-            `${padNumber(currentDateTime.getHours())}`+
-            `${padNumber(currentDateTime.getMinutes())}`+
-            `${padNumber(currentDateTime.getSeconds())}`;
 
         let fileName = '경비승인내역.프로젝트별.';
         let fileNameYm = year+monthVal;
@@ -86,7 +79,7 @@ const EmpExpenseAprvProject = ({ prjctId, year, monthVal, aplyOdr }) => {
         if(aplyOdr != '')
             fileNameOdr = '-'+aplyOdr;
 
-        fileName = fileName+fileNameYm+fileNameOdr+'_'+formattedDateTime;
+        fileName = fileName+fileNameYm+fileNameOdr+'_';
 
         return fileName;
     }
@@ -106,7 +99,7 @@ const EmpExpenseAprvProject = ({ prjctId, year, monthVal, aplyOdr }) => {
                     columnGTName={'소계'}
                     blockCollapse={true}
                     weekendColor={true}
-                    fileName={makeExcelFileName()}
+                    fileName={makeExcelFileName}
                 />
             </div>
         </div>

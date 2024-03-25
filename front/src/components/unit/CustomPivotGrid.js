@@ -2,7 +2,7 @@ import React from 'react';
 import PivotGrid, { FieldChooser, Export, PivotGridTypes, } from 'devextreme-react/pivot-grid';
 import { Workbook } from 'exceljs';
 import { saveAs } from 'file-saver-es';
-import {exportDataGrid, exportPivotGrid} from 'devextreme/excel_exporter';
+import { exportPivotGrid } from 'devextreme/excel_exporter';
 
 
 const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fileName }) => {
@@ -31,10 +31,29 @@ const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fi
         return { font: '9C6500', fill: 'FFEB9C' };
     };
 
-    const onExporting = (e: PivotGridTypes.ExportingEvent) => {
-        const workbook = new Workbook();
-        const worksheet = workbook.addWorksheet(`${fileName}`);
+    const makeFileName = () => {
+        const currentDateTime = new Date();
+        const formattedDateTime = `${currentDateTime.getFullYear()}`+
+            `${padNumber(currentDateTime.getMonth() + 1)}`+
+            `${padNumber(currentDateTime.getDate())}`+
+            `${padNumber(currentDateTime.getHours())}`+
+            `${padNumber(currentDateTime.getMinutes())}`+
+            `${padNumber(currentDateTime.getSeconds())}`;
 
+        fileName = fileName+formattedDateTime;
+
+        return fileName;
+    }
+
+    // 숫자를 두 자릿수로 만들어주는 함수
+    const padNumber = (num) => {
+        return num.toString().padStart(2, '0');
+    };
+
+    const onExporting = (e: PivotGridTypes.ExportingEvent) => {
+        const excelName = makeFileName();
+        const workbook = new Workbook();
+        const worksheet = workbook.addWorksheet(excelName);
 
         exportPivotGrid({
             component: e.component,
@@ -55,7 +74,7 @@ const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fi
             },
         }).then(() => {
             workbook.xlsx.writeBuffer().then((buffer) => {
-                saveAs(new Blob([buffer], { type: 'application/octet-stream' }), `${fileName}'.xlsx`);
+                saveAs(new Blob([buffer], { type: 'application/octet-stream' }), excelName+'.xlsx');
             });
         });
     };
@@ -75,7 +94,7 @@ const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fi
         let cell = null;
         colorFor === 'pivot' ? cell = data.cell : cell = data;
 
-        console.log('color',cell);
+        // console.log('color',cell);
 
         if(weekendColor === true){
             if (data.area === 'column'){
@@ -130,7 +149,7 @@ const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fi
 
         // 날짜 컬럼 렌더링을 위한 null 데이터 display : none 처리
         if (e.area === 'row' && e.cell && e.cell.text && e.cell.text.includes('null_')) {
-            console.log(e);
+            // console.log(e);
             e.cellElement.style.display = 'none';
         } else if (e.area === 'data' && e.cell && e.cell.rowPath && e.cell.rowPath[0].includes('null_')) {
             e.cellElement.style.display = 'none';
