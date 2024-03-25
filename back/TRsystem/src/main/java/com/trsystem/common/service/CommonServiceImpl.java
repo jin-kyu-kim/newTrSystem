@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -409,23 +410,54 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Transactional
-    public int insertFile(Map<String, Object> tbData, Map<String, Object> params, List<MultipartFile> attachments) {
+    public int insertFile(Map<String, Object> tbData, Map<String, Object> params, List<MultipartFile> attachments,
+                          Map<String, Object> idData, List<Map<String, Object>> deleteFiles) {
         int atchResult = 0;//첨부파일 insert결과
         int result = 0;
-
-        String atchmnflId = null;
-        int atchmnflSn = 1;
 
         Map<String, Object> atchmnflMap = new HashMap<>();
         Map<String, Object> tableMap = new HashMap<>();
         List<Map<String, Object>> atchmnflParam = new ArrayList<>();
         List<Map<String, Object>> insertParam = new ArrayList<>();
 
+        String atchmnflId = null;
+        int atchmnflSn = 1;
+
+        //2. 파일 내부 디렉토리에 업로드
+        String uploadDir = "TRsystem/upload" ;
+        // 2-1 파일일 디렉토리가 없으면 생성
+        Path directory = Path.of(uploadDir);
+
+        // 수정 - 첨부파일 개별 삭제
+        if(idData != null){
+            List<Map<String, Object>> deleteParam = new ArrayList<>();
+            Map<String, Object> directoryFile = new HashMap<>();
+
+            tableMap.put("tbNm", "ATCHMNFL");
+            tableMap.put("snColumn", "atchmnflSn");
+            deleteParam.add(tableMap);
+            atchmnflSn = commonGetMax(deleteParam) + 1;
+            tableMap.clear();
+
+            if(deleteFiles.size() > 1){
+                for (int i=1; i<deleteFiles.size(); i++) {
+                    deleteParam.clear();
+                    directoryFile.clear();
+
+                    deleteParam.add(deleteFiles.get(0));
+                    directoryFile.put("atchmnflSn", deleteFiles.get(i).get("atchmnflSn"));
+                    deleteParam.add(directoryFile);
+                    deleteData(deleteParam);
+
+                    File file = new File(directory + "/" + deleteFiles.get(i).get("strgFileNm"));
+                    if (file.exists()) {
+                        file.delete();
+                    }
+                }
+            }
+        }
+
         try{
-            //2. 파일 내부 디렉토리에 업로드
-            String uploadDir = "../../front/public/upload";
-            // 2-1 파일일 디렉토리가 없으면 생성
-            Path directory = Path.of(uploadDir);
             if (Files.notExists(directory)) {
                 Files.createDirectories(directory);
             }
@@ -468,16 +500,47 @@ public class CommonServiceImpl implements CommonService {
                 }
             }
 
-            //4. 입력된 첨부파일 ID를 parameter에 지정
-            params.put("atchmnflId", atchmnflId);
-            insertParam.add(tbData);
-            insertParam.add(params);
+            if(idData == null){
+                //4. 입력된 첨부파일 ID를 parameter에 지정
+                params.put("atchmnflId", atchmnflId);
 
-            //5. 사용하려는 테이블에 INSERT
-            result = insertData(insertParam);
+                //5. 사용하려는 테이블에 INSERT
+                insertParam.add(tbData);
+                insertParam.add(params);
+                result = insertData(insertParam);
+            } else {
+                //5. 사용하려는 테이블에 UPDATE
+                insertParam.add(tbData);
+                insertParam.add(params);
+                insertParam.add(idData);
+                result = updateData(insertParam);
+            }
+
             return result;
         }catch (IOException e){
             return result;
         }
+    }
+
+    @Transactional
+    public int deleteFile(Map<String, Object> deleteData) {
+        List<Map<String, Object>> params = (List<Map<String, Object>>) deleteData.get("params");
+        List<Map<String, Object>> fileParams = (List<Map<String, Object>>) deleteData.get("fileParams");
+
+        int result = 0;
+        String uploadDir = "TRsystem/upload";
+        Path directory = Path.of(uploadDir);
+
+        result += deleteData(params);
+
+        List<Map<String, Object>> fileNameList = commonSelect(fileParams);
+        for (Map<String, Object> strgName : fileNameList) {
+            File file = new File(directory + "/" + strgName.get("strgFileNm"));
+            if (file.exists()) {
+                file.delete();
+            }
+        }
+        result += deleteData(fileParams);
+        return result;
     }
 }

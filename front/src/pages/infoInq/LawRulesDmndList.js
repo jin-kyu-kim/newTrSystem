@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import 'react-tabs/style/react-tabs.css';
+// import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+// import 'react-tabs/style/react-tabs.css';
 import CustomCdComboBox from '../../components/unit/CustomCdComboBox';
 import TextBox from "devextreme-react/text-box";
 import { Button } from "devextreme-react/button";

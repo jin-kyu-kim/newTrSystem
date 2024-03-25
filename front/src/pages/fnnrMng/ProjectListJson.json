@@ -13,7 +13,9 @@
         { "key": "ctmmnyId", "value": "고객사", "width": 150, "alignment" : "left"  },
         { "key": "ctrtYmd", "value": "시작일", "width": 130  },
         { "key": "bizEndYmd", "value": "종료일", "width": 130},
-        { "key": "prjctId", "value": "구분", "width": 80, "button": "비용청구현황" }
+        { "key": "prjctId", "value": "구분", "width": 80, "button": { "text": "비용청구현황",
+                                                                     "name": "prjctId"
+                                                                    } }
     ], "searchParams":
 	{
         "prjctMngrEmpIdItem": false,

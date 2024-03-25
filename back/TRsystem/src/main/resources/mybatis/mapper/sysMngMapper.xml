@@ -25,6 +25,19 @@
         </if>
     </select>
 
+    <select id="authCdList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            ag.AUTHRT_GROUP_ID,
+            ag.AUTHRT_GROUP_NM,
+            ag.AUTHRT_GROUP_CN,
+            GROUP_CONCAT(am.AUTHRT_CD) AS AUTHRT_CDs,
+            GROUP_CONCAT(cd.CD_NM) AS AUTHRT_CD_NMs
+        FROM AUTHRT_GROUP ag
+                 JOIN AUTHRT_MAPNG am ON ag.AUTHRT_GROUP_ID = am.AUTHRT_GROUP_ID
+                 JOIN CD cd ON am.AUTHRT_CD = cd.CD_VALUE
+        GROUP BY ag.AUTHRT_GROUP_ID, ag.AUTHRT_GROUP_NM, ag.AUTHRT_GROUP_CN;
+    </select>
+
     <select id="customersList" parameterType="map" resultType="com.trsystem.LowerHashMap">
         select
             COUNT(*) OVER () AS TOTAL_ITEMS,
@@ -41,5 +54,33 @@
             <if test="industCd != null and !industCd.equals('')">
                 AND INDUST_CD = #{industCd}
             </if>
+    </select>
+
+    <select id="userInfo" parameterType="String" resultType="com.trsystem.LowerHashMap">
+    SELECT LU.EMP_ID,
+           LU.EMPNO,
+           (SELECT E.EMP_FLNM FROM EMP E WHERE LU.EMP_ID =  E.EMP_ID) EMP_NM,
+           PSWD
+    FROM LGN_USER LU
+    WHERE EMPNO = #{empno}
+    </select>
+
+    <select id="userAuth" parameterType="String" resultType="com.trsystem.LowerHashMap">
+    SELECT ag.AUTHRT_GROUP_ID , am.AUTHRT_CD
+    FROM AUTHRT_GROUP ag
+             JOIN AUTHRT_MAPNG am
+             JOIN LGN_USER_AUTHRT lua
+                  ON ag.AUTHRT_GROUP_ID = am.AUTHRT_GROUP_ID
+                      AND lua.AUTHRT_GROUP_ID = ag.AUTHRT_GROUP_ID
+    WHERE lua.EMP_ID = #{empId}
+    </select>
+
+    <select id="userDept" parameterType="String" resultType="com.trsystem.LowerHashMap">
+      SELECT A.DEPT_ID
+           , A.DEPT_NM
+        FROM DEPT A
+        JOIN DEPT_HNF B
+          ON A.DEPT_ID = B.DEPT_ID
+        WHERE B.EMP_ID = #{empId}
     </select>
 </mapper>

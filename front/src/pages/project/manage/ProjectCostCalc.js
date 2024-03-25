@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import ApiRequest from '../../../utils/ApiRequest';
 import CustomHorizontalTable from '../../../components/unit/CustomHorizontalTable';
 import CostCalc from './ProjectCostCalcJson.json';
-import CustonbudgetTable from '../../../components/unit/CustonbudgetTable';
+import CustombudgetTable from '../../../components/unit/CustombudgetTable';
 import DataGrid, {
   Column,
   Summary,
@@ -11,10 +11,14 @@ import DataGrid, {
   Grouping,
   TotalItem,
 } from "devextreme-react/data-grid";
-const ProjectCostCalc = ({prjctId,ctrtYmd, bizEndYmd, bgtMngOdr, bgtMngOdrTobe}) => {
+const ProjectCostCalc = ({prjctId, ctrtYmd, stbleEndYmd, bgtMngOdr, bgtMngOdrTobe, change}) => {
 const [baseInfoData, setBaseInfoData] = useState([]);
 const [cnsrtmData, setCnsrtmData] = useState([]);
 const [data, setData] = useState([]);
+const copyCtrtYmd = ctrtYmd ? JSON.parse(JSON.stringify(ctrtYmd)): "";
+const copyStbleEndYmd = stbleEndYmd ? JSON.parse(JSON.stringify(stbleEndYmd)) : "";
+const ctrtYmdPrarm = copyCtrtYmd.replace(/-(\d{2})-\d{2}/, '$1');
+const stbleEndYmdPrarm = copyStbleEndYmd.replace(/-(\d{2})-\d{2}/, '$1');
 
 useEffect(() => {
   BaseInfoData();
@@ -57,8 +61,13 @@ const CnsrtmData = async () => {
 const handelGetData = async () => {
   try {
     await CostCalc.PrmpcAnls.params.map(async (item) => {
-      //TODO. 차수를 detail에서 호출일때와 change에서 호출일때 다르게 해야함.
-      const modifiedItem = { ...item, prjctId: prjctId, bgtMngOdr: bgtMngOdrTobe};   
+      let order; //detail에서 호출일때와 change에서 호출일때 차수 다르게 조회해옴.
+      if(change){
+        order = bgtMngOdrTobe
+      }else{
+        order = bgtMngOdr
+      }
+      const modifiedItem = { ...item, prjctId: prjctId, bgtMngOdr: order, ctrtYmd:ctrtYmdPrarm, stbleEndYmd:stbleEndYmdPrarm};   
       const response = await ApiRequest(
         "/boot/common/queryIdSearch",
         modifiedItem
@@ -123,7 +132,7 @@ const calculateCustomSummary = (options) => {
       <div>
       <p><strong>* 사업개요</strong></p>
       <CustomHorizontalTable headers={CostCalc.BizSumry.BizSumry1} column={baseInfoData}/>
-      <CustonbudgetTable headers={CostCalc.BizSumry.BizSumry2} column={baseInfoData}/>
+      <CustombudgetTable headers={CostCalc.BizSumry.BizSumry2} column={baseInfoData}/>
       <CustomHorizontalTable headers={CostCalc.BizSumry.BizSumry3} column={baseInfoData}/> 
       &nbsp;
       <p><strong>* 컨소시엄</strong></p>

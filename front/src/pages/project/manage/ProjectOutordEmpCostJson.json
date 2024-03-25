@@ -108,5 +108,6 @@
             "placeholder": "철수에정일"
         }
     },
-    "format" :"Total: {0}MM"
+    "format" :"Total: {0}MM",
+    "AddRowBtn": "인력 추가"
 }

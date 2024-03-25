@@ -8,7 +8,7 @@ import CustomTable from "../../components/unit/CustomTable";
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
 
-const ProjectCostClaimList = () => {
+const ProjectClaimCost = () => {
   const [values, setValues] = useState([]);
   const [param, setParam] = useState({});
 
@@ -55,9 +55,15 @@ const ProjectCostClaimList = () => {
     }
   };
 
-  const onClick = (data) => {
-    navigate("/fnnrMng/ProjectClaimCostDetail",
-             {state: { prjctId: data.prjctId, prjctNm: data.prjctNm }})
+  const onClick = (button, data) => {
+    if (button.name === "prjctId") {
+      navigate("/fnnrMng/ProjectClaimCostDetail",{
+            state: {
+              prjctId: data.prjctId,
+              prjctNm: data.prjctNm,
+            }
+      });
+    }
   };
   
   return (
@@ -89,4 +95,4 @@ const ProjectCostClaimList = () => {
   );
 };
 
-export default ProjectCostClaimList;
+export default ProjectClaimCost;
