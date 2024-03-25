@@ -192,68 +192,95 @@
         </if>
     </select>
 
-    <!--프로젝트청구현황일자별 수행인력-->
-    <select id="retrievePrjctCtClmSttusYMDMMAccto" parameterType="map" resultType="com.trsystem.LowerHashMap">
-        SELECT
-            b.APLY_YMD,
-            (SELECT EMP_FLNM FROM nwTr.EMP emp WHERE EMP_ID = b.EMP_ID) AS EMP_FLNM,
-            FORMAT(b.MD, 1) AS MD,
-            CASE
-                WHEN a.MM_ATRZ_CMPTN_YN = 'Y' THEN '승인완료'
-            END AS MM_ATRZ_CMPTN_YN
-        FROM nwTr.PRJCT_INDVDL_CT_MM a, nwTr.PRJCT_MM_APLY b
-        WHERE 1 = 1
-            AND a.PRJCT_ID = b.PRJCT_ID
-            AND a.APLY_YM = b.APLY_YM
-            AND a.APLY_ODR = b.APLY_ODR
-            AND a.EMP_ID = b.EMP_ID
-            AND a.MM_ATRZ_CMPTN_YN = 'Y'
-        <if test="prjctId != null and !prjctId.equals('')">
-            AND a.PRJCT_ID = #{prjctId}
-        </if>
-        <if test="aplyYm != null and !aplyYm.equals('')">
-            AND a.APLY_YM = #{aplyYm}
-        </if>
-        <if test="aplyOdr != null and !aplyOdr.equals('')">
-            AND a.APLY_ODR = #{aplyOdr}
-        </if>
-        <if test="empId != null and !empId.equals('')">
-            AND b.EMP_ID = #{empId}
-        </if>
-    </select>
-
-    <!--프로젝트청구현황일자별 경비-->
-    <select id="retrievePrjctCtClmSttusYMDCtAccto" parameterType="map" resultType="com.trsystem.LowerHashMap">
-        SELECT
-            SUBSTR(b.UTZTN_DT,1,8) AS UTZTN_DT,
-            (SELECT EMP_FLNM FROM nwTr.EMP emp WHERE EMP_ID = b.EMP_ID) AS EMP_FLNM,
-            (SELECT CD_NM FROM nwTr.CD cd WHERE UP_CD_VALUE = 'VTW045' AND CD_VALUE = b.EXPENS_CD) AS CD_NM,
-            b.UTZTN_AMT,
-            b.USE_OFFIC,
-            b.CT_PRPOS,
-            b.ATDRN,
-            CASE
-                WHEN a.CT_ATRZ_CMPTN_YN = 'Y' THEN '승인완료'
-            END AS CT_ATRZ_CMPTN_YN
-        FROM nwTr.PRJCT_INDVDL_CT_MM a, nwTr.PRJCT_CT_APLY b
-        WHERE 1 = 1
-            AND a.PRJCT_ID = b.PRJCT_ID
-            AND a.APLY_YM = b.APLY_YM
-            AND a.APLY_ODR = b.APLY_ODR
-            AND a.EMP_ID = b.EMP_ID
-            AND a.MM_ATRZ_CMPTN_YN = 'Y'
-        <if test="prjctId != null and !prjctId.equals('')">
-            AND a.PRJCT_ID = #{prjctId}
-        </if>
-        <if test="aplyYm != null and !aplyYm.equals('')">
-            AND a.APLY_YM = #{aplyYm}
-        </if>
-        <if test="aplyOdr != null and !aplyOdr.equals('')">
-            AND a.APLY_ODR = #{aplyOdr}
-        </if>
-        <if test="empId != null and !empId.equals('')">
-            AND b.EMP_ID = #{empId}
-        </if>
+    <!-- 프로젝트청구현황일자별 -->
+    <select id="retrievePrjctCtClmYMDAccto" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        WITH RECURSIVE a AS (
+            SELECT
+                CONCAT(SUBSTR(b.APLY_YMD, 1, 4),'-',SUBSTR(b.APLY_YMD, 5, 2),'-',SUBSTR(b.APLY_YMD, 7, 2)) AS APLY_YMD,
+                p.PRJCT_NM,
+                (SELECT EMP_FLNM FROM nwTr.EMP emp WHERE EMP_ID = b.EMP_ID) AS EMP_FLNM,
+                FORMAT(b.MD*8, 1) AS MD,
+                '근무 시간' AS CD_NM,
+                null AS UTZTN_AMT,
+                null AS USE_OFFIC,
+                null AS CT_PRPOS,
+                null AS ATDRN
+            FROM nwTr.PRJCT_INDVDL_CT_MM a, nwTr.PRJCT_MM_APLY b
+            JOIN PRJCT p
+                 ON b.PRJCT_ID = p.PRJCT_ID
+            WHERE 1 = 1
+                AND a.PRJCT_ID = b.PRJCT_ID
+                AND a.APLY_YM = b.APLY_YM
+                AND a.APLY_ODR = b.APLY_ODR
+                AND a.EMP_ID = b.EMP_ID
+                AND a.MM_ATRZ_CMPTN_YN = 'Y'
+            <if test="prjctId != null and !prjctId.equals('')">
+                AND a.PRJCT_ID = #{prjctId}
+            </if>
+            <if test="aplyYm != null and !aplyYm.equals('')">
+                AND a.APLY_YM = #{aplyYm}
+            </if>
+            <if test="aplyOdr != null and !aplyOdr.equals('')">
+                AND a.APLY_ODR = #{aplyOdr}
+            </if>
+        ), b AS (
+            SELECT
+                CONCAT(SUBSTR(b.UTZTN_DT, 1, 4),'-',SUBSTR(b.UTZTN_DT, 5, 2),'-',SUBSTR(b.UTZTN_DT, 7, 2)) AS APLY_YMD,
+                p.PRJCT_NM,
+                (SELECT EMP_FLNM FROM nwTr.EMP emp WHERE EMP_ID = b.EMP_ID) AS EMP_FLNM,
+                null AS MD,
+                (SELECT CD_NM FROM nwTr.CD cd WHERE UP_CD_VALUE = 'VTW045' AND CD_VALUE = b.EXPENS_CD) AS CD_NM,
+                b.UTZTN_AMT,
+                b.USE_OFFIC,
+                b.CT_PRPOS,
+                b.ATDRN
+            FROM nwTr.PRJCT_INDVDL_CT_MM a, nwTr.PRJCT_CT_APLY b
+            JOIN PRJCT p
+                 ON b.PRJCT_ID = p.PRJCT_ID
+            WHERE 1 = 1
+                AND a.PRJCT_ID = b.PRJCT_ID
+                AND a.APLY_YM = b.APLY_YM
+                AND a.APLY_ODR = b.APLY_ODR
+                AND a.EMP_ID = b.EMP_ID
+                AND a.MM_ATRZ_CMPTN_YN = 'Y'
+            <if test="prjctId != null and !prjctId.equals('')">
+                AND a.PRJCT_ID = #{prjctId}
+            </if>
+            <if test="aplyYm != null and !aplyYm.equals('')">
+                AND a.APLY_YM = #{aplyYm}
+            </if>
+            <if test="aplyOdr != null and !aplyOdr.equals('')">
+                AND a.APLY_ODR = #{aplyOdr}
+            </if>
+        ), c AS (
+            SELECT CAST(CONCAT(#{aplyYm}, '01') AS DATE) AS PIVOT_DATE
+            UNION ALL
+            SELECT DATE_ADD(PIVOT_DATE, INTERVAL 1 DAY)
+            FROM c
+            WHERE DATE_ADD(PIVOT_DATE, INTERVAL 1 DAY) &lt; CAST(CONCAT(#{aplyYm}, '01') AS DATE) + INTERVAL 1 MONTH
+        )
+        SELECT * FROM (
+            SELECT *
+            FROM c
+            WHERE (
+            1 = 1 AND DAY(PIVOT_DATE) &lt;= 15
+            ) OR (
+            1 = 2 AND DAY(PIVOT_DATE) > 15 AND DAY(PIVOT_DATE) &lt;= DAY(LAST_DAY(PIVOT_DATE)))
+        ) d
+        LEFT JOIN a
+            ON d.PIVOT_DATE = a.APLY_YMD
+        UNION
+        SELECT * FROM (
+            SELECT *
+            FROM c
+            WHERE (
+            1 = 1 AND DAY(PIVOT_DATE) &lt;= 15
+            ) OR (
+            1 = 2 AND DAY(PIVOT_DATE) > 15 AND DAY(PIVOT_DATE) &lt;= DAY(LAST_DAY(PIVOT_DATE)))
+        ) d
+        LEFT JOIN b
+            ON d.PIVOT_DATE = b.APLY_YMD
+        ORDER BY PIVOT_DATE
     </select>
 
     <!--근무시간 승인 내역 -->
@@ -361,7 +388,7 @@
             </if>
         ) b
             ON a.PIVOT_DATE = b.UTZTN_DT
-        ORDER BY PIVOT_DATE;
+        ORDER BY PIVOT_DATE
     </select>
 
 
