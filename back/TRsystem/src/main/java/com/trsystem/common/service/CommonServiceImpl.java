@@ -384,7 +384,9 @@ public class CommonServiceImpl implements CommonService {
                     preparedStatement.setString(j+1, (String) params.get(i));
                 } else if (params.get(i) instanceof Integer) {
                     preparedStatement.setInt(j+1, (Integer) params.get(i));
-                } else if (params.get(i) instanceof Double) {
+                }  else if (params.get(i) instanceof Long) { // bigint (Long) 처리
+                    preparedStatement.setLong(j+1, (Long) params.get(i));
+                }else if (params.get(i) instanceof Double) {
                     preparedStatement.setDouble(j+1, (Double) params.get(i));
                 } else if (params.get(i) instanceof Timestamp) {
                     preparedStatement.setTimestamp(j+1, (Timestamp) params.get(i));
@@ -392,7 +394,7 @@ public class CommonServiceImpl implements CommonService {
                     preparedStatement.setTimestamp(j+1, Timestamp.from((Instant) params.get(i)));
                 }  else if (params.get(i) == null) {
                     preparedStatement.setString(j+1, null);
-                } else {
+                }  else {
                     j++;
                     return null;
                 }
@@ -424,7 +426,8 @@ public class CommonServiceImpl implements CommonService {
         int atchmnflSn = 1;
 
         //2. 파일 내부 디렉토리에 업로드
-        String uploadDir = "TRsystem/upload" ;
+//        String uploadDir = "../../front/public/upload";
+        String uploadDir = "TRsystem/upload";
         // 2-1 파일일 디렉토리가 없으면 생성
         Path directory = Path.of(uploadDir);
 
