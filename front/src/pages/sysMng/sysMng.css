@@ -1,85 +1,113 @@
-  .dx-switch-container {
-    display: inline-block;
-    width: 100%;
-    vertical-align: middle;
-    margin: 0 -6px 0 0;
-    padding: 0 2px;
-    height: 240px;
-    background: #fff;
-    border: none;
-  }
+.dx-switch-container {
+  display: inline-block;
+  width: 100%;
+  vertical-align: middle;
+  margin: 0 -6px 0 0;
+  padding: 0 2px;
+  height: 240px;
+  background: #fff;
+  border: none;
+}
 
-  /* List delete toggle 버튼 */
-  .dx-list-item-before-bag .dx-icon-toggle-delete {
-    width: 15px; 
-    height: 15px; 
-  }
+/* List delete toggle 버튼 */
+.dx-list-item-before-bag .dx-icon-toggle-delete {
+  width: 15px; 
+  height: 15px; 
+}
 
-  .dx-datagrid-rowsview .dx-row-focused.dx-data-row .dx-command-edit .dx-link,
-  .dx-datagrid-rowsview .dx-row-focused.dx-data-row>td:not(.dx-focused):not(.dx-cell-modified):not(.dx-datagrid-invalid) .dx-switch-container {
-    display: inline-block;
-    width: 100%;
-    vertical-align: middle;
-    margin: 0 -6px 0 0;
-    padding: 0 2px;
-    height: 240px;
-    border: none;
-    background: #cdeefd
-  }
-  .dx-datagrid-addrow-button::before {
-    content: '추가';
-    font-size: 20px;
-    font-weight: bold;
-    color: black;
-  }
-  .dx-toolbar-button.dx-toolbar-text-auto-hide .dx-button-has-icon.dx-button-has-text{
-    height: 23px;
-    border-radius: 0%;
-  }
-  .dx-list-select-all {
-    background-color: rgb(219, 216, 216);
-  }
-  .icon-button .dx-icon {
-    color: red;
-  }
-  .arrowIcon {
-    width: 40px;
-    pointer-events: none;
-  }
-  .dx-datagrid .dx-header-row {
-    background-color: #f0f0f0; 
-  }
-  .dx-header-row>td>.dx-datagrid-text-content {
-    font-weight: bolder;
-    font-size: medium;
-    color: black;
-  }
+.dx-datagrid-rowsview .dx-row-focused.dx-data-row .dx-command-edit .dx-link,
+.dx-datagrid-rowsview .dx-row-focused.dx-data-row>td:not(.dx-focused):not(.dx-cell-modified):not(.dx-datagrid-invalid) .dx-switch-container {
+  display: inline-block;
+  width: 100%;
+  vertical-align: middle;
+  margin: 0 -6px 0 0;
+  padding: 0 2px;
+  height: 240px;
+  border: none;
+  background: #cdeefd
+}
+.dx-datagrid-addrow-button::before {
+  content: '추가';
+  font-size: 20px;
+  font-weight: bold;
+  color: black;
+}
+.dx-toolbar-button.dx-toolbar-text-auto-hide .dx-button-has-icon.dx-button-has-text{
+  height: 23px;
+  border-radius: 0%;
+}
+.dx-list-select-all {
+  background-color: rgb(219, 216, 216);
+}
+.icon-button .dx-icon {
+  color: red;
+}
+.authIcon {
+  display: flex;
+  align-items: center;
+}
+.arrowIcon {
+  width: 40px;
+  pointer-events: none;
+}
+.authRightArea {
+  flex: 1;
+  border: 1px solid #ccc;
+  padding: 20px; 
+  height: 660px
+}
+.authRightTtl {
+  text-decoration: underline;
+  font-weight: bold;
+  margin-right: 10px;
+}
+.authCdArea {
+  border: 1px solid #ccc;
+  padding: 10px
+}
+.authCd{
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px
+}
+.authCd > span {
+  font-weight: bold;
+}
 
-  .selectBoxRender {
-    display: flex;
-    margin-left: 20px;
-    border-bottom: 1px solid #ccc;
-    padding: 20px
-  }
-  
-  .authNmArea {
-    border: 1px solid #ccc;
-    padding: 20px;
-    border-radius: 5px;
-    background-color: #f5f7fe;
-  }
-  
-  .authTitle {
-    margin-bottom: 10px;
-    font-weight: bold;
-    color: #333;
-  }
-  
-  .authNameItem {
-    padding: 10px;
-    margin: 5px;
-    border-radius: 5px;
-    background-color: #e0e0e0;
-    border: 1px solid #ccc;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
+.dx-datagrid .dx-header-row {
+  background-color: #f0f0f0; 
+}
+.dx-header-row>td>.dx-datagrid-text-content {
+  font-weight: bolder;
+  font-size: medium;
+  color: black;
+}
+
+.selectBoxRender {
+  display: flex;
+  margin-left: 20px;
+  border-bottom: 1px solid #ccc;
+  padding: 20px
+}
+
+.authNmArea {
+  border: 1px solid #ccc;
+  padding: 20px;
+  border-radius: 5px;
+  background-color: #f5f7fe;
+}
+
+.authTitle {
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #333;
+}
+
+.authNameItem {
+  padding: 10px;
+  margin: 5px;
+  border-radius: 5px;
+  background-color: #e0e0e0;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}

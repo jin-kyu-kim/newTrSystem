@@ -4,6 +4,7 @@ import TextBox from "devextreme-react/text-box";
 import Box, { Item } from "devextreme-react/box"
 import { Button } from "devextreme-react/button";
 import CustomComboBox from 'components/unit/CustomComboBox';
+import CustomDateRangeBox from "components/unit/CustomDateRangeBox";
 
 const SearchInfoSet = ({ callBack, props, insertPage }) => {
   const navigate = useNavigate();
@@ -18,6 +19,20 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
     setInitParam({
       ...initParam,
       [name]: value,
+    });
+  };
+
+  const handleStartDateChange = (newStartDate) => {
+    setInitParam({
+      ...initParam,
+      [searchParams.startDtNm]: newStartDate,
+    });
+  };
+
+  const handleEndDateChange = (newEndDate) => {
+    setInitParam({
+      ...initParam,
+      [searchParams.endDtNm]: newEndDate
     });
   };
 
@@ -38,7 +53,7 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
         width="100%"
         height={40}
       >
-        {selectBoxItem.map((item, index) => {
+        {selectBoxItem && selectBoxItem.map((item, index) => {
           return(
             <Item key={index} ratio={1}>
               <CustomComboBox
@@ -51,7 +66,7 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
           )
         })}
 
-        {textBoxItem.map((item, index) => {
+        {textBoxItem && textBoxItem.map((item, index) => {
             return(
               <Item key={index} ratio={1} >
                 <TextBox
@@ -66,14 +81,24 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
             )
         })}
 
+        {searchParams.dateRange && 
+        <Item ratio={2}>
+          <CustomDateRangeBox
+            onStartDateChange={handleStartDateChange}
+            onEndDateChange={handleEndDateChange}
+          />
+        </Item>
+        }
+
         <Item ratio={1} >
           <Button onClick={handleSubmit} text="검색" />
         </Item>
 
-        <Item ratio={1} visible={searchParams.insertButton}>
+        {searchParams.insertButton && 
+        <Item ratio={1}>
           <Button text="입력" onClick={onClickInsertBtn} />
         </Item>
-
+        }
       </Box>
     </div>
   );

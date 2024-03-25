@@ -52,7 +52,7 @@
             { "key": "ctmmnyNm", "value": "고객사명(한글)", "isRequire": true },
             { "key": "ctmmnyEngNm", "value": "고객사명(영문)" },
             { "key": "industCd", "value": "산업명", "editType": "selectBox", "comCd": "VTW016", "isRequire": true },
-            { "key": "useYn", "value": "사용여부", "editType": "toggle", "button": true }
+            { "key": "useYn", "value": "사용여부", "type": "dxSwitch", "editType": "toggle", "button": true }
         ],
         "tbNm": "CTMMNY_INFO",
         "searchInfo":{
@@ -85,7 +85,7 @@
             { "tabName": "기본 권한", "default": true, "displayExpr": "cdNm" },
             { "tabName": "생성 권한", "displayExpr": "authrtGroupNm" }
         ],
-        "queryId": "infoInqMapper.retrieveEmpList",
+        "authQueryId": "sysMngMapper.authCdList",
         "columns": [
             { "key": "empno", "value": "사번"},
             { "key": "empFlnm", "value": "성명"},

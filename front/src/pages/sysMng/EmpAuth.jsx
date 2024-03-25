@@ -11,8 +11,8 @@ import moment from 'moment';
 import "./sysMng.css";
 
 const EmpAuth = () => {
-    const { tabMenu, formColumn } = sysMngJson.empAuthJson;
     const itemTitle = (tab) => <span>{tab.tabName}</span>;
+    const { tabMenu, authQueryId, formColumn } = sysMngJson.empAuthJson;
     const [cookies] = useCookies(["userInfo", "userAuth"]);
     const empId = cookies.userInfo.empId;
     const date = moment();
@@ -49,9 +49,7 @@ const EmpAuth = () => {
 
     const getCreateList = async () => {
         try {
-            const response = await ApiRequest('/boot/common/commonSelect', [
-                { tbNm: "AUTHRT_GROUP" }
-            ]);
+            const response = await ApiRequest('/boot/common/queryIdSearch', {queryId: authQueryId});
             if (response.length !== 0) setNewAuthList(response);
         } catch (error) {
             console.log('error', error);
@@ -65,20 +63,16 @@ const EmpAuth = () => {
     };
 
     const newAuthClick = async (e) => {
-        setSelectedItems([]);
         setGroupId(e.itemData.authrtGroupId);
+        setSelectedItems([]);
         setData({
             authrtGroupNm: e.itemData.authrtGroupNm,
             authrtGroupCn: e.itemData.authrtGroupCn
         });
-        try{
-            const res = await ApiRequest('/boot/common/commonSelect', [
-                { tbNm: "AUTHRT_MAPNG" }, { authrtGroupId: e.itemData.authrtGroupId }
-            ]);
-            setSelectedItems(res)
-        } catch (error) {
-            console.error("API 요청 에러", error);
-        }
+        setSelectedItems(e.itemData.authrtCds.split(",").map((authrtCd, index) => ({
+            authrtCd: authrtCd, 
+            authrtCdNm: e.itemData.authrtCdNms.split(",")[index]
+        })));
     };
     
     const newAuthStore = async (editMode) => {
@@ -130,6 +124,10 @@ const EmpAuth = () => {
     const handleRemoveItem = (authrtCd) => {
         setSelectedItems(selectedItems.filter((item) => item.authrtCd !== authrtCd));
     };
+    useEffect(() => {
+        if(selectedItems.length === 0) clickCancelBtn();
+    }, [selectedItems.length])
+
     const clickCancelBtn = () => {
         setSelectedItems([]);
         setData(initData);
@@ -161,24 +159,24 @@ const EmpAuth = () => {
                                 onItemDeleting={deleteNewAuth} />
                         )} />
                 </div>
-                <div style={{ display: "flex", alignItems: "center" }}>
+                <div className="authIcon">
                     <Button icon="arrowright" stylingMode="text" className="arrowIcon" />
                 </div>
-                <div style={{ flex: 1, border: "1px solid #ccc", padding: "20px", height: '660px' }}>
+                <div className="authRightArea">
                     <div style={{ display: 'flex' }}>
                         {selectedItems.length !== 0 && selectedItems[0].authrtGroupId ? 
-                        <h5 style={{ textDecoration: "underline", fontWeight: "bold", marginRight: '10px' }}>생성 권한 수정</h5>
-                        :<><h5 style={{ textDecoration: "underline", fontWeight: "bold", marginRight: '10px' }}>
+                        <h5 className="authRightTtl">생성 권한 수정</h5>
+                        :<><h5 className="authRightTtl">
                             선택권한 목록
                         </h5><span>(좌측 영역에서 추가할 권한을 선택해주세요.)</span></>}
                     </div>
 
                     <div style={{ marginTop: "10px" }}>
                         {selectedItems.length > 0 && (
-                            <div style={{ border: "1px solid #ccc", padding: "10px" }}>
+                            <div className="authCdArea">
                                 {selectedItems.map((item) => (
-                                    <div key={item.authrtCd} style={{ display: "flex", alignItems: "center", marginBottom: "5px" }}>
-                                        <div style={{ fontWeight: 'bold' }}>{item.authrtCdNm}</div>
+                                    <div key={item.authrtCd} className="authCd">
+                                        <span>{item.authrtCdNm}</span>
                                         <Button icon="close" className="icon-button" stylingMode="text"
                                             onClick={() => handleRemoveItem(item.authrtCd)} />
                                     </div>
