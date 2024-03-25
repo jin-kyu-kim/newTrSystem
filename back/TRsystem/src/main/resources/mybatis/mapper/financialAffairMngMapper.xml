@@ -286,21 +286,24 @@
     <!--근무시간 승인 내역 -->
     <select id="retrievePrjctMmAplyList" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
-            P.PRJCT_ID AS PRJCT_ID,
-            DATE_FORMAT(PMA.APLY_YMD , '%Y-%m-%d') AS APLY_YMD,
-            P.PRJCT_NM AS PRJCT_NM,
-            E.EMP_FLNM AS EMP_FLNM,
+        P.PRJCT_ID AS PRJCT_ID,
+        DATE_FORMAT(PMA.APLY_YMD , '%Y-%m-%d') AS APLY_YMD,
+        P.PRJCT_NM AS PRJCT_NM,
+        E.EMP_FLNM AS EMP_FLNM,
         CASE
         WHEN PMA.MD = 1 THEN 8
         WHEN PMA.MD = 0.5 THEN 4
         ELSE 0
         END AS MD
-        FROM PRJCT_MM_APLY PMA
-                 INNER JOIN PRJCT P ON PMA.PRJCT_ID = P.PRJCT_ID
-                 INNER JOIN EMP E ON E.EMP_ID  = PMA.EMP_ID
-                 INNER JOIN PRJCT_INDVDL_CT_MM PICM ON PICM.EMP_ID = PMA.EMP_ID
+        FROM PRJCT_MM_APLY PMA, PRJCT P , PRJCT_INDVDL_CT_MM PICM, EMP E
         WHERE 1=1
-          AND PICM.MM_ATRZ_CMPTN_YN ='Y'
+        AND PMA.PRJCT_ID = PICM.PRJCT_ID
+        AND   PMA.EMP_ID = PICM.EMP_ID
+        AND   PMA.APLY_YM = PICM.APLY_YM
+        AND   PMA.APLY_ODR = PICM.APLY_ODR
+        AND   P.PRJCT_ID  = PMA.PRJCT_ID
+        AND   PMA.EMP_ID  = E.EMP_ID
+        AND PICM.MM_ATRZ_CMPTN_YN = 'Y'
         <if test="yearItem != null and yearItem !=''">
             AND DATE_FORMAT(PMA.APLY_YMD , '%Y') = #{yearItem}
         </if>
@@ -479,5 +482,86 @@
 			<if test="empId != null and empId !=''">
 			AND AA.EMP_ID LIKE CONCAT('%', #{empId}, '%')
 			</if>
-	</select>	
+	</select>
+
+    <!--근무시간, 경비 통합승인 내역 중 근무시간-->
+    <select id="retrieveWorkHrAprvList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            EMP_FLNM ,
+            PRJCT_NM,
+            PRJCT_NON_INSERT,
+            PRJCT_INSERT,
+            VACATION,
+            TOTAL_PRJCT_NON_INSERT,
+            TOTAL_PRJCT_INSERT
+        FROM
+            (
+                SELECT
+                    E.EMP_FLNM AS EMP_FLNM,
+                    P.PRJCT_NM AS PRJCT_NM ,
+                    SUM(CASE WHEN P.PRJCT_STLE_CD = 'VTW01801' THEN
+                                 CASE WHEN PMA.MD = 0 THEN 0
+                                      WHEN PMA.MD = 0.5 THEN 4
+                                      WHEN PMA.MD = 1 THEN 8
+                                      ELSE 0 END
+                             ELSE 0 END) AS PRJCT_NON_INSERT,
+                    SUM(CASE WHEN P.PRJCT_STLE_CD = 'VTW01802' THEN
+                                 CASE WHEN PMA.MD = 0 THEN 0
+                                      WHEN PMA.MD = 0.5 THEN 4
+                                      WHEN PMA.MD = 1 THEN 8
+                                      ELSE 0 END
+                             ELSE 0 END) AS PRJCT_INSERT,
+                    SUM(CASE WHEN PMA.YRYC_RATE = 0 THEN 0
+                             WHEN PMA.YRYC_RATE = 0.5 THEN 4
+                             WHEN PMA.YRYC_RATE = 1 THEN 8
+                             ELSE 0 END) AS VACATION ,
+                    (SUM(CASE WHEN P.PRJCT_STLE_CD = 'VTW01801' THEN
+                                  CASE WHEN PMA.MD = 0 THEN 0
+                                       WHEN PMA.MD = 0.5 THEN 4
+                                       WHEN PMA.MD = 1 THEN 8
+                                       ELSE 0 END
+                              ELSE 0 END) +
+                     SUM(CASE WHEN P.PRJCT_STLE_CD = 'VTW01801' THEN
+                                  CASE WHEN PMA.YRYC_RATE = 0 THEN 0
+                                       WHEN PMA.YRYC_RATE = 0.5 THEN 4
+                                       WHEN PMA.YRYC_RATE = 1 THEN 8
+                                       ELSE 0 END
+                              ELSE 0 END)
+                        ) AS TOTAL_PRJCT_NON_INSERT,
+                    (SUM(CASE WHEN P.PRJCT_STLE_CD = 'VTW01802' THEN
+                                  CASE WHEN PMA.MD = 0 THEN 0
+                                       WHEN PMA.MD = 0.5 THEN 4
+                                       WHEN PMA.MD = 1 THEN 8
+                                       ELSE 0 END
+                              ELSE 0 END) +
+                     SUM(CASE WHEN P.PRJCT_STLE_CD = 'VTW01802' THEN
+                                  CASE WHEN PMA.YRYC_RATE = 0 THEN 0
+                                       WHEN PMA.YRYC_RATE = 0.5 THEN 4
+                                       WHEN PMA.YRYC_RATE = 1 THEN 8
+                                       ELSE 0 END
+                              ELSE 0 END)
+                        ) AS TOTAL_PRJCT_INSERT
+                FROM
+                    PRJCT_INDVDL_CT_MM PICM ,
+                    PRJCT_MM_APLY PMA,
+                    PRJCT P,
+                    EMP E
+                WHERE
+                    PICM.PRJCT_ID = PMA.PRJCT_ID
+                  AND PICM.EMP_ID = PMA.EMP_ID
+                  AND PICM.APLY_YM = PMA.APLY_YM
+                  AND PICM.APLY_ODR = PMA.APLY_ODR
+                  AND P.PRJCT_ID = PICM.PRJCT_ID
+                  AND PMA.EMP_ID = E.EMP_ID
+                  AND PICM.MM_ATRZ_CMPTN_YN = 'Y'
+                GROUP BY
+                    E.EMP_FLNM ,
+                    P.PRJCT_NM ,
+                    PMA.YRYC_RATE
+            ) WORK_HOUR
+
+    </select>
+
+
+
 </mapper>
