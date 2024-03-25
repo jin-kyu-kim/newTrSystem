@@ -424,7 +424,7 @@ public class CommonServiceImpl implements CommonService {
         int atchmnflSn = 1;
 
         //2. 파일 내부 디렉토리에 업로드
-        String uploadDir = "TRsystem/upload";
+        String uploadDir = "TRsystem/upload" ;
         // 2-1 파일일 디렉토리가 없으면 생성
         Path directory = Path.of(uploadDir);
 
