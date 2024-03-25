@@ -11,7 +11,7 @@
 			 , ACT_IEM
 			 , CLTUR_PHSTRN_SE_CD
 			 , ACT_PURPS
-			 , RJCT_PRVONSH
+			 , RM
 			 , c.ATCHMNFL_ID
 			 , a.ATCHMNFL_SN
 			 , a.REAL_FILE_NM

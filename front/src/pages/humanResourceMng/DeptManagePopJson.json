@@ -1,0 +1,113 @@
+{
+  "menuName": "DeptManagePop",
+  "searchParams":
+  {
+      "popupVisible": true
+  } ,
+"listQueryId": "humanResourceMngMapper.retrieveDeptList",
+"hnfQueryId": "humanResourceMngMapper.retrieveDeptHnfList",
+  "hnfKeyColumn": "empId",
+  "hafTableColumns": [
+      { "key": "empno", "value": "사번"},
+      { "key": "empFlnm", "value": "성명" },
+      { "key": "jbpsNm", "value": "직위"},
+      { "key": "jbttlNm", "value": "직책" }
+  ],
+  "emplistQueryId": "infoInqMapper.retrieveEmpList",
+  "emplistKeyColumn": "empId",
+  "emplistTableColumns": [
+      { "key": "empno", "value": "사번", "width": 100, "alignment" : "center" },
+      { "key": "empFlnm", "value": "성명"},
+      { "key": "jbpsNm", "value": "직위"},
+      { "key": "deptId", "value": "소속"}
+  ],
+  "searchInfo": {
+    "searchParams": {
+        "insertButton": false
+    },
+    "commonCd": "VTW001",
+    "selectBoxItem": [
+        {
+            "placeholder": "[재직여부]",
+            "param":{
+              "tbNm": "CD",
+              "valueExpr": "cdValue",
+              "displayExpr": "cdNm",
+              "name": "hdofSttsNm",
+              "condition": {
+                "upCdValue": "VTW003"
+              },
+              "clearButton": false
+            }
+        },
+        {
+            "placeholder": "[직위]",
+            "param":{
+              "tbNm": "CD",
+              "valueExpr": "cdValue",
+              "displayExpr": "cdNm",
+              "name": "jbpsNm",
+              "condition": {
+                "upCdValue": "VTW001"
+              },
+              "clearButton": false
+            }
+        }
+    ],
+    "textBoxItem": [
+        {
+            "placeholder": "사번",
+            "name": "empno"
+        },
+        {
+            "placeholder": "성명",
+            "name": "empFlnm"
+        }
+    ]
+},
+"labelValue" : {
+  "empno": {
+    "name": "empno",
+    "type": "TextBox",
+    "label": "사번",
+    "required": true,
+    "placeholder": "사번"
+  },
+  "empFlnm": {
+      "name": "empFlnm",
+      "type": "TextBox",
+      "label": "성명",
+      "required": true,
+      "placeholder": "성명"
+  },
+  "jbpsCd": {
+      "type": "ComboBox",
+      "required": true,
+      "label": "직위",
+      "placeholder": "직위",
+      "param": { "tbNm" : "CD",
+                  "condition": {
+                      "upCdValue": "VTW001"
+                  },
+                  "valueExpr" : "cdValue",
+                  "displayExpr": "cdNm",
+                  "name": "jbpsCd"
+               }
+  },
+  "jbttlCd": {
+    "type": "ComboBox",
+    "required": true,
+    "label": "직책",
+    "placeholder": "직책",
+    "param": { "tbNm" : "CD",
+                "condition": {
+                    "upCdValue": "VTW010"
+                },
+                "valueExpr" : "cdValue",
+                "displayExpr": "cdNm",
+                "name": "jbttlCd"
+             }
+  }
+  
+}
+}

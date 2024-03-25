@@ -2,6 +2,8 @@ package com.trsystem.sysMng.controller;
 
 import com.trsystem.sysMng.domain.SysMngDomain;
 import com.trsystem.sysMng.service.SysMngService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,7 +29,7 @@ public class SysMngController {
     }
 
     @PostMapping(value = "/boot/sysMng/lgnSkll")
-    public Map<String, Object> loginCheck(@RequestBody Map<String, Object> loginInfo) {
+    public ResponseEntity<UserDetails> loginCheck(@RequestBody Map<String, Object> loginInfo) {
         return userDetails.login(loginInfo);
     }
 }

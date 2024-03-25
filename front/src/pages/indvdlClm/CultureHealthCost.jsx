@@ -109,7 +109,7 @@ const CultureHealthCost = () => {
                         tmpElement.actIem = element.actIem;
                         tmpElement.clturPhstrnSeCd = element.clturPhstrnSeCd;
                         tmpElement.actPurps = element.actPurps;
-                        tmpElement.rjctPrvonsh = element.rjctPrvonsh;
+                        tmpElement.rm = element.rm;
                         if(element.atchmnflId !== null){
                             tmpElement.atchmnfl = [];
                             tmpElement.atchmnfl.push({
@@ -153,7 +153,7 @@ const CultureHealthCost = () => {
         return errors.length === 0;
     };
 
-    const costInsert = async() => {
+    const handleSubmit = async() => {
         const confirmResult = window.confirm("등록하시겠습니까?");
         if (confirmResult) {
             const formData = new FormData();
@@ -254,7 +254,7 @@ const CultureHealthCost = () => {
                             <Column dataField='clmAmt' caption='금액' minWidth={30} />
                             <Column dataField='actIem' caption='항목' minWidth={30} />
                             <Column dataField='actPurps' caption='목적' minWidth={30} />
-                            <Column dataField='aprvYn' caption='비고' minWidth={100} />
+                            <Column dataField='rm' caption='비고' minWidth={100} />
                             <Column caption='첨부' minWidth={100} cellRender={fileCell} />
                         </DataGrid>
                     </div>
@@ -262,7 +262,7 @@ const CultureHealthCost = () => {
                         <Button text="삭제" onClick={onDeleteClick} disabled={!selectedItem} type='danger' style={button}></Button>
                     </div>
                 </div>
-                <form style={empDetailContainerStyle} onSubmit={costInsert}>
+                <form style={empDetailContainerStyle} onSubmit={handleSubmit}>
                     <div style={{height: "290px"}}>
                         <p><strong>* 문화 체련비 등록</strong></p>
                         <div style={fontSize}>
@@ -297,7 +297,7 @@ const CultureHealthCost = () => {
                     </div>
                     <div style={{display: "flex", justifyContent: "flex-end"}}>
                         <Button style={button} type='default' text="저장" useSubmitBehavior></Button>
-                        <Button style={button} type='default' text="초기화" onClick={onResetClick}></Button>
+                        <Button style={button} text="초기화" onClick={onResetClick}></Button>
                     </div>
                     <div>
                     </div>

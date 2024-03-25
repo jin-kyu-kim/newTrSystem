@@ -10,6 +10,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,32 +38,28 @@ public class SysMngService implements UserDetailsService {
         SysMngService.commonService = commonService;
     }
 
-    public Map<String, Object> login(Map<String, Object> request) {
+    public ResponseEntity<UserDetails> login(Map<String, Object> request) {
         Map<String, Object> userInfo = new HashMap<>();
         Map<String, Object> relInfo = new HashMap<>();
         String empno = request.get("empno").toString();
         String password = request.get("password").toString();
 
-        SysMngUser setInfo = loadUserByUsername(empno);
+        UserDetails setInfo = loadUserByUsername(empno);
 
         // 입력된 비밀번호와 저장된 비밀번호 비교
         if (passwordEncoder.matches(password, setInfo.getPassword())) {
             Authentication authentication = new UsernamePasswordAuthenticationToken(null, setInfo.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
             SecurityContextHolder.getContext();
-            relInfo.put("userInfo", setInfo.getUserInfo());
-            relInfo.put("deptInfo", setInfo.getDeptInfo());
-            relInfo.put("userAuth", setInfo.getAuthorities());
-            return relInfo;
+            return ResponseEntity.ok(setInfo) ;
         } else {
-            relInfo.put("fail",ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null));
 
-            return relInfo;
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
 
     @Override
-    public SysMngUser loadUserByUsername(String empno) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String empno) throws UsernameNotFoundException {
         Map<String, Object> reltSet = new HashMap<>();
         Map<String, Object> user =  sqlSession.selectOne("com.trsystem.mybatis.mapper.sysMngMapper.userInfo",empno);
 
@@ -79,7 +76,7 @@ public class SysMngService implements UserDetailsService {
         return buildUserDetails(reltSet);
     }
 
-    private SysMngUser buildUserDetails(Map<String, Object> userData) {
+    private UserDetails buildUserDetails(Map<String, Object> userData) {
         // 사용자의 정보로부터 username과 password를 가져옵니다.
         Map<String, Object> userInfo = (Map<String, Object>) userData.get("userInfo");
         String empId = (String) userInfo.get("empId");

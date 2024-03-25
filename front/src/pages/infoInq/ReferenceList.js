@@ -44,7 +44,7 @@ const ReferenceList = () => {
         }
     };
 
-    const onRowDblClick = (e) => {
+    const onRowClick = (e) => {
         navigate("/infoInq/ReferenceDetail", 
                   {state: { id: e.key }})
       };
@@ -74,7 +74,7 @@ const ReferenceList = () => {
                 pageSize={pageSize}
                 columns={tableColumns}
                 values={values}
-                onRowDblClick={onRowDblClick}
+                onRowClick={onRowClick}
                 paging={true}
             />
         </div>

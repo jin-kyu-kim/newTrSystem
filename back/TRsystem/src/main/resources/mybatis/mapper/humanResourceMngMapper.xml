@@ -26,6 +26,9 @@
 	        , COUNT(*) OVER () AS TOTAL_ITEMS                                                           -- 총건수
 	     FROM DEPT d
 	     WHERE 1=1
+	    <if test="deptId!= null and !deptId.equals('')">
+			AND DEPT_ID LIKE CONCAT('%',#{deptId},'%')
+		</if> 
 		<if test="deptNm!= null and !deptNm.equals('')">
 			AND DEPT_NM LIKE CONCAT('%',#{deptNm},'%')
 		</if>
@@ -51,7 +54,40 @@
 			</if>
 		</if>
 		ORDER BY REG_DT DESC </select>
-
+	   <!--트리구조 부서조회 임시-->
+	   <select id="retrieveDeptList2" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		WITH RECURSIVE DEPT_PATH(DEPT_ID,DEPT_NM,UP_DEPT_ID,DEPTH,PATH)  AS (
+		    SELECT 
+		    	DEPT_ID,
+		     	DEPT_NM, 
+		     	UP_DEPT_ID,
+		     	1,
+		     	CAST(DEPT_ID AS CHAR(200))
+		    FROM 
+		    	DEPT
+		    WHERE UP_DEPT_ID IS NULL
+		 
+		    UNION ALL
+		 
+		    SELECT 
+		    	d.DEPT_ID, 
+		    	d.DEPT_NM, 
+		    	d.UP_DEPT_ID
+		    	,dp.DEPTH+1
+		    	,CONCAT(dp.PATH,',',d.DEPT_ID)
+		    FROM DEPT d
+		    INNER JOIN DEPT_PATH dp ON d.UP_DEPT_ID =dp.DEPT_ID
+		)
+		SELECT 
+			DEPT_ID,
+			DEPT_NM ,
+			UP_DEPT_ID,
+			COUNT(*) OVER () AS TOTAL_ITEMS       
+		FROM 
+			DEPT_PATH
+		ORDER BY PATH;
+		</select>
+		
 	   <!--부서 상세 조회-->
   	   <select id="getDeptDetail" parameterType="map" resultType="com.trsystem.LowerHashMap">
 	   SELECT d.DEPT_ID
@@ -72,7 +108,7 @@
 		</select>
 
 
-		<!--부서 인력 조회-->
+		<!--부서 하위부서 조회-->
 		<select id="retrieveDownDeptList" parameterType="map" resultType="com.trsystem.LowerHashMap">
 			SELECT d.DEPT_ID
                  , d.DEPT_NM
@@ -101,6 +137,7 @@
 		      FROM EMP e
 		     INNER JOIN DEPT_HNF h ON e.EMP_ID = h.EMP_ID
 		     WHERE h.DEPT_ID = #{deptId}
+		     ORDER BY h.JBTTL_CD 
 		</select>
 
 
