@@ -89,7 +89,8 @@
         "columns": [
             { "key": "empno", "value": "사번"},
             { "key": "empFlnm", "value": "성명"},
-            { "key": "jbpsNm", "value": "직위"}
+            { "key": "jbpsNm", "value": "직위"},
+            { "key": "deptId", "value": "소속"}
         ],
         "formColumn": [
             {"dataField": "authrtGroupNm", "editorType": "dxTextBox", "caption": "권한명", "message": "권한명은 필수입니다."},

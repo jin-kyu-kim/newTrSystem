@@ -1,6 +1,11 @@
 {
   "ExpenseInfo":[
     {
+      "TabName": "롯데법인카드 엑셀 업로드",
+      "tabId": "ProjectExpanseExcel",
+      "url": "./ProjectExpanseExcel"
+    },
+    {
       "TabName": "개인 지불비용(롯데 개인법인카드) 일괄청구",
       "tabId": "ProjectExpenseCard",
       "url": "./ProjectExpenseCard"
