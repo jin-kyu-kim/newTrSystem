@@ -1,34 +1,13 @@
 import React, {useCallback, useEffect, useState} from "react";
 import Button from "devextreme-react/button";
-import DateBox from 'devextreme-react/date-box';
-import CultureHealthCostJson from "./CultureHealthCost.json";
-import CustomCdComboBox from "../../components/unit/CustomCdComboBox";
-import {FileUploader, NumberBox} from "devextreme-react";
+import CultureHealthCostJson from "./CultureHealthCostJson.json";
+import {FileUploader} from "devextreme-react";
 import DataGrid, {Column} from 'devextreme-react/data-grid';
 import uuid from "react-uuid";
-import {TextBox} from "devextreme-react/text-box";
 import ApiRequest from "../../utils/ApiRequest";
 import {useCookies} from "react-cookie";
 import axios from "axios";
-  const thStyle = {
-    backgroundColor: '#f5f5f5',
-    color: '#666666',
-    fontWeight: 'bold',
-    textAlign: 'center',
-    border : '1px solid #dddddd',
-    fontSize: 14
-  };
-  const inputStyle = {
-    backgroundColor: 'white',
-    width: '100%',
-    height: '50px',
-    border : '1px solid #dddddd',
-    borderRadius : '5px',
-    fontSize: 14
-  }
-  const tdStyle = {
-    border : '1px solid #dddddd'
-  }
+import CustomLabelValue from "../../components/unit/CustomLabelValue";
   const empListContainerStyle = {
       width: "60%",
       marginTop: "20px",
@@ -56,6 +35,7 @@ const CultureHealthCost = () => {
     const [selectedItem, setSelectedItem] = useState(null);
     let now = new Date();
     const Json = CultureHealthCostJson;
+    const {labelValue} = Json;
     const [initParam, setInitParam] = useState({
         "clmAmt": 0,
         "clmYmd": now.getFullYear()+('0' + (now.getMonth() + 1)).slice(-2)+('0' + now.getDate()).slice(-2),
@@ -90,7 +70,7 @@ const CultureHealthCost = () => {
         }
     }
 
-    const handleChgState = ({name, value}) => {
+    const handleChgValue = ({name, value}) => {
         setInitParam({
             ...initParam,
             [name] : value,
@@ -124,11 +104,12 @@ const CultureHealthCost = () => {
                     if(!tmpList.includes(JSON.stringify(tmpElement))){
                         tmpList.push(JSON.stringify(tmpElement));
                         tmpElement.month = getLastMonth(element.clmYmd);
+                        tmpElement.clmYmd = element.clmYmd;
                         tmpElement.clmAmt = element.clmAmt;
                         tmpElement.actIem = element.actIem;
                         tmpElement.clturPhstrnSeCd = element.clturPhstrnSeCd;
                         tmpElement.actPurps = element.actPurps;
-                        tmpElement.rjctPrvonsh = element.rjctPrvonsh;
+                        tmpElement.rm = element.rm;
                         if(element.atchmnflId !== null){
                             tmpElement.atchmnfl = [];
                             tmpElement.atchmnfl.push({
@@ -172,7 +153,7 @@ const CultureHealthCost = () => {
         return errors.length === 0;
     };
 
-    const costInsert = async() => {
+    const handleSubmit = async() => {
         const confirmResult = window.confirm("등록하시겠습니까?");
         if (confirmResult) {
             const formData = new FormData();
@@ -234,7 +215,7 @@ const CultureHealthCost = () => {
         })
     }
 
-    const test = (e) => {
+    const fileCell = (e) => {
         let atchList = e.data.atchmnfl;
         if (atchList != null) {
             return (<div>
@@ -273,15 +254,15 @@ const CultureHealthCost = () => {
                             <Column dataField='clmAmt' caption='금액' minWidth={30} />
                             <Column dataField='actIem' caption='항목' minWidth={30} />
                             <Column dataField='actPurps' caption='목적' minWidth={30} />
-                            <Column dataField='aprvYn' caption='비고' minWidth={100} />
-                            <Column caption='첨부' minWidth={100} cellRender={test} />
+                            <Column dataField='rm' caption='비고' minWidth={100} />
+                            <Column caption='첨부' minWidth={100} cellRender={fileCell} />
                         </DataGrid>
                     </div>
                     <div style={{display: "flex", justifyContent: "flex-end"}}>
                         <Button text="삭제" onClick={onDeleteClick} disabled={!selectedItem} type='danger' style={button}></Button>
                     </div>
                 </div>
-                <form style={empDetailContainerStyle} onSubmit={costInsert}>
+                <form style={empDetailContainerStyle} onSubmit={handleSubmit}>
                     <div style={{height: "290px"}}>
                         <p><strong>* 문화 체련비 등록</strong></p>
                         <div style={fontSize}>
@@ -293,79 +274,30 @@ const CultureHealthCost = () => {
                                 <strong>(문화비의 경우 매월 상여로 처리하며 연말정산 시 본인이 세금을 부담합니다.)</strong></p>
                         </div>
                     </div>
-                    <table style={{border: '1px solid #dddddd'}}>
-                        <colgroup>
-                            <col width="25%"/>
-                            <col width="75%"/>
-                        </colgroup>
-                        <tbody>
-                        <tr>
-                            <th style={thStyle}>청구일자</th>
-                            <td style={tdStyle}>
-                                <DateBox
-                                    value={initParam?.clmYmd}
-                                    dateSerializationFormat={'yyyyMMdd'}
-                                    onValueChanged={(e) => handleChgState({ name: "clmYmd", value: e.value })}
-                                    inputAttr={Json.dateLabel}
-                                    type="date"
-                                    style={{backgroundColor: 'white'}}
-                                />
-                                <span style={{color: "red", fontSize: 14, fontWeight: "bold"}}>*법인카드로 결제한 날짜를 입력해 주세요.</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th style={thStyle}>청구금액</th>
-                            <td style={tdStyle}>
-                                <NumberBox
-                                    value={initParam?.clmAmt}
-                                    onValueChanged={(e) => handleChgState({ name: "clmAmt", value: e.value })}
-                                    inputAttr={Json.withSpinAndButtonsLabel}
-                                    style={{backgroundColor: 'white'}}
-                                />
-                            </td>
-                        </tr>
-                        <tr>
-                            <th style={thStyle}>구분</th>
-                            <td style={tdStyle}>
-                                <CustomCdComboBox
-                                    param="VTW009"
-                                    placeholderText="구분"
-                                    name="clturPhstrnSeCd"
-                                    onSelect={handleChgState}
-                                    value={initParam?.clturPhstrnSeCd}
-                                />
-                            </td>
-                        </tr>
-                        <tr>
-                            <th style={thStyle}>항목</th>
-                            <td style={tdStyle}>
-                                <TextBox style={inputStyle} placeholder="항목" value={initParam?.actIem} onValueChanged={(e) => handleChgState({ name: "actIem", value: e.value })}/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th style={thStyle}>목적</th>
-                            <td style={tdStyle}>
-                                <TextBox style={inputStyle} placeholder="목적" value={initParam?.actPurps} onValueChanged={(e) => handleChgState({ name: "actPurps", value: e.value })}/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th style={thStyle}>첨부파일</th>
-                            <td style={tdStyle}>
-                                <FileUploader
-                                    multiple={true}
-                                    accept="*/*"
-                                    uploadMode="useButton"
-                                    onValueChanged={handleAttachmentChange}
-                                    maxFileSize={1.5 * 1024 * 1024 * 1024}
-                                >
-                                </FileUploader>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                    <div className="dx-fieldset" style={{width: '100%'}}>
+                        <span style={{color: "red", fontSize: 14, fontWeight: "bold"}}>*법인카드로 결제한 날짜를 입력해 주세요.</span>
+                        <CustomLabelValue props={labelValue.clmYmd} onSelect={handleChgValue}
+                                          value={initParam?.clmYmd}/>
+                        <CustomLabelValue props={labelValue.clmAmt} onSelect={handleChgValue}
+                                          value={initParam?.clmAmt}/>
+                        <CustomLabelValue props={labelValue.clturPhstrnSeCd} onSelect={handleChgValue}
+                                          value={initParam?.clturPhstrnSeCd}/>
+                        <CustomLabelValue props={labelValue.actIem} onSelect={handleChgValue}
+                                          value={initParam?.actIem}/>
+                        <CustomLabelValue props={labelValue.actPurps} onSelect={handleChgValue}
+                                          value={initParam?.actPurps}/>
+                        <FileUploader
+                            multiple={true}
+                            accept="*/*"
+                            uploadMode="useButton"
+                            onValueChanged={handleAttachmentChange}
+                            maxFileSize={1.5 * 1024 * 1024 * 1024}
+                        >
+                        </FileUploader>
+                    </div>
                     <div style={{display: "flex", justifyContent: "flex-end"}}>
                         <Button style={button} type='default' text="저장" useSubmitBehavior></Button>
-                        <Button style={button} type='default' text="초기화" onClick={onResetClick}></Button>
+                        <Button style={button} text="초기화" onClick={onResetClick}></Button>
                     </div>
                     <div>
                     </div>

@@ -19,11 +19,18 @@ public class SecurityConfig {
         return (request) -> true;
     }
 
+//    @Bean
+//    public UserDetailsService authentication(){
+//        SysMngUser test = (SysMngUser) User.builder().username("test").password("11").roles("USER").build();
+//
+//        return new InMemoryUserDetailsManager(test);
+//    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable
-                        ).headers((headerConfig)->headerConfig.frameOptions((HeadersConfigurer.FrameOptionsConfig::disable)))
+                ).headers((headerConfig)->headerConfig.frameOptions((HeadersConfigurer.FrameOptionsConfig::disable)))
                 .authorizeHttpRequests((authorizeRequest)->
                         authorizeRequest
                                 .requestMatchers(allRequestMatcher()).permitAll()

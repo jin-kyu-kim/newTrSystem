@@ -5,7 +5,7 @@ import SelectBox from 'devextreme-react/select-box';
 import 'devextreme/dist/css/dx.common.css';
 import 'devextreme/dist/css/dx.light.css';
 
-const AutoCompleteProject = ({ placeholderText, onValueChange, readOnlyValue, value}) => {
+const AutoCompleteName = ({ placeholderText, onValueChange, readOnlyValue, value}) => {
   const [suggestionsData, setSuggestionsData] = useState([]);
   const [valid, setValid] = useState(true);
 
@@ -63,4 +63,4 @@ const AutoCompleteProject = ({ placeholderText, onValueChange, readOnlyValue, va
   );
 };
 
-export default AutoCompleteProject;
+export default AutoCompleteName;

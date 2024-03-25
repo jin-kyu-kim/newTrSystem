@@ -1,0 +1,86 @@
+{
+  "ExpenseInfo":[
+    {
+      "TabName": "롯데법인카드 엑셀 업로드",
+      "tabId": "ProjectExpanseExcel",
+      "url": "./ProjectExpanseExcel"
+    },
+    {
+      "TabName": "개인 지불비용(롯데 개인법인카드) 일괄청구",
+      "tabId": "ProjectExpenseCard",
+      "url": "./ProjectExpenseCard"
+    },
+    {
+      "TabName": "개인 지불비용(현금 및 개인법인카드) 청구",
+      "tabId": "ProjectExpenseCash",
+      "url": "./ProjectExpenseCash"
+    }
+  ],
+  "labelValue" : {
+    "testParameter": {
+      "name": "testParameter",
+      "type": "ComboBox",
+      "label": "구분",
+      "placeholder": "구분",
+      "param": { "tbNm" : "CD",
+        "condition": {
+          "upCdValue": "VTW019"
+        },
+        "valueExpr" : "cdValue",
+        "displayExpr": "cdNm",
+        "name": "testParameter"
+      },
+      "required": true
+    },
+    "utztnDt": {
+      "name": "utztnDt",
+      "type": "DateBox",
+      "label": "사용일시",
+      "placeholder": "사용일시",
+      "required": true
+    },
+    "useOffic": {
+      "name": "useOffic",
+      "type": "TextBox",
+      "label": "사용처",
+      "placeholder": "사용처",
+      "required": true
+    },
+    "utztnAmt": {
+      "name": "utztnAmt",
+      "type": "NumberBox",
+      "label": "금액",
+      "placeholder": "금액",
+      "required": true
+    },
+    "expensCd": {
+      "name": "expensCd",
+      "type": "ComboBox",
+      "label": "비용코드",
+      "placeholder": "비용코드",
+      "param": { "tbNm" : "CD",
+        "condition": {
+          "upCdValue": "VTW045"
+        },
+        "valueExpr" : "cdValue",
+        "displayExpr": "cdNm",
+        "name": "expensCd"
+      },
+      "required": true
+    },
+    "ctPrpos": {
+      "name": "ctPrpos",
+      "type": "TextBox",
+      "label": "용도",
+      "placeholder": "용도",
+      "required": true
+    },
+    "ATDRN": {
+      "name": "ATDRN",
+      "type": "TextBox",
+      "label": "참석자",
+      "placeholder": "참석자",
+      "required": true
+    }
+  }
+}

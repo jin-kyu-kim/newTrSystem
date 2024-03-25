@@ -75,6 +75,12 @@ const TreRoutes = [
     name: "EmpAuth",
     element: React.lazy(() => import("../pages/sysMng/EmpAuth")),
   },
+  // 권한부여관리
+  {
+    path: "/sysMng/EmpAuthorization",
+    name: "EmpAuth",
+    element: React.lazy(() => import("../pages/sysMng/EmpAuthorization")),
+  },
    // 고객사관리
   {
     path: "/sysMng/CustomersList",
@@ -213,7 +219,12 @@ const TreRoutes = [
     name: "CultureHealthCost",
     element: React.lazy(() => import("../pages/indvdlClm/CultureHealthCost")),
   },
-
+  // 개인 청구 > 프로젝트비용
+  {
+    path: "/indvdlClm/ProjectExpense",
+    name: "ProjectExpense",
+    element: React.lazy(() => import("../pages/indvdlClm/ProjectExpense")),
+  },
   // 재무 관리 > 근무시간 승인내역
   {
     path: "/fnnrMng/EmpTimeAprvList",

@@ -6,9 +6,11 @@ import {Workbook} from "exceljs";
 import {exportDataGrid} from "devextreme/excel_exporter";
 import { saveAs } from 'file-saver';
 import '../../assets/css/Style.css'
+import CustomPivotGrid from "../../components/unit/CustomPivotGrid";
+import PivotGridDataSource from "devextreme/ui/pivot_grid/data_source";
 
 
-const EmpExpenseAprvProject = ({ startYm, startOdr, endYm, endOdr }) => {
+const EmpExpenseAprvProject = ({ prjctId, year, monthVal, aplyOdr, dateList }) => {
 
     const { keyColumn, queryId } = EmpExpenseAprvProjectJson;
     const [expenseAprvData, setExpenstAprvData] = useState([]);
@@ -16,19 +18,19 @@ const EmpExpenseAprvProject = ({ startYm, startOdr, endYm, endOdr }) => {
 
     useEffect(() => {
         getExpenseAprvData();
-    }, [startYm, startOdr, endYm, endOdr]);
+    }, [year, monthVal, aplyOdr]);
 
     //경비 승인내역 조회
     const getExpenseAprvData = async () => {
         const param = {
             queryId: queryId,
-            startYmOdr: startYm+startOdr,
-            endYmOdr: endYm+endOdr,
+            prjctId: prjctId,
+            aplyYm: year+monthVal,
+            aplyOdr: aplyOdr,
         };
         try{
             const response = await ApiRequest('/boot/common/queryIdSearch', param);
             setExpenstAprvData(response);
-            console.log('rrr',response);
         }catch (error){
             console.log(error);
         }
@@ -66,9 +68,6 @@ const EmpExpenseAprvProject = ({ startYm, startOdr, endYm, endOdr }) => {
     };
 
 
-
-    // const utztnDtColumns = [...new Set(expenseAprvData.map(item => item.utztnDt))];
-
     const columns = [
         { dataField: 'prjctNm', caption: '프로젝트명', width: '250' },
         { dataField: 'expensCd', caption: '비용 코드', width: '200' },
@@ -77,39 +76,78 @@ const EmpExpenseAprvProject = ({ startYm, startOdr, endYm, endOdr }) => {
         { dataField: 'atdrn', caption: '용도', width: '200' },
         { dataField: 'utztnAmt', caption: '금액(소계)', width: '100' },
         { dataField: 'bfeClm', caption: '기간외', width: '100' },
-        // ...utztnDtColumns.map(utztnDt => ({
-        //     dataField: utztnDt,
-        //     caption: utztnDt,
-        //     width: '130',
-        //     calculateCellValue: rowData => {
-        //         const matchingRow = expenseAprvData.find(item => item.utztnDt == rowData.utztnDt && item.prjctNm == rowData.prjctNm && item.empFlnm == rowData.empFlnm);
-        //
-        //         return matchingRow.utztnDt == utztnDt ? matchingRow.utztnAmt : '';
-        //     }
-        // }))
     ];
+
+    // 날짜에 대한 열 생성
+    const pushDateColumns = () => {
+
+        dateList.forEach(date => {
+            columns.push({
+                dataField: date,
+                caption: date, // 날짜를 열의 캡션으로 사용
+                width: '130',
+                calculateCellValue: rowData => {
+                    return makeReturn();
+                }
+            });
+        });
+
+    }
+
+    const dataSource = new PivotGridDataSource({
+        fields: [{
+            caption: '프로젝트명',
+            dataField: 'prjctNm',
+            area: 'row',
+            expanded: true,
+        }, {
+            caption: '비용코드',
+            dataField: 'expensCd',
+            width: 150,
+            area: 'row',
+        }, {
+            caption: '직원명',
+            dataField: 'empFlnm',
+            width: 150,
+            area: 'row',
+        }, {
+            caption: '상세내역',
+            dataField: 'ctPrpos',
+            width: 150,
+        }, {
+            dataField: 'pivotDate',
+            area: 'column',
+        }, {
+            groupName: 'date',
+            groupInterval: 'year',
+            expanded: true,
+        }, {
+            groupName: 'date',
+            groupInterval: 'month',
+            expanded: true,
+        }, {
+            caption: '금액',
+            dataField: 'utztnAmt',
+            dataType: 'number',
+            summaryType: 'sum',
+            format: 'fixedPoint',
+            area: 'data',
+        }],
+        store: expenseAprvData,
+    });
+
+    pushDateColumns();
+
+    const makeReturn = () => {
+        return 0;
+    }
 
     return (
         <div style={{padding: '20px'}}>
             <div className='container'>
-                <DataGrid
-                    dataSource={expenseAprvData}
-                    showBorders={true}
-                    showColumnLines={true}
-                    wordWrapEnabled={true}
-                    onExporting={onExporting}
-                    onCellPrepared={(e) => {
-                        if (e.rowType === 'header') {
-                            e.cellElement.style.textAlign = 'center';
-                            e.cellElement.style.fontWeight = 'bold';
-                        }
-                    }}
-                >
-                    {columns.map((column, index) => (
-                        <Column key={index} {...column} />
-                    ))}
-                    <Export enabled={true} />
-                </DataGrid>
+                <CustomPivotGrid
+                    values={dataSource}
+                />
             </div>
         </div>
     );

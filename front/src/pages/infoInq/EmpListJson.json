@@ -51,6 +51,7 @@
                   "queryId": {
                     "queryId": "infoInqMapper.retriveDeptSearchList"
                   },
+                  "values": ["deptId"],
                   "valueExpr": "deptId",
                   "displayExpr": "deptNm",
                   "name": "deptId",

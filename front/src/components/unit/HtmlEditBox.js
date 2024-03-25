@@ -60,6 +60,14 @@ const HtmlEditBox = ({ column, data, setData, placeholder, value }) => {
           <Item name="codeBlock" />
           <Item name="blockquote" />
           <Item name="separator" />
+          <Item name="insertTable" />
+          <Item name="deleteTable" />
+          <Item name="insertRowAbove" />
+          <Item name="insertRowBelow" />
+          <Item name="deleteRow" />
+          <Item name="insertColumnLeft" />
+          <Item name="insertColumnRight" />
+          <Item name="deleteColumn" />
         </Toolbar>
       </HtmlEditor>
     </div>

@@ -15,7 +15,7 @@ const ReferenceInput = () => {
     const location = useLocation();
     const [cookies] = useCookies(["userInfo", "userAuth"]);
     const [attachments, setAttachments] = useState([]);
-    const [deleteFiles, setDeleteFiles] = useState([]);
+    const [deleteFiles, setDeleteFiles] = useState([{tbNm: "ATCHMNFL"}]);
     const [newAttachments, setNewAttachments] = useState(attachments);
     const { edit, insertUrl, detail } = NoticeJson;
 
@@ -23,6 +23,7 @@ const ReferenceInput = () => {
     const editMode = location.state.editMode;
     const id = location.state.id;
     const date = moment();
+    const [prevData, setPrevData] = useState({});
     const [ data, setData ] = useState({
         noticeId: uuid(),
         regEmpId: empId,
@@ -31,18 +32,18 @@ const ReferenceInput = () => {
     });
     
     const onClick = () => {
-        const result = window.confirm(editMode === 'create' ? "등록하시겠습니까?" : "수정하시겠습니까?");
+        const result = window.confirm(editMode !== 'update' ? "등록하시겠습니까?" : "수정하시겠습니까?");
         if(result) storeNotice(editMode);
     };
 
     const getOneData = async () => {
-        const param = { queryId: detail.detailQueryId, noticeId: id }
+    const param = { queryId: detail.detailQueryId, noticeId: id }
         try {
             const response = await ApiRequest("/boot/common/queryIdSearch", param);
             if (response.length !== 0) {
-                const { atchmnflSn, strgFileNm, realFileNm, ...resData } = response[0];
-                console.log('...resData', {...resData})
+                const { atchmnflSn, realFileNm, strgFileNm, regDt, regEmpNm, ...resData } = response[0];
                 setData({ ...resData });
+                setPrevData({ ...resData });
                 const tmpFileList = response.map((data) => ({
                     realFileNm: data.realFileNm,
                     strgFileNm: data.strgFileNm,
@@ -86,34 +87,51 @@ const ReferenceInput = () => {
     }, [typeChk.imprtnc, typeChk.move, typeChk.useYn])
     
     const attachFileDelete = (deleteItem) => {
-        setDeleteFiles([...deleteFiles, { atchmnflSn: deleteItem.atchmnflSn }]);
+        setDeleteFiles([...deleteFiles, { atchmnflId: data.atchmnflId , atchmnflSn: deleteItem.atchmnflSn }]);
         setNewAttachments(newAttachments.filter(item => item !== deleteItem));
     }
 
+    const validateData = () => {
+        const errors = [];
+        if (!data.noticeTtl || !data.noticeCn) {
+          errors.push('required');
+        }
+        return errors.length === 0;
+    };
+
     const storeNotice = async (editMode) => {
-        console.log('delete파일 배열: ',deleteFiles)
-        
         if(editMode === 'update'){
+            let changedValues = {};
+
+            Object.keys(data).forEach(key => {
+                if(prevData[key] !== data[key]){
+                    changedValues = { ...changedValues, [key]: data[key] }
+                }
+            });
             setData({
-                ...data,
-                noticeId: id,
+                atchmnflId: data.atchmnflId,
+                regEmpId: empId,
                 mdfcnEmpId: empId,
-                mdfcnDt: date.format('YYYY-MM-DD HH:mm:ss')
+                mdfcnDt: date.format('YYYY-MM-DD HH:mm:ss'),
+                changedValues
             })
         }
-        console.log('data전체',data)
-        console.log('attachments',attachments)
-        
         const formData = new FormData();
         formData.append("tbNm", JSON.stringify({tbNm: "NOTICE"}));
         formData.append("data", JSON.stringify(data));
+        if(editMode === 'update') {
+            formData.append("idColumn", JSON.stringify({noticeId: data.noticeId}));
+            formData.append("deleteFiles", JSON.stringify(deleteFiles));
+        }
         Object.values(attachments)
             .forEach((attachment) => formData.append("attachments", attachment));
         try {
-            const response = await axios.post(insertUrl, formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            })
-            if (response.data >= 0) navigate("/infoInq/ReferenceList")
+            if(validateData()){
+                const response = await axios.post(insertUrl, formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                })
+                if (response.data >= 1) navigate("/infoInq/ReferenceList")
+            }
         } catch (error) {
             console.error("API 요청 에러:", error);
         }
@@ -131,6 +149,7 @@ const ReferenceInput = () => {
                 data={data}
                 typeChk={typeChk}
                 editMode={editMode}
+                editType='referemce'
                 attachments={attachments}
                 newAttachments={newAttachments}
                 setData={setData}
