@@ -131,9 +131,11 @@
 			       , ( SELECT c.CD_NM
 			             FROM CD c
                         WHERE c.CD_VALUE = e.JBPS_CD) AS JBPS_NM                                          -- 직위
+                   , e.JBPS_CD     
                    , ( SELECT c.CD_NM
 			             FROM CD c
                         WHERE c.CD_VALUE = h.JBTTL_CD) AS JBTTL_NM                                        -- 직책
+                   , h.JBTTL_CD     
 		      FROM EMP e
 		     INNER JOIN DEPT_HNF h ON e.EMP_ID = h.EMP_ID
 		     WHERE h.DEPT_ID = #{deptId}

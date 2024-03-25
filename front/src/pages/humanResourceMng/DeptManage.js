@@ -24,8 +24,8 @@ const DeptManage = ({callBack}) => {
   const [deptInfo, setDeptInfo] = useState([]);                     //팝업 및 상세정보에 넘길 정보 셋팅용
   const [isPopup, setPopup] = useState(false);                      //수정팝업에 넘길것 셋팅용
   const [empPopup,setEmpPop] = useState(false);                     //부서내 직원관리 팝업 세팅
-
-  const [popupVisible, setPopupVisible] = useState(false);
+  const [newEmpPop,setNewEmpPop] = useState(false);                     //부서내 직원관리 팝업 세팅
+  const [popupVisible, setPopupVisible] = useState(false);          //부서등록 팝업
   const [totalItems, setTotalItems] = useState(0);
  // const [readOnly, setReadOnly] = useState(true);
 
@@ -168,7 +168,13 @@ const deptDetailHandle = async () => {
     setPopupVisible(true);
     setPopup(true);
   };
-
+//=================부서 등록 팝업 버튼 이벤트============================
+  const newDeptPopView = () =>{
+    setNewEmpPop(true)
+  };
+  const newDeptPopHandleClose = () => {
+    setNewEmpPop(false)
+  } 
 //=================부서 직원 관리 팝업 버튼 이벤트============================
   const empPopupView = () =>{
     setEmpPop(true)
@@ -176,6 +182,7 @@ const deptDetailHandle = async () => {
   const empHandleClose = () => {
     setEmpPop(false)
   }
+
 //==================팝업 닫기 버튼 이벤트==================================
   const handleClose = () => {
     setPopupVisible(false);
@@ -239,10 +246,22 @@ const deleteDeptHist = async (paramDel,paramDelHnf,paramDelHist) => {
       <div style={{ marginBottom: "20px" }}>
       <SearchHumanResourceMngtSet callBack={searchHandle} props={searchParams} popup={popup}/>
       </div>
-      <div>검색된 건 수 : {totalItems} 건</div>
+      <div>검색된 건 수 : {totalItems} 건 </div>
+              <div div className="buttonContainer" style={buttonContainerStyle}>
+                <Button style={editButtonStyle} onClick={editDept} text="부서등록(수정중)"/>
+              </div>
       <div className="tableContainer" style={tableContainerStyle}>
         <div className="deptListContainer" style={deptListContainerStyle}>
           <div className="deptListTable" style={deptListStyle}>
+          <Popup
+              width="90%"
+              height="90%"
+              visible={newEmpPop}
+              onHiding={newDeptPopHandleClose}
+              showCloseButton={true}
+            >
+            <DeptRegist onHide={onHide} isNew={true}/>
+            </Popup>
           <div><p><strong>* 부서목록 </strong></p></div>
             <TreeView id="deptList"
               dataSource={values}
@@ -268,10 +287,7 @@ const deleteDeptHist = async (paramDel,paramDelHnf,paramDelHist) => {
               </div>
             ) : null}
             </div>
-              <DeptRegist 
-                deptInfo={deptInfo}
-                deptId={deptInfo.deptId} 
-                isNew={false} />
+              <DeptRegist deptInfo={deptInfo} deptId={deptInfo.deptId} isNew={false} />
           </div>
           <div className="deptHnfListTable" style={deptDetailStyle}>
             <div className="deptHnfButtonContainer" style={buttonContainerStyle}> 
