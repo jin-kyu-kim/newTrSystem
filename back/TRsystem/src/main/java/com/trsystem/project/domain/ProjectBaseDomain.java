@@ -1,18 +1,16 @@
 package com.trsystem.project.domain;
 
+import com.trsystem.batchSkill.service.BatchSkillService;
+import com.trsystem.common.service.CommonService;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.trsystem.batchSkill.service.BatchSkillService;
-import com.trsystem.common.service.CommonService;
-
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -332,7 +330,7 @@ public class ProjectBaseDomain {
 	
 	/**
 	 * 변경차수가 반려일 경우 초기화를 선택하였을 때
-	 * @param params
+//	 * @param params
 	 */
 	public static int resetPrmpc(Map<String, Object> param) {
 		int result = 0;
@@ -376,7 +374,30 @@ public class ProjectBaseDomain {
 		} catch (Exception e) {
 	    	return result;
 		}
-		
+	}
+
+	public static List<Map<String, Object>> retrievePjrctCost(Map<String, Object>param){
+		List<Map<String, Object>> result = new ArrayList<>();
+        Map<String, Object> searchParam = new HashMap<>(param);
+		searchParam.put("queryId", "projectMapper.retrievedistinctCost");
+
+		//원가 비용코드값 수
+		List<Map<String, Object>> getCost = commonService.queryIdSearch(searchParam);
+
+		List<Map<String, Object>> getData;
+		for(Map<String, Object> data : getCost){
+			param.put("expensCd", data.get("expensCd").toString());
+			param.put("expensNm", data.get("expensNm").toString());
+			getData = commonService.queryIdSearch(param);
+			for(Map<String, Object> cdVal: getData){
+				cdVal.put("prjctId", param.get("prjctId").toString());
+				cdVal.put("expensCd", data.get("expensCd").toString());
+				cdVal.put("expensNm", data.get("expensNm").toString());
+				result.add(cdVal);
+			}
+		}
+
+		return result;
 	}
 
 }

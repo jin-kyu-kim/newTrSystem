@@ -100,5 +100,10 @@ public class ProjectBaseController {
     public int resetPrmpc(@RequestBody Map<String, Object> param) {
     	return ProjectBaseDomain.resetPrmpc(param);
     }
-    
+
+    @PostMapping(value = "/boot/prjct/retrievePjrctCost")
+    public List<Map<String, Object>> retrievePjrctCost(@RequestBody Map<String, Object> param) {
+        return ProjectBaseDomain.retrievePjrctCost(param);
+    }
+
 }
