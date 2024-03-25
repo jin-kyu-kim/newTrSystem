@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from "react";
 import CustomLabelValue from "../../components/unit/CustomLabelValue";
 import ElecAtrzOutordEmpCtrtJson from "../elecAtrz/ElecAtrzOutordEmpCtrtJson.json";
-
+import CompanyCtrtInfo from "./ctrtInfo/CompanyCtrtInfo"
 import ElecAtrzCtrtInfo from "./ctrtInfo/ElecAtrzCtrtInfo";
 
-const ElecAtrzOutordEmpCtrt = ({data, prjctData}) => {
+const ElecAtrzOutordEmpCtrt = ({data, prjctId}) => {
 
     console.log(data);
-    console.log(prjctData)
+    console.log(prjctId)
     
     useEffect(() => {
 
@@ -16,11 +16,8 @@ const ElecAtrzOutordEmpCtrt = ({data, prjctData}) => {
 
     return (
         <>
-            <ElecAtrzCtrtInfo data={data}/>z
-            <div>
-                계약 세부 내용
-            </div>
-            <div>세부내용이 주를를르르ㅡ르르르르르ㅡㄱ</div>
+            <ElecAtrzCtrtInfo data={data}/>
+            <CompanyCtrtInfo prjctId={prjctId}/>
         </>
     );
 };
