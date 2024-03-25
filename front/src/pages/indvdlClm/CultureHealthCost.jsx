@@ -287,6 +287,8 @@ const CultureHealthCost = () => {
                         <CustomLabelValue props={labelValue.actPurps} onSelect={handleChgValue}
                                           value={initParam?.actPurps}/>
                         <FileUploader
+                            selectButtonText="파일 선택"
+                            labelText="또는 드래그"
                             multiple={true}
                             accept="*/*"
                             uploadMode="useButton"
