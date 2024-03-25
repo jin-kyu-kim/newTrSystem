@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.trsystem.mybatis.mapper.elecAtrzMapper">
+	<!-- 전자결재 계약: 계약서 품의(재료비) 지불계획 팝업 -->
+	<select id="retrieveMatrlPlan" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT CONCAT(PRDUCT_NM,  " - ", DLVGDS_ENTRPS_NM) AS MATRL_PLAN
+			 , CNTRCTAMOUNT
+			 , PRDUCT_NM
+			 , DLVGDS_ENTRPS_NM
+			 , DTL_CN
+			 , UNTPC
+			 , QY
+			 , UNTPC * QY AS TOT
+			 , mcp.PRJCT_ID
+		  FROM MATRL_CT_PRMPC mcp
+		  JOIN (SELECT MAX(BGT_MNG_ODR), PRJCT_ID 
+		  		  FROM PRJCT_BGT_PRMPC
+	 		 	 WHERE 1=1
+		   		   AND ATRZ_DMND_STTS_CD = 'VTW03703'
+			    GROUP BY PRJCT_ID) pbp ON (mcp.PRJCT_ID = pbp.PRJCT_ID)
+		  WHERE 1=1
+		    AND mcp.PRJCT_ID = #{prjctId}
+	</select>	
+
+</mapper>
