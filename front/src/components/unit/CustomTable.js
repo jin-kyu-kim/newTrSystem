@@ -3,8 +3,8 @@ import GridRows from "./GridRows";
 import AllowedPageSize from "./AllowedPageSize";
 
 const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, onClick, wordWrap, onRowClick, excel, onExcel }) => {
-
   return (
+    
     <div className="wrap_table">
       <DataGrid
         keyExpr={keyColumn}
@@ -27,6 +27,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
         }}
         wordWrapEnabled={wordWrap}
       >
+        {GridRows({columns, onClick})}
         <Paging defaultPageSize={pageSize} enabled={paging} />
         <Pager
           displayMode="full"
@@ -35,7 +36,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
           showPageSizeSelector={true}
           allowedPageSizes={AllowedPageSize(values)}
         />
-        {GridRows(columns)}
+        
 
         {summary&&
           <Summary>
