@@ -16,11 +16,11 @@
 			 , UNTPC * QY AS TOT
 			 , mcp.PRJCT_ID
 		  FROM MATRL_CT_PRMPC mcp
-		  JOIN (SELECT MAX(BGT_MNG_ODR), PRJCT_ID 
+		  JOIN (SELECT MAX(BGT_MNG_ODR) AS BGT_MNG_ODR, PRJCT_ID 
 		  		  FROM PRJCT_BGT_PRMPC
 	 		 	 WHERE 1=1
 		   		   AND ATRZ_DMND_STTS_CD = 'VTW03703'
-			    GROUP BY PRJCT_ID) pbp ON (mcp.PRJCT_ID = pbp.PRJCT_ID)
+			    GROUP BY PRJCT_ID) pbp ON (mcp.PRJCT_ID = pbp.PRJCT_ID AND mcp.BGT_MNG_ODR = pbp.BGT_MNG_ODR)
 		  WHERE 1=1
 		    AND mcp.PRJCT_ID = #{prjctId}
 	</select>	
