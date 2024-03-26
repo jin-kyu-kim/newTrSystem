@@ -40,9 +40,9 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
 
     const onEditRow = async (editMode, e) => {
         let editInfo = {};
-        let isDuplicate = false;
         let editParam = doublePk ? [{tbNm: tbNm, snColumn: keyColumn}] : [{tbNm: tbNm}];
         let keyInfo = doublePk ? { [keyColumn]: e.key, [doublePk.nm]: doublePk.val } : { [keyColumn]: e.key };
+        let isDuplicate = false;
         
         switch (editMode) {
             case 'insert':
@@ -50,6 +50,11 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
                     Object.assign(e.data, {
                         [doublePk.nm]: doublePk.val
                     });
+                }
+                isDuplicate = checkDuplicate(e.data[keyColumn]);
+                if (isDuplicate) {
+                    alert("중복된 키 값입니다. 다른 키 값을 사용해주세요.");
+                    return;
                 }
                 handleYnVal !== undefined 
                     ? (e.data = {...e.data, regDt: date.format('YYYY-MM-DD'), regEmpId: empId, ...ynVal.current})
