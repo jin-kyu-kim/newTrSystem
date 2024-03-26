@@ -116,8 +116,8 @@ return(
       </div>
       {/* <SearchPrjctCostSet callBack={searchHandle} props={searchParams} /> */}
       <div className="wrap_search" style={{marginBottom: "20px"}}>
-                  {/*<SearchPrjctCostSet callBack={searchHandle} props={searchParams}/>*/}
-                  <SearchOdrRange callBack={searchHandle} props={searchParams}/>
+                  <SearchPrjctCostSet callBack={searchHandle} props={searchParams}/>
+                  {/* <SearchOdrRange callBack={searchHandle} props={searchParams}/> */}
               </div>
               <CustomPivotGrid
                     values={dataSource}

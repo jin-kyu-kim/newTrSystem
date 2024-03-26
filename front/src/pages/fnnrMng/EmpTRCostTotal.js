@@ -4,11 +4,17 @@ import  EmpTRCostTotalJson from "./EmpTRCostTotalJson.json";
 import ApiRequest from "../../utils/ApiRequest";
 import CustomTable from "components/unit/CustomTable";
 import SearchPrjctCostSet from "../../components/composite/SearchPrjctCostSet";
+import { Workbook } from "exceljs";
+import { exportDataGrid } from "devextreme/excel_exporter";
+import { saveAs } from 'file-saver';
+import SearchInfoSet from "components/composite/SearchInfoSet";
+
+
 
 const EmpTRCostTotal = () => {
   const [values, setValues] = useState([]);
   const [param, setParam] = useState({});
-  const { keyColumn, queryId, tableColumns, searchParams  } = EmpTRCostTotalJson;
+  const { keyColumn, queryId, tableColumns, searchParams, summaryColumn , searchInfo } = EmpTRCostTotalJson;
   const [totalItems, setTotalItems] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -49,7 +55,27 @@ const EmpTRCostTotal = () => {
     }
   };
 
+  const padNumber = (num) => {
+    return num.toString().padStart(2, '0');
+};
+  const currentDateTime = new Date();
+        const formattedDateTime = `${currentDateTime.getFullYear()}_`+
+            `${padNumber(currentDateTime.getMonth() + 1)}_`+
+            `${padNumber(currentDateTime.getDate())}`
 
+  const onExporting = (e) => {
+    const workbook = new Workbook();
+    const worksheet = workbook.addWorksheet('Main sheet');
+    exportDataGrid({
+      component: e.component,
+      worksheet,
+      autoFilterEnabled: true,
+    }).then(() => {
+      workbook.xlsx.writeBuffer().then((buffer) => {
+        saveAs(new Blob([buffer], { type: 'application/octet-stream' }), '근무시간 경비 통합승인내역'+formattedDateTime+'.xlsx');
+      });
+    });
+  };
 
 
 
@@ -69,7 +95,10 @@ const EmpTRCostTotal = () => {
 
     <div>
     <div style={{ marginBottom: "20px" }}>
-      {/* <SearchPrjctCostSet callBack={searchHandle} props={searchParams} /> */}
+    <SearchInfoSet 
+                    props={searchInfo}
+                  callBack={pageHandle}
+                /> 
       </div>
 
       <CustomTable
@@ -78,7 +107,12 @@ const EmpTRCostTotal = () => {
         columns={tableColumns}
         values={values}
         paging={true}
-      />
+        summary={true}
+        summaryColumn={summaryColumn}
+        excel={true}
+        onExcel={onExporting}
+      />  
+    
  
         </div>
 </div>

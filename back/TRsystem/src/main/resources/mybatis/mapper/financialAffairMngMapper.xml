@@ -484,21 +484,28 @@
 			</if>
 	</select>
 
-    <!--근무시간, 경비 통합승인 내역 중 근무시간-->
+    <!--근무시간, 경비 통합승인 내역 -->
     <select id="retrieveWorkHrAprvList" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
+
+            W_EMP_ID  AS EMP_ID,
             EMP_FLNM ,
             PRJCT_NM,
-            PRJCT_NON_INSERT,
-            PRJCT_INSERT,
-            VACATION,
-            TOTAL_PRJCT_NON_INSERT,
-            TOTAL_PRJCT_INSERT
+            FORMAT(PRJCT_NON_INSERT, 1) AS PRJCT_NON_INSERT,
+            FORMAT(PRJCT_INSERT, 1) AS PRJCT_INSERT,
+            FORMAT(VACATION, 1) AS VACATION,
+            FORMAT(TOTAL_PRJCT_NON_INSERT, 1) AS TOTAL_PRJCT_NON_INSERT,
+            FORMAT(TOTAL_PRJCT_INSERT, 1) AS TOTAL_PRJCT_INSERT,
+            PRJCT_NON_INSERT_EXPENSE,
+            PRJCT_INSERT_EXPENSE AS PRJCT_INSERT_EXPENSE
         FROM
             (
                 SELECT
+
+                    E.EMP_ID AS W_EMP_ID,
                     E.EMP_FLNM AS EMP_FLNM,
                     P.PRJCT_NM AS PRJCT_NM ,
+                    P.PRJCT_ID AS W_PRJCT_ID,
                     SUM(CASE WHEN P.PRJCT_STLE_CD = 'VTW01801' THEN
                                  CASE WHEN PMA.MD = 0 THEN 0
                                       WHEN PMA.MD = 0.5 THEN 4
@@ -555,13 +562,42 @@
                   AND PMA.EMP_ID = E.EMP_ID
                   AND PICM.MM_ATRZ_CMPTN_YN = 'Y'
                 GROUP BY
+                    E.EMP_ID,
                     E.EMP_FLNM ,
                     P.PRJCT_NM ,
+                    P.PRJCT_ID,
                     PMA.YRYC_RATE
-            ) WORK_HOUR
+            ) WORK_HOUR,
+            (
+                SELECT
+                    E.EMP_ID AS C_EMP_ID,
+                    P.PRJCT_ID AS C_PRJCT_ID,
+                    P.PRJCT_NM AS C_PRJCT_NM,
+                    SUM(CASE WHEN P.PRJCT_STLE_CD = 'VTW01801' THEN PCA.UTZTN_AMT ELSE 0 END ) PRJCT_NON_INSERT_EXPENSE
+                        ,
+                    SUM(CASE WHEN P.PRJCT_STLE_CD = 'VTW01802' THEN PCA.UTZTN_AMT ELSE 0 END ) PRJCT_INSERT_EXPENSE
+                FROM
+                    PRJCT_INDVDL_CT_MM PICM ,
+                    PRJCT P,
+                    EMP E,
+                    PRJCT_CT_APLY PCA
+                WHERE
+                    1 = 1
+                  AND E.EMP_ID = PICM.EMP_ID
+                  AND PICM.PRJCT_ID = P.PRJCT_ID
+                  AND PICM.PRJCT_ID = PCA.PRJCT_ID
+                  AND PICM.EMP_ID = PCA.EMP_ID
+                  AND PICM.APLY_YM = PCA.APLY_YM
+                  AND PICM.APLY_ODR = PCA.APLY_ODR
+                  AND PICM.CT_ATRZ_CMPTN_YN = 'Y'
+                GROUP BY
+                    E.EMP_ID,
+                    E.EMP_FLNM ,
+                    P.PRJCT_NM,
+                    P.PRJCT_ID) CT_LIST
+        WHERE WORK_HOUR.W_PRJCT_ID = CT_LIST.C_PRJCT_ID
+          AND   WORK_HOUR.W_EMP_ID = CT_LIST.C_EMP_ID
 
     </select>
-
-
 
 </mapper>
