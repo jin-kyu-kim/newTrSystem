@@ -6,16 +6,21 @@ import TextBox from "devextreme-react/text-box";
 
 import ApiRequest from "utils/ApiRequest";
 import CustomLabelValue from "components/unit/CustomLabelValue";
+import CustomEditTable from "components/unit/CustomEditTable";
 import MatrlCtCtrtDetailJson from "./MatrlCtCtrtDetailJson.json";
 
-const PymntPlanPopup = ({prjctId}) => {
 
-    const labelValue = MatrlCtCtrtDetailJson.labelValue
+const PymntPlanPopup = ({prjctId, handlePopupVisible}) => {
+    
+    const labelValue = MatrlCtCtrtDetailJson.matrlCtrt.labelValue
+    const { keyColumn, tableColumns } = MatrlCtCtrtDetailJson.matrlCtrt
     const [matrlPlan, setMatrlPlan] = useState({});
     const [matrlCtrtData, setMatrlCtrtData] = useState({});
+    const [pay, setPay] = useState([]);
+
+    const matrlCtrt = {};
 
     useEffect(() => {
-        console.log("프로젝트:", prjctId);
 
         retrieveMatrlPlan();
     }, []);
@@ -25,25 +30,49 @@ const PymntPlanPopup = ({prjctId}) => {
             queryId: "elecAtrzMapper.retrieveMatrlPlan",
             prjctId: prjctId
         }
-         try {
+        
+        try {
             const response = await ApiRequest("/boot/common/queryIdSearch", param);
             console.log(response)
             setMatrlPlan(response)
-         } catch (error) {
-             console.error(error)
-         }
+        } catch (error) {
+            console.error(error)
+        }
 
     }
 
     const selectMatrlPlan = (e) => {
-        console.log(e)
-        setMatrlCtrtData(e)
+        setMatrlCtrtData(e);
     }
     
-    const handleChgState = (e) => {
-        
-    }   
+    const handleChgState = ({name, value}) => {
+        setMatrlCtrtData({
+            ...matrlCtrtData,
+            [name]: value
+        })
+    } 
 
+    const handleData = async (payData) => {
+        console.log(payData)
+        setPay(payData)
+
+        for(let i = 0; i < payData.length; i++) {
+            
+            console.log(
+
+                payData[i].payYmd
+            )
+        }
+
+        setMatrlCtrtData({
+            ...matrlCtrtData,
+            payData
+        })
+    }
+
+    const test = async () => {
+        console.log(matrlCtrtData)
+    }
 
     return (
         <>
@@ -62,7 +91,7 @@ const PymntPlanPopup = ({prjctId}) => {
                                 </div>
                             </div>
                             <CustomLabelValue props={labelValue.cntrctamount} onSelect={handleChgState} readOnly={true} value={matrlCtrtData.cntrctamount}/>
-                            <CustomLabelValue props={labelValue.productNm} onSelect={handleChgState} value={matrlCtrtData.productNm}/>
+                            <CustomLabelValue props={labelValue.prductNm} onSelect={handleChgState} value={matrlCtrtData.prductNm}/>
                             <CustomLabelValue props={labelValue.dlvgdsEntrpsNm} onSelect={handleChgState}  value={matrlCtrtData.dlvgdsEntrpsNm}/>
                             <CustomLabelValue props={labelValue.dtlCn} onSelect={handleChgState} value={matrlCtrtData.dtlCn}/>
                             <CustomLabelValue props={labelValue.untpc} onSelect={handleChgState} value={matrlCtrtData.untpc}/>
@@ -72,20 +101,21 @@ const PymntPlanPopup = ({prjctId}) => {
                         </div>
                     </div>
                     <div className="project-change-content-inner-right">
-                        <div className="dx-fieldset">
-                            <div className="dx-field">
-                                <div className="dx-field-value">
-                                    <div>adsasdasdadasdadsadqweqw</div>
-                                </div>
-                            </div>
-                        </div>
+                        <CustomEditTable 
+                            keyColumn={keyColumn} 
+                            columns={tableColumns} 
+                            allowEdit={true}
+                            values={pay}
+                            handleData={handleData}
+                        />
                     </div>
                 </div>
+                <div>
+                    <Button text="저장" onClick={test}/>
+                    <Button text="취소" onClick={handlePopupVisible}/>
+                </div>
             </div>
-            <div style={{display:"inline-block"}}>
-                <Button text="저장"/>
-                <Button text="취소"/>
-            </div>
+
         </>
     );
 

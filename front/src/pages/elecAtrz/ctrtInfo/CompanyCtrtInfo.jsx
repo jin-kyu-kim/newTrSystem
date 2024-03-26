@@ -34,7 +34,7 @@ const CompanyCtrtInfo = ({prjctId}) => {
                 showCloseButton={true}
                 title="지불 계획 입력"
             >
-                <PymntPlanPopup prjctId={prjctId}/>
+                <PymntPlanPopup prjctId={prjctId} handlePopupVisible={handlePopupVisible}/>
             </Popup>
         </>
     );
