@@ -7,16 +7,10 @@ import ApiRequest from 'utils/ApiRequest';
 
 import { Button } from 'devextreme-react/button';
 
-const ElectAtrzRenderForm = ({formList, onExample, onFormClick}) => {
+const ElectAtrzRenderForm = ({formList, onFormClick}) => {
 
     const [docSeCd, setDocSeCd] = useState([]);
-    // const onExample = (data) => {
-    //     console.log(data)
-    // }
 
-    // const onFormClick = () => {
-
-    // }
     useEffect(() => {
         retriveDocSeCd();
     }, []);
@@ -60,7 +54,6 @@ const ElectAtrzRenderForm = ({formList, onExample, onFormClick}) => {
 
     const renderForm = (cd) => {
         const result = [];
-        console.log(cd)
 
         formList.map((data) => {
             if(data.docSeCd === cd) {
@@ -75,15 +68,10 @@ const ElectAtrzRenderForm = ({formList, onExample, onFormClick}) => {
                                     , border: "solid black 1px"
                                     , cursor: "pointer"}}   
                         >
-                            {/* <div style={{textAlign: "left", marginBottom: "20px"}} onClick={() => onExample(data)}>
-                                미리보기
-                            </div> */}
-
                             <div onClick={onFormClick} style={{marginBottom: "20px"}}>
                                 {data.gnrlAtrzTtl}
                             </div>
                             <div>
-                                {/* <Button text={"미리보기"} onClick={() => onExample(data)}/> */}
                                 <Button text={"기안하기"} onClick={() => onFormClick(data)}/>
                             </div>
                         </div>
@@ -96,30 +84,6 @@ const ElectAtrzRenderForm = ({formList, onExample, onFormClick}) => {
 
     return (
         <>
-            {/* <div>
-                * 계약
-            </div>
-            <div className="elecAtrz-from-container">
-                    {renderForm('VTW03401')}
-            </div>
-            <div>
-                * 지급
-            </div>
-            <div>
-                * 품의
-            </div>
-            <div>
-                * 인사/지원
-            </div>
-            <div className="elecAtrz-from-container">
-                    {renderForm('VTW03401')}
-            </div>
-            <div>
-                * 경비
-            </div>
-            <div className="elecAtrz-from-container">
-                    {renderForm('VTW03403')}
-            </div> */}
             {renderDocSe()}
         </>
     )

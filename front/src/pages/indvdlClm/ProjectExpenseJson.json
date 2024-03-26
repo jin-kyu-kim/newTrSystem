@@ -17,8 +17,8 @@
     }
   ],
   "labelValue" : {
-    "testParameter": {
-      "name": "testParameter",
+    "ctAtrzSeCd": {
+      "name": "ctAtrzSeCd",
       "type": "ComboBox",
       "label": "구분",
       "placeholder": "구분",
@@ -28,7 +28,7 @@
         },
         "valueExpr" : "cdValue",
         "displayExpr": "cdNm",
-        "name": "testParameter"
+        "name": "ctAtrzSeCd"
       },
       "required": true
     },

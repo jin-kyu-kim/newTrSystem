@@ -1,14 +1,8 @@
 import React from "react";
-import Button from "devextreme-react/button";
+import ExcelUpload from "../../components/unit/ExcelUpload";
 
-const button = {
-    borderRadius: '5px',
-    width: '100px',
-    marginTop: '20px',
-    marginRight: '15px'
-}
+const ProjectExpanseExcel = (props) => {
 
-const ProjectExpanseExcel = () => {
     return(
         <div className="container" style={{margin: '4%'}}>
             <span style={{fontSize: 18}}>롯데카드 법인카드 사용내역 엑셀을 업로드 합니다.<br/>
@@ -19,10 +13,7 @@ const ProjectExpanseExcel = () => {
                     ※ 승인번호가 같은 경우 기존 데이터를 수정합니다.
                 </span>
             </span>
-            <div>
-            <Button style={button} text="파일 선택"></Button>
-                <Button style={button} text="업로드" type='default'></Button>
-            </div>
+            <ExcelUpload excel={props.excel} setExcel={props.setExcel}/>
         </div>
 );
 };

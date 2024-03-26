@@ -3,7 +3,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import LawRulesJson from "./LawRulesJson.json";
 import ApiRequest from "../../utils/ApiRequest";
-import 'react-tabs/style/react-tabs.css';
 import "react-datepicker/dist/react-datepicker.css";
 import { TabPanel } from "devextreme-react";
 
