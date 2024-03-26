@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Popup } from "devextreme-react/popup";
 import { Button } from "devextreme-react/button";
@@ -10,7 +10,11 @@ const CompanyCtrtInfo = ({prjctId}) => {
     console.log(prjctId)
 
     const [popupVisible, setPopupVisible] = useState(false);
+    const [plan, setPlan] = useState({});
 
+    useEffect(() => {
+        console.log(plan)
+    }, [plan]);
 
     /**
      * 팝업 레이어 표시/비표시
@@ -19,13 +23,15 @@ const CompanyCtrtInfo = ({prjctId}) => {
         setPopupVisible(!popupVisible);
     }
 
+    const handlePlanData = (planData) => {
+        setPlan(planData)
+    }
+
     return (
         <>
             <h3>계약 세부 내용</h3>
             <div>CompanyCtrtInfo</div>
             <Button text="추가" onClick={handlePopupVisible}></Button>
-
-
             <Popup
                 width="80%"
                 height="80%"
@@ -34,7 +40,7 @@ const CompanyCtrtInfo = ({prjctId}) => {
                 showCloseButton={true}
                 title="지불 계획 입력"
             >
-                <PymntPlanPopup prjctId={prjctId} handlePopupVisible={handlePopupVisible}/>
+                <PymntPlanPopup prjctId={prjctId} handlePopupVisible={handlePopupVisible} handlePlanData={handlePlanData}/>
             </Popup>
         </>
     );
