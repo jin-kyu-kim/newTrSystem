@@ -1,79 +1,30 @@
-import React, { useState , useEffect} from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
+import React, { useState, useEffect } from "react";
 import EmpInfoJson from "./EmpInfoJson.json";
 import ApiRequest from "utils/ApiRequest";
 import { useCookies } from "react-cookie";
 import CustomEditTable from "components/unit/CustomEditTable";
 
-const EmpEduHist = ({  }) => {
-
-  const [param, setParam] = useState({});
-
-  const {queryId, keyColumn, tableColumns, tbNm } = EmpInfoJson.EmpEduHist;
-  const [values, setValues] = useState([]);
-  const [tableKey, setTableKey] = useState(0);
+const EmpEduHist = () => {
+  const { queryId, keyColumn, tableColumns, tbNm } = EmpInfoJson.EmpEduHist;
   const [cookies] = useCookies(["userInfo", "userAuth"]);
-  const date = new Date();
   const userEmpId = cookies.userInfo.empId;
-  const doublePk = {nm: "empId", val: userEmpId};
-  const [data, setData] = useState({
-    empId: userEmpId,
-    regEmpId: userEmpId,
-    regDt: date.toISOString().split("T")[0] + " " + date.toTimeString().split(" ")[0],
-  });
-
-  const [isSuccess, setIsSuccess] = useState(false);
+  const doublePk = { nm: "empId", val: userEmpId };
+  const [values, setValues] = useState([]);
 
   useEffect(() => {
-     getSn();
-  setParam({
-    ...param,
-    queryId: queryId,
-    empId : userEmpId,
-  });
-}, []);
-
-useEffect(() => {
-   
-  getSn();
-}, [param, isSuccess]);
-
-const getSn = async () => {
-  const selectParams = {
-    queryId: "infoInqMapper.selectEduSn",
-    empId: data.empId
-  };
-
-  try {
-    const response = await ApiRequest("/boot/common/queryIdSearch", selectParams);
-    setData(() => ({
-      ...data,
-      eduSn: response[0].eduSn
-    }));
-  
-
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-const pageHandle = async () => {
-  try {
-    const response =  await ApiRequest("/boot/common/queryIdSearch", param);
-    setValues(response);
-    if (response.length !== 0) {
-      setIsSuccess(!isSuccess);
-    } else {
-    }
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-useEffect(()=>{
     pageHandle();
- 
-},[param.empId,tableKey]);
+  }, []);
+
+  const pageHandle = async () => {
+    try {
+      const response = await ApiRequest("/boot/common/queryIdSearch", {
+        queryId: queryId, empId: userEmpId
+      });
+      if (response.length !== 0) setValues(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="container" style={{ height: "700px" }}>
@@ -81,19 +32,16 @@ useEffect(()=>{
         <h1 style={{ fontSize: "40px" }}>교육이력</h1>
       </div>
       <div style={{ marginBottom: "20px" }}>
-      <CustomEditTable
-                    keyColumn={keyColumn}
-                    columns={tableColumns}
-                    values={values}
-                    tbNm={tbNm}
-                    doublePk={doublePk}
-                    getKeyCol={data.eduSn}
-                />
+        <CustomEditTable
+          tbNm={tbNm}
+          values={values}
+          keyColumn={keyColumn}
+          columns={tableColumns}
+          doublePk={doublePk}
+          callback={pageHandle}
+        />
       </div>
-       
-      
     </div>
   );
 };
-
 export default EmpEduHist;

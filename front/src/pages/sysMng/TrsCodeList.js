@@ -3,18 +3,13 @@ import SysMng from './SysMngJson.json';
 import ApiRequest from '../../utils/ApiRequest';
 import SearchInfoSet from "components/composite/SearchInfoSet"
 import CustomEditTable from "components/unit/CustomEditTable";
-import { DataGrid } from "devextreme-react";
-import { Column } from "devextreme-react/cjs/data-grid";
 import '../../pages/sysMng/sysMng.css'
 
 const TrsCodeList = () => {
     const [ values, setValues ] = useState([]);
     const [ param, setParam ] = useState({});
     const [ childList, setChildList ] = useState([]);
-
-    const [totalItems, setTotalItems] = useState(0);
-    const [currentPage] = useState(1);
-    const [pageSize] = useState(20);
+    const [ totalItems, setTotalItems ] = useState(0);
     const { keyColumn, queryId, tableColumns, childTableColumns, searchInfo, tbNm } = SysMng.trsCodeJson;
 
     useEffect(() => {
@@ -26,9 +21,7 @@ const TrsCodeList = () => {
     const searchHandle = async (initParam) => {
         setParam({
             ...initParam,
-            queryId: queryId,
-            currentPage: currentPage,
-            pageSize: pageSize,
+            queryId: queryId
         });
     };
 
@@ -44,24 +37,23 @@ const TrsCodeList = () => {
         }
     };
 
-    const handleYnVal = async (idColumn, useYn) => {
+    const handleYnVal = async (e) => {
         const ynParam = [
             { tbNm: "CD" },
-            { useYn: useYn },
-            { cdValue: idColumn }
+            e.data,
+            { cdValue: e.key }
         ];
         try {
             const response = await ApiRequest('/boot/common/commonUpdate', ynParam);
-            setChildList(response)
         } catch (error) {
             console.log(error)
         }
     }
-    
-    const getChildList = async (id) => {
+
+    const getChildList = async (e) => {
         try{
             const response = await ApiRequest('/boot/common/commonSelect', [
-                { tbNm: "CD" }, { upCdValue: id }
+                { tbNm: "CD" }, { upCdValue: e.data.cdValue }
             ]);
             setChildList(response)
         } catch(error){
@@ -71,28 +63,21 @@ const TrsCodeList = () => {
 
     const masterDetail = (e) => {
         return (
-            <DataGrid
-                dataSource={''}
-                showBorders={true}
-            >
-                {childTableColumns.map((c) => (
-                    <Column
-                        key={c.key}
-                        dataField={c.key}
-                        caption={c.value}
-                    />
-                ))}
-            </DataGrid>
+            <CustomEditTable
+                tbNm={tbNm}
+                values={childList}
+                keyColumn={keyColumn}
+                removeAdd={true}
+                columns={childTableColumns}
+                handleYnVal={handleYnVal}
+            />
         );
     };
 
     return (
         <div className="container">
-            <div
-                className="title p-1"
-                style={{ marginTop: "20px", marginBottom: "10px" }}
-            >
-                <h1 style={{ fontSize: "40px" }}>권한코드</h1>
+            <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }} >
+                <h1 style={{ fontSize: "40px" }}>코드 관리</h1>
             </div>
             <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
                 <span>* 권한코드를 조회합니다.</span>
@@ -103,12 +88,14 @@ const TrsCodeList = () => {
 
             <div>검색된 건 수 : {totalItems} 건</div>
             <CustomEditTable
+                tbNm={tbNm}
+                values={values}
+                allowEdit={true}
                 keyColumn={keyColumn}
                 columns={tableColumns}
-                values={values}
-                handleYnVal={handleYnVal}
-                tbNm={tbNm}
                 masterDetail={masterDetail}
+                handleYnVal={handleYnVal}
+                callback={pageHandle}
             />
         </div>
     );

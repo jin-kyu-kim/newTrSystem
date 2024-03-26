@@ -32,7 +32,16 @@ public class SysMngDomain {
         List<Map<String, Object>> mapngParam = new ArrayList<>();
 
         try{
-            result += commonService.insertData(authGroup);
+            if(authGroup.size() > 2){
+                result += commonService.updateData(authGroup);
+
+                mapngParam.add(authMapng.get(0));
+                mapngParam.add(authGroup.get(2));
+                commonService.deleteData(mapngParam);
+            } else {
+                result += commonService.insertData(authGroup);
+            }
+
             for (int i=1; i<authMapng.size(); i++){
                 mapngParam.clear();
                 mapngParam.add(authMapng.get(0));

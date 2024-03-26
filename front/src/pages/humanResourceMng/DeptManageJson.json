@@ -10,19 +10,8 @@
         "height": "auto",
         "title":  "부서 등록"
     },
-	"listQueryId": "humanResourceMngMapper.retrieveDeptList",
-    "listKeyColumn": "deptId",
-    "listTableColumns": [
-        { "key": "rownum", "value": "번호", "width": 70, "alignment" : "center" },
-        { "key": "deptNm", "value": "부서명"},
-        { "key": "upDeptNm", "value": "상위부서명"},
-        { "key": "deptMngrEmpFlnm", "value": "부서장명"}
-    ],
-    "downDeptQueryId": "humanResourceMngMapper.retrieveDownDeptList",
-    "downDeptTableColumns": [
-        { "key": "deptNm", "value": "부서명"},
-        { "key": "deptMngrEmpFlnm", "value": "부서장명"}
-    ],
+	"listQueryId2": "humanResourceMngMapper.retrieveDeptList",
+    "listQueryId": "humanResourceMngMapper.retrieveDeptList2",
 	"hnfQueryId": "humanResourceMngMapper.retrieveDeptHnfList",
     "hnfKeyColumn": "empId",
     "hafTableColumns": [
@@ -30,6 +19,14 @@
         { "key": "empFlnm", "value": "성명" },
         { "key": "jbpsNm", "value": "직위"},
         { "key": "jbttlNm", "value": "직책" }
+    ],
+    "emplistQueryId": "infoInqMapper.retrieveEmpList",
+    "emplistKeyColumn": "empId",
+    "listTableColumns": [
+        { "key": "empno", "value": "사번", "width": 100, "alignment" : "center" },
+        { "key": "empFlnm", "value": "성명"},
+        { "key": "jbpsNm", "value": "직위"},
+        { "key": "deptId", "value": "소속"}
     ]
-
+    
 }

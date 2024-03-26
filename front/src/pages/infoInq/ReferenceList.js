@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "react-datepicker/dist/react-datepicker.css";
-
 import ApiRequest from "../../utils/ApiRequest";
 import NoticeJson from "../infoInq/NoticeJson.json";
-import CustomTable from "../../components/unit/CustomTable";
 import SearchInfoSet from 'components/composite/SearchInfoSet';
+import CustomEditTable from "components/unit/CustomEditTable";
 
 const ReferenceList = () => {
     const [values, setValues] = useState([]);
@@ -44,7 +42,7 @@ const ReferenceList = () => {
         }
     };
 
-    const onRowDblClick = (e) => {
+    const onRowClick = (e) => {
         navigate("/infoInq/ReferenceDetail", 
                   {state: { id: e.key }})
       };
@@ -69,12 +67,13 @@ const ReferenceList = () => {
             </div>
 
             <div>검색된 건 수 : {totalItems} 건</div>
-            <CustomTable
+            <CustomEditTable
+                noEdit={true}
                 keyColumn={keyColumn}
                 pageSize={pageSize}
                 columns={tableColumns}
                 values={values}
-                onRowDblClick={onRowDblClick}
+                onRowClick={onRowClick}
                 paging={true}
             />
         </div>
