@@ -60,4 +60,126 @@
         </if>
     </select>
 
+    <!-- 휴가첨부파일조회 -->
+    <select id="retrieveAtchmnflInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            ATCHMNFL_ID			/* 첨부파일ID */
+            ,ATCHMNFL_SN		/* 첨부파일순번 */
+            ,STRG_FILE_NM		/* 저장피알명 */
+            ,REAL_FILE_NM		/* 실제파일명 */
+            ,FILE_STRG_COURS	/* 파일저장경로 */
+        FROM ATCHMNFL
+        WHERE ATCHMNFL_ID = #{atchmnflId}
+    </select>
+
+    <!-- 결재선심사권자조회 -->
+    <select id="retrieveAtrzLnSrngInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            EMP.EMP_ID
+            ,EMP.EMPNO
+            ,EMP_FLNM
+            ,JBPS_CD
+            ,(SELECT CD_NM FROM CD WHERE CD_VALUE = JBPS_CD)	JBPS_NM
+            ,DEPT.DEPT_ID
+            ,DEPT.DEPT_NM
+            ,HNF.JBTTL_CD
+            ,(SELECT CD_NM FROM CD WHERE CD_VALUE = JBTTL_CD)	JBTTL_NM
+            ,PRJCT.PRJCT_MNGR_EMP_ID
+            ,CONCAT(DEPT_NM, ' ', EMP_FLNM, ' ', (SELECT CD_NM FROM CD WHERE CD_VALUE = EMP.JBPS_CD)) LIST_EMP_FLNM
+        FROM
+            EMP			EMP
+            ,DEPT 		DEPT
+            ,DEPT_HNF	HNF
+            ,PRJCT		PRJCT
+        WHERE HDOF_STTS_CD = 'VTW00301'
+        AND EMP.EMP_ID = HNF.EMP_ID
+        AND DEPT.DEPT_ID = HNF.DEPT_ID
+        AND EMP.EMP_ID = PRJCT.PRJCT_MNGR_EMP_ID
+        AND HNF.EMP_ID = PRJCT.PRJCT_MNGR_EMP_ID
+        AND DEPT.DEPT_ID = PRJCT.DEPT_ID
+        AND HNF.DEPT_ID = PRJCT.DEPT_ID
+        <if test="prjctMngrEmpId !=null and !prjctMngrEmpId.equals('')">
+            AND PRJCT.PRJCT_MNGR_EMP_ID = #{prjctMngrEmpId}
+        </if>
+    </select>
+
+    <!-- 결재선승인목록조회 -->
+    <select id="retrieveAtrzLnAprvListInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        WITH RECURSIVE DEPT_LINE AS (
+            SELECT
+                DEPT_ID,
+                DEPT_NM,
+                UP_DEPT_ID,
+                0 AS LEVEL
+            FROM DEPT
+            WHERE DEPT_ID = #{deptId}
+            AND END_YN = 'N'
+            UNION ALL
+            SELECT
+                DEPT2.DEPT_ID,
+                DEPT2.DEPT_NM,
+                DEPT2.UP_DEPT_ID,
+                LINE.LEVEL + 1 AS LEVEL
+            FROM DEPT 	DEPT2
+            INNER JOIN DEPT_LINE LINE ON DEPT2.DEPT_ID = LINE.UP_DEPT_ID
+        )
+        SELECT
+            DEPT_ID
+<!--            ,DEPT_NM,-->
+<!--            ,UP_DEPT_ID-->
+<!--            ,LEVEL-->
+        FROM DEPT_LINE	DL
+<!--        ORDER BY DL.LEVEL DESC-->
+    </select>
+
+    <!-- 결재선승인권자조회 -->
+    <select id="retrieveAtrzLnAprvInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            EMP.EMP_ID
+            ,EMP_FLNM
+            ,JBPS_CD
+            ,(SELECT CD_NM FROM CD WHERE CD_VALUE = JBPS_CD)	JBPS_NM
+            ,DEPT.DEPT_ID
+            ,DEPT.DEPT_NM
+            ,HNF.JBTTL_CD
+            ,(SELECT CD_NM FROM CD WHERE HNF.JBTTL_CD = CD_VALUE) JBTTL_NM
+            ,CONCAT(DEPT_NM, ' ', EMP_FLNM, ' ', (SELECT CD_NM FROM CD WHERE CD_VALUE = EMP.JBPS_CD)) LIST_EMP_FLNM
+        FROM
+            EMP			EMP
+            ,DEPT 		DEPT
+            ,DEPT_HNF	HNF
+        WHERE HDOF_STTS_CD = 'VTW00301'
+        AND EMP.EMP_ID = HNF.EMP_ID
+        AND DEPT.DEPT_ID = HNF.DEPT_ID
+        <if test="deptId !=null and !deptId.equals('')">
+            AND DEPT.DEPT_ID IN
+            <foreach collection="deptId" item="item" index="index" separator="," open="(" close=")">
+                #{item.deptId}
+            </foreach>
+        </if>
+        ORDER BY JBTTL_CD
+    </select>
+
+    <!-- 결재선참조자조회 -->
+    <select id="retrieveElctrnAtrzRefrnInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            EMP.EMP_ID
+            ,EMP.EMPNO
+            ,EMP_FLNM
+            ,JBPS_CD
+            ,(SELECT CD_NM FROM CD WHERE CD_VALUE = JBPS_CD)	JBPS_NM
+            ,DEPT.DEPT_ID
+            ,DEPT.DEPT_NM
+            ,CONCAT(DEPT_NM, ' ', EMP_FLNM, ' ', (SELECT CD_NM FROM CD WHERE CD_VALUE = EMP.JBPS_CD)) LIST_EMP_FLNM
+            ,'VTW00706' APPROVAL_CODE
+        FROM EMP			EMP
+            ,DEPT 		DEPT
+            ,DEPT_HNF	HNF
+        WHERE HDOF_STTS_CD = 'VTW00301'
+        AND EMP.EMP_ID = HNF.EMP_ID
+        AND DEPT.DEPT_ID = HNF.DEPT_ID
+        AND DEPT.DEPT_ID = #{repDeptId}
+        AND EMP.EMP_FLNM IN ('이진원', '안주리')
+    </select>
+
 </mapper>
