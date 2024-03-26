@@ -3,16 +3,14 @@
     "queryId": "projectMapper.retrieveElctrnAtrzMatrlCtDetail",
     "keyColumn": "matrlCtSn",
     "tableColumns": [
-      { "key": "outordEntrpsNm", "value": "제품명" },
-      { "key": "tkcgJob", "value": "업체명" },
-      { "key": "expectCt", "value": "단가" },
-      { "key": "useAmt", "value": "수량" },
-      { "key": "avail2", "value": "가용금액" },
-      { "key": "avail3", "value": "총 사용액" },
+      { "key": "prductNm", "value": "제품명" },
+      { "key": "dlvgdsEntrpsNm", "value": "업체명" },
+      { "key": "cntrctamount", "value": "가용금액" },
+      { "key": "payTot", "value": "총 사용액" },
       { "value": "선금",
         "subColumns": [
-          { "key": "avail5", "value": "날짜" },
-          { "key": "avail6", "value": "금액" }
+          { "key": "advPayYm", "value": "날짜" },
+          { "key": "advPayAmt", "value": "금액" }
         ]},
       { "value": "중도금",
         "subColumns": [
@@ -29,13 +27,13 @@
     ],
     "summaryColumn": [
       {
-        "key": "avail2",
+        "key": "cntrctamount",
         "value": "가용금액",
         "type": "sum",
         "format": "Total: {0}원"
       },
       {
-        "key": "avail3",
+        "key": "payTot",
         "value": "총 사용액",
         "type": "sum",
         "format": "Total: {0}원"
