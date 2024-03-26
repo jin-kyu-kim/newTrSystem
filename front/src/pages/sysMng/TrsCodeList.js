@@ -9,10 +9,7 @@ const TrsCodeList = () => {
     const [ values, setValues ] = useState([]);
     const [ param, setParam ] = useState({});
     const [ childList, setChildList ] = useState([]);
-
-    const [totalItems, setTotalItems] = useState(0);
-    const [currentPage] = useState(1);
-    const [pageSize] = useState(20);
+    const [ totalItems, setTotalItems ] = useState(0);
     const { keyColumn, queryId, tableColumns, childTableColumns, searchInfo, tbNm } = SysMng.trsCodeJson;
 
     useEffect(() => {
@@ -24,9 +21,7 @@ const TrsCodeList = () => {
     const searchHandle = async (initParam) => {
         setParam({
             ...initParam,
-            queryId: queryId,
-            currentPage: currentPage,
-            pageSize: pageSize,
+            queryId: queryId
         });
     };
 
@@ -42,15 +37,14 @@ const TrsCodeList = () => {
         }
     };
 
-    const handleYnVal = async (idColumn, useYn) => {
+    const handleYnVal = async (e) => {
         const ynParam = [
             { tbNm: "CD" },
-            { useYn: useYn },
-            { cdValue: idColumn }
+            e.data,
+            { cdValue: e.key }
         ];
         try {
             const response = await ApiRequest('/boot/common/commonUpdate', ynParam);
-            setChildList(response)
         } catch (error) {
             console.log(error)
         }
@@ -83,7 +77,7 @@ const TrsCodeList = () => {
     return (
         <div className="container">
             <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }} >
-                <h1 style={{ fontSize: "40px" }}>권한코드</h1>
+                <h1 style={{ fontSize: "40px" }}>코드 관리</h1>
             </div>
             <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
                 <span>* 권한코드를 조회합니다.</span>
@@ -99,9 +93,9 @@ const TrsCodeList = () => {
                 allowEdit={true}
                 keyColumn={keyColumn}
                 columns={tableColumns}
-                handleYnVal={handleYnVal}
                 masterDetail={masterDetail}
-                getChildList={getChildList}
+                handleYnVal={handleYnVal}
+                callback={pageHandle}
             />
         </div>
     );
