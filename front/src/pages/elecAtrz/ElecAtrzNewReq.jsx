@@ -204,7 +204,7 @@ const ElecAtrzNewReq = () => {
                 <hr/>
                 <div dangerouslySetInnerHTML={{ __html: formData.docFormDc }} />
                 {formData.elctrnAtrzTySeCd === "VTW04908" && 
-                    <ElecAtrzOutordEmpCtrt data={data} prjctData={prjctData} />
+                    <ElecAtrzOutordEmpCtrt data={data} prjctId={prjctId} />
                 }
                 <HtmlEditBox 
                     column={ {"dataField": "gnrlAtrzCn"}}

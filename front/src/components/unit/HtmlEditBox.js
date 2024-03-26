@@ -18,7 +18,7 @@ const HtmlEditBox = ({ column, data, setData, placeholder, value }) => {
         height="725px"
         id={column.dataField}
         placeholder={placeholder}
-        value={valueContent? valueContent : value}
+        value={valueContent ?? value}  //valueContent가 null이나 undefined일 경우 value를 사용 그 외 falsy(0,"",false)한 값은 valueContent를 사용
         onValueChanged={valueChanged}
         onFocusOut={(e) => {
           setData({ ...data, [column.dataField]: valueContent });
