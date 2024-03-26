@@ -32,7 +32,7 @@
                       "valueExpr": "cdValue",
                       "displayExpr": "cdNm",
                       "name": "cdValue",
-                      "clearButton": false
+                      "clearButton": true
                     }
                 }
             ],
@@ -52,7 +52,7 @@
             { "key": "ctmmnyNm", "value": "고객사명(한글)", "isRequire": true },
             { "key": "ctmmnyEngNm", "value": "고객사명(영문)" },
             { "key": "industCd", "value": "산업명", "editType": "selectBox", "comCd": "VTW016", "isRequire": true },
-            { "key": "useYn", "value": "사용여부", "type": "dxSwitch", "editType": "toggle", "button": true }
+            { "key": "useYn", "value": "사용여부", "editType": "toggle", "button": true }
         ],
         "tbNm": "CTMMNY_INFO",
         "searchInfo":{
