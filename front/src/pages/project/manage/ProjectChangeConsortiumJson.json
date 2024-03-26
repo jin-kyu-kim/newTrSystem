@@ -7,7 +7,7 @@
         {"key": "bizFlfmtTyCd","keyNm":"bizFlfmtTyCdNm","value": "사업수행유형", "type": "combo", "required":"Y"},
         {"key": "cnsrtmCoNm", "value": "회사 명", "required":"Y", "type" : "string", "min":0, "max":100},
         {"key": "altmntAmt", "value": "금액", "subType": "NumberBox", "format": "#,### 원", "required":"Y", "min": 0, "max" : 9000000000000000},
-        {"key": "cmmnExpensAmt", "value": "공통경비 금액", "subType": "NumberBox", "format": "#,### 원", "required":"Y", "min": 0, "max" : 2000000000},
+        {"key": "cmmnExpensAmt", "value": "공통경비 금액", "subType": "NumberBox", "format": "#,### 원", "required":"Y", "min": 0, "max" : 9000000000000000},
         {"key": "slsAmRfltYn", "keyNm":"slsAmRfltYn", "value": "매출액 반영여부", "type": "comboYn", "required":"Y"}
     ],
     "pkColumns": ["prjctId","cnsrtmSn"],

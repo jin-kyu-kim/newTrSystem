@@ -8,10 +8,10 @@
         {"key": "dlvgdsEntrpsNm", "value": "업체명", "required":"Y", "type" : "string", "min":0, "max":100},
         {"key": "prductNm", "value": "제품명", "required":"Y", "type" : "string", "min":0, "max":100},
         {"key": "dtlCn", "value": "상세스펙", "required":"Y", "type" : "string", "min":0, "max":200},
-        {"key": "untpc", "value": "단가", "subType": "NumberBox", "format": "#,### 원", "required":"Y", "min": 0, "max" : 2000000000},
+        {"key": "untpc", "value": "단가", "subType": "NumberBox", "format": "#,### 원", "required":"Y", "min": 0, "max" : 9000000000000000},
         {"key": "qy", "value": "수량", "width": "7%","subType": "NumberBox", "required":"Y", "min": 0, "max" : 2000000000},
-        {"key": "cntrctamount", "value": "계약금액(부가세 별도)", "width": "14%", "subType": "NumberBox", "format": "#,### 원", "required":"Y", "min": 0, "max" : 2000000000},
-        {"key": "dscntBfeEstmtPc", "value": "견적가(할인전)", "width": "14%", "subType": "NumberBox", "format": "#,### 원", "required":"Y", "min": 0, "max" : 2000000000}
+        {"key": "cntrctamount", "value": "계약금액(부가세 별도)", "width": "14%", "subType": "NumberBox", "format": "#,### 원", "required":"Y", "min": 0, "max" : 9000000000000000},
+        {"key": "dscntBfeEstmtPc", "value": "견적가(할인전)", "width": "14%", "subType": "NumberBox", "format": "#,### 원", "required":"Y", "min": 0, "max" : 9000000000000000}
 	],
     "pkColumns": ["prjctId","matrlCtSn","bgtMngOdr"],
     "CdComboboxColumn": "matrlCtIemCd",
