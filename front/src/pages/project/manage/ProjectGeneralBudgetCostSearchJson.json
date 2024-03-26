@@ -2,40 +2,50 @@
   {
     "caption": "비용코드",
     "width": 120,
-    "dataField": "expensNm",
+    "dataField": "expensnm",
     "area": "row",
     "expanded": true,
     "showTotals": false
   },
   {
-    "caption": "상세내용",
-    "dataField": "dtlDtls",
-    "width": 200,
-    "area": "row",
-    "expanded": true,
-    "showTotals": false
-  },
-  {
-    "caption": " ",
-    "dataField": "flag",
-    "width": 100,
-    "area": "row",
-    "expanded": true,
-    "showTotals": false
-  },
-  {
-    "dataField": "useYm",
-    "dataType": "inptYm",
-    "groupInterval": "year",
+    "dataField": "ym",
     "area": "column",
-    "showTotals": true,
     "expanded": true
   },
   {
-    "caption": "Total",
-    "dataField": "expensCt",
+    "caption": "예산",
+    "dataField": "expectCt",
     "dataType": "number",
     "summaryType": "sum",
-    "area": "data"
+    "area": "data",
+    "format": {
+      "type": "fixedPoint",
+      "precision": 0,
+      "groupSeparator": ","
+    }
+  },
+  {
+    "caption": "사용",
+    "dataField": "expensCt",
+    "area": "data",
+    "dataType": "number",
+    "summaryType": "sum",
+    "format": {
+      "type": "fixedPoint",
+      "precision": 0,
+      "groupSeparator": ","
+    }
+  },
+  {
+    "caption": "가용",
+    "dataField": "calcCt",
+    "area": "data",
+    "dataType": "number",
+    "summaryType": "sum",
+    "format": {
+      "type": "fixedPoint",
+      "precision": 0,
+      "groupSeparator": ","
+    }
   }
 ]
