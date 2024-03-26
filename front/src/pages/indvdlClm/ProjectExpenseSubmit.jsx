@@ -54,7 +54,9 @@ const ProjectExpenseSubmit = (props) => {
         if (confirmResult) {
             const params = [{ tbNm: props.tbNm, snColumn: props.snColumn }];
             props.value.forEach(value => {
-                value.utztnAmt = value.utztnAmt.replace(",","");
+                if(typeof value.utztnAmt === "string"){
+                    value.utztnAmt = value.utztnAmt.replace(",","");
+                }
                 params.push(value);
             })
             try {
