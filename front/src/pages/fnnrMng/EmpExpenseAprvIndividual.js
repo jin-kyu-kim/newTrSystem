@@ -4,21 +4,21 @@ import CustomPivotGrid from "../../components/unit/CustomPivotGrid";
 import PivotGridDataSource from "devextreme/ui/pivot_grid/data_source";
 
 
-const EmpExpenseAprvIndividual = ({ empNo, year, monthVal, aplyOdr, expensCd }) => {
+const EmpExpenseAprvIndividual = ({ empNo, aplyYm, aplyOdr, expensCd }) => {
 
     const [expenseAprvData, setExpenstAprvData] = useState([]);
 
     useEffect(() => {
         getExpenseAprvData();
 
-    }, [year, monthVal, aplyOdr]);
+    }, [aplyYm, aplyOdr]);
 
     //경비 승인내역 조회
     const getExpenseAprvData = async () => {
         const param = {
             queryId: 'financialAffairMngMapper.retrieveExpensAprvDtls',
             empNo: empNo,
-            aplyYm: year+monthVal,
+            aplyYm: aplyYm,
             aplyOdr: aplyOdr,
             expensCd: expensCd
         };
@@ -82,7 +82,7 @@ const EmpExpenseAprvIndividual = ({ empNo, year, monthVal, aplyOdr, expensCd }) 
     const makeExcelFileName = () => {
 
         let fileName = '경비승인내역.개인별.';
-        let fileNameYm = year+monthVal;
+        let fileNameYm = aplyYm;
         let fileNameOdr = '';
 
         if(aplyOdr != '')
@@ -95,15 +95,13 @@ const EmpExpenseAprvIndividual = ({ empNo, year, monthVal, aplyOdr, expensCd }) 
 
     return (
         <div style={{padding: '20px'}}>
-            <div className='container'>
-                <CustomPivotGrid
-                    values={dataSource}
-                    columnGTName={'소계'}
-                    blockCollapse={true}
-                    weekendColor={true}
-                    fileName={makeExcelFileName}
-                />
-            </div>
+            <CustomPivotGrid
+                values={dataSource}
+                columnGTName={'소계'}
+                blockCollapse={true}
+                weekendColor={true}
+                fileName={makeExcelFileName}
+            />
         </div>
     );
 };
