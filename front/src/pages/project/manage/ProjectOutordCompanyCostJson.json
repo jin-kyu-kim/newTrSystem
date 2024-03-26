@@ -10,7 +10,7 @@
         {"key": "ctrtBgngYmd", "value": "계약시작일자", "subType": "Date","format": "yyyy-MM-dd", "required":"Y"},
         {"key": "ctrtEndYmd", "value": "계약종료일자", "subType": "Date", "format": "yyyy-MM-dd", "required":"N"},
         {"key": "inptPrnmntHnfCnt", "value": "투입예정인력수", "subType":"NumberBox", "required":"N", "min":0, "max":2000000000},
-        {"key": "expectCt", "value": "예상비용", "subType":"NumberBox", "required":"Y", "min":0, "max":2000000000}
+        {"key": "expectCt", "value": "예상비용", "subType":"NumberBox", "required":"Y", "min":0, "max":9000000000000000}
 	],
     "pkColumns": ["prjctId","outordEntrpsCtPrmpcSn","bgtMngOdr"],
     "CdComboboxColumn": "outordEntrpsId",
