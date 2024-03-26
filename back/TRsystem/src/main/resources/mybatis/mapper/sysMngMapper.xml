@@ -23,7 +23,6 @@
         <if test="cdNm != null and cdNm !=''">
             AND CD_NM LIKE CONCAT('%', #{cdNm}, '%')
         </if>
-        ORDER BY REG_DT DESC
     </select>
 
     <select id="authCdList" parameterType="map" resultType="com.trsystem.LowerHashMap">

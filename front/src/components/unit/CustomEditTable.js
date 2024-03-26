@@ -7,7 +7,7 @@ import moment from 'moment';
 import { useCookies } from 'react-cookie';
 
 const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, masterDetail, doublePk, 
-    noEdit, onSelection, onRowClick, removeAdd, callback }) => {
+    noEdit, onSelection, onRowClick, removeAdd, callback, handleData }) => {
     const [ cookies ] = useCookies(["userInfo", "userAuth"]);
     const [ cdValList, setCdValList ] = useState({});
     const empId = cookies.userInfo.empId;
@@ -39,66 +39,66 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
     }, [])
 
     const onEditRow = async (editMode, e) => {
-        let editInfo = {};
-        let editParam = doublePk ? [{tbNm: tbNm, snColumn: keyColumn}] : [{tbNm: tbNm}];
-        let keyInfo = doublePk ? { [keyColumn]: e.key, [doublePk.nm]: doublePk.val } : { [keyColumn]: e.key };
-        let isDuplicate = false;
-        
-        switch (editMode) {
-            case 'insert':
-                if(doublePk !== undefined){
-                    Object.assign(e.data, {
-                        [doublePk.nm]: doublePk.val
-                    });
-                }
-                isDuplicate = checkDuplicate(e.data[keyColumn]);
-                if (isDuplicate) {
-                    alert("중복된 키 값입니다. 다른 키 값을 사용해주세요.");
-                    return;
-                }
-                handleYnVal !== undefined 
-                    ? (e.data = {...e.data, regDt: date.format('YYYY-MM-DD'), regEmpId: empId, ...ynVal.current})
-                    : e.data = {...e.data, regDt: date.format('YYYY-MM-DD'), regEmpId: empId}
-                editParam[1] = e.data;
-                editInfo = { url: 'commonInsert', complete: '저장' }
-                break;
-            case 'update':
-                isDuplicate = checkDuplicate(e.newData[keyColumn]);
-                if (isDuplicate) {
-                    alert("중복된 키 값입니다. 다른 키 값을 사용해주세요.");
-                    return;
-                }
-                handleYnVal !== undefined 
-                    ? (e.newData = {...e.newData, mdfcnDt: date.format('YYYY-MM-DD'), mdfcnEmpId: empId, ...ynVal.current})
-                    : e.newData = {...e.newData, mdfcnDt: date.format('YYYY-MM-DD'), mdfcnEmpId: empId}
-                editParam[1] = e.newData;
-                editParam[2] = keyInfo;
-                editInfo = { url: 'commonUpdate', complete: '수정' }
-                break;
-            case 'delete':
-                editParam[1] = keyInfo;
-                editInfo = { url: 'commonDelete', complete: '삭제' }
-                break;
-        }
-        
-        try {
-            const response = await ApiRequest('/boot/common/' + editInfo.url, editParam);
-            if(response === 1) {
-                alert(editInfo.complete + "되었습니다.");
-                callback();
-            } else{
-                alert(editInfo.complete + "에 실패했습니다.");
+        if(tbNm !== undefined) {
+            let editInfo = {};
+            let editParam = doublePk ? [{tbNm: tbNm, snColumn: keyColumn}] : [{tbNm: tbNm}];
+            let keyInfo = doublePk ? { [keyColumn]: e.key, [doublePk.nm]: doublePk.val } : { [keyColumn]: e.key };
+            let isDuplicate = false;
+            
+            switch (editMode) {
+                case 'insert':
+                    if(doublePk !== undefined){
+                        Object.assign(e.data, {
+                            [doublePk.nm]: doublePk.val
+                        });
+                    }
+                    if(!doublePk){
+                        isDuplicate = checkDuplicate(e.data[keyColumn]);
+                        if (isDuplicate) return;
+                    }
+                    handleYnVal !== undefined 
+                        ? (e.data = {...e.data, regDt: date.format('YYYY-MM-DD'), regEmpId: empId, ...ynVal.current})
+                        : e.data = {...e.data, regDt: date.format('YYYY-MM-DD'), regEmpId: empId}
+                    editParam[1] = e.data;
+                    editInfo = { url: 'commonInsert', complete: '저장' }
+                    break;
+                case 'update':
+                    if(!doublePk){
+                        isDuplicate = checkDuplicate(e.newData[keyColumn]);
+                        if (isDuplicate) return;
+                    }
+                    handleYnVal !== undefined 
+                        ? (e.newData = {...e.newData, mdfcnDt: date.format('YYYY-MM-DD'), mdfcnEmpId: empId, ...ynVal.current})
+                        : e.newData = {...e.newData, mdfcnDt: date.format('YYYY-MM-DD'), mdfcnEmpId: empId}
+                    editParam[1] = e.newData;
+                    editParam[2] = keyInfo;
+                    editInfo = { url: 'commonUpdate', complete: '수정' }
+                    break;
+                case 'delete':
+                    editParam[1] = keyInfo;
+                    editInfo = { url: 'commonDelete', complete: '삭제' }
+                    break;
             }
-        } catch (error) {
-            console.log(error)
+            try {
+                const response = await ApiRequest('/boot/common/' + editInfo.url, editParam);
+                if(response === 1) {
+                    alert(editInfo.complete + "되었습니다.");
+                    callback();
+                } else{
+                    alert(editInfo.complete + "에 실패했습니다.");
+                }
+            } catch (error) {
+                console.log(error)
+            } 
+        } else {
+            handleData(values);
         }
     }
 
     const checkDuplicate = (newKeyValue) => {
         let isDuplicate = false;
-        if(newKeyValue !== undefined){
-            isDuplicate = values.some(item => item[keyColumn] === newKeyValue);
-        }
+        if(newKeyValue !== undefined) isDuplicate = values.some(item => item[keyColumn] === newKeyValue);
+        if(isDuplicate) alert("중복된 키 값입니다. 다른 키 값을 사용해주세요.");
         return isDuplicate;
     };
 
@@ -147,7 +147,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
                 <MasterDetail
                     style={{backgroundColor: 'lightBlue'}}    
                     enabled={true}
-                    render={masterDetail}
+                    component={masterDetail}
                  />}
                 {!noEdit && 
                     <Editing
@@ -184,7 +184,6 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
                         {col.length && <StringLengthRule max={col.length} message={`최대입력 길이는 ${col.length}입니다`}/>}
                     </Column>
                 ))}
-
                 <Paging defaultPageSize={20} />
                 <Pager
                     displayMode="full"
