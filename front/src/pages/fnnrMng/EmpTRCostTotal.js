@@ -42,7 +42,7 @@ const EmpTRCostTotal = () => {
       startVal: 0,
       pageSize: pageSize,
     });
-    console.log(initParam);d
+    console.log(initParam);
   };
 
 
