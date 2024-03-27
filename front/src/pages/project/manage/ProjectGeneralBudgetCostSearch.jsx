@@ -33,7 +33,7 @@ const ProjectGeneralBudgetCostSearch = () => {
     prjctId: prjctId,
     costFlag: "general",
     ctrtYmd:ctrtYmd,
-    stbleEndYmd:stbleEndYmd
+    stbleEndYmd:stbleEndYmd,
   };
 
   const Cnsrtm = async () => {

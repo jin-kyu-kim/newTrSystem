@@ -273,8 +273,6 @@
 
     <select id="retrieveProjectGeneralBudgetCostSearch" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT Z1.YM, Z2.PRJCT_ID, Z2.BGT_MNG_ODR, Z2.EXPENS_PRMPC_SN
-             , Z2.EXPENS_CD
-             , #{expenseNm} AS EXPENS_NM
              , Z2.DTL_DTLS, Z2.USE_YM
              , IFNULL(Z2.EXPENS_CT,0) AS EXPENS_CT
              , IFNULL(Z2.EXPECT_CT,0) AS EXPECT_CT
@@ -355,8 +353,7 @@
 
     <select id="retrieveProjectEmpCostSearch" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT Z1.YM, IFNULL(Z2.EXPECT_MM,0) EXPECT_MM, IFNULL(Z2.UNTPC,0) UNTPC, IFNULL(Z2.MM,0) MM
-        FROM
-            (SELECT DATE_FORMAT((#{ctrtYmd} + INTERVAL (a.a + (10 * b.a) + (100 * c.a)) MONTH), '%Y-%m') AS YM
+        FROM (SELECT DATE_FORMAT((#{ctrtYmd} + INTERVAL (a.a + (10 * b.a) + (100 * c.a)) MONTH), '%Y-%m') AS YM
              FROM (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT
                  5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS a
                       CROSS JOIN (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL
@@ -414,7 +411,7 @@
             ON A.PRJCT_ID =B.PRJCT_ID
             AND A.BGT_MNG_ODR = B.BGT_MNG_ODR
             AND A.MMNY_LBRCO_PRMPC_SN = B.MMNY_LBRCO_PRMPC_SN
-            AND A.BGT_MNG_ODR = (SELECT MAX(BGT_MNG_ODR) FROM PRJCT_BGT_PRMPC WHERE PRJCT_ID =#{prjctId} AND ATRZ_DMND_STTS_CD = 'VTW03703'))
+            AND A.BGT_MNG_ODR = (SELECT MAX(BGT_MNG_ODR) FROM PRJCT_BGT_PRMPC WHERE PRJCT_ID =#{prjctId} AND ATRZ_DMND_STTS_CD = 'VTW03703')
             ) T1
             RIGHT OUTER JOIN MMNY_LBRCO_EXCN T2
         ON T1.PRJCT_ID = T2.PRJCT_ID

@@ -22,15 +22,8 @@ const ProjectControlBudgetCostSearch = () => {
   });
 
   useEffect(() => {
-    if (prjctId && ctrtYmd) {
-      if (!stbleEndYmd) {
-        // 종료일자가 없을 경우 계약기간에서 2년을 표출해준다.
-        setStbleEndYmd(format(add(new Date(ctrtYmd), { years: 2 }), 'yyyy-MM-dd'), () => {
-          Cnsrtm();
-        });
-      } else {
-        Cnsrtm();
-      }
+    if (prjctId && ctrtYmd && stbleEndYmd) {
+      Cnsrtm();
     }
   }, []);
 

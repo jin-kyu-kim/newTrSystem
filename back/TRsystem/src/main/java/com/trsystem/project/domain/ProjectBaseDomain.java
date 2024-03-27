@@ -390,9 +390,7 @@ public class ProjectBaseDomain {
 			param.put("expensNm", data.get("expensNm").toString());
 			getData = commonService.queryIdSearch(param);
 			for(Map<String, Object> cdVal: getData){
-				cdVal.put("prjctId", param.get("prjctId").toString());
-				cdVal.put("expensCd", data.get("expensCd").toString());
-				cdVal.put("expensNm", data.get("expensNm").toString());
+				cdVal.putAll(data);
 				result.add(cdVal);
 			}
 		}
@@ -405,21 +403,12 @@ public class ProjectBaseDomain {
 		searchParam.put("queryId", "projectMapper.retrievedistinctEmpCost");
 
 		List<Map<String, Object>> getCost = commonService.queryIdSearch(searchParam);
-
 		List<Map<String, Object>> getData;
 		for(Map<String, Object> data : getCost){
 			param.put("empId", data.get("empId").toString());
 			getData = commonService.queryIdSearch(param);
 			for(Map<String, Object> cdVal: getData){
 				cdVal.putAll(data);
-//				cdVal.put("prjctId", data.get("prjctId").toString());
-//				cdVal.put("empId", data.get("empId").toString());
-//				cdVal.put("empNm", data.get("empNm").toString());
-//				cdVal.put("hnfRoleCd", data.get("hnfRoleCd").toString());
-//				cdVal.put("hnfRoleNm", data.get("hnfRoleNm").toString());
-//				cdVal.put("tkcgJob", data.get("tkcgJob").toString());
-//				cdVal.put("inptPrnmntYmd", data.get("inptPrnmntYmd").toString());
-//				cdVal.put("withdrPrnmntYmd", data.get("withdrPrnmntYmd").toString());
 				result.add(cdVal);
 			}
 		}

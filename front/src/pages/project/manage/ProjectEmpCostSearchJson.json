@@ -2,8 +2,7 @@
   {
     "caption": "직원명",
     "width": 120,
-    "dataField": "empId",
-    "label": "empNm",
+    "dataField": "empNm",
     "area": "row",
     "expanded": true
   },
@@ -16,7 +15,7 @@
     "showTotals": false
   },
   {
-    "caption": "직급",
+    "caption": "직급명",
     "dataField": "jbpsNm",
     "width": 100,
     "area": "row",
@@ -64,7 +63,7 @@
     "area": "data"
   },
   {
-    "caption": "원가MM",
+    "caption": "원가",
     "dataField": "expectMm",
     "dataType": "number",
     "summaryType": "sum",
