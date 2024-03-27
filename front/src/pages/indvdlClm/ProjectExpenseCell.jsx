@@ -7,7 +7,7 @@ import {useCookies} from "react-cookie";
 const ProjectExpenseCell = () => {
     const {keyColumn, columnValue, columnCharge} = Json;
     const [values, setValues] = useState([]);
-    const [charge, setCharge] = useState();
+    const [charge, setCharge] = useState([]);
     const [pageSize] = useState(10);
     const [cookies] = useCookies([]);
     let aplyDate = null;
