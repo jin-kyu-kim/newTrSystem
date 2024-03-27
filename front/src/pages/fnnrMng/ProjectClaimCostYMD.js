@@ -5,22 +5,23 @@ import CustomPivotGrid from "../../components/unit/CustomPivotGrid";
 import PivotGridDataSource from "devextreme/ui/pivot_grid/data_source";
 
 
-const ProjectClaimCostYMD = ({ prjctId, prjctNm, year, monthVal, aplyOdr, expensCd }) => {
+const ProjectClaimCostYMD = ({ prjctId, prjctNm, startYmOdr, endYmOdr, empId, expensCd }) => {
 
     const [expenseAprvData, setExpenstAprvData] = useState([]);
 
     useEffect(() => {
         getExpenseAprvData();
 
-    }, [year, monthVal, aplyOdr]);
+    }, [startYmOdr, endYmOdr]);
 
     //경비 승인내역 조회
     const getExpenseAprvData = async () => {
         const param = {
             queryId: 'financialAffairMngMapper.retrievePrjctCtClmYMDAccto',
             prjctId: prjctId,
-            aplyYm: year+monthVal,
-            aplyOdr: aplyOdr,
+            empId: empId,
+            startYmOdr: startYmOdr,
+            endYmOdr: endYmOdr,
             expensCd: expensCd
         };
         try{
@@ -90,7 +91,27 @@ const ProjectClaimCostYMD = ({ prjctId, prjctNm, year, monthVal, aplyOdr, expens
 
     const makeExcelFileName = () => {
 
-        const fileName = prjctNm+'.'+year+monthVal+'-'+aplyOdr+'_';
+        let fileName = '';
+        let startYearMonth = '';
+        let startOdr = '';
+        let endYearMonth = '';
+        let endOdr = '';
+
+        if(startYmOdr == endYmOdr){
+            startYearMonth = startYmOdr.substr(0,6);
+            startOdr = startYmOdr.substr(6,2);
+
+            fileName = prjctNm+'.'+startYearMonth+'-'+startOdr+'_';
+        } else {
+            startYearMonth = startYmOdr.substr(0,6);
+            startOdr = startYmOdr.substr(6,2);
+            endYearMonth = endYmOdr.substr(0,6);
+            endOdr = endYmOdr.substr(6,2);
+
+            fileName = prjctNm+'.'+startYearMonth+'-'+startOdr+'~'+endYearMonth+'-'+endOdr+'_';
+        }
+
+
 
         return fileName;
     };
@@ -98,15 +119,13 @@ const ProjectClaimCostYMD = ({ prjctId, prjctNm, year, monthVal, aplyOdr, expens
 
     return (
         <div style={{padding: '20px'}}>
-            <div className='container'>
-                <CustomPivotGrid
-                    values={dataSource}
-                    columnGTName={'소계'}
-                    blockCollapse={true}
-                    weekendColor={true}
-                    fileName={makeExcelFileName}
-                />
-            </div>
+            <CustomPivotGrid
+                values={dataSource}
+                columnGTName={'소계'}
+                blockCollapse={true}
+                weekendColor={true}
+                fileName={makeExcelFileName}
+            />
         </div>
     );
 };

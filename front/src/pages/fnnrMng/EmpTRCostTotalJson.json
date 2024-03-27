@@ -1,6 +1,6 @@
 {
     "menuName": "EmpTRCostTotal",
-    "queryId": "financialAffairMngMapper.retrievePrjctMmAplyList",
+    "queryId": "financialAffairMngMapper.retrieveWorkHrAprvList",
     "keyColumn": "empId",
     "tableColumns": [
         { "key": "empFlnm", "value": "성명", "width": 120, "alignment": "center" },
@@ -51,16 +51,16 @@
         "commonCd": "VTW001",
         "selectBoxItem": [
             {
-                "placeholder": "[인턴 포함 여부]",
+                "placeholder": "[재직 상태]",
                 "param":{
                   "tbNm": "CD",
                   "valueExpr": "cdValue",
                   "displayExpr": "cdNm",
                   "name": "hdofSttsNm",
                   "condition": {
-                    "upCdValue": "VTW003"
+                    "upCdValue": "VTW002"
                   },
-                  "clearButton": false
+                  "clearButton": true
                 }
             },
        
@@ -73,20 +73,8 @@
                   "name": "prjctId",
                   "clearButton": true
                 }
-            },
-            {
-                "placeholder": "[소속]",
-                "param":{
-                  "queryId": {
-                    "queryId": "infoInqMapper.retriveDeptSearchList"
-                  },
-                  "values": ["deptId"],
-                  "valueExpr": "deptId",
-                  "displayExpr": "deptNm",
-                  "name": "deptId",
-                  "clearButton": false
-                }
             }
+           
         ],
         "textBoxItem": [
             {
@@ -96,11 +84,8 @@
             {
                 "placeholder": "성명",
                 "name": "empFlnm"
-            },
-            {
-                "placeholder": "전화번호",
-                "name": "telNo"
             }
+           
         ]
     }
 

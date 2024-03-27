@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import  EmpTRCostTotalJson from "./EmpTRCostTotalJson.json";
 import ApiRequest from "../../utils/ApiRequest";
@@ -8,7 +8,7 @@ import { Workbook } from "exceljs";
 import { exportDataGrid } from "devextreme/excel_exporter";
 import { saveAs } from 'file-saver';
 import SearchInfoSet from "components/composite/SearchInfoSet";
-
+import { CheckBox, CheckBoxTypes } from 'devextreme-react/check-box';
 
 
 const EmpTRCostTotal = () => {
@@ -20,16 +20,21 @@ const EmpTRCostTotal = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
 
+  const [searchByType, setSearchByType] = useState("");
+  const handleProjectCheckboxChange = (type) => {
+    setSearchByType(type);
+  };
+
 
 
   useEffect(() => {
+    if (!Object.values(param).every((value) => value === "")) {
       pageHandle();
-  }, []);
+    }
+  }, [param]);
 
   // 검색으로 조회할 때
   const searchHandle = async (initParam) => {
-    setTotalPages(1);
-    setCurrentPage(1);
     setParam({
       ...initParam,
       queryId: queryId,
@@ -37,18 +42,28 @@ const EmpTRCostTotal = () => {
       startVal: 0,
       pageSize: pageSize,
     });
+    console.log(initParam);
   };
 
+
+
+
+
+
+
+
+console.log(searchByType)
   const pageHandle = async () => {
+    const paramInfo = {
+      queryId: queryId
+    }
     try {
-      const response = await ApiRequest("/boot/retrieveFnnrMngWorkHrCtUnityAprv", param);
+      const response = await ApiRequest("/boot/common/queryIdSearch", paramInfo);
       setValues(response);
       if (response.length !== 0) {
         setValues(response);
-       console.log(values+"이게바로")
       } else {
-        setTotalPages(1);
-        setTotalItems(0);
+       
       }
     } catch (error) {
       console.log(error);
@@ -78,7 +93,6 @@ const EmpTRCostTotal = () => {
   };
 
 
-
   return (
 
 
@@ -97,9 +111,26 @@ const EmpTRCostTotal = () => {
     <div style={{ marginBottom: "20px" }}>
     <SearchInfoSet 
                     props={searchInfo}
-                  callBack={pageHandle}
+                  callBack={searchHandle}
                 /> 
+                    
       </div>
+      <div>
+      <CheckBox
+              text="프로젝트로 검색"
+              value={searchByType==="project" ? true : false}
+              onValueChanged= {()=> handleProjectCheckboxChange( "project") }
+            />  
+            
+       <CheckBox style={{marginLeft :"30px"}}
+           
+              value={searchByType==="name" ? true : false}
+              onValueChanged= {()=> handleProjectCheckboxChange( "name") }
+              text="이름으로 검색"
+            />   
+
+      </div>
+     
 
       <CustomTable
         keyColumn={keyColumn}

@@ -2,7 +2,7 @@ import React from 'react';
 
 import Scheduler from 'devextreme-react/scheduler';
 
-const ProjectClaimCostIndividualMmPop = ({props, prjctNm, data}) => {
+const ProjectClaimCostIndividualMmPop = ({props, prjctNm, startYmOdr, endYmOdr, data}) => {
 
     const currentDate = new Date();
 
@@ -37,7 +37,7 @@ const ProjectClaimCostIndividualMmPop = ({props, prjctNm, data}) => {
         <div className="container">
             <div className="" style={{ marginBottom: "10px" }}>
                 <div>
-                    <span>* {prjctNm} ({data.aplySn} 차수) 수행인력 </span>
+                    <span>* {prjctNm} ({startYmOdr.substr(0,6)}-{startYmOdr.substr(6,1)}~{endYmOdr.substr(0,6)}-{endYmOdr.substr(6,1)}) 수행인력 </span>
                     <br/>
                     <span>* {data.empFlnm}</span>
                 </div>
