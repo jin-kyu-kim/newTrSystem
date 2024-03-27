@@ -9,16 +9,29 @@ import ApiRequest from "../../../utils/ApiRequest";
 
 import ProjectGeneralBudgetCostSearchJson from "./ProjectGeneralBudgetCostSearchJson.json";
 import {useLocation} from "react-router-dom";
+import {add, format} from "date-fns";
 
 const ProjectControlBudgetCostSearch = () => {
   const location = useLocation();
+  const prjctId = location.state.prjctId;
+  const ctrtYmd = location.state.ctrtYmd;
+  const [stbleEndYmd,setStbleEndYmd] = useState(location.state.stbleEndYmd);
   const [pivotGridConfig, setPivotGridConfig] = useState({
     fields: ProjectGeneralBudgetCostSearchJson,
     store: [],
   });
 
   useEffect(() => {
-    Cnsrtm();
+    if (prjctId && ctrtYmd) {
+      if (!stbleEndYmd) {
+        // 종료일자가 없을 경우 계약기간에서 2년을 표출해준다.
+        setStbleEndYmd(format(add(new Date(ctrtYmd), { years: 2 }), 'yyyy-MM-dd'), () => {
+          Cnsrtm();
+        });
+      } else {
+        Cnsrtm();
+      }
+    }
   }, []);
 
   const param = {
@@ -41,11 +54,6 @@ const ProjectControlBudgetCostSearch = () => {
     }
   };
 
-  const test = (e) => {
-    console.log(e);
-    console.log(dataSource);
-  };
-
   const dataSource = new PivotGridDataSource(pivotGridConfig);
 
   return (
@@ -55,11 +63,10 @@ const ProjectControlBudgetCostSearch = () => {
         allowSortingBySummary={true}
         height={560}
         showBorders={true}
-        showColumnGrandTotals={false}
+        showColumnGrandTotals={true}
         allowFiltering={false}
         allowSorting={false}
         allowExpandAll={false}
-        onCellClick={test}
       >
         <FieldPanel
           showRowFields={true}

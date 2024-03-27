@@ -4,37 +4,44 @@ import "devextreme/dist/css/dx.common.css";
 import ProjectEmpCostSearchJson from "./ProjectEmpCostSearchJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
 import PivotGridDataSource from "devextreme/ui/pivot_grid/data_source";
-// import { Workbook } from "exceljs";
-// import { saveAs } from "file-saver";
 import PivotGrid, {
   Export,
   FieldChooser,
   FieldPanel,
   Scrolling,
 } from "devextreme-react/pivot-grid";
-import { exportPivotGrid } from "devextreme/excel_exporter";
-import { Button } from "devextreme-react";
 
-const ProjectEmpCostSearch = ({prjctId, bgtMngOdr}) => {
+import {useLocation} from "react-router-dom";
+import {add, format} from "date-fns";
+
+const ProjectEmpCostSearch = () => {
+  const location = useLocation();
+  const prjctId = location.state.prjctId;
+  const ctrtYmd = location.state.ctrtYmd;
+  // const stbleEndYmd = location.state.stbleEndYmd;
+  const stbleEndYmd = '2024-12-31'
   const [pivotGridConfig, setPivotGridConfig] = useState({
     fields: ProjectEmpCostSearchJson,
     store: [],
   });
 
   useEffect(() => {
-    Cnsrtm();                                                                                                                             
+    if (prjctId && ctrtYmd&&stbleEndYmd) {
+        Cnsrtm();
+    }
   }, []);
-  console.log(prjctId)
-  console.log(bgtMngOdr)
+
   const param = {
-    queryId: "projectMapper.retrieveprojectEmpCostSearch",
+    queryId: "projectMapper.retrieveProjectEmpCostSearch",
     prjctId: prjctId,
-    bgtMngOdr: bgtMngOdr
+    ctrtYmd:ctrtYmd,
+    stbleEndYmd:stbleEndYmd
   };
 
   const Cnsrtm = async () => {
     try {
-      const response = await ApiRequest("/boot/common/queryIdSearch", param);
+      const response = await ApiRequest("/boot/prjct/retrievePjrctEmpCost", param);
+      console.log(response)
       setPivotGridConfig({
         ...pivotGridConfig,
         store: response,
@@ -43,27 +50,6 @@ const ProjectEmpCostSearch = ({prjctId, bgtMngOdr}) => {
       console.error(error);
     }
   };
-/*
-  const onExporting = (e) => {
-    const workbook = new Workbook();
-    const worksheet = workbook.addWorksheet("Sales");
-    exportPivotGrid({
-      component: e.component,
-      worksheet,
-    }).then(() => {
-      workbook.xlsx.writeBuffer().then((buffer) => {
-        saveAs(
-          new Blob([buffer], { type: "application/octet-stream" }),
-          "Sales.xlsx"
-        );
-      });
-    });
-  };
-*/
-  const test = (e) => {
-    console.log(e);
-  };
-
   const dataSource = new PivotGridDataSource(pivotGridConfig);
 
   return (
@@ -73,11 +59,10 @@ const ProjectEmpCostSearch = ({prjctId, bgtMngOdr}) => {
         allowSortingBySummary={true}
         height={560}
         showBorders={true}
-        showColumnGrandTotals={false}
+        showColumnGrandTotals={true}
         allowFiltering={false}
         allowSorting={false}
         allowExpandAll={false}
-        // onExporting={onExporting}
       >
         <FieldPanel
           showRowFields={true}
@@ -92,7 +77,6 @@ const ProjectEmpCostSearch = ({prjctId, bgtMngOdr}) => {
         <FieldChooser enabled={false} />
         <Scrolling mode="virtual" />
         <Export enabled={true} />
-        <Button onClick={test} />
       </PivotGrid>
     </div>
   );
