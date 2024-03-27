@@ -2,7 +2,7 @@
   {
     "caption": "비용코드",
     "width": 120,
-    "dataField": "expensNm",
+    "dataField": "expensnm",
     "area": "row",
     "expanded": true,
     "showTotals": false

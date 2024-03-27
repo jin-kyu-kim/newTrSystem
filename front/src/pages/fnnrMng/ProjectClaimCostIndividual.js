@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Popup } from "devextreme-react";
+import { useNavigate } from "react-router-dom";
 
 import ApiRequest from '../../utils/ApiRequest';
 import CustomTable from "../../components/unit/CustomTable";
@@ -7,8 +8,8 @@ import ProjectClaimCostIndividualJson from './ProjectClaimCostIndividualJson.jso
 import ProjectClaimCostIndividualCtPop from "./ProjectClaimCostIndividualCtPop";
 import ProjectClaimCostIndividualMmPop from "./ProjectClaimCostIndividualMmPop";
 
-const ProjectClaimCostIndividual = ({ prjctId, prjctNm, year, monthVal, aplyOdr, empId }) => {
-  const { keyColumn, queryId, mmColumns, ctColumns, mmSumColumns, ctSumColumns } = ProjectClaimCostIndividualJson;
+const ProjectClaimCostIndividual = ({ prjctId, prjctNm, startYmOdr, endYmOdr, empId }) => {
+  const { mmKeyColumn, ctKeyColumn, queryId, mmColumns, ctColumns, mmSumColumns, ctSumColumns } = ProjectClaimCostIndividualJson;
   const [mmData, setMMData] = useState([]);
   const [ctData, setCtData] = useState([]);
   const [data, setData] = useState([]);
@@ -17,18 +18,20 @@ const ProjectClaimCostIndividual = ({ prjctId, prjctNm, year, monthVal, aplyOdr,
   const [mmPopupVisible, setMmPopupVisible] = useState(false);
   const [ctPopupVisible, setCtPopupVisible] = useState(false);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
       getMMData();
       getCtData();
-  }, [year, monthVal, aplyOdr, empId]);
+  }, [startYmOdr, endYmOdr, empId]);
 
     const getMMData = async () => {
 
         const param = {
             queryId: queryId.empMMQueryId,
             prjctId: prjctId,
-            aplyYm: year+monthVal,
-            aplyOdr: aplyOdr,
+            startYmOdr: startYmOdr,
+            endYmOdr: endYmOdr,
             empId: empId
         };
         try{
@@ -44,8 +47,8 @@ const ProjectClaimCostIndividual = ({ prjctId, prjctNm, year, monthVal, aplyOdr,
         const param = {
             queryId: queryId.empCtQueryId,
             prjctId: prjctId,
-            aplyYm: year+monthVal,
-            aplyOdr: aplyOdr,
+            startYmOdr: startYmOdr,
+            endYmOdr: endYmOdr,
             empId: empId
         };
         try{
@@ -69,8 +72,8 @@ const ProjectClaimCostIndividual = ({ prjctId, prjctNm, year, monthVal, aplyOdr,
         const param = {
             queryId: queryId.mmPopupQueryId,
             prjctId: prjctId,
-            aplyYm: year+monthVal,
-            aplyOdr: aplyOdr,
+            startYmOdr: startYmOdr,
+            endYmOdr: endYmOdr,
             empId: data.empId
         }
         const response = await ApiRequest("/boot/common/queryIdSearch", param);
@@ -78,7 +81,7 @@ const ProjectClaimCostIndividual = ({ prjctId, prjctNm, year, monthVal, aplyOdr,
     }
 
     const onCtBtnClick = async (button, data) => {
-        if (button.name === "empId") {
+        if (button.name === "expenseAprv") {
             setData(data);
         }
         await retrievePrjctCtClmSttusIndvdlCtAcctoDetail(data);
@@ -88,11 +91,11 @@ const ProjectClaimCostIndividual = ({ prjctId, prjctNm, year, monthVal, aplyOdr,
     const retrievePrjctCtClmSttusIndvdlCtAcctoDetail = async (data) => {
 
         const param = {
-            queryId: queryId.ctPopupQueryId,
+            queryId: 'financialAffairMngMapper.retrievePrjctCtClmYMDAccto',
             prjctId: prjctId,
-            aplyYm: year+monthVal,
-            aplyOdr: aplyOdr,
-            empId: data.empId
+            startYmOdr: startYmOdr,
+            endYmOdr: endYmOdr,
+            expensCd: data.expensCd
         }
         const response = await ApiRequest("/boot/common/queryIdSearch", param);
         setCtDetailValues(response);
@@ -108,7 +111,7 @@ const ProjectClaimCostIndividual = ({ prjctId, prjctNm, year, monthVal, aplyOdr,
       <div className='container'>
         <p><strong>* 수행인력</strong></p>
         <CustomTable
-          keyColumn={keyColumn}
+          keyColumn={mmKeyColumn}
           values={mmData}
           columns={mmColumns}
           summary={true}
@@ -118,7 +121,7 @@ const ProjectClaimCostIndividual = ({ prjctId, prjctNm, year, monthVal, aplyOdr,
         &nbsp;
         <p><strong>* 경비</strong></p>
         <CustomTable
-          keyColumn={keyColumn}
+          keyColumn={ctKeyColumn}
           values={ctData}
           columns={ctColumns}
           summary={true}
@@ -132,7 +135,7 @@ const ProjectClaimCostIndividual = ({ prjctId, prjctNm, year, monthVal, aplyOdr,
               onHiding={handleClose}
               showCloseButton={true}
           >
-              <ProjectClaimCostIndividualMmPop props={mmDetailValues} prjctNm={prjctNm} data={data}/>
+              <ProjectClaimCostIndividualMmPop props={mmDetailValues} prjctNm={prjctNm} startYmOdr={startYmOdr} endYmOdr={endYmOdr} data={data}/>
           </Popup>
           <Popup
               width="90%"
@@ -141,7 +144,7 @@ const ProjectClaimCostIndividual = ({ prjctId, prjctNm, year, monthVal, aplyOdr,
               onHiding={handleClose}
               showCloseButton={true}
           >
-              <ProjectClaimCostIndividualCtPop props={ctDetailValues} prjctNm={prjctNm} data={data}/>
+              <ProjectClaimCostIndividualCtPop props={ctDetailValues} prjctNm={prjctNm} startYmOdr={startYmOdr} endYmOdr={endYmOdr} data={data}/>
           </Popup>
       </div>
     </div>

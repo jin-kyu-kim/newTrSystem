@@ -47,6 +47,7 @@ const ProjectControlBudgetCostSearch = () => {
     }
   };
 
+
   const dataSource = new PivotGridDataSource(pivotGridConfig);
 
   return (
@@ -60,6 +61,7 @@ const ProjectControlBudgetCostSearch = () => {
         allowFiltering={false}
         allowSorting={false}
         allowExpandAll={false}
+
       >
         <FieldPanel
           showRowFields={true}

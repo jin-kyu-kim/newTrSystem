@@ -34,7 +34,10 @@ const ElecAtrzForm = () => {
 
         const param = [
             { tbNm: "ELCTRN_ATRZ_DOC_FORM" },
-            { useYn: "Y" }
+            { 
+                useYn: "Y",
+                eprssYn: "Y"
+            }
         ]
         try {
             const response = await ApiRequest("/boot/common/commonSelect", param);
@@ -48,7 +51,7 @@ const ElecAtrzForm = () => {
 
         const param = [
             { tbNm: "PRJCT" },
-            {}
+            { bizSttsCd: "VTW00402"}
         ]
         try {
             const response = await ApiRequest("/boot/common/commonSelect", param);
@@ -73,10 +76,6 @@ const ElecAtrzForm = () => {
             return;
         }
         navigate("../elecAtrz/ElecAtrzNewReq", {state: {prjctId: prjctId, formData: data}});
-    }
-
-    const onExample = async (data) => {
-        console.log(data)
     }
 
     const validationRules = {
@@ -108,7 +107,7 @@ const ElecAtrzForm = () => {
             <div>
                 <h4>2. 서식 선택</h4>
             </div>
-                <ElectAtrzRenderForm formList={formList} onExample={onExample} onFormClick={onFormClick}/>
+                <ElectAtrzRenderForm formList={formList} onFormClick={onFormClick}/>
         </div>
     );
 }

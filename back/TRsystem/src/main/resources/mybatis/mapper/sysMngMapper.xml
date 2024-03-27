@@ -54,6 +54,7 @@
             <if test="industCd != null and !industCd.equals('')">
                 AND INDUST_CD = #{industCd}
             </if>
+        ORDER BY REG_DT DESC
     </select>
 
     <select id="userInfo" parameterType="String" resultType="com.trsystem.LowerHashMap">

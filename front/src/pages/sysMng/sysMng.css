@@ -74,7 +74,7 @@
   font-weight: bold;
 }
 
-.dx-datagrid .dx-header-row {
+.editGridStyle .dx-datagrid .dx-header-row {
   background-color: #f0f0f0; 
 }
 .dx-header-row>td>.dx-datagrid-text-content {
@@ -110,4 +110,8 @@
   background-color: #e0e0e0;
   border: 1px solid #ccc;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.editGridStyle .dx-error-row {
+  display: none !important;
 }

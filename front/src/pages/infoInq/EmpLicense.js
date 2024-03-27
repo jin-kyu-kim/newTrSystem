@@ -38,6 +38,7 @@ const EmpLicense = () => {
           keyColumn={keyColumn}
           columns={tableColumns}
           doublePk={doublePk}
+          callback={pageHandle}
         />
       </div>
     </div>

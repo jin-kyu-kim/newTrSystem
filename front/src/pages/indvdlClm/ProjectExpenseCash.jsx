@@ -67,7 +67,7 @@ const ProjectExpenseCash = () => {
                 <CustomLabelValue props={labelValue.expensCd} onSelect={handleChgValue} value={cashValue?.expensCd}/>
                 <CustomLabelValue props={labelValue.ctPrpos} onSelect={handleChgValue} value={cashValue?.ctPrpos}/>
                 <CustomLabelValue props={labelValue.ATDRN} onSelect={handleChgValue} value={cashValue?.ATDRN}/>
-                <ProjectExpenseSubmit text="저장" type="default" value={cashValue} tbNm="PRJCT_CT_APLY" snColumn="PRJCT_CT_APLY_SN"/>
+                <ProjectExpenseSubmit text="저장" type="default" value={[cashValue]} tbNm="PRJCT_CT_APLY" snColumn="PRJCT_CT_APLY_SN"/>
             </div>
         </div>
     );

@@ -1,7 +1,7 @@
 import React from "react";
 import ExcelUpload from "../../components/unit/ExcelUpload";
 
-const ProjectExpanseExcel = (props) => {
+const ProjectExpenseExcel = (props) => {
 
     return(
         <div className="container" style={{margin: '4%'}}>
@@ -18,4 +18,4 @@ const ProjectExpanseExcel = (props) => {
 );
 };
 
-export default ProjectExpanseExcel;
+export default ProjectExpenseExcel;
