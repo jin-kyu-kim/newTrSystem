@@ -52,7 +52,7 @@ const EmpTRCostTotal = () => {
    
     
     try {
-    
+     
       const response = await ApiRequest("/boot/common/queryIdSearch", updateParam);
     
         setValues(response);
@@ -121,7 +121,6 @@ const EmpTRCostTotal = () => {
         keyColumn={keyColumn}
         columns={prjctColumns}
         values={values}
-        paging={true}
         summary={true}
         summaryColumn={summaryColumn2}
         excel={true}
