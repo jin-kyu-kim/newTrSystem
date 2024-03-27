@@ -5,7 +5,7 @@ import { useCookies } from "react-cookie";
 import CustomEditTable from "components/unit/CustomEditTable";
 
 const EmpEduHist = () => {
-  const { queryId, keyColumn, tableColumns, tbNm } = EmpInfoJson.EmpCareer;
+  const { queryId, keyColumn, tableColumns, tbNm } = EmpInfoJson.EmpEduHist;
   const [cookies] = useCookies(["userInfo", "userAuth"]);
   const userEmpId = cookies.userInfo.empId;
   const doublePk = { nm: "empId", val: userEmpId };
@@ -38,6 +38,7 @@ const EmpEduHist = () => {
           keyColumn={keyColumn}
           columns={tableColumns}
           doublePk={doublePk}
+          callback={pageHandle}
         />
       </div>
     </div>

@@ -10,8 +10,6 @@ const CustomersList = () => {
     const [values, setValues] = useState([]);
     const [param, setParam] = useState({});
     const [totalItems, setTotalItems] = useState(0);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize] = useState(20);
     const { keyColumn, queryId, tableColumns, searchInfo, tbNm } = SysMng.customersJson;
 
     useEffect(() => {
@@ -21,13 +19,9 @@ const CustomersList = () => {
     }, [param]);
 
     const searchHandle = async (initParam) => {
-        setCurrentPage(1);
         setParam({
             ...initParam,
-            queryId: queryId,
-            currentPage: currentPage,
-            startVal: 0,
-            pageSize: pageSize,
+            queryId: queryId
         });
     };
 
@@ -45,11 +39,11 @@ const CustomersList = () => {
         }
     };
 
-    const handleYnVal = async (idColumn, useYn) => {
+    const handleYnVal = async (e) => {
         const ynParam = [
             { tbNm: "CTMMNY_INFO" },
-            { useYn: useYn },
-            { ctmmnyId: idColumn }
+            e.data,
+            { ctmmnyId: e.key }
         ];
         try {
             const response = await ApiRequest('/boot/common/commonUpdate', ynParam);
@@ -75,10 +69,10 @@ const CustomersList = () => {
                 <CustomEditTable
                     tbNm={tbNm}
                     values={values}
-                    allowEdit={true}
                     keyColumn={keyColumn}
                     columns={tableColumns}
                     handleYnVal={handleYnVal}
+                    callback={pageHandle}
                   />
             </div>
         </div>

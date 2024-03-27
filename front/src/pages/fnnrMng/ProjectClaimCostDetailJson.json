@@ -1,11 +1,18 @@
 {
   "menuName": "ProjectClaimCostDetail",
-  "searchParams":
-  {
-    "yearItem": true,
-    "monthItem": true,
-    "aplyOdr": true,
-    "empId": true
+  "searchInfo": {
+    "searchParams": {
+      "insertButton": false,
+      "dateRange": true,
+      "startDtNm": "startYmOdr",
+      "endDtNm": "endYmOdr"
+    },
+    "textBoxItem": [
+      {
+        "placeholder": "기안자 성명",
+        "name": "empFlnm"
+      }
+    ]
   },
   "tabMenu":
   [

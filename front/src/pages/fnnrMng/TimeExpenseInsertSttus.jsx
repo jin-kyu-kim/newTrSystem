@@ -17,7 +17,7 @@ const [values, setValues] = useState([]);   //상단values
 const [values2, setValues2] = useState([]); //하단values
 const [paramtot, setParamtot] = useState({}); //상단 조회용 param
 const [param, setParam] = useState({}); //하단 조회용 param
-const { keyColumn, queryId, tableColumns, searchParams,totQueryId } = TimeExpenseInsertSttusJson;
+const { keyColumn, queryId, totTableColumns, tableColumns, searchParams, totQueryId } = TimeExpenseInsertSttusJson;
 const [currentPhase, setCurrentPhase] = useState(''); //차수설정용
 const navigate = useNavigate();
 const nowDate = moment().format('YYYYMM') //현재 년월
@@ -141,37 +141,12 @@ const onClick = (button,data) => {      //
         <Button text="마감 및 엑셀다운"  onClick={ddlnExcelDwn}/>
       </div>
         <div style={{ marginBottom: "20px" }}>
-        <DataGrid showBorders={true} >
-        <Column caption="전체" alignment="center" />
-        <Column caption="근무시간" alignment="center">
-            <Column caption="입력여부" alignment="center"> 
-                <Column caption="입력" alignment="center"/>
-                <Column caption="미입력" alignment="center"/>
-            </Column>
-            <Column caption="승인요청여부" alignment="center"> 
-                <Column caption="요청" alignment="center"/>
-                <Column caption="미요청" alignment="center"/>
-            </Column>
-            <Column caption="승인여부" alignment="center"> 
-                <Column caption="승인및반려" alignment="center"/>
-                <Column caption="미승인" alignment="center"/>
-            </Column>
-        </Column>
-        <Column caption="프로젝트비용" alignment="center">
-            <Column caption="입력여부" alignment="center"> 
-                <Column caption="입력" alignment="center"/>
-                <Column caption="미입력" alignment="center"/>
-            </Column>
-            <Column caption="승인요청여부" alignment="center"> 
-                <Column caption="요청" alignment="center"/>
-                <Column caption="미요청" alignment="center"/>
-            </Column>
-            <Column caption="승인여부" alignment="center"> 
-                <Column caption="승인및반려" alignment="center"/>
-                <Column caption="미승인" alignment="center"/>
-            </Column>
-        </Column>
-        </DataGrid>
+        <CustomTable 
+          keyColumn={keyColumn}
+          columns={totTableColumns}
+          values={values}
+          paging={false}
+        />
         </div>
         <div style={{ marginBottom: "20px" }}>
         <CustomTable keyColumn={keyColumn}  columns={tableColumns} values={values2} paging={true} onClick={onClick} />

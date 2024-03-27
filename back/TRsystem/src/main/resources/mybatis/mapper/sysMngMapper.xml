@@ -25,6 +25,19 @@
         </if>
     </select>
 
+    <select id="authCdList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            ag.AUTHRT_GROUP_ID,
+            ag.AUTHRT_GROUP_NM,
+            ag.AUTHRT_GROUP_CN,
+            GROUP_CONCAT(am.AUTHRT_CD) AS AUTHRT_CDs,
+            GROUP_CONCAT(cd.CD_NM) AS AUTHRT_CD_NMs
+        FROM AUTHRT_GROUP ag
+                 JOIN AUTHRT_MAPNG am ON ag.AUTHRT_GROUP_ID = am.AUTHRT_GROUP_ID
+                 JOIN CD cd ON am.AUTHRT_CD = cd.CD_VALUE
+        GROUP BY ag.AUTHRT_GROUP_ID, ag.AUTHRT_GROUP_NM, ag.AUTHRT_GROUP_CN;
+    </select>
+
     <select id="customersList" parameterType="map" resultType="com.trsystem.LowerHashMap">
         select
             COUNT(*) OVER () AS TOTAL_ITEMS,
@@ -41,6 +54,7 @@
             <if test="industCd != null and !industCd.equals('')">
                 AND INDUST_CD = #{industCd}
             </if>
+        ORDER BY REG_DT DESC
     </select>
 
     <select id="userInfo" parameterType="String" resultType="com.trsystem.LowerHashMap">

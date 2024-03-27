@@ -5,6 +5,10 @@ import SelectBox from 'devextreme-react/select-box';
 import 'devextreme/dist/css/dx.common.css';
 import 'devextreme/dist/css/dx.light.css';
 
+// 2024.03.21(박지환)
+// return값 추가 (prjctMngrEmpId)
+// return값 추가됨에따라 배열로 반환받음
+
 const AutoCompleteProject = ({ placeholderText, onValueChange }) => {
   const [suggestionsData, setSuggestionsData] = useState([]);
   const [valid, setValid] = useState(true);
