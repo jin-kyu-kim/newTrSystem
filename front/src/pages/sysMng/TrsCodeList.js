@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import SysMng from './SysMngJson.json';
 import ApiRequest from '../../utils/ApiRequest';
 import SearchInfoSet from "components/composite/SearchInfoSet"
@@ -6,10 +6,11 @@ import CustomEditTable from "components/unit/CustomEditTable";
 import '../../pages/sysMng/sysMng.css'
 
 const TrsCodeList = () => {
-    const [ values, setValues ] = useState([]);
+    const [ values, setValues] = useState([]);
     const [ param, setParam ] = useState({});
-    const [ childList, setChildList ] = useState([]);
-    const [ totalItems, setTotalItems ] = useState(0);
+    const [ childList, setChildList ] = useState({});
+    const child = useRef('')
+    const [totalItems, setTotalItems] = useState(0);
     const { keyColumn, queryId, tableColumns, childTableColumns, searchInfo, tbNm } = SysMng.trsCodeJson;
 
     useEffect(() => {
@@ -49,19 +50,23 @@ const TrsCodeList = () => {
             console.log(error)
         }
     }
+    useEffect(() => {
+        getChildList(child.current);
+    }, [child.current])
 
-    const getChildList = async (e) => {
-        try{
+    const getChildList = async (key) => {
+        try {
             const response = await ApiRequest('/boot/common/commonSelect', [
-                { tbNm: "CD" }, { upCdValue: e.data.cdValue }
+                { tbNm: "CD" }, { upCdValue: key }
             ]);
             setChildList(response)
-        } catch(error){
+        } catch (error) {
             console.log('error', error)
         }
     }
 
     const masterDetail = (e) => {
+        child.current = e.data.key
         return (
             <CustomEditTable
                 tbNm={tbNm}
@@ -72,6 +77,7 @@ const TrsCodeList = () => {
                 handleYnVal={handleYnVal}
             />
         );
+
     };
 
     return (
