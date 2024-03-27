@@ -20,7 +20,7 @@ const ProjectClaimCostDetail = () => {
     let year = "";
     let monthVal = "";
     let aplyOdr = 0;
-    let empId = "";
+    let empFlnm = "";
 
     let startYmd = '';
     let startOdr = '';
@@ -34,7 +34,7 @@ const ProjectClaimCostDetail = () => {
             prjctId: prjctId,
             startYmOdr: year+monthVal+aplyOdr,
             endYmOdr: year+monthVal+aplyOdr,
-            empId: empId,
+            empFlnm: empFlnm,
         };
 
         const response = ApiRequest("/boot/common/queryIdSearch", param);
@@ -57,30 +57,30 @@ const ProjectClaimCostDetail = () => {
                 ...param,
                 startYmOdr: year+monthVal+odrVal,
                 endYmOdr: year+monthVal+odrVal,
-                empId: initParam.empId,
+                empFlnm: initParam.empFlnm,
             })
 
             return;
         } else if(initParam.startYmOdr !== null && initParam.endYmOdr == null) {
 
             startYmd = initParam.startYmOdr.substr(0, 6);
-            startOdr = initParam.startYmOdr.substr(6, 1) > 15 ? "2" : "1";
+            startOdr = initParam.startYmOdr.substr(6, 2) > 15 ? "2" : "1";
             endYmd = initParam.startYmOdr.substr(0, 6);
-            endOdr = initParam.startYmOdr.substr(6, 1) > 15 ? "2" : "1";
+            endOdr = initParam.startYmOdr.substr(6, 2) > 15 ? "2" : "1";
 
         } else if(initParam.startYmOdr == null && initParam.endYmOdr !== null) {
 
             startYmd = initParam.endYmOdr.substr(0, 6);
-            startOdr = initParam.endYmOdr.substr(6, 1) > 15 ? "2" : "1";
+            startOdr = initParam.endYmOdr.substr(6, 2) > 15 ? "2" : "1";
             endYmd = initParam.endYmOdr.substr(0, 6);
-            endOdr = initParam.endYmOdr.substr(6, 1) > 15 ? "2" : "1";
+            endOdr = initParam.endYmOdr.substr(6, 2) > 15 ? "2" : "1";
 
         } else if(initParam.startYmOdr !== null && initParam.endYmOdr !== null) {
 
             startYmd = initParam.startYmOdr.substr(0, 6);
-            startOdr = initParam.startYmOdr.substr(6, 1) > 15 ? "2" : "1";
+            startOdr = initParam.startYmOdr.substr(6, 2) > 15 ? "2" : "1";
             endYmd = initParam.endYmOdr.substr(0, 6);
-            endOdr = initParam.endYmOdr.substr(6, 1) > 15 ? "2" : "1";
+            endOdr = initParam.endYmOdr.substr(6, 2) > 15 ? "2" : "1";
 
         };
 
@@ -89,7 +89,7 @@ const ProjectClaimCostDetail = () => {
             ...param,
             startYmOdr: startYmd+startOdr,
             endYmOdr: endYmd+endOdr,
-            empId: initParam.empId,
+            empFlnm: initParam.empFlnm,
         })
 
     }
@@ -145,7 +145,7 @@ const ProjectClaimCostDetail = () => {
                                                prjctNm={prjctNm}
                                                startYmOdr={param.startYmOdr}
                                                endYmOdr={param.endYmOdr}
-                                               empId={param.empId}/>
+                                               empFlnm={param.empFlnm}/>
                                 </React.Suspense>
                             );
                         }}

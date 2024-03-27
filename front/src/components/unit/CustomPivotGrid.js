@@ -53,28 +53,28 @@ const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fi
     const onExporting = (e: PivotGridTypes.ExportingEvent) => {
         const excelName = makeFileName();
         const workbook = new Workbook();
-        const worksheet = workbook.addWorksheet(excelName);
+        const worksheet = workbook.addWorksheet('excelName');
 
         exportPivotGrid({
             component: e.component,
             worksheet,
-            customizeCell: ({ pivotCell, excelCell }) => {
-                console.log('eee',pivotCell,excelCell);
-                const appearance = weekendCellColor(pivotCell, 'excel');
-                console.log('aaaa',weekendCellColor(pivotCell, 'excel'));
-                Object.assign(excelCell, getExcelCellFormat(appearance));
-
-                const borderStyle = { style: 'thin', color: { argb: 'FF7E7E7E' } };
-                excelCell.border = {
-                    bottom: borderStyle,
-                    left: borderStyle,
-                    right: borderStyle,
-                    top: borderStyle,
-                };
-            },
+            // customizeCell: ({ pivotCell, excelCell }) => {
+            //     console.log('eee',pivotCell,excelCell);
+            //     const appearance = weekendCellColor(pivotCell, 'excel');
+            //     console.log('aaaa',weekendCellColor(pivotCell, 'excel'));
+            //     Object.assign(excelCell, getExcelCellFormat(appearance));
+            //
+            //     const borderStyle = { style: 'thin', color: { argb: 'FF7E7E7E' } };
+            //     excelCell.border = {
+            //         bottom: borderStyle,
+            //         left: borderStyle,
+            //         right: borderStyle,
+            //         top: borderStyle,
+            //     };
+            // },
         }).then(() => {
             workbook.xlsx.writeBuffer().then((buffer) => {
-                saveAs(new Blob([buffer], { type: 'application/octet-stream' }), excelName+'.xlsx');
+                saveAs(new Blob([buffer], { type: 'application/octet-stream' }), 'excelName'+'.xlsx');
             });
         });
     };
@@ -148,12 +148,13 @@ const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fi
         }
 
         // 날짜 컬럼 렌더링을 위한 null 데이터 display : none 처리
-        if (e.area === 'row' && e.cell && e.cell.text && e.cell.text.includes('null_')) {
-            // console.log(e);
-            e.cellElement.style.display = 'none';
-        } else if (e.area === 'data' && e.cell && e.cell.rowPath && e.cell.rowPath[0].includes('null_')) {
-            e.cellElement.style.display = 'none';
-        }
+        // console.log('ee',e.area, e.cell);
+        // if (e.area === 'row' && e.cell && e.cell.text && e.cell.text.includes('null_')) {
+        //     // console.log(e);
+        //     e.cellElement.style.display = 'none';
+        // } else if (e.area === 'data' && e.cell && e.cell.rowPath && e.cell.rowPath[0].includes('null_')) {
+        //     e.cellElement.style.display = 'none';
+        // }
 
         // row collapse block 상태일 때 화살표 아이콘 삭제
         if(blockCollapse === true && e.area === 'row' && e.cell.expanded === true){

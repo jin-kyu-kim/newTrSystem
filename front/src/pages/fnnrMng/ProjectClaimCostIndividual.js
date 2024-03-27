@@ -8,7 +8,7 @@ import ProjectClaimCostIndividualJson from './ProjectClaimCostIndividualJson.jso
 import ProjectClaimCostIndividualCtPop from "./ProjectClaimCostIndividualCtPop";
 import ProjectClaimCostIndividualMmPop from "./ProjectClaimCostIndividualMmPop";
 
-const ProjectClaimCostIndividual = ({ prjctId, prjctNm, startYmOdr, endYmOdr, empId }) => {
+const ProjectClaimCostIndividual = ({ prjctId, prjctNm, startYmOdr, endYmOdr, empFlnm }) => {
   const { mmKeyColumn, ctKeyColumn, queryId, mmColumns, ctColumns, mmSumColumns, ctSumColumns } = ProjectClaimCostIndividualJson;
   const [mmData, setMMData] = useState([]);
   const [ctData, setCtData] = useState([]);
@@ -23,7 +23,7 @@ const ProjectClaimCostIndividual = ({ prjctId, prjctNm, startYmOdr, endYmOdr, em
   useEffect(() => {
       getMMData();
       getCtData();
-  }, [startYmOdr, endYmOdr, empId]);
+  }, [startYmOdr, endYmOdr, empFlnm]);
 
     const getMMData = async () => {
 
@@ -32,7 +32,7 @@ const ProjectClaimCostIndividual = ({ prjctId, prjctNm, startYmOdr, endYmOdr, em
             prjctId: prjctId,
             startYmOdr: startYmOdr,
             endYmOdr: endYmOdr,
-            empId: empId
+            empFlnm: empFlnm
         };
         try{
             const response = await ApiRequest('/boot/common/queryIdSearch', param);
@@ -48,8 +48,7 @@ const ProjectClaimCostIndividual = ({ prjctId, prjctNm, startYmOdr, endYmOdr, em
             queryId: queryId.empCtQueryId,
             prjctId: prjctId,
             startYmOdr: startYmOdr,
-            endYmOdr: endYmOdr,
-            empId: empId
+            endYmOdr: endYmOdr
         };
         try{
             const response = await ApiRequest('/boot/common/queryIdSearch', param);
@@ -91,7 +90,7 @@ const ProjectClaimCostIndividual = ({ prjctId, prjctNm, startYmOdr, endYmOdr, em
     const retrievePrjctCtClmSttusIndvdlCtAcctoDetail = async (data) => {
 
         const param = {
-            queryId: 'financialAffairMngMapper.retrievePrjctCtClmYMDAccto',
+            queryId: queryId.ctPopupQueryId,
             prjctId: prjctId,
             startYmOdr: startYmOdr,
             endYmOdr: endYmOdr,
