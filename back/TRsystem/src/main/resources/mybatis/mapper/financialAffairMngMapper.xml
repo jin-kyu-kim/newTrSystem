@@ -11,11 +11,22 @@
             pma.EMP_ID,
             d.DEPT_NM,
             e.EMP_FLNM,
-            CONCAT(picm.APLY_YM, '-', picm.APLY_ODR) AS APLY_ODR,
+            CONCAT(SUBSTR(#{startYmOdr},1, 6),'-',SUBSTR(#{startYmOdr}, 7, 1)) AS START_APLY_ODR,
+            CONCAT(SUBSTR(#{endYmOdr},1, 6),'-',SUBSTR(#{endYmOdr}, 7, 1)) AS END_APLY_ODR,
             mm.EXPECT_MM,
-            mle.MM,
-            (mm.EXPECT_MM - mle.MM) AS USE_MM,
-            SUM(pma.MD) AS CLM_MD
+            (
+                SELECT SUM(a.MD*8) / 88
+                FROM PRJCT_MM_APLY a
+                WHERE a.PRJCT_ID = pma.PRJCT_ID
+                GROUP BY a.PRJCT_ID
+            ) AS TOTAL_MD_SUM,
+            (mm.EXPECT_MM - (
+                SELECT SUM(a.MD*8) / 88
+                FROM PRJCT_MM_APLY a
+                WHERE a.PRJCT_ID = pma.PRJCT_ID
+                GROUP BY a.PRJCT_ID
+            )) AS USE_MM,
+            SUM(pma.MD*8) AS CLM_MD
         FROM PRJCT_MM_APLY pma
         JOIN PRJCT_INDVDL_CT_MM picm
             ON pma.PRJCT_ID = picm.PRJCT_ID
@@ -31,86 +42,77 @@
             ON d.DEPT_ID = dh.DEPT_ID
         JOIN (
             SELECT
-                mlp.EMP_ID,
-                mim.EXPECT_MM,
-                mlp.PRJCT_ID,
-                mim.INPT_YM
+            mlp.EMP_ID,
+            mim.EXPECT_MM,
+            mlp.PRJCT_ID,
+            mim.INPT_YM
             FROM MMNY_LBRCO_PRMPC mlp
             JOIN MMNY_INPT_MM mim
-                ON mlp.PRJCT_ID = mim.PRJCT_ID
-                AND mlp.BGT_MNG_ODR = mim.BGT_MNG_ODR
-                AND mlp.MMNY_LBRCO_PRMPC_SN = mim.MMNY_LBRCO_PRMPC_SN
+            ON mlp.PRJCT_ID = mim.PRJCT_ID
+            AND mlp.BGT_MNG_ODR = mim.BGT_MNG_ODR
+            AND mlp.MMNY_LBRCO_PRMPC_SN = mim.MMNY_LBRCO_PRMPC_SN
         ) mm
             ON mm.PRJCT_ID = picm.PRJCT_ID
             AND mm.EMP_ID = picm.EMP_ID
-        JOIN MMNY_LBRCO_EXCN mle
-            ON mle.PRJCT_ID = picm.PRJCT_ID
-            AND mle.EMP_ID = picm.EMP_ID
-            AND mle.INPT_YM = mm.INPT_YM
         WHERE 1 = 1
         <if test="prjctId != null and !prjctId.equals('')">
             AND pma.PRJCT_ID = #{prjctId}
         </if>
-        <if test="aplyYm != null and !aplyYm.equals('')">
-            AND pma.APLY_YM = #{aplyYm}
+        <if test="empId != null and !empId.equals('')">
+            AND pma.EMP_ID = #{empId}
         </if>
-        <if test="aplyOdr != null and !aplyOdr.equals('')">
-            AND pma.APLY_ODR = #{aplyOdr}
+        <if test="(startYmOdr != null and !startYmOdr.equals('')) and (endYmOdr != null and !endYmOdr.equals(''))">
+            AND CONCAT(pma.APLY_YM, pma.APLY_ODR) BETWEEN #{startYmOdr} AND #{endYmOdr}
         </if>
         <if test="empId != null and !empId.equals('')">
             AND pma.EMP_ID = #{empId}
         </if>
-        GROUP BY pma.EMP_ID, d.DEPT_NM, e.EMP_FLNM, picm.APLY_YM, picm.APLY_ODR, mm.EXPECT_MM, mle.MM
+        GROUP BY pma.EMP_ID, d.DEPT_NM, e.EMP_FLNM, START_APLY_ODR, END_APLY_ODR, mm.EXPECT_MM, USE_MM
     </select>
 
     <!--프로젝트청구현황개인별 경비-->
     <select id="retrievePrjctCtClmSttusIndvdlCtAccto" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
-            pca.EMP_ID,
-            d.DEPT_NM,
-            e.EMP_FLNM,
-            CONCAT(picm.APLY_YM, '-', picm.APLY_ODR) AS APLY_ODR,
+            (SELECT CD_NM FROM nwTr.CD cd WHERE UP_CD_VALUE = 'VTW045' AND CD_VALUE = pca.EXPENS_CD) AS EXPENS_NM,
+            pca.EXPENS_CD,
+            CONCAT(SUBSTR(#{startYmOdr},1, 6),'-',SUBSTR(#{startYmOdr}, 7, 1)) AS START_APLY_ODR,
+            CONCAT(SUBSTR(#{endYmOdr},1, 6),'-',SUBSTR(#{endYmOdr}, 7, 1)) AS END_APLY_ODR,
             (
                 SELECT SUM(a.UTZTN_AMT)
                 FROM PRJCT_CT_APLY a
-                WHERE a.EMP_ID = pca.EMP_ID
-                GROUP BY a.EMP_ID
+                WHERE a.EXPENS_CD = pca.EXPENS_CD
+                AND a.PRJCT_ID = pca.PRJCT_ID
+                GROUP BY a.EXPENS_CD
             ) AS TOTAL_AMT_SUM,
             SUM(pca.UTZTN_AMT) AS TOTAL_AMT
         FROM PRJCT_CT_APLY pca
         JOIN PRJCT_INDVDL_CT_MM picm
             ON pca.PRJCT_ID = picm.PRJCT_ID
-            AND pca.EMP_ID = picm.EMP_ID
+            AND pca.EMP_ID  = picm.EMP_ID
             AND pca.APLY_YM = picm.APLY_YM
             AND pca.APLY_ODR = picm.APLY_ODR
             AND picm.CT_ATRZ_CMPTN_YN = 'Y'
-        JOIN EMP e
-            ON e.EMP_ID = picm.EMP_ID
-        JOIN DEPT_HNF dh
-            ON dh.EMP_ID = picm.EMP_ID
-        JOIN DEPT d
-            ON d.DEPT_ID = dh.DEPT_ID
         WHERE 1 = 1
         <if test="prjctId != null and !prjctId.equals('')">
             AND pca.PRJCT_ID = #{prjctId}
         </if>
-        <if test="aplyYm != null and !aplyYm.equals('')">
-            AND pca.APLY_YM = #{aplyYm}
-        </if>
-        <if test="aplyOdr != null and !aplyOdr.equals('')">
-            AND pca.APLY_ODR = #{aplyOdr}
-        </if>
         <if test="empId != null and !empId.equals('')">
             AND pca.EMP_ID = #{empId}
         </if>
-        GROUP BY pca.EMP_ID, d.DEPT_NM, e.EMP_FLNM, picm.APLY_YM, picm.APLY_ODR
+        <if test="(startYmOdr != null and !startYmOdr.equals('')) and (endYmOdr != null and !endYmOdr.equals(''))">
+            AND CONCAT(pca.APLY_YM, pca.APLY_ODR) BETWEEN #{startYmOdr} AND #{endYmOdr}
+        </if>
+        <if test="expensCd != null and !expensCd.equals('')">
+            AND pca.EXPENS_CD = #{expensCd}
+        </if>
+        GROUP BY TOTAL_AMT_SUM, EXPENS_CD, START_APLY_ODR, END_APLY_ODR
     </select>
 
     <!-- 프로젝트청구현황개인별 수행인력 팝업 -->
     <select id="retrievePrjctCtClmSttusIndvdlMMAcctoDetail" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
-            pma.MD,
-            CONCAT(pma.MD, 'hrs | ', e.EMP_FLNM, '(', c.CD_NM, ')') AS TEXT,
+            pma.MD*8,
+            CONCAT(pma.MD*8, 'hrs | ', e.EMP_FLNM, '(', c.CD_NM, ')') AS TEXT,
             c.CD_NM AS ATRZ_DMND_STTS_NM ,
             DATE_FORMAT(pma.APLY_YMD, '%Y-%m-%d') AS START_DATE,
             DATE_FORMAT(pma.APLY_YMD,'%Y-%m-%d') AS END_DATE,
@@ -136,11 +138,8 @@
         <if test="prjctId != null and !prjctId.equals('')">
             AND pma.PRJCT_ID = #{prjctId}
         </if>
-        <if test="aplyYm != null and !aplyYm.equals('')">
-            AND pma.APLY_YM = #{aplyYm}
-        </if>
-        <if test="aplyOdr != null and !aplyOdr.equals('')">
-            AND pma.APLY_ODR = #{aplyOdr}
+        <if test="(startYmOdr != null and !startYmOdr.equals('')) and (endYmOdr != null and !endYmOdr.equals(''))">
+            AND CONCAT(pma.APLY_YM, pma.APLY_ODR) BETWEEN #{startYmOdr} AND #{endYmOdr}
         </if>
         <if test="empId != null and !empId.equals('')">
             AND pma.EMP_ID = #{empId}
@@ -194,11 +193,25 @@
 
     <!-- 프로젝트청구현황일자별 -->
     <select id="retrievePrjctCtClmYMDAccto" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            PIVOT_DATE,
+            COALESCE(APLY_YMD, '') AS APLY_YMD,
+            COALESCE(PRJCT_NM, 'null_project') AS PRJCT_NM,
+            COALESCE(EMP_FLNM, 'null_flnm') AS EMP_FLNM,
+            COALESCE(EMP_DETAIL, 'null_detail') AS EMP_DETAIL,
+            COALESCE(MD, '') AS MD,
+            COALESCE(CD_NM, 'null_cd') AS CD_NM,
+            COALESCE(UTZTN_AMT, '') AS UTZTN_AMT,
+            COALESCE(USE_OFFIC, '') AS USE_OFFIC,
+            COALESCE(CT_PRPOS, '') AS CT_PRPOS,
+            COALESCE(ATDRN, '') AS ATDRN
+        FROM (
         WITH RECURSIVE a AS (
             SELECT
                 CONCAT(SUBSTR(b.APLY_YMD, 1, 4),'-',SUBSTR(b.APLY_YMD, 5, 2),'-',SUBSTR(b.APLY_YMD, 7, 2)) AS APLY_YMD,
                 p.PRJCT_NM,
                 (SELECT EMP_FLNM FROM nwTr.EMP emp WHERE EMP_ID = b.EMP_ID) AS EMP_FLNM,
+                '' AS EMP_DETAIL,
                 FORMAT(b.MD*8, 1) AS MD,
                 '근무 시간' AS CD_NM,
                 null AS UTZTN_AMT,
@@ -207,27 +220,26 @@
                 null AS ATDRN
             FROM nwTr.PRJCT_INDVDL_CT_MM a, nwTr.PRJCT_MM_APLY b
             JOIN PRJCT p
-                 ON b.PRJCT_ID = p.PRJCT_ID
+                ON b.PRJCT_ID = p.PRJCT_ID
             WHERE 1 = 1
                 AND a.PRJCT_ID = b.PRJCT_ID
                 AND a.APLY_YM = b.APLY_YM
                 AND a.APLY_ODR = b.APLY_ODR
                 AND a.EMP_ID = b.EMP_ID
                 AND a.MM_ATRZ_CMPTN_YN = 'Y'
-            <if test="prjctId != null and !prjctId.equals('')">
-                AND a.PRJCT_ID = #{prjctId}
-            </if>
-            <if test="aplyYm != null and !aplyYm.equals('')">
-                AND a.APLY_YM = #{aplyYm}
-            </if>
-            <if test="aplyOdr != null and !aplyOdr.equals('')">
-                AND a.APLY_ODR = #{aplyOdr}
+            <if test="prjctId != null and !prjctId.equals('')">AND a.PRJCT_ID = #{prjctId}
+                AND a.EMP_ID = #{empId}</if>
+            <if test="
+            empId != null and !empId.equals('')"></if>
+            <if test="(startYmOdr != null and !startYmOdr.equals('')) and (endYmOdr != null and !endYmOdr.equals(''))">
+                AND CONCAT(a.APLY_YM, a.APLY_ODR) BETWEEN #{startYmOdr} AND #{endYmOdr}
             </if>
         ), b AS (
             SELECT
                 CONCAT(SUBSTR(b.UTZTN_DT, 1, 4),'-',SUBSTR(b.UTZTN_DT, 5, 2),'-',SUBSTR(b.UTZTN_DT, 7, 2)) AS APLY_YMD,
                 p.PRJCT_NM,
                 (SELECT EMP_FLNM FROM nwTr.EMP emp WHERE EMP_ID = b.EMP_ID) AS EMP_FLNM,
+                CONCAT('상세내역 : ', b.CT_PRPOS, ' | 용도 : ', b.ATDRN) AS EMP_DETAIL,
                 null AS MD,
                 (SELECT CD_NM FROM nwTr.CD cd WHERE UP_CD_VALUE = 'VTW045' AND CD_VALUE = b.EXPENS_CD) AS CD_NM,
                 b.UTZTN_AMT,
@@ -236,7 +248,7 @@
                 b.ATDRN
             FROM nwTr.PRJCT_INDVDL_CT_MM a, nwTr.PRJCT_CT_APLY b
             JOIN PRJCT p
-                 ON b.PRJCT_ID = p.PRJCT_ID
+                ON b.PRJCT_ID = p.PRJCT_ID
             WHERE 1 = 1
                 AND a.PRJCT_ID = b.PRJCT_ID
                 AND a.APLY_YM = b.APLY_YM
@@ -246,26 +258,29 @@
             <if test="prjctId != null and !prjctId.equals('')">
                 AND a.PRJCT_ID = #{prjctId}
             </if>
-            <if test="aplyYm != null and !aplyYm.equals('')">
-                AND a.APLY_YM = #{aplyYm}
+            <if test="empId != null and !empId.equals('')">
+                AND a.EMP_ID = #{empId}
             </if>
-            <if test="aplyOdr != null and !aplyOdr.equals('')">
-                AND a.APLY_ODR = #{aplyOdr}
+            <if test="(startYmOdr != null and !startYmOdr.equals('')) and (endYmOdr != null and !endYmOdr.equals(''))">
+                AND CONCAT(a.APLY_YM, a.APLY_ODR) BETWEEN #{startYmOdr} AND #{endYmOdr}
             </if>
         ), c AS (
-            SELECT CAST(CONCAT(#{aplyYm}, '01') AS DATE) AS PIVOT_DATE
+            SELECT CAST(CONCAT(SUBSTR(#{startYmOdr},1, 6), '01') AS DATE) AS PIVOT_DATE
             UNION ALL
             SELECT DATE_ADD(PIVOT_DATE, INTERVAL 1 DAY)
             FROM c
-            WHERE DATE_ADD(PIVOT_DATE, INTERVAL 1 DAY) &lt; CAST(CONCAT(#{aplyYm}, '01') AS DATE) + INTERVAL 1 MONTH
+            WHERE DATE_ADD(PIVOT_DATE, INTERVAL 1 DAY) &lt; CAST(CONCAT(SUBSTR(#{endYmOdr}, 1, 6), '01') AS DATE) + INTERVAL 1 MONTH
         )
         SELECT * FROM (
             SELECT *
             FROM c
             WHERE (
-            1 = 1 AND DAY(PIVOT_DATE) &lt;= 15
-            ) OR (
-            1 = 2 AND DAY(PIVOT_DATE) > 15 AND DAY(PIVOT_DATE) &lt;= DAY(LAST_DAY(PIVOT_DATE)))
+                (SUBSTR(#{startYmOdr},7, 1) = 1 AND PIVOT_DATE >= CONCAT(SUBSTR(#{startYmOdr},1, 6), '01')) OR
+                (SUBSTR(#{startYmOdr},7, 1) = 2 AND PIVOT_DATE >= CONCAT(SUBSTR(#{startYmOdr},1, 6), '16'))
+                ) AND (
+                (SUBSTR(#{endYmOdr},7, 1) = 1 AND PIVOT_DATE &lt;= CONCAT(SUBSTR(#{endYmOdr},1, 6), '15')) OR
+                (CONCAT(SUBSTR(#{endYmOdr}, 7, 1) = 2 AND PIVOT_DATE &lt;= LAST_DAY(CAST(CONCAT(SUBSTR(#{endYmOdr}, 1, 6), '01') AS DATE))))
+            )
         ) d
         LEFT JOIN a
             ON d.PIVOT_DATE = a.APLY_YMD
@@ -274,12 +289,16 @@
             SELECT *
             FROM c
             WHERE (
-            1 = 1 AND DAY(PIVOT_DATE) &lt;= 15
-            ) OR (
-            1 = 2 AND DAY(PIVOT_DATE) > 15 AND DAY(PIVOT_DATE) &lt;= DAY(LAST_DAY(PIVOT_DATE)))
+                (SUBSTR(#{startYmOdr},7, 1) = 1 AND PIVOT_DATE >= CONCAT(SUBSTR(#{startYmOdr},1, 6), '01')) OR
+                (SUBSTR(#{startYmOdr},7, 1) = 2 AND PIVOT_DATE >= CONCAT(SUBSTR(#{startYmOdr},1, 6), '16'))
+                ) AND (
+                (SUBSTR(#{endYmOdr},7, 1) = 1 AND PIVOT_DATE &lt;= CONCAT(SUBSTR(#{endYmOdr},1, 6), '15')) OR
+                (CONCAT(SUBSTR(#{endYmOdr}, 7, 1) = 2 AND PIVOT_DATE &lt;= LAST_DAY(CAST(CONCAT(SUBSTR(#{endYmOdr}, 1, 6), '01') AS DATE))))
+            )
         ) d
         LEFT JOIN b
-            ON d.PIVOT_DATE = b.APLY_YMD
+        ON d.PIVOT_DATE = b.APLY_YMD
+        ) a
         ORDER BY PIVOT_DATE
     </select>
 
@@ -355,8 +374,8 @@
                 CONCAT(p.PRJCT_NM, ' (PM : ', (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = pah.APRVR_EMP_ID), ')') AS PRJCT_NM,
                 (SELECT CD_NM FROM CD WHERE CD_VALUE = pca.EXPENS_CD) AS EXPENS_CD,
                 e.EMP_FLNM,
-                CONCAT(e.EMP_FLNM, ' | 상세내역 : ', pca.CT_PRPOS, ' | 용도 : ', pca.ATDRN) as PRJCT_DETAIL,
-                CONCAT('상세내역 : ', pca.CT_PRPOS, ' | 용도 : ', pca.ATDRN) as EMP_DETAIL,
+                CONCAT(e.EMP_FLNM, ' | 상세내역 : ', pca.CT_PRPOS, ' | 용도 : ', pca.ATDRN) AS PRJCT_DETAIL,
+                CONCAT('상세내역 : ', pca.CT_PRPOS, ' | 용도 : ', pca.ATDRN) AS EMP_DETAIL,
                 pca.UTZTN_AMT,
                 CONCAT(SUBSTR(pca.UTZTN_DT, 1, 4),'-',SUBSTR(pca.UTZTN_DT, 5, 2),'-',SUBSTR(pca.UTZTN_DT, 7, 2)) AS UTZTN_DT
             FROM PRJCT_CT_APLY pca
@@ -390,7 +409,7 @@
                 AND pca.EXPENS_CD = #{expensCd}
             </if>
         ) b
-            ON a.PIVOT_DATE = b.UTZTN_DT
+        ON a.PIVOT_DATE = b.UTZTN_DT
         ORDER BY PIVOT_DATE
     </select>
 
