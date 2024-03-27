@@ -68,6 +68,9 @@ const HtmlEditBox = ({ column, data, setData, placeholder, value }) => {
           <Item name="insertColumnLeft" />
           <Item name="insertColumnRight" />
           <Item name="deleteColumn" />
+          <Item name="separator" />
+          <Item name="cellProperties" />
+          <Item name="tableProperties" />
         </Toolbar>
       </HtmlEditor>
     </div>
