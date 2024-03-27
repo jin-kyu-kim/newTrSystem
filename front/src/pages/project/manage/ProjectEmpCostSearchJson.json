@@ -2,7 +2,7 @@
   {
     "caption": "직원명",
     "width": 120,
-    "dataField": "empId",
+    "dataField": "empNm",
     "area": "row",
     "expanded": true
   },
@@ -64,7 +64,7 @@
     "expanded": true
   },
   {
-    "dataField": "mm",
+    "dataField": "expectMm",
     "dataType": "number",
     "summaryType": "sum",
     "area": "data"

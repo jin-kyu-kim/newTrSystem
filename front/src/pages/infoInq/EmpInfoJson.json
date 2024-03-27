@@ -1,113 +1,87 @@
 {
-   
-   
-   
-   
-  "EmpDegree":{
-      "menuName": "EmpDegree",
-      "queryId": "infoInqMapper.retrieveEmpAcbg",
-      "keyColumn":  "acbgSn" , 
-      "tableColumns" :[
-
+  "EmpDegree": {
+    "menuName": "EmpDegree",
+    "queryId": "infoInqMapper.retrieveEmpAcbg",
+    "keyColumn":  "acbgSn" , 
+    "tableColumns" :[
       { "key": "acbgSeCd", "value": "구분" ,"editType" : "selectBox", "comCd" : "VTW025" ,"isRequire" : true },
-      { "key": "schlNm", "value": "학교명"},
-      { "key": "majorIntltshNm", "value": "전공(계열)" },
+      { "key": "schlNm", "value": "학교명" ,"isRequire" : true},
+      { "key": "majorIntltshNm", "value": "전공(계열)" ,"isRequire" : true},
       { "key": "grdtnSttsCd", "value": "졸업구분" ,"editType" : "selectBox" ,"comCd" : "VTW026" ,"isRequire" : true},
       { "key": "pntPscoreSeCd", "value": "성적만점" ,"editType" : "selectBox" ,"comCd" :"VTW027" ,"isRequire" : true },
-      { "key": "scre", "value" : "성적" ,"type": "Number" ,"isRequire" : true},
-      { "key": "mtcltnYr", "value": "입학년도", "type": "Number" ,"length" : 4 ,"isRequire" : true},
-      { "key": "grdtnYr", "value": "졸업년도" ,"type": "Number" , "length" : 4 ,"isRequire" : true}
-  ], 
-        "tbNm" :"EMP_ACBG"
-
-  }  , 
+      { "key": "scre", "value" : "성적" ,"type": "number" ,"isRequire" : true},
+      { "key": "mtcltnYr", "value": "입학년도", "type": "number" ,"length" : 4 ,"isRequire" : true},
+      { "key": "grdtnYr", "value": "졸업년도" ,"type": "number" , "length" : 4 ,"isRequire" : true}
+    ], 
+    "tbNm" :"EMP_ACBG"
+  }, 
   "EmpLanguage":{
-      "menuName": "EmpLanguage",
-      "queryId": "infoInqMapper.retrieveFgggAblty",
-      "keyColumn": "fgggAbltySn",
-      "tableColumns": 
-[     
+    "menuName": "EmpLanguage",
+    "queryId": "infoInqMapper.retrieveFgggAblty",
+    "keyColumn": "fgggAbltySn",
+    "tableColumns": [     
       { "key": "fgggKndCd", "value": "외국어" ,"editType" : "selectBox" ,"comCd" : "VTW028" ,"isRequire" : true },
       { "key": "pictrsLevelCd", "value": "회화수준","editType" : "selectBox" ,"comCd" : "VTW029" ,"isRequire" : true},
       { "key": "athriTestNm", "value": "공인시험" ,"isRequire" : true },
-      { "key": "score", "value": "점수"  ,"type": "Number" ,"isRequire" : true }
-],
-      "tbNm" : "EMP_FGGG_ABLTY"
-
+      { "key": "score", "value": "점수"  ,"type": "number" ,"isRequire" : true }
+    ],
+    "tbNm" : "EMP_FGGG_ABLTY"
   }, 
-
-
   "EmpLicense":{
-      "menuName": "EmpLicense",
-      "queryId": "infoInqMapper.retrieveEmpQlfcLcns",
-      "keyColumn": "qlfcLcnsSn",
-      "tableColumns": 
-      [   
-          { "key": "qlfcLcnsNm", "value": "자격면허" },
-          { "key": "qlfcLcnsId", "value": "면허코드" },
-          { "key": "gradNm", "value": "등급"  },
-          { "key": "acqsYmd", "value": "취득일", "type" : "date" }
-      ],
-      "tbNm": " EMP_QLFC_LCNS"
-      
-
+    "menuName": "EmpLicense",
+    "queryId": "infoInqMapper.retrieveEmpQlfcLcns",
+    "keyColumn": "qlfcLcnsSn",
+    "tableColumns": [   
+      { "key": "qlfcLcnsNm", "value": "자격면허" ,"isRequire" : true},
+      { "key": "qlfcLcnsId", "value": "면허코드" ,"isRequire" : true},
+      { "key": "gradNm", "value": "등급"  ,"isRequire" : true},
+      { "key": "acqsYmd", "value": "취득일", "type" : "date" ,"isRequire" : true }
+    ],
+    "tbNm": " EMP_QLFC_LCNS"
   },
-  "EmpEduHist":{
-      
-      "menuName": "EmpEduHist",
-"queryId": "infoInqMapper.retrieveEmpEduHist",
-  "keyColumn": "eduSn",
-  "tableColumns": 
-[   
-      { "key": "eduInstNm", "value": "교육기관" },
-      { "key": "eduNm", "value": "교육명" },
-      { "key": "eduBgngYmd", "value": "교육시작일자" ,"type" : "date" },
-      { "key": "eduEndYmd", "value": "교육종료일자" ,"type" : "date" },
-      { "key": "eduCn", "value": "교육내용" }
-],"tbNm": "EMP_EDU"
- 
-  
+  "EmpEduHist": {
+    "menuName": "EmpEduHist",
+    "queryId": "infoInqMapper.retrieveEmpEduHist",
+    "keyColumn": "eduSn",
+    "tableColumns": [   
+      { "key": "eduInstNm", "value": "교육기관" ,"isRequire" : true },
+      { "key": "eduNm", "value": "교육명" ,"isRequire" : true },
+      { "key": "eduBgngYmd", "value": "교육시작일자" ,"type" : "date"  ,"isRequire" : true},
+      { "key": "eduEndYmd", "value": "교육종료일자" ,"type" : "date"  ,"isRequire" : true},
+      { "key": "eduCn", "value": "교육내용"  ,"isRequire" : true}
+    ],
+    "tbNm": "EMP_EDU"
   },
-
-
-  "EmpCareer":{
-      "menuName": "EmpCareer",
-      "queryId": "infoInqMapper.retrieveEmpCareer",
-      "keyColumn": "careerSn",
-      "tableColumns":
-      [
-          { "key": "careerSn", "value": "자격면허", "width": 300, "alignment" : "center" ,"visible": true},
-          { "key": "workYmd", "value": "기간", "width": 250, "alignment" : "center" },
-          { "key": "wrkplcNm", "value": "근무처", "width": 250 , "alignment" : "center"},
-          { "key": "mainCareerCn", "value": "주요경력사항", "width": 250, "alignment" : "center" },
-          { "key": "lctnAddr", "value": "소재지", "width": 300, "alignment" : "center" },
-          { "key": "rm", "value": "특기사항", "width": 170, "alignment" : "center"  }
-      ]
+  "EmpCareer": {
+    "menuName": "EmpCareer",
+    "queryId": "infoInqMapper.retrieveEmpCareer",
+    "keyColumn": "careerSn",
+    "tableColumns": [
+      { "key": "workBgngYmd", "value": "근무시작일", "type" : "date" ,"isRequire" : true},
+      { "key": "workEndYmd", "value": "근무종료일", "type" : "date" ,"isRequire" : true },
+      { "key": "wrkplcNm", "value": "근무처" ,"isRequire" : true},
+      { "key": "mainCareerCn", "value": "주요경력사항" ,"isRequire" : true},
+      { "key": "lctnAddr", "value": "소재지" ,"isRequire" : true },
+      { "key": "rm", "value": "특기사항"  ,"isRequire" : true}
+    ],
+    "tbNm": "EMP_CAREER"
   },
-
-
-
-
-  "prjctHist" : 
-  {
-
-  "menuName": "EmpProjectHist",
-  "queryId": "infoInqMapper.retrievePrjctHist",
-  "keyColumn": "histSn",
-  "tableColumns": 
-[     
-  { "key": "histSn", "value": "자격면허", "width": 300, "alignment" : "center" ,"visible": true},
-      { "key": "prjctNm", "value": "프로젝트명", "width": 200, "alignment" : "center" },
-      { "key": "prjctYmd", "value": "참여기간", "width": 300, "alignment" : "center" },
-      { "key": "tkcgJobCn", "value": "담당업무", "width": 150, "alignment" : "center" },
-      { "key": "orderInstNm", "value": "발주처", "width": 150, "alignment" : "center"  },
-      { "key": "jobNm", "value": "업무분류", "width": 150, "alignment" : "center"  },
-      { "key": "tchnlgyNm", "value": "기술분류", "width": 150 ,  "alignment" : "center"  },
-      { "key": "rm", "value": "비고", "width": 100,  "alignment" : "center"  }
-]
+  "prjctHist": {
+    "menuName": "EmpProjectHist",
+    "queryId": "infoInqMapper.retrievePrjctHist",
+    "keyColumn": "prjctHistSn",
+    "tableColumns": [     
+      { "key": "prjctNm", "value": "프로젝트명" ,"isRequire" : true},
+      { "key": "prjctBgngYmd", "value": "시작일" ,"type" : "date" ,"isRequire" : true},
+      { "key": "prjctEndYmd", "value": "종료일" , "type" : "date" ,"isRequire" : true },
+      { "key": "tkcgJobCn", "value": "담당업무"  ,"isRequire" : true},
+      { "key": "orderInstNm", "value": "발주처"  ,"isRequire" : true },
+      { "key": "jobClCd", "value": "업무분류" ,"isRequire" : true ,"editType" : "selectBox" ,"comCd" : "VTW030"},
+      { "key": "tchnlgyClCd", "value": "기술분류"  ,"isRequire" : true ,"editType" : "selectBox" ,"comCd" : "VTW031" },
+      { "key": "rm", "value": "비고"  ,"isRequire" : true }
+    ], 
+    "tbNm": "EMP_PRJCT_HIST"
   },
-
-
   "EmpDetailInfo":[
       {
         "TabName": "비밀번호변경",
@@ -157,23 +131,16 @@
         "url": "./EmpProjectHist",
         "index" : 7
       }
-      
-
-
     ],
-
-
-    "EmpBasicInfo":{
-    "BaseInfo" :
-    [
+  "EmpBasicInfo":{
+    "BaseInfo": [
       { "key": "empFlnm", "value": "성명" },
       { "key": "telno", "value": "전화번호" },
       { "key": "eml", "value": "이메일" },
       {"key": "brdt","value": "생년월일"},
       {"key": "deptNm", "value": "부서"}
     ],
-    "DtlInfo":
-    [
+    "DtlInfo": [
       {"key": "engFlnm","value": "영문성명"},
       {"key": "chcrtFlnm","value": "한자성명"},
       {"key": "sexdstnCd","value": "성별코드"},
@@ -195,8 +162,6 @@
       {"key": "mdfcnDt","value": "수정일시"},
       {"key": "mdfcnEmpId","value": "수정직원ID"},
       {"key": "mtrscCd","value": "병역코드"}
-
     ]
   }
-  
 }

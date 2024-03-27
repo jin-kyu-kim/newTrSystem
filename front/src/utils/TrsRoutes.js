@@ -69,6 +69,18 @@ const TreRoutes = [
     name: "ProjectAprvDetail",
     element: React.lazy(() => import("../pages/project/approval/ProjectAprvDetail")),
   },
+  // 권한관리
+  {
+    path: "/sysMng/EmpAuth",
+    name: "EmpAuth",
+    element: React.lazy(() => import("../pages/sysMng/EmpAuth")),
+  },
+  // 권한부여관리
+  {
+    path: "/sysMng/EmpAuthorization",
+    name: "EmpAuth",
+    element: React.lazy(() => import("../pages/sysMng/EmpAuthorization")),
+  },
    // 고객사관리
   {
     path: "/sysMng/CustomersList",
@@ -204,10 +216,15 @@ const TreRoutes = [
   // 개인 청구 > 문화체력비용
   {
     path: "/indvdlClm/CultureHealthCost",
-    name: "ProjectClaimCostDetail",
-    element: React.lazy(() => import("../pages/fnnrMng/ProjectClaimCostDetail")),
+    name: "CultureHealthCost",
+    element: React.lazy(() => import("../pages/indvdlClm/CultureHealthCost")),
   },
-
+  // 개인 청구 > 프로젝트비용
+  {
+    path: "/indvdlClm/ProjectExpense",
+    name: "ProjectExpense",
+    element: React.lazy(() => import("../pages/indvdlClm/ProjectExpense")),
+  },
   // 재무 관리 > 근무시간 승인내역
   {
     path: "/fnnrMng/EmpTimeAprvList",
@@ -221,11 +238,11 @@ const TreRoutes = [
     name: "EmpTRCostTotal",
     element: React.lazy(() => import("../pages/fnnrMng/EmpTRCostTotal")),
   },
-  // 개인 청구 > 문화체력비용
+  // 재무 관리 > 경비승인내역
   {
-    path: "/indvdlClm/CultureHealthCost",
-    name: "CultureHealthCost",
-    element: React.lazy(() => import("../pages/indvdlClm/CultureHealthCost")),
+    path: "/fnnrMng/EmpExpenseAprvList",
+    name: "EmpExpenseAprvList",
+    element: React.lazy(() => import("../pages/fnnrMng/EmpExpenseAprvList")),
   },
   // 관리자메뉴 > 전자결재서식관리
   {
@@ -238,6 +255,24 @@ const TreRoutes = [
     path: "/mngrMenu/ElecAtrzNewForm",
     name: "ElecAtrzNewForm",
     element: React.lazy(() => import("../pages/mngrMenu/ElecAtrzNewForm")),
+  },
+  // 전자결재 
+  {
+    path: "/elecAtrz/ElecAtrz",
+    name: "ElecAtrz",
+    element: React.lazy(() => import("../pages/elecAtrz/ElecAtrz")),
+  },
+  // 전자결재 신규기안 작성 
+  {
+    path: "/elecAtrz/ElecAtrzNewReq",
+    name: "ElecAtrzNewReq",
+    element: React.lazy(() => import("../pages/elecAtrz/ElecAtrzNewReq")),
+  },
+  // 전자결재 서식
+  {
+    path: "/elecAtrz/ElecAtrzForm",
+    name: "ElecAtrzForm",
+    element: React.lazy(() => import("../pages/elecAtrz/ElecAtrzForm")),
   }
 ];
 

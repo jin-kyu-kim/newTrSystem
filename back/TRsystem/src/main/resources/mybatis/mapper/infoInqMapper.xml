@@ -3,52 +3,52 @@
 
 <mapper namespace="com.trsystem.mybatis.mapper.infoInqMapper">
 	<select id="retrieveEmpList" parameterType="map" resultType="com.trsystem.LowerHashMap">
-			SELECT
-			E.EMP_ID AS EMP_ID
-			,E.EMPNO AS EMPNO
-			,E.EMP_FLNM AS EMP_FLNM
-			,E.EMP_TY_CD AS EMP_TY_CD
-			,C.CD_NM AS JBPS_NM
-			,GROUP_CONCAT(D.DEPT_NM) AS DEPT_ID
-			,E.TELNO AS TELNO
-			,E.EML AS EML
-			,C2.CD_NM AS HDOF_STTS_NM
-			,COUNT(*) OVER () AS TOTAL_ITEMS
-			,C3.CD_NM AS BANK_NM
-			,E.ACTNO AS ACTNO
-			,C.CD_VALUE JBPS_CD
-			,C3.CD_VALUE  AS BANK_CD
-			,C2.CD_VALUE AS HDOF_STTS_CD
-		FROM EMP E
-			LEFT OUTER JOIN CD C ON C.CD_VALUE =E.JBPS_CD
-			LEFT OUTER JOIN DEPT_HNF DF ON E.EMP_ID = DF.EMP_ID
-			LEFT OUTER JOIN DEPT D ON D.DEPT_ID = DF.DEPT_ID
-			LEFT OUTER JOIN CD C2 ON C2.CD_VALUE =E.HDOF_STTS_CD
-			LEFT OUTER JOIN CD C3 ON C3.CD_VALUE =E.BANK_CD 
-			WHERE 1=1
-						<if test="empno != null and empno !=''">
-							AND E.EMPNO LIKE CONCAT('%', #{empno}, '%')
-						</if>
-
-						<if test="empFlnm != null and empFlnm !=''">
-							AND E.EMP_FLNM LIKE CONCAT('%', #{empFlnm}, '%')
-						</if>
-
-						<if test="jbpsNm != null and jbpsNm !=''">
-							AND E.JBPS_CD = #{jbpsNm}
-						</if>
-
-						<if test="telNo != null and telNo !=''">
-							AND E.TELNO LIKE CONCAT('%', #{telNo}, '%')www
-						</if>
-						<if test="deptId != null and deptId !=''">
-							AND D.DEPT_ID = #{deptId}
-						</if>
-
-						<if test="hdofSttsNm != null and hdofSttsNm !=''">
-							AND C2.CD_VALUE = #{hdofSttsNm}
-						</if>
-						GROUP BY E.EMP_ID
+	       SELECT
+	              E.EMP_ID AS EMP_ID
+	            , E.EMPNO AS EMPNO
+	            , E.EMP_FLNM AS EMP_FLNM
+	            , E.EMP_TY_CD AS EMP_TY_CD
+	            , C.CD_NM AS JBPS_NM
+	            , GROUP_CONCAT(D.DEPT_NM) AS DEPT_ID
+	            , E.TELNO AS TELNO
+	            , E.EML AS EML
+	            , C2.CD_NM AS HDOF_STTS_NM
+	            , COUNT(*) OVER () AS TOTAL_ITEMS
+	            , C3.CD_NM AS BANK_NM
+	            , E.ACTNO AS ACTNO
+	            , C.CD_VALUE JBPS_CD
+	            , C3.CD_VALUE  AS BANK_CD
+	            , C2.CD_VALUE AS HDOF_STTS_CD
+	         FROM EMP E
+	            LEFT OUTER JOIN CD C ON C.CD_VALUE =E.JBPS_CD
+	            LEFT OUTER JOIN DEPT_HNF DF ON E.EMP_ID = DF.EMP_ID
+	            LEFT OUTER JOIN DEPT D ON D.DEPT_ID = DF.DEPT_ID
+	            LEFT OUTER JOIN CD C2 ON C2.CD_VALUE =E.HDOF_STTS_CD
+	            LEFT OUTER JOIN CD C3 ON C3.CD_VALUE =E.BANK_CD
+	            WHERE 1=1
+	                        <if test="empno != null and empno !=''">
+	                            AND E.EMPNO LIKE CONCAT('%', #{empno}, '%')
+	                        </if>
+	 
+	                        <if test="empFlnm != null and empFlnm !=''">
+	                            AND E.EMP_FLNM LIKE CONCAT('%', #{empFlnm}, '%')
+	                        </if>
+	 
+	                        <if test="jbpsNm != null and jbpsNm !=''">
+	                            AND E.JBPS_CD = #{jbpsNm}
+	                        </if>
+	 
+	                        <if test="telNo != null and telNo !=''">
+	                            AND E.TELNO LIKE CONCAT('%', #{telNo}, '%')www
+	                        </if>
+	                        <if test="deptId != null and deptId !=''">
+	                            AND D.DEPT_ID = #{deptId}
+	                        </if>
+	 
+	                        <if test="hdofSttsNm != null and hdofSttsNm !=''">
+	                            AND C2.CD_VALUE = #{hdofSttsNm}
+	                        </if>
+	                        GROUP BY E.EMP_ID
 	</select>
 	<!--직급발령정보 조회-->
 	<select id="retrieveEmpJbpsHist" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -144,7 +144,8 @@
 	<select id="retrieveEmpCareer" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT
 			CAREER_SN,
-			CONCAT(DATE_FORMAT(WORK_BGNG_YMD, '%Y-%m-%d')  , '~', DATE_FORMAT(WORK_END_YMD, '%Y-%m-%d')) AS WORK_YMD ,
+			WORK_BGNG_YMD,
+			WORK_END_YMD,
 			WRKPLC_NM,
 			MAIN_CAREER_CN,
 			LCTN_ADDR,
@@ -155,18 +156,17 @@
 
 	<select id="retrievePrjctHist" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT 
-			EPH.PRJCT_HIST_SN AS HIST_SN,
-			EPH.PRJCT_NM AS PRJCT_NM,
-			CONCAT(DATE_FORMAT(EPH.PRJCT_BGNG_YMD, '%Y-%m-%d')  , '~', DATE_FORMAT(EPH.PRJCT_END_YMD, '%Y-%m-%d')) AS PRJCT_YMD ,
-			EPH.TKCG_JOB_CN AS TKCG_JOB_CN , 
-			EPH.ORDER_INST_NM AS ORDER_INST_NM ,
-			C.CD_NM AS JOB_NM,
-			C2.CD_NM AS TCHNLGY_NM,
-			EPH.RM AS RM
-		FROM EMP_PRJCT_HIST EPH 
-		INNER JOIN CD C ON C.CD_VALUE = EPH.JOB_CL_CD
-		INNER JOIN CD C2 ON C2.CD_VALUE = EPH.TCHNLGY_CL_CD
-		WHERE EPH.EMP_ID = #{empId}
+			PRJCT_HIST_SN ,
+			PRJCT_NM ,
+			PRJCT_BGNG_YMD,
+	        PRJCT_END_YMD,
+			TKCG_JOB_CN,
+			ORDER_INST_NM,
+			JOB_CL_CD,
+			TCHNLGY_CL_CD,
+			RM
+		FROM EMP_PRJCT_HIST
+		WHERE EMP_ID = #{empId}
 	</select>
 
 	<select id="retrieveNoticeList" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -221,62 +221,13 @@
 			, a.ATCHMNFL_SN
 			, a.REAL_FILE_NM
 			, a.STRG_FILE_NM
-			, e.EMP_FLNM AS REG_EMP_ID
+			, e.EMP_FLNM AS REG_EMP_NM
+			, n.REG_EMP_ID
 			, DATE_FORMAT(n.REG_DT, '%Y-%m-%d %H:%i') AS REG_DT
-			, n.MDFCN_DT
 		FROM NOTICE n
 				 LEFT JOIN EMP e ON n.REG_EMP_ID = e.EMP_ID
 				 LEFT JOIN  ATCHMNFL a ON n.ATCHMNFL_ID = a.ATCHMNFL_ID
 		WHERE NOTICE_ID = #{noticeId}
-	</select>
-	
-		
-	<select id="selectAcbgSn" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT  
-		  IFNULL(MAX(ACBG_SN), 0) +1 AS ACBG_SN
-		FROM EMP_ACBG
-		WHERE EMP_ID = #{empId}
-	
-	</select>
-	
-	<select id="selectFgggSn" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT  
-		  IFNULL(MAX(FGGG_ABLTY_SN), 0) +1 AS FGGG_ABLTY_SN
-		FROM EMP_FGGG_ABLTY
-		WHERE EMP_ID = #{empId}
-	
-	</select>
-	
-	<select id="selectLcnsSn" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT  
-		  IFNULL(MAX(QLFC_LCNS_SN), 0) +1 AS QLFC_LCNS_SN
-		FROM EMP_QLFC_LCNS
-		WHERE EMP_ID = #{empId}
-	
-	</select>
-	
-	<select id="selectEduSn" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT  
-		  IFNULL(MAX(EDU_SN), 0) +1 AS EDU_SN
-		FROM EMP_EDU
-		WHERE EMP_ID = #{empId}
-	
-	</select>
-	
-	<select id="selectCareerSn" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT  
-		  IFNULL(MAX(CAREER_SN), 0) +1 AS CAREER_SN
-		FROM EMP_CAREER
-		WHERE EMP_ID = #{empId}
-	
-	</select>
-	
-	<select id="selectPrjctHistSn" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT  
-		  IFNULL(MAX(PRJCT_HIST_SN), 0) +1 AS PRJCT_HIST_SN
-		FROM EMP_PRJCT_HIST
-		WHERE EMP_ID = #{empId}
-	
 	</select>
 	
 	<select id="retriveDeptSearchList" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -307,9 +258,6 @@
 
 		SELECT COUNT(*) AS CNT FROM EMP_DTL WHERE EMP_ID = #{empId}
 	</select>
-
-
-
 
 </mapper>
 

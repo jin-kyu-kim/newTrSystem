@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import uuid from "react-uuid";
 import { DateBox, DateRangeBox, FileUploader, TextBox } from "devextreme-react";
 import { Validator, RequiredRule } from 'devextreme-react/validator'
@@ -6,21 +6,28 @@ import HtmlEditBox from "components/unit/HtmlEditBox";
 import CheckBox from "devextreme-react/check-box";
 import "../../assets/css/Style.css";
 
-const BoardInputForm = ({ edit, data, setData, attachments, setAttachments, attachFileDelete, typeChk, setTypeChk, editMode, newAttachments, setNewAttachments }) => {
+const BoardInputForm = ({ edit, data, setData, attachments, setAttachments, attachFileDelete, typeChk, setTypeChk, editMode, editType, newAttachments, setNewAttachments }) => {
+    const [isDataLoaded, setIsDataLoaded] = useState(false);
     const handleAttachmentChange = (e) => {
         setAttachments(e.value);
         setData({
             ...data, 
-            atchmnflId: editMode === 'update' ? data.atchmnflId : uuid()
+            atchmnflId: (editMode === 'update' && data.atchmnflId !== null) ? data.atchmnflId : uuid()
         })
     };
 
     useEffect(() => {
-        if (editMode === 'update' && data.noticeTtl !== undefined) {
+        if (data.noticeTtl !== undefined) {
+            setIsDataLoaded(true);
+        }
+    }, [data.noticeTtl]);
+
+    useEffect(() => {
+        if (editMode === 'update' && isDataLoaded) {
             setNewAttachments([...attachments]);
             setAttachments([]); // 수정시에는 새로 첨부한 파일만 받기
         }
-    }, [editMode, data.noticeTtl]);
+    }, [editMode, isDataLoaded]);
 
     const handleDateRange = (e) => {
         setData({ ...data, imprtncNtcBgngYmd: e.value[0], imprtncNtcEndYmd: e.value[1] });
@@ -63,7 +70,7 @@ const BoardInputForm = ({ edit, data, setData, attachments, setAttachments, atta
                                     return (
                                         <div key={check.dataField} className="checkbox-wrapper">
                                             <div className="checkbox-label">{check.dataField === 'move' ? 
-                                                (data.sgnalOrdr === 0 ? check.noticeLabel : check.referLabel) : check.label}:</div>
+                                                (editType === 'notice' ? check.noticeLabel : check.referLabel) : check.label}:</div>
                                                 <CheckBox
                                                     className="checkSpace"
                                                     value={check.dataField === 'imprtnc' ? typeChk.imprtnc 

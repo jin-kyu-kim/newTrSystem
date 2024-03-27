@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 import ApiRequest from "utils/ApiRequest";
 
-const CustomAddTable = ({ columns, values, pagerVisible, prjctId, json, bgtMngOdrTobe, cdValues }) => {
+const CustomAddTable = ({ columns, values, pagerVisible, prjctId, json, bgtMngOdrTobe, cdValues, ctrtYmd, stbleEndYmd }) => {
   const navigate = useNavigate();
   const [param, setParam] = useState([]);
   const [value, setValue] = useState([]);
@@ -170,7 +170,7 @@ const CustomAddTable = ({ columns, values, pagerVisible, prjctId, json, bgtMngOd
 const reload = () => {
     navigate("../project/ProjectChange",
         {
-    state: { prjctId: prjctId, bgtMngOdrTobe: bgtMngOdrTobe },
+    state: { prjctId: prjctId, bgtMngOdrTobe: bgtMngOdrTobe, ctrtYmd: ctrtYmd, stbleEndYmd: stbleEndYmd },
     })
 };
 
@@ -226,6 +226,18 @@ const reload = () => {
           format={column.subType ==="NumberBox" ? column.format : 
                   column.subType ==="Date" ? column.format :
                    ""}
+          min={column.subType ==="NumberBox" ? column.min : undefined}
+          max={column.subType ==="NumberBox" ? column.max : undefined}
+          validationRules={[
+            ...(column.subType === "NumberBox" ? [{
+              type: "range",
+              min: column.min,
+              max: column.max,
+              message: `The value must be between ${column.min} and ${column.max}.` 
+            }] : []),
+            ...(column.required === "Y" ? [{ type: "required", message: "This field is required." }] : []),
+            ...(column.type === "string" ? [{ type: "stringLength", min:column.min, max:column.max,  message: `The value must be between ${column.min} and ${column.max}.`  }] : [])
+          ]}
         >
         {column.required === "Y" ? <RequiredRule /> : null}
         {column.type === "combo" ? <Lookup dataSource={cdValues} displayExpr={column.keyNm} valueExpr={column.key} />: 

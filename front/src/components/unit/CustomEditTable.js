@@ -1,12 +1,12 @@
-import { Column, DataGrid, Editing, Lookup, MasterDetail, RequiredRule, StringLengthRule, Pager, Paging } from 'devextreme-react/data-grid';
+import { Column, DataGrid, Editing, Lookup, MasterDetail, Selection, RequiredRule, StringLengthRule, Pager, Paging } from 'devextreme-react/data-grid';
+import { useCallback, useEffect, useState } from 'react';
 import ToggleButton from 'pages/sysMng/ToggleButton';
 import ApiRequest from 'utils/ApiRequest';
 import '../../pages/sysMng/sysMng.css'
-import { useCallback, useEffect, useState } from 'react';
 
-const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, masterDetail, allowKeyChg, doublePk }) => {
+const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, masterDetail, doublePk, 
+    noEdit, onSelection, onRowClick, removeAdd }) => {
     const [ cdValList, setCdValList ] = useState({});
-    const [ isStart, setIsStart ] = useState(false);
 
     useEffect(() => {
         getCdVal();
@@ -35,16 +35,15 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
     const onEditRow = async (editMode, e) => {
         const editParam = doublePk ? [{tbNm: tbNm, snColumn: keyColumn}] : [{tbNm: tbNm}];
         let editInfo = {};
-
         let keyInfo = doublePk ? { [keyColumn]: e.key, [doublePk.nm]: doublePk.val } : { [keyColumn]: e.key };
-        if(doublePk !== undefined){
-            Object.assign(e.data, {
-                [doublePk.nm]: doublePk.val,
-                [keyColumn]: ''
-            });
-        }
+        
         switch (editMode) {
             case 'insert':
+                if(doublePk !== undefined){
+                    Object.assign(e.data, {
+                        [doublePk.nm]: doublePk.val
+                    });
+                }
                 editParam[1] = e.data;
                 editInfo = { url: 'commonInsert', complete: '저장' }
                 break;
@@ -58,9 +57,10 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
                 editInfo = { url: 'commonDelete', complete: '삭제' }
                 break;
         }
+        
         try {
             const response = await ApiRequest('/boot/common/' + editInfo.url, editParam);
-            response === 1 ? alert(editInfo.complete + "되었습니다.") : alert(editInfo.complete + "에 실패했습니다.")
+            response === 1 ? alert(editInfo.complete + "되었습니다.") : alert(editInfo.complete + "에 실패했습니다.");
         } catch (error) {
             console.log(error)
         }
@@ -84,6 +84,9 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
                 columnAutoWidth={true}
                 wordWrapEnabled={true}
                 repaintChangesOnly={true}
+                noDataText=''
+                onRowClick={onRowClick}
+                onSelectionChanged={onSelection && ((e) => onSelection(e))}
                 onRowInserted={(e) => onEditRow('insert', e)}
                 onRowUpdating={(e) => onEditRow('update', e)}
                 onRowRemoving={(e) => onEditRow('delete', e)}
@@ -91,25 +94,32 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
                     if (e.rowType === 'header') {
                         e.cellElement.style.textAlign = 'center';
                         e.cellElement.style.fontWeight = 'bold';
-                }}}
+                    }}}
+                onRowPrepared={(e) => {
+                    if (e.rowType === 'data' && [1, 3].includes(e.data.sgnalOrdr)) {
+                        e.rowElement.style.backgroundColor = 'rgb(255, 253, 203)';
+                    }
+                }}
                 >
                 {masterDetail && 
                 <MasterDetail
+                    style={{backgroundColor: 'lightBlue'}}    
                     enabled={true}
-                    component={masterDetail}
+                    render={masterDetail}
                  />}
-
-                <Editing
+                {!noEdit && 
+                    <Editing
                     mode="form"
-                    allowAdding={true}
+                    allowAdding={removeAdd ? false : true}
                     allowDeleting={true}
                     allowUpdating={true}
                     refreshMode='reshape'
                     texts={{
                         saveRowChanges: '저장',
                         cancelRowChanges: '취소'
-                    }}
-                />
+                    }} />
+                }
+                {onSelection && <Selection mode="multiple" selectAllMode="page"/>}
                 {columns.map((col) => (
                     <Column
                         key={col.key}
@@ -118,7 +128,6 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
                         dataType={col.type}
                         format={col.format}
                         alignment={'center'}
-                        //allowEditing={allowKeyChg && col.key === keyColumn ? false : true}
                         cellRender={col.button ? (e) => buttonRender(e, col) : undefined}
                         editCellRender={col.button ? (e) => buttonRender(e, col) : undefined}
                     >
