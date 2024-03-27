@@ -70,7 +70,7 @@
 		    A.EMPNO,
 		    B.EMP_INFO_CHG_ODR,
 		    B.EMP_HIST_SN,
-		    B.JBPS_CD AS JBPS_CD,
+		    A.JBPS_CD AS JBPS_CD,
 		    C.CD_NM AS JBPS_NM,
 		    DATE_FORMAT(B.REG_DT,'%Y-%m-%d') AS REG_DT,
 		    D.EMPNO AS REG_EMPNO
