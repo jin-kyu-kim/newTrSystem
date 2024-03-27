@@ -321,36 +321,54 @@
         ORDER BY PIVOT_DATE
     </select>
 
+    <!-- 날짜 목록 -->
+    <select id="retrieveDays" parameterType="map" resultType="com.trsystem.LowerHashMap">
+    WITH RECURSIVE a AS (
+        SELECT CAST(CONCAT(#{aplyYm}, '01') AS DATE) AS PIVOT_DATE
+        UNION ALL
+        SELECT DATE_ADD(PIVOT_DATE, INTERVAL 1 DAY)
+        FROM a
+        WHERE DATE_ADD(PIVOT_DATE, INTERVAL 1 DAY) &lt; CAST(CONCAT(#{aplyYm}, '01') AS DATE) + INTERVAL 1 MONTH
+    )
+    SELECT *
+    FROM a
+    <if test="aplyOdr != null and !aplyOdr.equals('')">
+        WHERE (
+        #{aplyOdr} = 1 AND DAY(PIVOT_DATE) &lt;= 15
+        ) OR (
+        #{aplyOdr} = 2 AND DAY(PIVOT_DATE) > 15 AND DAY(PIVOT_DATE) &lt;= DAY(LAST_DAY(PIVOT_DATE)))
+    </if>
+    </select>
 
     <!-- 경비 승인내역 -->
     <select id="retrieveExpensAprvDtls" parameterType="map" resultType="com.trsystem.LowerHashMap">
-        SELECT
-            PIVOT_DATE,
-            COALESCE(b.PRJCT_NM, 'null_project') AS PRJCT_NM,
-            COALESCE(b.EXPENS_CD, 'null_Cd') AS EXPENS_CD,
-            COALESCE(b.EMP_FLNM, 'null_flnm') AS EMP_FLNM,
-            COALESCE(b.PRJCT_DETAIL, 'null_info') AS PRJCT_DETAIL,
-            COALESCE(b.EMP_DETAIL, 'null_info') AS EMP_DETAIL,
-            COALESCE(b.UTZTN_AMT, 'null_amt') AS UTZTN_AMT,
-            COALESCE(b.UTZTN_DT, 'null_dt') AS UTZTN_DT
-        FROM (
-            WITH RECURSIVE a AS (
-            SELECT CAST(CONCAT(#{aplyYm}, '01') AS DATE) AS PIVOT_DATE
-            UNION ALL
-            SELECT DATE_ADD(PIVOT_DATE, INTERVAL 1 DAY)
-            FROM a
-            WHERE DATE_ADD(PIVOT_DATE, INTERVAL 1 DAY) &lt; CAST(CONCAT(#{aplyYm}, '01') AS DATE) + INTERVAL 1 MONTH
-        )
-        SELECT *
-        FROM a
-        <if test="aplyOdr != null and !aplyOdr.equals('')">
-            WHERE (
-            #{aplyOdr} = 1 AND DAY(PIVOT_DATE) &lt;= 15
-            ) OR (
-            #{aplyOdr} = 2 AND DAY(PIVOT_DATE) > 15 AND DAY(PIVOT_DATE) &lt;= DAY(LAST_DAY(PIVOT_DATE)))
-        </if>
-        ) a
-        LEFT JOIN (
+<!--        SELECT-->
+<!--            PIVOT_DATE,-->
+<!--            COALESCE(b.PRJCT_NM, 'null_project') AS PRJCT_NM,-->
+<!--            COALESCE(b.EXPENS_CD, 'null_Cd') AS EXPENS_CD,-->
+<!--            COALESCE(b.EMP_FLNM, 'null_flnm') AS EMP_FLNM,-->
+<!--            COALESCE(b.PRJCT_DETAIL, 'null_info') AS PRJCT_DETAIL,-->
+<!--            COALESCE(b.EMP_DETAIL, 'null_info') AS EMP_DETAIL,-->
+<!--            COALESCE(b.UTZTN_AMT, 'null_amt') AS UTZTN_AMT,-->
+<!--            COALESCE(b.UTZTN_DT, 'null_dt') AS UTZTN_DT-->
+<!--        FROM (-->
+<!--            WITH RECURSIVE a AS (-->
+<!--            SELECT CAST(CONCAT(#{aplyYm}, '01') AS DATE) AS PIVOT_DATE-->
+<!--            UNION ALL-->
+<!--            SELECT DATE_ADD(PIVOT_DATE, INTERVAL 1 DAY)-->
+<!--            FROM a-->
+<!--            WHERE DATE_ADD(PIVOT_DATE, INTERVAL 1 DAY) &lt; CAST(CONCAT(#{aplyYm}, '01') AS DATE) + INTERVAL 1 MONTH-->
+<!--        )-->
+<!--        SELECT *-->
+<!--        FROM a-->
+<!--        <if test="aplyOdr != null and !aplyOdr.equals('')">-->
+<!--            WHERE (-->
+<!--            #{aplyOdr} = 1 AND DAY(PIVOT_DATE) &lt;= 15-->
+<!--            ) OR (-->
+<!--            #{aplyOdr} = 2 AND DAY(PIVOT_DATE) > 15 AND DAY(PIVOT_DATE) &lt;= DAY(LAST_DAY(PIVOT_DATE)))-->
+<!--        </if>-->
+<!--        ) a-->
+<!--        LEFT JOIN (-->
             SELECT
                 CONCAT(p.PRJCT_NM, ' (PM : ', (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = pah.APRVR_EMP_ID), ')') AS PRJCT_NM,
                 (SELECT CD_NM FROM CD WHERE CD_VALUE = pca.EXPENS_CD) AS EXPENS_CD,
@@ -389,9 +407,9 @@
             <if test="expensCd != null and !expensCd.equals('')">
                 AND pca.EXPENS_CD = #{expensCd}
             </if>
-        ) b
-        ON a.PIVOT_DATE = b.UTZTN_DT
-        ORDER BY PIVOT_DATE
+--         ) b
+--         ON a.PIVOT_DATE = b.UTZTN_DT
+--         ORDER BY PIVOT_DATE
     </select>
 
 
