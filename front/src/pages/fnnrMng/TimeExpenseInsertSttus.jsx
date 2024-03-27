@@ -96,8 +96,7 @@ const handleClose = () => {
   setPopupVisible(false);
 };
 //===========================테이블내 버튼 이벤트======================================
-const onClick = (button,data) => {      //
-   
+const onBtnClick = ({button,data}) => {      //
     if(button.name === "workHrMv"){
         alert("근무시간페이지이동");
         navigate("/fnnrMng/prjctCtClm/ProjectCostClaimDetail",          //경로 수정 예정
@@ -149,7 +148,7 @@ const onClick = (button,data) => {      //
         />
         </div>
         <div style={{ marginBottom: "20px" }}>
-        <CustomTable keyColumn={keyColumn}  columns={tableColumns} values={values2} paging={true} onClick={onClick} />
+        <CustomTable keyColumn={keyColumn}  columns={tableColumns} values={values2} paging={true} onClick={onBtnClick} />
         <Popup
               width="90%"
               height="90%"
