@@ -59,16 +59,15 @@ const CustomComboBox = ({props, onSelect, label, placeholder, value, readOnly, r
             onValueChanged={(e)=> {
                 if(props.queryId) {
                     const selectedItem = values.find(item => item[props.name] === e.value);
-                    // if(selectedItem) {
-                    //     [props.name, props.name2, props.name3].forEach(propName => {
-                    //         if(propName){
-                    //             onSelect({name: propName, value: selectedItem[propName]});
-                    //         }
-                    // });
-                    // }
+
                     if(selectedItem) {
                         props.values.forEach(propName => {
                             onSelect({name: propName, value: selectedItem[propName]});
+                        });
+                    }
+                    else{
+                        props.values.forEach(propName => {
+                            onSelect({name: propName, value: undefined});
                         });
                     }
                 } else {
@@ -78,7 +77,7 @@ const CustomComboBox = ({props, onSelect, label, placeholder, value, readOnly, r
             searchEnabled={true}
             value={value}
             readOnly={readOnly}
-            showClearButton={props.clearButton}
+            showClearButton={true}
         >
             <Validator>{validate()}</Validator>
         </SelectBox>

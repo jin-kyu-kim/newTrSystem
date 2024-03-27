@@ -29,7 +29,7 @@
                   "condition": {
                     "upCdValue": "VTW003"
                   },
-                  "clearButton": false
+                  "clearButton": true
                 }
             },
             {
@@ -42,7 +42,7 @@
                   "condition": {
                     "upCdValue": "VTW001"
                   },
-                  "clearButton": false
+                  "clearButton": true
                 }
             },
             {
@@ -51,10 +51,11 @@
                   "queryId": {
                     "queryId": "infoInqMapper.retriveDeptSearchList"
                   },
+                  "values": ["deptId"],
                   "valueExpr": "deptId",
                   "displayExpr": "deptNm",
                   "name": "deptId",
-                  "clearButton": false
+                  "clearButton": true
                 }
             }
         ],

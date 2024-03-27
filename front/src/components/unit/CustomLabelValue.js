@@ -53,6 +53,7 @@ const CustomLabelValue = ({props, onSelect, value, readOnly}) => {
                         onSelect({name: props.name, value: e.value})
                     }}
                     format={props.format}
+                    max={props.max ? props.max : 2000000000}
                 >
                     <Validator>{validate()}</Validator>
                 </NumberBox>

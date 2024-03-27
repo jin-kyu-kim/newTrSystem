@@ -13,60 +13,74 @@ const button = {
 const ProjectExpenseSubmit = (props) => {
 
     const handleSubmit = async() => {
-        let params = [];
         try{
-            params = [{
-                tbNm: "PRJCT_INDVDL_CT_MM"
-            }, {
-                "prjctId": props.value[0].prjctId,
-                "empId": props.value[0].empId,
-                "aplyYm": props.value[0].aplyYm,
-                "aplyOdr": props.value[0].aplyOdr
-            }]
-            const result = searchMM(params);
-            result.then((value)=>{
-                if(value?.length == 0){
-                    const resultMM = insertMM(params);
-                    resultMM.then(()=>{
+            const confirmResult = window.confirm("등록하시겠습니까?");
+            if (confirmResult) {
+                let params = [];
+                props.value.forEach((data) => {
+                    let prjctId = null;
+                    if(typeof data.prjctId === "string"){
+                        prjctId = data.prjctId;
+                    } else if (typeof data.prjctId === "object"){
+                        prjctId = data.prjctId[0].prjctId;
+                    }
+                    params.push({
+                        "prjctId": prjctId,
+                        "empId": data.empId,
+                        "aplyYm": data.aplyYm,
+                        "aplyOdr": data.aplyOdr
+                    })
+                });
+                const result = searchMM(params);
+                result.then((value)=>{
+                    if(value?.length == 0){
                         insertValue();
-                    });
-                } else {
-                    insertValue();
-                }
-            });
+                    } else {
+                        const resultMM = insertMM(value);
+                        resultMM.then(()=>{
+                            insertValue();
+                        });
+                    }
+                });
+            }
         } catch (e) {
             window.alert("오류가 발생했습니다. 사용내역을 선택했는지 확인해 주세요.")
         }
     };
 
     const searchMM = async(params) => {
-        const response = await ApiRequest("/boot/common/commonSelect", params);
+        const response = await ApiRequest("/boot/indvdlClm/prjctExpns/selectPrjctMM", params);
         return response;
     }
 
     const insertMM = async (params) => {
+        params.push({
+            "tbNm": "PRJCT_INDVDL_CT_MM"
+        })
         const response = await axios.post("/boot/common/commonInsert", params);
         return response;
     }
 
     const insertValue = async () => {
-        const confirmResult = window.confirm("등록하시겠습니까?");
-        if (confirmResult) {
-            const params = [{ tbNm: props.tbNm, snColumn: props.snColumn }];
-            props.value.forEach(value => {
-                value.utztnAmt = value.utztnAmt.replace(",","");
-                params.push(value);
-            })
-            try {
-                const response = await ApiRequest("/boot/common/commonInsert", params);
-                if (response === 1) {
-                    window.location.reload();
-                    window.alert("등록되었습니다.")
-                }
-            } catch (error) {
-                console.error("API 요청 에러:", error);
-                throw error;
+        const params = [{ tbNm: props.tbNm, snColumn: props.snColumn }];
+        props.value.forEach(value => {
+            if (typeof value.prjctId === "object"){
+                value.prjctId = value.prjctId[0].prjctId;
             }
+            if(typeof value.utztnAmt === "string"){
+                value.utztnAmt = value.utztnAmt.replace(",","");
+            }
+            params.push(value);
+        })
+        try {
+            const response = await ApiRequest("/boot/common/commonInsert", params);
+            if (response === 1) {
+                window.location.reload();
+                window.alert("등록되었습니다.")
+            }
+        } catch (error) {
+            console.error("API 요청 에러:", error);
+            throw error;
         }
     }
 

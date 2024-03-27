@@ -2,6 +2,7 @@ import React, {useCallback, useEffect, useState} from "react";
 import {TabPanel} from "devextreme-react";
 import ProjectExpenseJson from "./ProjectExpenseJson.json"
 import {useCookies} from "react-cookie";
+import ProjectExpenseCell from "./ProjectExpenseCell";
 
 const ProjectExpense = () => {
   const ExpenseInfo = ProjectExpenseJson.ExpenseInfo;
@@ -62,6 +63,7 @@ const ProjectExpense = () => {
 
   return (
       <div className="container">
+          <ProjectExpenseCell/>
           <TabPanel
               height="auto"
               width="auto"

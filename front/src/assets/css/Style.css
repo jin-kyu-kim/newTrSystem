@@ -209,3 +209,26 @@
   font-family: Roboto, RobotoFallback, "Noto Kufi Arabic", Helvetica, Arial, sans-serif;
 }
 
+.elecAtrz-from-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.elecAtrz-from-container-box {
+  width: 23%;
+  margin: 10px;
+}
+
+.elecAtrzNewReq-ctrtInfo > .dx-fieldset > .dx-field > .dx-field-label{
+  text-align: center;
+  width: 20%
+}
+
+.elecAtrzNewReq-ctrtInfo > .dx-fieldset > .dx-field > .dx-field-value{
+  width: 50%
+}
+
+.elecAtrzNewReq-ctrtInfo > .dx-fieldset > .dx-field > .dx-field-value > .dx-field-value-text{
+  padding: 9px 0px 9px 0px;
+  font-size: 16px;
+}

@@ -2,6 +2,8 @@ import React from "react";
 import headerJson from "./HeaderJson.json";
 import vtwPng from "../../assets/img/vtw.png";
 import { Link } from "react-router-dom";
+import {signIn, signOut} from "../../utils/AuthMng"
+import {Button} from "devextreme-react/button";
 
 const Header = () => {
   const NavItem = ({ item }) => {
@@ -62,9 +64,7 @@ const Header = () => {
           ))}
         </ul>
         <div className="ml-auto">
-          <Link to="/" className="nav-link">
-            로그아웃
-          </Link>
+          <Button onClick={signOut}>로그아웃</Button>
         </div>
       </div>
     </nav>

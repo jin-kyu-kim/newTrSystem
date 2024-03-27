@@ -10,8 +10,6 @@ const CustomersList = () => {
     const [values, setValues] = useState([]);
     const [param, setParam] = useState({});
     const [totalItems, setTotalItems] = useState(0);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize] = useState(20);
     const { keyColumn, queryId, tableColumns, searchInfo, tbNm } = SysMng.customersJson;
 
     useEffect(() => {
@@ -21,13 +19,9 @@ const CustomersList = () => {
     }, [param]);
 
     const searchHandle = async (initParam) => {
-        setCurrentPage(1);
         setParam({
             ...initParam,
-            queryId: queryId,
-            currentPage: currentPage,
-            startVal: 0,
-            pageSize: pageSize,
+            queryId: queryId
         });
     };
 
@@ -45,11 +39,11 @@ const CustomersList = () => {
         }
     };
 
-    const handleYnVal = async (idColumn, useYn) => {
+    const handleYnVal = async (e) => {
         const ynParam = [
             { tbNm: "CTMMNY_INFO" },
-            { useYn: useYn },
-            { ctmmnyId: idColumn } 
+            e.data,
+            { ctmmnyId: e.key }
         ];
         try {
             const response = await ApiRequest('/boot/common/commonUpdate', ynParam);
@@ -60,10 +54,7 @@ const CustomersList = () => {
 
     return (
         <div className="container">
-            <div
-                className="title p-1"
-                style={{ marginTop: "20px", marginBottom: "10px" }}
-            >
+            <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }} >
                 <h1 style={{ fontSize: "40px" }}>고객사 관리</h1>
             </div>
             <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
@@ -76,13 +67,13 @@ const CustomersList = () => {
             <div>검색된 건 수 : {totalItems} 건</div>
             <div style={{ marginBottom: '100px' }}>
                 <CustomEditTable
+                    tbNm={tbNm}
+                    values={values}
                     keyColumn={keyColumn}
                     columns={tableColumns}
-                    values={values}
                     handleYnVal={handleYnVal}
-                    tbNm={tbNm}
-                    allowKeyChg={true}
-                />
+                    callback={pageHandle}
+                  />
             </div>
         </div>
     );

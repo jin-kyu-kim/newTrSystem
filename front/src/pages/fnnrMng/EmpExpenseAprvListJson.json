@@ -4,21 +4,26 @@
   {
     "yearItem": true,
     "monthItem": true,
-    "aplyOdr": true,
-    "empNm": false
+    "aplyOdr": true
   },
   "tabMenu":
   [
     {
       "TabName": "프로젝트 별",
       "tabId": "EmpExpenseAprvProject",
-      "url": "pages/fnnrMng/EmpExpenseAprvProject"
+      "url": "pages/fnnrMng/EmpExpenseAprvProject",
+      "prjctNameItem": true,
+      "empnoItem": false,
+      "expensCdItem": false
 
     },
     {
       "TabName": "개인 별",
       "tabId": "EmpExpenseAprvIndividual",
-      "url": "pages/fnnrMng/EmpExpenseAprvIndividual"
+      "url": "pages/fnnrMng/EmpExpenseAprvIndividual",
+      "prjctNameItem": false,
+      "empnoItem": true,
+      "expensCdItem": true
     }
   ]
 }
