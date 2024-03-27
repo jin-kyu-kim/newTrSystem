@@ -35,15 +35,21 @@
       AND BIZ_FLFMT_TY_CD = #{bizFlfmtTyCd}
         </if>
         <if test="ctrtYmd != null and bizEndYmd == null">
-      AND CTRT_YMD > #{ctrtYmd}
+      AND CTRT_YMD >= #{ctrtYmd}
         </if>
         <if test="ctrtYmd == null and bizEndYmd != null">
-      AND BIZ_END_YMD > #{bizEndYmd}
+      AND BIZ_END_YMD &lt;= #{bizEndYmd}
         </if>
         <if test="ctrtYmd != null and bizEndYmd != null">
             <if test="!ctrtYmd.equals('') and !bizEndYmd.equals('')">
       AND CTRT_YMD BETWEEN #{ctrtYmd} AND #{bizEndYmd}
             </if>
+        </if>
+        <if test="prjctNm != null and !prjctNm.equals('')">
+            AND PRJCT_NM = #{prjctNm}
+        </if>
+        <if test="ctmmnyNm != null and !ctmmnyNm.equals('')">
+            AND CTMMNY_ID IN (SELECT CTMMNY_ID FROM CTMMNY_INFO WHERE CTMMNY_NM LIKE CONCAT('%',#{ctmmnyNm},'%'))
         </if>
     ORDER BY REG_DT DESC
     </select>
