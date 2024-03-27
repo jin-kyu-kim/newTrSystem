@@ -3,6 +3,64 @@
     "totQueryId": "financialAffairMngMapper.retrieveTotWorkHrCtInptSttus",
 	"queryId": "financialAffairMngMapper.retrieveWorkHrCtInptSttus",
     "keyColumn": "empId",
+    "totTableColumns" : 
+    [
+        { "value": "전체", "alignment" : "center", "chkBox" : true},
+        { 
+            "value": "근무시간", "alignment" : "center", 
+                "subColumns" : 
+                [
+                    { "value" : "입력여부", "alignment" : "center", 
+                        "subColumns" : 
+                        [
+                            {"key":"A", "value" : "입력", "alignment" : "center", "chkBox" : true},
+                            {"key":"B", "value" : "미입력", "alignment" : "center", "chkBox" : true}
+                        ]
+                    },
+                    { "value" : "승인요청여부", "alignment" : "center",
+                        "subColumns" : 
+                        [
+                            {"key":"C", "value" : "요청", "alignment" : "center", "chkBox" : true},
+                            {"key":"D", "value" : "미요청", "alignment" : "center", "chkBox" : true}
+                        ]
+                    },
+                    { "value" : "승인요청여부", "alignment" : "center",
+                        "subColumns" : 
+                        [
+                            {"key":"E", "value" : "승인및반려", "alignment" : "center", "chkBox" : true},
+                            {"key":"F", "value" : "미승인", "alignment" : "center", "chkBox" : true}
+                        ]
+                    }
+                ]
+        },
+        { 
+            "value": "프로젝트비용", "alignment" : "center", 
+                "subColumns" : 
+                [
+                    { "value" : "입력여부", "alignment" : "center", 
+                        "subColumns" : 
+                        [
+                            {"key":"G", "value" : "입력", "alignment" : "center", "chkBox" : true},
+                            {"key":"H", "value" : "미입력", "alignment" : "center", "chkBox" : true}
+                        ]
+                    },
+                    { "value" : "승인요청여부", "alignment" : "center",
+                        "subColumns" : 
+                        [
+                            {"key":"I", "value" : "요청", "alignment" : "center", "chkBox" : true},
+                            {"key":"J", "value" : "미요청", "alignment" : "center", "chkBox" : true}
+                        ]
+                    },
+                    { "value" : "승인여부", "alignment" : "center",
+                        "subColumns" : 
+                        [
+                            {"key":"K", "value" : "승인및반려", "alignment" : "center", "chkBox" : true},
+                            {"key":"L", "value" : "미승인", "alignment" : "center", "chkBox" : true}
+                        ]
+                    }
+                ]
+        }
+    ],
     "tableColumns": 
 	[
         { "key": "empno", "value": "사번", "width": 80, "alignment" : "center"},
@@ -29,7 +87,8 @@
         ]},
         {  "value": "회사지불비용", "width": 80, "button": {"text" : "이동", "name" : "companyPrice"} },
         {  "value": "출력", "width": 80, "button": {"text" : "출력", "name" : "print"} }
-  ], "searchParams":
+  ],
+  "searchParams":
   {
     "yearItem": true,
     "monthItem": true,

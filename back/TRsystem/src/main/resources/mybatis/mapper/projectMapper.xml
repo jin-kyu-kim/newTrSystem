@@ -300,78 +300,96 @@
     </select>
 
     <select id="retrieveProjectGeneralBudgetCostSearch" parameterType="map" resultType="com.trsystem.LowerHashMap">
-    SELECT T1.*
-             , T1.EXPECT_CT AS EXPENS_CT
-             , '예산' FLAG
-        FROM (
-                 SELECT A.PRJCT_ID, A.DTL_DTLS, A.EXPENS_CD,
-                        (SELECT CD_NM FROM CD WHERE CD_VALUE = A.EXPENS_CD) AS EXPENS_NM ,
-                        B.USE_YM, B.EXPECT_CT
-                 FROM EXPENS_PRMPC A , EXPENS_MNBY_PRMPC_DTLS B
-                 WHERE A.PRJCT_ID = B.PRJCT_ID
-                   AND A.BGT_MNG_ODR = B.BGT_MNG_ODR
-                   AND A.EXPENS_CD = B.EXPENS_CD
-                   AND A.PRJCT_ID = #{prjctId}
-                   AND A.BGT_MNG_ODR = #{bgtMngOdr}
-                <if test="costFlag.equals('general')">
-                    AND A.EXPENS_CD BETWEEN 'VTW04501' AND 'VTW04528'
-                </if>
-                <if test="costFlag.equals('control')">
-                    AND A.EXPENS_CD BETWEEN 'VTW04529' AND 'VTW04535'
-                </if>
-             ) T1
-                 LEFT OUTER JOIN EXPENS_EXCN T2
-                                 ON T1.PRJCT_ID = T2.PRJCT_ID
-                                     AND T1.EXPENS_CD = T2.EXPENS_CD
+        SELECT Z1.YM, Z2.PRJCT_ID, Z2.BGT_MNG_ODR, Z2.EXPENS_PRMPC_SN
+             , Z2.EXPENS_CD
+             , #{expenseNm} AS EXPENS_NM
+             , Z2.DTL_DTLS, Z2.USE_YM
+             , IFNULL(Z2.EXPENS_CT,0) AS EXPENS_CT
+             , IFNULL(Z2.EXPECT_CT,0) AS EXPECT_CT
+             , IFNULL(Z2.EXPECT_CT,0) - IFNULL(Z2.EXPENS_CT,0) AS CALC_CT
+        FROM (SELECT DATE_FORMAT((#{ctrtYmd} + INTERVAL (a.a + (10 * b.a) + (100 * c.a)) MONTH), '%Y-%m') AS YM
+        FROM (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT
+        5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS a
+        CROSS JOIN (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL
+        SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS b
+        CROSS JOIN (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL
+        SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS c
+        WHERE (#{ctrtYmd} + INTERVAL (a.a + (10 * b.a) + (100 * c.a)) MONTH)<![CDATA[<=]]> #{stbleEndYmd}
+        ORDER BY YM
+        ) Z1
+        LEFT OUTER JOIN
+        (SELECT T1.PRJCT_ID
+        , T1.BGT_MNG_ODR
+        , T1.EXPENS_PRMPC_SN
+        , T1.EXPENS_CD
+        , T1.DTL_DTLS
+        , IF(CHAR_LENGTH(T1.USE_YM) = 6
+        , DATE_FORMAT(DATE(CONCAT(T1.USE_YM, '01')),'%Y-%m-%d')
+        , DATE_FORMAT(DATE(CONCAT(T1.USE_YM, '-01')),'%Y-%m-%d')) AS USE_YM
+        , T1.EXPECT_CT
+        , T2.EXPENS_CT
+        FROM (SELECT
+        A.PRJCT_ID
+        , A.BGT_MNG_ODR
+        , A.EXPENS_PRMPC_SN
+        , A.EXPENS_CD
+        , A.DTL_DTLS
+        , B.USE_YM
+        , B.EXPECT_CT
+        FROM EXPENS_PRMPC A
+        , EXPENS_MNBY_PRMPC_DTLS B
+        WHERE A.PRJCT_ID = B.PRJCT_ID
+        AND A.BGT_MNG_ODR = B.BGT_MNG_ODR
+        AND A.EXPENS_PRMPC_SN = B.EXPENS_PRMPC_SN
+        AND A.BGT_MNG_ODR = (SELECT MAX(BGT_MNG_ODR) FROM PRJCT_BGT_PRMPC WHERE PRJCT_ID = #{prjctId}
+        AND A.EXPENS_CD =#{expensCd})
+            ) T1
+        LEFT OUTER JOIN EXPENS_EXCN T2
+        ON T1.PRJCT_ID = T2.PRJCT_ID
+        AND T1.EXPENS_CD = T2.EXPENS_CD
+        AND T1.USE_YM = T2.INPT_YM
+        AND T2.EXPENS_CD =#{expensCd}
+      WHERE T1.PRJCT_ID = #{prjctId}
         UNION ALL
-        SELECT T1.*
-             , IFNULL(T2.EXPENS_CT,0) AS EXPENS_CT
-             , '사용' FLAG
+        SELECT T1.PRJCT_ID
+        , T1.BGT_MNG_ODR
+        , T1.EXPENS_PRMPC_SN
+        , T1.EXPENS_CD
+        , T1.DTL_DTLS
+        , IF(CHAR_LENGTH(T2.INPT_YM) = 6
+        , DATE_FORMAT(DATE(CONCAT(T2.INPT_YM, '01')),'%Y-%m-%d')
+        , DATE_FORMAT(DATE(CONCAT(T2.INPT_YM, '-01')),'%Y-%m-%d')) AS USE_YM
+        , T1.EXPECT_CT
+        , T2.EXPENS_CT
         FROM (
-                 SELECT A.PRJCT_ID, A.DTL_DTLS, A.EXPENS_CD,
-                        (SELECT CD_NM FROM CD WHERE CD_VALUE = A.EXPENS_CD) AS EXPENS_NM ,
-                        B.USE_YM, B.EXPECT_CT
-                 FROM EXPENS_PRMPC A , EXPENS_MNBY_PRMPC_DTLS B
-                 WHERE A.PRJCT_ID = B.PRJCT_ID
-                   AND A.BGT_MNG_ODR = B.BGT_MNG_ODR
-                   AND A.EXPENS_CD = B.EXPENS_CD
-                   AND A.PRJCT_ID = #{prjctId}
-                   AND A.BGT_MNG_ODR = #{bgtMngOdr}
-                <if test="costFlag.equals('general')">
-                    AND A.EXPENS_CD BETWEEN 'VTW04501' AND 'VTW04528'
-                </if>
-                <if test="costFlag.equals('control')">
-                    AND A.EXPENS_CD BETWEEN 'VTW04529' AND 'VTW04535'
-                </if>
-             ) T1
-                 LEFT OUTER JOIN EXPENS_EXCN T2
-                                 ON T1.PRJCT_ID = T2.PRJCT_ID
-                                     AND T1.EXPENS_CD = T2.EXPENS_CD
-        UNION ALL
-        SELECT T1.*
-             , T1.EXPECT_CT - IFNULL(T2.EXPENS_CT,0) AS EXPENS_CT
-             , '가용' FLAG
-        FROM (
-                 SELECT A.PRJCT_ID, A.DTL_DTLS, A.EXPENS_CD,
-                        (SELECT CD_NM FROM CD WHERE CD_VALUE = A.EXPENS_CD) AS EXPENS_NM ,
-                        B.USE_YM, B.EXPECT_CT
-                 FROM EXPENS_PRMPC A , EXPENS_MNBY_PRMPC_DTLS B
-                 WHERE A.PRJCT_ID = B.PRJCT_ID
-                   AND A.BGT_MNG_ODR = B.BGT_MNG_ODR
-                   AND A.EXPENS_CD = B.EXPENS_CD
-                   AND A.PRJCT_ID = #{prjctId}
-                   AND A.BGT_MNG_ODR = #{bgtMngOdr}
-                <if test="costFlag.equals('general')">
-                    AND A.EXPENS_CD BETWEEN 'VTW04501' AND 'VTW04528'
-                </if>
-                <if test="costFlag.equals('control')">
-                    AND A.EXPENS_CD BETWEEN 'VTW04529' AND 'VTW04535'
-                </if>
-             ) T1
-                 LEFT OUTER JOIN EXPENS_EXCN T2
-                                 ON T1.PRJCT_ID = T2.PRJCT_ID
-                                     AND T1.EXPENS_CD = T2.EXPENS_CD
-      </select>
+        SELECT A.PRJCT_ID, A.BGT_MNG_ODR, A.EXPENS_PRMPC_SN, A.EXPENS_CD, A.DTL_DTLS, B.USE_YM, B.EXPECT_CT
+        FROM EXPENS_PRMPC A
+        JOIN EXPENS_MNBY_PRMPC_DTLS B
+        ON A.PRJCT_ID = B.PRJCT_ID
+        AND A.BGT_MNG_ODR = B.BGT_MNG_ODR
+        AND A.EXPENS_PRMPC_SN = B.EXPENS_PRMPC_SN
+        AND A.BGT_MNG_ODR = (SELECT MAX(BGT_MNG_ODR) FROM PRJCT_BGT_PRMPC WHERE PRJCT_ID = #{prjctId}
+        AND A.EXPENS_CD =#{expensCd})
+        ) T1
+        RIGHT OUTER JOIN EXPENS_EXCN T2
+        ON T1.PRJCT_ID = T2.PRJCT_ID
+        AND T1.EXPENS_CD = T2.EXPENS_CD
+        AND T1.USE_YM = T2.INPT_YM
+        AND T2.EXPENS_CD =#{expensCd}
+        WHERE T1.PRJCT_ID = #{prjctId}
+        ) Z2
+        ON concat(Z1.YM,'-01') = Z2.USE_YM
+    </select>
+
+    <select id="retrievedistinctCost" parameterType="map" resultType="com.trsystem.LowerHashMap">
+    SELECT DISTINCT(EXPENS_CD) AS EXPENS_CD, (SELECT CD_NM FROM CD WHERE CD_VALUE = EXPENS_CD) AS EXPENS_NM
+      FROM EXPENS_PRMPC
+     WHERE PRJCT_ID = #{prjctId}
+      AND BGT_MNG_ODR = (SELECT MAX(BGT_MNG_ODR)
+                           FROM PRJCT_BGT_PRMPC
+                          WHERE PRJCT_ID = #{prjctId})
+      AND EXPENS_CD IN ((SELECT CD_VALUE FROM CD WHERE UP_CD_VALUE = 'VTW045' AND USER_DFN_VALUE = #{costFlag}))
+    </select>
       
 	<select id="retrieveBgtMngOdr" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT IFNULL(MAX(BGT_MNG_ODR), 0) AS BGT_MNG_ODR

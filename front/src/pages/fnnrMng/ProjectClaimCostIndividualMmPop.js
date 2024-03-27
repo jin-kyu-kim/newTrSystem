@@ -4,7 +4,7 @@ import Scheduler from 'devextreme-react/scheduler';
 
 const ProjectClaimCostIndividualMmPop = ({props, prjctNm, startYmOdr, endYmOdr, data}) => {
 
-    const currentDate = new Date();
+    const currentDate = new Date(`${startYmOdr.substr(0, 4)}-${startYmOdr.substr(4, 2)}-01`);
 
     const showDetails = () => {
 

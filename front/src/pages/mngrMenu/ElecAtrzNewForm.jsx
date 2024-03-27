@@ -110,7 +110,7 @@ const ElecAtrzNewForm = ({}) => {
                 <GroupItem colCount={2} caption="신규 양식">          
                     <Item dataField="useYn" 
                             editorType="dxSelectBox" 
-                            label={{ text: "* 문서 사용 여부" }}
+                            label={{ text: "문서 사용 여부" }}
                             isRequired={true}
                             editorOptions ={{
                                 items: positions,
@@ -143,7 +143,7 @@ const ElecAtrzNewForm = ({}) => {
 
                     <Item dataField="docSeCd" 
                             editorType="dxSelectBox" 
-                            label={{ text: "* 양식 구분" }}   
+                            label={{ text: "양식 구분" }}   
                     >
                         <CustomCdComboBox
                             param="VTW034"
@@ -155,12 +155,12 @@ const ElecAtrzNewForm = ({}) => {
                             label={"양식구분"} 
                             readOnly={mdfStts === 'U' ? true : false}
                         />
-                       <RequiredRule message="양식 구분은 필수 입력입니다." />
+                       {/* <RequiredRule message="양식 구분은 필수 입력입니다." /> */}
                     </Item>
 
                     <Item dataField="elctrnAtrzTySeCd" 
                             editorType="dxSelectBox" 
-                            label={{ text: "* 결재유형" }} >
+                            label={{ text: "결재유형" }} >
                         <CustomCdComboBox
                             param="VTW049"
                             placeholderText="[결재유형]"
@@ -188,13 +188,13 @@ const ElecAtrzNewForm = ({}) => {
                                     })
                                         }}  
                     >
-                    <RequiredRule message="보고서 작성 여부는 필수 입력입니다." />
+                    {/* <RequiredRule message="보고서 작성 여부는 필수 입력입니다." /> */}
                     </Item>
                 </GroupItem>
             
                 <Item dataField="gnrlAtrzTtl" 
                     editorType="dxTextBox" 
-                    label={{ text: "* 양식 제목" }}
+                    label={{ text: "양식 제목" }}
                     editorOptions={{
                         mode: "text",
                         placeholder: "[양식 제목]",
@@ -205,7 +205,7 @@ const ElecAtrzNewForm = ({}) => {
                         })
                     }}
                 >
-                <RequiredRule message="양식제목은 필수 입력입니다." />
+                {/* <RequiredRule message="양식제목은 필수 입력입니다." /> */}
                 </Item>
             </Form>
 

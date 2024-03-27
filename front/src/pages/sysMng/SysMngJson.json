@@ -32,7 +32,7 @@
                       "valueExpr": "cdValue",
                       "displayExpr": "cdNm",
                       "name": "cdValue",
-                      "clearButton": false
+                      "clearButton": true
                     }
                 }
             ],
@@ -71,7 +71,7 @@
                       "condition": {
                         "upCdValue": "VTW016"
                       },
-                      "clearButton": false
+                      "clearButton": true
                     }
                 }
             ],
@@ -85,7 +85,7 @@
             { "tabName": "기본 권한", "default": true, "displayExpr": "cdNm" },
             { "tabName": "생성 권한", "displayExpr": "authrtGroupNm" }
         ],
-        "queryId": "infoInqMapper.retrieveEmpList",
+        "authQueryId": "sysMngMapper.authCdList",
         "columns": [
             { "key": "empno", "value": "사번"},
             { "key": "empFlnm", "value": "성명"},

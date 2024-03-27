@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
 
 import { Button } from "devextreme-react/button"; 
 import { TextBox } from "devextreme-react/text-box";
@@ -15,18 +16,21 @@ const ElecAtrzNewReq = () => {
     const prjctId = location.state.prjctId;
     const formData = location.state.formData;
     const [prjctData, setPrjctData] = useState({});
-    const [data, setData] = useState([]);
+    const [data, setData] = useState(location.state.formData);
+    const [cookies] = useCookies(["userInfo", "userAuth"]);
+
+    const [atrzParam, setAtrzParam] = useState({});
 
     const navigate = useNavigate();
 
     const column = { "dataField": "gnrlAtrzCn", "placeholder": "내용을 입력해주세요."};
-
+    
     useEffect(() => {
-        console.log(formData)
-        
         retrievePrjctInfo();
 
-        setData(formData);
+        // Todo: 결재정보 조회로 넘어온 경우라면, 결재 정보를 보여준다.(임시저장이거나 결재 올라간거???)
+
+
     }, []);
 
     const retrievePrjctInfo = async () => {
@@ -45,8 +49,16 @@ const ElecAtrzNewReq = () => {
     /**
      * 결재요청 버튼 클릭시 전자결재 요청 함수 실행
      */
-    const handleElecAtrz = async () => {
+    const requestElecAtrz = async () => {
         console.log("전자결재 요청");
+
+        // Todo
+        // elctrnAtrzTySeCd에 따라서 저장 테이블 다르게(계약, 청구, 일반, 휴가..)
+        // 결재선 지정이 되어있는지 확인, 안되어 있으면..?
+
+        
+
+
     }
 
     /**
@@ -54,6 +66,12 @@ const ElecAtrzNewReq = () => {
      */
     const onAtrzLnPopup = async () => {
         console.log("결재선 지정 팝업 호출");
+    
+        /**
+         * Todo
+         * 결재선 만들어지면 
+         * 결재선 보이는 테이블 형식에 집어넣기. 
+         */
     }
 
     /**
@@ -61,6 +79,14 @@ const ElecAtrzNewReq = () => {
      */
     const saveTemp = async () => {
         console.log("임시저장");
+        
+        /**
+         * Todo
+         * 전자결재 테이블저장 하고, elctrnAtrzTySeCd에 따라서 저장 테이블 다르게(계약, 청구, 일반, 휴가..)
+         * 결재요청상태코드는 임시저장으로 저장
+         * 결재선은 당장은 없어도? 될 듯?
+         */
+
     }
 
     /**
@@ -70,13 +96,22 @@ const ElecAtrzNewReq = () => {
         navigate("../elecAtrz/elecAtrzForm", {state: {prjctId: prjctId}});
     }
 
+    /**
+     * 결재 param 생성하는 함수
+     */
+    const handleElecAtrz = (e) => {
+        console.log(e.value);
+        setAtrzParam({title: e.value});
+    }
+
+
     return (
         <>
             <div className="container" style={{marginTop:"10px"}}>
                 <div style={{display:"flex", justifyContent:"flex-start"}}>
                     <div style={{float: "left", marginRight:"auto"}}>로고</div>
                     <div style={{display: "inline-block"}}>
-                        <Button text="결재요청" onClick={handleElecAtrz}/>
+                        <Button text="결재요청" onClick={requestElecAtrz}/>
                         <Button text="결재선지정" onClick={onAtrzLnPopup}/>
                         <Button text="임시저장" onClick={saveTemp}/>
                         <Button text="목록" onClick={toAtrzNewReq}/>
@@ -99,7 +134,7 @@ const ElecAtrzNewReq = () => {
                             <tr>
                                 <td>기안자</td>
                                 <td> : </td>
-                                <td>부서 명 / 로그인한 사용자 명</td>
+                                <td>부서 명 / {cookies.userInfo.empNm}</td>
                             </tr>
                             <tr>
                                 <td>기안일자</td>
@@ -144,7 +179,7 @@ const ElecAtrzNewReq = () => {
                         </table>
                     </div>
                 </div>
-                <div style={{marginTop:"20px"}}>
+                <div className="elecAtrzNewReq-title" style={{marginTop:"20px"}}>
                     <div className="dx-fieldset">
                         <div className="dx-field">
                             <div className="dx-field-label" style={{width: "5%"}}>참 조</div>
@@ -160,16 +195,17 @@ const ElecAtrzNewReq = () => {
                             <TextBox
                                 className="dx-field-value"
                                 style={{width: "95%"}}
+                                value={atrzParam.title}
+                                onValueChanged={handleElecAtrz}
                             />
                         </div>
                     </div>
                 </div>
                 <hr/>
                 <div dangerouslySetInnerHTML={{ __html: formData.docFormDc }} />
-
-                {data.elctrnAtrzTySeCd === "VTW04908" && <ElecAtrzOutordEmpCtrt data={data} prjctId={prjctId}/>}
-
-
+                {formData.elctrnAtrzTySeCd === "VTW04908" && 
+                    <ElecAtrzOutordEmpCtrt data={data} prjctId={prjctId} />
+                }
                 <HtmlEditBox 
                     column={ {"dataField": "gnrlAtrzCn"}}
                     data={data}

@@ -1,12 +1,24 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
+import CustomLabelValue from "../../components/unit/CustomLabelValue";
+import ElecAtrzOutordEmpCtrtJson from "../elecAtrz/ElecAtrzOutordEmpCtrtJson.json";
+import CompanyCtrtInfo from "./ctrtInfo/CompanyCtrtInfo"
+import ElecAtrzCtrtInfo from "./ctrtInfo/ElecAtrzCtrtInfo";
 
 const ElecAtrzOutordEmpCtrt = ({data, prjctId}) => {
 
     console.log(data);
-    console.log(prjctId);
+    console.log(prjctId)
+    
+    useEffect(() => {
+
+    }, []);
+
 
     return (
-        <div>ElecAtrzOutordEmpCtrt</div>
+        <>
+            <ElecAtrzCtrtInfo data={data}/>
+            <CompanyCtrtInfo prjctId={prjctId}/>
+        </>
     );
 };
 export default ElecAtrzOutordEmpCtrt;

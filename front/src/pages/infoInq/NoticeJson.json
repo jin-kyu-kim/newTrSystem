@@ -54,7 +54,7 @@
           "condition": {
             "upCdValue": "VTW017"
           },
-          "clearButton": false
+          "clearButton": true
         }
       }
     ],

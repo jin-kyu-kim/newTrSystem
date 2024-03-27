@@ -11,6 +11,7 @@ import { exportDataGrid } from 'devextreme/excel_exporter';
 import Box, {Item} from "devextreme-react/box"
 import CustomDateRangeBox from "../../components/unit/CustomDateRangeBox";
 import AutoCompleteName from "../../components/unit/AutoCompleteName";
+import CustomTable from "components/unit/CustomTable";
 
 const EmpVacUseList = (callBack,props) => {
 
@@ -100,7 +101,7 @@ const EmpVacUseList = (callBack,props) => {
           autoFilterEnabled: true,
         }).then(() => {
           workbook.xlsx.writeBuffer().then((buffer) => {
-            saveAs(new Blob([buffer], { type: 'application/octet-stream' }), 'DataGrid.xlsx');
+            saveAs(new Blob([buffer], { type: 'application/octet-stream' }), '휴가사용내역.xlsx');
           });
         });
       };
@@ -237,39 +238,8 @@ const EmpVacUseList = (callBack,props) => {
                 검색된 건 수 : {totalItems} 건
             </div>
             {/*----------------테이블 구간---------------------------------------------------------------- */}
-            {/* <CustomTable keyColumn={keyColumn} columns={tableColumns} values={values} paging={true}/> */}
-            <div className="wrap_table">
-            <DataGrid
-                keyExpr={keyColumn}
-                id={"dataGrid"}
-                className={"table"}
-                dataSource={values}
-                showBorders={true}
-                showColumnLines={false}
-                focusedRowEnabled={true}
-                columnAutoWidth={false}
-                noDataText=""
-                onExporting={onExporting}  // DataGrid export를 위한 함수 호출
-                onCellPrepared={(e) => {
-                if (e.rowType === 'header') {
-                    e.cellElement.style.textAlign = 'center';
-                    e.cellElement.style.fontWeight = 'bold';
-            }
-            }}
-            >                            
-            {/* <Paging defaultPageSize={pageSize} enabled={paging} /> */}
-            <Pager
-            displayMode="adaptive"
-            showNavigationButtons={true}
-            showInfo={false}
-            showPageSizeSelector={true}
-             allowedPageSizes={[20, 50, 80, 100]}
-            />
-            {gridRows()}
-            <Export enabled={true} /> 
-            </DataGrid>
-            </div>
-           {/*----------------테이블 구간---------------------------------------------------------------- */}   
+                <CustomTable keyColumn={keyColumn} columns={tableColumns} values={values} paging={true} excel={true} onExcel={onExporting}/> 
+            {/*----------------테이블 구간---------------------------------------------------------------- */}   
         </div>
     );
 };
