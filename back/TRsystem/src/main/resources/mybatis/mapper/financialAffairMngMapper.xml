@@ -501,7 +501,6 @@
         FROM
             (
                 SELECT
-
                     E.EMP_ID AS W_EMP_ID,
                     E.EMP_FLNM AS EMP_FLNM,
                     P.PRJCT_NM AS PRJCT_NM ,
@@ -597,6 +596,9 @@
                     P.PRJCT_ID) CT_LIST
         WHERE WORK_HOUR.W_PRJCT_ID = CT_LIST.C_PRJCT_ID
           AND   WORK_HOUR.W_EMP_ID = CT_LIST.C_EMP_ID
+        <if test="prjctId != null and prjctId !=''">
+            AND   W_PRJCT_ID = #{prjctId}
+        </if>
 
     </select>
 
