@@ -20,7 +20,7 @@ const EmpTRCostTotal = () => {
     setCheckBox1Checked(e.value);
     if (e.value) {
       setCheckBox2Checked(false);
-      setValues(null);
+      setValues([])
     }
   };
 
@@ -28,14 +28,14 @@ const EmpTRCostTotal = () => {
     setCheckBox2Checked(e.value);
     if (e.value) {
       setCheckBox1Checked(false);
-      setValues(null);
+      setValues([])
     }
   };
 
 
   useEffect(() => {
     setCheckBox1Checked(true)
-    setValues(null);
+    setValues([])
   }, []);
 
  
@@ -52,7 +52,10 @@ const EmpTRCostTotal = () => {
    
     
     try {
-      
+      if(!checkBox1Checked && !checkBox2Checked ){
+      alert("프로젝트별 혹은 이름별 을 선택해야 검색이 가능합니다.")
+      return;
+    }
       const response = await ApiRequest("/boot/common/queryIdSearch", updateParam);
     
         setValues(response);
