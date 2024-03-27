@@ -54,10 +54,7 @@ const ProjectExpenseSubmit = (props) => {
     }
 
     const insertMM = async (params) => {
-        params.push({
-            "tbNm": "PRJCT_INDVDL_CT_MM"
-        })
-        const response = await axios.post("/boot/common/commonInsert", params);
+        const response = await axios.post("/boot/indvdlClm/prjctExpns/insertPrjctMM", params);
         return response;
     }
 

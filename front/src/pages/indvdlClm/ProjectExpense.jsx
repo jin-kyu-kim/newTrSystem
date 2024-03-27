@@ -41,7 +41,7 @@ const ProjectExpense = () => {
           const date = excel[i].__EMPTY_4;
           const time = excel[i].__EMPTY_5;
           const data = {
-              "utztnDt" : date.substring(2,4)+date.substring(5,7)+date.substring(8,10)+time.substring(0,2)+time.substring(3,5)+time.substring(6,8),
+              "utztnDt" : date.substring(0,4)+date.substring(5,7)+date.substring(8,10)+time.substring(0,2)+time.substring(3,5)+time.substring(6,8),
               "useOffic" : excel[i].__EMPTY_6,
               "utztnAmt" : excel[i].__EMPTY_7,
               "regEmpId" : cookies.userInfo.empId,
