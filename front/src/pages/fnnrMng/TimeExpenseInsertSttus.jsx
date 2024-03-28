@@ -70,7 +70,7 @@ const searchHandle = async (initParam) => {
         ...paramtot,
         queryId: totQueryId,
         aplyYm: initParam.yearItem + initParam.monthItem,
-        aplyOdr: initParam.aplyOd,
+        aplyOdr: initParam.aplyOdr,
         empId: initParam.empId,
         hdofSttsCd: initParam.hdofSttsCd
     })
