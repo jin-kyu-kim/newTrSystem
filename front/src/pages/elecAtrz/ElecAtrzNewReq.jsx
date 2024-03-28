@@ -11,7 +11,7 @@ import ElecAtrzHeader from "./common/ElecAtrzHeader";
 import ElecAtrzNewReqJson from "./ElecAtrzNewReqJson.json"
 
 import ElecAtrzTitleInfo from "./common/ElecAtrzTitleInfo";
-
+import ExpensInfo from "./expensClm/ExpensInfo";
 
 import ElecAtrzCtrtInfo from "./ctrtInfo/ElecAtrzCtrtInfo";
 import ElecAtrzCtrtInfoDetail from "./ctrtInfo/ElecAtrzCtrtInfoDetail";
@@ -34,7 +34,6 @@ const ElecAtrzNewReq = () => {
     console.log("formData", formData);
     
     useEffect(() => {
-        console.log(cookies)
 
         retrievePrjctInfo();
 
@@ -150,10 +149,6 @@ const ElecAtrzNewReq = () => {
                     onHandleAtrzTitle={handleElecAtrz}
                     atrzParam={atrzParam}
                 />
-                <div>
-                    <div dangerouslySetInnerHTML={{ __html: formData.docFormDc }}/>
-                </div>
-                <hr/>
                 <div dangerouslySetInnerHTML={{ __html: formData.docFormDc }} />
                     {["VTW04909","VTW04910"].includes(data.elctrnAtrzTySeCd) &&  (
                         <>
@@ -161,6 +156,11 @@ const ElecAtrzNewReq = () => {
                         <ElecAtrzCtrtInfoDetail prjctId={prjctId} data={data}/>
                         </>
                     )}
+                    {formData.elctrnAtrzTySeCd === "VTW04907" &&
+                    <>
+                        <ExpensInfo />
+                    </>
+                    }
                 <HtmlEditBox 
                     column={ {"dataField": "gnrlAtrzCn"}}
                     data={data}
