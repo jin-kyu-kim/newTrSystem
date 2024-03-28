@@ -1,22 +1,26 @@
 import { Column, DataGrid, Editing, Lookup, MasterDetail, Selection, RequiredRule, StringLengthRule, Pager, Paging } from 'devextreme-react/data-grid';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useCookies } from 'react-cookie';
 import ToggleButton from 'pages/sysMng/ToggleButton';
 import ApiRequest from 'utils/ApiRequest';
 import '../../pages/sysMng/sysMng.css'
 import moment from 'moment';
-import { useCookies } from 'react-cookie';
 
 const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, masterDetail, doublePk, 
     noEdit, onSelection, onRowClick, removeAdd, callback, handleData }) => {
     const [ cookies ] = useCookies(["userInfo", "userAuth"]);
     const [ cdValList, setCdValList ] = useState({});
     const empId = cookies.userInfo.empId;
-    const ynVal= useRef({useYn: false});
     const date = moment();
 
     useEffect(() => {
         getCdVal();
-    }, [])
+    }, []);
+
+    const ynVal = [
+        {cdValue: "Y", cdNm: "사용"},
+        {cdValue: "N", cdNm: "미사용"}
+    ];
 
     const getCdVal = useCallback(async () => {
         try{
@@ -32,7 +36,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
                     };
                 }
             }
-            setCdValList(updatedCdValList);
+            setCdValList({...updatedCdValList, useYn: ynVal});
         } catch(error){
             console.log(error)
         }
@@ -56,9 +60,8 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
                         isDuplicate = checkDuplicate(e.data[keyColumn]);
                         if (isDuplicate) return;
                     }
-                    handleYnVal !== undefined 
-                        ? (e.data = {...e.data, regDt: date.format('YYYY-MM-DD'), regEmpId: empId, ...ynVal.current})
-                        : e.data = {...e.data, regDt: date.format('YYYY-MM-DD'), regEmpId: empId}
+                    handleYnVal !== undefined ? e.data.useYn === undefined && (e.data = {...e.data, regDt: date.format('YYYY-MM-DD'), regEmpId: empId, useYn: "N" })
+                    : e.data = {...e.data, regDt: date.format('YYYY-MM-DD'), regEmpId: empId}
                     editParam[1] = e.data;
                     editInfo = { url: 'commonInsert', complete: '저장' }
                     break;
@@ -67,9 +70,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
                         isDuplicate = checkDuplicate(e.newData[keyColumn]);
                         if (isDuplicate) return;
                     }
-                    handleYnVal !== undefined 
-                        ? (e.newData = {...e.newData, mdfcnDt: date.format('YYYY-MM-DD'), mdfcnEmpId: empId, ...ynVal.current})
-                        : e.newData = {...e.newData, mdfcnDt: date.format('YYYY-MM-DD'), mdfcnEmpId: empId}
+                    e.newData = {...e.newData, mdfcnDt: date.format('YYYY-MM-DD'), mdfcnEmpId: empId}
                     editParam[1] = e.newData;
                     editParam[2] = keyInfo;
                     editInfo = { url: 'commonUpdate', complete: '수정' }
@@ -102,16 +103,9 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
         return isDuplicate;
     };
 
-    const getYnVal = (e) => {
-        ynVal.current = e.data;
-    }
-
-    const buttonRender = (e, col, edit) => {
-        if (col.editType === 'toggle') {
-            return (
-                edit !== undefined ? <ToggleButton callback={getYnVal} data={e}/>
-                : <ToggleButton callback={handleYnVal} data={e} />
-            )
+    const buttonRender = (e, col) => {
+        if (col.buttonType === 'toggle') {
+            return ( <ToggleButton callback={handleYnVal} data={e} /> )
         }
     }
 
@@ -129,7 +123,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
                 noDataText=''
                 onRowClick={onRowClick}
                 onSelectionChanged={onSelection && ((e) => onSelection(e))}
-                onRowInserted={(e) => onEditRow('insert', e)}
+                onRowInserting={(e) => onEditRow('insert', e)}
                 onRowUpdating={(e) => onEditRow('update', e)}
                 onRowRemoving={(e) => onEditRow('delete', e)}
                 onCellPrepared={(e) => {
@@ -170,9 +164,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
                         dataType={col.type}
                         format={col.format}
                         alignment={'center'}
-                        cellRender={col.button ? (e) => buttonRender(e, col) : undefined}
-                        editCellRender={col.button ? (e) => buttonRender(e, col, 'edit') : undefined}
-                    >
+                        cellRender={col.button ? (e) => buttonRender(e, col) : undefined} >
                         {col.editType === 'selectBox' ? 
                             <Lookup 
                                 dataSource={cdValList[col.key]}

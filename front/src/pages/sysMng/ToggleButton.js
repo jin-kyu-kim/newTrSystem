@@ -3,7 +3,8 @@ import { Switch } from 'devextreme-react/switch';
 import './sysMng.css';
 
 const ToggleButton = ({ data, callback }) => {
-    const [isOn, setIsOn] = useState(data.displayValue === 'Y');
+    const [isOn, setIsOn] = useState(data.value === 'Y');
+    
     const updateData = {
         key: data.key,
         data: {

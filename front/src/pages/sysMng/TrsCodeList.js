@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import SysMng from './SysMngJson.json';
 import ApiRequest from '../../utils/ApiRequest';
 import SearchInfoSet from "components/composite/SearchInfoSet"
@@ -46,6 +46,7 @@ const TrsCodeList = () => {
         ];
         try {
             const response = await ApiRequest('/boot/common/commonUpdate', ynParam);
+            if(response === 1) pageHandle();
         } catch (error) {
             console.log(error)
         }
