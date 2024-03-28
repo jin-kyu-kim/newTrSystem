@@ -1,8 +1,6 @@
-import React, {useEffect, useState} from "react";
-import CustomLabelValue from "../../components/unit/CustomLabelValue";
-import ElecAtrzOutordEmpCtrtJson from "../elecAtrz/ElecAtrzOutordEmpCtrtJson.json";
-import CompanyCtrtInfo from "./ctrtInfo/CompanyCtrtInfo"
+import React, {useEffect} from "react";
 import ElecAtrzCtrtInfo from "./ctrtInfo/ElecAtrzCtrtInfo";
+import ElecAtrzCtrtInfoDetail from "./ctrtInfo/ElecAtrzCtrtInfoDetail";
 
 const ElecAtrzOutordEmpCtrt = ({data, prjctId}) => {
 
@@ -13,12 +11,20 @@ const ElecAtrzOutordEmpCtrt = ({data, prjctId}) => {
 
     }, []);
 
-
-    return (
+    /**
+     *  VTW04909 외주업체 계약, 
+     *  VTW04910 재료비 계약,
+     */
+    return ( 
         <>
+        {["VTW04909","VTW04910"].includes(data.elctrnAtrzTySeCd) &&  (
+            <>
             <ElecAtrzCtrtInfo data={data}/>
-            <CompanyCtrtInfo prjctId={prjctId} data={data}/>
+            <ElecAtrzCtrtInfoDetail prjctId={prjctId} data={data}/>
+            </>
+        )}
         </>
     );
 };
 export default ElecAtrzOutordEmpCtrt;
+
