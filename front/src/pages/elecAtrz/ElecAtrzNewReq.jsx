@@ -13,7 +13,8 @@ import ElecAtrzNewReqJson from "./ElecAtrzNewReqJson.json"
 import ElecAtrzTitleInfo from "./common/ElecAtrzTitleInfo";
 
 
-import ElecAtrzOutordEmpCtrt from "./ElecAtrzOutordEmpCtrt";
+import ElecAtrzCtrtInfo from "./ctrtInfo/ElecAtrzCtrtInfo";
+import ElecAtrzCtrtInfoDetail from "./ctrtInfo/ElecAtrzCtrtInfoDetail";
 
 const ElecAtrzNewReq = () => {
 
@@ -29,6 +30,8 @@ const ElecAtrzNewReq = () => {
     const navigate = useNavigate();
 
     const column = { "dataField": "gnrlAtrzCn", "placeholder": "내용을 입력해주세요."};
+
+    console.log("formData", formData);
     
     useEffect(() => {
         console.log(cookies)
@@ -150,9 +153,14 @@ const ElecAtrzNewReq = () => {
                 <div>
                     <div dangerouslySetInnerHTML={{ __html: formData.docFormDc }}/>
                 </div>
-                {formData.elctrnAtrzTySeCd === "VTW04908" && 
-                    <ElecAtrzOutordEmpCtrt data={data} prjctId={prjctId} />
-                }
+                <hr/>
+                <div dangerouslySetInnerHTML={{ __html: formData.docFormDc }} />
+                    {["VTW04909","VTW04910"].includes(data.elctrnAtrzTySeCd) &&  (
+                        <>
+                        <ElecAtrzCtrtInfo data={data}/>
+                        <ElecAtrzCtrtInfoDetail prjctId={prjctId} data={data}/>
+                        </>
+                    )}
                 <HtmlEditBox 
                     column={ {"dataField": "gnrlAtrzCn"}}
                     data={data}

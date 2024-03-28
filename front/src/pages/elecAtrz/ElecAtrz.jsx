@@ -2,116 +2,142 @@ import React, { useState, useEffect } from "react";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import { Button } from "devextreme-react/button";
+import { Tooltip } from 'devextreme-react/tooltip';
 import CustomTable from "components/unit/CustomTable";
 import SearchInfoSet from "components/composite/SearchInfoSet";
 import elecAtrzJson from "./ElecAtrzJson.json";
-import "./ElecAtrz.css";
 import ApiRequest from 'utils/ApiRequest';
+import "./ElecAtrz.css";
 
 const ElecAtrz = () => {
   const navigate = useNavigate();
-  const [ cookies ] = useCookies(["userInfo", "userAuth"]);
+  const [cookies] = useCookies(["userInfo", "userAuth"]);
   const empId = cookies.userInfo.empId;
-  const { keyColumn, queryId, barList, searchInfo, baseColumns } = elecAtrzJson.elecMain;
-  const [ param, setParam ] = useState({});
-  const [ clickBox, setClickBox ] = useState(null);
-  const [ titleRow, setTitleRow ] = useState([]); // 제목행을 동적으로 보여주기 위한 state
-  const [ totalCount, setTotalCount ] = useState(0);
-  const [ selectedList, setSelectedList ] = useState([]);
-  
+  const { keyColumn, queryId, countQueryId, barList, searchInfo, baseColumns } = elecAtrzJson.elecMain;
+  const [param, setParam] = useState({});
+  const [clickBox, setClickBox] = useState(null);
+  const [titleRow, setTitleRow] = useState([]); // 제목행을 동적으로 보여주기 위한 state
+  const [totalCount, setTotalCount] = useState([]);
+  const [selectedList, setSelectedList] = useState([]);
+
   const onNewReq = async () => {
     navigate("../elecAtrz/ElecAtrzForm");
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     const getAtrz = async () => {
-        try{
-            const response = await ApiRequest('/boot/common/queryIdSearch', param)
-            setSelectedList(response)
-        } catch(error) {
-            console.log('error', error)
-        }
+      try {
+        const response = await ApiRequest('/boot/common/queryIdSearch', param)
+        setSelectedList(response)
+      } catch (error) {
+        console.log('error', error)
+      }
     };
-    if(Object.keys(param).length !== 0 && param.sttsCd !== null) getAtrz();
+    if (Object.keys(param).length !== 0) getAtrz();
   }, [param])
 
   const searchHandle = async (initParam) => {
     setParam({
-        ...initParam,
-        queryId: queryId
+      ...initParam
     });
-  };  
+  };
+
+  const getAllCount = async () => {
+    try{
+      const response = await ApiRequest('/boot/common/queryIdSearch', { queryId: countQueryId, empId: empId });
+      setTotalCount(response);
+    } catch(error) {
+      console.log('error', error);
+    }
+  }
+
+  useEffect(() => {
+    getAllCount();
+  }, []);
 
   const getList = async (keyNm, refer, sttsCd) => {
     setClickBox(keyNm) // 선택된 박스의 색상 변경
     setTitleRow(baseColumns.concat(elecAtrzJson.elecMain[keyNm]))
     setParam({
-        ...param,
-        queryId: queryId,
-        empId: empId,
-        refer: refer,
-        sttsCd: sttsCd
+      ...param,
+      queryId: queryId,
+      empId: empId,
+      refer: refer,
+      sttsCd: sttsCd
     })
   };
 
-  const ElecBar = ({ text, barColor, children }) => {
+  const ElecBar = ({ text, barColor, color, width, children }) => {
     return (
-      <div>
-        <div className='elec-bar' style={{backgroundColor: barColor}}>{text}</div>
+      <div style={{width}}>
+        <div className='elec-bar' style={{ backgroundColor: barColor, color: color }}>{text}</div>
         <div className="elec-square-container">{children}</div>
       </div>
     );
   };
 
-  const ElecSquare = ({ text, keyNm, refer, sttsCd, squareColor }) => {
+  const ElecSquare = ({ keyNm, info }) => {
     return (
-      <div className='elec-square' onClick={() => getList(keyNm, refer, sttsCd)} style={(clickBox === keyNm) ? {backgroundColor:'#4473a5', color: 'white'} : {backgroundColor: squareColor}}>
-        <div className="elec-square-text" style={{color: (clickBox === text) && 'white'}}>{text}</div>
-        <div className="elec-square-count" style={{color: (clickBox === text) && 'white'}}>{totalCount} 건</div>
+      <div id={keyNm} onClick={() => getList(keyNm, info.refer, info.sttsCd)} style={(clickBox === keyNm) ? 
+        { backgroundColor: '#4473a5', color: 'white' } : { backgroundColor: info.squareColor }} className='elec-square' >
+
+        <div className="elec-square-text" style={{ color: (clickBox === info.text) && 'white' }}>{info.text}</div>
+        <div className="elec-square-count" style={{ color: (clickBox === info.text) && 'white' }}>
+          {totalCount.length !== 0 && (totalCount[0][keyNm] === 0 ? 0 
+          : <span>{totalCount[0][keyNm]}</span> )} 건
+        </div>
+        <Tooltip
+          target={`#${keyNm}`}
+          showEvent="mouseenter"
+          hideEvent="mouseleave"
+          position="top"
+          hideOnOutsideClick={false} >
+            <div className='elecTooltip'>{info.tooltip}</div>
+        </Tooltip>
       </div>
     );
   };
 
-  const clickHist = () => {
+  const sendDetail = (e) => {
+    navigate('/elecAtrz/ElecAtrzDetail', {
+      state: {data: e.data}
+    })
   }
 
   return (
     <div className="container">
-        <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }} ></div>
-        <div className="col-md-10 mx-auto" style={{ marginBottom: "20px" }}>
-                <h3>전자결재</h3>
+      <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }} ></div>
+      <div className="col-md-10 mx-auto" style={{ marginBottom: "20px", display: 'flex' }}>
+        <h3 style={{marginRight: '50px'}}>전자결재</h3>
+        <div>
+          <Button text="신규 기안 작성" onClick={onNewReq} type='danger'></Button>
         </div>
-      <div>
-        <Button text="신규 기안 작성" onClick={onNewReq}></Button>
       </div>
 
       <div className="elec-container">
         {barList.map((bar) => (
-          <ElecBar key={bar.text} text={bar.text} barColor={bar.barColor}>
+          <ElecBar key={bar.text} text={bar.text} barColor={bar.barColor} width={bar.width} color={bar.color}>
             {bar.childList.map((child) => (
               <ElecSquare
                 key={child.key}
-                text={child.text}
                 keyNm={child.key}
-                refer={child.refer}
-                sttsCd={child.sttsCd}
-                squareColor={child.squareColor}
+                info={child.info}
               />
             ))}
           </ElecBar>
         ))}
       </div>
-           
-      {selectedList.length !== 0 && 
-        <div style={{marginTop: '20px'}}>
-            <SearchInfoSet callBack={() => searchHandle} props={searchInfo} />
-            <CustomTable 
-                keyColumn={keyColumn} 
-                values={selectedList} 
-                columns={titleRow} 
-                onClick={clickHist}
-            />
-        </div> }
+
+      {selectedList.length !== 0 &&
+        <div style={{ marginTop: '20px' }}>
+          <SearchInfoSet callBack={() => searchHandle} props={searchInfo} />
+          <CustomTable
+            keyColumn={keyColumn}
+            values={selectedList}
+            columns={titleRow}
+            onRowClick={sendDetail}
+          />
+        </div>}
     </div>
   );
 };
