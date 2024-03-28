@@ -6,7 +6,7 @@ import EmpInfoJson from "./EmpInfoJson.json";
 
 import Button from "devextreme-react/button";
 
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const EmpDetailInfo = () => {
     
@@ -14,8 +14,10 @@ const EmpDetailInfo = () => {
     
     const EmpDetailInfo = EmpInfoJson.EmpDetailInfo;
 
+    const navigate = useNavigate();
     const location = useLocation();
     const [naviEmpId, setNaviEmpId] = useState([]);
+    const [showNewButton, setShowNewButton] = useState(false);
 
     useEffect(() => {
 
@@ -24,6 +26,7 @@ const EmpDetailInfo = () => {
             const naviTapIndex = location.state.index;
 
             setSelectedIndex(naviTapIndex);
+            setShowNewButton(true);
         }
     },[]);
 
@@ -38,12 +41,20 @@ const EmpDetailInfo = () => {
         (args) => {
           if (args.name === "selectedIndex") {
             setSelectedIndex(args.value);
+
+              if (location.state !== null && args.value == 0 && empId !== naviEmpId){
+                  setSelectedIndex(args.previousValue);
+              }
           }
         },
         []
       );
 
     const itemTitleRender = (a) => <span>{a.TabName}</span>;
+
+    const onClick = () => {
+        navigate("/humanResourceMng/EmpManage");
+    };
 
     return (
         <div>
@@ -65,6 +76,18 @@ const EmpDetailInfo = () => {
           >
             전체이력조회출력
           </Button>
+            {showNewButton && (
+                <Button
+                    width={110}
+                    text="New Button"
+                    type="default"
+                    stylingMode="contained"
+                    style={{ margin: "2px" }}
+                    onClick={onClick}
+                >
+                    목록
+                </Button>
+            )}
         </div>
         <div
           style={{
