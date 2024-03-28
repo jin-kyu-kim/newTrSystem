@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import  EmpCultHealthCostManageJson from "./EmpCultHealthCostManageJson.json";
+import  EmpCultHealthCostManageJson from "./EmpCultHealthCostManageDeadLineJson.json";
 import ApiRequest from "../../utils/ApiRequest";
 import CustomTable from "components/unit/CustomTable";
 import { Workbook } from "exceljs";
@@ -13,28 +13,15 @@ import { Navigate, useNavigate } from "react-router-dom";
 const EmpCultHealthCostManage = () => {
   const [values, setValues] = useState([]);
   const [param, setParam] = useState({});
-  const { keyColumn, queryId, tableColumns, prjctColumns , summaryColumn , summaryColumn2, searchInfo } = EmpCultHealthCostManageJson;
-  const [checkBox1Checked, setCheckBox1Checked] = useState(false);
-  const [checkBox2Checked, setCheckBox2Checked] = useState(false);
+  const { keyColumn, queryId, tableColumns, prjctColumns , summaryColumn , wordWrap, searchInfo } = EmpCultHealthCostManageJson;
   const navigate = useNavigate();
-  const handleCheckBox1Change = (e) => {
-    setCheckBox1Checked(e.value);
-    if (e.value) {
-      setCheckBox2Checked(false);
-      setValues([])
-    }
-  };
-
-
-
-
-  useEffect(() => {
-    setCheckBox1Checked(true)
-    setValues([])
-  }, []);
-
  
 
+ 
+useEffect(() => {
+   
+    pageHandle();
+  }, [param]);
 
   const pageHandle = async (initParam) => {
     console.log(initParam)
@@ -67,9 +54,9 @@ const EmpCultHealthCostManage = () => {
 
 
   const handleDeadLine = () => {
-    const btnChk = window.confirm("문화체련비를 마감하시겠습니까?")
+    const btnChk = window.confirm("문화체련비 마감 을 취소 하시겠습니까?")
     if (btnChk) {
-      alert("마감되었습니다.")
+      alert("마감 취소 되었습니다.")
     }
   };
 
@@ -110,7 +97,7 @@ const EmpCultHealthCostManage = () => {
       style={{ marginTop: "20px", marginBottom: "10px",  display: "flex"}}
     >
       <h1 style={{ fontSize: "40px" }}>문화체련비 마감 목록</h1>
-      <div style={{marginTop: "7px", marginLeft: "20px"}}><Button onClick={handleMove}>마감 목록</Button> <Button onClick={handleDeadLine}>  전체 마감</Button> </div>
+      <div style={{marginTop: "7px", marginLeft: "20px"}}><Button onClick={handleMove}>관리 목록</Button> <Button style = {{backgroundColor: "#B40404", color: "#fff"}}onClick={handleDeadLine}>  마감 취소</Button> </div>
     </div>
     <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
       <span>* 직원의 문화체련비 마감 목록을 조회 합니다.</span>
@@ -131,12 +118,14 @@ const EmpCultHealthCostManage = () => {
         columns={tableColumns}
         values={values}
         paging={true}
+        wordWrap={wordWrap}
         excel={true}
+        summary={true}
+        summaryColumn={summaryColumn}
         onExcel={onExporting}
-       
       />  
 
-    
+
      
 
 

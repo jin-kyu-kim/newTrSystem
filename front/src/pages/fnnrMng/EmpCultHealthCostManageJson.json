@@ -2,9 +2,12 @@
     "menuName": "EmpTRCostTotal",
     "queryId": "financialAffairMngMapper.retrieveWorkHrAprvList",
     "keyColumn": "empId",
+    "wordWrap": true,
    
     "tableColumns": [
-      { "key": "empFlnm", "value": "성명", "width": 120, "alignment": "center" },
+      { "key": "empFlnm", "value": "성명", "width": 120, "alignment": "center","button": { "text": "으악"
+      
+     }  },
       {  "key": "prjctNm", "value": "월별", "width": 120, "alignment": "center" },
       {  "key": "prjctNm", "value": "구분", "width": 120, "alignment": "center" },
       {  "key": "prjctNm", "value": "이월금액", "width": 120, "alignment": "center" },

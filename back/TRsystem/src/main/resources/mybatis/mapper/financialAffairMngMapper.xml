@@ -676,6 +676,22 @@
 
 
 
+
     </select>
 
+    <!-- 문체비 바감 내역 -->
+    <select id="retrieveClturPhstrnDdlnList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+
+        SELECT
+            E.EMP_ID AS EMP_ID
+            ,C.CD_NM   AS BANK_NAME
+             ,E.ACTNO  AS ACTNO
+             ,E.EMP_FLNM AS EMP_FLNM
+             ,CPAC.DPST_AMT  AS DPST_AMT
+             ,CONCAT(SUBSTR(CLM_YM,5), '월 문화체련비' ) AS REMARK
+        FROM CLTUR_PHSTRN_ACT_CT CPAC
+                 JOIN EMP E ON E.EMP_ID = CPAC.EMP_ID
+                 JOIN CD  C ON C.CD_VALUE  = E.BANK_CD
+
+    </select>
 </mapper>
