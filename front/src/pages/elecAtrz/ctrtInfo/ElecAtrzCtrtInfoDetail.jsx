@@ -34,7 +34,9 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId}) => {
             setPopupVisible(prev => !prev);
             setSelectedData(data);
         }else if(button.name === "delete"){
-            setTableData(currentTableData => currentTableData.filter(item => item.matrlCtSn !== data.matrlCtSn));
+            if(data.matrlCtSn != 0){
+                setTableData(currentTableData => currentTableData.filter(item => item.matrlCtSn !== data.matrlCtSn));
+            }
         }       
 
     },[popupVisible]);
