@@ -11,14 +11,19 @@ import { useCookies } from "react-cookie";
 import CustomCdComboBox from "components/unit/CustomCdComboBox";
 import { DateBox, NumberBox, TextBox } from "devextreme-react";
 
-const EmpBasicInfo = () => {
+const EmpBasicInfo = (naviEmpId) => {
   const [baseInfoData, setBaseInfoData] = useState([]);
   /*유저세션*/
   const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
 
-   const empId = cookies.userInfo.empId;
- 
-  
+   let empId;
+
+    if(naviEmpId.naviEmpId.length !== 0){
+        empId = naviEmpId.naviEmpId;
+    } else {
+        empId = cookies.userInfo.empId;
+    }
+
   const [empCnt, setEmpCnt] = useState(0);
 
   const [empDtlData, setEmpDtlData] = useState([]);

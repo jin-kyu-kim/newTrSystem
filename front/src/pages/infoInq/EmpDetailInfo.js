@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import { TabPanel } from "devextreme-react";
 import { useCookies } from "react-cookie";
 
@@ -6,11 +6,26 @@ import EmpInfoJson from "./EmpInfoJson.json";
 
 import Button from "devextreme-react/button";
 
+import { useLocation } from 'react-router-dom';
+
 const EmpDetailInfo = () => {
     
     const [selectedIndex, setSelectedIndex] = useState(0);
     
     const EmpDetailInfo = EmpInfoJson.EmpDetailInfo;
+
+    const location = useLocation();
+    const [naviEmpId, setNaviEmpId] = useState([]);
+
+    useEffect(() => {
+
+        if (location.state !== null){
+            setNaviEmpId(location.state.empId);
+            const naviTapIndex = location.state.index;
+
+            setSelectedIndex(naviTapIndex);
+        }
+    },[]);
 
     /*유저세션*/
     const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
@@ -72,7 +87,7 @@ const EmpDetailInfo = () => {
             if(data.index=== selectedIndex){
               return (
                 <React.Suspense fallback={<div>Loading...</div>}>
-                    <Component/>
+                    <Component naviEmpId={naviEmpId}/>
                 </React.Suspense>
             );
             }
