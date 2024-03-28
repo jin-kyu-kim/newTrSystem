@@ -279,7 +279,25 @@ const TreRoutes = [
     path: "/elecAtrz/ElecAtrzForm",
     name: "ElecAtrzForm",
     element: React.lazy(() => import("../pages/elecAtrz/ElecAtrzForm")),
-  }
+  },
+
+    // 재무 관리 > 문화체련비 관리
+    {
+      path: "/fnnrMng/EmpCultHealthCostManage",
+      name: "EmpCultHealthCostManage",
+      element: React.lazy(() => import("../pages/fnnrMng/EmpCultHealthCostManage")),
+    },
+
+       // 재무 관리 > 문화체련비 관리 > 문화체련비 관리 마감 목록
+   {
+    path: "/fnnrMng/EmpCultHealthCostManageDeadLine",
+    name: "EmpCultHealthCostManageDeadLine",
+    element: React.lazy(() => import("../pages/fnnrMng/EmpCultHealthCostManageDeadLine")),
+  },
+
 ];
+
+
+
 
 export default TreRoutes;
