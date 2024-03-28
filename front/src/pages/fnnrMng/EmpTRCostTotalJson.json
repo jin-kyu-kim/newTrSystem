@@ -40,6 +40,17 @@
         ]   }
      
   ],
+  "smallSummaryColumn": [
+    { "value": "성명",  "format": "총 합계 :" },
+    { "key": "prjctNonInsert", "value": "프로젝트 미투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
+    { "key": "prjctInsert", "value": "프로젝트 투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
+    { "key": "vacation", "value": "휴가", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
+    { "key": "totalPrjctNonInsert", "value": "프로젝트  미투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
+    { "key": "totalPrjctInsert", "value": "프로젝트  투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
+    { "key": "prjctNonInsertExpense", "value": "프로젝트미투입", "type"  : "sum", "format": "{0} 원"  ,"precision": "0"   },
+    { "key": "prjctInsertExpense", "value": "프로젝트투입", "type"  : "sum", "format": "{0} 원","precision": "" }
+  ],
+  
 
     "summaryColumn": [
       { "value": "성명",  "format": "총 합계 :" },
