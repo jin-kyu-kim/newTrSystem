@@ -55,7 +55,7 @@ const ProjectClaimCost = () => {
     }
   };
 
-  const onClick = (button, data) => {
+  const onClick = ({button, data}) => {
     if (button.name === "prjctId") {
       navigate("/fnnrMng/ProjectClaimCostDetail",{
             state: {
