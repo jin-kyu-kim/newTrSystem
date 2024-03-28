@@ -8,7 +8,8 @@ import { FileUploader } from "devextreme-react/file-uploader";
 import HtmlEditBox from "components/unit/HtmlEditBox";
 import ApiRequest from "utils/ApiRequest";
 
-import ElecAtrzOutordEmpCtrt from "./ElecAtrzOutordEmpCtrt";
+import ElecAtrzCtrtInfo from "./ctrtInfo/ElecAtrzCtrtInfo";
+import ElecAtrzCtrtInfoDetail from "./ctrtInfo/ElecAtrzCtrtInfoDetail";
 
 const ElecAtrzNewReq = () => {
 
@@ -24,6 +25,8 @@ const ElecAtrzNewReq = () => {
     const navigate = useNavigate();
 
     const column = { "dataField": "gnrlAtrzCn", "placeholder": "내용을 입력해주세요."};
+
+    console.log("formData", formData);
     
     useEffect(() => {
         retrievePrjctInfo();
@@ -203,9 +206,12 @@ const ElecAtrzNewReq = () => {
                 </div>
                 <hr/>
                 <div dangerouslySetInnerHTML={{ __html: formData.docFormDc }} />
-                {formData.elctrnAtrzTySeCd === "VTW04908" && 
-                    <ElecAtrzOutordEmpCtrt data={data} prjctId={prjctId} />
-                }
+                    {["VTW04909","VTW04910"].includes(data.elctrnAtrzTySeCd) &&  (
+                        <>
+                        <ElecAtrzCtrtInfo data={data}/>
+                        <ElecAtrzCtrtInfoDetail prjctId={prjctId} data={data}/>
+                        </>
+                    )}
                 <HtmlEditBox 
                     column={ {"dataField": "gnrlAtrzCn"}}
                     data={data}
