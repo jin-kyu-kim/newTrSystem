@@ -262,6 +262,12 @@ const TreRoutes = [
     name: "ElecAtrz",
     element: React.lazy(() => import("../pages/elecAtrz/ElecAtrz")),
   },
+  // 전자결재 상세
+  {
+    path: "/elecAtrz/ElecAtrzDetail",
+    name: "ElecAtrzDetail",
+    element: React.lazy(() => import("../pages/elecAtrz/ElecAtrzDetail")),
+  },
   // 전자결재 신규기안 작성 
   {
     path: "/elecAtrz/ElecAtrzNewReq",

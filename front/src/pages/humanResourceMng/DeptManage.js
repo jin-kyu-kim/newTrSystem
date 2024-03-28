@@ -171,6 +171,7 @@ const DeptManage = ({callBack}) => {
           if (response > 0) {
             alert("등록되었습니다.");
             reset();
+            setDeptHnfParam({});
             pageHandle();
           }
       } catch (error) {

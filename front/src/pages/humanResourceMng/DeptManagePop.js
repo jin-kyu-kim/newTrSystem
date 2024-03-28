@@ -167,14 +167,7 @@ const DeptManagePop = ({callBack,data,deptId,deptNm}) => {
         if(deptAptParam.jbttlCd === "VTW01001"){
           for(const value of data){
             if(value.jbttlCd === "VTW01001"){
-              alert("부서에 본부장은 한명만 발령 가능합니다.");
-              return;
-            }
-          }
-        }else if(deptAptParam.jbttlCd === "VTW01002"){
-          for(const value of data){
-            if(value.jbttlCd === "VTW01002"){
-              alert("부서에 그룹장/센터장은 한명만 발령 가능합니다.");
+              alert("부서에 부서장은 한명만 발령 가능합니다.");
               return;
             }
           }
@@ -230,14 +223,7 @@ const insertDeptEmp = async (InsertParam,InsertHistParam) => {
         if(deptHnfParam.jbttlCd === "VTW01001"){
           for(const value of data){
             if(value.jbttlCd === "VTW01001"){
-              alert("부서에 본부장은 한명만 발령 가능합니다.");
-              return;
-            }
-          }
-        }else if(deptHnfParam.jbttlCd === "VTW01002"){
-          for(const value of data){
-            if(value.jbttlCd === "VTW01002"){
-              alert("부서에 그룹장/센터장은 한명만 발령 가능합니다.");
+              alert("부서에 부서장은 한명만 발령 가능합니다.");
               return;
             }
           }

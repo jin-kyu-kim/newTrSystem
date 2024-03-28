@@ -180,7 +180,7 @@
       		AND VCATN_BGNG_YMD > #{vcatnBgngYmd}
         </if>
         <if test="vcatnBgngYmd == null and vcatnEndYmd != null">
-      		AND VCATN_END_YMD > #{vcatnEndYmd}
+      		AND VCATN_END_YMD <![CDATA[< ]]> #{vcatnEndYmd}
         </if>
         <if test="vcatnBgngYmd != null and vcatnEndYmd != null">
            <if test="!vcatnBgngYmd.equals('') and !vcatnEndYmd.equals('')">
@@ -194,7 +194,7 @@
     </select>
 
 
-	<!-- 직원별휴가정보조회 (임시사용)-->
+	<!--사번max값 조회용 쿼리-->
 	<select id="retrieveEmpnoMax" parameterType="map" resultType="com.trsystem.LowerHashMap">
 	SELECT
 		CONCAT(#{empnoChk},LPAD(MAX(substr(empno, 3))+1, '4', '0')) as  EMPNO_CHK
