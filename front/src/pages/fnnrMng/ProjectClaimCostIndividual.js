@@ -58,7 +58,7 @@ const ProjectClaimCostIndividual = ({ prjctId, prjctNm, startYmOdr, endYmOdr, em
         }
     };
 
-    const onMmBtnClick = async (button, data) => {
+    const onMmBtnClick = async ({button, data}) => {
         if (button.name === "empId") {
             setData(data);
         }
@@ -79,7 +79,7 @@ const ProjectClaimCostIndividual = ({ prjctId, prjctNm, startYmOdr, endYmOdr, em
         setMmDetailValues(response);
     }
 
-    const onCtBtnClick = async (button, data) => {
+    const onCtBtnClick = async ({button, data}) => {
         if (button.name === "expenseAprv") {
             setData(data);
         }
