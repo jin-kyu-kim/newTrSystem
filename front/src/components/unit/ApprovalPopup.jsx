@@ -7,91 +7,17 @@ import { DataGrid, Popup, Button, TagBox, TextBox } from "devextreme-react";
 import CustomEmpComboBox from "../unit/CustomEmpComboBox"
 import ApiRequest from "../../utils/ApiRequest";
 
-let tablBodyCodeValue = [];
-let tablBodyAtrzValue = [];
+const ApprovalPopup = ( {visible, onHiding, atrzValue} ) => {
 
-function onSelectAtrz(selectCodeValue, selectEmpValue, tablBodyCodeValue, tablBodyAtrzValue, changeAppovalValue, changeValue, codeIndex){
+    console.log("다른화면에서 넘어오는 값 atrzValue : ", atrzValue)
 
-    tablBodyAtrzValue.splice(codeIndex, 1, changeValue);
+    let tablBodyCodeValue = [];     //테이블에 나타날 결재상태코드
+    let tablBodyAtrzValue = [];     //테이블에 나타날 결재권자(가공 후)
 
-    render(selectCodeValue, selectEmpValue, tablBodyCodeValue, tablBodyAtrzValue);
-}
+    //테이블에 나타날 결재권자
+    const [bodyAtrzValue, setBodyAtrzValue] = useState(atrzValue); //가공 전
 
-function onAddButtonClick() {
-    // console.log(e);
-}
-
-const tableHeaderData = [
-    { value: "입력", width: "70px" },
-    { value: "결재단계", width: "100px" },
-    { value: "결재권자" },
-];
-
-function createTableHeader() {
-    return (
-        <>
-            {tableHeaderData.map((item, index) => (
-                <TableCell
-                    key={"header" + index}
-                    style={{ textAlign: "center", backgroundColor: "#EEEEEE", border: "1px solid #CCCCCC", width: tableHeaderData[index].width }}>
-                    {tableHeaderData[index].value}
-                </TableCell>
-            ))}
-        </>
-    )
-}
-
-
-
-const render = (selectCodeValue, selectEmpValue, tablBodyCodeValue, tablBodyAtrzValue) =>{
-    console.log("tablBodyAtrzValue : ", tablBodyAtrzValue);
-    return (
-        <>
-            {tablBodyCodeValue.map((codeItem, codeIndex) => (
-                <>
-                    <TableRow>
-                        <TableCell>
-                            <div>
-                                <Button
-                                    text="+"
-                                    onClick={(e) => { onAddButtonClick("addButton" + codeIndex) }}
-                                />
-                            </div>
-                        </TableCell>
-                        <TableCell style={{ textAlign: "center" }}>
-                            <div>
-                                {selectCodeValue ? selectCodeValue[codeIndex].cdNm : ""}
-                            </div>
-                        </TableCell>
-                        <TableCell style={{ textAlign: "center" }}>
-                            <TagBox
-                                dataSource={selectEmpValue}
-                                value={tablBodyAtrzValue[codeIndex]}
-                                // valueExpr="empId"
-                                displayExpr="listEmpFlnm"
-                                stylingMode="underlined"
-                                onValueChange={(e) => {onSelectAtrz(
-                                    selectCodeValue, 
-                                    selectEmpValue, 
-                                    tablBodyCodeValue, 
-                                    tablBodyAtrzValue, 
-                                    selectCodeValue[codeIndex].cdValue,
-                                    e,
-                                    codeIndex
-                                    )}
-                                }
-                                // onValueChange={onSelectAtrz}
-                            />
-                        </TableCell>
-                    </TableRow>
-                </>
-            ))}
-        </>
-    )
-}
-
-
-const ApprovalPopup = ({ visible, onHiding, atrzValue }) => {
+    //직원콤보박스에서 고른 직원
     const [selectValue, setSelectValue] = useState({empId: ""});
 
     // 결재상태코드
@@ -109,6 +35,11 @@ const ApprovalPopup = ({ visible, onHiding, atrzValue }) => {
         searchType: "empList" 
     });
 
+    /*초기 변수값 설정 나중에 바꿔야함*/
+    useEffect(() => {
+        setBodyAtrzValue(atrzValue)
+    }, [atrzValue])
+    
     useEffect(() => {
         pageHandle(searchCodeParam);
     }, [searchCodeParam])
@@ -117,44 +48,180 @@ const ApprovalPopup = ({ visible, onHiding, atrzValue }) => {
         pageHandle(searchEmpParam);
     }, [searchEmpParam])
 
-
     // 결재상태코드조회
     const pageHandle = async (initParam) => {
         try {
-            if(initParam.searchType == "approvalCode" ) setSelectCodeValue(await ApiRequest("/boot/common/queryIdSearch", initParam));
-            else if(initParam.searchType == "empList" ) setSelectEmpValue(await ApiRequest("/boot/common/queryIdSearch", initParam));
+            if(initParam.searchType === "approvalCode" ) {
+                setSelectCodeValue(await ApiRequest("/boot/common/queryIdSearch", initParam)); 
+            } else if(initParam.searchType === "empList" ) {
+                setSelectEmpValue(await ApiRequest("/boot/common/queryIdSearch", initParam));
+            }
+
         } catch (error) {
             console.log(error);
         }
     };
-
-    // 우측의 SelectBox 성명 변경
-    function onSelectEmpFlnmChg(e) {
+    
+    //SelectBox 성명 변경
+    const onSelectEmpFlnmChg = (e) => {
         setSelectValue({
             ...selectValue,
-            empno: e[0].empno,
-            empId: e[0].empId,
+            empno : e[0].empno,
+            empId : e[0].empId,
+            empFlnm: e[0].empFlnm,
+            jbpsNm: e[0].jbpsNm,
+            listEmpFlnm : e[0].listEmpFlnm
         })
     }
+    
+    //+버튼시 추가
+    const onAddButtonClick = (approvalCode) => {
+        const addBodyAtrzValue = {
+            approvalCode: approvalCode,
+            empId : selectValue.empId,
+            empFlnm : selectValue.empFlnm,
+            jbpsNm : selectValue.jbpsNm,
+            listEmpFlnm : selectValue.listEmpFlnm
+        }
+        //BodyAtrzValue setState
+        setBodyAtrzValue([...bodyAtrzValue, addBodyAtrzValue]);
+    }
 
-    function createTableBody() {
+    function onSelectAtrz(selectCodeValue, selectEmpValue, tablBodyCodeValue , tablBodyAtrzValue, changeAppovalValue, changeValue, codeIndex){
+
+        tablBodyAtrzValue.splice(codeIndex, 1, changeValue);
+    
+        bodyRender(selectCodeValue, selectEmpValue, tablBodyCodeValue, tablBodyAtrzValue);
+    }
+
+    /*onValueChange 삭제 이벤트*/
+    const onDeleteTagBox = (e) => {
+        alert("삭제");
+        console.log("deleteBox")
+        console.log("e : ", e);
+        console.log("tablBodyAtrzValue*** : ", tablBodyAtrzValue);
+        console.log("bodyAtrzValue*** : ", bodyAtrzValue);
+
+        if(bodyAtrzValue.length > 1 && bodyAtrzValue){
+            for(let i = 0; i < bodyAtrzValue.length; i++){
+                const delApprovalCd = e.ApprovalPopup;
+                const delEmpId = e.empId;
+                const listEmpFlnm = e.listEmpFlnm;
+ 
+
+            }
+        }
+
+    }
+    /*
+        TagBox 렌더링 
+    */
+    const createTagBox = (codeIndex, value) => {
+        console.log("single : ", value)
+        return(
+            <>
+                <TagBox
+                    key={value.empId}
+                    name={value.empId}
+                    clearButton={true}
+                    dataSource={selectEmpValue}
+                    displayExpr="listEmpFlnm"
+                    showSelectionControls={true}
+                    value={value}
+                    valueExpr={value.empId}
+                    stylingMode="underlined"
+                    onValueChange={(e) => {onDeleteTagBox(value)}}
+                    // onValueChange={onSelectAtrz}
+                    // onValueChange={onDeleteTagBox}
+                />
+            </>
+        )   
+    }
+
+    const tableHeaderData = [
+        { value: "입력", width: "70px" },
+        { value: "결재단계", width: "100px" },
+        { value: "결재권자" },
+    ];
+
+    /*
+        table header 렌더링
+    */
+    const createTableHeader = () => {
+        return (
+            <>
+                {tableHeaderData.map((item, index) => (
+                    <TableCell
+                        key={"header" + index}
+                        style={{ textAlign: "center", backgroundColor: "#EEEEEE", border: "1px solid #CCCCCC", width: tableHeaderData[index].width }}>
+                        {tableHeaderData[index].value}
+                    </TableCell>
+                ))}
+            </>
+        )
+    }
+
+    /*
+        table body 변수 설정
+    */
+    const createApprovalTableBody = () => {
+        tablBodyCodeValue = [];
         selectCodeValue.map((item, index) => {
             tablBodyCodeValue.push({
                 approvalCode: selectCodeValue[index].cdValue,
                 atrzLnNm: ""
             })
-            tablBodyAtrzValue.push(
-                atrzValue.filter(item => item.approvalCode == selectCodeValue[index].cdValue)
-            )
+            if(bodyAtrzValue && bodyAtrzValue.length > 0){
+                tablBodyAtrzValue[index] = (
+                    bodyAtrzValue.filter(item => item.approvalCode === selectCodeValue[index].cdValue)
+                )
+            }
         });
-    
+
         return (
-            render(selectCodeValue, selectEmpValue, tablBodyCodeValue, tablBodyAtrzValue)
-        );
+            bodyRender(selectCodeValue, selectEmpValue, tablBodyCodeValue, tablBodyAtrzValue)
+        );   
     }
-    
 
+    /*
+        tablebody렌더링
+    */
+    const bodyRender = (selectCodeValue, selectEmpValue, tablBodyCodeValue, tablBodyAtrzValue) => {
+        console.log("tablBodyAtrzValue V :", tablBodyAtrzValue);
+        return (
+            <>
+                {tablBodyCodeValue.map((codeItem, codeIndex) => (
+                    <>
+                        <TableRow>
+                            <TableCell>
+                                <div>
+                                    <Button
+                                        text="+"
+                                        name={codeItem.approvalCode}
+                                        onClick={(e) => { onAddButtonClick(codeItem.approvalCode, codeIndex) }}
+                                    />
+                                </div>
+                            </TableCell>
+                            <TableCell style={{ textAlign: "center" }}>
+                                <div>
+                                    {selectCodeValue[codeIndex] ? selectCodeValue[codeIndex].cdNm : ""}
+                                </div>
+                            </TableCell>
+                            <TableCell style={{ textAlign: "center" }}>
+                                {tablBodyAtrzValue[codeIndex].length > 1 ? 
+                                    tablBodyAtrzValue[codeIndex].map((item, index) => (createTagBox(codeIndex, [tablBodyAtrzValue[codeIndex][index]]))) : createTagBox(codeIndex, tablBodyAtrzValue[codeIndex])}
+                                {/*createTagBox(codeIndex, tablBodyAtrzValue[codeIndex])*/}
+                            </TableCell>
+                        </TableRow>
+                    </>
+                ))}
+            </>
+        )
+    }
 
+    /*
+        전체 팝업창 렌더링
+    */
     const createRenderData = () => {
         return (
             <>
@@ -177,7 +244,7 @@ const ApprovalPopup = ({ visible, onHiding, atrzValue }) => {
                             {createTableHeader()}
                         </TableHead>
                         <TableBody>
-                            {createTableBody()}
+                            {createApprovalTableBody()}
                         </TableBody>
                     </Table>
                 </div>
@@ -185,7 +252,7 @@ const ApprovalPopup = ({ visible, onHiding, atrzValue }) => {
         )
     }
 
-    return (
+return (
         <>
             <Popup
                 width={"900px"}
@@ -197,7 +264,6 @@ const ApprovalPopup = ({ visible, onHiding, atrzValue }) => {
                 onHiding={(e) => {
                     onHiding(false);
                 }}
-
             />
         </>
     )
