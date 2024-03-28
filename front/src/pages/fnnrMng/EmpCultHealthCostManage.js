@@ -1,30 +1,132 @@
-import React from 'react';
-import DataGrid, { Column, Editing, Paging } from 'devextreme-react/data-grid';
-import 'devextreme/dist/css/dx.light.css';
+import React, { useState, useEffect, useCallback } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import  EmpCultHealthCostManageJson from "./EmpCultHealthCostManageJson.json";
+import ApiRequest from "../../utils/ApiRequest";
+import CustomTable from "components/unit/CustomTable";
+import { Workbook } from "exceljs";
+import { exportDataGrid } from "devextreme/excel_exporter";
+import { saveAs } from 'file-saver';
+import SearchInfoSet from "components/composite/SearchInfoSet";
+import { Button } from "devextreme-react";
+import { Navigate, useNavigate } from "react-router-dom";
 
-class App extends React.Component {
-  state = {
-    dataSource: [
-      { id: 1, field1: 'Value 1', field2: 'Value A' },
-      { id: 2, field1: 'Value 1', field2: 'Value A' },
-      { id: 3, field1: 'Value 2', field2: 'Value A' },
-      { id: 4, field1: 'Value 2', field2: 'Value B' },
-    ]
+const EmpCultHealthCostManage = () => {
+  const [values, setValues] = useState([]);
+  const [param, setParam] = useState({});
+  const { keyColumn, queryId, tableColumns, prjctColumns , summaryColumn , wordWrap, searchInfo } = EmpCultHealthCostManageJson;
+  const navigate = useNavigate();
+
+
+  useEffect(() => {
+  }, []);
+
+  const pageHandle = async (initParam) => {
+    console.log(initParam)
+    
+
+    const updateParam = {
+      ...initParam,
+      queryId: queryId,
+    }
+   
+    
+    try {
+     
+      const response = await ApiRequest("/boot/common/queryIdSearch", updateParam);
+    
+        setValues(response);
+     
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  render() {
-    return (
-      <DataGrid
-        dataSource={this.state.dataSource}
-        showBorders={true}
-        cellMergingEnabled={true}
-      >
-        <Column dataField="field1" caption="field1" />
-        <Column dataField="field2"  caption="Field 2" />
-       
-      </DataGrid>
-    );
-  }
+
+ const handleMove=() => {
+   
+    navigate("/fnnrMng/EmpCultHealthCostManageDeadLine");
 }
 
-export default App;
+
+  const handleDeadLine = () => {
+    const btnChk = window.confirm("문화체련비를 마감하시겠습니까?")
+    if (btnChk) {
+      alert("마감되었습니다.")
+    }
+  };
+
+
+  const padNumber = (num) => {
+    return num.toString().padStart(2, '0');
+};
+  const currentDateTime = new Date();
+        const formattedDateTime = `${currentDateTime.getFullYear()}_`+
+            `${padNumber(currentDateTime.getMonth() + 1)}_`+
+            `${padNumber(currentDateTime.getDate())}`
+
+  const onExporting = (e) => {
+    const workbook = new Workbook();
+    const worksheet = workbook.addWorksheet('Main sheet');
+    exportDataGrid({
+      component: e.component,
+      worksheet,
+      autoFilterEnabled: true,
+    }).then(() => {
+      workbook.xlsx.writeBuffer().then((buffer) => {
+        saveAs(new Blob([buffer], { type: 'application/octet-stream' }), '근무시간 경비 통합승인내역'+formattedDateTime+'.xlsx');
+      });
+    });
+  };
+
+
+
+
+
+
+
+
+  return (
+    <div className="container">
+    <div 
+      className="title p-1"
+      style={{ marginTop: "20px", marginBottom: "10px",  display: "flex"}}
+    >
+      <h1 style={{ fontSize: "40px" }}>문화체련비 관리 목록</h1>
+      <div style={{marginTop: "7px", marginLeft: "20px"}}><Button onClick={handleMove}>마감 목록</Button> <Button onClick={handleDeadLine} style = {{backgroundColor: "#B40404", color: "#fff"}}>  전체 마감</Button> </div>
+    </div>
+    <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
+      <span>* 직원의 문화체련비를 조회 합니다.</span>
+    </div>
+
+    <div>
+    <div style={{ marginBottom: "20px" }}>
+    <SearchInfoSet 
+                    props={searchInfo}
+                  callBack={pageHandle}
+                /> 
+      </div>
+     
+
+     
+      <CustomTable
+        keyColumn={keyColumn}
+        columns={tableColumns}
+        values={values}
+        paging={true}
+        excel={true}
+        onExcel={onExporting}
+        wordWrap={wordWrap}
+       
+      />  
+
+
+    
+     
+
+
+        </div>
+</div>
+  );
+};
+
+export default EmpCultHealthCostManage;

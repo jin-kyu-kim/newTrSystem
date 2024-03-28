@@ -5,9 +5,7 @@
     "wordWrap": true,
    
     "tableColumns": [
-      { "key": "empFlnm", "value": "성명", "width": 120, "alignment": "center","button": { "text": "으악"
-      
-     }  },
+      { "key": "empFlnm", "value": "성명", "width": 400, "alignment": "center", "grouping" : true  },
       {  "key": "prjctNm", "value": "월별", "width": 120, "alignment": "center" },
       {  "key": "prjctNm", "value": "구분", "width": 120, "alignment": "center" },
       {  "key": "prjctNm", "value": "이월금액", "width": 120, "alignment": "center" },
@@ -15,7 +13,7 @@
       {  "key": "prjctNm", "value": "청구금액", "width": 120, "alignment": "center" },
       {  "key": "prjctNm", "value": "지급금액", "width": 120, "alignment": "center" },
       {  "key": "prjctNm", "value": "잔액", "width": 120, "alignment": "center" },
-      {  "key": "prjctNm", "value": "전체잔액", "width": 120, "alignment": "center" },
+      {  "key": "prjctNm", "value": "전체잔액", "width": 120, "alignment": "center" , "grouping" : true },
       {  "key": "prjctNm", "value": "상세청구내역", "width": 120, "alignment": "center" }
     
      
