@@ -17,11 +17,15 @@ const EmpVacUseList = (callBack,props) => {
 
     const [values, setValues] = useState([]);
     const [param, setParam] = useState([]);
-
     const [totalItems, setTotalItems] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [pageSize, setPageSize] = useState(20);
+    const [initParam, setInitParam] = useState({     
+      vcatnBgngYmd: null, //시작일자
+      vcatnEndYmd: null, //끝일자
+      empno: null,  // 사번
+    });
     
     //=============== JSON데이터 넣어두기=======================================
     const {keyColumn, queryId, tableColumns, searchParams} = EmpVacUseListJson;
@@ -35,6 +39,7 @@ const EmpVacUseList = (callBack,props) => {
     
     useEffect(() => {
         if(!Object.values(param).every((value) => value === "")) {
+          console.log("param뭐가졍홈??",param)
             pageHandle();
         };
         
@@ -52,27 +57,6 @@ const EmpVacUseList = (callBack,props) => {
             pageSize: pageSize,
         });
     }
-
-    //=============== 페이징 처리===========================================
-    const handlePageChange = (newPage) => {
-        setCurrentPage(newPage);
-        setParam({
-            ...param,
-            currentPage: newPage + 1,
-            startVal: (newPage - 1) * pageSize,
-        });
-    };
-
-    //============== 페이지 사이즈 변경=======================================
-    const handlePageSizeChange = (e) => {
-        setPageSize(e.value * 1);
-        setParam({
-            ...param,
-            currentPage: 1,
-            startVal: 0,
-            pageSize: e.value * 1,
-        });
-    };
 
 
     //============== 정보 검색해오기(Back단으로 정보던지기)===========================================
@@ -106,11 +90,7 @@ const EmpVacUseList = (callBack,props) => {
         });
       };
     //============== 서치셋 세팅============================================
-    const [initParam, setInitParam] = useState({     
-      vcatnBgngYmd: "", //시작일자
-      vcatnEndYmd: "", //끝일자
-      empno: "",  // 사번
-    });
+  
     
     const handleStartDateChange = (newStartDate) => {
    

@@ -11,12 +11,12 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
 
 //-----------------------------선언 구간 -----------------------------------
     const {labelValue,empDetailqueryId} = EmpRegistJson;
-    const [empMax,setEmpMax] =useState({});
-    const [param, setParam] = useState([]);
-    const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
+    const [empMax,setEmpMax] =useState({});   //사번 MAX값
+    const [param, setParam] = useState([]);   //사번 max값 조회용 세팅 param
+    const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);  
     const empId = cookies.userInfo.empId;
     const query =(empDetailqueryId);
-    const [data, setData] = useState({});
+//==----------------------기초정보 폼 설정용 선언==============================
     const [empIdd,setEmpIdd] = useState();
     const [empno,setEmpno] = useState();
     const [empFlnm, setEmpFlnm] = useState();
@@ -27,24 +27,24 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
     const [eml, setEml] = useState(); 
     const [actno, setActno] = useState(); 
     const [empTyCd,setEmpTyCd] = useState();
+    //const emailRegEx = /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/i;
 //-----------------------------초기세팅 구간 -----------------------------------
   
-    useEffect(() => {
-      setEmpIdd(null);
-      setEmpno(null);
-      setEmpFlnm(null);
-      setTelno(null);
-      setBankCd(null);
-      setJbpsCd(null);
-      setHdofSttsCd(null);
-      setEml(null);
-      setActno(null);
-      setEmpTyCd(null)
-    }, []);
+      useEffect(() => {   //변수 초기화
+        setEmpIdd(null);
+        setEmpno(null);
+        setEmpFlnm(null);
+        setTelno(null);
+        setBankCd(null);
+        setJbpsCd(null);
+        setHdofSttsCd(null);
+        setEml(null);
+        setActno(null);
+        setEmpTyCd(null)
+      }, []);
 
     useEffect(() => {
       if (empInfo.empId !== undefined) {
-        setData(empInfo);
         setEmpIdd(empInfo.empId);
         setEmpno(empInfo.empno);
         setEmpFlnm(empInfo.empFlnm);
@@ -100,8 +100,12 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
         setActno(value);
       }else if(name === "hdofSttsCd"){
         setHdofSttsCd(value);
-      }else if(name === "eml"){
-        setEml(value);
+      }else if(name === "eml" ){
+        // if(!emailCheck(value) && value !== null){
+        //   alert("이메일 형식으로 입력해주세요");
+        // }else{
+        // }
+        setEml(value);  
       }
       
     };
@@ -141,7 +145,6 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
     };
     //사번 max값 조회용
     const empnoHandle = async () => {
-      console.log("조회하러옴 어쨰서????");
       try {
         const response = await ApiRequest("/boot/common/queryIdSearch", param);
         setEmpMax(response[0].empnoChk);    
@@ -150,10 +153,11 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
       }
     };
 
-
+    // const emailCheck = (emailck) => { //이메일 형식 체크용
+    //   return emailRegEx.test(emailck); 
+    // }
   //================기초정보 등록
     const insertEmp = async () => {
-      console.log("인서트임");
       const date = new Date();
       const now =  date.toISOString().split("T")[0] +" " +date.toTimeString().split(" ")[0];
       const param =[
@@ -178,7 +182,6 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
           if (response > 0) {
             alert("저장되었습니다.");
             onReset();
-            console.log(data);
             callBack(query);
           }
       } catch (error) {
@@ -187,7 +190,7 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
     };
   
     const updateEmp = async () => {   //업데이트
-      console.log("업데이트임"); 
+
       const date = new Date();
       const now =  date.toISOString().split("T")[0] +" " +date.toTimeString().split(" ")[0];
       const param =[
@@ -213,7 +216,6 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
             alert("저장되었습니다."); 
             onReset();
             callBack(query);
-            console.log(data);
           }
       } catch (error) {
         console.error("Error fetching data", error);

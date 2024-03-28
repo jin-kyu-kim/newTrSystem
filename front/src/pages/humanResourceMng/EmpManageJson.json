@@ -21,8 +21,7 @@
         { "key": "empInfoChgOdr", "value": "발령차수","width" : 90 },
         { "key": "jbpsNm", "value": "발령직급","width" : 90 },
         { "key": "regDt", "value": "입력날짜" },
-        { "key": "regEmpno", "value": "입력사번","width" : 90 },
-        { "key": "empId", "value": "삭제", "width": 80, "button": {"text" : "삭제"},"alignment" : "center"}
+        { "key": "regEmpno", "value": "입력사번","width" : 90 }
     ],
     "labelValue" : {
         "jbpsCd": {

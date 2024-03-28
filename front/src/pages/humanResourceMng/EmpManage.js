@@ -16,7 +16,7 @@ const EmpManage = ({}) => {
   const [values, setValues] = useState([]);     //좌측 테이블 데이터 세팅용
   const [histValues, setHistValues] = useState([]);   //진급정보 세팅용
   const [param, setParam] = useState({});
-  const { listQueryId, searchParams, listKeyColumn, listTableColumns,       //직원목록조회 
+  const { listQueryId, listKeyColumn, listTableColumns,       //직원목록조회 
           ejhQueryId, ejhKeyColumn, ejhTableColumns,labelValue,searchInfo            //직원발령정보목록,발령용컴포넌트
         } = EmpManageJson; 
   const [year, setYear] = useState([]);
@@ -29,7 +29,10 @@ const EmpManage = ({}) => {
   const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
   const empId = cookies.userInfo.empId;
   const navigate = useNavigate ();
-
+  const [empYear,setEmpYear] = useState();
+  const [empMonth,setEmpMonth] = useState();
+  const [empOdr, setEmpOdr] = useState();
+  const [empJbps, setEmpJbps] = useState();
   const nowYear = new Date().getFullYear(); //현재년도
   const startYear = nowYear -10;
   const date = new Date();
@@ -64,6 +67,10 @@ const EmpManage = ({}) => {
       } 
     setYear(yearList);
     setMonth(monthList);
+    setEmpYear(null);
+    setEmpMonth(null);
+    setEmpOdr(null);
+    setEmpJbps(null);
   }, []);
 
 
@@ -124,37 +131,54 @@ const EmpManage = ({}) => {
     }
   };
 
-//=================================진급정보 콤보박스 선택 변경시
+//==========================진급정보 콤보박스 선택 변경시===================
   const handleChgState = (name,e) => {
-      setEmpDetailParam({
-        ...empDetailParam,
-        [name]: e.value,
-      });
-  };
-  const handleChgJbps = (e) => {
-    setEmpDetailParam({
-        ...empDetailParam,
-        [e.name]: e.value,
-      });
+    console.log("name",name,"eeeee",e)
+      // setEmpDetailParam({
+      //   ...empDetailParam,
+      //   [name]: e.value,
+      // });
+      if(name === "year") {
+        setEmpYear(e.value);
+    } else if(name === "month") {
+      setEmpMonth(e.value);
+    } else if(name === "aplyOdr") {
+      setEmpOdr(e.value);
+    } else if(name.name === "jbpsCd") {
+      setEmpJbps(name.value);
+    }
   };
 
-
-  const onClickHst = () => {    //발령저장 사용시 
-   
+//=========================발령저장 버튼 클릭 이벤트 ========================
+  const onClickHst = () => {    
+    if(empYear === null) {
+      alert("발령년도를 선택해주세요");
+        return;
+    } else if(empMonth === null) {
+      alert("발령 월을 선택해주세요");
+      return;
+    } else if(empOdr === null) {
+      alert("발령 차수를 선택해주세요");
+      return;
+    }else if(empJbps === null) {
+      alert("직위를 선택해주세요");
+      return;
+    }else{ 
     const isconfirm = window.confirm("진급정보를 저장 하시겠습니까?"); 
     if (isconfirm) {
         insertEmpHist();
     } else{
       return;
      }
+    }
   };
- //========================진급정보 입력 
+ //========================진급정보 인서트====================================== 
   const insertEmpHist = async () => {
     
     const paramUpd =[
       { tbNm: "EMP" },
       {
-         jbpsCd : empDetailParam.jbpsCd,
+         jbpsCd : empJbps,
          mdfcnEmpId : empId,
          mdfcnDt: now,
       },
@@ -174,9 +198,9 @@ const EmpManage = ({}) => {
       eml : empDetailParam.eml,
       empFlnm : empDetailParam.empFlnm,
       hdofSttsCd : empDetailParam.hdofSttsCd,
-      jbpsCd : empDetailParam.jbpsCd,
+      jbpsCd : empJbps,
       telno : empDetailParam.telno,
-      empInfoChgOdr: empDetailParam.year + empDetailParam.month + empDetailParam.aplyOdr,
+      empInfoChgOdr: empYear + empMonth + empOdr,
       regEmpId : empId,
       regDt: now,
     }
@@ -194,30 +218,63 @@ const EmpManage = ({}) => {
       console.error("Error fetching data", error);
     }
   };
+//====================발령취소 버튼 클릭 이벤트===============================
+  const onClickDel = () => {        
+    let maxSn=0;
+    let maxJbpsCd;
+    if(histValues.length === 0){
+      alert("취소할 진급이력이 존재하지 않습니다.")
+    }else{
 
-  const onClickDel = (data) => {        //삭제버튼클릭이벤트
-    const isconfirm = window.confirm("진급정보를 삭제 하시겠습니까?"); 
-    if (isconfirm) {
-      const paramDel =[
-        { tbNm: "EMP_HIST" },
-        {
-           empId: data.empId,
-           empHistSn: data.empHistSn,
+      for(const value of histValues){
+        if(maxSn < value.empHistSn){
+          maxSn = value.empHistSn;
         }
-        ]
-        deleteEmpHist(paramDel);
+      } 
+      const isconfirm = window.confirm("진급을 취소 하시겠습니까?"); 
+
+    if (isconfirm) {
+      
+      for(const value of histValues){
+        if(value.empHistSn === maxSn){
+          maxJbpsCd = value.jbpsCd;
+          break;
+        }
+      } 
+        const updParam=[
+          {tbNm : "EMP"},
+          {jbpsCd : maxJbpsCd},
+          {empId : empDetailParam.empId}
+         ]
+
+        const ehdParam =[
+          { tbNm: "EMP_HIST" },
+          {
+            empId:empDetailParam.empId,
+            empHistSn: maxSn
+          }
+          ]
+
+          cancelJbpsEmpHist(updParam,ehdParam,);
     } else{
       return;
      }
+    }
 }
 
 
-const deleteEmpHist = async (paramDel) => {       //삭제axios
-  try {
-    const responseDel = await ApiRequest("/boot/common/commonDelete", paramDel);
+const cancelJbpsEmpHist = async (updParam,ehdParam) => {       //삭제axios
+    
+    console.log("upd",updParam)
+    console.log("del",ehdParam)
 
-      if (responseDel > 0 ) {
-        alert("삭제되었습니다.");
+  try {
+    
+    const responseUpd = await ApiRequest("/boot/common/commonUpdate", updParam);
+    const responseDel = await ApiRequest("/boot/common/commonDelete", ehdParam);
+      if (responseUpd > 0 && responseDel > 0 ) {
+        alert("취소되었습니다.");
+        pageHandle();
         empJbpsHistHandle();
       }
   } catch (error) {
@@ -241,6 +298,10 @@ const deleteEmpHist = async (paramDel) => {       //삭제axios
     setEmpDetailParam({});
     setJbpsHistParam({});
     setHistValues([]);
+    setEmpYear(null);
+    setEmpMonth(null);
+    setEmpOdr(null);
+    setEmpJbps(null);
  }
 
 //================================비밀번호 초기화 (개발예정)
@@ -307,6 +368,9 @@ const deleteEmpHist = async (paramDel) => {       //삭제axios
             주의!! 직위발령을 입력하지 않거나 잘못 입력 할 경우 '프로젝트관리'메뉴에 
             실행원가 집행현황 자사인력<br/> 누적사용금액이 제대로 계산되지 않습니다.
             </span>
+            <div className="buttonContainer" style={{marginBottom: "10px" }}>
+            <Button style={buttonStyle} onClick={empUpload}>발령정보업로드 </Button>
+            </div>   
             <div className="dx-field">
             <div className="dx-field-label asterisk">진급발령년도</div>
             <div className="dx-field-value">
@@ -318,10 +382,11 @@ const deleteEmpHist = async (paramDel) => {       //삭제axios
                 placeholder="연도"
                 style={{margin: "0px 5px 0px 5px"}}
                 required = {true}
-                value={empDetailParam.year}
+                value={empYear}
               />
               </div>
               </div>
+
             <div className="dx-field">
             <div className="dx-field-label asterisk">진급발령차수</div>
             <div className="dx-field-value">
@@ -334,7 +399,7 @@ const deleteEmpHist = async (paramDel) => {       //삭제axios
                   placeholder="월"
                   style={{margin: "0px 5px 0px 5px"}}
                   required = {true}
-                  value={empDetailParam.month}
+                  value={empMonth}
               />
               <SelectBox
                   id="odr"
@@ -345,21 +410,24 @@ const deleteEmpHist = async (paramDel) => {       //삭제axios
                   placeholder="차수"
                   style={{margin: "0px 5px 0px 5px"}}
                   required = {true}
-                  value={empDetailParam.aplyOdr}
+                  value={empOdr}
               />
                 </div>
               </div>
-              <CustomLabelValue props={labelValue.jbpsCd} onSelect={handleChgJbps} value={empDetailParam.jbpsCd}/>
-        <div className="buttonContainer" style={buttonContainerStyle}>
-            <Button style={buttonStyle} onClick={empUpload}>발령정보업로드 </Button>
+              <CustomLabelValue props={labelValue.jbpsCd} onSelect={handleChgState} value={empJbps}/>
+            
             {empDetailParam.empId != null ? ( 
+            <div className="buttonContainer" style={buttonContainerStyle}>
             <Button style={buttonStyle} onClick={onClickHst}>발령저장</Button>
+            <Button style={buttonStyle} onClick={onClickDel}>발령취소</Button>
+            </div>
             ): null }    
-        </div>
         
         </div>
+        
          <div className="empHnfListTable" style={empDetailStyle}>
-          <CustomTable keyColumn={ejhKeyColumn}  columns={ejhTableColumns} values={histValues} paging={true} onClick={onClickDel} />
+         <p> <strong>* 진급이력 정보 </strong> </p>
+          <CustomTable keyColumn={ejhKeyColumn}  columns={ejhTableColumns} values={histValues} paging={true} />
         </div>     
         </div>
       </div>
