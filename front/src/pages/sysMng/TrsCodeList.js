@@ -9,8 +9,8 @@ const TrsCodeList = () => {
     const [ values, setValues] = useState([]);
     const [ param, setParam ] = useState({});
     const [ childList, setChildList ] = useState({});
-    const child = useRef('')
-    const [totalItems, setTotalItems] = useState(0);
+    const [ child, setChild ] = useState('');
+    const [ totalItems, setTotalItems ] = useState(0);
     const { keyColumn, queryId, tableColumns, childTableColumns, searchInfo, tbNm } = SysMng.trsCodeJson;
 
     useEffect(() => {
@@ -51,8 +51,8 @@ const TrsCodeList = () => {
         }
     }
     useEffect(() => {
-        getChildList(child.current);
-    }, [child.current])
+        getChildList(child);
+    }, [child])
 
     const getChildList = async (key) => {
         try {
@@ -66,7 +66,7 @@ const TrsCodeList = () => {
     }
 
     const masterDetail = (e) => {
-        child.current = e.data.key
+        setChild(e.data.key)
         return (
             <CustomEditTable
                 tbNm={tbNm}

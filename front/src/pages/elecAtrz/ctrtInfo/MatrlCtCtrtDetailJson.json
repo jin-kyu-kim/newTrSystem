@@ -6,51 +6,67 @@
                 "name": "cntrctamount",
                 "type": "TextBox",
                 "label": "가용금액",
-                "placeholder": "가용금액"
+                "placeholder": "가용금액",
+                "required": true
             },
             "prductNm": {
                 "name": "prductNm",
                 "type": "TextBox",
                 "label": "제품명",
-                "placeholder": "제품명"
+                "placeholder": "제품명",
+                "required": true
             },
             "dlvgdsEntrpsNm": {
                 "name": "dlvgdsEntrpsNm",
                 "type": "TextBox",
                 "label": "납품 업체명",
-                "placeholder": "납품 업체명"
+                "placeholder": "납품 업체명",
+                "required": true
             },
             "dtlCn": {
                 "name": "dtlCn",
                 "type": "TextBox",
                 "label": "상세스펙",
-                "placeholder": "상세스펙"
+                "placeholder": "상세스펙",
+                "required": true
             },
             "untpc": {
                 "name": "untpc",
                 "type": "NumberBox",
                 "label": "단가",
+                "format": "#,###",
                 "placeholder": "단가",
-                "max": 900000000000
+                "max": 900000000000,
+                "required": true
             },
             "qy": {
                 "name": "qy",
                 "type": "TextBox",
                 "label": "수량",
-                "placeholder": "수량"
+                "placeholder": "수량",
+                "required": true
             },
             "tot": {
                 "name": "tot",
                 "type": "NumberBox",
                 "label": "총액",
+                "format": "#,###",
                 "placeholder": "총액",
-                "max": 900000000000
+                "max": 900000000000,
+                "required": true
             },
-            "date": {
-                "name": "date",
+            "dlvgdsYmd": {
+                "name": "dlvgdsYmd",
                 "type": "DateBox",
                 "label": "납품예정일",
-                "placeholder": "납품예정일"
+                "placeholder": "납품예정일",
+                "required": true
+            },
+            "payTot": {
+                "name": "payTot",
+                "type" : "NumberBox",
+                "label": "지급 총액",
+                "format": "#,###"
             }
         },
         "keyColumn": "payCd",

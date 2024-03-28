@@ -4,8 +4,9 @@ import { Popup } from "devextreme-react/popup";
 import { Button } from "devextreme-react/button";
 
 import PymntPlanPopup from "./PymntPlanPopup"
+import ElecAtrzCtrtInfoDetail from "./ElecAtrzCtrtInfoDetail"
 
-const CompanyCtrtInfo = ({prjctId}) => {
+const CompanyCtrtInfo = ({data, prjctId}) => {
     
     console.log(prjctId)
 
@@ -23,10 +24,10 @@ const CompanyCtrtInfo = ({prjctId}) => {
         <>
             <h3>계약 세부 내용</h3>
             <div>CompanyCtrtInfo</div>
-            <Button text="추가" onClick={handlePopupVisible}></Button>
+            {/* <Button text="추가" onClick={handlePopupVisible}></Button> */}
+            <ElecAtrzCtrtInfoDetail prjctId={prjctId} data={data}/>
 
-
-            <Popup
+            {/* <Popup
                 width="80%"
                 height="80%"
                 visible={popupVisible}
@@ -34,8 +35,8 @@ const CompanyCtrtInfo = ({prjctId}) => {
                 showCloseButton={true}
                 title="지불 계획 입력"
             >
-                <PymntPlanPopup prjctId={prjctId} handlePopupVisible={handlePopupVisible}/>
-            </Popup>
+                <PymntPlanPopup prjctId={prjctId}/>
+            </Popup> */}
         </>
     );
     

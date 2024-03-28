@@ -171,7 +171,7 @@ const ProjectExpenseCard = (props) => {
                     </span>
                 </p>
             </div>
-            <DataGrid dataSource={props.cardValue} onSelectionChanged={onSelectionChanged} showBorders={true} style={{width: "100%"}}>
+            <DataGrid dataSource={props.cardValue} onSelectionChanged={onSelectionChanged} showBorders={true} style={{width: "100%", marginBottom: '4%'}}>
                 <Selection mode="multiple" />
                 <Column dataField="utztnDt" caption="사용일시" />
                 <Column dataField="useOffic" caption="사용처"/>

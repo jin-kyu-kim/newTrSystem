@@ -4,7 +4,6 @@ import { CheckBox } from "devextreme-react";
 import React, { useState } from 'react';
 
 const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
-
     const [isChecked, setIsChecked] = useState(true);
 
     const result = [];
@@ -22,7 +21,7 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
               width={width}
               alignment={alignment}
             > 
-                {GridRows({columns})}
+                {GridRows({columns, onClick})}
             </Column>
         );
       } else if(button){

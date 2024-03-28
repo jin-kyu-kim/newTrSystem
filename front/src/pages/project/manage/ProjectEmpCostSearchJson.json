@@ -15,8 +15,8 @@
     "showTotals": false
   },
   {
-    "caption": "직급",
-    "dataField": "grade",
+    "caption": "직급명",
+    "dataField": "jbpsNm",
     "width": 100,
     "area": "row",
     "expanded": true,
@@ -47,16 +47,8 @@
     "showTotals": false
   },
   {
-    "caption": "FLAG",
-    "dataField": "flag",
-    "width": 100,
-    "area": "row",
-    "expanded": true,
-    "showTotals": false
-  },
-  {
-    "dataField": "inptYm",
-    "dataType": "inptYm",
+    "dataField": "ym",
+    "dataType": "ym",
     "format": "YYYY-mm",
     "groupInterval": "year",
     "area": "column",
@@ -64,6 +56,14 @@
     "expanded": true
   },
   {
+    "caption": "MM",
+    "dataField": "mm",
+    "dataType": "number",
+    "summaryType": "sum",
+    "area": "data"
+  },
+  {
+    "caption": "원가",
     "dataField": "expectMm",
     "dataType": "number",
     "summaryType": "sum",

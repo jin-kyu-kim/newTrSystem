@@ -17,7 +17,7 @@ const ElecAtrzOutordEmpCtrt = ({data, prjctId}) => {
     return (
         <>
             <ElecAtrzCtrtInfo data={data}/>
-            <CompanyCtrtInfo prjctId={prjctId}/>
+            <CompanyCtrtInfo prjctId={prjctId} data={data}/>
         </>
     );
 };
