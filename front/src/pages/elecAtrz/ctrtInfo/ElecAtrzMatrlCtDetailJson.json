@@ -4,7 +4,6 @@
     "keyColumn": "matrlCtSn",
     "tableColumns": [
       { "key": "prductNm", "value": "제품명" },
-      { "key": "dlvgdsEntrpsNm", "value": "업체명" },
       { "key": "cntrctamount", "value": "가용금액" },
       { "key": "payTot", "value": "총 사용액" },
       { "value": "선금",
@@ -14,13 +13,13 @@
         ]},
       { "value": "중도금",
         "subColumns": [
-            { "key": "avail8", "value": "날짜" },
-            { "key": "avail9", "value": "금액" }
+            { "key": "prtPayYm", "value": "날짜" },
+            { "key": "prtPayAmt", "value": "금액" }
         ]},
       { "value": "잔금",
         "subColumns": [
-            { "key": "avail33", "value": "날짜" },
-            { "key": "avail44", "value": "금액" }
+            { "key": "surplusYm", "value": "날짜" },
+            { "key": "surplusAmt", "value": "금액" }
         ]},
         {  "value": "추가", "width": 80, "button": {"text" : "추가", "name" : "insert"} },
         {  "value": "삭제", "width": 80, "button": {"text" : "삭제", "name" : "delete"} }
@@ -29,7 +28,7 @@
       {
         "key": "cntrctamount",
         "value": "가용금액",
-        "type": "sum",
+        "type": "max",
         "format": "Total: {0}원"
       },
       {

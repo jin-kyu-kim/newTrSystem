@@ -23,7 +23,7 @@ const ElecAtrzCtrtInfo = ({data}) => {
             <h3>계약정보</h3>
             <div className="dx-fieldset">
                 <div className="dx-field">
-                    <div className="dx-field-label">계약구분</div>
+                    <div className="dx-field-label"> 계약구분</div>
                     <div className="dx-field-value">
                         <div className="dx-field-value-text">
                             {data.elctrnAtrzTySeCdNm}
@@ -49,7 +49,7 @@ const ElecAtrzCtrtInfo = ({data}) => {
                     </div>
                 </div>
                 {
-                    data.elctrnAtrzTySeCd === "VTW04908" || data.elctrnAtrzTySeCd === "VTW04909" ?
+                    ["VTW04908","VTW04909"].includes(data.elctrnAtrzTySeCd) &&
                     <div className="dx-field">
                         <div className="dx-field-label">계약기간</div>
                         <div className="dx-field-value">
@@ -62,8 +62,6 @@ const ElecAtrzCtrtInfo = ({data}) => {
                             </div>
                         </div>
                     </div>
-                    :
-                    <></>
                 }
                 <div className="dx-field">
                     <div className="dx-field-label">입금계좌</div>
@@ -100,6 +98,7 @@ const ElecAtrzCtrtInfo = ({data}) => {
                         </div>
                     </div>
                 </div>
+                <CustomLabelValue props={ElecAtrzOutordEmpCtrtJson.labelValue.etc} />
             </div>
         </div>
     );

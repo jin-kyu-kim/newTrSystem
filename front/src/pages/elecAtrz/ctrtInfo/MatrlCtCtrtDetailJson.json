@@ -2,6 +2,21 @@
     "menuName": "ElecAtrzOutordEmpCtrt",
     "matrlCtrt": {
         "labelValue": {
+            "matrlPlan": {
+                "type": "ComboBox",
+                "label": "계획 투입 재료비",
+                "required": true,
+                "placeholder": "계획 투입 재료비",
+                "param":{ 
+                        "queryId" : {
+                            "queryId" : "elecAtrzMapper.retrieveMatrlPlan"
+                            },
+                        "valueExpr" : "matrlPlan",
+                        "displayExpr": "matrlPlan",
+                        "values" : ["cntrctamount","dlvgdsEntrpsNm","dtlCn","matrlPlan","prductNm","prjctId","qy","tot","untpc"],
+                        "name" : "matrlPlan"
+                        }
+            },
             "cntrctamount": {
                 "name": "cntrctamount",
                 "type": "TextBox",
@@ -14,13 +29,6 @@
                 "type": "TextBox",
                 "label": "제품명",
                 "placeholder": "제품명",
-                "required": true
-            },
-            "dlvgdsEntrpsNm": {
-                "name": "dlvgdsEntrpsNm",
-                "type": "TextBox",
-                "label": "납품 업체명",
-                "placeholder": "납품 업체명",
                 "required": true
             },
             "dtlCn": {

@@ -12,6 +12,12 @@
             "type": "TextBox",
             "label": "계약자주소",
             "placeholder": "계약자주소"
+        },
+        "etc": {
+            "name": "etc",
+            "type": "TextBox",
+            "label": "기타",
+            "placeholder": "기타"
         }
     }
 
