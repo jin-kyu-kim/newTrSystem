@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 
-import { Button } from "devextreme-react/button"; 
-import { TextBox } from "devextreme-react/text-box";
 import { FileUploader } from "devextreme-react/file-uploader";
 import HtmlEditBox from "components/unit/HtmlEditBox";
 import ApiRequest from "utils/ApiRequest";
@@ -11,39 +9,63 @@ import ElecAtrzHeader from "./common/ElecAtrzHeader";
 import ElecAtrzNewReqJson from "./ElecAtrzNewReqJson.json"
 
 import ElecAtrzTitleInfo from "./common/ElecAtrzTitleInfo";
-
+import ExpensInfo from "./expensClm/ExpensInfo";
 
 import ElecAtrzCtrtInfo from "./ctrtInfo/ElecAtrzCtrtInfo";
 import ElecAtrzCtrtInfoDetail from "./ctrtInfo/ElecAtrzCtrtInfoDetail";
 
 const ElecAtrzNewReq = () => {
 
+    const navigate = useNavigate();
     const location = useLocation();
     const prjctId = location.state.prjctId;
     const formData = location.state.formData;
-    const [prjctData, setPrjctData] = useState({});
-    const [data, setData] = useState(location.state.formData);
+    // const childRef = useRef();
     const [cookies] = useCookies(["userInfo", "userAuth"]);
 
+    const [data, setData] = useState(location.state.formData);
     const [atrzParam, setAtrzParam] = useState({});
-
-    const navigate = useNavigate();
+    const [childData, setChildData] = useState({});  //자식 컴포넌트에서 받아온 데이터
+    const [prjctData, setPrjctData] = useState({});
 
     const column = { "dataField": "gnrlAtrzCn", "placeholder": "내용을 입력해주세요."};
 
-    console.log("formData", formData);
+
+    /**
+     * 자식컴포넌트에서 받아온 데이터 처리
+     * @param {Object|Array} data 
+     */
+    const handleChildData = (data) => {
+        if(Array.isArray(data)){
+            setChildData(prevData => ({
+                ...prevData,
+                arrayData: data
+            }));
+        }else if(typeof data === "object"){
+            setChildData(prevData => ({
+                ...prevData,
+                ...data
+            }));
+        }
+    }
     
+    /**
+     * console.log useEffect
+     */
     useEffect(() => {
-        console.log(cookies)
+        console.log("childData", childData);
+    }, [childData]);
+
+
+
+    useEffect(() => {
 
         retrievePrjctInfo();
-
         /**
          * Todo
          * 전자결재ID가 있는 경우,
          * 결재정보 조회로 넘어온 경우라면, 결재 정보를 보여준다.(임시저장이거나 결재 올라간거???)
          */
-
 
     }, []);
 
@@ -73,9 +95,6 @@ const ElecAtrzNewReq = () => {
         // elctrnAtrzTySeCd에 따라서 저장 테이블 다르게(계약, 청구, 일반, 휴가..)
         // 결재선 지정이 되어있는지 확인, 안되어 있으면..?
 
-        
-
-
     }
 
     /**
@@ -89,6 +108,7 @@ const ElecAtrzNewReq = () => {
          * 결재선 만들어지면 
          * 결재선 보이는 테이블 형식에 집어넣기. 
          */
+
     }
 
     /**
@@ -109,7 +129,7 @@ const ElecAtrzNewReq = () => {
     /**
      * 목록 버튼 클릭시 전자결재 서식 목록으로 이동
      */
-    const toAtrzNewReq = async () => {
+    const toAtrzNewReq = () => {
         navigate("../elecAtrz/ElecAtrzForm", {state: {prjctId: prjctId}});
     }
 
@@ -150,17 +170,18 @@ const ElecAtrzNewReq = () => {
                     onHandleAtrzTitle={handleElecAtrz}
                     atrzParam={atrzParam}
                 />
-                <div>
-                    <div dangerouslySetInnerHTML={{ __html: formData.docFormDc }}/>
-                </div>
-                <hr/>
                 <div dangerouslySetInnerHTML={{ __html: formData.docFormDc }} />
                     {["VTW04909","VTW04910"].includes(data.elctrnAtrzTySeCd) &&  (
                         <>
-                        <ElecAtrzCtrtInfo data={data}/>
-                        <ElecAtrzCtrtInfoDetail prjctId={prjctId} data={data}/>
+                        <ElecAtrzCtrtInfo prjctId={prjctId} data={data} onSendData={handleChildData}/>
+                        <ElecAtrzCtrtInfoDetail prjctId={prjctId} data={data} onSendData={handleChildData}/>
                         </>
                     )}
+                    {formData.elctrnAtrzTySeCd === "VTW04907" &&
+                    <>
+                        <ExpensInfo />
+                    </>
+                    }
                 <HtmlEditBox 
                     column={ {"dataField": "gnrlAtrzCn"}}
                     data={data}
