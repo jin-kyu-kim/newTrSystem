@@ -39,7 +39,10 @@ const CustomEmpComboBox = ({value, readOnly, onValueChange, useEventBoolean, sho
                 if(selectedItem){
                     selectItemValue.push({
                         empId: selectedItem.empId,
-                        empno: selectedItem.empno
+                        empno: selectedItem.empno,
+                        empFlnm: selectedItem.empFlnm,
+                        jbpsNm: selectedItem.jbpsNm,
+                        listEmpFlnm: selectedItem.listEmpFlnm
                     });
                 } else {
                     selectItemValue.push({
