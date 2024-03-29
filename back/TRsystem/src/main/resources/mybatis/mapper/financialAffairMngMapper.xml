@@ -786,4 +786,19 @@
                  JOIN CD  C ON C.CD_VALUE  = E.BANK_CD
 
     </select>
+
+    <select id="retrieveClturPhstrnIndvdlList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+             E.EMP_ID AS EMP_ID
+             ,E.EMP_FLNM AS EMP_FLNM
+             ,CPAC .CLM_YM AS CLM_YM
+             ,CPAC.CLM_AMT AS CLM_AMT
+             ,CPAC.DPST_AMT AS DPST_AMT
+             ,CPAC.CYFD_AMT + CPAC.CLM_AMT -CPAC.DPST_AMT AS BALANCE
+        FROM CLTUR_PHSTRN_ACT_CT CPAC
+                 JOIN EMP E ON E.EMP_ID = CPAC.EMP_ID
+        <if test="empId != null and empId !=''">
+            WHERE   E.EMP_ID = #{empId}s
+        </if>
+    </select>
 </mapper>
