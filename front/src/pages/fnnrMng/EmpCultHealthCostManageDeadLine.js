@@ -15,8 +15,11 @@ const EmpCultHealthCostManage = () => {
   const [param, setParam] = useState({});
   const { keyColumn, queryId, tableColumns, prjctColumns , summaryColumn , wordWrap, searchInfo } = EmpCultHealthCostManageJson;
   const navigate = useNavigate();
- 
+  const [autoExpandAll, setAutoExpandAll] = useState(true);
 
+  const onAutoExpandAllChanged = useCallback(() => {
+    setAutoExpandAll((previousAutoExpandAll) => !previousAutoExpandAll);
+  }, []);
  
 useEffect(() => {
    
@@ -123,6 +126,8 @@ useEffect(() => {
         summary={true}
         summaryColumn={summaryColumn}
         onExcel={onExporting}
+        autoExpandAll = {onAutoExpandAllChanged}
+        
       />  
 
 
