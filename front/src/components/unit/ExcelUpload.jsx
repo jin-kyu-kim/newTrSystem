@@ -2,14 +2,16 @@ import {FileUploader} from "devextreme-react";
 import React from "react";
 import * as XLSX from "xlsx";
 
-const fileExtensions = ['.xlsx', '.xls', '.csv'];
-
 const ExcelUpload = (props) => {
+
+    const fileExtensions = ['.xlsx', '.xls', '.csv'];
+
     const handleAttachmentChange = (e) => {
         if (e.value.length > 0) {
             const file = e.value[0];
             const reader = new FileReader();
             reader.onload = async (e) => {
+
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, { type: "array", bookVBA: true });
                 const sheetName = workbook.SheetNames[0];
@@ -25,11 +27,22 @@ const ExcelUpload = (props) => {
         <div>
             <FileUploader
                 selectButtonText="파일 선택"
-                labelText="또는 드래그"
+                labelText=""
                 uploadMode="useButton"
-                accept="*/*"
+                accept=".xlsx, .xls, .csv"
+                showClearButton={false}
                 allowedFileExtensions={fileExtensions}
-                onValueChanged={handleAttachmentChange}
+                onValueChanged={(e) => {
+                    if (e.value && e.value.length > 0) {
+                        const file = e.value[0];
+                        if (file && fileExtensions.includes(`.${file.name.split('.').pop()}`)) {
+                            handleAttachmentChange(e);
+                        } else if (file && !fileExtensions.includes(`.${file.name.split('.').pop()}`)) {
+                            alert('파일은 .xlsx, .xls, .csv 형식만 업로드 가능합니다.');
+                            return ;
+                        }
+                    }
+                }}
             />
         </div>
     );
