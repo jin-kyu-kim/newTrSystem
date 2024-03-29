@@ -66,7 +66,7 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData }) => {
                                 name="cntrctrIdntfcSeCd"
                                 onSelect={handleChgState}
                                 value={infoData.cntrctrIdntfcSeCd}
-                                required={true}
+                                required={false}
                                 label={"구분"}
                             />
                         </div>
@@ -107,7 +107,7 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData }) => {
                                 name="dpstBankCd"
                                 onSelect={handleChgState}
                                 value={infoData.dpstBankCd}
-                                required={true}
+                                required={false}
                                 label={"은행코드"}
                             />
                         </div>
@@ -141,7 +141,7 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData }) => {
                                 name="giveMthdSeCd"
                                 onSelect={handleChgState}
                                 value={infoData.giveMthdSeCd}
-                                required={true}
+                                required={false}
                                 label={"지급구분"}
                             />
                         </div>
@@ -163,6 +163,7 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData }) => {
                         </div>
                     </div>
                 </div>
+                <CustomLabelValue props={labelValue.etc} value={infoData.etc} onSelect={handleChgState}/>
             </div>
         </div>
     );

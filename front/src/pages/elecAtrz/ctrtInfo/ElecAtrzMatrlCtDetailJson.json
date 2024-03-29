@@ -21,7 +21,7 @@
             { "key": "surplusYm", "value": "날짜" },
             { "key": "surplusAmt", "value": "금액" }
         ]},
-        {  "value": "추가", "width": 80, "button": {"text" : "추가", "name" : "insert"} },
+        {  "value": "추가", "width": 80, "button": {"text" : "수정", "name" : "update"} },
         {  "value": "삭제", "width": 80, "button": {"text" : "삭제", "name" : "delete"} }
     ],
     "summaryColumn": [

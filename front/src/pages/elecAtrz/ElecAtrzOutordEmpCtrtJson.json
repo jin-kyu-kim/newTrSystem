@@ -16,8 +16,8 @@
         "etc": {
             "name": "etc",
             "type": "TextBox",
-            "label": "기타",
-            "placeholder": "기타"
+            "label": "지급일 사유",
+            "placeholder": "지급일 사유"
         }
     }
 
