@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import CustomTable from "../../../components/unit/CustomTable";
 import ElecAtrzMatrlCtDetailJson from "./ElecAtrzMatrlCtDetailJson.json";
 
@@ -6,12 +6,14 @@ import { Popup } from "devextreme-react/popup";
 import PymntPlanPopup from "./PymntPlanPopup"
 
 
-const ElecAtrzCtrtInfoDetail = ({data, prjctId}) => {
+const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, childRef }) => {
+
     const {keyColumn, tableColumns, summaryColumn} = ElecAtrzMatrlCtDetailJson;
     const [popupVisible, setPopupVisible] = useState(false);
-    const [tableData, setTableData] = useState([{matrlCtSn: 0}]);
-    const [selectedData, setSelectedData] = useState({});
+    const [tableData, setTableData] = useState([{matrlCtSn: 0}]);   //그리드 전체 데이터
+    const [selectedData, setSelectedData] = useState({});           //선택된 행의 데이터
     const test = [{'2024.03': "뭐야"}];  //그리드 기본 값
+    
 
     /**
      * console.log useEffect
@@ -20,9 +22,15 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId}) => {
         console.log(popupVisible);
     }, [popupVisible]);
 
+    /**
+     *  부모창으로 데이터 전송
+     */
     useEffect(() => {
         console.log(tableData);
+        onSendData(tableData);
+        // childRef.current = tableData;
     }, [tableData]);
+
 
 
     /**
