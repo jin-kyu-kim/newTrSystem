@@ -249,13 +249,13 @@ const CultureHealthCost = () => {
                             dataSource={values}
                             onRowClick={onRowClick}
                         >
-                            <Column dataField='month' caption='대상월' minWidth={30} />
-                            <Column dataField='clmYmd' caption='청구일자' minWidth={30} />
-                            <Column dataField='clmAmt' caption='금액' minWidth={30} />
-                            <Column dataField='actIem' caption='항목' minWidth={30} />
-                            <Column dataField='actPurps' caption='목적' minWidth={30} />
-                            <Column dataField='rm' caption='비고' minWidth={100} />
-                            <Column caption='첨부' minWidth={100} cellRender={fileCell} />
+                            <Column dataField='month' caption='대상월' minWidth={30} alignment="center"/>
+                            <Column dataField='clmYmd' caption='청구일자' minWidth={30} alignment="center"/>
+                            <Column dataField='clmAmt' caption='금액' minWidth={30} alignment="center"/>
+                            <Column dataField='actIem' caption='항목' minWidth={30} alignment="center"/>
+                            <Column dataField='actPurps' caption='목적' minWidth={30} alignment="center"/>
+                            <Column dataField='rm' caption='비고' minWidth={100} alignment="center"/>
+                            <Column caption='첨부' minWidth={100} cellRender={fileCell} alignment="center"/>
                         </DataGrid>
                     </div>
                     <div style={{display: "flex", justifyContent: "flex-end"}}>

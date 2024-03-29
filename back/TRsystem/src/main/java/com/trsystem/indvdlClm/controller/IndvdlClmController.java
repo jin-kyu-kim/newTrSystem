@@ -13,13 +13,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class IndvdlClmController {
 
-    @PostMapping(value = "/boot/indvdlClm/prjctExpns/selectPrjctMM")
-    public List<Map<String, Object>> selectPrjctMM (@RequestBody List<Map<String, Object>> params){
-        return IndvdlClmDomain.selectPrjctMM(params);
-    }
-
     @PostMapping(value = "/boot/indvdlClm/prjctExpns/insertPrjctMM")
-    public List<Map<String, Object>> insertPrjctMM (@RequestBody List<Map<String, Object>> params){
+    public int insertPrjctMM (@RequestBody List<Map<String, Object>> params){
         return IndvdlClmDomain.insertPrjctMM(params);
     }
 }
