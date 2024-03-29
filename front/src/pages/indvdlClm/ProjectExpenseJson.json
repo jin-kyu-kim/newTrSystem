@@ -84,17 +84,6 @@
     }
   },
   "keyColumn": "prjctCtAplySn",
-  "columnValue": [
-    { "key": "ctAtrzSeCdNm", "value": "구분", "alignment": "center" },
-    { "key": "utztnDt", "value": "사용일시", "alignment": "center" },
-    { "key": "useOffic", "value": "사용처", "alignment": "center" },
-    { "key": "utztnAmt", "value": "금액", "alignment": "center" },
-    { "key": "prjctNm", "value": "프로젝트", "alignment": "center" },
-    { "key": "expensCdNm", "value": "비용코드", "alignment": "center" },
-    { "key": "ctPrpos", "value": "상세내역(목적)", "alignment": "center" },
-    { "key": "atdrn", "value": "용도(참석자명단)", "alignment": "center" },
-    { "key": "atrzDmndSttsCdNm", "value": "결재상태", "alignment": "center" }
-  ],
   "columnCharge": [
     { "key": "ctAtrzSeCdNm", "value": "구분", "alignment": "center" },
     { "key": "utztnDt", "value": "사용일시", "alignment": "center" },
@@ -104,6 +93,6 @@
     { "key": "expensCdNm", "value": "비용코드", "alignment": "center" },
     { "key": "ctPrpos", "value": "상세내역(목적)", "alignment": "center" },
     { "key": "atdrn", "value": "용도(참석자명단)", "alignment": "center" },
-    { "value": "문서 보기", "alignment": "center" }
+    { "value": "문서 보기", "alignment": "center", "button": {"text" : "선택"}}
   ]
 }
