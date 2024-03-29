@@ -3,19 +3,29 @@ import { Popup } from "devextreme-react/popup";
 import { Button } from "devextreme-react";
 
 import CustomTable from "../../../components/unit/CustomTable";
-import ElecAtrzMatrlCtDetailJson from "./ElecAtrzMatrlCtDetailJson.json";
+import ElecAtrzMatrlCtJson from "./ElecAtrzMatrlCtJson.json";
+import ElecAtrzOutordCompanyJson from "./ElecAtrzOutordCompanyJson.json";
 import PymntPlanPopup from "./PymntPlanPopup"
 
-
+/**
+ *  "VTW04909" : 외주업체
+ *  "VTW04910" : 재료비
+ */
 const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, childRef }) => {
-
-    const {keyColumn, tableColumns, summaryColumn} = ElecAtrzMatrlCtDetailJson;
+    console.log("data", data);
+    
     const [popupVisible, setPopupVisible] = useState(false);
-    // const [tableData, setTableData] = useState([{matrlCtSn: 0}]);   //그리드 전체 데이터
     const [tableData, setTableData] = useState([]);   //그리드 전체 데이터
     const [selectedData, setSelectedData] = useState({});           //선택된 행의 데이터
-    const test = [{'2024.03': "뭐야"}];  //그리드 기본 값
     
+    let jsonData = {};
+    if(data.elctrnAtrzTySeCd === "VTW04910"){
+        jsonData = ElecAtrzMatrlCtJson
+    }
+    else if (data.elctrnAtrzTySeCd === "VTW04909"){
+        jsonData = ElecAtrzOutordCompanyJson
+    }
+    const {keyColumn, tableColumns, summaryColumn, insertButton} = jsonData;
 
     /**
      * console.log useEffect
@@ -39,8 +49,6 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, childRef }) => {
      *  Table 버튼 handling
      */
     const handlePopupVisible = useCallback((button, data) => {
-        console.log("가긴함?", button)
-        console.log("data?", data)
 
         if(button.name === "insert") {  //update인 경우도 추가해야함 .
             setPopupVisible(prev => !prev);
@@ -74,7 +82,7 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, childRef }) => {
             data.matrlCtSn = maxSn + 1;     
             setTableData(prev => [...prev, data]);
         }
-        
+
     }
 
     
@@ -84,7 +92,7 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, childRef }) => {
     return (
         <div className="elecAtrzNewReq-ctrtInfo">
             <div style={{ textAlign: "right", marginBottom:"10px" }}>
-                <Button name="insert" onClick={()=>handlePopupVisible({name:"insert"})}>재료비 추가</Button>
+                <Button name="insert" onClick={()=>handlePopupVisible({name:"insert"})}>{insertButton}</Button>
             </div>
            <CustomTable
             keyColumn={keyColumn}
@@ -109,6 +117,7 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, childRef }) => {
                     handlePopupVisible={closePopupVisible} 
                     handlePlanData={handlePopupData} 
                     selectedData={selectedData}
+                    data={data}
                 />
             </Popup>
         </div>

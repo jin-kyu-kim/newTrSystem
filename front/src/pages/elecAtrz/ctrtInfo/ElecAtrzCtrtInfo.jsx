@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 
 import CustomLabelValue from "../../../components/unit/CustomLabelValue";
-import ElecAtrzOutordEmpCtrtJson from "../ElecAtrzOutordEmpCtrtJson.json";
+import ElecAtrzCtrtInfoJson from "./ElecAtrzCtrtInfoJson.json";
 
 import { SelectBox } from "devextreme-react/select-box";
 import { TextBox } from "devextreme-react/text-box";
@@ -12,7 +12,7 @@ import CustomCdComboBox from "../../../components/unit/CustomCdComboBox";
 
 
 const ElecAtrzCtrtInfo = ({data, prjctId, onSendData }) => {
-    const labelValue = ElecAtrzOutordEmpCtrtJson.labelValue;
+    const labelValue = ElecAtrzCtrtInfoJson.labelValue;
     const [infoData, setInfoData] = useState({});
 
     useEffect(() => {
@@ -148,6 +148,7 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData }) => {
                         <div style={{float: "left", marginRight: "20px", width:"20%"}}>
                             <SelectBox
                                 placeholder="지급일"
+                                // value={infoData}
                             />
                         </div>
                         <div style={{float: "left", marginRight: "auto", width:"20%"}}>
