@@ -2,7 +2,6 @@ import React, {useEffect, useState} from "react";
 
 import CustomLabelValue from "../../../components/unit/CustomLabelValue";
 import ElecAtrzOutordEmpCtrtJson from "../ElecAtrzOutordEmpCtrtJson.json";
-import ElecAtrzCtrtInfoJson from "./ElecAtrzCtrtInfoJson.json";
 
 import { SelectBox } from "devextreme-react/select-box";
 import { TextBox } from "devextreme-react/text-box";
@@ -14,8 +13,6 @@ const ElecAtrzCtrtInfo = ({data}) => {
     useEffect(() => {
         console.log("info")
         console.log(data.elctrnAtrzTySeCd);
-        console.log(ElecAtrzCtrtInfoJson.elctrnAtrzTySeCd)
-
     }, []);
 
     return (
