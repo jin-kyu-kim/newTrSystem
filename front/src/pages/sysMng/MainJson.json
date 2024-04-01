@@ -1,0 +1,33 @@
+{ 
+  "noticeQueryId": "sysMngMapper.retrieveNotice",
+  "noticeTableColumns": [
+    { "key": "noticeTtl", "value": "제목",  "alignment": "center" },
+    { "key": "regDt", "value": "작성일","alignment": "center" }
+  ],
+  "trAplyTotQueryId": "sysMngMapper.retrieveInptSttus",
+  "trAplyKeyColumn": "empId",
+  "trAplyTableColumns": 
+	[
+        {"value": "근무시간",
+        "subColumns": [
+            { "key": "88", "value": "필수시간"},
+            { "key": "sum", "value": "요청"},
+            { "key": "mmReject", "value": "반려" },
+            { "key": "mmComplete", "value": "승인"}
+        ]},
+        {"value": "프로젝트비용입력",
+        "subColumns": [
+            { "key": "cnt", "value": "요청"},
+            { "key": "prjReject", "value": "반려"},
+            { "key": "prjComplete", "value": "승인" }
+        ]}
+  ],
+  "atrzSttsQueryId": "sysMngMapper.retrieveAtrzAplySttus",
+  "atrzSttsTableColumns": [
+    { "key": "elctrnAtrzTySeCdNm", "value": "결제구분",  "alignment": "center" },
+    { "key": "cnptNm", "value": "결재명",  "alignment": "center" },
+    { "key": "atrzDmndEmpId", "value": "기안자",  "alignment": "center" },
+    { "key": "regDt", "value": "기안일자",  "alignment": "center" },
+    { "key": "atrzSttsCd", "value": "결재상태",  "alignment": "center" }
+  ]
+}

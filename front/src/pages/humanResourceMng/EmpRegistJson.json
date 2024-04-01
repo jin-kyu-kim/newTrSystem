@@ -67,7 +67,7 @@
             "name": "bankCd",
             "type": "ComboBox",
             "label": "은행코드",
-            "required": false,            
+            "required": true,            
             "placeholder": "은행코드",
             "param": { "tbNm" : "CD",
                         "condition": {
@@ -82,8 +82,15 @@
             "name": "actno",
             "type": "TextBox",
             "label": "계좌번호",
-            "required": false,
+            "required": true,
             "placeholder": "계좌번호"
+        },
+        "jncmpYmd": {
+            "name": "jncmpYmd",
+            "type": "DateBox",
+            "label": "입사일",
+            "required": false,
+            "placeholder": "입사일"
         }
     }
     ,

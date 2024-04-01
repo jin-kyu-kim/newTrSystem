@@ -17,11 +17,10 @@
 	"ejhQueryId": "infoInqMapper.retrieveEmpJbpsHist",
     "ejhKeyColumn": "empId",
     "ejhTableColumns": [
-        { "key": "empno", "value": "사번", "width" : 100},
-        { "key": "empInfoChgOdr", "value": "발령차수","width" : 90 },
-        { "key": "jbpsNm", "value": "발령직급","width" : 90 },
-        { "key": "regDt", "value": "입력날짜" },
-        { "key": "regEmpno", "value": "입력사번","width" : 90 }
+        { "key": "empInfoChgOdr", "value": "발령차수","width" : 150 },
+        { "key": "jbpsNm", "value": "발령직급","width" : 150 },
+        { "key": "regDt", "value": "입력날짜","width" : 150},
+        { "key": "regEmpno", "value": "입력사번","width" : 150 }
     ],
     "labelValue" : {
         "jbpsCd": {

@@ -177,10 +177,10 @@
      VCATN_ATRZ va     	   <!--휴가결재 테이블-->
  	 WHERE 1=1
         <if test="vcatnBgngYmd != null and vcatnEndYmd == null">
-      		AND VCATN_BGNG_YMD > #{vcatnBgngYmd}
+      		AND VCATN_BGNG_YMD <![CDATA[>=]]> #{vcatnBgngYmd}
         </if>
         <if test="vcatnBgngYmd == null and vcatnEndYmd != null">
-      		AND VCATN_END_YMD <![CDATA[< ]]> #{vcatnEndYmd}
+      		AND VCATN_END_YMD <![CDATA[<=]]> #{vcatnEndYmd}
         </if>
         <if test="vcatnBgngYmd != null and vcatnEndYmd != null">
            <if test="!vcatnBgngYmd.equals('') and !vcatnEndYmd.equals('')">
@@ -203,9 +203,6 @@
 	WHERE
 		EMPNO LIKE CONCAT(#{empnoChk},'%');
 	</select>
-
-
-
 
 
 

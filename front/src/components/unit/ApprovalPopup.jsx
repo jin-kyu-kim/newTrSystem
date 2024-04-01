@@ -7,10 +7,19 @@ import { DataGrid, Popup, Button, TagBox, TextBox } from "devextreme-react";
 import CustomEmpComboBox from "../unit/CustomEmpComboBox"
 import ApiRequest from "../../utils/ApiRequest";
 
+/*
+INPUT, OUTPUT 
+EX)
+atrzValue(결재권자) : 
+[
+{approvalCode: 'VTW00706', empId: '7951782e-d3df-e0c4-5123-a38c5f4686b6', empFlnm: '이진원', jbpsNm: '이사', listEmpFlnm: '경영지원팀 이진원 이사'},
+{approvalCode: 'VTW00706', empId: 'ca74f678-8520-10ab-4429-e7593b2ff009', empFlnm: '안주리', jbpsNm: '차장', listEmpFlnm: '경영지원팀 안주리 차장'}
+]
+*/
 const ApprovalPopup = ( {visible, onHiding, atrzValue} ) => {
-
+    console.log("atrzValue", atrzValue);
     //=======================선언구간========================//
-    let tablBodyAtrzValue = [];     //테이블에 나타날 결재권자(가공 후)
+    let tablBodyAtrzValue = []; //테이블에 나타날 결재권자(가공 후)
     
     //테이블에 나타날 결재권자
     const [bodyAtrzValue, setBodyAtrzValue] = useState(atrzValue); //가공 전
@@ -23,7 +32,7 @@ const ApprovalPopup = ( {visible, onHiding, atrzValue} ) => {
         queryId: "humanResourceMngMapper.retrieveCodeList",
         upCdValue: "VTW007"
     };
-    //=======================선언구간=========================//
+    //=======================================================//
 
     //=======================================================//
     useEffect(() => {
@@ -42,43 +51,67 @@ const ApprovalPopup = ( {visible, onHiding, atrzValue} ) => {
 
     //======================이벤트===========================//
     //SelectBox 성명 변경
-    const onSelectEmpFlnmChg = (e) => {
+    const onSelectEmpFlnmChg = (data) => {
         setSelectValue({
-            ...selectValue,
-            empno : e[0].empno,
-            empId : e[0].empId,
-            empFlnm: e[0].empFlnm,
-            jbpsNm: e[0].jbpsNm,
-            listEmpFlnm : e[0].listEmpFlnm
-        })
-    }
+                ...selectValue,
+                empno : data[0].empno,
+                empId : data[0].empId,
+                empFlnm: data[0].empFlnm,
+                jbpsNm: data[0].jbpsNm,
+                listEmpFlnm : data[0].listEmpFlnm
+            })
+        }
     
     //+버튼시 추가
-    const onAddButtonClick = (data, approvalCode, codeIndex) => {
-        //===============유효성검사=================//
-        console.log("tablBodyAtrzValue : ", tablBodyAtrzValue)
-        console.log("data : ", data.value)
-        console.log("approvalCode : ", approvalCode)
-        console.log("codeIndex : ", codeIndex)
-        alert("안돼")
+    const onAddButtonClick = (data, addApprovalCode, codeIndex) => {
+        //===================유효성검사======================//
 
-        if(tablBodyAtrzValue[codeIndex] &&
-           ( approvalCode === "VTW00701" || approvalCode === "VTW00702" || approvalCode === "VTW00704" || approvalCode === "VTW00705")){
+        let isSelectChk = true;
+        let isDuplicateChk = true;
 
+        //선택한사람 없을 때
+        if(selectValue.empId === null || selectValue.empId === ""){
+            isSelectChk = false;
+            alert("결재자를 입력해주세요");
         }
-        //=========================================//
 
-        const addBodyAtrzValue = {
-            approvalCode: approvalCode,
-            empId : selectValue.empId,
-            empFlnm : selectValue.empFlnm,
-            jbpsNm : selectValue.jbpsNm,
-            listEmpFlnm : selectValue.listEmpFlnm
+        //1. 기안, 검토, 확인, 심사, 승인 은 단 한명만 가능
+        //as-is 검토 확인 심사 승인
+        if(isSelectChk === true && (addApprovalCode === "VTW00701" || addApprovalCode === "VTW00702" || addApprovalCode === "VTW00703" || addApprovalCode === "VTW00704" || addApprovalCode === "VTW00705")){
+            for(let i = 0; i < bodyAtrzValue.length; i++){
+                if((bodyAtrzValue[i].approvalCode === addApprovalCode) && bodyAtrzValue[i].empId === selectValue.empId){
+                    isDuplicateChk = false;
+                    alert("이미 해당 결제단계에 등록되어 있습니다.");
+                } else if(bodyAtrzValue[i].approvalCode === addApprovalCode){
+                    isDuplicateChk = false;
+                    alert("기안, 검토, 확인, 심사, 승인 단계 결재권자는 한명만 설정할 수 있습니다. 삭제 후 설정하시기 바랍니다.");
+                }
+            }
         }
-        //BodyAtrzValue setStateF
-        setBodyAtrzValue([...bodyAtrzValue, addBodyAtrzValue]);
+
+        //2.같은 결재단계에 동일인 안 됨
+        if(isSelectChk === true && ( addApprovalCode === "VTW00706" || addApprovalCode === "VTW00707"))
+            for(let i = 0; i < bodyAtrzValue.length; i++){
+                if((bodyAtrzValue[i].approvalCode === addApprovalCode) && (bodyAtrzValue[i].empId === selectValue.empId)){
+                    isDuplicateChk = false;
+                    alert("이미 해당 결제단계에 등록되어 있습니다.");
+            }
+        }
+       //===================================================//
+
+        if(isDuplicateChk === true && isSelectChk === true){
+            const addBodyAtrzValue = {
+                approvalCode: addApprovalCode,
+                empId : selectValue.empId,
+                empFlnm : selectValue.empFlnm,
+                jbpsNm : selectValue.jbpsNm,
+                listEmpFlnm : selectValue.listEmpFlnm
+            }
+
+            setBodyAtrzValue([...bodyAtrzValue, addBodyAtrzValue]);
+        }
     }
-
+    
     /*onValueChange 삭제 이벤트*/
     const onDeleteTagBox = (data, codeIndex) => {
         tablBodyAtrzValue[codeIndex] = data;
@@ -94,27 +127,8 @@ const ApprovalPopup = ( {visible, onHiding, atrzValue} ) => {
         setBodyAtrzValue([...tmpBodyAtrzValue]);
     }
 
-    //팝업창 닫았을 떄
-    const closePopup = () => {
-        
-    }
 
-    //======================이벤트===========================//
-
-    //=====================Validatation Check================//
-
-    //추가이벤트 밸리데이션
-    /*
-        요구사항
-        1. 기안, 검토, 심사, 승인 은 단 한명만 가능
-        2. 같은결재단계에 두 명 안됨
-    */
-    const addValidationCheck = () => {
-        //console.log("tablBodyAtrzValue : ", tablBodyAtrzValue)
-
-        return;
-    }
-    //====================Validatation Check=================//
+    //=======================================================//
 
     //================== 화면 렌더링 =========================//
     //TagBox 렌더링
@@ -186,8 +200,8 @@ const ApprovalPopup = ( {visible, onHiding, atrzValue} ) => {
                                 <div>
                                     <Button
                                         text="+"
-                                        name={codeItem.approvalCode}
-                                        onClick={(e) => { onAddButtonClick(e, codeItem.approvalCode, codeIndex) }}
+                                        name={codeItem.cdValue}
+                                        onClick={(e) => { onAddButtonClick(e, codeItem.cdValue, codeIndex) }}
                                     />
                                 </div>
                             </TableCell>
@@ -234,9 +248,10 @@ const ApprovalPopup = ( {visible, onHiding, atrzValue} ) => {
                         </TableBody>
                     </Table>
                 </div>
-                <div style={{ marginTop: "15px" }}>
+                <div style={{ marginTop: "15px", display: 'flex', justifyContent: 'flex-end' }}>
                     <Button
                         text="Close"
+                        onClick = {(e) => {onHiding(bodyAtrzValue)}}
                     />
                 </div>
             </>
@@ -253,9 +268,7 @@ const ApprovalPopup = ( {visible, onHiding, atrzValue} ) => {
                     visible={visible}
                     showCloseButton={true}
                     contentRender={createRenderData}
-                    onHiding={(e) => {
-                        onHiding(false);
-                    }}
+                    onHiding={(e) => {onHiding(bodyAtrzValue)}}
                 />
             </>
         )

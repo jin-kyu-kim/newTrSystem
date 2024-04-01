@@ -9,6 +9,16 @@
 	            , E.EMP_FLNM AS EMP_FLNM
 	            , E.EMP_TY_CD AS EMP_TY_CD
 	            , C.CD_NM AS JBPS_NM
+	            ,(
+	            	SELECT 
+	            		EH.JNCMP_YMD 
+	            	FROM 
+	            		EMP_HIST EH 
+	            	WHERE 
+	            		EH.EMP_ID = E.EMP_ID 
+	            	ORDER BY  
+	            		EH.EMP_HIST_SN DESC 
+	            	    LIMIT 1) AS JNCMP_YMD
 	            , GROUP_CONCAT(D.DEPT_NM) AS DEPT_ID
 	            , E.TELNO AS TELNO
 	            , E.EML AS EML
@@ -56,7 +66,6 @@
     SELECT
        		EMP_ID,
        	 	JBPS_CD,
-       		EMPNO,
         	EMP_HIST_SN,
         	ROW_NUMBER() OVER (PARTITION BY EMP_ID ORDER BY REG_DT) AS RowNum ,
        		REG_DT,
@@ -65,9 +74,8 @@
     FROM 
     		EMP_HIST
 	)
-	SELECT
+	SELECT	
 		    A.EMP_ID,
-		    A.EMPNO,
 		    B.EMP_INFO_CHG_ODR,
 		    B.EMP_HIST_SN,
 		    A.JBPS_CD AS JBPS_CD,
@@ -83,7 +91,7 @@
 	  	1=1
 	  	AND A.JBPS_CD <![CDATA[<>]]> B.JBPS_CD
 	 	<if test="empId != null and empId !=''">
-		AND A.EMP_ID LIKE CONCAT('%', #{empId}, '%')
+		AND A.EMP_ID = #{empId}
 		</if>
 	ORDER BY 
 		EMP_HIST_SN DESC;

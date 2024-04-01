@@ -3,10 +3,9 @@ import React, { lazy } from "react";
 const TreRoutes = [
   // 홈
   {
-    path: "/infoInq/EmpDetailInfo",
+    path: "/",
     name: "main",
-    element: React.lazy(() =>
-      import("../pages/infoInq/EmpDetailInfo")
+    element: React.lazy(() => import("../pages/sysMng/Main")
     ),
   },
   // 로그인
