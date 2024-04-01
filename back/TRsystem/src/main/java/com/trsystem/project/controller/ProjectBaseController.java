@@ -110,4 +110,9 @@ public class ProjectBaseController {
     public List<Map<String, Object>> retrievePjrctEmpCost(@RequestBody Map<String, Object> param) {
         return ProjectBaseDomain.retrievePjrctEmpCost(param);
     }
+
+    @PostMapping(value = "/boot/prjct/retrievePjrctOutordEmpCost")
+    public List<Map<String, Object>> retrievePjrctOutordEmpCost(@RequestBody Map<String, Object> param) {
+        return ProjectBaseDomain.retrievePjrctOutordEmpCost(param);
+    }
 }

@@ -17,6 +17,7 @@ const ProjectEmpCostSearch = () => {
   const location = useLocation();
   const prjctId = location.state.prjctId;
   const ctrtYmd = location.state.ctrtYmd;
+  const bgtMngOdr = location.state.bgtMngOdr;
   //TODO: const stbleEndYmd = location.state.stbleEndYmd;
   const stbleEndYmd = '2024-12-31'
   const [pivotGridConfig, setPivotGridConfig] = useState({
@@ -34,7 +35,8 @@ const ProjectEmpCostSearch = () => {
     queryId: "projectMapper.retrieveProjectEmpCostSearch",
     prjctId: prjctId,
     ctrtYmd:ctrtYmd,
-    stbleEndYmd:stbleEndYmd
+    stbleEndYmd:stbleEndYmd,
+    bgtMngOdr:bgtMngOdr
   };
 
   const Cnsrtm = async () => {

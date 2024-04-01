@@ -414,5 +414,22 @@ public class ProjectBaseDomain {
 		}
 		return result;
 	}
+	public static List<Map<String, Object>> retrievePjrctOutordEmpCost(Map<String, Object>param){
+		List<Map<String, Object>> result = new ArrayList<>();
+		Map<String, Object> searchParam = new HashMap<>(param);
+		searchParam.put("queryId", "projectMapper.retrievePjrctOutordEmpCost");
+
+		List<Map<String, Object>> getCost = commonService.queryIdSearch(searchParam);
+		List<Map<String, Object>> getData;
+		for(Map<String, Object> data : getCost){
+			param.put("outordEmpId", data.get("outordEmpId").toString());
+			getData = commonService.queryIdSearch(param);
+			for(Map<String, Object> cdVal: getData){
+				cdVal.putAll(data);
+				result.add(cdVal);
+			}
+		}
+		return result;
+	}
 
 }
