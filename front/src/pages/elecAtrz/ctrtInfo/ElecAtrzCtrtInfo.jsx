@@ -16,11 +16,6 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData }) => {
     const labelValue = ElecAtrzCtrtInfoJson.labelValue;
     const [infoData, setInfoData] = useState({});
 
-    useEffect(() => {
-        console.log("info")
-        console.log(data);
-    }, []);
-
     /**
      *  부모창으로 데이터 전송
      */
