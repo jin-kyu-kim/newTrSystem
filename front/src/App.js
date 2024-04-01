@@ -2,7 +2,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./assets/css/Style.css";
 import Header from "./components/composite/Header.js";
 import TreRoutes from "./utils/TrsRoutes.js";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {BrowserRouter as Router, Routes, Route, Navigate} from "react-router-dom";
 import React, { Suspense, useState, useEffect } from "react";
 import LoginForm from "./pages/login/LoginFrom.jsx";
 import { CookiesProvider } from "react-cookie";
@@ -47,6 +47,7 @@ function App() {
     } else {
       return (
         <Router>
+          <Navigate to="/" />
           <LoginForm handleLogin={handleLogin} />;
         </Router>
       );
