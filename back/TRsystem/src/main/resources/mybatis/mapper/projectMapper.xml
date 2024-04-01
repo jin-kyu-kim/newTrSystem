@@ -667,6 +667,7 @@
 			 , e.EMP_ID
 			 , pca.APLY_YM
 			 , pca.APLY_ODR
+		     , ANY_VALUE(pca.PRJCT_CT_APLY_SN) AS PRJCT_CT_APLY_SN
 		  FROM PRJCT_CT_APLY pca
 		  JOIN EMP e ON (e.EMP_ID = pca.EMP_ID)
 	      JOIN DEPT_HNF dh ON (e.EMP_ID = dh.EMP_ID)
