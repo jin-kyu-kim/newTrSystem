@@ -28,20 +28,20 @@
         "queryId": "elecAtrzMapper.elecAtrzMain",
         "countQueryId": "elecAtrzMapper.elecAtrzMainCount",
         "baseColumns": [
-            {"key": "elctrnAtrzId", "value": "문서번호", "width": 120},
-            {"key": "elctrnAtrzTySeCdNm", "value": "결재유형", "width": 130},
-            {"key": "atrzDmndEmpId", "value": "기안자", "width": 130},
-            {"key": "regDt", "value": "기안요청일", "width": 150},
-            {"key": "ttl", "value": "결재 명"}
+            {"key": "elctrnAtrzId", "value": "문서번호"},
+            {"key": "elctrnAtrzTySeCdNm", "value": "결재유형"},
+            {"key": "atrzDmndEmpId", "value": "기안자"},
+            {"key": "regDt", "value": "기안요청일"},
+            {"key": "ttl", "value": "결재 명", "width": 400}
         ],
         "progressApproval": [
           {"key": "atrzDmnd", "value": "결재"}
         ],
         "progress": [
-          {"key": "cnptNm", "value": "거래처", "width": 120},
-          {"key": "aprvrEmpId", "value": "현재결재권자", "width": 120},
-          {"key": "atrzStepCd" , "value": "현재결제단계", "width": 120},
-          {"key": "yn", "value": "결재 회수가능여부", "width": 130}
+          {"key": "cnptNm", "value": "거래처"},
+          {"key": "aprvrEmpId", "value": "현재결재권자", "width": 100},
+          {"key": "atrzStepCd" , "value": "현재결제단계", "width": 100},
+          {"key": "yn", "value": "결재 회수가능여부", "width": 100}
         ],
         "progressRefer": [
           {"key": "aprvrEmpId", "value": "현재 결재권자"},
@@ -58,7 +58,7 @@
           {"key": "atrzStepCd", "value": "현재 결재단계"}
         ],
         "deny": [
-          {"key": "atrzDmnd", "value": "결재"}
+          {"key": "atrzDmnd", "value": "결재", "width": 100}
         ],
         "writeReport": [
           {"key": "write", "value": "보고서 작성", "button": {"text": "작성", "name": ""}},
@@ -80,7 +80,7 @@
                   "tbNm": "CD",
                   "valueExpr": "cdValue",
                   "displayExpr": "cdNm",
-                  "name": "",
+                  "name": "elctrnAtrzTySeCd",
                   "condition": {
                     "upCdValue": "VTW049"
                   },
@@ -89,7 +89,7 @@
               }
             ],
             "textBoxItem": [
-              { "placeholder": "결재명", "name": "" }
+              { "placeholder": "결재명", "name": "title" }
             ]
           }
     },
@@ -106,9 +106,13 @@
             },
             "valueExpr" : "cdValue",
             "displayExpr": "cdNm",
-            "name": "ctAtrzSeCd"
+            "name": "vcantnTyCd"
           }
         }
       }
+    ],
+    "header": [
+      { "text": "출력", "id": "print" },
+      { "text": "문서이력", "id": "docHist" }
     ]
 }
