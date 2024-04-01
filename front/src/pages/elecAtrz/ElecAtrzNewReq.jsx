@@ -54,6 +54,13 @@ const ElecAtrzNewReq = () => {
      */
     useEffect(() => {
         console.log("childData", childData);
+
+        setAtrzParam(atrzParam => ({
+            ...atrzParam,
+            ...childData
+        }));
+
+
     }, [childData]);
 
 
@@ -124,6 +131,18 @@ const ElecAtrzNewReq = () => {
          * 결재선은 당장은 없어도? 될 듯?
          */
 
+        // createAtrz(atrzParam);
+    }
+
+    const createAtrz = async (param) => {
+
+        console.log(param)
+        try {
+            const response = await ApiRequest("/boot/elecAtrz/insertElecAtrz", param);
+            console.log(response);
+        } catch (error) {
+            console.error(error)
+        }
     }
 
     /**
@@ -138,7 +157,10 @@ const ElecAtrzNewReq = () => {
      */
     const handleElecAtrz = (e) => {
         console.log(e.value);
-        setAtrzParam({title: e.value});
+        setAtrzParam({
+            ...atrzParam,
+            title: e.value
+        });
     }
 
     const onBtnClick = (e) => {
@@ -179,7 +201,7 @@ const ElecAtrzNewReq = () => {
                     )}
                     {formData.elctrnAtrzTySeCd === "VTW04907" &&
                     <>
-                        <ExpensInfo />
+                        <ExpensInfo onSendData={handleChildData}/>
                     </>
                     }
                 <HtmlEditBox 

@@ -16,7 +16,7 @@ const ElecAtrz = () => {
   const { keyColumn, queryId, countQueryId, barList, searchInfo, baseColumns } = elecAtrzJson.elecMain;
   const [param, setParam] = useState({});
   const [clickBox, setClickBox] = useState(null);
-  const [titleRow, setTitleRow] = useState([]); // 제목행을 동적으로 보여주기 위한 state
+  const [titleRow, setTitleRow] = useState([]);
   const [totalCount, setTotalCount] = useState([]);
   const [selectedList, setSelectedList] = useState([]);
 
@@ -38,6 +38,7 @@ const ElecAtrz = () => {
 
   const searchHandle = async (initParam) => {
     setParam({
+      ...param,
       ...initParam
     });
   };
@@ -59,8 +60,7 @@ const ElecAtrz = () => {
     setClickBox(keyNm) // 선택된 박스의 색상 변경
     setTitleRow(baseColumns.concat(elecAtrzJson.elecMain[keyNm]))
     setParam({
-      ...param,
-      queryId: queryId,
+      queryId: queryId, 
       empId: empId,
       refer: refer,
       sttsCd: sttsCd
@@ -83,8 +83,7 @@ const ElecAtrz = () => {
 
         <div className="elec-square-text" style={{ color: (clickBox === info.text) && 'white' }}>{info.text}</div>
         <div className="elec-square-count" style={{ color: (clickBox === info.text) && 'white' }}>
-          {totalCount.length !== 0 && (totalCount[0][keyNm] === 0 ? 0 
-          : <span>{totalCount[0][keyNm]}</span> )} 건
+          {totalCount.length !== 0 && (totalCount[0][keyNm] === 0 ? 0 : <span>{totalCount[0][keyNm]}</span> )} 건
         </div>
         <Tooltip
           target={`#${keyNm}`}
@@ -103,7 +102,7 @@ const ElecAtrz = () => {
       state: {data: e.data}
     })
   }
-
+console.log('param.sttsCd', param.sttsCd)
   return (
     <div className="container">
       <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }} ></div>
@@ -122,22 +121,22 @@ const ElecAtrz = () => {
                 key={child.key}
                 keyNm={child.key}
                 info={child.info}
-              />
-            ))}
+              /> ))}
           </ElecBar>
         ))}
       </div>
 
-      {selectedList.length !== 0 &&
-        <div style={{ marginTop: '20px' }}>
-          <SearchInfoSet callBack={() => searchHandle} props={searchInfo} />
-          <CustomTable
-            keyColumn={keyColumn}
-            values={selectedList}
-            columns={titleRow}
-            onRowClick={sendDetail}
-          />
-        </div>}
+      {(selectedList.length !== 0 || param.sttsCd !== undefined) && (
+      <div style={{ marginTop: '20px' }}>
+        <div style={{marginBottom: '15px'}}><SearchInfoSet callBack={searchHandle} props={searchInfo} /></div>
+        <CustomTable
+          keyColumn={keyColumn}
+          values={selectedList}
+          columns={titleRow}
+          wordWrap={true}
+          onRowClick={sendDetail}
+        />
+      </div> )}
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 
 import CustomLabelValue from "../../../components/unit/CustomLabelValue";
-import ElecAtrzOutordEmpCtrtJson from "../ElecAtrzOutordEmpCtrtJson.json";
+import ElecAtrzCtrtInfoJson from "./ElecAtrzCtrtInfoJson.json";
 
 import { SelectBox } from "devextreme-react/select-box";
 import { TextBox } from "devextreme-react/text-box";
@@ -9,22 +9,23 @@ import { NumberBox } from "devextreme-react";
 import { DateRangeBox } from "devextreme-react/date-range-box";
 
 import CustomCdComboBox from "../../../components/unit/CustomCdComboBox";
+import { set } from "date-fns";
 
 
 const ElecAtrzCtrtInfo = ({data, prjctId, onSendData }) => {
-    const labelValue = ElecAtrzOutordEmpCtrtJson.labelValue;
+    const labelValue = ElecAtrzCtrtInfoJson.labelValue;
     const [infoData, setInfoData] = useState({});
-
-    useEffect(() => {
-        console.log("info")
-        console.log(data);
-    }, []);
 
     /**
      *  부모창으로 데이터 전송
      */
     useEffect(() => {
-        console.log("infoData", infoData);
+        if (!infoData.tbNm) {
+            setInfoData(infoData => ({
+                ...infoData,
+                tbNm: 'CTRT_ATRZ'
+            }));
+        }      
         onSendData(infoData);
     }, [infoData]);
 
@@ -148,6 +149,7 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData }) => {
                         <div style={{float: "left", marginRight: "20px", width:"20%"}}>
                             <SelectBox
                                 placeholder="지급일"
+                                // value={infoData}
                             />
                         </div>
                         <div style={{float: "left", marginRight: "auto", width:"20%"}}>
