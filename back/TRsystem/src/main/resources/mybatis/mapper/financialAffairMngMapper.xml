@@ -798,7 +798,7 @@
         FROM CLTUR_PHSTRN_ACT_CT CPAC
                  JOIN EMP E ON E.EMP_ID = CPAC.EMP_ID
         <if test="empId != null and empId !=''">
-            WHERE   E.EMP_ID = #{empId}s
+            WHERE   E.EMP_ID = #{empId}
         </if>
     </select>
 </mapper>

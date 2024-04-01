@@ -5,29 +5,42 @@ import ApiRequest from "../../utils/ApiRequest";
 import SearchEmpSet from "components/composite/SearchInfoSet";
 import CustomTable from "components/unit/CustomTable";
 
-function EmpCultHealthCostManagePop( empId ) {
+function EmpCultHealthCostManagePop( {popEmpId} ) {
   const [values, setValues] = useState([]);
   const [initialLoad, setInitialLoad] = useState(true); // 초기 로딩 여부 상태 변수 추가
   const [param, setParam] = useState({});
 
   const { keyColumn, queryId, tableColumns, popup, searchInfo } = EmpCultHealthCostManagePopJson;
-  
-  useEffect(() => {
-    if (initialLoad) {
-      // 초기 로딩 시에만 pageHandle 함수 실행
-      pageHandle();
-      setInitialLoad(false); // 초기 로딩 상태 업데이트
-    }
-  }, []); // 의존성 배열을 빈 배열로 설정하여 컴포넌트가 마운트될 때만 실행되도록 함
+    // console.log("empId",empId);
+//   useEffect(() => {
+//         setParam({
+//             ...param, 
+//            queryId: queryId,
+//            empId: empId
+//         })
+ 
 
-  const pageHandle = async () => {
+//       // 초기 로딩 시에만 pageHandle 함수 실행
+//       setInitialLoad(false); // 초기 로딩 상태 업데이트
+//   }, []); // 의존성 배열을 빈 배열로 설정하여 컴포넌트가 마운트될 때만 실행되도록 함
+
+  useEffect(() =>{
     setParam({
         ...param, 
        queryId: queryId,
-       empId: empId
+       empId: popEmpId
     })
-    console.log("나 탓어!!");
 
+    if (!Object.values(param).every((value) => value === "")) {
+        pageHandle();
+      }
+
+  }, [popEmpId])
+
+
+  const pageHandle = async () => {
+   
+console.log("페이지핸들의" + JSON.stringify(param));
     try {
       const response = await ApiRequest("/boot/common/queryIdSearch", param);
       setValues(response);

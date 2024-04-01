@@ -6,7 +6,7 @@
    
     "tableColumns": [
       { "key": "empFlnm", "value": "성명", "width": 400, "alignment": "center", "grouping" : true  },
-      {  "key": "prjctNm", "value": "월별", "width": 120, "alignment": "center" },
+      {  "key": "empId", "value": "월별", "width": 120, "alignment": "center" },
       {  "key": "prjctNm", "value": "구분", "width": 120, "alignment": "center" },
       {  "key": "prjctNm", "value": "이월금액", "width": 120, "alignment": "center" },
       {  "key": "prjctNm", "value": "청구일자", "width": 120, "alignment": "center" },
@@ -19,39 +19,7 @@
      
   ],
 
-    "summaryColumn": [
-      { "value": "성명",  "format": "총 합계 :" },
-      { "key": "prjctNonInsert", "value": "프로젝트 미투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
-      { "key": "prjctInsert", "value": "프로젝트 투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
-      { "key": "vacation", "value": "휴가", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
-      { "key": "totalPrjctNonInsert", "value": "프로젝트  미투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
-      { "key": "totalPrjctInsert", "value": "프로젝트  투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
-      { "key": "prjctNonInsertExpense", "value": "프로젝트미투입", "type"  : "sum", "format": "{0} 원"  ,"precision": "0"   },
-      { "key": "prjctInsertExpense", "value": "프로젝트투입", "type"  : "sum", "format": "{0} 원","precision": "" }
-    ],
-
-    "summaryColumn2": [
-      { "value": "프로젝트",  "format": "총 합계 :" },
-      { "key": "prjctNonInsert", "value": "프로젝트 미투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
-      { "key": "prjctInsert", "value": "프로젝트 투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
-      { "key": "vacation", "value": "휴가", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
-      { "key": "totalPrjctNonInsert", "value": "프로젝트  미투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
-      { "key": "totalPrjctInsert", "value": "프로젝트  투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
-      { "key": "prjctNonInsertExpense", "value": "프로젝트미투입", "type"  : "sum", "format": "{0} 원"  ,"precision": "0"   },
-      { "key": "prjctInsertExpense", "value": "프로젝트투입", "type"  : "sum", "format": "{0} 원","precision": "" }
-    ],
-  
-
    
-
-    "searchParams":
-  {
-    "yearItem": true,
-    "monthItem": true,
-    "aplyOdr": true,
-    "empNm" : false
-
-  },
     "searchInfo": {
         "searchParams": {
             "insertButton": false

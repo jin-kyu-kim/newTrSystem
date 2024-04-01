@@ -19,6 +19,7 @@ const EmpCultHealthCostManage = () => {
   const navigate = useNavigate();
   const [isGroupPopupVisible, setIsGroupPopupVisible] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState(null);
+  const [selectedRowData, setSelectedRowData] = useState(null);
 
 
   useEffect(() => {
@@ -37,7 +38,7 @@ const EmpCultHealthCostManage = () => {
     try {
      
       const response = await ApiRequest("/boot/common/queryIdSearch", updateParam);
-    
+      console.log(response);
         setValues(response);
      
     } catch (error) {
@@ -84,8 +85,22 @@ const EmpCultHealthCostManage = () => {
 
   const onRowClick = (e) => {   //직원목록 로우 클릭 이벤트
     if (e.rowType === 'group') {
-      console.log("그룹 모달이 과연 될까? ㅋ")
-      setSelectedGroup(values); // 선택한 그룹 정보를 상태 변수에 저장
+
+      if (e.data && e.data.key) {
+        const subStringResult = e.data.key.substring(0, 2);
+            setSelectedRowData(subStringResult);
+      } else {
+        console.log('e.data 또는 e.data.key가 null입니다.');
+      }
+
+
+
+      // setSelectedRowData(e.data.key);
+      
+      // console.log("zzzzz",e.data); 
+      // console.log("zzzzz123123",e.data.key); 
+      // console.log("zzzzz123123123123", selectedRowData);
+      // setSelectedRowData(selectedRowData.substring(0, 1));
       setIsGroupPopupVisible(true);
     }
    
@@ -134,7 +149,7 @@ const EmpCultHealthCostManage = () => {
 
 <Button text="닫기" onClick={closeGroupPopup} />
 
-  <EmpCultHealthCostManagePop empId = {"0c4a515e-11d1-78e7-3ade-4f85fcaf1472"} />
+<EmpCultHealthCostManagePop popEmpId={selectedRowData} />
   {/* 선택한 그룹의 정보 출력 */}
 </Popup>
       <CustomTable
