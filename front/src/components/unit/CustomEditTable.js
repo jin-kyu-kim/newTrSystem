@@ -7,7 +7,7 @@ import '../../pages/sysMng/sysMng.css'
 import moment from 'moment';
 
 const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, masterDetail, doublePk, 
-    noEdit, onSelection, onRowClick, removeAdd, callback, handleData }) => {
+    noEdit, onSelection, onRowClick, removeAdd, callback, handleData, handleExpanding }) => {
     const [ cookies ] = useCookies(["userInfo", "userAuth"]);
     const [ cdValList, setCdValList ] = useState({});
     const empId = cookies.userInfo.empId;
@@ -122,6 +122,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
                 repaintChangesOnly={true}
                 noDataText=''
                 onRowClick={onRowClick}
+                onRowExpanding={handleExpanding}
                 onSelectionChanged={onSelection && ((e) => onSelection(e))}
                 onRowInserting={(e) => onEditRow('insert', e)}
                 onRowUpdating={(e) => onEditRow('update', e)}
