@@ -36,3 +36,14 @@
   .elec-square-text {
     font-size: small;
   }
+
+  .elec-square-count > span {
+    font-weight: bold;
+    text-decoration: underline;
+  }
+
+  .elecTooltip {
+    font-size: 15px;
+    width: 260px;
+    white-space: normal;
+  }
