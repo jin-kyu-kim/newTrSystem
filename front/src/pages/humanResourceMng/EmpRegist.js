@@ -13,6 +13,7 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
     const {labelValue,empDetailqueryId} = EmpRegistJson;
     const [empMax,setEmpMax] =useState({});   //사번 MAX값
     const [param, setParam] = useState([]);   //사번 max값 조회용 세팅 param
+    const [updateParam,setUpdateParam] = useState([]);
     const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);  
     const empId = cookies.userInfo.empId;
     const query =(empDetailqueryId);
@@ -27,6 +28,9 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
     const [eml, setEml] = useState(); 
     const [actno, setActno] = useState(); 
     const [empTyCd,setEmpTyCd] = useState();
+    const [jncmpYmd,setJncmpYmd] = useState();
+    const date = new Date();
+    const now =  date.toISOString().split("T")[0] +" " +date.toTimeString().split(" ")[0];
     //const emailRegEx = /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/i;
 //-----------------------------초기세팅 구간 -----------------------------------
   
@@ -40,7 +44,8 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
         setHdofSttsCd(null);
         setEml(null);
         setActno(null);
-        setEmpTyCd(null)
+        setEmpTyCd(null);
+        setJncmpYmd(null);
       }, []);
 
     useEffect(() => {
@@ -54,12 +59,30 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
         setHdofSttsCd(empInfo.hdofSttsCd);
         setEml(empInfo.eml);
         setActno(empInfo.actno);
+        setJncmpYmd(empInfo.jncmpYmd)
       }
     }, [empInfo]);
 
     useEffect(() => {
       if(empMax !== undefined || empMax !== "" || empMax !== null){
-        insertEmp();
+        const paramIns =[
+          { tbNm: "EMP" },
+          {
+            empId : uuid(),
+            empno : empMax,
+            actno : actno,
+            bankCd : bankCd,
+            empTyCd : empTyCd,
+            eml : eml,
+            empFlnm : empFlnm,
+            hdofSttsCd : hdofSttsCd,
+            jbpsCd : jbpsCd,
+            telno : telno,
+            regEmpId : empId,
+            regDt: now,
+          }
+        ]
+        insertEmp(paramIns);
       }
     }, [empMax]);
 
@@ -74,6 +97,12 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
       }
     }, [jbpsCd]);
 
+    useEffect(() => {
+      if(!Object.values(updateParam).every((value) => value === "")){
+        updateEmp();
+      }
+    }, [updateParam]);
+
 //-----------------------------이벤트 구간 -----------------------------------
     const reset = () => {
       setEmpIdd(null);
@@ -85,6 +114,7 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
       setHdofSttsCd(null);
       setEml(null);
       setActno(null);
+      setJncmpYmd(null);
     };
 
     const handleChgState = ({ name, value }) => {     //값변경시 이벤트
@@ -106,6 +136,8 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
         // }else{
         // }
         setEml(value);  
+      }else if(name === "jncmpYmd" ){
+        setJncmpYmd(value);  
       }
       
     };
@@ -118,23 +150,40 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
 
     //기초정보 저장 
     const onClick = (e) => {
-      console.log("empidddd",empIdd);
-      console.log("empno",empno);
+
       if(empFlnm === null){
         alert("성명을 입력해주세요");
       }else if(jbpsCd === null){
         alert("직위를 선택해주세요");
       }else if(hdofSttsCd === null){
         alert("재직상태를 선택해주세요");
+      }else if(bankCd === null){
+        alert("은행코드를 선택해주세요");
+      }else if(actno === null){
+        alert("계좌번호를 입력해주세요");
       }else{
         const isconfirm = window.confirm("기초정보를 저장 하시겠습니까?"); 
         if (isconfirm) {
           if(empIdd === null ){
             empnoHandle(); //조회하러 이동
             
-          }else{ 
-            updateEmp();
-            
+          }else{
+            if(jncmpYmd !== null || empInfo.jncmpYmd !== jncmpYmd){
+              const paramHist =[
+                { tbNm: "EMP_HIST" , snColumn: "EMP_HIST_SN", snSearch: {empId : empIdd}},
+                {
+                empId : empIdd,
+                hdofSttsCd : hdofSttsCd,
+                jbpsCd : jbpsCd,
+                jncmpYmd : jncmpYmd,
+                regEmpId : empId,
+                regDt: now,
+              }
+              ]
+              setUpdateParam(paramHist)
+            }else{
+              updateEmp();
+            }
           }       
         } else{
           return;
@@ -156,30 +205,25 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
     // const emailCheck = (emailck) => { //이메일 형식 체크용
     //   return emailRegEx.test(emailck); 
     // }
+
   //================기초정보 등록
-    const insertEmp = async () => {
-      const date = new Date();
-      const now =  date.toISOString().split("T")[0] +" " +date.toTimeString().split(" ")[0];
-      const param =[
-        { tbNm: "EMP" },
+    const insertEmp = async (paramIns) => {
+      const paramHist =[
+        { tbNm: "EMP_HIST"},
         {
-          empId : uuid(),
-          empno : empMax,
-          actno : actno,
-          bankCd : bankCd,
-          empTyCd : empTyCd,
-          eml : eml,
-          empFlnm : empFlnm,
-          hdofSttsCd : hdofSttsCd,
-          jbpsCd : jbpsCd,
-          telno : telno,
-          regEmpId : empId,
-          regDt: now,
-        }
-    ]
+        empId : paramIns[1].empId,
+        empHistSn: "0",
+        hdofSttsCd : hdofSttsCd,
+        jbpsCd : jbpsCd,
+        jncmpYmd : jncmpYmd,
+        regEmpId : empId,
+        regDt: now,
+      }
+      ]
       try {
-        const response = await ApiRequest("/boot/common/commonInsert", param);
-          if (response > 0) {
+        const response = await ApiRequest("/boot/common/commonInsert", paramIns);
+        const responseHist = await ApiRequest("/boot/common/commonInsert", paramHist);
+          if (response > 0 && responseHist > 0 ) {
             alert("저장되었습니다.");
             onReset();
             callBack(query);
@@ -190,9 +234,6 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
     };
   
     const updateEmp = async () => {   //업데이트
-
-      const date = new Date();
-      const now =  date.toISOString().split("T")[0] +" " +date.toTimeString().split(" ")[0];
       const param =[
         { tbNm: "EMP" },
         {
@@ -210,8 +251,12 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
           empId : empIdd
         }
     ]
+    
       try {
         const response = await ApiRequest("/boot/common/commonUpdate", param);
+        if(!Object.values(updateParam).every((value) => value === "")){
+        const responseHist = await ApiRequest("/boot/common/commonInsert",updateParam);
+        }
           if (response > 0) {
             alert("저장되었습니다."); 
             onReset();
@@ -222,19 +267,20 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
       }
     };
 
-//화면그리는구간//
+//-------------------------------------------화면그리는구간-------------------------------------------------------------------//
   return (
     <div className="popup-content" >
         <div className="dept-regist-content-inner" style={popupContentInnerStyle}>
           <div className="dx-fieldset">
           <div className="empDetailLeft" style={empDetailLeftStyle}>
           <CustomLabelValue props={labelValue.empFlnm} onSelect={handleChgState} value={empFlnm} />
+          <CustomLabelValue props={labelValue.hdofSttsCd} onSelect={handleChgState} value={hdofSttsCd} />
           <CustomLabelValue props={labelValue.telno} onSelect={handleChgState} value={telno} />
           <CustomLabelValue props={labelValue.bankCd} onSelect={handleChgState} value={bankCd} /> 
           </div>
           <div className="empDetailRight" style={empDetailRightStyle}> 
           <CustomLabelValue props={labelValue.jbpsCd} onSelect={handleChgState} value={jbpsCd} readOnly={read}/>
-          <CustomLabelValue props={labelValue.hdofSttsCd} onSelect={handleChgState} value={hdofSttsCd} />
+          <CustomLabelValue props={labelValue.jncmpYmd} onSelect={handleChgState} value={jncmpYmd} />
           <CustomLabelValue props={labelValue.eml} onSelect={handleChgState} value={eml} />
           <CustomLabelValue props={labelValue.actno} onSelect={handleChgState} value={actno} />          
           </div>
