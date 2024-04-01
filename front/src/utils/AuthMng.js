@@ -68,10 +68,10 @@ export async function changePassword(empno, oldPassword, newPassword) {
     }
 }
 
-export async function resetPassword() {
+export async function resetPassword(empId, empno) {
     try {
-        const param = {empId:'2022f551-bf25-11ee-b259-000c2956283f',empno:'VK1545'};
-        const response = await ApiRequest("/boot/trs/sysMng/resetPswd", param);
+        const param = {empId:empId, empno:empno};
+        const response = await ApiRequest("/boot/sysMng/resetPswd", param);
         return {
             isOk: true,
             data: response
@@ -79,7 +79,7 @@ export async function resetPassword() {
     }
     catch {
         return {
-            isOk: false,
+            isOk: "false",
             data: {msg:"Authentication failed"}
         };
     }

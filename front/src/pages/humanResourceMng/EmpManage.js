@@ -9,6 +9,7 @@ import { SelectBox } from "devextreme-react/select-box";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom"; 
 import SearchEmpSet from "components/composite/SearchInfoSet";
+import { resetPassword } from "utils/AuthMng";
 
 const EmpManage = ({}) => {
 
@@ -16,6 +17,8 @@ const EmpManage = ({}) => {
   const [values, setValues] = useState([]);     //좌측 테이블 데이터 세팅용
   const [histValues, setHistValues] = useState([]);   //진급정보 세팅용
   const [param, setParam] = useState({});
+  const [empFteParam,setEmpFteParam] = useState({}); //인턴->정규직 전환시 사번max값 조회용 param
+  const [empMax,setEmpMax] =useState({});   //사번 MAX값
   const { listQueryId, listKeyColumn, listTableColumns,       //직원목록조회 
           ejhQueryId, ejhKeyColumn, ejhTableColumns,labelValue,searchInfo            //직원발령정보목록,발령용컴포넌트
         } = EmpManageJson; 
@@ -88,6 +91,27 @@ const EmpManage = ({}) => {
     }
   }, [empInfo.empId]);
 
+
+  useEffect(() => {     //사번 max값 세팅 후 조회쿼리 이동
+    if (!Object.values(empFteParam).every((value) => value === "")) {
+      empnoHandle();
+    }
+  }, [empFteParam]);
+
+  useEffect(() => {   //사번 max값 조회후 세팅 시 인서트로 이동
+    if (!Object.values(empMax).every((value) => value === "")) {
+      console.log("empmaxax",empMax)
+      const isconfirm = window.confirm(`정직원으로 발령시 사번이 ${empMax}으로 변경됩니다. \n발령하시겠습니까?`); 
+      if (isconfirm) {
+        insertEmpFte();
+      } else{
+        setEmpMax({});
+        setEmpFteParam({});
+        
+       }
+      
+    }
+  }, [empMax]);
 //------------------------------이벤트영역--------------------------------------------
 
   const searchHandle = async (initParam) => { //검색이벤트
@@ -103,12 +127,17 @@ const EmpManage = ({}) => {
       const response = await ApiRequest("/boot/common/queryIdSearch", param);
       setValues(response);
       setTotalItems(response[0].totalItems);
+      setReset();
     } catch (error) {
       console.log(error);
     }
   };
  
   const onRowClick = (e) => {   //직원목록 로우 클릭 이벤트
+    setEmpYear(null);
+    setEmpMonth(null);
+    setEmpOdr(null);
+    setEmpJbps(null);
     for (const value of values) {
       if (value.empId === e.data.empId) {
         setEmpInfo(value);  
@@ -133,7 +162,6 @@ const EmpManage = ({}) => {
 
 //==========================진급정보 콤보박스 선택 변경시===================
   const handleChgState = (name,e) => {
-    console.log("name",name,"eeeee",e)
       // setEmpDetailParam({
       //   ...empDetailParam,
       //   [name]: e.value,
@@ -163,14 +191,19 @@ const EmpManage = ({}) => {
     }else if(empJbps === null) {
       alert("직위를 선택해주세요");
       return;
-    }else{ 
-    const isconfirm = window.confirm("진급정보를 저장 하시겠습니까?"); 
-    if (isconfirm) {
-        insertEmpHist();
-    } else{
-      return;
-     }
-    }
+    }else{
+      if(empDetailParam.jbpsCd === "VTW00119"){   //인턴 -> 사원 or 컨설턴트 진급시 
+        setEmpFteParam({empnoChk : "VK" ,queryId : "humanResourceMngMapper.retrieveEmpnoMax", });
+      } else{
+        const isconfirm = window.confirm("진급정보를 저장 하시겠습니까?"); 
+        if (isconfirm) {
+            insertEmpHist();
+        } else{
+          return;
+         }
+        }
+      }
+   
   };
  //========================진급정보 인서트====================================== 
   const insertEmpHist = async () => {
@@ -191,15 +224,9 @@ const EmpManage = ({}) => {
       { tbNm: "EMP_HIST", snColumn: "EMP_HIST_SN", snSearch: {empId : empDetailParam.empId}},
       {
       empId : empDetailParam.empId,
-      empno : empDetailParam.empno,
-      actno : empDetailParam.actno,
-      bankCd : empDetailParam.bankCd,
-      empTyCd : empDetailParam.empTyCd,
-      eml : empDetailParam.eml,
-      empFlnm : empDetailParam.empFlnm,
       hdofSttsCd : empDetailParam.hdofSttsCd,
       jbpsCd : empJbps,
-      telno : empDetailParam.telno,
+      jncmpYmd : empDetailParam.jncmpYmd,
       empInfoChgOdr: empYear + empMonth + empOdr,
       regEmpId : empId,
       regDt: now,
@@ -218,6 +245,62 @@ const EmpManage = ({}) => {
       console.error("Error fetching data", error);
     }
   };
+ //=================================사번 max값 조회용================================================
+ const empnoHandle = async () => {
+  try {
+    const response = await ApiRequest("/boot/common/queryIdSearch", empFteParam);
+    setEmpMax(response[0].empnoChk);    
+  } catch (error) {
+    console.log(error);
+  }
+}; 
+//========================진급정보 인서트 (인턴->사원 발령 이벤트)====================================== 
+const insertEmpFte = async () => {
+    
+  const paramUpd =[
+    { tbNm: "EMP" },
+    {  
+       empno : empMax,
+       empTyCd : "VTW00201",
+       jbpsCd : empJbps,
+       mdfcnEmpId : empId,
+       mdfcnDt: now,
+    },
+    {
+       empId : empDetailParam.empId 
+    }
+  ]
+
+  const paramHist =[
+    { tbNm: "EMP_HIST", snColumn: "EMP_HIST_SN", snSearch: {empId : empDetailParam.empId}},
+    {
+    empId : empDetailParam.empId,
+    hdofSttsCd : empDetailParam.hdofSttsCd,
+    jbpsCd : empJbps,
+    jncmpYmd : empDetailParam.jncmpYmd,
+    empInfoChgOdr: empYear + empMonth + empOdr,
+    regEmpId : empId,
+    regDt: now,
+  }
+  ]
+  try {
+    const responseUpt = await ApiRequest("/boot/common/commonUpdate", paramUpd);
+    const responseHist = await ApiRequest("/boot/common/commonInsert", paramHist);
+      if (responseUpt > 0 && responseHist > 0) {
+        alert("저장되었습니다.");
+        setEmpMax({});
+        setEmpFteParam({});
+        empJbpsHistHandle();
+        pageHandle();
+        setReset();
+      
+      }
+  } catch (error) {
+    console.error("Error fetching data", error);
+  }
+};
+
+
 //====================발령취소 버튼 클릭 이벤트===============================
   const onClickDel = () => {        
     let maxSn=0;
@@ -264,10 +347,6 @@ const EmpManage = ({}) => {
 
 
 const cancelJbpsEmpHist = async (updParam,ehdParam) => {       //삭제axios
-    
-    console.log("upd",updParam)
-    console.log("del",ehdParam)
-
   try {
     
     const responseUpd = await ApiRequest("/boot/common/commonUpdate", updParam);
@@ -287,7 +366,7 @@ const cancelJbpsEmpHist = async (updParam,ehdParam) => {       //삭제axios
       console.log(e);
       navigate("/infoInq/EmpDetailInfo", 
               { state: { 
-                        empId: e.empId,
+                naviEmpId: e.empId,
                       } 
               });
     }
@@ -305,14 +384,21 @@ const cancelJbpsEmpHist = async (updParam,ehdParam) => {       //삭제axios
  }
 
 //================================비밀번호 초기화 (개발예정)
-    const onClickRestPwd = (data) => {
+    const onClickRestPwd  = async (e) => {
       const isconfirm = window.confirm("비밀번호를 초기화 하시겠습니까?"); 
-      if (isconfirm) {
-        alert("초기화되었습니다."); //개발예정
+      if (isconfirm) {    
+        const data =  await resetPassword(e.data.empId,e.data.empno)
+        console.log("datata",data)
+        if(data.isOk){
+          alert(data.isOk);
+        }else {
+          window.alert("초기화에 실패하였습니다.");
+        }
       } else{
         return;
       }
     }
+    
 //===============================발령정보 업로드 (개발예정)
     const empUpload =()=>{
       alert("발령정보를 업로드 하시겠습니까?")
