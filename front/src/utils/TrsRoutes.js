@@ -88,9 +88,9 @@ const TreRoutes = [
   },
   // 코드 관리
   {
-    path: "/sysMng/TrsCodeList",
-    name: "TrsCodeList",
-    element: React.lazy(() => import("../pages/sysMng/TrsCodeList")),
+    path: "/sysMng/TrsCode",
+    name: "TrsCode",
+    element: React.lazy(() => import("../pages/sysMng/TrsCode")),
   },
   // 공지사항
   {

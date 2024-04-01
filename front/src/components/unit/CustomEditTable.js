@@ -6,22 +6,14 @@ import ApiRequest from 'utils/ApiRequest';
 import '../../pages/sysMng/sysMng.css'
 import moment from 'moment';
 
-const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, masterDetail, doublePk, 
-    noEdit, onSelection, onRowClick, removeAdd, callback, handleData }) => {
+const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal, masterDetail, doublePk, 
+    noEdit, onSelection, onRowClick, removeAdd, callback, handleData, handleExpanding, showPageSize }) => {
     const [ cookies ] = useCookies(["userInfo", "userAuth"]);
     const [ cdValList, setCdValList ] = useState({});
     const empId = cookies.userInfo.empId;
     const date = moment();
 
-    useEffect(() => {
-        getCdVal();
-    }, []);
-
-    const ynVal = [
-        {cdValue: "Y", cdNm: "사용"},
-        {cdValue: "N", cdNm: "미사용"}
-    ];
-
+    useEffect(() => { getCdVal(); }, []);
     const getCdVal = useCallback(async () => {
         try{
             let updatedCdValList = {};
@@ -75,7 +67,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
                     editParam[2] = keyInfo;
                     editInfo = { url: 'commonUpdate', complete: '수정' }
                     break;
-                case 'delete':
+                default :
                     editParam[1] = keyInfo;
                     editInfo = { url: 'commonDelete', complete: '삭제' }
                     break;
@@ -91,9 +83,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
             } catch (error) {
                 console.log(error)
             } 
-        } else {
-            handleData(values);
-        }
+        } else { handleData(values); }
     }
 
     const checkDuplicate = (newKeyValue) => {
@@ -122,6 +112,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
                 repaintChangesOnly={true}
                 noDataText=''
                 onRowClick={onRowClick}
+                onRowExpanding={handleExpanding}
                 onSelectionChanged={onSelection && ((e) => onSelection(e))}
                 onRowInserting={(e) => onEditRow('insert', e)}
                 onRowUpdating={(e) => onEditRow('update', e)}
@@ -152,9 +143,9 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
                     refreshMode='reshape'
                     texts={{
                         saveRowChanges: '저장',
-                        cancelRowChanges: '취소'
-                    }} />
-                }
+                        cancelRowChanges: '취소',
+                        confirmDeleteMessage: '삭제하시겠습니까?'
+                    }} /> }
                 {onSelection && <Selection mode="multiple" selectAllMode="page"/>}
                 {columns.map((col) => (
                     <Column
@@ -164,6 +155,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
                         dataType={col.type}
                         format={col.format}
                         alignment={'center'}
+                        groupIndex={col.grouping && 0}
                         cellRender={col.button ? (e) => buttonRender(e, col) : undefined} >
                         {col.editType === 'selectBox' ? 
                             <Lookup 
@@ -181,7 +173,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, master
                     displayMode="full"
                     showNavigationButtons={true}
                     showInfo={false}
-                    showPageSizeSelector={true}
+                    showPageSizeSelector={showPageSize}
                     allowedPageSizes={[20, 50, 80, 100]}
                 />
             </DataGrid>
