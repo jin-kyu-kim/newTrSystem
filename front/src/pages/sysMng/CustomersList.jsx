@@ -8,7 +8,7 @@ const CustomersList = () => {
     const [values, setValues] = useState([]);
     const [param, setParam] = useState({});
     const [totalItems, setTotalItems] = useState(0);
-    const { keyColumn, queryId, tableColumns, searchInfo, tbNm } = SysMng.customersJson;
+    const { keyColumn, queryId, tableColumns, searchInfo, tbNm, ynVal } = SysMng.customersJson;
 
     useEffect(() => {
         if (!Object.values(param).every((value) => value === "")) {
@@ -67,6 +67,7 @@ const CustomersList = () => {
             <div style={{ marginBottom: '100px' }}>
                 <CustomEditTable
                     tbNm={tbNm}
+                    ynVal={ynVal}
                     values={values}
                     keyColumn={keyColumn}
                     columns={tableColumns}

@@ -16,6 +16,10 @@
             { "key": "useYn", "value": "사용여부", "editType": "selectBox", "buttonType": "toggle", "button": true }
         ],
         "tbNm": "CD",
+        "ynVal": [
+            {"cdValue": "Y", "cdNm": "사용"},
+            {"cdValue": "N", "cdNm": "미사용"}
+        ],
         "searchInfo":{
             "searchParams": {
             },
@@ -53,6 +57,10 @@
             { "key": "useYn", "value": "사용여부", "editType": "selectBox", "buttonType": "toggle", "button": true }
         ],
         "tbNm": "CTMMNY_INFO",
+        "ynVal": [
+            {"cdValue": "Y", "cdNm": "사용"},
+            {"cdValue": "N", "cdNm": "미사용"}
+        ],
         "searchInfo":{
             "searchParams": {
             },

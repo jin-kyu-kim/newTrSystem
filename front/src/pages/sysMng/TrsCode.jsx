@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef, useLayoutEffect } from "react";
-import SysMng from "./SysMngJson.json";
-import ApiRequest from "../../utils/ApiRequest";
 import SearchInfoSet from "components/composite/SearchInfoSet";
 import CustomEditTable from "components/unit/CustomEditTable";
+import ApiRequest from "../../utils/ApiRequest";
+import SysMng from "./SysMngJson.json";
 import "../../pages/sysMng/sysMng.css";
 
 const TrsCodeList = () => {
-  const { keyColumn, queryId, tableColumns, childTableColumns, searchInfo, tbNm } = SysMng.trsCodeJson;
+  const { keyColumn, queryId, tableColumns, childTableColumns, searchInfo, tbNm, ynVal } = SysMng.trsCodeJson;
   const [ expandedRowKey, setExpandedRowKey ] = useState(null);
   const [ values, setValues ] = useState([]);
   const [ param, setParam ] = useState({});
@@ -73,15 +73,16 @@ const TrsCodeList = () => {
     }
   };
 
-  const masterDetail = (e) => {
+  const masterDetail = () => {
     if(childList.length !== 0){
       return (
         <CustomEditTable
           tbNm={tbNm}
+          ynVal={ynVal}
           values={childList}
-          removeAdd={true}
           keyColumn={keyColumn}
           handleYnVal={handleYnVal}
+          showPageSize={false}
           columns={childTableColumns}
         />
       );
@@ -89,7 +90,7 @@ const TrsCodeList = () => {
   };
 
   return (
-    <div className="container">
+    <div className="container" style={{marginBottom: '100px'}}>
       <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }} >
         <h1 style={{ fontSize: "40px" }}>코드 관리</h1>
       </div>
@@ -97,23 +98,20 @@ const TrsCodeList = () => {
         <span>* 권한코드를 조회합니다.</span>
       </div>
       <div style={{ marginBottom: "20px" }}>
-        <SearchInfoSet
-          callBack={searchHandle}
-          props={searchInfo}
-          upCdList={values}
-        />
+        <SearchInfoSet callBack={searchHandle} props={searchInfo} />
       </div>
 
       <div>검색된 건 수 : {totalItems} 건</div>
       <CustomEditTable
         tbNm={tbNm}
+        ynVal={ynVal}
         values={values}
         allowEdit={true}
+        callback={pageHandle}
         keyColumn={keyColumn}
         columns={tableColumns}
-        masterDetail={masterDetail}
         handleYnVal={handleYnVal}
-        callback={pageHandle}
+        masterDetail={masterDetail}
         handleExpanding={handleExpanding}
       />
     </div>
