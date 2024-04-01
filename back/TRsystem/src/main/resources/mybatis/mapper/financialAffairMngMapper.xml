@@ -798,7 +798,25 @@
         FROM CLTUR_PHSTRN_ACT_CT CPAC
                  JOIN EMP E ON E.EMP_ID = CPAC.EMP_ID
         <if test="empId != null and empId !=''">
-            WHERE   E.EMP_ID = #{empId}
+            WHERE   E.EMPNO = #{empId}
         </if>
     </select>
+
+    <select id="retrieveClturPhstrnCtClmList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            CONCAT('(',E.EMPNO ,')', ' ' ,E.EMP_FLNM ) AS EMP_FLNM,
+            CPACR.CLM_YMD AS CLM_YMD,
+            SUM(CPACR.CLM_AMT) AS TOTAL_CLM_AMT,
+            CASE WHEN CPACR.CLTUR_PHSTRN_SE_CD  = 'VTW00901' THEN '문화비'
+                 WHEN CPACR.CLTUR_PHSTRN_SE_CD  = 'VTW00902' THEN '체력단련비'
+                 ELSE NULL END AS CLTUR_PHSTRN
+        FROM
+            EMP E
+                LEFT JOIN
+            CLTUR_PHSTRN_ACT_CT_REG CPACR ON E.EMP_ID = CPACR.EMP_ID
+        GROUP BY
+            E.EMP_FLNM, E.EMPNO, CPACR.CLM_YMD,   CPACR.CLTUR_PHSTRN_SE_CD
+    </select>
+
+
 </mapper>

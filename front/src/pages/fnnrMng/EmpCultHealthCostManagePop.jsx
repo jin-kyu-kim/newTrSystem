@@ -25,24 +25,29 @@ function EmpCultHealthCostManagePop( {popEmpId} ) {
 //   }, []); // 의존성 배열을 빈 배열로 설정하여 컴포넌트가 마운트될 때만 실행되도록 함
 
   useEffect(() =>{
+    console.log("popEmpId", popEmpId);
     setParam({
         ...param, 
        queryId: queryId,
        empId: popEmpId
     })
 
-    if (!Object.values(param).every((value) => value === "")) {
-        pageHandle();
-      }
-
   }, [popEmpId])
+
+  useEffect(() => {
+    if (!Object.values(param).every((value) => value === "")) {
+      pageHandle();
+    }
+  }, [param]);
+  
 
 
   const pageHandle = async () => {
-   
+    console.log("Calling ApiRequest with param", param);
 console.log("페이지핸들의" + JSON.stringify(param));
     try {
       const response = await ApiRequest("/boot/common/queryIdSearch", param);
+      console.log("ApiRequest response", response);
       setValues(response);
     } catch (error) {
       console.log(error);

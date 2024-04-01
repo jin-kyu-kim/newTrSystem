@@ -11,6 +11,9 @@ import { Button } from "devextreme-react";
 import { useNavigate } from "react-router-dom";
 import { Popup } from "devextreme-react";
 import EmpCultHealthCostManagePop from "./EmpCultHealthCostManagePop";
+import CustomEditTable from "components/unit/CustomEditTable";
+
+
 
 const EmpCultHealthCostManage = () => {
   const [values, setValues] = useState([]);
@@ -20,7 +23,7 @@ const EmpCultHealthCostManage = () => {
   const [isGroupPopupVisible, setIsGroupPopupVisible] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [selectedRowData, setSelectedRowData] = useState(null);
-
+  const [ selectedList, setSelectedList ] = useState([]);
 
   useEffect(() => {
   }, []);
@@ -85,23 +88,13 @@ const EmpCultHealthCostManage = () => {
 
   const onRowClick = (e) => {   //직원목록 로우 클릭 이벤트
     if (e.rowType === 'group') {
-
       if (e.data && e.data.key) {
-        const subStringResult = e.data.key.substring(0, 2);
-            setSelectedRowData(subStringResult);
+        const subStringResult = e.data.key.substring(1, 7);
+        setSelectedRowData(subStringResult);
+        setIsGroupPopupVisible(true); // 팝업 열기
       } else {
         console.log('e.data 또는 e.data.key가 null입니다.');
       }
-
-
-
-      // setSelectedRowData(e.data.key);
-      
-      // console.log("zzzzz",e.data); 
-      // console.log("zzzzz123123",e.data.key); 
-      // console.log("zzzzz123123123123", selectedRowData);
-      // setSelectedRowData(selectedRowData.substring(0, 1));
-      setIsGroupPopupVisible(true);
     }
    
   };
@@ -111,15 +104,18 @@ const EmpCultHealthCostManage = () => {
     setIsGroupPopupVisible(false);
   };
 
-
-
-
-
-
-
-
-
+  const onSelection = (e) => { setSelectedList(e.selectedRowsData) }
   return (
+    
+    <>
+    <style>
+      {`
+        .dx-datagrid-group-opened {
+          display: none !important;
+        }
+      `}
+    </style>
+
     <div className="container">
     <div 
       className="title p-1"
@@ -149,10 +145,12 @@ const EmpCultHealthCostManage = () => {
 
 <Button text="닫기" onClick={closeGroupPopup} />
 
-<EmpCultHealthCostManagePop popEmpId={selectedRowData} />
+{isGroupPopupVisible && (
+          <EmpCultHealthCostManagePop popEmpId={selectedRowData} closePopup={closeGroupPopup} />
+        )}
   {/* 선택한 그룹의 정보 출력 */}
 </Popup>
-      <CustomTable
+      <CustomEditTable
         keyColumn={keyColumn}
         columns={tableColumns}
         values={values}
@@ -161,14 +159,13 @@ const EmpCultHealthCostManage = () => {
         onExcel={onExporting}
         wordWrap={wordWrap}
         onRowClick={onRowClick}
+        noEdit={true}
+        onSelection={onSelection}
        
       />  
-
-
-
-
         </div>
 </div>
+</>
   );
 };
 
