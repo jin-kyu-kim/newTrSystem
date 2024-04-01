@@ -128,7 +128,7 @@ const EmpBasicInfo = ({naviEmpId}) => {
       console.log(error);
     }
   };
-
+console.log(empCnt)
   const updateEmpInfo = async () => {
     const dtlConfirmResult = window.confirm("직원정보를 저장하시겠습니까?");
 
@@ -141,6 +141,13 @@ const EmpBasicInfo = ({naviEmpId}) => {
       }
 
       if (empCnt === 0) {
+        setEmpDtlData({
+          ...empDtlData,
+          empId: empId,
+        });
+
+        
+
         const params = [{ tbNm: "EMP_DTL" }, empDtlData];
         try {
           console.log("params:", params);
