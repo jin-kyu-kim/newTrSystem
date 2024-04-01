@@ -15,6 +15,7 @@ const ProjectControlBudgetCostSearch = () => {
   const location = useLocation();
   const prjctId = location.state.prjctId;
   const ctrtYmd = location.state.ctrtYmd;
+  const bgtMngOdr = location.state.bgtMngOdr;
   const [stbleEndYmd,setStbleEndYmd] = useState(location.state.stbleEndYmd);
   const [pivotGridConfig, setPivotGridConfig] = useState({
     fields: ProjectGeneralBudgetCostSearchJson,
@@ -29,10 +30,11 @@ const ProjectControlBudgetCostSearch = () => {
 
   const param = {
     queryId: "projectMapper.retrieveProjectGeneralBudgetCostSearch",
-    prjctId: location.state.prjctId,
+    prjctId: prjctId,
     costFlag: "control",
-    ctrtYmd:location.state.ctrtYmd,
-    stbleEndYmd:location.state.stbleEndYmd
+    ctrtYmd:ctrtYmd,
+    stbleEndYmd:stbleEndYmd,
+    bgtMngOdr:bgtMngOdr
   };
 
   const Cnsrtm = async () => {

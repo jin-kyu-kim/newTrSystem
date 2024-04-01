@@ -16,6 +16,7 @@ const ProjectGeneralBudgetCostSearch = () => {
   const prjctId = location.state.prjctId;
   const ctrtYmd = location.state.ctrtYmd;
   const stbleEndYmd = location.state.stbleEndYmd;
+  const bgtMngOdr = location.state.bgtMngOdr;
 
   const [pivotGridConfig, setPivotGridConfig] = useState({
     fields: ProjectGeneralBudgetCostSearchJson,
@@ -34,6 +35,7 @@ const ProjectGeneralBudgetCostSearch = () => {
     costFlag: "general",
     ctrtYmd:ctrtYmd,
     stbleEndYmd:stbleEndYmd,
+    bgtMngOdr:bgtMngOdr
   };
 
   const Cnsrtm = async () => {

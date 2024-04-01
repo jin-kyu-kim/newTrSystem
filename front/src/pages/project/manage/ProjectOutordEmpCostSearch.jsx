@@ -10,7 +10,16 @@ import PivotGrid, {
   Scrolling,
 } from "devextreme-react/pivot-grid";
 
-const ProjectOutordEmpCostSearch = ({prjctId, bgtMngOdr}) => {
+import {useLocation} from "react-router-dom";
+
+const ProjectOutordEmpCostSearch = () => {
+  const location = useLocation();
+  const prjctId = location.state.prjctId;
+  const ctrtYmd = location.state.ctrtYmd;
+  //TODO: const stbleEndYmd = location.state.stbleEndYmd;
+  const stbleEndYmd = '2024-12-31'
+  const bgtMngOdr = location.state.bgtMngOdr;
+
   const [pivotGridConfig, setPivotGridConfig] = useState({
     fields: ProjectOutordEmpCostSearchJson,
     store: [],
@@ -20,17 +29,17 @@ const ProjectOutordEmpCostSearch = ({prjctId, bgtMngOdr}) => {
     Cnsrtm();
   }, []);
 
-  useEffect(() => {}, [pivotGridConfig]);
-
   const param = {
     queryId: "projectMapper.retrieveProjectOutordEmpCostSearch",
     prjctId: prjctId,
-    bgtMngOdr: bgtMngOdr
+    ctrtYmd: ctrtYmd,
+    stbleEndYmd:stbleEndYmd,
+    bgtMngOdr:bgtMngOdr
   };
 
   const Cnsrtm = async () => {
     try {
-      const response = await ApiRequest("/boot/common/queryIdSearch", param);
+      const response = await ApiRequest("/boot/prjct/retrievePjrctOutordEmpCost", param);
       setPivotGridConfig({
         ...pivotGridConfig,
         store: response,
@@ -49,7 +58,7 @@ const ProjectOutordEmpCostSearch = ({prjctId, bgtMngOdr}) => {
         allowSortingBySummary={true}
         height={560}
         showBorders={true}
-        showColumnGrandTotals={false}
+        showColumnGrandTotals={true}
         allowFiltering={false}
         allowSorting={false}
         allowExpandAll={false}
