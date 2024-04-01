@@ -30,7 +30,6 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
     const [pay, setPay] = useState([]);
 
 
-
     /**
      * console.log useEffect
      */
@@ -51,7 +50,8 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
      *  부모창에서 전달 된 데이터로 셋팅
      */
     useEffect(() => {
-        // console.log("먼디",selectedData)
+        console.log("먼디",selectedData)
+        
             if(selectedData.matrlCtSn === 0) {
                 setMatrlCtrtData({});
                 setPay([]);
@@ -61,7 +61,9 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
             }
     }, [selectedData]);
 
-
+    // useEffect(() => {
+    //     handleData(pay);
+    // }, [pay]);
     /**
      *  선금, 중도금, 잔금 데이터 핸들링
      */
@@ -76,9 +78,6 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
         let prtPayAmt = 0;
 
         for(let i = 0; i < payData.length; i++) {
-            // console.log(payData[i].payCd)
-            // console.log(payData[i].payYm.getFullYear());
-            // console.log(payData[i].payYm.getMonth() + 1);
 
             let month
             if(payData[i].payYm.getMonth() + 1 < 10) {
@@ -91,11 +90,12 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
                     advPayYm = payData[i].payYm.getFullYear() + "" + month;
                 }
                 advPayAmt += payData[i].payAmt;
+               
             //잔금
             } else if(payData[i].payCd === "VTW03212") {    
-
                 surplusYm = payData[i].payYm.getFullYear() + "" + month;
                 surplusAmt = payData[i].payAmt;
+
             //중도금
             } else  {
                 if(payData[i].payCd === "VTW03202") {  
@@ -105,8 +105,8 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
             }
         }
 
-        setMatrlCtrtData({
-            ...matrlCtrtData,
+        setMatrlCtrtData(prevState => ({
+            ...prevState,
             pay,
             "advPayYm": advPayYm,
             "advPayAmt": advPayAmt,
@@ -115,7 +115,7 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
             "prtPayYm": prtPayYm,
             "prtPayAmt": prtPayAmt,
             "payTot": advPayAmt + surplusAmt + prtPayAmt
-        })
+        }));
     }
 
     /**
@@ -137,9 +137,15 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
             alert("지불 총액은 0 이상 입력해야 합니다.");
             return;
         }
+
+        //지급 총액이 가용금액을 초과할 경우
+        if(matrlCtrtData.cntrctamount < matrlCtrtData.payTot) {
+            alert("지불 총액은 계약금액을 초과할 수 없습니다.");
+            return;
+        }
+
         handlePlanData(matrlCtrtData);
         handlePopupVisible();
-        // e.stopPropagation();    //상위컴포넌트로의 버블링 제어
     }
 
     

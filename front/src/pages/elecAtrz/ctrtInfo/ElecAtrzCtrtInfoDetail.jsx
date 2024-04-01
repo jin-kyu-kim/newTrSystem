@@ -8,14 +8,14 @@ import ElecAtrzOutordCompanyJson from "./ElecAtrzOutordCompanyJson.json";
 import PymntPlanPopup from "./PymntPlanPopup"
 
 /**
+ *  "VTW04908" : 외주인력
  *  "VTW04909" : 외주업체
  *  "VTW04910" : 재료비
  */
-const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, childRef }) => {
-    console.log("data", data);
+const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData }) => {
     
     const [popupVisible, setPopupVisible] = useState(false);
-    const [tableData, setTableData] = useState([]);   //그리드 전체 데이터
+    const [tableData, setTableData] = useState([]);                 //그리드 전체 데이터
     const [selectedData, setSelectedData] = useState({});           //선택된 행의 데이터
     
     let jsonData = {};
@@ -34,15 +34,23 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, childRef }) => {
         console.log(popupVisible);
     }, [popupVisible]);
 
+
     /**
      *  부모창으로 데이터 전송
      */
     useEffect(() => {
-        console.log(tableData);
-        onSendData(tableData);
-        // childRef.current = tableData;
-    }, [tableData]);
+        //각 pay 배열에 tbNm 추가
+        const updatedTableData = tableData.map(item => ({
+            ...item,
+            pay: [...item.pay, { tbNm: 'ENTRPS_CTRT_DTL_CND' }] 
+        }));
+        
+        //테이블 배열에 tbNm 추가
+        let newData;
+        newData = [...updatedTableData, { tbNm: 'ENTRPS_CTRT_DTL' }];
 
+        onSendData(newData);
+    }, [tableData]);
 
 
     /**
