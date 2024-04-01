@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import "react-datepicker/dist/react-datepicker.css";
-
 import SearchInfoSet from 'components/composite/SearchInfoSet';
 import CustomEditTable from 'components/unit/CustomEditTable';
 import ApiRequest from '../../utils/ApiRequest';
@@ -47,6 +45,7 @@ const CustomersList = () => {
         ];
         try {
             const response = await ApiRequest('/boot/common/commonUpdate', ynParam);
+            if(response === 1) pageHandle();
         } catch (error) {
             console.log(error)
         }

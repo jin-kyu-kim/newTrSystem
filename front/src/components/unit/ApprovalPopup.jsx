@@ -9,59 +9,38 @@ import ApiRequest from "../../utils/ApiRequest";
 
 const ApprovalPopup = ( {visible, onHiding, atrzValue} ) => {
 
-    console.log("다른화면에서 넘어오는 값 atrzValue : ", atrzValue)
-
-    let tablBodyCodeValue = [];     //테이블에 나타날 결재상태코드
+    //=======================선언구간========================//
     let tablBodyAtrzValue = [];     //테이블에 나타날 결재권자(가공 후)
-
+    
     //테이블에 나타날 결재권자
     const [bodyAtrzValue, setBodyAtrzValue] = useState(atrzValue); //가공 전
-
     //직원콤보박스에서 고른 직원
     const [selectValue, setSelectValue] = useState({empId: ""});
-
     // 결재상태코드
     const [selectCodeValue, setSelectCodeValue] = useState([]);
-    const [searchCodeParam, setSearchCodeParam] = useState({
+
+    const searchCodeParam = {
         queryId: "humanResourceMngMapper.retrieveCodeList",
-        searchType: "approvalCode",
         upCdValue: "VTW007"
-    });
+    };
+    //=======================선언구간=========================//
 
-    // 직원목록
-    const [selectEmpValue, setSelectEmpValue] = useState([]);
-    const [searchEmpParam, setSearchEmpParam] = useState({ 
-        queryId: "humanResourceMngMapper.retrieveEmpList", 
-        searchType: "empList" 
-    });
-
-    /*초기 변수값 설정 나중에 바꿔야함*/
-    useEffect(() => {
-        setBodyAtrzValue(atrzValue)
-    }, [atrzValue])
-    
+    //=======================================================//
     useEffect(() => {
         pageHandle(searchCodeParam);
-    }, [searchCodeParam])
-
-    useEffect(() => {
-        pageHandle(searchEmpParam);
-    }, [searchEmpParam])
+    }, [])
 
     // 결재상태코드조회
-    const pageHandle = async (initParam) => {
+    const pageHandle = async (searchCodeParam) => {
         try {
-            if(initParam.searchType === "approvalCode" ) {
-                setSelectCodeValue(await ApiRequest("/boot/common/queryIdSearch", initParam)); 
-            } else if(initParam.searchType === "empList" ) {
-                setSelectEmpValue(await ApiRequest("/boot/common/queryIdSearch", initParam));
-            }
-
+            setSelectCodeValue(await ApiRequest("/boot/common/queryIdSearch", searchCodeParam));
         } catch (error) {
             console.log(error);
         }
     };
-    
+    //=======================================================//
+
+    //======================이벤트===========================//
     //SelectBox 성명 변경
     const onSelectEmpFlnmChg = (e) => {
         setSelectValue({
@@ -75,7 +54,20 @@ const ApprovalPopup = ( {visible, onHiding, atrzValue} ) => {
     }
     
     //+버튼시 추가
-    const onAddButtonClick = (approvalCode) => {
+    const onAddButtonClick = (data, approvalCode, codeIndex) => {
+        //===============유효성검사=================//
+        console.log("tablBodyAtrzValue : ", tablBodyAtrzValue)
+        console.log("data : ", data.value)
+        console.log("approvalCode : ", approvalCode)
+        console.log("codeIndex : ", codeIndex)
+        alert("안돼")
+
+        if(tablBodyAtrzValue[codeIndex] &&
+           ( approvalCode === "VTW00701" || approvalCode === "VTW00702" || approvalCode === "VTW00704" || approvalCode === "VTW00705")){
+
+        }
+        //=========================================//
+
         const addBodyAtrzValue = {
             approvalCode: approvalCode,
             empId : selectValue.empId,
@@ -83,61 +75,68 @@ const ApprovalPopup = ( {visible, onHiding, atrzValue} ) => {
             jbpsNm : selectValue.jbpsNm,
             listEmpFlnm : selectValue.listEmpFlnm
         }
-        //BodyAtrzValue setState
+        //BodyAtrzValue setStateF
         setBodyAtrzValue([...bodyAtrzValue, addBodyAtrzValue]);
     }
 
-    function onSelectAtrz(selectCodeValue, selectEmpValue, tablBodyCodeValue , tablBodyAtrzValue, changeAppovalValue, changeValue, codeIndex){
-
-        tablBodyAtrzValue.splice(codeIndex, 1, changeValue);
-    
-        bodyRender(selectCodeValue, selectEmpValue, tablBodyCodeValue, tablBodyAtrzValue);
-    }
-
     /*onValueChange 삭제 이벤트*/
-    const onDeleteTagBox = (e) => {
-        alert("삭제");
-        console.log("deleteBox")
-        console.log("e : ", e);
-        console.log("tablBodyAtrzValue*** : ", tablBodyAtrzValue);
-        console.log("bodyAtrzValue*** : ", bodyAtrzValue);
+    const onDeleteTagBox = (data, codeIndex) => {
+        tablBodyAtrzValue[codeIndex] = data;
 
-        if(bodyAtrzValue.length > 1 && bodyAtrzValue){
-            for(let i = 0; i < bodyAtrzValue.length; i++){
-                const delApprovalCd = e.ApprovalPopup;
-                const delEmpId = e.empId;
-                const listEmpFlnm = e.listEmpFlnm;
- 
+        let tmpBodyAtrzValue = [];
 
+        for(let i = 0; i < tablBodyAtrzValue.length; i++){
+            for(let j = 0; j < tablBodyAtrzValue[i].length; j++){
+                tmpBodyAtrzValue.push(tablBodyAtrzValue[i][j]);
             }
         }
 
+        setBodyAtrzValue([...tmpBodyAtrzValue]);
     }
+
+    //팝업창 닫았을 떄
+    const closePopup = () => {
+        
+    }
+
+    //======================이벤트===========================//
+
+    //=====================Validatation Check================//
+
+    //추가이벤트 밸리데이션
     /*
-        TagBox 렌더링 
+        요구사항
+        1. 기안, 검토, 심사, 승인 은 단 한명만 가능
+        2. 같은결재단계에 두 명 안됨
     */
+    const addValidationCheck = () => {
+        //console.log("tablBodyAtrzValue : ", tablBodyAtrzValue)
+
+        return;
+    }
+    //====================Validatation Check=================//
+
+    //================== 화면 렌더링 =========================//
+    //TagBox 렌더링
     const createTagBox = (codeIndex, value) => {
-        console.log("single : ", value)
         return(
             <>
                 <TagBox
-                    key={value.empId}
-                    name={value.empId}
                     clearButton={true}
-                    dataSource={selectEmpValue}
                     displayExpr="listEmpFlnm"
                     showSelectionControls={true}
                     value={value}
-                    valueExpr={value.empId}
                     stylingMode="underlined"
-                    onValueChange={(e) => {onDeleteTagBox(value)}}
-                    // onValueChange={onSelectAtrz}
-                    // onValueChange={onDeleteTagBox}
+                    onValueChange={(e) => {onDeleteTagBox(e, codeIndex)}}
+                    searchEnabled={false}
                 />
             </>
         )   
     }
 
+    /*
+        header 값세팅
+    */
     const tableHeaderData = [
         { value: "입력", width: "70px" },
         { value: "결재단계", width: "100px" },
@@ -161,16 +160,9 @@ const ApprovalPopup = ( {visible, onHiding, atrzValue} ) => {
         )
     }
 
-    /*
-        table body 변수 설정
-    */
+    //바디변수설정
     const createApprovalTableBody = () => {
-        tablBodyCodeValue = [];
         selectCodeValue.map((item, index) => {
-            tablBodyCodeValue.push({
-                approvalCode: selectCodeValue[index].cdValue,
-                atrzLnNm: ""
-            })
             if(bodyAtrzValue && bodyAtrzValue.length > 0){
                 tablBodyAtrzValue[index] = (
                     bodyAtrzValue.filter(item => item.approvalCode === selectCodeValue[index].cdValue)
@@ -179,18 +171,15 @@ const ApprovalPopup = ( {visible, onHiding, atrzValue} ) => {
         });
 
         return (
-            bodyRender(selectCodeValue, selectEmpValue, tablBodyCodeValue, tablBodyAtrzValue)
+            bodyRender(selectCodeValue, tablBodyAtrzValue)
         );   
     }
 
-    /*
-        tablebody렌더링
-    */
-    const bodyRender = (selectCodeValue, selectEmpValue, tablBodyCodeValue, tablBodyAtrzValue) => {
-        console.log("tablBodyAtrzValue V :", tablBodyAtrzValue);
+   //바디렌더링
+    const bodyRender = (selectCodeValue, tablBodyAtrzValue) => {
         return (
             <>
-                {tablBodyCodeValue.map((codeItem, codeIndex) => (
+                {selectCodeValue.map((codeItem, codeIndex) => (
                     <>
                         <TableRow>
                             <TableCell>
@@ -198,7 +187,7 @@ const ApprovalPopup = ( {visible, onHiding, atrzValue} ) => {
                                     <Button
                                         text="+"
                                         name={codeItem.approvalCode}
-                                        onClick={(e) => { onAddButtonClick(codeItem.approvalCode, codeIndex) }}
+                                        onClick={(e) => { onAddButtonClick(e, codeItem.approvalCode, codeIndex) }}
                                     />
                                 </div>
                             </TableCell>
@@ -208,9 +197,8 @@ const ApprovalPopup = ( {visible, onHiding, atrzValue} ) => {
                                 </div>
                             </TableCell>
                             <TableCell style={{ textAlign: "center" }}>
-                                {tablBodyAtrzValue[codeIndex].length > 1 ? 
-                                    tablBodyAtrzValue[codeIndex].map((item, index) => (createTagBox(codeIndex, [tablBodyAtrzValue[codeIndex][index]]))) : createTagBox(codeIndex, tablBodyAtrzValue[codeIndex])}
-                                {/*createTagBox(codeIndex, tablBodyAtrzValue[codeIndex])*/}
+
+                                {createTagBox(codeIndex, tablBodyAtrzValue[codeIndex])}
                             </TableCell>
                         </TableRow>
                     </>
@@ -219,9 +207,7 @@ const ApprovalPopup = ( {visible, onHiding, atrzValue} ) => {
         )
     }
 
-    /*
-        전체 팝업창 렌더링
-    */
+    //팝업창 렌더링
     const createRenderData = () => {
         return (
             <>
@@ -248,25 +234,32 @@ const ApprovalPopup = ( {visible, onHiding, atrzValue} ) => {
                         </TableBody>
                     </Table>
                 </div>
+                <div style={{ marginTop: "15px" }}>
+                    <Button
+                        text="Close"
+                    />
+                </div>
             </>
         )
     }
 
-return (
-        <>
-            <Popup
-                width={"900px"}
-                height={"850px"}
-                title={"* 결재선 지정"}
-                visible={visible}
-                showCloseButton={true}
-                contentRender={createRenderData}
-                onHiding={(e) => {
-                    onHiding(false);
-                }}
-            />
-        </>
-    )
+    return (
+            <>
+                <Popup
+                    onClose={true}
+                    width={"900px"}
+                    height={"850px"}
+                    title={"* 결재선 지정"}
+                    visible={visible}
+                    showCloseButton={true}
+                    contentRender={createRenderData}
+                    onHiding={(e) => {
+                        onHiding(false);
+                    }}
+                />
+            </>
+        )
+
 }
 
 export default ApprovalPopup;
