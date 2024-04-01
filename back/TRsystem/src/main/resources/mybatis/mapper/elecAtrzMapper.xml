@@ -28,10 +28,11 @@
 	<select id="elecAtrzMain" parameterType="String" resultType="com.trsystem.LowerHashMap">
 		SELECT
 			ea.ELCTRN_ATRZ_ID,
+			ea.PRJCT_ID,
 			tyCd.CD_NM AS ELCTRN_ATRZ_TY_SE_CD_NM, -- 전자결재 유형
 			e1.EMP_FLNM AS ATRZ_DMND_EMP_ID, -- 기안자
 			e2.EMP_FLNM AS APRVR_EMP_ID, -- 현재 결재권자
-			ea.REG_DT, -- 기안 요청일
+			DATE_FORMAT(ea.REG_DT, '%Y-%m-%d') AS REG_DT,
 			ca.CNPT_NM, -- 청구결재 (거래처명)
 			stepCd.CD_NM AS ATRZ_STEP_CD, -- 현재 결재단계 (VTW007)
 			sttsCd.CD_NM AS ATRZ_STTS_CD, -- 결재상태 (VTW008)
@@ -65,6 +66,17 @@
 		<if test="sttsCd != null and sttsCd.startsWith('VTW008')">
 			AND al.ATRZ_STTS_CD = #{sttsCd}
 			AND al.APRVR_EMP_ID = #{empId}
+		</if>
+		<if test="elctrnAtrzTySeCd != null">
+			AND ea.ELCTRN_ATRZ_TY_SE_CD = #{elctrnAtrzTySeCd}
+		</if>
+		<if test="title != null">
+			AND (
+				LOWER(ga.GNRL_ATRZ_TTL) LIKE CONCAT('%', LOWER(#{title}), '%') OR
+				LOWER(ca.CLM_ATRZ_TTL) LIKE CONCAT('%', LOWER(#{title}), '%') OR
+				LOWER(cga.ATRZ_TTL) LIKE CONCAT('%', LOWER(#{title}), '%') OR
+				LOWER(va.VCATN_TY_CD) IN (SELECT CD_VALUE FROM CD WHERE LOWER(CD_NM) LIKE CONCAT('%', LOWER(#{title}), '%'))
+			)
 		</if>
 	</select>
 
