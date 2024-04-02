@@ -170,10 +170,11 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
                             <CustomLabelValue props={matrlPlanParam}  value={matrlCtrtData.matrlPlan} onSelect={handleChgState} />
                             <CustomLabelValue props={labelValue.cntrctamount} onSelect={handleChgState} readOnly={true} value={matrlCtrtData.cntrctamount}/>
                             <CustomLabelValue props={labelValue.prductNm} onSelect={handleChgState} value={matrlCtrtData.prductNm}/>
-                            <CustomLabelValue props={labelValue.dtlCn} onSelect={handleChgState} value={matrlCtrtData.dtlCn}/>
-                            <CustomLabelValue props={labelValue.tot} onSelect={handleChgState} value={matrlCtrtData.tot}/>
-                            <CustomLabelValue props={labelValue.dlvgdsYmd} onSelect={handleChgState} value={matrlCtrtData.dlvgdsYmd}/>
-                            <CustomLabelValue props={labelValue.endYmd} onSelect={handleChgState} value={matrlCtrtData.endYmd}/>
+                            <CustomLabelValue props={labelValue.tkcgJob} onSelect={handleChgState} value={matrlCtrtData.tkcgJob}/>
+                            <CustomLabelValue props={labelValue.inptPrnmntHnfCnt} onSelect={handleChgState} value={matrlCtrtData.inptPrnmntHnfCnt}/>
+                            <CustomLabelValue props={labelValue.inptBgngYmd} onSelect={handleChgState} value={matrlCtrtData.inptBgngYmd}/>
+                            <CustomLabelValue props={labelValue.inptEndYmd} onSelect={handleChgState} value={matrlCtrtData.inptEndYmd}/>
+                            <CustomLabelValue props={labelValue.payTot} onSelect={handleChgState} readOnly={true} value={matrlCtrtData.payTot}/>
                          </div>
                         }
                     </div>
