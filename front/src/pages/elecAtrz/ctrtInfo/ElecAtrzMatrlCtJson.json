@@ -1,7 +1,7 @@
 {
     "menuName": "ElecAtrzMatrlCtDetailJson",
     "queryId": "projectMapper.retrieveElctrnAtrzMatrlCtDetail",
-    "keyColumn": "matrlCtSn",
+    "keyColumn": "entrpsCtrtDtlSn",
     "insertButton" : "재료비 추가",
     "tableColumns": [
       { "key": "prductNm", "value": "제품명" },

@@ -83,8 +83,8 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData }) => {
             setPopupVisible(prev => !prev);
             // setSelectedData(data);
         }else if(button.name === "delete"){
-            if(data.matrlCtSn != 0){
-                setTableData(currentTableData => currentTableData.filter(item => item.matrlCtSn !== data.matrlCtSn));
+            if(data.entrpsCtrtDtlSn != 0){
+                setTableData(currentTableData => currentTableData.filter(item => item.entrpsCtrtDtlSn !== data.entrpsCtrtDtlSn));
             }
         }else if(button.name === "update"){
             setPopupVisible(prev => !prev);
@@ -100,15 +100,15 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData }) => {
 
 
     const handlePopupData = (data) => {
-        const existingIndex = tableData.findIndex(item => item.matrlCtSn === data.matrlCtSn);
+        const existingIndex = tableData.findIndex(item => item.entrpsCtrtDtlSn === data.entrpsCtrtDtlSn);
 
         if(existingIndex >=0){
             const updatedData = [...tableData];
             updatedData[existingIndex] = data;
             setTableData(updatedData);
         } else {
-            const maxSn = tableData.length > 0 ? Math.max(...tableData.map(item => item.matrlCtSn || 0)) : 0;
-            data.matrlCtSn = maxSn + 1;     
+            const maxSn = tableData.length > 0 ? Math.max(...tableData.map(item => item.entrpsCtrtDtlSn || 0)) : 0;
+            data.entrpsCtrtDtlSn = maxSn + 1;     
             setTableData(prev => [...prev, data]);
         }
     }
