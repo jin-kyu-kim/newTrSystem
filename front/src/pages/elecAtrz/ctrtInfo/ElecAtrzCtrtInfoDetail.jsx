@@ -52,14 +52,15 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData }) => {
      */
     useEffect(() => {
 
+        //pay 배열에 tbNm 추가
         const updatedTableData = tableData.map(item => ({
             ...item,
-            pay: item.pay.map(payItem => ({ ...payItem })).concat([{ tbNm: 'ENTRPS_CTRT_DTL_CND' }]) 
+            pay: [{ tbNm: 'ENTRPS_CTRT_DTL_CND' }, ...item.pay.map(payItem => ({ ...payItem }))]
         }));
         
         //테이블 배열에 tbNm 추가
         let newData;
-        newData = [...updatedTableData, { tbNm: 'ENTRPS_CTRT_DTL' }];
+        newData = [{ tbNm: 'ENTRPS_CTRT_DTL' }, ...updatedTableData];
 
         //pay데이터의 날짜 데이터 포멧팅
         newData.forEach(item => {
