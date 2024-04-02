@@ -255,6 +255,12 @@ const TreRoutes = [
     name: "ElecAtrzNewForm",
     element: React.lazy(() => import("../pages/mngrMenu/ElecAtrzNewForm")),
   },
+  // 관리자메뉴 > 전자결재(관리자)
+  {
+    path: "/mngrMenu/ElecAtrzManage",
+    name: "ElecAtrzManage",
+    element: React.lazy(() => import("../pages/mngrMenu/ElecAtrzManage")),
+  },
   // 전자결재 
   {
     path: "/elecAtrz/ElecAtrz",
