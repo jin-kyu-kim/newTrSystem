@@ -4,9 +4,10 @@ import ApiRequest from "utils/ApiRequest";
 import { useCookies } from "react-cookie";
 import CustomEditTable from "components/unit/CustomEditTable";
 
-const EmpCareer = ({naviEmpId}) => {
-  const { queryId, keyColumn, tableColumns, tbNm } = EmpInfoJson.EmpCareer;
+const EmpInfoPop = ({ naviEmpId }) => {
+  const { queryId, keyColumn, tableColumns, tbNm } = EmpInfoJson.EmpDegree;
   const [cookies] = useCookies(["userInfo", "userAuth"]);
+  const [values, setValues] = useState([]);
 
   let userEmpId;
 
@@ -17,8 +18,9 @@ const EmpCareer = ({naviEmpId}) => {
   }
 
   const doublePk = { nm: "empId", val: userEmpId };
-  const [values, setValues] = useState([]);
-  
+
+
+
   useEffect(() => {
     pageHandle();
   }, []);
@@ -28,7 +30,7 @@ const EmpCareer = ({naviEmpId}) => {
       const response = await ApiRequest("/boot/common/queryIdSearch", {
         queryId: queryId, empId: userEmpId
       });
-      if (response.length !== 0) setValues(response);
+      if(response.length !== 0) setValues(response);
     } catch (error) {
       console.log(error);
     }
@@ -38,7 +40,7 @@ const EmpCareer = ({naviEmpId}) => {
     <div style={{ padding: "20px" ,backgroundColor: "#b5c1c7" }}>
     <div className="container" style={{ padding: "20px" ,backgroundColor: "#fff" }}>
       <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }}>
-        <h1 style={{ fontSize: "40px" }}>경력</h1>
+        <h1 style={{ fontSize: "40px" }}>학력</h1>
       </div>
       <div style={{ marginBottom: "20px" }}>
         <CustomEditTable
@@ -54,4 +56,4 @@ const EmpCareer = ({naviEmpId}) => {
     </div>
   );
 };
-export default EmpCareer;
+export default EmpInfoPop;

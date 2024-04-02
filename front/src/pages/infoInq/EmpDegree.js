@@ -37,7 +37,8 @@ const EmpDegree = ({ naviEmpId }) => {
   };
 
   return (
-    <div className="container" style={{ height: "100%" }}>
+    <div style={{ padding: "20px" ,backgroundColor: "#b5c1c7" }}>
+    <div className="container" style={{ padding: "20px" ,backgroundColor: "#fff" }}>
       <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }}>
         <h1 style={{ fontSize: "40px" }}>학력</h1>
       </div>
@@ -51,6 +52,7 @@ const EmpDegree = ({ naviEmpId }) => {
           callback={pageHandle}
         />
       </div>
+    </div>
     </div>
   );
 };

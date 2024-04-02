@@ -51,7 +51,7 @@ const EmpDetailInfo = () => {
       );
 
     const itemTitleRender = (a) => <span>{a.TabName}</span>;
-
+    
     const onClick = () => {
         navigate("/humanResourceMng/EmpManage");
     };
@@ -68,7 +68,7 @@ const EmpDetailInfo = () => {
         </div>
         <div className="buttons" align="right" style={{ margin: "20px" }}>
           <Button
-            width={110}
+            width={130}
             text="Contained"
             type="default"
             stylingMode="contained"
