@@ -7,13 +7,13 @@
 	<!-- 전자결재 계약: 계약서 품의(재료비) 지불계획 팝업 -->
 	<select id="retrieveMatrlPlan" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT CONCAT(PRDUCT_NM,  " - ", DLVGDS_ENTRPS_NM) AS MATRL_PLAN
+			 , MATRL_CT_SN 
 			 , CNTRCTAMOUNT
 			 , PRDUCT_NM
 			 , DLVGDS_ENTRPS_NM
 			 , DTL_CN
 			 , UNTPC
 			 , QY
-			 , UNTPC * QY AS TOT
 			 , mcp.PRJCT_ID
 		  FROM MATRL_CT_PRMPC mcp
 		  JOIN (SELECT MAX(BGT_MNG_ODR) AS BGT_MNG_ODR, PRJCT_ID 
@@ -118,6 +118,33 @@
 		WHERE 1=1
 		  AND ln.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
 		  AND ln.ATRZ_LN_SN = #{atrzLnSn}
+	</select>
+	
+	<select id="retrieveOutordCompanyPlan" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT 
+      		  (SELECT OUTORD_ENTRPS_NM from OUTORD_ENTRPS oe WHERE oe.OUTORD_ENTRPS_ID = oep.OUTORD_ENTRPS_ID) as OUTORD_ENTRPS_NM
+      		 , OUTORD_ENTRPS_ID 
+   			 , OUTORD_ENTRPS_CT_PRMPC_SN 
+   			 , TKCG_JOB
+   			 , DTL_DTLS
+   			 , CTRT_BGNG_YMD
+   			 , CTRT_END_YMD
+   			 , INPT_PRNMNT_HNF_CNT
+   			 , EXPECT_CT			
+		  FROM OUTORD_ENTRPS_CT_PRMPC oep
+		  JOIN (SELECT MAX(BGT_MNG_ODR) AS BGT_MNG_ODR, PRJCT_ID 
+		  		  FROM PRJCT_BGT_PRMPC
+	 		 	 WHERE 1=1
+		   		   AND ATRZ_DMND_STTS_CD = 'VTW03703'
+			    GROUP BY PRJCT_ID) pbp ON (oep.PRJCT_ID = pbp.PRJCT_ID AND oep.BGT_MNG_ODR = pbp.BGT_MNG_ODR)
+		  WHERE 1=1
+		    AND oep.PRJCT_ID = #{prjctId}
+	</select>
+	
+	<select id="retrieveRealOutordCompanyPlan" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT OUTORD_ENTRPS_ID AS PRDUCT_ID, 
+				OUTORD_ENTRPS_NM AS PRDUCT_NM
+				from OUTORD_ENTRPS
 	</select>
 	
 </mapper>

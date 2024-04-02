@@ -9,27 +9,35 @@
                 "placeholder": "계획 투입 업체",
                 "param":{ 
                         "queryId" : {
-                            "queryId" : "elecAtrzMapper.retrieveMatrlPlan"
+                            "queryId" : "elecAtrzMapper.retrieveOutordCompanyPlan"
                             },
-                        "valueExpr" : "matrlPlan",
-                        "displayExpr": "matrlPlan",
-                        "values" : ["cntrctamount","dlvgdsEntrpsNm","dtlCn","matrlPlan","prductNm","prjctId","qy","tot","untpc"],
-                        "name" : "matrlPlan"
+                        "valueExpr" : "outordEntrpsNm",
+                        "displayExpr": "outordEntrpsNm",
+                        "values" : ["outordEntrpsNm","outordEntrpsId","outordEntrpsCtPrmpcSn","tkcgJob","dtlDtls","ctrtBgngYmd","ctrtEndYmd","inptPrnmntHnfCnt","expectCt"],
+                        "name" : "outordEntrpsNm"
                         }
             },
-            "cntrctamount": {
-                "name": "cntrctamount",
+            "expectCt": {
+                "name": "expectCt",
                 "type": "TextBox",
                 "label": "가용금액",
                 "placeholder": "가용금액",
                 "required": true
             },
             "prductNm": {
-                "name": "prductNm",
-                "type": "TextBox",
+                "type": "ComboBox",
                 "label": "실제투입업체",
                 "placeholder": "실제투입업체",
-                "required": true
+                "required": true,
+                "param":{ 
+                        "queryId" : {
+                            "queryId" : "elecAtrzMapper.retrieveRealOutordCompanyPlan"
+                            },
+                        "valueExpr" : "prductNm",
+                        "displayExpr": "prductNm",
+                        "values" : ["prductId","prductNm"],
+                        "name" : "prductNm"
+                        }
             },
             "tkcgJob": {
                 "name": "tkcgJob",
@@ -47,22 +55,22 @@
                 "max": 9000000,
                 "required": true
             },
-            "inptBgngYmd": {
-                "name": "inptBgngYmd",
+            "ctrtBgngYmd": {
+                "name": "ctrtBgngYmd",
                 "type": "DateBox",
                 "label": "투입시작일",
                 "placeholder": "투입시작일",
                 "required": true
             },
-            "inptEndYmd": {
-                "name": "inptEndYmd",
+            "ctrtEndYmd": {
+                "name": "ctrtEndYmd",
                 "type": "DateBox",
                 "label": "투입종료일",
                 "placeholder": "투입종료일",
                 "required": true
             },
-            "payTot": {
-                "name": "payTot",
+            "totAmt": {
+                "name": "totAmt",
                 "type" : "NumberBox",
                 "label": "지급 총액",
                 "format": "#,###"
