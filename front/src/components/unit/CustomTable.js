@@ -54,9 +54,12 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
   }
 
   const buttonRender = (button, data) => {
+    let disabled = false;
+    if(button.able != null && data != null && data[button.able.key] != button.able.value){
+      disabled = true;
+    }
     return(
-      <Button name={button.name} text={button.text} onClick={(e) => {onClick(button, data)}}/>
-      
+      <Button name={button.name} text={button.text} onClick={(e) => {onClick(button, data)}} disabled={disabled}/>
     )
   }
 

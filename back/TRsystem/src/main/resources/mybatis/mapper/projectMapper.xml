@@ -591,6 +591,7 @@
 			 , pma.APLY_ODR
 		     , ROUND(SUM(CASE WHEN pmat.ATRZ_DMND_STTS_CD='VTW03703' THEN pma.MD ELSE 0 END)/MM_QUERY.MM,2) AS EXCN_MM
 		     , (mmp.EXPECT_MM - ROUND(SUM(CASE WHEN pmat.ATRZ_DMND_STTS_CD='VTW03703' THEN pma.MD ELSE 0 END)/MM_QUERY.MM,2)) AS AVBLE_MM
+		     , ANY_VALUE(indv.MM_ATRZ_CMPTN_YN) AS MM_ATRZ_CMPTN_YN
 		FROM (SELECT
             (SELECT COUNT(CRTR_YMD) FROM CRTR_DATE WHERE HLDY_CL_CD = 'VTW05001' AND CRTR_ODR = #{aplyOdr} AND DATE_FORMAT(CRTR_YMD, '%Y%m') = #{aplyYm}) AS MM
         ) AS MM_QUERY,
@@ -606,6 +607,7 @@
 		  JOIN DEPT_HNF dh ON (e.EMP_ID = dh.EMP_ID)
 		  JOIN DEPT d ON (d.DEPT_ID = dh.DEPT_ID)
           LEFT JOIN PRJCT_MM_ATRZ pmat ON pmat.PRJCT_ID = pma.PRJCT_ID AND (pmat.EMP_ID = pma.EMP_ID OR (pmat.EMP_ID IS NULL AND pma.EMP_ID IS NULL)) AND pmat.APLY_YM = pma.APLY_YM AND pmat.APLY_ODR = pma.APLY_ODR AND pmat.APLY_YMD = pma.APLY_YMD
+		  JOIN PRJCT_INDVDL_CT_MM indv ON indv.PRJCT_ID = pma.PRJCT_ID AND (indv.EMP_ID = pma.EMP_ID OR (indv.EMP_ID IS NULL AND pma.EMP_ID IS NULL)) AND indv.APLY_YM = pma.APLY_YM AND indv.APLY_ODR = pma.APLY_ODR
 		 WHERE 1=1
 		   AND pma.PRJCT_ID = #{prjctId}
 		   AND pma.APLY_YM = #{aplyYm}
@@ -674,12 +676,14 @@
 			 , e.EMP_ID
 			 , pca.APLY_YM
 			 , pca.APLY_ODR
+		     , ANY_VALUE(indv.CT_ATRZ_CMPTN_YN) AS CT_ATRZ_CMPTN_YN
 		  FROM PRJCT_CT_APLY pca
 		  JOIN EMP e ON (e.EMP_ID = pca.EMP_ID)
 	      JOIN DEPT_HNF dh ON (e.EMP_ID = dh.EMP_ID)
   		  JOIN DEPT d ON (d.DEPT_ID = dh.DEPT_ID)
          LEFT JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_ID = pca.PRJCT_ID AND (pcat.EMP_ID = pca.EMP_ID OR (pcat.EMP_ID IS NULL AND pca.EMP_ID IS NULL))
               AND pcat.APLY_YM = pca.APLY_YM AND pcat.APLY_ODR = pca.APLY_ODR)
+        JOIN PRJCT_INDVDL_CT_MM indv ON indv.PRJCT_ID = pca.PRJCT_ID AND (indv.EMP_ID = pca.EMP_ID OR (indv.EMP_ID IS NULL AND pca.EMP_ID IS NULL)) AND indv.APLY_YM = pca.APLY_YM AND indv.APLY_ODR = pca.APLY_ODR
 		 WHERE 1=1
 		   AND pca.PRJCT_ID = #{prjctId}
 		   AND pca.APLY_YM = #{aplyYm}
