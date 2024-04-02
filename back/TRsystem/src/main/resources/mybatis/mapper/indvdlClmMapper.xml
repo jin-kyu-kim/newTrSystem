@@ -172,7 +172,7 @@
             ,DEPT.DEPT_NM
             ,CONCAT(DEPT_NM, ' ', EMP_FLNM, ' ', (SELECT CD_NM FROM CD WHERE CD_VALUE = EMP.JBPS_CD)) LIST_EMP_FLNM
             ,'VTW00706' APPROVAL_CODE
-        FROM EMP			EMP
+        FROM EMP		EMP
             ,DEPT 		DEPT
             ,DEPT_HNF	HNF
         WHERE HDOF_STTS_CD = 'VTW00301'
@@ -181,5 +181,180 @@
         AND DEPT.DEPT_ID = #{repDeptId}
         AND EMP.EMP_FLNM IN ('이진원', '안주리')
     </select>
+
+    <!-- 프로젝트MM신청조회 -->
+    <select id="retrievePrjctIndvdlCtAply" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        WITH RECURSIVE VCATN_CNT AS (
+            SELECT
+                ATRZ.ELCTRN_ATRZ_ID
+                ,EMP.EMP_ID
+                ,ATRZ.VCATN_BGNG_YMD AS VCATN_YMD
+                ,ATRZ.VCATN_TY_CD
+                ,(SELECT CD_NM FROM CD WHERE CD_VALUE = ATRZ.VCATN_TY_CD) AS VCATN_TY_NM
+                ,CASE
+                    WHEN ATRZ.VCATN_TY_CD IN ('VTW01201', 'VTW01204') THEN '8hrs'
+                    ELSE '4hrs'
+                    END VCATN_TIME
+                ,ATRZ.VCATN_DE_CNT AS FLAG_CNT
+                FROM VCATN_ATRZ 	ATRZ
+                    ,ELCTRN_ATRZ	ELCTRN
+                    ,EMP			EMP
+                WHERE ATRZ.ELCTRN_ATRZ_ID = ELCTRN.ELCTRN_ATRZ_ID
+                AND ELCTRN.ATRZ_DMND_EMP_ID = EMP.EMP_ID
+                AND ATRZ.VCATN_TY_CD != 'VTW01207'
+                AND ELCTRN.ATRZ_DMND_EMP_ID = #{empId}
+                AND SUBSTR(ATRZ.VCATN_BGNG_YMD, 1, 6) = #{aplyYm}
+        UNION ALL
+            SELECT
+                ELCTRN_ATRZ_ID
+                ,EMP_ID
+                ,VCATN_YMD + 1
+                ,VCATN_TY_CD
+                ,VCATN_TY_NM
+                ,VCATN_TIME
+                ,FLAG_CNT - 1
+                FROM VCATN_CNT
+                WHERE 1 <![CDATA[<]]> FLAG_CNT
+        )
+        SELECT
+            'workAply'  APLY_TYPE       /* 근무_휴가구분식별자 */
+            ,ATRZ.PRJCT_ID	            /* 프로젝트ID */
+            ,(SELECT PRJCT_NM FROM PRJCT PRJCT WHERE PRJCT.PRJCT_ID = ATRZ.PRJCT_ID)	PRJCT_NM	/* 프로젝트명 */
+            ,ATRZ.EMP_ID	            /* 직원ID */
+            ,ATRZ.APLY_YM	            /* 신청연월 */
+            ,ATRZ.APLY_ODR	            /* 신청차수 */
+            ,ATRZ.APLY_YMD              /* 신청일자 */
+            ,ROUND(APLY.MD)	MD			/* 근무시간비율 */
+            ,ATRZ.RJCT_PRVONSH			/* 반려사유 */
+            ,ATRZ.PRJCT_APRVR_CD	    /* 프로젝트결재자코드 */
+            ,ATRZ.ATRZ_DMND_STTS_CD	    /* 결재요청상태코드 */
+            ,(SELECT CD_NM FROM CD WHERE CD_VALUE = ATRZ_DMND_STTS_CD)	ATRZ_DMND_STTS_CD_NM		/* 결재요청상태코드명 */
+            ,ATRZ.APRVR_EMP_ID	        /* 결재자직원ID */
+            ,(SELECT EMP_FLNM FROM EMP EMP WHERE EMP.EMP_ID = APRVR_EMP_ID)	APRVR_EMP_FLNM			/* 결재자직원명 */
+            ,ATRZ.APRV_YMD	            /* 승인일자 */
+            ,ATRZ.RJCT_YMD	            /* 반려일자 */
+            ,''	VCATN_TY_CD				/* 휴가유형코드 */
+            ,CONCAT(
+                ROUND(md * 8), '시간 | ',
+                (SELECT PRJCT_NM FROM PRJCT PRJCT WHERE PRJCT.PRJCT_ID = ATRZ.PRJCT_ID), ' ',
+                IFNULL((SELECT EMP_FLNM FROM EMP EMP WHERE EMP.EMP_ID = APRVR_EMP_ID), ''), ' ',
+                IFNULL((SELECT CD_NM FROM CD WHERE CD_VALUE = ATRZ_DMND_STTS_CD), '')
+            ) TEXT						/* 결재상태내용 */
+        FROM PRJCT_MM_ATRZ 	ATRZ
+            ,PRJCT_MM_APLY 	APLY
+        WHERE 1 = 1
+        AND ATRZ.PRJCT_ID = APLY.PRJCT_ID
+        AND ATRZ.EMP_ID = APLY.EMP_ID
+        AND ATRZ.APLY_YM = APLY.APLY_YM
+        AND ATRZ.APLY_ODR = APLY.APLY_ODR
+        AND ATRZ.APLY_YMD = APLY.APLY_YMD
+        AND ATRZ.EMP_ID = #{empId}
+        AND ATRZ.APLY_YM = #{aplyYm}
+        AND ATRZ.APLY_ODR = #{aplyOdr}
+        UNION ALL
+        SELECT
+            'vcatnAply' APLY_TYPE     /* 근무_휴가구분식별자 */
+            ,''
+            ,''
+            ,EMP_ID
+            ,''
+            ,''
+            ,VCATN_YMD
+            ,''
+            ,''
+            ,''
+            ,''
+            ,''
+            ,''
+            ,''
+            ,''
+            ,''
+            ,VCATN_TY_CD
+            ,CONCAT(VCATN_TY_NM, ' ', VCATN_TIME)
+        FROM VCATN_CNT
+    </select>
+
+
+    <!-- 프로젝트개인비용저장 -->
+    <insert id="retrievePrjctIndvdlCtMmStrg" parameterType="map">
+        INSERT INTO PRJCT_INDVDL_CT_MM
+        VALUES (
+            #{prjctId}			/* 프로젝트ID */
+            ,#{empId}			/* 직원ID */
+            ,#{aplyYm}			/* 신청연월 */
+            ,#{aplyOdr}			/* 신청차수 */
+            ,#{ctAtrzCmptnYn}	/* 비용결재완료여부 */
+            ,#{mmAtrzCmptnYn}	/* MM결재완료여부 */
+            ,#{expensCd}		/* 경비코드 */
+        )
+        ON DUPLICATE KEY UPDATE
+            PRJCT_ID 			= #{prjctId}
+            ,EMP_ID				= #{empId}
+            ,APLY_YM 			= #{aplyYm}
+            ,APLY_ODR			= #{aplyOdr}
+            ,MM_ATRZ_CMPTN_YN 	= #{mmAtrzCmptnYn}
+    </insert>
+
+    <!-- 프로젝트MM신청삭제 -->
+    <delete id="retrievePrjctMmAplyDel" parameterType="map">
+        DELETE FROM PRJCT_MM_APLY
+        WHERE EMP_ID = #{empId}
+        AND APLY_YM = #{aplyYm}
+        AND APLY_ODR = #{aplyOdr}
+    </delete>
+
+    <!-- 프로젝트MM결재삭제 -->
+    <delete id="retrievePrjctMmAtrzDel" parameterType="map">
+        DELETE FROM PRJCT_MM_ATRZ
+        WHERE EMP_ID = #{empId}
+        AND APLY_YM = #{aplyYm}
+        AND APLY_ODR = #{aplyOdr}
+    </delete>
+
+    <!-- 프로젝트MM신청저장 -->
+    <insert id="retrievePrjctMmAplyStrg" parameterType="map">
+        INSERT INTO PRJCT_MM_APLY
+        VALUES
+        (
+            #{prjctId},
+            #{empId},
+            #{aplyYm},
+            #{aplyOdr},
+            #{md},
+            #{aplyYmd},
+            #{regDt},
+            #{regEmpId},
+            #{mdfcnDt},
+            #{mdfcnEmpId},
+            #{yrycRate}
+        )
+    </insert>
+
+
+    <!-- 프로젝트MM결재저장 -->
+    <insert id="retrievePrjctMmAtrzStrg" parameterType="map">
+        INSERT INTO PRJCT_MM_ATRZ
+        VALUES
+        (
+            #{rjctPrvonsh}
+            ,#{prjctAprvrCd}
+            ,#{atrzDmndSttsCd}
+            ,#{aprvrEmpId}
+            ,#{prjctId}
+            ,#{empId}
+            ,#{aplyYm}
+            ,#{aplyOdr}
+            ,#{aprvYmd}
+            ,#{prjctYmd}
+            ,#{regDt}
+            ,#{regEmpId}
+            ,#{mMdfcnDt}
+            ,#{mdfcnEmpId}
+            ,#{aplyYmd}
+        )
+
+    </insert>
+
+
 
 </mapper>

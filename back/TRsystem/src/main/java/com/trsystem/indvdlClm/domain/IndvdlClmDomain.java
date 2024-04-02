@@ -22,12 +22,13 @@ public class IndvdlClmDomain {
         IndvdlClmDomain.commonService = commonService;
     }
 
-    public static List<Map<String, Object>> selectPrjctMM(List<Map<String, Object>> params){
+    public static int insertPrjctMM(List<Map<String, Object>> params){
 
         List<Map<String, Object>> newList = params.stream().distinct().collect(Collectors.toList());
-        List<Map<String, Object>> result = new ArrayList<>();
+        List<Map<String, Object>> insertList = new ArrayList<>();
         HashMap<String, Object> tbNm = new HashMap<String, Object>();
         tbNm.put("tbNm", "PRJCT_INDVDL_CT_MM");
+        insertList.add(tbNm);
 
         for(int i = 0; i < newList.size(); i++){
             List <Map<String, Object>> searchList = new ArrayList<>();
@@ -36,33 +37,77 @@ public class IndvdlClmDomain {
 
             List<Map<String, Object>> list = commonService.commonSelect(searchList);
             if(list.isEmpty()){
-                result.add(newList.get(i));
+                insertList.add(newList.get(i));
             }
         }
+        int result = commonService.insertData(insertList);
         return result;
     }
 
-    public static List<Map<String, Object>> insertPrjctMM(List<Map<String, Object>> params){
-        List<Map<String, Object>> mmList = new ArrayList<>();
-        HashMap<String, Object> tbNmMM = new HashMap<String, Object>();
-        tbNmMM.put("tbNm", "PRJCT_INDVDL_CT_MM");
-        mmList.add(tbNmMM);
-        mmList.addAll(params);
-        int resultMM = commonService.insertData(mmList);
-
+    public static int insertPrjctHis(List<Map<String, Object>> params){
         List<Map<String, Object>> histList = new ArrayList<>();
-        if (resultMM > 0){
-            HashMap<String, Object> tbNmHist = new HashMap<String, Object>();
-            tbNmHist.put("tbNm", "PRJCT_ATRZ_HIST");
-            histList.add(tbNmHist);
-            for(int i = 0; i < params.size(); i++){
-                Map<String, Object> newParam = params.get(i);
-                newParam.put("atrzDmndSttsCd","VTW03701");
-                newParam.put("prjctAtrzHistSn", 1);
-                histList.add(newParam);
-            }
-            int resultHist = commonService.insertData(histList);
+        HashMap<String, Object> tbNmHist = new HashMap<String, Object>();
+        tbNmHist.put("tbNm", "PRJCT_ATRZ_HIST");
+        histList.add(tbNmHist);
+        for(int i = 0; i < params.size(); i++){
+            Map<String, Object> newParam = params.get(i);
+            newParam.put("atrzDmndSttsCd","VTW03701");
+            newParam.put("prjctAtrzHistSn", 1);
+            histList.add(newParam);
         }
-        return histList;
+        int result = commonService.insertData(histList);
+        return result;
+    }
+
+    public static List<Map<String, Object>> insertPrjctMmAply(List<Map<String, Object>> params){
+        int result;
+        if(params.size() > 0){
+            // PRJCT_MM_APLY(프로젝트MM신청) 기존 데이터 삭제
+            Map<String, Object> deletePrjctMmAplyMap = new HashMap<>();
+            deletePrjctMmAplyMap = params.get(0);
+            deletePrjctMmAplyMap.put("queryId", "indvdlClmMapper.retrievePrjctMmAplyDel");
+            List<Map<String, Object>> deletePrjctMmAplyData = commonService.queryIdSearch(deletePrjctMmAplyMap);
+
+            // PRJCT_MM_ATRZ(프로젝트MM결재) 기존 데이터 삭제
+            Map<String, Object> deletePrjctMmAtrzMap = new HashMap<>();
+            deletePrjctMmAtrzMap = params.get(0);
+            deletePrjctMmAtrzMap.put("queryId", "indvdlClmMapper.retrievePrjctMmAtrzDel");
+            List<Map<String, Object>> deletePrjctMmAtrzData = commonService.queryIdSearch(deletePrjctMmAtrzMap);
+        }
+
+
+        List<Map<String, Object>> insertMap = new ArrayList<>();
+        for(int i = 0; i < params.size(); i++){
+            params.get(i).put("tbNm", "PRJCT_INDVDL_CT_MM");
+            insertMap.add(params.get(i));
+
+            // PRJCT_INDVDL_CT_MM(프로젝트개인비용MM) INSERT/UPDATE
+            Map<String, Object> mergePrjctIndvdlCtMmMap = new HashMap<>();
+            mergePrjctIndvdlCtMmMap = params.get(i);
+            mergePrjctIndvdlCtMmMap.put("queryId", "indvdlClmMapper.retrievePrjctIndvdlCtMmStrg");
+            List<Map<String, Object>> mergePrjctIndvdlCtMmData = commonService.queryIdSearch(mergePrjctIndvdlCtMmMap);
+
+            Map<String, Object> insertPrjctMmAplyMap = new HashMap<>();
+            insertPrjctMmAplyMap = params.get(i);
+            insertPrjctMmAplyMap.put("queryId", "indvdlClmMapper.retrievePrjctMmAplyStrg");
+            List<Map<String, Object>> insertPrjctMmAplyResult = commonService.queryIdSearch(insertPrjctMmAplyMap);
+
+            Map<String, Object> insertPrjctMmAtrzMap = new HashMap<>();
+            insertPrjctMmAtrzMap = params.get(i);
+            insertPrjctMmAtrzMap.put("queryId", "indvdlClmMapper.retrievePrjctMmAtrzStrg");
+            List<Map<String, Object>> insertPrjctMmAtrzResult = commonService.queryIdSearch(insertPrjctMmAtrzMap);
+        }
+
+//        System.out.println("======================================");
+//        System.out.println("insertMap" + insertMap);
+//        System.out.println("======================================");
+
+//        result = commonService.insertDataList(insertMap);
+
+        System.out.println("======================================");
+//        System.out.println("result" + result);
+        System.out.println("======================================");
+
+        return null;
     }
 }

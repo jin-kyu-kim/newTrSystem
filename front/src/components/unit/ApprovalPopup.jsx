@@ -1,206 +1,121 @@
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from 'react';
+import { Popup, ToolbarItem } from 'devextreme-react/popup';
+import CustomEmpComboBox from './CustomEmpComboBox';
+import ApiRequest from 'utils/ApiRequest';
+import '../../assets/css/Style.css'
 
-import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
-
-import { DataGrid, Popup, Button, TagBox, TextBox } from "devextreme-react";
-
-import CustomEmpComboBox from "../unit/CustomEmpComboBox"
-import ApiRequest from "../../utils/ApiRequest";
-
-let tablBodyCodeValue = [];
-let tablBodyAtrzValue = [];
-
-function onSelectAtrz(selectCodeValue, selectEmpValue, tablBodyCodeValue, tablBodyAtrzValue, changeAppovalValue, changeValue, codeIndex){
-
-    tablBodyAtrzValue.splice(codeIndex, 1, changeValue);
-
-    render(selectCodeValue, selectEmpValue, tablBodyCodeValue, tablBodyAtrzValue);
-}
-
-function onAddButtonClick() {
-    // console.log(e);
-}
-
-const tableHeaderData = [
-    { value: "입력", width: "70px" },
-    { value: "결재단계", width: "100px" },
-    { value: "결재권자" },
-];
-
-function createTableHeader() {
-    return (
-        <>
-            {tableHeaderData.map((item, index) => (
-                <TableCell
-                    key={"header" + index}
-                    style={{ textAlign: "center", backgroundColor: "#EEEEEE", border: "1px solid #CCCCCC", width: tableHeaderData[index].width }}>
-                    {tableHeaderData[index].value}
-                </TableCell>
-            ))}
-        </>
-    )
-}
-
-
-
-const render = (selectCodeValue, selectEmpValue, tablBodyCodeValue, tablBodyAtrzValue) =>{
-    console.log("tablBodyAtrzValue : ", tablBodyAtrzValue);
-    return (
-        <>
-            {tablBodyCodeValue.map((codeItem, codeIndex) => (
-                <>
-                    <TableRow>
-                        <TableCell>
-                            <div>
-                                <Button
-                                    text="+"
-                                    onClick={(e) => { onAddButtonClick("addButton" + codeIndex) }}
-                                />
-                            </div>
-                        </TableCell>
-                        <TableCell style={{ textAlign: "center" }}>
-                            <div>
-                                {selectCodeValue ? selectCodeValue[codeIndex].cdNm : ""}
-                            </div>
-                        </TableCell>
-                        <TableCell style={{ textAlign: "center" }}>
-                            <TagBox
-                                dataSource={selectEmpValue}
-                                value={tablBodyAtrzValue[codeIndex]}
-                                // valueExpr="empId"
-                                displayExpr="listEmpFlnm"
-                                stylingMode="underlined"
-                                onValueChange={(e) => {onSelectAtrz(
-                                    selectCodeValue, 
-                                    selectEmpValue, 
-                                    tablBodyCodeValue, 
-                                    tablBodyAtrzValue, 
-                                    selectCodeValue[codeIndex].cdValue,
-                                    e,
-                                    codeIndex
-                                    )}
-                                }
-                                // onValueChange={onSelectAtrz}
-                            />
-                        </TableCell>
-                    </TableRow>
-                </>
-            ))}
-        </>
-    )
-}
-
-
-const ApprovalPopup = ({ visible, onHiding, atrzValue }) => {
-    const [selectValue, setSelectValue] = useState({empId: ""});
-
-    // 결재상태코드
-    const [selectCodeValue, setSelectCodeValue] = useState([]);
-    const [searchCodeParam, setSearchCodeParam] = useState({
-        queryId: "humanResourceMngMapper.retrieveCodeList",
-        searchType: "approvalCode",
-        upCdValue: "VTW007"
-    });
-
-    // 직원목록
-    const [selectEmpValue, setSelectEmpValue] = useState([]);
-    const [searchEmpParam, setSearchEmpParam] = useState({ 
-        queryId: "humanResourceMngMapper.retrieveEmpList", 
-        searchType: "empList" 
-    });
+const ApprovalPopup = ({ visible, atrzValue, onHiding }) => {
+    const [aprvrEmpList, setAprvrEmpList] = useState(atrzValue);
+    const [selectedEmp, setSelectedEmp] = useState({});
+    const [stepCdList, setStepCdList] = useState([]);
+    const tableTitle = ['입력', '결재단계', '결재권자'];
+    
+    const getCloseButtonOptions = useCallback(
+        () => ({
+            text: '등록',
+            stylingMode: 'outlined',
+            type: 'default',
+            onClick: () => onHiding(aprvrEmpList),
+        }),
+        [onHiding]
+    );
 
     useEffect(() => {
-        pageHandle(searchCodeParam);
-    }, [searchCodeParam])
+        const getAtrzStepCd = async () => {
+            try {
+                const response = await ApiRequest('/boot/common/commonSelect', [
+                    { tbNm: "CD" }, { upCdValue: "VTW007" }
+                ]);
+                setStepCdList(response);
+            } catch (error) {
+                console.log('error', error);
+            }
+        };
+        getAtrzStepCd();
+    }, []);
 
-    useEffect(() => {
-        pageHandle(searchEmpParam);
-    }, [searchEmpParam])
+    const onEmpChg = (data) => {
+        setSelectedEmp(data[0]);
+    };
 
-
-    // 결재상태코드조회
-    const pageHandle = async (initParam) => {
-        try {
-            if(initParam.searchType == "approvalCode" ) setSelectCodeValue(await ApiRequest("/boot/common/queryIdSearch", initParam));
-            else if(initParam.searchType == "empList" ) setSelectEmpValue(await ApiRequest("/boot/common/queryIdSearch", initParam));
-        } catch (error) {
-            console.log(error);
+    const onAddEmp = (cdValue) => {
+        // 검토 / 확인 / 심사 / 승인에는 한명만
+        const oneEmpCase = ['VTW00702', 'VTW00703', 'VTW00704', 'VTW00705'];
+        const isOneCase = oneEmpCase.includes(cdValue);
+        const hasEmpAlready = aprvrEmpList.some(emp => emp.approvalCode === cdValue);
+        const isEmpIdExist = aprvrEmpList.some(emp => emp.empId === selectedEmp.empId && emp.approvalCode === cdValue);
+        
+        if (!isEmpIdExist) {
+            if (isOneCase && hasEmpAlready) {
+                alert('검토, 확인, 심사, 승인 단계 결재권자는 한명만 설정할 수 있습니다. 다시 선택해주세요.');
+            } else {
+                setAprvrEmpList([...aprvrEmpList, { ...selectedEmp, approvalCode: cdValue }]);
+            }
+        } else {
+            alert('이미 해당 결재단계에 등록되어 있습니다.');
         }
     };
 
-    // 우측의 SelectBox 성명 변경
-    function onSelectEmpFlnmChg(e) {
-        setSelectValue({
-            ...selectValue,
-            empno: e[0].empno,
-            empId: e[0].empId,
-        })
-    }
+    const removeEmp = (empId, approvalCode) => {
+        const updatedList = aprvrEmpList.filter(emp => !(emp.empId === empId && emp.approvalCode === approvalCode));
+        setAprvrEmpList(updatedList);
+    };
 
-    function createTableBody() {
-        selectCodeValue.map((item, index) => {
-            tablBodyCodeValue.push({
-                approvalCode: selectCodeValue[index].cdValue,
-                atrzLnNm: ""
-            })
-            tablBodyAtrzValue.push(
-                atrzValue.filter(item => item.approvalCode == selectCodeValue[index].cdValue)
-            )
-        });
-    
+    const addAprvrEmpArea = () => {
         return (
-            render(selectCodeValue, selectEmpValue, tablBodyCodeValue, tablBodyAtrzValue)
+            <div>
+                <span style={{ color: 'blue' }}>결재자를 선택하거나 검색 후, 추가 버튼을 이용해 결재권자를 설정합니다.</span>
+                <CustomEmpComboBox
+                    value={selectedEmp.empId}
+                    readOnly={false}
+                    useEventBoolean={true}
+                    showClearButton={true}
+                    onValueChange={onEmpChg}
+                />
+                <div className="atrz-popup-header">
+                    {tableTitle.map((item, index) => (
+                        <div className="atrz-popup-cell" key={index}>{item}</div>
+                    ))}
+                </div>
+
+                {stepCdList.map((cd) => (
+                    <div className="atrz-popup-row" key={cd.cdValue}>
+                        <div className="atrz-popup-cell atrz-popup-button" onClick={() => onAddEmp(cd.cdValue)}>추가</div>
+                        <div className="atrz-popup-cell">{cd.cdNm}</div>
+                        <div className="atrz-popup-cell">
+                            {aprvrEmpList.length !== 0 && aprvrEmpList.filter(emp => emp.approvalCode === cd.cdValue)
+                                .map((emp, index) => (
+                                    <div className='aprvrEmp' key={index}>
+                                        {emp.empFlnm}
+                                        <button onClick={() => removeEmp(emp.empId, emp.approvalCode)}
+                                        className='popup-delete-btn'>X</button>
+                                    </div>
+                            ))}
+                        </div>
+                    </div>
+                ))}
+            </div>
         );
-    }
-    
-
-
-    const createRenderData = () => {
-        return (
-            <>
-                <div>
-                    결재자를 검색 후 입력 버튼을 이용해 결재권자를 설정합니다.
-                </div>
-                <div style={{ width: "400px", marginTop: "15px" }}>
-                    <CustomEmpComboBox
-                        value={selectValue.empId}
-                        readOnly={false}
-                        useEventBoolean={true}
-                        showClearButton={true}
-                        onValueChange={onSelectEmpFlnmChg}
-                    />
-                </div>
-
-                <div style={{ marginTop: "15px" }}>
-                    <Table>
-                        <TableHead>
-                            {createTableHeader()}
-                        </TableHead>
-                        <TableBody>
-                            {createTableBody()}
-                        </TableBody>
-                    </Table>
-                </div>
-            </>
-        )
-    }
+    };
 
     return (
-        <>
+        <div>
             <Popup
-                width={"900px"}
-                height={"850px"}
-                title={"* 결재선 지정"}
+                height={660}
                 visible={visible}
+                onHiding={() => onHiding(aprvrEmpList)}
                 showCloseButton={true}
-                contentRender={createRenderData}
-                onHiding={(e) => {
-                    onHiding(false);
-                }}
-
-            />
-        </>
-    )
+                contentRender={addAprvrEmpArea}
+                title="* 결재선지정"
+            >
+                <ToolbarItem
+                    widget="dxButton"
+                    toolbar="bottom"
+                    location="center"
+                    options={getCloseButtonOptions()}
+                />
+            </Popup>
+        </div>
+    );
 }
-
 export default ApprovalPopup;

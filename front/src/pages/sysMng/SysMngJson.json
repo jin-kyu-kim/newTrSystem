@@ -5,17 +5,21 @@
         "keyColumn": "cdValue",
         "tableColumns": 
         [
-            { "key": "cdValue", "value": "상위코드" },
-            { "key": "cdNm", "value": "상위코드명" },
-            { "key": "useYn", "value": "사용여부", "editType": "toggle", "button": true }
+            { "key": "cdValue", "value": "상위코드", "isRequire" : true },
+            { "key": "cdNm", "value": "상위코드명", "isRequire" : true },
+            { "key": "useYn", "value": "사용여부", "editType": "selectBox", "buttonType": "toggle", "button": true }
         ],
         "childTableColumns": 
         [
-            { "key": "cdValue", "value": "하위코드" },
-            { "key": "cdNm", "value": "하위코드명" },
-            { "key": "useYn", "value": "사용여부", "editType": "toggle", "button": true }
+            { "key": "cdValue", "value": "하위코드", "isRequire" : true },
+            { "key": "cdNm", "value": "하위코드명", "isRequire" : true },
+            { "key": "useYn", "value": "사용여부", "editType": "selectBox", "buttonType": "toggle", "button": true }
         ],
         "tbNm": "CD",
+        "ynVal": [
+            {"cdValue": "Y", "cdNm": "사용"},
+            {"cdValue": "N", "cdNm": "미사용"}
+        ],
         "searchInfo":{
             "searchParams": {
             },
@@ -50,9 +54,13 @@
             { "key": "ctmmnyNm", "value": "고객사명(한글)", "isRequire": true },
             { "key": "ctmmnyEngNm", "value": "고객사명(영문)" },
             { "key": "industCd", "value": "산업명", "editType": "selectBox", "comCd": "VTW016", "isRequire": true },
-            { "key": "useYn", "value": "사용여부", "editType": "toggle", "button": true }
+            { "key": "useYn", "value": "사용여부", "editType": "selectBox", "buttonType": "toggle", "button": true }
         ],
         "tbNm": "CTMMNY_INFO",
+        "ynVal": [
+            {"cdValue": "Y", "cdNm": "사용"},
+            {"cdValue": "N", "cdNm": "미사용"}
+        ],
         "searchInfo":{
             "searchParams": {
             },

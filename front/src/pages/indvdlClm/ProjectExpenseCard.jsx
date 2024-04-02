@@ -11,6 +11,7 @@ import {TextBox} from "devextreme-react";
 import ProjectExpenseSubmit from "./ProjectExpenseSubmit";
 import SelectBox from "devextreme-react/select-box";
 import ApiRequest from "../../utils/ApiRequest";
+import {useCookies} from "react-cookie";
 
 const button = {
     borderRadius: '5px',
@@ -21,15 +22,19 @@ const button = {
 const fontSize = {
     fontSize: 14
 }
-const ProjectExpenseCard = (props) => {
+const ProjectExpenseCard = () => {
+    const [cardValue, setCardValue] = useState([]);
     const [cdVal, setCdVal] = useState([]);
     const [suggestionsData, setSuggestionsData] = useState([]);
     const [searchParam, setSearchParam] = useState();
     const [selectedItem, setSelectedItem] = useState();
+    const [cookies] = useCookies([]);
+    let aplyDate = null;
 
     useEffect(() => {
         getCode();
         fetchData();
+        getCardValue();
     }, []);
 
     const getCode = async () => {
@@ -58,6 +63,31 @@ const ProjectExpenseCard = (props) => {
         }
     };
 
+    const getCardValue = async () => {
+        try {
+            let now = new Date();
+            let dateNum = Number(now.getDate());
+            if(dateNum <= 15){
+                let firstDayOfMonth = new Date( now.getFullYear(), now.getMonth() , 1 );
+                let lastMonth = new Date ( firstDayOfMonth.setDate( firstDayOfMonth.getDate() - 1 ) );
+                aplyDate = {
+                    "aplyYm": lastMonth.getFullYear()+('0' + (lastMonth.getMonth()+1)).slice(-2),
+                    "aplyOdr": 2
+                }
+            } else if (16 <= dateNum){
+                aplyDate = {
+                    "aplyYm": now.getFullYear()+('0' + (now.getMonth()+1)).slice(-2),
+                    "aplyOdr": 1
+                }
+            }
+            const response = await ApiRequest("/boot/common/commonSelect", [{ tbNm: "CARD_USE_DTLS" },
+                { empId: cookies.userInfo.empId, aplyYm: aplyDate?.aplyYm, aplyOdr: aplyDate?.aplyOdr}]);
+            setCardValue(response);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     const handleStartDateChange = (value) => {
         setSearchParam({...searchParam, bgngYmd: value});
     };
@@ -68,11 +98,7 @@ const ProjectExpenseCard = (props) => {
         setSearchParam({...searchParam, [name] : value});
     };
     const handleChgValue = (e) => {
-        let copyValue = [...props.cardValue];
-        let copyData = e.data;
-        copyData[e.name] = e.value;
-        copyValue[e.rowIndex] = copyData;
-        props.setCardValue(copyValue);
+
     };
 
     const onSelectionChanged = useCallback((e) => {
@@ -171,15 +197,15 @@ const ProjectExpenseCard = (props) => {
                     </span>
                 </p>
             </div>
-            <DataGrid dataSource={props.cardValue} onSelectionChanged={onSelectionChanged} showBorders={true} style={{width: "100%", marginBottom: '4%'}}>
+            <DataGrid dataSource={cardValue} onSelectionChanged={onSelectionChanged} showBorders={true} style={{width: "100%", marginBottom: '4%'}}>
                 <Selection mode="multiple" />
-                <Column dataField="utztnDt" caption="사용일시" />
-                <Column dataField="useOffic" caption="사용처"/>
-                <Column dataField="utztnAmt" caption="금액"/>
-                <Column caption="프로젝트" cellRender={projectCell}  width={250}/>
-                <Column caption="경비코드" cellRender={expanseCell} width={200}/>
-                <Column caption="용도" cellRender={purposeCell}/>
-                <Column caption="참석자" cellRender={attendCell} width={250}/>
+                <Column dataField="utztnDt" caption="사용일시" alignment="center"/>
+                <Column dataField="useOffic" caption="사용처" alignment="center"/>
+                <Column dataField="utztnAmt" caption="금액" alignment="center"/>
+                <Column caption="프로젝트" cellRender={projectCell} width={250} alignment="center"/>
+                <Column caption="경비코드" cellRender={expanseCell} width={200} alignment="center"/>
+                <Column caption="용도" cellRender={purposeCell} alignment="center"/>
+                <Column caption="참석자" cellRender={attendCell} width={250} alignment="center"/>
             </DataGrid>
         </div>
     );

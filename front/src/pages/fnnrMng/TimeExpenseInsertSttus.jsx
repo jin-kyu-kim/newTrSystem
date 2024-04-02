@@ -54,6 +54,7 @@ const searchHandle = async (initParam) => {
         aplyYm: nowDate,
         aplyOdr: currentPhase,
         empId: initParam.empId,
+        hdofSttsCd: initParam.hdofSttsCd
     })
     setParam({
         ...param,
@@ -61,15 +62,17 @@ const searchHandle = async (initParam) => {
         aplyYm: nowDate,
         aplyOdr: currentPhase,
         empId: initParam.empId,
+        hdofSttsCd: initParam.hdofSttsCd
     })  
     return;
 };
     setParamtot({
         ...paramtot,
         queryId: totQueryId,
-        aplyYm: nowDate,
-        aplyOdr: currentPhase,
+        aplyYm: initParam.yearItem + initParam.monthItem,
+        aplyOdr: initParam.aplyOdr,
         empId: initParam.empId,
+        hdofSttsCd: initParam.hdofSttsCd
     })
 
     setParam({
@@ -78,14 +81,16 @@ const searchHandle = async (initParam) => {
         aplyYm: initParam.yearItem + initParam.monthItem,
         aplyOdr: initParam.aplyOdr,
         empId: initParam.empId,
+        hdofSttsCd: initParam.hdofSttsCd
     })
 };
 
 const pageHandle = async () => {
   try {
-    //const responsetot = await ApiRequest("/boot/common/queryIdSearch", paramtot); //상단 total 검색
+    const responsetot = await ApiRequest("/boot/common/queryIdSearch", paramtot); //상단 total 검색
     const response = await ApiRequest("/boot/common/queryIdSearch", param); //하단 목록 검색
-    //setValues(responsetot);
+
+    setValues(responsetot);
     setValues2(response);
   } catch (error) {
     console.log(error);
@@ -102,7 +107,7 @@ const onBtnClick = ({button,data}) => {      //
         navigate("/fnnrMng/prjctCtClm/ProjectCostClaimDetail",          //경로 수정 예정
         {state: { empId: values2.empId }})
     }
-    if(button.name === "hrRtrcn"){                                   //취소상태로 변경
+    if(button.name === "hrRtrcn"){                                   //취소상태로 변경 -> 반려?
         alert("시간취소!"); 
     }
     if(button.name === "prjctScrnMv"){                                      //경로 수정 예정
@@ -110,7 +115,7 @@ const onBtnClick = ({button,data}) => {      //
         navigate("/fnnrMng/prjctCtClm/ProjectCostClaimDetail",
         {state: { empId: values2.empId }})
     }
-    if(button.name === "ctRtrcn"){                                    //취소상태로 변경
+    if(button.name === "ctRtrcn"){                                    //취소상태로 변경 -> 반려?
         alert("비용취소");
     }
      if(button.name === "companyPrice"){                                 //경로 수정 예정
@@ -129,37 +134,44 @@ const onBtnClick = ({button,data}) => {      //
 //========================화면그리는 구간 ====================================================
     return(
         <div className="container">
-        <div className="col-md-10 mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
-              <h1 style={{ fontSize: "30px" }}>근무시간비용 입력 현황</h1>
+            <div className="col-md-10 mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
+                  <h1 style={{ fontSize: "30px" }}>근무시간비용 입력 현황</h1>
+            </div>
+            <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
+              <span>* 근무시간비용 입력 현황을 조회합니다.</span>
+            </div>
+            <div style={{ marginBottom: "20px" }}>
+                <SearchPrjctCostSet callBack={searchHandle} props={searchParams} />
+                <Button text="마감 및 엑셀다운"  onClick={ddlnExcelDwn}/>
+            </div>
+            <div style={{ marginBottom: "20px" }}>
+                <CustomTable
+                  keyColumn={keyColumn}
+                  columns={totTableColumns}
+                  values={values}
+                  paging={false}
+                />
+            </div>
+            <div style={{ marginBottom: "20px" }}>
+                <CustomTable
+                    keyColumn={keyColumn}
+                    columns={tableColumns}
+                    values={values2}
+                    paging={true}
+                    onClick={onBtnClick}
+                    wordWrap={true}
+                />
+                <Popup
+                      width="90%"
+                      height="90%"
+                      visible={popupVisible}
+                      onHiding={handleClose}
+                      showCloseButton={true}
+                  >
+                   <TimeExpenseInsertList data={values}/>
+                </Popup>
+            </div>
         </div>
-        <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
-          <span>* 근무시간비용 입력 현황을 조회합니다.</span>
-        </div>
-        <div style={{ marginBottom: "20px" }}>
-        <SearchPrjctCostSet callBack={searchHandle} props={searchParams} />
-        <Button text="마감 및 엑셀다운"  onClick={ddlnExcelDwn}/>
-      </div>
-        <div style={{ marginBottom: "20px" }}>
-        <CustomTable 
-          keyColumn={keyColumn}
-          columns={totTableColumns}
-          values={values}
-          paging={false}
-        />
-        </div>
-        <div style={{ marginBottom: "20px" }}>
-        <CustomTable keyColumn={keyColumn}  columns={tableColumns} values={values2} paging={true} onClick={onBtnClick} />
-        <Popup
-              width="90%"
-              height="90%"
-              visible={popupVisible}
-              onHiding={handleClose}
-              showCloseButton={true}
-          >
-              <TimeExpenseInsertList data={values}/>
-          </Popup>
-        </div>
-      </div>
  );
 };
 

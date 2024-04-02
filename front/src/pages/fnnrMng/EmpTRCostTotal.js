@@ -12,7 +12,7 @@ import { CheckBox, CheckBoxTypes } from 'devextreme-react/check-box';
 const EmpTRCostTotal = () => {
   const [values, setValues] = useState([]);
   const [param, setParam] = useState({});
-  const { keyColumn, queryId, nameColumns, prjctColumns , summaryColumn , summaryColumn2, searchInfo } = EmpTRCostTotalJson;
+  const { keyColumn, queryId, nameColumns, prjctColumns , summaryColumn , smallSummaryColumn, searchInfo } = EmpTRCostTotalJson;
   const [checkBox1Checked, setCheckBox1Checked] = useState(false);
   const [checkBox2Checked, setCheckBox2Checked] = useState(false);
 
@@ -122,10 +122,12 @@ const EmpTRCostTotal = () => {
         columns={prjctColumns}
         values={values}
         summary={true}
-        summaryColumn={summaryColumn2}
+        summaryColumn={summaryColumn}
+        smallSummaryColumn={smallSummaryColumn}
         excel={true}
         onExcel={onExporting}
       />  
+      
 
       )}
     
@@ -139,6 +141,8 @@ const EmpTRCostTotal = () => {
         paging={true}
         summary={true}
         summaryColumn={summaryColumn}
+        smallSummary={true}
+        smallSummaryColumn={smallSummaryColumn}
         excel={true}
         onExcel={onExporting}
       />  

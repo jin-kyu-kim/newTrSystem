@@ -4,7 +4,11 @@ import Scheduler, { Resource } from 'devextreme-react/scheduler';
 
 const ProjectHrCtAprvCtPop = ({props, prjctNm, data}) => {
 
-    const currentDate = new Date();
+    const [currentDate, setCurrentDate] = useState(null);
+
+    useEffect(() => {
+        setCurrentDate(data.aplyYm?.slice(0,4)+"/"+data.aplyYm?.slice(4,6)+"/01");
+    }, [data]);
 
     const showDetails = () => {
 
@@ -57,10 +61,11 @@ const ProjectHrCtAprvCtPop = ({props, prjctNm, data}) => {
                 timeZone="Asia/Seoul"
                 dataSource={props}
                 defaultCurrentView="month"
-                defaultCurrentDate={currentDate}
+                currentDate={currentDate}
                 editing={false}
                 views={["month"]}
                 descriptionExpr='ctPrpos'
+                onOptionChanged={e => console.log(e)}
             >
             </Scheduler>
             <br/>
