@@ -804,18 +804,60 @@
 
     <select id="retrieveClturPhstrnCtClmList" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
-            CONCAT('(',E.EMPNO ,')', ' ' ,E.EMP_FLNM ) AS EMP_FLNM,
-            CPACR.CLM_YMD AS CLM_YMD,
-            SUM(CPACR.CLM_AMT) AS TOTAL_CLM_AMT,
-            CASE WHEN CPACR.CLTUR_PHSTRN_SE_CD  = 'VTW00901' THEN '문화비'
-                 WHEN CPACR.CLTUR_PHSTRN_SE_CD  = 'VTW00902' THEN '체력단련비'
-                 ELSE NULL END AS CLTUR_PHSTRN
-        FROM
-            EMP E
-                LEFT JOIN
-            CLTUR_PHSTRN_ACT_CT_REG CPACR ON E.EMP_ID = CPACR.EMP_ID
-        GROUP BY
-            E.EMP_FLNM, E.EMPNO, CPACR.CLM_YMD,   CPACR.CLTUR_PHSTRN_SE_CD
+            C.EMP_ID AS EMP_ID,
+            C.EMP_FLNM AS EMP_FLNM,
+            C.YM AS YM,
+            C.EXPENSE_TYPE AS EXPENSE_TYPE,
+            C.AMOUNT AS AMOUNT,
+            C.CLTUR_CT_DPST_AMT AS CLTUR_CT_DPST_AMT,
+            C.CLM_AMT AS CLM_AMT,
+            C.BALANCE AS BALANCE
+        FROM (
+                 SELECT
+                     A.EMP_ID AS EMP_ID,
+                     A.EMPNO,
+                     CONCAT('(', A.EMPNO, ')', ' ', A.EMP_FLNM) AS EMP_FLNM,
+                     A.YM AS YM,
+                     '문화비' AS EXPENSE_TYPE,
+                     SUM(IFNULL(CPAC.CLTUR_CT_CYFD_AMT, 0)) AS AMOUNT,
+                     SUM(IFNULL(CPAC.CLTUR_CT_DPST_AMT, 0)) AS CLTUR_CT_DPST_AMT,
+                     IFNULL(SUM(B.CLM_AMT), 0) AS CLM_AMT,
+                     SUM(IFNULL(CPAC.CLTUR_CT_CYFD_AMT, 0)) + IFNULL(SUM(B.CLM_AMT), 0) - SUM(IFNULL(CPAC.CLTUR_CT_DPST_AMT, 0)) AS BALANCE
+                 FROM (
+                          SELECT
+                              A.EMP_ID,
+                              A.EMP_FLNM,
+                              A.EMPNO,
+                              DATE_FORMAT(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH), '%Y%m') AS YM
+                          FROM EMP A
+                      ) A
+                          LEFT JOIN CLTUR_PHSTRN_ACT_CT_REG B ON A.EMP_ID = B.EMP_ID AND A.YM = SUBSTR(B.CLM_YMD, 1, 6)
+                          LEFT JOIN CLTUR_PHSTRN_ACT_CT CPAC ON CPAC.EMP_ID = A.EMP_ID AND CPAC.CLM_YM = A.YM AND B.CLTUR_PHSTRN_SE_CD = 'VTW00902'
+                 GROUP BY EMP_ID, EMPNO, EMP_FLNM, YM
+                 UNION ALL
+                 SELECT
+                     A.EMP_ID AS EMP_ID,
+                     A.EMPNO,
+                     CONCAT('(', A.EMPNO, ')', ' ', A.EMP_FLNM) AS EMP_FLNM,
+                     A.YM AS YM,
+                     '체력단련비' AS EXPENSE_TYPE,
+                     SUM(IFNULL(CPAC.FTNESS_TRNG_CT_CYFD_AMT, 0)) AS AMOUNT,
+                     SUM(IFNULL(CPAC.FTNESS_TRNG_CT_DPST_AMT, 0)) AS CLTUR_CT_DPST_AMT,
+                     IFNULL(SUM(B.CLM_AMT), 0) AS CLM_AMT,
+                     SUM(IFNULL(CPAC.FTNESS_TRNG_CT_CYFD_AMT, 0)) + IFNULL(SUM(B.CLM_AMT), 0) - SUM(IFNULL(CPAC.FTNESS_TRNG_CT_DPST_AMT, 0)) AS BALANCE
+                 FROM (
+                          SELECT
+                              A.EMP_ID,
+                              A.EMP_FLNM,
+                              A.EMPNO,
+                              DATE_FORMAT(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH), '%Y%m') AS YM
+                          FROM EMP A
+                      ) A
+                          LEFT JOIN CLTUR_PHSTRN_ACT_CT_REG B ON A.EMP_ID = B.EMP_ID AND A.YM = SUBSTR(B.CLM_YMD, 1, 6)
+                          LEFT JOIN CLTUR_PHSTRN_ACT_CT CPAC ON CPAC.EMP_ID = A.EMP_ID AND CPAC.CLM_YM = A.YM AND B.CLTUR_PHSTRN_SE_CD = 'VTW00902'
+                 GROUP BY EMP_ID, EMPNO, EMP_FLNM, YM
+             ) C
+        ORDER BY  EMP_FLNM, EXPENSE_TYPE
     </select>
 
 
