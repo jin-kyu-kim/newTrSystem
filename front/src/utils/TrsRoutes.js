@@ -4,7 +4,7 @@ const TreRoutes = [
   // 홈
   {
     path: "/",
-    name: "main",
+    name: "Main",
     element: React.lazy(() => import("../pages/sysMng/Main")
     ),
   },
