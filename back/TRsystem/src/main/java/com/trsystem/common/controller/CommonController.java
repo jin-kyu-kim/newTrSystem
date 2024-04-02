@@ -49,7 +49,7 @@ public class CommonController {
         return commonService.queryIdSearch(param);
     }
 
-    @PostMapping(value = "/boot/common/queryIdSearch")
+    @PostMapping(value = "/boot/common/queryIdDataControl")
     public int queryIdDataControl(@RequestBody Map<String, Object> param){
         return commonService.queryIdDataControl(param);
     }
