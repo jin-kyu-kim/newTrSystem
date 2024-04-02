@@ -62,6 +62,13 @@ const EmpCultHealthCostManage = () => {
       alert("마감되었습니다.")
     }
   };
+  const handleSaved = () => {
+    const btnChk = window.confirm("문화체련비를 저장하시겠습니까?")
+    if (btnChk) {
+      alert("저장되었습니다.");
+      window.scroll(0, 0);
+    }
+  };
 
 
   const padNumber = (num) => {
@@ -122,10 +129,16 @@ const EmpCultHealthCostManage = () => {
       style={{ marginTop: "20px", marginBottom: "10px",  display: "flex"}}
     >
       <h6 style={{ fontSize: "40px" }}>문화체련비 관리 목록</h6>
-      <div style={{marginTop: "7px", marginLeft: "20px"}}><Button onClick={handleMove}>마감 목록</Button> <Button onClick={handleDeadLine} style = {{backgroundColor: "#B40404", color: "#fff"}}>  전체 마감</Button> </div>
+      <div style={{marginTop: "7px", marginLeft: "20px"}}>
+      <Button onClick={handleMove}>마감 목록</Button>
+      <Button onClick={handleDeadLine} style = {{marginLeft: "10px",backgroundColor: "#B40404", color: "#fff"}}>  전체 마감</Button> 
+     
+      
+      </div>
     </div>
     <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
       <span>* 직원의 문화체련비를 조회 합니다.</span>
+      
     </div>
 
     <div>
@@ -150,6 +163,7 @@ const EmpCultHealthCostManage = () => {
         )}
   {/* 선택한 그룹의 정보 출력 */}
 </Popup>
+<Button onClick={handleSaved} style = {{backgroundColor: "#0366fc", color: "#fff",marginBottom: "20px"}}>  저장 하기</Button> 
       <CustomEditTable
         keyColumn={keyColumn}
         columns={tableColumns}
