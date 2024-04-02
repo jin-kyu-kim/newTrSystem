@@ -31,15 +31,15 @@
                 "placeholder": "실제투입업체",
                 "required": true
             },
-            "dtlCn": {
-                "name": "dtlCn",
+            "tkcgJob": {
+                "name": "tkcgJob",
                 "type": "TextBox",
                 "label": "담당업무",
                 "placeholder": "담당업무",
                 "required": true
             },
-            "tot": {
-                "name": "tot",
+            "inptPrnmntHnfCnt": {
+                "name": "inptPrnmntHnfCnt",
                 "type": "NumberBox",
                 "label": "투입예정인력수",
                 "format": "#,###",
@@ -47,26 +47,32 @@
                 "max": 9000000,
                 "required": true
             },
-            "dlvgdsYmd": {
-                "name": "dlvgdsYmd",
+            "inptBgngYmd": {
+                "name": "inptBgngYmd",
                 "type": "DateBox",
                 "label": "투입시작일",
                 "placeholder": "투입시작일",
                 "required": true
             },
-            "endYmd": {
-                "name": "endYmd",
+            "inptEndYmd": {
+                "name": "inptEndYmd",
                 "type": "DateBox",
                 "label": "투입종료일",
                 "placeholder": "투입종료일",
                 "required": true
+            },
+            "payTot": {
+                "name": "payTot",
+                "type" : "NumberBox",
+                "label": "지급 총액",
+                "format": "#,###"
             }
         },
-        "keyColumn": "payCd",
+        "keyColumn": "giveOdrCd",
         "tableColumns": [
-            {"key": "payCd", "value": "지급 차수", "isRequire": true, "editType" : "selectBox" ,"comCd" : "VTW032" },
-            {"key": "payYm", "value": "지급 일자", "type": "date", "format": "yyyy-MM", "isRequire": true},
-            {"key": "payAmt", "value": "지급 금액", "type": "number", "format":"#,###", "isRequire": true}
+            {"key": "giveOdrCd", "value": "지급 차수", "isRequire": true, "editType" : "selectBox" ,"comCd" : "VTW032" },
+            {"key": "ctrtYmd", "value": "지급 일자", "type": "date", "format": "yyyy-MM", "isRequire": true},
+            {"key": "ctrtAmt", "value": "지급 금액", "type": "number", "format":"#,###", "isRequire": true}
         ]
     }
 }

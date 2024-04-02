@@ -7,6 +7,7 @@ import ApiRequest from "utils/ApiRequest";
 import HtmlEditBox from "components/unit/HtmlEditBox";
 import CustomCdComboBox from "components/unit/CustomCdComboBox";
 import moment from 'moment';
+import uuid from "react-uuid";
 
 const positions = ['Y', 'N'];   //사용여부 selectBox에서 사용하는 값
 const columns = {"docFormDc": {"dataField":"docFormDc"},"gnrlAtrzCn": {"dataField":"gnrlAtrzCn"}};  //htmlEditBox에서 사용하는 컬럼
@@ -20,6 +21,7 @@ const ElecAtrzNewForm = ({}) => {
     const empId = cookies.userInfo.empId;
     const date = moment();
     const [formData, setFormData] = useState({
+        atrzFormDocSn: uuid(),
         regEmpId: empId,
         regDt: date.format('YYYY-MM-DD HH:mm:ss'),
     });
@@ -54,7 +56,7 @@ const ElecAtrzNewForm = ({}) => {
 
                 //신규, 수정 구분에 따라 param, request 값 설정
                 if(mdfStts =='I'){
-                    param = [{tbNm: "ELCTRN_ATRZ_DOC_FORM", snColumn: "ATRZ_FORM_DOC_SN"},
+                    param = [{tbNm: "ELCTRN_ATRZ_DOC_FORM"},
                                     formData ]
                     request = "/boot/common/commonInsert";
                 }else{
@@ -70,7 +72,7 @@ const ElecAtrzNewForm = ({}) => {
                     request = "/boot/common/commonUpdate";
                 }
                 
-                //서버와 통신
+                // 서버와 통신
                 try {
                     const response = await ApiRequest(request, param);
                     if(response > 0) {
