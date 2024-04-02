@@ -589,7 +589,15 @@
 			 , pma.EMP_ID
 			 , pma.APLY_YM
 			 , pma.APLY_ODR
-		  FROM PRJCT_MM_APLY pma
+		     , ROUND(MM_QUERY.MM1/MM_QUERY.MM2,2) AS EXCN_MM
+		     , (mmp.EXPECT_MM - ROUND(MM_QUERY.MM1/MM_QUERY.MM2,2)) AS AVBLE_MM
+		  FROM (SELECT
+		            (SELECT SUM(MD) FROM PRJCT_MM_APLY AS pma
+                    JOIN PRJCT_MM_ATRZ AS pmat ON pmat.PRJCT_ID = pma.PRJCT_ID AND pmat.EMP_ID = pma.EMP_ID AND pmat.APLY_YM = pma.APLY_YM AND pmat.APLY_ODR = pma.APLY_ODR
+                    WHERE pmat.ATRZ_DMND_STTS_CD='VTW03703') AS MM1
+                  , (SELECT COUNT(CRTR_YMD) FROM CRTR_DATE WHERE HLDY_CL_CD = 'VTW05001' AND CRTR_ODR = #{aplyOdr} AND DATE_FORMAT(CRTR_YMD, '%Y%m') = #{aplyYm}) AS MM2
+		        ) AS MM_QUERY,
+                PRJCT_MM_APLY pma
 	      JOIN (SELECT mlp.PRJCT_ID, mlp.EMP_ID, mlp.MMNY_LBRCO_PRMPC_SN, mim.EXPECT_MM
 			      FROM MMNY_LBRCO_PRMPC mlp
 			  	  JOIN MMNY_INPT_MM mim ON (mim.PRJCT_ID = mlp.PRJCT_ID AND mim.MMNY_LBRCO_PRMPC_SN = mlp.MMNY_LBRCO_PRMPC_SN)
@@ -609,7 +617,7 @@
                 AND pma.EMP_ID = #{empId}
             </if>
         </if>
-         GROUP BY pma.EMP_ID, d.DEPT_NM, mmp.EXPECT_MM, pma.EMP_ID
+         GROUP BY pma.EMP_ID, d.DEPT_NM, mmp.EXPECT_MM, pma.EMP_ID, MM_QUERY.MM1, MM_QUERY.MM2
 	</select>
 		
 	<select id="retrieveOutordHnfPrmpc" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -667,7 +675,6 @@
 			 , e.EMP_ID
 			 , pca.APLY_YM
 			 , pca.APLY_ODR
-		     , ANY_VALUE(pca.PRJCT_CT_APLY_SN) AS PRJCT_CT_APLY_SN
 		  FROM PRJCT_CT_APLY pca
 		  JOIN EMP e ON (e.EMP_ID = pca.EMP_ID)
 	      JOIN DEPT_HNF dh ON (e.EMP_ID = dh.EMP_ID)
