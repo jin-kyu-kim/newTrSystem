@@ -17,12 +17,10 @@
 	"ejhQueryId": "infoInqMapper.retrieveEmpJbpsHist",
     "ejhKeyColumn": "empId",
     "ejhTableColumns": [
-        { "key": "empno", "value": "사번", "width" : 100},
-        { "key": "empInfoChgOdr", "value": "발령차수","width" : 90 },
-        { "key": "jbpsNm", "value": "발령직급","width" : 90 },
-        { "key": "regDt", "value": "입력날짜" },
-        { "key": "regEmpno", "value": "입력사번","width" : 90 },
-        { "key": "empId", "value": "삭제", "width": 80, "button": "삭제","alignment" : "center"}
+        { "key": "empInfoChgOdr", "value": "발령차수","width" : 150 },
+        { "key": "jbpsNm", "value": "발령직급","width" : 150 },
+        { "key": "regDt", "value": "입력날짜","width" : 150},
+        { "key": "regEmpno", "value": "입력사번","width" : 150 }
     ],
     "labelValue" : {
         "jbpsCd": {
@@ -39,7 +37,68 @@
                         "name": "jbpsCd"
                      }
         }
+    },
+    "searchInfo": {
+        "searchParams": {
+            "insertButton": false
+        },
+        "commonCd": "VTW001",
+        "selectBoxItem": [
+            {
+                "placeholder": "[재직여부]",
+                "param":{
+                  "tbNm": "CD",
+                  "valueExpr": "cdValue",
+                  "displayExpr": "cdNm",
+                  "name": "hdofSttsNm",
+                  "condition": {
+                    "upCdValue": "VTW003"
+                  },
+                  "clearButton": false
+                }
+            },
+            {
+                "placeholder": "[직위]",
+                "param":{
+                  "tbNm": "CD",
+                  "valueExpr": "cdValue",
+                  "displayExpr": "cdNm",
+                  "name": "jbpsNm",
+                  "condition": {
+                    "upCdValue": "VTW001"
+                  },
+                  "clearButton": false
+                }
+            },
+            {
+                "placeholder": "[소속]",
+                "param":{
+                  "queryId": {
+                    "queryId": "infoInqMapper.retriveDeptSearchList"
+                  },
+                  "valueExpr": "deptId",
+                  "displayExpr": "deptNm",
+                  "name": "deptId",
+                  "clearButton": false
+                }
+            }
+        ],
+        "textBoxItem": [
+            {
+                "placeholder": "사번",
+                "name": "empno"
+            },
+            {
+                "placeholder": "성명",
+                "name": "empFlnm"
+            },
+            {
+                "placeholder": "전화번호",
+                "name": "telNo"
+            }
+        ]
     }
+
     
 
 }

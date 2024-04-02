@@ -115,3 +115,7 @@
 .editGridStyle .dx-error-row {
   display: none !important;
 }
+
+.dx-datagrid-rowsview .dx-master-detail-row:not(.dx-datagrid-edit-form) .dx-master-detail-cell, .dx-datagrid-rowsview .dx-master-detail-row:not(.dx-datagrid-edit-form)>.dx-datagrid-group-space {
+  background-color: rgb(222, 242, 250);
+}

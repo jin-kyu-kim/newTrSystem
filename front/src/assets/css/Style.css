@@ -232,3 +232,60 @@
   padding: 9px 0px 9px 0px;
   font-size: 16px;
 }
+
+
+
+
+.atrz-popup-header {
+  display: flex;
+  background-color: #d8dbde; 
+  padding: 10px 0; 
+  margin-top: 20px;
+  font-weight: bold;
+}
+
+.atrz-popup-row {
+  display: flex;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 10px 0;
+}
+
+.atrz-popup-cell:nth-child(1) {
+  text-align: center;
+  flex: 0 0 15%;
+  padding: 5px 0;
+}
+
+.atrz-popup-cell:nth-child(2) {
+  text-align: center;
+  flex: 0 0 30%;
+  padding: 5px 0;
+}
+
+.atrz-popup-cell:nth-child(3) {
+  text-align: center;
+  flex: 0 0 55%;
+  padding: 5px 0;
+  display: flex;
+}
+
+.aprvrEmp {
+  margin-right: 10px;
+}
+
+/* 추가 버튼 스타일 */
+.atrz-popup-button {
+  border: 1px solid #e8e6e6;
+  background-color: #e4f4fc;
+  padding: 10px 0; 
+  cursor: pointer;
+}
+
+.popup-delete-btn {
+  background-color: transparent;
+  color: red;
+  border: none;
+  cursor: pointer; 
+  padding: 0;
+  margin-left: 10px;
+}

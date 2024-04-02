@@ -4,10 +4,18 @@ import ApiRequest from "utils/ApiRequest";
 import { useCookies } from "react-cookie";
 import CustomEditTable from "components/unit/CustomEditTable";
 
-const EmpEduHist = () => {
+const EmpEduHist = ({naviEmpId}) => {
   const { queryId, keyColumn, tableColumns, tbNm } = EmpInfoJson.EmpEduHist;
   const [cookies] = useCookies(["userInfo", "userAuth"]);
-  const userEmpId = cookies.userInfo.empId;
+
+  let userEmpId;
+
+  if(naviEmpId.length !== 0){
+    userEmpId = naviEmpId;
+  } else {
+    userEmpId = cookies.userInfo.empId;
+  }
+
   const doublePk = { nm: "empId", val: userEmpId };
   const [values, setValues] = useState([]);
 

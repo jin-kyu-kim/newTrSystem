@@ -39,6 +39,29 @@ const SearchPrjctCostSet = ({ callBack, props }) => {
         name: "prjctId",
     }
 
+    const hdofSttsList = [
+        {
+            "id": "1",
+            "value": "",
+            "text": "전체"
+        },
+        {
+            "id": "2",
+            "value": "VTW00301",
+            "text": "재직"
+        },
+        {
+            "id": "3",
+            "value": "VTW00302",
+            "text": "퇴직"
+        },
+        {
+            "id": "4",
+            "value": "VTW00303",
+            "text": "휴직"
+        }
+    ];
+
     useEffect(() => {
 
         const date = new Date();
@@ -68,7 +91,8 @@ const SearchPrjctCostSet = ({ callBack, props }) => {
         setInitParams({
             yearItem: year,
             monthItem: monthVal,
-            aplyOdr: odrVal
+            aplyOdr: odrVal,
+            hdofSttsCd: "VTW00301"
         });
 
         setYearData(yearList);
@@ -161,6 +185,20 @@ const SearchPrjctCostSet = ({ callBack, props }) => {
                             placeholder="[차수]"
                             style={{margin: "0px 5px 0px 5px"}}
                             value={initParams.aplyOdr}
+                        />
+                    </Item>
+                }
+                { props.hdofSttsCd &&
+                    <Item ratio={0} baseSize={"120"}>
+                        <SelectBox
+                            dataSource={hdofSttsList}
+                            name="hdofSttsCd"
+                            displayExpr={"text"}
+                            valueExpr={"value"}
+                            onValueChanged={(e) => handleChgState({name: e.component.option("name"), value: e.value })}
+                            placeholder="[재직상태]"
+                            style={{margin: "0px 5px 0px 5px"}}
+                            value={initParams.hdofSttsCd}
                         />
                     </Item>
                 }

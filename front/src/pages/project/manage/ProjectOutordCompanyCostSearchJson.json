@@ -6,8 +6,8 @@
     { "key": "outordEntrpsNm", "value": "업체명" },
     { "key": "tkcgJob", "value": "담당업무" },
     { "key": "inptPrnmntHnfCnt", "value": "투입예정인력수" },
-    { "key": "expectCt", "value": "배정예산" },
-    { "key": "useAmt", "value": "누적사용" },
+    { "key": "expectCt", "value": "배정예산","format": {"type": "fixedPoint", "precision": 0, "groupSeparator": ","} },
+    { "key": "useAmt", "value": "누적사용","format": {"type": "fixedPoint", "precision": 0, "groupSeparator": ","} },
     { "key": "avail", "value": "가용" }
   ],
   "summaryColumn": [

@@ -9,24 +9,32 @@ import ApiRequest from "../../../utils/ApiRequest";
 
 import ProjectGeneralBudgetCostSearchJson from "./ProjectGeneralBudgetCostSearchJson.json";
 import {useLocation} from "react-router-dom";
+import {add, format} from "date-fns";
 
 const ProjectControlBudgetCostSearch = () => {
   const location = useLocation();
+  const prjctId = location.state.prjctId;
+  const ctrtYmd = location.state.ctrtYmd;
+  const bgtMngOdr = location.state.bgtMngOdr;
+  const [stbleEndYmd,setStbleEndYmd] = useState(location.state.stbleEndYmd);
   const [pivotGridConfig, setPivotGridConfig] = useState({
     fields: ProjectGeneralBudgetCostSearchJson,
     store: [],
   });
 
   useEffect(() => {
-    Cnsrtm();
+    if (prjctId && ctrtYmd && stbleEndYmd) {
+      Cnsrtm();
+    }
   }, []);
 
   const param = {
     queryId: "projectMapper.retrieveProjectGeneralBudgetCostSearch",
-    prjctId: location.state.prjctId,
+    prjctId: prjctId,
     costFlag: "control",
-    ctrtYmd:location.state.ctrtYmd,
-    stbleEndYmd:location.state.stbleEndYmd
+    ctrtYmd:ctrtYmd,
+    stbleEndYmd:stbleEndYmd,
+    bgtMngOdr:bgtMngOdr
   };
 
   const Cnsrtm = async () => {
@@ -41,10 +49,6 @@ const ProjectControlBudgetCostSearch = () => {
     }
   };
 
-  const test = (e) => {
-    console.log(e);
-    console.log(dataSource);
-  };
 
   const dataSource = new PivotGridDataSource(pivotGridConfig);
 
@@ -55,11 +59,11 @@ const ProjectControlBudgetCostSearch = () => {
         allowSortingBySummary={true}
         height={560}
         showBorders={true}
-        showColumnGrandTotals={false}
+        showColumnGrandTotals={true}
         allowFiltering={false}
         allowSorting={false}
         allowExpandAll={false}
-        onCellClick={test}
+
       >
         <FieldPanel
           showRowFields={true}
