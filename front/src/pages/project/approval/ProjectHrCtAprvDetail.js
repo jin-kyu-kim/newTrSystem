@@ -109,6 +109,12 @@ const ProjectHrCtAprvDetail = () => {
                 if(confirmResult){
                     const response = await ApiRequest('/boot/common/commonUpdate', param);
                     if(response > 0) {
+                        const param = [
+                            { tbNm: "PRJCT_INDVDL_CT_MM" },
+                            { mmAtrzCmptnYn: "Y"},
+                            { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr}
+                        ];
+                        await ApiRequest('/boot/common/commonUpdate', param);
                         handleMmAply();
                     }
                 }
@@ -147,13 +153,19 @@ const ProjectHrCtAprvDetail = () => {
                     aprvYmd: year + monthVal + dayVal,
                     rjctPrvonsh: null,
                     rjctYmd: null},
-                { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, prjctCtAplySn: data.prjctCtAplySn}
+                { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr}
             ];
             try {
                 const confirmResult = window.confirm("승인하시겠습니까?");
                 if(confirmResult){
                     const response = await ApiRequest('/boot/common/commonUpdate', param);
                     if(response > 0) {
+                        const param = [
+                            { tbNm: "PRJCT_INDVDL_CT_MM" },
+                            { ctAtrzCmptnYn: "Y"},
+                            { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr}
+                        ];
+                        await ApiRequest('/boot/common/commonUpdate', param);
                         handleCtAply();
                     }
                 }
@@ -221,7 +233,7 @@ const ProjectHrCtAprvDetail = () => {
                     rjctPrvonsh: opnnCn,
                     rjctYmd: year + monthVal + dayVal
                 },
-                { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, prjctCtAplySn: data.prjctCtAplySn}
+                { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr}
             ];
             if(confirmResult) {
                 const response = await ApiRequest('/boot/common/commonUpdate', param);

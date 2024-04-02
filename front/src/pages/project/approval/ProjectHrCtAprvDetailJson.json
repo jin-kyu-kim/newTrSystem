@@ -9,7 +9,7 @@
             { "key": "aplySn", "value": "차수" , "width": "100"},
             { "key": "expectMm", "value": "배정" , "width": "100"},
             { "key": "excnMm", "value": "누적사용" , "width": "100"},
-            { "key": "a", "value": "가용" , "width": "80"},
+            { "key": "avbleMm", "value": "가용" , "width": "80"},
             { "key": "totMd", "value": "당차수청구" , "width": "120" },
             { "width": "140", "button": { "text": "승인목록", "name": "aprvList" }},
             { "width": "100", "button": { "text": "승인", "name": "aprv" }},
