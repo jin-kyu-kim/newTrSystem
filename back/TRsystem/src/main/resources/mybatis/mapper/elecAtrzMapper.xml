@@ -27,31 +27,37 @@
 
 	<select id="elecAtrzMain" parameterType="String" resultType="com.trsystem.LowerHashMap">
 		SELECT
-			ea.ELCTRN_ATRZ_ID,
-			ea.PRJCT_ID,
-			tyCd.CD_NM AS ELCTRN_ATRZ_TY_SE_CD_NM, -- 전자결재 유형
-			e1.EMP_FLNM AS ATRZ_DMND_EMP_ID, -- 기안자
-			e2.EMP_FLNM AS APRVR_EMP_ID, -- 현재 결재권자
-			DATE_FORMAT(ea.REG_DT, '%Y-%m-%d') AS REG_DT,
-			ca.CNPT_NM, -- 청구결재 (거래처명)
-			stepCd.CD_NM AS ATRZ_STEP_CD, -- 현재 결재단계 (VTW007)
-			sttsCd.CD_NM AS ATRZ_STTS_CD, -- 결재상태 (VTW008)
-			COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cga.ATRZ_TTL, CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD), ' [', va.VCATN_BGNG_YMD, ' ~ ', va.VCATN_END_YMD, ' (', va.VCATN_DE_CNT, ')]')) AS TTL
+		ea.ELCTRN_ATRZ_ID,
+		ea.ELCTRN_ATRZ_TY_SE_CD,
+		ea.NOW_ATRZ_LN_SN,
+		ea.PRJCT_ID,
+		eadf.GNRL_ATRZ_TTL, -- 전자결재 유형
+		e1.EMP_FLNM AS ATRZ_DMND_EMP_ID, -- 기안자
+		e2.EMP_FLNM AS APRVR_EMP_ID, -- 현재 결재권자
+		DATE_FORMAT(ea.REG_DT, '%Y-%m-%d') AS REG_DT,
+		-- 			ca.CNPT_NM, -- 청구결재 (거래처명)
+		stepCd.CD_NM AS ATRZ_STEP_CD, -- 현재 결재단계 (VTW007)
+		sttsCd.CD_NM AS ATRZ_STTS_CD, -- 결재상태 (VTW008)
+		COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cta.CTRT_ATRZ_TTL, cga.ATRZ_TTL,
+		CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD), ' [', va.VCATN_BGNG_YMD, ' ~ ', va.VCATN_END_YMD, ' (', va.VCATN_DE_CNT, '일)]')) AS TITLE,
+		COALESCE(ga.GNRL_ATRZ_CN, ca.CLM_ATRZ_CN, cta.CTRT_ATRZ_CN, cga.STLM_CN) AS CN
 		FROM ELCTRN_ATRZ ea
-			LEFT JOIN ATRZ_LN al
-			ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID
-			AND ea.NOW_ATRZ_LN_SN = al.ATRZ_LN_SN
-			LEFT JOIN CD tyCd ON ea.ELCTRN_ATRZ_TY_SE_CD = tyCd.CD_VALUE -- 전자결재 유형코드 명
-			LEFT JOIN CD aprCd ON al.APRVR_EMP_ID = aprCd.CD_VALUE -- 현재 결재권자 명
-			LEFT JOIN CD stepCd ON al.ATRZ_STEP_CD = stepCd.CD_VALUE -- 현재 결재단계 (VTW007) 명
-			LEFT JOIN CD sttsCd ON al.ATRZ_STTS_CD = sttsCd.CD_VALUE -- 결재상태 (VTW008) 명
-			LEFT JOIN GNRL_ATRZ ga ON ea.ELCTRN_ATRZ_ID = ga.ELCTRN_ATRZ_ID -- 일반결재
-			LEFT JOIN CLM_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID -- 청구결재 - 거래처명
-			LEFT JOIN VCATN_ATRZ va ON ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID -- 휴가결재 제목
-			LEFT JOIN REFRN_MAN rm ON ea.ELCTRN_ATRZ_ID = rm.ELCTRN_ATRZ_ID -- 참조자
-			LEFT JOIN CTRT_GIVE_ATRZ cga ON ea.ELCTRN_ATRZ_ID = cga.ELCTRN_ATRZ_ID -- 참조자
-			JOIN EMP e1 ON ea.ATRZ_DMND_EMP_ID = e1.EMP_ID
-			JOIN EMP e2 ON al.APRVR_EMP_ID = e2.EMP_ID
+		LEFT JOIN ATRZ_LN al
+		ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID
+		AND ea.NOW_ATRZ_LN_SN = al.ATRZ_LN_SN
+		LEFT JOIN CD tyCd ON ea.ELCTRN_ATRZ_TY_SE_CD = tyCd.CD_VALUE -- 전자결재 유형코드 명
+		LEFT JOIN CD aprCd ON al.APRVR_EMP_ID = aprCd.CD_VALUE -- 현재 결재권자 명
+		LEFT JOIN CD stepCd ON al.ATRZ_STEP_CD = stepCd.CD_VALUE -- 현재 결재단계 (VTW007) 명
+		LEFT JOIN CD sttsCd ON al.ATRZ_STTS_CD = sttsCd.CD_VALUE -- 결재상태 (VTW008) 명
+		LEFT JOIN GNRL_ATRZ ga ON ea.ELCTRN_ATRZ_ID = ga.ELCTRN_ATRZ_ID -- 일반결재
+		LEFT JOIN CLM_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID -- 청구결재 - 거래처명
+		LEFT JOIN VCATN_ATRZ va ON ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID -- 휴가결재 제목
+		LEFT JOIN REFRN_MAN rm ON ea.ELCTRN_ATRZ_ID = rm.ELCTRN_ATRZ_ID -- 참조자
+		LEFT JOIN CTRT_ATRZ cta ON ea.ELCTRN_ATRZ_ID = cta.ELCTRN_ATRZ_ID -- 계약 지급
+		LEFT JOIN CTRT_GIVE_ATRZ cga ON ea.ELCTRN_ATRZ_ID = cga.ELCTRN_ATRZ_ID -- 계약 지급
+		LEFT JOIN ELCTRN_ATRZ_DOC_FORM eadf ON ea.ELCTRN_ATRZ_TY_SE_CD = eadf.ELCTRN_ATRZ_TY_SE_CD -- 서식 제목
+		JOIN EMP e1 ON ea.ATRZ_DMND_EMP_ID = e1.EMP_ID
+		JOIN EMP e2 ON al.APRVR_EMP_ID = e2.EMP_ID
 		WHERE 1=1
 		<choose>
 			<when test="sttsCd != null and refer != null and sttsCd.startsWith('VTW037')">
@@ -72,10 +78,10 @@
 		</if>
 		<if test="title != null">
 			AND (
-				LOWER(ga.GNRL_ATRZ_TTL) LIKE CONCAT('%', LOWER(#{title}), '%') OR
-				LOWER(ca.CLM_ATRZ_TTL) LIKE CONCAT('%', LOWER(#{title}), '%') OR
-				LOWER(cga.ATRZ_TTL) LIKE CONCAT('%', LOWER(#{title}), '%') OR
-				LOWER(va.VCATN_TY_CD) IN (SELECT CD_VALUE FROM CD WHERE LOWER(CD_NM) LIKE CONCAT('%', LOWER(#{title}), '%'))
+			LOWER(ga.GNRL_ATRZ_TTL) LIKE CONCAT('%', LOWER(#{title}), '%') OR
+			LOWER(ca.CLM_ATRZ_TTL) LIKE CONCAT('%', LOWER(#{title}), '%') OR
+			LOWER(cga.ATRZ_TTL) LIKE CONCAT('%', LOWER(#{title}), '%') OR
+			LOWER(va.VCATN_TY_CD) IN (SELECT CD_VALUE FROM CD WHERE LOWER(CD_NM) LIKE CONCAT('%', LOWER(#{title}), '%'))
 			)
 		</if>
 	</select>
@@ -97,4 +103,21 @@
 			JOIN EMP e2 ON al.APRVR_EMP_ID = e2.EMP_ID
 	</select>
 
+	<select id="retrieveAtrzLn" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT
+			cd.CD_NM AS ATRZ_STEP_CD,
+			cd2.CD_NM AS ATRZ_STTS_CD,
+			e.EMP_FLNM AS APRVR_EMP_ID,
+			ln.APRV_YMD,
+			ln.RJCT_YMD,
+			ln.RJCT_PRVONSH
+		FROM ATRZ_LN ln
+				 JOIN EMP e ON ln.APRVR_EMP_ID = e.EMP_ID
+				 JOIN CD cd ON ln.ATRZ_STEP_CD = cd.CD_VALUE
+				 JOIN CD cd2 ON ln.ATRZ_STTS_CD = cd2.CD_VALUE
+		WHERE 1=1
+		  AND ln.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
+		  AND ln.ATRZ_LN_SN = #{atrzLnSn}
+	</select>
+	
 </mapper>
