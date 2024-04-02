@@ -57,11 +57,30 @@ public class CommonServiceImpl implements CommonService {
             Connection connection = DriverManager.getConnection(applicationYamlRead.getUrl(), applicationYamlRead.getUsername(), applicationYamlRead.getPassword());
             // 트랜잭션 시작
             connection.setAutoCommit(false);
-            try {
+            try (Statement statement = connection.createStatement()){
+                ResultSet resultParamSet = statement.executeQuery("SELECT * FROM "  + tbNm + " WHERE 1=0"); // 빈 결과를 가져옴
+                ResultSetMetaData metaData = resultParamSet.getMetaData();
+                int columnCount = metaData.getColumnCount();
+
+                Map<String, Object> insertParam;
+                Map<String, Object> validInsertParam;
                 for (int i = 1; i < params.size(); i++) {
-                    Map<String, Object> insertParam = params.get(i);
-                    List<String> keys = new ArrayList<>(insertParam.keySet());
-                    List<Object> inParams = new ArrayList<>(insertParam.values());
+                    insertParam = params.get(i);
+                    validInsertParam = new HashMap<>();
+
+                    for (String key : insertParam.keySet()) {
+                        String upVal = key.replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase();
+                        for (int j = 1; j <= columnCount; j++) {
+                            String columnLabel = metaData.getColumnLabel(j);
+                            if (upVal.equalsIgnoreCase(columnLabel)) {
+                                validInsertParam.put(key, insertParam.get(key));
+                                break;
+                            }
+                        }
+                    }
+
+                    List<String> keys = new ArrayList<>(validInsertParam.keySet());
+                    List<Object> inParams = new ArrayList<>(validInsertParam.values());
 
                     // INSERT문 생성
                     StringBuilder queryBuilder = new StringBuilder("INSERT INTO ").append(tbNm).append(" ( ");
