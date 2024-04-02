@@ -48,6 +48,12 @@ public class CommonController {
     public List<Map<String, Object>> queryIdSearch(@RequestBody Map<String, Object> param){
         return commonService.queryIdSearch(param);
     }
+
+    @PostMapping(value = "/boot/common/queryIdSearch")
+    public int queryIdDataControl(@RequestBody Map<String, Object> param){
+        return commonService.queryIdDataControl(param);
+    }
+
     @PostMapping(value = "/boot/common/insertlongText", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public int longTextInsert(@RequestPart(required = false) List<MultipartFile> attachments,
                               @RequestPart String tbNm, @RequestPart String data,
