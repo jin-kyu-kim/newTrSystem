@@ -17,4 +17,10 @@ public class IndvdlClmController {
     public int insertPrjctMM (@RequestBody List<Map<String, Object>> params){
         return IndvdlClmDomain.insertPrjctMM(params);
     }
+
+    // 프로젝트근무시간 저장
+    @PostMapping(value = "/boot/indvdlClm/prjctMm/insertPrjctMmAply")
+    public List<Map<String, Object>> insertPrjctMmAply (@RequestBody List<Map<String, Object>> params){
+        return IndvdlClmDomain.insertPrjctMmAply(params);
+    }
 }
