@@ -9,12 +9,18 @@ import { NumberBox } from "devextreme-react";
 import { DateRangeBox } from "devextreme-react/date-range-box";
 
 import CustomCdComboBox from "../../../components/unit/CustomCdComboBox";
-import { set } from "date-fns";
 
 
 const ElecAtrzCtrtInfo = ({data, prjctId, onSendData }) => {
     const labelValue = ElecAtrzCtrtInfoJson.labelValue;
     const [infoData, setInfoData] = useState({});
+
+    const giveDe = [
+        {"value": "5"},
+        {"value": "10"},
+        {"value": "15"},
+        {"value": "지급일 지정"}
+    ];
 
     /**
      *  부모창으로 데이터 전송
@@ -26,22 +32,31 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData }) => {
                 tbNm: 'CTRT_ATRZ'
             }));
         }      
-        onSendData(infoData);
+        //지급일 지정일 경우 지급일 변경
+        const updatedInfoData = { ...infoData };
+        if(updatedInfoData.giveDe === "지급일 지정"){
+            updatedInfoData.giveDe = updatedInfoData.giveDeEtc;
+            delete updatedInfoData.giveDeEtc;
+        }
+
+        onSendData(updatedInfoData);
     }, [infoData]);
 
 
     /**
      *  입력값 변경시 데이터 핸들링
      */
-    const handleChgState = ({name, value}) => {
+    const handleChgState = ({name, value, name2, value2}) => {
+
         setInfoData(infoData => ({
             ...infoData,
-            [name]: value
+            [name]: value,
+            [name2] : value2
         }));
     } 
 
     return (
-        <div className="elecAtrzNewReq-ctrtInfo">
+        <div className="elecAtrzNewReq-ctrtInfo" >
             <h3>계약정보</h3>
             <div className="dx-fieldset">
                 <div className="dx-field">
@@ -72,7 +87,7 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData }) => {
                             />
                         </div>
                         <div style={{display:"inline-block", marginLeft:"auto"}}>
-                            <TextBox
+                            <NumberBox
                                 placeholder="사업자등록번호 또는 주민등록번호"
                                 width="400px"
                                 onValueChanged={(e) => {
@@ -93,6 +108,10 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData }) => {
                                     displayFormat={"yyyy-MM-dd"}
                                     dateSerializationFormat="yyyyMMdd"
                                     applyValueMode="useButtons"
+                                    value={[infoData.ctrtBgngYmd, infoData.ctrtEndYmd]}
+                                    onValueChanged={(e) => {
+                                        handleChgState({name: "ctrtBgngYmd", value: e.value[0], name2: "ctrtEndYmd", value2: e.value[1]})
+                                    }}
                                 />
                             </div>
                         </div>
@@ -122,7 +141,7 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData }) => {
                             />
                         </div>
                         <div style={{display:"inline-block", marginLeft:"auto", width: "30%"}}>
-                            <TextBox
+                            <NumberBox
                                 placeholder="계좌번호"
                                 onValueChanged={(e) => {
                                     handleChgState({name: "dpstActno", value: e.value})
@@ -149,23 +168,39 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData }) => {
                         <div style={{float: "left", marginRight: "20px", width:"20%"}}>
                             <SelectBox
                                 placeholder="지급일"
-                                // value={infoData}
+                                name="giveDe"
+                                displayExpr="value"
+                                valueExpr="value"
+                                onValueChanged={(e) => {
+                                    handleChgState({name: "giveDe", value: e.value})
+                                }}
+                                value={infoData.giveDe}
+                                dataSource={giveDe}
                             />
                         </div>
-                        <div style={{float: "left", marginRight: "auto", width:"20%"}}>
+                        <div style={{float: "left", marginRight: "auto", width:"30%"}}>
                             <NumberBox
                                 placeholder="사용자지급일"
                                 showClearButton={true}
                                 min={1}
                                 max={31}
-                                defaultValue={1}
                                 showSpinButtons={true}
                                 step={1}
+                                value={infoData.giveDeEtc}
+                                readOnly={infoData.giveDe === "지급일 지정" ? false : true}
+                                onValueChanged={(e) => {
+                                    handleChgState({name: "giveDeEtc", value: e.value})
+                                }}
                             />
                         </div>
                     </div>
                 </div>
-                <CustomLabelValue props={labelValue.etc} value={infoData.etc} onSelect={handleChgState}/>
+                <CustomLabelValue 
+                    props={labelValue.giveDePrvonsh} 
+                    value={infoData.giveDePrvonsh} 
+                    onSelect={handleChgState}
+                    readOnly={infoData.giveDe === "지급일 지정" ? false : true}
+                    />
             </div>
         </div>
     );

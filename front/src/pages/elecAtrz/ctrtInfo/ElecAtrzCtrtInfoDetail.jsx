@@ -34,20 +34,41 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData }) => {
         console.log(popupVisible);
     }, [popupVisible]);
 
+    useEffect(() => {
+        console.log(tableData);
+    }, [tableData]);
+
+    /**
+     *  날짜데이터 포멧팅
+     */
+    function formatDateToYYYYMM(date) {
+        let year = date.getFullYear().toString();
+        let month = (date.getMonth() + 1).toString().padStart(2, '0'); 
+        return year + month;
+    }
 
     /**
      *  부모창으로 데이터 전송
      */
     useEffect(() => {
-        //각 pay 배열에 tbNm 추가
+
         const updatedTableData = tableData.map(item => ({
             ...item,
-            pay: [...item.pay, { tbNm: 'ENTRPS_CTRT_DTL_CND' }] 
+            pay: item.pay.map(payItem => ({ ...payItem })).concat([{ tbNm: 'ENTRPS_CTRT_DTL_CND' }]) 
         }));
         
         //테이블 배열에 tbNm 추가
         let newData;
         newData = [...updatedTableData, { tbNm: 'ENTRPS_CTRT_DTL' }];
+
+        //pay데이터의 날짜 데이터 포멧팅
+        newData.forEach(item => {
+            if (!item.pay || item.pay.length === 0) return;
+            item.pay.forEach(element => {
+                if (!element.ctrtYmd) return;
+                element.ctrtYmd = formatDateToYYYYMM(element.ctrtYmd);
+            });
+        });
 
         onSendData(newData);
     }, [tableData]);
@@ -90,7 +111,6 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData }) => {
             data.matrlCtSn = maxSn + 1;     
             setTableData(prev => [...prev, data]);
         }
-
     }
 
     
