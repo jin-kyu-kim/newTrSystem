@@ -1,64 +1,132 @@
-import React, { useEffect, useState, useCallback } from "react";
-import CustomTable from "../../../components/unit/CustomTable";
-import ElecAtrzMatrlCtDetailJson from "./ElecAtrzMatrlCtDetailJson.json";
-
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Popup } from "devextreme-react/popup";
+import { Button } from "devextreme-react";
+
+import CustomTable from "../../../components/unit/CustomTable";
+import ElecAtrzMatrlCtJson from "./ElecAtrzMatrlCtJson.json";
+import ElecAtrzOutordCompanyJson from "./ElecAtrzOutordCompanyJson.json";
 import PymntPlanPopup from "./PymntPlanPopup"
 
-
-const ElecAtrzCtrtInfoDetail = ({prjctId}) => {
-    const {keyColumn, tableColumns} = ElecAtrzMatrlCtDetailJson;
+/**
+ *  "VTW04908" : 외주인력
+ *  "VTW04909" : 외주업체
+ *  "VTW04910" : 재료비
+ */
+const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData }) => {
+    
     const [popupVisible, setPopupVisible] = useState(false);
+    const [tableData, setTableData] = useState([]);                 //그리드 전체 데이터
+    const [selectedData, setSelectedData] = useState({});           //선택된 행의 데이터
+    
+    let jsonData = {};
+    if(data.elctrnAtrzTySeCd === "VTW04910"){
+        jsonData = ElecAtrzMatrlCtJson
+    }
+    else if (data.elctrnAtrzTySeCd === "VTW04909"){
+        jsonData = ElecAtrzOutordCompanyJson
+    }
+    const {keyColumn, tableColumns, summaryColumn, insertButton} = jsonData;
 
-    console.log("keyColumn", keyColumn);
-
+    /**
+     * console.log useEffect
+     */
     useEffect(() => {
         console.log(popupVisible);
     }, [popupVisible]);
 
 
-    const values = [{matrlCtSn: "0"}];  //그리드 기본 값
+    /**
+     *  부모창으로 데이터 전송
+     */
+    useEffect(() => {
+        //각 pay 배열에 tbNm 추가
+        const updatedTableData = tableData.map(item => ({
+            ...item,
+            pay: [...item.pay, { tbNm: 'ENTRPS_CTRT_DTL_CND' }] 
+        }));
+        
+        //테이블 배열에 tbNm 추가
+        let newData;
+        newData = [...updatedTableData, { tbNm: 'ENTRPS_CTRT_DTL' }];
+
+        onSendData(newData);
+    }, [tableData]);
 
 
     /**
      *  Table 버튼 handling
      */
     const handlePopupVisible = useCallback((button, data) => {
-        if(button.name === "insert") {
+
+        if(button.name === "insert") {  //update인 경우도 추가해야함 .
             setPopupVisible(prev => !prev);
+            // setSelectedData(data);
         }else if(button.name === "delete"){
-            console.log("삭제!!!!!!!!!!", data);
-        }       
+            if(data.matrlCtSn != 0){
+                setTableData(currentTableData => currentTableData.filter(item => item.matrlCtSn !== data.matrlCtSn));
+            }
+        }else if(button.name === "update"){
+            setPopupVisible(prev => !prev);
+            setSelectedData(data);
+        }      
+
     },[popupVisible]);
 
-    const toglePopupVisible = useCallback(() => {
-        setPopupVisible(prev => !prev);
+    const closePopupVisible = useCallback(() => {
+        setPopupVisible(false);
+        setSelectedData({});
     },[]);
 
 
+    const handlePopupData = (data) => {
+        const existingIndex = tableData.findIndex(item => item.matrlCtSn === data.matrlCtSn);
+
+        if(existingIndex >=0){
+            const updatedData = [...tableData];
+            updatedData[existingIndex] = data;
+            setTableData(updatedData);
+        } else {
+            const maxSn = tableData.length > 0 ? Math.max(...tableData.map(item => item.matrlCtSn || 0)) : 0;
+            data.matrlCtSn = maxSn + 1;     
+            setTableData(prev => [...prev, data]);
+        }
+
+    }
+
+    
     /**
      *  화면 표출
      */
     return (
         <div className="elecAtrzNewReq-ctrtInfo">
+            <div style={{ textAlign: "right", marginBottom:"10px" }}>
+                <Button name="insert" onClick={()=>handlePopupVisible({name:"insert"})}>{insertButton}</Button>
+            </div>
            <CustomTable
             keyColumn={keyColumn}
             columns={tableColumns}
-            values={values}
+            values={tableData}
             pagerVisible={false}
-            summary={false}
+            summary={true}
+            summaryColumn={summaryColumn}
             onClick={handlePopupVisible}
             />
 
             <Popup
                 width="80%"
-                height="80%"
+                height="80%" 
                 visible={popupVisible}
-                onHiding={toglePopupVisible}
+                onHiding={closePopupVisible}
                 showCloseButton={true}
                 title="지불 계획 입력"
             >
-                <PymntPlanPopup prjctId={prjctId}/>
+                <PymntPlanPopup 
+                    prjctId={prjctId} 
+                    handlePopupVisible={closePopupVisible} 
+                    handlePlanData={handlePopupData} 
+                    selectedData={selectedData}
+                    data={data}
+                />
             </Popup>
         </div>
     );

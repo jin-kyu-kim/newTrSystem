@@ -1,104 +1,182 @@
 import React, { useState, useEffect } from "react";
 
 import { Button } from "devextreme-react/button";
-import {SelectBox} from "devextreme-react/select-box";
-import TextBox from "devextreme-react/text-box";
 
-import ApiRequest from "utils/ApiRequest";
 import CustomLabelValue from "components/unit/CustomLabelValue";
 import CustomEditTable from "components/unit/CustomEditTable";
-import MatrlCtCtrtDetailJson from "./MatrlCtCtrtDetailJson.json";
+import ElecAtrzMatrlCtPopupJson from "./ElecAtrzMatrlCtPopupJson.json";
+import ElecAtrz0OutordCompanyPopupJson from "./ElecAtrzOutordCompanyPopupJson.json";
 
+/**
+ *  "VTW04909" : 외주업체
+ *  "VTW04910" : 재료비
+ */
+const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedData, data}) => {
 
-const PymntPlanPopup = ({prjctId, handlePopupVisible}) => {
-    
-    const labelValue = MatrlCtCtrtDetailJson.matrlCtrt.labelValue
-    const { keyColumn, tableColumns } = MatrlCtCtrtDetailJson.matrlCtrt
-    const [matrlPlan, setMatrlPlan] = useState({});
+    let jsonData = {};
+    if(data.elctrnAtrzTySeCd === "VTW04910"){
+        jsonData = ElecAtrzMatrlCtPopupJson
+    }
+    else if (data.elctrnAtrzTySeCd === "VTW04909"){
+        jsonData = ElecAtrz0OutordCompanyPopupJson
+    }
+
+    const labelValue = jsonData.matrlCtrt.labelValue
+    const matrlPlanParam = labelValue.matrlPlan
+    matrlPlanParam.param.queryId.prjctId = prjctId;
+
+    const { keyColumn, tableColumns } = jsonData.matrlCtrt
     const [matrlCtrtData, setMatrlCtrtData] = useState({});
     const [pay, setPay] = useState([]);
 
-    const matrlCtrt = {};
+
+    /**
+     * console.log useEffect
+     */
+    useEffect(() => {
+        // console.log("matrlCtrtData", matrlCtrtData)
+    },[matrlCtrtData]);
 
     useEffect(() => {
+        // console.log("pay", pay)
+    },[pay]);
 
-        retrieveMatrlPlan();
-    }, []);
+    useEffect(() => {
+        // console.log("뭐야 !! ", handlePopupVisible)
+    },[handlePopupVisible]);
 
-    const retrieveMatrlPlan = async () => {
-        const param = {
-            queryId: "elecAtrzMapper.retrieveMatrlPlan",
-            prjctId: prjctId
-        }
+
+    /**
+     *  부모창에서 전달 된 데이터로 셋팅
+     */
+    useEffect(() => {
+        console.log("먼디",selectedData)
         
-        try {
-            const response = await ApiRequest("/boot/common/queryIdSearch", param);
-            console.log(response)
-            setMatrlPlan(response)
-        } catch (error) {
-            console.error(error)
-        }
+            if(selectedData.matrlCtSn === 0) {
+                setMatrlCtrtData({});
+                setPay([]);
+            }else{
+                setMatrlCtrtData(selectedData);
+                setPay(selectedData.pay?selectedData.pay:[])
+            }
+    }, [selectedData]);
 
-    }
-
-    const selectMatrlPlan = (e) => {
-        setMatrlCtrtData(e);
-    }
-    
-    const handleChgState = ({name, value}) => {
-        setMatrlCtrtData({
-            ...matrlCtrtData,
-            [name]: value
-        })
-    } 
-
-    const handleData = async (payData) => {
-        console.log(payData)
+    // useEffect(() => {
+    //     handleData(pay);
+    // }, [pay]);
+    /**
+     *  선금, 중도금, 잔금 데이터 핸들링
+     */
+    const handleData = (payData) => {
         setPay(payData)
 
-        for(let i = 0; i < payData.length; i++) {
-            
-            console.log(
+        let advPayYm = "";
+        let advPayAmt = 0;
+        let surplusYm = "";
+        let surplusAmt = 0;
+        let prtPayYm = "";
+        let prtPayAmt = 0;
 
-                payData[i].payYmd
-            )
+        for(let i = 0; i < payData.length; i++) {
+
+            let month
+            if(payData[i].payYm.getMonth() + 1 < 10) {
+                month = "0" + (payData[i].payYm.getMonth() + 1)
+            }
+
+            //선금
+            if(["VTW03201","VTW03202","VTW03203","VTW03204"].includes(payData[i].payCd)){
+                if(payData[i].payCd === "VTW03201"){
+                    advPayYm = payData[i].payYm.getFullYear() + "" + month;
+                }
+                advPayAmt += payData[i].payAmt;
+               
+            //잔금
+            } else if(payData[i].payCd === "VTW03212") {    
+                surplusYm = payData[i].payYm.getFullYear() + "" + month;
+                surplusAmt = payData[i].payAmt;
+
+            //중도금
+            } else  {
+                if(payData[i].payCd === "VTW03202") {  
+                    prtPayYm = payData[i].payYm.getFullYear() + "" + month;
+                }
+                prtPayAmt += payData[i].payAmt;
+            }
         }
 
-        setMatrlCtrtData({
+        setMatrlCtrtData(prevState => ({
+            ...prevState,
+            pay,
+            "advPayYm": advPayYm,
+            "advPayAmt": advPayAmt,
+            "surplusYm": surplusYm,
+            "surplusAmt": surplusAmt,
+            "prtPayYm": prtPayYm,
+            "prtPayAmt": prtPayAmt,
+            "payTot": advPayAmt + surplusAmt + prtPayAmt
+        }));
+    }
+
+    /**
+     *  입력값 변경시 데이터 핸들링
+     */
+    const handleChgState = ({name, value}) => {
+        setMatrlCtrtData(matrlCtrtData => ({
             ...matrlCtrtData,
-            payData
-        })
+            [name]: value
+        }));
+    } 
+
+    /**
+     *  저장 시 밸리데이션 체크 
+     */
+    const savePlan = (e) => {
+        e.preventDefault();
+        if(!(matrlCtrtData.payTot > 0)) {
+            alert("지불 총액은 0 이상 입력해야 합니다.");
+            return;
+        }
+
+        //지급 총액이 가용금액을 초과할 경우
+        if(matrlCtrtData.cntrctamount < matrlCtrtData.payTot) {
+            alert("지불 총액은 계약금액을 초과할 수 없습니다.");
+            return;
+        }
+
+        handlePlanData(matrlCtrtData);
+        handlePopupVisible();
     }
 
-    const test = async () => {
-        console.log(matrlCtrtData)
-    }
-
+    
     return (
-        <>
+    <>
+        <form onSubmit={savePlan}>
             <div className="popup-content">
                 <div className="project-regist-content">
                     <div className="project-change-content-inner-left">
+                    {data.elctrnAtrzTySeCd === "VTW04910" ? 
                         <div className="dx-fieldset">
-                            <div className="dx-field">
-                                <div className="dx-field-label">계획 투입 재료비</div>
-                                <div className="dx-field-value">
-                                    <SelectBox
-                                        dataSource={matrlPlan}
-                                        displayExpr="matrlPlan"
-                                        onSelectionChanged={(e) => selectMatrlPlan(e.selectedItem)}
-                                    />
-                                </div>
-                            </div>
+                            <CustomLabelValue props={matrlPlanParam}  value={matrlCtrtData.matrlPlan} onSelect={handleChgState} />
                             <CustomLabelValue props={labelValue.cntrctamount} onSelect={handleChgState} readOnly={true} value={matrlCtrtData.cntrctamount}/>
                             <CustomLabelValue props={labelValue.prductNm} onSelect={handleChgState} value={matrlCtrtData.prductNm}/>
-                            <CustomLabelValue props={labelValue.dlvgdsEntrpsNm} onSelect={handleChgState}  value={matrlCtrtData.dlvgdsEntrpsNm}/>
                             <CustomLabelValue props={labelValue.dtlCn} onSelect={handleChgState} value={matrlCtrtData.dtlCn}/>
                             <CustomLabelValue props={labelValue.untpc} onSelect={handleChgState} value={matrlCtrtData.untpc}/>
                             <CustomLabelValue props={labelValue.qy} onSelect={handleChgState} value={matrlCtrtData.qy}/>
                             <CustomLabelValue props={labelValue.tot} onSelect={handleChgState} value={matrlCtrtData.tot}/>
-                            <CustomLabelValue props={labelValue.date} onSelect={handleChgState} value={matrlCtrtData.date}/>
-                        </div>
+                            <CustomLabelValue props={labelValue.dlvgdsYmd} onSelect={handleChgState} value={matrlCtrtData.dlvgdsYmd}/>
+                            <CustomLabelValue props={labelValue.payTot} onSelect={handleChgState} readOnly={true} value={matrlCtrtData.payTot}/>
+                        </div> : 
+                        <div className="dx-fieldset">
+                            <CustomLabelValue props={matrlPlanParam}  value={matrlCtrtData.matrlPlan} onSelect={handleChgState} />
+                            <CustomLabelValue props={labelValue.cntrctamount} onSelect={handleChgState} readOnly={true} value={matrlCtrtData.cntrctamount}/>
+                            <CustomLabelValue props={labelValue.prductNm} onSelect={handleChgState} value={matrlCtrtData.prductNm}/>
+                            <CustomLabelValue props={labelValue.dtlCn} onSelect={handleChgState} value={matrlCtrtData.dtlCn}/>
+                            <CustomLabelValue props={labelValue.tot} onSelect={handleChgState} value={matrlCtrtData.tot}/>
+                            <CustomLabelValue props={labelValue.dlvgdsYmd} onSelect={handleChgState} value={matrlCtrtData.dlvgdsYmd}/>
+                            <CustomLabelValue props={labelValue.endYmd} onSelect={handleChgState} value={matrlCtrtData.endYmd}/>
+                         </div>
+                        }
                     </div>
                     <div className="project-change-content-inner-right">
                         <CustomEditTable 
@@ -107,16 +185,16 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible}) => {
                             allowEdit={true}
                             values={pay}
                             handleData={handleData}
-                        />
+                            />
                     </div>
                 </div>
                 <div>
-                    <Button text="저장" onClick={test}/>
+                    <Button text="저장" useSubmitBehavior={true}/>
                     <Button text="취소" onClick={handlePopupVisible}/>
                 </div>
             </div>
-
-        </>
+        </form>
+    </>
     );
 
 }

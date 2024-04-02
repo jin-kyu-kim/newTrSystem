@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 import ProjectJson from "./ProjectListJson.json";
 import ApiRequest from "../../utils/ApiRequest";
-import SearchPrjctSet from "../../components/composite/SearchPrjctSet";
+import SearchInfoSet from "../../components/composite/SearchInfoSet";
 import CustomTable from "../../components/unit/CustomTable";
 
 import "react-datepicker/dist/react-datepicker.css";
@@ -19,7 +19,7 @@ const ProjectClaimCost = () => {
 
   const navigate = useNavigate();
 
-  const { keyColumn, queryId, tableColumns, searchParams, wordWrap } = ProjectJson;
+  const { keyColumn, queryId, tableColumns, searchInfo, wordWrap } = ProjectJson;
 
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
@@ -55,7 +55,7 @@ const ProjectClaimCost = () => {
     }
   };
 
-  const onClick = (button, data) => {
+  const onClick = ({button, data}) => {
     if (button.name === "prjctId") {
       navigate("/fnnrMng/ProjectClaimCostDetail",{
             state: {
@@ -75,10 +75,7 @@ const ProjectClaimCost = () => {
         <span>* 프로젝트를 조회합니다.</span>
       </div>
       <div style={{ marginBottom: "20px" }}>
-        <SearchPrjctSet
-          callBack={searchHandle}
-          props={searchParams}
-        />
+        <SearchInfoSet callBack={searchHandle} props={searchInfo} />
       </div>
 
       <div>검색된 건 수 : {totalItems} 건</div>

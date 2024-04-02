@@ -4,7 +4,7 @@ import {Button, TabPanel} from "devextreme-react";
 import ApiRequest from "../../utils/ApiRequest";
 
 import ProjectClaimCostDetailJson from "./ProjectClaimCostDetailJson.json";
-import SearchPrjctCostSet from "../../components/composite/SearchPrjctCostSet";
+import SearchInfoSet from "../../components/composite/SearchInfoSet";
 
 const ProjectClaimCostDetail = () => {
     const location = useLocation();
@@ -14,59 +14,79 @@ const ProjectClaimCostDetail = () => {
     const [selectedIndex, setSelectedIndex] = useState(0);
 
     const ProjectClaimCostDetail = ProjectClaimCostDetailJson.tabMenu;
-    const searchParams = ProjectClaimCostDetailJson.searchParams;
+    const searchInfo = ProjectClaimCostDetailJson.searchInfo;
     const [param, setParam] = useState([]);
 
-    let year = "";
-    let monthVal = "";
-    let aplyOdr = 0;
-    let empId = "";
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+
+    let odrVal = day > 15 ? "1" : "2";
+    let monthVal = month < 10 ? "0" + month : month;
+
+    const [startYmd, setStartYmd] = useState('');
+    const [startOdr, setStartOdr] = useState('');
+    const [endYmd, setEndYmd] = useState('');
+    const [endOdr, setEndOdr] = useState('');
+
+    let newStartYmd, newStartOdr, newEndYmd, newEndOdr;
 
     useEffect(() => {
 
-        const param = {
-            queryId: "financialAffairMngMapper.retrievePrjctCtClmSttusYMDMMAccto",
-            prjctId: prjctId,
-            year: year,
-            monthVal: monthVal,
-            aplyOdr: aplyOdr,
-            empId: empId,
-        };
-
-        const response = ApiRequest("/boot/common/queryIdSearch", param);
+        setStartYmd(year + monthVal);
+        setStartOdr(odrVal);
+        setEndYmd(year + monthVal);
+        setEndOdr(odrVal);
 
     }, []);
 
     const searchHandle = async (initParam) => {
 
-        if(initParam.yearItem == null || initParam.monthItem == null) {
-
-            const date = new Date();
-            const year = date.getFullYear();
-            const month = date.getMonth() + 1;
-            const day = date.getDate();
-
-            let odrVal = day > 15 ? "2" : "1";
-            let monthVal = month < 10 ? "0" + month : month;
+        if(initParam.startYmOdr == null && initParam.endYmOdr == null) {
 
             setParam({
                 ...param,
-                year: year,
-                monthVal: monthVal,
-                aplyOdr: odrVal,
-                empId: initParam.empId,
+                startYmOdr: year+monthVal+odrVal,
+                endYmOdr: year+monthVal+odrVal,
+                empFlnm: initParam.empFlnm,
             })
 
             return;
+        } else if(initParam.startYmOdr !== null && initParam.endYmOdr == null) {
+
+            newStartYmd = initParam.startYmOdr.substr(0, 6);
+            newStartOdr = initParam.startYmOdr.substr(6, 2) > 15 ? "2" : "1";
+            newEndYmd = initParam.startYmOdr.substr(0, 6);
+            newEndOdr = initParam.startYmOdr.substr(6, 2) > 15 ? "2" : "1";
+
+        } else if(initParam.startYmOdr == null && initParam.endYmOdr !== null) {
+
+            newStartYmd = initParam.endYmOdr.substr(0, 6);
+            newStartOdr = initParam.endYmOdr.substr(6, 2) > 15 ? "2" : "1";
+            newEndYmd = initParam.endYmOdr.substr(0, 6);
+            newEndOdr = initParam.endYmOdr.substr(6, 2) > 15 ? "2" : "1";
+
+        } else if(initParam.startYmOdr !== null && initParam.endYmOdr !== null) {
+
+            newStartYmd = initParam.startYmOdr.substr(0, 6);
+            newStartOdr = initParam.startYmOdr.substr(6, 2) > 15 ? "2" : "1";
+            newEndYmd = initParam.endYmOdr.substr(0, 6);
+            newEndOdr = initParam.endYmOdr.substr(6, 2) > 15 ? "2" : "1";
+
         };
+
+        setStartYmd(newStartYmd);
+        setStartOdr(newStartOdr);
+        setEndYmd(newEndYmd);
+        setEndOdr(newEndOdr);
 
         setParam({
 
             ...param,
-            year: initParam.yearItem,
-            monthVal: initParam.monthItem,
-            aplyOdr: initParam.aplyOdr,
-            empId: initParam.empId,
+            startYmOdr: newStartYmd+newStartOdr,
+            endYmOdr: newEndYmd+newEndOdr,
+            empFlnm: initParam.empFlnm,
         })
 
     }
@@ -83,21 +103,18 @@ const ProjectClaimCostDetail = () => {
 
     const itemTitleRender = (a) => <span>{a.TabName}</span>;
 
-
     return (
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-            <div className="container" >
-                <div className="col-md-10 mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
+        <div >
+            <div style={{ padding: "20px" }}>
+                <div className="col-md-10 mx-auto" style={{marginTop: "20px", marginBottom: "10px"}}>
                     <h1 style={{fontSize: "30px"}}>프로젝트비용청구현황</h1>
-                </div>
-                <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
-                    <span>* {prjctNm}({param.year}{param.monthVal}-{param.aplyOdr})</span>
+                    <span>* 선택하신 일자가 속한 차수 기준으로 검색됩니다.</span><br/>
+                    <span>* 일자를 하나만 선택하실 경우 해당 일자가 속한 하나의 차수만 조회됩니다.</span><br/>
+                    <span>* {prjctNm}({startYmd}-{startOdr}~{endYmd}-{endOdr})</span>
                 </div>
                 <div className="wrap_search" style={{marginBottom: "20px"}}>
-                    <SearchPrjctCostSet callBack={searchHandle} props={searchParams} />
+                    <SearchInfoSet callBack={searchHandle} props={searchInfo}/>
                 </div>
-
-
                 <div
                     style={{
                         marginTop: "20px",
@@ -114,16 +131,15 @@ const ProjectClaimCostDetail = () => {
                         onOptionChanged={onSelectionChanged}
                         itemTitleRender={itemTitleRender}
                         animationEnabled={true}
-                        itemComponent={({ data }) => {
+                        itemComponent={({data}) => {
                             const Component = React.lazy(() => import(`${data.url}`));
                             return (
                                 <React.Suspense fallback={<div>Loading...</div>}>
                                     <Component prjctId={prjctId}
                                                prjctNm={prjctNm}
-                                               year={param.year}
-                                               monthVal={param.monthVal}
-                                               aplyOdr={param.aplyOdr}
-                                               empId={param.empId} />
+                                               startYmOdr={param.startYmOdr}
+                                               endYmOdr={param.endYmOdr}
+                                               empFlnm={param.empFlnm}/>
                                 </React.Suspense>
                             );
                         }}
@@ -135,7 +151,7 @@ const ProjectClaimCostDetail = () => {
                 id="button"
                 text="목록"
                 className="btn_submit filled_gray"
-                style={{ alignSelf: "center" }}
+                style={{alignSelf: "center"}}
                 onClick={() => navigate("../fnnrMng/ProjectClaimCost")}
             />
         </div>

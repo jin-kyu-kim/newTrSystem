@@ -1,4 +1,4 @@
-import { useEffect, useState, } from "react";
+import React, {useCallback, useEffect, useState,} from "react";
 import  { useLocation } from "react-router-dom";
 import SearchPrjctCostSet from "../../../components/composite/SearchPrjctCostSet";
 import ProjectHrCtAprvDetailJson from "./ProjectHrCtAprvDetailJson.json";
@@ -7,6 +7,8 @@ import CustomTable from "../../../components/unit/CustomTable";
 import Popup from "devextreme-react/popup";
 import ProjectHrCtAprvCtPop from "./ProjectHtCtAprvCtPop";
 import ProjectHrCtAprvMmPop from "./ProjectHtCtAprvMmPop";
+import TextArea from "devextreme-react/text-area";
+import Button from "devextreme-react/button";
 
 const ProjectHrCtAprvDetail = () => {
 
@@ -21,9 +23,21 @@ const ProjectHrCtAprvDetail = () => {
     const [ctValues, setCtValues] = useState([]);
     const [ctPopupVisible, setCtPopupVisible] = useState(false);
     const [mmPopupVisible, setMmPopupVisible] = useState(false);
+    const [mmRjctPopupVisible, setMmRjctPopupVisible] = useState(false);
+    const [ctRjctPopupVisible, setCtRjctPopupVisible] = useState(false);
     const [ctDetailValues, setCtDetailValues] = useState([]);
     const [mmDetailValues, setMmDetailValues] = useState([]);
+    const [opnnCn, setOpnnCn] = useState("");
 
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+
+    let odrVal = day > 15 ? "2" : "1";
+    let monthVal = month < 10 ? "0" + month : month;
+    let dayVal = day < 10 ? "0" + day : day;
+    let aplyYm = year + monthVal;
     
     // 조회
     useEffect(() => {
@@ -54,16 +68,6 @@ const ProjectHrCtAprvDetail = () => {
 
     const searchHandle = async (initParam) => {
         if(initParam.yearItem == null || initParam.monthItem == null) {
-
-            const date = new Date();
-            const year = date.getFullYear();
-            const month = date.getMonth() + 1;
-            const day = date.getDate();
-
-            let odrVal = day > 15 ? "2" : "1";
-            let monthVal = month < 10 ? "0" + month : month;
-            let aplyYm = year + monthVal;
-
             setParam({
                 ...param,
                 queryId: ProjectHrCtAprvDetailJson.mm.queryId,
@@ -87,11 +91,33 @@ const ProjectHrCtAprvDetail = () => {
     }
 
     const onMmBtnClick = async (button, data) => {
-        console.log(data);
-        setData(data);
-
-        await retrieveProjectMmAplyDetail(data);
-        setMmPopupVisible(true);
+        if(button.name === "aprvList"){
+            setData(data);
+            await retrieveProjectMmAplyDetail(data);
+            setMmPopupVisible(true);
+        }else if(button.name === "aprv"){
+            const param = [
+                { tbNm: "PRJCT_MM_ATRZ" },
+                { atrzDmndSttsCd: "VTW03703",
+                  aprvYmd: year + monthVal + dayVal,
+                  rjctPrvonsh: null,
+                  rjctYmd: null},
+                { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr}
+            ];
+            try {
+                const confirmResult = window.confirm("승인하시겠습니까?");
+                if(confirmResult){
+                    const response = await ApiRequest('/boot/common/commonUpdate', param);
+                    if(response > 0) {
+                        handleMmAply();
+                    }
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }else if(button.name === "rjct"){
+            setMmRjctPopupVisible(true);
+        }
     }
 
     const retrieveProjectMmAplyDetail = async (data) => {
@@ -110,10 +136,33 @@ const ProjectHrCtAprvDetail = () => {
 
 
     const onCtBtnClick = async (button, data) => {
-        console.log(data);
-
-        await retrieveProjectCtAplyDetail(data);
-        setCtPopupVisible(true);
+        if(button.name === "ctList"){
+            setData(data);
+            await retrieveProjectCtAplyDetail(data);
+            setCtPopupVisible(true);
+        }else if(button.name === "aprv"){
+            const param = [
+                { tbNm: "PRJCT_CT_ATRZ" },
+                { atrzDmndSttsCd: "VTW03703",
+                    aprvYmd: year + monthVal + dayVal,
+                    rjctPrvonsh: null,
+                    rjctYmd: null},
+                { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, prjctCtAplySn: data.prjctCtAplySn}
+            ];
+            try {
+                const confirmResult = window.confirm("승인하시겠습니까?");
+                if(confirmResult){
+                    const response = await ApiRequest('/boot/common/commonUpdate', param);
+                    if(response > 0) {
+                        handleCtAply();
+                    }
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }else if(button.name === "rjct"){
+            setCtRjctPopupVisible(true);
+        }
     }
 
     const retrieveProjectCtAplyDetail = async (data) => {
@@ -132,7 +181,59 @@ const ProjectHrCtAprvDetail = () => {
     const handleClose = () => {
         setCtPopupVisible(false);
         setMmPopupVisible(false);
+        setCtRjctPopupVisible(false);
+        setMmRjctPopupVisible(false);
     };
+
+    const onTextAreaValueChanged = useCallback((e) => {
+        setOpnnCn(e.value);
+    }, []);
+
+    const onClickMmRjct = async () => {
+        try {
+            const confirmResult = window.confirm("반려하시겠습니까?");
+            const param = [
+                { tbNm: "PRJCT_MM_ATRZ" },
+                { atrzDmndSttsCd: "VTW03704",
+                    rjctPrvonsh: opnnCn,
+                    rjctYmd: year + monthVal + dayVal
+                },
+                { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr}
+            ];
+            if(confirmResult) {
+                const response = await ApiRequest('/boot/common/commonUpdate', param);
+                if (response > 0) {
+                    handleMmAply();
+                    setMmRjctPopupVisible(false);
+                }
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const onClickCtRjct = async () => {
+        try {
+            const confirmResult = window.confirm("반려하시겠습니까?");
+            const param = [
+                { tbNm: "PRJCT_CT_ATRZ" },
+                { atrzDmndSttsCd: "VTW03704",
+                    rjctPrvonsh: opnnCn,
+                    rjctYmd: year + monthVal + dayVal
+                },
+                { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, prjctCtAplySn: data.prjctCtAplySn}
+            ];
+            if(confirmResult) {
+                const response = await ApiRequest('/boot/common/commonUpdate', param);
+                if (response > 0) {
+                    handleCtAply();
+                    setCtRjctPopupVisible(false);
+                }
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     return (
         <div className="container">
@@ -174,6 +275,44 @@ const ProjectHrCtAprvDetail = () => {
                 showCloseButton={true}
             >
                 <ProjectHrCtAprvMmPop props={mmDetailValues} prjctNm={prjctNm} data={data}/>
+            </Popup>
+
+            <Popup
+                width={ProjectHrCtAprvDetailJson.rjctPopup.width}
+                height={ProjectHrCtAprvDetailJson.rjctPopup.height}
+                visible={mmRjctPopupVisible}
+                onHiding={handleClose}
+                showCloseButton={true}
+                title={ProjectHrCtAprvDetailJson.rjctPopup.title}
+            >
+                <TextArea
+                    height="50%"
+                    valueChangeEvent="change"
+                    onValueChanged={onTextAreaValueChanged}
+                    placeholder="반려 사유를 입력해주세요."
+                />
+                <br/>
+                <Button text="반려" onClick={onClickMmRjct}/>
+                <Button text="취소" onClick={handleClose}/>
+            </Popup>
+
+            <Popup
+                width={ProjectHrCtAprvDetailJson.rjctPopup.width}
+                height={ProjectHrCtAprvDetailJson.rjctPopup.height}
+                visible={ctRjctPopupVisible}
+                onHiding={handleClose}
+                showCloseButton={true}
+                title={ProjectHrCtAprvDetailJson.rjctPopup.title}
+            >
+                <TextArea
+                    height="50%"
+                    valueChangeEvent="change"
+                    onValueChanged={onTextAreaValueChanged}
+                    placeholder="반려 사유를 입력해주세요."
+                />
+                <br/>
+                <Button text="반려" onClick={onClickCtRjct}/>
+                <Button text="취소" onClick={handleClose}/>
             </Popup>
         </div>
 

@@ -160,7 +160,7 @@
       {
         "id": 5,
         "title": "문화체련비관리",
-        "link": "/"
+        "link": "/fnnrMng/EmpCultHealthCostManage"
       },
       {
         "id": 6,
@@ -196,7 +196,7 @@
       {
         "id": 3,
         "title": "코드관리",
-        "link": "sysMng/TrsCodeList"
+        "link": "sysMng/TrsCode"
       },
       {
         "id": 4 ,

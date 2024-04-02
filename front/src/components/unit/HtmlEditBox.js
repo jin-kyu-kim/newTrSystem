@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import HtmlEditor, { Toolbar, MediaResizing, ImageUpload, Item } from "devextreme-react/html-editor";
-import { Validator, RequiredRule } from 'devextreme-react/validator'
 
 const HtmlEditBox = ({ column, data, setData, placeholder, value }) => {
   const [valueContent, setValueContent] = useState(value);
@@ -24,9 +23,6 @@ const HtmlEditBox = ({ column, data, setData, placeholder, value }) => {
           setData({ ...data, [column.dataField]: valueContent });
         }}
       >
-        <Validator>
-          <RequiredRule message='내용은 필수입니다'  />
-        </Validator>
         <MediaResizing enabled={true} />
         <ImageUpload fileUploadMode="base64" />
         <Toolbar>
@@ -68,6 +64,9 @@ const HtmlEditBox = ({ column, data, setData, placeholder, value }) => {
           <Item name="insertColumnLeft" />
           <Item name="insertColumnRight" />
           <Item name="deleteColumn" />
+          <Item name="separator" />
+          <Item name="cellProperties" />
+          <Item name="tableProperties" />
         </Toolbar>
       </HtmlEditor>
     </div>

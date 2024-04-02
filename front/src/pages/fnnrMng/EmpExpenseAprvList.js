@@ -4,6 +4,7 @@ import ApiRequest from "../../utils/ApiRequest";
 
 import SearchOdrRange from "../../components/composite/SearchOdrRange";
 import EmpExpenseAprvListJson from "./EmpExpenseAprvListJson.json";
+import {useLocation} from "react-router-dom";
 
 const EmpExpenseAprvList = () => {
 
@@ -13,24 +14,6 @@ const EmpExpenseAprvList = () => {
     const searchParams = EmpExpenseAprvListJson.searchParams;
     const [param, setParam] = useState([]);
     const [searchItems, setSearchItems] = useState([]);
-
-    let year = "";
-    let monthVal = "";
-    let aplyOdr = 0;
-
-
-    useEffect(() => {
-
-        const param = {
-            queryId: "financialAffairMngMapper.retrieveExpensAprvDtls",
-            year: year,
-            monthVal: monthVal,
-            aplyOdr: aplyOdr,
-        };
-
-        const response = ApiRequest("/boot/common/queryIdSearch", param);
-
-    }, []);
 
     const searchHandle = async (initParam) => {
 
@@ -46,8 +29,7 @@ const EmpExpenseAprvList = () => {
 
             setParam({
                 ...param,
-                year: year,
-                monthVal: monthVal,
+                aplyYm: year + monthVal,
                 aplyOdr: odrVal,
                 // dateList: generateDates(year, monthVal, odrVal)
             })
@@ -72,24 +54,20 @@ const EmpExpenseAprvList = () => {
             setParam({
                 ...param,
                 prjctId: prjctId,
-                year: initParam.yearItem,
-                monthVal: initParam.monthItem,
+                aplyYm: initParam.yearItem + initParam.monthItem,
                 aplyOdr: '',
                 empNo: empNo,
                 expensCd: expensCd
-                // dateList: generateDates(initParam.yearItem, initParam.monthItem, '')
             })
         } else {
 
             setParam({
                 ...param,
                 prjctId: prjctId,
-                year: initParam.yearItem,
-                monthVal: initParam.monthItem,
+                aplyYm: initParam.yearItem + initParam.monthItem,
                 aplyOdr: initParam.aplyOdr,
                 empNo: empNo,
                 expensCd: expensCd
-                // dateList: generateDates(initParam.yearItem, initParam.monthItem, initParam.aplyOdr)
             })
         }
 
@@ -110,8 +88,8 @@ const EmpExpenseAprvList = () => {
     const itemTitleRender = (a) => <span>{a.TabName}</span>;
 
     return (
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-            <div className="container">
+        <div >
+            <div style={{padding: "20px"}}>
                 <div className="col-md-10 mx-auto" style={{marginTop: "20px", marginBottom: "10px"}}>
                     <h1 style={{fontSize: "30px"}}>경비 승인내역</h1>
                 </div>
@@ -119,7 +97,7 @@ const EmpExpenseAprvList = () => {
                     <span>* 차수별, 월별 검색</span>
                 </div>
                 <div className="wrap_search" style={{marginBottom: "20px"}}>
-                    <SearchOdrRange callBack={searchHandle} props={searchParams} searchItems={searchItems} />
+                    <SearchOdrRange callBack={searchHandle} props={searchParams} searchItems={searchItems}/>
                 </div>
                 <div
                     style={{
@@ -143,8 +121,7 @@ const EmpExpenseAprvList = () => {
                                 <React.Suspense fallback={<div>Loading...</div>}>
                                     <Component prjctId={param.prjctId}
                                                empNo={param.empNo}
-                                               year={param.year}
-                                               monthVal={param.monthVal}
+                                               aplyYm={param.aplyYm}
                                                aplyOdr={param.aplyOdr}
                                                expensCd={param.expensCd}/>
                                 </React.Suspense>

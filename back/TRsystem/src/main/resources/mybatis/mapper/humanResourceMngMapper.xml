@@ -56,25 +56,41 @@
 		ORDER BY REG_DT DESC </select>
 	   <!--트리구조 부서조회 임시-->
 	   <select id="retrieveDeptList2" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		WITH RECURSIVE DEPT_PATH(DEPT_ID,DEPT_NM,UP_DEPT_ID,DEPTH,PATH)  AS (
+		WITH RECURSIVE DEPT_PATH(DEPT_ID,DEPT_NM,UP_DEPT_ID,DEPT_MNGR_EMP_FLNM,DEPT_BGNG_YMD,DEPT_END_YMD,DEPTH)  AS (
 		    SELECT 
-		    	DEPT_ID,
-		     	DEPT_NM, 
-		     	UP_DEPT_ID,
-		     	1,
-		     	CAST(DEPT_ID AS CHAR(200))
+		    	DEPT_ID
+		     	,DEPT_NM 
+		     	,UP_DEPT_ID
+		     	,(SELECT a.EMP_FLNM
+					FROM (SELECT e.EMP_FLNM
+					         , ROW_NUMBER() OVER (ORDER BY h.JBTTL_CD) AS RN
+					    FROM EMP e
+					    INNER JOIN DEPT_HNF h ON e.EMP_ID = h.EMP_ID
+					    WHERE h.DEPT_ID = aa.DEPT_ID) a
+				WHERE RN = 1) AS DEPT_MNGR_EMP_FLNM     
+		     	,DEPT_BGNG_YMD
+		     	,DEPT_END_YMD
+		     	,1
 		    FROM 
-		    	DEPT
-		    WHERE UP_DEPT_ID IS NULL
+		    	DEPT aa
+		    WHERE aa.UP_DEPT_ID IS NULL
 		 
 		    UNION ALL
 		 
 		    SELECT 
-		    	d.DEPT_ID, 
-		    	d.DEPT_NM, 
-		    	d.UP_DEPT_ID
+		    	d.DEPT_ID 
+		    	,d.DEPT_NM 
+		    	,d.UP_DEPT_ID
+		    	,(SELECT a.EMP_FLNM
+				FROM (SELECT e.EMP_FLNM
+					         , ROW_NUMBER() OVER (ORDER BY h.JBTTL_CD) AS RN
+					    FROM EMP e
+					    INNER JOIN DEPT_HNF h ON e.EMP_ID = h.EMP_ID
+					    WHERE h.DEPT_ID = d.DEPT_ID) a
+				WHERE RN = 1) AS DEPT_MNGR_EMP_FLNM     
+		    	,d.DEPT_BGNG_YMD
+		    	,d.DEPT_END_YMD 
 		    	,dp.DEPTH+1
-		    	,CONCAT(dp.PATH,',',d.DEPT_ID)
 		    FROM DEPT d
 		    INNER JOIN DEPT_PATH dp ON d.UP_DEPT_ID =dp.DEPT_ID
 		)
@@ -82,10 +98,13 @@
 			DEPT_ID,
 			DEPT_NM ,
 			UP_DEPT_ID,
+			DEPT_MNGR_EMP_FLNM,
+			DEPT_BGNG_YMD,
+			DEPT_END_YMD, 
 			COUNT(*) OVER () AS TOTAL_ITEMS       
 		FROM 
-			DEPT_PATH
-		ORDER BY PATH;
+			DEPT_PATH;
+		
 		</select>
 		
 	   <!--부서 상세 조회-->
@@ -158,10 +177,10 @@
      VCATN_ATRZ va     	   <!--휴가결재 테이블-->
  	 WHERE 1=1
         <if test="vcatnBgngYmd != null and vcatnEndYmd == null">
-      		AND VCATN_BGNG_YMD > #{vcatnBgngYmd}
+      		AND VCATN_BGNG_YMD <![CDATA[>=]]> #{vcatnBgngYmd}
         </if>
         <if test="vcatnBgngYmd == null and vcatnEndYmd != null">
-      		AND VCATN_END_YMD > #{vcatnEndYmd}
+      		AND VCATN_END_YMD <![CDATA[<=]]> #{vcatnEndYmd}
         </if>
         <if test="vcatnBgngYmd != null and vcatnEndYmd != null">
            <if test="!vcatnBgngYmd.equals('') and !vcatnEndYmd.equals('')">
@@ -175,7 +194,7 @@
     </select>
 
 
-	<!-- 직원별휴가정보조회 (임시사용)-->
+	<!--사번max값 조회용 쿼리-->
 	<select id="retrieveEmpnoMax" parameterType="map" resultType="com.trsystem.LowerHashMap">
 	SELECT
 		CONCAT(#{empnoChk},LPAD(MAX(substr(empno, 3))+1, '4', '0')) as  EMPNO_CHK
@@ -184,9 +203,6 @@
 	WHERE
 		EMPNO LIKE CONCAT(#{empnoChk},'%');
 	</select>
-
-
-
 
 
 

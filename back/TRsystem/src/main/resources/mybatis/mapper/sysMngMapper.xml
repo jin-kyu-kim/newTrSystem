@@ -23,7 +23,6 @@
         <if test="cdNm != null and cdNm !=''">
             AND CD_NM LIKE CONCAT('%', #{cdNm}, '%')
         </if>
-        ORDER BY REG_DT DESC
     </select>
 
     <select id="authCdList" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -85,4 +84,137 @@
           ON A.DEPT_ID = B.DEPT_ID
         WHERE B.EMP_ID = #{empId}
     </select>
+    
+    <!-- main용 쿼리들-->
+    <select id="retrieveNotice" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT
+			ROW_NUMBER() OVER() ROWNUM
+			, NOTICE_ID
+			, NOTICE_TTL
+			, SGNAL_ORDR
+			, e.EMP_FLNM AS REG_EMP_ID
+			, DATE_FORMAT(n.REG_DT, '%Y-%m-%d %H:%i') AS REG_DT
+			, COUNT(*) OVER () AS TOTAL_ITEMS
+		FROM NOTICE n
+		LEFT JOIN EMP e ON n.REG_EMP_ID = e.EMP_ID
+		WHERE 1=1
+			AND SGNAL_ORDR IN (0, 1)
+		ORDER BY
+		CASE
+		WHEN SGNAL_ORDR IN (1, 3) THEN 0
+		ELSE 1
+		END,
+		REG_DT DESC
+		limit 11
+	</select>
+	
+	<select id="retrieveInptSttus" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT 
+			   AA.EMP_ID													
+		      ,CONCAT(IFNULL(BB.CNT,0),"건")AS CNT																		
+		      ,CONCAT((CASE WHEN BB.ATRZ_DMND_STTS_CD = 'VTW03704' THEN BB.CNT  ELSE 0 END),"건") AS PRJ_REJECT			
+			  ,CONCAT((CASE WHEN BB.ATRZ_DMND_STTS_CD = 'VTW03703' THEN BB.CNT  ELSE 0 END),"건") AS PRJ_COMPLETE  		
+			  ,CONCAT(IFNULL(CC.SUM,0),"시간")AS SUM																		
+			  	  ,CONCAT((CASE WHEN CC.ATRZ_DMND_STTS_CD = 'VTW03704' THEN CC.SUM  ELSE 0 END),"시간") AS MM_REJECT		
+			  ,CONCAT((CASE WHEN CC.ATRZ_DMND_STTS_CD = 'VTW03703' THEN CC.SUM  ELSE 0 END),"시간") AS MM_COMPLETE			
+		FROM EMP AA
+			 LEFT OUTER JOIN
+			 (
+				SELECT T1.PRJCT_ID , T1.EMP_ID , T1.APLY_YM , T1.APLY_ODR ,T2.ATRZ_DMND_STTS_CD, count(1) AS CNT
+				  FROM PRJCT_CT_APLY T1
+				  JOIN (SELECT A.PRJCT_ID , A.EMP_ID , A.APLY_YM , A.APLY_ODR, B.PRJCT_ATRZ_HIST_SN, B.ATRZ_DMND_STTS_CD
+				  FROM PRJCT_INDVDL_CT_MM A
+				  LEFT OUTER JOIN PRJCT_ATRZ_HIST B
+				    ON A.PRJCT_ID = B.PRJCT_ID
+				   AND A.EMP_ID = B.EMP_ID
+				   AND A.APLY_YM = B.APLY_YM
+				   AND A.APLY_ODR = B.APLY_ODR
+				WHERE B.PRJCT_ATRZ_HIST_SN  = (SELECT max(PRJCT_ATRZ_HIST_SN)
+					                              FROM PRJCT_ATRZ_HIST C
+					                             WHERE A.PRJCT_ID = C.PRJCT_ID
+												   AND A.EMP_ID = C.EMP_ID
+												   AND A.APLY_YM = C.APLY_YM
+												   AND A.APLY_ODR = C.APLY_ODR )
+				     ) T2
+				    ON T1.PRJCT_ID = T2.PRJCT_ID
+				   AND T1.EMP_ID  = T2.EMP_ID
+				   AND T1.APLY_YM = T2.APLY_YM
+				   AND T1.APLY_ODR = T2.APLY_ODR
+				   AND T1.APLY_YM = '202303'
+				   AND T1.APLY_ODR= '1'
+				GROUP BY T1.PRJCT_ID , T1.EMP_ID , T1.APLY_YM , T1.APLY_ODR ,T2.ATRZ_DMND_STTS_CD
+			 ) BB ON BB.EMP_ID = AA.EMP_ID
+			LEFT OUTER JOIN 
+			(
+				SELECT T1.PRJCT_ID , T1.EMP_ID , T1.APLY_YM , T1.APLY_ODR ,T2.ATRZ_DMND_STTS_CD, SUM(T1.MD) AS SUM
+				  FROM PRJCT_MM_APLY T1
+				  JOIN (SELECT A.PRJCT_ID , A.EMP_ID , A.APLY_YM , A.APLY_ODR, B.PRJCT_ATRZ_HIST_SN, B.ATRZ_DMND_STTS_CD
+				  FROM PRJCT_INDVDL_CT_MM A
+				  LEFT OUTER JOIN PRJCT_ATRZ_HIST B
+				    ON A.PRJCT_ID = B.PRJCT_ID
+				   AND A.EMP_ID = B.EMP_ID
+				   AND A.APLY_YM = B.APLY_YM
+				   AND A.APLY_ODR = B.APLY_ODR
+				WHERE B.PRJCT_ATRZ_HIST_SN  = (
+											   SELECT max(PRJCT_ATRZ_HIST_SN)
+					                           FROM PRJCT_ATRZ_HIST C
+					                           WHERE A.PRJCT_ID = C.PRJCT_ID
+												     AND A.EMP_ID = C.EMP_ID
+												     AND A.APLY_YM = C.APLY_YM
+												     AND A.APLY_ODR = C.APLY_ODR 
+											   )
+			     ) T2
+			    ON T1.PRJCT_ID = T2.PRJCT_ID
+			   AND T1.EMP_ID  = T2.EMP_ID
+			   AND T1.APLY_YM = T2.APLY_YM
+			   AND T1.APLY_ODR = T2.APLY_ODR
+			   AND T1.APLY_YM = '202303'
+			   AND T1.APLY_ODR= '1'
+			  GROUP BY T1.PRJCT_ID , T1.EMP_ID , T1.APLY_YM , T1.APLY_ODR, T2.ATRZ_DMND_STTS_CD
+			 ) CC 
+			ON CC.EMP_ID = AA.EMP_ID 
+		WHERE 
+			1=1						
+			AND AA.EMP_ID = "20218103-bf25-11ee-b259-000c2956283f"
+	</select>
+	
+	<select id="retrieveAtrzAplySttus" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT
+			ea.ELCTRN_ATRZ_ID,
+			ea.ELCTRN_ATRZ_TY_SE_CD,
+			tyCd.CD_NM AS ELCTRN_ATRZ_TY_SE_CD_NM, -- 전자결재 유형
+			e1.EMP_FLNM AS ATRZ_DMND_EMP_ID, -- 기안자
+			e2.EMP_FLNM AS APRVR_EMP_ID, -- 현재 결재권자
+			DATE_FORMAT(ea.REG_DT,'%Y.%m.%d') as REG_DT,
+			ca.CNPT_NM, -- 청구결재 (거래처명)
+			stepCd.CD_NM AS ATRZ_STEP_CD, -- 현재 결재단계 (VTW007)
+			sttsCd.CD_NM AS ATRZ_STTS_CD, -- 결재상태 (VTW008)
+			COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cga.ATRZ_TTL, CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD), ' [', va.VCATN_BGNG_YMD, ' ~ ', va.VCATN_END_YMD, ' (', va.VCATN_DE_CNT, ')]')) AS TTL
+		FROM ELCTRN_ATRZ ea
+			LEFT JOIN ATRZ_LN al
+			ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID
+			AND ea.NOW_ATRZ_LN_SN = al.ATRZ_LN_SN
+			LEFT JOIN CD tyCd ON ea.ELCTRN_ATRZ_TY_SE_CD = tyCd.CD_VALUE -- 전자결재 유형코드 명
+			LEFT JOIN CD aprCd ON al.APRVR_EMP_ID = aprCd.CD_VALUE -- 현재 결재권자 명
+			LEFT JOIN CD stepCd ON al.ATRZ_STEP_CD = stepCd.CD_VALUE -- 현재 결재단계 (VTW007) 명
+			LEFT JOIN CD sttsCd ON al.ATRZ_STTS_CD = sttsCd.CD_VALUE -- 결재상태 (VTW008) 명
+			LEFT JOIN GNRL_ATRZ ga ON ea.ELCTRN_ATRZ_ID = ga.ELCTRN_ATRZ_ID -- 일반결재
+			LEFT JOIN CLM_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID -- 청구결재 - 거래처명
+			LEFT JOIN VCATN_ATRZ va ON ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID -- 휴가결재 제목
+			LEFT JOIN REFRN_MAN rm ON ea.ELCTRN_ATRZ_ID = rm.ELCTRN_ATRZ_ID -- 참조자
+			LEFT JOIN CTRT_GIVE_ATRZ cga ON ea.ELCTRN_ATRZ_ID = cga.ELCTRN_ATRZ_ID -- 참조자
+			JOIN EMP e1 ON ea.ATRZ_DMND_EMP_ID = e1.EMP_ID
+			JOIN EMP e2 ON al.APRVR_EMP_ID = e2.EMP_ID
+		WHERE 1=1
+		<!--AND ea.ATRZ_DMND_EMP_ID = '2022f551-bf25-11ee-b259-000c2956283f'-->
+		<if test="sttsCd != null and sttsCd.startsWith('VTW037')">
+			AND ea.ATRZ_DMND_STTS_CD = #{sttsCd}
+			AND ea.ATRZ_DMND_EMP_ID = #{empId}
+		</if>
+		<if test="sttsCd != null and sttsCd.startsWith('VTW008')">
+			AND al.ATRZ_STTS_CD = #{sttsCd}
+			AND al.APRVR_EMP_ID = #{empId}
+		</if>
+		limit 4
+	</select>
 </mapper>

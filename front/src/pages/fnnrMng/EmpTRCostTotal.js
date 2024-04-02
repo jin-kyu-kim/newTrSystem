@@ -1,55 +1,62 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import  EmpTRCostTotalJson from "./EmpTRCostTotalJson.json";
 import ApiRequest from "../../utils/ApiRequest";
 import CustomTable from "components/unit/CustomTable";
-import SearchPrjctCostSet from "../../components/composite/SearchPrjctCostSet";
 import { Workbook } from "exceljs";
 import { exportDataGrid } from "devextreme/excel_exporter";
 import { saveAs } from 'file-saver';
 import SearchInfoSet from "components/composite/SearchInfoSet";
-
-
+import { CheckBox, CheckBoxTypes } from 'devextreme-react/check-box';
 
 const EmpTRCostTotal = () => {
   const [values, setValues] = useState([]);
   const [param, setParam] = useState({});
-  const { keyColumn, queryId, tableColumns, searchParams, summaryColumn , searchInfo } = EmpTRCostTotalJson;
-  const [totalItems, setTotalItems] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const { keyColumn, queryId, nameColumns, prjctColumns , summaryColumn , smallSummaryColumn, searchInfo } = EmpTRCostTotalJson;
+  const [checkBox1Checked, setCheckBox1Checked] = useState(false);
+  const [checkBox2Checked, setCheckBox2Checked] = useState(false);
 
+  const handleCheckBox1Change = (e) => {
+    setCheckBox1Checked(e.value);
+    if (e.value) {
+      setCheckBox2Checked(false);
+      setValues([])
+    }
+  };
+
+  const handleCheckBox2Change = (e) => {
+    setCheckBox2Checked(e.value);
+    if (e.value) {
+      setCheckBox1Checked(false);
+      setValues([])
+    }
+  };
 
 
   useEffect(() => {
-      pageHandle();
+    setCheckBox1Checked(true)
+    setValues([])
   }, []);
 
-  // 검색으로 조회할 때
-  const searchHandle = async (initParam) => {
-    setTotalPages(1);
-    setCurrentPage(1);
-    setParam({
+ 
+
+
+  const pageHandle = async (initParam) => {
+    console.log(initParam)
+    
+
+    const updateParam = {
       ...initParam,
       queryId: queryId,
-      currentPage: currentPage,
-      startVal: 0,
-      pageSize: pageSize,
-    });
-  };
-
-  const pageHandle = async () => {
+    }
+   
+    
     try {
-      const response = await ApiRequest("/boot/retrieveFnnrMngWorkHrCtUnityAprv", param);
-      setValues(response);
-      if (response.length !== 0) {
+     
+      const response = await ApiRequest("/boot/common/queryIdSearch", updateParam);
+    
         setValues(response);
-       console.log(values+"이게바로")
-      } else {
-        setTotalPages(1);
-        setTotalItems(0);
-      }
+     
     } catch (error) {
       console.log(error);
     }
@@ -77,11 +84,7 @@ const EmpTRCostTotal = () => {
     });
   };
 
-
-
   return (
-
-
     <div className="container">
     <div
       className="title p-1"
@@ -100,20 +103,48 @@ const EmpTRCostTotal = () => {
                   callBack={pageHandle}
                 /> 
       </div>
+      <CheckBox
+              text="프로젝트 별"
+              value={checkBox1Checked}
+              onValueChanged={handleCheckBox1Change}
+            />  
+            
+       <CheckBox style={{marginLeft :"30px"}}
+              value={checkBox2Checked}
+              onValueChanged={handleCheckBox2Change}
+              text="이름 별"
+            />   
 
+     
+      {checkBox1Checked && (
       <CustomTable
         keyColumn={keyColumn}
-        pageSize={pageSize}
-        columns={tableColumns}
+        columns={prjctColumns}
+        values={values}
+        summary={true}
+        summaryColumn={summaryColumn}
+        smallSummaryColumn={smallSummaryColumn}
+        excel={true}
+        onExcel={onExporting}
+      />  
+
+      )}
+    
+     
+
+{checkBox2Checked && (
+      <CustomTable
+        keyColumn={keyColumn}
+        columns={nameColumns}
         values={values}
         paging={true}
         summary={true}
         summaryColumn={summaryColumn}
+        smallSummaryColumn={smallSummaryColumn}
         excel={true}
         onExcel={onExporting}
       />  
-    
- 
+      )}
         </div>
 </div>
   );

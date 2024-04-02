@@ -3,29 +3,85 @@ import ApiRequest from "../../utils/ApiRequest";
 import CustomPivotGrid from "../../components/unit/CustomPivotGrid";
 import PivotGridDataSource from "devextreme/ui/pivot_grid/data_source";
 
-const EmpExpenseAprvProject = ({ prjctId, year, monthVal, aplyOdr }) => {
+const EmpExpenseAprvProject = ({ prjctId, aplyYm, aplyOdr }) => {
 
-    const [expenseAprvData, setExpenstAprvData] = useState([]);
+    const [data, setData] = useState([]);
 
     useEffect(() => {
-        getExpenseAprvData();
+        fetchData();
 
-    }, [year, monthVal, aplyOdr]);
+    }, []);
+
+    //날짜 조회
+    const getDays = async () => {
+        const param = {
+            queryId: 'financialAffairMngMapper.retrieveDays',
+            aplyYm: aplyYm,
+            aplyOdr: aplyOdr,
+        };
+        try{
+            const response = await ApiRequest('/boot/common/queryIdSearch', param);
+            return response;
+        }catch (error){
+            console.log(error);
+        }
+    };
 
     //경비 승인내역 조회
     const getExpenseAprvData = async () => {
         const param = {
             queryId: 'financialAffairMngMapper.retrieveExpensAprvDtls',
             prjctId: prjctId,
-            aplyYm: year+monthVal,
+            aplyYm: aplyYm,
             aplyOdr: aplyOdr,
         };
         try{
             const response = await ApiRequest('/boot/common/queryIdSearch', param);
-            setExpenstAprvData(response);
+            return response;
         }catch (error){
             console.log(error);
         }
+    };
+
+    const fetchData = async () => {
+        try {
+            // 두 쿼리를 실행하고 데이터를 조합하여 PivotGrid에 전달
+            const [columnData, rowData] = await Promise.all([getDays(), getExpenseAprvData()]);
+
+            // 데이터 조합
+            const combinedData = combineData(columnData, rowData);
+            setData(combinedData);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
+    const combineData = (columnData, rowData) => {
+        const combinedData = [];
+
+        const pivotDates = columnData.map(item => item.pivotDate);
+
+        for (const pivotDate of pivotDates) {
+            const matchingRowData = rowData.filter(item => item.utztnDt === pivotDate);
+
+            for (const row of matchingRowData) {
+                combinedData.push({
+                    pivotDate: pivotDate,
+                    prjctNm: row.prjctNm,
+                    expensCd: row.expensCd,
+                    prjctDetail: row.prjctDetail,
+                    utztnAmt: row.utztnAmt
+                });
+            }
+
+            if (matchingRowData.length === 0) {
+                combinedData.push({
+                    pivotDate: pivotDate,
+                });
+            }
+        }
+
+        return combinedData;
     };
 
     const dataSource = new PivotGridDataSource({
@@ -65,15 +121,18 @@ const EmpExpenseAprvProject = ({ prjctId, year, monthVal, aplyOdr }) => {
             summaryType: 'sum',
             format: 'fixedPoint',
             area: 'data',
+            customizeText: function(cellInfo) {
+                return cellInfo.valueText === '0'  ? '' : cellInfo.valueText;
+            }
         }],
-        store: expenseAprvData,
+        store: data,
         retrieveFields: false,
     });
 
     const makeExcelFileName = () => {
 
         let fileName = '경비승인내역.프로젝트별.';
-        let fileNameYm = year+monthVal;
+        let fileNameYm = aplyYm;
         let fileNameOdr = '';
 
         if(aplyOdr != '')
@@ -84,24 +143,15 @@ const EmpExpenseAprvProject = ({ prjctId, year, monthVal, aplyOdr }) => {
         return fileName;
     }
 
-    // 숫자를 두 자릿수로 만들어주는 함수
-    const padNumber = (num) => {
-        return num.toString().padStart(2, '0');
-    };
-
-
-
     return (
         <div style={{padding: '20px'}}>
-            <div className='container'>
-                <CustomPivotGrid
-                    values={dataSource}
-                    columnGTName={'소계'}
-                    blockCollapse={true}
-                    weekendColor={true}
-                    fileName={makeExcelFileName}
-                />
-            </div>
+            <CustomPivotGrid
+                values={dataSource}
+                columnGTName={'소계'}
+                blockCollapse={true}
+                weekendColor={true}
+                fileName={makeExcelFileName}
+            />
         </div>
     );
 };
