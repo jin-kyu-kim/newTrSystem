@@ -430,6 +430,21 @@ public class CommonServiceImpl implements CommonService {
         return sqlSession.selectList("com.trsystem.mybatis.mapper." + queryId, param);
     }
 
+    public int queryIdDataControl(Map<String, Object> param) {
+        String queryId = param.get("queryId").toString();
+        String status = param.get("state").toString();
+
+        switch (status){
+            case "INSERT" :
+                return sqlSession.insert("com.trsystem.mybatis.mapper." + queryId, param);
+            case "UPDATE" :
+                return sqlSession.update("com.trsystem.mybatis.mapper." + queryId, param);
+            case "DELETE" :
+                return sqlSession.delete("com.trsystem.mybatis.mapper." + queryId, param);
+        }
+        return -1;
+    }
+
     @Transactional
     public int insertFile(Map<String, Object> tbData, Map<String, Object> params, List<MultipartFile> attachments,
                           Map<String, Object> idData, List<Map<String, Object>> deleteFiles) {
