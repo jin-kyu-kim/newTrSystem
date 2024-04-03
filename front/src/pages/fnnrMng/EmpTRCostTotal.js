@@ -127,6 +127,7 @@ const EmpTRCostTotal = () => {
         excel={true}
         onExcel={onExporting}
       />  
+      
 
       )}
     
@@ -140,6 +141,7 @@ const EmpTRCostTotal = () => {
         paging={true}
         summary={true}
         summaryColumn={summaryColumn}
+        smallSummary={true}
         smallSummaryColumn={smallSummaryColumn}
         excel={true}
         onExcel={onExporting}

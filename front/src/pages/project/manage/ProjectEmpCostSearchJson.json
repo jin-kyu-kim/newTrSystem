@@ -56,17 +56,25 @@
     "expanded": true
   },
   {
-    "caption": "MM",
-    "dataField": "mm",
-    "dataType": "number",
-    "summaryType": "sum",
-    "area": "data"
-  },
-  {
     "caption": "원가",
     "dataField": "expectMm",
     "dataType": "number",
     "summaryType": "sum",
-    "area": "data"
+    "area": "data",
+    "format": {
+      "type": "fixedPoint",
+      "precision": 2
+    }
+  },
+  {
+    "caption": "MM",
+    "dataField": "mm",
+    "dataType": "number",
+    "summaryType": "sum",
+    "area": "data",
+    "format": {
+      "type": "fixedPoint",
+      "precision": 2
+    }
   }
 ]

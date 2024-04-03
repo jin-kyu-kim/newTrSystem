@@ -26,7 +26,6 @@ const ElecAtrzForm = () => {
 
         retrieveForm();
         retrievePrjctList();
-        console.log(formList)
 
     }, []);
 
@@ -49,6 +48,11 @@ const ElecAtrzForm = () => {
 
     const retrievePrjctList = async () => {
 
+        /**
+         * 만료된 프로젝트로 전자결재 상신하여 오류가 발생하는 문제
+         * 프로젝트가 만료되면 전자결재 상신이 이뤄지지 않도록
+         * => 현재 VTW00402 프로젝트 수행중인 프로젝트만 가져오도록 되어 있음. -> 이정도면 될지 좀 더 고민해보기.
+         */
         const param = [
             { tbNm: "PRJCT" },
             { bizSttsCd: "VTW00402"}

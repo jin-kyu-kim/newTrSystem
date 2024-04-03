@@ -4,7 +4,7 @@ const TreRoutes = [
   // 홈
   {
     path: "/",
-    name: "main",
+    name: "Main",
     element: React.lazy(() => import("../pages/sysMng/Main")
     ),
   },
@@ -255,6 +255,12 @@ const TreRoutes = [
     name: "ElecAtrzNewForm",
     element: React.lazy(() => import("../pages/mngrMenu/ElecAtrzNewForm")),
   },
+  // 관리자메뉴 > 전자결재(관리자)
+  {
+    path: "/mngrMenu/ElecAtrzManage",
+    name: "ElecAtrzManage",
+    element: React.lazy(() => import("../pages/mngrMenu/ElecAtrzManage")),
+  },
   // 전자결재 
   {
     path: "/elecAtrz/ElecAtrz",
@@ -295,8 +301,5 @@ const TreRoutes = [
   },
 
 ];
-
-
-
 
 export default TreRoutes;

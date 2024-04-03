@@ -1,12 +1,12 @@
 {
-    "menuName": "ElecAtrzOutordEmpCtrt",
+    "menuName": "PymntPlanPopup",
     "matrlCtrt": {
         "labelValue": {
             "matrlPlan": {
                 "type": "ComboBox",
-                "label": "계획 투입 재료비",
+                "label": "계획 투입 업체",
                 "required": true,
-                "placeholder": "계획 투입 재료비",
+                "placeholder": "계획 투입 업체",
                 "param":{ 
                         "queryId" : {
                             "queryId" : "elecAtrzMapper.retrieveMatrlPlan"
@@ -27,47 +27,38 @@
             "prductNm": {
                 "name": "prductNm",
                 "type": "TextBox",
-                "label": "제품명",
-                "placeholder": "제품명",
+                "label": "실제투입업체",
+                "placeholder": "실제투입업체",
                 "required": true
             },
-            "dtlCn": {
-                "name": "dtlCn",
+            "tkcgJob": {
+                "name": "tkcgJob",
                 "type": "TextBox",
-                "label": "상세스펙",
-                "placeholder": "상세스펙",
+                "label": "담당업무",
+                "placeholder": "담당업무",
                 "required": true
             },
-            "untpc": {
-                "name": "untpc",
+            "inptPrnmntHnfCnt": {
+                "name": "inptPrnmntHnfCnt",
                 "type": "NumberBox",
-                "label": "단가",
+                "label": "투입예정인력수",
                 "format": "#,###",
-                "placeholder": "단가",
-                "max": 900000000000,
+                "placeholder": "투입예정인력수",
+                "max": 9000000,
                 "required": true
             },
-            "qy": {
-                "name": "qy",
-                "type": "TextBox",
-                "label": "수량",
-                "placeholder": "수량",
-                "required": true
-            },
-            "tot": {
-                "name": "tot",
-                "type": "NumberBox",
-                "label": "총액",
-                "format": "#,###",
-                "placeholder": "총액",
-                "max": 900000000000,
-                "required": true
-            },
-            "dlvgdsYmd": {
-                "name": "dlvgdsYmd",
+            "inptBgngYmd": {
+                "name": "inptBgngYmd",
                 "type": "DateBox",
-                "label": "납품예정일",
-                "placeholder": "납품예정일",
+                "label": "투입시작일",
+                "placeholder": "투입시작일",
+                "required": true
+            },
+            "inptEndYmd": {
+                "name": "inptEndYmd",
+                "type": "DateBox",
+                "label": "투입종료일",
+                "placeholder": "투입종료일",
                 "required": true
             },
             "payTot": {
@@ -77,11 +68,11 @@
                 "format": "#,###"
             }
         },
-        "keyColumn": "payCd",
+        "keyColumn": "giveOdrCd",
         "tableColumns": [
-            {"key": "payCd", "value": "지급 차수", "isRequire": true, "editType" : "selectBox" ,"comCd" : "VTW032" },
-            {"key": "payYm", "value": "지급 일자", "type": "date", "format": "yyyy-MM", "isRequire": true},
-            {"key": "payAmt", "value": "지급 금액", "type": "number", "format":"#,###", "isRequire": true}
+            {"key": "giveOdrCd", "value": "지급 차수", "isRequire": true, "editType" : "selectBox" ,"comCd" : "VTW032" },
+            {"key": "ctrtYmd", "value": "지급 일자", "type": "date", "format": "yyyy-MM", "isRequire": true},
+            {"key": "ctrtAmt", "value": "지급 금액", "type": "number", "format":"#,###", "isRequire": true}
         ]
     }
 }
