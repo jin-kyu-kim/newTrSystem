@@ -2,8 +2,8 @@
   "ExpenseInfo":[
     {
       "TabName": "롯데법인카드 엑셀 업로드",
-      "tabId": "ProjectExpanseExcel",
-      "url": "./ProjectExpanseExcel"
+      "tabId": "ProjectExpenseExcel",
+      "url": "./ProjectExpenseExcel"
     },
     {
       "TabName": "개인 지불비용(롯데 개인법인카드) 일괄청구",
@@ -17,8 +17,8 @@
     }
   ],
   "labelValue" : {
-    "testParameter": {
-      "name": "testParameter",
+    "ctAtrzSeCd": {
+      "name": "ctAtrzSeCd",
       "type": "ComboBox",
       "label": "구분",
       "placeholder": "구분",
@@ -28,7 +28,7 @@
         },
         "valueExpr" : "cdValue",
         "displayExpr": "cdNm",
-        "name": "testParameter"
+        "name": "ctAtrzSeCd"
       },
       "required": true
     },
@@ -82,5 +82,17 @@
       "placeholder": "참석자",
       "required": true
     }
-  }
+  },
+  "keyColumn": "prjctCtAplySn",
+  "columnCharge": [
+    { "key": "ctAtrzSeCdNm", "value": "구분", "alignment": "center" },
+    { "key": "utztnDt", "value": "사용일시", "alignment": "center" },
+    { "key": "useOffic", "value": "사용처", "alignment": "center" },
+    { "key": "utztnAmt", "value": "금액", "alignment": "center" },
+    { "key": "prjctNm", "value": "프로젝트", "alignment": "center" },
+    { "key": "expensCdNm", "value": "비용코드", "alignment": "center" },
+    { "key": "ctPrpos", "value": "상세내역(목적)", "alignment": "center" },
+    { "key": "atdrn", "value": "용도(참석자명단)", "alignment": "center" },
+    { "value": "문서 보기", "alignment": "center", "button": {"text" : "선택"}}
+  ]
 }

@@ -27,6 +27,47 @@
         { "key": "empFlnm", "value": "성명"},
         { "key": "jbpsNm", "value": "직위"},
         { "key": "deptId", "value": "소속"}
-    ]
-    
+    ],
+    "labelValue" : {
+        "deptNm": {
+            "name": "deptNm",
+            "type": "TextBox",
+            "label": "부서명",
+            "required": true,
+            "placeholder": "부서명"
+        },
+        "upDeptId": {
+            "type": "ComboBox",
+            "required": false,
+            "label": "상위부서",
+            "name": "upDeptId",
+            "placeholder": "상위부서",
+            "param": { "tbNm" : "DEPT",
+                        "valueExpr" : "deptId",
+                        "displayExpr": "deptNm",
+                        "name": "upDeptId"
+                     }
+        },
+        "deptMngrEmpFlnm": {
+            "name": "deptMngrEmpFlnm",
+            "type": "TextBox",
+            "required": false,
+            "label": "부서장명",
+            "placeholder": "부서장명"
+        },
+        "deptBgngYmd": {
+            "name": "deptBgngYmd",
+            "type": "DateBox",
+            "label": "부서시작일자",
+            "required": true,
+            "placeholder": "부서시작일자"
+        },
+        "deptEndYmd": {
+            "name": "deptEndYmd",
+            "type": "DateBox",
+            "label": "부서종료일자",
+            "required": false,
+            "placeholder": "부서종료일"
+        }
+    }
 }

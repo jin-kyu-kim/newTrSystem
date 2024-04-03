@@ -3,6 +3,64 @@
     "totQueryId": "financialAffairMngMapper.retrieveTotWorkHrCtInptSttus",
 	"queryId": "financialAffairMngMapper.retrieveWorkHrCtInptSttus",
     "keyColumn": "empId",
+    "totTableColumns" : 
+    [
+        { "key":"allVtw" ,"value": "전체", "alignment" : "center", "chkBox" : true},
+        { 
+            "value": "근무시간", "alignment" : "center", 
+                "subColumns" : 
+                [
+                    { "value" : "입력여부", "alignment" : "center", 
+                        "subColumns" : 
+                        [
+                            {"key":"mm03701", "value" : "입력", "alignment" : "center", "chkBox" : true},
+                            {"key":"mm03701Min", "value" : "미입력", "alignment" : "center", "chkBox" : true}
+                        ]
+                    },
+                    { "value" : "승인요청여부", "alignment" : "center",
+                        "subColumns" : 
+                        [
+                            {"key":"mm03702", "value" : "요청", "alignment" : "center", "chkBox" : true},
+                            {"key":"mm03702Min", "value" : "미요청", "alignment" : "center", "chkBox" : true}
+                        ]
+                    },
+                    { "value" : "승인여부", "alignment" : "center",
+                        "subColumns" : 
+                        [
+                            {"key":"mm037034", "value" : "승인및반려", "alignment" : "center", "chkBox" : true},
+                            {"key":"mm037034Min", "value" : "미승인", "alignment" : "center", "chkBox" : true}
+                        ]
+                    }
+                ]
+        },
+        { 
+            "value": "프로젝트비용", "alignment" : "center", 
+                "subColumns" : 
+                [
+                    { "value" : "입력여부", "alignment" : "center", 
+                        "subColumns" : 
+                        [
+                            {"key":"ct03701", "value" : "입력", "alignment" : "center", "chkBox" : true},
+                            {"key":"ct03701Min", "value" : "미입력", "alignment" : "center", "chkBox" : true}
+                        ]
+                    },
+                    { "value" : "승인요청여부", "alignment" : "center",
+                        "subColumns" : 
+                        [
+                            {"key":"ct03702", "value" : "요청", "alignment" : "center", "chkBox" : true},
+                            {"key":"ct03702Min", "value" : "미요청", "alignment" : "center", "chkBox" : true}
+                        ]
+                    },
+                    { "value" : "승인여부", "alignment" : "center",
+                        "subColumns" : 
+                        [
+                            {"key":"ct037034", "value" : "승인및반려", "alignment" : "center", "chkBox" : true},
+                            {"key":"ct037034Min", "value" : "미승인", "alignment" : "center", "chkBox" : true}
+                        ]
+                    }
+                ]
+        }
+    ],
     "tableColumns": 
 	[
         { "key": "empno", "value": "사번", "width": 80, "alignment" : "center"},
@@ -13,15 +71,16 @@
         { "key": "hdofSttsNm", "value": "재직상태", "width": 100, "alignment" : "center"  },
         {"value": "근무시간",
         "subColumns": [
-            { "value": "입력화면이동", "button": {"text": "이동", "name": "workHrMv"} },
-            { "key": "sum", "value": "입력"},
+            { "value": "입력화면", "button": {"text": "이동", "name": "workHrMv"} },
+            { "key": "mdSum", "value": "입력"},
+            { "key": "vacSum", "value": "휴가" },
             { "key": "mmReject", "value": "반려" },
             { "key": "mmComplete", "value": "승인"},
             { "value": "취소", "button": {"text": "시간취소", "name": "hrRtrcn"}}
         ]},
-        {"value": "프로젝트비용입력",
+        {"value": "프로젝트비용",
         "subColumns": [
-            { "value": "입력화면이동", "button": {"text": "이동", "name": "prjctScrnMv"} },
+            { "value": "입력화면", "button": {"text": "이동", "name": "prjctScrnMv"} },
             { "key": "cnt", "value": "입력"},
             { "key": "prjReject", "value": "반려"},
             { "key": "prjComplete", "value": "승인" },
@@ -29,11 +88,13 @@
         ]},
         {  "value": "회사지불비용", "width": 80, "button": {"text" : "이동", "name" : "companyPrice"} },
         {  "value": "출력", "width": 80, "button": {"text" : "출력", "name" : "print"} }
-  ], "searchParams":
+  ],
+  "searchParams":
   {
     "yearItem": true,
     "monthItem": true,
     "aplyOdr": true,
-    "empId": true
+    "empId": true,
+    "hdofSttsCd": true
   }
 }

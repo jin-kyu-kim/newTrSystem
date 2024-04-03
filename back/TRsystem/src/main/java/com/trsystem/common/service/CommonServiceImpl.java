@@ -57,11 +57,30 @@ public class CommonServiceImpl implements CommonService {
             Connection connection = DriverManager.getConnection(applicationYamlRead.getUrl(), applicationYamlRead.getUsername(), applicationYamlRead.getPassword());
             // 트랜잭션 시작
             connection.setAutoCommit(false);
-            try {
+            try (Statement statement = connection.createStatement()){
+                ResultSet resultParamSet = statement.executeQuery("SELECT * FROM "  + tbNm + " WHERE 1=0"); // 빈 결과를 가져옴
+                ResultSetMetaData metaData = resultParamSet.getMetaData();
+                int columnCount = metaData.getColumnCount();
+
+                Map<String, Object> insertParam;
+                Map<String, Object> validInsertParam;
                 for (int i = 1; i < params.size(); i++) {
-                    Map<String, Object> insertParam = params.get(i);
-                    List<String> keys = new ArrayList<>(insertParam.keySet());
-                    List<Object> inParams = new ArrayList<>(insertParam.values());
+                    insertParam = params.get(i);
+                    validInsertParam = new HashMap<>();
+
+                    for (String key : insertParam.keySet()) {
+                        String upVal = key.replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase();
+                        for (int j = 1; j <= columnCount; j++) {
+                            String columnLabel = metaData.getColumnLabel(j);
+                            if (upVal.equalsIgnoreCase(columnLabel)) {
+                                validInsertParam.put(key, insertParam.get(key));
+                                break;
+                            }
+                        }
+                    }
+
+                    List<String> keys = new ArrayList<>(validInsertParam.keySet());
+                    List<Object> inParams = new ArrayList<>(validInsertParam.values());
 
                     // INSERT문 생성
                     StringBuilder queryBuilder = new StringBuilder("INSERT INTO ").append(tbNm).append(" ( ");
@@ -384,7 +403,9 @@ public class CommonServiceImpl implements CommonService {
                     preparedStatement.setString(j+1, (String) params.get(i));
                 } else if (params.get(i) instanceof Integer) {
                     preparedStatement.setInt(j+1, (Integer) params.get(i));
-                } else if (params.get(i) instanceof Double) {
+                }  else if (params.get(i) instanceof Long) { // bigint (Long) 처리
+                    preparedStatement.setLong(j+1, (Long) params.get(i));
+                }else if (params.get(i) instanceof Double) {
                     preparedStatement.setDouble(j+1, (Double) params.get(i));
                 } else if (params.get(i) instanceof Timestamp) {
                     preparedStatement.setTimestamp(j+1, (Timestamp) params.get(i));
@@ -392,7 +413,7 @@ public class CommonServiceImpl implements CommonService {
                     preparedStatement.setTimestamp(j+1, Timestamp.from((Instant) params.get(i)));
                 }  else if (params.get(i) == null) {
                     preparedStatement.setString(j+1, null);
-                } else {
+                }  else {
                     j++;
                     return null;
                 }
@@ -407,6 +428,21 @@ public class CommonServiceImpl implements CommonService {
     public List<Map<String, Object>> queryIdSearch(Map<String, Object> param) {
         String queryId = param.get("queryId").toString();
         return sqlSession.selectList("com.trsystem.mybatis.mapper." + queryId, param);
+    }
+
+    public int queryIdDataControl(Map<String, Object> param) {
+        String queryId = param.get("queryId").toString();
+        String status = param.get("state").toString();
+
+        switch (status){
+            case "INSERT" :
+                return sqlSession.insert("com.trsystem.mybatis.mapper." + queryId, param);
+            case "UPDATE" :
+                return sqlSession.update("com.trsystem.mybatis.mapper." + queryId, param);
+            case "DELETE" :
+                return sqlSession.delete("com.trsystem.mybatis.mapper." + queryId, param);
+        }
+        return -1;
     }
 
     @Transactional
@@ -424,7 +460,8 @@ public class CommonServiceImpl implements CommonService {
         int atchmnflSn = 1;
 
         //2. 파일 내부 디렉토리에 업로드
-        String uploadDir = "../../front/public/upload";
+//        String uploadDir = "../../front/public/upload";
+        String uploadDir = "TRsystem/upload";
         // 2-1 파일일 디렉토리가 없으면 생성
         Path directory = Path.of(uploadDir);
 
@@ -528,7 +565,7 @@ public class CommonServiceImpl implements CommonService {
         List<Map<String, Object>> fileParams = (List<Map<String, Object>>) deleteData.get("fileParams");
 
         int result = 0;
-        String uploadDir = "../../front/public/upload";
+        String uploadDir = "TRsystem/upload";
         Path directory = Path.of(uploadDir);
 
         result += deleteData(params);

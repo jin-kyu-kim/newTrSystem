@@ -11,14 +11,19 @@ import { useCookies } from "react-cookie";
 import CustomCdComboBox from "components/unit/CustomCdComboBox";
 import { DateBox, NumberBox, TextBox } from "devextreme-react";
 
-const EmpBasicInfo = () => {
+const EmpBasicInfo = ({naviEmpId}) => {
   const [baseInfoData, setBaseInfoData] = useState([]);
   /*유저세션*/
   const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
 
-   const empId = cookies.userInfo.empId;
- 
-  
+   let empId;
+
+    if(naviEmpId.length !== 0){
+        empId = naviEmpId;
+    } else {
+        empId = cookies.userInfo.empId;
+    }
+
   const [empCnt, setEmpCnt] = useState(0);
 
   const [empDtlData, setEmpDtlData] = useState([]);
@@ -123,7 +128,7 @@ const EmpBasicInfo = () => {
       console.log(error);
     }
   };
-
+console.log(empCnt)
   const updateEmpInfo = async () => {
     const dtlConfirmResult = window.confirm("직원정보를 저장하시겠습니까?");
 
@@ -136,6 +141,13 @@ const EmpBasicInfo = () => {
       }
 
       if (empCnt === 0) {
+        setEmpDtlData({
+          ...empDtlData,
+          empId: empId,
+        });
+
+        
+
         const params = [{ tbNm: "EMP_DTL" }, empDtlData];
         try {
           console.log("params:", params);

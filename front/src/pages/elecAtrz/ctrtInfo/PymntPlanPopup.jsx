@@ -1,92 +1,200 @@
 import React, { useState, useEffect } from "react";
 
 import { Button } from "devextreme-react/button";
-import {SelectBox} from "devextreme-react/select-box";
-import TextBox from "devextreme-react/text-box";
 
-import ApiRequest from "utils/ApiRequest";
 import CustomLabelValue from "components/unit/CustomLabelValue";
-import MatrlCtCtrtDetailJson from "./MatrlCtCtrtDetailJson.json";
+import CustomEditTable from "components/unit/CustomEditTable";
+import ElecAtrzMatrlCtPopupJson from "./ElecAtrzMatrlCtPopupJson.json";
+import ElecAtrzOutordCompanyPopupJson from "./ElecAtrzOutordCompanyPopupJson.json";
 
-const PymntPlanPopup = ({prjctId}) => {
+/**
+ *  "VTW04909" : 외주업체
+ *  "VTW04910" : 재료비
+ */
+const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedData, data}) => {
 
-    const labelValue = MatrlCtCtrtDetailJson.labelValue
-    const [matrlPlan, setMatrlPlan] = useState({});
+    let jsonData = {};
+    if(data.elctrnAtrzTySeCd === "VTW04910"){
+        jsonData = ElecAtrzMatrlCtPopupJson
+    }
+    else if (data.elctrnAtrzTySeCd === "VTW04909"){
+        jsonData = ElecAtrzOutordCompanyPopupJson
+    }
+
+    const labelValue = jsonData.matrlCtrt.labelValue
+    const matrlPlanParam = labelValue.matrlPlan
+    matrlPlanParam.param.queryId.prjctId = prjctId;
+
+    const { keyColumn, tableColumns } = jsonData.matrlCtrt
     const [matrlCtrtData, setMatrlCtrtData] = useState({});
+    const [pay, setPay] = useState([]);
+
+
+    /**
+     * console.log useEffect
+     */
+    useEffect(() => {
+        // console.log("matrlCtrtData", matrlCtrtData)
+    },[matrlCtrtData]);
 
     useEffect(() => {
-        console.log("프로젝트:", prjctId);
+        // console.log("pay", pay)
+    },[pay]);
 
-        retrieveMatrlPlan();
-    }, []);
+    useEffect(() => {
+        // console.log("뭐야 !! ", handlePopupVisible)
+    },[handlePopupVisible]);
 
-    const retrieveMatrlPlan = async () => {
-        const param = {
-            queryId: "elecAtrzMapper.retrieveMatrlPlan",
-            prjctId: prjctId
-        }
-         try {
-            const response = await ApiRequest("/boot/common/queryIdSearch", param);
-            console.log(response)
-            setMatrlPlan(response)
-         } catch (error) {
-             console.error(error)
-         }
 
-    }
-
-    const selectMatrlPlan = (e) => {
-        console.log(e)
-        setMatrlCtrtData(e)
-    }
-    
-    const handleChgState = (e) => {
+    /**
+     *  부모창에서 전달 된 데이터로 셋팅
+     */
+    useEffect(() => {
         
-    }   
+            if(selectedData.matrlCtSn === 0) {
+                setMatrlCtrtData({});
+                setPay([]);
+            }else{
+                setMatrlCtrtData(selectedData);
+                setPay(selectedData.pay?selectedData.pay:[])
+            }
+    }, [selectedData]);
 
 
+    /**
+     *  선금, 중도금, 잔금 데이터 핸들링
+     */
+    const handleData = (payData) => {
+        setPay([...payData])
+    }
+
+    useEffect(() => {
+        let advPayYm = "";
+        let advPayAmt = 0;
+        let surplusYm = "";
+        let surplusAmt = 0;
+        let prtPayYm = "";
+        let prtPayAmt = 0;
+
+        for(let i = 0; i < pay.length; i++) {
+
+            let month
+            if(pay[i].ctrtYmd.getMonth() + 1 < 10) {
+                month = "0" + (pay[i].ctrtYmd.getMonth() + 1)
+            }
+
+            //선금
+            if(["VTW03201","VTW03202","VTW03203","VTW03204"].includes(pay[i].giveOdrCd)){
+                if(pay[i].giveOdrCd === "VTW03201"){
+                    advPayYm = pay[i].ctrtYmd.getFullYear() + "" + month;
+                }
+                advPayAmt += pay[i].ctrtAmt;
+               
+            //잔금
+            } else if(pay[i].giveOdrCd === "VTW03212") {    
+                surplusYm = pay[i].ctrtYmd.getFullYear () + "" + month;
+                surplusAmt = pay[i].ctrtAmt;
+
+            //중도금
+            } else  {
+                if(pay[i].giveOdrCd === "VTW03202") {  
+                    prtPayYm = pay[i].ctrtYmd.getFullYear() + "" + month;
+                }
+                prtPayAmt += pay[i].ctrtAmt;
+            }
+        }
+        setMatrlCtrtData(prevState => ({
+            ...prevState,
+            pay,
+            "advPayYm": advPayYm,
+            "advPayAmt": advPayAmt,
+            "surplusYm": surplusYm,
+            "surplusAmt": surplusAmt,
+            "prtPayYm": prtPayYm,
+            "prtPayAmt": prtPayAmt,
+            "payTot": advPayAmt + surplusAmt + prtPayAmt
+        }));
+    }, [pay]);
+
+    
+    /**
+     *  입력값 변경시 데이터 핸들링
+     */
+    const handleChgState = ({name, value}) => {
+        setMatrlCtrtData(matrlCtrtData => ({
+            ...matrlCtrtData,
+            [name]: value
+        }));
+    } 
+
+    /**
+     *  저장 시 밸리데이션 체크 
+     */
+    const savePlan = (e) => {
+        e.preventDefault();
+        if(!(matrlCtrtData.payTot > 0)) {
+            alert("지불 총액은 0 이상 입력해야 합니다.");
+            return;
+        }
+
+        //지급 총액이 가용금액을 초과할 경우
+        if(matrlCtrtData.cntrctamount < matrlCtrtData.payTot) {
+            alert("지불 총액은 계약금액을 초과할 수 없습니다.");
+            return;
+        }
+
+        handlePlanData(matrlCtrtData);
+        handlePopupVisible();
+    }
+
+    
     return (
-        <>
+    <>
+        <form onSubmit={savePlan}>
             <div className="popup-content">
                 <div className="project-regist-content">
                     <div className="project-change-content-inner-left">
+                    {data.elctrnAtrzTySeCd === "VTW04910" ? 
                         <div className="dx-fieldset">
-                            <div className="dx-field">
-                                <div className="dx-field-label">계획 투입 재료비</div>
-                                <div className="dx-field-value">
-                                    <SelectBox
-                                        dataSource={matrlPlan}
-                                        displayExpr="matrlPlan"
-                                        onSelectionChanged={(e) => selectMatrlPlan(e.selectedItem)}
-                                    />
-                                </div>
-                            </div>
+                            <CustomLabelValue props={matrlPlanParam}  value={matrlCtrtData.matrlPlan} onSelect={handleChgState} />
                             <CustomLabelValue props={labelValue.cntrctamount} onSelect={handleChgState} readOnly={true} value={matrlCtrtData.cntrctamount}/>
-                            <CustomLabelValue props={labelValue.productNm} onSelect={handleChgState} value={matrlCtrtData.productNm}/>
-                            <CustomLabelValue props={labelValue.dlvgdsEntrpsNm} onSelect={handleChgState}  value={matrlCtrtData.dlvgdsEntrpsNm}/>
+                            <CustomLabelValue props={labelValue.prductNm} onSelect={handleChgState} value={matrlCtrtData.prductNm}/>
                             <CustomLabelValue props={labelValue.dtlCn} onSelect={handleChgState} value={matrlCtrtData.dtlCn}/>
                             <CustomLabelValue props={labelValue.untpc} onSelect={handleChgState} value={matrlCtrtData.untpc}/>
                             <CustomLabelValue props={labelValue.qy} onSelect={handleChgState} value={matrlCtrtData.qy}/>
                             <CustomLabelValue props={labelValue.tot} onSelect={handleChgState} value={matrlCtrtData.tot}/>
-                            <CustomLabelValue props={labelValue.date} onSelect={handleChgState} value={matrlCtrtData.date}/>
-                        </div>
+                            <CustomLabelValue props={labelValue.dlvgdsYmd} onSelect={handleChgState} value={matrlCtrtData.dlvgdsYmd}/>
+                            <CustomLabelValue props={labelValue.payTot} onSelect={handleChgState} readOnly={true} value={matrlCtrtData.payTot}/>
+                        </div> : 
+                        <div className="dx-fieldset">
+                            <CustomLabelValue props={matrlPlanParam}  value={matrlCtrtData.matrlPlan} onSelect={handleChgState} />
+                            <CustomLabelValue props={labelValue.cntrctamount} onSelect={handleChgState} readOnly={true} value={matrlCtrtData.cntrctamount}/>
+                            <CustomLabelValue props={labelValue.prductNm} onSelect={handleChgState} value={matrlCtrtData.prductNm}/>
+                            <CustomLabelValue props={labelValue.tkcgJob} onSelect={handleChgState} value={matrlCtrtData.tkcgJob}/>
+                            <CustomLabelValue props={labelValue.inptPrnmntHnfCnt} onSelect={handleChgState} value={matrlCtrtData.inptPrnmntHnfCnt}/>
+                            <CustomLabelValue props={labelValue.inptBgngYmd} onSelect={handleChgState} value={matrlCtrtData.inptBgngYmd}/>
+                            <CustomLabelValue props={labelValue.inptEndYmd} onSelect={handleChgState} value={matrlCtrtData.inptEndYmd}/>
+                            <CustomLabelValue props={labelValue.payTot} onSelect={handleChgState} readOnly={true} value={matrlCtrtData.payTot}/>
+                         </div>
+                        }
                     </div>
                     <div className="project-change-content-inner-right">
-                        <div className="dx-fieldset">
-                            <div className="dx-field">
-                                <div className="dx-field-value">
-                                    <div>adsasdasdadasdadsadqweqw</div>
-                                </div>
-                            </div>
-                        </div>
+                        <CustomEditTable 
+                            keyColumn={keyColumn} 
+                            columns={tableColumns} 
+                            allowEdit={true}
+                            values={pay}
+                            handleData={handleData}
+                            />
                     </div>
                 </div>
+                <div>
+                    <Button text="저장" useSubmitBehavior={true}/>
+                    <Button text="취소" onClick={handlePopupVisible}/>
+                </div>
             </div>
-            <div style={{display:"inline-block"}}>
-                <Button text="저장"/>
-                <Button text="취소"/>
-            </div>
-        </>
+        </form>
+    </>
     );
 
 }

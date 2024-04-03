@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import HtmlEditor, { Toolbar, MediaResizing, ImageUpload, Item } from "devextreme-react/html-editor";
-import { Validator, RequiredRule } from 'devextreme-react/validator'
 
 const HtmlEditBox = ({ column, data, setData, placeholder, value }) => {
   const [valueContent, setValueContent] = useState(value);
@@ -18,15 +17,12 @@ const HtmlEditBox = ({ column, data, setData, placeholder, value }) => {
         height="725px"
         id={column.dataField}
         placeholder={placeholder}
-        value={valueContent? valueContent : value}
+        value={valueContent ?? value}  //valueContent가 null이나 undefined일 경우 value를 사용 그 외 falsy(0,"",false)한 값은 valueContent를 사용
         onValueChanged={valueChanged}
         onFocusOut={(e) => {
           setData({ ...data, [column.dataField]: valueContent });
         }}
       >
-        <Validator>
-          <RequiredRule message='내용은 필수입니다'  />
-        </Validator>
         <MediaResizing enabled={true} />
         <ImageUpload fileUploadMode="base64" />
         <Toolbar>
@@ -68,6 +64,9 @@ const HtmlEditBox = ({ column, data, setData, placeholder, value }) => {
           <Item name="insertColumnLeft" />
           <Item name="insertColumnRight" />
           <Item name="deleteColumn" />
+          <Item name="separator" />
+          <Item name="cellProperties" />
+          <Item name="tableProperties" />
         </Toolbar>
       </HtmlEditor>
     </div>

@@ -1,20 +1,11 @@
 import React, {useEffect, useState} from "react";
 import ProjectExpenseJson from "./ProjectExpenseJson.json"
 import AutoCompleteProject from "../../components/unit/AutoCompleteProject";
-import Button from "devextreme-react/button";
 import CustomLabelValue from "../../components/unit/CustomLabelValue";
 import {useCookies} from "react-cookie";
-import ApiRequest from "../../utils/ApiRequest";
-import axios from "axios";
+import ProjectExpenseSubmit from "./ProjectExpenseSubmit";
 
-const button = {
-    borderRadius: '5px',
-    width: '80px',
-    marginTop: '20px',
-    marginRight: '15px'
-}
-
-const ProjectExpenseCash = (callBack,props) => {
+const ProjectExpenseCash = () => {
     const [cookies] = useCookies([]);
     const Json = ProjectExpenseJson;
     const {labelValue} = Json;
@@ -22,6 +13,7 @@ const ProjectExpenseCash = (callBack,props) => {
         "empId": cookies.userInfo.empId,
         "regEmpId": cookies.userInfo.empId
     });
+    const [dateValue, setDateValue] = useState();
     let aplyDate = null;
     let now = new Date();
 
@@ -50,54 +42,10 @@ const ProjectExpenseCash = (callBack,props) => {
         setCashValue({...cashValue, [name] : value});
     };
 
-    const handleSubmit = async() => {
-        const params = [{
-            tbNm: "PRJCT_INDVDL_CT_MM"
-        }, {
-            "prjctId": cashValue.prjctId,
-            "empId": cashValue.empId,
-            "aplyYm": cashValue.aplyYm,
-            "aplyOdr": cashValue.aplyOdr
-        }
-        ]
-        const result = searchMM(params);
-        result.then((value)=>{
-            if(value?.length == 0){
-                const resultMM = insertMM(params);
-                resultMM.then(()=>{
-                    insertValue();
-                });
-            } else {
-                insertValue();
-            }
-        });
+    const handleChgDate = ({name, value}) => {
+        setDateValue({...dateValue, [name] : value});
+        setCashValue({...cashValue, [name] : value + "000000"});
     };
-
-    const searchMM = async(params) => {
-        const response = await ApiRequest("/boot/common/commonSelect", params);
-        return response;
-    }
-
-    const insertMM = async (params) => {
-        const response = await axios.post("/boot/common/commonInsert", params);
-        return response;
-    }
-
-    const insertValue = async () => {
-        const confirmResult = window.confirm("등록하시겠습니까?");
-        if (confirmResult) {
-            const params = [{ tbNm: "PRJCT_CT_APLY", snColumn: "PRJCT_CT_APLY_SN" }, cashValue];
-            try {
-                const response = await ApiRequest("/boot/common/commonInsert", params);
-                if (response === 1) {
-                    window.alert("등록되었습니다.")
-                }
-            } catch (error) {
-                console.error("API 요청 에러:", error);
-                throw error;
-            }
-        }
-    }
 
     return(
         <div className="container" style={{margin: '4%'}}>
@@ -107,22 +55,20 @@ const ProjectExpenseCash = (callBack,props) => {
                     2. TR 제출시 승인받은 '결재 사전 보고' 결재문서를 출력하여 함께 제출하시기 바랍니다.
                 </span>
             </span>
-            <form onSubmit={handleSubmit}>
-                <div className="dx-fieldset" style={{width: '70%'}}>
-                    {/*<CustomLabelValue props={labelValue.testParameter} onSelect={handleChgValue} value={cashValue?.testParameter}/>*/}
-                    <CustomLabelValue props={labelValue.utztnDt} onSelect={handleChgValue} value={cashValue?.utztnDt}/>
-                    <CustomLabelValue props={labelValue.useOffic} onSelect={handleChgValue} value={cashValue?.useOffic}/>
-                    <CustomLabelValue props={labelValue.utztnAmt} onSelect={handleChgValue} value={cashValue?.utztnAmt}/>
-                    <AutoCompleteProject
-                        placeholderText="프로젝트 명"
-                        onValueChange={(e) => handleChgValue({name: "prjctId", value: e})}
-                    />
-                    <CustomLabelValue props={labelValue.expensCd} onSelect={handleChgValue} value={cashValue?.expensCd}/>
-                    <CustomLabelValue props={labelValue.ctPrpos} onSelect={handleChgValue} value={cashValue?.ctPrpos}/>
-                    <CustomLabelValue props={labelValue.ATDRN} onSelect={handleChgValue} value={cashValue?.ATDRN}/>
-                    <Button style={button} type='default' text="저장" useSubmitBehavior></Button>
-                </div>
-            </form>
+            <div className="dx-fieldset" style={{width: '70%'}}>
+                <CustomLabelValue props={labelValue.ctAtrzSeCd} onSelect={handleChgValue} value={cashValue?.ctAtrzSeCd}/>
+                <CustomLabelValue props={labelValue.utztnDt} onSelect={handleChgDate} value={dateValue?.utztnDt}/>
+                <CustomLabelValue props={labelValue.useOffic} onSelect={handleChgValue} value={cashValue?.useOffic}/>
+                <CustomLabelValue props={labelValue.utztnAmt} onSelect={handleChgValue} value={cashValue?.utztnAmt}/>
+                <AutoCompleteProject
+                    placeholderText="프로젝트 명"
+                    onValueChange={(e) => handleChgValue({name: "prjctId", value: e})}
+                />
+                <CustomLabelValue props={labelValue.expensCd} onSelect={handleChgValue} value={cashValue?.expensCd}/>
+                <CustomLabelValue props={labelValue.ctPrpos} onSelect={handleChgValue} value={cashValue?.ctPrpos}/>
+                <CustomLabelValue props={labelValue.ATDRN} onSelect={handleChgValue} value={cashValue?.ATDRN}/>
+                <ProjectExpenseSubmit text="저장" type="default" value={[cashValue]} tbNm="PRJCT_CT_APLY" snColumn="PRJCT_CT_APLY_SN"/>
+            </div>
         </div>
     );
 };

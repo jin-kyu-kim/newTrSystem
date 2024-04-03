@@ -1,0 +1,22 @@
+{
+    "menuName": "ElecAtrzNewReq",
+    "header": [
+        {
+            "text": "결재요청",
+            "id": "requestElecAtrz"
+        },
+        {
+            "text": "결재선지정",
+            "id": "onAtrzLnPopup"
+        },
+        {
+            "text": "임시저장",
+            "id": "saveTemp"
+        },
+        {
+            "text": "목록",
+            "id": "toAtrzNewReq"
+        }
+    ]
+
+}

@@ -1,0 +1,75 @@
+{
+    "menuName": "EmpTRCostTotal",
+    "queryId": "financialAffairMngMapper.retrieveClturPhstrnDdlnList",
+    "keyColumn": "empId",
+    "wordWrap": true,
+   
+    "tableColumns": [
+      { "key": "bankName", "value": "은행", "width": 120, "alignment": "center" },
+      {  "key": "actno", "value": "계좌번호", "width": 300, "alignment": "center" },
+      {  "key": "dpstAmt", "value": "지급금액", "width": 120, "alignment": "center" },
+      {  "key": "empFlnm", "value": "이름", "width": 120, "alignment": "center" },
+      {  "key": "remark", "value": "구분", "width": 120, "alignment": "center" }
+    
+     
+  ],
+
+    "summaryColumn": [
+      { "value": "계좌번호",  "format": "총 합계 :" },
+      { "key": "dpstAmt", "value": "지급금액", "type"  : "sum", "format": "{0} 원", "precision": "0" }
+    ],
+   
+    "searchParams":
+  {
+    "yearItem": true,
+    "monthItem": true,
+    "aplyOdr": true,
+    "empNm" : false
+
+  },
+    "searchInfo": {
+        "searchParams": {
+            "insertButton": false
+        },
+        "commonCd": "VTW001",
+        "selectBoxItem": [
+            {
+                "placeholder": "[재직 상태]",
+                "param":{
+                  "tbNm": "CD",
+                  "valueExpr": "cdValue",
+                  "displayExpr": "cdNm",
+                  "name": "hdofSttsNm",
+                  "condition": {
+                    "upCdValue": "VTW002"
+                  },
+                  "clearButton": true
+                }
+            },
+       
+            {
+                "placeholder": "[프로젝트 명]",
+                "param":{
+                  "tbNm": "PRJCT",
+                  "valueExpr": "prjctId",
+                  "displayExpr": "prjctNm",
+                  "name": "prjctId",
+                  "clearButton": true
+                }
+            }
+           
+        ],
+        "textBoxItem": [
+            {
+                "placeholder": "사번",
+                "name": "empno"
+            },
+            {
+                "placeholder": "성명",
+                "name": "empFlnm"
+            }
+           
+        ]
+    }
+
+}

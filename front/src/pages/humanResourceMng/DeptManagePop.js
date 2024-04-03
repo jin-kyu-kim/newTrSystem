@@ -11,12 +11,9 @@ const DeptManagePop = ({callBack,data,deptId,deptNm}) => {
 
   const [deptEmpParam, setDeptEmpParam] = useState({});   //좌측 부서인력정보 검색용
   const [param, setParam] = useState({});                 //우측 인력정보 검색용
-  const [deptAptParam, setDeptAptParam] = useState({});   //발령정보 입력
-
+  const [deptAptParam, setDeptAptParam] = useState({});   //발령용 정보
+  const [deptHnfParam, setDeptHnfParam] = useState({});   //직책변경 및 삭제용
   const [values, setValues] = useState([]);      //우측 발령할 사원정보 데이터
-  const [values2, setValues2] = useState([]);   //좌측 부서인력정보 데이터
-  const [valuesApt, setValuesApt] = useState([]);   //??????
-  
   const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
   const empId = cookies.userInfo.empId;     //현재 로그인중인 사원id
   const gnfdDate = moment().format('YYYYMM') //현재 년월
@@ -68,18 +65,6 @@ const DeptManagePop = ({callBack,data,deptId,deptNm}) => {
     marginRight:"10px",
     marginBottom:"10px",
   }
-
-  const deleteButtonStyle ={
-    marginRight:"20px",
-    marginBottom:"10px",
-  }
-
-  //인력 추가 버튼
-  const addButtonStyle ={
-    marginRight:"10px",
-    marginBottom:"10px",
-  }
-
  
 //========================초기 부서인력정보 조회=====================================
   useEffect(() => {
@@ -90,24 +75,7 @@ const DeptManagePop = ({callBack,data,deptId,deptNm}) => {
     })
     setDeptAptParam({});
    }, []);
-//========================setParam 이후에 함수가 실행되도록 하는 useEffect=============
-  useEffect(() => {
-    if (deptEmpParam.deptId !== undefined) {
-      deptHnfListHandle();
-    }
-  }, [deptEmpParam]);
 
-  
-  //========================부서인력 목록=====================================
-  const deptHnfListHandle = async () => {
-    try {
-      const response = await ApiRequest( "/boot/common/queryIdSearch", deptEmpParam);
-      setValues2(response);
-    } catch (error) {
-      console.log(error);
-    }
-  };
- 
  //========================직원 목록 조회용===============================================
   const searchHandle = async (initParam) => {
     setParam({
@@ -132,56 +100,181 @@ const DeptManagePop = ({callBack,data,deptId,deptNm}) => {
       console.log(error);
     }
   };
+
+
+//============================부서인력목록 로우 클릭시 발생하는 이벤트======================
+  const onHnfRowClick = (e) => {
+      if (e.data.empId !== null) {
+      setDeptHnfParam(e.data);
+      }
+  };
+
+//============================직원목록 로우 클릭시 발생하는 이벤트======================
+  const onEmpRowClick = (e) => {
+      if (e.data.empId !== null) {
+        setDeptAptParam(e.data);
+      }
+  };
+
+//====================인력 직책변경 이벤트=====================================================
+  const handleHnfChgState = ({ name, value }) => {
+    setDeptHnfParam({
+      ...deptHnfParam,
+      [name]: value,
+    });
+  };
+
 //===================직원 목록 및 직책 변경시 이벤트===========================================
   const handleChgState = ({ name, value }) => {
     setDeptAptParam({
       ...deptAptParam,
       [name]: value,
     });
-  };
-  useEffect(() => {
-    console.log("deeeeee",deptAptParam)
-  }, [deptAptParam]);
+  };  
 
-//============================직원목록에서 로우 클릭시 발생하는 이벤트======================
-  const onRowClick = (e) => {
-    for (const value of values) {
-      if (value.deptId === e.data.deptId) {
-        setDeptAptParam(value);
-        break;
-      }
-    }
-  };
 //============================발령버튼 클릭 이벤트==========================================
-  const deptapt = () => {
-    const InsertParam =[
-      { tbNm: "DEPT_HNF" },
-      {
-         deptId : deptId,
-         empId : deptAptParam.empId,
-         jbttlCd : deptAptParam.jbttlCd,
-         empno : deptAptParam.empno,
-         deptGnfdYmd : gnfdDate,
-         regDt : now,
-         regEmpId: empId,        
-      },
-  ]
-    insertDept(InsertParam);
+  const deptAptInst = () => {
+    const isconfirm = window.confirm("발령하시겠습니까?");
+    if (isconfirm) {
+      const InsertParam =[
+        { tbNm: "DEPT_HNF" },
+        {
+           deptId : deptId,
+           empId : deptAptParam.empId,
+           jbttlCd : deptAptParam.jbttlCd,
+           empno : deptAptParam.empno,
+           deptGnfdYmd : gnfdDate,
+           regDt : now,
+           regEmpId: empId,        
+        },
+      ]
+      const InsertHistParam=[ //히스토리 정보
+        { tbNm: "DEPT_HNF_HIST", snColumn: "DEPT_HNF_HIST_SN", snSearch: {deptId : deptId, empId : deptAptParam.empId}},
+        {
+           deptId : deptId,
+           empId : deptAptParam.empId,
+           jbttlCd : deptAptParam.jbttlCd,
+           empno : deptAptParam.empno,
+           deptGnfdYmd : gnfdDate,
+           regDt : now,
+           regEmpId: empId,        
+        },
+      ]
+      if(InsertParam[1].jbttlCd === null || InsertParam[1].jbttlCd === undefined){
+        alert("직책을 선택해주세요");
+        return;
+      }else{
+        if(deptAptParam.jbttlCd === "VTW01001"){
+          for(const value of data){
+            if(value.jbttlCd === "VTW01001"){
+              alert("부서에 부서장은 한명만 발령 가능합니다.");
+              return;
+            }
+          }
+        }else{
+          for(const value of data){
+            if(value.empId === deptAptParam.empId){
+              alert("이미 해당 직원이 부서에 존재합니다.");
+              return;
+            }
+          }
+        }
+        insertDeptEmp(InsertParam,InsertHistParam);
+      }
+    }  
   };
 //===========================부서발령정보 인서트============================================
-  const insertDept = async (InsertParam) => {
-    try {
-      const response = await ApiRequest("/boot/common/commonInsert", InsertParam);
-      console.log(response);
-        if (response > 0) {
-          alert("발령되었습니다.");
-          //setDeptAptParam({});
-          pageHandle();
-          callBack(deptEmpParam);
+const insertDeptEmp = async (InsertParam,InsertHistParam) => {
+  try {
+    const response = await ApiRequest("/boot/common/commonInsert", InsertParam); //발령인서트
+    const histResponse = await ApiRequest("/boot/common/commonInsert", InsertHistParam); //발령 히스토리 인서트
+      if (response > 0 && histResponse > 0) {
+        alert("발령되었습니다.");
+        setDeptAptParam({});
+        pageHandle();
+        callBack(deptEmpParam);
+      }
+  } catch (error) {
+    console.error("Error fetching data", error);
+  }
+};
+
+//============================직책변경버튼 클릭 이벤트==========================================
+  const deptAptUpd = () => {
+    const isconfirm = window.confirm("인력의 직책을 변경하시겠습니까?");
+    if (isconfirm) {
+      const updateParam =[
+        { tbNm: "DEPT_HNF" },
+        {jbttlCd:deptHnfParam.jbttlCd, mdfcnEmpId : empId, mdfcnDt: now,},
+        { deptId: deptId,empId: deptHnfParam.empId}]
+
+      const InsertHistParam=[     //히스토리 정보
+        { tbNm: "DEPT_HNF_HIST", snColumn: "DEPT_HNF_HIST_SN", snSearch: {deptId : deptId, empId : deptHnfParam.empId}},
+        {
+           deptId : deptId,
+           empId : deptHnfParam.empId,
+           jbttlCd : deptHnfParam.jbttlCd,
+           empno : deptHnfParam.empno,
+           deptGnfdYmd : gnfdDate,
+           regDt : now,
+           regEmpId: empId,        
+        },
+      ]
+        if(deptHnfParam.jbttlCd === "VTW01001"){
+          for(const value of data){
+            if(value.jbttlCd === "VTW01001"){
+              alert("부서에 부서장은 한명만 발령 가능합니다.");
+              return;
+            }
+          }
         }
-    } catch (error) {
-      console.error("Error fetching data", error);
+      updateDeptEmp(updateParam,InsertHistParam);
+    }  
+  };
+//===========================인력 직책 변경============================================
+const updateDeptEmp = async (updateParam,InsertHistParam) => {
+  try {
+    const responseDelHnf = await ApiRequest("/boot/common/commonUpdate", updateParam);
+    const histResponse = await ApiRequest("/boot/common/commonInsert", InsertHistParam); //발령 히스토리 인서트
+    if (responseDelHnf > 0 && histResponse >0) {
+      alert("변경되었습니다.");
+      setDeptHnfParam({});
+      pageHandle();
+      callBack(deptEmpParam);    
     }
+} catch (error) {
+  console.error("Error fetching data", error);
+}
+};
+
+//============================발령해제버튼 클릭 이벤트===========================================
+  const deptAptDel = () => {
+    const isconfirm = window.confirm("인력의 부서발령을 해제하시겠습니까?");
+    if (isconfirm) {
+      const deleteParam =[ { tbNm: "DEPT_HNF" },{ deptId: deptId, empId: deptHnfParam.empId}]
+      const histUpdParam =[ //히스토리 발령해제 갱신
+      { tbNm: "DEPT_HNF_HIST" },
+      {deptGnfdRmvYmd:gnfdDate, mdfcnEmpId : empId, mdfcnDt: now,},
+      { deptId: deptId ,empId: deptHnfParam.empId} 
+      ] 
+      deleteDeptEmp(deleteParam,histUpdParam);
+    }  
+  };
+
+//===========================부서발령정보 삭제============================================
+  const deleteDeptEmp = async (deleteParam,histUpdParam) => {
+    try {
+      const responseDelHnf = await ApiRequest("/boot/common/commonDelete", deleteParam);
+      const responseUpdHnf = await ApiRequest("/boot/common/commonUpdate", histUpdParam);
+      if (responseDelHnf > 0 && responseUpdHnf >0) {
+        alert("해제되었습니다.");
+        setDeptHnfParam({});
+        pageHandle();
+        callBack(deptEmpParam);
+      }
+  } catch (error) {
+    console.error("Error fetching data", error);
+  }
   };
 //============================화면그리는부분===================================================
   return (
@@ -198,23 +291,32 @@ const DeptManagePop = ({callBack,data,deptId,deptNm}) => {
       <div className="tableContainer" style={tableContainerStyle}>
         <div className="deptListContainer" style={deptEmpLeftContainerStyle}>
           <div className="deptListTable" style={deptListStyle}>
-            <div><p><strong>* 부서인력정보 </strong></p></div>
-            <CustomTable keyColumn={hnfKeyColumn} columns={hafTableColumns} values={data} paging={true} />
+            <div>
+                <p><strong>* 부서인력정보 </strong></p>
+                {deptHnfParam.empId != null ? (
+                <div className="buttonContainer" style={buttonContainerStyle}>
+                <Button style={editButtonStyle} onClick={deptAptUpd} text="직책변경" />
+                <Button style={editButtonStyle} onClick={deptAptDel} text="발령해제" />
+                <CustomLabelValue props={labelValue.jbttlCd} onSelect={handleHnfChgState} value={deptHnfParam.jbttlCd}/>
+                </div>
+                 ) : null}
+            </div>
+            <CustomTable keyColumn={hnfKeyColumn} columns={hafTableColumns} values={data} paging={true} onRowClick={onHnfRowClick}/>
           </div>
         </div>
       <div className="deptDetailContainer" style={deptEmpRightContainerStyle}>
           <div className="deptHnfListTable" style={deptDetailStyle}>
-              <p><strong>* 직원 목록 및 발령 </strong></p>
+              <p><strong>* 직원 부서발령 </strong></p>
             <CustomLabelValue props={labelValue.empno} onSelect={handleChgState}  value={deptAptParam.empno} readOnly={true}/>
             <CustomLabelValue props={labelValue.empFlnm} onSelect={handleChgState} value={deptAptParam.empFlnm} readOnly={true}/>
             <CustomLabelValue props={labelValue.jbpsCd} onSelect={handleChgState} value={deptAptParam.jbpsCd} readOnly={true}/>
             <CustomLabelValue props={labelValue.jbttlCd} onSelect={handleChgState} value={deptAptParam.jbttlCd}/>
             {deptAptParam.empId != null ? (
               <div className="buttonContainer" style={buttonContainerStyle}>
-                <Button style={editButtonStyle} onClick={deptapt} text="발령" />
+                <Button style={editButtonStyle} onClick={deptAptInst} text="발령" />
               </div>
             ) : null}
-            <CustomTable keyColumn={emplistKeyColumn} columns={emplistTableColumns} values={values} paging={true} onRowClick={onRowClick}/>
+            <CustomTable keyColumn={emplistKeyColumn} columns={emplistTableColumns} values={values} paging={true} onRowClick={onEmpRowClick}/>
           </div>
         </div>
       </div>
