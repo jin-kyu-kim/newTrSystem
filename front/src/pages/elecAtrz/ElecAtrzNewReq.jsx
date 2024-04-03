@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
+import uuid from 'react-uuid'
 
 import { FileUploader } from "devextreme-react/file-uploader";
 import HtmlEditBox from "components/unit/HtmlEditBox";
 import ApiRequest from "utils/ApiRequest";
-import ElecAtrzHeader from "./common/ElecAtrzHeader";
+import axios from "axios";
 import ElecAtrzNewReqJson from "./ElecAtrzNewReqJson.json"
 
 import ElecAtrzTitleInfo from "./common/ElecAtrzTitleInfo";
@@ -22,14 +23,16 @@ const ElecAtrzNewReq = () => {
     const formData = location.state.formData;
     // const childRef = useRef();
     const [cookies] = useCookies(["userInfo", "userAuth"]);
-
+    const empId = cookies.userInfo.empId;
+    console.log("empId",empId);
     const [data, setData] = useState(location.state.formData);
     const [atrzParam, setAtrzParam] = useState({});
     const [childData, setChildData] = useState({});  //자식 컴포넌트에서 받아온 데이터
     const [prjctData, setPrjctData] = useState({});
+    const [attachments, setAttachments] = useState([]);
+    const [atrzLnEmpList, setAtrzLnEmpList] = useState([]);
 
     const column = { "dataField": "gnrlAtrzCn", "placeholder": "내용을 입력해주세요."};
-
 
     /**
      * 자식컴포넌트에서 받아온 데이터 처리
@@ -63,6 +66,14 @@ const ElecAtrzNewReq = () => {
 
     }, [childData]);
 
+    useEffect(() => {
+        setAtrzParam(atrzParam => ({
+            ...atrzParam,
+            atrzCn: data.gnrlAtrzCn
+        }));
+    
+    }, [data]);
+
 
 
     useEffect(() => {
@@ -75,6 +86,28 @@ const ElecAtrzNewReq = () => {
          */
 
     }, []);
+
+    /** 결재선용 데이터 - 등록시에는 기본 참조자 리스트 조회 */
+    useEffect(() => {
+        const getAtrzEmp = async () => {
+            try{
+                const response = await ApiRequest('/boot/common/queryIdSearch', {
+                    queryId: "indvdlClmMapper.retrieveElctrnAtrzRefrnInq",
+                    searchType: "atrzLnReftnList", 
+                    repDeptId: "9da3f461-9c7e-cd6c-00b6-c36541b09b0d"
+                })
+                setAtrzLnEmpList(response);
+            } catch(error) {
+                console.log('error', error);
+            }
+        };
+        getAtrzEmp();
+    }, []);
+
+    const getAtrzLn = (lnList) => {
+        // 결재선 등록후 받은 파라미터
+        setAtrzLnEmpList(lnList);
+    }
 
     /**
      * 프로젝트 기초정보 조회
@@ -101,21 +134,7 @@ const ElecAtrzNewReq = () => {
         // Todo
         // elctrnAtrzTySeCd에 따라서 저장 테이블 다르게(계약, 청구, 일반, 휴가..)
         // 결재선 지정이 되어있는지 확인, 안되어 있으면..?
-
-    }
-
-    /**
-     * 결재선 지정 버튼 클릭시 결재선 지정 팝업 호출
-     */
-    const onAtrzLnPopup = async () => {
-        console.log("결재선 지정 팝업 호출");
-    
-        /**
-         * Todo
-         * 결재선 만들어지면 
-         * 결재선 보이는 테이블 형식에 집어넣기. 
-         */
-
+        createAtrz(atrzParam, "VTW03702");
     }
 
     /**
@@ -128,18 +147,66 @@ const ElecAtrzNewReq = () => {
          * Todo
          * 전자결재 테이블저장 하고, elctrnAtrzTySeCd에 따라서 저장 테이블 다르게(계약, 청구, 일반, 휴가..)
          * 결재요청상태코드는 임시저장으로 저장
-         * 결재선은 당장은 없어도? 될 듯?
+         * 결재선은 당장은 없어도? 될 듯?z`
          */
 
-        // createAtrz(atrzParam);
+        createAtrz(atrzParam, "VTW03701");
     }
 
-    const createAtrz = async (param) => {
-
+    /**
+     * 승인 요청 및 임시저장 시 실행되는 함수
+     * @param {} param 
+     */
+    const createAtrz = async (param, stts) => {
+        const date = new Date();
         console.log(param)
+
+        // 임시저장 버튼을 클릭했을 경우, 처리할 것이 있는가?
+        if(stts === "VTW03701"){
+
+        }
+
+        const insertParam = {
+            param,
+            atrzDmndSttsCd: stts,
+            elctrnAtrzId: uuid(),
+            prjctId: prjctId,
+            // 결재선
+            elctrnAtrzTySeCd: data.elctrnAtrzTySeCd,
+            regDt: date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0],
+            regEmpId: cookies.userInfo.empId,
+        }  
+
+        console.log(insertParam)
+
         try {
-            const response = await ApiRequest("/boot/elecAtrz/insertElecAtrz", param);
+            const response = await ApiRequest("/boot/elecAtrz/insertElecAtrz", insertParam);
             console.log(response);
+
+            if(response){
+                // 첨부파일 저장
+                const formDataAttach = new FormData();
+                formDataAttach.append("tbNm", JSON.stringify({tbNm: "CTRT_ATRZ"}));
+                formDataAttach.append("data", JSON.stringify({atchmnflId : uuid()}));
+                formDataAttach.append("idColumn", JSON.stringify({elctrnAtrzId: response})); //결재ID 받아와야 함
+                formDataAttach.append("deleteFiles", JSON.stringify([]));
+                Object.values(attachments)
+                    .forEach((attachment) => formDataAttach.append("attachments", attachment));
+
+                const responseAttach = await axios.post("/boot/common/insertlongText", formDataAttach, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                });
+                console.log(responseAttach);
+
+                if(responseAttach.status === 200){
+                    alert("전자결재 요청이 완료되었습니다.")
+                    navigate("/elecAtrz/ElecAtrzForm");
+                }
+
+        }else{
+            alert("전자결재 요청에 실패하였습니다. 관리자에게 문의하세요. ")
+        }
+
         } catch (error) {
             console.error(error)
         }
@@ -153,22 +220,19 @@ const ElecAtrzNewReq = () => {
     }
 
     /**
-     * 결재 param 생성하는 함수
+     * 결재 제목 생성하는 함수
      */
-    const handleElecAtrz = (e) => {
+    const handleElecAtrzTitle = (e) => {
         console.log(e.value);
         setAtrzParam({
             ...atrzParam,
-            title: e.value
-        });
+        title: e.value});
     }
 
     const onBtnClick = (e) => {
 
         switch (e.element.id) {
             case "requestElecAtrz": requestElecAtrz(); 
-                break;
-            case "onAtrzLnPopup": onAtrzLnPopup();
                 break;
             case "saveTemp": saveTemp();
                 break;
@@ -178,18 +242,25 @@ const ElecAtrzNewReq = () => {
                 break;
         }
     }
+
+    /**
+     * 첨부파일 데이터 핸들링
+     */
+    const handleAttachmentChange = (e) => {
+        setAttachments(e.value);
+    };
     
     return (
         <>
             <div className="container" style={{marginTop:"10px"}}>
-                <ElecAtrzHeader 
+                <ElecAtrzTitleInfo
+                    atrzLnEmpList={atrzLnEmpList}
+                    getAtrzLn={getAtrzLn}
                     contents={ElecAtrzNewReqJson.header}
+                    onHandleAtrzTitle={handleElecAtrzTitle}
                     onClick={onBtnClick}
-                />
-                <ElecAtrzTitleInfo 
-                    formData={formData}
                     prjctData={prjctData}
-                    onHandleAtrzTitle={handleElecAtrz}
+                    formData={formData}
                     atrzParam={atrzParam}
                 />
                 <div dangerouslySetInnerHTML={{ __html: formData.docFormDc }} />
@@ -218,7 +289,7 @@ const ElecAtrzNewReq = () => {
                         multiple={true}
                         accept="*/*"
                         uploadMode="useButton"
-                        // onValueChanged={handleAttachmentChange}
+                        onValueChanged={handleAttachmentChange}
                         maxFileSize={1.5 * 1024 * 1024 * 1024}
                     />
                 </div>

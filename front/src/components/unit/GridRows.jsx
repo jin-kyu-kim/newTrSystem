@@ -1,12 +1,22 @@
 import {Column} from "devextreme-react/data-grid";
-import ButtonRender from "./ButtonRender";
 import { CheckBox } from "devextreme-react";
 import React, { useState } from 'react';
+import {Button} from "devextreme-react/button";
 
 const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
     const [isChecked, setIsChecked] = useState(true);
 
     const result = [];
+
+    const ButtonRender = (button, data, onClick) => {
+        let disabled = false;
+        if(button.able != null && data != null && data[button.able.key] != button.able.value){
+            disabled = true;
+        }
+        return(
+            <Button name = {button.name} text={button.text} onClick={(e) => {onClick(button, data)}} disabled={disabled}/>
+        )
+    }
     
     for (let i = 0; i < columns.length; i++) {
       const { key, value, width, alignment, button, visible, toggle, subColumns, chkBox , grouping} = columns[i];      
@@ -36,7 +46,7 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
             caption={value}
             width={width}
             alignment={alignment || 'center'}
-            cellRender={({ data }) => ButtonRender({button, data, onClick})}
+            cellRender={({ data }) => ButtonRender(button, data, onClick)}
           >
           </Column>
         );
