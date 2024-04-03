@@ -6,9 +6,8 @@ import AtrzLnTable from "components/unit/AtrzLnTable";
 import ApprovalPopup from "components/unit/ApprovalPopup";
 import ApiRequest from "utils/ApiRequest";
 
-const ElecAtrzTitleInfo = ({ contents, onClick,  formData, prjctData, onHandleAtrzTitle, atrzParam }) => {
+const ElecAtrzTitleInfo = ({ atrzLnEmpList, getAtrzLn, contents, onClick,  formData, prjctData, onHandleAtrzTitle, atrzParam }) => {
     const [ cookies ] = useCookies(["userInfo", "userAuth"]);
-    const [ atrzLnEmpList, setAtrzLnEmpList ] = useState([]);
     const [ popVisible, setPopVisible ] = useState(false);
   
     const onAtrzLnPopup = async () => {
@@ -17,7 +16,7 @@ const ElecAtrzTitleInfo = ({ contents, onClick,  formData, prjctData, onHandleAt
 
     const onPopHiding = async (aprvrEmpList) => {
         setPopVisible(false);
-        setAtrzLnEmpList(aprvrEmpList)
+        getAtrzLn(aprvrEmpList)
     }
 
     const setButtons = () => {
@@ -28,22 +27,6 @@ const ElecAtrzTitleInfo = ({ contents, onClick,  formData, prjctData, onHandleAt
         });
         return result;
     };
-    
-    useEffect(() => {
-        const getAtrzEmp = async () => {
-            try{
-                const response = await ApiRequest('/boot/common/queryIdSearch', {
-                    queryId: "indvdlClmMapper.retrieveElctrnAtrzRefrnInq",
-                    searchType: "atrzLnReftnList", 
-                    repDeptId: "9da3f461-9c7e-cd6c-00b6-c36541b09b0d"
-                })
-                setAtrzLnEmpList(response);
-            } catch(error) {
-                console.log('error', error);
-            }
-        };
-        getAtrzEmp();
-    }, []);
   
   return (
     <>
