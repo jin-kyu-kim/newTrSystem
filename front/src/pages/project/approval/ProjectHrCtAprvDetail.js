@@ -98,7 +98,7 @@ const ProjectHrCtAprvDetail = () => {
         }else if(button.name === "aprv"){
             const param = [
                 { tbNm: "PRJCT_MM_ATRZ" },
-                { atrzDmndSttsCd: "VTW03703",
+                { atrzDmndSttsCd: "VTW00802",
                   aprvYmd: year + monthVal + dayVal,
                   rjctPrvonsh: null,
                   rjctYmd: null},
@@ -149,7 +149,7 @@ const ProjectHrCtAprvDetail = () => {
         }else if(button.name === "aprv"){
             const param = [
                 { tbNm: "PRJCT_CT_ATRZ" },
-                { atrzDmndSttsCd: "VTW03703",
+                { atrzDmndSttsCd: "VTW00802",
                     aprvYmd: year + monthVal + dayVal,
                     rjctPrvonsh: null,
                     rjctYmd: null},
@@ -206,7 +206,7 @@ const ProjectHrCtAprvDetail = () => {
             const confirmResult = window.confirm("반려하시겠습니까?");
             const param = [
                 { tbNm: "PRJCT_MM_ATRZ" },
-                { atrzDmndSttsCd: "VTW03704",
+                { atrzDmndSttsCd: "VTW00803",
                     rjctPrvonsh: opnnCn,
                     rjctYmd: year + monthVal + dayVal
                 },
@@ -229,7 +229,7 @@ const ProjectHrCtAprvDetail = () => {
             const confirmResult = window.confirm("반려하시겠습니까?");
             const param = [
                 { tbNm: "PRJCT_CT_ATRZ" },
-                { atrzDmndSttsCd: "VTW03704",
+                { atrzDmndSttsCd: "VTW00803",
                     rjctPrvonsh: opnnCn,
                     rjctYmd: year + monthVal + dayVal
                 },

@@ -1,4 +1,5 @@
-import { useEffect, useState, useCookies } from "react"
+import { useEffect, useState } from "react"
+import { useCookies } from "react-cookie";
 
 import axios from "axios";
 
@@ -93,7 +94,8 @@ const EmpMonthVacInfo = () => {
     locale('ko');
 
 
-
+    const [cookies, setCookie] = useCookies(["userInfo", "userAuth", "deptInfo"]);
+    const sessionEmpId = cookies.userInfo.empId ? cookies.userInfo.empId : "EMP_3000"
 
 
     // 프로젝트개인비용MM 조회
@@ -101,7 +103,7 @@ const EmpMonthVacInfo = () => {
     const [searchPrjctIndvdlCtMmParam, setSearchPrjctIndvdlCtMmParam] = useState({
         queryId: "indvdlClmMapper.retrievePrjctIndvdlCtAply",
         searchType: "prjctIndvdlCtMmParam",
-        empId: "EMP_3000",
+        empId: sessionEmpId,
         aplyYm: orderWorkBgngMm,
         aplyOdr: flagOrder,
         // empId: "sytest3",
@@ -120,11 +122,13 @@ const EmpMonthVacInfo = () => {
             if (initParam.searchType == "prjctIndvdlCtMmParam") {
                 let atrzDmndSttsCdFlag;
                 const prjctIndvdlCtMmParamResult = await ApiRequest("/boot/common/queryIdSearch", initParam);
-                const prjctIndvdlCtMmParamFilter = prjctIndvdlCtMmParamResult.filter(item => item.aplyType != "vcatnAply");
+                const prjctIndvdlCtMmParamFilter = prjctIndvdlCtMmParamResult.filter(item => item.aplyType != "vcatnAply" && item.aplyOdr == flagOrder);
 
                 setInsertWorkHourList(
                     await ApiRequest("/boot/common/queryIdSearch", initParam)
                 )
+
+                console.log("prjctIndvdlCtMmParamFilter : ", prjctIndvdlCtMmParamFilter);
 
                 if(prjctIndvdlCtMmParamFilter.length > 0){
                     if (prjctIndvdlCtMmParamFilter.length == prjctIndvdlCtMmParamFilter.filter(item => item.atrzDmndSttsCd == "VTW00801").length) {
@@ -140,6 +144,7 @@ const EmpMonthVacInfo = () => {
                     atrzDmndSttsCdFlag = "use"
                 }
 
+                console.log("atrzDmndSttsCdFlag : ", atrzDmndSttsCdFlag);
 
                 setSelectPrjctIndvdlCtMmValue({
                     prjctIndvdlCtMmParamResult,
@@ -232,21 +237,51 @@ const EmpMonthVacInfo = () => {
 
     // 승인요청버튼
     function onApprovalclick() {
-        insertPrjctMmAply(insertWorkHourList.filter(item => item.aplyType == "workAply"));
+        insertPrjctMmAply(insertWorkHourList.filter(item => item.aplyType == "workAply" && item.aplyOdr == flagOrder));
     }
 
     // 승인요청취소버튼
     function onApprovalCancleclick(){
-
+        const isconfirm = window.confirm("승인요청을 취소하시겠습니까?");
+        if (isconfirm) {
+            deletePrjctMmAply(insertWorkHourList.filter(item => item.aplyType == "workAply" && item.aplyOdr == flagOrder));
+        } else {
+            return;
+        }
     }
 
     // 승인요청버튼
     const insertPrjctMmAply = async (params) => {
-        try {
-            const response = await ApiRequest("/boot/indvdlClm/prjctMm/insertPrjctMmAply", params);
-            console.log("response : ", response);
-        } catch (error) {
-            console.log("error: ", error);
+        if(params.length > 0){
+            try {
+                const response = await ApiRequest("/boot/indvdlClm/insertPrjctMmAply", params);
+                selectData(searchPrjctIndvdlCtMmParam)
+            } catch (error) {
+                console.log("error: ", error);
+            }
+        } else {
+            alert("근무시간을 입력해주세요.");
+            return;
+        }
+    }
+
+    // 승인요청취소버튼
+    const deletePrjctMmAply = async (params) => {
+        if(params.length > 0){
+            try {
+                const response = await ApiRequest("/boot/common/queryIdSearch", {
+                    queryId: "indvdlClmMapper.retrievePrjctMmAtrzRtrcn",
+                    empId: sessionEmpId,
+                    aplyYm: orderWorkBgngMm,
+                    aplyOdr: flagOrder,
+                });
+                selectData(searchPrjctIndvdlCtMmParam)
+            } catch (error) {
+                console.log("error: ", error);
+            }
+        } else {
+            alert("요청된 근무시간이 없습니다.");
+            return;
         }
     }
 
@@ -308,7 +343,7 @@ const EmpMonthVacInfo = () => {
                 parseData.push({
                     text: insertWorkHourValue.prjctNm + " " + insertWorkHourValue.workHour + "시간",
                     prjctId: insertWorkHourValue.prjctId,
-                    empId: "EMP_3000",
+                    empId: sessionEmpId,
                     aplyYm: orderWorkBgngMm,
                     aplyOdr: flagOrder,
                     md: insertWorkHourValue.workHour / 8,
@@ -437,7 +472,7 @@ const EmpMonthVacInfo = () => {
                 </div>
             </div>
             {createScheduler(searchParam, insertWorkHourList)}
-            {createWorkHour(holidayList)}
+            {createWorkHour(holidayList, insertWorkHourList)}
             <div style={{ marginTop: "20px" }} />
             {createInsertWorkHour(selectPrjctIndvdlCtMmValue)}
 
@@ -470,21 +505,32 @@ const EmpMonthVacInfo = () => {
         )
     }
 
-    function createWorkHour(holidayList) {
+    function createWorkHour(holidayList, insertWorkHourList) {
         let workHour = getWorkDay(holidayList) * 8;
+        let vcatnCnt = -1;
+        let vcatnFilterList;
+
+        if(insertWorkHourList != null && insertWorkHourList != "" && insertWorkHourList != undefined && insertWorkHourList.length > 0){
+            vcatnCnt = insertWorkHourList.filter(item => item.aplyType == "vcatnAply").length
+        }
         return (
             <>
                 <div style={{ marginTop: "10px", border: "2px solid #CCCCCC" }}>
                     <div style={{ borderBottom: "2px solid #CCCCCC" }}>
                         <div style={{ display: "flex", alignItems: "center", height: "50px", marginLeft: "20px" }}>
-                            {orderWorkBgngMm} - {flagOrder}차수 근무시간 :  / {workHour} hrs.
+                            {orderWorkBgngMm} - {flagOrder}차수 근무시간 : {vcatnCnt != -1 ? workHour - vcatnCnt * 8 : workHour} / {workHour} hrs.
                         </div>
                     </div>
+                    {
+                        vcatnCnt != -1
+                            ?
+                                <div style={{ display: "flex", alignItems: "center", height: "50px", marginLeft: "20px" }}>
+                                    * 휴가 : {vcatnCnt * 8} / {workHour} hrs.
+                                </div>        
+                            : <></>
+                    }
                     <div style={{ display: "flex", alignItems: "center", height: "50px", marginLeft: "20px" }}>
-                        * 휴가 :  / {workHour} hrs.
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", height: "50px", marginLeft: "20px" }}>
-                        * CSC : ​ / {workHour} hrs.
+                        * CSC : {vcatnCnt != -1 ? workHour - vcatnCnt * 8 : workHour}​ / {workHour} hrs.
                     </div>
                 </div>
             </>

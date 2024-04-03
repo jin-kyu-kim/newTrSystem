@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useCookies } from "react-cookie";
 
 // 날짜계산
 // npm install moment
@@ -68,7 +69,7 @@ const elctrnAtrzId = uuid();
 let jbttlCd = "VTW01005";
 
 // 전자결재 팝업 데이터
-const artzListValue = [];
+let artzListValue = [];
 
 /**
  * @param {number} startYear 현재년도 기준 화면에 보여줄 (현재년도 - startYear)
@@ -124,12 +125,18 @@ function atrzLnAprv(jbttlCd, searchResult) {
 
 
 const EmpVacation = () => {
+    // 세션정보
+    const [cookies, setCookie] = useCookies(["userInfo", "userAuth", "deptInfo"]);
+    const sessionEmpId = cookies.userInfo.empId ? cookies.userInfo.empId : "EMP_3000"
+    const sessionEmpNm = cookies.userInfo.empNm ? cookies.userInfo.empNm : "테스트성명"
+    const sessionDeptNm = cookies.userInfo.deptNm ? cookies.userInfo.deptNm : "테스트소속"
+
     // 휴가목록조회
     const [selectVcatnListValue, setSelectVcatnListValue] = useState([]);
     const [searchVcatnListParam, setSearchVcatnListParam] = useState({
         queryId: "indvdlClmMapper.retrieveVcatnListInq",
         searchType: "vcatnList",
-        empId: "EMP_3000",
+        empId: sessionEmpId,
         searchYear: flagYear,
         isSearch: true
     });
@@ -149,7 +156,7 @@ const EmpVacation = () => {
         queryId: "indvdlClmMapper.retrieveVcatnInfoInq",
         searchType: "vcatnInfo",
         searchYear: flagYear,
-        empId: "EMP_3000",
+        empId: sessionEmpId,
         isSearch: true
     });
 
@@ -180,15 +187,12 @@ const EmpVacation = () => {
 
 
     // 휴가신청전자결재저장정보
-    const [insertElctrnValue, setInsertElctrnValue] = useState([{
-        tbNm: "ELCTRN_ATRZ",
-        snColumn: "NOW_ATRZ_LN_SN"
-    }, {
+    const [insertElctrnValue, setInsertElctrnValue] = useState({
         elctrnAtrzId: elctrnAtrzId,
-        atrzDmndEmpId: "EMP_3000",      // 추후 세션 empId
+        atrzDmndEmpId: sessionEmpId,
         atrzDmndSttsCd: "VTW00801",     // 결재요청상태코드_ATRZ_DMND_STTS_CD(심사중)
-        elctrnAtrzTySeCd: "VTW04301",   // 전자결재유형구분코드_ELCTRN_ATRZ_TY_SE_CD(휴가결재)
-    }]);
+        elctrnAtrzTySeCd: "VTW04901",   // 전자결재유형구분코드_ELCTRN_ATRZ_TY_SE_CD(휴가)
+    });
 
     // 휴가신청전자결재첨부파일정보
     const [attachments, setAttachments] = useState([]);
@@ -198,12 +202,7 @@ const EmpVacation = () => {
 
 
     // 휴가신청휴가결재저장정보
-    const [insertVcatnValue, setInsertVcatnValue] = useState({ elctrnAtrzId: elctrnAtrzId });
-
-
-    // useEffect(() => {
-    //     console.log("insertVcatnValue : ", insertVcatnValue);
-    // }, [insertVcatnValue])
+    const [insertVcatnValue, setInsertVcatnValue] = useState({ elctrnAtrzId: elctrnAtrzId, empId: sessionEmpId, flagYear: flagYear });
 
 
 
@@ -237,7 +236,7 @@ const EmpVacation = () => {
 
 
     // 전자결재 참조자목록정보
-    const [atrzLnReftnListValue, setAtrzLnReftnListValue] = useState({});
+    const [atrzLnReftnListValue, setAtrzLnReftnListValue] = useState();
     const [atrzLnReftnListParam, setAtrzLnReftnListParam] = useState({
         queryId: "indvdlClmMapper.retrieveElctrnAtrzRefrnInq",
         searchType: "atrzLnReftnList",
@@ -265,17 +264,11 @@ const EmpVacation = () => {
 
 
     // 전자결재 결재선 설정
-    useEffect(() => {
-        elctrnLine(atrzLnSrngValue, atrzLnAprvValue, insertElctrnValue);
-    }, [atrzLnSrngValue])
-
-
-
-
-
     // useEffect(() => {
-    //     console.log("atrzLnReftnListValue : ", atrzLnReftnListValue);
-    // },[atrzLnReftnListValue])
+    //     elctrnLine(atrzLnSrngValue, atrzLnAprvValue, insertElctrnValue, atrzLnReftnListValue);
+    // }, [atrzLnSrngValue])
+
+
 
 
 
@@ -288,6 +281,9 @@ const EmpVacation = () => {
             // 참조자 목록조회
             else if (initParam.searchType == "atrzLnReftnList") {
                 const atrzLnReftnResult = await ApiRequest("/boot/common/queryIdSearch", initParam);
+
+                setAtrzLnReftnListValue(atrzLnReftnResult);
+
                 if (atrzLnReftnResult.length > 0) {
                     atrzLnReftnResult.map((item, index) => {
                         artzListValue.push({
@@ -338,10 +334,38 @@ const EmpVacation = () => {
         }
     };
 
+    // useEffect(() => {
+    //     console.log("insertVcatnValue : ", insertVcatnValue);
+    // }, [insertVcatnValue])
+
+    // 휴가신청전자결재저장 별도 도메인
+    const insertVcatnAtrz = async (params) => {
+        const formData = new FormData();
+
+        formData.append("elctrnTbNm", JSON.stringify({ tbNm: "ELCTRN_ATRZ", snColumn: "NOW_ATRZ_LN_SN" }));
+        formData.append("insertElctrnValue", JSON.stringify(params));
+
+        formData.append("vcatnTbNm", JSON.stringify({ tbNm: "VCATN_ATRZ" }));
+        formData.append("insertVcatnValue", JSON.stringify(insertVcatnValue));
+
+        Object.values(attachments).forEach((attachment) => formData.append("attachments", attachment));
+
+        try {
+            const response = await axios.post("/boot/indvdlClm/insertVcatnAtrz", formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+            });
+            console.log("response : ", response);
+        } catch (error) {
+            console.log("error: ", error);
+        }
+    }
+
     // 휴가신청전자결재저장
     const insertElctrnData = async (initParam) => {
         try {
-            const response = await ApiRequest("/boot/common/commonInsert", initParam);
+            const response = await ApiRequest("/boot/common/commnoInsert", initParam);
             if (response > 0) {
                 try {
                     const formData = new FormData();
@@ -373,11 +397,11 @@ const EmpVacation = () => {
                             vcatnTyCd: "",
                             elctrnAtrzId: newUuid
                         })
-                        setInsertElctrnValue([{ ...insertElctrnValue[0] }, {
-                            ...insertElctrnValue[1],
+                        setInsertElctrnValue({
+                            ...insertElctrnValue,
                             elctrnAtrzId: newUuid,
                             prjctId: null
-                        }])
+                        })
                     } catch (error) {
                         console.error("insertVcatnError :", error);
                         throw error;
@@ -410,27 +434,21 @@ const EmpVacation = () => {
 
     // 저장버튼
     function onSaveClick() {
-        // 2024.03.18(박지환)
-        // 2deps 테이블의 경우 데이터 무결성 발생할 수 있음
-        // 추후 공통service 생성 후 해당 service안에서 무결성 해결해야 함.
-        insertElctrnData(insertElctrnValue);
+        insertVcatnAtrz(insertElctrnValue);
     }
 
     // 프로젝트ID 설정
     function onValuePrjctChange(e) {
-        setInsertElctrnValue([{ ...insertElctrnValue[0] }, {
-            ...insertElctrnValue[1],
+        setInsertElctrnValue({
+            ...insertElctrnValue,
             prjctId: e[0].prjctId,
-        }])
+        })
         selectData({
             searchType: "atrzLnSrng",
             prjctMngrEmpId: e[0].prjctMngrEmpId
         })
     }
 
-    // useEffect(() => {
-    //     console.log("insertElctrnValue[1] : ", insertElctrnValue[1]);
-    // }, [insertElctrnValue[1]])
 
     // 휴가정보 저장정보 설정
     function onInsertVcatnValue(param, e) {
@@ -439,14 +457,14 @@ const EmpVacation = () => {
         // 날짜 parsing
         if (param == "vcatnBgngYmd" || param == "vcatnEndYmd") e = Moment(e).format('YYYYMMDD');
 
-            // 휴가일수계산
-            if (param == "vcatnBgngYmd" && insertVcatnValue.vcatnEndYmd != undefined) {
-                vcatnDeCnt = insertVcatnValue.vcatnEndYmd - e + 1
-            } else if (param == "vcatnEndYmd" && insertVcatnValue.vcatnBgngYmd != undefined) {
-                vcatnDeCnt = e - insertVcatnValue.vcatnBgngYmd + 1
-            } else if (insertVcatnValue.vcatnEndYmd != undefined && insertVcatnValue.vcatnBgngYmd != undefined) {
-                vcatnDeCnt = insertVcatnValue.vcatnEndYmd - insertVcatnValue.vcatnBgngYmd + 1
-            } 
+        // 휴가일수계산
+        if (param == "vcatnBgngYmd" && insertVcatnValue.vcatnEndYmd != undefined) {
+            vcatnDeCnt = insertVcatnValue.vcatnEndYmd - e + 1
+        } else if (param == "vcatnEndYmd" && insertVcatnValue.vcatnBgngYmd != undefined) {
+            vcatnDeCnt = e - insertVcatnValue.vcatnBgngYmd + 1
+        } else if (insertVcatnValue.vcatnEndYmd != undefined && insertVcatnValue.vcatnBgngYmd != undefined) {
+            vcatnDeCnt = insertVcatnValue.vcatnEndYmd - insertVcatnValue.vcatnBgngYmd + 1
+        }
 
         if (param == "vcatnTyCd") {
             if ((e == "VTW01202" || e == "VTW01203" || e == "VTW01205" || e == "VTW01206")) {
@@ -492,22 +510,31 @@ const EmpVacation = () => {
     }
 
     // 테이블버튼클릭
-    function onButtonClick(e, data) {
-        if (e.text == "파일") {
+    function onButtonClick(e) {
+        console.log(e);
+        console.log(e.button.text);
+        if (e.button.text == "파일") {
             setPopupAttachValue({
-                attachId: data.atchmnflId,
+                attachId: e.data.atchmnflId,
                 visible: true,
             })
-        } else if (e.text == "휴가 취소요청") {
+        } else if (e.button.text == "휴가 취소요청") {
             alert("휴가 취소요청 팝업 호출");
         }
     }
 
     // 결재선버튼클릭
     function onAtrzClick(e) {
+        artzListValue = [];
         artzListValue.push(
             atrzLnAprvValue, atrzLnSrngValue
         )
+
+        atrzLnReftnListValue.map((item, index) => {
+            artzListValue.push(
+                atrzLnReftnListValue[index]
+            )
+        })
 
         setPopupAtrzValue([artzListValue, { visible: true }])
     }
@@ -516,14 +543,19 @@ const EmpVacation = () => {
     //     console.log("popupAtrzValue : ", popupAtrzValue);
     // }, [popupAtrzValue])
 
-    function onHiding(e) {
+    const onHiding = async (aprvrEmpList) => {
+        console.log("callback : ", aprvrEmpList);
+
+        // setPopupAtrzValue([{}, {
+        //     visible: e
+        // }])
+    }
+
+    function onEmpHiding(e) {
         setPopupAttachValue({
             attachId: "",
             visible: e
         })
-        setPopupAtrzValue([{}, {
-            visible: e
-        }])
     }
 
     const changeAttchValue = (e) => {
@@ -619,18 +651,18 @@ const EmpVacation = () => {
                             <span>2.프로젝트 재 검색시 휴가기간, 파일첨부는 다시 작성해야합니다.</span>
                         </div>
                         <div style={{ marginTop: "30px" }}>
-                            {elctrnLine(atrzLnSrngValue, atrzLnAprvValue, insertElctrnValue)}
+                            {elctrnLine(atrzLnSrngValue, atrzLnAprvValue, insertElctrnValue, atrzLnReftnListValue)}
                         </div>
                         <div className="row" style={{ marginTop: "30px" }}>
                             <div className="col-md-2" style={textAlign}>소속</div>
                             <div className="col-md-10">
-                                <TextBox value="소속" readOnly={true} />
+                                <TextBox value={sessionDeptNm} readOnly={true} />
                             </div>
                         </div>
                         <div className="row" style={{ marginTop: "5px" }}>
                             <div className="col-md-2" style={textAlign}>기안자</div>
                             <div className="col-md-10">
-                                <TextBox value="기안자" readOnly={true} />
+                                <TextBox value={sessionEmpNm} readOnly={true} />
                             </div>
                         </div>
                         <div className="row" style={{ marginTop: "5px" }}>
@@ -762,16 +794,16 @@ const EmpVacation = () => {
                             visible={popupAttachValue.visible}
                             attachId={popupAttachValue.attachId}
                             title={"전자결재 파일 첨부"}
-                            onHiding={onHiding}
+                            onHiding={onEmpHiding}
                         />
 
                         {
-                            popupAtrzValue[1].visible == true 
+                            popupAtrzValue[1].visible == true
                                 ?
                                 <ApprovalPopup
                                     width={"500px"}
                                     height={"500px"}
-                                    visible={popupAtrzValue[1].visible}
+                                    visible={true}
                                     atrzValue={popupAtrzValue[0]}
                                     onHiding={onHiding}
                                 />
@@ -847,21 +879,21 @@ function createBody(selectVcatnInfoValue) {
                     </TableCell>
                     <TableCell>
                         {
-                            tableData.newVcatnAltmntDaycnt != "" && tableData.newVcatnAltmntDaycnt != undefined 
-                                ? tableData.newVcatnAltmntDaycnt 
+                            tableData.newVcatnAltmntDaycnt != "" && tableData.newVcatnAltmntDaycnt != undefined
+                                ? tableData.newVcatnAltmntDaycnt
                                 : 0
                         }일
                     </TableCell>
                     <TableCell>
                         {
-                            tableData.newUseDaycnt != "" && tableData.newUseDaycnt != undefined 
+                            tableData.newUseDaycnt != "" && tableData.newUseDaycnt != undefined
                                 ? tableData.newUseDaycnt
                                 : 0
                         }일
                     </TableCell>
                     <TableCell>
                         {
-                            tableData.newRemndrDaycnt != "" && tableData.newRemndrDaycnt != undefined 
+                            tableData.newRemndrDaycnt != "" && tableData.newRemndrDaycnt != undefined
                                 ? tableData.newRemndrDaycnt
                                 : 0
                         }일
@@ -902,7 +934,7 @@ function createBody(selectVcatnInfoValue) {
     return tableBody;
 }
 
-function elctrnLine(atrzLnSrngValue, atrzLnAprvValue, insertElctrnValue) {
+function elctrnLine(atrzLnSrngValue, atrzLnAprvValue, insertElctrnValue, atrzLnReftnListValue) {
     return (
         <>
             <Table>
@@ -925,7 +957,7 @@ function elctrnLine(atrzLnSrngValue, atrzLnAprvValue, insertElctrnValue) {
                         <TableCell style={cellStyle}></TableCell>
                         <TableCell style={cellStyle}>
                             {
-                                atrzLnSrngValue.approvalCode != undefined && insertElctrnValue[1].prjctId != ""
+                                atrzLnSrngValue.approvalCode != undefined && insertElctrnValue.prjctId != ""
                                     ?
                                     atrzLnSrngValue.empId == atrzLnAprvValue.empId
                                         ?
@@ -941,7 +973,7 @@ function elctrnLine(atrzLnSrngValue, atrzLnAprvValue, insertElctrnValue) {
                         </TableCell>
                         <TableCell style={cellStyle}>
                             {
-                                atrzLnSrngValue.approvalCode != undefined && insertElctrnValue[1].prjctId != ""
+                                atrzLnSrngValue.approvalCode != undefined && insertElctrnValue.prjctId != ""
                                     ?
                                     <div>
                                         {atrzLnAprvValue.empFlnm}
@@ -954,7 +986,21 @@ function elctrnLine(atrzLnSrngValue, atrzLnAprvValue, insertElctrnValue) {
                     </TableRow>
                     <TableRow style={tableHeaderStyle}>
                         <TableCell style={tableLeftStyle}>참조</TableCell>
-                        <TableCell colSpan={4} style={cellStyle}></TableCell>
+                        <TableCell colSpan={4} style={cellStyle}>
+                            {   
+                                atrzLnReftnListValue != "" && atrzLnReftnListValue && atrzLnReftnListValue != undefined 
+                                    ?
+                                        atrzLnReftnListValue.map((item, index) => {
+                                            return(
+                                                <>
+                                                    {atrzLnReftnListValue[index].listEmpFlnm}
+                                                    <br/>
+                                                </>
+                                            )
+                                        })
+                                    : <></>
+                            }
+                        </TableCell>
                     </TableRow>
                 </TableBody>
             </Table>
