@@ -1,12 +1,10 @@
 import React, {useCallback, useEffect, useState} from "react";
-import { TabPanel } from "devextreme-react";
+import { Popup, TabPanel } from "devextreme-react";
 import { useCookies } from "react-cookie";
-
 import EmpInfoJson from "./EmpInfoJson.json";
-
 import Button from "devextreme-react/button";
-
 import { useLocation, useNavigate } from 'react-router-dom';
+import EmpInfoPop from "./EmpInfoPop";
 
 const EmpDetailInfo = () => {
     
@@ -18,7 +16,7 @@ const EmpDetailInfo = () => {
     const location = useLocation();
     const [naviEmpId, setNaviEmpId] = useState([]);
     const [showNewButton, setShowNewButton] = useState(false);
-
+    const [isPopupVisible, setIsPopupVisible] = useState(false);
     useEffect(() => {
 
         if (location.state !== null){
@@ -50,11 +48,23 @@ const EmpDetailInfo = () => {
         []
       );
 
+
+
     const itemTitleRender = (a) => <span>{a.TabName}</span>;
     
     const onClick = () => {
         navigate("/humanResourceMng/EmpManage");
     };
+
+    const openInfoPopup = () => {
+      setIsPopupVisible(true); // 팝업 열기
+      // window.open("../pages/infoInq/EmpInfoPop", "_blank", "width=700,height=600");
+  };
+
+  const closePopup = () => {
+    setIsPopupVisible(false);
+  };
+
 
     return (
         <div>
@@ -67,15 +77,33 @@ const EmpDetailInfo = () => {
           </div>
         </div>
         <div className="buttons" align="right" style={{ margin: "20px" }}>
+        <Popup
+          title="직원정보 출력"
+          visible={isPopupVisible}
+          onHiding={closePopup}
+          width={700}
+          height={600}
+        > 
+          <Button text="닫기" onClick={closePopup} />
+        {isPopupVisible && (
+          <EmpInfoPop  closePopup={closePopup} />
+        )}
+  {/* 선택한 그룹의 정보 출력 */}
+</Popup>
+
+          
+          
           <Button
             width={130}
             text="Contained"
             type="default"
             stylingMode="contained"
             style={{ margin: "2px" }}
+            onClick={openInfoPopup}
           >
             전체이력조회출력
           </Button>
+
             {showNewButton && (
                 <Button
                     width={110}
@@ -119,6 +147,7 @@ const EmpDetailInfo = () => {
           />
         </div>
       </div>
+      
     );
 };
 
