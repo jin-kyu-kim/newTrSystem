@@ -302,7 +302,4 @@ const TreRoutes = [
 
 ];
 
-
-
-
 export default TreRoutes;

@@ -61,7 +61,7 @@
 		WHERE 1=1
 		<choose>
 			<when test="sttsCd != null and refer != null and sttsCd.startsWith('VTW037')">
-				AND rm.REFRN_EMP_ID = #{empId}
+				AND rm.EMP_ID = #{empId}
 				AND ea.ATRZ_DMND_STTS_CD = #{sttsCd}
 			</when>
 			<when test="sttsCd != null and sttsCd.startsWith('VTW037')">
@@ -94,8 +94,8 @@
 			SUM(CASE WHEN ea.ATRZ_DMND_STTS_CD = 'VTW03704' AND ea.ATRZ_DMND_EMP_ID = #{empId} THEN 1 ELSE 0 END) AS DENY,
 			SUM(CASE WHEN al.ATRZ_STTS_CD = 'VTW00801' AND al.APRVR_EMP_ID = #{empId} THEN 1 ELSE 0 END) AS PROGRESS_APPROVAL,
 			SUM(CASE WHEN al.ATRZ_STTS_CD = 'VTW00802' AND al.APRVR_EMP_ID = #{empId} THEN 1 ELSE 0 END) AS TERMINATED_APRVR_EMP,
-			SUM(CASE WHEN ea.ATRZ_DMND_STTS_CD = 'VTW03702' AND rm.REFRN_EMP_ID = #{empId} THEN 1 ELSE 0 END) AS PROGRESS_REFER,
-			SUM(CASE WHEN ea.ATRZ_DMND_STTS_CD = 'VTW03703' AND rm.REFRN_EMP_ID = #{empId} THEN 1 ELSE 0 END) AS TERMINATED_REFER
+			SUM(CASE WHEN ea.ATRZ_DMND_STTS_CD = 'VTW03702' AND rm.EMP_ID = #{empId} THEN 1 ELSE 0 END) AS PROGRESS_REFER,
+			SUM(CASE WHEN ea.ATRZ_DMND_STTS_CD = 'VTW03703' AND rm.EMP_ID = #{empId} THEN 1 ELSE 0 END) AS TERMINATED_REFER
 		FROM ELCTRN_ATRZ ea
 			LEFT JOIN ATRZ_LN al ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID AND ea.NOW_ATRZ_LN_SN = al.ATRZ_LN_SN
 			LEFT JOIN REFRN_MAN rm ON ea.ELCTRN_ATRZ_ID = rm.ELCTRN_ATRZ_ID
@@ -105,19 +105,22 @@
 
 	<select id="retrieveAtrzLn" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT
-			cd.CD_NM AS ATRZ_STEP_CD,
-			cd2.CD_NM AS ATRZ_STTS_CD,
+		    ln.ATRZ_STEP_CD AS APPROVAL_CODE,
+			cd.CD_NM AS ATRZ_STEP_CD_NM,
+			cd2.CD_NM AS ATRZ_STTS_CD_NM,
 			e.EMP_FLNM AS APRVR_EMP_ID,
+			CONCAT(d.DEPT_NM, ' ', e.EMP_FLNM, ' ', (SELECT CD_NM FROM CD WHERE CD_VALUE = e.JBPS_CD)) LIST_EMP_FLNM,
 			ln.APRV_YMD,
 			ln.RJCT_YMD,
 			ln.RJCT_PRVONSH
 		FROM ATRZ_LN ln
-				 JOIN EMP e ON ln.APRVR_EMP_ID = e.EMP_ID
-				 JOIN CD cd ON ln.ATRZ_STEP_CD = cd.CD_VALUE
-				 JOIN CD cd2 ON ln.ATRZ_STTS_CD = cd2.CD_VALUE
+			LEFT JOIN EMP e ON ln.APRVR_EMP_ID = e.EMP_ID
+			LEFT JOIN DEPT_HNF dh ON e.EMP_ID = dh.EMP_ID
+			LEFT JOIN DEPT d ON dh.DEPT_ID = d.DEPT_ID
+			LEFT JOIN CD cd ON ln.ATRZ_STEP_CD = cd.CD_VALUE
+			LEFT JOIN CD cd2 ON ln.ATRZ_STTS_CD = cd2.CD_VALUE
 		WHERE 1=1
 		  AND ln.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
-		  AND ln.ATRZ_LN_SN = #{atrzLnSn}
 	</select>
 	
 	<select id="retrieveOutordCompanyPlan" parameterType="map" resultType="com.trsystem.LowerHashMap">

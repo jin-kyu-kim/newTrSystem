@@ -110,11 +110,11 @@
       { "text": "문서이력", "id": "docHist" }
     ],
     "queryId": "elecAtrzMapper.retrieveAtrzLn",
-    "keyColumn": "atrzStepCd",
+    "keyColumn": "atrzStepCdNm",
     "columns": [
-      { "key": "atrzStepCd", "value": "결재라인"},
+      { "key": "atrzStepCdNm", "value": "결재라인"},
       { "key": "aprvrEmpId", "value": "결재자"},
-      { "key": "atrzSttsCd", "value": "결재상태"},
+      { "key": "atrzSttsCdNm", "value": "결재상태"},
       { "key": "rjctPrvonsh", "value": "결재의견"},
       { "key": "aprvYmd", "value": "결재일자"}
     ],
@@ -124,7 +124,7 @@
       { "key": "atrzSttsCd", "value": "거래처명"},
       { "key": "rjctPrvonsh", "value": "금액"},
       { "key": "aprvYmd", "value": "상세내역(목적)"},
-      { "key": "aprvYmd", "value": "용도(참석자명단)"}
+      { "key": "aa", "value": "용도(참석자명단)"}
     ] 
   }
 }

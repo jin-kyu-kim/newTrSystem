@@ -23,7 +23,8 @@ const ElecAtrzNewReq = () => {
     const formData = location.state.formData;
     // const childRef = useRef();
     const [cookies] = useCookies(["userInfo", "userAuth"]);
-
+    const empId = cookies.userInfo.empId;
+    console.log("empId",empId);
     const [data, setData] = useState(location.state.formData);
     const [atrzParam, setAtrzParam] = useState({});
     const [childData, setChildData] = useState({});  //자식 컴포넌트에서 받아온 데이터
@@ -32,7 +33,6 @@ const ElecAtrzNewReq = () => {
     const [atrzLnEmpList, setAtrzLnEmpList] = useState([]);
 
     const column = { "dataField": "gnrlAtrzCn", "placeholder": "내용을 입력해주세요."};
-
 
     /**
      * 자식컴포넌트에서 받아온 데이터 처리
@@ -185,19 +185,29 @@ const ElecAtrzNewReq = () => {
             const response = await ApiRequest("/boot/elecAtrz/insertElecAtrz", insertParam);
             console.log(response);
 
-            // 첨부파일 저장
-            const formDataAttach = new FormData();
-            formDataAttach.append("tbNm", JSON.stringify({tbNm: "CTRT_ATRZ"}));
-            formDataAttach.append("data", JSON.stringify({}));
-            formDataAttach.append("idColumn", JSON.stringify({elctrnAtrzId: response})); //결재ID 받아와야 함
-            formDataAttach.append("deleteFiles", JSON.stringify([]));
-            Object.values(attachments)
-                .forEach((attachment) => formDataAttach.append("attachments", attachment));
+            if(response){
+                // 첨부파일 저장
+                const formDataAttach = new FormData();
+                formDataAttach.append("tbNm", JSON.stringify({tbNm: "CTRT_ATRZ"}));
+                formDataAttach.append("data", JSON.stringify({atchmnflId : uuid()}));
+                formDataAttach.append("idColumn", JSON.stringify({elctrnAtrzId: response})); //결재ID 받아와야 함
+                formDataAttach.append("deleteFiles", JSON.stringify([]));
+                Object.values(attachments)
+                    .forEach((attachment) => formDataAttach.append("attachments", attachment));
 
-            const responseAttach = await axios.post("/boot/common/insertlongText", formDataAttach, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            });
-            console.log(responseAttach);
+                const responseAttach = await axios.post("/boot/common/insertlongText", formDataAttach, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                });
+                console.log(responseAttach);
+
+                if(responseAttach.status === 200){
+                    alert("전자결재 요청이 완료되었습니다.")
+                    navigate("/elecAtrz/ElecAtrzForm");
+                }
+
+        }else{
+            alert("전자결재 요청에 실패하였습니다. 관리자에게 문의하세요. ")
+        }
 
         } catch (error) {
             console.error(error)
