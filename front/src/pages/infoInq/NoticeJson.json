@@ -42,7 +42,7 @@
     ]
   },
   "searchInfo": {
-    "searchParams": { "resetButton": false },
+    "searchParams": { "insertButton": true },
     "selectBoxItem": [
       {
         "placeholder": "[전체]",

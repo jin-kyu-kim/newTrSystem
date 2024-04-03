@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import electAtrzJson from './ElecAtrzJson.json';
 import ApiRequest from 'utils/ApiRequest';
 import './ElecAtrz.css';
+import CustomTable from 'components/unit/CustomTable';
+import CustomEditTable from 'components/unit/CustomEditTable';
 
 
 const ElecAtrzTabDetail = ({ detailData }) => {
-    const { vacDtl } = electAtrzJson.electAtrzDetail;
+    const { vacDtl, clmColumns } = electAtrzJson.electAtrzDetail;
     const [ dtlInfo, setDtlInfo ] = useState({});
     
     useEffect(() => {
@@ -47,10 +49,22 @@ const ElecAtrzTabDetail = ({ detailData }) => {
         );
     };
 
+    const ClmTab = ({columns}) => {
+        return(
+            <CustomEditTable
+                columns={columns}
+                values={[{}]}
+                noEdit={true}
+            />
+        );
+    };
+
     return (
         <div>
-            {detailData.elctrnAtrzTySeCd === 'VTW04901' &&
-                <VacInfoTab vacDtl={vacDtl} dtlInfo={dtlInfo} />
+            {dtlInfo && detailData.elctrnAtrzTySeCd === 'VTW04901' 
+            ? <VacInfoTab vacDtl={vacDtl} dtlInfo={dtlInfo} />
+            : detailData.elctrnAtrzTySeCd === 'VTW04907' && 
+                <ClmTab columns={clmColumns}/>
             }
         </div>
     );

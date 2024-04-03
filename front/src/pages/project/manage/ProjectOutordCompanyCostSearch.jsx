@@ -3,8 +3,13 @@ import React, { useEffect, useState } from "react";
 import ApiRequest from "../../../utils/ApiRequest";
 import CustomTable from "../../../components/unit/CustomTable";
 import ProjectOutordCompanyCostSearchJson from "./ProjectOutordCompanyCostSearchJson.json";
+import {useLocation} from "react-router-dom";
 
-const ProjectOutordCompanyCostSearch = (prjctId, bgtMngOdr) => {
+const ProjectOutordCompanyCostSearch = () => {
+  const location = useLocation();
+  const prjctId = location.state.prjctId;
+  const bgtMngOdr = location.state.bgtMngOdr;
+
   const { keyColumn, queryId, tableColumns, summaryColumn } = ProjectOutordCompanyCostSearchJson;
   const [values, setValues] = useState([]);
 

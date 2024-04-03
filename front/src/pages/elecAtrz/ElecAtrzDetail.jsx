@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import { Button } from 'devextreme-react/button';
-import ElecAtrzHeader from './common/ElecAtrzHeader';
 import ElecAtrzTitleInfo from './common/ElecAtrzTitleInfo';
 import CustomTable from 'components/unit/CustomTable';
 import ElecAtrzTabDetail from './ElecAtrzTabDetail';
@@ -26,7 +25,6 @@ const ElecAtrzDetail = () => {
         getAtrzLn();
     }, []);
 
-    console.log(typeof detailData.nowAtrzLnSn)
     const getPrjct = async () => {
         try {
             const response = await ApiRequest("/boot/common/commonSelect", [
@@ -54,11 +52,8 @@ const ElecAtrzDetail = () => {
 
     return (
         <div className="container" style={{ marginTop: "10px" }}>
-            <ElecAtrzHeader
-                contents={header}
-                onClick={onBtnClick}
-            />
             <ElecAtrzTitleInfo
+                contents={header}
                 formData={detailData}
                 prjctData={prjctData}
                 atrzParam={detailData}

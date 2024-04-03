@@ -1,0 +1,73 @@
+{
+    "elecManageMain" : {
+        "atrzSquareList" : [
+            {"key": "progress", "text" : "진행문서", "squareColor": "rgb(216, 237, 246)"},
+            {"key" : "terminatedAprvr", "text" : "완료문서", "squareColor": "rgb(216, 237, 246)"},
+            {"key" : "deny", "text" : "반려문서", "squareColor": "rgb(255, 218, 218)"}
+        ],
+        "keyColumn": "elctrnAtrzId",
+        "queryId": "elecAtrzMapper.elecAtrzMain",
+        "countQueryId": "",
+        "baseColumns": [
+            {"key": "elctrnAtrzId", "value": "문서번호"},
+            {"key": "elctrnAtrzTySeCdNm", "value": "결재유형"},
+            {"key": "atrzDmndEmpId", "value": "기안자"},
+            {"key": "regDt", "value": "기안요청일"},
+            {"key": "ttl", "value": "결재 명", "width": 400}
+        ],
+        "progress" : [
+            {"value": "거래처"},
+            {"value": "현재결재권자"},
+            {"value": "현재결재단계"},
+            {"value": "회수가능여부"}
+        ],
+        "terminatedAprvr" : [
+            {"value":"거래처"},
+            {"value":"첨부파일"},
+            {"value":"문서이력"}
+        ],
+        "deny" : [
+            {"value": "결재(사유)"}
+        ],
+        "searchInfo" : {
+            "searchParams": {
+                "dateRange": true,
+                "startDtNm": "",
+                "endDtNm": ""
+            },
+            "selectBoxItem": [
+                {
+                  "placeholder": "[문서서식]",
+                  "param":{
+                    "tbNm": "CD",
+                    "valueExpr": "cdValue",
+                    "displayExpr": "cdNm",
+                    "name": "elctrnAtrzTySeCd",
+                    "condition": {
+                      "upCdValue": "VTW049"
+                    },
+                    "clearButton": true
+                  }
+                },
+                {
+                  "placeholder": "[입력시 사용가능한 프로젝트 전체 조회",
+                  "param":{
+                    "tbNm": "CD",
+                    "valueExpr": "cdValue",
+                    "displayExpr": "cdNm",
+                    "name": "elctrnAtrzTySeCd",
+                    "condition": {
+                      "upCdValue": "VTW049"
+                    },
+                    "clearButton": true
+                  }
+                }
+            ],
+            "textBoxItem": [
+                {"placeholder": "기안자"},
+                {"placeholder": "거래처"},
+                {"placeholder": "결재명"}
+            ]
+        }
+    }
+}

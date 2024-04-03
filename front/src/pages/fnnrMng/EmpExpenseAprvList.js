@@ -8,50 +8,12 @@ import {useLocation} from "react-router-dom";
 
 const EmpExpenseAprvList = () => {
 
-    const location = useLocation();
-    console.log(location.state);
-    const state = location.state;
-
     const [selectedIndex, setSelectedIndex] = useState(0);
 
     const EmpExpenseAprvList = EmpExpenseAprvListJson.tabMenu;
     const searchParams = EmpExpenseAprvListJson.searchParams;
     const [param, setParam] = useState([]);
     const [searchItems, setSearchItems] = useState([]);
-
-    let year = "";
-    let monthVal = "";
-    let aplyOdr = 0;
-
-    const moveFromPrjctClmCt = () => {
-        if (location.state !== null){
-            setSelectedIndex(state.selectedIndex);
-
-            setParam({
-                ...param,
-                prjctId: state.prjctId,
-                aplyYm: state.aplyYm,
-                expensCd: state.expensCd,
-            })
-        }
-    };
-
-
-    useEffect(() => {
-
-        const param = {
-            queryId: "financialAffairMngMapper.retrieveExpensAprvDtls",
-            aplyYm: year + monthVal,
-            aplyOdr: aplyOdr,
-        };
-
-        const response = ApiRequest("/boot/common/queryIdSearch", param);
-
-        // if (location.state !== null){
-        //     moveFromPrjctClmCt();
-        // }
-
-    }, []);
 
     const searchHandle = async (initParam) => {
 
@@ -96,7 +58,6 @@ const EmpExpenseAprvList = () => {
                 aplyOdr: '',
                 empNo: empNo,
                 expensCd: expensCd
-                // dateList: generateDates(initParam.yearItem, initParam.monthItem, '')
             })
         } else {
 
@@ -107,7 +68,6 @@ const EmpExpenseAprvList = () => {
                 aplyOdr: initParam.aplyOdr,
                 empNo: empNo,
                 expensCd: expensCd
-                // dateList: generateDates(initParam.yearItem, initParam.monthItem, initParam.aplyOdr)
             })
         }
 

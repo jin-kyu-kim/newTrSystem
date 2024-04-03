@@ -1,0 +1,14 @@
+{
+    "menuName": "EmpCultHealthCostManagePop",
+    "queryId": "financialAffairMngMapper.retrieveClturPhstrnIndvdlList",
+    "keyColumn": "empId",
+    "wordWrap": true,
+   
+    "tableColumns": [
+      { "key": "empFlnm", "value": "성명", "width": 120, "alignment": "center" },
+      {  "key": "clmYm", "value": "청구대상월", "width": 150, "alignment": "center" },
+      {  "key": "clmAmt", "value": "청구금액", "width": 120, "alignment": "center" },
+      {  "key": "dpstAmt", "value": "지급금액", "width": 120, "alignment": "center" },
+      {  "key": "balance", "value": "잔액", "width": 100, "alignment": "center" }
+  ]
+}

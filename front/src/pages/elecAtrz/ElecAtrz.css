@@ -80,3 +80,23 @@
   margin-left: 5px;
   margin-right: 5px;
 }
+
+/* 결재선 공통 테이블 css */
+.diagonal-line-cell {
+  position: relative;
+}
+
+.diagonal-line-cell::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(to bottom right, transparent 49%, black 49%, black 51%, transparent 51%);
+}
+
+/* 결재자가 있을경우 숨기기 */
+.cell-with-data::after {
+  background: none;
+}

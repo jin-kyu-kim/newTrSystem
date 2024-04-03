@@ -6,7 +6,6 @@ import uuid from 'react-uuid'
 import { FileUploader } from "devextreme-react/file-uploader";
 import HtmlEditBox from "components/unit/HtmlEditBox";
 import ApiRequest from "utils/ApiRequest";
-import ElecAtrzHeader from "./common/ElecAtrzHeader";
 import ElecAtrzNewReqJson from "./ElecAtrzNewReqJson.json"
 
 import ElecAtrzTitleInfo from "./common/ElecAtrzTitleInfo";
@@ -200,8 +199,6 @@ const ElecAtrzNewReq = () => {
         switch (e.element.id) {
             case "requestElecAtrz": requestElecAtrz(); 
                 break;
-            case "onAtrzLnPopup": onAtrzLnPopup();
-                break;
             case "saveTemp": saveTemp();
                 break;
             case "toAtrzNewReq": toAtrzNewReq();
@@ -214,14 +211,12 @@ const ElecAtrzNewReq = () => {
     return (
         <>
             <div className="container" style={{marginTop:"10px"}}>
-                <ElecAtrzHeader 
+                <ElecAtrzTitleInfo
                     contents={ElecAtrzNewReqJson.header}
+                    onHandleAtrzTitle={handleElecAtrz}
                     onClick={onBtnClick}
-                />
-                <ElecAtrzTitleInfo 
-                    formData={formData}
                     prjctData={prjctData}
-                    onHandleAtrzTitle={handleElecAtrzTitle}
+                    formData={formDataTitle}
                     atrzParam={atrzParam}
                 />
                 <div dangerouslySetInnerHTML={{ __html: formData.docFormDc }} />

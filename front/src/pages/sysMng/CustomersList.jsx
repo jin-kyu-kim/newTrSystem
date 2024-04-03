@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import "react-datepicker/dist/react-datepicker.css";
-
 import SearchInfoSet from 'components/composite/SearchInfoSet';
 import CustomEditTable from 'components/unit/CustomEditTable';
 import ApiRequest from '../../utils/ApiRequest';
@@ -10,7 +8,7 @@ const CustomersList = () => {
     const [values, setValues] = useState([]);
     const [param, setParam] = useState({});
     const [totalItems, setTotalItems] = useState(0);
-    const { keyColumn, queryId, tableColumns, searchInfo, tbNm } = SysMng.customersJson;
+    const { keyColumn, queryId, tableColumns, searchInfo, tbNm, ynVal } = SysMng.customersJson;
 
     useEffect(() => {
         if (!Object.values(param).every((value) => value === "")) {
@@ -47,6 +45,7 @@ const CustomersList = () => {
         ];
         try {
             const response = await ApiRequest('/boot/common/commonUpdate', ynParam);
+            if(response === 1) pageHandle();
         } catch (error) {
             console.log(error)
         }
@@ -68,6 +67,7 @@ const CustomersList = () => {
             <div style={{ marginBottom: '100px' }}>
                 <CustomEditTable
                     tbNm={tbNm}
+                    ynVal={ynVal}
                     values={values}
                     keyColumn={keyColumn}
                     columns={tableColumns}

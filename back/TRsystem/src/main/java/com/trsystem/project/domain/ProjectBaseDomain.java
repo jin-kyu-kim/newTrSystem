@@ -390,13 +390,45 @@ public class ProjectBaseDomain {
 			param.put("expensNm", data.get("expensNm").toString());
 			getData = commonService.queryIdSearch(param);
 			for(Map<String, Object> cdVal: getData){
-				cdVal.put("prjctId", param.get("prjctId").toString());
-				cdVal.put("expensCd", data.get("expensCd").toString());
-				cdVal.put("expensNm", data.get("expensNm").toString());
+				cdVal.putAll(data);
 				result.add(cdVal);
 			}
 		}
+		return result;
+	}
 
+	public static List<Map<String, Object>> retrievePjrctEmpCost(Map<String, Object>param){
+		List<Map<String, Object>> result = new ArrayList<>();
+		Map<String, Object> searchParam = new HashMap<>(param);
+		searchParam.put("queryId", "projectMapper.retrievedistinctEmpCost");
+
+		List<Map<String, Object>> getCost = commonService.queryIdSearch(searchParam);
+		List<Map<String, Object>> getData;
+		for(Map<String, Object> data : getCost){
+			param.put("empId", data.get("empId").toString());
+			getData = commonService.queryIdSearch(param);
+			for(Map<String, Object> cdVal: getData){
+				cdVal.putAll(data);
+				result.add(cdVal);
+			}
+		}
+		return result;
+	}
+	public static List<Map<String, Object>> retrievePjrctOutordEmpCost(Map<String, Object>param){
+		List<Map<String, Object>> result = new ArrayList<>();
+		Map<String, Object> searchParam = new HashMap<>(param);
+		searchParam.put("queryId", "projectMapper.retrievePjrctOutordEmpCost");
+
+		List<Map<String, Object>> getCost = commonService.queryIdSearch(searchParam);
+		List<Map<String, Object>> getData;
+		for(Map<String, Object> data : getCost){
+			param.put("outordEmpId", data.get("outordEmpId").toString());
+			getData = commonService.queryIdSearch(param);
+			for(Map<String, Object> cdVal: getData){
+				cdVal.putAll(data);
+				result.add(cdVal);
+			}
+		}
 		return result;
 	}
 
