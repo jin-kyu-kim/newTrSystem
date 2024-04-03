@@ -4,7 +4,7 @@ import SelectBox from "devextreme-react/select-box"
 import ApiRequest from "../../utils/ApiRequest";
 import { Validator, RequiredRule, } from "devextreme-react/validator";
 
-const CustomComboBox = ({props, onSelect, label, placeholder, value, readOnly, required}) => {
+const CustomComboBox = ({props, onSelect, label, placeholder, value, readOnly, required, customParam}) => {
 
     const [values, setValues] = useState([]);
 
@@ -13,9 +13,11 @@ const CustomComboBox = ({props, onSelect, label, placeholder, value, readOnly, r
 
         if(props) {
 
-            if(props.queryId) {
+            if(props.queryId && !customParam) {
                 param = props.queryId
-            }else{
+            } else if (props.queryId && customParam) {
+                param = customParam
+            } else{
                 param = [
                     { tbNm: props.tbNm },
                     props.condition ? props.condition : {}
