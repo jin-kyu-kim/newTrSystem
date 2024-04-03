@@ -213,10 +213,10 @@ const ElecAtrzNewReq = () => {
             <div className="container" style={{marginTop:"10px"}}>
                 <ElecAtrzTitleInfo
                     contents={ElecAtrzNewReqJson.header}
-                    onHandleAtrzTitle={handleElecAtrz}
+                    onHandleAtrzTitle={handleElecAtrzTitle}
                     onClick={onBtnClick}
                     prjctData={prjctData}
-                    formData={formDataTitle}
+                    formData={formData}
                     atrzParam={atrzParam}
                 />
                 <div dangerouslySetInnerHTML={{ __html: formData.docFormDc }} />
