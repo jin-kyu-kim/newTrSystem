@@ -87,12 +87,12 @@ const routes = [
     name: "CustomersList",
     element: React.lazy(() => import("../../pages/sysMng/CustomersList")),
   },
-  // 코드 관리
-  {
-    path: "/sysMng/TrsCodeList",
-    name: "TrsCodeList",
-    element: React.lazy(() => import("../../pages/sysMng/TrsCodeList")),
-  },
+  // // 코드 관리
+  // {
+  //   path: "/sysMng/TrsCodeList",
+  //   name: "TrsCodeList",
+  //   element: React.lazy(() => import("../../pages/sysMng/TrsCodeList")),
+  // },
   // 공지사항
   {
     path: "/infoInq/NoticeList",
@@ -167,7 +167,7 @@ const routes = [
   },
   //직원 관리
   {
-    path: "humanResourceMng/EmpManage",
+    path: "/humanResourceMng/EmpManage",
     name: "EmpManage",
     element: React.lazy(() => import("../../pages/humanResourceMng/EmpManage")),
   },

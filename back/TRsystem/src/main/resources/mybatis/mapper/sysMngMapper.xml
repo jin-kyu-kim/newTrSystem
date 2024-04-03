@@ -186,7 +186,6 @@
 			e1.EMP_FLNM AS ATRZ_DMND_EMP_ID, -- 기안자
 			e2.EMP_FLNM AS APRVR_EMP_ID, -- 현재 결재권자
 			DATE_FORMAT(ea.REG_DT,'%Y.%m.%d') as REG_DT,
-			ca.CNPT_NM, -- 청구결재 (거래처명)
 			stepCd.CD_NM AS ATRZ_STEP_CD, -- 현재 결재단계 (VTW007)
 			sttsCd.CD_NM AS ATRZ_STTS_CD, -- 결재상태 (VTW008)
 			COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cga.ATRZ_TTL, CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD), ' [', va.VCATN_BGNG_YMD, ' ~ ', va.VCATN_END_YMD, ' (', va.VCATN_DE_CNT, ')]')) AS TTL

@@ -97,7 +97,6 @@ export const navigation = [
         text: '회의실예약관리',
         path: 'humanResourceMng/MeetingRoomManage'
       },
-      
     ]
   }, {
     text: '재무관리',
