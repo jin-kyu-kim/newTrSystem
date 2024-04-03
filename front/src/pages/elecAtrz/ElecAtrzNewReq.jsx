@@ -62,8 +62,6 @@ const ElecAtrzNewReq = () => {
             ...atrzParam,
             ...childData
         }));
-
-
     }, [childData]);
 
     useEffect(() => {
@@ -73,6 +71,7 @@ const ElecAtrzNewReq = () => {
         }));
     
     }, [data]);
+
 
 
 
@@ -166,6 +165,8 @@ const ElecAtrzNewReq = () => {
 
         }
 
+        console.log(atrzLnEmpList)
+
         const insertParam = {
             param,
             atrzDmndSttsCd: stts,
@@ -175,6 +176,7 @@ const ElecAtrzNewReq = () => {
             elctrnAtrzTySeCd: data.elctrnAtrzTySeCd,
             regDt: date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0],
             regEmpId: cookies.userInfo.empId,
+            atrzLnEmpList
         }  
 
         console.log(insertParam)
