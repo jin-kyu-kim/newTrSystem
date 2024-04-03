@@ -2,7 +2,7 @@ import DataGrid, { Column, Export, Pager, Paging, Summary, TotalItem } from "dev
 import GridRows from "./GridRows";
 import AllowedPageSize from "./AllowedPageSize";
 
-const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, onClick, wordWrap, onRowClick, excel, onExcel }) => {
+const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, onClick, wordWrap, onRowClick, excel, onExcel,onCellClick }) => {
   return (
     <div className="wrap_table">
       <DataGrid
@@ -18,6 +18,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
         onRowDblClick={onRowDblClick}
         onRowClick={onRowClick}
         onExporting={onExcel}
+        onCellClick={onCellClick}
         onCellPrepared={(e) => {
           if (e.rowType === 'header') {
             e.cellElement.style.textAlign = 'center';
