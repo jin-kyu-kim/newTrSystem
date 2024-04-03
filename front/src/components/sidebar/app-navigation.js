@@ -97,7 +97,6 @@ export const navigation = [
         text: '회의실예약관리',
         path: 'humanResourceMng/MeetingRoomManage'
       },
-      
     ]
   }, {
     text: '재무관리',
@@ -119,7 +118,7 @@ export const navigation = [
         path: 'fnnrMng/EmpTRCostTotal'
       },{
         text: '문화체련비관리',
-        path: '/44'
+        path: 'fnnrMng/EmpCultHealthCostManage'
       },{
         text: '근무시간비용입력현황',
         path: 'fnnrMng/TimeExpenseInsertSttus'
@@ -146,7 +145,7 @@ export const navigation = [
         path: 'sysMng/EmpAuthorization'
       },{
         text: '코드관리',
-        path: 'sysMng/TrsCodeList'
+        path: 'sysMng/TrsCode'
       },{
         text: '고객사관리',
         path: 'sysMng/CustomersList'
