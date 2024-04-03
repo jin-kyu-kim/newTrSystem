@@ -175,7 +175,7 @@
 			ON CC.EMP_ID = AA.EMP_ID 
 		WHERE 
 			1=1						
-			AND AA.EMP_ID = "20218103-bf25-11ee-b259-000c2956283f"
+			AND AA.EMP_ID = #{empId}
 	</select>
 	
 	<select id="retrieveAtrzAplySttus" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -205,9 +205,8 @@
 			JOIN EMP e1 ON ea.ATRZ_DMND_EMP_ID = e1.EMP_ID
 			JOIN EMP e2 ON al.APRVR_EMP_ID = e2.EMP_ID
 		WHERE 1=1
-		<!--AND ea.ATRZ_DMND_EMP_ID = '2022f551-bf25-11ee-b259-000c2956283f'-->
 		<if test="sttsCd != null and sttsCd.startsWith('VTW037')">
-			AND ea.ATRZ_DMND_STTS_CD = #{sttsCd}
+			<!--AND ea.ATRZ_DMND_STTS_CD = #{sttsCd}-->
 			AND ea.ATRZ_DMND_EMP_ID = #{empId}
 		</if>
 		<if test="sttsCd != null and sttsCd.startsWith('VTW008')">

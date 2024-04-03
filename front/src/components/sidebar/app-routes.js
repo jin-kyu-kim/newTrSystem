@@ -87,12 +87,12 @@ const routes = [
     name: "CustomersList",
     element: React.lazy(() => import("../../pages/sysMng/CustomersList")),
   },
-  // // 코드 관리
-  // {
-  //   path: "/sysMng/TrsCodeList",
-  //   name: "TrsCodeList",
-  //   element: React.lazy(() => import("../../pages/sysMng/TrsCodeList")),
-  // },
+  // 코드 관리
+  {
+    path: "/sysMng/TrsCode",
+    name: "TrsCode",
+    element: React.lazy(() => import("../../pages/sysMng/TrsCode")),
+  },
   // 공지사항
   {
     path: "/infoInq/NoticeList",
@@ -273,7 +273,25 @@ const routes = [
     path: "/elecAtrz/ElecAtrzForm",
     name: "ElecAtrzForm",
     element: React.lazy(() => import("../../pages/elecAtrz/ElecAtrzForm")),
-  }
+  },// 전자결재 상세
+  {
+    path: "/elecAtrz/ElecAtrzDetail",
+    name: "ElecAtrzDetail",
+    element: React.lazy(() => import("../../pages/elecAtrz/ElecAtrzDetail")),
+  },
+     // 재무 관리 > 문화체련비 관리
+     {
+      path: "/fnnrMng/EmpCultHealthCostManage",
+      name: "EmpCultHealthCostManage",
+      element: React.lazy(() => import("../../pages/fnnrMng/EmpCultHealthCostManage")),
+    },
+
+       // 재무 관리 > 문화체련비 관리 > 문화체련비 관리 마감 목록
+   {
+    path: "/fnnrMng/EmpCultHealthCostManageDeadLine",
+    name: "EmpCultHealthCostManageDeadLine",
+    element: React.lazy(() => import("../../pages/fnnrMng/EmpCultHealthCostManageDeadLine")),
+  },
 ];
 
 export default routes.map(route => {
