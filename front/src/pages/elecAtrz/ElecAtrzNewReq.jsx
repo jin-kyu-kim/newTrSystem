@@ -6,6 +6,7 @@ import uuid from 'react-uuid'
 import { FileUploader } from "devextreme-react/file-uploader";
 import HtmlEditBox from "components/unit/HtmlEditBox";
 import ApiRequest from "utils/ApiRequest";
+import axios from "axios";
 import ElecAtrzNewReqJson from "./ElecAtrzNewReqJson.json"
 
 import ElecAtrzTitleInfo from "./common/ElecAtrzTitleInfo";
@@ -27,6 +28,7 @@ const ElecAtrzNewReq = () => {
     const [atrzParam, setAtrzParam] = useState({});
     const [childData, setChildData] = useState({});  //자식 컴포넌트에서 받아온 데이터
     const [prjctData, setPrjctData] = useState({});
+    const [attachments, setAttachments] = useState([]);
 
     const column = { "dataField": "gnrlAtrzCn", "placeholder": "내용을 입력해주세요."};
 
@@ -172,6 +174,21 @@ const ElecAtrzNewReq = () => {
         try {
             const response = await ApiRequest("/boot/elecAtrz/insertElecAtrz", insertParam);
             console.log(response);
+
+            // 첨부파일 저장
+            const formDataAttach = new FormData();
+            formDataAttach.append("tbNm", JSON.stringify({tbNm: "CTRT_ATRZ"}));
+            formDataAttach.append("data", JSON.stringify({}));
+            formDataAttach.append("idColumn", JSON.stringify({elctrnAtrzId: response})); //결재ID 받아와야 함
+            formDataAttach.append("deleteFiles", JSON.stringify([]));
+            Object.values(attachments)
+                .forEach((attachment) => formDataAttach.append("attachments", attachment));
+
+            const responseAttach = await axios.post("/boot/common/insertlongText", formDataAttach, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            console.log(responseAttach);
+
         } catch (error) {
             console.error(error)
         }
@@ -207,6 +224,14 @@ const ElecAtrzNewReq = () => {
                 break;
         }
     }
+
+    /**
+     * 첨부파일 데이터 핸들링
+     */
+    const handleAttachmentChange = (e) => {
+        setAttachments(e.value);
+    };
+
     
     return (
         <>
@@ -245,7 +270,7 @@ const ElecAtrzNewReq = () => {
                         multiple={true}
                         accept="*/*"
                         uploadMode="useButton"
-                        // onValueChanged={handleAttachmentChange}
+                        onValueChanged={handleAttachmentChange}
                         maxFileSize={1.5 * 1024 * 1024 * 1024}
                     />
                 </div>
