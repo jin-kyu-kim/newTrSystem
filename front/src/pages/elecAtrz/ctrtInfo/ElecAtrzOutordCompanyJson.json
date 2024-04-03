@@ -6,7 +6,7 @@
     "tableColumns": [
       { "key": "prductNm", "value": "담당업무" },
       { "key": "cntrctamount", "value": "가용금액" },
-      { "key": "payTot", "value": "총 사용액" },
+      { "key": "totAmt", "value": "총 사용액" },
       { "value": "선금",
         "subColumns": [
           { "key": "advPayYm", "value": "날짜" },
@@ -33,7 +33,7 @@
         "format": "Total: {0}원"
       },
       {
-        "key": "payTot",
+        "key": "totAmt",
         "value": "총 사용액",
         "type": "sum",
         "format": "Total: {0}원"
