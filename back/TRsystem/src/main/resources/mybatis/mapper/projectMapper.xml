@@ -654,7 +654,7 @@
 			 , pma.APLY_YM
 			 , pma.APLY_ODR
 		     , ROUND(SUM(CASE WHEN pmat.ATRZ_DMND_STTS_CD='VTW00802' THEN pma.MD ELSE 0 END)/MM_QUERY.MM,2) AS EXCN_MM
-		     , (mmp.EXPECT_MM - ROUND(SUM(CASE WHEN pmat.ATRZ_DMND_STTS_CD='VTW00802' THEN pma.MD ELSE 0 END)/MM_QUERY.MM,2)) AS AVBLE_MM
+		     , ROUND((mmp.EXPECT_MM - ROUND(SUM(CASE WHEN pmat.ATRZ_DMND_STTS_CD='VTW00802' THEN pma.MD ELSE 0 END)/MM_QUERY.MM,2)),2) AS AVBLE_MM
 		     , ANY_VALUE(indv.MM_ATRZ_CMPTN_YN) AS MM_ATRZ_CMPTN_YN
 		FROM (SELECT
             (SELECT COUNT(CRTR_YMD) FROM CRTR_DATE WHERE HLDY_CL_CD = 'VTW05001' AND CRTR_ODR = #{aplyOdr} AND DATE_FORMAT(CRTR_YMD, '%Y%m') = #{aplyYm}) AS MM
@@ -770,8 +770,11 @@
 	         , pca.USE_OFFIC
      		 , pca.ATDRN
      		 , pca.CT_PRPOS
+             , (select CD_NM from CD where CD_VALUE = pcat.ATRZ_DMND_STTS_CD) AS 'ATRZ_DMND_STTS_CD'
 		  FROM PRJCT_CT_APLY pca
 		  JOIN EMP e ON (e.EMP_ID = pca.EMP_ID)
+          JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_ID = pca.PRJCT_ID AND (pcat.EMP_ID = pca.EMP_ID OR (pcat.EMP_ID IS NULL AND pca.EMP_ID IS NULL))
+              AND pcat.APLY_YM = pca.APLY_YM AND pcat.APLY_ODR = pca.APLY_ODR)
 		 WHERE 1=1
    		   AND pca.PRJCT_ID = #{prjctId}
 		   AND pca.APLY_YM = #{aplyYm}
@@ -782,7 +785,7 @@
 	<select id="retrieveProjectMmAplyDetail" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT 1 AS ID
 		  	 , 8 * pma.MD AS MD
-			 , CONCAT(TRUNCATE(8 * MD, 0), ' hrs | ', e1.EMP_FLNM, ' (요청)') AS TEXT
+			 , CONCAT(TRUNCATE(8 * MD, 0), ' hrs | ', e1.EMP_FLNM, ' (', cd.CD_NM, ')') AS TEXT
 			 , pah.ATRZ_DMND_STTS_CD
 			 , DATE_FORMAT(pma.APLY_YMD, '%Y-%m-%d') AS START_DATE
 			 , DATE_FORMAT(pma.APLY_YMD, '%Y-%m-%d') AS END_DATE
@@ -791,9 +794,10 @@
  		  	 , d.DEPT_NM
  		  	 , cd.CD_NM AS ATRZ_DMND_STTS_NM
 		FROM PRJCT_MM_APLY pma
-		JOIN PRJCT_ATRZ_HIST pah ON (pma.PRJCT_ID = pah.PRJCT_ID 
+		JOIN PRJCT_MM_ATRZ pah ON (pma.PRJCT_ID = pah.PRJCT_ID
 								 	AND pma.EMP_ID = pah.EMP_ID 
-								 	AND pma.APLY_YM = pah.APLY_YM 
+								 	AND pma.APLY_YM = pah.APLY_YM
+                                    AND pma.APLY_YMD = pah.APLY_YMD
 								 	AND pma.APLY_ODR = pah.APLY_ODR)
 		JOIN EMP e1 ON (pah.EMP_ID = e1.EMP_ID)						 	
 		JOIN EMP e2 ON (pah.APRVR_EMP_ID = e2.EMP_ID)
@@ -805,7 +809,7 @@
 	     AND pma.EMP_ID = #{empId}
 	     AND pma.APLY_YM = #{aplyYm}
 	     AND pma.APLY_ODR = #{aplyOdr}
-         AND pah.ATRZ_DMND_STTS_CD = 'VTW03702'
+         AND pah.ATRZ_DMND_STTS_CD = 'VTW00801'
 		UNION ALL
 		SELECT 2 AS ID
 			 , 8 * pma.MD AS MD
@@ -818,9 +822,10 @@
 		  	 , d.DEPT_NM
 		  	 , cd.CD_NM AS ATRZ_DMND_STTS_NM
 		FROM PRJCT_MM_APLY pma
-		JOIN PRJCT_ATRZ_HIST pah ON (pma.PRJCT_ID = pah.PRJCT_ID 
+		JOIN PRJCT_MM_ATRZ pah ON (pma.PRJCT_ID = pah.PRJCT_ID
 								 	AND pma.EMP_ID = pah.EMP_ID 
-								 	AND pma.APLY_YM = pah.APLY_YM 
+								 	AND pma.APLY_YM = pah.APLY_YM
+                                    AND pma.APLY_YMD = pah.APLY_YMD
 								 	AND pma.APLY_ODR = pah.APLY_ODR)
 		JOIN EMP e1 ON (pah.EMP_ID = e1.EMP_ID)						 	
 		JOIN EMP e2 ON (pah.APRVR_EMP_ID = e2.EMP_ID)
@@ -832,7 +837,7 @@
 		  AND pma.EMP_ID = #{empId}
 		  AND pma.APLY_YM = #{aplyYm}
 		  AND pma.APLY_ODR = #{aplyOdr}
-		  AND pah.ATRZ_DMND_STTS_CD = 'VTW03703'
+		  AND pah.ATRZ_DMND_STTS_CD = 'VTW00802'
 	</select>
 	
 	
