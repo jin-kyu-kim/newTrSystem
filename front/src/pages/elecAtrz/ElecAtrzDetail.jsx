@@ -10,11 +10,11 @@ import ApiRequest from 'utils/ApiRequest';
 import './ElecAtrz.css'
 
 const ElecAtrzDetail = () => {
-    const location = useLocation();
     const navigate = useNavigate();
+    const location = useLocation();
     const detailData = location.state.data;
     const [ prjctData, setPrjctData ] = useState({});
-    const [ atrzOpnn, setAtrzOpnn ] = useState({});
+    const [ atrzOpnn, setAtrzOpnn ] = useState([]);
     const { header, keyColumn, columns, queryId } = electAtrzJson.electAtrzDetail;
 
     const onBtnClick = (e) => {
@@ -23,6 +23,7 @@ const ElecAtrzDetail = () => {
     useEffect(() => {
         getPrjct();
         getAtrzLn();
+        getRefEmp();
     }, []);
 
     const getPrjct = async () => {
@@ -39,8 +40,7 @@ const ElecAtrzDetail = () => {
     const getAtrzLn = async () => {
         const param = {
             queryId: queryId,
-            elctrnAtrzId: detailData.elctrnAtrzId,
-            atrzLnSn: detailData.nowAtrzLnSn
+            elctrnAtrzId: detailData.elctrnAtrzId
         }
         try {
             const response = await ApiRequest("/boot/common/queryIdSearch", param);
@@ -50,14 +50,27 @@ const ElecAtrzDetail = () => {
         }
     };
 
+    const getRefEmp = async () => {
+        try{
+            const response = await ApiRequest('/boot/common/commonSelect', [
+                {tbNm: "REFRN_MAN"}, {elctrnAtrzId: detailData.elctrnAtrzId}
+            ]);
+            console.log('getRef', response);
+        } catch(error) {
+            console.log('error', error);
+        }
+    }
+
     return (
         <div className="container" style={{ marginTop: "10px" }}>
-            <ElecAtrzTitleInfo
-                contents={header}
-                formData={detailData}
-                prjctData={prjctData}
-                atrzParam={detailData}
-            />
+            {atrzOpnn.length !== 0 && 
+                <ElecAtrzTitleInfo
+                    atrzLnEmpList={atrzOpnn}
+                    contents={header}
+                    formData={detailData}
+                    prjctData={prjctData}
+                    atrzParam={detailData}
+                />}
 
             {/* 휴가, 청구의 경우에는 컴포넌트 렌더링 */}
             {(['VTW04901', 'VTW04907'].includes(detailData.elctrnAtrzTySeCd)) && (

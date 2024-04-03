@@ -3,15 +3,19 @@ import '../../pages/elecAtrz/ElecAtrz.css'
 
 const AtrzLnTable = ({atrzLnEmpList, bottomNm}) => {
   const approvalCodes = ['VTW00702', 'VTW00703', 'VTW00704', 'VTW00705'];
-  
+
   const renderEmp = (cd) => {
     return(
         atrzLnEmpList.filter(emp => emp.approvalCode === cd)
-        .map(emp => emp.empFlnm).join('; ')
+        .map(emp => emp.listEmpFlnm).join('; ')
     );
   };
   const hasEmp = (cd) => {
     return atrzLnEmpList.some(emp => emp.approvalCode === cd);
+  }
+  /** 상세조회의 경우 */
+  const hasAprvDate = (cd) => {
+    return atrzLnEmpList.some(emp => emp.approvalCode === cd && (emp.rjctYmd !== null || emp.aprvYmd !== null));
   }
 
   return (
@@ -28,9 +32,12 @@ const AtrzLnTable = ({atrzLnEmpList, bottomNm}) => {
           {approvalCodes.map((code) => (
             <TableCell
               key={code}
-              className={`diagonal-line-cell ${hasEmp(code) ? 'cell-with-data' : ''}`} 
+              className={`diagonal-line-cell ${hasEmp(code) ? 'cell-with-data' 
+              : ''}`} 
               style={cellStyle}
-            />
+            >
+            {hasAprvDate(code) ? '승인' : ''}
+            </TableCell>
           ))}
         </TableRow>
 

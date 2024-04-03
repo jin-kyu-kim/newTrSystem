@@ -1,33 +1,32 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useCookies } from "react-cookie";
 import { Button } from "devextreme-react/button";
 import { TextBox } from "devextreme-react/text-box";
 import AtrzLnTable from "components/unit/AtrzLnTable";
 import ApprovalPopup from "components/unit/ApprovalPopup";
-import ApiRequest from "utils/ApiRequest";
 
-const ElecAtrzTitleInfo = ({ atrzLnEmpList, getAtrzLn, contents, onClick,  formData, prjctData, onHandleAtrzTitle, atrzParam }) => {
-    const [ cookies ] = useCookies(["userInfo", "userAuth"]);
-    const [ popVisible, setPopVisible ] = useState(false);
-  
-    const onAtrzLnPopup = async () => {
-        setPopVisible(true);
-    }
+const ElecAtrzTitleInfo = ({ atrzLnEmpList, getAtrzLn, contents, onClick, formData, prjctData, onHandleAtrzTitle, atrzParam }) => {
+  const [cookies] = useCookies(["userInfo", "userAuth"]);
+  const [popVisible, setPopVisible] = useState(false);
 
-    const onPopHiding = async (aprvrEmpList) => {
-        setPopVisible(false);
-        getAtrzLn(aprvrEmpList)
-    }
+  const onAtrzLnPopup = async () => {
+    setPopVisible(true);
+  }
 
-    const setButtons = () => {
-        const result = [];
-        contents.map((item) => {
-            result.push(<Button id={item.id} text={item.text} 
-            onClick={item.id === 'onAtrzLnPopup' ? onAtrzLnPopup : onClick} />);
-        });
-        return result;
-    };
-  
+  const onPopHiding = async (aprvrEmpList) => {
+    setPopVisible(false);
+    getAtrzLn(aprvrEmpList)
+  }
+
+  const setButtons = () => {
+    const result = [];
+    contents.map((item) => {
+      result.push(<Button id={item.id} text={item.text}
+        onClick={item.id === 'onAtrzLnPopup' ? onAtrzLnPopup : onClick} />);
+    });
+    return result;
+  };
+
   return (
     <>
       <div style={{ display: "flex", justifyContent: "flex-start" }}>
@@ -42,7 +41,7 @@ const ElecAtrzTitleInfo = ({ atrzLnEmpList, getAtrzLn, contents, onClick,  formD
             <tr>
               <td>문서번호</td>
               <td> : </td>
-              <td></td>
+              <td>{formData.elctrnAtrzId}</td>
             </tr>
             <tr>
               <td>프로젝트</td>
@@ -59,13 +58,13 @@ const ElecAtrzTitleInfo = ({ atrzLnEmpList, getAtrzLn, contents, onClick,  formD
             <tr>
               <td>기안일자</td>
               <td> : </td>
-              <td></td>
+              <td>{formData.regDt}</td>
             </tr>
           </table>
         </div>
         {/* 결재선 컴포넌트 */}
         <div style={{ flex: 3, marginRight: "50px" }}>
-          <AtrzLnTable 
+          <AtrzLnTable
             atrzLnEmpList={atrzLnEmpList}
             bottomNm={'합의'}
           />
@@ -79,7 +78,7 @@ const ElecAtrzTitleInfo = ({ atrzLnEmpList, getAtrzLn, contents, onClick,  formD
               className="dx-field-value"
               readOnly={true}
               style={{ width: "95%" }}
-              value={atrzLnEmpList.filter((item) => item.approvalCode === 'VTW00706' )
+              value={atrzLnEmpList.filter((item) => item.approvalCode === 'VTW00706')
                 .map(item => item.listEmpFlnm).join('; ')}
             />
           </div>
@@ -94,11 +93,12 @@ const ElecAtrzTitleInfo = ({ atrzLnEmpList, getAtrzLn, contents, onClick,  formD
             />
           </div>
 
-          <ApprovalPopup
-            visible={popVisible}
-            atrzLnEmpList={atrzLnEmpList}
-            onHiding={onPopHiding}
-          />
+          {getAtrzLn &&
+            <ApprovalPopup
+              visible={popVisible}
+              atrzLnEmpList={atrzLnEmpList}
+              onHiding={onPopHiding}
+            />}
 
         </div>
       </div>
