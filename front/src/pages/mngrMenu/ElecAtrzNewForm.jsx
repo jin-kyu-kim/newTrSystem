@@ -21,7 +21,7 @@ const ElecAtrzNewForm = ({}) => {
     const empId = cookies.userInfo.empId;
     const date = moment();
     const [formData, setFormData] = useState({
-        atrzFormDocSn: uuid(),
+        atrzFormDocId: uuid(),
         regEmpId: empId,
         regDt: date.format('YYYY-MM-DD HH:mm:ss'),
     });
@@ -68,7 +68,7 @@ const ElecAtrzNewForm = ({}) => {
                                             
                     param = [{tbNm: "ELCTRN_ATRZ_DOC_FORM"},
                             modifiedData,
-                            {"ATRZ_FORM_DOC_SN" : formData.atrzFormDocSn}]
+                            {"ATRZ_FORM_DOC_ID" : formData.atrzFormDocId}]
                     request = "/boot/common/commonUpdate";
                 }
                 
