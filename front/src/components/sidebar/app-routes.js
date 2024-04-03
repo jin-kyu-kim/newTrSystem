@@ -88,11 +88,11 @@ const routes = [
     element: React.lazy(() => import("../../pages/sysMng/CustomersList")),
   },
   // 코드 관리
-  {
-    path: "/sysMng/TrsCodeList",
-    name: "TrsCodeList",
-    element: React.lazy(() => import("../../pages/sysMng/TrsCodeList")),
-  },
+  // {
+  //   path: "/sysMng/TrsCodeList",
+  //   name: "TrsCodeList",
+  //   element: React.lazy(() => import("../../pages/sysMng/TrsCodeList")),
+  // },
   // 공지사항
   {
     path: "/infoInq/NoticeList",

@@ -4,12 +4,12 @@ import CustomEmpComboBox from './CustomEmpComboBox';
 import ApiRequest from 'utils/ApiRequest';
 import '../../assets/css/Style.css'
 
-const ApprovalPopup = ({ visible, atrzValue, onHiding }) => {
-    const [aprvrEmpList, setAprvrEmpList] = useState(atrzValue);
+const ApprovalPopup = ({ visible, atrzLnEmpList, onHiding }) => {
+    const [aprvrEmpList, setAprvrEmpList] = useState([]);
     const [selectedEmp, setSelectedEmp] = useState({});
     const [stepCdList, setStepCdList] = useState([]);
     const tableTitle = ['입력', '결재단계', '결재권자'];
-    
+
     const getCloseButtonOptions = useCallback(
         () => ({
             text: '등록',
@@ -33,6 +33,10 @@ const ApprovalPopup = ({ visible, atrzValue, onHiding }) => {
         };
         getAtrzStepCd();
     }, []);
+
+    useEffect(() => {
+        setAprvrEmpList(atrzLnEmpList);
+    }, [atrzLnEmpList]);
 
     const onEmpChg = (data) => {
         setSelectedEmp(data[0]);
@@ -83,14 +87,15 @@ const ApprovalPopup = ({ visible, atrzValue, onHiding }) => {
                         <div className="atrz-popup-cell atrz-popup-button" onClick={() => onAddEmp(cd.cdValue)}>추가</div>
                         <div className="atrz-popup-cell">{cd.cdNm}</div>
                         <div className="atrz-popup-cell">
-                            {aprvrEmpList.length !== 0 && aprvrEmpList.filter(emp => emp.approvalCode === cd.cdValue)
+                            {aprvrEmpList.filter(emp => emp.approvalCode === cd.cdValue)
                                 .map((emp, index) => (
                                     <div className='aprvrEmp' key={index}>
                                         {emp.empFlnm}
                                         <button onClick={() => removeEmp(emp.empId, emp.approvalCode)}
                                         className='popup-delete-btn'>X</button>
                                     </div>
-                            ))}
+                                ))
+                            }
                         </div>
                     </div>
                 ))}
@@ -104,7 +109,6 @@ const ApprovalPopup = ({ visible, atrzValue, onHiding }) => {
                 height={660}
                 visible={visible}
                 onHiding={() => onHiding(aprvrEmpList)}
-                showCloseButton={true}
                 contentRender={addAprvrEmpArea}
                 title="* 결재선지정"
             >

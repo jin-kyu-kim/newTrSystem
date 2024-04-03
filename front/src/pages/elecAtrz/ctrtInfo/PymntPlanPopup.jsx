@@ -112,7 +112,7 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
             "surplusAmt": surplusAmt,
             "prtPayYm": prtPayYm,
             "prtPayAmt": prtPayAmt,
-            "payTot": advPayAmt + surplusAmt + prtPayAmt
+            "totAmt": advPayAmt + surplusAmt + prtPayAmt
         }));
     }, [pay]);
 
@@ -121,6 +121,7 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
      *  입력값 변경시 데이터 핸들링
      */
     const handleChgState = ({name, value}) => {
+        console.log(name, value)
         setMatrlCtrtData(matrlCtrtData => ({
             ...matrlCtrtData,
             [name]: value
@@ -132,13 +133,13 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
      */
     const savePlan = (e) => {
         e.preventDefault();
-        if(!(matrlCtrtData.payTot > 0)) {
+        if(!(matrlCtrtData.totAmt > 0)) {
             alert("지불 총액은 0 이상 입력해야 합니다.");
             return;
         }
 
         //지급 총액이 가용금액을 초과할 경우
-        if(matrlCtrtData.cntrctamount < matrlCtrtData.payTot) {
+        if(matrlCtrtData.cntrctamount < matrlCtrtData.totAmt) {
             alert("지불 총액은 계약금액을 초과할 수 없습니다.");
             return;
         }
@@ -162,19 +163,19 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
                             <CustomLabelValue props={labelValue.dtlCn} onSelect={handleChgState} value={matrlCtrtData.dtlCn}/>
                             <CustomLabelValue props={labelValue.untpc} onSelect={handleChgState} value={matrlCtrtData.untpc}/>
                             <CustomLabelValue props={labelValue.qy} onSelect={handleChgState} value={matrlCtrtData.qy}/>
-                            <CustomLabelValue props={labelValue.tot} onSelect={handleChgState} value={matrlCtrtData.tot}/>
-                            <CustomLabelValue props={labelValue.dlvgdsYmd} onSelect={handleChgState} value={matrlCtrtData.dlvgdsYmd}/>
-                            <CustomLabelValue props={labelValue.payTot} onSelect={handleChgState} readOnly={true} value={matrlCtrtData.payTot}/>
+                            <CustomLabelValue props={labelValue.tot} onSelect={handleChgState} value={matrlCtrtData.untpc*matrlCtrtData.qy}/>
+                            <CustomLabelValue props={labelValue.dlvgdsPrnmntYmd} onSelect={handleChgState} value={matrlCtrtData.dlvgdsPrnmntYmd}/>
+                            <CustomLabelValue props={labelValue.totAmt} onSelect={handleChgState} readOnly={true} value={matrlCtrtData.totAmt}/>
                         </div> : 
                         <div className="dx-fieldset">
-                            <CustomLabelValue props={matrlPlanParam}  value={matrlCtrtData.matrlPlan} onSelect={handleChgState} />
-                            <CustomLabelValue props={labelValue.cntrctamount} onSelect={handleChgState} readOnly={true} value={matrlCtrtData.cntrctamount}/>
-                            <CustomLabelValue props={labelValue.prductNm} onSelect={handleChgState} value={matrlCtrtData.prductNm}/>
+                            <CustomLabelValue props={matrlPlanParam}  value={matrlCtrtData.outordEntrpsNm} onSelect={handleChgState} />
+                            <CustomLabelValue props={labelValue.expectCt} onSelect={handleChgState} readOnly={true} value={matrlCtrtData.expectCt}/>
+                            <CustomLabelValue props={labelValue.prductNm} onSelect={handleChgState} value={matrlCtrtData.prductNm? matrlCtrtData.prductNm : matrlCtrtData.outordEntrpsNm}/>
                             <CustomLabelValue props={labelValue.tkcgJob} onSelect={handleChgState} value={matrlCtrtData.tkcgJob}/>
                             <CustomLabelValue props={labelValue.inptPrnmntHnfCnt} onSelect={handleChgState} value={matrlCtrtData.inptPrnmntHnfCnt}/>
-                            <CustomLabelValue props={labelValue.inptBgngYmd} onSelect={handleChgState} value={matrlCtrtData.inptBgngYmd}/>
-                            <CustomLabelValue props={labelValue.inptEndYmd} onSelect={handleChgState} value={matrlCtrtData.inptEndYmd}/>
-                            <CustomLabelValue props={labelValue.payTot} onSelect={handleChgState} readOnly={true} value={matrlCtrtData.payTot}/>
+                            <CustomLabelValue props={labelValue.ctrtBgngYmd} onSelect={handleChgState} value={matrlCtrtData.ctrtBgngYmd}/>
+                            <CustomLabelValue props={labelValue.ctrtEndYmd} onSelect={handleChgState} value={matrlCtrtData.ctrtEndYmd}/>
+                            <CustomLabelValue props={labelValue.totAmt} onSelect={handleChgState} readOnly={true} value={matrlCtrtData.totAmt}/>
                          </div>
                         }
                     </div>
