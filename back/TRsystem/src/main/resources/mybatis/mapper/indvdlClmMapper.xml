@@ -4,6 +4,7 @@
 
 <mapper namespace="com.trsystem.mybatis.mapper.indvdlClmMapper">
 
+    <!-- =================================박지환_작업================================= -->
     <!-- 휴가목록조회 -->
     <select id="retrieveVcatnListInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
@@ -58,6 +59,45 @@
         <if test="searchYear !=null and !searchYear.equals('')">
             AND VMNG.VCATN_YR = #{searchYear}
         </if>
+    </select>
+
+    <!-- 휴가저장정보조회 -->
+    <select id="retrieveVcatnStrgInfoInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            'ACCOUNT' TYPE				/* 회계_신규휴가 구분 */
+            ,VCATN_ALTMNT_SN			/* 휴가배정순번 */
+            ,EMP_ID						/* 직원ID */
+            ,VCATN_YR	                /* 휴가연도 */
+            ,VCATN_ALTMNT_DAYCNT	    /* 휴가배정일수 */
+            ,USE_DAYCNT	                /* 사용일수 */
+            ,PBLEN_VCATN_USE_DAYCNT	    /* 공적휴가사용일수 */
+            ,VCATN_REMNDR_DAYCNT	    /* 휴가잔여일수 */
+            ,NEW_VCATN_ALTMNT_DAYCNT	/* 신규휴가배정일수 */
+            ,NEW_USE_DAYCNT	            /* 신규사용일수 */
+            ,NEW_REMNDR_DAYCNT	        /* 신규잔여일수 */
+            ,ALTMNT_BGNG_YMD	        /* 배정시작일자 */
+            ,ALTMNT_USE_END_YMD         /* 배정사용종료일자 */
+        FROM VCATN_MNG
+        WHERE EMP_ID = #{empId}
+        AND VCATN_YR = #{flagYear}
+        UNION ALL
+        SELECT
+            'NEW'                       /* 회계_신규휴가 구분 */
+            ,VCATN_ALTMNT_SN	        /* 휴가배정순번 */
+            ,EMP_ID	                    /* 직원ID */
+            ,VCATN_YR	                /* 휴가연도 */
+            ,VCATN_ALTMNT_DAYCNT	    /* 휴가배정일수 */
+            ,USE_DAYCNT	                /* 사용일수 */
+            ,PBLEN_VCATN_USE_DAYCNT	    /* 공적휴가사용일수 */
+            ,VCATN_REMNDR_DAYCNT	    /* 휴가잔여일수 */
+            ,NEW_VCATN_ALTMNT_DAYCNT	/* 신규휴가배정일수 */
+            ,NEW_USE_DAYCNT	            /* 신규사용일수 */
+            ,NEW_REMNDR_DAYCNT	        /* 신규잔여일수 */
+            ,ALTMNT_BGNG_YMD	        /* 배정시작일자 */
+            ,ALTMNT_USE_END_YMD         /* 배정사용종료일자 */
+        FROM VCATN_MNG
+        WHERE EMP_ID = #{empId}
+        AND #{vcatnBgngYmd} BETWEEN ALTMNT_BGNG_YMD AND ALTMNT_USE_END_YMD
     </select>
 
     <!-- 휴가첨부파일조회 -->
@@ -250,7 +290,7 @@
         AND ATRZ.APLY_YMD = APLY.APLY_YMD
         AND ATRZ.EMP_ID = #{empId}
         AND ATRZ.APLY_YM = #{aplyYm}
-        AND ATRZ.APLY_ODR = #{aplyOdr}
+<!--        AND ATRZ.APLY_ODR = #{aplyOdr}-->
         UNION ALL
         SELECT
             'vcatnAply' APLY_TYPE     /* 근무_휴가구분식별자 */
@@ -338,7 +378,8 @@
         (
             #{rjctPrvonsh}
             ,#{prjctAprvrCd}
-            ,#{atrzDmndSttsCd}
+<!--            ,#{atrzDmndSttsCd}-->
+            ,"VTW00801"
             ,#{aprvrEmpId}
             ,#{prjctId}
             ,#{empId}
@@ -355,6 +396,18 @@
 
     </insert>
 
+    <update id="retrievePrjctMmAtrzRtrcn" parameterType="map">
+        UPDATE PRJCT_MM_ATRZ
+        SET
+            ATRZ_DMND_STTS_CD = ''
+            ,MDFCN_DT = SYSDATE()
+            ,MDFCN_EMP_ID = #{empId}
+        WHERE EMP_ID = #{empId}
+        AND APLY_YM = #{aplyYm}
+        AND APLY_ODR = #{aplyOdr}
+    </update>
+
+    <!-- =================================박지환_작업================================= -->
 
 
 </mapper>
