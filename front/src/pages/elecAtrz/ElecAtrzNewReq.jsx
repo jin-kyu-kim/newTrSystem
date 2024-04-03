@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
+import uuid from 'react-uuid'
 
 import { FileUploader } from "devextreme-react/file-uploader";
 import HtmlEditBox from "components/unit/HtmlEditBox";
@@ -63,6 +64,14 @@ const ElecAtrzNewReq = () => {
 
     }, [childData]);
 
+    useEffect(() => {
+        setAtrzParam(atrzParam => ({
+            ...atrzParam,
+            atrzCn: data.gnrlAtrzCn
+        }));
+    
+    }, [data]);
+
 
 
     useEffect(() => {
@@ -101,7 +110,7 @@ const ElecAtrzNewReq = () => {
         // Todo
         // elctrnAtrzTySeCd에 따라서 저장 테이블 다르게(계약, 청구, 일반, 휴가..)
         // 결재선 지정이 되어있는지 확인, 안되어 있으면..?
-
+        createAtrz(atrzParam, "VTW03702");
     }
 
     /**
@@ -128,17 +137,41 @@ const ElecAtrzNewReq = () => {
          * Todo
          * 전자결재 테이블저장 하고, elctrnAtrzTySeCd에 따라서 저장 테이블 다르게(계약, 청구, 일반, 휴가..)
          * 결재요청상태코드는 임시저장으로 저장
-         * 결재선은 당장은 없어도? 될 듯?
+         * 결재선은 당장은 없어도? 될 듯?z`
          */
 
-        // createAtrz(atrzParam);
+        createAtrz(atrzParam, "VTW03701");
     }
 
-    const createAtrz = async (param) => {
+    /**
+     * 승인 요청 및 임시저장 시 실행되는 함수
+     * @param {} param 
+     */
+    const createAtrz = async (param, stts) => {
 
+        const date = new Date();
         console.log(param)
+
+        // 임시저장 버튼을 클릭했을 경우, 처리할 것이 있는가?
+        if(stts === "VTW03701"){
+
+        }
+
+        const insertParam = {
+            param,
+            atrzDmndSttsCd: stts,
+            elctrnAtrzId: uuid(),
+            prjctId: prjctId,
+            // 결재선
+            elctrnAtrzTySeCd: data.elctrnAtrzTySeCd,
+            regDt: date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0],
+            regEmpId: cookies.userInfo.empId,
+        }  
+
+        console.log(insertParam)
+
         try {
-            const response = await ApiRequest("/boot/elecAtrz/insertElecAtrz", param);
+            const response = await ApiRequest("/boot/elecAtrz/insertElecAtrz", insertParam);
             console.log(response);
         } catch (error) {
             console.error(error)
@@ -153,14 +186,13 @@ const ElecAtrzNewReq = () => {
     }
 
     /**
-     * 결재 param 생성하는 함수
+     * 결재 제목 생성하는 함수
      */
-    const handleElecAtrz = (e) => {
+    const handleElecAtrzTitle = (e) => {
         console.log(e.value);
         setAtrzParam({
             ...atrzParam,
-            title: e.value
-        });
+        title: e.value});
     }
 
     const onBtnClick = (e) => {
@@ -189,7 +221,7 @@ const ElecAtrzNewReq = () => {
                 <ElecAtrzTitleInfo 
                     formData={formData}
                     prjctData={prjctData}
-                    onHandleAtrzTitle={handleElecAtrz}
+                    onHandleAtrzTitle={handleElecAtrzTitle}
                     atrzParam={atrzParam}
                 />
                 <div dangerouslySetInnerHTML={{ __html: formData.docFormDc }} />
