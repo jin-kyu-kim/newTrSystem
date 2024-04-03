@@ -48,6 +48,15 @@
     "showTotals": false
   },
   {
+    "caption": "단가",
+    "dataField": "outorUntpc",
+    "width": 100,
+    "area": "row",
+    "expanded": true,
+    "showTotals": false
+    
+  },
+  {
     "dataField": "ym",
     "dataType": "inptYm",
     "format": "YYYY-mm",
@@ -87,6 +96,17 @@
     "format": {
       "type": "fixedPoint",
       "precision": 2
+    }
+  },{
+    "caption": "금액",
+    "width": 30,
+    "dataField": "untpc",
+    "area": "data",
+    "dataType": "number",
+    "summaryType": "sum",
+    "format": {
+       "type": "fixedPoint",
+        "thousandsSeparator": ","
     }
   }
 ]
