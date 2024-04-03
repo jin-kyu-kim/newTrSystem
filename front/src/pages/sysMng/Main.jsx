@@ -100,7 +100,7 @@ const Main = ({}) => {
                 });
     }
     const goNotice = (e) => {     //공지사항이동
-        navigate("infoInq/NoticeList", 
+        navigate("/infoInq/NoticeList", 
                 { state: { 
                         empId: empId,
                         } 
