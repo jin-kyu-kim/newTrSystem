@@ -7,19 +7,26 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.trsystem.elecAtrz.domain.ElecAtrzDomain;
+
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 public class ElecAtrzController {
 
+	/**
+	 * 전자결재 테이블에 데이터를 입력한다.
+	 * 승인요청 / 임시저장
+	 * @param params
+	 * @return
+	 */
 	@PostMapping(value = "/boot/elecAtrz/insertElecAtrz")
-	public int insertElecAtrz(@RequestBody Map<String, Object> params) {
+	public String insertElecAtrz(@RequestBody Map<String, Object> params) {
 		
-		System.out.println(params);
+		String elctrnAtrzId = ElecAtrzDomain.insertElecAtrz(params);
 		
-		
-		return 1;
+		return elctrnAtrzId;
 	}
 	
 	
