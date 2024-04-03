@@ -89,6 +89,18 @@ const ElecAtrzForm = () => {
     return (
 
         <div className="container">
+            <div className="buttons" align="right" style={{ margin: "20px" }}>
+            <Button
+                width={110}
+                text="Contained"
+                type="default"
+                stylingMode="contained"
+                style={{ margin: "2px" }}
+                onClick={() => navigate("/elecAtrz/ElecAtrz")}
+            >
+                목록
+            </Button>
+            </div>
             <div>
                 <h4>1. 프로젝트 / 팀 선택</h4>
             </div>
