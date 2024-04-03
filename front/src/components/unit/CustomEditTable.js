@@ -98,6 +98,9 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
             return ( <ToggleButton callback={handleYnVal} data={e} /> )
         }
     }
+    const rowEventHandlers = ynVal
+        ? { onRowInserting: (e) => onEditRow('insert', e) }
+        : { onRowInserted: (e) => onEditRow('insert', e) };
 
     return (
         <div className="wrap_table">
@@ -114,7 +117,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                 onRowClick={onRowClick}
                 onRowExpanding={handleExpanding}
                 onSelectionChanged={onSelection && ((e) => onSelection(e))}
-                onRowInserting={(e) => onEditRow('insert', e)}
+                {...rowEventHandlers}
                 onRowUpdating={(e) => onEditRow('update', e)}
                 onRowRemoving={(e) => onEditRow('delete', e)}
                 onCellPrepared={(e) => {
