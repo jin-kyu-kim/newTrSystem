@@ -7,6 +7,7 @@ import { SelectBox } from "devextreme-react/select-box";
 import { TextBox } from "devextreme-react/text-box";
 import { NumberBox } from "devextreme-react";
 import { DateRangeBox } from "devextreme-react/date-range-box";
+import { Validator, RequiredRule, } from "devextreme-react/validator";
 
 import CustomCdComboBox from "../../../components/unit/CustomCdComboBox";
 
@@ -94,7 +95,9 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData }) => {
                                     handleChgState({name: "cntrctrIdntfcNo", value: e.value})
                                 }}
                                 value={infoData.cntrctrIdntfcNo}
-                           />
+                           >
+                                {/* <Validator><RequiredRule message={"필수값입니다."}/></Validator> */}
+                           </NumberBox>
                         </div>
                     </div>
                 </div>
