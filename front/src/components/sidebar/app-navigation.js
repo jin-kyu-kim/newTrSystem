@@ -167,7 +167,7 @@ export const navigation = [
         path: 'mngrMenu/ElecAtrzFormManage'
       },{
         text: '전자결제',
-        path: '/74'
+        path: 'mngrMenu/ElecAtrzManage'
       },{
         text: '개발및연구',
         path: '/75'
