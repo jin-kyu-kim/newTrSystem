@@ -524,9 +524,9 @@ public class CommonServiceImpl implements CommonService {
                     atchmnflMap.put("realFileNm", file.getOriginalFilename());
                     atchmnflMap.put("fileStrgCours", uploadDir); // 파일저장경로
                     atchmnflMap.put("regDt", currentTimestamp);
-                    atchmnflMap.put("regEmpId", params.get("regEmpId").toString());
+//                    atchmnflMap.put("regEmpId", params.get("regEmpId").toString());
                     atchmnflMap.put("mdfcnDt", currentTimestamp);
-                    atchmnflMap.put("mdfcnEmpId", params.get("regEmpId").toString());
+//                    atchmnflMap.put("mdfcnEmpId", params.get("regEmpId").toString());
 
                     atchmnflParam.clear();
                     tableMap.put("tbNm", "ATCHMNFL");

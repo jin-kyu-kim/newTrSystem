@@ -11,14 +11,14 @@ import "./ElecAtrz.css";
 
 const ElecAtrz = () => {
   const navigate = useNavigate();
-  const [cookies] = useCookies(["userInfo", "userAuth"]);
+  const [ cookies ] = useCookies(["userInfo", "userAuth"]);
   const empId = cookies.userInfo.empId;
   const { keyColumn, queryId, countQueryId, barList, searchInfo, baseColumns } = elecAtrzJson.elecMain;
-  const [param, setParam] = useState({});
-  const [clickBox, setClickBox] = useState(null);
-  const [titleRow, setTitleRow] = useState([]);
-  const [totalCount, setTotalCount] = useState([]);
-  const [selectedList, setSelectedList] = useState([]);
+  const [ param, setParam ] = useState({});
+  const [ clickBox, setClickBox ] = useState(null);
+  const [ titleRow, setTitleRow ] = useState([]);
+  const [ totalCount, setTotalCount ] = useState([]);
+  const [ selectedList, setSelectedList ] = useState([]);
 
   const onNewReq = async () => {
     navigate("../elecAtrz/ElecAtrzForm");
@@ -43,28 +43,28 @@ const ElecAtrz = () => {
     });
   };
 
-  const getAllCount = async () => {
-    try{
-      const response = await ApiRequest('/boot/common/queryIdSearch', { queryId: countQueryId, empId: empId });
-      setTotalCount(response);
-    } catch(error) {
-      console.log('error', error);
-    }
-  }
-
   useEffect(() => {
+    const getAllCount = async () => {
+      try{
+        const response = await ApiRequest('/boot/common/queryIdSearch', { queryId: countQueryId, empId: empId });
+        setTotalCount(response);
+      } catch(error) {
+        console.log('error', error);
+      }
+    }
     getAllCount();
   }, []);
 
   const getList = async (keyNm, refer, sttsCd) => {
-    setClickBox(keyNm) // 선택된 박스의 색상 변경
-    setTitleRow(baseColumns.concat(elecAtrzJson.elecMain[keyNm]))
+    setClickBox(keyNm); // 선택된 박스의 색상 변경
+    setSelectedList([]);
+    setTitleRow(baseColumns.concat(elecAtrzJson.elecMain[keyNm]));
     setParam({
       queryId: queryId, 
       empId: empId,
       refer: refer,
       sttsCd: sttsCd
-    })
+    });
   };
 
   const ElecBar = ({ text, barColor, color, width, children }) => {
@@ -98,11 +98,9 @@ const ElecAtrz = () => {
   };
 
   const sendDetail = (e) => {
-    navigate('/elecAtrz/ElecAtrzDetail', {
-      state: {data: e.data}
-    })
-  }
-console.log('param.sttsCd', param.sttsCd)
+    navigate('/elecAtrz/ElecAtrzDetail', {state: {data: e.data}});
+  };
+
   return (
     <div className="container">
       <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }} ></div>
@@ -127,16 +125,16 @@ console.log('param.sttsCd', param.sttsCd)
       </div>
 
       {(selectedList.length !== 0 || param.sttsCd !== undefined) && (
-      <div style={{ marginTop: '20px' }}>
-        <div style={{marginBottom: '15px'}}><SearchInfoSet callBack={searchHandle} props={searchInfo} /></div>
-        <CustomTable
-          keyColumn={keyColumn}
-          values={selectedList}
-          columns={titleRow}
-          wordWrap={true}
-          onRowClick={sendDetail}
-        />
-      </div> )}
+        <div style={{ marginTop: '20px' }}>
+          <div style={{marginBottom: '15px'}}><SearchInfoSet callBack={searchHandle} props={searchInfo} /></div>
+          <CustomTable
+            keyColumn={keyColumn}
+            values={selectedList}
+            columns={titleRow}
+            wordWrap={true}
+            onRowClick={sendDetail}
+          />
+        </div> )}
     </div>
   );
 };
