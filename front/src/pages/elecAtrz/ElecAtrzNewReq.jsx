@@ -202,7 +202,7 @@ const ElecAtrzNewReq = () => {
 
                 if(responseAttach.status === 200){
                     alert("전자결재 요청이 완료되었습니다.")
-                    navigate("/elecAtrz/ElecAtrzForm");
+                    navigate("/elecAtrz/ElecAtrz");
                 }
 
         }else{
