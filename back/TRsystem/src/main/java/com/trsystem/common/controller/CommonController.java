@@ -56,11 +56,14 @@ public class CommonController {
 
     @PostMapping(value = "/boot/common/insertlongText", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public int longTextInsert(@RequestPart(required = false) List<MultipartFile> attachments,
-                              @RequestPart String tbNm, @RequestPart String data,
+                              @RequestPart(required = false) String tbNm, @RequestPart String data,
                               @RequestPart(required = false) String deleteFiles,
                               @RequestPart(required = false) String idColumn) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> mapData = mapper.readValue(data,Map.class);
+        Map<String, Object> mapData = null;
+        if( data != null) {
+        	mapData = mapper.readValue(data,Map.class);
+        }
         Map<String, Object> tbNmData = mapper.readValue(tbNm,Map.class);
 
         Map<String, Object> idData = null;
@@ -68,7 +71,9 @@ public class CommonController {
 
         if(idColumn != null){
             idData = mapper.readValue(idColumn,Map.class);
-            deleteFile = mapper.readValue(deleteFiles, new TypeReference<List<Map<String, Object>>>() {});
+            if(deleteFiles !=null) {
+            	deleteFile = mapper.readValue(deleteFiles, new TypeReference<List<Map<String, Object>>>() {});
+            }
         }
         return commonService.insertFile(tbNmData, mapData, attachments, idData, deleteFile);
     }

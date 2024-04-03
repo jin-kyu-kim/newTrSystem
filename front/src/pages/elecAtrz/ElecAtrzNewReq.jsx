@@ -175,9 +175,13 @@ const ElecAtrzNewReq = () => {
         const isValid = checkValidation(stts,param); 
         if(!isValid) return;
 
+
         /**
          * 전자결재 & 첨부파일 저장
          */
+
+        console.log(atrzLnEmpList)
+
         const insertParam = {
             param,
             atrzDmndSttsCd: stts,
@@ -187,6 +191,7 @@ const ElecAtrzNewReq = () => {
             elctrnAtrzTySeCd: data.elctrnAtrzTySeCd,
             regDt: date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0],
             regEmpId: cookies.userInfo.empId,
+            atrzLnEmpList
         }  
 
         try {

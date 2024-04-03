@@ -273,7 +273,14 @@ const routes = [
     path: "/elecAtrz/ElecAtrzForm",
     name: "ElecAtrzForm",
     element: React.lazy(() => import("../../pages/elecAtrz/ElecAtrzForm")),
+  },
+  // 전자결제 상세
+  {
+    path: "/elecAtrz/ElecAtrzDetail",
+    name: "ElecAtrzDetail",
+    element: React.lazy(() => import("../../pages/elecAtrz/ElecAtrzDetail")),
   }
+
 ];
 
 export default routes.map(route => {
