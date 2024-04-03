@@ -30,6 +30,7 @@ const ElecAtrzNewReq = () => {
     const [childData, setChildData] = useState({});  //자식 컴포넌트에서 받아온 데이터
     const [prjctData, setPrjctData] = useState({});
     const [attachments, setAttachments] = useState([]);
+    const [atrzLnEmpList, setAtrzLnEmpList] = useState([]);
 
     const column = { "dataField": "gnrlAtrzCn", "placeholder": "내용을 입력해주세요."};
 
@@ -86,6 +87,28 @@ const ElecAtrzNewReq = () => {
 
     }, []);
 
+    /** 결재선용 데이터 - 등록시에는 기본 참조자 리스트 조회 */
+    useEffect(() => {
+        const getAtrzEmp = async () => {
+            try{
+                const response = await ApiRequest('/boot/common/queryIdSearch', {
+                    queryId: "indvdlClmMapper.retrieveElctrnAtrzRefrnInq",
+                    searchType: "atrzLnReftnList", 
+                    repDeptId: "9da3f461-9c7e-cd6c-00b6-c36541b09b0d"
+                })
+                setAtrzLnEmpList(response);
+            } catch(error) {
+                console.log('error', error);
+            }
+        };
+        getAtrzEmp();
+    }, []);
+
+    const getAtrzLn = (lnList) => {
+        // 결재선 등록후 받은 파라미터
+        setAtrzLnEmpList(lnList);
+    }
+
     /**
      * 프로젝트 기초정보 조회
      */
@@ -115,20 +138,6 @@ const ElecAtrzNewReq = () => {
     }
 
     /**
-     * 결재선 지정 버튼 클릭시 결재선 지정 팝업 호출
-     */
-    const onAtrzLnPopup = async () => {
-        console.log("결재선 지정 팝업 호출");
-    
-        /**
-         * Todo
-         * 결재선 만들어지면 
-         * 결재선 보이는 테이블 형식에 집어넣기. 
-         */
-
-    }
-
-    /**
      * 임시저장 버튼 클릭시 임시저장 함수 실행
      */
     const saveTemp = async () => {
@@ -149,7 +158,6 @@ const ElecAtrzNewReq = () => {
      * @param {} param 
      */
     const createAtrz = async (param, stts) => {
-
         const date = new Date();
         console.log(param)
 
@@ -241,12 +249,13 @@ const ElecAtrzNewReq = () => {
     const handleAttachmentChange = (e) => {
         setAttachments(e.value);
     };
-
     
     return (
         <>
             <div className="container" style={{marginTop:"10px"}}>
                 <ElecAtrzTitleInfo
+                    atrzLnEmpList={atrzLnEmpList}
+                    getAtrzLn={getAtrzLn}
                     contents={ElecAtrzNewReqJson.header}
                     onHandleAtrzTitle={handleElecAtrzTitle}
                     onClick={onBtnClick}

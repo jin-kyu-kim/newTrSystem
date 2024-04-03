@@ -3,7 +3,7 @@ import '../../pages/elecAtrz/ElecAtrz.css'
 
 const AtrzLnTable = ({atrzLnEmpList, bottomNm}) => {
   const approvalCodes = ['VTW00702', 'VTW00703', 'VTW00704', 'VTW00705'];
-
+  
   const renderEmp = (cd) => {
     return(
         atrzLnEmpList.filter(emp => emp.approvalCode === cd)
@@ -18,7 +18,7 @@ const AtrzLnTable = ({atrzLnEmpList, bottomNm}) => {
     <Table>
       <TableBody>
         <TableRow>
-          <TableCell rowSpan={3} style={{ ...cellStyle, ...grayBackground }}>결재선</TableCell>
+          <TableCell rowSpan={4} style={{ ...cellStyle, ...grayBackground }}>결재선</TableCell>
             {['검토', '확인', '심사', '승인'].map((text, index) => (
                 <TableCell key={index} style={{ ...cellStyle, ...grayBackground }}>{text}</TableCell>
             ))}
@@ -39,6 +39,15 @@ const AtrzLnTable = ({atrzLnEmpList, bottomNm}) => {
           {approvalCodes.map((code) => (
             <TableCell key={code} style={cellStyle}>
               {renderEmp(code)}
+            </TableCell>
+          ))}
+        </TableRow>
+        
+        {/* 승인, 반려 완료후 승인일자가 , 반려일자가 나타나는 행 */}
+        <TableRow>
+          {approvalCodes.map((code) => (
+            <TableCell key={code} style={cellStyle}>
+              
             </TableCell>
           ))}
         </TableRow>
