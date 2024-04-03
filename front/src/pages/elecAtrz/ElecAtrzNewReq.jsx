@@ -5,7 +5,6 @@ import { useCookies } from "react-cookie";
 import { FileUploader } from "devextreme-react/file-uploader";
 import HtmlEditBox from "components/unit/HtmlEditBox";
 import ApiRequest from "utils/ApiRequest";
-import ElecAtrzHeader from "./common/ElecAtrzHeader";
 import ElecAtrzNewReqJson from "./ElecAtrzNewReqJson.json"
 
 import ElecAtrzTitleInfo from "./common/ElecAtrzTitleInfo";
@@ -105,20 +104,6 @@ const ElecAtrzNewReq = () => {
     }
 
     /**
-     * 결재선 지정 버튼 클릭시 결재선 지정 팝업 호출
-     */
-    const onAtrzLnPopup = async () => {
-        console.log("결재선 지정 팝업 호출");
-    
-        /**
-         * Todo
-         * 결재선 만들어지면 
-         * 결재선 보이는 테이블 형식에 집어넣기. 
-         */
-
-    }
-
-    /**
      * 임시저장 버튼 클릭시 임시저장 함수 실행
      */
     const saveTemp = async () => {
@@ -168,8 +153,6 @@ const ElecAtrzNewReq = () => {
         switch (e.element.id) {
             case "requestElecAtrz": requestElecAtrz(); 
                 break;
-            case "onAtrzLnPopup": onAtrzLnPopup();
-                break;
             case "saveTemp": saveTemp();
                 break;
             case "toAtrzNewReq": toAtrzNewReq();
@@ -182,14 +165,12 @@ const ElecAtrzNewReq = () => {
     return (
         <>
             <div className="container" style={{marginTop:"10px"}}>
-                <ElecAtrzHeader 
+                <ElecAtrzTitleInfo
                     contents={ElecAtrzNewReqJson.header}
-                    onClick={onBtnClick}
-                />
-                <ElecAtrzTitleInfo 
-                    formData={formData}
-                    prjctData={prjctData}
                     onHandleAtrzTitle={handleElecAtrz}
+                    onClick={onBtnClick}
+                    prjctData={prjctData}
+                    formData={formData}
                     atrzParam={atrzParam}
                 />
                 <div dangerouslySetInnerHTML={{ __html: formData.docFormDc }} />
