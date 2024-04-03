@@ -187,7 +187,7 @@ const ElecAtrzNewReq = () => {
                 // 첨부파일 저장
                 const formDataAttach = new FormData();
                 formDataAttach.append("tbNm", JSON.stringify({tbNm: "CTRT_ATRZ"}));
-                formDataAttach.append("data", JSON.stringify({atchmnflId : ""}));
+                formDataAttach.append("data", JSON.stringify({atchmnflId : uuid()}));
                 formDataAttach.append("idColumn", JSON.stringify({elctrnAtrzId: response})); //결재ID 받아와야 함
                 formDataAttach.append("deleteFiles", JSON.stringify([]));
                 Object.values(attachments)
