@@ -34,20 +34,42 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData }) => {
         console.log(popupVisible);
     }, [popupVisible]);
 
+    useEffect(() => {
+        console.log(tableData);
+    }, [tableData]);
+
+    /**
+     *  날짜데이터 포멧팅
+     */
+    function formatDateToYYYYMM(date) {
+        let year = date.getFullYear().toString();
+        let month = (date.getMonth() + 1).toString().padStart(2, '0'); 
+        return year + month;
+    }
 
     /**
      *  부모창으로 데이터 전송
      */
     useEffect(() => {
-        //각 pay 배열에 tbNm 추가
+
+        //pay 배열에 tbNm 추가
         const updatedTableData = tableData.map(item => ({
             ...item,
-            pay: [...item.pay, { tbNm: 'ENTRPS_CTRT_DTL_CND' }] 
+            pay: [{ tbNm: 'ENTRPS_CTRT_DTL_CND' }, ...item.pay.map(payItem => ({ ...payItem }))]
         }));
         
         //테이블 배열에 tbNm 추가
         let newData;
-        newData = [...updatedTableData, { tbNm: 'ENTRPS_CTRT_DTL' }];
+        newData = [{ tbNm: 'ENTRPS_CTRT_DTL' }, ...updatedTableData];
+
+        //pay데이터의 날짜 데이터 포멧팅
+        newData.forEach(item => {
+            if (!item.pay || item.pay.length === 0) return;
+            item.pay.forEach(element => {
+                if (!element.ctrtYmd) return;
+                element.ctrtYmd = formatDateToYYYYMM(element.ctrtYmd);
+            });
+        });
 
         onSendData(newData);
     }, [tableData]);
@@ -62,8 +84,8 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData }) => {
             setPopupVisible(prev => !prev);
             // setSelectedData(data);
         }else if(button.name === "delete"){
-            if(data.matrlCtSn != 0){
-                setTableData(currentTableData => currentTableData.filter(item => item.matrlCtSn !== data.matrlCtSn));
+            if(data.entrpsCtrtDtlSn != 0){
+                setTableData(currentTableData => currentTableData.filter(item => item.entrpsCtrtDtlSn !== data.entrpsCtrtDtlSn));
             }
         }else if(button.name === "update"){
             setPopupVisible(prev => !prev);
@@ -79,18 +101,17 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData }) => {
 
 
     const handlePopupData = (data) => {
-        const existingIndex = tableData.findIndex(item => item.matrlCtSn === data.matrlCtSn);
+        const existingIndex = tableData.findIndex(item => item.entrpsCtrtDtlSn === data.entrpsCtrtDtlSn);
 
         if(existingIndex >=0){
             const updatedData = [...tableData];
             updatedData[existingIndex] = data;
             setTableData(updatedData);
         } else {
-            const maxSn = tableData.length > 0 ? Math.max(...tableData.map(item => item.matrlCtSn || 0)) : 0;
-            data.matrlCtSn = maxSn + 1;     
+            const maxSn = tableData.length > 0 ? Math.max(...tableData.map(item => item.entrpsCtrtDtlSn || 0)) : 0;
+            data.entrpsCtrtDtlSn = maxSn + 1;     
             setTableData(prev => [...prev, data]);
         }
-
     }
 
     

@@ -6,16 +6,12 @@
    
     "tableColumns": [
       { "key": "empFlnm", "value": "성명", "width": 400, "alignment": "center", "grouping" : true  },
-      {  "key": "clmYmd", "value": "월별", "width": 120, "alignment": "center" },
-      {  "key": "totalClmAmt", "value": "구분", "width": 120, "alignment": "center" },
-      {  "key": "clturPhstrn", "value": "이월금액", "width": 120, "alignment": "center" },
-      {  "key": "clturPhstrn", "value": "청구일자", "width": 120, "alignment": "center" },
-      {  "key": "clturPhstrn", "value": "청구금액", "width": 120, "alignment": "center" },
-      {  "key": "clturPhstrn", "value": "지급금액", "width": 120, "alignment": "center" },
-      {  "key": "clturPhstrn", "value": "잔액", "width": 120, "alignment": "center" },
-      {  "key": "clturPhstrn", "value": "전체잔액", "width": 120, "alignment": "center"  },
-      {  "key": "clturPhstrn", "value": "상세청구내역", "width": 120, "alignment": "center" }
-    
+      {  "key": "ym", "value": "월별", "width": 120, "alignment": "center" },
+      {  "key": "expenseType", "value": "구분", "width": 120, "alignment": "center" },
+      {  "key": "amount", "value": "이월금액", "width": 120, "alignment": "center" },
+      {  "key": "clmAmt", "value": "청구금액", "width": 120, "alignment": "center" },
+      {  "key": "clturCtDpstAmt", "value": "지급금액", "width": 120, "alignment": "center" },
+      {  "key": "balance", "value": "잔액", "width": 120, "alignment": "center" }
      
   ],
 
