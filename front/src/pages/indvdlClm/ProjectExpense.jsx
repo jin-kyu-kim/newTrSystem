@@ -27,10 +27,11 @@ const ProjectExpense = () => {
 
         const date = new Date();
         const year = date.getFullYear();
-        const month = date.getMonth() + 1;
         const day = date.getDate();
 
-        let odrVal = day > 15 ? "2" : "1";
+        const month = day > 15 ? date.getMonth() + 1 : date.getMonth();
+
+        let odrVal = day > 15 ? "1" : "2";
         let monthVal = month < 10 ? "0" + month : month;
 
         setAplyYm(year+monthVal);

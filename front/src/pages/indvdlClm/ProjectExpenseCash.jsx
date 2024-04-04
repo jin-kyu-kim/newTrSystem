@@ -258,6 +258,7 @@ const ProjectExpenseCash = (props) => {
                     type="default"
                     value={[cashValue]}
                     tbNm="PRJCT_CT_APLY"
+                    atrzTbNm="PRJCT_CT_ATRZ"
                     snColumn="PRJCT_CT_APLY_SN"
                     requiredValidation={requiredValidationList}
                 />

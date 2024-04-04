@@ -501,6 +501,25 @@
         </if>
     </select>
 
+    <!-- 프로젝트비용 신청 순번 조회 -->
+    <select id="retrievePrjctCtAplySn" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT MAX(PRJCT_CT_APLY_SN) AS PRJCT_CT_APLY_SN
+        FROM PRJCT_CT_APLY pca
+        WHERE 1 = 1
+        <if test="empId != null and !empId.equals('')">
+            AND pca.EMP_ID = #{empId}
+        </if>
+        <if test="prjctId != null and !prjctId.equals('')">
+            AND pca.PRJCT_ID = #{prjctId}
+        </if>
+        <if test="aplyYm != null and !aplyYm.equals('')">
+            AND pca.APLY_YM = #{aplyYm}
+        </if>
+        <if test="aplyOdr != null and !aplyOdr.equals('')">
+            AND pca.APLY_ODR = #{aplyOdr}
+        </if>
+    </select>
+
     <!-- 문체비 목록 조회 -->
     <select id="retrieveClturPhstrnActCtList" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT

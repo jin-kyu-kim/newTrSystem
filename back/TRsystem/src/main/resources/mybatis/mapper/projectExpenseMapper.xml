@@ -4,31 +4,33 @@
 <mapper namespace="com.trsystem.mybatis.mapper.projectExpenseMapper">
 	<select id="retrievePrjctCtAplyList" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT
-			PRJCT_CT_APLY_SN
-			, EXPENS_CD
-			, UTZTN_DT
-			, USE_OFFIC
-			, UTZTN_AMT
-			, ATDRN
-			, CT_PRPOS
-		    , ELCTRN_ATRZ_ID
-			, CT_ATRZ_SE_CD
-			, (select CD_NM from CD where CD_VALUE = a.CT_ATRZ_SE_CD) AS 'CT_ATRZ_SE_CD_NM'
-     		, (select CD_NM from CD where CD_VALUE = a.EXPENS_CD) AS 'EXPENS_CD_NM'
-			, a.EMP_ID
-		    , a.PRJCT_ID
-		    , a.APLY_YM
-		    , a.APLY_ODR
-			, h.ATRZ_DMND_STTS_CD
-			, (select CD_NM from CD where CD_VALUE = h.ATRZ_DMND_STTS_CD) AS 'ATRZ_DMND_STTS_CD_NM'
-			, p.PRJCT_NM
-		FROM PRJCT_CT_APLY a
-			LEFT JOIN  PRJCT_ATRZ_HIST h ON a.PRJCT_ID = h.PRJCT_ID
-			AND a.EMP_ID = h.EMP_ID
-			AND a.APLY_YM = h.APLY_YM
-			AND a.APLY_ODR = h.APLY_ODR
-		    LEFT JOIN  PRJCT p ON a.PRJCT_ID = p.PRJCT_ID
-		WHERE a.EMP_ID = #{empId} AND a.APLY_YM = #{aplyYm} AND a.APLY_ODR = #{aplyOdr}
+			pca.PRJCT_CT_APLY_SN
+			 , pca.EXPENS_CD
+			 , CONCAT(SUBSTR(UTZTN_DT, 5, 2),'월 ',SUBSTR(UTZTN_DT,7,2),'일') AS UTZTN_DT
+			 , USE_OFFIC
+			 , UTZTN_AMT
+			 , ATDRN
+			 , CT_PRPOS
+			 , ELCTRN_ATRZ_ID
+			 , CT_ATRZ_SE_CD
+			 , (select CD_NM from CD where CD_VALUE = pca.CT_ATRZ_SE_CD) AS 'CT_ATRZ_SE_CD_NM'
+	, (select CD_NM from CD where CD_VALUE = pca.EXPENS_CD) AS 'EXPENS_CD_NM'
+	, pca.EMP_ID
+			 , pca.PRJCT_ID
+			 , pca.APLY_YM
+			 , pca.APLY_ODR
+			 , pcaz.ATRZ_DMND_STTS_CD
+			 , (select CD_NM from CD where CD_VALUE = pcaz.ATRZ_DMND_STTS_CD) AS 'ATRZ_DMND_STTS_CD_NM'
+	, (SELECT PRJCT_NM FROM PRJCT WHERE PRJCT_ID = pca.PRJCT_ID) AS PRJCT_NM
+		FROM PRJCT_CT_APLY pca
+				 JOIN PRJCT_CT_ATRZ pcaz
+					  ON pca.PRJCT_CT_APLY_SN = pcaz.PRJCT_CT_APLY_SN
+						  AND pca.EMP_ID = pcaz.EMP_ID
+						  AND pca.APLY_YM = pcaz.APLY_YM
+						  AND pca.APLY_ODR = pcaz.APLY_ODR
+		WHERE pca.EMP_ID = #{empId}
+		  AND pca.APLY_YM = #{aplyYm}
+		  AND pca.APLY_ODR = #{aplyOdr}
 	</select>
 </mapper>
 
