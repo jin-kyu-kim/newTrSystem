@@ -16,13 +16,14 @@ import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material'
 // 랜덤채번 import
 import uuid from "react-uuid";
 
+import { useNavigate } from "react-router-dom";
 
 import axios from "axios";
 import CustomTable from "components/unit/CustomTable";
+import ApprovalPopup from "components/unit/ApprovalPopup"
 import AutoCompleteProject from "components/unit/AutoCompleteProject";
 import EmpVacationJson from "../indvdlClm/EmpVacationJson.json"
 import EmpVacationAttchList from "../indvdlClm/EmpVacationAttchList"
-import ApprovalPopup from "components/unit/ApprovalPopup"
 import ApiRequest from "utils/ApiRequest";
 
 /**
@@ -46,14 +47,6 @@ import ApiRequest from "utils/ApiRequest";
  * 7. 저장 시 validation 처리 필요함.
  */
 
-const textAlign = {
-    textAlign: "center",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    fontSize: "14px"
-}
-
 const { listQueryId, listKeyColumn, listTableColumns } = EmpVacationJson;
 
 // 현재년도
@@ -63,7 +56,7 @@ const nowYear = new Date().getFullYear();
 const flagYear = Moment().format('YYYYMMDD') >= nowYear + "0401" ? nowYear : nowYear - 1
 
 // 전자결재, 휴가결재 
-const elctrnAtrzId = uuid();
+let elctrnAtrzId = uuid();
 
 // 세션에서 받아올 직책코드
 let jbttlCd = "VTW01005";
@@ -125,6 +118,8 @@ function atrzLnAprv(jbttlCd, searchResult) {
 
 
 const EmpVacation = () => {
+    const navigate = useNavigate();
+
     // 세션정보
     const [cookies, setCookie] = useCookies(["userInfo", "userAuth", "deptInfo"]);
     const sessionEmpId = cookies.userInfo.empId ? cookies.userInfo.empId : "EMP_3000"
@@ -170,12 +165,12 @@ const EmpVacation = () => {
 
 
     // 휴가코드조회
+    const [selectCodeValue, setSelectCodeValue] = useState([]);
     const [searchCodeParam, setSearchCodeParam] = useState({
         queryId: "humanResourceMngMapper.retrieveCodeList",
         searchType: "vcatnCode",
         upCdValue: "VTW012"
     });
-    const [selectCodeValue, setSelectCodeValue] = useState([]);
 
     // 휴가코드조회
     useEffect(() => {
@@ -186,33 +181,42 @@ const EmpVacation = () => {
 
 
 
+    // 휴가신청전자결재첨부파일정보
+    const [attachments, setAttachments] = useState([]);
+
     // 휴가신청전자결재저장정보
     const [insertElctrnValue, setInsertElctrnValue] = useState({
-        elctrnAtrzId: elctrnAtrzId,
+        // elctrnAtrzId: elctrnAtrzId,
         atrzDmndEmpId: sessionEmpId,
         atrzDmndSttsCd: "VTW00801",     // 결재요청상태코드_ATRZ_DMND_STTS_CD(심사중)
         elctrnAtrzTySeCd: "VTW04901",   // 전자결재유형구분코드_ELCTRN_ATRZ_TY_SE_CD(휴가)
     });
-
-    // 휴가신청전자결재첨부파일정보
-    const [attachments, setAttachments] = useState([]);
 
 
 
 
 
     // 휴가신청휴가결재저장정보
-    const [insertVcatnValue, setInsertVcatnValue] = useState({ elctrnAtrzId: elctrnAtrzId, empId: sessionEmpId, flagYear: flagYear });
+    const [insertVcatnValue, setInsertVcatnValue] = useState({ 
+        // elctrnAtrzId: elctrnAtrzId, 
+        empId: sessionEmpId, 
+        flagYear: flagYear 
+    });
 
 
 
 
 
-    // 첨부파일팝업에 전달할 첨부파일ID
+    // 첨부파일팝업 전달 첨부파일ID
     const [popupAttachValue, setPopupAttachValue] = useState({ visible: false });
 
+
+
+
+
     // 결재선팝업에 전달할 결재선정보
-    const [popupAtrzValue, setPopupAtrzValue] = useState(["", { visible: false }]);
+    const [popupAtrzValue, setPopupAtrzValue] = useState([]);
+    const [popupAtrzVisibleValue, setPopupVisibleAtrzValue] = useState(false);
 
 
 
@@ -243,7 +247,7 @@ const EmpVacation = () => {
         repDeptId: "9da3f461-9c7e-cd6c-00b6-c36541b09b0d"
     });
 
-    // 전자결재 승인권자목록정보
+    // 전자결재 참조자목록정보
     useEffect(() => {
         selectData(atrzLnReftnListParam);
     }, [atrzLnReftnListParam])
@@ -252,24 +256,8 @@ const EmpVacation = () => {
 
 
 
-
-    // 전자결재 승인권자 결재선정보
-    const [atrzLnAprvValue, setAtrzLnAprvValue] = useState({});
-
     // 전자결재 심사권자 결재선정보
     const [atrzLnSrngValue, setAtrzLnSrngValue] = useState({});
-
-
-
-
-
-    // 전자결재 결재선 설정
-    // useEffect(() => {
-    //     elctrnLine(atrzLnSrngValue, atrzLnAprvValue, insertElctrnValue, atrzLnReftnListValue);
-    // }, [atrzLnSrngValue])
-
-
-
 
 
     // 목록 및 코드조회
@@ -278,7 +266,6 @@ const EmpVacation = () => {
             if (initParam.searchType == "vcatnList" && initParam.isSearch == true) setSelectVcatnListValue(await ApiRequest("/boot/common/queryIdSearch", initParam));
             else if (initParam.searchType == "vcatnCode") setSelectCodeValue(await ApiRequest("/boot/common/queryIdSearch", initParam));
             else if (initParam.searchType == "vcatnInfo") setSelectVcatnInfoValue(await ApiRequest("/boot/common/queryIdSearch", initParam));
-            // 참조자 목록조회
             else if (initParam.searchType == "atrzLnReftnList") {
                 const atrzLnReftnResult = await ApiRequest("/boot/common/queryIdSearch", initParam);
 
@@ -287,6 +274,7 @@ const EmpVacation = () => {
                 if (atrzLnReftnResult.length > 0) {
                     atrzLnReftnResult.map((item, index) => {
                         artzListValue.push({
+                            ...popupAtrzValue,
                             approvalCode: "VTW00706",               // 결재단계코드(참조)
                             empId: atrzLnReftnResult[index].empId,
                             empFlnm: atrzLnReftnResult[index].empFlnm,
@@ -294,39 +282,42 @@ const EmpVacation = () => {
                             listEmpFlnm: atrzLnReftnResult[index].listEmpFlnm,
                         })
                     })
+                    setPopupAtrzValue(artzListValue);
                 }
             }
-            // 심사권자 목록조회
             else if (initParam.searchType == "atrzLnAprvList") {
                 const atrzLnAprvListResult = await ApiRequest("/boot/common/queryIdSearch", initParam);
                 if (atrzLnAprvListResult.length > 0) {
-                    // 심사권자 상세조회
                     const AtrzLnAprvResult = await ApiRequest("/boot/common/queryIdSearch", { queryId: "indvdlClmMapper.retrieveAtrzLnAprvInq", deptId: atrzLnAprvListResult });
                     if (AtrzLnAprvResult.length > 0) {
                         const returnReslut = atrzLnAprv(jbttlCd, AtrzLnAprvResult);
-
-                        setAtrzLnAprvValue({
-                            approvalCode: "VTW00705",               // 결재단계코드(승인)
-                            empId: returnReslut[0].empId,
-                            empFlnm: returnReslut[0].empFlnm,
-                            jbpsNm: returnReslut[0].jbpsNm,
-                            listEmpFlnm: returnReslut[0].atrzLnAprvNm,
-                        })
+                        setPopupAtrzValue(prevState => [
+                            ...prevState,
+                            {
+                                approvalCode: "VTW00705",               // 결재단계코드(승인)
+                                empId: returnReslut[0].empId,
+                                empFlnm: returnReslut[0].empFlnm,
+                                jbpsNm: returnReslut[0].jbpsNm,
+                                listEmpFlnm: returnReslut[0].atrzLnAprvNm,
+                            }
+                        ])
                     }
                 }
             }
             else if (initParam.searchType == "atrzLnSrng") {
                 const atrzLnSrngResult = await ApiRequest("/boot/common/queryIdSearch", { queryId: "indvdlClmMapper.retrieveAtrzLnSrngInq", prjctMngrEmpId: initParam.prjctMngrEmpId });
                 if (atrzLnSrngResult.length > 0) {
-                    setAtrzLnSrngValue({
-                        approvalCode: "VTW00704",               // 결재단계코드(심사)
+                    setPopupAtrzValue(popupAtrzValue.filter(item => item.approvalCode != "VTW00704"))
+
+                    setPopupAtrzValue(prevState => [...prevState,
+                    {
+                        approvalCode: "VTW00704",                   // 결재단계코드(심사)
                         empId: atrzLnSrngResult[0].empId,
                         empFlnm: atrzLnSrngResult[0].empFlnm,
                         jbpsNm: atrzLnSrngResult[0].jbpsNm,
                         listEmpFlnm: atrzLnSrngResult[0].listEmpFlnm
-                    })
-                } else {
-                    setAtrzLnSrngValue({})
+                    }
+                    ])
                 }
             }
         } catch (error) {
@@ -334,19 +325,24 @@ const EmpVacation = () => {
         }
     };
 
-    // useEffect(() => {
-    //     console.log("insertVcatnValue : ", insertVcatnValue);
-    // }, [insertVcatnValue])
 
     // 휴가신청전자결재저장 별도 도메인
     const insertVcatnAtrz = async (params) => {
         const formData = new FormData();
+
+        formData.append("elctrnAtrzId", elctrnAtrzId);
 
         formData.append("elctrnTbNm", JSON.stringify({ tbNm: "ELCTRN_ATRZ", snColumn: "NOW_ATRZ_LN_SN" }));
         formData.append("insertElctrnValue", JSON.stringify(params));
 
         formData.append("vcatnTbNm", JSON.stringify({ tbNm: "VCATN_ATRZ" }));
         formData.append("insertVcatnValue", JSON.stringify(insertVcatnValue));
+
+        formData.append("atrzLnTbNm", JSON.stringify({ tbNm: "ATRZ_LN", snColumn: "ATRZ_LN_SN"}));
+        formData.append("insertAtrzLnValue", JSON.stringify(popupAtrzValue.filter(item => item.approvalCode == "VTW00702" || item.approvalCode == "VTW00703" || item.approvalCode == "VTW00704" || item.approvalCode == "VTW00705")));
+
+        formData.append("refrnTbNm", JSON.stringify({ tbNm: "REFRN_MAN", snColumn: "CC_SN"}));
+        formData.append("insertRefrnValue", JSON.stringify(popupAtrzValue.filter(item => item.approvalCode == "VTW00706" || item.approvalCode == "VTW00707")));
 
         Object.values(attachments).forEach((attachment) => formData.append("attachments", attachment));
 
@@ -356,64 +352,33 @@ const EmpVacation = () => {
                     'Content-Type': 'multipart/form-data'
                 },
             });
-            console.log("response : ", response);
+
+            elctrnAtrzId = uuid();
+
+            setSearchVcatnListParam({
+                ...searchVcatnListParam,
+                isSearch: true
+            })
+            setInsertVcatnValue({
+                elctrnAtrzId: "",
+                emgncCttpc: "",
+                rm: "",
+                vcatnBgngYmd: "",
+                vcatnDeCnt: "",
+                vcatnEndYmd: "",
+                vcatnPrvonsh: "",
+                vcatnTyCd: "",
+                // elctrnAtrzId: newUuid
+            })
+            setInsertElctrnValue({
+                ...insertElctrnValue,
+                // elctrnAtrzId: newUuid,
+                prjctId: null
+            })
         } catch (error) {
             console.log("error: ", error);
         }
     }
-
-    // 휴가신청전자결재저장
-    const insertElctrnData = async (initParam) => {
-        try {
-            const response = await ApiRequest("/boot/common/commnoInsert", initParam);
-            if (response > 0) {
-                try {
-                    const formData = new FormData();
-                    formData.append("tbNm", JSON.stringify({ tbNm: "VCATN_ATRZ" }));
-                    formData.append("data", JSON.stringify(insertVcatnValue));
-                    Object.values(attachments).forEach((attachment) => formData.append("attachments", attachment));
-
-                    try {
-                        const response = await axios.post("/boot/common/insertlongText", formData, {
-                            headers: {
-                                'Content-Type': 'multipart/form-data'
-                            },
-                        })
-
-                        let newUuid = uuid();
-
-                        setSearchVcatnListParam({
-                            ...searchVcatnListParam,
-                            isSearch: true
-                        })
-                        setInsertVcatnValue({
-                            elctrnAtrzId: "",
-                            emgncCttpc: "",
-                            rm: "",
-                            vcatnBgngYmd: "",
-                            vcatnDeCnt: "",
-                            vcatnEndYmd: "",
-                            vcatnPrvonsh: "",
-                            vcatnTyCd: "",
-                            elctrnAtrzId: newUuid
-                        })
-                        setInsertElctrnValue({
-                            ...insertElctrnValue,
-                            elctrnAtrzId: newUuid,
-                            prjctId: null
-                        })
-                    } catch (error) {
-                        console.error("insertVcatnError :", error);
-                        throw error;
-                    }
-                } catch (error) {
-                    console.log("insertElctrnError : ", error);
-                }
-            }
-        } catch (error) {
-            console.log("insertError : ", error);
-        }
-    };
 
     // 휴가목록 검색조건 설정
     function onSearchVcatnParam(param, e) {
@@ -435,6 +400,7 @@ const EmpVacation = () => {
     // 저장버튼
     function onSaveClick() {
         insertVcatnAtrz(insertElctrnValue);
+        setAtrzLnSrngValue()
     }
 
     // 프로젝트ID 설정
@@ -448,7 +414,6 @@ const EmpVacation = () => {
             prjctMngrEmpId: e[0].prjctMngrEmpId
         })
     }
-
 
     // 휴가정보 저장정보 설정
     function onInsertVcatnValue(param, e) {
@@ -505,59 +470,44 @@ const EmpVacation = () => {
     }
 
     // 휴가목록 선택
-    function onRowClick() {
-        alert("휴가 전자결재화면 이동");
+    function onRowClick(e) {
+        console.log("e : ", e.data.elctrnAtrzId);
+        navigate("/elecAtrz/ElecAtrzDetatil", { state: { elctrnAtrzId: e.data.elctrnAtrzId } })
     }
 
     // 테이블버튼클릭
-    function onButtonClick(e) {
-        console.log(e);
-        console.log(e.button.text);
-        if (e.button.text == "파일") {
+    function onButtonClick(e, data) {
+        if (e.text == "파일") {
             setPopupAttachValue({
-                attachId: e.data.atchmnflId,
+                attachId: data.atchmnflId,
                 visible: true,
             })
-        } else if (e.button.text == "휴가 취소요청") {
+        } else if (e.text == "휴가 취소요청") {
             alert("휴가 취소요청 팝업 호출");
         }
     }
 
     // 결재선버튼클릭
     function onAtrzClick(e) {
-        artzListValue = [];
-        artzListValue.push(
-            atrzLnAprvValue, atrzLnSrngValue
-        )
-
-        atrzLnReftnListValue.map((item, index) => {
-            artzListValue.push(
-                atrzLnReftnListValue[index]
-            )
-        })
-
-        setPopupAtrzValue([artzListValue, { visible: true }])
+        setPopupVisibleAtrzValue(true);
     }
 
-    // useEffect(() => {
-    //     console.log("popupAtrzValue : ", popupAtrzValue);
-    // }, [popupAtrzValue])
-
-    const onHiding = async (aprvrEmpList) => {
+    // 결재선버튼 callback
+    const onAtrzHiding = async (aprvrEmpList) => {
         console.log("callback : ", aprvrEmpList);
-
-        // setPopupAtrzValue([{}, {
-        //     visible: e
-        // }])
+        setPopupAtrzValue(aprvrEmpList);
+        setPopupVisibleAtrzValue(false);
     }
 
-    function onEmpHiding(e) {
+    // 첨부파일버튼 callback
+    function onAttchHiding(e) {
         setPopupAttachValue({
             attachId: "",
             visible: e
         })
     }
 
+    // 첨부파일
     const changeAttchValue = (e) => {
         setInsertVcatnValue({
             ...insertVcatnValue,
@@ -651,7 +601,7 @@ const EmpVacation = () => {
                             <span>2.프로젝트 재 검색시 휴가기간, 파일첨부는 다시 작성해야합니다.</span>
                         </div>
                         <div style={{ marginTop: "30px" }}>
-                            {elctrnLine(atrzLnSrngValue, atrzLnAprvValue, insertElctrnValue, atrzLnReftnListValue)}
+                            {elctrnLine(popupAtrzValue)}
                         </div>
                         <div className="row" style={{ marginTop: "30px" }}>
                             <div className="col-md-2" style={textAlign}>소속</div>
@@ -794,24 +744,16 @@ const EmpVacation = () => {
                             visible={popupAttachValue.visible}
                             attachId={popupAttachValue.attachId}
                             title={"전자결재 파일 첨부"}
-                            onHiding={onEmpHiding}
+                            onHiding={onAttchHiding}
                         />
 
-                        {
-                            popupAtrzValue[1].visible == true
-                                ?
-                                <ApprovalPopup
-                                    width={"500px"}
-                                    height={"500px"}
-                                    visible={true}
-                                    atrzValue={popupAtrzValue[0]}
-                                    onHiding={onHiding}
-                                />
-                                :
-                                <></>
-                        }
-
-
+                        <ApprovalPopup
+                            width={"500px"}
+                            height={"500px"}
+                            visible={popupAtrzVisibleValue}
+                            atrzLnEmpList={popupAtrzValue}
+                            onHiding={onAtrzHiding}
+                        />
                     </div>
                 </div>
             </div>
@@ -934,7 +876,13 @@ function createBody(selectVcatnInfoValue) {
     return tableBody;
 }
 
-function elctrnLine(atrzLnSrngValue, atrzLnAprvValue, insertElctrnValue, atrzLnReftnListValue) {
+function elctrnLine(popupAtrzValue) {
+    const atrzLnReviewValue = popupAtrzValue.find(item => item.approvalCode == "VTW00702")
+    const atrzLnConfirmValue = popupAtrzValue.find(item => item.approvalCode == "VTW00703")
+    const atrzLnSrngValue = popupAtrzValue.find(item => item.approvalCode == "VTW00704")
+    const atrzLnAprvListValue = popupAtrzValue.find(item => item.approvalCode == "VTW00705")
+    const atrzLnReftnListValue = popupAtrzValue.filter(item => item.approvalCode == "VTW00706")
+
     return (
         <>
             <Table>
@@ -953,13 +901,35 @@ function elctrnLine(atrzLnSrngValue, atrzLnAprvValue, insertElctrnValue, atrzLnR
                         <TableCell style={cellStyle}></TableCell>
                     </TableRow>
                     <TableRow>
-                        <TableCell style={cellStyle}></TableCell>
-                        <TableCell style={cellStyle}></TableCell>
                         <TableCell style={cellStyle}>
                             {
-                                atrzLnSrngValue.approvalCode != undefined && insertElctrnValue.prjctId != ""
+                                atrzLnReviewValue
                                     ?
-                                    atrzLnSrngValue.empId == atrzLnAprvValue.empId
+                                        <div>
+                                            {atrzLnReviewValue.empFlnm}
+                                            <br />
+                                            {atrzLnReviewValue.jbpsNm}
+                                        </div>
+                                    : ""
+                            }
+                        </TableCell>
+                        <TableCell style={cellStyle}>
+                            {
+                                atrzLnConfirmValue
+                                    ?
+                                        <div>
+                                            {atrzLnConfirmValue.empFlnm}
+                                            <br />
+                                            {atrzLnConfirmValue.jbpsNm}
+                                        </div>
+                                    : ""
+                            }
+                        </TableCell>
+                        <TableCell style={cellStyle}>
+                            {
+                                atrzLnSrngValue
+                                    ?
+                                    atrzLnSrngValue.empId == atrzLnAprvListValue.empId
                                         ?
                                         <></>
                                         :
@@ -973,12 +943,12 @@ function elctrnLine(atrzLnSrngValue, atrzLnAprvValue, insertElctrnValue, atrzLnR
                         </TableCell>
                         <TableCell style={cellStyle}>
                             {
-                                atrzLnSrngValue.approvalCode != undefined && insertElctrnValue.prjctId != ""
+                                atrzLnSrngValue
                                     ?
                                     <div>
-                                        {atrzLnAprvValue.empFlnm}
+                                        {atrzLnAprvListValue.empFlnm}
                                         <br />
-                                        {atrzLnAprvValue.jbpsNm}
+                                        {atrzLnAprvListValue.jbpsNm}
                                     </div>
                                     : ""
                             }
@@ -987,17 +957,17 @@ function elctrnLine(atrzLnSrngValue, atrzLnAprvValue, insertElctrnValue, atrzLnR
                     <TableRow style={tableHeaderStyle}>
                         <TableCell style={tableLeftStyle}>참조</TableCell>
                         <TableCell colSpan={4} style={cellStyle}>
-                            {   
-                                atrzLnReftnListValue != "" && atrzLnReftnListValue && atrzLnReftnListValue != undefined 
+                            {
+                                atrzLnSrngValue
                                     ?
-                                        atrzLnReftnListValue.map((item, index) => {
-                                            return(
-                                                <>
-                                                    {atrzLnReftnListValue[index].listEmpFlnm}
-                                                    <br/>
-                                                </>
-                                            )
-                                        })
+                                    atrzLnReftnListValue.map((item, index) => {
+                                        return (
+                                            <>
+                                                {atrzLnReftnListValue[index].listEmpFlnm}
+                                                <br />
+                                            </>
+                                        )
+                                    })
                                     : <></>
                             }
                         </TableCell>
@@ -1034,4 +1004,12 @@ const cellStyle = {
     fontSize: "12px",
     height: "70px",
     width: "100vw"
+}
+
+const textAlign = {
+    textAlign: "center",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    fontSize: "14px"
 }
