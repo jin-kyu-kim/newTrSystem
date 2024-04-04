@@ -6,24 +6,9 @@ import CustomTable from 'components/unit/CustomTable';
 import CustomEditTable from 'components/unit/CustomEditTable';
 
 
-const ElecAtrzTabDetail = ({ detailData }) => {
+const ElecAtrzTabDetail = ({ dtlInfo, detailData }) => {
     const { vacDtl, clmColumns } = electAtrzJson.electAtrzDetail;
-    const [ dtlInfo, setDtlInfo ] = useState({});
     
-    useEffect(() => {
-        const getInfo = async () => {
-            try {
-                const response = await ApiRequest('/boot/common/commonSelect', [
-                    { tbNm: "VCATN_ATRZ" }, { elctrnAtrzId: detailData.elctrnAtrzId }
-                ]);
-                setDtlInfo(response[0]);
-            } catch (error) {
-                console.log('error', error);
-            }
-        };
-        getInfo();
-    }, []);
-
     const VacInfoTab = ({ vacDtl, dtlInfo }) => {
         return (
             <div className="dtl-table">

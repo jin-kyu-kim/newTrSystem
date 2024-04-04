@@ -20,6 +20,7 @@ const ElecAtrzDetail = () => {
     const { header, keyColumn, columns, queryId } = electAtrzJson.electAtrzDetail;
     const [ cookies ] = useCookies(["userInfo"]);
     const [maxAtrzLnSn, setMaxAtrzLnSn] = useState();
+    const [ dtlInfo, setDtlInfo ] = useState({});
 
     const onBtnClick = (e) => {
 
@@ -38,11 +39,23 @@ const ElecAtrzDetail = () => {
     }
 
     useEffect(() => {
+        getVacInfo();
         getPrjct();
         getAtrzLn();
         getRefEmp();
         getMaxAtrzLnSn();
     }, []);
+    
+    const getVacInfo = async () => {
+        try {
+            const response = await ApiRequest('/boot/common/commonSelect', [
+                { tbNm: "VCATN_ATRZ" }, { elctrnAtrzId: detailData.elctrnAtrzId }
+            ]);
+            setDtlInfo(response[0]);
+        } catch (error) {
+            console.log('error', error);
+        }
+    };
 
     const getPrjct = async () => {
         try {
@@ -233,7 +246,6 @@ const ElecAtrzDetail = () => {
         }
     }
 
-
     return (
         <div className="container" style={{ marginTop: "10px" }}>
             {atrzOpnn.length !== 0 && 
@@ -249,6 +261,7 @@ const ElecAtrzDetail = () => {
             {/* 휴가, 청구의 경우에는 컴포넌트 렌더링 */}
             {(['VTW04901', 'VTW04907'].includes(detailData.elctrnAtrzTySeCd)) && (
                 <ElecAtrzTabDetail
+                    dtlInfo={dtlInfo}
                     detailData={detailData}
                 />
             )}
