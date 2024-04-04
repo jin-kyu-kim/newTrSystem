@@ -77,7 +77,7 @@ export default function SideNavInnerToolbar({ children }) {
         opened={menuStatus === MenuStatus.Closed ? false : true}
         template={'menu'}
       >
-        <div className={'container'}>
+        {/* <div className={'container'}> */}
         
           <Header
             menuToggleEnabled={isXSmall}
@@ -96,7 +96,7 @@ export default function SideNavInnerToolbar({ children }) {
               })}
             </div>
           </ScrollView>
-        </div>
+        {/* </div> */}
 
         <Template name={'menu'}>
           <SideNavigationMenu

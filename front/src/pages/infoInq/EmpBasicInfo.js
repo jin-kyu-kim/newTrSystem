@@ -192,8 +192,8 @@ console.log(empCnt)
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <div className="container">
+    <div style={{ padding: "20px" ,backgroundColor: "#b5c1c7" }}>
+    <div className="container" style={{ padding: "20px" ,backgroundColor: "#fff" }}>
         <div>
           <p>
             <strong>* 직원 기본정보</strong>
@@ -533,8 +533,8 @@ console.log(empCnt)
                 </Item>
               </GroupItem>
           </Form>
-          <div style={{ marginTop: "10px" }}>
-            <Button text="저장" onClick={updateEmpInfo} />
+          <div style={{ marginTop: "25px",  marginLeft: "600px" }}>
+            <Button text="저장" onClick={updateEmpInfo} type="default" />
 
          
           </div>

@@ -1,14 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
-import Scheduler, { Resource } from 'devextreme-react/scheduler';
+import Scheduler from 'devextreme-react/scheduler';
 
 const ProjectHrCtAprvCtPop = ({props, prjctNm, data}) => {
 
-    const [currentDate, setCurrentDate] = useState(null);
-
-    useEffect(() => {
-        setCurrentDate(data.aplyYm?.slice(0,4)+"/"+data.aplyYm?.slice(4,6)+"/01");
-    }, [data]);
+    let currentDate = new Date();
 
     const showDetails = () => {
 
@@ -35,7 +31,7 @@ const ProjectHrCtAprvCtPop = ({props, prjctNm, data}) => {
                             <td>용도(참석자명단): {data.atdrn}</td>
                         </tr>
                         <tr>
-                            <td>사용처: {data.useOffic} | 결재정보_수정예정</td>
+                            <td>사용처: {data.useOffic} | 결재정보: {data.atrzDmndSttsCd}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -61,11 +57,10 @@ const ProjectHrCtAprvCtPop = ({props, prjctNm, data}) => {
                 timeZone="Asia/Seoul"
                 dataSource={props}
                 defaultCurrentView="month"
-                currentDate={currentDate}
+                defaultCurrentDate={currentDate}
                 editing={false}
                 views={["month"]}
                 descriptionExpr='ctPrpos'
-                onOptionChanged={e => console.log(e)}
             >
             </Scheduler>
             <br/>
