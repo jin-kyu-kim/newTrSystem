@@ -13,7 +13,7 @@
                             },
                         "valueExpr" : "matrlPlan",
                         "displayExpr": "matrlPlan",
-                        "values" : ["cntrctamount","dlvgdsEntrpsNm","dtlCn","matrlPlan","prductNm","prjctId","qy","tot","untpc"],
+                        "values" : ["cntrctamount","matrlCtSn","dlvgdsEntrpsNm","dtlCn","matrlPlan","prductNm","prjctId","qy","tot","untpc"],
                         "name" : "matrlPlan"
                         }
             },
@@ -63,25 +63,25 @@
                 "max": 900000000000,
                 "required": true
             },
-            "dlvgdsYmd": {
-                "name": "dlvgdsYmd",
+            "dlvgdsPrnmntYmd": {
+                "name": "dlvgdsPrnmntYmd",
                 "type": "DateBox",
                 "label": "납품예정일",
                 "placeholder": "납품예정일",
                 "required": true
             },
-            "payTot": {
-                "name": "payTot",
+            "totAmt": {
+                "name": "totAmt",
                 "type" : "NumberBox",
                 "label": "지급 총액",
                 "format": "#,###"
             }
         },
-        "keyColumn": "payCd",
+        "keyColumn": "giveOdrCd",
         "tableColumns": [
-            {"key": "payCd", "value": "지급 차수", "isRequire": true, "editType" : "selectBox" ,"comCd" : "VTW032" },
-            {"key": "payYm", "value": "지급 일자", "type": "date", "format": "yyyy-MM", "isRequire": true},
-            {"key": "payAmt", "value": "지급 금액", "type": "number", "format":"#,###", "isRequire": true}
+            {"key": "giveOdrCd", "value": "지급 차수", "isRequire": true, "editType" : "selectBox" ,"comCd" : "VTW032" },
+            {"key": "ctrtYmd", "value": "지급 일자", "type": "date", "format": "yyyy-MM", "isRequire": true},
+            {"key": "ctrtAmt", "value": "지급 금액", "type": "number", "format":"#,###", "isRequire": true}
         ]
     }
 }

@@ -2,22 +2,23 @@ import React, { useState, useEffect } from "react";
 import { FormControl, InputLabel, Select, MenuItem, TextField, Button, Grid } from "@mui/material";
 import { DateBox } from "devextreme-react/date-box";
 import ApiRequest from "utils/ApiRequest";
+import { set } from "date-fns";
+
 
 const ExpensInfo = ({onSendData}) => {
 
     const [ctStlmSeCdList, setCtStlmSeCdList] = useState([]);
     const [bankCdList, setBankCdList] = useState([]);
     const [expensCdList, setExpensCdList] = useState([]);
+    const [clmOdr, setClmOdr] = useState();
+
 
     useEffect(() => {
         retrieveCtStlmSeCd();
         retrieveBankCd();
         retrieveCdList();
+        setExpensDate();
     }, []);
-
-    useEffect(() => {
-        console.log(ctStlmSeCdList)
-    }, [ctStlmSeCdList]);
 
     const retrieveCtStlmSeCd = async () => {
         
@@ -63,67 +64,71 @@ const ExpensInfo = ({onSendData}) => {
             console.error(error)
         }
     }
-
+    
     const [forms, setForms] = useState([
         {
-            ctStlmSeCd: "",
-            taxBillPblcnYmd: "",
-            dtlUseDtls: "",
-            clmAmt: "",
-            vatInclsAmt: "",
-            dpstDmndYmd: "",
-            expensCd: "",
-            cnptNm: "",
-            clmPrpos: "",
-            bankCd: "",
-            dpstrFlnm: "",
-            dpstActno: ""
+            clmAtrzDtlSn: 1,
+            ctStlmSeCd: null,
+            rciptPblcnYmd: null,
+            taxBillPblcnYmd: null,
+            dtlUseDtls: null,
+            clmAmt: null,
+            vatInclsAmt: null,
+            dpstDmndYmd: null,
+            expensCd: null,
+            cnptNm: null,
+            clmPrpos: null,
+            bankCd: null,
+            dpstrFlnm: null,
+            dpstActno: null
         }
     ]);
 
     const addForm = () => {
-        // const newFormId = forms[forms.length - 1] + 1;
+        const newClmAtrzDtlSn = forms[forms.length - 1].clmAtrzDtlSn + 1;
+
         setForms([...forms, {
+            clmAtrzDtlSn: newClmAtrzDtlSn,
             ctStlmSeCd: "",
-            taxBillPblcnYmd: "",
-            dtlUseDtls: "",
-            clmAmt: "",
-            vatInclsAmt: "",
-            dpstDmndYmd: "",
-            expensCd: "",
-            cnptNm: "",
-            clmPrpos: "",
-            bankCode: "",
-            dpstrFlnm: "",
-            dpstActno: ""
+            rciptPblcnYmd: null,
+            taxBillPblcnYmd: null,
+            dtlUseDtls: null,
+            clmAmt: null,
+            vatInclsAmt: null,
+            dpstDmndYmd: null,
+            expensCd: null,
+            cnptNm: null,
+            clmPrpos: null,
+            bankCd: null,
+            dpstrFlnm: null,
+            dpstActno: null
         }]);
     };
 
     useEffect(() => {
-        console.log(forms)
-        onSendData(forms)
 
+        let data = [{tbNm: "CLM_ATRZ_DTL"}, ...forms]
+
+        onSendData(data)
     },[forms]);
 
-    const removeForm = (id) => {
-        if (forms.length === 1) {
-            return; // If only one form, do not remove
+    const removeForm = (selectForm) => {
+        if (forms.length === 1) { // 하나일 경우 지우지 않는다.
+            return; 
         }
-        
-        const newForms = forms.filter((formId) => formId !== id);
 
-        setForms(newForms);
+        setForms(forms.filter((form) => form.clmAtrzDtlSn !== selectForm.clmAtrzDtlSn));
     };
 
     const handleInputChange = (e, index, fieldName) => {
         const newForms = [...forms];
         if (fieldName === "ctStlmSeCd") {
             if (e.target.value !== "VTW01904") {
-                newForms[index]["dpstDmndYmd"] = "";
-                newForms[index]["vatInclsAmt"] = "";
-                newForms[index]["dpstActno"] = "";
-                newForms[index]["dpstrFlnm"] = "";
-                newForms[index]["bankCd"] = "";
+                newForms[index]["dpstDmndYmd"] = null
+                newForms[index]["vatInclsAmt"] = null;
+                newForms[index]["dpstActno"] = null;
+                newForms[index]["dpstrFlnm"] = null;
+                newForms[index]["bankCd"] = null;
             }
         }
         newForms[index][fieldName] = e.target.value;
@@ -133,19 +138,39 @@ const ExpensInfo = ({onSendData}) => {
     const handleDateChange = (value, index, fieldName) => {
         const newForms = [...forms];
         newForms[index][fieldName] = value;
-        setForms(newForms);
+        setForms(newForms => [...newForms]);
     };
 
-    const handleSubmit = () => {
+    const setExpensDate = () => {
+        let today = new Date();
+        let year = today.getFullYear();
+        let month = today.getMonth();
+        let day = today.getDay();
 
-        onSendData(forms)
-    };
+        console.log(year, month);
+        if(month < 10) {
+            month = "0" + month;
+        }
+
+        console.log(today.getDay)
+
+        let order;
+        if(day <= 15) {
+            order = "2";
+        } else {
+            order = "1";
+        }
+
+        let result = year + month + "-" + order;
+
+        setClmOdr(result);
+    } 
 
     return (
         
         <div className="expensInpt" style={{ marginTop: "15px", paddingTop: "5px", paddingBottom: "10px" }}>
             <h4>사용 경비 입력</h4>
-            {forms.map((formId, index) => (
+            {forms.map((form, index) => (
                 <div key={index}>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
@@ -159,7 +184,6 @@ const ExpensInfo = ({onSendData}) => {
                                             onChange={(e) => handleInputChange(e, index, "ctStlmSeCd")}
                                             autoWidth
                                         >
-
                                             {ctStlmSeCdList.map((item, index) => (
                                             <MenuItem key={index} value={item.cdValue}>
                                                 {item.cdNm}
@@ -169,16 +193,6 @@ const ExpensInfo = ({onSendData}) => {
                                     </FormControl>
                                 </Grid>
                                 <Grid item xs={2}>
-                                    {/* <TextField
-                                        fullWidth
-                                        id="UseDt"
-                                        label="영수증발행일"
-                                        type="text"
-                                        variant="outlined"
-                                        value=""
-                                        onChange={() => {}}
-                                        InputLabelProps={{ shrink: true }}
-                                    /> */}
                                     <DateBox
                                         label={forms[index].ctStlmSeCd !== "VTW01904" ? "영수증발행일" : "세금계산서발행일"}
                                         placeholder="사용일자"
@@ -208,6 +222,7 @@ const ExpensInfo = ({onSendData}) => {
                                         label="금액"
                                         type="number"
                                         variant="outlined"
+                                        
                                         value={forms[index].clmAmt}
                                         onChange={(e) => handleInputChange(e, index, "clmAmt")}
                                     />
@@ -225,15 +240,6 @@ const ExpensInfo = ({onSendData}) => {
                                     />
                                 </Grid>
                                 <Grid item xs={2}>
-                                    {/* <TextField
-                                        fullWidth
-                                        id="usePrice"
-                                        label="입금요청일"
-                                        type="text"
-                                        variant="outlined"
-                                        value=""
-                                        onChange={() => {}}
-                                    /> */}
                                     <DateBox 
                                         label="입금요청일"
                                         labelMode="floating"
@@ -358,7 +364,7 @@ const ExpensInfo = ({onSendData}) => {
                             variant="contained"
                             color="secondary"
                             style={{ marginTop: "10px", marginBottom: "10px" }}
-                            onClick={() => removeForm(formId)}
+                            onClick={() => removeForm(form)}
                         >
                             삭제
                         </Button>
@@ -366,10 +372,8 @@ const ExpensInfo = ({onSendData}) => {
                 </div>
             ))}
 
-            <Button onClick={()=>handleSubmit()}>체크</Button>
-            
             <hr/>
-            <div>* 현재 TR 입력 차수: </div>
+            <div>* 현재 TR 입력 차수: {clmOdr}</div>
             <div>* 마감 여부: </div>
             <br/>
             <div>1. 지출 방법: 개인법인카드, 개인현금</div>

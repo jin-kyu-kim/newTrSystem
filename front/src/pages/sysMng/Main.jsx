@@ -9,7 +9,8 @@ import uuid from "react-uuid";
 import { useCookies } from "react-cookie";
 import {TableContainer, Table,TableRow,TableCell } from "@mui/material";
 import CustomEditTable from "components/unit/CustomEditTable";
-
+import Moment from "moment"
+import { isSaturday, isSunday, startOfMonth, endOfMonth } from 'date-fns'
 const Main = ({}) => {
 
 //------------------------선언구간----------------------------------------
@@ -55,7 +56,6 @@ const Main = ({}) => {
 
         useEffect(()=> {
             pageHandle();
-            console.log(deptNm)
         },[dataSession])
 
         useEffect(() => {
@@ -74,7 +74,16 @@ const Main = ({}) => {
               setCurrentPhase('2');
             }
           }, []);
-        
+
+//{*-------------------------- 차수 및 날짜 설정 구간 -----------------------------------*}
+
+// 차수별 시작, 종료일자 
+let flagOrder = new Date().getDate() > 15 ? 1 : 2;
+let orderWorkBgngYmd = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMMDD")) : String(Moment(new Date()).format("YYYYMM") - 1 + "16")
+let orderWorkEndYmd = flagOrder == 1 ? String(Moment(new Date()).format("YYYYMM") + "15") : Moment(endOfMonth(new Date(Moment(Moment(new Date()).format("YYYYMM") - 1 + "15").format("YYYY-MM-DD")))).format("YYYYMMDD")
+let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMM")) : String(Moment(new Date()).format("YYYYMM") - 1)
+
+
 //{*-------------------------- 이벤트 영역 -----------------------------------*}
 
   const pageHandle = async () => { 
@@ -100,7 +109,7 @@ const Main = ({}) => {
                 });
     }
     const goNotice = (e) => {     //공지사항이동
-        navigate("infoInq/NoticeList", 
+        navigate("/infoInq/NoticeList", 
                 { state: { 
                         empId: empId,
                         } 
@@ -124,7 +133,6 @@ const Main = ({}) => {
     };
 
     const onCellClick = (e) => {  //TR 입력 현황 테이블 클릭
-        console.log("eeeee",e.columnIndex)
         if(0 <= e.columnIndex && e.columnIndex < 4 ){  //근무시간페이지로 이동
             navigate("/indvdlClm/EmpWorkTime", 
                     {state: { id: e.key }})
@@ -136,10 +144,9 @@ const Main = ({}) => {
     };
 
     const onAplyRowClick = (e) => {   //결재 신청 현황 테이블 클릭 (전자결재 상세화면 개발 후 설정 예정)
-        console.log("eee",e.data.elctrnAtrzTySeCd)
           if(e.data.elctrnAtrzTySeCd === "VTW04901"){ //휴가결재
-                  navigate("/indvdlClm/EmpVacation", 
-                 {state: { id: e.key }})
+                  navigate("/elecAtrz/ElecAtrzDetail", 
+                 {state: { id: e.key ,elctrnAtrzId : e.data.elctrnAtrzId  }})
           }else if(e.data.elctrnAtrzTySeCd === "VTW04902"){ //일반결재
             navigate("/indvdlClm/EmpWorkTime", 
             {state: { id: e.key }})
@@ -216,20 +223,20 @@ const Main = ({}) => {
 {/* ----------------------------------TR입력 현황 ------------------------------------------------*/}
         <div className="mainRightContainer" style={mainRightContainerStyle}>
           <div className="tableDetailTable" style={tableDetailStyle}>
-            <p><strong>20243-1차수 TR입력 현황 </strong></p>
-            <CustomTable  keyColumn={trAplyKeyColumn}  columns={trAplyTableColumns}  values={trAplyValues}  onCellClick={onCellClick}/>
+            <p><strong>{orderWorkBgngMm}-{flagOrder}차수 TR입력 현황 </strong></p>
+            <CustomTable  keyColumn={trAplyKeyColumn}  columns={trAplyTableColumns}  values={trAplyValues}  onCellClick={onCellClick} />
           </div>
           
 {/* ----------------------------------결제 신청 현황 ------------------------------------------------*/}
             <div className="aplyTableList" style={{marginLeft:"20px",flex:"1",}}>
             <p> <strong>결재 신청 현황 </strong> </p>
-            <CustomTable  keyColumn="elctrnAtrzId"  columns={atrzSttsTableColumns}  values={aplyValues} onRowClick={onAplyRowClick}/>
+            <CustomTable  keyColumn="elctrnAtrzId"  columns={atrzSttsTableColumns}  values={aplyValues} onRowClick={onAplyRowClick} noDataText='진행중인 결재가 없습니다.'/>
             </div>
 
 {/* -----------------------------------결제리스트---------------------------------------------------*/}
             <div className="aplyTableList" style={{marginLeft:"20px",flex:"1",}}>
             <p> <strong>결재 리스트 </strong> </p>
-            <CustomTable  keyColumn="elctrnAtrzId"  columns={atrzSttsTableColumns}  values={atrzValues} onRowClick={onAtrzRowClick} />
+            <CustomTable  keyColumn="elctrnAtrzId"  columns={atrzSttsTableColumns}  values={atrzValues} onRowClick={onAtrzRowClick} noDataText="진행중인 결재가 없습니다."/>
             </div>
         </div>
       </div>

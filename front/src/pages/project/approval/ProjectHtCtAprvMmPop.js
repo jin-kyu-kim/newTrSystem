@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import Scheduler, { Resource } from 'devextreme-react/scheduler';
 
 const ProjectHrCtAprvMmPop = ({props, prjctNm, data}) => {
 
-    const currentDate = new Date();
+    let currentDate = new Date();
 
     const showDetails = () => {
 

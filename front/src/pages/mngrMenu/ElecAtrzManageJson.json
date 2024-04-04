@@ -1,0 +1,73 @@
+{
+    "elecManageMain" : {
+        "atrzSquareList" : [
+            {"key": "progress", "text" : "진행문서", "squareColor": "rgb(216, 237, 246)"},
+            {"key" : "terminatedAprvrEmp", "text" : "완료문서", "squareColor": "rgb(216, 237, 246)"},
+            {"key" : "deny", "text" : "반려문서", "squareColor": "rgb(255, 218, 218)"}
+        ],
+        "keyColumn": "elctrnAtrzId",
+        "queryId": "elecAtrzMapper.elecAtrzMain",
+        "countQueryId": "elecAtrzMapper.elecAtrzMainCount",
+        "baseColumns": [
+            {"key": "elctrnAtrzId", "value": "문서번호"},
+            {"key": "elctrnAtrzTySeCdNm", "value": "결재유형"},
+            {"key": "atrzDmndEmpId", "value": "기안자"},
+            {"key": "regDt", "value": "기안요청일"},
+            {"key": "ttl", "value": "결재 명", "width": 400}
+        ],
+        "progress" : [
+          {"key": "cnptNm", "value": "거래처"},
+          {"key": "aprvrEmpId", "value": "현재결재권자", "width": 100},
+          {"key": "atrzStepCd" , "value": "현재결제단계", "width": 100},
+          {"key": "yn", "value": "결재 회수가능여부", "width": 100}
+        ],
+        "terminatedAprvrEmp" : [
+            {"value":"거래처"},
+            {"value":"첨부파일", "button":{"text":"첨부파일"}},
+            {"value":"문서이력", "button":{"text":"문서이력"}}
+        ],
+        "deny" : [
+          {"key": "atrzDmnd", "value": "결재", "width": 100}
+        ],
+        "searchInfo" : {
+            "searchParams": {
+                "dateRange": true,
+                "startDtNm": "",
+                "endDtNm": ""
+            },
+            "selectBoxItem": [
+                {
+                  "placeholder": "[문서서식]",
+                  "param":{
+                    "tbNm": "CD",
+                    "valueExpr": "cdValue",
+                    "displayExpr": "cdNm",
+                    "name": "elctrnAtrzTySeCd",
+                    "condition": {
+                      "upCdValue": "VTW049"
+                    },
+                    "clearButton": true
+                  }
+                },
+                {
+                  "placeholder": "프로젝트명",
+                  "param":{
+                    "tbNm": "CD",
+                    "valueExpr": "cdValue",
+                    "displayExpr": "cdNm",
+                    "name": "elctrnAtrzTySeCd",
+                    "condition": {
+                      "upCdValue": "VTW049"
+                    },
+                    "clearButton": true
+                  }
+                }
+            ],
+            "textBoxItem": [
+                {"placeholder": "기안자"},
+                {"placeholder": "거래처"},
+                {"placeholder": "결재명", "name": "title"}
+            ]
+        }
+    }
+}

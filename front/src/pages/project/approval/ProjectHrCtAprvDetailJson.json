@@ -9,11 +9,11 @@
             { "key": "aplySn", "value": "차수" , "width": "100"},
             { "key": "expectMm", "value": "배정" , "width": "100"},
             { "key": "excnMm", "value": "누적사용" , "width": "100"},
-            { "key": "a", "value": "가용" , "width": "80"},
+            { "key": "avbleMm", "value": "가용" , "width": "80"},
             { "key": "totMd", "value": "당차수청구" , "width": "120" },
             { "width": "140", "button": { "text": "승인목록", "name": "aprvList" }},
-            { "width": "100", "button": { "text": "승인", "name": "aprv" }},
-            { "width": "100", "button": { "text": "반려", "name": "rjct" }}
+            { "width": "100", "button": { "text": "승인", "name": "aprv", "able": {"key": "mmAtrzCmptnYn", "value": "N"}}},
+            { "width": "100", "button": { "text": "반려", "name": "rjct", "able": {"key": "mmAtrzCmptnYn", "value": "N"}}}
         ],
         "summaryColumn": [
             {
@@ -41,8 +41,8 @@
             { "key": "totUtztnAmt", "value": "누적사용" , "width": "200"},
             { "key": "totAplyAmt", "value": "당차수청구" , "width": "200"},
             { "width": "140", "button": { "text": "승인목록", "name": "ctList" }},
-            { "width": "100", "button": { "text": "승인", "name": "aprv" }},
-            { "width": "100", "button": { "text": "반려", "name": "rjct" }}
+            { "width": "100", "button": { "text": "승인", "name": "aprv", "able": {"key": "ctAtrzCmptnYn", "value": "N"}}},
+            { "width": "100", "button": { "text": "반려", "name": "rjct", "able": {"key": "ctAtrzCmptnYn", "value": "N"}}}
         ],
         "summaryColumn": [
             {

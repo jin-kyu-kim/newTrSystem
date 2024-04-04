@@ -56,7 +56,19 @@
     "expanded": true
   },
   {
-    "caption": "원가",
+    "caption": "투입",
+    "dataField": "mm",
+    "dataType": "number",
+    "summaryType": "sum",
+    "area": "data",
+    "format": {
+      "type": "fixedPoint",
+      "precision": 2
+    }
+
+  },
+  {
+    "caption": "가용",
     "dataField": "expectMm",
     "dataType": "number",
     "summaryType": "sum",
@@ -66,15 +78,17 @@
       "precision": 2
     }
   },
+ 
   {
-    "caption": "MM",
-    "dataField": "mm",
+    "caption": "금액",
+    "width": 30,
+    "dataField": "untpc",
+    "area": "data",
     "dataType": "number",
     "summaryType": "sum",
-    "area": "data",
     "format": {
-      "type": "fixedPoint",
-      "precision": 2
+       "type": "fixedPoint",
+        "thousandsSeparator": ","
     }
   }
 ]
