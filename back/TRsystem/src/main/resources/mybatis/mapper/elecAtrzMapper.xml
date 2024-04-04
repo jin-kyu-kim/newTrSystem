@@ -150,4 +150,21 @@
 		  AND ELCTRN_ATRZ_ID = #{elctrnAtrzId}
 	</select>
 	
+	<select id="retrieveElctrnAtrzExpensClm" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT cd1.CD_NM AS CT_STLM_SE_CD_NM	
+		 , CT_STLM_SE_CD
+		 , RCIPT_PBLCN_YMD				
+		 , cad.CNPT_NM	-- 거래처명
+		 , cad.CLM_AMT
+		 , cd2.CD_NM AS  EXPENS_CD_NM	
+		 , cad.DTL_USE_DTLS
+		 , cad.CLM_PRPOS
+	  FROM CLM_ATRZ ca
+	  JOIN CLM_ATRZ_DTL cad ON (ca.ELCTRN_ATRZ_ID = cad.ELCTRN_ATRZ_ID)
+	  JOIN CD cd1 ON (cad.CT_STLM_SE_CD = cd1.CD_VALUE)
+	  JOIN CD cd2 ON (cad.EXPENS_CD = cd2.CD_VALUE)
+	WHERE 1=1
+	   AND ca.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
+	</select>
+	
 </mapper>
