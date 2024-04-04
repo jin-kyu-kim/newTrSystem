@@ -37,6 +37,8 @@ const ElecAtrzDetail = () => {
         }
     }
 
+    console.log('detailData', detailData);
+
     useEffect(() => {
         getPrjct();
         getAtrzLn();
@@ -156,13 +158,13 @@ const ElecAtrzDetail = () => {
      */
     const upNowAtrzLnSn = async (nowAtrzLnSn) => {
 
-        let udtParam = {};
+        let updParam = {};
         console.log("maxAtrzLnSn", maxAtrzLnSn)
         console.log("nowAtrzLnSn", nowAtrzLnSn)
 
         if(nowAtrzLnSn === maxAtrzLnSn) {
             // max와 현재가 같으면 최종승인임.
-            udtParam = {
+            updParam = {
                 atrzDmndSttsCd: "VTW00802",
                 nowAtrzLnSn: nowAtrzLnSn,
                 mdfcnDt: new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0],
@@ -170,7 +172,7 @@ const ElecAtrzDetail = () => {
             }
         } else {
             // max와 현재가 다르면 중간승인임.
-            udtParam = {
+            updParam = {
                 nowAtrzLnSn: nowAtrzLnSn + 1,
                 mdfcnDt: new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0],
                 mdfcnEmpId: cookies.userInfo.empId
@@ -179,7 +181,7 @@ const ElecAtrzDetail = () => {
 
         const param = [
             { tbNm: "ELCTRN_ATRZ" },
-            udtParam,
+            updParam,
             {
                 elctrnAtrzId: detailData.elctrnAtrzId
             }
@@ -233,6 +235,40 @@ const ElecAtrzDetail = () => {
         }
     }
 
+    /**
+     * 휴가결재 최종 승인 시 휴가 일수 차감 
+     */
+    const handleVacation = async () => {
+
+        // USE_DAYCNT
+        // PBLEN_VCATN_USE_DAYCNT
+        // VCATN_REMNDR_DAYCNT
+
+        if(detailData.elctrnAtrzTySeCd === "VTW04901") {
+
+            let updParam = {}
+            const dtlInfo = {};
+            // if(["VTW01204", "VTW01205", "VTW01206"].includes(dtlInfo.vcatnTyCd)) {
+            //     updParam = {
+            //         pblenVcatnUseDaycnt: dtlInfo.vcatnDeCnt,
+            //         mdfcnDt: new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0],
+            //         mdfcnEmpId: cookies.userInfo.empId   
+            //     }
+            // } else if (["VTW01201", "VTW01202", "VTW01203"].includes(dtlInfo.vcatnTyCd)){
+            //     updParam = {
+            //         useDaycnt: 
+            //     }
+            // }
+            
+
+            // constParam = [
+            //     { tbNm: "VCATN_MNG" },
+            //     {  },
+            // ]
+        }
+        
+
+    }
 
     return (
         <div className="container" style={{ marginTop: "10px" }}>
