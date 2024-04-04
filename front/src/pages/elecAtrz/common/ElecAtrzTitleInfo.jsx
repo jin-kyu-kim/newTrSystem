@@ -53,7 +53,7 @@ const ElecAtrzTitleInfo = ({ atrzLnEmpList, getAtrzLn, contents, onClick, formDa
             <tr>
               <td>기안자</td>
               <td> : </td>
-              <td>부서 명 / {cookies.userInfo.empNm}</td>
+              <td>부서 명 / {formData.atrzDmndEmpNm}</td>
             </tr>
             <tr>
               <td>기안일자</td>
