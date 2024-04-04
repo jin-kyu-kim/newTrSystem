@@ -1,0 +1,29 @@
+.dx-scheduler-date-table-other-month.dx-scheduler-date-table-cell {
+    opacity: 1;
+    color: rgba(0, 0, 0, 0.3);
+}
+
+.dx-template-wrapper,
+.dx-scheduler-date-table-cell {
+    position: relative;
+}
+
+.dx-scheduler-date-table-cell .dx-template-wrapper {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+.day-cell {
+    height: 100%;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+.sunday {
+    background-color: rgba(244, 227, 226, 1);
+}
+
+.saturday {
+    background-color: rgba(225, 235, 244, 1);
+}

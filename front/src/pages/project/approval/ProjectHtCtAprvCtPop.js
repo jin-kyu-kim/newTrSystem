@@ -1,8 +1,18 @@
 import React from 'react';
 
 import Scheduler from 'devextreme-react/scheduler';
+import './ProjectHtCtAprvPop.css';
 
 const ProjectHrCtAprvCtPop = ({props, prjctNm, data, currentDate, setCurrentDate}) => {
+
+    const isWeekEnd = (date) => {
+        const day = date.getDay();
+        if(day === 0){
+            return "sunday";
+        }else if(day === 6){
+            return "saturday";
+        }
+    };
 
     const showDetails = () => {
 
@@ -41,6 +51,18 @@ const ProjectHrCtAprvCtPop = ({props, prjctNm, data, currentDate, setCurrentDate
 
     }
 
+    const DataCell = (props) => {
+        const {
+            data: {startDate, text}
+        } = props;
+        const dayClass = ['dx-template-wrapper'];
+        dayClass.push(isWeekEnd(startDate));
+        return (
+            <div className={dayClass.join(' ')}>
+                <div className={'day-cell'}>{text}</div>
+            </div>
+        );
+    };
 
     return (
         <div className="container">
@@ -54,6 +76,7 @@ const ProjectHrCtAprvCtPop = ({props, prjctNm, data, currentDate, setCurrentDate
             <Scheduler
                 timeZone="Asia/Seoul"
                 dataSource={props}
+                dataCellComponent={DataCell}
                 defaultCurrentView="month"
                 currentDate={currentDate}
                 editing={false}
