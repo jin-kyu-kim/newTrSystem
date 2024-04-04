@@ -235,7 +235,7 @@ const ProjectExpenseSubmit = (props) => {
 
     useEffect(() => {
         console.log('response[0].prjctCtAplySn', prjctCtAplySn);
-        if (prjctCtAplySn !== undefined) {
+        if (prjctCtAplySn !== undefined && prjctCtAplySn !== null) {
             // prjctCtAplySn 값이 정의되었을 때 로직 실행
             insertAtrzValue();
         }
