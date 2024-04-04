@@ -172,7 +172,7 @@ const ElecAtrzNewReq = () => {
         console.log(param)
 
         //임시저장 눌렀을 시 벨리데이션 체크    
-        const isValid = checkValidation(stts,param); 
+        const isValid = checkValidation(stts, param, atrzLnEmpList); 
         if(!isValid) return;
 
 
@@ -273,7 +273,7 @@ const ElecAtrzNewReq = () => {
     /**
      * 결재요청 및 임시저장 벨리데이션 체크
      */
-    const checkValidation = (stts, param) => {
+    const checkValidation = (stts, param, atrzLnEmpList) => {
         if(["VTW03701","VTW03702"].includes(stts)){
             if(param.title === undefined || param.title === ""){
                 alert("결재 제목을 입력해주세요.");
@@ -283,6 +283,19 @@ const ElecAtrzNewReq = () => {
                 return false;
             }
         }
+        console.log(atrzLnEmpList)
+
+        var atrzLn = atrzLnEmpList.find( ({ approvalCode }) => approvalCode == 'VTW00705');
+
+
+        // console.log(atrzLn)
+
+        if(atrzLn === undefined){
+            alert("결재선을 입력해주세요.");
+            return false;
+        }
+
+
         return true;
     }
     

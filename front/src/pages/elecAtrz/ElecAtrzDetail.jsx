@@ -21,7 +21,6 @@ const ElecAtrzDetail = () => {
     const [ cookies ] = useCookies(["userInfo"]);
     const [maxAtrzLnSn, setMaxAtrzLnSn] = useState();
 
-    console.log(    );
     const onBtnClick = (e) => {
 
         switch (e.element.id) {

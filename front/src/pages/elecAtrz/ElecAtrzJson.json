@@ -30,12 +30,12 @@
       "baseColumns": [
           {"key": "elctrnAtrzId", "value": "문서번호"},
           {"key": "gnrlAtrzTtl", "value": "결재유형"},
-          {"key": "atrzDmndEmpId", "value": "기안자"},
+          {"key": "atrzDmndEmpNm", "value": "기안자"},
           {"key": "regDt", "value": "기안요청일"},
           {"key": "title", "value": "결재 명", "width": 400}
       ],
       "progressApproval": [
-        {"key": "atrzDmnd", "value": "결재"}
+        {"key": "rjctPrvonsh", "value": "결재"}
       ],
       "progress": [
         {"key": "cnptNm", "value": "거래처"},
@@ -58,10 +58,10 @@
         {"key": "atrzStepCd", "value": "현재 결재단계"}
       ],
       "deny": [
-        {"key": "atrzDmnd", "value": "결재", "width": 100}
+        {"key": "rjctPrvonsh", "value": "결재", "width": 100}
       ],
       "temp": [
-        {"key": "remove", "value": "삭제", "button": {"text": "삭제", "name": ""}}
+        {"key": "delete", "value": "삭제"}
       ],
       "searchInfo": {
           "searchParams": { 
@@ -111,7 +111,7 @@
     "keyColumn": "atrzStepCdNm",
     "columns": [
       { "key": "atrzStepCdNm", "value": "결재라인"},
-      { "key": "aprvrEmpId", "value": "결재자"},
+      { "key": "empFlnm", "value": "결재자"},
       { "key": "atrzSttsCdNm", "value": "결재상태"},
       { "key": "rjctPrvonsh", "value": "결재의견"},
       { "key": "aprvYmd", "value": "결재일자"}

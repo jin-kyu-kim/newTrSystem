@@ -3,7 +3,7 @@ import '../../pages/elecAtrz/ElecAtrz.css'
 
 const AtrzLnTable = ({atrzLnEmpList, bottomNm}) => {
   const approvalCodes = ['VTW00702', 'VTW00703', 'VTW00704', 'VTW00705'];
-  console.log('aaa', atrzLnEmpList)
+
   const renderEmp = (cd) => {
     return(
         atrzLnEmpList.filter(emp => emp.approvalCode === cd)
@@ -72,4 +72,4 @@ const AtrzLnTable = ({atrzLnEmpList, bottomNm}) => {
 export default AtrzLnTable;
 
 const cellStyle = { border: '1px solid #c4c1c1', textAlign: 'center', height: '50px' };
-const grayBackground = { background: '#e1dfdf' };
+const grayBackground = { background: 'rgb(239, 239, 239)' };
