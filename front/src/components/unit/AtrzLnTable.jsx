@@ -7,7 +7,7 @@ const AtrzLnTable = ({atrzLnEmpList, bottomNm}) => {
   const renderEmp = (cd) => {
     return(
         atrzLnEmpList.filter(emp => emp.approvalCode === cd)
-        .map(emp => emp.listEmpFlnm).join('; ')
+        .map(emp => emp.empFlnm + ' ' + emp.jbpsNm).join('; ')
     );
   };
   const hasEmp = (cd) => {
