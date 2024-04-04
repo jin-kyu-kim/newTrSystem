@@ -33,13 +33,22 @@ const Main = ({}) => {
     const empId = cookies.userInfo.empId;
     const empno = cookies.userInfo.empno;
     const empNm = cookies.userInfo.empNm;
-    const deptNm = cookies.deptInfo.deptId;
+    const jbpsNm = cookies.userInfo.jbpsNm;
+    let test ="";
+    const deptNm = cookies.deptInfo.map((item, index)=>{
+      if(index != 0){
+        test +=", "
+      }
+      test += item.deptNm
+    })
+
     const navigate = useNavigate ();
     const [dataSession,setDataSession] = useState([]);
     const nowDate = moment().format('YYYYMM') //현재 년월
     const [currentPhase, setCurrentPhase] = useState(''); //차수설정용
 //------------------------ 초기 설정 --------------------------------------
         useEffect(()=> {
+          console.log("dddd",test)
             setDataSession([
                 {
                 empId : empId,
@@ -190,6 +199,10 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
             <TableRow style={ {borderStyle : "solid"}}>
                 <TableCell align="center" component="th" style={ { backgroundColor:"rgb(221, 221, 221)",fontWeight:"bold"}}>성명</TableCell>
                 <TableCell align="center" component="th" style={ {borderWidth: "1px" , textAlign:"left"}}>{empNm}</TableCell>
+            </TableRow>
+            <TableRow style={ {borderStyle : "solid"}}>
+                <TableCell align="center" component="th" style={ { backgroundColor:"rgb(221, 221, 221)",fontWeight:"bold"}}>직위</TableCell>
+                <TableCell align="center" component="th" style={ {borderWidth: "1px" , textAlign:"left"}}>{jbpsNm}</TableCell>
             </TableRow>
             <TableRow style={ {borderStyle : "solid"}}>
                 <TableCell align="center" component="th" style={ {backgroundColor:"rgb(221, 221, 221)",fontWeight:"bold"}}>소속</TableCell>

@@ -370,7 +370,7 @@ const cancelJbpsEmpHist = async (updParam,ehdParam) => {       //삭제axios
       navigate("/infoInq/EmpDetailInfo", 
               { state: { 
                 empId: e.data.empId,
-                index: 1
+                 index: 1
                       } 
               });
     }
