@@ -80,7 +80,7 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData }) => {
                 columns={columns}
                 values={expensClmInfo}
                 grouping={groupingColumn}
-                keyColumn={"clmAmt"}
+                keyColumn={"rowId"}
                 groupingData={groupingData}
                 groupingCustomizeText={groupingCustomizeText}
             />

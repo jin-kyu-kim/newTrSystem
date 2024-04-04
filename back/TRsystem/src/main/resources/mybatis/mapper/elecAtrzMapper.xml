@@ -151,7 +151,8 @@
 	</select>
 	
 	<select id="retrieveElctrnAtrzExpensClm" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT cd1.CD_NM AS CT_STLM_SE_CD_NM	
+		SELECT ROW_NUMBER() OVER() AS ROW_ID
+		 , cd1.CD_NM AS CT_STLM_SE_CD_NM	
 		 , CT_STLM_SE_CD
 		 , RCIPT_PBLCN_YMD				
 		 , cad.CNPT_NM	-- 거래처명
