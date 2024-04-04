@@ -26,53 +26,42 @@
 	</select>	
 
 	<select id="elecAtrzMain" parameterType="String" resultType="com.trsystem.LowerHashMap">
-		SELECT
-		ea.ELCTRN_ATRZ_ID,
-		ea.ELCTRN_ATRZ_TY_SE_CD,
-		ea.NOW_ATRZ_LN_SN,
-		ea.PRJCT_ID,
-		eadf.GNRL_ATRZ_TTL, -- 전자결재 유형
-		e1.EMP_FLNM AS ATRZ_DMND_EMP_ID, -- 기안자
-		e2.EMP_FLNM AS APRVR_EMP_ID, -- 현재 결재권자
-		DATE_FORMAT(ea.REG_DT, '%Y-%m-%d') AS REG_DT,
-		-- 			ca.CNPT_NM, -- 청구결재 (거래처명)
-		stepCd.CD_NM AS ATRZ_STEP_CD, -- 현재 결재단계 (VTW007)
-		sttsCd.CD_NM AS ATRZ_STTS_CD, -- 결재상태 (VTW008)
-		COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cta.CTRT_ATRZ_TTL, cga.ATRZ_TTL,
-		CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD), ' [', va.VCATN_BGNG_YMD, ' ~ ', va.VCATN_END_YMD, ' (', va.VCATN_DE_CNT, '일)]')) AS TITLE,
-		COALESCE(ga.GNRL_ATRZ_CN, ca.CLM_ATRZ_CN, cta.CTRT_ATRZ_CN, cga.STLM_CN) AS CN
+		SELECT DISTINCT
+			ea.ELCTRN_ATRZ_ID,
+			ea.PRJCT_ID,
+			eadf.GNRL_ATRZ_TTL, -- 전자결재 유형
+			(SELECT EMP_FLNM FROM EMP WHERE EMP_ID = ea.ATRZ_DMND_EMP_ID) ATRZ_DMND_EMP_ID, -- 기안자
+			(SELECT EMP_FLNM FROM EMP WHERE EMP_ID = al.APRVR_EMP_ID) APRVR_EMP_ID, -- 결재자
+			(SELECT CD_NM FROM CD WHERE CD_VALUE = al.ATRZ_STEP_CD) ATRZ_STEP_CD, -- 현재 결재단계
+			(SELECT CD_NM FROM CD WHERE CD_VALUE = al.ATRZ_STTS_CD) ATRZ_STTS_CD, -- 결재상태
+			DATE_FORMAT(ea.REG_DT, '%Y-%m-%d') AS REG_DT,
+			COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cta.CTRT_ATRZ_TTL, cga.ATRZ_TTL, CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD), ' [',
+			DATE_FORMAT(va.VCATN_BGNG_YMD, '%Y-%m-%d'), ' ~ ', DATE_FORMAT(va.VCATN_END_YMD, '%Y-%m-%d'), ' (', va.VCATN_DE_CNT, '일)]')) AS TITLE,
+			COALESCE(ga.GNRL_ATRZ_CN, ca.CLM_ATRZ_CN, cta.CTRT_ATRZ_CN, cga.STLM_CN) AS CN
 		FROM ELCTRN_ATRZ ea
-		LEFT JOIN ATRZ_LN al
-		ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID
-		AND ea.NOW_ATRZ_LN_SN = al.ATRZ_LN_SN
-		LEFT JOIN CD tyCd ON ea.ELCTRN_ATRZ_TY_SE_CD = tyCd.CD_VALUE -- 전자결재 유형코드 명
-		LEFT JOIN CD aprCd ON al.APRVR_EMP_ID = aprCd.CD_VALUE -- 현재 결재권자 명
-		LEFT JOIN CD stepCd ON al.ATRZ_STEP_CD = stepCd.CD_VALUE -- 현재 결재단계 (VTW007) 명
-		LEFT JOIN CD sttsCd ON al.ATRZ_STTS_CD = sttsCd.CD_VALUE -- 결재상태 (VTW008) 명
-		LEFT JOIN GNRL_ATRZ ga ON ea.ELCTRN_ATRZ_ID = ga.ELCTRN_ATRZ_ID -- 일반결재
-		LEFT JOIN CLM_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID -- 청구결재 - 거래처명
-		LEFT JOIN VCATN_ATRZ va ON ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID -- 휴가결재 제목
-		LEFT JOIN REFRN_MAN rm ON ea.ELCTRN_ATRZ_ID = rm.ELCTRN_ATRZ_ID -- 참조자
-		LEFT JOIN CTRT_ATRZ cta ON ea.ELCTRN_ATRZ_ID = cta.ELCTRN_ATRZ_ID -- 계약 지급
-		LEFT JOIN CTRT_GIVE_ATRZ cga ON ea.ELCTRN_ATRZ_ID = cga.ELCTRN_ATRZ_ID -- 계약 지급
-		LEFT JOIN ELCTRN_ATRZ_DOC_FORM eadf ON ea.ELCTRN_ATRZ_TY_SE_CD = eadf.ELCTRN_ATRZ_TY_SE_CD -- 서식 제목
-		JOIN EMP e1 ON ea.ATRZ_DMND_EMP_ID = e1.EMP_ID
-		JOIN EMP e2 ON al.APRVR_EMP_ID = e2.EMP_ID
+			LEFT JOIN ATRZ_LN al ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID AND ea.NOW_ATRZ_LN_SN = al.ATRZ_LN_SN -- 현재 결재단계만
+			LEFT JOIN REFRN_MAN rm ON ea.ELCTRN_ATRZ_ID = rm.ELCTRN_ATRZ_ID -- 참조자의 경우
+			LEFT JOIN GNRL_ATRZ ga ON ea.ELCTRN_ATRZ_ID = ga.ELCTRN_ATRZ_ID -- 일반결재
+			LEFT JOIN CLM_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID -- 청구결재
+			LEFT JOIN CTRT_ATRZ cta ON ea.ELCTRN_ATRZ_ID = cta.ELCTRN_ATRZ_ID -- 계약결재
+			LEFT JOIN CTRT_GIVE_ATRZ cga ON ea.ELCTRN_ATRZ_ID = cga.ELCTRN_ATRZ_ID -- 계약지급결재
+			LEFT JOIN VCATN_ATRZ va ON ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID -- 휴가결재
+			LEFT JOIN ELCTRN_ATRZ_DOC_FORM eadf ON ea.ATRZ_FORM_DOC_ID = eadf.ATRZ_FORM_DOC_ID -- 서식 제목
 		WHERE 1=1
 		<choose>
-			<when test="sttsCd != null and refer != null and sttsCd.startsWith('VTW037')">
+			<when test='sttsCd != null and refer == null and sttsCd.startsWith("VTW037")'>
+				AND ATRZ_DMND_EMP_ID = #{empId}
+				AND ea.ATRZ_DMND_STTS_CD = #{sttsCd}
+			</when>
+			<when test='sttsCd != null and refer == true and sttsCd.startsWith("VTW037")'>
 				AND rm.EMP_ID = #{empId}
 				AND ea.ATRZ_DMND_STTS_CD = #{sttsCd}
 			</when>
-			<when test="sttsCd != null and sttsCd.startsWith('VTW037')">
-				AND ea.ATRZ_DMND_STTS_CD = #{sttsCd}
-				AND ea.ATRZ_DMND_EMP_ID = #{empId}
+			<when test='sttsCd != null and sttsCd.startsWith("VTW008")'>
+				AND al.APRVR_EMP_ID = #{empId}
+				AND al.ATRZ_STTS_CD = #{sttsCd}
 			</when>
 		</choose>
-		<if test="sttsCd != null and sttsCd.startsWith('VTW008')">
-			AND al.ATRZ_STTS_CD = #{sttsCd}
-			AND al.APRVR_EMP_ID = #{empId}
-		</if>
 		<if test="elctrnAtrzTySeCd != null">
 			AND ea.ELCTRN_ATRZ_TY_SE_CD = #{elctrnAtrzTySeCd}
 		</if>
@@ -81,26 +70,26 @@
 			LOWER(ga.GNRL_ATRZ_TTL) LIKE CONCAT('%', LOWER(#{title}), '%') OR
 			LOWER(ca.CLM_ATRZ_TTL) LIKE CONCAT('%', LOWER(#{title}), '%') OR
 			LOWER(cga.ATRZ_TTL) LIKE CONCAT('%', LOWER(#{title}), '%') OR
-			LOWER(va.VCATN_TY_CD) IN (SELECT CD_VALUE FROM CD WHERE LOWER(CD_NM) LIKE CONCAT('%', LOWER(#{title}), '%'))
-			)
+			LOWER(va.VCATN_TY_CD) IN (SELECT CD_VALUE FROM CD WHERE LOWER(CD_NM) LIKE CONCAT('%', LOWER(#{title}), '%')) )
 		</if>
 	</select>
 
 	<select id="elecAtrzMainCount" parameterType="String" resultType="com.trsystem.LowerHashMap">
 		SELECT
-			SUM(CASE WHEN ea.ATRZ_DMND_STTS_CD = 'VTW03701' AND ea.ATRZ_DMND_EMP_ID = #{empId} THEN 1 ELSE 0 END) AS TEMP,
-			SUM(CASE WHEN ea.ATRZ_DMND_STTS_CD = 'VTW03702' AND ea.ATRZ_DMND_EMP_ID = #{empId} THEN 1 ELSE 0 END) AS PROGRESS,
-			SUM(CASE WHEN ea.ATRZ_DMND_STTS_CD = 'VTW03703' AND ea.ATRZ_DMND_EMP_ID = #{empId} THEN 1 ELSE 0 END) AS TERMINATED_MY,
-			SUM(CASE WHEN ea.ATRZ_DMND_STTS_CD = 'VTW03704' AND ea.ATRZ_DMND_EMP_ID = #{empId} THEN 1 ELSE 0 END) AS DENY,
-			SUM(CASE WHEN al.ATRZ_STTS_CD = 'VTW00801' AND al.APRVR_EMP_ID = #{empId} THEN 1 ELSE 0 END) AS PROGRESS_APPROVAL,
-			SUM(CASE WHEN al.ATRZ_STTS_CD = 'VTW00802' AND al.APRVR_EMP_ID = #{empId} THEN 1 ELSE 0 END) AS TERMINATED_APRVR_EMP,
-			SUM(CASE WHEN ea.ATRZ_DMND_STTS_CD = 'VTW03702' AND rm.EMP_ID = #{empId} THEN 1 ELSE 0 END) AS PROGRESS_REFER,
-			SUM(CASE WHEN ea.ATRZ_DMND_STTS_CD = 'VTW03703' AND rm.EMP_ID = #{empId} THEN 1 ELSE 0 END) AS TERMINATED_REFER
+			COUNT(DISTINCT CASE WHEN ea.ATRZ_DMND_STTS_CD = 'VTW03701' AND ea.ATRZ_DMND_EMP_ID = #{empId} THEN ea.ELCTRN_ATRZ_ID END) AS TEMP,
+			COUNT(DISTINCT CASE WHEN ea.ATRZ_DMND_STTS_CD = 'VTW03702' AND ea.ATRZ_DMND_EMP_ID = #{empId} THEN ea.ELCTRN_ATRZ_ID END) AS PROGRESS,
+			COUNT(DISTINCT CASE WHEN ea.ATRZ_DMND_STTS_CD = 'VTW03703' AND ea.ATRZ_DMND_EMP_ID = #{empId} THEN ea.ELCTRN_ATRZ_ID END) AS TERMINATED_MY,
+			COUNT(DISTINCT CASE WHEN ea.ATRZ_DMND_STTS_CD = 'VTW03704' AND ea.ATRZ_DMND_EMP_ID = #{empId} THEN ea.ELCTRN_ATRZ_ID END) AS DENY,
+			COUNT(DISTINCT CASE WHEN al.ATRZ_STTS_CD = 'VTW00801' AND al.APRVR_EMP_ID = #{empId} THEN al.ELCTRN_ATRZ_ID END) AS PROGRESS_APPROVAL,
+			COUNT(DISTINCT CASE WHEN al.ATRZ_STTS_CD = 'VTW00802' AND al.APRVR_EMP_ID = #{empId} THEN al.ELCTRN_ATRZ_ID END) AS TERMINATED_APRVR_EMP,
+			COUNT(DISTINCT CASE WHEN ea.ATRZ_DMND_STTS_CD = 'VTW03702' AND rm.EMP_ID = #{empId} THEN rm.ELCTRN_ATRZ_ID END) AS PROGRESS_REFER,
+			COUNT(DISTINCT CASE WHEN ea.ATRZ_DMND_STTS_CD = 'VTW03703' AND rm.EMP_ID = #{empId} THEN rm.ELCTRN_ATRZ_ID END) AS TERMINATED_REFER
 		FROM ELCTRN_ATRZ ea
-			LEFT JOIN ATRZ_LN al ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID AND ea.NOW_ATRZ_LN_SN = al.ATRZ_LN_SN
-			LEFT JOIN REFRN_MAN rm ON ea.ELCTRN_ATRZ_ID = rm.ELCTRN_ATRZ_ID
-			JOIN EMP e1 ON ea.ATRZ_DMND_EMP_ID = e1.EMP_ID
-			JOIN EMP e2 ON al.APRVR_EMP_ID = e2.EMP_ID
+				 LEFT JOIN ATRZ_LN al ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID
+				 LEFT JOIN REFRN_MAN rm ON ea.ELCTRN_ATRZ_ID = rm.ELCTRN_ATRZ_ID
+		WHERE ea.ATRZ_DMND_EMP_ID = #{empId}
+		   OR al.APRVR_EMP_ID = #{empId}
+		   OR rm.EMP_ID = #{empId}
 	</select>
 
 	<select id="retrieveAtrzLn" parameterType="map" resultType="com.trsystem.LowerHashMap">

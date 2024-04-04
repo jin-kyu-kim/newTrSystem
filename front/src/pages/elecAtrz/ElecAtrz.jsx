@@ -26,6 +26,7 @@ const ElecAtrz = () => {
 
   useEffect(() => {
     const getAtrz = async () => {
+      console.log('...', param)
       try {
         const response = await ApiRequest('/boot/common/queryIdSearch', param)
         setSelectedList(response)
