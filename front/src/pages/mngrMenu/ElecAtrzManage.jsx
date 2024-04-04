@@ -127,7 +127,6 @@ const ElecAtrzManage = () => {
                   values={searchList}
                   columns={columnTitle}
                   paging={true}
-                  onClick
                 />
             </div>
         </div>
