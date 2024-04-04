@@ -5,11 +5,11 @@ import CustomTable from "components/unit/CustomTable";
 import { Tooltip } from "devextreme-react";
 import ApiRequest from "utils/ApiRequest";
 import "../elecAtrz/ElecAtrz.css";
-import { useCookies } from "react-cookie";
+import { useNavigate } from "react-router-dom";
 
 const ElecAtrzManage = () => {
     //========================선언구간=======================//
-    //const [cookies] = useCookies(["userInfo", "userAuth"]); 
+    const navigate = useNavigate(); 
     const { keyColumn, queryId, countQueryId, baseColumns, progress, atrzSquareList, searchInfo } = elecAtrzManageJson.elecManageMain;
     const [searchParam, setSearchParam] = useState({keyColumn : keyColumn, queryId : queryId, searchType : "progress"});
     const [totalCount, setTotalCount] = useState([]);
@@ -67,17 +67,31 @@ const ElecAtrzManage = () => {
     }
 
     const getList = ({keyNm}) => {
-        keyNm !== "progress" ? setSearchSetVisivle(true) : setSearchSetVisivle(false);
+        
 
-        setClickBox(keyNm)
-        setColumnTitle(
-            baseColumns.concat(elecAtrzManageJson.elecManageMain[keyNm])
-        )
         setSearchParam({
             queryId : queryId,
             keyColumn : keyColumn,
             searchType : keyNm
         })
+        
+        keyNm !== "progress" ? setSearchSetVisivle(true) : setSearchSetVisivle(false);
+        setClickBox(keyNm)
+
+        setColumnTitle(
+            baseColumns.concat(elecAtrzManageJson.elecManageMain[keyNm])
+        )
+
+    }
+
+    //팝업 호출 이벤트
+    const onBtnClick = (e) => {
+        alert("작업중입니다.")
+    }
+
+    //그리드 로우 클릭 이벤트
+    const onRowDblClick = (e) => {
+        navigate('/elecAtrz/ElecAtrzDetail', {state: {data: e.data}});
     }
     
     //======================================================//
@@ -127,6 +141,8 @@ const ElecAtrzManage = () => {
                   values={searchList}
                   columns={columnTitle}
                   paging={true}
+                  onRowDblClick={onRowDblClick}
+                  onClick={onBtnClick}
                 />
             </div>
         </div>

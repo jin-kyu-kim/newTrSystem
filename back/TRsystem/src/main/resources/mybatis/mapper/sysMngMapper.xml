@@ -218,7 +218,8 @@
 	
 	<!-- 전자결재(관리자메뉴) 쿼리  -->
 	<select id="retrieveElecAtrzMng" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT M.ELCTRN_ATRZ_ID						-- 전자결재 ID							
+		SELECT M.ELCTRN_ATRZ_ID						-- 전자결재 ID
+		     , M.PRJCT_ID							-- 프로젝트 ID
 		     , M.ELCTRN_ATRZ_TY_SE_CD				-- 전자결재유형코드
 		     , M.TY_CD AS ELCTRN_ATRZ_TY_SE_CD_NM
 		     , M.ATRZ_DMND_STTS_CD					-- 결재요청상세코드
@@ -240,6 +241,7 @@
 		     , COUNT(*) OVER () AS TOTAL_ITEMS
 		  FROM (
 					SELECT EA.ELCTRN_ATRZ_ID
+					     , EA.PRJCT_ID
 					     , EA.ELCTRN_ATRZ_TY_SE_CD
 					     , CD1.CD_NM AS TY_CD
 					     , EA.ATRZ_DMND_STTS_CD
@@ -289,11 +291,19 @@
 				AND (ATRZ_STTS_CD = 'VTW00803' OR ATRZ_DMND_STTS_CD = 'VTW03704')
 			</when>
 		</choose>
-		
-		<if test="elctrnAtrzTySeCd != null">
-			AND ea.ELCTRN_ATRZ_TY_SE_CD = #{elctrnAtrzTySeCd}
+		<!-- 검색 조건 -->
+		<if test="prjctId != null">
+			AND PRJCT_ID = #{prjctId}
 		</if>
-		
+		<if test="elctrnAtrzTySeCd != null">
+			AND ELCTRN_ATRZ_TY_SE_CD = #{elctrnAtrzTySeCd}
+		</if>
+		<if test="atrzDmndEmpNm != null">
+			AND ATRZ_DMND_EMP_NM LIKE CONCAT('%', LOWER(#{atrzDmndEmpNm}), '%')
+		</if>
+		<if test="cnptNm != null">
+			AND CNPT_NM LIKE CONCAT('%', LOWER(#{cnptNm}), '%')
+		</if>
 		<if test="title != null">
 			AND (
 			LOWER(GA.GNRL_ATRZ_TTL) LIKE CONCAT('%', LOWER(#{title}), '%') OR

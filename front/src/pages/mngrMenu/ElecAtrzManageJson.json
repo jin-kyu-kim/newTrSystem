@@ -9,10 +9,10 @@
         "queryId": "sysMngMapper.retrieveElecAtrzMng",
         "countQueryId": "sysMngMapper.elecAtrzMngCount",
         "baseColumns": [
-            {"key": "elctrnAtrzId", "value": "문서번호"},
-            {"key": "elctrnAtrzTySeCdNm", "value": "결재유형"},
-            {"key": "atrzDmndEmpNm", "value": "기안자"},
-            {"key": "regDt", "value": "기안요청일"},
+            {"key": "elctrnAtrzId", "value": "문서번호", "width": 150},
+            {"key": "gnrlAtrzTtl", "value": "결재유형", "width": 200},
+            {"key": "atrzDmndEmpNm", "value": "기안자", "width": 100},
+            {"key": "regDt", "value": "기안요청일", "width": 150},
             {"key": "title", "value": "결재 명", "width": 400}
         ],
         "progress" : [
@@ -22,7 +22,7 @@
           {"key": "yn", "value": "결재 회수가능여부", "width": 100}
         ],
         "terminatedAprvrEmp" : [
-            {"key": "cnptNm", "value":"거래처"},
+            {"key": "cnptNm", "value":"거래처", "width": 100},
             {"value":"첨부파일", "button":{"text":"첨부파일"}},
             {"value":"문서이력", "button":{"text":"문서이력"}}
         ],
@@ -61,8 +61,8 @@
               }
             ],
             "textBoxItem": [
-                {"placeholder": "기안자"},
-                {"placeholder": "거래처"},
+                {"placeholder": "기안자", "name" : "atrzDmndEmpNm"},
+                {"placeholder": "거래처", "name" : "cnptNm"},
                 {"placeholder": "결재명", "name": "title"}
             ]
         }
