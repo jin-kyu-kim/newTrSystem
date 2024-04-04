@@ -2,17 +2,17 @@
   "elecMain": {
       "barList": [
           {"text": "결재 진행함", "barColor": "#4473a5", "childList": [
-              {"key": "progressApproval", "info": {"text": "결재문서", "sttsCd": "VTW00801", "squareColor": "rgb(216, 237, 246)", 
+              {"key": "progressApproval", "info": {"text": "결재문서", "sttsCd": "VTW00801", "refer": null, "squareColor": "rgb(216, 237, 246)", 
               "tooltip": "본인이 결재 해야할 문서를 조회합니다."}},
-              {"key": "progress", "info": {"text": "진행문서", "sttsCd": "VTW03702", "squareColor": "rgb(216, 237, 246)", 
+              {"key": "progress", "info": {"text": "진행문서", "sttsCd": "VTW03702", "refer": null, "squareColor": "rgb(216, 237, 246)", 
               "tooltip": "본인이 기안한 문서 중 진행중인 문서를 조회합니다."}},
               {"key": "progressRefer", "info": {"text": "참조문서", "sttsCd": "VTW03702", "refer": true, "squareColor": "rgb(216, 237, 246)", 
               "tooltip": "본인이 참조선에 지정된 문서중 진행중인 문서를 조회합니다."}}
           ]},
           {"text": "결재 완료함", "barColor": "#4473a5", "childList": [
-              {"key": "terminatedMy", "info": {"text": "내 기안문서", "sttsCd": "VTW03703", "squareColor": "rgb(216, 237, 246)", 
+              {"key": "terminatedMy", "info": {"text": "내 기안문서", "sttsCd": "VTW03703", "refer": null, "squareColor": "rgb(216, 237, 246)", 
               "tooltip": "본인이 작성한 기안문서 중 완료된 문서를 조회합니다."}},
-              {"key": "terminatedAprvrEmp", "info": {"text": "완료문서", "sttsCd": "VTW00802", "squareColor": "rgb(216, 237, 246)", 
+              {"key": "terminatedAprvrEmp", "info": {"text": "완료문서", "sttsCd": "VTW00802", "refer": null, "squareColor": "rgb(216, 237, 246)", 
               "tooltip": "본인이 결재한 문서를 조회합니다."}},
               {"key": "terminatedRefer", "info": {"text": "참조문서", "sttsCd": "VTW03703", "refer": true, "squareColor": "rgb(216, 237, 246)", 
               "tooltip": "본인이 참조선에 지정된 문서중 결재완료된 문서를 조회합니다."}}
@@ -30,12 +30,12 @@
       "baseColumns": [
           {"key": "elctrnAtrzId", "value": "문서번호"},
           {"key": "gnrlAtrzTtl", "value": "결재유형"},
-          {"key": "atrzDmndEmpId", "value": "기안자"},
+          {"key": "atrzDmndEmpNm", "value": "기안자"},
           {"key": "regDt", "value": "기안요청일"},
           {"key": "title", "value": "결재 명", "width": 400}
       ],
       "progressApproval": [
-        {"key": "atrzDmnd", "value": "결재"}
+        {"key": "rjctPrvonsh", "value": "결재"}
       ],
       "progress": [
         {"key": "cnptNm", "value": "거래처"},
@@ -58,14 +58,10 @@
         {"key": "atrzStepCd", "value": "현재 결재단계"}
       ],
       "deny": [
-        {"key": "atrzDmnd", "value": "결재", "width": 100}
-      ],
-      "writeReport": [
-        {"key": "write", "value": "보고서 작성", "button": {"text": "작성", "name": ""}},
-        {"key": "search", "value": "보고서 조회", "button": {"text": "조회", "name": ""}}
+        {"key": "rjctPrvonsh", "value": "결재", "width": 100}
       ],
       "temp": [
-        {"key": "remove", "value": "삭제", "button": {"text": "삭제", "name": ""}}
+        {"key": "delete", "value": "삭제"}
       ],
       "searchInfo": {
           "searchParams": { 
@@ -106,6 +102,8 @@
       {"key": "rm", "value": "비고"}
     ],
     "header": [
+      { "text": "승인", "id": "aprv" },
+      { "text": "반려", "id": "rjct" },
       { "text": "출력", "id": "print" },
       { "text": "문서이력", "id": "docHist" }
     ],
@@ -113,7 +111,7 @@
     "keyColumn": "atrzStepCdNm",
     "columns": [
       { "key": "atrzStepCdNm", "value": "결재라인"},
-      { "key": "aprvrEmpId", "value": "결재자"},
+      { "key": "empFlnm", "value": "결재자"},
       { "key": "atrzSttsCdNm", "value": "결재상태"},
       { "key": "rjctPrvonsh", "value": "결재의견"},
       { "key": "aprvYmd", "value": "결재일자"}

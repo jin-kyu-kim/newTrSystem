@@ -28,6 +28,7 @@ const ProjectHrCtAprvDetail = () => {
     const [ctDetailValues, setCtDetailValues] = useState([]);
     const [mmDetailValues, setMmDetailValues] = useState([]);
     const [opnnCn, setOpnnCn] = useState("");
+    const [currentDate, setCurrentDate] = useState(new Date());
 
     const date = new Date();
     const year = date.getFullYear();
@@ -47,6 +48,12 @@ const ProjectHrCtAprvDetail = () => {
         }
 
     }, [param])
+
+    useEffect(() => {
+        if(data.aplyYm != null){
+            setCurrentDate(data.aplyYm.slice(0,4)+"/"+data.aplyYm.slice(4,6)+"/01");
+        }
+    }, [data]);
 
     const handleCtAply = async () => {
 
@@ -137,7 +144,6 @@ const ProjectHrCtAprvDetail = () => {
         }
         const response = await ApiRequest("/boot/common/queryIdSearch", param);
         setMmDetailValues(response);
-        console.log(response)
     }
 
 
@@ -276,7 +282,7 @@ const ProjectHrCtAprvDetail = () => {
                 onHiding={handleClose}
                 showCloseButton={true}
             >
-                <ProjectHrCtAprvCtPop props={ctDetailValues} prjctNm={prjctNm} data={data}/> 
+                <ProjectHrCtAprvCtPop props={ctDetailValues} prjctNm={prjctNm} data={data} currentDate={currentDate} setCurrentDate={setCurrentDate}/>
             </Popup>
 
             <Popup
@@ -286,7 +292,7 @@ const ProjectHrCtAprvDetail = () => {
                 onHiding={handleClose}
                 showCloseButton={true}
             >
-                <ProjectHrCtAprvMmPop props={mmDetailValues} prjctNm={prjctNm} data={data}/>
+                <ProjectHrCtAprvMmPop props={mmDetailValues} prjctNm={prjctNm} data={data} currentDate={currentDate} setCurrentDate={setCurrentDate}/>
             </Popup>
 
             <Popup

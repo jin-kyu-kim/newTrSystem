@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Form, {
     Item, GroupItem, Label, FormTypes, SimpleItem
 } from 'devextreme-react/form';
+// import "../ElecAtrzFormManageStyles.css";
 
 import ApiRequest from 'utils/ApiRequest';
 
@@ -57,6 +58,26 @@ const ElectAtrzRenderForm = ({formList, onFormClick}) => {
 
         formList.map((data) => {
             if(data.docSeCd === cd) {
+                // result.push(
+                //     <div className='elecAtrz-from-container-box' style={{minHeight: "100px"}}>
+                //         <div 
+                //             style={{textAlign: "center"
+                //                     , padding: "20px"
+                //                     , minHeight:"150px"
+                //                     , minWidth: "100px"
+                //                     , width: "100%"
+                //                     , border: "solid black 1px"
+                //                     , cursor: "pointer"}}   
+                //         >
+                //             <div onClick={onFormClick} style={{marginBottom: "20px"}}>
+                //                 {data.gnrlAtrzTtl}
+                //             </div>
+                //             <div>
+                //                 <Button text={"기안하기"} onClick={() => onFormClick(data)}/>
+                //             </div>
+                //         </div>
+                //     </div>
+                // )
                 result.push(
                     <div className='elecAtrz-from-container-box' style={{minHeight: "100px"}}>
                         <div 
@@ -65,14 +86,21 @@ const ElectAtrzRenderForm = ({formList, onFormClick}) => {
                                     , minHeight:"150px"
                                     , minWidth: "100px"
                                     , width: "100%"
-                                    , border: "solid black 1px"
+                                    , border: "solid grey 1px"
+                                    , backgroundColor: "rgba(225, 239, 243, 0.4)"
                                     , cursor: "pointer"}}   
                         >
-                            <div onClick={onFormClick} style={{marginBottom: "20px"}}>
-                                {data.gnrlAtrzTtl}
-                            </div>
+                    
                             <div>
-                                <Button text={"기안하기"} onClick={() => onFormClick(data)}/>
+                                <Button style={{
+                                    position: "relative",
+                                    width: "auto",
+                                    height: "100px",
+                                    padding: "10px 20px",
+                                    margin: "10px",
+                                    cursor: "pointer",
+                                    backgroundColor: "white"
+                                }} text={data.gnrlAtrzTtl} onClick={() => onFormClick(data)}/>
                             </div>
                         </div>
                     </div>

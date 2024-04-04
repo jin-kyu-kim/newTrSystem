@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FormControl, InputLabel, Select, MenuItem, TextField, Button, Grid } from "@mui/material";
+import { FormControl, InputLabel, Select, MenuItem, TextField, Button, Grid, TableCell } from "@mui/material";
 import { DateBox } from "devextreme-react/date-box";
 import ApiRequest from "utils/ApiRequest";
 import { set } from "date-fns";
@@ -10,14 +10,14 @@ const ExpensInfo = ({onSendData}) => {
     const [ctStlmSeCdList, setCtStlmSeCdList] = useState([]);
     const [bankCdList, setBankCdList] = useState([]);
     const [expensCdList, setExpensCdList] = useState([]);
-    const [clmOdr, setClmOdr] = useState();
+    const [clmOdr, setClmOdr] = useState({});
 
 
     useEffect(() => {
         retrieveCtStlmSeCd();
         retrieveBankCd();
         retrieveCdList();
-        setExpensDate();
+        // setExpensDate();
     }, []);
 
     const retrieveCtStlmSeCd = async () => {
@@ -144,26 +144,55 @@ const ExpensInfo = ({onSendData}) => {
     const setExpensDate = () => {
         let today = new Date();
         let year = today.getFullYear();
-        let month = today.getMonth();
+        let month = today.getMonth();   // 현재 달보다 -1임
         let day = today.getDay();
 
-        console.log(year, month);
-        if(month < 10) {
-            month = "0" + month;
-        }
-
-        console.log(today.getDay)
+        let disMonth;
 
         let order;
+        let nextOrder;
         if(day <= 15) {
             order = "2";
+            nextOrder = "1";
         } else {
             order = "1";
+            nextOrder = "2";
+            month =  today.getMonth() + 1;
         }
 
-        let result = year + month + "-" + order;
+        if(month < 10) {
+            disMonth = "0" + month;
+        } else {
+            disMonth = "" + month;
+        }
+        
 
-        setClmOdr(result);
+        
+        console.log(year, month, day);
+
+
+        let nextYearMonthOrder;
+        if(month === 12 && day >= 16) {
+            nextYearMonthOrder = year + "" + month + 1 + "-" + nextOrder;
+        } else if(month === 1 && day <= 15) {
+            
+        }
+        console.log(nextYearMonthOrder)
+
+        // console.log(year, month, order, nextOrder);
+
+        
+        let yearMonthOrder = year + "" + disMonth + "-" + order;
+
+        setClmOdr({
+            yearMonthOrder: yearMonthOrder,
+            order: order,
+            nextOrder: nextOrder,   
+            year: year,
+            month: month,
+            day: day
+        })
+
     } 
 
     return (
@@ -373,12 +402,40 @@ const ExpensInfo = ({onSendData}) => {
             ))}
 
             <hr/>
-            <div>* 현재 TR 입력 차수: {clmOdr}</div>
+            <div>* 현재 TR 입력 차수: </div>
             <div>* 마감 여부: </div>
             <br/>
             <div>1. 지출 방법: 개인법인카드, 개인현금</div>
             <div>
+                <table>
+                    <thead>
+                        <tr>
+                            <td>
+                                사용일자
+                            </td>
+                            <td>
+                                반영차수
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
 
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+
+                            </td>
+                            <td>
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
             <br/>
             <div>2. 지출 방법: 기업법인카드, 세금계산서</div>

@@ -107,7 +107,6 @@ const EmpManage = ({}) => {
       } else{
         setEmpMax({});
         setEmpFteParam({});
-        
        }
       
     }
@@ -270,7 +269,11 @@ const insertEmpFte = async () => {
        empId : empDetailParam.empId 
     }
   ]
-
+  const paramUpdUser =
+    {  
+       empno : empMax,
+       empId:  empDetailParam.empId ,
+    }
   const paramHist =[
     { tbNm: "EMP_HIST", snColumn: "EMP_HIST_SN", snSearch: {empId : empDetailParam.empId}},
     {
@@ -285,8 +288,9 @@ const insertEmpFte = async () => {
   ]
   try {
     const responseUpt = await ApiRequest("/boot/common/commonUpdate", paramUpd);
+    const responseUptUser = await ApiRequest("/boot/sysMng/resetPswd", paramUpdUser);
     const responseHist = await ApiRequest("/boot/common/commonInsert", paramHist);
-      if (responseUpt > 0 && responseHist > 0) {
+      if (responseUpt > 0 && responseHist > 0 && responseUptUser === "성공")  {
         alert("저장되었습니다.");
         setEmpMax({});
         setEmpFteParam({});
@@ -348,7 +352,6 @@ const insertEmpFte = async () => {
 
 const cancelJbpsEmpHist = async (updParam,ehdParam) => {       //삭제axios
   try {
-    
     const responseUpd = await ApiRequest("/boot/common/commonUpdate", updParam);
     const responseDel = await ApiRequest("/boot/common/commonDelete", ehdParam);
       if (responseUpd > 0 && responseDel > 0 ) {
@@ -363,11 +366,11 @@ const cancelJbpsEmpHist = async (updParam,ehdParam) => {       //삭제axios
 
 //===========================더블클릭시 회원정보창으로 이동
     const onRowDblClick = (e) => {
-      console.log(e);
+      console.log("eee",e);
       navigate("/infoInq/EmpDetailInfo", 
               { state: { 
-                empId: e.empId,
-                index: 1
+                empId: e.data.empId,
+                 index: 1
                       } 
               });
     }
@@ -385,13 +388,13 @@ const cancelJbpsEmpHist = async (updParam,ehdParam) => {       //삭제axios
  }
 
 //================================비밀번호 초기화 (개발예정)
-    const onClickRestPwd  = async (e) => {
+    const onClickRestPwd  = async (e,data) => {
       const isconfirm = window.confirm("비밀번호를 초기화 하시겠습니까?"); 
-      if (isconfirm) {    
-        const data =  await resetPassword(e.data.empId,e.data.empno)
-        console.log("datata",data)
-        if(data.isOk){
-          alert(data.isOk);
+      if (isconfirm) {
+        const response =  await resetPassword(data.empId,data.empno)
+        console.log("datata",response)
+        if(response.isOk){
+          window.alert("비밀번호가 초기화되었습니다");
         }else {
           window.alert("초기화에 실패하였습니다.");
         }

@@ -129,7 +129,7 @@ export const navigation = [
       
     ]
   }, {
-    text: '전자결제',
+    text: '전자결재',
     icon: 'importselected',
     path: 'elecAtrz/ElecAtrz'
   }, {
@@ -163,10 +163,10 @@ export const navigation = [
         text: '프로젝트승인',
         path: '/72'
       },{
-        text: '전자결제서식관리',
+        text: '전자결재서식관리',
         path: 'mngrMenu/ElecAtrzFormManage'
       },{
-        text: '전자결제',
+        text: '전자결재',
         path: 'mngrMenu/ElecAtrzManage'
       },{
         text: '개발및연구',

@@ -1,10 +1,18 @@
 import React from 'react';
 
 import Scheduler, { Resource } from 'devextreme-react/scheduler';
+import './ProjectHtCtAprvPop.css';
 
-const ProjectHrCtAprvMmPop = ({props, prjctNm, data}) => {
+const ProjectHrCtAprvMmPop = ({props, prjctNm, data, currentDate, setCurrentDate}) => {
 
-    let currentDate = new Date();
+    const isWeekEnd = (date) => {
+        const day = date.getDay();
+        if(day === 0){
+            return "sunday";
+        }else if(day === 6){
+            return "saturday";
+        }
+    };
 
     const showDetails = () => {
 
@@ -45,6 +53,18 @@ const ProjectHrCtAprvMmPop = ({props, prjctNm, data}) => {
         }
     ]
 
+    const DataCell = (props) => {
+        const {
+            data: {startDate, text}
+        } = props;
+        const dayClass = ['dx-template-wrapper'];
+        dayClass.push(isWeekEnd(startDate));
+        return (
+            <div className={dayClass.join(' ')}>
+                <div className={'day-cell'}>{text}</div>
+            </div>
+        );
+    };
 
     return (
         <div className="container">
@@ -58,10 +78,16 @@ const ProjectHrCtAprvMmPop = ({props, prjctNm, data}) => {
             <Scheduler
                 timeZone="Asia/Seoul"
                 dataSource={props}
+                dataCellComponent={DataCell}
                 defaultCurrentView="month"
-                defaultCurrentDate={currentDate}
+                currentDate={currentDate}
                 editing={false}
                 views={["month"]}
+                onOptionChanged={e => {
+                    if (e.name === "currentDate") {
+                        setCurrentDate(e.value);
+                    }
+                }}
             >
                 <Resource
                     dataSource={atrzDmndStts}

@@ -8,6 +8,8 @@ import ElecAtrzTabDetail from './ElecAtrzTabDetail';
 import electAtrzJson from './ElecAtrzJson.json';
 import ApiRequest from 'utils/ApiRequest';
 import './ElecAtrz.css'
+import { useCookies } from 'react-cookie';
+import { max } from 'date-fns';
 
 const ElecAtrzDetail = () => {
     const navigate = useNavigate();
@@ -16,14 +18,30 @@ const ElecAtrzDetail = () => {
     const [ prjctData, setPrjctData ] = useState({});
     const [ atrzOpnn, setAtrzOpnn ] = useState([]);
     const { header, keyColumn, columns, queryId } = electAtrzJson.electAtrzDetail;
+    const [ cookies ] = useCookies(["userInfo"]);
+    const [maxAtrzLnSn, setMaxAtrzLnSn] = useState();
 
     const onBtnClick = (e) => {
+
+        switch (e.element.id) {
+            case "aprv": ; aprvAtrz();
+                break;
+            case "rjct": ; rjctAtrz();
+                break;
+            case "print": console.log("출력 클릭"); 
+                break;
+            case "docHist": console.log("문서이력 클릭");
+                break;
+            default:
+                break;
+        }
     }
 
     useEffect(() => {
         getPrjct();
         getAtrzLn();
         getRefEmp();
+        getMaxAtrzLnSn();
     }, []);
 
     const getPrjct = async () => {
@@ -61,6 +79,161 @@ const ElecAtrzDetail = () => {
         }
     }
 
+    /**
+     * 최종 결재선 순번확인: 현재 결재자가 마지막 결재인지 확인하기 위함
+     */
+    const getMaxAtrzLnSn = async () => {
+        const param = {
+            queryId: "elecAtrzMapper.retrieveMaxAtrzLnSn",
+            elctrnAtrzId: detailData.elctrnAtrzId
+        }
+
+        try {
+            const response = await ApiRequest("/boot/common/queryIdSearch", param);
+            setMaxAtrzLnSn(response[0].maxAtrzLnSn);
+
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    /**
+     * 날짜 생성
+     * @returns yyyyMMdd
+     */
+    const getToday = () => {
+        let date = new Date();
+        let year = date.getFullYear();
+        let month = ("0" + (1 + date.getMonth())).slice(-2);
+        let day = ("0" + date.getDate()).slice(-2);
+    
+        return year + month + day;
+    }
+    
+
+    /**
+     * 승인 처리
+     */
+    const aprvAtrz = async () => {
+        const isconfirm = window.confirm("요청을 승인하시겠습니까?");
+        const date = getToday();
+        const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
+
+        const nowAtrzLnSn = detailData.nowAtrzLnSn;
+        if(isconfirm) {
+
+            const param = [
+                { tbNm: "ATRZ_LN" },
+                { 
+                    atrzSttsCd: "VTW00802",
+                    aprvYmd: date,
+                    mdfcnDt: mdfcnDt,
+                    mdfcnEmpId: cookies.userInfo.empId,
+                },
+                { 
+                    elctrnAtrzId: detailData.elctrnAtrzId,
+                    aprvrEmpId: cookies.userInfo.empId,
+                    atrzLnSn: nowAtrzLnSn
+                }
+            ]
+
+            const result = await ApiRequest("/boot/common/commonUpdate", param);
+
+            if(result > 0) {
+                // 단계 올리기
+                upNowAtrzLnSn(nowAtrzLnSn);
+            } else {
+                alert("승인 처리에 실패하였습니다.");
+                return;
+            }
+        }
+    }
+
+    /**
+     * 결재가 완료된 후 결재선 순번에 따라 현재 결재선 순번을 높여준다. 
+     * @param {} nowAtrzLnSn : 현재 결재선 순번
+     * @returns 
+     */
+    const upNowAtrzLnSn = async (nowAtrzLnSn) => {
+
+        let udtParam = {};
+        console.log("maxAtrzLnSn", maxAtrzLnSn)
+        console.log("nowAtrzLnSn", nowAtrzLnSn)
+
+        if(nowAtrzLnSn === maxAtrzLnSn) {
+            // max와 현재가 같으면 최종승인임.
+            udtParam = {
+                atrzDmndSttsCd: "VTW00802",
+                nowAtrzLnSn: nowAtrzLnSn,
+                mdfcnDt: new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0],
+                mdfcnEmpId: cookies.userInfo.empId
+            }
+        } else {
+            // max와 현재가 다르면 중간승인임.
+            udtParam = {
+                nowAtrzLnSn: nowAtrzLnSn + 1,
+                mdfcnDt: new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0],
+                mdfcnEmpId: cookies.userInfo.empId
+            }
+        }
+
+        const param = [
+            { tbNm: "ELCTRN_ATRZ" },
+            udtParam,
+            {
+                elctrnAtrzId: detailData.elctrnAtrzId
+            }
+        ]
+    
+        try {
+            const response = await ApiRequest("/boot/common/commonUpdate", param);
+            if(response > 0) {
+                alert("승인 처리되었습니다.");
+                navigate('/elecAtrz/ElecAtrz');
+            } else {
+                alert("승인 처리에 실패하였습니다.");
+                return;
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const rjctAtrz = async () => {
+        const isconfirm = window.confirm("요청을 반려하시겠습니까?");
+        const date = getToday();
+        const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
+
+        const nowAtrzLnSn = detailData.nowAtrzLnSn;
+        if(isconfirm) {
+
+            const param = [
+                { tbNm: "ATRZ_LN" },
+                { 
+                    atrzSttsCd: "VTW00803",
+                    rjctYmd: date,
+                    mdfcnDt: mdfcnDt,
+                    mdfcnEmpId: cookies.userInfo.empId,
+                },
+                { 
+                    elctrnAtrzId: detailData.elctrnAtrzId,
+                    aprvrEmpId: cookies.userInfo.empId,
+                    atrzLnSn: nowAtrzLnSn
+                }
+            ]
+
+            const result = await ApiRequest("/boot/common/commonUpdate", param);
+
+            if(result > 0) {
+                alert("반려 처리되었습니다.");
+                navigate('/elecAtrz/ElecAtrz');
+            } else {
+                alert("반려 처리에 실패하였습니다.");
+            }
+        }
+    }
+
+
     return (
         <div className="container" style={{ marginTop: "10px" }}>
             {atrzOpnn.length !== 0 && 
@@ -70,6 +243,7 @@ const ElecAtrzDetail = () => {
                     formData={detailData}
                     prjctData={prjctData}
                     atrzParam={detailData}
+                    onClick={onBtnClick}
                 />}
 
             {/* 휴가, 청구의 경우에는 컴포넌트 렌더링 */}
