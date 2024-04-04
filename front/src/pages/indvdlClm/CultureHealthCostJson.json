@@ -1,7 +1,7 @@
 {
   "menuName": "CultureHealthCost",
   "keyColumn": "clturPhstrnActCtSn",
-  "queryId": "cultureHealthCostMapper.retrieveClturPhstrnActCtList",
+  "queryId": "indvdlClmMapper.retrieveClturPhstrnActCtList",
   "labelValue" : {
     "clmYmd": {
       "name": "clmYmd",
