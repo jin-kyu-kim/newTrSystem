@@ -11,11 +11,10 @@ import ProjectTotCostInfoJson from "./ProjectTotCostInfoJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
 
 const ProjectTotCostInfo = (prjctId) => {
-  const [values, setValues] = useState([]);
   const [data, setData] = useState([]);
   const { keyColumn, queryId, tableColumns, prjctColumns , summaryColumn , wordWrap, searchInfo } = ProjectTotCostInfoJson;
   useEffect(() => {
-    // handelGetData();
+    pageHandle();
     console.log(1);
   }, []);
 
@@ -34,16 +33,28 @@ const ProjectTotCostInfo = (prjctId) => {
   //   }
   // };
 
+  const pageHandle = async (item) => {
+    try {
+      const modifiedItem = { ...item,queryId:queryId, prjctId: prjctId.prjctId };
+      const response = await ApiRequest("/boot/common/queryIdSearch", modifiedItem);
+      setData(response);
+      if (response.length !== 0) {
+      } else {
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
 
   return (
     <div style={{ padding: "5%", height: "100%" }}>
       <CustomTable
         keyColumn={keyColumn}
         columns={tableColumns}
-        values={values}
+        values={data}
         paging={true}
         wordWrap={wordWrap}
-        excel={true}
         summary={true}
         summaryColumn={summaryColumn}
         
