@@ -1018,7 +1018,7 @@
             USE_FUL_BGT,
             USE_RATE
         FROM(SELECT
-                 '원가별집계' AS PRMPC_ACCTO_TOT,
+                 '인건비' AS PRMPC_ACCTO_TOT,
                  자사인력인건비 AS CT_NM,
                  예산 AS BGT,
                  사용 AS USE_BGT,
@@ -1027,7 +1027,7 @@
              FROM(
                      SELECT
                          '자사인력인건비',
-                         SUM(IFNULL(MIM.EXPECT_MM,0 ) * IFNULL(MIM.UNTPC, 0)) '예산',
+                         IFNULL(SUM(IFNULL(MIM.EXPECT_MM,0 ) * IFNULL(MIM.UNTPC, 0)),0) '예산',
                          IFNULL((
                                     SELECT
                                         SUM(IFNULL(GIVE_CT * MM, 0))
@@ -1050,7 +1050,7 @@
                      )) A
              UNION ALL
              SELECT
-                 '원가별집계' AS PRMPC_ACCTO_TOT,
+                 '인건비' AS PRMPC_ACCTO_TOT,
                  외주인력인건비 AS CT_NM,
                  예산 AS BGT,
                  사용 AS USE_BGT,
@@ -1059,7 +1059,7 @@
              FROM
                  (SELECT
                       '외주인력인건비',
-                      SUM(IFNULL(OLP.UNTPC,0) * IFNULL(OLPD.EXPECT_MM,0)) AS 예산,
+                      IFNULL(SUM(IFNULL(OLP.UNTPC,0) * IFNULL(OLPD.EXPECT_MM,0)),0) AS 예산,
                       IFNULL((
                                  SELECT
                                      SUM(IFNULL(GIVE_CT * MM, 0))
@@ -1083,7 +1083,7 @@
                   ))A
              UNION ALL
              SELECT
-                 '원가별집계' AS PRMPC_ACCTO_TOT,
+                 '경비' AS PRMPC_ACCTO_TOT,
                  일반경비 AS CT_NM,
                  예산 AS BGT,
                  사용 AS USE_BGT,
@@ -1091,7 +1091,7 @@
                  CONCAT(ROUND((사용 * 100) / 예산), ' %') AS USE_RATE
              FROM(SELECT
                       '일반경비',
-                      SUM(EMPD.EXPECT_CT) '예산',
+                      IFNULL(SUM(IFNULL(EMPD.EXPECT_CT, 0)),0) '예산',
                       IFNULL((
                                  SELECT
                                      SUM(EXPENS_CT)
@@ -1114,7 +1114,7 @@
                       WHERE PRJCT_ID = #{prjctId} )) A
              UNION ALL
              SELECT
-                 '원가별집계' AS PRMPC_ACCTO_TOT,
+                 '경비' AS PRMPC_ACCTO_TOT,
                  통제성경비 AS CT_NM,
                  예산 AS BGT,
                  사용 AS USE_BGT,
@@ -1122,7 +1122,7 @@
                  CONCAT(ROUND((사용 * 100) / 예산), ' %') AS USE_RATE
              FROM(SELECT
                       '통제성경비',
-                      SUM(EMPD.EXPECT_CT) '예산',
+                      IFNULL(SUM(EMPD.EXPECT_CT),0) '예산',
                       IFNULL((
                                  SELECT
                                      SUM(EXPENS_CT)
@@ -1145,7 +1145,7 @@
                       WHERE PRJCT_ID = #{prjctId})) A
              UNION ALL
              SELECT
-                 '원가별집계' AS PRMPC_ACCTO_TOT,
+                 '외주업체비' AS PRMPC_ACCTO_TOT,
                  외주업체비용 AS CT_NM,
                  예산 AS BGT,
                  사용 AS USE_BGT,
@@ -1173,7 +1173,7 @@
                   ))A
              UNION ALL
              SELECT
-                 '원가별집계' AS PRMPC_ACCTO_TOT,
+                 '재료비' AS PRMPC_ACCTO_TOT,
                  재료비 AS CT_NM,
                  예산  AS BGT,
                  사용  AS USE_BGT,
@@ -1182,7 +1182,7 @@
              FROM(
                      SELECT
                          '재료비',
-                         SUM(MCP.QY) '예산',
+                         IFNULL(SUM(MCP.QY),0) '예산',
                          IFNULL((
                                     SELECT
                                         SUM(USE_AMT)

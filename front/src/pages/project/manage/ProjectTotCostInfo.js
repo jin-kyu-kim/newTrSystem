@@ -12,7 +12,7 @@ import ApiRequest from "../../../utils/ApiRequest";
 
 const ProjectTotCostInfo = (prjctId) => {
   const [data, setData] = useState([]);
-  const { keyColumn, queryId, tableColumns, prjctColumns , summaryColumn , wordWrap, searchInfo } = ProjectTotCostInfoJson;
+  const { keyColumn, queryId, tableColumns, prjctColumns , summaryColumn , wordWrap, groupingColumn ,groupingData} = ProjectTotCostInfoJson;
   useEffect(() => {
     pageHandle();
     console.log(1);
@@ -55,9 +55,9 @@ const ProjectTotCostInfo = (prjctId) => {
         values={data}
         paging={true}
         wordWrap={wordWrap}
+        groupingData={groupingData}
         summary={true}
         summaryColumn={summaryColumn}
-        
       />  
     </div>
   );
