@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Popup, ToolbarItem } from 'devextreme-react/popup';
+import { useEffect, useState } from 'react';
+import Button from 'devextreme-react/button';
+import { Popup } from 'devextreme-react/popup';
 import CustomEmpComboBox from './CustomEmpComboBox';
 import ApiRequest from 'utils/ApiRequest';
 import '../../assets/css/Style.css'
@@ -9,16 +10,6 @@ const ApprovalPopup = ({ visible, atrzLnEmpList, onHiding }) => {
     const [selectedEmp, setSelectedEmp] = useState({});
     const [stepCdList, setStepCdList] = useState([]);
     const tableTitle = ['입력', '결재단계', '결재권자'];
-
-    const getCloseButtonOptions = useCallback(
-        () => ({
-            text: '등록',
-            stylingMode: 'outlined',
-            type: 'default',
-            onClick: () => onHiding(aprvrEmpList),
-        }),
-        [onHiding]
-    );
 
     useEffect(() => {
         const getAtrzStepCd = async () => {
@@ -43,20 +34,24 @@ const ApprovalPopup = ({ visible, atrzLnEmpList, onHiding }) => {
     };
 
     const onAddEmp = (cdValue) => {
-        // 검토 / 확인 / 심사 / 승인에는 한명만
-        const oneEmpCase = ['VTW00702', 'VTW00703', 'VTW00704', 'VTW00705'];
-        const isOneCase = oneEmpCase.includes(cdValue);
-        const hasEmpAlready = aprvrEmpList.some(emp => emp.approvalCode === cdValue);
-        const isEmpIdExist = aprvrEmpList.some(emp => emp.empId === selectedEmp.empId && emp.approvalCode === cdValue);
-        
-        if (!isEmpIdExist) {
-            if (isOneCase && hasEmpAlready) {
-                alert('검토, 확인, 심사, 승인 단계 결재권자는 한명만 설정할 수 있습니다. 다시 선택해주세요.');
+        if(selectedEmp.empId){
+            const oneEmpCase = ['VTW00702', 'VTW00703', 'VTW00704', 'VTW00705'];
+            const isOneCase = oneEmpCase.includes(cdValue);
+            const hasEmpAlready = aprvrEmpList.some(emp => emp.approvalCode === cdValue);
+            const isEmpIdExist = aprvrEmpList.some(emp => emp.empId === selectedEmp.empId && emp.approvalCode === cdValue);
+            
+            if (!isEmpIdExist) {
+                if (isOneCase && hasEmpAlready) {
+                    alert('검토, 확인, 심사, 승인 단계 결재권자는 한명만 설정할 수 있습니다. 다시 선택해주세요.');
+                } else {
+                    setAprvrEmpList([...aprvrEmpList, { ...selectedEmp, approvalCode: cdValue }]);
+                }
             } else {
-                setAprvrEmpList([...aprvrEmpList, { ...selectedEmp, approvalCode: cdValue }]);
+                alert('이미 해당 결재단계에 등록되어 있습니다.');
             }
-        } else {
-            alert('이미 해당 결재단계에 등록되어 있습니다.');
+        } else{ 
+            alert('결재자를 선택 후 추가해주세요.');
+            return null;
         }
     };
 
@@ -99,6 +94,14 @@ const ApprovalPopup = ({ visible, atrzLnEmpList, onHiding }) => {
                         </div>
                     </div>
                 ))}
+
+                <div style={{marginTop: '30px', textAlign: 'center'}}>
+                    <Button text='등록' type='default' onClick={() => onHiding(aprvrEmpList)} style={{marginRight: '10px'}}/>
+                    <Button text='닫기' type='danger' onClick={() => {
+                        setAprvrEmpList(atrzLnEmpList);
+                        onHiding(atrzLnEmpList);
+                    }}/>
+                </div>
             </div>
         );
     };
@@ -108,16 +111,9 @@ const ApprovalPopup = ({ visible, atrzLnEmpList, onHiding }) => {
             <Popup
                 height={660}
                 visible={visible}
-                onHiding={() => onHiding(aprvrEmpList)}
                 contentRender={addAprvrEmpArea}
                 title="* 결재선지정"
             >
-                <ToolbarItem
-                    widget="dxButton"
-                    toolbar="bottom"
-                    location="center"
-                    options={getCloseButtonOptions()}
-                />
             </Popup>
         </div>
     );

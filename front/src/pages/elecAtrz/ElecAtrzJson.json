@@ -111,7 +111,7 @@
     "keyColumn": "atrzStepCdNm",
     "columns": [
       { "key": "atrzStepCdNm", "value": "결재라인"},
-      { "key": "aprvrEmpId", "value": "결재자"},
+      { "key": "empFlnm", "value": "결재자"},
       { "key": "atrzSttsCdNm", "value": "결재상태"},
       { "key": "rjctPrvonsh", "value": "결재의견"},
       { "key": "aprvYmd", "value": "결재일자"}
