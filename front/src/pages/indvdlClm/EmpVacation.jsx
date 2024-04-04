@@ -188,7 +188,7 @@ const EmpVacation = () => {
     const [insertElctrnValue, setInsertElctrnValue] = useState({
         // elctrnAtrzId: elctrnAtrzId,
         atrzDmndEmpId: sessionEmpId,
-        atrzDmndSttsCd: "VTW00801",     // 결재요청상태코드_ATRZ_DMND_STTS_CD(심사중)
+        atrzDmndSttsCd: "VTW03702",     // 결재요청상태코드_ATRZ_DMND_STTS_CD(심사중)
         elctrnAtrzTySeCd: "VTW04901",   // 전자결재유형구분코드_ELCTRN_ATRZ_TY_SE_CD(휴가)
     });
 
@@ -330,18 +330,18 @@ const EmpVacation = () => {
     const insertVcatnAtrz = async (params) => {
         const formData = new FormData();
 
-        formData.append("elctrnAtrzId", elctrnAtrzId);
+        formData.append("elctrnAtrzId", JSON.stringify({elctrnAtrzId : elctrnAtrzId}));
 
-        formData.append("elctrnTbNm", JSON.stringify({ tbNm: "ELCTRN_ATRZ", snColumn: "NOW_ATRZ_LN_SN" }));
+        formData.append("elctrnTbNm", JSON.stringify({ tbNm: "ELCTRN_ATRZ" }));
         formData.append("insertElctrnValue", JSON.stringify(params));
 
         formData.append("vcatnTbNm", JSON.stringify({ tbNm: "VCATN_ATRZ" }));
         formData.append("insertVcatnValue", JSON.stringify(insertVcatnValue));
 
-        formData.append("atrzLnTbNm", JSON.stringify({ tbNm: "ATRZ_LN", snColumn: "ATRZ_LN_SN"}));
+        formData.append("atrzLnTbNm", JSON.stringify({ tbNm: "ATRZ_LN" }));
         formData.append("insertAtrzLnValue", JSON.stringify(popupAtrzValue.filter(item => item.approvalCode == "VTW00702" || item.approvalCode == "VTW00703" || item.approvalCode == "VTW00704" || item.approvalCode == "VTW00705")));
 
-        formData.append("refrnTbNm", JSON.stringify({ tbNm: "REFRN_MAN", snColumn: "CC_SN"}));
+        formData.append("refrnTbNm", JSON.stringify({ tbNm: "REFRN_MAN" }));
         formData.append("insertRefrnValue", JSON.stringify(popupAtrzValue.filter(item => item.approvalCode == "VTW00706" || item.approvalCode == "VTW00707")));
 
         Object.values(attachments).forEach((attachment) => formData.append("attachments", attachment));
@@ -368,11 +368,9 @@ const EmpVacation = () => {
                 vcatnEndYmd: "",
                 vcatnPrvonsh: "",
                 vcatnTyCd: "",
-                // elctrnAtrzId: newUuid
             })
             setInsertElctrnValue({
                 ...insertElctrnValue,
-                // elctrnAtrzId: newUuid,
                 prjctId: null
             })
         } catch (error) {
@@ -472,7 +470,7 @@ const EmpVacation = () => {
     // 휴가목록 선택
     function onRowClick(e) {
         console.log("e : ", e.data.elctrnAtrzId);
-        navigate("/elecAtrz/ElecAtrzDetatil", { state: { elctrnAtrzId: e.data.elctrnAtrzId } })
+        navigate("/elecAtrz/ElecAtrzDetail", { state: { data: e.data.elctrnAtrzId } })
     }
 
     // 테이블버튼클릭
