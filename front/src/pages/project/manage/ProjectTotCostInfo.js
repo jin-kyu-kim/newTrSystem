@@ -1,156 +1,64 @@
 import React from "react";
 
 import { useState, useEffect } from "react";
-import DataGrid, {
-  Column,
-  Summary,
-  GroupItem,
-  Grouping,
-  TotalItem,
-} from "devextreme-react/data-grid";
+
 import "devextreme/dist/css/dx.common.css";
 import "devextreme/dist/css/dx.light.css";
 import "devextreme/dist/css/dx.material.blue.light.css";
+import CustomTable from "components/unit/CustomTable";
 
-import ProjectTotCostInfoJson from "./ProjectTotCostInfoJson";
+import ProjectTotCostInfoJson from "./ProjectTotCostInfoJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
 
 const ProjectTotCostInfo = (prjctId) => {
   const [data, setData] = useState([]);
-
+  const { keyColumn, queryId, tableColumns, prjctColumns , summaryColumn , wordWrap, groupingColumn ,groupingData} = ProjectTotCostInfoJson;
   useEffect(() => {
-    handelGetData();
+    pageHandle();
     console.log(1);
   }, []);
 
-  const handelGetData = async () => {
+  // const handelGetData = async () => {
+  //   try {
+  //     await ProjectTotCostInfoJson.params.map(async (item) => {
+  //       const modifiedItem = { ...item, prjctId: prjctId.prjctId };
+  //       const response = await ApiRequest(
+  //         "/boot/common/queryIdSearch",
+  //         modifiedItem
+  //       );
+  //       setData((prevData) => [...prevData, ...response]);
+  //     });
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  const pageHandle = async (item) => {
     try {
-      await ProjectTotCostInfoJson.params.map(async (item) => {
-        const modifiedItem = { ...item, prjctId: prjctId.prjctId };
-        const response = await ApiRequest(
-          "/boot/common/queryIdSearch",
-          modifiedItem
-        );
-        setData((prevData) => [...prevData, ...response]);
-      });
+      const modifiedItem = { ...item,queryId:queryId, prjctId: prjctId.prjctId };
+      const response = await ApiRequest("/boot/common/queryIdSearch", modifiedItem);
+      setData(response);
+      if (response.length !== 0) {
+      } else {
+      }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const gridRows = () => {
-    const result = [];
-    for (let i = 0; i < ProjectTotCostInfoJson.tableColumns.length; i++) {
-      const { key, value } = ProjectTotCostInfoJson.tableColumns[i];
-      result.push(
-        <Column
-          key={key}
-          dataField={key}
-          caption={value}
-          alignment="right"
-          format={"#,##0"}
-        />
-      );
-    }
-    return result;
-  };
 
   return (
     <div style={{ padding: "5%", height: "100%" }}>
-      <DataGrid
-        dataSource={data}
-        keyExpr="id"
-        showBorders={true}
-        masterDetail={{
-          enabled: false,
-        }}
-        onCellPrepared={(e) => {
-          if (e.rowType === "header") {
-            e.cellElement.style.textAlign = "center";
-            e.cellElement.style.fontWeight = "bold";
-          }
-        }}
-      >
-        {gridRows()}
-
-        <Column
-          dataField="bind"
-          caption="원가별집계"
-          customizeText={(e) => {
-            if (e.value === 1) {
-              return "인건비";
-            } else if (e.value === 2) {
-              return "경비";
-            } else {
-              return "재료비";
-            }
-          }}
-          groupIndex={0}
-        />
-
-        <Grouping autoExpandAll={true} />
-
-        <Summary>
-          <GroupItem
-            column="costAmt"
-            summaryType="sum"
-            valueFormat="#,##0"
-            displayFormat="{0} 원"
-            alignByColumn={true}
-          />
-          <GroupItem
-            column="useAmt"
-            summaryType="sum"
-            valueFormat="#,##0"
-            displayFormat="{0} 원"
-            alignByColumn={true}
-          />
-          <GroupItem
-            column="availAmt"
-            summaryType="sum"
-            valueFormat="#,##0"
-            displayFormat="{0} 원"
-            alignByColumn={true}
-          />
-          <GroupItem
-            column="useRate"
-            summaryType="avg"
-            valueFormat="#,##0.00"
-            displayFormat="{0} %"
-            alignByColumn={true}
-          />
-          <TotalItem
-            column="costKind"
-            customizeText={() => {
-              return "총 계";
-            }}
-          />
-          <TotalItem
-            column="costAmt"
-            summaryType="sum"
-            valueFormat="#,##0"
-            displayFormat="{0} 원"
-          />
-          <TotalItem
-            column="useAmt"
-            summaryType="sum"
-            valueFormat="#,##0"
-            displayFormat="{0} 원"
-          />
-          <TotalItem
-            column="availAmt"
-            summaryType="sum"
-            valueFormat="#,##0"
-            displayFormat="{0} 원"
-          />
-          <TotalItem
-            column="useRate"
-            summaryType="avg"
-            valueFormat="#,##0"
-            displayFormat="{0} %"
-          />
-        </Summary>
-      </DataGrid>
+      <CustomTable
+        keyColumn={keyColumn}
+        columns={tableColumns}
+        values={data}
+        paging={true}
+        wordWrap={wordWrap}
+        groupingData={groupingData}
+        summary={true}
+        summaryColumn={summaryColumn}
+      />  
     </div>
   );
 };

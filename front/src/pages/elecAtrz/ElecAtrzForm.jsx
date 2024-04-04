@@ -1,17 +1,9 @@
 import React, { useEffect, useState, useCallback, } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-
+import Form, { Item } from 'devextreme-react/form';
 import { Button } from "devextreme-react/button";
-
-import CustomComboBox from "../../components/unit/CustomComboBox";
-import ApiRequest from "utils/ApiRequest";
 import ElectAtrzRenderForm from "./ElectAtrzRenderForm";
-
-import Form, {
-    Item, GroupItem, Label, FormTypes, SimpleItem
-  } from 'devextreme-react/form';
-
-
+import ApiRequest from "utils/ApiRequest";
 
 const ElecAtrzForm = () => {
     const navigate = useNavigate();
@@ -40,7 +32,8 @@ const ElecAtrzForm = () => {
         ]
         try {
             const response = await ApiRequest("/boot/common/commonSelect", param);
-            setFormList(response);
+            const newData = response.map(({ regDt, ...rest }) => rest);
+            setFormList(newData);
         } catch (error) {
             console.error(error)
         }
@@ -66,7 +59,6 @@ const ElecAtrzForm = () => {
     }
 
     const handleChgState = (e) => {
-        console.log(e)
         setPrjctId(e.value)
     }
 

@@ -1,8 +1,9 @@
-import DataGrid, { Column, Export, Pager, Paging, Summary, TotalItem } from "devextreme-react/data-grid";
+import DataGrid, { Column, Export, Pager, Paging, Summary, TotalItem, GroupItem, Grouping } from "devextreme-react/data-grid";
 import GridRows from "./GridRows";
 import AllowedPageSize from "./AllowedPageSize";
 
-const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, onClick, wordWrap, onRowClick, excel, onExcel,onCellClick }) => {
+const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, onClick,
+                       wordWrap, onRowClick, excel, onExcel,onCellClick, grouping, groupingData, groupingCustomizeText }) => {
   return (
     <div className="wrap_table">
       <DataGrid
@@ -37,7 +38,6 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
           allowedPageSizes={AllowedPageSize(values)}
         />
         
-
         {summary&&
           <Summary>
             {summaryColumn.map(item => (
@@ -51,6 +51,50 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
             ))}
           </Summary>
         }
+
+        {grouping &&
+          <Column
+            dataField={groupingData.dataField}
+            caption={groupingData.caption} 
+            customizeText={groupingCustomizeText}
+            groupIndex={0}
+        />
+        }
+
+        {grouping &&
+          <Grouping autoExpandAll={true} />
+        }
+
+        {grouping &&
+          <Summary> 
+          {grouping.map(item => (
+            <GroupItem
+              column={item.key}
+              summaryType={item.summaryType}
+              valueFormat={item.valueFormat}
+              displayFormat={item.displayFormat}
+              alignByColumn={true}
+            />
+            ))}
+        
+          <TotalItem
+            column={groupingData.totalTextColumn}
+            customizeText={() => {
+              return "총 계";
+            }}
+          />
+          {grouping.map(item => (
+            <TotalItem
+                name={item.key}
+                column={item.key}
+                summaryType={item.summaryType}
+                valueFormat={item.valueFormat}
+                displayFormat={item.displayFormat}
+              />
+          ))}
+          </Summary>
+        }
+        
       {excel &&
       <Export enabled={true} >
       </Export>

@@ -1,68 +1,29 @@
 {
-  "queryId": "projectMapper.retrievePrjctList",
-  "keyColumn": "id",
+  "menuName": "ProjectTotCostInfo",
+  "queryId": "projectMapper.retrievePrjctGnrlzTot",
+  "keyColumn": "prmpcAcctoTot",
+  "wordWrap": true,
+  
   "tableColumns": [
-    { "key": "costKind", "value": "원가항목" },
-    { "key": "costAmt", "value": "배정예산(원)" },
-    { "key": "useAmt", "value": "누적사용(원)" },
-    { "key": "availAmt", "value": "가용(원)" },
-    { "key": "useRate", "value": "사용비율(%)" }
-  ],
-  "searchParams": {
-    "prjctMngrEmpIdItem": false
-  },
-  "params": [
-    {
-      "id": 1,
-      "costKind": "자사인력",
-      "tbCostNm": "MMNY_INPT_MM",
-      "costCol": "EXPECT_MM",
-      "tbExcuteNm": "MMNY_LBRCO_EXCN",
-      "excuteCol": "MM",
-      "queryId": "projectMapper.retrievePrjctCostSummery",
-      "group": 1
-    },
-    {
-      "id": 2,
-      "costKind": "외주인력",
-      "tbCostNm": "OUTORD_LBRCO_PRMPC_DTL",
-      "costCol": "EXPECT_MM",
-      "tbExcuteNm": "OUTORD_LBRCO_EXCN",
-      "excuteCol": "MM",
-      "queryId": "projectMapper.retrievePrjctCostSummery",
-      "group": 1
-    },
-    {
-      "id": 4,
-      "costKind": "통제성경비",
-      "tbCostNm": "EXPENS_MNBY_PRMPC_DTLS",
-      "costCol": "EXPECT_CT",
-      "tbExcuteNm": "EXPENS_EXCN",
-      "excuteCol": "EXPENS_CT",
-      "queryId": "projectMapper.retrievePrjctCostSummery",
-      "control": "Y",
-      "group": 2
-    },
-    {
-      "id": 5,
-      "costKind": "일반경비",
-      "tbCostNm": "EXPENS_MNBY_PRMPC_DTLS",
-      "costCol": "EXPECT_CT",
-      "tbExcuteNm": "EXPENS_EXCN      ",
-      "excuteCol": "EXPENS_CT",
-      "queryId": "projectMapper.retrievePrjctCostSummery",
-      "general": "Y",
-      "group": 2
-    },
-    {
-      "id": 6,
-      "costKind": "재료비",
-      "tbCostNm": "MATRL_CT_PRMPC",
-      "costCol": "UNTPC",
-      "tbExcuteNm": "MATRL_CT_EXCN",
-      "excuteCol": "USE_AMT",
-      "queryId": "projectMapper.retrievePrjctCostSummery",
-      "group": 3
-    }
+    { "key": "prmpcAcctoTot", "value":"원가별집계", "width": 120, "alignment": "center" ,"grouping": true},
+    {  "key": "ctNm", "value": "원가항목", "width": 300, "alignment": "center" },
+    {  "key": "bgt", "value": "배정예산(원)", "width": 200, "alignment": "center" },
+    {  "key": "useBgt", "value": "누적사용(원)", "width": 200, "alignment": "center" },
+    {  "key": "useFulBgt", "value":"가용(원)", "width": 200, "alignment": "center" },
+    {  "key": "useRate", "value": "사용비율(%)", "width": 200, "alignment": "center" }
+  
+   
+],
+
+  "summaryColumn": [
+    
+    { "value":"원가별집계",  "format": "총 합계 :" },
+    { "key": "bgt", "value": "배정예산(원)", "type"  : "sum", "format": "{0} 원", "precision": "0" },
+    { "key": "useBgt", "value": "누적사용(원)", "type"  : "sum", "format": "{0} 원", "precision": "0" },
+    { "key": "useFulBgt", "value":"가용(원)", "type"  : "sum", "format": "{0} 원", "precision": "0" },
+    { "key": "useRate", "value":"사용비율(%)", "type"  : "sum", "format": "{0} %", "precision": "0" }
   ]
+  , "groupingData" : 
+  {"caption":"원가별집계", "dataField": "prmpcAcctoTot", "totalTextColumn": "rciptPblcnYmd"}
+
 }
