@@ -7,9 +7,8 @@ import CustomTable from 'components/unit/CustomTable';
 import ElecAtrzTabDetail from './ElecAtrzTabDetail';
 import electAtrzJson from './ElecAtrzJson.json';
 import ApiRequest from 'utils/ApiRequest';
-import './ElecAtrz.css'
 import { useCookies } from 'react-cookie';
-import { max } from 'date-fns';
+import './ElecAtrz.css'
 
 const ElecAtrzDetail = () => {
     const navigate = useNavigate();
@@ -44,7 +43,6 @@ const ElecAtrzDetail = () => {
         getVacInfo();
         getPrjct();
         getAtrzLn();
-        getRefEmp();
         getMaxAtrzLnSn();
     }, []);
     
@@ -82,17 +80,6 @@ const ElecAtrzDetail = () => {
             console.error(error)
         }
     };
-
-    const getRefEmp = async () => {
-        try{
-            const response = await ApiRequest('/boot/common/commonSelect', [
-                {tbNm: "REFRN_MAN"}, {elctrnAtrzId: detailData.elctrnAtrzId}
-            ]);
-            console.log('getRef', response);
-        } catch(error) {
-            console.log('error', error);
-        }
-    }
 
     /**
      * 최종 결재선 순번확인: 현재 결재자가 마지막 결재인지 확인하기 위함
