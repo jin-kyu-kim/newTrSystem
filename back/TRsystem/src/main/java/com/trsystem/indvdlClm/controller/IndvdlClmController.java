@@ -33,11 +33,16 @@ public class IndvdlClmController {
     // 휴가결재저장
     @PostMapping(value = "/boot/indvdlClm/insertVcatnAtrz", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public int insertVcatnAtrz (
+            String elctrnAtrzId,
             @RequestPart(required = false) List<MultipartFile> attachments,
-            @RequestPart(required = false) String insertElctrnValue,
-            @RequestPart(required = false) String insertVcatnValue,
             @RequestPart(required = false) String elctrnTbNm,
-            @RequestPart(required = false) String vcatnTbNm
+            @RequestPart(required = false) String insertElctrnValue,
+            @RequestPart(required = false) String vcatnTbNm,
+            @RequestPart(required = false) String insertVcatnValue,
+            @RequestPart(required = false) String atrzLnTbNm,
+            @RequestPart(required = false) String insertAtrzLnValue,
+            @RequestPart(required = false) String refrnTbNm,
+            @RequestPart(required = false) String insertRefrnValue
             ) throws JsonProcessingException {
 
             ObjectMapper mapper = new ObjectMapper();
@@ -45,7 +50,24 @@ public class IndvdlClmController {
             Map<String, Object> insertElctrnMap = mapper.readValue(insertElctrnValue,Map.class);
             Map<String, Object> vcatnTbMap = mapper.readValue(vcatnTbNm,Map.class);
             Map<String, Object> insertVcatnMap = mapper.readValue(insertVcatnValue,Map.class);
+            Map<String, Object> atrzLnTbMap = mapper.readValue(atrzLnTbNm,Map.class);
+            Map<String, Object> insertAtrzLnMap = mapper.readValue(insertAtrzLnValue,Map.class);
+            Map<String, Object> refrnTbMap = mapper.readValue(refrnTbNm,Map.class);
+            Map<String, Object> insertRefrnMap = mapper.readValue(insertRefrnValue,Map.class);
 
-        return IndvdlClmDomain.insertVcatnAtrz(elctrnTbMap, insertElctrnMap, vcatnTbMap, insertVcatnMap, attachments);
+        return IndvdlClmDomain.insertVcatnAtrz(
+                elctrnAtrzId,
+                elctrnTbMap,
+                insertElctrnMap,
+                vcatnTbMap,
+                insertVcatnMap,
+                atrzLnTbMap,
+//                insertAtrzLnMap,
+                null,
+                refrnTbMap,
+//                insertRefrnMap,
+                null,
+                attachments
+        );
     }
 }

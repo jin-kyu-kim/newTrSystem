@@ -44,11 +44,6 @@ let orderWorkBgngYmd = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).
 let orderWorkEndYmd = flagOrder == 1 ? String(Moment(new Date()).format("YYYYMM") + "15") : Moment(endOfMonth(new Date(Moment(Moment(new Date()).format("YYYYMM") - 1 + "15").format("YYYY-MM-DD")))).format("YYYYMMDD")
 let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMM")) : String(Moment(new Date()).format("YYYYMM") - 1)
 
-
-// let orderWorkBgngYmd = flagOrder == 2 ? String(Moment(startOfMonth(new Date())).format("YYYYMMDD")) : String(Moment(new Date()).format("YYYYMM") - 1 + "16")
-// let orderWorkEndYmd = flagOrder == 2 ? String(Moment(new Date()).format("YYYYMM") + "15") : Moment(endOfMonth(new Date(Moment(Moment(new Date()).format("YYYYMM") - 1 + "15").format("YYYY-MM-DD")))).format("YYYYMMDD")
-// let orderWorkBgngMm = flagOrder == 2 ? String(Moment(startOfMonth(new Date())).format("YYYYMM")) : String(Moment(new Date()).format("YYYYMM") - 1)
-
 /**
  * @param {number} startYear 현재년도 기준 화면에 보여줄 (현재년도 - startYear)
  * @param {number} endYear 현재년도 기준 화면에 보여줄 (현재년도 + endYear)
@@ -98,7 +93,7 @@ const EmpMonthVacInfo = () => {
     const sessionEmpId = cookies.userInfo.empId ? cookies.userInfo.empId : "EMP_3000"
 
 
-    // 프로젝트개인비용MM 조회
+    // 프로젝트개인비용MM 신청여부 조회
     const [selectPrjctIndvdlCtMmValue, setSelectPrjctIndvdlCtMmValue] = useState();
     const [searchPrjctIndvdlCtMmParam, setSearchPrjctIndvdlCtMmParam] = useState({
         queryId: "indvdlClmMapper.retrievePrjctIndvdlCtAply",
@@ -106,9 +101,6 @@ const EmpMonthVacInfo = () => {
         empId: sessionEmpId,
         aplyYm: orderWorkBgngMm,
         aplyOdr: flagOrder,
-        // empId: "sytest3",
-        // aplyYm: "202402",
-        // aplyOdr: "2",
     });
 
     // 프로젝트개인비용MM 신청여부 조회
@@ -116,7 +108,7 @@ const EmpMonthVacInfo = () => {
         selectData(searchPrjctIndvdlCtMmParam);
     }, [searchPrjctIndvdlCtMmParam])
 
-
+    // 프로젝트개인비용MM 신청여부 조회
     const selectData = async (initParam) => {
         try {
             if (initParam.searchType == "prjctIndvdlCtMmParam") {
@@ -127,8 +119,6 @@ const EmpMonthVacInfo = () => {
                 setInsertWorkHourList(
                     await ApiRequest("/boot/common/queryIdSearch", initParam)
                 )
-
-                console.log("prjctIndvdlCtMmParamFilter : ", prjctIndvdlCtMmParamFilter);
 
                 if(prjctIndvdlCtMmParamFilter.length > 0){
                     if (prjctIndvdlCtMmParamFilter.length == prjctIndvdlCtMmParamFilter.filter(item => item.atrzDmndSttsCd == "VTW00801").length) {
@@ -143,8 +133,6 @@ const EmpMonthVacInfo = () => {
                 } else {
                     atrzDmndSttsCdFlag = "use"
                 }
-
-                console.log("atrzDmndSttsCdFlag : ", atrzDmndSttsCdFlag);
 
                 setSelectPrjctIndvdlCtMmValue({
                     prjctIndvdlCtMmParamResult,
@@ -172,7 +160,6 @@ const EmpMonthVacInfo = () => {
     const getHolidayInfo = async () => {
         const response = await axios.get(getHoliday.url + "ServiceKey=" + getHoliday.serviceKey + "&solYear=" + getHoliday.solYear + "&numOfRows=100").then(function (response) {
             setHolidayList(response.data.response.body.items.item)
-            // console.log("공휴일조회완료")
         }).catch(function (error) {
             console.log("실패");
         })
@@ -186,10 +173,8 @@ const EmpMonthVacInfo = () => {
     const [searchParam, setSearchParam] = useState({
         searchYear: new Date().getFullYear(),
         searchMonth: new Date().getDate() < 15 ? new Date().getMonth() : new Date().getMonth() + 1,
-        // searchMonth: new Date().getMonth() + 1,
         searchPrevYear: new Date().getFullYear(),
         searchPrevMonth: new Date().getDate() < 15 ? new Date().getMonth() : new Date().getMonth() + 1,
-        // searchPrevMonth: new Date().getMonth() + 1,
         searchBoolean: true
     });
 
@@ -220,7 +205,6 @@ const EmpMonthVacInfo = () => {
         setSearchParam({
             ...searchParam,
             [currParam]: e.value,
-            // [prevParam]: e.previousValue,
             searchBoolean: false,
         })
     }
@@ -372,7 +356,6 @@ const EmpMonthVacInfo = () => {
     }
 
     function onAppointmentClick(e) {
-        console.log(e);
         if (e.appointmentData.isInsertBoolean == false) e.cancel = true;
         else if (e.appointmentData.aplyType == "vcatnAply") e.cancel = true;
         else if (e.appointmentData.atrzDmndSttsCd == "VTW00801" || e.appointmentData.atrzDmndSttsCd == "VTW00802") e.cancel = true;
@@ -414,10 +397,6 @@ const EmpMonthVacInfo = () => {
             return workDay;
         }
     }
-
-    // useEffect(() => {
-    //     console.log("searchParam : ", searchParam);
-    // },[searchParam])
 
     return (
         <div className="" style={{ marginLeft: "10%", marginRight: "10%" }}>
@@ -507,22 +486,21 @@ const EmpMonthVacInfo = () => {
 
     function createWorkHour(holidayList, insertWorkHourList) {
         let workHour = getWorkDay(holidayList) * 8;
-        let vcatnCnt = -1;
-        let vcatnFilterList;
+        let vcatnCnt = 0;
 
         if(insertWorkHourList != null && insertWorkHourList != "" && insertWorkHourList != undefined && insertWorkHourList.length > 0){
-            vcatnCnt = insertWorkHourList.filter(item => item.aplyType == "vcatnAply").length
+            vcatnCnt = insertWorkHourList.filter(item => item.aplyType == "vcatnAply" && item.aplyOdr == flagOrder).length
         }
         return (
             <>
                 <div style={{ marginTop: "10px", border: "2px solid #CCCCCC" }}>
                     <div style={{ borderBottom: "2px solid #CCCCCC" }}>
                         <div style={{ display: "flex", alignItems: "center", height: "50px", marginLeft: "20px" }}>
-                            {orderWorkBgngMm} - {flagOrder}차수 근무시간 : {vcatnCnt != -1 ? workHour - vcatnCnt * 8 : workHour} / {workHour} hrs.
+                            {orderWorkBgngMm} - {flagOrder}차수 근무시간 : {vcatnCnt != 0 ? workHour - vcatnCnt * 8 : workHour} / {workHour} hrs.
                         </div>
                     </div>
                     {
-                        vcatnCnt != -1
+                        vcatnCnt != 0
                             ?
                                 <div style={{ display: "flex", alignItems: "center", height: "50px", marginLeft: "20px" }}>
                                     * 휴가 : {vcatnCnt * 8} / {workHour} hrs.
@@ -530,7 +508,7 @@ const EmpMonthVacInfo = () => {
                             : <></>
                     }
                     <div style={{ display: "flex", alignItems: "center", height: "50px", marginLeft: "20px" }}>
-                        * CSC : {vcatnCnt != -1 ? workHour - vcatnCnt * 8 : workHour}​ / {workHour} hrs.
+                        * CSC : {vcatnCnt != 0 ? workHour - vcatnCnt * 8 : workHour}​ / {workHour} hrs.
                     </div>
                 </div>
             </>
