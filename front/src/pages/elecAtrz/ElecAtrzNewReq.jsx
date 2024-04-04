@@ -43,6 +43,7 @@ const ElecAtrzNewReq = () => {
         insertTable = "CTRT_ATRZ";
     }
 
+    console.log(formData);
 
     /**
      * 자식컴포넌트에서 받아온 데이터 처리
@@ -187,10 +188,10 @@ const ElecAtrzNewReq = () => {
             atrzDmndSttsCd: stts,
             elctrnAtrzId: uuid(),
             prjctId: prjctId,
-            // 결재선
             elctrnAtrzTySeCd: data.elctrnAtrzTySeCd,
             regDt: date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0],
             regEmpId: cookies.userInfo.empId,
+            atrzFormDocId: formData.atrzFormDocId,
             atrzLnEmpList
         }  
 

@@ -7,9 +7,8 @@ import CustomTable from 'components/unit/CustomTable';
 import ElecAtrzTabDetail from './ElecAtrzTabDetail';
 import electAtrzJson from './ElecAtrzJson.json';
 import ApiRequest from 'utils/ApiRequest';
-import './ElecAtrz.css'
 import { useCookies } from 'react-cookie';
-import { max } from 'date-fns';
+import './ElecAtrz.css'
 
 const ElecAtrzDetail = () => {
     const navigate = useNavigate();
@@ -20,6 +19,7 @@ const ElecAtrzDetail = () => {
     const { header, keyColumn, columns, queryId } = electAtrzJson.electAtrzDetail;
     const [ cookies ] = useCookies(["userInfo"]);
     const [maxAtrzLnSn, setMaxAtrzLnSn] = useState();
+    const [ dtlInfo, setDtlInfo ] = useState({});
 
     const onBtnClick = (e) => {
 
@@ -37,12 +37,25 @@ const ElecAtrzDetail = () => {
         }
     }
 
+    console.log('detailData', detailData);
+
     useEffect(() => {
+        getVacInfo();
         getPrjct();
         getAtrzLn();
-        getRefEmp();
         getMaxAtrzLnSn();
     }, []);
+    
+    const getVacInfo = async () => {
+        try {
+            const response = await ApiRequest('/boot/common/commonSelect', [
+                { tbNm: "VCATN_ATRZ" }, { elctrnAtrzId: detailData.elctrnAtrzId }
+            ]);
+            setDtlInfo(response[0]);
+        } catch (error) {
+            console.log('error', error);
+        }
+    };
 
     const getPrjct = async () => {
         try {
@@ -67,17 +80,6 @@ const ElecAtrzDetail = () => {
             console.error(error)
         }
     };
-
-    const getRefEmp = async () => {
-        try{
-            const response = await ApiRequest('/boot/common/commonSelect', [
-                {tbNm: "REFRN_MAN"}, {elctrnAtrzId: detailData.elctrnAtrzId}
-            ]);
-            console.log('getRef', response);
-        } catch(error) {
-            console.log('error', error);
-        }
-    }
 
     /**
      * 최종 결재선 순번확인: 현재 결재자가 마지막 결재인지 확인하기 위함
@@ -156,13 +158,13 @@ const ElecAtrzDetail = () => {
      */
     const upNowAtrzLnSn = async (nowAtrzLnSn) => {
 
-        let udtParam = {};
+        let updParam = {};
         console.log("maxAtrzLnSn", maxAtrzLnSn)
         console.log("nowAtrzLnSn", nowAtrzLnSn)
 
         if(nowAtrzLnSn === maxAtrzLnSn) {
             // max와 현재가 같으면 최종승인임.
-            udtParam = {
+            updParam = {
                 atrzDmndSttsCd: "VTW00802",
                 nowAtrzLnSn: nowAtrzLnSn,
                 mdfcnDt: new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0],
@@ -170,7 +172,7 @@ const ElecAtrzDetail = () => {
             }
         } else {
             // max와 현재가 다르면 중간승인임.
-            udtParam = {
+            updParam = {
                 nowAtrzLnSn: nowAtrzLnSn + 1,
                 mdfcnDt: new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0],
                 mdfcnEmpId: cookies.userInfo.empId
@@ -179,7 +181,7 @@ const ElecAtrzDetail = () => {
 
         const param = [
             { tbNm: "ELCTRN_ATRZ" },
-            udtParam,
+            updParam,
             {
                 elctrnAtrzId: detailData.elctrnAtrzId
             }
@@ -188,6 +190,10 @@ const ElecAtrzDetail = () => {
         try {
             const response = await ApiRequest("/boot/common/commonUpdate", param);
             if(response > 0) {
+                const vacResult = handleVacation();
+                if(vacResult < 0) {
+                    alert("승인 처리에 실패하였습니다.");
+                }
                 alert("승인 처리되었습니다.");
                 navigate('/elecAtrz/ElecAtrz');
             } else {
@@ -225,6 +231,7 @@ const ElecAtrzDetail = () => {
             const result = await ApiRequest("/boot/common/commonUpdate", param);
 
             if(result > 0) {
+
                 alert("반려 처리되었습니다.");
                 navigate('/elecAtrz/ElecAtrz');
             } else {
@@ -232,6 +239,71 @@ const ElecAtrzDetail = () => {
             }
         }
     }
+
+    /**
+     * 휴가결재 최종 승인 시 휴가 일수 차감 
+     */
+    const handleVacation = async () => {
+
+        // 해당 사람의 휴가 관리 테이블 조회
+        const VacMng = await getVacMngInfo();
+
+        if(detailData.elctrnAtrzTySeCd === "VTW04901") {
+
+            let updParam = {}
+            if(["VTW01204", "VTW01205", "VTW01206"].includes(dtlInfo.vcatnTyCd)) {
+                updParam = {
+                    pblenVcatnUseDaycnt: VacMng.pblenVcatnUseDaycnt + dtlInfo.vcatnDeCnt,
+                    mdfcnDt: new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0],
+                    mdfcnEmpId: cookies.userInfo.empId   
+                }
+            } else if (["VTW01201", "VTW01202", "VTW01203"].includes(dtlInfo.vcatnTyCd)){
+                updParam = {
+                    useDaycnt: VacMng.useDaycnt + dtlInfo.vcatnDeCnt,
+                    vcatnRemndrDaycnt: VacMng.vcatnRemndrDaycnt - dtlInfo.vcatnDeCnt,
+                    mdfcnDt: new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0],
+                    mdfcnEmpId: cookies.userInfo.empId   
+                }
+            }
+
+            const param = [
+                { tbNm: "VCATN_MNG" },
+                updParam,
+                { 
+                    empId: detailData.atrzDmndEmpId, 
+                    vcatnYr: '2024' 
+                },
+            ]
+
+            try {
+                const response = await ApiRequest("/boot/common/commonUpdate", param);
+                return response;
+
+            } catch (error) {
+                console.error(error)
+            }
+        } else {
+            return;
+        }
+    }
+
+    const getVacMngInfo = async () => {
+        try {
+            const response = await ApiRequest('/boot/common/commonSelect', [
+                { tbNm: "VCATN_MNG" }, 
+                { 
+                    empId: detailData.atrzDmndEmpId,
+                    vcatnYr: 2024
+                }
+            ]);
+            
+            return response[0];
+
+        } catch (error) {
+            console.log('error', error);
+        }
+    };
+
 
 
     return (
@@ -249,6 +321,7 @@ const ElecAtrzDetail = () => {
             {/* 휴가, 청구의 경우에는 컴포넌트 렌더링 */}
             {(['VTW04901', 'VTW04907'].includes(detailData.elctrnAtrzTySeCd)) && (
                 <ElecAtrzTabDetail
+                    dtlInfo={dtlInfo}
                     detailData={detailData}
                 />
             )}

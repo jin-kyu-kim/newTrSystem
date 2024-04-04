@@ -131,16 +131,8 @@ public class ElecAtrzDomain {
 		ArrayList<Map<String, Object>> refrnParams = new ArrayList<>();
 		ArrayList<Map<String, Object>> atrzLnParams = new ArrayList<>();
 		
-//		VTW00701	기안
-//		VTW00702	검토
-//		VTW00703	확인
-//		VTW00704	심사
-//		VTW00705	승인
 		
-//		VTW00706	참조
-//		VTW00707	합의
-		
-		// 1. 정렬.
+		// 1. 결재선 리스트 정렬.
 		final String sortKey = "approvalCode";
 		
 		Collections.sort(paramList, new Comparator<Map<String, Object>>() {
@@ -156,11 +148,6 @@ public class ElecAtrzDomain {
 		System.out.println(paramList);
 		
 		tbParam.put("tbNm", "ATRZ_LN");
-		
-    	String atrzStepCd[] = {"VTW00705", "VTW00704", "VTW00703", "VTW00702", "VTW00701"};
-    	
-    	// 합의 저장?? -> 참조에 같이 넣는다.
-		
 		
 		insertParams.add(0, tbParam);
     	
