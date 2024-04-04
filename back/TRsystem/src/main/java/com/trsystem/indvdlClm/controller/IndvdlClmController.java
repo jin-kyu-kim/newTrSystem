@@ -20,7 +20,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class IndvdlClmController {
 
-    @PostMapping(value = "/boot/indvdlClm/prjctExpns/insertPrjctMM")
+    @PostMapping(value = "/boot/indvdlClm/insertPrjctMM")
     public int insertPrjctMM (@RequestBody List<Map<String, Object>> params){
         return IndvdlClmDomain.insertPrjctMM(params);
     }
