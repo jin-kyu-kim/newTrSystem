@@ -9,15 +9,14 @@ import { useCookies } from "react-cookie";
 
 const ElecAtrzManage = () => {
     //========================선언구간=======================//
-    const [cookies] = useCookies(["userInfo", "userAuth"]); 
-    const empId = cookies.userInfo.empId;   //화면테스트 위해 작성 필요없을 시 삭제 예정
-    const { keyColumn, queryId, countQueryId, baseColumns, progress, terminatedAprvrEmp, deny, atrzSquareList, searchInfo } = elecAtrzManageJson.elecManageMain;
-    const [searchParam, setSearchParam] = useState({keyColumn : keyColumn, queryId : queryId});
+    //const [cookies] = useCookies(["userInfo", "userAuth"]); 
+    const { keyColumn, queryId, countQueryId, baseColumns, progress, atrzSquareList, searchInfo } = elecAtrzManageJson.elecManageMain;
+    const [searchParam, setSearchParam] = useState({keyColumn : keyColumn, queryId : queryId, searchType : "progress"});
     const [totalCount, setTotalCount] = useState([]);
     const [searchList, setSearchList] = useState([]);
     const [columnTitle, setColumnTitle]= useState(baseColumns.concat(progress));
     const [searchSetVisible, setSearchSetVisivle] = useState(false);
-    const [clickBox, setClickBox] = useState([]);
+    const [clickBox, setClickBox] = useState('progress');
 
     //페이징
     const [totalItems, setTotalItems] = useState(0);
@@ -29,31 +28,30 @@ const ElecAtrzManage = () => {
     //======================================================//
     useEffect(() => {
         pageHandle();
-    }, []);
-    
-    useEffect(() => {
-        //전자결재 조회
-        getAtrz();
-    }, [searchParam])
-    
+    }, [searchParam]);
     //======================================================//
 
     //======================조회 이벤트======================//
     const pageHandle = async () => {
+
         const countParam = {
-            queryId : countQueryId,
-            empId: empId
+            queryId : countQueryId
         }
-        const atrzParam = {
-            keyColumn : keyColumn,
-            queryId : queryId
-        }
+
         try{
             const cntResp = await ApiRequest('/boot/common/queryIdSearch', countParam)
-            const atrzResp = await ApiRequest('/boot/common/queryIdSearch', atrzParam)
-            
+            const atrzResp = await ApiRequest('/boot/common/queryIdSearch', searchParam)
+
             setTotalCount(cntResp);
             setSearchList(atrzResp);
+            
+            if(atrzResp.length !== 0){
+                setTotalPages(Math.ceil(atrzResp[0].totalItems / pageSize));
+                setTotalItems(atrzResp[0].totalItems);
+            } else {
+                setTotalPages(1);
+            }
+            
         } catch(error) {
             console.log('error', error)
         }
@@ -63,29 +61,25 @@ const ElecAtrzManage = () => {
     const searchHandle = (initParam) => {
         setSearchParam({
           ...searchParam,
-          ...initParam
+          ...initParam,
+          searchType : clickBox
         })
     }
 
-    //전자결재 조회
-    const getAtrz = async () => {
-        console.log("searchParam : ", searchParam);
-        try{
-            const response = await ApiRequest('/boot/common/queryIdSearch', searchParam)
-            console.log("getAtrz", response);
-            setSearchList(response)
-        } catch(error) {
-            console.log(error)
-        }
-    };
-    
     const getList = ({keyNm}) => {
         keyNm !== "progress" ? setSearchSetVisivle(true) : setSearchSetVisivle(false);
+
         setClickBox(keyNm)
         setColumnTitle(
             baseColumns.concat(elecAtrzManageJson.elecManageMain[keyNm])
         )
+        setSearchParam({
+            queryId : queryId,
+            keyColumn : keyColumn,
+            searchType : keyNm
+        })
     }
+    
     //======================================================//
 
     const ElecSquare = ({keyNm, atrzSquare}) => {
@@ -95,6 +89,14 @@ const ElecAtrzManage = () => {
                 <div className="elec-square-count" style={{ color: (atrzSquare.text) && 'white' }}>
                   {totalCount.length !== 0 && (totalCount[0][keyNm] === 0 ? 0 : <span>{totalCount[0][keyNm]}</span> )} 건
                 </div>
+                <Tooltip
+                    target={`#${keyNm}`}
+                    showEvent="mouseenter"
+                    hideEvent="mouseleave"
+                    position="top"
+                    hideOnOutsideClick={false}>
+                    <div className='elecTooltip'>{atrzSquare.toolTip}</div>
+                </Tooltip>
             </div>
         );
     }
@@ -103,7 +105,7 @@ const ElecAtrzManage = () => {
         <div className="container">
             <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }} ></div>
             <div className="col-md-10 mx-auto" style={{ marginBottom: "20px", display: 'flex' }}>
-                <h3>전자결제(관리자)</h3>
+                <h3>전자결재(관리자)</h3>
             </div>
 
             <div className="elec-container">
@@ -121,9 +123,11 @@ const ElecAtrzManage = () => {
                 </div>
                 <CustomTable
                   keyColumn={keyColumn}
+                  pageSize={pageSize}
                   values={searchList}
                   columns={columnTitle}
-                  //paging={true}
+                  paging={true}
+                  onClick
                 />
             </div>
         </div>
