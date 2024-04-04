@@ -1,9 +1,6 @@
 package com.trsystem.indvdlClm.domain;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -118,7 +115,7 @@ public class IndvdlClmDomain {
     // 휴가결재저장
     @Transactional
     public static int insertVcatnAtrz(
-            String elctrnAtrzId,                        // 전자결재ID
+            Map<String, Object> elctrnAtrzId,           // 전자결재ID
             Map<String, Object> elctrnTbMap,            // ELCTRN_ATRZ
             Map<String, Object> insertElctrnMap,        // ELCTRN_ATRZ
             Map<String, Object> vcatnTbMap,             // VCATN_ATRZ
@@ -130,45 +127,59 @@ public class IndvdlClmDomain {
             List<MultipartFile> attachments)
     {
         int result = 0;
+        String elctrnAtrzValue = (String) elctrnAtrzId.get("elctrnAtrzId");
+
+        final String sortKey = "approvalCode";
+        Collections.sort(insertAtrzLnMap, new Comparator<Map<String, Object>>() {
+            @Override
+            public int compare(Map<String, Object> map1, Map<String, Object> map2) {
+                Comparable value1 = (Comparable) map1.get(sortKey);
+                Comparable value2 = (Comparable) map2.get(sortKey);
+                return value1.compareTo(value2);
+            }
+        });
+
+        System.out.println("=======================================");
+        System.out.println("insertAtrzLnMap : " + insertAtrzLnMap);
+        System.out.println("=======================================");
+
+        // ELCTRN_ATRZ(전자결재) 테이블 저장
+        List<Map<String, Object>> insertElctrnList = new ArrayList<>();
+        insertElctrnMap.put("elctrnAtrzId", elctrnAtrzValue);
+        insertElctrnMap.put("atrzFormDocId", "9632d577-f0bd-11ee-9b25-000c2956283f");
+        insertElctrnMap.put("nowAtrzLnSn", "1");
+        insertElctrnList.add(0, elctrnTbMap);
+        insertElctrnList.add(1, insertElctrnMap);
+        result = commonService.insertData(insertElctrnList);
+
+        // VCATN_ATRZ(휴가결재), ATCHMNFL(첨부파일) 테이블 저장
+        insertVcatnMap.put("elctrnAtrzId", elctrnAtrzValue);
+        result = commonService.insertFile(vcatnTbMap, insertVcatnMap, attachments, null, null);
 
 
-//
-//        // ELCTRN_ATRZ(전자결재) 테이블 저장
-//        List<Map<String, Object>> insertElctrnList = new ArrayList<>();
-//        insertElctrnMap.put("elctrnAtrzId", elctrnAtrzId);
-//        insertElctrnList.add(0, elctrnTbMap);
-//        insertElctrnList.add(1, insertElctrnMap);
-//        result = commonService.insertData(insertElctrnList);
-//
-//        // VCATN_ATRZ(휴가결재), ATCHMNFL(첨부파일) 테이블 저장
-//        insertVcatnMap.put("elctrnAtrzId", elctrnAtrzId);
-//        result = commonService.insertFile(vcatnTbMap, insertVcatnMap, attachments, null, null);
-//
-//
-//        // ATRZ_LN(결재선) 저장
-//        List<Map<String, Object>> insertAtrzLnList = new ArrayList<>();
-//        insertAtrzLnList.add(0, atrzLnTbMap);
-//        for (int i = 1 ; i < insertAtrzLnMap.size(); i++){
-//            insertAtrzLnMap.get(i).put("elctrnAtrzId", elctrnAtrzId);
-//            insertAtrzLnMap.get(i).put("atrzStepCd", insertAtrzLnMap.get(i).get("approvalCdoe"));
-//            insertAtrzLnMap.get(i).put("aprvrEmpId", insertAtrzLnMap.get(i).get("empId"));
-//            insertAtrzLnMap.get(i).put("atrzSttsCD", "VTW00801");
-//            insertAtrzLnList.add(i, insertAtrzLnMap.get(i));
-//        }
-//        result = commonService.insertData(insertAtrzLnList);
-//
-//        // REFRN_MAN(결재선) 저장
-//        List<Map<String, Object>> insertRefrnManList = new ArrayList<>();
-//        insertRefrnManList.add(0, atrzLnTbMap);
-//        for (int i = 1 ; i < insertRefrnMap.size(); i++){
-//            insertRefrnMap.get(i).put("elctrnAtrzId", elctrnAtrzId);
-//            insertRefrnMap.get(i).put("refrnCncrrncClCd", insertRefrnMap.get(i).get("approvalCdoe"));
-//            insertRefrnManList.add(i, insertRefrnMap.get(i));
-//        }
-//        result = commonService.insertData(insertRefrnManList);
+        // ATRZ_LN(결재선) 저장
+        List<Map<String, Object>> insertAtrzLnList = new ArrayList<>();
+        insertAtrzLnList.add(0, atrzLnTbMap);
+        for (int i = 0 ; i < insertAtrzLnMap.size(); i++){
+            insertAtrzLnMap.get(i).put("elctrnAtrzId", elctrnAtrzValue);
+            insertAtrzLnMap.get(i).put("atrzStepCd", insertAtrzLnMap.get(i).get("approvalCode"));
+            insertAtrzLnMap.get(i).put("aprvrEmpId", insertAtrzLnMap.get(i).get("empId"));
+            insertAtrzLnMap.get(i).put("atrzSttsCD", "VTW00801");
+            insertAtrzLnMap.get(i).put("atrzLnSn", i + 1);
+            insertAtrzLnList.add(i + 1, insertAtrzLnMap.get(i));
+        }
+        result = commonService.insertData(insertAtrzLnList);
 
-
-
+        // REFRN_MAN(결재선) 저장
+        List<Map<String, Object>> insertRefrnManList = new ArrayList<>();
+        insertRefrnManList.add(0, refrnTbMap);
+        for (int i = 0 ; i < insertRefrnMap.size(); i++){
+            insertRefrnMap.get(i).put("elctrnAtrzId", elctrnAtrzValue);
+            insertRefrnMap.get(i).put("refrnCncrrncClCd", insertRefrnMap.get(i).get("approvalCode"));
+            insertRefrnMap.get(i).put("ccSn", i + 1);
+            insertRefrnManList.add(i + 1, insertRefrnMap.get(i));
+        }
+        result = commonService.insertData(insertRefrnManList);
 
 
 
@@ -194,9 +205,9 @@ public class IndvdlClmDomain {
         retrieveVcatnStrgInfoMap.put("queryId", "indvdlClmMapper.retrieveVcatnStrgInfoInq");
         List<Map<String, Object>> retrieveVcatnStrgInfoResult = commonService.queryIdSearch(retrieveVcatnStrgInfoMap);
 
-        System.out.println("=====================================");
-        System.out.println("retrieveVcatnStrgInfoResult : " + retrieveVcatnStrgInfoResult);
-        System.out.println("=====================================");
+//        System.out.println("=====================================");
+//        System.out.println("retrieveVcatnStrgInfoResult : " + retrieveVcatnStrgInfoResult);
+//        System.out.println("=====================================");
 
         /**
          * caseFlag
@@ -282,15 +293,15 @@ public class IndvdlClmDomain {
             }
         }
 
-        System.out.println("=====================================");
-        System.out.println("입사기준휴가");
-        System.out.println("insertNewVcatnMngMap : " + insertNewVcatnMngMap);
-        System.out.println("=====================================");
-
-        System.out.println("=====================================");
-        System.out.println("회계기준휴가");
-        System.out.println("insertVcatnMngMap : " + insertVcatnMngMap);
-        System.out.println("=====================================");
+//        System.out.println("=====================================");
+//        System.out.println("입사기준휴가");
+//        System.out.println("insertNewVcatnMngMap : " + insertNewVcatnMngMap);
+//        System.out.println("=====================================");
+//
+//        System.out.println("=====================================");
+//        System.out.println("회계기준휴가");
+//        System.out.println("insertVcatnMngMap : " + insertVcatnMngMap);
+//        System.out.println("=====================================");
 
 //        insertVcatnMap.put("state", "UPDATE");
 //        result = commonService.queryIdDataControl(insertVcatnMap);

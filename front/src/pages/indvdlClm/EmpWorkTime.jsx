@@ -83,7 +83,7 @@ function getMonthList() {
     return monthList;
 }
 
-const EmpMonthVacInfo = () => {
+const EmpWorkTime = () => {
     // DevExtrme 한글화설정
     loadMessages(koMessages);
     locale('ko');
@@ -612,7 +612,7 @@ const EmpMonthVacInfo = () => {
     }
 }
 
-export default EmpMonthVacInfo;
+export default EmpWorkTime;
 
 
 const textAlign = {

@@ -323,8 +323,8 @@
             ,#{empId}			/* 직원ID */
             ,#{aplyYm}			/* 신청연월 */
             ,#{aplyOdr}			/* 신청차수 */
-            ,#{ctAtrzCmptnYn}	/* 비용결재완료여부 */
-            ,#{mmAtrzCmptnYn}	/* MM결재완료여부 */
+            ,'N'            	/* 비용결재완료여부 */
+            ,'N'            	/* MM결재완료여부 */
             ,#{expensCd}		/* 경비코드 */
         )
         ON DUPLICATE KEY UPDATE
