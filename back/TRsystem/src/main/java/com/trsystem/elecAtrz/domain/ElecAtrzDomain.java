@@ -53,7 +53,7 @@ public class ElecAtrzDomain {
 		// 전자결재 테이블에 insert 한다.
 		elecAtrzParam.putAll(params);
 		elecAtrzParam.put("nowAtrzLnSn", 1);
-		elecAtrzParam.put("atrzDnmdEmpId", regEmpId);
+		elecAtrzParam.put("atrzDmndEmpId", regEmpId);
 		elecAtrzParam.remove("param");
 		
 		System.out.println(elecAtrzParam);

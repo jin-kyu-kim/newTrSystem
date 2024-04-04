@@ -139,4 +139,11 @@
 				from OUTORD_ENTRPS
 	</select>
 	
+	<select id="retrieveMaxAtrzLnSn" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT MAX(ATRZ_LN_SN) AS MAX_ATRZ_LN_SN
+		FROM ATRZ_LN
+		WHERE 1=1
+		  AND ELCTRN_ATRZ_ID = #{elctrnAtrzId}
+	</select>
+	
 </mapper>
