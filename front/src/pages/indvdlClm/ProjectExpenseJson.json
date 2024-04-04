@@ -53,33 +53,35 @@
       "placeholder": "금액",
       "required": true
     },
-    "expensCd": {
-      "name": "expensCd",
-      "type": "ComboBox",
-      "label": "비용코드",
-      "placeholder": "비용코드",
-      "param": { "tbNm" : "CD",
-        "condition": {
-          "upCdValue": "VTW045"
-        },
-        "valueExpr" : "cdValue",
-        "displayExpr": "cdNm",
-        "name": "expensCd"
+    "prjctId": {
+      "name": "prjctId",
+      "label": "프로젝트",
+      "placeholder": "\"[\"입력시 사용가능한 프로젝트 전체 조회",
+      "param": { "tbNm" : "PRJCT",
+        "valueExpr" : "prjctId",
+        "displayExpr": "prjctNm",
+        "name": "prjctId"
       },
       "required": true
     },
-    "ctPrpos": {
-      "name": "ctPrpos",
+    "expensBox": {
+      "name": "expensCd",
       "type": "TextBox",
-      "label": "용도",
-      "placeholder": "용도",
+      "label": "비용코드",
+      "placeholder": "프로젝트가 입력되지 않았습니다.",
       "required": true
     },
-    "ATDRN": {
-      "name": "ATDRN",
-      "type": "TextBox",
-      "label": "참석자",
-      "placeholder": "참석자",
+    "expensCd": {
+      "name": "expensCd",
+      "label": "비용코드",
+      "placeholder": "[비용코드 입력]",
+      "param": {
+        "queryId": "indvdlClmMapper.retrieveExpensCdPrjctAccto",
+        "valueExpr" : "expensCd",
+        "displayExpr": "cdNm",
+        "name": "expensCd",
+        "values": ["expensCd"]
+      },
       "required": true
     }
   },
