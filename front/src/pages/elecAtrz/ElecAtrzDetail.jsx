@@ -7,9 +7,8 @@ import CustomTable from 'components/unit/CustomTable';
 import ElecAtrzTabDetail from './ElecAtrzTabDetail';
 import electAtrzJson from './ElecAtrzJson.json';
 import ApiRequest from 'utils/ApiRequest';
-import './ElecAtrz.css'
 import { useCookies } from 'react-cookie';
-import { max } from 'date-fns';
+import './ElecAtrz.css'
 
 const ElecAtrzDetail = () => {
     const navigate = useNavigate();
@@ -44,7 +43,6 @@ const ElecAtrzDetail = () => {
         getVacInfo();
         getPrjct();
         getAtrzLn();
-        getRefEmp();
         getMaxAtrzLnSn();
     }, []);
     
@@ -82,17 +80,6 @@ const ElecAtrzDetail = () => {
             console.error(error)
         }
     };
-
-    const getRefEmp = async () => {
-        try{
-            const response = await ApiRequest('/boot/common/commonSelect', [
-                {tbNm: "REFRN_MAN"}, {elctrnAtrzId: detailData.elctrnAtrzId}
-            ]);
-            console.log('getRef', response);
-        } catch(error) {
-            console.log('error', error);
-        }
-    }
 
     /**
      * 최종 결재선 순번확인: 현재 결재자가 마지막 결재인지 확인하기 위함
@@ -203,6 +190,10 @@ const ElecAtrzDetail = () => {
         try {
             const response = await ApiRequest("/boot/common/commonUpdate", param);
             if(response > 0) {
+                const vacResult = handleVacation();
+                if(vacResult < 0) {
+                    alert("승인 처리에 실패하였습니다.");
+                }
                 alert("승인 처리되었습니다.");
                 navigate('/elecAtrz/ElecAtrz');
             } else {
@@ -240,6 +231,7 @@ const ElecAtrzDetail = () => {
             const result = await ApiRequest("/boot/common/commonUpdate", param);
 
             if(result > 0) {
+
                 alert("반려 처리되었습니다.");
                 navigate('/elecAtrz/ElecAtrz');
             } else {
@@ -253,35 +245,66 @@ const ElecAtrzDetail = () => {
      */
     const handleVacation = async () => {
 
-        // USE_DAYCNT
-        // PBLEN_VCATN_USE_DAYCNT
-        // VCATN_REMNDR_DAYCNT
+        // 해당 사람의 휴가 관리 테이블 조회
+        const VacMng = await getVacMngInfo();
 
         if(detailData.elctrnAtrzTySeCd === "VTW04901") {
 
             let updParam = {}
-            const dtlInfo = {};
-            // if(["VTW01204", "VTW01205", "VTW01206"].includes(dtlInfo.vcatnTyCd)) {
-            //     updParam = {
-            //         pblenVcatnUseDaycnt: dtlInfo.vcatnDeCnt,
-            //         mdfcnDt: new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0],
-            //         mdfcnEmpId: cookies.userInfo.empId   
-            //     }
-            // } else if (["VTW01201", "VTW01202", "VTW01203"].includes(dtlInfo.vcatnTyCd)){
-            //     updParam = {
-            //         useDaycnt: 
-            //     }
-            // }
-            
+            if(["VTW01204", "VTW01205", "VTW01206"].includes(dtlInfo.vcatnTyCd)) {
+                updParam = {
+                    pblenVcatnUseDaycnt: VacMng.pblenVcatnUseDaycnt + dtlInfo.vcatnDeCnt,
+                    mdfcnDt: new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0],
+                    mdfcnEmpId: cookies.userInfo.empId   
+                }
+            } else if (["VTW01201", "VTW01202", "VTW01203"].includes(dtlInfo.vcatnTyCd)){
+                updParam = {
+                    useDaycnt: VacMng.useDaycnt + dtlInfo.vcatnDeCnt,
+                    vcatnRemndrDaycnt: VacMng.vcatnRemndrDaycnt - dtlInfo.vcatnDeCnt,
+                    mdfcnDt: new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0],
+                    mdfcnEmpId: cookies.userInfo.empId   
+                }
+            }
 
-            // constParam = [
-            //     { tbNm: "VCATN_MNG" },
-            //     {  },
-            // ]
+            const param = [
+                { tbNm: "VCATN_MNG" },
+                updParam,
+                { 
+                    empId: detailData.atrzDmndEmpId, 
+                    vcatnYr: '2024' 
+                },
+            ]
+
+            try {
+                const response = await ApiRequest("/boot/common/commonUpdate", param);
+                return response;
+
+            } catch (error) {
+                console.error(error)
+            }
+        } else {
+            return;
         }
-        
-
     }
+
+    const getVacMngInfo = async () => {
+        try {
+            const response = await ApiRequest('/boot/common/commonSelect', [
+                { tbNm: "VCATN_MNG" }, 
+                { 
+                    empId: detailData.atrzDmndEmpId,
+                    vcatnYr: 2024
+                }
+            ]);
+            
+            return response[0];
+
+        } catch (error) {
+            console.log('error', error);
+        }
+    };
+
+
 
     return (
         <div className="container" style={{ marginTop: "10px" }}>

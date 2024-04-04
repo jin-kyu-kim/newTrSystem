@@ -1,12 +1,10 @@
 import React, { useState } from "react";
-import { useCookies } from "react-cookie";
 import { Button } from "devextreme-react/button";
 import { TextBox } from "devextreme-react/text-box";
 import AtrzLnTable from "components/unit/AtrzLnTable";
 import ApprovalPopup from "components/unit/ApprovalPopup";
 
 const ElecAtrzTitleInfo = ({ atrzLnEmpList, getAtrzLn, contents, onClick, formData, prjctData, onHandleAtrzTitle, atrzParam }) => {
-  const [cookies] = useCookies(["userInfo", "userAuth"]);
   const [popVisible, setPopVisible] = useState(false);
 
   const onAtrzLnPopup = async () => {
@@ -20,8 +18,8 @@ const ElecAtrzTitleInfo = ({ atrzLnEmpList, getAtrzLn, contents, onClick, formDa
 
   const setButtons = () => {
     const result = [];
-    contents.map((item) => {
-      result.push(<Button id={item.id} text={item.text}
+    contents.map((item, index) => {
+      result.push(<Button id={item.id} text={item.text} key={index}
         onClick={item.id === 'onAtrzLnPopup' ? onAtrzLnPopup : onClick} />);
     });
     return result;
@@ -53,7 +51,7 @@ const ElecAtrzTitleInfo = ({ atrzLnEmpList, getAtrzLn, contents, onClick, formDa
             <tr>
               <td>기안자</td>
               <td> : </td>
-              <td>부서 명 / {cookies.userInfo.empNm}</td>
+              <td>부서 명 / {formData.atrzDmndEmpNm}</td>
             </tr>
             <tr>
               <td>기안일자</td>
@@ -62,7 +60,7 @@ const ElecAtrzTitleInfo = ({ atrzLnEmpList, getAtrzLn, contents, onClick, formDa
             </tr>
           </table>
         </div>
-        {/* 결재선 컴포넌트 */}
+
         <div style={{ flex: 3, marginRight: "50px" }}>
           <AtrzLnTable
             atrzLnEmpList={atrzLnEmpList}
