@@ -103,25 +103,67 @@ public class SysMngService implements UserDetailsService {
         Map<String, Object> condition = new HashMap<>();
         String empno = (String) request.get("empno");
         String empId = (String) request.get("empId");
-
+        
         tbNm.put("tbNm", "LGN_USER");
-        request.clear();
+        //request.clear();
         request.put("pswd",passwordEncoder.encode(empno));
+        
         condition.put("empId", empId);
 
         List<Map<String, Object>> param = new ArrayList<>();
         param.add(tbNm);
-        param.add(request);
         param.add(condition);
-
-        int result = commonService.updateData(param);
-
-        // 입력된 비밀번호와 저장된 비밀번호 비교
-        if (result > 0) {
-            // 인증 객체 생성
-            return ResponseEntity.ok("비밀번호 변경 성공");
-        } else {
-            return ResponseEntity.ok("비밀번호 변경 실패");
+        
+        //param.add(request);
+        
+        
+        
+        //lgn_user에 데이터가 있는지 확인 
+        List<Map<String, Object>> search = commonService.commonSelect(param); 
+        
+        int result;
+        if(search.size() > 0) {
+        	if(empno != search.get(0).get("empno").toString()) {
+        	    request.clear();
+        	    request.put("empno",empno);
+        	    request.put("pswd",passwordEncoder.encode(empno));
+        	    param.clear();
+        	    param.add(tbNm);
+            	param.add(request);
+            	param.add(condition);
+            	result = commonService.updateData(param);
+            	if (result > 0) {
+                    return ResponseEntity.ok("성공");
+                } else {
+                    return ResponseEntity.ok("실패");
+                }
+        	}else {
+        		param.clear();
+            	param.add(tbNm);
+            	param.add(request);
+            	param.add(condition);
+            	result = commonService.updateData(param);
+	            	if (result > 0) {
+	                    return ResponseEntity.ok("성공");
+	                } else {
+	                    return ResponseEntity.ok("실패");
+	                }
+        	}
+        }else { 
+        	param.clear();
+        	param.add(tbNm);
+        	param.add(request);
+        	result = commonService.insertData(param);
+        	 if (result > 0) {
+                 // 인증 객체 생성
+                 return ResponseEntity.ok("성공");
+             } else {
+                 return ResponseEntity.ok("실패");
+             }
         }
+
+      
     }
+    
+    
 }
