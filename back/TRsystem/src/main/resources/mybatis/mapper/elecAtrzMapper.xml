@@ -23,7 +23,7 @@
 			    GROUP BY PRJCT_ID) pbp ON (mcp.PRJCT_ID = pbp.PRJCT_ID AND mcp.BGT_MNG_ODR = pbp.BGT_MNG_ODR)
 		  WHERE 1=1
 		    AND mcp.PRJCT_ID = #{prjctId}
-	</select>
+	</select>	
 
 	<select id="elecAtrzMain" parameterType="String" resultType="com.trsystem.LowerHashMap">
 		SELECT
@@ -148,6 +148,13 @@
 		SELECT OUTORD_ENTRPS_ID AS PRDUCT_ID, 
 				OUTORD_ENTRPS_NM AS PRDUCT_NM
 				from OUTORD_ENTRPS
+	</select>
+	
+	<select id="retrieveMaxAtrzLnSn" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT MAX(ATRZ_LN_SN) AS MAX_ATRZ_LN_SN
+		FROM ATRZ_LN
+		WHERE 1=1
+		  AND ELCTRN_ATRZ_ID = #{elctrnAtrzId}
 	</select>
 	
 </mapper>

@@ -106,6 +106,8 @@
       {"key": "rm", "value": "비고"}
     ],
     "header": [
+      { "text": "승인", "id": "aprv" },
+      { "text": "반려", "id": "rjct" },
       { "text": "출력", "id": "print" },
       { "text": "문서이력", "id": "docHist" }
     ],
