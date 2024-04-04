@@ -60,21 +60,21 @@ const ElecAtrzManage = () => {
     //SearchInfoSet 검색
     const searchHandle = (initParam) => {
         setSearchParam({
-          ...searchParam,
           ...initParam,
+          queryId : queryId,
+          keyColumn : keyColumn,
           searchType : clickBox
         })
     }
 
     const getList = ({keyNm}) => {
         
-
         setSearchParam({
             queryId : queryId,
             keyColumn : keyColumn,
             searchType : keyNm
         })
-        
+
         keyNm !== "progress" ? setSearchSetVisivle(true) : setSearchSetVisivle(false);
         setClickBox(keyNm)
 
