@@ -25,7 +25,11 @@ public class ElecAtrzDomain {
 		ElecAtrzDomain.commonService = commonService;
 	}
 
-	
+	/**
+	 * 전자결재
+	 * @param params
+	 * @return
+	 */
 	public static String insertElecAtrz(Map<String, Object> params) {
 		
 		System.out.println(params);

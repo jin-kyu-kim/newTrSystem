@@ -21,18 +21,28 @@ const ElecAtrzNewReq = () => {
     const location = useLocation();
     const prjctId = location.state.prjctId;
     const formData = location.state.formData;
-    // const childRef = useRef();
     const [cookies] = useCookies(["userInfo", "userAuth"]);
-    const empId = cookies.userInfo.empId;
-    console.log("empId",empId);
+
     const [data, setData] = useState(location.state.formData);
     const [atrzParam, setAtrzParam] = useState({});
     const [childData, setChildData] = useState({});  //자식 컴포넌트에서 받아온 데이터
     const [prjctData, setPrjctData] = useState({});
     const [attachments, setAttachments] = useState([]);
     const [atrzLnEmpList, setAtrzLnEmpList] = useState([]);
-
     const column = { "dataField": "gnrlAtrzCn", "placeholder": "내용을 입력해주세요."};
+
+    /*
+     * 첨부파일 저장 테이블 지정 
+     * >> TODO. 현재는 전자결재문서를 elctrnAtrzTySeCd 이것으로 구분중이지만 
+     *    전자결재ID로 구분하는게 맞을 듯함.
+     */
+    let insertTable = "";
+    if(["VTW04907"].includes(data.elctrnAtrzTySeCd)){
+        insertTable = "CLM_ATRZ";
+    }else if(["VTW04909","VTW04910"].includes(data.elctrnAtrzTySeCd)){
+        insertTable = "CTRT_ATRZ";
+    }
+
 
     /**
      * 자식컴포넌트에서 받아온 데이터 처리
@@ -52,8 +62,9 @@ const ElecAtrzNewReq = () => {
         }
     }
     
+
     /**
-     * console.log useEffect
+     * 자식컴포넌트에서 받아온 데이터 set 
      */
     useEffect(() => {
         console.log("childData", childData);
@@ -62,18 +73,17 @@ const ElecAtrzNewReq = () => {
             ...atrzParam,
             ...childData
         }));
-
-
     }, [childData]);
 
+    /**
+     *  내용 html 데이터 set
+     */
     useEffect(() => {
         setAtrzParam(atrzParam => ({
             ...atrzParam,
             atrzCn: data.gnrlAtrzCn
         }));
-    
     }, [data]);
-
 
 
     useEffect(() => {
@@ -161,10 +171,16 @@ const ElecAtrzNewReq = () => {
         const date = new Date();
         console.log(param)
 
-        // 임시저장 버튼을 클릭했을 경우, 처리할 것이 있는가?
-        if(stts === "VTW03701"){
+        //임시저장 눌렀을 시 벨리데이션 체크    
+        const isValid = checkValidation(stts,param); 
+        if(!isValid) return;
 
-        }
+
+        /**
+         * 전자결재 & 첨부파일 저장
+         */
+
+        console.log(atrzLnEmpList)
 
         const insertParam = {
             param,
@@ -175,9 +191,8 @@ const ElecAtrzNewReq = () => {
             elctrnAtrzTySeCd: data.elctrnAtrzTySeCd,
             regDt: date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0],
             regEmpId: cookies.userInfo.empId,
+            atrzLnEmpList
         }  
-
-        console.log(insertParam)
 
         try {
             const response = await ApiRequest("/boot/elecAtrz/insertElecAtrz", insertParam);
@@ -185,13 +200,17 @@ const ElecAtrzNewReq = () => {
 
             if(response){
                 // 첨부파일 저장
-                const formDataAttach = new FormData();
-                formDataAttach.append("tbNm", JSON.stringify({tbNm: "CTRT_ATRZ"}));
+                const formDataAttach = new FormData();      
+                formDataAttach.append("tbNm", JSON.stringify({tbNm : insertTable})); 
                 formDataAttach.append("data", JSON.stringify({atchmnflId : uuid()}));
-                formDataAttach.append("idColumn", JSON.stringify({elctrnAtrzId: response})); //결재ID 받아와야 함
+                formDataAttach.append("idColumn", JSON.stringify({elctrnAtrzId: response})); //결재ID
                 formDataAttach.append("deleteFiles", JSON.stringify([]));
                 Object.values(attachments)
                     .forEach((attachment) => formDataAttach.append("attachments", attachment));
+
+                    for (let [key, value] of formDataAttach.entries()) {
+                        console.log(key, value);
+                    }
 
                 const responseAttach = await axios.post("/boot/common/insertlongText", formDataAttach, {
                     headers: { 'Content-Type': 'multipart/form-data' },
@@ -200,7 +219,7 @@ const ElecAtrzNewReq = () => {
 
                 if(responseAttach.status === 200){
                     alert("전자결재 요청이 완료되었습니다.")
-                    navigate("/elecAtrz/ElecAtrzForm");
+                    navigate("/elecAtrz/ElecAtrz");
                 }
 
         }else{
@@ -249,6 +268,23 @@ const ElecAtrzNewReq = () => {
     const handleAttachmentChange = (e) => {
         setAttachments(e.value);
     };
+
+
+    /**
+     * 결재요청 및 임시저장 벨리데이션 체크
+     */
+    const checkValidation = (stts, param) => {
+        if(["VTW03701","VTW03702"].includes(stts)){
+            if(param.title === undefined || param.title === ""){
+                alert("결재 제목을 입력해주세요.");
+                return false;
+            }else if(param.atrzCn === undefined || param.atrzCn === ""){
+                alert("결재 내용을 입력해주세요.");
+                return false;
+            }
+        }
+        return true;
+    }
     
     return (
         <>

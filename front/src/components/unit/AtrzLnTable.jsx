@@ -3,19 +3,23 @@ import '../../pages/elecAtrz/ElecAtrz.css'
 
 const AtrzLnTable = ({atrzLnEmpList, bottomNm}) => {
   const approvalCodes = ['VTW00702', 'VTW00703', 'VTW00704', 'VTW00705'];
-
+  console.log('aaa', atrzLnEmpList)
   const renderEmp = (cd) => {
     return(
         atrzLnEmpList.filter(emp => emp.approvalCode === cd)
-        .map(emp => emp.listEmpFlnm).join('; ')
+        .map(emp => emp.empFlnm + ' ' + emp.jbpsNm).join('; ')
     );
   };
   const hasEmp = (cd) => {
     return atrzLnEmpList.some(emp => emp.approvalCode === cd);
   }
   /** 상세조회의 경우 */
-  const hasAprvDate = (cd) => {
-    return atrzLnEmpList.some(emp => emp.approvalCode === cd && (emp.rjctYmd !== null || emp.aprvYmd !== null));
+  const hasAprvDate = (cd, type) => {
+    const foundEmp = atrzLnEmpList.find(emp => emp.approvalCode === cd &&
+                              (emp.rjctYmd !== undefined || emp.aprvYmd !== undefined));
+    
+    return foundEmp ? (type !== 'date' ? foundEmp.atrzSttsCdNm 
+      : foundEmp.atrzSttsCd === "VTW00803" ? foundEmp.rjctYmd : foundEmp.aprvYmd) : undefined;
   }
 
   return (
@@ -26,17 +30,13 @@ const AtrzLnTable = ({atrzLnEmpList, bottomNm}) => {
             {['검토', '확인', '심사', '승인'].map((text, index) => (
                 <TableCell key={index} style={{ ...cellStyle, ...grayBackground }}>{text}</TableCell>
             ))}
-        </TableRow>
+        </TableRow>    
 
         <TableRow>
           {approvalCodes.map((code) => (
-            <TableCell
-              key={code}
-              className={`diagonal-line-cell ${hasEmp(code) ? 'cell-with-data' 
-              : ''}`} 
-              style={cellStyle}
-            >
-            {hasAprvDate(code) ? '승인' : ''}
+            <TableCell key={code} style={cellStyle}
+              className={`diagonal-line-cell ${hasEmp(code) ? 'cell-with-data' : ''}`} >
+              {hasAprvDate(code, 'step')}
             </TableCell>
           ))}
         </TableRow>
@@ -54,14 +54,14 @@ const AtrzLnTable = ({atrzLnEmpList, bottomNm}) => {
         <TableRow>
           {approvalCodes.map((code) => (
             <TableCell key={code} style={cellStyle}>
-              
+               {hasAprvDate(code, 'date')}
             </TableCell>
           ))}
         </TableRow>
         
         <TableRow>
             <TableCell style={{ ...cellStyle, ...grayBackground }}>{bottomNm}</TableCell>
-            <TableCell colSpan={4} style={{ border: '1px solid black', textAlign: 'center' }}>
+            <TableCell colSpan={4} style={cellStyle}>
                 {renderEmp(bottomNm === '참조' ? 'VTW00706' : 'VTW00707')}
             </TableCell>
         </TableRow>
@@ -71,5 +71,5 @@ const AtrzLnTable = ({atrzLnEmpList, bottomNm}) => {
 };
 export default AtrzLnTable;
 
-const cellStyle = { border: '1px solid black', textAlign: 'center', height: '50px' };
+const cellStyle = { border: '1px solid #c4c1c1', textAlign: 'center', height: '50px' };
 const grayBackground = { background: '#e1dfdf' };
