@@ -7,7 +7,7 @@ import CustomCdComboBox from '../../../components/unit/CustomCdComboBox';
 import NumberBox from 'devextreme-react/number-box';
 import Button from "devextreme-react/button";
 
-const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdrTobe, ctrtYmd, stbleEndYmd, transformedData}) => {
+const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdrTobe, ctrtYmd, stbleEndYmd, transformedData, deptId}) => {
     const navigate = useNavigate();
     const [inputValue, setInputValue] = useState(transformedData); //월별 값 입력을 위한 상태
     const [data, setData] = useState([]);
@@ -125,7 +125,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
     const handleCancel = (e) => {
         navigate("../project/ProjectChange",
             {
-        state: { prjctId: prjctId, bgtMngOdrTobe: bgtMngOdrTobe, ctrtYmd: ctrtYmd, stbleEndYmd: stbleEndYmd},
+        state: { prjctId: prjctId, bgtMngOdrTobe: bgtMngOdrTobe, ctrtYmd: ctrtYmd, stbleEndYmd: stbleEndYmd, deptId: deptId},
         })
     };
 

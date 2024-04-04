@@ -24,6 +24,7 @@ const CustomCostTable = ({
   stbleEndYmd,
   prjctId,
   bgtMngOdrTobe,
+  deptId
 }) => {
 
   const navigate = useNavigate();
@@ -151,7 +152,7 @@ const CustomCostTable = ({
   const handleCancel = () => {
     navigate("../project/ProjectChange",
         {
-    state: { prjctId: prjctId, bgtMngOdrTobe: bgtMngOdrTobe, ctrtYmd: ctrtYmd, stbleEndYmd: stbleEndYmd},
+    state: { prjctId: prjctId, bgtMngOdrTobe: bgtMngOdrTobe, ctrtYmd: ctrtYmd, stbleEndYmd: stbleEndYmd, deptId: deptId},
     })
   };
 
@@ -271,6 +272,7 @@ const CustomCostTable = ({
           ctrtYmd={ctrtYmd}
           stbleEndYmd={stbleEndYmd}
           transformedData={transformedData}
+          deptId={deptId}
           />
        </Popup>
 
