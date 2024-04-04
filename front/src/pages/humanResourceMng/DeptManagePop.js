@@ -201,6 +201,11 @@ const insertDeptEmp = async (InsertParam,InsertHistParam) => {
 
 //============================직책변경버튼 클릭 이벤트==========================================
   const deptAptUpd = () => {
+    console.log("직직직직책",deptAptParam.jbttlCd)
+    if(deptAptParam.jbttlCd === undefined){
+      alert("직책을 선택해주세요");
+      return;
+    }
     const isconfirm = window.confirm("인력의 직책을 변경하시겠습니까?");
     if (isconfirm) {
       const updateParam =[
@@ -292,31 +297,36 @@ const updateDeptEmp = async (updateParam,InsertHistParam) => {
         <div className="deptListContainer" style={deptEmpLeftContainerStyle}>
           <div className="deptListTable" style={deptListStyle}>
             <div>
-                <p><strong>* 부서인력정보 </strong></p>
-                {deptHnfParam.empId != null ? (
+                <p><strong>* 직원 부서발령</strong></p>
+               
+            </div>
+            <CustomTable keyColumn={emplistKeyColumn} columns={emplistTableColumns} values={values} paging={true} onRowClick={onEmpRowClick}/>
+          </div>
+        </div>
+      <div className="deptDetailContainer" style={deptEmpRightContainerStyle}>
+          <div className="deptHnfListTable" style={deptDetailStyle}>
+              <p><strong>* 부서인력정보 </strong></p>    
+            <CustomLabelValue props={labelValue.empno} onSelect={handleChgState}  value={deptAptParam.empno} readOnly={true}/>
+            <CustomLabelValue props={labelValue.empFlnm} onSelect={handleChgState} value={deptAptParam.empFlnm} readOnly={true}/>
+            <CustomLabelValue props={labelValue.jbpsCd} onSelect={handleChgState} value={deptAptParam.jbpsCd} readOnly={true}/>
+            <CustomLabelValue props={labelValue.jbttlCd} onSelect={handleChgState} value={deptAptParam.jbttlCd}/>
+
+            {deptAptParam.empId != null ? (
+              <div className="buttonContainer" style={buttonContainerStyle}>
+                <Button style={editButtonStyle} onClick={deptAptInst} text="발령" />
+              </div>
+            ) : null}
+
+
+            <CustomTable keyColumn={hnfKeyColumn} columns={hafTableColumns} values={data} paging={true} onRowClick={onHnfRowClick}/>
+
+            {deptHnfParam.empId != null ? (
                 <div className="buttonContainer" style={buttonContainerStyle}>
                 <Button style={editButtonStyle} onClick={deptAptUpd} text="직책변경" />
                 <Button style={editButtonStyle} onClick={deptAptDel} text="발령해제" />
                 <CustomLabelValue props={labelValue.jbttlCd} onSelect={handleHnfChgState} value={deptHnfParam.jbttlCd}/>
                 </div>
                  ) : null}
-            </div>
-            <CustomTable keyColumn={hnfKeyColumn} columns={hafTableColumns} values={data} paging={true} onRowClick={onHnfRowClick}/>
-          </div>
-        </div>
-      <div className="deptDetailContainer" style={deptEmpRightContainerStyle}>
-          <div className="deptHnfListTable" style={deptDetailStyle}>
-              <p><strong>* 직원 부서발령 </strong></p>
-            <CustomLabelValue props={labelValue.empno} onSelect={handleChgState}  value={deptAptParam.empno} readOnly={true}/>
-            <CustomLabelValue props={labelValue.empFlnm} onSelect={handleChgState} value={deptAptParam.empFlnm} readOnly={true}/>
-            <CustomLabelValue props={labelValue.jbpsCd} onSelect={handleChgState} value={deptAptParam.jbpsCd} readOnly={true}/>
-            <CustomLabelValue props={labelValue.jbttlCd} onSelect={handleChgState} value={deptAptParam.jbttlCd}/>
-            {deptAptParam.empId != null ? (
-              <div className="buttonContainer" style={buttonContainerStyle}>
-                <Button style={editButtonStyle} onClick={deptAptInst} text="발령" />
-              </div>
-            ) : null}
-            <CustomTable keyColumn={emplistKeyColumn} columns={emplistTableColumns} values={values} paging={true} onRowClick={onEmpRowClick}/>
           </div>
         </div>
       </div>

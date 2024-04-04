@@ -68,7 +68,7 @@ public class SysMngService implements UserDetailsService {
         }
 
         List<Map<String, Object>> authorities = sqlSession.selectList("com.trsystem.mybatis.mapper.sysMngMapper.userAuth",user.get("empId").toString());
-        List<Map<String, Object>> deptInfo = sqlSession.selectList("com.trsystem.mybatis.mapper.sysMngMapper.userAuth",user.get("empId").toString());
+        List<Map<String, Object>> deptInfo = sqlSession.selectList("com.trsystem.mybatis.mapper.sysMngMapper.userDept",user.get("empId").toString());
         reltSet.put("userInfo",user);
         reltSet.put("authorities",authorities);
         reltSet.put("deptInfo",deptInfo);

@@ -283,11 +283,12 @@ const DeptManage = ({callBack}) => {
               dataSource={values}
               dataStructure="plain"
               width={300}  
-              searchMode={value}
+              searchMode={true}
               searchEnabled={true}
               keyExpr="deptId"
               displayExpr="deptNm"
               parentIdExpr="upDeptId"
+              expandedExpr="totalItems"
               onItemClick={deptListTree}
               />
           </div>
@@ -323,6 +324,7 @@ const DeptManage = ({callBack}) => {
               visible={empPopup}
               onHiding={empHandleClose}
               showCloseButton={true}
+              deferRendering={false}
             >
             <DeptManagePop data={hnfValues} deptId={deptHnfParam.deptId} deptNm={deptHnfParam.deptNm} callBack={deptHnfListHandle}/>
             </Popup>
