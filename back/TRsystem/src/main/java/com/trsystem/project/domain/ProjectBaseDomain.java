@@ -216,23 +216,52 @@ public class ProjectBaseDomain {
       	}
     	
     }
-    
-    /*
+
+    /**
      * 결재자 EmpId 계층 쿼리 조회
+     * @param params
+     * @return
      */
     public static List<Map<String, Object>> retrieveAprvrEmpId(Map<String, Object> params) {
     	
-//    	String deptId;
-    	
     	final String queryId = "projectMapper.retrieveAprvrEmpId";
     	
-    	// 2. deptId로 결재자(팀장급)의 Id를 찾는다.
     	List<Map<String, Object>> aprvrEmpIdlist = new ArrayList<>();
     	Map<String, Object> queryIdMap = new HashMap<>();
+    	
     	queryIdMap.put("queryId", queryId);
-    	queryIdMap.put("deptId", params.get("deptId"));
+    	
+    	// 1. deptId가 없는 경우 가져오기.
+    	Map<String, Object> tbParam = new HashMap<>();
+    	Map<String, Object> infoParam = new HashMap<>();
+    	List<Map<String, Object>> selectParams = new ArrayList<>();
+    	
+    	
+    	
+    	// deptId가 null일 경우 프로젝트에서 직접 찾는다.
+    	if(String.valueOf(params.get("deptId")).equals("null") || String.valueOf(params.get("deptId")).equals(null)) {
+    		
+    		tbParam.put("tbNm", "PRJCT");
+    		infoParam.put("prjctId", params.get("prjctId"));
+    		
+    		selectParams.add(0, tbParam);
+    		selectParams.add(infoParam);
+    		
+    		List<Map<String, Object>> result = commonService.commonSelect(selectParams);
+    		
+    		System.out.println(result.get(0));
+    		
+    		queryIdMap.put("deptId", result.get(0).get("deptId"));
+    	} else {
+    		
+    		queryIdMap.put("deptId", params.get("deptId"));
+    	}
+    	
+
+
     	
     	try {
+        	// 2. deptId로 결재자(팀장급)의 Id를 찾는다.
     		// 넘겨받은 deptId = 프로젝트가 속한 부서의 deptId.
     		// deptId에 해당하는 계층쿼리를 조회한다.
     		aprvrEmpIdlist = commonService.queryIdSearch(queryIdMap);
