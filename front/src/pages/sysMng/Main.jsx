@@ -37,7 +37,7 @@ const Main = ({}) => {
     let test ="";
     const deptNm = cookies.deptInfo.map((item, index)=>{
       if(index != 0){
-        test +=", "
+        test +=","
       }
       test += item.deptNm
     })
@@ -48,7 +48,7 @@ const Main = ({}) => {
     const [currentPhase, setCurrentPhase] = useState(''); //차수설정용
 //------------------------ 초기 설정 --------------------------------------
         useEffect(()=> {
-          console.log("dddd",test)
+          console.log("dddd",cookies.deptInfo)
             setDataSession([
                 {
                 empId : empId,
