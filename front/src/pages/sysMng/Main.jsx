@@ -206,7 +206,7 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
             </TableRow>
             <TableRow style={ {borderStyle : "solid"}}>
                 <TableCell align="center" component="th" style={ {backgroundColor:"rgb(221, 221, 221)",fontWeight:"bold"}}>소속</TableCell>
-                <TableCell align="center" component="th" style={ {borderWidth: "1px" , textAlign:"left"}}>{deptNm}</TableCell>
+                <TableCell align="center" component="th" style={ {borderWidth: "1px" , textAlign:"left"}}>{test}</TableCell>
             </TableRow>
           </Table>
           </TableContainer>
