@@ -662,10 +662,11 @@
          PRJCT_MM_APLY pma
 	      JOIN (SELECT mlp.PRJCT_ID, mlp.EMP_ID, mlp.MMNY_LBRCO_PRMPC_SN, mim.EXPECT_MM
 			      FROM MMNY_LBRCO_PRMPC mlp
-			  	  JOIN MMNY_INPT_MM mim ON (mim.PRJCT_ID = mlp.PRJCT_ID AND mim.MMNY_LBRCO_PRMPC_SN = mlp.MMNY_LBRCO_PRMPC_SN)
+			  	  JOIN MMNY_INPT_MM mim ON (mim.PRJCT_ID = mlp.PRJCT_ID AND mim.MMNY_LBRCO_PRMPC_SN = mlp.MMNY_LBRCO_PRMPC_SN AND mlp.BGT_MNG_ODR = mim.BGT_MNG_ODR)
 		     	 WHERE 1=1
 		       	   AND mim.INPT_YM = #{aplyYm}
-		       	   AND mim.PRJCT_ID = #{prjctId}) mmp ON (mmp.EMP_ID = pma.EMP_ID)
+		       	   AND mim.PRJCT_ID = #{prjctId}
+                   AND mlp.BGT_MNG_ODR = #{bgtMngOdr}) mmp ON (mmp.EMP_ID = pma.EMP_ID)
 	   <!--    JOIN MMNY_LBRCO_EXCN mle ON (pma.PRJCT_ID = mim.PRJCT_ID AND pma.APLY_YM = mle.INPT_YM) -->
 		  JOIN EMP e ON (e.EMP_ID = pma.EMP_ID)
 		  JOIN DEPT_HNF dh ON (e.EMP_ID = dh.EMP_ID)

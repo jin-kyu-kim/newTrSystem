@@ -62,10 +62,10 @@ const ProjectHrCtAprv = () => {
     const onBtnClick = (button, data) => {
 
         navigate("/project/ProjectHrCtAprvDetail", 
-            { state: { 
+            { state: {
                 prjctId: data.prjctId,
                 prjctNm: data.prjctNm,
-                
+                bgtMngOdr: data.bgtMngOdr
             } 
         });
     }
