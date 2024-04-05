@@ -72,7 +72,7 @@
 		 	 , ci.CTMMNY_NM
 			 , p.PIC_FLNM
 			 , p.PIC_TELNO
-			 , p.PIC_EML 
+			 , p.PIC_EML
 		  FROM PRJCT p
 		  JOIN DEPT d ON (d.DEPT_ID = p.DEPT_ID)
 		  JOIN EMP e ON (e.EMP_ID = p.PRJCT_MNGR_EMP_ID)
@@ -100,6 +100,8 @@
 				  , pal.NOW_ATRZ_STEP_CD
 				  , pal.BGT_MNG_ODR
 				  , pald.APRVR_EMP_ID
+		          , DATE_FORMAT(p.CTRT_YMD, '%Y-%m-%d') AS CTRT_YMD
+				  , DATE_FORMAT(STBLE_END_YMD, '%Y-%m-%d') AS STBLE_END_YMD
 			      , COUNT(*) OVER () AS TOTAL_ITEMS
 			  FROM PRJCT_ATRZ_LN pal
 			  JOIN PRJCT_ATRZ_LN_DTL pald ON(pal.PRJCT_ID = pald.PRJCT_ID AND pal.ATRZ_LN_SN = pald.ATRZ_LN_SN AND pal.NOW_ATRZ_STEP_CD = pald.ATRZ_STEP_CD)
@@ -662,10 +664,11 @@
          PRJCT_MM_APLY pma
 	      JOIN (SELECT mlp.PRJCT_ID, mlp.EMP_ID, mlp.MMNY_LBRCO_PRMPC_SN, mim.EXPECT_MM
 			      FROM MMNY_LBRCO_PRMPC mlp
-			  	  JOIN MMNY_INPT_MM mim ON (mim.PRJCT_ID = mlp.PRJCT_ID AND mim.MMNY_LBRCO_PRMPC_SN = mlp.MMNY_LBRCO_PRMPC_SN)
+			  	  JOIN MMNY_INPT_MM mim ON (mim.PRJCT_ID = mlp.PRJCT_ID AND mim.MMNY_LBRCO_PRMPC_SN = mlp.MMNY_LBRCO_PRMPC_SN AND mlp.BGT_MNG_ODR = mim.BGT_MNG_ODR)
 		     	 WHERE 1=1
 		       	   AND mim.INPT_YM = #{aplyYm}
-		       	   AND mim.PRJCT_ID = #{prjctId}) mmp ON (mmp.EMP_ID = pma.EMP_ID)
+		       	   AND mim.PRJCT_ID = #{prjctId}
+                   AND mlp.BGT_MNG_ODR = #{bgtMngOdr}) mmp ON (mmp.EMP_ID = pma.EMP_ID)
 	   <!--    JOIN MMNY_LBRCO_EXCN mle ON (pma.PRJCT_ID = mim.PRJCT_ID AND pma.APLY_YM = mle.INPT_YM) -->
 		  JOIN EMP e ON (e.EMP_ID = pma.EMP_ID)
 		  JOIN DEPT_HNF dh ON (e.EMP_ID = dh.EMP_ID)
