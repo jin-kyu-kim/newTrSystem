@@ -407,6 +407,10 @@
         SELECT
         CARD_USE_SN,
         EMP_ID,
+        PRJCT_ID,
+        EXPENS_CD,
+        ATDRN,
+        CT_PRPOS,
         APLY_YM,
         APLY_ODR,
         CONCAT(SUBSTR(UTZTN_DT, 5, 2),'월 ',SUBSTR(UTZTN_DT,7,2),'일 ',SUBSTR(UTZTN_DT,9,2),':',SUBSTR(UTZTN_DT,11,2)) AS UTZTN_DT,
