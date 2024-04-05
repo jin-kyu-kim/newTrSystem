@@ -2,21 +2,28 @@ import React, { useState, useEffect } from "react";
 import elecAtrzManageJson from "./ElecAtrzManageJson.json";
 import SearchInfoSet from "components/composite/SearchInfoSet";
 import CustomTable from "components/unit/CustomTable";
-import { Tooltip } from "devextreme-react";
+import { Button, Popup, Tooltip, FileUploader } from "devextreme-react";
 import ApiRequest from "utils/ApiRequest";
 import "../elecAtrz/ElecAtrz.css";
 import { useNavigate } from "react-router-dom";
+import ElecAtrzManageHistList from "./ElecAtrzManageAttchList";
+import EmpVacationAttchList from "pages/indvdlClm/EmpVacationAttchList";
+import ElecAtrzManageAttchList from "./ElecAtrzManageAttchList";
 
 const ElecAtrzManage = () => {
     //========================선언구간=======================//
     const navigate = useNavigate(); 
-    const { keyColumn, queryId, countQueryId, baseColumns, progress, atrzSquareList, searchInfo } = elecAtrzManageJson.elecManageMain;
+    const { keyColumn, queryId, countQueryId, atchmnFlPopupqueryId, baseColumns, progress, atrzSquareList, searchInfo, atchmnFlPopupColumns, docHistPopupColumns} = elecAtrzManageJson.elecManageMain;
     const [searchParam, setSearchParam] = useState({keyColumn : keyColumn, queryId : queryId, searchType : "progress"});
     const [totalCount, setTotalCount] = useState([]);
     const [searchList, setSearchList] = useState([]);
     const [columnTitle, setColumnTitle]= useState(baseColumns.concat(progress));
     const [searchSetVisible, setSearchSetVisivle] = useState(false);
     const [clickBox, setClickBox] = useState('progress');
+
+    //팝업창 visible
+    const [isAtchmnFlPopupVisible, setIsAtchmnFlPopupVisible] = useState(false);
+    const [isDocHistPopupVisible, setIsDocHistPopupVisible] = useState(false);
 
     //페이징
     const [totalItems, setTotalItems] = useState(0);
@@ -67,8 +74,7 @@ const ElecAtrzManage = () => {
         })
     }
 
-    const getList = ({keyNm}) => {
-        
+    const getList = (keyNm) => {
         setSearchParam({
             queryId : queryId,
             keyColumn : keyColumn,
@@ -84,24 +90,65 @@ const ElecAtrzManage = () => {
 
     }
 
+    //======================팝업테스트용 선언=================//
+    //첨부파일 리스트
+    const [atchmnFlId, setAtchmnFlId] = useState([]);
+
+    //문서이력 리스트 
+    const [docHistList, setDocHistList] = useState([]);
+    //======================================================//
+    
+    //======================팝업테스트용 이벤트=================//
+
     //팝업 호출 이벤트
-    const onBtnClick = (e) => {
-        alert("작업중입니다.")
+    const onBtnClick = (button, data) => {
+        console.log("data", data);
+        if(button.name === "atchmnFl"){
+
+            let popupParam = {
+                queryId : atchmnFlPopupqueryId,
+                elctrnAtrzId : data.elctrnAtrzId
+            }
+
+            setIsAtchmnFlPopupVisible(true);
+
+            popupHandle(popupParam)
+        } else if(button.name === "docHist"){
+            setIsDocHistPopupVisible(true);
+        }
+    }
+
+    const popupHandle = async (popupParam) => {
+
+        try{
+            const response = await ApiRequest('/boot/common/queryIdSearch', popupParam);
+            setAtchmnFlId(response[0])
+        } catch(error) {
+            console.log('error', error)
+        }
+    }
+
+    //팝업 닫기 이벤트(테스트용)
+    const onAtchmnFlHidePopup = (e) => {
+        setIsAtchmnFlPopupVisible(false);
+    }
+
+    //팝업 닫기 이벤트(테스트용)
+    const onDocHistHidePopup = (e) => {
+        setIsDocHistPopupVisible(false);
     }
 
     //그리드 로우 클릭 이벤트
     const onRowDblClick = (e) => {
         navigate('/elecAtrz/ElecAtrzDetail', {state: {data: e.data}});
     }
-    
-    //======================================================//
-
+    //===================================================//
     const ElecSquare = ({keyNm, atrzSquare}) => {
         return (
-            <div id={keyNm} onClick={() => getList({keyNm})} style={(clickBox === keyNm) ? { backgroundColor: '#4473a5', color: 'white' } : { backgroundColor: atrzSquare.squareColor }} className='elec-square' >
+            <div id={keyNm} onClick={() => getList(keyNm)} style={(clickBox === keyNm) ? { backgroundColor: '#4473a5', color: 'white' } : { backgroundColor: atrzSquare.squareColor }} className='elec-square' >
                 <div className="elec-square-text" style={{ color: (atrzSquare.text) && 'white' }}>{atrzSquare.text}</div>
                 <div className="elec-square-count" style={{ color: (atrzSquare.text) && 'white' }}>
-                  {totalCount.length !== 0 && (totalCount[0][keyNm] === 0 ? 0 : <span>{totalCount[0][keyNm]}</span> )} 건
+                  {totalCount.length !== 0 && (totalCount[0][keyNm] === 0 || totalCount[0][keyNm] === null ? 0 : <span>{totalCount[0][keyNm]}</span>)} 건
                 </div>
                 <Tooltip
                     target={`#${keyNm}`}
@@ -145,7 +192,22 @@ const ElecAtrzManage = () => {
                   onClick={onBtnClick}
                 />
             </div>
+
+            <ElecAtrzManageHistList
+
+            />
+
+            {isAtchmnFlPopupVisible &&
+                    <ElecAtrzManageAttchList
+                        width={"500px"}
+                        height={"500px"}
+                        visible={isAtchmnFlPopupVisible}
+                        attachId={atchmnFlId}
+                        title={"전자결재 파일 첨부"}
+                        onHiding={onAtchmnFlHidePopup}
+                    />}
         </div>
+
     );
 } 
 
