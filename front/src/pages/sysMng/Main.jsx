@@ -88,7 +88,7 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
   const pageHandle = async () => { 
     try {
       const responseNotice = await ApiRequest("/boot/common/queryIdSearch",{queryId : noticeQueryId ,type: 'notice'});
-      const responseTrAply = await ApiRequest("/boot/common/queryIdSearch", {queryId : trAplyTotQueryId, empId:empId ,aplyYm:nowDate ,aplyOdr: currentPhase});
+      const responseTrAply = await ApiRequest("/boot/common/queryIdSearch", {queryId : trAplyTotQueryId, empId:empId ,aplyYm:nowDate ,aplyOdr: flagOrder});
       const responseAply = await ApiRequest("/boot/common/queryIdSearch",{queryId : atrzSttsQueryId, empId:empId , sttsCd:"VTW037"});
       const responseAtrz = await ApiRequest("/boot/common/queryIdSearch", {queryId : atrzSttsQueryId, empId:empId , sttsCd:"VTW008" });
       setNoticeValues(responseNotice);
@@ -143,9 +143,10 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
     };
 
     const onAplyRowClick = (e) => {   //결재 신청 현황 테이블 클릭 (전자결재 상세화면 개발 후 설정 예정)
+          console.log("eeee",e)
           if(e.data.elctrnAtrzTySeCd === "VTW04901"){ //휴가결재
                   navigate("/elecAtrz/ElecAtrzDetail", 
-                 {state: { id: e.key ,elctrnAtrzId : e.data.elctrnAtrzId  }})
+                 {state: {data : e.data }})
           }else if(e.data.elctrnAtrzTySeCd === "VTW04902"){ //일반결재
             navigate("/indvdlClm/EmpWorkTime", 
             {state: { id: e.key }})
