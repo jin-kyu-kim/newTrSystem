@@ -34,12 +34,12 @@ const Main = ({}) => {
     const empno = cookies.userInfo.empno;
     const empNm = cookies.userInfo.empNm;
     const jbpsNm = cookies.userInfo.jbpsNm;
-    let test ="";
-    const deptNm = cookies.deptInfo.map((item, index)=>{
+    let deptNm ="";
+    const test = cookies.deptInfo.map((item, index)=>{
       if(index != 0){
-        test +=","
+        deptNm +=","
       }
-      test += item.deptNm
+      deptNm += item.deptNm
     })
 
     const navigate = useNavigate ();
@@ -206,7 +206,7 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
             </TableRow>
             <TableRow style={ {borderStyle : "solid"}}>
                 <TableCell align="center" component="th" style={ {backgroundColor:"rgb(221, 221, 221)",fontWeight:"bold"}}>소속</TableCell>
-                <TableCell align="center" component="th" style={ {borderWidth: "1px" , textAlign:"left"}}>{test}</TableCell>
+                <TableCell align="center" component="th" style={ {borderWidth: "1px" , textAlign:"left"}}>{deptNm}</TableCell>
             </TableRow>
           </Table>
           </TableContainer>
