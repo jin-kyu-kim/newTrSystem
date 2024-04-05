@@ -72,7 +72,7 @@
 		 	 , ci.CTMMNY_NM
 			 , p.PIC_FLNM
 			 , p.PIC_TELNO
-			 , p.PIC_EML 
+			 , p.PIC_EML
 		  FROM PRJCT p
 		  JOIN DEPT d ON (d.DEPT_ID = p.DEPT_ID)
 		  JOIN EMP e ON (e.EMP_ID = p.PRJCT_MNGR_EMP_ID)
@@ -100,6 +100,8 @@
 				  , pal.NOW_ATRZ_STEP_CD
 				  , pal.BGT_MNG_ODR
 				  , pald.APRVR_EMP_ID
+		          , DATE_FORMAT(p.CTRT_YMD, '%Y-%m-%d') AS CTRT_YMD
+				  , DATE_FORMAT(STBLE_END_YMD, '%Y-%m-%d') AS STBLE_END_YMD
 			      , COUNT(*) OVER () AS TOTAL_ITEMS
 			  FROM PRJCT_ATRZ_LN pal
 			  JOIN PRJCT_ATRZ_LN_DTL pald ON(pal.PRJCT_ID = pald.PRJCT_ID AND pal.ATRZ_LN_SN = pald.ATRZ_LN_SN AND pal.NOW_ATRZ_STEP_CD = pald.ATRZ_STEP_CD)
