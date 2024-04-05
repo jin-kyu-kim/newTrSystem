@@ -966,7 +966,7 @@
 			   CONCAT(DATE_FORMAT(P.CTRT_YMD, '%Y-%m-%d'), ' ~ ', DATE_FORMAT(P.BIZ_END_YMD, '%Y-%m-%d')) AS PRJCT_PERIOD
 		from PRJCT P
 		LEFT JOIN CTMMNY_INFO C ON P.CTMMNY_ID = C.CTMMNY_ID 
-		LEFT JOIN EMP E ON P.REG_EMP_ID = E.REG_EMP_ID 
+		LEFT JOIN EMP E ON P.REG_EMP_ID = E.EMP_ID 
 		LEFT JOIN EMP E2 ON P.PRJCT_MNGR_EMP_ID = E2.EMP_ID 
 		WHERE 1=1 
 		AND PRJCT_ID = #{prjctId}
@@ -1005,6 +1005,204 @@
           AND A.PRJCT_ID = #{prjctId}
           AND A.BGT_MNG_ODR = #{bgtMngOdr}
     </select>
-	
+
+
+
+    <select id="retrievePrjctGnrlzTot" parameterType="map" resultType="com.trsystem.LowerHashMap">
+
+        SELECT
+            PRMPC_ACCTO_TOT ,
+            CT_NM,
+            BGT,
+            USE_BGT,
+            USE_FUL_BGT,
+            USE_RATE
+        FROM(SELECT
+                 '인건비' AS PRMPC_ACCTO_TOT,
+                 자사인력인건비 AS CT_NM,
+                 예산 AS BGT,
+                 사용 AS USE_BGT,
+                 예산 - 사용 AS USE_FUL_BGT,
+                 CONCAT(ROUND((사용 * 100) / 예산), ' %') AS USE_RATE
+             FROM(
+                     SELECT
+                         '자사인력인건비',
+                         IFNULL(SUM(IFNULL(MIM.EXPECT_MM,0 ) * IFNULL(MIM.UNTPC, 0)),0) '예산',
+                         IFNULL((
+                                    SELECT
+                                        SUM(IFNULL(GIVE_CT * MM, 0))
+                                    FROM MMNY_LBRCO_EXCN
+                                    WHERE PRJCT_ID = #{prjctId}
+                                ),0) 사용
+                     FROM MMNY_INPT_MM MIM
+                              INNER JOIN PRJCT_BGT_PRMPC PBP ON PBP.PRJCT_ID = MIM.PRJCT_ID
+                         AND PBP.BGT_MNG_ODR = MIM.BGT_MNG_ODR
+                              INNER JOIN MMNY_LBRCO_PRMPC MLP ON MLP.PRJCT_ID = MIM.PRJCT_ID
+                     WHERE MIM.PRJCT_ID = #{prjctId}
+                       AND PBP.ATRZ_DMND_STTS_CD  ='VTW03703'
+                       AND MIM.BGT_MNG_ODR = MLP.BGT_MNG_ODR
+                       AND MIM.BGT_MNG_ODR = (
+                         SELECT
+                             MAX(BGT_MNG_ODR)
+                         FROM
+                             MMNY_INPT_MM
+                         WHERE PRJCT_ID = #{prjctId}
+                     )) A
+             UNION ALL
+             SELECT
+                 '인건비' AS PRMPC_ACCTO_TOT,
+                 외주인력인건비 AS CT_NM,
+                 예산 AS BGT,
+                 사용 AS USE_BGT,
+                 예산 - 사용 AS USE_FUL_BGT,
+                 CONCAT(ROUND((사용 * 100) / 예산), ' %') AS USE_RATE
+             FROM
+                 (SELECT
+                      '외주인력인건비',
+                      IFNULL(SUM(IFNULL(OLP.UNTPC,0) * IFNULL(OLPD.EXPECT_MM,0)),0) AS 예산,
+                      IFNULL((
+                                 SELECT
+                                     SUM(IFNULL(GIVE_CT * MM, 0))
+                                 FROM OUTORD_LBRCO_EXCN
+                                 WHERE PRJCT_ID = #{prjctId}
+                             ),0) 사용
+                  FROM
+                      OUTORD_LBRCO_PRMPC_DTL OLPD
+                          INNER JOIN PRJCT_BGT_PRMPC PBP ON PBP.PRJCT_ID  = OLPD.PRJCT_ID
+                          AND PBP.BGT_MNG_ODR = OLPD.BGT_MNG_ODR
+                          INNER JOIN OUTORD_LBRCO_PRMPC OLP ON OLP.PRJCT_ID = OLPD.PRJCT_ID
+                          AND OLPD.BGT_MNG_ODR = OLP.BGT_MNG_ODR
+                  WHERE OLPD.PRJCT_ID = #{prjctId}
+                    AND PBP.ATRZ_DMND_STTS_CD  ='VTW03703'
+                    AND OLPD.BGT_MNG_ODR = (
+                      SELECT
+                          MAX(BGT_MNG_ODR)
+                      FROM
+                          OUTORD_LBRCO_PRMPC_DTL
+                      WHERE PRJCT_ID = #{prjctId}
+                  ))A
+             UNION ALL
+             SELECT
+                 '경비' AS PRMPC_ACCTO_TOT,
+                 일반경비 AS CT_NM,
+                 예산 AS BGT,
+                 사용 AS USE_BGT,
+                 예산 - 사용 AS USE_FUL_BGT,
+                 CONCAT(ROUND((사용 * 100) / 예산), ' %') AS USE_RATE
+             FROM(SELECT
+                      '일반경비',
+                      IFNULL(SUM(IFNULL(EMPD.EXPECT_CT, 0)),0) '예산',
+                      IFNULL((
+                                 SELECT
+                                     SUM(EXPENS_CT)
+                                 FROM EXPENS_EXCN EE
+                                 WHERE PRJCT_ID = #{prjctId}
+                             ),0) AS '사용'
+                  FROM
+                      EXPENS_MNBY_PRMPC_DTLS EMPD
+                          INNER JOIN PRJCT_BGT_PRMPC PBP ON PBP .PRJCT_ID = EMPD.PRJCT_ID
+                          AND PBP.BGT_MNG_ODR = EMPD.BGT_MNG_ODR
+                  WHERE
+                      EMPD.PRJCT_ID = #{prjctId}
+                    AND EMPD.EXPENS_CD  BETWEEN 'VTW04501' AND 'VTW04528'
+                    AND  PBP.ATRZ_DMND_STTS_CD = 'VTW03703'
+                    AND EMPD.BGT_MNG_ODR = (
+                      SELECT
+                          MAX(BGT_MNG_ODR)
+                      FROM
+                          EXPENS_MNBY_PRMPC_DTLS
+                      WHERE PRJCT_ID = #{prjctId} )) A
+             UNION ALL
+             SELECT
+                 '경비' AS PRMPC_ACCTO_TOT,
+                 통제성경비 AS CT_NM,
+                 예산 AS BGT,
+                 사용 AS USE_BGT,
+                 예산 - 사용 AS USE_FUL_BGT,
+                 CONCAT(ROUND((사용 * 100) / 예산), ' %') AS USE_RATE
+             FROM(SELECT
+                      '통제성경비',
+                      IFNULL(SUM(EMPD.EXPECT_CT),0) '예산',
+                      IFNULL((
+                                 SELECT
+                                     SUM(EXPENS_CT)
+                                 FROM EXPENS_EXCN EE
+                                 WHERE PRJCT_ID = #{prjctId}
+                             ),0) AS '사용'
+                  FROM
+                      EXPENS_MNBY_PRMPC_DTLS EMPD
+                          INNER JOIN PRJCT_BGT_PRMPC PBP ON PBP .PRJCT_ID = EMPD.PRJCT_ID
+                          AND PBP.BGT_MNG_ODR = EMPD.BGT_MNG_ODR
+                  WHERE
+                      EMPD.PRJCT_ID = #{prjctId}
+                    AND EMPD.EXPENS_CD  BETWEEN 'VTW04529' AND 'VTW04535'
+                    AND  PBP.ATRZ_DMND_STTS_CD = 'VTW03703'
+                    AND EMPD.BGT_MNG_ODR = (
+                      SELECT
+                          MAX(BGT_MNG_ODR)
+                      FROM
+                          EXPENS_MNBY_PRMPC_DTLS
+                      WHERE PRJCT_ID = #{prjctId})) A
+             UNION ALL
+             SELECT
+                 '외주업체비' AS PRMPC_ACCTO_TOT,
+                 외주업체비용 AS CT_NM,
+                 예산 AS BGT,
+                 사용 AS USE_BGT,
+                 예산 - 사용 AS USE_FUL_BGT,
+                 CONCAT(ROUND((사용 * 100) / 예산), ' %') AS USE_RATE
+             FROM(SELECT
+                      '외주업체비용',
+                      IFNULL(SUM(EXPECT_CT),0) AS 예산,
+                      (SELECT
+                           IFNULL(SUM(GIVE_CT),0)
+                       FROM OUTORD_ENTRPS_CT_EXCN
+                       WHERE PRJCT_ID = #{prjctId}
+                      ) AS 사용
+                  FROM OUTORD_ENTRPS_CT_PRMPC OECP
+                           INNER JOIN PRJCT_BGT_PRMPC PBP ON PBP.PRJCT_ID = OECP.PRJCT_ID
+                      AND PBP.BGT_MNG_ODR = OECP.BGT_MNG_ODR
+                  WHERE OECP.PRJCT_ID = #{prjctId}
+                    AND PBP.ATRZ_DMND_STTS_CD  ='VTW03703'
+                    AND OECP.BGT_MNG_ODR = (
+                      SELECT
+                          MAX(BGT_MNG_ODR)
+                      FROM
+                          OUTORD_ENTRPS_CT_PRMPC
+                      WHERE PRJCT_ID = #{prjctId}
+                  ))A
+             UNION ALL
+             SELECT
+                 '재료비' AS PRMPC_ACCTO_TOT,
+                 재료비 AS CT_NM,
+                 예산  AS BGT,
+                 사용  AS USE_BGT,
+                 예산 - 사용 AS USE_FULL_BGT,
+                 CONCAT(ROUND((사용 * 100) / 예산), ' %') AS USE_RATE
+             FROM(
+                     SELECT
+                         '재료비',
+                         IFNULL(SUM(MCP.QY),0) '예산',
+                         IFNULL((
+                                    SELECT
+                                        SUM(USE_AMT)
+                                    FROM MATRL_CT_EXCN MCE
+                                    WHERE PRJCT_ID = #{prjctId}
+                                ),0) 사용
+                     FROM
+                         MATRL_CT_PRMPC  MCP
+                             INNER JOIN PRJCT_BGT_PRMPC PBP ON PBP .PRJCT_ID = MCP.PRJCT_ID
+                             AND PBP.BGT_MNG_ODR = MCP.BGT_MNG_ODR
+                     WHERE
+                         MCP.PRJCT_ID = #{prjctId}
+                       AND  PBP.ATRZ_DMND_STTS_CD = 'VTW03703'
+                       AND MCP.BGT_MNG_ODR = (
+                         SELECT
+                             MAX(BGT_MNG_ODR)
+                         FROM
+                             MATRL_CT_PRMPC
+                         WHERE PRJCT_ID = #{prjctId} )) A
+            ) B
+    </select>
 
 </mapper>

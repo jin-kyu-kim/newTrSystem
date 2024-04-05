@@ -53,37 +53,53 @@
       "placeholder": "금액",
       "required": true
     },
-    "expensCd": {
-      "name": "expensCd",
-      "type": "ComboBox",
-      "label": "비용코드",
-      "placeholder": "비용코드",
-      "param": { "tbNm" : "CD",
+    "prjctId": {
+      "name": "prjctId",
+      "label": "프로젝트",
+      "placeholder": "\"[\"입력시 사용가능한 프로젝트 전체 조회",
+      "param": { "tbNm" : "PRJCT",
         "condition": {
-          "upCdValue": "VTW045"
+          "bizSttsCd": "VTW00402"
         },
-        "valueExpr" : "cdValue",
-        "displayExpr": "cdNm",
-        "name": "expensCd"
+        "valueExpr" : "prjctId",
+        "displayExpr": "prjctNm",
+        "name": "prjctId"
       },
       "required": true
     },
-    "ctPrpos": {
-      "name": "ctPrpos",
+    "expensBox": {
+      "name": "expensCd",
       "type": "TextBox",
-      "label": "용도",
-      "placeholder": "용도",
+      "label": "비용코드",
+      "placeholder": "프로젝트가 입력되지 않았습니다.",
       "required": true
     },
-    "ATDRN": {
-      "name": "ATDRN",
-      "type": "TextBox",
-      "label": "참석자",
-      "placeholder": "참석자",
+    "expensCd": {
+      "name": "expensCd",
+      "label": "비용코드",
+      "placeholder": "[비용코드 입력]",
+      "param": {
+        "queryId": "indvdlClmMapper.retrieveExpensCdPrjctAccto",
+        "valueExpr" : "expensCd",
+        "displayExpr": "cdNm",
+        "name": "expensCd",
+        "values": ["expensCd"]
+      },
       "required": true
     }
   },
   "keyColumn": "prjctCtAplySn",
+  "ctAplyTableColumns": [
+    { "key": "ctAtrzSeCdNm", "value": "구분", "alignment": "center" },
+    { "key": "utztnDt", "value": "사용일시", "alignment": "center" },
+    { "key": "useOffic", "value": "사용처", "alignment": "center" },
+    { "key": "utztnAmt", "value": "금액", "alignment": "center" },
+    { "key": "prjctNm", "value": "프로젝트", "alignment": "center" },
+    { "key": "expensCdNm", "value": "비용코드", "alignment": "center" },
+    { "key": "ctPrpos", "value": "상세내역(목적)", "alignment": "center" },
+    { "key": "atdrn", "value": "용도(참석자명단)", "alignment": "center" },
+    { "value": "결재상태", "alignment": "center", "button": {"text" : "삭제" }}
+  ],
   "columnCharge": [
     { "key": "ctAtrzSeCdNm", "value": "구분", "alignment": "center" },
     { "key": "utztnDt", "value": "사용일시", "alignment": "center" },

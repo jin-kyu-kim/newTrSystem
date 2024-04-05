@@ -1,195 +1,237 @@
 import React, {useCallback, useEffect, useState} from "react";
-import CustomDateRangeBox from "../../components/unit/CustomDateRangeBox";
-import Box, {Item} from "devextreme-react/box";
 import {Button} from "devextreme-react/button";
-import CustomCdComboBox from "../../components/unit/CustomCdComboBox";
-import DataGrid, {
-    Column,
-    Selection
-} from 'devextreme-react/data-grid';
-import {TextBox} from "devextreme-react";
 import ProjectExpenseSubmit from "./ProjectExpenseSubmit";
-import SelectBox from "devextreme-react/select-box";
 import ApiRequest from "../../utils/ApiRequest";
-import {useCookies} from "react-cookie";
-
-const button = {
-    borderRadius: '5px',
-    width: 'auto',
-    marginTop: '20px',
-    marginRight: '15px'
-}
-const fontSize = {
-    fontSize: 14
-}
-const ProjectExpenseCard = () => {
-    const [cardValue, setCardValue] = useState([]);
-    const [cdVal, setCdVal] = useState([]);
-    const [suggestionsData, setSuggestionsData] = useState([]);
-    const [searchParam, setSearchParam] = useState();
-    const [selectedItem, setSelectedItem] = useState();
-    const [cookies] = useCookies([]);
-    let aplyDate = null;
-
-    useEffect(() => {
-        getCode();
-        fetchData();
-        getCardValue();
-    }, []);
-
-    const getCode = async () => {
-        try {
-            const response = await ApiRequest("/boot/common/commonSelect", [{ tbNm: "CD" }, { upCdValue: "VTW045"}]);
-            const updatedCdValues = response.map((item) => ({
-                cdValue: item.cdValue,
-                cdNm: item.cdNm,
-            }));
-            setCdVal(updatedCdValues);
-        } catch (error) {
-            console.log(error);
-        }
+import ProjectExpenseCardJson from "./ProjectExpenseCardJson.json";
+import SearchInfoSet from "../../components/composite/SearchInfoSet";
+import DataGrid, { Column, Export, Pager, Paging, Summary, TotalItem, Selection } from "devextreme-react/data-grid";
+import SelectBox from "devextreme-react/select-box";
+import {CheckBox, TextBox} from "devextreme-react";
+const ProjectExpenseCard = (props) => {
+    const button = {
+        borderRadius: '5px',
+        width: 'auto',
+        marginTop: '20px',
+        marginRight: '15px'
     }
 
-    const fetchData = async () => {
+    const searchInfo = ProjectExpenseCardJson.searchInfo;
+    const { keyColumn, tableColumns, wordWrap } = ProjectExpenseCardJson;
+
+    const [cardUseDtls, setCardUseDtls] = useState([]);
+    const [selectedItem, setSelectedItem] = useState();
+    const [param, setParam] = useState([]);
+    const [prjctList, setPrjctList] = useState([]);
+    const [expensCdList, setExpensCdList] = useState([]);
+    const [cardValue, setCardValue] = useState({});
+    const [rowDataValue, setRowDataValue] = useState({});
+
+    useEffect(() => {
+        if (!Object.values(param).every((value) => value === "")) {
+            getCardUseDtls();
+        }
+
+        getPrjctList();
+        getExpensCdList();
+
+    }, [param]);
+
+    const getPrjctList = async () => {
         try {
-            const response = await ApiRequest("/boot/common/commonSelect", [{ tbNm: "PRJCT" }, {}]);
+            const response = await ApiRequest("/boot/common/commonSelect", [
+                { tbNm: "PRJCT" },
+                { bizSttsCd: "VTW00402"},
+            ]);
             const processedData = response.map(({ prjctId, prjctNm }) => ({
                 key: prjctId,
                 value: prjctNm,
             }));
-            setSuggestionsData(processedData);
+            setPrjctList(processedData);
         } catch (error) {
             console.log(error);
         }
     };
 
-    const getCardValue = async () => {
+    const getExpensCdList = async () => {
+        const param = [
+            { tbNm: "CD" },
+            { upCdValue: "VTW045" }
+        ];
         try {
-            let now = new Date();
-            let dateNum = Number(now.getDate());
-            if(dateNum <= 15){
-                let firstDayOfMonth = new Date( now.getFullYear(), now.getMonth() , 1 );
-                let lastMonth = new Date ( firstDayOfMonth.setDate( firstDayOfMonth.getDate() - 1 ) );
-                aplyDate = {
-                    "aplyYm": lastMonth.getFullYear()+('0' + (lastMonth.getMonth()+1)).slice(-2),
-                    "aplyOdr": 2
-                }
-            } else if (16 <= dateNum){
-                aplyDate = {
-                    "aplyYm": now.getFullYear()+('0' + (now.getMonth()+1)).slice(-2),
-                    "aplyOdr": 1
-                }
-            }
-            const response = await ApiRequest("/boot/common/commonSelect", [{ tbNm: "CARD_USE_DTLS" },
-                { empId: cookies.userInfo.empId, aplyYm: aplyDate?.aplyYm, aplyOdr: aplyDate?.aplyOdr}]);
-            setCardValue(response);
+            const response = await ApiRequest("/boot/common/commonSelect", param);
+            const processedData = response.map(({ cdValue, cdNm }) => ({
+                key: cdValue,
+                value: cdNm,
+            }));
+
+            setExpensCdList(processedData);
         } catch (error) {
             console.log(error);
         }
-    }
-
-    const handleStartDateChange = (value) => {
-        setSearchParam({...searchParam, bgngYmd: value});
-    };
-    const handleEndDateChange = (value) => {
-        setSearchParam({...searchParam, endYmd: value});
-    };
-    const handleSrchValue = ({name, value}) => {
-        setSearchParam({...searchParam, [name] : value});
-    };
-    const handleChgValue = (e) => {
-
     };
 
-    const onSelectionChanged = useCallback((e) => {
-        const selectedRowsData = e.selectedRowsData;
-        setSelectedItem(selectedRowsData);
-    }, []);
+    const getCardUseDtls = async () => {
 
-    const handleSubmit = async () => {
+        try{
+            const response = await ApiRequest('/boot/common/queryIdSearch', param);
+            setCardUseDtls(response);
+        }catch (error){
+            console.log(error);
+        }
+    };
+
+    const searchHandle = async (initParam) => {
+
+        if(initParam.startDate == null && initParam.endDate == null
+            && initParam.useOffic == null && initParam.useTime == null) {
+
+            setParam({
+
+                ...param,
+                queryId: "indvdlClmMapper.retrieveExpenseCardUseDtls",
+                empId: props.empId,
+                aplyYm: props.aplyYm,
+                aplyOdr: props.aplyOdr,
+                startDate: '',
+                endDate: '',
+                useOffic: '',
+                useTime: '',
+            })
+        }
+
+        setParam({
+
+            ...param,
+            queryId: "indvdlClmMapper.retrieveExpenseCardUseDtls",
+            empId: props.empId,
+            aplyYm: props.aplyYm,
+            aplyOdr: props.aplyOdr,
+            startDate: initParam.startDate,
+            endDate: initParam.endDate,
+            useOffic: initParam.useOffic,
+            useTime: initParam.useTime
+        })
+
+    }
+
+    const onSelectionChanged = (e) => {
+        // console.log('e',e);
+        //
+        // console.log('cardValue', cardValue);
+        setSelectedItem(e.selectedRowsData, cardValue)
+    }
+
+    const handleDelete = async (e) => {
+        let deleteSnList = '';
+
+        if(window.confirm('선택한 결제내역을 삭제하시겠습니까? 삭제 후 재등록 시 수동으로 입력하셔야 합니다.')){
+            for(let i = 0; i < selectedItem.length; i++){
+                deleteSnList = deleteSnList + selectedItem[i].cardUseSn + ','
+                console.log(selectedItem[i]);
+
+            }
+            deleteSnList = deleteSnList.slice(0, -1);
+            console.log(deleteSnList)
+
+            // const response = await ApiRequest('/boot/common/commonDelete', [
+            //     {tbNm: "CART_USE_DTLS"}, {cardUseSn: selectedItem, empId: props.empId}
+            // ]);
+            //
+            // if(response === 1) alert('삭제되었습니다.')
+        } else {
+            e.cancel = true;
+        }
+    }
+
+    const prjctIdSelectBoxCell = (rowData, rowIndex) => {
+
+        const selectBoxValue = rowDataValue.rowIndex === rowIndex ? rowDataValue.prjctId : rowData.prjctId;
+
+        return (
+            <SelectBox
+                dataSource={prjctList}
+                displayExpr="value"
+                placeholder='"["입력 시 사용가능한 프로젝트 전체 조회'
+                valueExpr="key"
+                onValueChanged={(e)=> {
+                    const updatedRowData = { ...rowData, prjctId: e.value, rowIndex:rowIndex };
+                    setRowDataValue(updatedRowData)
+                    console.log('rowDataValue',rowDataValue)
+
+                    handleChgValue({ name: "prjctId", value: e.value });
+                }}
+                value={selectBoxValue}
+            />
+        );
 
     };
 
-    const projectCell = (cell) => {
-        return (<SelectBox
-            dataSource={suggestionsData}
-            valueExpr="key"
-            displayExpr="value"
-            placeholderText="프로젝트 명"
-            onValueChanged={(e) => handleChgValue({name: "prjctId", rowIndex: cell.rowIndex, data: cell.data, value: e.value})}
-            value={cell.data.prjctId}
-            showClearButton={true}
-        />);
-    }
+    const expensCdSelectBoxCell = (rowData, rowIndex) => {
 
-    const expanseCell = (cell) => {
-        return (<SelectBox
-            dataSource={cdVal}
-            displayExpr="cdNm"
-            valueExpr="cdValue"
-            placeholderText="[비용코드 선택]"
-            onValueChanged={(e) => handleChgValue({name: "expensCd", rowIndex: cell.rowIndex, data: cell.data, value: e.value})}
-            value={cell.data.expensCd}
-            showClearButton={true}
-        />);
-    }
-    const purposeCell = (cell) => {
-        return (<TextBox
-            value={cell.data.ctPrpos}
-            onValueChanged={(e) => handleChgValue({name: "ctPrpos", rowIndex: cell.rowIndex, data: cell.data, value: e.value})}
-            placeholder='용도'
-            showClearButton={true}
-        ></TextBox>);
-    }
-    const attendCell = (cell) => {
-        return (<TextBox
-            value={cell.data.ATDRN}
-            onValueChanged={(e) => handleChgValue({name: "ATDRN", rowIndex: cell.rowIndex, data: cell.data, value: e.value})}
-            placeholder='참석자'
-            showClearButton={true}
-        ></TextBox>);
-    }
+        const value = rowDataValue.rowIndex === rowIndex ? rowDataValue.expensCd : rowData.expensCd;
+
+        return (
+            <SelectBox
+                dataSource={expensCdList}
+                displayExpr="value"
+                placeholder='[비용코드 선택]'
+                valueExpr="key"
+                onValueChanged={(e)=> {
+                    const updatedRowData = { ...rowData, expensCd: e.value, rowIndex:rowIndex };
+                    setRowDataValue(updatedRowData)
+                    console.log('rowDataValue',rowDataValue)
+
+                    handleChgValue({name: "expensCd", value: e.value});
+                }}
+                value={value}
+            />
+        );
+    };
+
+    const ctPrposTextBoxCell = () => {
+        return (
+            <TextBox
+                value={cardValue?.ctPrpos}
+                placeholder="상세내역(목적)"
+                onValueChanged={(e)=> {
+                    handleChgValue({name: "ctPrpos", value: e.value});
+                }}
+            />);
+    };
+
+    const atdrnTextBoxCell = () => {
+        return (
+            <TextBox
+                value={cardValue?.atdrn}
+                placeholder="용도(참석자명단)"
+                onValueChanged={(e)=> {
+                    handleChgValue({name: "atdrn", value: e.value});
+                }}
+            />);
+    };
+
+
+
+    const handleChgValue = ({name, value}, rowIndex) => {
+
+        setCardValue({...rowDataValue, [name] : value, rowIndex: rowIndex});
+    };
+
+    console.log('cardValue',cardValue)
+    // console.log('selectedItem', selectedItem);
+
     return (
         <div className="container">
-            <div style={{marginBottom: 20, width: "100%"}}>
-                <Box
-                    direction="row"
-                    style={{width: "100%", height: 25, border: "0px"}}
-                >
-                    <Item ratio={3}>
-                        <CustomDateRangeBox
-                            onStartDateChange={handleStartDateChange}
-                            onEndDateChange={handleEndDateChange}
-                        />
-                    </Item>
-                    <Item ratio={2}>
-                        <CustomCdComboBox
-                            param="VTW011"
-                            placeholderText="[이용시간별 조회]"
-                            name="useTime"
-                            onSelect={handleSrchValue}
-                            value={searchParam?.useTime}
-                            showClearButton={true}
-                        />
-                    </Item>
-                    <Item ratio={2}>
-                        <TextBox
-                            onValueChanged={(e) => handleSrchValue({name: "useOffic", value: e.value})}
-                            placeholder='이용가맹점'
-                            showClearButton={true}
-                        ></TextBox>
-                    </Item>
-                    <Item ratio={1}>
-                        <Button onClick={handleSubmit} text="검색"/>
-                    </Item>
-                </Box>
+            <div className="wrap_search" style={{margin: "20px"}}>
+                <SearchInfoSet callBack={searchHandle} props={searchInfo}/>
             </div>
             <div style={{marginBottom: 20}}>
-                <Button style={button} type='danger' text="선택한 사용내역 삭제하기"/>
+                <Button style={button} type='danger' text="선택한 사용내역 삭제하기" onClick={handleDelete} />
                 <Button style={button} type='default' text="선택한 사용내역 전자결재 작성"/>
-                <ProjectExpenseSubmit text="선택한 사용내역 등록하기" value={selectedItem} tbNm="PRJCT_CT_APLY" snColumn="PRJCT_CT_APLY_SN"/>
+                <ProjectExpenseSubmit text="선택한 사용내역 등록하기" value={selectedItem} tbNm="PRJCT_CT_APLY"
+                                      snColumn="PRJCT_CT_APLY_SN"/>
             </div>
-            <div style={fontSize}>
+            <div style={{fontSize: 14}}>
                 <p> ※ 일괄적용 버튼 클릭 시 체크박스로 선택한 항목 중 가장 위에서 선택한 항목으로 일괄적용 됩니다.<br/>
                     <span style={{color: "red"}}>※ 사용금액이 20만원 이상일 경우<br/>
                         1. '전자결재 > 경비 사전 보고'를 작성후 승인 받으시기 바랍니다.<br/>
@@ -197,16 +239,91 @@ const ProjectExpenseCard = () => {
                     </span>
                 </p>
             </div>
-            <DataGrid dataSource={cardValue} onSelectionChanged={onSelectionChanged} showBorders={true} style={{width: "100%", marginBottom: '4%'}}>
-                <Selection mode="multiple" />
-                <Column dataField="utztnDt" caption="사용일시" alignment="center"/>
-                <Column dataField="useOffic" caption="사용처" alignment="center"/>
-                <Column dataField="utztnAmt" caption="금액" alignment="center"/>
-                <Column caption="프로젝트" cellRender={projectCell} width={250} alignment="center"/>
-                <Column caption="경비코드" cellRender={expanseCell} width={200} alignment="center"/>
-                <Column caption="용도" cellRender={purposeCell} alignment="center"/>
-                <Column caption="참석자" cellRender={attendCell} width={250} alignment="center"/>
-            </DataGrid>
+            <div className="wrap_table">
+                <DataGrid
+                    keyExpr={keyColumn}
+                    id={"dataGrid"}
+                    className={"table"}
+                    dataSource={cardUseDtls}
+                    showBorders={true}
+                    showColumnLines={false}
+                    focusedRowEnabled={true}
+                    columnAutoWidth={false}
+                    noDataText=""
+                    wordWrapEnabled={wordWrap}
+                    // onSelectionChanged={onSelectionChanged}
+                >
+                    <Selection mode="multiple" />
+                    <Column
+                        key="utztnDt"
+                        dataField="utztnDt"
+                        caption="사용일시"
+                        width="150"
+                        alignment="center"
+                    />
+                    <Column
+                        key="useOffic"
+                        dataField="useOffic"
+                        caption="사용처"
+                        width="170"
+                        alignment="center"
+                    />
+                    <Column
+                        key="utztnAmt"
+                        dataField="utztnAmt"
+                        caption="이용금액"
+                        width="100"
+                        alignment="center"
+                        format="#,###"
+                    />
+                    <Column
+                        caption="프로젝트"
+                        width="280"
+                        alignment="alignment"
+                        cellRender={({ data, rowIndex }) => prjctIdSelectBoxCell(data, rowIndex)}
+                        headerCellRender={({  }) => {
+                            return (
+                                <div>
+                                    <span style={{margin: "5px"}}>프로젝트</span>
+                                    <Button
+                                        text="일괄적용"
+                                        hint="선택 된 첫번째 체크박스의 항목으로 일괄적용 됩니다."
+                                    />
+                                </div>
+                            );
+                        }}
+                    />
+                    <Column
+                        caption="비용코드"
+                        width="150"
+                        alignment="alignment"
+                        cellRender={({ data, rowIndex }) => expensCdSelectBoxCell(data, rowIndex)}
+                        headerCellRender={({  }) => {
+                            return (
+                                <div>
+                                    <span style={{margin: "5px"}}>비용코드</span>
+                                    <Button
+                                        text="일괄적용"
+                                        hint="선택 된 첫번째 체크박스의 항목으로 일괄적용 됩니다."
+                                    />
+                                </div>
+                            );
+                        }}
+                    />
+                    <Column
+                        caption="상세내역(목적)"
+                        width="170"
+                        alignment='center'
+                        cellRender={ctPrposTextBoxCell}
+                    />
+                    <Column
+                        caption="용도(참석자명단)"
+                        width="200"
+                        alignment='center'
+                        cellRender={atdrnTextBoxCell}
+                    />
+                </DataGrid>
+            </div>
         </div>
     );
 };

@@ -1,0 +1,49 @@
+{
+  "menuName": "ProjectExpenseCard",
+  "keyColumn": "cardUseSn",
+  "wordWrap": true,
+  "searchInfo": {
+    "searchParams": {
+      "insertButton": false,
+      "dateRange": true,
+      "startDtNm": "startDate",
+      "endDtNm": "endDate"
+    },
+    "selectBoxItem": [
+      {
+        "placeholder": "[이용시간별 조회]",
+        "param":{
+          "tbNm": "CD",
+          "valueExpr": "cdValue",
+          "displayExpr": "cdNm",
+          "name": "useTime",
+          "condition": {
+            "upCdValue": "VTW011"
+          },
+          "clearButton": true
+        }
+      }
+    ],
+    "textBoxItem": [
+      {
+        "placeholder": "이용가맹점",
+        "name": "useOffic"
+      }
+    ]
+  },
+  "tableColumns":
+  [
+    { "key": "cardUseSn", "value": "", "alignment" : "center", "selection" : true},
+    { "key": "utztnDt", "value": "사용일시", "width": 150, "alignment" : "center" },
+    { "key": "useOffic", "value": "사용처", "width": 200, "alignment" : "center" },
+    { "key": "utztnAmt", "value": "금액", "width": 100, "alignment" : "center" },
+    { "value": "프로젝트", "width": 280, "alignment" : "center",
+      "selectbox": { "key": "prjctId", "text": "\"[\"입력 시 사용가능한 프로젝트 전체 조회" } },
+    { "value": "비용코드", "width": 150, "alignment" : "center",
+      "selectbox": { "key": "expensCd", "text": "[비용코드 선택]", "disabled": "prjctId" } },
+    { "value": "상세내역", "width": 170, "alignment" : "center",
+      "textbox": { "key": "ctPrpos", "text": "상세내역(목적)", "value": "ctPrpos" } },
+    { "value": "용도", "width": 150, "alignment" : "center",
+      "textbox": { "key": "atdrn", "text": "용도(참석자)", "value": "atdrn" } }
+  ]
+}

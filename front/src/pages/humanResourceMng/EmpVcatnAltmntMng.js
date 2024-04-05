@@ -9,7 +9,7 @@ import CustomTable from "components/unit/CustomTable";
 import CustomCdComboBox from "components/unit/CustomCdComboBox";
 import CustomEmpComboBox from "components/unit/CustomEmpComboBox"
 import ApiRequest from "../../utils/ApiRequest";
-import EmpVcatnAltmntMngJson from "../humanResourceMng/EmpVcatnAltmntMng.json"
+import EmpVcatnAltmntMngJson from "../humanResourceMng/EmpVcatnAltmntMngJson.json"
 import Moment from "moment"     // npm install moment
 
 const { listQueryId, listKeyColumn, listTableColumns, insertQueryId } = EmpVcatnAltmntMngJson;

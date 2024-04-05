@@ -220,10 +220,23 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
         regDt: now,
       }
       ]
+      const paramuUser =
+        {
+        empId : paramIns[1].empId,
+        empno : paramIns[1].empno,
+        acntExpryYn : "N",
+        acntYn : "N",
+        passwordExpryYn : "N",
+        usePsbltyAcntYn : "Y",
+        regEmpId : empId,
+        regDt: now,
+      }
+    
       try {
         const response = await ApiRequest("/boot/common/commonInsert", paramIns);
         const responseHist = await ApiRequest("/boot/common/commonInsert", paramHist);
-          if (response > 0 && responseHist > 0 ) {
+        const responseUser = await ApiRequest("/boot/sysMng/resetPswd", paramuUser);
+          if (response > 0 && responseHist > 0 && responseUser === "성공") {
             alert("저장되었습니다.");
             onReset();
             callBack(query);
@@ -233,6 +246,9 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
       }
     };
   
+
+
+
     const updateEmp = async () => {   //업데이트
       const param =[
         { tbNm: "EMP" },
@@ -287,7 +303,7 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
           </div>
         </div>
       <div className="buttonContainer" style={buttonContainerStyle}>
-          <Button style={buttonStyle} onClick={onReset} >직원신규입력</Button>
+          <Button style={buttonStyle} onClick={onReset} >입력초기화</Button>
           <Button style={buttonStyle} onClick={onClick} >기초정보 저장</Button>
       </div>
     </div>
