@@ -18,6 +18,8 @@ const ProjectAprvDetail = () => {
     const atrzSttsCd = location.state.atrzSttsCd;
     const atrzStepCd = location.state.atrzStepCd;
     const nowAtrzStepCd = location.state.nowAtrzStepCd;
+    const ctrtYmd = location.state.ctrtYmd;
+    const stbleEndYmd = location.state.stbleEndYmd;
     const bgtMngOdr = location.state.bgtMngOdr;
     const aprvrEmpId = location.state.aprvrEmpId;
     const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
@@ -33,8 +35,6 @@ const ProjectAprvDetail = () => {
     useEffect(() => {
         console.log(aprvrEmpId)
         console.log(cookies.userInfo.empId)
-
-
 
         if(atrzSttsCd === 'VTW00801') {
             if(aprvrEmpId === cookies.userInfo.empId) handleBtnVisible();
@@ -92,6 +92,7 @@ const ProjectAprvDetail = () => {
                     prjctId: prjctId,
                     atrzLnSn: atrzLnSn,
                     aprvrEmpId: cookies.userInfo.empId,
+                    atrzStepCd: atrzStepCd
                 }
             ]
             
@@ -113,6 +114,9 @@ const ProjectAprvDetail = () => {
                             break;
                         case "VTW00704":
                             nowStep = "VTW00705";
+                            break;
+                        case "VTW00705":
+                            nowStep = "VTW00708";
                             break;
                     }
 
@@ -163,7 +167,7 @@ const ProjectAprvDetail = () => {
                 {
                     prjctId: prjctId,
                     atrzLnSn: atrzLnSn,
-                    aprvrEmpId: cookies.userInfo.empId,
+                    atrzStepCd: atrzStepCd
                 }
             ]
 
@@ -480,7 +484,7 @@ const ProjectAprvDetail = () => {
                             if(data.index === selectedIndex) {
                                 return (
                                     <React.Suspense fallback={<div>Loading...</div>}>
-                                        <Component prjctId={prjctId} atrzLnSn={atrzLnSn} bgtMngOdr={bgtMngOdr}/>
+                                        <Component prjctId={prjctId} ctrtYmd={ctrtYmd} stbleEndYmd={stbleEndYmd} bgtMngOdr={bgtMngOdr}/>
                                     </React.Suspense>
                                 );
                             }
