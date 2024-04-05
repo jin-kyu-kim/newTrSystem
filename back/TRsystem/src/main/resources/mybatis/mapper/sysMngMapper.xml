@@ -113,7 +113,8 @@
 	
 	<select id="retrieveInptSttus" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT 
-			   AA.EMP_ID													
+			   AA.EMP_ID
+			  ,CONCAT((select COUNT(*)*8 FROM CRTR_DATE WHERE CRTR_YMD LIKE CONCAT(#{aplyYm}, '%') AND CRTR_ODR = #{aplyOdr} AND HLDY_CL_CD ="VTW05001"),"시간") AS TOTAL					 								
 		      ,CONCAT(IFNULL(BB.CNT,0),"건")AS CNT																		
 		      ,CONCAT((CASE WHEN BB.ATRZ_DMND_STTS_CD = 'VTW03704' THEN BB.CNT  ELSE 0 END),"건") AS PRJ_REJECT			
 			  ,CONCAT((CASE WHEN BB.ATRZ_DMND_STTS_CD = 'VTW03703' THEN BB.CNT  ELSE 0 END),"건") AS PRJ_COMPLETE  		
@@ -143,8 +144,8 @@
 				   AND T1.EMP_ID  = T2.EMP_ID
 				   AND T1.APLY_YM = T2.APLY_YM
 				   AND T1.APLY_ODR = T2.APLY_ODR
-				   AND T1.APLY_YM = '202303'
-				   AND T1.APLY_ODR= '1'
+				   AND T1.APLY_YM = #{aplyYm}
+				   AND T1.APLY_ODR= #{aplyOdr}
 				GROUP BY T1.PRJCT_ID , T1.EMP_ID , T1.APLY_YM , T1.APLY_ODR ,T2.ATRZ_DMND_STTS_CD
 			 ) BB ON BB.EMP_ID = AA.EMP_ID
 			LEFT OUTER JOIN 
@@ -171,8 +172,8 @@
 			   AND T1.EMP_ID  = T2.EMP_ID
 			   AND T1.APLY_YM = T2.APLY_YM
 			   AND T1.APLY_ODR = T2.APLY_ODR
-			   AND T1.APLY_YM = '202303'
-			   AND T1.APLY_ODR= '1'
+			   AND T1.APLY_YM = #{aplyYm}
+			   AND T1.APLY_ODR= #{aplyOdr}
 			  GROUP BY T1.PRJCT_ID , T1.EMP_ID , T1.APLY_YM , T1.APLY_ODR, T2.ATRZ_DMND_STTS_CD
 			 ) CC 
 			ON CC.EMP_ID = AA.EMP_ID 
@@ -183,30 +184,37 @@
 	
 	<select id="retrieveAtrzAplySttus" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT
-			ea.ELCTRN_ATRZ_ID,
-			ea.ELCTRN_ATRZ_TY_SE_CD,
-			tyCd.CD_NM AS ELCTRN_ATRZ_TY_SE_CD_NM, -- 전자결재 유형
-			e1.EMP_FLNM AS ATRZ_DMND_EMP_ID, -- 기안자
-			e2.EMP_FLNM AS APRVR_EMP_ID, -- 현재 결재권자
-			DATE_FORMAT(ea.REG_DT,'%Y.%m.%d') as REG_DT,
-			stepCd.CD_NM AS ATRZ_STEP_CD, -- 현재 결재단계 (VTW007)
-			sttsCd.CD_NM AS ATRZ_STTS_CD, -- 결재상태 (VTW008)
-			COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cga.ATRZ_TTL, CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD), ' [', va.VCATN_BGNG_YMD, ' ~ ', va.VCATN_END_YMD, ' (', va.VCATN_DE_CNT, ')]')) AS TTL
+		ea.ELCTRN_ATRZ_ID,
+		ea.ELCTRN_ATRZ_TY_SE_CD,
+		ea.NOW_ATRZ_LN_SN,
+		ea.PRJCT_ID,
+		tyCd.CD_NM,
+		eadf.GNRL_ATRZ_TTL, -- 전자결재 유형
+		e1.EMP_FLNM AS ATRZ_DMND_EMP_ID, -- 기안자
+		e2.EMP_FLNM AS APRVR_EMP_ID, -- 현재 결재권자
+		DATE_FORMAT(ea.REG_DT, '%Y-%m-%d') AS REG_DT,
+		stepCd.CD_NM AS ATRZ_STEP_CD, -- 현재 결재단계 (VTW007)
+		sttsCd.CD_NM AS ATRZ_STTS_CD, -- 결재상태 (VTW008)
+		COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cta.CTRT_ATRZ_TTL, cga.ATRZ_TTL,
+		CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD), ' [', va.VCATN_BGNG_YMD, ' ~ ', va.VCATN_END_YMD, ' (', va.VCATN_DE_CNT, '일)]')) AS TITLE,
+		COALESCE(ga.GNRL_ATRZ_CN, ca.CLM_ATRZ_CN, cta.CTRT_ATRZ_CN, cga.STLM_CN) AS CN
 		FROM ELCTRN_ATRZ ea
-			LEFT JOIN ATRZ_LN al
-			ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID
-			AND ea.NOW_ATRZ_LN_SN = al.ATRZ_LN_SN
-			LEFT JOIN CD tyCd ON ea.ELCTRN_ATRZ_TY_SE_CD = tyCd.CD_VALUE -- 전자결재 유형코드 명
-			LEFT JOIN CD aprCd ON al.APRVR_EMP_ID = aprCd.CD_VALUE -- 현재 결재권자 명
-			LEFT JOIN CD stepCd ON al.ATRZ_STEP_CD = stepCd.CD_VALUE -- 현재 결재단계 (VTW007) 명
-			LEFT JOIN CD sttsCd ON al.ATRZ_STTS_CD = sttsCd.CD_VALUE -- 결재상태 (VTW008) 명
-			LEFT JOIN GNRL_ATRZ ga ON ea.ELCTRN_ATRZ_ID = ga.ELCTRN_ATRZ_ID -- 일반결재
-			LEFT JOIN CLM_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID -- 청구결재 - 거래처명
-			LEFT JOIN VCATN_ATRZ va ON ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID -- 휴가결재 제목
-			LEFT JOIN REFRN_MAN rm ON ea.ELCTRN_ATRZ_ID = rm.ELCTRN_ATRZ_ID -- 참조자
-			LEFT JOIN CTRT_GIVE_ATRZ cga ON ea.ELCTRN_ATRZ_ID = cga.ELCTRN_ATRZ_ID -- 참조자
-			JOIN EMP e1 ON ea.ATRZ_DMND_EMP_ID = e1.EMP_ID
-			JOIN EMP e2 ON al.APRVR_EMP_ID = e2.EMP_ID
+		LEFT JOIN ATRZ_LN al
+		ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID
+		AND ea.NOW_ATRZ_LN_SN = al.ATRZ_LN_SN
+		LEFT JOIN CD tyCd ON ea.ELCTRN_ATRZ_TY_SE_CD = tyCd.CD_VALUE -- 전자결재 유형코드 명
+		LEFT JOIN CD aprCd ON al.APRVR_EMP_ID = aprCd.CD_VALUE -- 현재 결재권자 명
+		LEFT JOIN CD stepCd ON al.ATRZ_STEP_CD = stepCd.CD_VALUE -- 현재 결재단계 (VTW007) 명
+		LEFT JOIN CD sttsCd ON al.ATRZ_STTS_CD = sttsCd.CD_VALUE -- 결재상태 (VTW008) 명
+		LEFT JOIN GNRL_ATRZ ga ON ea.ELCTRN_ATRZ_ID = ga.ELCTRN_ATRZ_ID -- 일반결재
+		LEFT JOIN CLM_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID -- 청구결재 - 거래처명
+		LEFT JOIN VCATN_ATRZ va ON ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID -- 휴가결재 제목
+		LEFT JOIN REFRN_MAN rm ON ea.ELCTRN_ATRZ_ID = rm.ELCTRN_ATRZ_ID -- 참조자
+		LEFT JOIN CTRT_ATRZ cta ON ea.ELCTRN_ATRZ_ID = cta.ELCTRN_ATRZ_ID -- 계약 지급
+		LEFT JOIN CTRT_GIVE_ATRZ cga ON ea.ELCTRN_ATRZ_ID = cga.ELCTRN_ATRZ_ID -- 계약 지급
+		LEFT JOIN ELCTRN_ATRZ_DOC_FORM eadf ON ea.ELCTRN_ATRZ_TY_SE_CD = eadf.ELCTRN_ATRZ_TY_SE_CD -- 서식 제목
+		JOIN EMP e1 ON ea.ATRZ_DMND_EMP_ID = e1.EMP_ID
+		JOIN EMP e2 ON al.APRVR_EMP_ID = e2.EMP_ID
 		WHERE 1=1
 		<if test="sttsCd != null and sttsCd.startsWith('VTW037')">
 			<!--AND ea.ATRZ_DMND_STTS_CD = #{sttsCd}-->

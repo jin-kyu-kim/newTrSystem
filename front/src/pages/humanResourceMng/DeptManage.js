@@ -53,10 +53,6 @@ const DeptManage = ({callBack}) => {
         pageHandle();
     }, [param]);
 
-    useEffect(()=>{
-        console.log(deptInfo)
-    },[deptInfo]);
-
   useEffect(() => { //setParam 이후에 함수가 실행되도록 하는 useEffect
     if (deptHnfParam.deptId !== undefined) {
       deptHnfListHandle();
