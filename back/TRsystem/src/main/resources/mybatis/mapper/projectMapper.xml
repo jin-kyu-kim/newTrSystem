@@ -647,7 +647,7 @@
 	</select>
 	
 	<select id="retrieveMmAply" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT d.DEPT_NM
+		SELECT GROUP_CONCAT(DISTINCT d.DEPT_NM) AS DEPT_NM
 			 , e.EMP_FLNM
 			 , CONCAT(pma.APLY_YM, '-', pma.APLY_ODR) APLY_SN
 			 , mmp.EXPECT_MM
@@ -662,13 +662,14 @@
             (SELECT COUNT(CRTR_YMD) FROM CRTR_DATE WHERE HLDY_CL_CD = 'VTW05001' AND CRTR_ODR = #{aplyOdr} AND DATE_FORMAT(CRTR_YMD, '%Y%m') = #{aplyYm}) AS MM
         ) AS MM_QUERY,
          PRJCT_MM_APLY pma
-	      JOIN (SELECT mlp.PRJCT_ID, mlp.EMP_ID, mlp.MMNY_LBRCO_PRMPC_SN, mim.EXPECT_MM
+	      LEFT JOIN (SELECT mlp.PRJCT_ID, mlp.EMP_ID, mlp.MMNY_LBRCO_PRMPC_SN, mim.EXPECT_MM
 			      FROM MMNY_LBRCO_PRMPC mlp
 			  	  JOIN MMNY_INPT_MM mim ON (mim.PRJCT_ID = mlp.PRJCT_ID AND mim.MMNY_LBRCO_PRMPC_SN = mlp.MMNY_LBRCO_PRMPC_SN AND mlp.BGT_MNG_ODR = mim.BGT_MNG_ODR)
 		     	 WHERE 1=1
 		       	   AND mim.INPT_YM = #{aplyYm}
 		       	   AND mim.PRJCT_ID = #{prjctId}
-                   AND mlp.BGT_MNG_ODR = #{bgtMngOdr}) mmp ON (mmp.EMP_ID = pma.EMP_ID)
+                   AND mlp.BGT_MNG_ODR = #{bgtMngOdr})
+	            mmp ON (mmp.EMP_ID = pma.EMP_ID)
 	   <!--    JOIN MMNY_LBRCO_EXCN mle ON (pma.PRJCT_ID = mim.PRJCT_ID AND pma.APLY_YM = mle.INPT_YM) -->
 		  JOIN EMP e ON (e.EMP_ID = pma.EMP_ID)
 		  JOIN DEPT_HNF dh ON (e.EMP_ID = dh.EMP_ID)
@@ -684,7 +685,7 @@
                 AND pma.EMP_ID = #{empId}
             </if>
         </if>
-         GROUP BY pma.EMP_ID, d.DEPT_NM, mmp.EXPECT_MM, MM_QUERY.MM
+         GROUP BY pma.EMP_ID, mmp.EXPECT_MM, MM_QUERY.MM
 	</select>
 		
 	<select id="retrieveOutordHnfPrmpc" parameterType="map" resultType="com.trsystem.LowerHashMap">
