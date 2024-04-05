@@ -76,7 +76,7 @@ import { NavigationProvider } from './components/sidebar/contexts/navigation';
 import { AuthProvider, useAuth } from './components/sidebar/contexts/auth';
 import { useScreenSizeClass } from './components/sidebar/utils/media-query';
 import Content from './components/sidebar/Content';
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState, useEffect, useTransition } from "react";
 import LoginForm from "./pages/login/LoginFrom.jsx";
 import { CookiesProvider } from "react-cookie";
 import {locale} from 'devextreme/localization';
@@ -92,6 +92,8 @@ function App() {
 
 
       const screenSizeClass = useScreenSizeClass();
+
+      const [isPending,] = useTransition();
 
       const [isLoggedIn, setLoggedIn] = useState(() => {
         const storedLoginStatus = localStorage.getItem("isLoggedIn"); //sessionStorage
@@ -129,7 +131,7 @@ function App() {
               <CookiesProvider>
                 <AuthProvider>
                 <NavigationProvider>
-                  <div className={`app ${screenSizeClass}`}>
+                  <div className={`app ${screenSizeClass}`}  style ={ {opacity: isPending ? 0.2 : 1 }}>
                     <App/>
                   </div>
                 </NavigationProvider>

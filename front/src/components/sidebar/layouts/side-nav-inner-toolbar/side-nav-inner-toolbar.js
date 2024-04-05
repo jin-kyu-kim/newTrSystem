@@ -2,7 +2,7 @@ import Button from 'devextreme-react/button';
 import Drawer from 'devextreme-react/drawer';
 import ScrollView from 'devextreme-react/scroll-view';
 import Toolbar, { Item } from 'devextreme-react/toolbar';
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef,useTransition } from 'react';
 import { useNavigate } from 'react-router';
 import { Header, SideNavigationMenu, Footer } from '../../components';
 import './side-nav-inner-toolbar.scss';
@@ -16,6 +16,7 @@ import { Link } from "react-router-dom";
 export default function SideNavInnerToolbar({ children }) {
   const scrollViewRef = useRef(null);
   const navigate = useNavigate();
+  const [,startTransition] = useTransition();
   const { isXSmall, isLarge } = useScreenSize();
   const [patchCssClass, onMenuReady] = useMenuPatch();
   const [menuStatus, setMenuStatus] = useState(
@@ -53,8 +54,8 @@ export default function SideNavInnerToolbar({ children }) {
       event.preventDefault();
       return;
     }
-
-    navigate(itemData.path);
+    
+    startTransition(()=>  navigate(itemData.path));
     scrollViewRef.current.instance.scrollTo(0);
 
     if (!isLarge || menuStatus === MenuStatus.TemporaryOpened) {

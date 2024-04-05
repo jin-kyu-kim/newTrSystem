@@ -14,11 +14,6 @@ import { isSaturday, isSunday, startOfMonth, endOfMonth } from 'date-fns'
 const Main = ({}) => {
 
 //------------------------선언구간----------------------------------------
-
-    const [noticeParam, setNoticeParam] = useState({});    //공지사항 조회용
-    const [trAplyParam, setTrAplyParam] = useState({});   //TR입력현황 조회용
-    const [aplyParam, setAplyParam] = useState({});       //결재 신청 현황 조회용
-    const [atrzParam, setAtrzParam] = useState({});       //결재리스트 조회용
     const [noticeValues, setNoticeValues] = useState([]);   //공지사항 데이터
     const [trAplyValues, setTrAplyValues] = useState([]);   //TR입력현황 데이터
     const [aplyValues, setAplyValues] = useState([]);       //결재 신청 현황 데이터
@@ -48,7 +43,6 @@ const Main = ({}) => {
     const [currentPhase, setCurrentPhase] = useState(''); //차수설정용
 //------------------------ 초기 설정 --------------------------------------
         useEffect(()=> {
-          console.log("dddd",cookies.deptInfo)
             setDataSession([
                 {
                 empId : empId,
@@ -57,10 +51,6 @@ const Main = ({}) => {
                 deptNm : deptNm
                 }   
              ]);
-             setNoticeParam({queryId : noticeQueryId ,type: 'notice'});
-             setTrAplyParam({queryId : trAplyTotQueryId, empId:empId ,aplyYm:nowDate ,aplyOdr: currentPhase});
-             setAplyParam({queryId : atrzSttsQueryId, empId:empId , sttsCd:"VTW037"});
-             setAtrzParam({queryId : atrzSttsQueryId, empId:empId , sttsCd:"VTW008" });
         },[])
 
         useEffect(()=> {
@@ -97,10 +87,10 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
 
   const pageHandle = async () => { 
     try {
-      const responseNotice = await ApiRequest("/boot/common/queryIdSearch", noticeParam);
-      const responseTrAply = await ApiRequest("/boot/common/queryIdSearch", trAplyParam);
-      const responseAply = await ApiRequest("/boot/common/queryIdSearch", aplyParam);
-      const responseAtrz = await ApiRequest("/boot/common/queryIdSearch", atrzParam);
+      const responseNotice = await ApiRequest("/boot/common/queryIdSearch",{queryId : noticeQueryId ,type: 'notice'});
+      const responseTrAply = await ApiRequest("/boot/common/queryIdSearch", {queryId : trAplyTotQueryId, empId:empId ,aplyYm:nowDate ,aplyOdr: currentPhase});
+      const responseAply = await ApiRequest("/boot/common/queryIdSearch",{queryId : atrzSttsQueryId, empId:empId , sttsCd:"VTW037"});
+      const responseAtrz = await ApiRequest("/boot/common/queryIdSearch", {queryId : atrzSttsQueryId, empId:empId , sttsCd:"VTW008" });
       setNoticeValues(responseNotice);
       setTrAplyValues(responseTrAply);
       setAplyValues(responseAply);
@@ -224,7 +214,7 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
             paging={true}
           />
 {/* ----------------------------------버튼그룹 --------------------------------------------------*/}
-          <div classNmae="buttonContainer" style={buttonContainerStyle}>
+          <div className="buttonContainer" style={buttonContainerStyle}>
           <Button style={ButtonStyle} onClick={goReference} text="자료실" name="jaryu" type="default"/>
           <Button style={ButtonStyle} onClick={goNotice} text="공지사항" type="default"/>
           <Button style={ButtonStyle} onClick={goKms} text="지식관리시스템" type="default"/>
