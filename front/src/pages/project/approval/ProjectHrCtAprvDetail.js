@@ -166,7 +166,7 @@ const ProjectHrCtAprvDetail = () => {
                     aprvYmd: year + monthVal + dayVal,
                     rjctPrvonsh: null,
                     rjctYmd: null},
-                { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr}
+                { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, atrzDmndSttsCd: "VTW03702"}
             ];
             try {
                 const confirmResult = window.confirm("승인하시겠습니까?");
