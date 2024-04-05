@@ -298,6 +298,12 @@ const routes = [
     name: "EmpCultHealthCostManageDeadLine",
     element: React.lazy(() => import("../../pages/fnnrMng/EmpCultHealthCostManageDeadLine")),
   },
+    // 회의실 예약
+    {
+      path: "/infoInq/MeetingRoomReserv",
+      name: "MeetingRoomReserv",
+      element: React.lazy(() => import("../../pages/infoInq/MeetingRoomReserv")),
+    },
 ];
 
 export default routes.map(route => {

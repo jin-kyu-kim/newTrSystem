@@ -68,6 +68,7 @@ function EmpList() {
         columns={tableColumns}
         values={values}
         paging={true}
+        wordWrap={true}
       />
     </div>
   );
