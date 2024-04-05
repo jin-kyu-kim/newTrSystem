@@ -155,7 +155,15 @@ const CustomCostTable = ({
   const handleCancel = () => {
     navigate("../project/ProjectChange",
         {
-    state: { prjctId: prjctId, bgtMngOdrTobe: bgtMngOdrTobe, ctrtYmd: ctrtYmd, stbleEndYmd: stbleEndYmd, deptId: deptId},
+    state: { prjctId: prjctId, 
+            bgtMngOdrTobe: bgtMngOdrTobe, 
+            ctrtYmd: ctrtYmd, 
+            stbleEndYmd: stbleEndYmd, 
+            deptId : deptId,  
+            targetOdr : targetOdr,
+            bizSttsCd : bizSttsCd,
+            atrzLnSn : atrzLnSn
+            },
     })
   };
 

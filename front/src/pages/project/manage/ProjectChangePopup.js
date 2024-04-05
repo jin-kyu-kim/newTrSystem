@@ -125,7 +125,14 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
     const handleCancel = (e) => {
         navigate("../project/ProjectChange",
             {
-        state: { prjctId: prjctId, bgtMngOdrTobe: bgtMngOdrTobe, ctrtYmd: ctrtYmd, stbleEndYmd: stbleEndYmd, deptId, targetOdr, bizSttsCd, atrzLnSn},
+        state: { prjctId: prjctId, 
+                bgtMngOdrTobe: bgtMngOdrTobe, 
+                ctrtYmd: ctrtYmd, 
+                stbleEndYmd: stbleEndYmd, 
+                deptId : deptId,  
+                targetOdr : targetOdr,
+                bizSttsCd : bizSttsCd,
+                atrzLnSn : atrzLnSn},
         })
     };
 
