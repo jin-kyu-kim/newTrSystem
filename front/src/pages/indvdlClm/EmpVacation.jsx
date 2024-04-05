@@ -11,7 +11,7 @@ import { FileUploader, SelectBox, Button, TextBox, DateBox } from "devextreme-re
 // 테이블 import
 // npm install @mui/material
 // npm install @emotion/styled
-import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+import { Select, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 
 // 랜덤채번 import
 import uuid from "react-uuid";
@@ -58,9 +58,6 @@ const flagYear = Moment().format('YYYYMMDD') >= nowYear + "0401" ? nowYear : now
 // 전자결재, 휴가결재 
 let elctrnAtrzId = uuid();
 
-// 세션에서 받아올 직책코드
-let jbttlCd = "VTW01005";
-
 // 전자결재 팝업 데이터
 let artzListValue = [];
 
@@ -92,12 +89,15 @@ function atrzLnAprv(jbttlCd, searchResult) {
     let flag = true;
     let startIndex = parseInt(jbttlCd.substr(7, 8));
 
+    console.log("searchResult : ", searchResult);
+
     for (startIndex; startIndex > 0; startIndex--) {
-        let forStartIndex = startIndex == 5 ? startIndex - 2 : startIndex - 1;
+        let forStartIndex = 1;
 
         if (jbttlCd == ("VTW0100" + startIndex)) {
             while (forStartIndex > 0 && flag) {
                 if (searchResult.find((item) => item.jbttlCd == ("VTW0100" + forStartIndex))) {
+                    let test = searchResult.find((item) => item.jbttlCd == ("VTW0100" + forStartIndex));
                     result.push({
                         empId: searchResult.find((item) => item.jbttlCd == ("VTW0100" + forStartIndex)).empId,
                         empFlnm: searchResult.find((item) => item.jbttlCd == ("VTW0100" + forStartIndex)).empFlnm,
@@ -111,7 +111,6 @@ function atrzLnAprv(jbttlCd, searchResult) {
             }
         }
     }
-
     return result
 }
 
@@ -121,10 +120,13 @@ const EmpVacation = () => {
     const navigate = useNavigate();
 
     // 세션정보
-    const [cookies, setCookie] = useCookies(["userInfo", "userAuth", "deptInfo"]);
-    const sessionEmpId = cookies.userInfo.empId ? cookies.userInfo.empId : "EMP_3000"
-    const sessionEmpNm = cookies.userInfo.empNm ? cookies.userInfo.empNm : "테스트성명"
-    const sessionDeptNm = cookies.userInfo.deptNm ? cookies.userInfo.deptNm : "테스트소속"
+    const [cookies, setCookie] = useCookies(["userInfo", "deptInfo"]);
+    const sessionEmpId = cookies.userInfo.empId
+    const sessionEmpNm = cookies.userInfo.empNm
+    let sessionDeptNm = cookies.deptInfo[0].deptNm
+    let jbttlCd = cookies.deptInfo[0].jbttlCd
+
+    console.log("cookies : ", cookies);
 
     // 휴가목록조회
     const [selectVcatnListValue, setSelectVcatnListValue] = useState([]);
@@ -197,10 +199,10 @@ const EmpVacation = () => {
 
 
     // 휴가신청휴가결재저장정보
-    const [insertVcatnValue, setInsertVcatnValue] = useState({ 
+    const [insertVcatnValue, setInsertVcatnValue] = useState({
         // elctrnAtrzId: elctrnAtrzId, 
-        empId: sessionEmpId, 
-        flagYear: flagYear 
+        empId: sessionEmpId,
+        flagYear: flagYear
     });
 
 
@@ -227,7 +229,7 @@ const EmpVacation = () => {
     const [atrzLnAprvListParam, setAtrzLnAprvListParam] = useState({
         queryId: "indvdlClmMapper.retrieveAtrzLnAprvListInq",
         searchType: "atrzLnAprvList",
-        deptId: "456c2043-6a96-2446-1965-8b80f8d11930"
+        deptId: cookies.deptInfo[0].deptId
     });
 
     // 전자결재 승인권자목록정보
@@ -288,8 +290,8 @@ const EmpVacation = () => {
             else if (initParam.searchType == "atrzLnAprvList") {
                 const atrzLnAprvListResult = await ApiRequest("/boot/common/queryIdSearch", initParam);
                 if (atrzLnAprvListResult.length > 0) {
-                    const AtrzLnAprvResult = await ApiRequest("/boot/common/queryIdSearch", { queryId: "indvdlClmMapper.retrieveAtrzLnAprvInq", deptId: atrzLnAprvListResult });
-                    if (AtrzLnAprvResult.length > 0) {
+                    const AtrzLnAprvResult = await ApiRequest("/boot/common/queryIdSearch", { queryId: "indvdlClmMapper.retrieveAtrzLnAprvInq", deptId: atrzLnAprvListResult, empId: sessionEmpId });
+                    if (AtrzLnAprvResult.length > 0 && AtrzLnAprvResult) {
                         const returnReslut = atrzLnAprv(jbttlCd, AtrzLnAprvResult);
                         setPopupAtrzValue(prevState => [
                             ...prevState,
@@ -330,7 +332,7 @@ const EmpVacation = () => {
     const insertVcatnAtrz = async (params) => {
         const formData = new FormData();
 
-        formData.append("elctrnAtrzId", JSON.stringify({elctrnAtrzId : elctrnAtrzId}));
+        formData.append("elctrnAtrzId", JSON.stringify({ elctrnAtrzId: elctrnAtrzId }));
 
         formData.append("elctrnTbNm", JSON.stringify({ tbNm: "ELCTRN_ATRZ" }));
         formData.append("insertElctrnValue", JSON.stringify(params));
@@ -395,10 +397,42 @@ const EmpVacation = () => {
         })
     }
 
+    //
+    function onDeptChange(e){
+        console.log("e : ", e);
+        setAtrzLnAprvListParam({
+            ...atrzLnAprvListParam,
+            deptId: e
+        })
+    }
+
     // 저장버튼
     function onSaveClick() {
-        insertVcatnAtrz(insertElctrnValue);
-        setAtrzLnSrngValue()
+        let errorMsg;
+
+        if (!insertElctrnValue.prjctId) {
+            errorMsg = "프로젝트를 선택하세요."
+        } else if (!insertVcatnValue.vcatnTyCd) {
+            errorMsg = "휴가유형을 선택하세요."
+        } else if (!insertVcatnValue.vcatnBgngYmd) {
+            errorMsg = "휴가시작기간을 선택하세요."
+        } else if (!insertVcatnValue.vcatnEndYmd && (insertVcatnValue.vcatnTyCd == "VTW01201" || insertVcatnValue.vcatnTyCd == "VTW01204")) {
+            errorMsg = "휴가종료기간을 선택하세요."
+        }
+
+        if (errorMsg) {
+            alert(errorMsg);
+            return;
+        } else {
+            const isconfirm = window.confirm("저장하시겠습니까?");
+            if (isconfirm) {
+                insertVcatnAtrz(insertElctrnValue);
+                setAtrzLnSrngValue()
+            } else {
+                return;
+            }
+        }
+
     }
 
     // 프로젝트ID 설정
@@ -470,7 +504,7 @@ const EmpVacation = () => {
     // 휴가목록 선택
     function onRowClick(e) {
         console.log("e : ", e.data.elctrnAtrzId);
-        navigate("/elecAtrz/ElecAtrzDetail", { state: { data: e.data.elctrnAtrzId } })
+        navigate("/elecAtrz/ElecAtrzDetail", { state: { data: { elctrnAtrzId: e.data.elctrnAtrzId, elctrnAtrzTySeCd: "VTW04901" } } })
     }
 
     // 테이블버튼클릭
@@ -602,10 +636,29 @@ const EmpVacation = () => {
                             {elctrnLine(popupAtrzValue)}
                         </div>
                         <div className="row" style={{ marginTop: "30px" }}>
-                            <div className="col-md-2" style={textAlign}>소속</div>
-                            <div className="col-md-10">
-                                <TextBox value={sessionDeptNm} readOnly={true} />
-                            </div>
+                            {
+                                cookies.deptInfo.length > 1
+                                    ?
+                                    <>
+                                        <div className="col-md-2" style={textAlign}>소속</div>
+                                        <div className="col-md-10">
+                                            <SelectBox 
+                                                defaultValue={cookies.deptInfo[0].deptId}
+                                                dataSource={cookies.deptInfo}
+                                                displayExpr="deptNm"
+                                                valueExpr="deptId"
+                                                onValueChange={onDeptChange} 
+                                            />
+                                        </div>
+                                    </>
+                                    : 
+                                    <>
+                                        <div className="col-md-2" style={textAlign}>소속</div>
+                                        <div className="col-md-10">
+                                            <TextBox value={sessionDeptNm} readOnly={true} />
+                                        </div>
+                                    </>
+                            }
                         </div>
                         <div className="row" style={{ marginTop: "5px" }}>
                             <div className="col-md-2" style={textAlign}>기안자</div>
@@ -784,7 +837,7 @@ function createHeader() {
 
     for (let i = 0; i < headerData.length; i++) {
         tableHeader.push(
-            <TableCell>
+            <TableCell key={"tableHeader : " + i}>
                 {headerData[i].value}
             </TableCell>
         )
@@ -804,15 +857,15 @@ function createBody(selectVcatnInfoValue) {
     if (selectVcatnInfoValue.length > 0) {
         tableBody.push(
             <>
-                <TableRow>
-                    <TableCell rowSpan={3}>연차</TableCell>
-                    <TableCell>회계년도 기준</TableCell>
-                    <TableCell>{tableData.vcatnAltmntDaycnt}일</TableCell>
-                    <TableCell>{tableData.useDaycnt}일</TableCell>
-                    <TableCell>{tableData.vcatnRemndrDaycnt}일</TableCell>
-                    <TableCell>{flagYear}-04-01<br />~{flagYear + 1}-03-31</TableCell>
+                <TableRow key={"TableRow1"}>
+                    <TableCell key={"TableCell1"} rowSpan={3}>연차</TableCell>
+                    <TableCell key={"TableCell2"}>회계년도 기준</TableCell>
+                    <TableCell key={"TableCell3"}>{tableData.vcatnAltmntDaycnt}일</TableCell>
+                    <TableCell key={"TableCell4"}>{tableData.useDaycnt}일</TableCell>
+                    <TableCell key={"TableCell5"}>{tableData.vcatnRemndrDaycnt}일</TableCell>
+                    <TableCell key={"TableCell6"}>{flagYear}-04-01<br />~{flagYear + 1}-03-31</TableCell>
                 </TableRow>
-                <TableRow>
+                <TableRow key={"TableRow2"}>
                     <TableCell>
                         입사일 기준<br />
                         <span style={{ color: "red", fontSize: "11px", fontWeight: "bold" }}>(입사 1년차 미만자 해당)</span>
@@ -852,14 +905,14 @@ function createBody(selectVcatnInfoValue) {
                         }
                     </TableCell>
                 </TableRow>
-                <TableRow>
+                <TableRow key={"TableRow3"}>
                     <TableCell>총연차</TableCell>
                     <TableCell>{tableData.vcatnAltmntDaycnt + tableData.newVcatnAltmntDaycnt}일</TableCell>
                     <TableCell>{tableData.useDaycnt + tableData.newUseDaycnt}일</TableCell>
                     <TableCell>{tableData.vcatnRemndrDaycnt + tableData.newRemndrDaycnt}일</TableCell>
                     <TableCell>{flagYear}-04-01<br />~{flagYear + 1}-03-31</TableCell>
                 </TableRow>
-                <TableRow style={{ borderTop: "2px solid #CCCCCC", borderBottom: "2px solid #CCCCCC" }}>
+                <TableRow key={"TableRow4"} style={{ borderTop: "2px solid #CCCCCC", borderBottom: "2px solid #CCCCCC" }}>
                     <TableCell>공가</TableCell>
                     <TableCell>-</TableCell>
                     <TableCell>-</TableCell>
@@ -903,11 +956,11 @@ function elctrnLine(popupAtrzValue) {
                             {
                                 atrzLnReviewValue
                                     ?
-                                        <div>
-                                            {atrzLnReviewValue.empFlnm}
-                                            <br />
-                                            {atrzLnReviewValue.jbpsNm}
-                                        </div>
+                                    <div>
+                                        {atrzLnReviewValue.empFlnm}
+                                        <br />
+                                        {atrzLnReviewValue.jbpsNm}
+                                    </div>
                                     : ""
                             }
                         </TableCell>
@@ -915,11 +968,11 @@ function elctrnLine(popupAtrzValue) {
                             {
                                 atrzLnConfirmValue
                                     ?
-                                        <div>
-                                            {atrzLnConfirmValue.empFlnm}
-                                            <br />
-                                            {atrzLnConfirmValue.jbpsNm}
-                                        </div>
+                                    <div>
+                                        {atrzLnConfirmValue.empFlnm}
+                                        <br />
+                                        {atrzLnConfirmValue.jbpsNm}
+                                    </div>
                                     : ""
                             }
                         </TableCell>

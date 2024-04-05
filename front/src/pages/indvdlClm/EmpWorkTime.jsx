@@ -1,23 +1,21 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useCookies } from "react-cookie";
 
 import axios from "axios";
 
-import { SelectBox, Button, DateBox, TextBox, NumberBox, Scheduler } from "devextreme-react";
-import { loadMessages, locale } from "devextreme/localization";
+import { SelectBox, Button, DateBox, TextBox, NumberBox, Scheduler, Form } from "devextreme-react";
 
 // 날짜관련
 // npm install date-fns
 import { isSaturday, isSunday, startOfMonth, endOfMonth } from 'date-fns'
-import { subYears, subMonths } from "date-fns"
 
 // 날짜계산
 // npm install moment
 import Moment from "moment"
 
-import koMessages from "utils/ko.json";
 import ApiRequest from "utils/ApiRequest";
 import AutoCompleteProject from "components/unit/AutoCompleteProject";
+import CustomComboBox from "components/unit/CustomComboBox";
 
 /**
  * 2023.03.27(박지환)
@@ -29,6 +27,8 @@ import AutoCompleteProject from "components/unit/AutoCompleteProject";
  * 1. 15일보다 크면 1차수, 15일보다 작으면 2차수 고정
  * 2. 15일보다 크면 시작일자 1일 종료일자 15일 고정, 
  *    15일보다 작으면 시작일자 16일 종료일자 마지막날짜 고정
+ * 3. 년도/월 검색조건 선택 시 State로 관리하여 화면 렌더링 발생함
+ *    Reft로 관리하여 화면 렌더링 차단
  */
 
 const getHoliday = {
@@ -84,14 +84,24 @@ function getMonthList() {
 }
 
 const EmpWorkTime = () => {
-    // DevExtrme 한글화설정
-    loadMessages(koMessages);
-    locale('ko');
+    const insertValueRef = useRef(null)
+    const SearchValueRef = useRef(null)
 
 
-    const [cookies, setCookie] = useCookies(["userInfo", "userAuth", "deptInfo"]);
-    const sessionEmpId = cookies.userInfo.empId ? cookies.userInfo.empId : "EMP_3000"
+    const [cookies, setCookie] = useCookies(["userInfo", "deptInfo"]);
+    const sessionEmpId = cookies.userInfo.empId
+    const sessionJbpsCd = cookies.userInfo.jbpsCd
+    const sessionDeptIdList = [];
+    const sessionDeptNmList = [];
 
+    for (let i = 0; i < cookies.deptInfo.length; i++) {
+        sessionDeptIdList.push(
+            cookies.deptInfo[i].deptId
+        )
+        sessionDeptNmList.push(
+            cookies.deptInfo[i].deptNm
+        )
+    }
 
     // 프로젝트개인비용MM 신청여부 조회
     const [selectPrjctIndvdlCtMmValue, setSelectPrjctIndvdlCtMmValue] = useState();
@@ -120,12 +130,12 @@ const EmpWorkTime = () => {
                     await ApiRequest("/boot/common/queryIdSearch", initParam)
                 )
 
-                if(prjctIndvdlCtMmParamFilter.length > 0){
-                    if (prjctIndvdlCtMmParamFilter.length == prjctIndvdlCtMmParamFilter.filter(item => item.atrzDmndSttsCd == "VTW00801").length) {
+                if (prjctIndvdlCtMmParamFilter.length > 0) {
+                    if (prjctIndvdlCtMmParamFilter.length == prjctIndvdlCtMmParamFilter.filter(item => item.atrzDmndSttsCd == "VTW03702").length) {
                         atrzDmndSttsCdFlag = "audit"
-                    } else if(prjctIndvdlCtMmParamFilter.length == prjctIndvdlCtMmParamFilter.filter(item => item.atrzDmndSttsCd == "VTW00802").length){
+                    } else if (prjctIndvdlCtMmParamFilter.length == prjctIndvdlCtMmParamFilter.filter(item => item.atrzDmndSttsCd == "VTW03703").length) {
                         atrzDmndSttsCdFlag = "approval"
-                    } else if(prjctIndvdlCtMmParamFilter.length == prjctIndvdlCtMmParamFilter.filter(item => item.atrzDmndSttsCd == "VTW00801").length + prjctIndvdlCtMmParamFilter.filter(item => item.atrzDmndSttsCd == "VTW00802").length) {
+                    } else if (prjctIndvdlCtMmParamFilter.length == prjctIndvdlCtMmParamFilter.filter(item => item.atrzDmndSttsCd == "VTW03702").length + prjctIndvdlCtMmParamFilter.filter(item => item.atrzDmndSttsCd == "VTW03703").length) {
                         atrzDmndSttsCdFlag = "composite"
                     } else {
                         atrzDmndSttsCdFlag = "use"
@@ -194,6 +204,8 @@ const EmpWorkTime = () => {
         workHour: 8,
         workBgngYmd: orderWorkBgngYmd,
         workEndYmd: orderWorkEndYmd,
+        prjctId: "",
+        prjctNm: "",
     });
 
 
@@ -221,14 +233,9 @@ const EmpWorkTime = () => {
 
     // 승인요청버튼
     function onApprovalclick() {
-        insertPrjctMmAply(insertWorkHourList.filter(item => item.aplyType == "workAply" && item.aplyOdr == flagOrder));
-    }
-
-    // 승인요청취소버튼
-    function onApprovalCancleclick(){
-        const isconfirm = window.confirm("승인요청을 취소하시겠습니까?");
+        const isconfirm = window.confirm("승인요청 하시겠습니까?");
         if (isconfirm) {
-            deletePrjctMmAply(insertWorkHourList.filter(item => item.aplyType == "workAply" && item.aplyOdr == flagOrder));
+            insertPrjctMmAply(insertWorkHourList.filter(item => item.aplyType == "workAply" && item.aplyOdr == flagOrder));
         } else {
             return;
         }
@@ -236,7 +243,7 @@ const EmpWorkTime = () => {
 
     // 승인요청버튼
     const insertPrjctMmAply = async (params) => {
-        if(params.length > 0){
+        if (params.length > 0) {
             try {
                 const response = await ApiRequest("/boot/indvdlClm/insertPrjctMmAply", params);
                 selectData(searchPrjctIndvdlCtMmParam)
@@ -250,8 +257,18 @@ const EmpWorkTime = () => {
     }
 
     // 승인요청취소버튼
+    function onApprovalCancleclick() {
+        const isconfirm = window.confirm("승인요청을 취소하시겠습니까?");
+        if (isconfirm) {
+            deletePrjctMmAply(insertWorkHourList.filter(item => item.aplyType == "workAply" && item.aplyOdr == flagOrder));
+        } else {
+            return;
+        }
+    }
+
+    // 승인요청취소버튼
     const deletePrjctMmAply = async (params) => {
-        if(params.length > 0){
+        if (params.length > 0) {
             try {
                 const response = await ApiRequest("/boot/common/queryIdSearch", {
                     queryId: "indvdlClmMapper.retrievePrjctMmAtrzRtrcn",
@@ -291,74 +308,107 @@ const EmpWorkTime = () => {
 
     // 저장
     function onSaveClick() {
-        let parseData = [];
-        let startDate = parseInt(insertWorkHourValue.workBgngYmd);
-        let endDate = parseInt(insertWorkHourValue.workEndYmd);
+        let errorMsg;
+        let inputFormData = insertValueRef.current.props.data;
 
-        // 근무시작일자 ~ 근무종료일자 
-        for (startDate; startDate <= endDate; startDate++) {
-            let vcatnData = insertWorkHourList.filter(item => item.aplyYmd == Moment(String(startDate)).format("YYYYMMDD"));
+        if (!inputFormData.prjctId) errorMsg = "프로젝트를 선택하세요."
+        else if (!inputFormData.workBgngYmd) errorMsg = "근무시작시간을 선택하세요."
+        else if (!inputFormData.workEndYmd) errorMsg = "근무종료시간을 선택하세요."
+        else if (!inputFormData.workHour) errorMsg = "근무시간을 선택하세요."
 
-            if (holidayList.find((item) => item.locdate == startDate)) {
-                // parseData.push({
-                //     text: holidayList.find((item) => item.locdate == startDate).dateName,
-                //     aplyYmd: Moment(String(startDate)).format("YYYY-MM-DD"),
-                //     isInsertBoolean: false
-                // })
-            } else if (isSaturday(Moment(String(startDate)).format("YYYY-MM-DD")) || isSunday(Moment(String(startDate)).format("YYYY-MM-DD"))) {
-                
-            } else if ( vcatnData.length > 0 && vcatnData[0].aplyType == 'vcatnAply' ){
-                if(vcatnData[0].vcatnTyCd == "VTW01201" || vcatnData[0].vcatnTyCd == "VTW01204"){
-                    
-                } else {
+        if (errorMsg) {
+            alert(errorMsg);
+            return;
+        } else {
+            let parseData = [];
+            let startDate = parseInt(inputFormData.workBgngYmd);
+            let endDate = parseInt(inputFormData.workEndYmd);
+    
+            for (startDate; startDate <= endDate; startDate++) {
+                let vcatnData = insertWorkHourList.filter(item => item.aplyYmd == Moment(String(startDate)).format("YYYYMMDD"));
+    
+                if (holidayList.find((item) => item.locdate == startDate)) {
                     // parseData.push({
-                    //     text: insertWorkHourValue.prjctNm + " " + insertWorkHourValue.workHour > 4 ? 4 : insertWorkHourValue.workHour + "시간",
-                    //     prjctId: insertWorkHourValue.prjctId,
-                    //     empId: "EMP_3000",
-                    //     aplyYm: orderWorkBgngMm,
-                    //     aplyOdr: flagOrder,
-                    //     md: insertWorkHourValue.workHour > 4 ? 0.5 : insertWorkHourValue.workHour / 8,
-                    //     aplyYmd: Moment(String(startDate)).format("YYYYMMDD"),
-                    //     yrycRate: 1 - (insertWorkHourValue.workHour / 8),
-                    //     isInsertBoolean: true
-                    // }) 
+                    //     text: holidayList.find((item) => item.locdate == startDate).dateName,
+                    //     aplyYmd: Moment(String(startDate)).format("YYYY-MM-DD"),
+                    //     isInsertBoolean: false
+                    // })
+                } else if (isSaturday(Moment(String(startDate)).format("YYYY-MM-DD")) || isSunday(Moment(String(startDate)).format("YYYY-MM-DD"))) {
+    
+                } else if (vcatnData.length > 0 && vcatnData[0].aplyType == 'vcatnAply') {
+                    if (vcatnData[0].vcatnTyCd == "VTW01201" || vcatnData[0].vcatnTyCd == "VTW01204") {
+    
+                    } else {
+                        // parseData.push({
+                        //     text: insertWorkHourValue.prjctNm + " " + insertWorkHourValue.workHour > 4 ? 4 : insertWorkHourValue.workHour + "시간",
+                        //     prjctId: insertWorkHourValue.prjctId,
+                        //     empId: "EMP_3000",
+                        //     aplyYm: orderWorkBgngMm,
+                        //     aplyOdr: flagOrder,
+                        //     md: insertWorkHourValue.workHour > 4 ? 0.5 : insertWorkHourValue.workHour / 8,
+                        //     aplyYmd: Moment(String(startDate)).format("YYYYMMDD"),
+                        //     yrycRate: 1 - (insertWorkHourValue.workHour / 8),
+                        //     isInsertBoolean: true
+                        // }) 
+                    }
+                } else {
+                    parseData.push({
+                        text: inputFormData.prjctNm + " " + inputFormData.workHour + "시간",
+                        prjctId: inputFormData.prjctId,
+                        empId: sessionEmpId,
+                        aplyYm: orderWorkBgngMm,
+                        aplyOdr: flagOrder,
+                        md: inputFormData.workHour / 8,
+                        aplyYmd: Moment(String(startDate)).format("YYYYMMDD"),
+                        yrycRate: 1 - (inputFormData.workHour / 8),
+                        aplyType: "workAply",
+                        atrzDmndSttsCd: "VTW03702",
+                        isInsertBoolean: true,
+                        jbpsCd: sessionJbpsCd
+                    })
                 }
-            } else {
-                parseData.push({
-                    text: insertWorkHourValue.prjctNm + " " + insertWorkHourValue.workHour + "시간",
-                    prjctId: insertWorkHourValue.prjctId,
-                    empId: sessionEmpId,
-                    aplyYm: orderWorkBgngMm,
-                    aplyOdr: flagOrder,
-                    md: insertWorkHourValue.workHour / 8,
-                    aplyYmd: Moment(String(startDate)).format("YYYYMMDD"),
-                    yrycRate: 1 - (insertWorkHourValue.workHour / 8),
-                    aplyType: "workAply",
-                    atrzDmndSttsCd: "VTW00801",
-                    isInsertBoolean: true
-                })
             }
-        }
-
-        if (insertWorkHourList) {
-            for (let i = 0; i < insertWorkHourList.length; i++) {
-                if (parseData.find(item => item.aplyYmd == insertWorkHourList[i].aplyYmd)) {
-                    if (parseData.find(item => item.aplyYmd == insertWorkHourList[i].aplyYmd).md + insertWorkHourList[i].md > 1) {
-                        alert("근무시간은 8시간을 초과할 수 없습니다.");
+    
+            // 현재 선택된 직전 근무시간 데이터 정합성 체크
+            if (insertWorkHourList) {
+                for (let i = 0; i < insertWorkHourList.length; i++) {
+                    if (parseData.find(item => item.aplyYmd == insertWorkHourList[i].aplyYmd)) {
+                        if (parseData.find(item => item.aplyYmd == insertWorkHourList[i].aplyYmd).md + insertWorkHourList[i].md > 1) {
+                            alert("근무시간은 8시간을 초과할 수 없습니다.");
+                            return;
+                        }
+                    }
+                    parseData.push(insertWorkHourList[i]);
+                }
+            }
+    
+    
+            // 누적 선택된 근무시간 정합성 체크
+            for (let i = 0; i < parseData.length; i++) {
+                let workHourCheckList = [];
+                let workHourValue = 0;
+    
+                workHourCheckList = parseData.filter(item => item.aplyYmd == parseData[i].aplyYmd)
+    
+                if(workHourCheckList){
+                    workHourCheckList.map((item, index) => {
+                        workHourValue += workHourCheckList[index].md
+                    })
+    
+                    if(workHourValue > 1){
+                        alert("근무시간은 8시간을 초과할 수 없습니다.")
                         return;
                     }
                 }
-                parseData.push(insertWorkHourList[i]);
             }
+            setInsertWorkHourList(parseData)
         }
-
-        setInsertWorkHourList( parseData )
     }
 
     function onAppointmentClick(e) {
         if (e.appointmentData.isInsertBoolean == false) e.cancel = true;
         else if (e.appointmentData.aplyType == "vcatnAply") e.cancel = true;
-        else if (e.appointmentData.atrzDmndSttsCd == "VTW00801" || e.appointmentData.atrzDmndSttsCd == "VTW00802") e.cancel = true;
+        else if (e.appointmentData.atrzDmndSttsCd == "VTW03702" || e.appointmentData.atrzDmndSttsCd == "VTW03703") e.cancel = true;
         else e.cancel = false;
     }
 
@@ -443,9 +493,9 @@ const EmpWorkTime = () => {
                             />
                             : selectPrjctIndvdlCtMmValue != undefined && (selectPrjctIndvdlCtMmValue.mmAtrzCmptnYn == "audit" || selectPrjctIndvdlCtMmValue.mmAtrzCmptnYn == "composite")
                                 ?
-                                    <Button
-                                        onClick={onApprovalCancleclick} text='승인요청취소' style={{ marginLeft: "5px", height: "48px", width: "140px" }}
-                                    />
+                                <Button
+                                    onClick={onApprovalCancleclick} text='승인요청취소' style={{ marginLeft: "5px", height: "48px", width: "140px" }}
+                                />
                                 : <></>
                     }
                 </div>
@@ -488,7 +538,7 @@ const EmpWorkTime = () => {
         let workHour = getWorkDay(holidayList) * 8;
         let vcatnCnt = 0;
 
-        if(insertWorkHourList != null && insertWorkHourList != "" && insertWorkHourList != undefined && insertWorkHourList.length > 0){
+        if (insertWorkHourList != null && insertWorkHourList != "" && insertWorkHourList != undefined && insertWorkHourList.length > 0) {
             vcatnCnt = insertWorkHourList.filter(item => item.aplyType == "vcatnAply" && item.aplyOdr == flagOrder).length
         }
         return (
@@ -502,13 +552,21 @@ const EmpWorkTime = () => {
                     {
                         vcatnCnt != 0
                             ?
-                                <div style={{ display: "flex", alignItems: "center", height: "50px", marginLeft: "20px" }}>
-                                    * 휴가 : {vcatnCnt * 8} / {workHour} hrs.
-                                </div>        
+                            <div style={{ display: "flex", alignItems: "center", height: "50px", marginLeft: "20px" }}>
+                                * 휴가 : {vcatnCnt * 8} / {workHour} hrs.
+                            </div>
                             : <></>
                     }
                     <div style={{ display: "flex", alignItems: "center", height: "50px", marginLeft: "20px" }}>
-                        * CSC : {vcatnCnt != 0 ? workHour - vcatnCnt * 8 : workHour}​ / {workHour} hrs.
+                        * {
+                            sessionDeptNmList.map((item, index) => {
+                                return (
+                                    <>
+                                        {sessionDeptNmList[index]}
+                                    </>
+                                )
+                            })
+                        } : {vcatnCnt != 0 ? workHour - vcatnCnt * 8 : workHour}​ / {workHour} hrs.
                     </div>
                 </div>
             </>
@@ -516,8 +574,21 @@ const EmpWorkTime = () => {
     }
 
     function createInsertWorkHour(selectPrjctIndvdlCtMmValue) {
+        let refInsertWorkHourValue = insertWorkHourValue;
+        
+        function onRefInsertWorkHourValue(param, e) {
+            if (param == "workBgngYmd" || param == "workEndYmd") e = Moment(e).format('YYYYMMDD');
+            
+            refInsertWorkHourValue[param] = e;
+        }
+
+        function onRefValuePrjctChange(e) {
+            refInsertWorkHourValue.prjctId = e[0].prjctId;
+            refInsertWorkHourValue.prjctNm = e[0].prjctNm;
+        }
+
         return (
-            <>
+            <Form ref={insertValueRef} data={refInsertWorkHourValue} >
                 {
                     selectPrjctIndvdlCtMmValue != undefined && selectPrjctIndvdlCtMmValue.mmAtrzCmptnYn == "use"
                         ?
@@ -534,21 +605,28 @@ const EmpWorkTime = () => {
                                     <div className="col-md-4">
                                         <AutoCompleteProject
                                             placeholderText="프로젝트를 선택해주세요"
-                                            onValueChange={onValuePrjctChange}
+                                            onValueChange={onRefValuePrjctChange}
                                         />
+                                        {/* <CustomComboBox
+                                            label={prjctJson.prjctId.label}
+                                            props={prjctJson.prjctId.param}
+                                            onSelect={onRefValuePrjctChange}
+                                            placeholder={'프로젝트를 선택해주세요'}
+                                            value={cashValue?.prjctId}
+                                        /> */}
                                     </div>
                                 </div>
                                 <div className="row" style={{ marginTop: "30px" }}>
                                     <div className="col-md-3" style={textAlign}>근무시작일자</div>
                                     <div className="col-md-2">
-                                        <DateBox
-                                            stylingMode="underlined"
-                                            displayFormat="yyyy-MM-dd"
-                                            value={insertWorkHourValue.workBgngYmd}
-                                            min={orderWorkBgngYmd}
-                                            max={orderWorkEndYmd}
-                                            onValueChange={(e) => { onInsertWorkHourValue("workBgngYmd", e) }}
-                                        />
+                                            <DateBox
+                                                stylingMode="underlined"
+                                                displayFormat="yyyy-MM-dd"
+                                                defaultValue={refInsertWorkHourValue.workBgngYmd}
+                                                min={orderWorkBgngYmd}
+                                                max={orderWorkEndYmd}
+                                                onValueChange={(e) => { onRefInsertWorkHourValue("workBgngYmd", e) }}
+                                            />
                                     </div>
                                 </div>
                                 <div className="row" style={{ marginTop: "30px" }}>
@@ -557,10 +635,10 @@ const EmpWorkTime = () => {
                                         <DateBox
                                             stylingMode="underlined"
                                             displayFormat="yyyy-MM-dd"
-                                            value={insertWorkHourValue.workEndYmd}
+                                            defaultValue={refInsertWorkHourValue.workEndYmd}
                                             min={orderWorkBgngYmd}
                                             max={orderWorkEndYmd}
-                                            onValueChange={(e) => { onInsertWorkHourValue("workEndYmd", e) }}
+                                            onValueChange={(e) => { onRefInsertWorkHourValue("workEndYmd", e) }}
                                         />
                                     </div>
                                 </div>
@@ -570,12 +648,11 @@ const EmpWorkTime = () => {
                                         <NumberBox
                                             stylingMode="underlined"
                                             showSpinButtons={true}
-                                            min={0}
+                                            min={1}
                                             max={8}
                                             step={1}
                                             defaultValue={8}
-                                            value={insertWorkHourValue.workHour}
-                                            onValueChange={(e) => { onInsertWorkHourValue("workHour", e) }}
+                                            onValueChange={(e) => { onRefInsertWorkHourValue("workHour", e) }}
                                         />
                                     </div>
                                     <div className="col-md-1" style={textAlignMargin}>
@@ -590,24 +667,21 @@ const EmpWorkTime = () => {
                         </div>
                         : selectPrjctIndvdlCtMmValue != undefined && (selectPrjctIndvdlCtMmValue.mmAtrzCmptnYn == "audit" || selectPrjctIndvdlCtMmValue.mmAtrzCmptnYn == "composite")
                             ?
-                                <div>
-                                    <div style={{ marginTop: "10px", border: "2px solid #CCCCCC", height: "200px", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                                        <h4>근무시간 [승인요청취소] 후 등록/수정/삭제 할 수 있습니다.</h4>
-                                    </div>
-                                    <br /><br /><br /><br />
+                            <div>
+                                <div style={{ marginTop: "10px", border: "2px solid #CCCCCC", height: "200px", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                                    <h4>근무시간 [승인요청취소] 후 등록/수정/삭제 할 수 있습니다.</h4>
                                 </div>
+                            </div>
                             : selectPrjctIndvdlCtMmValue != undefined && selectPrjctIndvdlCtMmValue.mmAtrzCmptnYn == "approval"
-                                ? 
+                                ?
                                 <div>
                                     <div style={{ marginTop: "10px", border: "2px solid #CCCCCC", height: "200px", display: "flex", justifyContent: "center", alignItems: "center" }}>
                                         <h4>요청한 근무시간이 최종승인 되었습니다.</h4>
                                     </div>
-                                    <br /><br /><br /><br />
                                 </div>
                                 : <></>
-
                 }
-            </>
+            </Form>
         )
     }
 }
@@ -631,3 +705,21 @@ const textAlignMargin = {
     fontSize: "14px",
     marginLeft: "-30px"
 }
+
+const prjctJson = [{
+    "prjctId": {
+        "name": "prjctId",
+        "label": "프로젝트",
+        "placeholder": "\"[\"입력시 사용가능한 프로젝트 전체 조회",
+        "param": { "tbNm" : "PRJCT",
+        "condition": {
+            "bizSttsCd": "VTW00402"
+        },
+        "valueExpr" : "prjctId",
+        "displayExpr": "prjctNm",
+        "name": "prjctId"
+        },
+        "required": true
+    }
+    }
+]

@@ -284,7 +284,7 @@
 				,#{vcatnAltmntDaycnt}		/* 휴가배정일수 */
 				,0							/* 사용일수 */
 				,0							/* 공적휴가사용일수 */
-				,#{vcatnRemndrDaycnt}		/* 휴가잔여일수 */
+				,#{vcatnAltmntDaycnt}		/* 휴가잔여일수 */
 				,#{newVcatnAltmntDaycnt}	/* 신규휴가배정일수 */
 				,0							/* 신규사용일수 */
 				,#{newRemndrDaycnt}			/* 신규잔여일수 */
@@ -294,6 +294,7 @@
 				,#{regEmpId}				/* 등록지원ID */
 				,SYSDATE()					/* 수정일시 */
 				,#{mdfcnEmpId}				/* 수정직원ID */
+				,#{newAltmntDdlnYr}			/* 신규배정마감연도 */
 		ON DUPLICATE KEY UPDATE
 			VCATN_YR 					= #{vcatnYr}
 			,VCATN_ALTMNT_DAYCNT		= #{vcatnAltmntDaycnt}
