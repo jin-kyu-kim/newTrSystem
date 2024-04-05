@@ -460,5 +460,83 @@ public class ProjectBaseDomain {
 		}
 		return result;
 	}
+	
+	public static String aprvPrjctAtrz(List<Map<String, Object>> paramList) {
+		
+		// 현재 승인자
+		String aprvrEmpId = String.valueOf(paramList.get(2).get("aprvrEmpId"));
+		
+		// 현재 승인자의 결재 단계
+		String atrzStepCd = String.valueOf(paramList.get(2).get("atrzStepCd"));
+
+		int uptResult = -1;
+
+		
+		Map<String, Object> selectParam = new HashMap<>();
+		selectParam.put("queryId", "projectMapper.retrievePrjctAtrzLn");
+		selectParam.put("prjctId", paramList.get(2).get("prjctId"));
+		selectParam.put("atrzLnSn", paramList.get(2).get("atrzLnSn"));
+		selectParam.put("atrzStepCd", atrzStepCd);
+		List<Map<String, Object>> atrzLine = commonService.queryIdSearch(selectParam);
+		
+		try {
+			// update 해준다.
+
+			for(int i = 0; i < atrzLine.size(); i++) {
+				
+				Map<String, Object> updateParam = new HashMap<>();
+				List<Map<String, Object>> updateParams = new ArrayList<>();
+				
+				if(String.valueOf(atrzLine.get(i).get("atrzStepCd")).equals(atrzStepCd) && 
+					String.valueOf(atrzLine.get(i).get("aprvrEmpId")).equals(aprvrEmpId)) {
+					// 라인의 단계와 현재 단계가 같으면서 현재 결재자가 같은 경우에 결재선 승인함.
+					System.out.println(atrzLine.get(i));
+					System.out.println(atrzStepCd);
+					
+					updateParams.add(0, paramList.get(0));
+					updateParams.add(1, paramList.get(1));
+
+					
+					updateParam.put("prjctId", paramList.get(2).get("prjctId"));
+					updateParam.put("atrzLnSn", paramList.get(2).get("atrzLnSn"));
+					updateParam.put("aprvrEmpId", aprvrEmpId);
+					updateParam.put("atrzStepCd", atrzStepCd);
+					
+					updateParams.add(2, updateParam);
+					
+					uptResult = commonService.updateData(updateParams);
+					
+					if(uptResult < 0) {
+						return null;
+					}
+					
+					switch(atrzStepCd) {
+					case "VTW00701" : 
+						atrzStepCd = "VTW00702"; 
+						break;
+					case "VTW00702":
+						atrzStepCd = "VTW00703";
+						break;
+					case "VTW00703":
+						atrzStepCd = "VTW00704";
+						break;
+					case "VTW00704":
+						atrzStepCd = "VTW00705";
+						break;
+					case "VTW00705":
+						break;
+					}
+					
+				}
+				
+			}
+
+			
+		} catch (Exception e) {
+			return null;
+		}
+		
+		return atrzStepCd;
+	}
 
 }

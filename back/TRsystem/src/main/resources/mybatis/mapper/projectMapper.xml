@@ -1207,5 +1207,17 @@
                          WHERE PRJCT_ID = #{prjctId} )) A
             ) B
     </select>
+    
+    <select id="retrievePrjctAtrzLn" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT PRJCT_ID
+			 , ATRZ_LN_SN
+			 , ATRZ_STEP_CD
+			 , APRVR_EMP_ID
+		 FROM PRJCT_ATRZ_LN_DTL
+		WHERE 1=1
+		  AND PRJCT_ID = #{prjctId}
+		  AND ATRZ_LN_SN = #{atrzLnSn}
+		  AND ATRZ_STEP_CD <![CDATA[ >= ]]> #{atrzStepCd}
+	</select>
 
 </mapper>
