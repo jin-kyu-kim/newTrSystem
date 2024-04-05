@@ -217,8 +217,8 @@ const EmpVcatnAltmntMng = () => {
         setInsertValue({
             ...selectValue,
             queryId: insertQueryId,
-            vcatnRemndrDaycnt: selectValue.isNew == false ? selectValue.vcatnAltmntDaycnt - selectValue.useDaycnt : 0,
-            newRemndrDaycnt: selectValue.isNew == false ? selectValue.newVcatnAltmntDaycnt - selectValue.newUseDaycnt : 0,
+            vcatnRemndrDaycnt: selectValue.isNew == false ? selectValue.vcatnAltmntDaycnt - selectValue.useDaycnt : vcatnAltmntDaycnt,
+            newRemndrDaycnt: selectValue.isNew == false ? selectValue.newVcatnAltmntDaycnt - selectValue.newUseDaycnt : newVcatnAltmntDaycnt,
             empId: selectValue.empId,
         })
     }

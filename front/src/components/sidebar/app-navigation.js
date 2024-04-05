@@ -23,7 +23,7 @@ export const navigation = [
         path: 'infoInq/ReferenceList'
       },{
         text: '회의실예약',
-        path: '/1'
+        path: 'infoInq/MeetingRoomReserv'
       },{
         text: '법제도',
         path: 'infoInq/LawRules'

@@ -143,12 +143,13 @@ const ProjectExpenseSubmit = (props) => {
 
                 let params = [];
                 props.value.forEach((data) => {
-                    console.log('data',data)
                     params.push({
                         "prjctId": data.prjctId,
                         "empId": data.empId,
                         "aplyYm": data.aplyYm,
-                        "aplyOdr": data.aplyOdr
+                        "aplyOdr": data.aplyOdr,
+                        "ctAtrzCmptnYn": "N",
+                        "mmAtrzCmptnYn": "N"
                     })
                 });
 
@@ -209,8 +210,7 @@ const ProjectExpenseSubmit = (props) => {
             prjctId: props.value[0].prjctId,
             empId: props.value[0].empId,
             aplyYm: props.value[0].aplyYm,
-            aplyOdr: props.value[0].aplyOdr,
-            atrzDmndSttsCd: "VTW03701"
+            aplyOdr: props.value[0].aplyOdr
         });
 
         try {

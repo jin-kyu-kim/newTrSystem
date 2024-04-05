@@ -12,8 +12,8 @@
             ,EMP.EMP_FLNM					/* 직원명 */
             ,VCATN.VCATN_TY_CD				/* 휴가유형코드 */
             ,(SELECT CD_NM FROM CD WHERE CD_VALUE = VCATN.VCATN_TY_CD)	VCATN_TY_NM					/* 휴가유형코드명 */
-            ,VCATN.VCATN_BGNG_YMD			/* 휴가시작일자 */
-            ,VCATN.VCATN_END_YMD			/* 휴가종료일자 */
+            ,DATE_FORMAT(VCATN.VCATN_BGNG_YMD, '%Y-%m-%d') VCATN_BGNG_YMD							/* 휴가시작일자 */
+            ,DATE_FORMAT(VCATN.VCATN_END_YMD, '%Y-%m-%d' )VCATN_END_YMD								/* 휴가종료일자 */
             ,VCATN.VCATN_DE_CNT				/* 휴가일수 */
             ,VCATN.VCATN_PRVONSH			/* 휴가사유 */
             ,ELCTRN.ATRZ_DMND_STTS_CD		/* 결재요청상태코드 */
@@ -119,27 +119,18 @@
             ,EMP.EMPNO
             ,EMP_FLNM
             ,JBPS_CD
-            ,(SELECT CD_NM FROM CD WHERE CD_VALUE = JBPS_CD)	JBPS_NM
-            ,DEPT.DEPT_ID
-            ,DEPT.DEPT_NM
-            ,HNF.JBTTL_CD
-            ,(SELECT CD_NM FROM CD WHERE CD_VALUE = JBTTL_CD)	JBTTL_NM
+            ,(SELECT CD_NM FROM CD WHERE CD_VALUE = EMP.JBPS_CD)	JBPS_NM
             ,PRJCT.PRJCT_MNGR_EMP_ID
-            ,CONCAT(DEPT_NM, ' ', EMP_FLNM, ' ', (SELECT CD_NM FROM CD WHERE CD_VALUE = EMP.JBPS_CD)) LIST_EMP_FLNM
-        FROM
-            EMP			EMP
-            ,DEPT 		DEPT
-            ,DEPT_HNF	HNF
-            ,PRJCT		PRJCT
+            ,CONCAT(EMP_FLNM, ' ', (SELECT CD_NM FROM CD WHERE CD_VALUE = EMP.JBPS_CD)) LIST_EMP_FLNM
+        FROM EMP    EMP
+            ,PRJCT	PRJCT
         WHERE HDOF_STTS_CD = 'VTW00301'
-        AND EMP.EMP_ID = HNF.EMP_ID
-        AND DEPT.DEPT_ID = HNF.DEPT_ID
         AND EMP.EMP_ID = PRJCT.PRJCT_MNGR_EMP_ID
-        AND HNF.EMP_ID = PRJCT.PRJCT_MNGR_EMP_ID
-        AND DEPT.DEPT_ID = PRJCT.DEPT_ID
-        AND HNF.DEPT_ID = PRJCT.DEPT_ID
         <if test="prjctMngrEmpId !=null and !prjctMngrEmpId.equals('')">
             AND PRJCT.PRJCT_MNGR_EMP_ID = #{prjctMngrEmpId}
+        </if>
+        <if test="prjctId !=null and !prjctId.equals('')">
+            AND PRJCT.PRJCT_ID = #{prjctId}
         </if>
     </select>
 
@@ -191,6 +182,7 @@
         WHERE HDOF_STTS_CD = 'VTW00301'
         AND EMP.EMP_ID = HNF.EMP_ID
         AND DEPT.DEPT_ID = HNF.DEPT_ID
+        AND EMP.EMP_ID != #{empId}
         <if test="deptId !=null and !deptId.equals('')">
             AND DEPT.DEPT_ID IN
             <foreach collection="deptId" item="item" index="index" separator="," open="(" close=")">
@@ -332,7 +324,7 @@
             ,EMP_ID				= #{empId}
             ,APLY_YM 			= #{aplyYm}
             ,APLY_ODR			= #{aplyOdr}
-            ,MM_ATRZ_CMPTN_YN 	= #{mmAtrzCmptnYn}
+            ,MM_ATRZ_CMPTN_YN 	= 'N'
     </insert>
 
     <!-- 프로젝트MM신청삭제 -->
@@ -362,11 +354,12 @@
             #{aplyOdr},
             #{md},
             #{aplyYmd},
-            #{regDt},
-            #{regEmpId},
-            #{mdfcnDt},
-            #{mdfcnEmpId},
+            SYSDATE(),
+            #{empId},
+            SYSDATE(),
+            #{empId},
             #{yrycRate}
+            ,(SELECT USER_DFN_VALUE FROM CD CD WHERE CD.CD_VALUE = #{jbpsCd})
         )
     </insert>
 
@@ -379,7 +372,7 @@
             #{rjctPrvonsh}
             ,#{prjctAprvrCd}
 <!--            ,#{atrzDmndSttsCd}-->
-            ,"VTW00801"
+            ,"VTW03702"
             ,#{aprvrEmpId}
             ,#{prjctId}
             ,#{empId}
@@ -387,10 +380,10 @@
             ,#{aplyOdr}
             ,#{aprvYmd}
             ,#{prjctYmd}
-            ,#{regDt}
-            ,#{regEmpId}
-            ,#{mMdfcnDt}
-            ,#{mdfcnEmpId}
+            ,SYSDATE()
+            ,#{empId}
+            ,SYSDATE()
+            ,#{empId}
             ,#{aplyYmd}
         )
 
@@ -414,6 +407,10 @@
         SELECT
         CARD_USE_SN,
         EMP_ID,
+        PRJCT_ID,
+        EXPENS_CD,
+        ATDRN,
+        CT_PRPOS,
         APLY_YM,
         APLY_ODR,
         CONCAT(SUBSTR(UTZTN_DT, 5, 2),'월 ',SUBSTR(UTZTN_DT,7,2),'일 ',SUBSTR(UTZTN_DT,9,2),':',SUBSTR(UTZTN_DT,11,2)) AS UTZTN_DT,
@@ -539,4 +536,32 @@
                  LEFT JOIN  ATCHMNFL a ON c.ATCHMNFL_ID = a.ATCHMNFL_ID
         WHERE EMP_ID = #{empId}
     </select>
+
+    <!-- 프로젝트 비용 입력마감 (빈 코드값 -> 임시저장) -->
+    <update id="retrievePrjctCtInptDdln" parameterType="map">
+        UPDATE PRJCT_CT_ATRZ
+        SET
+            ATRZ_DMND_STTS_CD = 'VTW03701',
+            MDFCN_DT = now(),
+            MDFCN_EMP_ID = #{empId}
+        WHERE 1 = 1
+          AND ATRZ_DMND_STTS_CD IS NULL
+          AND EMP_ID = #{empId}
+          AND APLY_YM = #{aplyYm}
+          AND APLY_ODR = #{aplyOdr}
+    </update>
+
+    <!-- 프로젝트 비용 승인요청 (임시저장 -> 결재중) -->
+    <update id="retrievePrjctAprvDmnd" parameterType="map">
+        UPDATE PRJCT_CT_ATRZ
+        SET
+            ATRZ_DMND_STTS_CD = 'VTW03702',
+            MDFCN_DT = now(),
+            MDFCN_EMP_ID = #{empId}
+        WHERE 1 = 1
+          AND ATRZ_DMND_STTS_CD = 'VTW03701'
+          AND EMP_ID = #{empId}
+          AND APLY_YM = #{aplyYm}
+          AND APLY_ODR = #{aplyOdr}
+    </update>
 </mapper>

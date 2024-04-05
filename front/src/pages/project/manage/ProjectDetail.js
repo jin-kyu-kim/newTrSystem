@@ -93,13 +93,18 @@ const ProjectDetail = () => {
           // 반려인 경우
           const isconfirm = window.confirm("기존에 반려된 요청이 존재합니다. 반려된 요청을 수정하시겠습니까?");
           if(isconfirm) {
-            const isconfirm = window.confirm("기존에 반려된 요청의 변경 사항을 초기화하여 수정하시겠습니까?");
-            if(isconfirm) {
-              await resetPrmpc();
-            }
-          }
+              const isconfirm = window.confirm("기존에 반려된 요청의 변경 사항을 초기화하여 수정하시겠습니까?");
+              if(isconfirm) {
+                await resetPrmpc();
+              } else {
+                const isconfirm = window.confirm("반려된 요청을 이어서 수정하시겠습니까?");
+                if(isconfirm){
+                  await projectChgHandle();
+                }
+              }
+          } 
         } else {
-          const isconfirm = window.confirm("프로젝트 변경을 진행하시겠습니까?");
+          const isconfirm = window.confirm("프로젝트 변경을 진행하시겠습니까? 프로젝트가 '변경중'으로 바뀌게 됩니다.");
           if(isconfirm){
             await projectChgHandle();
           }
