@@ -12,8 +12,8 @@
             ,EMP.EMP_FLNM					/* 직원명 */
             ,VCATN.VCATN_TY_CD				/* 휴가유형코드 */
             ,(SELECT CD_NM FROM CD WHERE CD_VALUE = VCATN.VCATN_TY_CD)	VCATN_TY_NM					/* 휴가유형코드명 */
-            ,VCATN.VCATN_BGNG_YMD			/* 휴가시작일자 */
-            ,VCATN.VCATN_END_YMD			/* 휴가종료일자 */
+            ,DATE_FORMAT(VCATN.VCATN_BGNG_YMD, '%Y-%m-%d') VCATN_BGNG_YMD							/* 휴가시작일자 */
+            ,DATE_FORMAT(VCATN.VCATN_END_YMD, '%Y-%m-%d' )VCATN_END_YMD								/* 휴가종료일자 */
             ,VCATN.VCATN_DE_CNT				/* 휴가일수 */
             ,VCATN.VCATN_PRVONSH			/* 휴가사유 */
             ,ELCTRN.ATRZ_DMND_STTS_CD		/* 결재요청상태코드 */
@@ -191,6 +191,7 @@
         WHERE HDOF_STTS_CD = 'VTW00301'
         AND EMP.EMP_ID = HNF.EMP_ID
         AND DEPT.DEPT_ID = HNF.DEPT_ID
+        AND EMP.EMP_ID != #{empId}
         <if test="deptId !=null and !deptId.equals('')">
             AND DEPT.DEPT_ID IN
             <foreach collection="deptId" item="item" index="index" separator="," open="(" close=")">
@@ -332,7 +333,7 @@
             ,EMP_ID				= #{empId}
             ,APLY_YM 			= #{aplyYm}
             ,APLY_ODR			= #{aplyOdr}
-            ,MM_ATRZ_CMPTN_YN 	= #{mmAtrzCmptnYn}
+            ,MM_ATRZ_CMPTN_YN 	= 'N'
     </insert>
 
     <!-- 프로젝트MM신청삭제 -->
@@ -362,11 +363,12 @@
             #{aplyOdr},
             #{md},
             #{aplyYmd},
-            #{regDt},
-            #{regEmpId},
-            #{mdfcnDt},
-            #{mdfcnEmpId},
+            SYSDATE(),
+            #{empId},
+            SYSDATE(),
+            #{empId},
             #{yrycRate}
+            ,(SELECT USER_DFN_VALUE FROM CD CD WHERE CD.CD_VALUE = #{jbpsCd})
         )
     </insert>
 
@@ -379,7 +381,7 @@
             #{rjctPrvonsh}
             ,#{prjctAprvrCd}
 <!--            ,#{atrzDmndSttsCd}-->
-            ,"VTW00801"
+            ,"VTW03702"
             ,#{aprvrEmpId}
             ,#{prjctId}
             ,#{empId}
@@ -387,10 +389,10 @@
             ,#{aplyOdr}
             ,#{aprvYmd}
             ,#{prjctYmd}
-            ,#{regDt}
-            ,#{regEmpId}
-            ,#{mMdfcnDt}
-            ,#{mdfcnEmpId}
+            ,SYSDATE()
+            ,#{empId}
+            ,SYSDATE()
+            ,#{empId}
             ,#{aplyYmd}
         )
 
