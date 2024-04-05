@@ -960,11 +960,11 @@
 			   C.CTMMNY_NM, 
 			   P.PIC_FLNM, 
 			   E2.EMP_FLNM AS PRJCT_MNGR_EMP_NM,
-			   E.EMP_FLNM, 
-			   P.TOT_BGT, 
-			   P.BDDPR_PC, 
-			   P.MMNY_SLS_AM, 
-			   CONCAT(DATE_FORMAT(P.CTRT_YMD, '%Y-%m-%d'), ' ~ ', DATE_FORMAT(P.BIZ_END_YMD, '%Y-%m-%d')) AS PRJCT_PERIOD
+			   E.EMP_FLNM,
+               FORMAT(P.TOT_BGT,0) AS TOT_BGT,
+               FORMAT(P.BDDPR_PC,0)AS BDDPR_PC,
+               FORMAT(P.MMNY_SLS_AM,0) AS MMNY_SLS_AM,
+               CONCAT(DATE_FORMAT(P.CTRT_YMD, '%Y-%m-%d'), ' ~ ', DATE_FORMAT(P.BIZ_END_YMD, '%Y-%m-%d')) AS PRJCT_PERIOD
 		from PRJCT P
 		LEFT JOIN CTMMNY_INFO C ON P.CTMMNY_ID = C.CTMMNY_ID 
 		LEFT JOIN EMP E ON P.REG_EMP_ID = E.EMP_ID 
@@ -1017,7 +1017,9 @@
             BGT,
             USE_BGT,
             USE_FUL_BGT,
-            USE_RATE
+            CASE WHEN BGT = 0 THEN '0 %' -- 분모가 0인 경우 0으로 처리
+            ELSE CONCAT(ROUND((USE_BGT * 100) / BGT), ' %')
+            END AS USE_RATE
         FROM(SELECT
                  '인건비' AS PRMPC_ACCTO_TOT,
                  자사인력인건비 AS CT_NM,
@@ -1025,6 +1027,7 @@
                  사용 AS USE_BGT,
                  예산 - 사용 AS USE_FUL_BGT,
                  CONCAT(ROUND((사용 * 100) / 예산), ' %') AS USE_RATE
+
              FROM(
                      SELECT
                          '자사인력인건비',

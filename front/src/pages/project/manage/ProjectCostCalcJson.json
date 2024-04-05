@@ -10,7 +10,7 @@
             ],
           "BizSumry2" : [
             { "key": "", "value": "예산" },
-            { "key": "totBgt", "value": "총예산(VAT 제외)" },
+            { "key": "totBgt", "value": "총예산(VAT 제외)"  },
             { "key": "bddprPc", "value": "투찰가" },
             { "key": "mmnySlsAm", "value": "자사매출액" }
           ],
