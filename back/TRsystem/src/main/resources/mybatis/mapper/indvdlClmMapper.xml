@@ -119,27 +119,18 @@
             ,EMP.EMPNO
             ,EMP_FLNM
             ,JBPS_CD
-            ,(SELECT CD_NM FROM CD WHERE CD_VALUE = JBPS_CD)	JBPS_NM
-            ,DEPT.DEPT_ID
-            ,DEPT.DEPT_NM
-            ,HNF.JBTTL_CD
-            ,(SELECT CD_NM FROM CD WHERE CD_VALUE = JBTTL_CD)	JBTTL_NM
+            ,(SELECT CD_NM FROM CD WHERE CD_VALUE = EMP.JBPS_CD)	JBPS_NM
             ,PRJCT.PRJCT_MNGR_EMP_ID
-            ,CONCAT(DEPT_NM, ' ', EMP_FLNM, ' ', (SELECT CD_NM FROM CD WHERE CD_VALUE = EMP.JBPS_CD)) LIST_EMP_FLNM
-        FROM
-            EMP			EMP
-            ,DEPT 		DEPT
-            ,DEPT_HNF	HNF
-            ,PRJCT		PRJCT
+            ,CONCAT(EMP_FLNM, ' ', (SELECT CD_NM FROM CD WHERE CD_VALUE = EMP.JBPS_CD)) LIST_EMP_FLNM
+        FROM EMP    EMP
+            ,PRJCT	PRJCT
         WHERE HDOF_STTS_CD = 'VTW00301'
-        AND EMP.EMP_ID = HNF.EMP_ID
-        AND DEPT.DEPT_ID = HNF.DEPT_ID
         AND EMP.EMP_ID = PRJCT.PRJCT_MNGR_EMP_ID
-        AND HNF.EMP_ID = PRJCT.PRJCT_MNGR_EMP_ID
-        AND DEPT.DEPT_ID = PRJCT.DEPT_ID
-        AND HNF.DEPT_ID = PRJCT.DEPT_ID
         <if test="prjctMngrEmpId !=null and !prjctMngrEmpId.equals('')">
             AND PRJCT.PRJCT_MNGR_EMP_ID = #{prjctMngrEmpId}
+        </if>
+        <if test="prjctId !=null and !prjctId.equals('')">
+            AND PRJCT.PRJCT_ID = #{prjctId}
         </if>
     </select>
 
