@@ -165,7 +165,7 @@ const ElecAtrzDetail = () => {
         if(nowAtrzLnSn === maxAtrzLnSn) {
             // max와 현재가 같으면 최종승인임.
             updParam = {
-                atrzDmndSttsCd: "VTW00802",
+                atrzDmndSttsCd: "VTW03703",
                 nowAtrzLnSn: nowAtrzLnSn,
                 mdfcnDt: new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0],
                 mdfcnEmpId: cookies.userInfo.empId
