@@ -115,4 +115,14 @@ public class ProjectBaseController {
     public List<Map<String, Object>> retrievePjrctOutordEmpCost(@RequestBody Map<String, Object> param) {
         return ProjectBaseDomain.retrievePjrctOutordEmpCost(param);
     }
+    
+    /**
+     * 프로젝트 결재선 DTL 승인여부 반영
+     * @param paramList
+     * @return
+     */
+    @PostMapping(value = "/boot/prjct/aprvPrjctAtrz")
+    public String aprvPrjctAtrz(@RequestBody List<Map<String, Object>> paramList) {
+    	return ProjectBaseDomain.aprvPrjctAtrz(paramList);
+    }
 }
