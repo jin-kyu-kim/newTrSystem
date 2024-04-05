@@ -524,6 +524,7 @@ public class ProjectBaseDomain {
 						atrzStepCd = "VTW00705";
 						break;
 					case "VTW00705":
+						atrzStepCd = "VTW00708";
 						break;
 					}
 					
