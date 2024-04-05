@@ -8,4 +8,7 @@ public interface BatchSkillService {
 	public void executeEmpPrmot(String empId, String jbpsCd);
 	public void executeEmpRetirePrcs();
 	public void executeAddPrjctBgtPrmpc(String prjctId, int bgtMngOdr, int bgtMngOdrTobe);
+	
+	
+	public int executeCostUpdate();
 }
