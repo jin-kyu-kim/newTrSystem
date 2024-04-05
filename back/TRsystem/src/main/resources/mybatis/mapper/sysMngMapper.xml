@@ -81,6 +81,7 @@
     <select id="userDept" parameterType="String" resultType="com.trsystem.LowerHashMap">
       SELECT A.DEPT_ID
            , A.DEPT_NM
+           , B.JBTTL_CD
         FROM DEPT A
         JOIN DEPT_HNF B
           ON A.DEPT_ID = B.DEPT_ID

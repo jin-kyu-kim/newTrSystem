@@ -34,12 +34,12 @@ const Main = ({}) => {
     const empno = cookies.userInfo.empno;
     const empNm = cookies.userInfo.empNm;
     const jbpsNm = cookies.userInfo.jbpsNm;
-    let test ="";
-    const deptNm = cookies.deptInfo.map((item, index)=>{
+    let deptNm ="";
+    const test = cookies.deptInfo.map((item, index)=>{
       if(index != 0){
-        test +=","
+        deptNm +=","
       }
-      test += item.deptNm
+      deptNm += item.deptNm
     })
 
     const navigate = useNavigate ();

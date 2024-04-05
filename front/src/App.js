@@ -69,7 +69,7 @@ import 'devextreme/dist/css/dx.common.css';
 import './components/sidebar/themes/generated/theme.base.css';
 import './components/sidebar/themes/generated/theme.additional.css';
 import React from 'react';
-import { HashRouter as Router } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import './dx-styles.scss';
 import LoadPanel from 'devextreme-react/load-panel';
 import { NavigationProvider } from './components/sidebar/contexts/navigation';
@@ -79,14 +79,26 @@ import Content from './components/sidebar/Content';
 import { Suspense, useState, useEffect } from "react";
 import LoginForm from "./pages/login/LoginFrom.jsx";
 import { CookiesProvider } from "react-cookie";
+import {locale} from 'devextreme/localization';
 
 function App() {
+
+        locale(getLocale());
+
+      function getLocale() {
+        const locale = sessionStorage.getItem('locale');
+        return locale != null ? locale : 'ko';
+      }
+
+
       const screenSizeClass = useScreenSizeClass();
+
       const [isLoggedIn, setLoggedIn] = useState(() => {
         const storedLoginStatus = localStorage.getItem("isLoggedIn"); //sessionStorage
         return storedLoginStatus ? JSON.parse(storedLoginStatus) : false;
       });
     
+
       useEffect(() => {
         localStorage.setItem("isLoggedIn", JSON.stringify(isLoggedIn));
       }, [localStorage]);
@@ -100,15 +112,15 @@ function App() {
         setLoggedIn(isOk);
       };
 
-  const { user, loading } = useAuth();
+      const { user, loading } = useAuth();
 
-  if (loading) {
-    return <LoadPanel visible={true} />;
-  }
+      if (loading) {
+        return <LoadPanel visible={true} />;
+      }
 
-  if (user) {
-    return <Content/>;
-  }
+      if (user) {
+        return <Content/>;
+      }
 
   const renderRoutes = () => {
         if (isLoggedIn) {
