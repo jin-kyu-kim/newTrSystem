@@ -24,7 +24,10 @@ const CustomCostTable = ({
   stbleEndYmd,
   prjctId,
   bgtMngOdrTobe,
-  deptId
+  deptId,
+  targetOdr, 
+  bizSttsCd, 
+  atrzLnSn
 }) => {
 
   const navigate = useNavigate();
@@ -273,6 +276,9 @@ const CustomCostTable = ({
           stbleEndYmd={stbleEndYmd}
           transformedData={transformedData}
           deptId={deptId}
+          targetOdr={targetOdr}
+          bizSttsCd={bizSttsCd}
+          atrzLnSn={atrzLnSn}
           />
        </Popup>
 
