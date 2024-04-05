@@ -99,27 +99,28 @@ const ProjectAprvDetail = () => {
             // const response = await ApiRequest("/boot/common/commonUpdate", atrzLnDtlParam);
             const result = await requestProcess(atrzLnDtlParam).then((value) => {
                 
-                if(value > 0) {
-                    let nowStep;
+                // if(value > 0) {
+                if(value != null) {
+                    // let nowStep;
 
-                    switch(atrzStepCd) {
-                        case "VTW00701":
-                            nowStep = "VTW00702";
-                            break;
-                        case "VTW00702":
-                            nowStep = "VTW00703";
-                            break;
-                        case "VTW00703":
-                            nowStep = "VTW00704";
-                            break;
-                        case "VTW00704":
-                            nowStep = "VTW00705";
-                            break;
-                        case "VTW00705":
-                            nowStep = "VTW00708";
-                            break;
-                    }
-
+                    // switch(atrzStepCd) {
+                    //     case "VTW00701":
+                    //         nowStep = "VTW00702";
+                    //         break;
+                    //     case "VTW00702":
+                    //         nowStep = "VTW00703";
+                    //         break;
+                    //     case "VTW00703":
+                    //         nowStep = "VTW00704";
+                    //         break;
+                    //     case "VTW00704":
+                    //         nowStep = "VTW00705";
+                    //         break;
+                    //     case "VTW00705":
+                    //         nowStep = "VTW00708";
+                    //         break;
+                    // }
+                    const nowStep = value;
                     handleNowAtrzStepCd(nowStep);
                     // 마지막 결재자일 경우
                     if(atrzStepCd === "VTW00705") { 
@@ -190,7 +191,9 @@ const ProjectAprvDetail = () => {
     }
 
     const requestProcess = async (param) => {
-        const response = await ApiRequest("/boot/common/commonUpdate", param);
+        // const response = await ApiRequest("/boot/common/commonUpdate", param);
+        const response = await ApiRequest("/boot/prjct/aprvPrjctAtrz", param)
+        console.log(response)
         return response;
     
     }
