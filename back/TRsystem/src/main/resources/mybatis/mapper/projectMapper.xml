@@ -740,7 +740,7 @@
 
 	
 	<select id="retrieveCtAply" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT d.DEPT_NM
+		SELECT dept.DEPT_NM
 			 , e.EMP_FlNM
 			 , CONCAT(pca.APLY_YM, '-', pca.APLY_ODR) AS APLY_SN
 			 , SUM(UTZTN_AMT) AS TOT_APLY_AMT
@@ -751,10 +751,15 @@
 		     , ANY_VALUE(indv.CT_ATRZ_CMPTN_YN) AS CT_ATRZ_CMPTN_YN
 		  FROM PRJCT_CT_APLY pca
 		  JOIN EMP e ON (e.EMP_ID = pca.EMP_ID)
-	      JOIN DEPT_HNF dh ON (e.EMP_ID = dh.EMP_ID)
-  		  JOIN DEPT d ON (d.DEPT_ID = dh.DEPT_ID)
+          JOIN (
+            SELECT GROUP_CONCAT(DISTINCT d.DEPT_NM) AS DEPT_NM, pma.EMP_ID
+            FROM DEPT d
+            JOIN DEPT_HNF dh ON (d.DEPT_ID = dh.DEPT_ID)
+            JOIN PRJCT_MM_APLY pma ON (pma.EMP_ID = dh.EMP_ID)
+            GROUP BY pma.EMP_ID
+          ) dept ON dept.EMP_ID = e.EMP_ID
          LEFT JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_ID = pca.PRJCT_ID AND (pcat.EMP_ID = pca.EMP_ID OR (pcat.EMP_ID IS NULL AND pca.EMP_ID IS NULL))
-              AND pcat.APLY_YM = pca.APLY_YM AND pcat.APLY_ODR = pca.APLY_ODR)
+              AND pcat.APLY_YM = pca.APLY_YM AND pcat.APLY_ODR = pca.APLY_ODR AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN)
         JOIN PRJCT_INDVDL_CT_MM indv ON indv.PRJCT_ID = pca.PRJCT_ID AND (indv.EMP_ID = pca.EMP_ID OR (indv.EMP_ID IS NULL AND pca.EMP_ID IS NULL)) AND indv.APLY_YM = pca.APLY_YM AND indv.APLY_ODR = pca.APLY_ODR
 		 WHERE 1=1
 		   AND pca.PRJCT_ID = #{prjctId}
@@ -765,11 +770,12 @@
                 AND pca.EMP_ID = #{empId}
             </if>
         </if>
-		 GROUP BY d.DEPT_NM, e.EMP_ID
+		 GROUP BY e.EMP_ID
 	</select>
 	
 	<select id="retrieveProjectCtAplyDetail" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT CONCAT(CT_PRPOS, ' (' ,UTZTN_AMT, '원)') AS TEXT
+		SELECT 1 AS ID
+		     , CONCAT(CT_PRPOS, ' | ' ,UTZTN_AMT, '원 (', cd.CD_NM, ')') AS TEXT
 		     , DATE_FORMAT(UTZTN_DT, '%Y-%m-%d %H:%i:%s') AS START_DATE
 		     , DATE_FORMAT(UTZTN_DT, '%Y-%m-%d %H:%i:%s') AS END_DATE
 		     , CONCAT(pca.APLY_YM, '-', pca.APLY_ODR) AS APLY_SN
@@ -778,16 +784,41 @@
 	         , pca.USE_OFFIC
      		 , pca.ATDRN
      		 , pca.CT_PRPOS
-             , (select CD_NM from CD where CD_VALUE = pcat.ATRZ_DMND_STTS_CD) AS 'ATRZ_DMND_STTS_CD'
+             , cd.CD_NM AS ATRZ_DMND_STTS_NM
 		  FROM PRJCT_CT_APLY pca
 		  JOIN EMP e ON (e.EMP_ID = pca.EMP_ID)
           JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_ID = pca.PRJCT_ID AND (pcat.EMP_ID = pca.EMP_ID OR (pcat.EMP_ID IS NULL AND pca.EMP_ID IS NULL))
-              AND pcat.APLY_YM = pca.APLY_YM AND pcat.APLY_ODR = pca.APLY_ODR)
+              AND pcat.APLY_YM = pca.APLY_YM AND pcat.APLY_ODR = pca.APLY_ODR AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN)
+          JOIN CD cd ON (pcat.ATRZ_DMND_STTS_CD = cd.CD_VALUE)
 		 WHERE 1=1
    		   AND pca.PRJCT_ID = #{prjctId}
 		   AND pca.APLY_YM = #{aplyYm}
 		   AND pca.APLY_ODR = #{aplyOdr}
 		   AND pca.EMP_ID = #{empId}
+           AND pcat.ATRZ_DMND_STTS_CD = 'VTW03702'
+        UNION ALL
+        SELECT 2 AS ID
+             , CONCAT(CT_PRPOS, ' | ' ,UTZTN_AMT, '원 (', cd.CD_NM, ')') AS TEXT
+             , DATE_FORMAT(UTZTN_DT, '%Y-%m-%d %H:%i:%s') AS START_DATE
+             , DATE_FORMAT(UTZTN_DT, '%Y-%m-%d %H:%i:%s') AS END_DATE
+             , CONCAT(pca.APLY_YM, '-', pca.APLY_ODR) AS APLY_SN
+             , e.EMP_FLNM
+             , pca.UTZTN_AMT
+             , pca.USE_OFFIC
+             , pca.ATDRN
+             , pca.CT_PRPOS
+             , cd.CD_NM AS ATRZ_DMND_STTS_NM
+        FROM PRJCT_CT_APLY pca
+        JOIN EMP e ON (e.EMP_ID = pca.EMP_ID)
+        JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_ID = pca.PRJCT_ID AND (pcat.EMP_ID = pca.EMP_ID OR (pcat.EMP_ID IS NULL AND pca.EMP_ID IS NULL))
+            AND pcat.APLY_YM = pca.APLY_YM AND pcat.APLY_ODR = pca.APLY_ODR AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN)
+        JOIN CD cd ON (pcat.ATRZ_DMND_STTS_CD = cd.CD_VALUE)
+        WHERE 1=1
+          AND pca.PRJCT_ID = #{prjctId}
+          AND pca.APLY_YM = #{aplyYm}
+          AND pca.APLY_ODR = #{aplyOdr}
+          AND pca.EMP_ID = #{empId}
+          AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703'
 	</select>
 	
 	<select id="retrieveProjectMmAplyDetail" parameterType="map" resultType="com.trsystem.LowerHashMap">
