@@ -18,8 +18,8 @@
         {"value": "프로젝트비용입력",
         "subColumns": [
             { "key": "cnt", "value": "요청"},
-            { "key": "prjReject", "value": "반려"},
-            { "key": "prjComplete", "value": "승인" }
+            { "key": "aplyReject", "value": "반려"},
+            { "key": "aplyComplete", "value": "승인" }
         ]}
   ],
   "atrzSttsQueryId": "sysMngMapper.retrieveAtrzAplySttus",
