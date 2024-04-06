@@ -164,7 +164,15 @@ public class ElecAtrzDomain {
 			infoParam.put("atrzStepCd", paramList.get(i).get("approvalCode"));
 			infoParam.put("elctrnAtrzId", basicInfo.get("elctrnAtrzId"));
 			infoParam.put("atrzLnSn", i+1);
-			infoParam.put("atrzSttsCd", atrzSttsCd);
+			
+			if(i == 0) {
+				
+				infoParam.put("atrzSttsCd", atrzSttsCd);
+			} else {
+				infoParam.put("atrzSttsCd", "VTW00806");
+			}
+			
+			
 			infoParam.put("aprvrEmpId", paramList.get(i).get("empId"));
 			infoParam.put("regDt", basicInfo.get("regDt"));
 			infoParam.put("regEmpId", basicInfo.get("regEmpId"));
@@ -507,5 +515,73 @@ public class ElecAtrzDomain {
 		}
 		
 		return result;
+	}
+	
+	public static int aprvElecAtrz(List<Map<String, Object>> paramList) {
+		
+		String aprvrEmpId = String.valueOf(paramList.get(2).get("aprvrEmpId"));	// 현재 승인자
+		
+		int atrzLnSn = Integer.parseInt(String.valueOf(paramList.get(2).get("atrzLnSn"))); // 현재 승인자의 결재단계(순번)
+		
+		int uptResult = -1;
+		
+		Map<String, Object> selectParam = new HashMap<>();
+		
+		selectParam.put("queryId", "elecAtrzMapper.retrieveElecAtrzLn");
+		selectParam.put("atrzLnSn", atrzLnSn);
+		selectParam.put("elctrnAtrzId", paramList.get(2).get("elctrnAtrzId"));
+		
+		//  결재라인 가져오기
+		List<Map<String, Object>> atrzLine = commonService.queryIdSearch(selectParam);
+		
+		
+		try {
+			for(int i = 0; i < atrzLine.size(); i++) {
+				
+				Map<String, Object> updateParam = new HashMap<>();
+				List<Map<String, Object>> updateParams = new ArrayList<>();
+				Map<String, Object> conditionParam = new HashMap<>();
+				
+				if(Integer.parseInt(String.valueOf(atrzLine.get(i).get("atrzLnSn"))) == atrzLnSn && 
+					String.valueOf(atrzLine.get(i).get("aprvrEmpId")).equals(aprvrEmpId)) {
+					
+					
+					updateParams.add(0, paramList.get(0));	// 업데이트할 타겟 테이블
+					updateParams.add(1, paramList.get(1));	// 업데이트할 테이블의 내용
+					
+					updateParam.put("elctrnAtrzId", paramList.get(2).get("elctrnAtrzId"));
+					updateParam.put("aprvrEmpId", aprvrEmpId);
+					updateParam.put("atrzLnSn", atrzLnSn);
+					
+					updateParams.add(2, updateParam);
+					
+					uptResult = commonService.updateData(updateParams);
+					
+					if(uptResult < 0) {
+						return 0;
+					}
+					
+					atrzLnSn++;
+					
+				} else {
+					updateParams.add(0, paramList.get(0));	// 업데이트할 타겟 테이블
+					conditionParam.put("atrzLnSn", atrzLnSn);
+					conditionParam.put("elctrnAtrzId", paramList.get(2).get("elctrnAtrzId"));
+					
+					updateParam.put("atrzSttsCd", "VTW00801");
+
+					updateParams.add(1, updateParam); // 업데이트할 정보
+					updateParams.add(2, conditionParam); // 업데이트할 테이블의 조건
+
+
+					uptResult = commonService.updateData(updateParams);
+				}
+				
+			}
+		} catch(Exception e) {
+			
+		}
+		
+		return atrzLnSn;
 	}
 }

@@ -139,16 +139,29 @@ const ElecAtrzDetail = () => {
                 }
             ]
 
-            const result = await ApiRequest("/boot/common/commonUpdate", param);
+            const response = aprvProcess(param).then((value) => {
 
-            if(result > 0) {
-                // 단계 올리기
-                upNowAtrzLnSn(nowAtrzLnSn);
-            } else {
-                alert("승인 처리에 실패하였습니다.");
-                return;
-            }
+                console.log("result", value)
+                if(value > 0) {
+                    // 단계 올리기
+                    upNowAtrzLnSn(value);
+                } else {
+                    alert("승인 처리에 실패하였습니다.");
+                    return;
+                }
+            });
         }
+    }
+
+    /**
+     * 승인하는 프로세스
+     * @param {*} param 
+     * @returns 
+     */
+    const aprvProcess = async (param) => {
+        const response = await ApiRequest("/boot/elecAtrz/aprvElecAtrz", param);
+
+        return response;
     }
 
     /**
@@ -162,18 +175,18 @@ const ElecAtrzDetail = () => {
         console.log("maxAtrzLnSn", maxAtrzLnSn)
         console.log("nowAtrzLnSn", nowAtrzLnSn)
 
-        if(nowAtrzLnSn === maxAtrzLnSn) {
-            // max와 현재가 같으면 최종승인임.
+        if(nowAtrzLnSn > maxAtrzLnSn) {
+            // max보다 승인이 끝난 뒤 결재선 순번이 크면 최종승인임.
             updParam = {
                 atrzDmndSttsCd: "VTW03703",
-                nowAtrzLnSn: nowAtrzLnSn,
+                nowAtrzLnSn: maxAtrzLnSn,
                 mdfcnDt: new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0],
                 mdfcnEmpId: cookies.userInfo.empId
             }
         } else {
             // max와 현재가 다르면 중간승인임.
             updParam = {
-                nowAtrzLnSn: nowAtrzLnSn + 1,
+                nowAtrzLnSn: nowAtrzLnSn,
                 mdfcnDt: new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0],
                 mdfcnEmpId: cookies.userInfo.empId
             }
@@ -190,9 +203,13 @@ const ElecAtrzDetail = () => {
         try {
             const response = await ApiRequest("/boot/common/commonUpdate", param);
             if(response > 0) {
-                const vacResult = handleVacation();
-                if(vacResult < 0) {
-                    alert("승인 처리에 실패하였습니다.");
+
+                // 휴가 결재이면서 최종 숭인인 경우 휴가 내용 반영해준다. 
+                if(detailData.elctrnAtrzTySeCd === "VTW04901" && nowAtrzLnSn > maxAtrzLnSn) {
+                    const vacResult = handleVacation();
+                    if(vacResult < 0) {
+                        alert("승인 처리에 실패하였습니다.");
+                    }
                 }
                 alert("승인 처리되었습니다.");
                 navigate('/elecAtrz/ElecAtrz');

@@ -186,4 +186,15 @@
 	   AND ca.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
 	</select>
 	
+    <select id="retrieveElecAtrzLn" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT ATRZ_STEP_CD
+			 , ATRZ_LN_SN
+			 , ATRZ_STTS_CD
+			 , APRVR_EMP_ID
+		  FROM ATRZ_LN al
+		WHERE 1=1
+		  AND ATRZ_LN_SN <![CDATA[ >= ]]> #{atrzLnSn}
+		  AND ELCTRN_ATRZ_ID = #{elctrnAtrzId}
+	</select>
+	
 </mapper>
