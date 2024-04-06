@@ -647,16 +647,16 @@
 	</select>
 	
 	<select id="retrieveMmAply" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT GROUP_CONCAT(DISTINCT d.DEPT_NM) AS DEPT_NM
-			 , e.EMP_FLNM
+		SELECT dept.DEPT_NM
+		     , e.EMP_FLNM
 			 , CONCAT(pma.APLY_YM, '-', pma.APLY_ODR) APLY_SN
 			 , mmp.EXPECT_MM
 			 , SUM(8 * pma.MD) AS TOT_MD
 			 , pma.EMP_ID
 			 , pma.APLY_YM
 			 , pma.APLY_ODR
-		     , ROUND(SUM(CASE WHEN pmat.ATRZ_DMND_STTS_CD='VTW00802' THEN pma.MD ELSE 0 END)/MM_QUERY.MM,2) AS EXCN_MM
-		     , ROUND((mmp.EXPECT_MM - ROUND(SUM(CASE WHEN pmat.ATRZ_DMND_STTS_CD='VTW00802' THEN pma.MD ELSE 0 END)/MM_QUERY.MM,2)),2) AS AVBLE_MM
+		     , ROUND(SUM(CASE WHEN pmat.ATRZ_DMND_STTS_CD='VTW03703' THEN pma.MD ELSE 0 END)/MM_QUERY.MM,2) AS EXCN_MM
+		     , ROUND((mmp.EXPECT_MM - ROUND(SUM(CASE WHEN pmat.ATRZ_DMND_STTS_CD='VTW03703' THEN pma.MD ELSE 0 END)/MM_QUERY.MM,2)),2) AS AVBLE_MM
 		     , ANY_VALUE(indv.MM_ATRZ_CMPTN_YN) AS MM_ATRZ_CMPTN_YN
 		FROM (SELECT
             (SELECT COUNT(CRTR_YMD) FROM CRTR_DATE WHERE HLDY_CL_CD = 'VTW05001' AND CRTR_ODR = #{aplyOdr} AND DATE_FORMAT(CRTR_YMD, '%Y%m') = #{aplyYm}) AS MM
@@ -670,12 +670,16 @@
 		       	   AND mim.PRJCT_ID = #{prjctId}
                    AND mlp.BGT_MNG_ODR = #{bgtMngOdr})
 	            mmp ON (mmp.EMP_ID = pma.EMP_ID)
-	   <!--    JOIN MMNY_LBRCO_EXCN mle ON (pma.PRJCT_ID = mim.PRJCT_ID AND pma.APLY_YM = mle.INPT_YM) -->
 		  JOIN EMP e ON (e.EMP_ID = pma.EMP_ID)
-		  JOIN DEPT_HNF dh ON (e.EMP_ID = dh.EMP_ID)
-		  JOIN DEPT d ON (d.DEPT_ID = dh.DEPT_ID)
           LEFT JOIN PRJCT_MM_ATRZ pmat ON pmat.PRJCT_ID = pma.PRJCT_ID AND (pmat.EMP_ID = pma.EMP_ID OR (pmat.EMP_ID IS NULL AND pma.EMP_ID IS NULL)) AND pmat.APLY_YM = pma.APLY_YM AND pmat.APLY_ODR = pma.APLY_ODR AND pmat.APLY_YMD = pma.APLY_YMD
 		  JOIN PRJCT_INDVDL_CT_MM indv ON indv.PRJCT_ID = pma.PRJCT_ID AND (indv.EMP_ID = pma.EMP_ID OR (indv.EMP_ID IS NULL AND pma.EMP_ID IS NULL)) AND indv.APLY_YM = pma.APLY_YM AND indv.APLY_ODR = pma.APLY_ODR
+          JOIN (
+              SELECT GROUP_CONCAT(DISTINCT d.DEPT_NM) AS DEPT_NM, pma.EMP_ID
+              FROM DEPT d
+              JOIN DEPT_HNF dh ON (d.DEPT_ID = dh.DEPT_ID)
+              JOIN PRJCT_MM_APLY pma ON (pma.EMP_ID = dh.EMP_ID)
+              GROUP BY pma.EMP_ID
+            ) dept ON dept.EMP_ID = e.EMP_ID
 		 WHERE 1=1
 		   AND pma.PRJCT_ID = #{prjctId}
 		   AND pma.APLY_YM = #{aplyYm}
@@ -740,7 +744,7 @@
 			 , e.EMP_FlNM
 			 , CONCAT(pca.APLY_YM, '-', pca.APLY_ODR) AS APLY_SN
 			 , SUM(UTZTN_AMT) AS TOT_APLY_AMT
-             , SUM(CASE WHEN pcat.ATRZ_DMND_STTS_CD='VTW00802' AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN THEN UTZTN_AMT ELSE 0 END) AS TOT_UTZTN_AMT
+             , SUM(CASE WHEN pcat.ATRZ_DMND_STTS_CD='VTW03703' AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN THEN UTZTN_AMT ELSE 0 END) AS TOT_UTZTN_AMT
 			 , e.EMP_ID
 			 , pca.APLY_YM
 			 , pca.APLY_ODR
@@ -795,7 +799,7 @@
 			 , DATE_FORMAT(pma.APLY_YMD, '%Y-%m-%d') AS END_DATE
 			 , pah.APRV_YMD
  		  	 , e2.EMP_FLNM AS APRVR_EMP_FLNM
- 		  	 , d.DEPT_NM
+ 		  	 , dept.DEPT_NM
  		  	 , cd.CD_NM AS ATRZ_DMND_STTS_NM
 		FROM PRJCT_MM_APLY pma
 		JOIN PRJCT_MM_ATRZ pah ON (pma.PRJCT_ID = pah.PRJCT_ID
@@ -803,17 +807,22 @@
 								 	AND pma.APLY_YM = pah.APLY_YM
                                     AND pma.APLY_YMD = pah.APLY_YMD
 								 	AND pma.APLY_ODR = pah.APLY_ODR)
-		JOIN EMP e1 ON (pah.EMP_ID = e1.EMP_ID)						 	
-		JOIN EMP e2 ON (pah.APRVR_EMP_ID = e2.EMP_ID)
+		JOIN EMP e1 ON (pah.EMP_ID = e1.EMP_ID)
+		LEFT JOIN EMP e2 ON (pah.APRVR_EMP_ID = e2.EMP_ID)
 		JOIN CD cd ON (pah.ATRZ_DMND_STTS_CD = cd.CD_VALUE)
-		JOIN DEPT_HNF dh ON (dh.EMP_ID = e2.EMP_ID)
-		JOIN DEPT d ON (d.DEPT_ID = dh.DEPT_ID)
+        JOIN (
+            SELECT GROUP_CONCAT(DISTINCT d.DEPT_NM) AS DEPT_NM, pma.EMP_ID
+            FROM DEPT d
+                     JOIN DEPT_HNF dh ON (d.DEPT_ID = dh.DEPT_ID)
+                     JOIN PRJCT_MM_APLY pma ON (pma.EMP_ID = dh.EMP_ID)
+            GROUP BY pma.EMP_ID
+        ) dept ON dept.EMP_ID = pah.EMP_ID
 	   WHERE 1=1 
 	     AND pma.PRJCT_ID = #{prjctId}
 	     AND pma.EMP_ID = #{empId}
 	     AND pma.APLY_YM = #{aplyYm}
 	     AND pma.APLY_ODR = #{aplyOdr}
-         AND pah.ATRZ_DMND_STTS_CD = 'VTW00801'
+         AND pah.ATRZ_DMND_STTS_CD = 'VTW03702'
 		UNION ALL
 		SELECT 2 AS ID
 			 , 8 * pma.MD AS MD
@@ -823,7 +832,7 @@
 			 , DATE_FORMAT(pma.APLY_YMD, '%Y-%m-%d') AS END_DATE
 			 , pah.APRV_YMD
 		  	 , e2.EMP_FLNM AS APRVR_EMP_FLNM
-		  	 , d.DEPT_NM
+		  	 , dept.DEPT_NM
 		  	 , cd.CD_NM AS ATRZ_DMND_STTS_NM
 		FROM PRJCT_MM_APLY pma
 		JOIN PRJCT_MM_ATRZ pah ON (pma.PRJCT_ID = pah.PRJCT_ID
@@ -834,14 +843,19 @@
 		JOIN EMP e1 ON (pah.EMP_ID = e1.EMP_ID)						 	
 		JOIN EMP e2 ON (pah.APRVR_EMP_ID = e2.EMP_ID)
 		JOIN CD cd ON (pah.ATRZ_DMND_STTS_CD = cd.CD_VALUE)
-		JOIN DEPT_HNF dh ON (dh.EMP_ID = e2.EMP_ID)
-		JOIN DEPT d ON (d.DEPT_ID = dh.DEPT_ID)
+        JOIN (
+            SELECT GROUP_CONCAT(DISTINCT d.DEPT_NM) AS DEPT_NM, pma.EMP_ID
+            FROM DEPT d
+                     JOIN DEPT_HNF dh ON (d.DEPT_ID = dh.DEPT_ID)
+                     JOIN PRJCT_MM_APLY pma ON (pma.EMP_ID = dh.EMP_ID)
+            GROUP BY pma.EMP_ID
+        ) dept ON dept.EMP_ID = pah.EMP_ID
 		WHERE 1=1 
 		  AND pma.PRJCT_ID = #{prjctId}
 		  AND pma.EMP_ID = #{empId}
 		  AND pma.APLY_YM = #{aplyYm}
 		  AND pma.APLY_ODR = #{aplyOdr}
-		  AND pah.ATRZ_DMND_STTS_CD = 'VTW00802'
+		  AND pah.ATRZ_DMND_STTS_CD = 'VTW03703'
 	</select>
 	
 	
