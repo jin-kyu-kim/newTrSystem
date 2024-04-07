@@ -112,74 +112,58 @@
 	</select>
 	
 	<select id="retrieveInptSttus" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT 
-			   AA.EMP_ID
-			  ,CONCAT((select COUNT(*)*8 FROM CRTR_DATE WHERE CRTR_YMD LIKE CONCAT(#{aplyYm}, '%') AND CRTR_ODR = #{aplyOdr} AND HLDY_CL_CD ="VTW05001"),"시간") AS TOTAL					 								
-		      ,CONCAT(IFNULL(BB.CNT,0),"건")AS CNT																		
-		      ,CONCAT((CASE WHEN BB.ATRZ_DMND_STTS_CD = 'VTW03704' THEN BB.CNT  ELSE 0 END),"건") AS PRJ_REJECT			
-			  ,CONCAT((CASE WHEN BB.ATRZ_DMND_STTS_CD = 'VTW03703' THEN BB.CNT  ELSE 0 END),"건") AS PRJ_COMPLETE  		
-			  ,CONCAT(IFNULL(CC.SUM,0),"시간")AS SUM																		
-			  	  ,CONCAT((CASE WHEN CC.ATRZ_DMND_STTS_CD = 'VTW03704' THEN CC.SUM  ELSE 0 END),"시간") AS MM_REJECT		
-			  ,CONCAT((CASE WHEN CC.ATRZ_DMND_STTS_CD = 'VTW03703' THEN CC.SUM  ELSE 0 END),"시간") AS MM_COMPLETE			
-		FROM EMP AA
-			 LEFT OUTER JOIN
-			 (
-				SELECT T1.PRJCT_ID , T1.EMP_ID , T1.APLY_YM , T1.APLY_ODR ,T2.ATRZ_DMND_STTS_CD, count(1) AS CNT
-				  FROM PRJCT_CT_APLY T1
-				  JOIN (SELECT A.PRJCT_ID , A.EMP_ID , A.APLY_YM , A.APLY_ODR, B.PRJCT_ATRZ_HIST_SN, B.ATRZ_DMND_STTS_CD
-				  FROM PRJCT_INDVDL_CT_MM A
-				  LEFT OUTER JOIN PRJCT_ATRZ_HIST B
-				    ON A.PRJCT_ID = B.PRJCT_ID
-				   AND A.EMP_ID = B.EMP_ID
-				   AND A.APLY_YM = B.APLY_YM
-				   AND A.APLY_ODR = B.APLY_ODR
-				WHERE B.PRJCT_ATRZ_HIST_SN  = (SELECT max(PRJCT_ATRZ_HIST_SN)
-					                              FROM PRJCT_ATRZ_HIST C
-					                             WHERE A.PRJCT_ID = C.PRJCT_ID
-												   AND A.EMP_ID = C.EMP_ID
-												   AND A.APLY_YM = C.APLY_YM
-												   AND A.APLY_ODR = C.APLY_ODR )
-				     ) T2
-				    ON T1.PRJCT_ID = T2.PRJCT_ID
-				   AND T1.EMP_ID  = T2.EMP_ID
-				   AND T1.APLY_YM = T2.APLY_YM
-				   AND T1.APLY_ODR = T2.APLY_ODR
-				   AND T1.APLY_YM = #{aplyYm}
-				   AND T1.APLY_ODR= #{aplyOdr}
-				GROUP BY T1.PRJCT_ID , T1.EMP_ID , T1.APLY_YM , T1.APLY_ODR ,T2.ATRZ_DMND_STTS_CD
-			 ) BB ON BB.EMP_ID = AA.EMP_ID
-			LEFT OUTER JOIN 
-			(
-				SELECT T1.PRJCT_ID , T1.EMP_ID , T1.APLY_YM , T1.APLY_ODR ,T2.ATRZ_DMND_STTS_CD, SUM(T1.MD) AS SUM
-				  FROM PRJCT_MM_APLY T1
-				  JOIN (SELECT A.PRJCT_ID , A.EMP_ID , A.APLY_YM , A.APLY_ODR, B.PRJCT_ATRZ_HIST_SN, B.ATRZ_DMND_STTS_CD
-				  FROM PRJCT_INDVDL_CT_MM A
-				  LEFT OUTER JOIN PRJCT_ATRZ_HIST B
-				    ON A.PRJCT_ID = B.PRJCT_ID
-				   AND A.EMP_ID = B.EMP_ID
-				   AND A.APLY_YM = B.APLY_YM
-				   AND A.APLY_ODR = B.APLY_ODR
-				WHERE B.PRJCT_ATRZ_HIST_SN  = (
-											   SELECT max(PRJCT_ATRZ_HIST_SN)
-					                           FROM PRJCT_ATRZ_HIST C
-					                           WHERE A.PRJCT_ID = C.PRJCT_ID
-												     AND A.EMP_ID = C.EMP_ID
-												     AND A.APLY_YM = C.APLY_YM
-												     AND A.APLY_ODR = C.APLY_ODR 
-											   )
-			     ) T2
-			    ON T1.PRJCT_ID = T2.PRJCT_ID
-			   AND T1.EMP_ID  = T2.EMP_ID
-			   AND T1.APLY_YM = T2.APLY_YM
-			   AND T1.APLY_ODR = T2.APLY_ODR
-			   AND T1.APLY_YM = #{aplyYm}
-			   AND T1.APLY_ODR= #{aplyOdr}
-			  GROUP BY T1.PRJCT_ID , T1.EMP_ID , T1.APLY_YM , T1.APLY_ODR, T2.ATRZ_DMND_STTS_CD
-			 ) CC 
-			ON CC.EMP_ID = AA.EMP_ID 
-		WHERE 
-			1=1						
-			AND AA.EMP_ID = #{empId}
+		select
+		E.EMP_ID
+		,CONCAT((select COUNT(*)*8 FROM CRTR_DATE WHERE CRTR_YMD LIKE CONCAT(#{aplyYm},'%') AND CRTR_ODR = #{aplyOdr} AND HLDY_CL_CD ="VTW05001"),"시간") AS TOTAL
+		,CONCAT(IFNULL(BB.SUM,0),"시간")AS SUM		
+		,CONCAT((CASE WHEN BB.STTS_CD = 'VTW03704' THEN BB.SUM  ELSE 0 END),"시간") AS MM_REJECT			
+		,CONCAT((CASE WHEN BB.STTS_CD = 'VTW03703' THEN BB.SUM  ELSE 0 END),"시간") AS MM_COMPLETE
+		,CONCAT(IFNULL(AA.CNT,0),"건")AS CNT		
+		,CONCAT((CASE WHEN AA.STTS_CD = 'VTW03704' THEN AA.CNT  ELSE 0 END),"건") AS APLY_REJECT			
+		,CONCAT((CASE WHEN AA.STTS_CD = 'VTW03703' THEN AA.CNT  ELSE 0 END),"건") AS APLY_COMPLETE  	
+		from EMP E
+		LEFT OUTER JOIN(
+			   	 SELECT
+			   	 Count(*) as CNT
+			   	 , pca.EMP_ID
+			   	 , pcaz.ATRZ_DMND_STTS_CD STTS_CD
+				 FROM PRJCT_CT_APLY pca
+				 JOIN PRJCT_CT_ATRZ pcaz
+					 ON pca.PRJCT_CT_APLY_SN = pcaz.PRJCT_CT_APLY_SN
+						  AND pca.EMP_ID = pcaz.EMP_ID
+						  AND pca.APLY_YM = pcaz.APLY_YM
+						  AND pca.APLY_ODR = pcaz.APLY_ODR
+				WHERE
+					 1=1
+					  AND pca.APLY_YM = #{aplyYm}
+					  AND pca.APLY_ODR = #{aplyOdr}
+		 		group by 
+		 			pca.EMP_ID, STTS_CD
+		)AA ON AA.EMP_ID =E.EMP_ID
+		LEFT OUTER JOIN(
+				select 
+		 			(count(*)*8)as SUM
+		 			,pma.EMP_ID 
+		 			,pmaz.ATRZ_DMND_STTS_CD STTS_CD
+		 		from 
+		 			PRJCT_MM_APLY pma 
+		 		JOIN 
+		 			PRJCT_MM_ATRZ pmaz
+			 		ON pma.PRJCT_ID =pmaz.PRJCT_ID 
+				 		AND pma.EMP_ID =pmaz.EMP_ID 
+				 		AND pma.APLY_YM =pmaz.APLY_YM 
+				 		AND pma.APLY_ODR =pmaz.APLY_ODR 
+				 		AND pma.APLY_YMD =pmaz.APLY_YMD 
+		 		WHERE
+		 		1=1
+				  AND pma.APLY_YM = #{aplyYm}
+				  AND pma.APLY_ODR =#{aplyOdr}
+		 		group by 
+		 			pma.EMP_ID, STTS_CD
+		)BB ON BB.EMP_ID =E.EMP_ID 
+		where 
+		1=1
+		AND E.EMP_ID =#{empId}
 	</select>
 	
 	<select id="retrieveAtrzAplySttus" parameterType="map" resultType="com.trsystem.LowerHashMap">
