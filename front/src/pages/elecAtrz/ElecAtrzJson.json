@@ -114,7 +114,7 @@
       { "key": "empFlnm", "value": "결재자"},
       { "key": "atrzSttsCdNm", "value": "결재상태"},
       { "key": "rjctPrvonsh", "value": "결재의견"},
-      { "key": "aprvYmd", "value": "결재일자"}
+      { "key": "mdfcnDt", "value": "결재일자"}
     ],
     "keyColumnClm" : "ctStlmSeCdNm",
     "clmColumns": [
