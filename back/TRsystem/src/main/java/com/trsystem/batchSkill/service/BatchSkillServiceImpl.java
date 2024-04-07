@@ -183,7 +183,7 @@ public class BatchSkillServiceImpl implements BatchSkillService {
             // 트랜잭션 시작
             connection.setAutoCommit(false);
             
-            String callProcedure = "CALL nwTr.P_MOD_PRJCT_BGT_PRMPC(?, ?, ?)";
+            String callProcedure = "CALL nwTr.P_ADD_PRJCT_BGT_PRMPC(?, ?, ?)";
             
             try (CallableStatement callableStatement = connection.prepareCall(callProcedure)) {
             	

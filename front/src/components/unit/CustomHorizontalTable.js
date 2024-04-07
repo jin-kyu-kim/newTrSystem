@@ -52,9 +52,9 @@ const CustomHorizontalTable = ({ headers, column }) => {
       }}   
     >
       <Column dataField="header" caption="Header" alignment="center" />
-      <Column dataField="column" caption="Column" />
+      <Column dataField="column" caption="Column" alignment="center" />
       <Column dataField="header1" caption="Header1" alignment="center" />
-      <Column dataField="column1" caption="Column1" />
+      <Column dataField="column1" caption="Column1" alignment='center' />
     </DataGrid>
   );
 };

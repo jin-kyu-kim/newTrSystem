@@ -104,7 +104,7 @@ const ProjectDetail = () => {
               }
           } 
         } else {
-          const isconfirm = window.confirm("프로젝트 변경을 진행하시겠습니까? 프로젝트가 '변경중'으로 바뀌게 됩니다.");
+          const isconfirm = window.confirm("프로젝트 변경을 진행하시겠습니까?");
           if(isconfirm){
             await projectChgHandle();
           }
