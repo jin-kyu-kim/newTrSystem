@@ -29,5 +29,16 @@ public class ElecAtrzController {
 		return elctrnAtrzId;
 	}
 	
+	/**
+	 * 전자결재 승인 프로세스
+	 * @param paramList
+	 * @return
+	 */
+	@PostMapping(value = "/boot/elecAtrz/aprvElecAtrz")
+	public int aprvElecAtrz(@RequestBody List<Map<String, Object>> paramList) {
+		
+		return ElecAtrzDomain.aprvElecAtrz(paramList);
+	}
+	
 	
 }

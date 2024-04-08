@@ -24,6 +24,6 @@
     { "key": "useRate", "value":"사용비율(%)", "type"  : "sum", "format": "{0} %", "precision": "0" }
   ]
   , "groupingData" : 
-  {"caption":"원가별집계", "dataField": "prmpcAcctoTot", "totalTextColumn": "rciptPblcnYmd"}
+  {"caption":"원가별집계", "dataField": "prmpcAcctoTot"}
 
 }

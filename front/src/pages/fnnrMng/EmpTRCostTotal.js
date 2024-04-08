@@ -8,6 +8,7 @@ import { exportDataGrid } from "devextreme/excel_exporter";
 import { saveAs } from 'file-saver';
 import SearchInfoSet from "components/composite/SearchInfoSet";
 import { CheckBox, CheckBoxTypes } from 'devextreme-react/check-box';
+import Button from "devextreme-react/button";
 
 const EmpTRCostTotal = () => {
   const [values, setValues] = useState([]);
@@ -84,6 +85,20 @@ const EmpTRCostTotal = () => {
     });
   };
 
+
+
+  const executeCostUpdate = async () => {
+    try {
+      const response = await ApiRequest("/boot/batchSkll/executeCostUpdate");
+      console.log(response);
+      if (response >=1 ) {
+        alert("실행원가 정산이 완료되었습니다.");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <div className="container">
     <div
@@ -114,8 +129,9 @@ const EmpTRCostTotal = () => {
               onValueChanged={handleCheckBox2Change}
               text="이름 별"
             />   
-
-     
+      <Button style={{marginLeft:"20px"}}
+              onClick={executeCostUpdate}
+              > 실행원가 정산</Button>
       {checkBox1Checked && (
       <CustomTable
         keyColumn={keyColumn}

@@ -166,7 +166,13 @@ public class ProjectBaseDomain {
         	aprvDtlParam.put("atrzLnSn", params.get(2).get("atrzLnSn"));
         	aprvDtlParam.put("regDt", params.get(2).get("regDt"));
         	aprvDtlParam.put("regEmpId", params.get(2).get("empId"));
-        	aprvDtlParam.put("atrzSttsCd", atrzSttsCd);
+        	
+        	if(i == empIdParams.size() - 1) {
+        		
+        		aprvDtlParam.put("atrzSttsCd", atrzSttsCd);
+        	} else {
+        		aprvDtlParam.put("atrzSttsCd", "VTW00806");
+        	}
     		
         	// 다른 부분
         	aprvDtlParam.put("atrzStepCd", atrzStepCd[i]);
@@ -216,23 +222,52 @@ public class ProjectBaseDomain {
       	}
     	
     }
-    
-    /*
+
+    /**
      * 결재자 EmpId 계층 쿼리 조회
+     * @param params
+     * @return
      */
     public static List<Map<String, Object>> retrieveAprvrEmpId(Map<String, Object> params) {
     	
-//    	String deptId;
-    	
     	final String queryId = "projectMapper.retrieveAprvrEmpId";
     	
-    	// 2. deptId로 결재자(팀장급)의 Id를 찾는다.
     	List<Map<String, Object>> aprvrEmpIdlist = new ArrayList<>();
     	Map<String, Object> queryIdMap = new HashMap<>();
+    	
     	queryIdMap.put("queryId", queryId);
-    	queryIdMap.put("deptId", params.get("deptId"));
+    	
+    	// 1. deptId가 없는 경우 가져오기.
+    	Map<String, Object> tbParam = new HashMap<>();
+    	Map<String, Object> infoParam = new HashMap<>();
+    	List<Map<String, Object>> selectParams = new ArrayList<>();
+    	
+    	
+    	
+    	// deptId가 null일 경우 프로젝트에서 직접 찾는다.
+    	if(String.valueOf(params.get("deptId")).equals("null") || String.valueOf(params.get("deptId")).equals(null)) {
+    		
+    		tbParam.put("tbNm", "PRJCT");
+    		infoParam.put("prjctId", params.get("prjctId"));
+    		
+    		selectParams.add(0, tbParam);
+    		selectParams.add(infoParam);
+    		
+    		List<Map<String, Object>> result = commonService.commonSelect(selectParams);
+    		
+    		System.out.println(result.get(0));
+    		
+    		queryIdMap.put("deptId", result.get(0).get("deptId"));
+    	} else {
+    		
+    		queryIdMap.put("deptId", params.get("deptId"));
+    	}
+    	
+
+
     	
     	try {
+        	// 2. deptId로 결재자(팀장급)의 Id를 찾는다.
     		// 넘겨받은 deptId = 프로젝트가 속한 부서의 deptId.
     		// deptId에 해당하는 계층쿼리를 조회한다.
     		aprvrEmpIdlist = commonService.queryIdSearch(queryIdMap);
@@ -430,6 +465,100 @@ public class ProjectBaseDomain {
 			}
 		}
 		return result;
+	}
+	
+	public static String aprvPrjctAtrz(List<Map<String, Object>> paramList) {
+		
+		// 현재 승인자
+		String aprvrEmpId = String.valueOf(paramList.get(2).get("aprvrEmpId"));
+		
+		// 현재 승인자의 결재 단계
+		String atrzStepCd = String.valueOf(paramList.get(2).get("atrzStepCd"));
+
+		int uptResult = -1;
+
+		
+		Map<String, Object> selectParam = new HashMap<>();
+		selectParam.put("queryId", "projectMapper.retrievePrjctAtrzLn");
+		selectParam.put("prjctId", paramList.get(2).get("prjctId"));
+		selectParam.put("atrzLnSn", paramList.get(2).get("atrzLnSn"));
+		selectParam.put("atrzStepCd", atrzStepCd);
+		List<Map<String, Object>> atrzLine = commonService.queryIdSearch(selectParam);
+		
+		try {
+			// update 해준다.
+
+			for(int i = 0; i < atrzLine.size(); i++) {
+				
+				Map<String, Object> updateParam = new HashMap<>();
+				Map<String, Object> conditionParam = new HashMap<>();
+				List<Map<String, Object>> updateParams = new ArrayList<>();
+				
+				if(String.valueOf(atrzLine.get(i).get("atrzStepCd")).equals(atrzStepCd) && 
+					String.valueOf(atrzLine.get(i).get("aprvrEmpId")).equals(aprvrEmpId)) {
+					// 라인의 단계와 현재 단계가 같으면서 현재 결재자가 같은 경우에 결재선 승인함.
+					System.out.println(atrzLine.get(i));
+					System.out.println(atrzStepCd);
+					
+					updateParams.add(0, paramList.get(0));	// 업데이트할 타겟 테이블
+					updateParams.add(1, paramList.get(1));	// 업데이트할 테이블의 내용
+
+					
+					updateParam.put("prjctId", paramList.get(2).get("prjctId"));
+					updateParam.put("atrzLnSn", paramList.get(2).get("atrzLnSn"));
+					updateParam.put("aprvrEmpId", aprvrEmpId);
+					updateParam.put("atrzStepCd", atrzStepCd);
+					
+					updateParams.add(2, updateParam);
+					
+					uptResult = commonService.updateData(updateParams);
+					
+					if(uptResult < 0) {
+						return null;
+					}
+					
+					switch(atrzStepCd) {
+					case "VTW00701" : 
+						atrzStepCd = "VTW00702"; 
+						break;
+					case "VTW00702":
+						atrzStepCd = "VTW00703";
+						break;
+					case "VTW00703":
+						atrzStepCd = "VTW00704";
+						break;
+					case "VTW00704":
+						atrzStepCd = "VTW00705";
+						break;
+					case "VTW00705":
+						atrzStepCd = "VTW00708";
+						break;
+					}
+					
+				} else {
+					updateParams.add(0, paramList.get(0));	// 업데이트할 타겟 테이블
+					
+					conditionParam.put("atrzStepCd", atrzStepCd);
+					conditionParam.put("prjctId", paramList.get(2).get("prjctId"));
+					conditionParam.put("atrzLnSn", paramList.get(2).get("atrzLnSn"));
+					
+					updateParam.put("atrzSttsCd", "VTW00801");
+					
+					updateParams.add(1, updateParam); // 업데이트할 정보
+					updateParams.add(2, conditionParam); // 업데이트할 테이블의 조건
+					
+					
+					uptResult = commonService.updateData(updateParams);
+				}
+				
+			}
+
+			
+		} catch (Exception e) {
+			return null;
+		}
+		
+		return atrzStepCd;
 	}
 
 }

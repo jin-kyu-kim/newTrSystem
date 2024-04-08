@@ -9,12 +9,15 @@ import ProjectHrCtAprvCtPop from "./ProjectHtCtAprvCtPop";
 import ProjectHrCtAprvMmPop from "./ProjectHtCtAprvMmPop";
 import TextArea from "devextreme-react/text-area";
 import Button from "devextreme-react/button";
+import {useCookies} from "react-cookie";
 
 const ProjectHrCtAprvDetail = () => {
 
+    const [cookies] = useCookies([]);
     const location = useLocation();
     const prjctId = location.state.prjctId;
     const prjctNm = location.state.prjctNm;
+    const bgtMngOdr = location.state.bgtMngOdr;
     const { searchParams, mm, ct } = ProjectHrCtAprvDetailJson;
     
     const [param, setParam] = useState([]);
@@ -82,6 +85,7 @@ const ProjectHrCtAprvDetail = () => {
                 aplyYm: aplyYm,
                 aplyOdr: odrVal,
                 empId: initParam.empId,
+                bgtMngOdr: bgtMngOdr
             })
 
             return;
@@ -94,6 +98,7 @@ const ProjectHrCtAprvDetail = () => {
             aplyYm: initParam.yearItem + initParam.monthItem,
             aplyOdr: initParam.aplyOdr,
             empId: initParam.empId,
+            bgtMngOdr: bgtMngOdr
         })
     }
 
@@ -105,7 +110,8 @@ const ProjectHrCtAprvDetail = () => {
         }else if(button.name === "aprv"){
             const param = [
                 { tbNm: "PRJCT_MM_ATRZ" },
-                { atrzDmndSttsCd: "VTW00802",
+                { atrzDmndSttsCd: "VTW03703",
+                  aprvrEmpId: cookies.userInfo.empId,
                   aprvYmd: year + monthVal + dayVal,
                   rjctPrvonsh: null,
                   rjctYmd: null},
@@ -155,11 +161,12 @@ const ProjectHrCtAprvDetail = () => {
         }else if(button.name === "aprv"){
             const param = [
                 { tbNm: "PRJCT_CT_ATRZ" },
-                { atrzDmndSttsCd: "VTW00802",
+                { atrzDmndSttsCd: "VTW03703",
+                    aprvrEmpId: cookies.userInfo.empId,
                     aprvYmd: year + monthVal + dayVal,
                     rjctPrvonsh: null,
                     rjctYmd: null},
-                { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr}
+                { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, atrzDmndSttsCd: "VTW03702"}
             ];
             try {
                 const confirmResult = window.confirm("승인하시겠습니까?");
@@ -212,7 +219,8 @@ const ProjectHrCtAprvDetail = () => {
             const confirmResult = window.confirm("반려하시겠습니까?");
             const param = [
                 { tbNm: "PRJCT_MM_ATRZ" },
-                { atrzDmndSttsCd: "VTW00803",
+                { atrzDmndSttsCd: "VTW03704",
+                    aprvrEmpId: cookies.userInfo.empId,
                     rjctPrvonsh: opnnCn,
                     rjctYmd: year + monthVal + dayVal
                 },
@@ -235,7 +243,8 @@ const ProjectHrCtAprvDetail = () => {
             const confirmResult = window.confirm("반려하시겠습니까?");
             const param = [
                 { tbNm: "PRJCT_CT_ATRZ" },
-                { atrzDmndSttsCd: "VTW00803",
+                { atrzDmndSttsCd: "VTW03704",
+                    aprvrEmpId: cookies.userInfo.empId,
                     rjctPrvonsh: opnnCn,
                     rjctYmd: year + monthVal + dayVal
                 },

@@ -15,7 +15,7 @@ const SearchPrjctSet = ({ callBack, props, popup }) => {
   const [initParam, setInitParam] = useState({
     prjctStleCd: "",
     prjctId: "",
-    ctmmnyNo: "",
+    ctmmnyNm: "",
     bizFlfmtTyCd: "",
     ctrtYmd: "",
     bizEndYmd: "",
@@ -39,7 +39,7 @@ const SearchPrjctSet = ({ callBack, props, popup }) => {
   const handleChgPrjct = (selectedOption) => {
     setInitParam({
       ...initParam,
-      prjctId: selectedOption,
+      prjctId: selectedOption[0].prjctId,
     });
   };
 
@@ -115,7 +115,7 @@ const SearchPrjctSet = ({ callBack, props, popup }) => {
             placeholder="고객사"
             stylingMode="underlined"
             size="large"
-            name="ctmmnyNo"
+            name="ctmmnyNm"
             onValueChanged={(e) => handleChgState({ name: e.component.option('name'), value: e.value })}
           />
         </Item>

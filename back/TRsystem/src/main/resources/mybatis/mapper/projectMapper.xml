@@ -72,7 +72,7 @@
 		 	 , ci.CTMMNY_NM
 			 , p.PIC_FLNM
 			 , p.PIC_TELNO
-			 , p.PIC_EML 
+			 , p.PIC_EML
 		  FROM PRJCT p
 		  JOIN DEPT d ON (d.DEPT_ID = p.DEPT_ID)
 		  JOIN EMP e ON (e.EMP_ID = p.PRJCT_MNGR_EMP_ID)
@@ -100,6 +100,8 @@
 				  , pal.NOW_ATRZ_STEP_CD
 				  , pal.BGT_MNG_ODR
 				  , pald.APRVR_EMP_ID
+		          , DATE_FORMAT(p.CTRT_YMD, '%Y-%m-%d') AS CTRT_YMD
+				  , DATE_FORMAT(STBLE_END_YMD, '%Y-%m-%d') AS STBLE_END_YMD
 			      , COUNT(*) OVER () AS TOTAL_ITEMS
 			  FROM PRJCT_ATRZ_LN pal
 			  JOIN PRJCT_ATRZ_LN_DTL pald ON(pal.PRJCT_ID = pald.PRJCT_ID AND pal.ATRZ_LN_SN = pald.ATRZ_LN_SN AND pal.NOW_ATRZ_STEP_CD = pald.ATRZ_STEP_CD)
@@ -645,33 +647,39 @@
 	</select>
 	
 	<select id="retrieveMmAply" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT d.DEPT_NM
-			 , e.EMP_FLNM
+		SELECT dept.DEPT_NM
+		     , e.EMP_FLNM
 			 , CONCAT(pma.APLY_YM, '-', pma.APLY_ODR) APLY_SN
 			 , mmp.EXPECT_MM
 			 , SUM(8 * pma.MD) AS TOT_MD
 			 , pma.EMP_ID
 			 , pma.APLY_YM
 			 , pma.APLY_ODR
-		     , ROUND(SUM(CASE WHEN pmat.ATRZ_DMND_STTS_CD='VTW00802' THEN pma.MD ELSE 0 END)/MM_QUERY.MM,2) AS EXCN_MM
-		     , ROUND((mmp.EXPECT_MM - ROUND(SUM(CASE WHEN pmat.ATRZ_DMND_STTS_CD='VTW00802' THEN pma.MD ELSE 0 END)/MM_QUERY.MM,2)),2) AS AVBLE_MM
+		     , ROUND(SUM(CASE WHEN pmat.ATRZ_DMND_STTS_CD='VTW03703' THEN pma.MD ELSE 0 END)/MM_QUERY.MM,2) AS EXCN_MM
+		     , ROUND((mmp.EXPECT_MM - ROUND(SUM(CASE WHEN pmat.ATRZ_DMND_STTS_CD='VTW03703' THEN pma.MD ELSE 0 END)/MM_QUERY.MM,2)),2) AS AVBLE_MM
 		     , ANY_VALUE(indv.MM_ATRZ_CMPTN_YN) AS MM_ATRZ_CMPTN_YN
 		FROM (SELECT
             (SELECT COUNT(CRTR_YMD) FROM CRTR_DATE WHERE HLDY_CL_CD = 'VTW05001' AND CRTR_ODR = #{aplyOdr} AND DATE_FORMAT(CRTR_YMD, '%Y%m') = #{aplyYm}) AS MM
         ) AS MM_QUERY,
          PRJCT_MM_APLY pma
-	      JOIN (SELECT mlp.PRJCT_ID, mlp.EMP_ID, mlp.MMNY_LBRCO_PRMPC_SN, mim.EXPECT_MM
+	      LEFT JOIN (SELECT mlp.PRJCT_ID, mlp.EMP_ID, mlp.MMNY_LBRCO_PRMPC_SN, mim.EXPECT_MM
 			      FROM MMNY_LBRCO_PRMPC mlp
-			  	  JOIN MMNY_INPT_MM mim ON (mim.PRJCT_ID = mlp.PRJCT_ID AND mim.MMNY_LBRCO_PRMPC_SN = mlp.MMNY_LBRCO_PRMPC_SN)
+			  	  JOIN MMNY_INPT_MM mim ON (mim.PRJCT_ID = mlp.PRJCT_ID AND mim.MMNY_LBRCO_PRMPC_SN = mlp.MMNY_LBRCO_PRMPC_SN AND mlp.BGT_MNG_ODR = mim.BGT_MNG_ODR)
 		     	 WHERE 1=1
 		       	   AND mim.INPT_YM = #{aplyYm}
-		       	   AND mim.PRJCT_ID = #{prjctId}) mmp ON (mmp.EMP_ID = pma.EMP_ID)
-	   <!--    JOIN MMNY_LBRCO_EXCN mle ON (pma.PRJCT_ID = mim.PRJCT_ID AND pma.APLY_YM = mle.INPT_YM) -->
+		       	   AND mim.PRJCT_ID = #{prjctId}
+                   AND mlp.BGT_MNG_ODR = #{bgtMngOdr})
+	            mmp ON (mmp.EMP_ID = pma.EMP_ID)
 		  JOIN EMP e ON (e.EMP_ID = pma.EMP_ID)
-		  JOIN DEPT_HNF dh ON (e.EMP_ID = dh.EMP_ID)
-		  JOIN DEPT d ON (d.DEPT_ID = dh.DEPT_ID)
           LEFT JOIN PRJCT_MM_ATRZ pmat ON pmat.PRJCT_ID = pma.PRJCT_ID AND (pmat.EMP_ID = pma.EMP_ID OR (pmat.EMP_ID IS NULL AND pma.EMP_ID IS NULL)) AND pmat.APLY_YM = pma.APLY_YM AND pmat.APLY_ODR = pma.APLY_ODR AND pmat.APLY_YMD = pma.APLY_YMD
 		  JOIN PRJCT_INDVDL_CT_MM indv ON indv.PRJCT_ID = pma.PRJCT_ID AND (indv.EMP_ID = pma.EMP_ID OR (indv.EMP_ID IS NULL AND pma.EMP_ID IS NULL)) AND indv.APLY_YM = pma.APLY_YM AND indv.APLY_ODR = pma.APLY_ODR
+          JOIN (
+              SELECT GROUP_CONCAT(DISTINCT d.DEPT_NM) AS DEPT_NM, pma.EMP_ID
+              FROM DEPT d
+              JOIN DEPT_HNF dh ON (d.DEPT_ID = dh.DEPT_ID)
+              JOIN PRJCT_MM_APLY pma ON (pma.EMP_ID = dh.EMP_ID)
+              GROUP BY pma.EMP_ID
+            ) dept ON dept.EMP_ID = e.EMP_ID
 		 WHERE 1=1
 		   AND pma.PRJCT_ID = #{prjctId}
 		   AND pma.APLY_YM = #{aplyYm}
@@ -681,7 +689,7 @@
                 AND pma.EMP_ID = #{empId}
             </if>
         </if>
-         GROUP BY pma.EMP_ID, d.DEPT_NM, mmp.EXPECT_MM, MM_QUERY.MM
+         GROUP BY pma.EMP_ID, mmp.EXPECT_MM, MM_QUERY.MM
 	</select>
 		
 	<select id="retrieveOutordHnfPrmpc" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -732,21 +740,26 @@
 
 	
 	<select id="retrieveCtAply" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT d.DEPT_NM
+		SELECT dept.DEPT_NM
 			 , e.EMP_FlNM
 			 , CONCAT(pca.APLY_YM, '-', pca.APLY_ODR) AS APLY_SN
 			 , SUM(UTZTN_AMT) AS TOT_APLY_AMT
-             , SUM(CASE WHEN pcat.ATRZ_DMND_STTS_CD='VTW00802' AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN THEN UTZTN_AMT ELSE 0 END) AS TOT_UTZTN_AMT
+             , SUM(CASE WHEN pcat.ATRZ_DMND_STTS_CD='VTW03703' AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN THEN UTZTN_AMT ELSE 0 END) AS TOT_UTZTN_AMT
 			 , e.EMP_ID
 			 , pca.APLY_YM
 			 , pca.APLY_ODR
 		     , ANY_VALUE(indv.CT_ATRZ_CMPTN_YN) AS CT_ATRZ_CMPTN_YN
 		  FROM PRJCT_CT_APLY pca
 		  JOIN EMP e ON (e.EMP_ID = pca.EMP_ID)
-	      JOIN DEPT_HNF dh ON (e.EMP_ID = dh.EMP_ID)
-  		  JOIN DEPT d ON (d.DEPT_ID = dh.DEPT_ID)
+          JOIN (
+            SELECT GROUP_CONCAT(DISTINCT d.DEPT_NM) AS DEPT_NM, pma.EMP_ID
+            FROM DEPT d
+            JOIN DEPT_HNF dh ON (d.DEPT_ID = dh.DEPT_ID)
+            JOIN PRJCT_MM_APLY pma ON (pma.EMP_ID = dh.EMP_ID)
+            GROUP BY pma.EMP_ID
+          ) dept ON dept.EMP_ID = e.EMP_ID
          LEFT JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_ID = pca.PRJCT_ID AND (pcat.EMP_ID = pca.EMP_ID OR (pcat.EMP_ID IS NULL AND pca.EMP_ID IS NULL))
-              AND pcat.APLY_YM = pca.APLY_YM AND pcat.APLY_ODR = pca.APLY_ODR)
+              AND pcat.APLY_YM = pca.APLY_YM AND pcat.APLY_ODR = pca.APLY_ODR AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN)
         JOIN PRJCT_INDVDL_CT_MM indv ON indv.PRJCT_ID = pca.PRJCT_ID AND (indv.EMP_ID = pca.EMP_ID OR (indv.EMP_ID IS NULL AND pca.EMP_ID IS NULL)) AND indv.APLY_YM = pca.APLY_YM AND indv.APLY_ODR = pca.APLY_ODR
 		 WHERE 1=1
 		   AND pca.PRJCT_ID = #{prjctId}
@@ -757,11 +770,12 @@
                 AND pca.EMP_ID = #{empId}
             </if>
         </if>
-		 GROUP BY d.DEPT_NM, e.EMP_ID
+		 GROUP BY e.EMP_ID
 	</select>
 	
 	<select id="retrieveProjectCtAplyDetail" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT CONCAT(CT_PRPOS, ' (' ,UTZTN_AMT, '원)') AS TEXT
+		SELECT 1 AS ID
+		     , CONCAT(CT_PRPOS, ' | ' ,UTZTN_AMT, '원 (', cd.CD_NM, ')') AS TEXT
 		     , DATE_FORMAT(UTZTN_DT, '%Y-%m-%d %H:%i:%s') AS START_DATE
 		     , DATE_FORMAT(UTZTN_DT, '%Y-%m-%d %H:%i:%s') AS END_DATE
 		     , CONCAT(pca.APLY_YM, '-', pca.APLY_ODR) AS APLY_SN
@@ -770,16 +784,41 @@
 	         , pca.USE_OFFIC
      		 , pca.ATDRN
      		 , pca.CT_PRPOS
-             , (select CD_NM from CD where CD_VALUE = pcat.ATRZ_DMND_STTS_CD) AS 'ATRZ_DMND_STTS_CD'
+             , cd.CD_NM AS ATRZ_DMND_STTS_NM
 		  FROM PRJCT_CT_APLY pca
 		  JOIN EMP e ON (e.EMP_ID = pca.EMP_ID)
           JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_ID = pca.PRJCT_ID AND (pcat.EMP_ID = pca.EMP_ID OR (pcat.EMP_ID IS NULL AND pca.EMP_ID IS NULL))
-              AND pcat.APLY_YM = pca.APLY_YM AND pcat.APLY_ODR = pca.APLY_ODR)
+              AND pcat.APLY_YM = pca.APLY_YM AND pcat.APLY_ODR = pca.APLY_ODR AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN)
+          JOIN CD cd ON (pcat.ATRZ_DMND_STTS_CD = cd.CD_VALUE)
 		 WHERE 1=1
    		   AND pca.PRJCT_ID = #{prjctId}
 		   AND pca.APLY_YM = #{aplyYm}
 		   AND pca.APLY_ODR = #{aplyOdr}
 		   AND pca.EMP_ID = #{empId}
+           AND pcat.ATRZ_DMND_STTS_CD = 'VTW03702'
+        UNION ALL
+        SELECT 2 AS ID
+             , CONCAT(CT_PRPOS, ' | ' ,UTZTN_AMT, '원 (', cd.CD_NM, ')') AS TEXT
+             , DATE_FORMAT(UTZTN_DT, '%Y-%m-%d %H:%i:%s') AS START_DATE
+             , DATE_FORMAT(UTZTN_DT, '%Y-%m-%d %H:%i:%s') AS END_DATE
+             , CONCAT(pca.APLY_YM, '-', pca.APLY_ODR) AS APLY_SN
+             , e.EMP_FLNM
+             , pca.UTZTN_AMT
+             , pca.USE_OFFIC
+             , pca.ATDRN
+             , pca.CT_PRPOS
+             , cd.CD_NM AS ATRZ_DMND_STTS_NM
+        FROM PRJCT_CT_APLY pca
+        JOIN EMP e ON (e.EMP_ID = pca.EMP_ID)
+        JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_ID = pca.PRJCT_ID AND (pcat.EMP_ID = pca.EMP_ID OR (pcat.EMP_ID IS NULL AND pca.EMP_ID IS NULL))
+            AND pcat.APLY_YM = pca.APLY_YM AND pcat.APLY_ODR = pca.APLY_ODR AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN)
+        JOIN CD cd ON (pcat.ATRZ_DMND_STTS_CD = cd.CD_VALUE)
+        WHERE 1=1
+          AND pca.PRJCT_ID = #{prjctId}
+          AND pca.APLY_YM = #{aplyYm}
+          AND pca.APLY_ODR = #{aplyOdr}
+          AND pca.EMP_ID = #{empId}
+          AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703'
 	</select>
 	
 	<select id="retrieveProjectMmAplyDetail" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -791,7 +830,7 @@
 			 , DATE_FORMAT(pma.APLY_YMD, '%Y-%m-%d') AS END_DATE
 			 , pah.APRV_YMD
  		  	 , e2.EMP_FLNM AS APRVR_EMP_FLNM
- 		  	 , d.DEPT_NM
+ 		  	 , dept.DEPT_NM
  		  	 , cd.CD_NM AS ATRZ_DMND_STTS_NM
 		FROM PRJCT_MM_APLY pma
 		JOIN PRJCT_MM_ATRZ pah ON (pma.PRJCT_ID = pah.PRJCT_ID
@@ -799,17 +838,22 @@
 								 	AND pma.APLY_YM = pah.APLY_YM
                                     AND pma.APLY_YMD = pah.APLY_YMD
 								 	AND pma.APLY_ODR = pah.APLY_ODR)
-		JOIN EMP e1 ON (pah.EMP_ID = e1.EMP_ID)						 	
-		JOIN EMP e2 ON (pah.APRVR_EMP_ID = e2.EMP_ID)
+		JOIN EMP e1 ON (pah.EMP_ID = e1.EMP_ID)
+		LEFT JOIN EMP e2 ON (pah.APRVR_EMP_ID = e2.EMP_ID)
 		JOIN CD cd ON (pah.ATRZ_DMND_STTS_CD = cd.CD_VALUE)
-		JOIN DEPT_HNF dh ON (dh.EMP_ID = e2.EMP_ID)
-		JOIN DEPT d ON (d.DEPT_ID = dh.DEPT_ID)
+        JOIN (
+            SELECT GROUP_CONCAT(DISTINCT d.DEPT_NM) AS DEPT_NM, pma.EMP_ID
+            FROM DEPT d
+                     JOIN DEPT_HNF dh ON (d.DEPT_ID = dh.DEPT_ID)
+                     JOIN PRJCT_MM_APLY pma ON (pma.EMP_ID = dh.EMP_ID)
+            GROUP BY pma.EMP_ID
+        ) dept ON dept.EMP_ID = pah.EMP_ID
 	   WHERE 1=1 
 	     AND pma.PRJCT_ID = #{prjctId}
 	     AND pma.EMP_ID = #{empId}
 	     AND pma.APLY_YM = #{aplyYm}
 	     AND pma.APLY_ODR = #{aplyOdr}
-         AND pah.ATRZ_DMND_STTS_CD = 'VTW00801'
+         AND pah.ATRZ_DMND_STTS_CD = 'VTW03702'
 		UNION ALL
 		SELECT 2 AS ID
 			 , 8 * pma.MD AS MD
@@ -819,7 +863,7 @@
 			 , DATE_FORMAT(pma.APLY_YMD, '%Y-%m-%d') AS END_DATE
 			 , pah.APRV_YMD
 		  	 , e2.EMP_FLNM AS APRVR_EMP_FLNM
-		  	 , d.DEPT_NM
+		  	 , dept.DEPT_NM
 		  	 , cd.CD_NM AS ATRZ_DMND_STTS_NM
 		FROM PRJCT_MM_APLY pma
 		JOIN PRJCT_MM_ATRZ pah ON (pma.PRJCT_ID = pah.PRJCT_ID
@@ -830,14 +874,19 @@
 		JOIN EMP e1 ON (pah.EMP_ID = e1.EMP_ID)						 	
 		JOIN EMP e2 ON (pah.APRVR_EMP_ID = e2.EMP_ID)
 		JOIN CD cd ON (pah.ATRZ_DMND_STTS_CD = cd.CD_VALUE)
-		JOIN DEPT_HNF dh ON (dh.EMP_ID = e2.EMP_ID)
-		JOIN DEPT d ON (d.DEPT_ID = dh.DEPT_ID)
+        JOIN (
+            SELECT GROUP_CONCAT(DISTINCT d.DEPT_NM) AS DEPT_NM, pma.EMP_ID
+            FROM DEPT d
+                     JOIN DEPT_HNF dh ON (d.DEPT_ID = dh.DEPT_ID)
+                     JOIN PRJCT_MM_APLY pma ON (pma.EMP_ID = dh.EMP_ID)
+            GROUP BY pma.EMP_ID
+        ) dept ON dept.EMP_ID = pah.EMP_ID
 		WHERE 1=1 
 		  AND pma.PRJCT_ID = #{prjctId}
 		  AND pma.EMP_ID = #{empId}
 		  AND pma.APLY_YM = #{aplyYm}
 		  AND pma.APLY_ODR = #{aplyOdr}
-		  AND pah.ATRZ_DMND_STTS_CD = 'VTW00802'
+		  AND pah.ATRZ_DMND_STTS_CD = 'VTW03703'
 	</select>
 	
 	
@@ -959,11 +1008,11 @@
 			   C.CTMMNY_NM, 
 			   P.PIC_FLNM, 
 			   E2.EMP_FLNM AS PRJCT_MNGR_EMP_NM,
-			   E.EMP_FLNM, 
-			   P.TOT_BGT, 
-			   P.BDDPR_PC, 
-			   P.MMNY_SLS_AM, 
-			   CONCAT(DATE_FORMAT(P.CTRT_YMD, '%Y-%m-%d'), ' ~ ', DATE_FORMAT(P.BIZ_END_YMD, '%Y-%m-%d')) AS PRJCT_PERIOD
+			   E.EMP_FLNM,
+               FORMAT(P.TOT_BGT,0) AS TOT_BGT,
+               FORMAT(P.BDDPR_PC,0)AS BDDPR_PC,
+               FORMAT(P.MMNY_SLS_AM,0) AS MMNY_SLS_AM,
+               CONCAT(DATE_FORMAT(P.CTRT_YMD, '%Y-%m-%d'), ' ~ ', DATE_FORMAT(P.BIZ_END_YMD, '%Y-%m-%d')) AS PRJCT_PERIOD
 		from PRJCT P
 		LEFT JOIN CTMMNY_INFO C ON P.CTMMNY_ID = C.CTMMNY_ID 
 		LEFT JOIN EMP E ON P.REG_EMP_ID = E.EMP_ID 
@@ -1016,7 +1065,9 @@
             BGT,
             USE_BGT,
             USE_FUL_BGT,
-            USE_RATE
+            CASE WHEN BGT = 0 THEN '0 %' -- 분모가 0인 경우 0으로 처리
+            ELSE CONCAT(ROUND((USE_BGT * 100) / BGT), ' %')
+            END AS USE_RATE
         FROM(SELECT
                  '인건비' AS PRMPC_ACCTO_TOT,
                  자사인력인건비 AS CT_NM,
@@ -1024,6 +1075,7 @@
                  사용 AS USE_BGT,
                  예산 - 사용 AS USE_FUL_BGT,
                  CONCAT(ROUND((사용 * 100) / 예산), ' %') AS USE_RATE
+
              FROM(
                      SELECT
                          '자사인력인건비',
@@ -1204,5 +1256,17 @@
                          WHERE PRJCT_ID = #{prjctId} )) A
             ) B
     </select>
+    
+    <select id="retrievePrjctAtrzLn" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT PRJCT_ID
+			 , ATRZ_LN_SN
+			 , ATRZ_STEP_CD
+			 , APRVR_EMP_ID
+		 FROM PRJCT_ATRZ_LN_DTL
+		WHERE 1=1
+		  AND PRJCT_ID = #{prjctId}
+		  AND ATRZ_LN_SN = #{atrzLnSn}
+		  AND ATRZ_STEP_CD <![CDATA[ >= ]]> #{atrzStepCd}
+	</select>
 
 </mapper>

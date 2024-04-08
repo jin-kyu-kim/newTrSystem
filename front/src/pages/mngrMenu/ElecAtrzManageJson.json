@@ -22,9 +22,9 @@
           {"key": "yn", "value": "결재 회수가능여부", "width": 100}
         ],
         "terminatedAprvrEmp" : [
-            {"key": "cnptNm", "value":"거래처", "width": 100},
-            {"value":"첨부파일", "button":{"text":"첨부파일"}},
-            {"value":"문서이력", "button":{"text":"문서이력"}}
+            {"key" : "cnptNm", "value":"거래처", "width": 100},
+            {"key" : "atchmnFl", "value":"첨부파일", "button":{"text":"첨부파일", "name" : "atchmnFl"}},
+            {"key" : "docHist", "value":"문서이력", "button":{"text":"문서이력", "name" : "docHist"}}
         ],
         "deny" : [
           {"key": "CN", "value": "결재", "width": 100}
@@ -65,6 +65,19 @@
                 {"placeholder": "거래처", "name" : "cnptNm"},
                 {"placeholder": "결재명", "name": "title"}
             ]
-        }
+        },
+        "atchmnFlPopupqueryId": "sysMngMapper.retrieveElecAtrzAtchmnFl",
+        "atchmnFlPopupColumns" : [
+            {"key" : "atchmnflId", "value" : "첨부파일"}
+        ],
+        "docHistPopupqueryId": "sysMngMapper.retrieveElecAtrzAtchmnFl",
+        "docHistPopupColumns" : [
+            {"value" : "번호"},
+            {"value" : "이력 구분"},
+            {"value" : "이력 날짜"},
+            {"value" : "사번"},
+            {"value" : "성명"},
+            {"value" : "연결문서 확인", "button" : {"text" : "확인"}}
+        ]
     }
 }

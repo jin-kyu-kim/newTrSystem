@@ -36,7 +36,7 @@ const CustombudgetTable = ({ headers, column }) => {
         }}      
     >   
         {headers.map(header =>(
-            <Column key={header.key} dataField={header.key} caption={header.value} />
+            <Column key={header.key} dataField={header.key} caption={header.value} alignment='center'/>
         ))}
   </DataGrid>
   );
