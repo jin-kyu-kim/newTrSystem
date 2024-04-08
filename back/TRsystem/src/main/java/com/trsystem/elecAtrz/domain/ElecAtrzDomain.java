@@ -41,6 +41,7 @@ public class ElecAtrzDomain {
 		String regEmpId = String.valueOf(params.get("regEmpId"));
 		String atrzTySeCd = String.valueOf(params.get("elctrnAtrzTySeCd"));
 		String elctrnAtrzId =  String.valueOf(params.get("elctrnAtrzId"));
+		String deptId = String.valueOf(params.get("deptId"));
 		
 		Map<String, String> basicInfo = new HashMap<>();
 		basicInfo.put("regDt", regDt);
@@ -54,6 +55,7 @@ public class ElecAtrzDomain {
 		elecAtrzParam.putAll(params);
 		elecAtrzParam.put("nowAtrzLnSn", 1);
 		elecAtrzParam.put("atrzDmndEmpId", regEmpId);
+		elecAtrzParam.put("atrzDmndEmpDeptId", deptId);
 		elecAtrzParam.remove("param");
 		
 		System.out.println(elecAtrzParam);
@@ -584,4 +586,93 @@ public class ElecAtrzDomain {
 		
 		return atrzLnSn;
 	}
-}
+	
+	public static int insertPrjctCt(Map<String, Object> param) {
+		int result = -1;
+		
+		Map<String, Object> selectParam = new HashMap<>();
+		selectParam.put("queryId", "elecAtrzMapper.retrieveClmAtrzInfo");
+		selectParam.put("elctrnAtrzId", param.get("elctrnAtrzId"));
+		
+		try {
+			List<Map<String, Object>> list = commonService.queryIdSearch(selectParam);
+			
+			Map<String, Object> masterTbParam = new HashMap<>();
+			Map<String, Object> slaveTbParam = new HashMap<>();
+			masterTbParam.put("tbNm", "PRJCT_CT_APLY");
+			slaveTbParam.put("tbNm", "PRJCT_CT_ATRZ");
+			
+			// PRJCT_CT_APLY 테이블에 데이터 추가
+			for(int i = 0; i < list.size(); i++) {
+				List<Map<String, Object>> insertMasterParam = new ArrayList<>();
+				List<Map<String, Object>> insertSlaveParam = new ArrayList<>();
+				
+				insertMasterParam.add(0, masterTbParam);
+				insertSlaveParam.add(0, slaveTbParam);
+				
+				int masterResult = 0;
+				int slaveResult = 0;
+				
+				Map<String, Object> selectMaxParam = new HashMap<>();
+				selectMaxParam.put("queryId", "indvdlClmMapper.retrievePrjctCtAplySn");
+				
+				List<Map<String, Object>> selectMaxPrjctCtAplySn = commonService.queryIdSearch(selectMaxParam);
+				int prjctCtAplySn = 0;
+				
+				if(String.valueOf(selectMaxPrjctCtAplySn.get(0).get("prjctCtAplySn")).equals("null") ||
+				   String.valueOf(selectMaxPrjctCtAplySn.get(0).get("prjctCtAplySn")).equals(null)) {
+					prjctCtAplySn = 1;
+				} else {
+					prjctCtAplySn = Integer.parseInt(String.valueOf(selectMaxPrjctCtAplySn.get(0).get("prjctCtAplySn"))) + 1;
+				}
+				
+				Map<String, Object> masterInfoParam = new HashMap<>();
+				
+				masterInfoParam.put("prjctCtAplySn", prjctCtAplySn);
+				masterInfoParam.put("aplyYm", param.get("aplyYm"));
+				masterInfoParam.put("aplyOdr", param.get("aplyOdr"));
+				masterInfoParam.put("empId", param.get("empId"));
+				masterInfoParam.put("prjctId", param.get("prjctId"));
+				masterInfoParam.put("elctrnAtrzId", param.get("elctrnAtrzId"));
+				masterInfoParam.put("expensCd", list.get(i).get("expensCd"));
+				masterInfoParam.put("utztnDt", list.get(i).get("utztnDt"));
+				masterInfoParam.put("useOffic", list.get(i).get("useOffic"));
+				masterInfoParam.put("utztnAmt", list.get(i).get("utztnAmt"));
+				masterInfoParam.put("atdrn", list.get(i).get("atdrn"));
+				masterInfoParam.put("ctPrpos", list.get(i).get("ctPrpos"));
+				masterInfoParam.put("ctAtrzSeCd", list.get(i).get("ctAtrzSeCd"));
+				masterInfoParam.put("regDt", param.get("regDt"));
+				masterInfoParam.put("regEmpId", param.get("regEmpId"));
+				
+				insertMasterParam.add(1, masterInfoParam);
+				
+				Map<String, Object> slaveInfoParam = new HashMap<>();
+				slaveInfoParam.put("prjctCtAplySn", prjctCtAplySn);
+				slaveInfoParam.put("atrzDmndSttsCd", list.get(i).get("atrzDmndSttsCd"));
+				slaveInfoParam.put("aprvrEmpId", list.get(i).get("aprvrEmpId"));
+				slaveInfoParam.put("prjctId", param.get("prjctId"));
+				slaveInfoParam.put("empId", param.get("empId"));
+				slaveInfoParam.put("aplyYm", param.get("aplyYm"));
+				slaveInfoParam.put("aplyOdr", param.get("aplyOdr"));
+				slaveInfoParam.put("aprvYmd", list.get(i).get("aprvYmd"));
+				slaveInfoParam.put("regDt", param.get("regDt"));
+				slaveInfoParam.put("regEmpId", param.get("regEmpId"));
+				
+				insertSlaveParam.add(1, slaveInfoParam);
+				
+				masterResult = commonService.insertData(insertMasterParam);
+				slaveResult = commonService.insertData(insertSlaveParam);
+
+				if(masterResult > 0 && slaveResult > 0) {
+					result = 1;
+				}
+			}
+
+			return result;
+			
+		} catch (Exception e) {
+			return -1;
+		}
+		
+	}
+} 
