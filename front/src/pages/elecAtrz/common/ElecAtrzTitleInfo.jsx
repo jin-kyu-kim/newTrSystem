@@ -17,11 +17,16 @@ const ElecAtrzTitleInfo = ({ atrzLnEmpList, getAtrzLn, contents, onClick, formDa
   }
 
   const setButtons = () => {
-    const result = [];
-    contents.map((item, index) => {
-      result.push(<Button id={item.id} text={item.text} key={index}
-        onClick={item.id === 'onAtrzLnPopup' ? onAtrzLnPopup : onClick} />);
-    });
+    const defaultButtons = ['print', 'docHist'];
+    const buttonIdToShow = {
+      'VTW00801': ['aprv', 'rjct', 'print', 'docHist'],
+      'VTW03701': ['reAtrz', 'print', 'docHist'],
+    };
+
+    const currentButtons = buttonIdToShow[formData.atrzDmndSttsCd] || defaultButtons;
+    const result = contents.filter(item => currentButtons.includes(item.id)).map((item, index) => (
+      <Button id={item.id} text={item.text} key={index} onClick={item.id === 'onAtrzLnPopup' ? onAtrzLnPopup : onClick} />
+    ));
     return result;
   };
 

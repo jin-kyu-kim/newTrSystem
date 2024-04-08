@@ -104,10 +104,12 @@
     "header": [
       { "text": "승인", "id": "aprv" },
       { "text": "반려", "id": "rjct" },
+      { "text": "재기안", "id": "reAtrz" },
       { "text": "출력", "id": "print" },
       { "text": "문서이력", "id": "docHist" }
     ],
     "queryId": "elecAtrzMapper.retrieveAtrzLn",
+    "atchFlQueryId": "indvdlClmMapper.retrieveAtchmnflInq",
     "keyColumn": "atrzStepCdNm",
     "columns": [
       { "key": "atrzStepCdNm", "value": "결재라인"},
