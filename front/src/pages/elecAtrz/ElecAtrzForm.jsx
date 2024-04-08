@@ -19,6 +19,7 @@ const ElecAtrzForm = () => {
     const [cookies] = useCookies(["userInfo", "userAuth", "deptInfo"]);
     useEffect(() => {
         setPrjctId(location.state ? location.state.prjctId : "");
+        setDeptId(location.state ? location.state.deptId : "");
 
         retrieveForm();
         retrievePrjctList();
@@ -137,6 +138,7 @@ const ElecAtrzForm = () => {
                     validationRules={validationRules.dept}
                     editorOptions={{
                         items: deptList,
+                        value: deptId,
                         displayExpr: "deptNm",
                         valueExpr: "deptId",
                         onValueChanged: handleChgDeptState
