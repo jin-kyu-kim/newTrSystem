@@ -326,7 +326,7 @@ const ElecAtrzNewReq = () => {
                     )}
                     {formData.elctrnAtrzTySeCd === "VTW04907" &&
                     <>
-                        <ExpensInfo onSendData={handleChildData}/>
+                        <ExpensInfo onSendData={handleChildData} prjctId={prjctId}/>
                     </>
                     }
                 <HtmlEditBox 
