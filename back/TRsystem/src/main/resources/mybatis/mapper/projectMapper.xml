@@ -671,13 +671,13 @@
 		SELECT dept.DEPT_NM
 		     , e.EMP_FLNM
 			 , CONCAT(pma.APLY_YM, '-', pma.APLY_ODR) APLY_SN
-			 , CONCAT(mmp.EXPECT_MM, ' MM') AS EXPECT_MM
-			 , CONCAT(TRUNCATE(SUM(8 * pma.MD),0), ' hrs') AS TOT_MD
+			 , IFNULL(mmp.EXPECT_MM,0) AS EXPECT_MM
+			 , TRUNCATE(SUM(8 * pma.MD),0) AS TOT_MD
 			 , pma.EMP_ID
 			 , pma.APLY_YM
 			 , pma.APLY_ODR
-		     , CONCAT(ROUND(SUM(CASE WHEN pmat.ATRZ_DMND_STTS_CD='VTW03703' THEN pma.MD ELSE 0 END)/MM_QUERY.MM,2), ' MM') AS EXCN_MM
-		     , CONCAT(ROUND((mmp.EXPECT_MM - ROUND(SUM(CASE WHEN pmat.ATRZ_DMND_STTS_CD='VTW03703' THEN pma.MD ELSE 0 END)/MM_QUERY.MM,2)),2), ' MM') AS AVBLE_MM
+		     , ROUND(SUM(CASE WHEN pmat.ATRZ_DMND_STTS_CD='VTW03703' THEN pma.MD ELSE 0 END)/MM_QUERY.MM,2) AS EXCN_MM
+		     , ROUND((IFNULL(mmp.EXPECT_MM,0) - ROUND(SUM(CASE WHEN pmat.ATRZ_DMND_STTS_CD='VTW03703' THEN pma.MD ELSE 0 END)/MM_QUERY.MM,2)),2) AS AVBLE_MM
              , CASE
                  WHEN COUNT(*) = SUM(CASE WHEN pmat.ATRZ_DMND_STTS_CD = 'VTW03703' THEN 1 ELSE 0 END) THEN 'VTW03703'
                  WHEN SUM(CASE WHEN pmat.ATRZ_DMND_STTS_CD = 'VTW03704' THEN 1 ELSE 0 END) > 0 THEN 'VTW03704'
@@ -767,8 +767,8 @@
 		SELECT dept.DEPT_NM
 			 , e.EMP_FlNM
 			 , CONCAT(pca.APLY_YM, '-', pca.APLY_ODR) AS APLY_SN
-			 , CONCAT(SUM(UTZTN_AMT), ' 원') AS TOT_APLY_AMT
-             , CONCAT(SUM(CASE WHEN pcat.ATRZ_DMND_STTS_CD='VTW03703' AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN THEN UTZTN_AMT ELSE 0 END), ' 원') AS TOT_UTZTN_AMT
+			 , SUM(UTZTN_AMT) AS TOT_APLY_AMT
+             , SUM(CASE WHEN pcat.ATRZ_DMND_STTS_CD='VTW03703' AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN THEN UTZTN_AMT ELSE 0 END) AS TOT_UTZTN_AMT
 			 , e.EMP_ID
 			 , pca.APLY_YM
 			 , pca.APLY_ODR
@@ -1118,7 +1118,7 @@
                          AND PBP.BGT_MNG_ODR = MIM.BGT_MNG_ODR
                               INNER JOIN MMNY_LBRCO_PRMPC MLP ON MLP.PRJCT_ID = MIM.PRJCT_ID
                      WHERE MIM.PRJCT_ID = #{prjctId}
-                       AND PBP.ATRZ_DMND_STTS_CD  IN ('VTW03703', 'VTW03702')
+                       AND PBP.ATRZ_DMND_STTS_CD  = 'VTW03703'
                        AND MIM.BGT_MNG_ODR = MLP.BGT_MNG_ODR
                        AND MIM.BGT_MNG_ODR = (
                          SELECT
@@ -1152,7 +1152,7 @@
                           INNER JOIN OUTORD_LBRCO_PRMPC OLP ON OLP.PRJCT_ID = OLPD.PRJCT_ID
                           AND OLPD.BGT_MNG_ODR = OLP.BGT_MNG_ODR
                   WHERE OLPD.PRJCT_ID = #{prjctId}
-                    AND PBP.ATRZ_DMND_STTS_CD  IN ('VTW03703', 'VTW03702')
+                    AND PBP.ATRZ_DMND_STTS_CD  = 'VTW03703'
                     AND OLPD.BGT_MNG_ODR = (
                       SELECT
                           MAX(BGT_MNG_ODR)
@@ -1185,7 +1185,7 @@
                   WHERE
                       EMPD.PRJCT_ID = #{prjctId}
                     AND EMPD.EXPENS_CD  BETWEEN 'VTW04501' AND 'VTW04528'
-                    AND  PBP.ATRZ_DMND_STTS_CD IN ('VTW03703', 'VTW03702')
+                    AND  PBP.ATRZ_DMND_STTS_CD = 'VTW03703'
                     AND EMPD.BGT_MNG_ODR = (
                       SELECT
                           MAX(BGT_MNG_ODR)
@@ -1217,7 +1217,7 @@
                   WHERE
                       EMPD.PRJCT_ID = #{prjctId}
                     AND EMPD.EXPENS_CD  BETWEEN 'VTW04529' AND 'VTW04535'
-                    AND  PBP.ATRZ_DMND_STTS_CD IN ('VTW03703', 'VTW03702')
+                    AND  PBP.ATRZ_DMND_STTS_CD = 'VTW03703'
                     AND EMPD.BGT_MNG_ODR = (
                       SELECT
                           MAX(BGT_MNG_ODR)
@@ -1244,7 +1244,7 @@
                            INNER JOIN PRJCT_BGT_PRMPC PBP ON PBP.PRJCT_ID = OECP.PRJCT_ID
                       AND PBP.BGT_MNG_ODR = OECP.BGT_MNG_ODR
                   WHERE OECP.PRJCT_ID = #{prjctId}
-                    AND PBP.ATRZ_DMND_STTS_CD  IN ('VTW03703', 'VTW03702')
+                    AND PBP.ATRZ_DMND_STTS_CD  = 'VTW03703'
                     AND OECP.BGT_MNG_ODR = (
                       SELECT
                           MAX(BGT_MNG_ODR)
@@ -1276,7 +1276,7 @@
                              AND PBP.BGT_MNG_ODR = MCP.BGT_MNG_ODR
                      WHERE
                          MCP.PRJCT_ID = #{prjctId}
-                       AND  PBP.ATRZ_DMND_STTS_CD IN ('VTW03703', 'VTW03702')
+                       AND  PBP.ATRZ_DMND_STTS_CD = 'VTW03703'
                        AND MCP.BGT_MNG_ODR = (
                          SELECT
                              MAX(BGT_MNG_ODR)
@@ -1298,9 +1298,10 @@
 		  AND ATRZ_STEP_CD <![CDATA[ >= ]]> #{atrzStepCd}
 	</select>
 
+
     <select id="retrievePrjctAtrzAuthrt" parameterType="map" resultType="com.trsystem.LowerHashMap" >
 
-    SELECT
+        SELECT
         EMP_ID,
         EMPNO,
         EMP_FLNM,
@@ -1309,7 +1310,7 @@
         HDOF_STTS_NM,
         READ_YN,
         WRITE_YN
-FROM(
+        FROM(
         SELECT
         E.EMP_ID AS EMP_ID,
         E.EMPNO AS EMPNO,
@@ -1317,8 +1318,14 @@ FROM(
         C.CD_NM AS JBPS_NM,
         GROUP_CONCAT(D.DEPT_NM) AS DEPT_ID,
         C2.CD_NM AS HDOF_STTS_NM,
-        'READ' AS READ_YN,
-        'WRITE' AS WRITE_YN
+        CASE WHEN PMA.EMP_ID IS NOT NULL AND PMA.PRJCT_MNG_AUTHRT_CD = 'VTW05201' OR PMA.PRJCT_MNG_AUTHRT_CD = 'VTW05202'  THEN 'Y'
+        WHEN PMA.EMP_ID IS NULL THEN 'N'
+        ELSE 'N'
+        END AS READ_YN,
+        CASE WHEN PMA.EMP_ID IS NOT NULL AND PMA.PRJCT_MNG_AUTHRT_CD = 'VTW05202'  THEN 'Y'
+        WHEN PMA.EMP_ID IS NULL THEN 'N'
+        ELSE 'N'
+        END AS WRITE_YN
         FROM
         EMP E
         LEFT OUTER JOIN
@@ -1333,7 +1340,10 @@ FROM(
         CD C3 ON C3.CD_VALUE = E.BANK_CD
         LEFT OUTER JOIN
         EMP_HIST EH ON EH.EMP_ID = E.EMP_ID
+        LEFT OUTER JOIN PRJCT_MNG_AUTHRT PMA
+        ON E.EMP_ID = PMA.EMP_ID
         WHERE 1=1
+        AND PMA.PRJCT_ID = #{prjctId}
         <if test="empno != null and empno !=''">
             AND E.EMPNO LIKE CONCAT('%', #{empno}, '%')
         </if>
@@ -1358,7 +1368,7 @@ FROM(
         </if>
         GROUP BY
         E.EMP_ID, E.EMPNO, E.EMP_FLNM, E.EMP_TY_CD, C.CD_NM,
-        E.TELNO, E.EML, C2.CD_NM, C3.CD_NM, E.ACTNO, C.CD_VALUE, C3.CD_VALUE, C2.CD_VALUE
+        E.TELNO, E.EML, C2.CD_NM, C3.CD_NM, E.ACTNO, C.CD_VALUE, C3.CD_VALUE, C2.CD_VALUE,READ_YN, WRITE_YN
         ORDER BY
         E.JBPS_CD ASC
         ) A
