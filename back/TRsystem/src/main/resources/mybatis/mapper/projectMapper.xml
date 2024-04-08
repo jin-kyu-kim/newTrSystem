@@ -262,13 +262,14 @@
         AND T1.EXPENS_CD = T2.EXPENS_CD
         AND T1.USE_YM = T2.INPT_YM
         AND T2.EXPENS_CD =#{expensCd}
-        WHERE T1.PRJCT_ID = #{prjctId}
+        WHERE T2.PRJCT_ID = #{prjctId}
         ) Z2
         ON concat(Z1.YM) = Z2.USE_YM
     </select>
 
     <select id="retrieveProjectEmpCostSearch" parameterType="map" resultType="com.trsystem.LowerHashMap">
-        SELECT Z1.YM, IFNULL(Z2.EXPECT_MM,0) EXPECT_MM, IFNULL(Z2.UNTPC,0) UNTPC, IFNULL(Z2.MM,0) MM
+        SELECT Z1.YM, IFNULL(Z2.EXPECT_MM,0) EXPECT_MM, IFNULL(Z2.UNTPC,0) UNTPC, IFNULL(Z2.MM,0) MM, Z2.GIVE_CT
+             , ((IFNULL(Z2.UNTPC,0)*IFNULL(Z2.EXPECT_MM,0))- IFNULL(Z2.GIVE_CT,0)) AS CALC_CT
         FROM (SELECT DATE_FORMAT((#{ctrtYmd} + INTERVAL (a.a + (10 * b.a) + (100 * c.a)) MONTH), '%Y-%m') AS YM
              FROM (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT
                  5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS a
@@ -284,6 +285,7 @@
                 , T1.UNTPC
                 , T1.INPT_YM
                 , T2.MM
+                , T2.GIVE_CT
         FROM (SELECT A.PRJCT_ID
                 , A.MMNY_LBRCO_PRMPC_SN
                 , A.EMP_ID
@@ -311,6 +313,7 @@
                 , T1.UNTPC
                 , DATE_FORMAT(DATE (CONCAT(T2.INPT_YM, '01')), '%Y-%m') AS INPT_YM
                 , T2.MM
+                , T2.GIVE_CT
         FROM (
             SELECT
                   A.PRJCT_ID
@@ -390,7 +393,7 @@
             ON T1.PRJCT_ID = T2.PRJCT_ID
             AND T1.OUTORD_EMP_ID = T2.OUTORD_EMP_ID
             AND T1.INPT_YM = T2.INPT_YM
-            WHERE T1.PRJCT_ID = #{prjctId}
+            WHERE T2.PRJCT_ID = #{prjctId}
             AND T1.OUTORD_EMP_ID = #{outordEmpId}
             ) Z2
         ON Z1.YM = Z2.INPT_YM
