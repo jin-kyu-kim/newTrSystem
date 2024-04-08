@@ -8,6 +8,7 @@ import CustomTable from "../../../components/unit/CustomTable";
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
 import { Button } from "devextreme-react";
+import { useCookies } from "react-cookie";
 
 const ProjectList = () => {
   const [values, setValues] = useState([]);
@@ -17,7 +18,10 @@ const ProjectList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
+  const [cookies] = useCookies(["userInfo", "userAuth"]);
 
+
+  const userEmpId = cookies.userInfo.empId;
   const navigate = useNavigate();
 
   const { keyColumn, queryId, tableColumns, searchParams, popup } = ProjectJson;
@@ -38,6 +42,7 @@ const ProjectList = () => {
       currentPage: currentPage,
       startVal: 0,
       pageSize: pageSize,
+      empId: userEmpId,
     });
   };
 
