@@ -14,7 +14,8 @@ export default function SideNavigationMenu(props) {
     selectedItemChanged,
     openMenu,
     compactMode,
-    onMenuReady
+    onMenuReady,
+    status
   } = props;
 
   const { isLarge } = useScreenSize();
@@ -47,6 +48,7 @@ export default function SideNavigationMenu(props) {
   }, [openMenu]);
 
   useEffect(() => {
+    console.log(status);
     const treeView = treeViewRef.current && treeViewRef.current.instance;
     if (!treeView) {
       return;

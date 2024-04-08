@@ -39,8 +39,6 @@ const Main = ({}) => {
 
     const navigate = useNavigate ();
     const [dataSession,setDataSession] = useState([]);
-    const nowDate = moment().format('YYYYMM') //현재 년월
-    const [currentPhase, setCurrentPhase] = useState(''); //차수설정용
 //------------------------ 초기 설정 --------------------------------------
         useEffect(()=> {
             setDataSession([
@@ -56,25 +54,7 @@ const Main = ({}) => {
         useEffect(()=> {
             pageHandle();
         },[dataSession])
-
-        useEffect(() => {
-            // 현재 날짜를 가져오는 함수
-            const getCurrentDate = () => {
-            const now = new Date();
-            const dayOfMonth = now.getDate();
-            return dayOfMonth;
-            };
-            // 현재 날짜를 가져오기
-            const dayOfMonth = getCurrentDate();
-            // 15일을 기준으로 차수를 결정
-            if (dayOfMonth <= 15) {
-              setCurrentPhase('1');
-            } else {
-              setCurrentPhase('2');
-            }
-          }, []);
-
-//{*-------------------------- 차수 및 날짜 설정 구간 -----------------------------------*}
+//{*-------------------------- 차수 및 날짜 설정 -----------------------------------*}
 
 // 차수별 시작, 종료일자 
 let flagOrder = new Date().getDate() > 15 ? 1 : 2;
@@ -89,8 +69,8 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
     try {
       const responseNotice = await ApiRequest("/boot/common/queryIdSearch",{queryId : noticeQueryId ,type: 'notice'});
       const responseTrAply = await ApiRequest("/boot/common/queryIdSearch", {queryId : trAplyTotQueryId, empId:empId ,aplyYm:orderWorkBgngMm ,aplyOdr: flagOrder});
-      const responseAply = await ApiRequest("/boot/common/queryIdSearch",{queryId : atrzSttsQueryId, empId:empId , sttsCd:"VTW037"});
-      const responseAtrz = await ApiRequest("/boot/common/queryIdSearch", {queryId : atrzSttsQueryId, empId:empId , sttsCd:"VTW008" });
+      const responseAply = await ApiRequest("/boot/common/queryIdSearch",{queryId : atrzSttsQueryId, empId:empId , stts:"ATRZ"});
+      const responseAtrz = await ApiRequest("/boot/common/queryIdSearch", {queryId : atrzSttsQueryId, empId:empId , stts:"APRVR" });
       setNoticeValues(responseNotice);
       setTrAplyValues(responseTrAply);
       setAplyValues(responseAply);
@@ -149,22 +129,16 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
                  {state: {data : e.data }})
           }else if(e.data.elctrnAtrzTySeCd === "VTW04902"){ //일반결재
             navigate("/indvdlClm/EmpWorkTime", 
-            {state: { id: e.key }})
-          }else if(e.data.elctrnAtrzTySeCd === "VTW04903"){ //청구결재
-            navigate("/infoInq/NoticeDetail", 
-            {state: { id: e.key }})
-          }else if(e.data.elctrnAtrzTySeCd === "VTW04904"){ //계약결재
-            navigate("/infoInq/NoticeDetail", 
-            {state: { id: e.key }})
-          }else if(e.data.elctrnAtrzTySeCd === "VTW04905"){ //계약지급결재
-            navigate("/infoInq/NoticeDetail", 
-            {state: { id: e.key }})
+            {state: { data : e.dataa }})   
+          }else{    //휴가 일반 제외 모든 결재
+            navigate("/elecAtrz/ElecAtrzDetail", 
+            {state: {data : e.data }})   
           }
     };
 
     const onAtrzRowClick = (e) => {   //결재 리스트 테이블 클릭
-        navigate("/infoInq/NoticeDetail", 
-                {state: { id: e.key }})
+        navigate("/elecAtrz/ElecAtrzDetail", 
+                {state: {data: e.data }})
     };
 //============================기타 이벤트=====================================
 
@@ -237,7 +211,7 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
             <CustomTable  keyColumn="elctrnAtrzId"  columns={atrzSttsTableColumns}  values={aplyValues} onRowClick={onAplyRowClick} noDataText='진행중인 결재가 없습니다.'/>
             </div>
 
-{/* -----------------------------------결제리스트---------------------------------------------------*/}
+{/* -----------------------------------결제리스트-----------------------------------------------------*/}
             <div className="aplyTableList" style={{marginLeft:"20px",flex:"1",}}>
             <p> <strong>결재 리스트 </strong> </p>
             <CustomTable  keyColumn="elctrnAtrzId"  columns={atrzSttsTableColumns}  values={atrzValues} onRowClick={onAtrzRowClick} noDataText="진행중인 결재가 없습니다."/>
