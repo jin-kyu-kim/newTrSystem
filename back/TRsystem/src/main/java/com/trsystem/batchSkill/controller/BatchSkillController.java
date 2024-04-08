@@ -1,5 +1,6 @@
 package com.trsystem.batchSkill.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,6 +37,11 @@ public class BatchSkillController {
 	@PostMapping(value = "/boot/batchSkll/empPrmot")
 	public int executeEmpPrmot(@RequestBody Map<String, Object> params){
 		return batchSkillService.prmotUpdateJBPS(params);
+	}
+	
+	@PostMapping(value = "/boot/batchSkll/executeCostUpdate")
+	public int executeCostUpdate() {
+		return batchSkillService.executeCostUpdate();
 	}
 
 }
