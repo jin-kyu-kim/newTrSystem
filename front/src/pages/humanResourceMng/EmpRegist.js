@@ -6,6 +6,8 @@ import { useCookies } from "react-cookie";
 import CustomLabelValue from "components/unit/CustomLabelValue";
 import ApiRequest from "utils/ApiRequest";
 import { left, right } from "@popperjs/core";
+import moment from "moment";
+
 
 const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
 
@@ -31,6 +33,7 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
     const [jncmpYmd,setJncmpYmd] = useState();
     const date = new Date();
     const now =  date.toISOString().split("T")[0] +" " +date.toTimeString().split(" ")[0];
+    const startday = moment().format('YYYYMMDD'); //현재 년월일 (부서 시작일자 자동 세팅용)
     //const emailRegEx = /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/i;
 //-----------------------------초기세팅 구간 -----------------------------------
   
@@ -41,11 +44,12 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
         setTelno(null);
         setBankCd(null);
         setJbpsCd(null);
-        setHdofSttsCd(null);
+        setHdofSttsCd("VTW00301");
         setEml(null);
         setActno(null);
         setEmpTyCd(null);
-        setJncmpYmd(null);
+        setJncmpYmd(startday);
+        console.log(startday)
       }, []);
 
     useEffect(() => {
@@ -111,10 +115,10 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
       setTelno(null);
       setBankCd(null);
       setJbpsCd(null);
-      setHdofSttsCd(null);
+      setHdofSttsCd("VTW00301");
       setEml(null);
       setActno(null);
-      setJncmpYmd(null);
+      setJncmpYmd(startday);
     };
 
     const handleChgState = ({ name, value }) => {     //값변경시 이벤트

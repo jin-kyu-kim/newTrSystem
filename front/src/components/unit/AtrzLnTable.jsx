@@ -15,11 +15,8 @@ const AtrzLnTable = ({atrzLnEmpList, bottomNm}) => {
   }
   /** 상세조회의 경우 */
   const hasAprvDate = (cd, type) => {
-    const foundEmp = atrzLnEmpList.find(emp => emp.approvalCode === cd &&
-                              (emp.rjctYmd !== undefined || emp.aprvYmd !== undefined));
-    
-    return foundEmp ? (type !== 'date' ? foundEmp.atrzSttsCdNm 
-      : foundEmp.atrzSttsCd === "VTW00803" ? foundEmp.rjctYmd : foundEmp.aprvYmd) : undefined;
+    const foundEmp = atrzLnEmpList.find(emp => emp.approvalCode === cd && emp.mdfcnDt !== undefined);
+    return foundEmp ? (type !== 'date' ? foundEmp.atrzSttsCdNm : foundEmp.mdfcnDt) : undefined;
   }
 
   return (

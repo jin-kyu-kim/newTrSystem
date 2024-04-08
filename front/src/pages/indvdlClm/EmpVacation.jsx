@@ -89,8 +89,6 @@ function atrzLnAprv(jbttlCd, searchResult) {
     let flag = true;
     let startIndex = parseInt(jbttlCd.substr(7, 8));
 
-    console.log("searchResult : ", searchResult);
-
     for (startIndex; startIndex > 0; startIndex--) {
         let forStartIndex = 1;
 
@@ -125,8 +123,6 @@ const EmpVacation = () => {
     const sessionEmpNm = cookies.userInfo.empNm
     let sessionDeptNm = cookies.deptInfo[0].deptNm
     let jbttlCd = cookies.deptInfo[0].jbttlCd
-
-    console.log("cookies : ", cookies);
 
     // 휴가목록조회
     const [selectVcatnListValue, setSelectVcatnListValue] = useState([]);
@@ -307,7 +303,7 @@ const EmpVacation = () => {
                 }
             }
             else if (initParam.searchType == "atrzLnSrng") {
-                const atrzLnSrngResult = await ApiRequest("/boot/common/queryIdSearch", { queryId: "indvdlClmMapper.retrieveAtrzLnSrngInq", prjctMngrEmpId: initParam.prjctMngrEmpId });
+                const atrzLnSrngResult = await ApiRequest("/boot/common/queryIdSearch", { queryId: "indvdlClmMapper.retrieveAtrzLnSrngInq", prjctMngrEmpId: initParam.prjctMngrEmpId, prjctId: initParam.prjctId });
                 if (atrzLnSrngResult.length > 0) {
                     setPopupAtrzValue(popupAtrzValue.filter(item => item.approvalCode != "VTW00704"))
 
@@ -399,7 +395,6 @@ const EmpVacation = () => {
 
     //
     function onDeptChange(e){
-        console.log("e : ", e);
         setAtrzLnAprvListParam({
             ...atrzLnAprvListParam,
             deptId: e
@@ -443,6 +438,7 @@ const EmpVacation = () => {
         })
         selectData({
             searchType: "atrzLnSrng",
+            prjctId: e[0].prjctId,
             prjctMngrEmpId: e[0].prjctMngrEmpId
         })
     }
@@ -503,7 +499,6 @@ const EmpVacation = () => {
 
     // 휴가목록 선택
     function onRowClick(e) {
-        console.log("e : ", e.data.elctrnAtrzId);
         navigate("/elecAtrz/ElecAtrzDetail", { state: { data: { elctrnAtrzId: e.data.elctrnAtrzId, elctrnAtrzTySeCd: "VTW04901" } } })
     }
 
@@ -526,7 +521,6 @@ const EmpVacation = () => {
 
     // 결재선버튼 callback
     const onAtrzHiding = async (aprvrEmpList) => {
-        console.log("callback : ", aprvrEmpList);
         setPopupAtrzValue(aprvrEmpList);
         setPopupVisibleAtrzValue(false);
     }
