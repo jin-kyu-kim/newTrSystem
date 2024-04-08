@@ -3,7 +3,7 @@ import { FormControl, InputLabel, Select, MenuItem, TextField, Button, Grid, Tab
 import { DateBox } from "devextreme-react/date-box";
 import ApiRequest from "utils/ApiRequest";
 
-const ExpensInfo = ({onSendData}) => {
+const ExpensInfo = ({onSendData, prjctId}) => {
 
     const [ctStlmSeCdList, setCtStlmSeCdList] = useState([]);
     const [bankCdList, setBankCdList] = useState([]);
@@ -15,8 +15,10 @@ const ExpensInfo = ({onSendData}) => {
     useEffect(() => {
         retrieveCtStlmSeCd();
         retrieveBankCd();
-        retrieveCdList();
+        retrieveExpensCdList();
         setExpensDate();
+
+        console.log(prjctId);
     }, []);
 
     const retrieveCtStlmSeCd = async () => {
@@ -50,14 +52,14 @@ const ExpensInfo = ({onSendData}) => {
         }
     }
     
-    const retrieveCdList = async () => {
-        const param = [
-            { tbNm: "CD" },
-            { upCdValue: "VTW045" }
-        ];
+    const retrieveExpensCdList = async () => {
+        const param = {
+            "queryId": "elecAtrzMapper.retrieveExpensCdByPrmpc",
+            prjctId: prjctId
+        }
 
         try {
-            const response = await ApiRequest("/boot/common/commonSelect", param);
+            const response = await ApiRequest("/boot/common/queryIdSearch", param);
             setExpensCdList(response);
         } catch (error) {
             console.error(error)
@@ -280,8 +282,7 @@ const ExpensInfo = ({onSendData}) => {
                                                 label="지출방법"
                                                 value={forms[index].ctStlmSeCd}
                                                 onChange={(e) => handleInputChange(e, index, "ctStlmSeCd")}
-                                                autoWidth
-                                                
+                                                fullWidth
                                             >
                                                 {ctStlmSeCdList.map((item, index) => (
                                                 <MenuItem key={index} value={item.cdValue}>
@@ -358,7 +359,7 @@ const ExpensInfo = ({onSendData}) => {
                                             <InputLabel>비용코드</InputLabel>
                                             <Select
                                                 label="비용코드"
-                                                autoWidth
+                                                fullWidth
                                                 value={forms[index].expensCd}
                                                 onChange={(e) => handleInputChange(e, index, "expensCd")}
                                                 MenuProps={{
