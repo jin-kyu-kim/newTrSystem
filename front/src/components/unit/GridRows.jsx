@@ -17,9 +17,27 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
             <Button name = {button.name} text={button.text} onClick={(e) => {onClick(button, data)}} disabled={disabled}/>
         )
     }
-    
+
+    const ButtonsRender = (buttons, data, onClick) => {
+        let button = null;
+        let disabled = false;
+        buttons.forEach((item) => {
+            if (data != null && data[item.visible.key] == item.visible.value ) {
+                button = item;
+                if(item.able != null && data[item.able.key] != item.able.value){
+                    disabled = true;
+                }
+            }
+        });
+        if(button != null){
+            return(
+                <Button name = {button.name} text={button.text} onClick={(e) => {onClick(button, data)}} disabled={disabled}/>
+            )
+        }
+    }
+
     for (let i = 0; i < columns.length; i++) {
-      const { key, value, width, alignment, button, visible, toggle, subColumns, chkBox , grouping} = columns[i];      
+      const { key, value, width, alignment, button, buttons, visible, toggle, subColumns, chkBox , grouping} = columns[i];
 
       if(subColumns){
         /*===============헤더 하위 뎁스 컬럼 설정===================*/
@@ -50,6 +68,19 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
           >
           </Column>
         );
+      } else if(buttons){
+          /*=====================데이터 값에 따라 버튼 선택=========================*/
+          result.push(
+              <Column
+                  key={key}
+                  dataField={key}
+                  caption={value}
+                  width={width}
+                  alignment={alignment || 'center'}
+                  cellRender={({ data }) => ButtonsRender(buttons, data, onClick)}
+              >
+              </Column>
+          );
       } else if(chkBox){
         /*=====================헤더 체크박스 설정====================*/
         const CheckBoxHeaderCellComponent = ({ data, callback, idColumn }) => {
