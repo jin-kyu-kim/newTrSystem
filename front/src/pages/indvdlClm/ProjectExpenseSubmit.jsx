@@ -148,7 +148,6 @@ const ProjectExpenseSubmit = (props) => {
                         "empId": data.empId,
                         "aplyYm": data.aplyYm,
                         "aplyOdr": data.aplyOdr,
-                        "ctAtrzCmptnYn": "N",
                         "mmAtrzCmptnYn": "N"
                     })
                 });
