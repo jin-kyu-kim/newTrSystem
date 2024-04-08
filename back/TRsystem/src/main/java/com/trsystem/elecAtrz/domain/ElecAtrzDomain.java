@@ -41,6 +41,7 @@ public class ElecAtrzDomain {
 		String regEmpId = String.valueOf(params.get("regEmpId"));
 		String atrzTySeCd = String.valueOf(params.get("elctrnAtrzTySeCd"));
 		String elctrnAtrzId =  String.valueOf(params.get("elctrnAtrzId"));
+		String deptId = String.valueOf(params.get("deptId"));
 		
 		Map<String, String> basicInfo = new HashMap<>();
 		basicInfo.put("regDt", regDt);
@@ -54,6 +55,7 @@ public class ElecAtrzDomain {
 		elecAtrzParam.putAll(params);
 		elecAtrzParam.put("nowAtrzLnSn", 1);
 		elecAtrzParam.put("atrzDmndEmpId", regEmpId);
+		elecAtrzParam.put("deptId", deptId);
 		elecAtrzParam.remove("param");
 		
 		System.out.println(elecAtrzParam);

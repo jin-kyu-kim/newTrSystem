@@ -20,6 +20,7 @@ const ElecAtrzNewReq = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const prjctId = location.state.prjctId;
+    const deptId = location.state.deptId;
     const formData = location.state.formData;
     const [cookies] = useCookies(["userInfo", "userAuth"]);
 
@@ -188,6 +189,7 @@ const ElecAtrzNewReq = () => {
             atrzDmndSttsCd: stts,
             elctrnAtrzId: uuid(),
             prjctId: prjctId,
+            deptId: deptId,
             elctrnAtrzTySeCd: data.elctrnAtrzTySeCd,
             regDt: date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0],
             regEmpId: cookies.userInfo.empId,
@@ -236,7 +238,7 @@ const ElecAtrzNewReq = () => {
      * 목록 버튼 클릭시 전자결재 서식 목록으로 이동
      */
     const toAtrzNewReq = () => {
-        navigate("../elecAtrz/ElecAtrzForm", {state: {prjctId: prjctId}});
+        navigate("../elecAtrz/ElecAtrzForm", {state: {prjctId: prjctId, deptId: deptId}});
     }
 
     /**
@@ -312,6 +314,7 @@ const ElecAtrzNewReq = () => {
                     prjctData={prjctData}
                     formData={formData}
                     atrzParam={atrzParam}
+                    deptId={deptId}
                 />
                 <div dangerouslySetInnerHTML={{ __html: formData.docFormDc }} />
                     {["VTW04909","VTW04910"].includes(data.elctrnAtrzTySeCd) &&  (
