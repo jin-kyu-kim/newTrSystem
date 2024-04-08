@@ -12,8 +12,10 @@
             { "key": "avbleMm", "value": "가용" , "width": "80"},
             { "key": "totMd", "value": "당차수청구" , "width": "120" },
             { "width": "140", "button": { "text": "승인목록", "name": "aprvList" }},
-            { "width": "100", "button": { "text": "승인", "name": "aprv", "able": {"key": "mmAtrzCmptnYn", "value": "N"}}},
-            { "width": "100", "button": { "text": "반려", "name": "rjct", "able": {"key": "mmAtrzCmptnYn", "value": "N"}}}
+            { "width": "130", "buttons": [{ "text": "승인", "name": "aprv", "visible": {"key": "sttsCd", "value": "VTW03702"}},
+                                         { "text": "승인취소", "name": "aprvCncl", "visible": {"key": "sttsCd", "value": "VTW03703"}}]},
+            { "width": "130", "buttons": [{ "text": "반려", "name": "rjct", "visible": {"key": "sttsCd", "value": "VTW03702"}},
+                                          { "text": "반려취소", "name": "rjctCncl", "visible": {"key": "sttsCd", "value": "VTW03704"}}]}
         ],
         "summaryColumn": [
             {
@@ -41,8 +43,10 @@
             { "key": "totUtztnAmt", "value": "누적사용" , "width": "200"},
             { "key": "totAplyAmt", "value": "당차수청구" , "width": "200"},
             { "width": "140", "button": { "text": "승인목록", "name": "ctList" }},
-            { "width": "100", "button": { "text": "승인", "name": "aprv", "able": {"key": "ctAtrzCmptnYn", "value": "N"}}},
-            { "width": "100", "button": { "text": "반려", "name": "rjct", "able": {"key": "ctAtrzCmptnYn", "value": "N"}}}
+            { "width": "130", "buttons": [{ "text": "승인", "name": "aprv", "visible": {"key": "sttsCd", "value": "VTW03702"}},
+                                          { "text": "승인취소", "name": "aprvCncl", "visible": {"key": "sttsCd", "value": "VTW03703"}}]},
+            { "width": "130", "buttons": [{ "text": "반려", "name": "rjct", "visible": {"key": "sttsCd", "value": "VTW03702"}},
+                                          { "text": "반려취소", "name": "rjctCncl", "visible": {"key": "sttsCd", "value": "VTW03704"}}]}
         ],
         "summaryColumn": [
             {
