@@ -24,10 +24,19 @@
   ],
   "atrzSttsQueryId": "sysMngMapper.retrieveAtrzAplySttus",
   "atrzSttsTableColumns": [
-    { "key": "cdNm", "value": "결제구분",  "alignment": "center" },
+    { "key": "tySe", "value": "결재구분",  "alignment": "center" },
     { "key": "title", "value": "결재명",  "alignment": "center" },
-    { "key": "atrzDmndEmpId", "value": "기안자",  "alignment": "center" },
+    { "key": "atrzEmpNm", "value": "기안자",  "alignment": "center" },
     { "key": "regDt", "value": "기안일자",  "alignment": "center" },
-    { "key": "atrzSttsCd", "value": "결재상태",  "alignment": "center" }
+    { "key": "atrzSttsCdNm", "value": "결재상태",  "alignment": "center" }
+  ],
+  "atrzListQueryId": "sysMngMapper.retrieveAtrzList",
+  "atrzListTableColumns": [
+    { "key": "tySe", "value": "결재구분",  "alignment": "center" },
+    { "key": "title", "value": "결재명",  "alignment": "center" },
+    { "key": "atrzEmpNm", "value": "기안자",  "alignment": "center" },
+    { "key": "regDt", "value": "기안일자",  "alignment": "center" },
+    { "key": "atrzSttsCdNm", "value": "결재상태",  "alignment": "center" }
   ]
+  
 }

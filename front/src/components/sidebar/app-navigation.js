@@ -1,7 +1,7 @@
 export const navigation = [
   {
     text: 'Home',
-    path: '/',
+    path: '/home',
     icon: 'home'
   },
   {
@@ -128,10 +128,10 @@ export const navigation = [
       },
       
     ]
-  }, {
+  },{
     text: '전자결재',
-    icon: 'importselected',
-    path: 'elecAtrz/ElecAtrz'
+    path: 'elecAtrz/ElecAtrz',
+    icon: 'importselected'
   }, {
     text: '시스템관리',
     icon: 'folder',

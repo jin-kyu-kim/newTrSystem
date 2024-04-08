@@ -4,7 +4,7 @@ import React, { lazy } from "react";
 const routes = [
     // 홈
   {
-    path: "/home",
+    path: "home",
     name: "main",
     element: React.lazy(() => import("../../pages/sysMng/Main")
     ),
@@ -264,7 +264,7 @@ const routes = [
   },
   // 전자결재 
   {
-    path: "/elecAtrz/ElecAtrz",
+    path: "elecAtrz/ElecAtrz",
     name: "ElecAtrz",
     element: React.lazy(() => import("../../pages/elecAtrz/ElecAtrz")),
   },
