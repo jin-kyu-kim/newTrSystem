@@ -1100,7 +1100,7 @@
                          AND PBP.BGT_MNG_ODR = MIM.BGT_MNG_ODR
                               INNER JOIN MMNY_LBRCO_PRMPC MLP ON MLP.PRJCT_ID = MIM.PRJCT_ID
                      WHERE MIM.PRJCT_ID = #{prjctId}
-                       AND PBP.ATRZ_DMND_STTS_CD  IN ('VTW03703', 'VTW03702')
+                       AND PBP.ATRZ_DMND_STTS_CD  = 'VTW03703'
                        AND MIM.BGT_MNG_ODR = MLP.BGT_MNG_ODR
                        AND MIM.BGT_MNG_ODR = (
                          SELECT
@@ -1134,7 +1134,7 @@
                           INNER JOIN OUTORD_LBRCO_PRMPC OLP ON OLP.PRJCT_ID = OLPD.PRJCT_ID
                           AND OLPD.BGT_MNG_ODR = OLP.BGT_MNG_ODR
                   WHERE OLPD.PRJCT_ID = #{prjctId}
-                    AND PBP.ATRZ_DMND_STTS_CD  IN ('VTW03703', 'VTW03702')
+                    AND PBP.ATRZ_DMND_STTS_CD  = 'VTW03703'
                     AND OLPD.BGT_MNG_ODR = (
                       SELECT
                           MAX(BGT_MNG_ODR)
@@ -1167,7 +1167,7 @@
                   WHERE
                       EMPD.PRJCT_ID = #{prjctId}
                     AND EMPD.EXPENS_CD  BETWEEN 'VTW04501' AND 'VTW04528'
-                    AND  PBP.ATRZ_DMND_STTS_CD IN ('VTW03703', 'VTW03702')
+                    AND  PBP.ATRZ_DMND_STTS_CD = 'VTW03703'
                     AND EMPD.BGT_MNG_ODR = (
                       SELECT
                           MAX(BGT_MNG_ODR)
@@ -1199,7 +1199,7 @@
                   WHERE
                       EMPD.PRJCT_ID = #{prjctId}
                     AND EMPD.EXPENS_CD  BETWEEN 'VTW04529' AND 'VTW04535'
-                    AND  PBP.ATRZ_DMND_STTS_CD IN ('VTW03703', 'VTW03702')
+                    AND  PBP.ATRZ_DMND_STTS_CD = 'VTW03703'
                     AND EMPD.BGT_MNG_ODR = (
                       SELECT
                           MAX(BGT_MNG_ODR)
@@ -1226,7 +1226,7 @@
                            INNER JOIN PRJCT_BGT_PRMPC PBP ON PBP.PRJCT_ID = OECP.PRJCT_ID
                       AND PBP.BGT_MNG_ODR = OECP.BGT_MNG_ODR
                   WHERE OECP.PRJCT_ID = #{prjctId}
-                    AND PBP.ATRZ_DMND_STTS_CD  IN ('VTW03703', 'VTW03702')
+                    AND PBP.ATRZ_DMND_STTS_CD  = 'VTW03703'
                     AND OECP.BGT_MNG_ODR = (
                       SELECT
                           MAX(BGT_MNG_ODR)
@@ -1258,7 +1258,7 @@
                              AND PBP.BGT_MNG_ODR = MCP.BGT_MNG_ODR
                      WHERE
                          MCP.PRJCT_ID = #{prjctId}
-                       AND  PBP.ATRZ_DMND_STTS_CD IN ('VTW03703', 'VTW03702')
+                       AND  PBP.ATRZ_DMND_STTS_CD = 'VTW03703'
                        AND MCP.BGT_MNG_ODR = (
                          SELECT
                              MAX(BGT_MNG_ODR)
