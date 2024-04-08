@@ -79,7 +79,7 @@
 
   },
   {
-    "caption": "가용금액",
+    "caption": "금액",
     "width": 30,
     "dataField": "calcCt",
     "area": "data",

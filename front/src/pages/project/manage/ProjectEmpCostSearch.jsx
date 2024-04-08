@@ -16,6 +16,7 @@ import {useLocation} from "react-router-dom";
 const ProjectEmpCostSearch = ({prjctId}) => {
   const location = useLocation();
   // const prjctId = location.state.prjctId;
+
   const ctrtYmd = location.state.ctrtYmd;
   const bgtMngOdr = location.state.bgtMngOdr;
   //TODO: const stbleEndYmd = location.state.stbleEndYmd;

@@ -15,6 +15,7 @@ import {useLocation} from "react-router-dom";
 const ProjectOutordEmpCostSearch = ({prjctId}) => {
   const location = useLocation();
   // const prjctId = location.state.prjctId;
+
   const ctrtYmd = location.state.ctrtYmd;
   //TODO: const stbleEndYmd = location.state.stbleEndYmd;
   const stbleEndYmd = '2024-12-31'

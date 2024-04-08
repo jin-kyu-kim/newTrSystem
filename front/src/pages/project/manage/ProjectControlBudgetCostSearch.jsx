@@ -14,6 +14,7 @@ import {add, format} from "date-fns";
 const ProjectControlBudgetCostSearch = ({prjctId}) => {
   const location = useLocation();
   // const prjctId = location.state.prjctId;
+
   const ctrtYmd = location.state.ctrtYmd;
   const bgtMngOdr = location.state.bgtMngOdr;
   const [stbleEndYmd,setStbleEndYmd] = useState(location.state.stbleEndYmd);
