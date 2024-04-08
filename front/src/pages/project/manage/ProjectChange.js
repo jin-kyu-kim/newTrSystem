@@ -211,7 +211,7 @@ const ProjectChange = () => {
     console.log("prjctId!! 변경! ", prjctId);
     navigate("../project/ProjectDetail",
         {
-        state: { prjctId: prjctId, ctrtYmd: ctrtYmd, stbleEndYmd: stbleEndYmd, bgtMngOdr:bgtMngOdr, bgtMngOdrTobe:bgtMngOdrTobe, deptId: deptId },
+        state: { prjctId: prjctId, ctrtYmd: ctrtYmd, stbleEndYmd: stbleEndYmd, bgtMngOdr:bgtMngOdr, bgtMngOdrTobe:bgtMngOdrTobe, deptId: deptId, targetOdr: targetOdr, bizSttsCd :bizSttsCd , atrzLnSn: atrzLnSn },
         })
   };
 
@@ -317,6 +317,10 @@ const ProjectChange = () => {
                 revise={true}
                 tabId={data.tabId}
                 change={true}
+                deptId={deptId}
+                targetOdr={targetOdr}
+                bizSttsCd={bizSttsCd}
+                atrzLnSn={atrzLnSn}
               />
             </Suspense>
           );

@@ -18,6 +18,8 @@ const ProjectAprvDetail = () => {
     const atrzSttsCd = location.state.atrzSttsCd;
     const atrzStepCd = location.state.atrzStepCd;
     const nowAtrzStepCd = location.state.nowAtrzStepCd;
+    const ctrtYmd = location.state.ctrtYmd;
+    const stbleEndYmd = location.state.stbleEndYmd;
     const bgtMngOdr = location.state.bgtMngOdr;
     const aprvrEmpId = location.state.aprvrEmpId;
     const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
@@ -33,8 +35,6 @@ const ProjectAprvDetail = () => {
     useEffect(() => {
         console.log(aprvrEmpId)
         console.log(cookies.userInfo.empId)
-
-
 
         if(atrzSttsCd === 'VTW00801') {
             if(aprvrEmpId === cookies.userInfo.empId) handleBtnVisible();
@@ -92,30 +92,35 @@ const ProjectAprvDetail = () => {
                     prjctId: prjctId,
                     atrzLnSn: atrzLnSn,
                     aprvrEmpId: cookies.userInfo.empId,
+                    atrzStepCd: atrzStepCd
                 }
             ]
             
             // const response = await ApiRequest("/boot/common/commonUpdate", atrzLnDtlParam);
             const result = await requestProcess(atrzLnDtlParam).then((value) => {
                 
-                if(value > 0) {
-                    let nowStep;
+                // if(value > 0) {
+                if(value != null) {
+                    // let nowStep;
 
-                    switch(atrzStepCd) {
-                        case "VTW00701":
-                            nowStep = "VTW00702";
-                            break;
-                        case "VTW00702":
-                            nowStep = "VTW00703";
-                            break;
-                        case "VTW00703":
-                            nowStep = "VTW00704";
-                            break;
-                        case "VTW00704":
-                            nowStep = "VTW00705";
-                            break;
-                    }
-
+                    // switch(atrzStepCd) {
+                    //     case "VTW00701":
+                    //         nowStep = "VTW00702";
+                    //         break;
+                    //     case "VTW00702":
+                    //         nowStep = "VTW00703";
+                    //         break;
+                    //     case "VTW00703":
+                    //         nowStep = "VTW00704";
+                    //         break;
+                    //     case "VTW00704":
+                    //         nowStep = "VTW00705";
+                    //         break;
+                    //     case "VTW00705":
+                    //         nowStep = "VTW00708";
+                    //         break;
+                    // }
+                    const nowStep = value;
                     handleNowAtrzStepCd(nowStep);
                     // 마지막 결재자일 경우
                     if(atrzStepCd === "VTW00705") { 
@@ -163,7 +168,7 @@ const ProjectAprvDetail = () => {
                 {
                     prjctId: prjctId,
                     atrzLnSn: atrzLnSn,
-                    aprvrEmpId: cookies.userInfo.empId,
+                    atrzStepCd: atrzStepCd
                 }
             ]
 
@@ -186,7 +191,9 @@ const ProjectAprvDetail = () => {
     }
 
     const requestProcess = async (param) => {
-        const response = await ApiRequest("/boot/common/commonUpdate", param);
+        // const response = await ApiRequest("/boot/common/commonUpdate", param);
+        const response = await ApiRequest("/boot/prjct/aprvPrjctAtrz", param)
+        console.log(response)
         return response;
     
     }
@@ -480,7 +487,7 @@ const ProjectAprvDetail = () => {
                             if(data.index === selectedIndex) {
                                 return (
                                     <React.Suspense fallback={<div>Loading...</div>}>
-                                        <Component prjctId={prjctId} atrzLnSn={atrzLnSn} bgtMngOdr={bgtMngOdr}/>
+                                        <Component prjctId={prjctId} ctrtYmd={ctrtYmd} stbleEndYmd={stbleEndYmd} bgtMngOdr={bgtMngOdr}/>
                                     </React.Suspense>
                                 );
                             }
