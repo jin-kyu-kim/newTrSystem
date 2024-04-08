@@ -86,6 +86,18 @@
         "values": ["expensCd"]
       },
       "required": true
+    },
+    "elctrnAtrzId": {
+      "name": "elctrnAtrzId",
+      "type": "ComboBox",
+      "label": "전자결재",
+      "placeholder": "[전자결재 선택]",
+      "param": {
+        "queryId": "projectExpenseMapper.retrieveElctrnAtrzClm",
+        "valueExpr" : "elctrnAtrzId",
+        "displayExpr": "clmAtrzTtl",
+        "name": "elctrnAtrzId"
+      }
     }
   },
   "keyColumn": "prjctCtAplySn",
@@ -98,17 +110,19 @@
     { "key": "expensCdNm", "value": "비용코드", "alignment": "center" },
     { "key": "ctPrpos", "value": "상세내역(목적)", "alignment": "center" },
     { "key": "atdrn", "value": "용도(참석자명단)", "alignment": "center" },
+    { "text": "삭제", "name": "삭제", "visible": {"key": "atrzDmndSttsCdNm", "value": "prjctCtAplySn"}},
     { "key": "atrzDmndSttsCdNm", "value": "결재상태", "alignment": "center" }
   ],
+  "elcKeyColumn": "elctrnAtrzId",
   "columnCharge": [
-    { "key": "ctAtrzSeCdNm", "value": "구분", "alignment": "center" },
-    { "key": "utztnDt", "value": "사용일시", "alignment": "center" },
-    { "key": "useOffic", "value": "사용처", "alignment": "center" },
-    { "key": "utztnAmt", "value": "금액", "alignment": "center" },
+    { "key": "ctStlmSeCd", "value": "구분", "alignment": "center" },
+    { "key": "rciptPblcnYmd", "value": "사용일시", "alignment": "center" },
+    { "key": "cnptNm", "value": "사용처", "alignment": "center" },
+    { "key": "clmAmt", "value": "금액", "alignment": "center" },
     { "key": "prjctNm", "value": "프로젝트", "alignment": "center" },
     { "key": "expensCdNm", "value": "비용코드", "alignment": "center" },
-    { "key": "ctPrpos", "value": "상세내역(목적)", "alignment": "center" },
-    { "key": "atdrn", "value": "용도(참석자명단)", "alignment": "center" },
-    { "value": "문서 보기", "alignment": "center", "button": {"text" : "선택"}}
+    { "key": "dtlUseDtls", "value": "상세내역(목적)", "alignment": "center" },
+    { "key": "clmPrpos", "value": "용도(참석자명단)", "alignment": "center" },
+    { "key": "elctrnAtrzId", "value": "문서 보기", "button": { "text": "선택", "name": "elctrnAtrzId" }}
   ]
 }

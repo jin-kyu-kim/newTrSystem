@@ -11,6 +11,7 @@ import CustomComboBox from "../../components/unit/CustomComboBox";
 const ProjectExpenseCash = (props) => {
     const { labelValue } = ProjectExpenseJson;
     const [customParam, setCustomParam] = useState([]);
+    const [elcCustomParam, setElcCustomParam] = useState([]);
     const [empList, setEmpList] = useState([]);
     const [cashValue, setCashValue] = useState({
         "empId": props.empId,
@@ -37,6 +38,7 @@ const ProjectExpenseCash = (props) => {
         getEmpList();
 
         setCustomParam({...customParam, "queryId" : 'indvdlClmMapper.retrieveExpensCdPrjctAccto'});
+        setElcCustomParam({"queryId": "projectExpenseMapper.retrieveElctrnAtrzClm", "empId": props.empId})
         setCashValue({...cashValue, "aplyYm" : props.aplyYm, "aplyOdr" : props.aplyOdr});
     },[]);
 
@@ -178,7 +180,7 @@ const ProjectExpenseCash = (props) => {
                 <CustomLabelValue props={labelValue.useOffic} onSelect={handleChgValue} value={cashValue?.useOffic}/>
                 <CustomLabelValue props={labelValue.utztnAmt} onSelect={handleChgValue} value={cashValue?.utztnAmt}/>
                 <div className="dx-field">
-                    <div className="dx-field-label asterisk">프로젝트<br />(프로젝트명 또는 코드 입력)</div>
+                    <div className="dx-field-label asterisk">프로젝트<br/>(프로젝트명 또는 코드 입력)</div>
                     <div className="dx-field-value">
                         <CustomComboBox
                             label={labelValue.prjctId.label}
@@ -227,30 +229,43 @@ const ProjectExpenseCash = (props) => {
                 <div className="dx-field">
                     <div className={atdrnTextBox.className}>용도(참석자명단)</div>
                     <div className="dx-field-value">
-                    {cashValue.expensCd === 'VTW04531' ? (
-                        <TagBox
-                            dataSource={empList}
-                            displayExpr="value"
-                            valueExpr="key"
-                            placeholder={atdrnTextBox.placeholder}
-                            searchEnabled={true}
-                            onValueChanged={(e) => handleChgValue({name: "atdrn", value: e.value})}
-                        >
-                            <Validator>{validate(atdrnTextBox.required)}</Validator>
-                        </TagBox>
-                    ) : (
-                        <TextBox
-                            key="atdrn"
-                            placeholder={atdrnTextBox.placeholder}
-                            showClearButton={true}
-                            value={cashValue?.atdrn}
-                            onValueChanged={(e) => {
-                                handleChgValue({name: "atdrn", value: e.value})
-                            }}
-                        >
-                            <Validator>{validate(atdrnTextBox.required)}</Validator>
-                        </TextBox>
-                    )}
+                        {cashValue.expensCd === 'VTW04531' ? (
+                            <TagBox
+                                dataSource={empList}
+                                displayExpr="value"
+                                valueExpr="key"
+                                placeholder={atdrnTextBox.placeholder}
+                                searchEnabled={true}
+                                onValueChanged={(e) => handleChgValue({name: "atdrn", value: e.value})}
+                            >
+                                <Validator>{validate(atdrnTextBox.required)}</Validator>
+                            </TagBox>
+                        ) : (
+                            <TextBox
+                                key="atdrn"
+                                placeholder={atdrnTextBox.placeholder}
+                                showClearButton={true}
+                                value={cashValue?.atdrn}
+                                onValueChanged={(e) => {
+                                    handleChgValue({name: "atdrn", value: e.value})
+                                }}
+                            >
+                                <Validator>{validate(atdrnTextBox.required)}</Validator>
+                            </TextBox>
+                        )}
+                    </div>
+                </div>
+                <div className="dx-field">
+                    <div className="dx-field-label">전자결재</div>
+                    <div className="dx-field-value">
+                        <CustomComboBox
+                            label={labelValue.elctrnAtrzId.label}
+                            props={labelValue.elctrnAtrzId.param}
+                            customParam={elcCustomParam}
+                            onSelect={handleChgValue}
+                            placeholder={labelValue.elctrnAtrzId.placeholder}
+                            value={cashValue?.elctrnAtrzId}
+                        />
                     </div>
                 </div>
                 <ProjectExpenseSubmit
