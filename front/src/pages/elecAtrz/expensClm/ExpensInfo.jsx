@@ -2,22 +2,21 @@ import React, { useState, useEffect } from "react";
 import { FormControl, InputLabel, Select, MenuItem, TextField, Button, Grid, TableCell } from "@mui/material";
 import { DateBox } from "devextreme-react/date-box";
 import ApiRequest from "utils/ApiRequest";
-import { set } from "date-fns";
-
 
 const ExpensInfo = ({onSendData}) => {
 
     const [ctStlmSeCdList, setCtStlmSeCdList] = useState([]);
     const [bankCdList, setBankCdList] = useState([]);
     const [expensCdList, setExpensCdList] = useState([]);
-    const [clmOdr, setClmOdr] = useState({});
+    const [ clmOdr, setClmOdr ] = useState();
+    const [ nextClmOdr, setNextClmOdr ] = useState();
 
 
     useEffect(() => {
         retrieveCtStlmSeCd();
         retrieveBankCd();
         retrieveCdList();
-        // setExpensDate();
+        setExpensDate();
     }, []);
 
     const retrieveCtStlmSeCd = async () => {
@@ -142,57 +141,57 @@ const ExpensInfo = ({onSendData}) => {
     };
 
     const setExpensDate = () => {
-        let today = new Date();
+        
+        const today = new Date();
+
         let year = today.getFullYear();
-        let month = today.getMonth();   // 현재 달보다 -1임
-        let day = today.getDay();
+        let month = today.getMonth() + 1; 
+        const day = today.getDate();
+        let odr;
+        let nextOdr
 
-        let disMonth;
-
-        let order;
-        let nextOrder;
-        if(day <= 15) {
-            order = "2";
-            nextOrder = "1";
+        if (day <= 15) {
+            odr = 2;
         } else {
-            order = "1";
-            nextOrder = "2";
-            month =  today.getMonth() + 1;
-        }
 
-        if(month < 10) {
-            disMonth = "0" + month;
+            odr = 1;
+
+        }
+        
+        if (month === 1) {
+            if(day <= 15) {
+                month = 12; // 1월인 경우 이전 연도 12월로 설정
+                year--;
+            } else {
+
+            }
         } else {
-            disMonth = "" + month;
+            if(day <= 15) {
+                month--; // 2월 이상인 경우 이전 월로 설정
+            } 
         }
+    
+        // 월을 두 자리 숫자로 표현합니다.
+        const monthString = (month < 10 ? '0' : '') + month;
         
+        setClmOdr(`${year}${monthString}-${odr}`);
 
-        
-        console.log(year, month, day);
-
-
-        let nextYearMonthOrder;
-        if(month === 12 && day >= 16) {
-            nextYearMonthOrder = year + "" + month + 1 + "-" + nextOrder;
-        } else if(month === 1 && day <= 15) {
-            
+        let nextYear = today.getFullYear();
+        let nextMonth = today.getMonth() + 1; 
+        if(nextMonth > 12) {
+            nextMonth = 1;
+            nextYear++;
         }
-        console.log(nextYearMonthOrder)
 
-        // console.log(year, month, order, nextOrder);
+        const nextMonthString = (nextMonth < 10 ? '0' : '') + nextMonth;
 
-        
-        let yearMonthOrder = year + "" + disMonth + "-" + order;
+        if(odr === 1) {
+            nextOdr = 2;
+        } else {
+            nextOdr = 1;
+        }
 
-        setClmOdr({
-            yearMonthOrder: yearMonthOrder,
-            order: order,
-            nextOrder: nextOrder,   
-            year: year,
-            month: month,
-            day: day
-        })
-
+        setNextClmOdr(`${nextYear}${nextMonthString}-${nextOdr}`);
     } 
 
     return (
@@ -467,36 +466,38 @@ const ExpensInfo = ({onSendData}) => {
             </div>
 
             <hr/>
-            <div>* 현재 TR 입력 차수: </div>
+            <div>* 현재 TR 입력 차수: { clmOdr }</div>
             <div>* 마감 여부: </div>
             <br/>
             <div>1. 지출 방법: 개인법인카드, 개인현금</div>
+            <br/>
             <div>
-                <table>
+                <table className="expensInfo-table">
                     <thead>
                         <tr>
-                            <td>
+                            <th style={{width: '70%'}}>
                                 사용일자
-                            </td>
-                            <td>
+                            </th>
+                            <th>
                                 반영차수
-                            </td>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>
-
+                                2024년 03월 31일 이전
                             </td>
                             <td>
+                                {nextClmOdr} 차수
                             </td>
                         </tr>
                         <tr>
                             <td>
-
+                                2024년 03월 31일 이후
                             </td>
                             <td>
-
+                                해당차수 반영
                             </td>
                         </tr>
                     </tbody>
@@ -504,8 +505,30 @@ const ExpensInfo = ({onSendData}) => {
             </div>
             <br/>
             <div>2. 지출 방법: 기업법인카드, 세금계산서</div>
+            <br/>
             <div>
-
+                <table className="expensInfo-table">
+                    <thead>
+                        <tr>
+                            <th style={{width: '70%'}}>
+                                사용일자
+                            </th>
+                            <th>
+                                반영차수
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                전체
+                            </td>
+                            <td>
+                                해당차수 반영
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
             <br/>
             <div>현재 TR입력차수가 마감되어 다음차수로 반영될 경우 직접 마감취소 또는 경영지원팀으로 마감취소 요청 하시기 바랍니다.</div>
