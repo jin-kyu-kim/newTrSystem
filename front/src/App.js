@@ -90,10 +90,9 @@ function App() {
         return locale != null ? locale : 'ko';
       }
 
-
       const screenSizeClass = useScreenSizeClass();
 
-      const [isPending,] = useTransition();
+      const [isPending,startTransition] = useTransition();
 
       const [isLoggedIn, setLoggedIn] = useState(() => {
         const storedLoginStatus = localStorage.getItem("isLoggedIn"); //sessionStorage
