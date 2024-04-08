@@ -18,9 +18,7 @@ const ProjectHrCtAprvMmPop = ({props, prjctNm, data, currentDate, setCurrentDate
 
         const results = [];
 
-        const temp = props.filter((data) => data.atrzDmndSttsCd !== "VTW03702");
-
-        temp.map((data) => {
+        props.map((data) => {
             
             results.push(
                 <>

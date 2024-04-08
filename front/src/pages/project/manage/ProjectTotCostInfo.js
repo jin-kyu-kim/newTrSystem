@@ -55,9 +55,9 @@ const ProjectTotCostInfo = ({prjctId, atrzDmndSttsCd}) => {
         values={data}
         paging={true}
         wordWrap={wordWrap}
+        grouping={groupingColumn}
         groupingData={groupingData}
-        summary={true}
-        summaryColumn={summaryColumn}
+      
       />  
     </div>
   );

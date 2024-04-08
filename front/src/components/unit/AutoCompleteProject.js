@@ -9,7 +9,11 @@ import 'devextreme/dist/css/dx.light.css';
 // return값 추가 (prjctMngrEmpId)
 // return값 추가됨에따라 배열로 반환받음
 
-const AutoCompleteProject = ({ placeholderText, onValueChange }) => {
+// 2024.04.08(박지환)
+// sttsBoolean props 추가 
+// 수행중인 프로젝트만 조회
+
+const AutoCompleteProject = ({ placeholderText, onValueChange, sttsBoolean }) => {
   const [suggestionsData, setSuggestionsData] = useState([]);
   const [valid, setValid] = useState(true);
 
@@ -20,12 +24,19 @@ const AutoCompleteProject = ({ placeholderText, onValueChange }) => {
           { tbNm: "PRJCT" },
           {},
         ]);
-        const processedData = response.map(({ prjctId, prjctNm, prjctMngrEmpId }) => ({
+
+        const processedData = response.map(({ prjctId, prjctNm, prjctMngrEmpId, bizSttsCd }) => ({
           key: prjctId,
           value: prjctNm,
           prjctMngrEmpId: prjctMngrEmpId,
+          bizSttsCd: bizSttsCd,
         }));
-        setSuggestionsData(processedData);
+
+        if(sttsBoolean && sttsBoolean == true){
+          setSuggestionsData(processedData.filter(item => item.bizSttsCd == "VTW00402"));
+        } else {
+          setSuggestionsData(processedData);
+        }
       } catch (error) {
         console.log(error);
       }

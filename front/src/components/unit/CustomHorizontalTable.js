@@ -48,13 +48,22 @@ const CustomHorizontalTable = ({ headers, column }) => {
         }
         if (e.columnIndex === 3 && e.values[2] === '' &&  e.values[3] === '') {
           e.cellElement.style.display = 'none';
+          
+        }
+        if (e.columnIndex === 4 && e.value === '') {
+          e.cellElement.style.textAlign = 'center';
+          e.cellElement.style.fontWeight = 'bold';
+          e.cellElement.style.cursor = 'default';
+          e.cellElement.style.color ='black'
+          e.cellElement.style.backgroundColor = 'white'
+          e.cellElement.style.pointerEvents = 'none';
         }
       }}   
     >
       <Column dataField="header" caption="Header" alignment="center" />
-      <Column dataField="column" caption="Column" />
+      <Column dataField="column" caption="Column" alignment="center" />
       <Column dataField="header1" caption="Header1" alignment="center" />
-      <Column dataField="column1" caption="Column1" />
+      <Column dataField="column1" caption="Column1" alignment='center' />
     </DataGrid>
   );
 };

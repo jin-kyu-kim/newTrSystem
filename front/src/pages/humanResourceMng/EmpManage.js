@@ -433,7 +433,7 @@ const cancelJbpsEmpHist = async (updParam,ehdParam) => {       //삭제axios
             직원 성명을 선택시 상세내역 페이지로 이동합니다.<br/>
             아이콘 클릭시 비밀번호 사번으로 초기화<br/>
             </span>
-            <CustomTable 
+            <CustomTable
              keyColumn={listKeyColumn}
              columns={listTableColumns} 
              values={values}

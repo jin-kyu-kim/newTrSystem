@@ -1,0 +1,61 @@
+{   
+
+
+    "menuName": "ProjectStngInfo",
+    "queryId": "projectMapper.retrievePrjctAtrzAuthrt",
+    "queryId2": "projectMapper.retrieveYnPrjctAtrzAuthrt",
+    "keyColumn": "empId",
+    "tableColumns": [
+        { "key": "empno", "value": "사번", "width": 120, "alignment": "center" },
+        { "key": "empFlnm", "value": "성명", "width": 100, "alignment": "center" },
+        { "key": "jbpsNm", "value": "직위", "width": 200, "alignment": "center" },
+        { "key": "deptId", "value": "소속", "width": 170, "alignment": "center" },
+        {"key": "readYn", "value"  : "조회권한","buttonType"  : "toggle", "button"  : true },
+        {"key": "writeYn", "value"  : "쓰기권한","buttonType"  : "toggle",  "button"  : true }
+
+    ],
+    "searchInfo": {
+        "searchParams": {
+        },
+        "commonCd": "VTW001",
+        "selectBoxItem": [
+            {
+                "placeholder": "[직위]",
+                "param":{
+                  "tbNm": "CD",
+                  "valueExpr": "cdValue",
+                  "displayExpr": "cdNm",
+                  "name": "jbpsNm",
+                  "condition": {
+                    "upCdValue": "VTW001"
+                  },
+                  "clearButton": true
+                }
+            },
+            {
+                "placeholder": "[소속]",
+                "param":{
+                  "queryId": {
+                    "queryId": "infoInqMapper.retriveDeptSearchList"
+                  },
+                  "values": ["deptId"],
+                  "valueExpr": "deptId",
+                  "displayExpr": "deptNm",
+                  "name": "deptId",
+                  "clearButton": true
+                }
+            }
+        ],
+        "textBoxItem": [
+            {
+                "placeholder": "사번",
+                "name": "empno"
+            },
+            {
+                "placeholder": "성명",
+                "name": "empFlnm"
+            }
+         
+        ]
+    }
+}

@@ -166,7 +166,13 @@ public class ProjectBaseDomain {
         	aprvDtlParam.put("atrzLnSn", params.get(2).get("atrzLnSn"));
         	aprvDtlParam.put("regDt", params.get(2).get("regDt"));
         	aprvDtlParam.put("regEmpId", params.get(2).get("empId"));
-        	aprvDtlParam.put("atrzSttsCd", atrzSttsCd);
+        	
+        	if(i == empIdParams.size() - 1) {
+        		
+        		aprvDtlParam.put("atrzSttsCd", atrzSttsCd);
+        	} else {
+        		aprvDtlParam.put("atrzSttsCd", "VTW00806");
+        	}
     		
         	// 다른 부분
         	aprvDtlParam.put("atrzStepCd", atrzStepCd[i]);
@@ -485,6 +491,7 @@ public class ProjectBaseDomain {
 			for(int i = 0; i < atrzLine.size(); i++) {
 				
 				Map<String, Object> updateParam = new HashMap<>();
+				Map<String, Object> conditionParam = new HashMap<>();
 				List<Map<String, Object>> updateParams = new ArrayList<>();
 				
 				if(String.valueOf(atrzLine.get(i).get("atrzStepCd")).equals(atrzStepCd) && 
@@ -493,8 +500,8 @@ public class ProjectBaseDomain {
 					System.out.println(atrzLine.get(i));
 					System.out.println(atrzStepCd);
 					
-					updateParams.add(0, paramList.get(0));
-					updateParams.add(1, paramList.get(1));
+					updateParams.add(0, paramList.get(0));	// 업데이트할 타겟 테이블
+					updateParams.add(1, paramList.get(1));	// 업데이트할 테이블의 내용
 
 					
 					updateParam.put("prjctId", paramList.get(2).get("prjctId"));
@@ -528,6 +535,20 @@ public class ProjectBaseDomain {
 						break;
 					}
 					
+				} else {
+					updateParams.add(0, paramList.get(0));	// 업데이트할 타겟 테이블
+					
+					conditionParam.put("atrzStepCd", atrzStepCd);
+					conditionParam.put("prjctId", paramList.get(2).get("prjctId"));
+					conditionParam.put("atrzLnSn", paramList.get(2).get("atrzLnSn"));
+					
+					updateParam.put("atrzSttsCd", "VTW00801");
+					
+					updateParams.add(1, updateParam); // 업데이트할 정보
+					updateParams.add(2, conditionParam); // 업데이트할 테이블의 조건
+					
+					
+					uptResult = commonService.updateData(updateParams);
 				}
 				
 			}

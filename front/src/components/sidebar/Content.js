@@ -2,11 +2,12 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import routes from './app-routes';
 import { SideNavInnerToolbar as SideNavBarLayout } from './layouts';
 import { Footer } from './components';
+import React, { useState } from 'react';
 
 export default function Content() {
-
+  const [menuStatus, setMenuStatus] = useState(  MenuStatus.Closed );
   return (
-    <SideNavBarLayout >
+    <SideNavBarLayout status ={menuStatus}>
       <Routes>
         {routes.map(({ path, element }) => (
           <Route
@@ -29,4 +30,10 @@ export default function Content() {
     </SideNavBarLayout>
   );
 }
+
+const MenuStatus = {
+  Closed: 1,
+  Opened: 2,
+  TemporaryOpened: 3
+};
 

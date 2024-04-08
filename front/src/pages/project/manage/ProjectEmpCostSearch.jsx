@@ -13,9 +13,10 @@ import PivotGrid, {
 
 import {useLocation} from "react-router-dom";
 
-const ProjectEmpCostSearch = () => {
+const ProjectEmpCostSearch = ({prjctId}) => {
   const location = useLocation();
-  const prjctId = location.state.prjctId;
+  // const prjctId = location.state.prjctId;
+
   const ctrtYmd = location.state.ctrtYmd;
   const bgtMngOdr = location.state.bgtMngOdr;
   //TODO: const stbleEndYmd = location.state.stbleEndYmd;
@@ -26,9 +27,9 @@ const ProjectEmpCostSearch = () => {
   });
 
   useEffect(() => {
-    if (prjctId && ctrtYmd&&stbleEndYmd) {
+    console.log(prjctId);
+    console.log("bgtMngOdr",bgtMngOdr);
         Cnsrtm();
-    }
   }, []);
 
   const param = {
@@ -64,6 +65,7 @@ const ProjectEmpCostSearch = () => {
         allowFiltering={false}
         allowSorting={false}
         allowExpandAll={false}
+        showRowTotals={false}
       >
         <FieldPanel
           showRowFields={true}

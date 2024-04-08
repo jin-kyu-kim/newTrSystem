@@ -95,7 +95,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
 
     const buttonRender = (e, col) => {
         if (col.buttonType === 'toggle') {
-            return ( <ToggleButton callback={handleYnVal} data={e} /> )
+            return ( <ToggleButton callback={handleYnVal} data={e} colData={col} /> )
         }
     }
     const rowEventHandlers = ynVal
