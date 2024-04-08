@@ -17,8 +17,6 @@ const ExpensInfo = ({onSendData, prjctId}) => {
         retrieveBankCd();
         retrieveExpensCdList();
         setExpensDate();
-
-        console.log(prjctId);
     }, []);
 
     const retrieveCtStlmSeCd = async () => {
