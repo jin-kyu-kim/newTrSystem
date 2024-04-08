@@ -3,17 +3,19 @@ import { Button } from 'devextreme-react/button'
 import ApiRequest from "utils/ApiRequest";
 
 const ProjectExpenseCardInsert = ({ selectedItem, sendTbInfo, button }) => {
-  const [completedCount, setCompletedCount] = useState(0);
-  const [prjctCtAplySn, setPrjctCtAplySn] = useState(null);
+  const [ completedCount, setCompletedCount ] = useState(0);
+  const [ prjctCtAplySn, setPrjctCtAplySn ] = useState([]);
 
   useEffect(() => {
-    if (prjctCtAplySn !== undefined && prjctCtAplySn !== null) insertAtrzValue();
+    if (selectedItem.length !== 0 && prjctCtAplySn.length === selectedItem.length) {
+      insertAtrzValue();
+    }
   }, [prjctCtAplySn]);
 
   useEffect(() => {
     if (selectedItem.length > 0 && completedCount === selectedItem.length) {
-      window.location.reload();
       alert("등록되었습니다.");
+      window.location.reload();
     }
   }, [completedCount]);
 
@@ -27,23 +29,32 @@ const ProjectExpenseCardInsert = ({ selectedItem, sendTbInfo, button }) => {
       return;
     }
     if (!window.confirm("등록하시겠습니까?")) return;
-    else{ updateYn(); }
+
+    try {
+      const ynUpdated = await updateYn();
+      if (ynUpdated) {
+        const mmInserted = await insertMM();
+
+        if (mmInserted) await insertValue();
+      }
+    } catch (error) {
+      console.error("error", error);
+    }
   };
 
   /** CARD_USE_DTLS - PRJCT_CT_INPT_PSBLTY_YN 값 => "N" */
   const updateYn = async () => {
-    try{
-      let res;
-      for (const item of selectedItem) {
-        res = await ApiRequest("/boot/common/commonUpdate", [
-          { tbNm: "CARD_USE_DTLS" },
-          { prjctCtInptPsbltyYn: "N" },
-          { cardUseSn: item.cardUseSn }
-        ]);
-      }
-      if(res === 1) insertMM();
-    } catch(error){
-      console.log('error', error);
+    try {
+      const updates = selectedItem.map(item => ApiRequest("/boot/common/commonUpdate", [
+        { tbNm: "CARD_USE_DTLS" },
+        { prjctCtInptPsbltyYn: "N" },
+        { cardUseSn: item.cardUseSn }
+      ]));
+      await Promise.all(updates);
+      return true;
+    } catch (error) {
+      console.error('updateYn error', error);
+      return false;
     }
   };
 
@@ -59,50 +70,60 @@ const ProjectExpenseCardInsert = ({ selectedItem, sendTbInfo, button }) => {
     }));
     try{
       const res = await ApiRequest("/boot/indvdlClm/insertPrjctMM", param);
-      if(res === 1) insertValue();
+      return true;
     } catch(error) {
-      console.log('error', error);
+      console.log('insertMM  error', error);
+      return false;
     }
   };
 
   /** PRJCT_CT_APLY (프로젝트비용신청) - insert */
   const insertValue = async () => {
     const tbInfo = { tbNm: sendTbInfo.tbNm, snColumn: sendTbInfo.snColumn };
-    const newArray = selectedItem.map(({ aprvNo, cardUseSn, ...rest }) => ([
-      { ...tbInfo }, { ...rest, ctAtrzSeCd: "VTW01903" }
-    ]));
-    try {
-      let res;
-      for (let i = 0; i < newArray.length; i++) {
-        res = await ApiRequest("/boot/common/commonInsert", newArray[i]);
-        if(res === 1) getPrjctCtAplySn();
+    const snArray = []; // SN 값을 저장할 임시 배열
+  
+    for (const item of selectedItem) {
+      const requestBody = [{ ...tbInfo }, { ...item, ctAtrzSeCd: "VTW01903" }];
+  
+      try {
+        await ApiRequest("/boot/common/commonInsert", requestBody);
+        const maxSn = await getPrjctCtAplySn();
+        snArray.push(maxSn);
+      } catch (error) {
+        console.error("insertValueAndFetchSn error", error);
+        break;
       }
-    } catch (error) {
-      console.error("API 요청 에러:", error);
     }
+    setPrjctCtAplySn(snArray);
   };
 
   const getPrjctCtAplySn = async () => {
     const param = setParam(selectedItem, {queryId: "indvdlClmMapper.retrievePrjctCtAplySn"})
     try {
       const response = await ApiRequest("/boot/common/queryIdSearch", param);
-      setPrjctCtAplySn(response[0].prjctCtAplySn);
+      return response[0].prjctCtAplySn;
     } catch (error) {
-      console.log(error);
+      console.error("getPrjctCtAplySn error", error);
+      return null;
     }
   };
 
   /** PRJCT_CT_ATRZ (프로젝트비용결재) - insert */
   const insertAtrzValue = async () => {
-    const atrzParams = { tbNm: sendTbInfo.atrzTbNm };
-    const param = setParam(selectedItem, {prjctCtAplySn: prjctCtAplySn})
-    try {
-      const res = await ApiRequest("/boot/common/commonInsert", [
-        {...atrzParams}, {...param}
-      ]);
-      setCompletedCount(prev => prev + 1);
-    } catch (error) {
-      console.error("API 요청 에러:", error);
+    const getParam = setParam(selectedItem);
+
+    for (const sn of prjctCtAplySn) {
+      const param = [
+        { tbNm: sendTbInfo.atrzTbNm },
+        { prjctCtAplySn: sn, ...getParam }
+      ];
+      try {
+        await ApiRequest("/boot/common/commonInsert", param);
+        setCompletedCount(prev => prev + 1);
+      } catch (error) {
+        console.error("insertAtrzValue error", error);
+        break;
+      }
     }
   };
 
