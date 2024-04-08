@@ -13,14 +13,13 @@ import vtwPng from "../../../../assets/img/vtw.png";
 import { Link } from "react-router-dom";
 
 
-export default function SideNavInnerToolbar({ children }) {
+export default function SideNavInnerToolbar({ children, status }) {
   const scrollViewRef = useRef(null);
   const navigate = useNavigate();
   const [,startTransition] = useTransition();
   const { isXSmall, isLarge } = useScreenSize();
   const [patchCssClass, onMenuReady] = useMenuPatch();
-  // const [menuStatus, setMenuStatus] = useState( isLarge ? MenuStatus.Opened : MenuStatus.Closed );
-  const [menuStatus, setMenuStatus] = useState(  MenuStatus.Opened );
+  const [menuStatus, setMenuStatus] = useState(  isLarge ? MenuStatus.Closed : MenuStatus.Opened );
 
   const toggleMenu = useCallback(({ event }) => {
     setMenuStatus(
@@ -100,6 +99,7 @@ export default function SideNavInnerToolbar({ children }) {
 
         <Template name={'menu'}>
           <SideNavigationMenu
+            status={status}
             compactMode={menuStatus === MenuStatus.Closed}
             selectedItemChanged={onNavigationChanged}
             openMenu={temporaryOpenMenu}

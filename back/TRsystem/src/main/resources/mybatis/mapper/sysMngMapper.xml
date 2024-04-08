@@ -89,6 +89,7 @@
     </select>
     
     <!-- main용 쿼리들-->
+    <!-- main 공지사항 쿼리-->
     <select id="retrieveNotice" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT
 			ROW_NUMBER() OVER() ROWNUM
@@ -111,6 +112,7 @@
 		limit 11
 	</select>
 	
+	<!-- main 현차수 TR 입력사항-->
 	<select id="retrieveInptSttus" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		select
 		E.EMP_ID
@@ -166,8 +168,9 @@
 		AND E.EMP_ID =#{empId}
 	</select>
 	
+	<!-- main 결제 신청현황 및 결제리스트-->
 	<select id="retrieveAtrzAplySttus" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT
+		SELECT DISTINCT
 		ea.ELCTRN_ATRZ_ID,
 		ea.ELCTRN_ATRZ_TY_SE_CD,
 		ea.NOW_ATRZ_LN_SN,
@@ -200,14 +203,16 @@
 		JOIN EMP e1 ON ea.ATRZ_DMND_EMP_ID = e1.EMP_ID
 		JOIN EMP e2 ON al.APRVR_EMP_ID = e2.EMP_ID
 		WHERE 1=1
-		<if test="sttsCd != null and sttsCd.startsWith('VTW037')">
+		<if test='stts != null and stts.equals("ATRZ")'>
 			<!--AND ea.ATRZ_DMND_STTS_CD = #{sttsCd}-->
 			AND ea.ATRZ_DMND_EMP_ID = #{empId}
 		</if>
-		<if test="sttsCd != null and sttsCd.startsWith('VTW008')">
-			AND al.ATRZ_STTS_CD = #{sttsCd}
+		<if test='stts != null and stts.equals("APRVR")'>
+			<!--AND al.ATRZ_STTS_CD = #{sttsCd}-->
+			AND ea.ATRZ_DMND_STTS_CD ="VTW03702"
 			AND al.APRVR_EMP_ID = #{empId}
 		</if>
+		ORDER BY REG_DT
 		limit 4
 	</select>
 	
