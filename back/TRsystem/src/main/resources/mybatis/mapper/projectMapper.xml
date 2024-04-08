@@ -1280,9 +1280,10 @@
 		  AND ATRZ_STEP_CD <![CDATA[ >= ]]> #{atrzStepCd}
 	</select>
 
+
     <select id="retrievePrjctAtrzAuthrt" parameterType="map" resultType="com.trsystem.LowerHashMap" >
 
-    SELECT
+        SELECT
         EMP_ID,
         EMPNO,
         EMP_FLNM,
@@ -1291,7 +1292,7 @@
         HDOF_STTS_NM,
         READ_YN,
         WRITE_YN
-FROM(
+        FROM( 
         SELECT
         E.EMP_ID AS EMP_ID,
         E.EMPNO AS EMPNO,
@@ -1299,8 +1300,14 @@ FROM(
         C.CD_NM AS JBPS_NM,
         GROUP_CONCAT(D.DEPT_NM) AS DEPT_ID,
         C2.CD_NM AS HDOF_STTS_NM,
-        'READ' AS READ_YN,
-        'WRITE' AS WRITE_YN
+        CASE WHEN PMA.EMP_ID IS NOT NULL AND PMA.PRJCT_MNG_AUTHRT_CD = 'VTW05201' OR PMA.PRJCT_MNG_AUTHRT_CD = 'VTW05202'  THEN 'Y'
+        WHEN PMA.EMP_ID IS NULL THEN 'N'
+        ELSE 'N'
+        END AS READ_YN,
+        CASE WHEN PMA.EMP_ID IS NOT NULL AND PMA.PRJCT_MNG_AUTHRT_CD = 'VTW05202'  THEN 'Y'
+        WHEN PMA.EMP_ID IS NULL THEN 'N'
+        ELSE 'N'
+        END AS WRITE_YN
         FROM
         EMP E
         LEFT OUTER JOIN
@@ -1315,6 +1322,8 @@ FROM(
         CD C3 ON C3.CD_VALUE = E.BANK_CD
         LEFT OUTER JOIN
         EMP_HIST EH ON EH.EMP_ID = E.EMP_ID
+        LEFT OUTER JOIN PRJCT_MNG_AUTHRT PMA
+        ON E.EMP_ID = PMA.EMP_ID
         WHERE 1=1
         <if test="empno != null and empno !=''">
             AND E.EMPNO LIKE CONCAT('%', #{empno}, '%')
@@ -1340,7 +1349,7 @@ FROM(
         </if>
         GROUP BY
         E.EMP_ID, E.EMPNO, E.EMP_FLNM, E.EMP_TY_CD, C.CD_NM,
-        E.TELNO, E.EML, C2.CD_NM, C3.CD_NM, E.ACTNO, C.CD_VALUE, C3.CD_VALUE, C2.CD_VALUE
+        E.TELNO, E.EML, C2.CD_NM, C3.CD_NM, E.ACTNO, C.CD_VALUE, C3.CD_VALUE, C2.CD_VALUE,READ_YN, WRITE_YN
         ORDER BY
         E.JBPS_CD ASC
         ) A

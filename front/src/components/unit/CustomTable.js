@@ -58,7 +58,6 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
             caption={groupingData.caption} 
             customizeText={groupingCustomizeText}
             groupIndex={0}
-            format="#,##0"
         />
         }
 

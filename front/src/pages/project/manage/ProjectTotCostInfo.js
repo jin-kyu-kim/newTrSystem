@@ -57,6 +57,7 @@ const ProjectTotCostInfo = (prjctId) => {
         wordWrap={wordWrap}
         grouping={groupingColumn}
         groupingData={groupingData}
+      
       />  
     </div>
   );
