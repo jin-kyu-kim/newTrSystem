@@ -112,10 +112,8 @@ const ProjectHrCtAprvDetail = () => {
                 { tbNm: "PRJCT_MM_ATRZ" },
                 { atrzDmndSttsCd: "VTW03703",
                   aprvrEmpId: cookies.userInfo.empId,
-                  aprvYmd: year + monthVal + dayVal,
-                  rjctPrvonsh: null,
-                  rjctYmd: null},
-                { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr}
+                  aprvYmd: year + monthVal + dayVal},
+                { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, atrzDmndSttsCd: "VTW03702"}
             ];
             try {
                 const confirmResult = window.confirm("승인하시겠습니까?");
@@ -136,6 +134,52 @@ const ProjectHrCtAprvDetail = () => {
             }
         }else if(button.name === "rjct"){
             setMmRjctPopupVisible(true);
+        }else if(button.name === "aprvCncl"){
+            const param = [
+                { tbNm: "PRJCT_MM_ATRZ" },
+                { atrzDmndSttsCd: "VTW03705",
+                  aprvrEmpId: null,
+                  aprvYmd: null},
+                { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, atrzDmndSttsCd: "VTW03703"}
+            ];
+            try {
+                const confirmResult = window.confirm("승인 취소하시겠습니까?");
+                if(confirmResult){
+                    const response = await ApiRequest('/boot/common/commonUpdate', param);
+                    if(response > 0) {
+                        const param = [
+                            { tbNm: "PRJCT_INDVDL_CT_MM" },
+                            { mmAtrzCmptnYn: "N"},
+                            { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr}
+                        ];
+                        await ApiRequest('/boot/common/commonUpdate', param);
+                        handleMmAply();
+                    }
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }else if(button.name === "rjctCncl"){
+            try {
+                const confirmResult = window.confirm("반려 취소하시겠습니까?");
+                const param = [
+                    { tbNm: "PRJCT_MM_ATRZ" },
+                    { atrzDmndSttsCd: "VTW03702",
+                      aprvrEmpId: null,
+                      rjctPrvonsh: null,
+                      rjctYmd: null
+                    },
+                    { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, atrzDmndSttsCd: "VTW03704"}
+                ];
+                if(confirmResult) {
+                    const response = await ApiRequest('/boot/common/commonUpdate', param);
+                    if (response > 0) {
+                        handleMmAply();
+                    }
+                }
+            } catch (error) {
+                console.log(error)
+            }
         }
     }
 
@@ -162,10 +206,8 @@ const ProjectHrCtAprvDetail = () => {
             const param = [
                 { tbNm: "PRJCT_CT_ATRZ" },
                 { atrzDmndSttsCd: "VTW03703",
-                    aprvrEmpId: cookies.userInfo.empId,
-                    aprvYmd: year + monthVal + dayVal,
-                    rjctPrvonsh: null,
-                    rjctYmd: null},
+                  aprvrEmpId: cookies.userInfo.empId,
+                  aprvYmd: year + monthVal + dayVal},
                 { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, atrzDmndSttsCd: "VTW03702"}
             ];
             try {
@@ -187,6 +229,52 @@ const ProjectHrCtAprvDetail = () => {
             }
         }else if(button.name === "rjct"){
             setCtRjctPopupVisible(true);
+        }else if(button.name === "aprvCncl"){
+            const param = [
+                { tbNm: "PRJCT_CT_ATRZ" },
+                { atrzDmndSttsCd: "VTW03705",
+                  aprvrEmpId: null,
+                  aprvYmd: null},
+                { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, atrzDmndSttsCd: "VTW03703"}
+            ];
+            try {
+                const confirmResult = window.confirm("승인 취소하시겠습니까?");
+                if(confirmResult){
+                    const response = await ApiRequest('/boot/common/commonUpdate', param);
+                    if(response > 0) {
+                        const param = [
+                            { tbNm: "PRJCT_INDVDL_CT_MM" },
+                            { ctAtrzCmptnYn: "N"},
+                            { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr}
+                        ];
+                        await ApiRequest('/boot/common/commonUpdate', param);
+                        handleCtAply();
+                    }
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }else if(button.name === "rjctCncl"){
+            try {
+                const confirmResult = window.confirm("반려 취소하시겠습니까?");
+                const param = [
+                    { tbNm: "PRJCT_CT_ATRZ" },
+                    { atrzDmndSttsCd: "VTW03702",
+                        aprvrEmpId: null,
+                        rjctPrvonsh: null,
+                        rjctYmd: null
+                    },
+                    { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, atrzDmndSttsCd: "VTW03704"}
+                ];
+                if(confirmResult) {
+                    const response = await ApiRequest('/boot/common/commonUpdate', param);
+                    if (response > 0) {
+                        handleCtAply();
+                    }
+                }
+            } catch (error) {
+                console.log(error)
+            }
         }
     }
 
@@ -220,11 +308,11 @@ const ProjectHrCtAprvDetail = () => {
             const param = [
                 { tbNm: "PRJCT_MM_ATRZ" },
                 { atrzDmndSttsCd: "VTW03704",
-                    aprvrEmpId: cookies.userInfo.empId,
-                    rjctPrvonsh: opnnCn,
-                    rjctYmd: year + monthVal + dayVal
+                  aprvrEmpId: cookies.userInfo.empId,
+                  rjctPrvonsh: opnnCn,
+                  rjctYmd: year + monthVal + dayVal
                 },
-                { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr}
+                { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, atrzDmndSttsCd: "VTW03702"}
             ];
             if(confirmResult) {
                 const response = await ApiRequest('/boot/common/commonUpdate', param);
@@ -244,11 +332,11 @@ const ProjectHrCtAprvDetail = () => {
             const param = [
                 { tbNm: "PRJCT_CT_ATRZ" },
                 { atrzDmndSttsCd: "VTW03704",
-                    aprvrEmpId: cookies.userInfo.empId,
-                    rjctPrvonsh: opnnCn,
-                    rjctYmd: year + monthVal + dayVal
+                  aprvrEmpId: cookies.userInfo.empId,
+                  rjctPrvonsh: opnnCn,
+                  rjctYmd: year + monthVal + dayVal
                 },
-                { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr}
+                { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, atrzDmndSttsCd: "VTW03702"}
             ];
             if(confirmResult) {
                 const response = await ApiRequest('/boot/common/commonUpdate', param);
