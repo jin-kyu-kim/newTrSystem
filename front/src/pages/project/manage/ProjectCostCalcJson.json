@@ -15,8 +15,8 @@
             { "key": "mmnySlsAm", "value": "자사매출액" }
           ],
           "BizSumry3" : [
-            { "key": "", "value": "사업기간" },
-            { "key": "prjctPeriod", "value": "" }
+            { "key": "prjctPeriod", "value": "사업기간" },
+            { "key": "", "value": "" }
           ]
         },     
       "Cnsrtm":

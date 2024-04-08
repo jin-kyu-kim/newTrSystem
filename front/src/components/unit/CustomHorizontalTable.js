@@ -48,6 +48,15 @@ const CustomHorizontalTable = ({ headers, column }) => {
         }
         if (e.columnIndex === 3 && e.values[2] === '' &&  e.values[3] === '') {
           e.cellElement.style.display = 'none';
+          
+        }
+        if (e.columnIndex === 4 && e.value === '') {
+          e.cellElement.style.textAlign = 'center';
+          e.cellElement.style.fontWeight = 'bold';
+          e.cellElement.style.cursor = 'default';
+          e.cellElement.style.color ='black'
+          e.cellElement.style.backgroundColor = 'white'
+          e.cellElement.style.pointerEvents = 'none';
         }
       }}   
     >
