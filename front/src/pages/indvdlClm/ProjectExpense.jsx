@@ -5,9 +5,12 @@ import ApiRequest from "../../utils/ApiRequest";
 import {useCookies} from "react-cookie";
 import CustomTable from "../../components/unit/CustomTable";
 import axios from "axios";
+import {useNavigate} from "react-router-dom";
 
 const ProjectExpense = () => {
-    const {keyColumn, ctAplyTableColumns, columnCharge} = ProjectExpenseJson;
+    const navigate = useNavigate ();
+
+    const {keyColumn, elcKeyColumn, ctAplyTableColumns, columnCharge} = ProjectExpenseJson;
     const ExpenseInfo = ProjectExpenseJson.ExpenseInfo;
     const [index, setIndex] = useState(0);
     const [aplyYm, setAplyYm] = useState();
@@ -16,9 +19,9 @@ const ProjectExpense = () => {
     const [values, setValues] = useState([]);
     const [charge, setCharge] = useState([]);
     const [mmAplyCheck, setMmAplyCheck] = useState();
-    const [ctAtrzCmptnYn, setCtAtrzCmptnYn] = useState();
-    const [totCnt, setTotCnt] = useState();
-    const [aprvDmndCnt, setAprvDmndCnt] = useState();
+    const [ctAtrzCmptnYn, setCtAtrzCmptnYn] = useState(null);
+    const [totCnt, setTotCnt] = useState(0);
+    const [aprvDmndCnt, setAprvDmndCnt] = useState(0);
     const [cookies] = useCookies([]);
 
     const empId = cookies.userInfo.empId;
@@ -46,13 +49,16 @@ const ProjectExpense = () => {
         // 비용 청구 0건일 때 근무시간 먼저 승인요청 했는지 체크
         checkMMAply();
 
-        // 비용 청구 0건일 때 근무시간 먼저 승인요청 했는지 체크
+        // 비용결재완료여부 확인
         getCtAtrzCmptnYn();
 
         // 비용 청구내역 조회
         getCtAplyList();
 
-        // 전자결재 승인 내역 조회
+        // 전자결재 청구내역 조회
+        getElctrnAtrzClmList();
+
+        // 결재요청상태코드별 건수 조회
         getCtAtrzDmndStts();
 
         setAplyYm(year+monthVal);
@@ -91,20 +97,30 @@ const ProjectExpense = () => {
             };
             const response = await ApiRequest("/boot/common/queryIdSearch", param);
 
-            const tempCharge = [];
-            response.forEach((value) => {
-                if(value?.elctrnAtrzId != null){
-                    tempCharge.push(value);
-                }
-            });
-            setCharge(tempCharge);
             setValues(response);
         } catch (e) {
             console.log(e);
         }
     };
 
-    // 전자결재 승인 내역 조회
+    // 전자결재 청구내역 조회
+    const getElctrnAtrzClmList = async () => {
+        try{
+            const param = {
+                queryId: "projectExpenseMapper.retrieveElctrnAtrzClm",
+                empId: empId,
+                aplyYm: year+monthVal,
+                aplyOdr: odrVal
+            };
+            const response = await ApiRequest("/boot/common/queryIdSearch", param);
+
+            setCharge(response);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+
+    // 결재요청상태코드별 건수 조회
     const getCtAtrzDmndStts = async () => {
         try{
             const param = {
@@ -117,29 +133,8 @@ const ProjectExpense = () => {
 
             setTotCnt(response[0].totCnt);
             setAprvDmndCnt(response[0].aprvDmnd);
-
         } catch (e) {
             console.log(e);
-        }
-    };
-
-    const statusCell = (cell) => {
-        if(cell.data.atrzDmndSttsCd === "VTW03701"){
-            return (<div style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
-                    <div>
-                        {cell.data.atrzDmndSttsCdNm}
-                    </div>
-                    <Button
-                        icon="clearsquare"
-                        style={{border: "none"}}
-                        onClick={() => deleteValue(cell)}
-                    />
-                </div>
-            );
-        }else{
-            return (<div>
-                {cell.data.atrzDmndSttsCdNm}
-            </div>);
         }
     };
 
@@ -155,8 +150,10 @@ const ProjectExpense = () => {
 
         if(inptDDln){
             if(totCnt === 0){
+                // 프로젝트개인비용MM 비용결재완료여부 N으로 업데이트
                 updateCtAtrzCmptnYn();
             } else {
+                // 비용 청구 데이터 결재요청상태 null -> 임시저장
                 prjctCtInptDdln();
             }
         }
@@ -202,6 +199,7 @@ const ProjectExpense = () => {
         try {
             const response = await ApiRequest("/boot/common/queryIdDataControl", param);
 
+            // 프로젝트개인비용MM 비용결재완료여부 N으로 업데이트
             if (response !== 0)
                 updateCtAtrzCmptnYn();
 
@@ -210,10 +208,9 @@ const ProjectExpense = () => {
         }
     }
 
-    // 비용 청구 0건일 때 근무시간 먼저 승인요청 했는지 체크
+    // 비용결재완료여부 확인
     const getCtAtrzCmptnYn = async () => {
         try {
-
             const param = [
                 { tbNm: "PRJCT_INDVDL_CT_MM" },
                 {
@@ -224,8 +221,14 @@ const ProjectExpense = () => {
             ];
             const response = await axios.post("/boot/common/commonSelect", param);
 
-            setCtAtrzCmptnYn(response.data[0].ctAtrzCmptnYn);
-
+            for(let i = 0; i < response.data.length; i++) {
+                if(response.data[i].ctAtrzCmptnYn === 'Y'){
+                    setCtAtrzCmptnYn('Y');
+                } else if(response.data[i].ctAtrzCmptnYn === 'N'){
+                    setCtAtrzCmptnYn('N');
+                    break;
+                }
+            }
         } catch (error) {
             console.log(error);
         }
@@ -238,8 +241,10 @@ const ProjectExpense = () => {
 
         if(aprvDmnd){
             if(totCnt === 0){
+                // 프로젝트개인비용MM 비용결재완료여부 Y로 업데이트
                 updateCtAtrzCmptnYnAprv();
             } else {
+                // 비용 청구 데이터 결재요청상태 임시저장 -> 결재중
                 prjctPrjctAprvDmnd();
             }
         }
@@ -264,7 +269,7 @@ const ProjectExpense = () => {
 
             if (response > 0) {
                 window.location.reload();
-                window.alert("입력마감 되었습니다.");
+                window.alert("승인요청 되었습니다.");
             }
         } catch (error) {
             console.error("Error fetching data", error);
@@ -299,6 +304,7 @@ const ProjectExpense = () => {
 
         const inptDDlnRtrcn = window.confirm('입력마감을 취소 하시겠습니까?');
 
+        // 비용 청구 데이터 결재요청상태 임시저장 -> null
         if(inptDDlnRtrcn)
             prjctCtInptDdlnRtrcn();
     };
@@ -317,7 +323,8 @@ const ProjectExpense = () => {
         try {
             const response = await ApiRequest("/boot/common/queryIdDataControl", param);
 
-            if (response !== 0)
+            // 프로젝트개인비용MM 비용결재완료여부 NULL으로 업데이트
+            if (response !== undefined || response !== null)
                 updateCtAtrzCmptnYnNull();
         } catch (error) {
             console.log(error);
@@ -355,6 +362,7 @@ const ProjectExpense = () => {
 
         const aprvDmndRtrcn = window.confirm('승인요청을 취소 하시겠습니까?');
 
+        // 비용 청구 데이터 결재요청상태 임시저장 -> 결재중
         if(aprvDmndRtrcn)
             prjctPrjctAprvDmndRtrcn();
     }
@@ -384,7 +392,7 @@ const ProjectExpense = () => {
 
 
     function onPrintClick() {
-
+        console.log('aprvDmnd',aprvDmndCnt)
     };
 
 
@@ -429,6 +437,22 @@ const ProjectExpense = () => {
 
     };
 
+    const elecAtrzButtonRender = (button, data) => {
+        let render = true;
+
+        return(
+            render && <Button name={button.name} text={button.text} onClick={(e) => moveToElecAtrz(button, data)} />
+        );
+    };
+
+    const moveToElecAtrz = (button, data) => {
+        navigate("/elecAtrz/ElecAtrzDetail",
+            { state: {
+                    data: data
+                }
+            });
+    }
+
     const itemTitleRender = (a) => <span>{a.TabName}</span>;
 
     return (
@@ -448,11 +472,17 @@ const ProjectExpense = () => {
                                 onClick={onPrintClick} text="출력(팝업)" style={{ marginLeft: "5px", height: "48px", width: "120px" }}
                             />
                         </div>
-                    ) : ctAtrzCmptnYn === 'Y' || aprvDmndCnt !== 0 ? (
+                    ) : aprvDmndCnt !== 0 ? (
                         <div>
                             <Button
                                 onClick={onAprvDmndRtrcnClick} text="승인요청취소" style={{ marginLeft: "5px", height: "48px", width: "130px" }}
                             />
+                            <Button
+                                onClick={onPrintClick} text="출력(팝업)" style={{ marginLeft: "5px", height: "48px", width: "120px" }}
+                            />
+                        </div>
+                    ) : ctAtrzCmptnYn === 'Y' ? (
+                        <div>
                             <Button
                                 onClick={onPrintClick} text="출력(팝업)" style={{ marginLeft: "5px", height: "48px", width: "120px" }}
                             />
@@ -472,17 +502,21 @@ const ProjectExpense = () => {
                             values={values}
                             paging={true}
                             onClick={deleteValue}
+                            wordWrapEnabled={true}
                         />
                         <p>* 전자결재 청구 내역</p>
                         <CustomTable
-                            keyColumn={keyColumn}
+                            keyColumn={elcKeyColumn}
                             pageSize={pageSize}
                             columns={columnCharge}
                             values={charge}
                             paging={true}
+                            wordWrapEnabled={true}
+                            buttonRender={elecAtrzButtonRender}
+                            onClick={moveToElecAtrz}
                         />
                 </div>
-                {ctAtrzCmptnYn === 'N' ? (
+                {ctAtrzCmptnYn !== null ? (
                     <div style={{
                         height: "250px",
                         width: "auto",

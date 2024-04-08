@@ -161,14 +161,14 @@ const ProjectExpenseCard = (props) => {
                             alignment={'center'}
                             dataField={col.key}
                             caption={col.value}
-                            headerCellRender={['expensCd', 'prjctId'].includes(col.key) && ((props) => (
-                                <div>
-                                    <span>{col.key === 'prjctId' ? '프로젝트' : '비용코드'}</span><br/>
-                                    <Button hint="선택 된 첫번째 체크박스의 항목으로 일괄적용 됩니다." 
-                                        type="success" text="일괄적용" onClick={() => batchSelect(col.key)}
-                                    />
-                                </div>)
-                            )}
+                            // headerCellRender={['expensCd', 'prjctId'].includes(col.key) && ((props) => (
+                            //     <div>
+                            //         <span>{col.key === 'prjctId' ? '프로젝트' : '비용코드'}</span><br/>
+                            //         <Button hint="선택 된 첫번째 체크박스의 항목으로 일괄적용 됩니다." 
+                            //             type="success" text="일괄적용" onClick={() => batchSelect(col.key)}
+                            //         />
+                            //     </div>)
+                            // )}
                             cellRender={col.type && ((props) => {
                                 if (col.type === 'selectBox') {
                                     return (
