@@ -37,7 +37,7 @@
     { "key": "utztnDt", "value": "사용일시" },
     { "key": "useOffic", "value": "사용처" },
     { "key": "utztnAmt", "value": "이용금액" },
-    { "key": "prjctId", "value": "프로젝트", "type": "selectBox", "displayExpr": "value", "valueExpr": "key", "placeholder": "입력 시 사용가능한 프로젝트 전체 조회" },
+    { "key": "prjctId", "value": "프로젝트", "type": "selectBox", "displayExpr": "prjctNm", "valueExpr": "prjctId", "placeholder": "입력 시 사용가능한 프로젝트 전체 조회" },
     { "key": "expensCd", "value": "비용코드", "type": "selectBox", "displayExpr": "cdNm", "valueExpr": "cdValue", "placeholder": "[비용코드 선택]" },
     { "key": "ctPrpos", "value": "상세내역(목적)", "type": "textBox", "placeholder": "상세내역(목적)" },
     { "key": "atdrn", "value": "용도(참석자명단)", "type": "textBox", "placeholder": "용도(참석자명단)" }

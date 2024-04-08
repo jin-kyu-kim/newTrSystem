@@ -19,7 +19,6 @@ export default function SideNavInnerToolbar({ children, status }) {
   const [,startTransition] = useTransition();
   const { isXSmall, isLarge } = useScreenSize();
   const [patchCssClass, onMenuReady] = useMenuPatch();
-  // const [menuStatus, setMenuStatus] = useState( isLarge ? MenuStatus.Opened : MenuStatus.Closed );
   const [menuStatus, setMenuStatus] = useState(  isLarge ? MenuStatus.Closed : MenuStatus.Opened );
 
   const toggleMenu = useCallback(({ event }) => {
