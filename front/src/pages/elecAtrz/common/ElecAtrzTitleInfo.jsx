@@ -40,12 +40,11 @@ const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick
   };
 
     useEffect(() => {
-      const deptList = cookies.deptInfo;
-
-      const dept = deptList.find(item => item.deptId === deptId);
-
-      setDeptNm(dept.deptNm);
-
+      if(onHandleAtrzTitle){
+        const deptList = cookies.deptInfo;
+        const dept = deptList.find(item => item.deptId === deptId);
+        setDeptNm(dept.deptNm);
+      }
     }, []);
 
   return (
