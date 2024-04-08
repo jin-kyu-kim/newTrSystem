@@ -1,7 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useLocation } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import { Button } from 'devextreme-react/button';
+import Popup from "devextreme-react/popup";
+import TextArea from "devextreme-react/text-area";
+
 import ElecAtrzTitleInfo from './common/ElecAtrzTitleInfo';
 import CustomTable from 'components/unit/CustomTable';
 import ElecAtrzTabDetail from './ElecAtrzTabDetail';
@@ -24,13 +27,15 @@ const ElecAtrzDetail = () => {
     const [ atachFileList, setAtachFileList ] = useState([]);
     const [ aplyYmd, setAplyYmd ] = useState();
     const [ odr, setOdr ] = useState();
+    const [rjctPopupVisible, setRjctPopupVisible] = useState(false);
+    const [opnnCn, setOpnnCn] = useState("");
 
     const onBtnClick = (e) => {
 
         switch (e.element.id) {
             case "aprv": ; aprvAtrz();
                 break;
-            case "rjct": ; rjctAtrz();
+            case "rjct": ; onRjctPopup();
                 break;
             case "print": console.log("출력 클릭"); 
                 break;
@@ -246,6 +251,20 @@ const ElecAtrzDetail = () => {
             console.error(error)
         }
     }
+    
+    const onRjctPopup = () => {
+        setRjctPopupVisible(true);
+    }
+
+    // 팝업 close
+    const handleClose = () => {
+        setRjctPopupVisible(false);
+    };
+
+    // 반려 의견 입력
+    const onTextAreaValueChanged = useCallback((e) => {
+        setOpnnCn(e.value);
+    }, []);
 
     const rjctAtrz = async () => {
         const isconfirm = window.confirm("요청을 반려하시겠습니까?");
@@ -259,6 +278,7 @@ const ElecAtrzDetail = () => {
                 { tbNm: "ATRZ_LN" },
                 { 
                     atrzSttsCd: "VTW00803",
+                    rjctPrvonsh: opnnCn,
                     rjctYmd: date,
                     mdfcnDt: mdfcnDt,
                     mdfcnEmpId: cookies.userInfo.empId,
@@ -274,12 +294,43 @@ const ElecAtrzDetail = () => {
 
             if(result > 0) {
 
-                alert("반려 처리되었습니다.");
-                navigate('/elecAtrz/ElecAtrz');
+                handleDmndStts(nowAtrzLnSn).then((value) => {
+                    console.log(value);
+                    if(value > 0) {
+                        alert("반려 처리되었습니다.");
+                        
+                        navigate('/elecAtrz/ElecAtrz');
+                    } else {
+                        alert("반려 처리에 실패하였습니다.");
+                        return;
+                    }
+                });
+
             } else {
                 alert("반려 처리에 실패하였습니다.");
             }
         }
+    }
+
+    const handleDmndStts = async (nowAtrzLnSn) => {
+        const date = getToday();
+        const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
+        const param = [
+            { tbNm: "ELCTRN_ATRZ" },
+            { 
+                atrzDmndSttsCd: "VTW03704",
+                mdfcnDt: mdfcnDt,
+                mdfcnEmpId: cookies.userInfo.empId,
+            },
+            { 
+                elctrnAtrzId: detailData.elctrnAtrzId,
+                nowAtrzLnSn: nowAtrzLnSn
+            }
+        ]
+
+        const result = await ApiRequest("/boot/common/commonUpdate", param);
+   
+        return result;
     }
 
     /**
@@ -349,6 +400,7 @@ const ElecAtrzDetail = () => {
         setOdr(odr);
     } 
 
+    
 
 
     /**
@@ -464,6 +516,24 @@ const ElecAtrzDetail = () => {
                 ))}
                 <Button text='목록' type='normal' onClick={() => navigate('/elecAtrz/ElecAtrz')} />
             </div>
+            <Popup
+                width={"80%"}
+                height={"80%"}
+                visible={rjctPopupVisible}
+                onHiding={handleClose}
+                showCloseButton={true}
+                title={"반려 사유"}
+            >
+                <TextArea 
+                    height="50%"
+                    valueChangeEvent="change"
+                    onValueChanged={onTextAreaValueChanged}
+                    placeholder="반려 사유를 입력해주세요."
+                />
+                <br/>
+                <Button text="반려" onClick={rjctAtrz}/>
+                <Button text="취소" onClick={handleClose}/>
+            </Popup>
         </div>
     );
 }
