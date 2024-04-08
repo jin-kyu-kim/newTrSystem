@@ -1292,7 +1292,7 @@
         HDOF_STTS_NM,
         READ_YN,
         WRITE_YN
-        FROM( 
+        FROM(
         SELECT
         E.EMP_ID AS EMP_ID,
         E.EMPNO AS EMPNO,
@@ -1325,6 +1325,7 @@
         LEFT OUTER JOIN PRJCT_MNG_AUTHRT PMA
         ON E.EMP_ID = PMA.EMP_ID
         WHERE 1=1
+        AND PMA.PRJCT_ID = #{prjctId}
         <if test="empno != null and empno !=''">
             AND E.EMPNO LIKE CONCAT('%', #{empno}, '%')
         </if>

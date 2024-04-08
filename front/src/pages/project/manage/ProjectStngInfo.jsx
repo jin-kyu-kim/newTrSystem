@@ -37,6 +37,10 @@ function ProjectStngInfo( prjctId ) {
   };
 
   const pageHandle = async () => {
+    setParam({
+      ...param,
+      prjctId: prjctId.prjctId
+    })
 
     try {
       const response = await ApiRequest("/boot/common/queryIdSearch", param);
