@@ -233,10 +233,13 @@
         LEFT OUTER JOIN EXPENS_EXCN T2
         ON T1.PRJCT_ID = T2.PRJCT_ID
         AND T1.EXPENS_CD = T2.EXPENS_CD
-        AND T1.USE_YM = T2.INPT_YM
+        AND T1.USE_YM = IF(CHAR_LENGTH (T2.INPT_YM) = 6
+        , DATE_FORMAT(DATE (CONCAT(T2.INPT_YM, '01')), '%Y-%m')
+        , DATE_FORMAT(DATE (CONCAT(T2.INPT_YM, '-01')), '%Y-%m')
+        )
         AND T2.EXPENS_CD =#{expensCd}
       WHERE T1.PRJCT_ID = #{prjctId}
-        UNION ALL
+        UNION
         SELECT T1.PRJCT_ID
         , T1.BGT_MNG_ODR
         , T1.EXPENS_PRMPC_SN
@@ -260,9 +263,12 @@
         RIGHT OUTER JOIN EXPENS_EXCN T2
         ON T1.PRJCT_ID = T2.PRJCT_ID
         AND T1.EXPENS_CD = T2.EXPENS_CD
-        AND T1.USE_YM = T2.INPT_YM
-        AND T2.EXPENS_CD =#{expensCd}
+        AND T1.USE_YM = IF(CHAR_LENGTH (T2.INPT_YM) = 6
+        , DATE_FORMAT(DATE (CONCAT(T2.INPT_YM, '01')), '%Y-%m')
+        , DATE_FORMAT(DATE (CONCAT(T2.INPT_YM, '-01')), '%Y-%m')
+        )
         WHERE T2.PRJCT_ID = #{prjctId}
+          AND T2.EXPENS_CD =#{expensCd}
         ) Z2
         ON concat(Z1.YM) = Z2.USE_YM
     </select>
@@ -307,8 +313,11 @@
             LEFT OUTER JOIN MMNY_LBRCO_EXCN T2
         ON T1.PRJCT_ID = T2.PRJCT_ID
             AND T1.EMP_ID = T2.EMP_ID
-            AND T1.INPT_YM = T2.INPT_YM
-        UNION ALL
+            AND T1.INPT_YM = IF(CHAR_LENGTH (T2.INPT_YM) = 6
+            , DATE_FORMAT(DATE (CONCAT(T2.INPT_YM, '01')), '%Y-%m')
+            , DATE_FORMAT(DATE (CONCAT(T2.INPT_YM, '-01')), '%Y-%m')
+            )
+        UNION
         SELECT    T1.EXPECT_MM
                 , T1.UNTPC
                 , DATE_FORMAT(DATE (CONCAT(T2.INPT_YM, '01')), '%Y-%m') AS INPT_YM
@@ -335,7 +344,10 @@
             RIGHT OUTER JOIN MMNY_LBRCO_EXCN T2
         ON T1.PRJCT_ID = T2.PRJCT_ID
             AND T1.EMP_ID = T2.EMP_ID
-            AND T1.INPT_YM = T2.INPT_YM
+            AND T1.INPT_YM = IF(CHAR_LENGTH (T2.INPT_YM) = 6
+            , DATE_FORMAT(DATE (CONCAT(T2.INPT_YM, '01')), '%Y-%m')
+            , DATE_FORMAT(DATE (CONCAT(T2.INPT_YM, '-01')), '%Y-%m')
+            )
         WHERE T2.PRJCT_ID = #{prjctId}
           AND T2.EMP_ID = #{empId}
             ) Z2
@@ -374,8 +386,11 @@
             LEFT JOIN OUTORD_LBRCO_EXCN T2
         ON T1.PRJCT_ID = T2.PRJCT_ID
             AND T1.OUTORD_EMP_ID = T2.OUTORD_EMP_ID
-            AND T1.INPT_YM = T2.INPT_YM
-        UNION ALL
+            AND T1.INPT_YM = IF(CHAR_LENGTH (T2.INPT_YM) = 6
+            , DATE_FORMAT(DATE (CONCAT(T2.INPT_YM, '01')), '%Y-%m')
+            , DATE_FORMAT(DATE (CONCAT(T2.INPT_YM, '-01')), '%Y-%m')
+            )
+        UNION
         SELECT T1.OUTORD_EMP_ID, T1.INPT_YM, T1.EXPECT_MM, T2.MM
         FROM (
             SELECT B.PRJCT_ID, A.OUTORD_EMP_ID,
@@ -392,7 +407,10 @@
             RIGHT JOIN OUTORD_LBRCO_EXCN T2
             ON T1.PRJCT_ID = T2.PRJCT_ID
             AND T1.OUTORD_EMP_ID = T2.OUTORD_EMP_ID
-            AND T1.INPT_YM = T2.INPT_YM
+            AND T1.INPT_YM = IF(CHAR_LENGTH (T2.INPT_YM) = 6
+            , DATE_FORMAT(DATE (CONCAT(T2.INPT_YM, '01')), '%Y-%m')
+            , DATE_FORMAT(DATE (CONCAT(T2.INPT_YM, '-01')), '%Y-%m')
+            )
             WHERE T2.PRJCT_ID = #{prjctId}
             AND T1.OUTORD_EMP_ID = #{outordEmpId}
             ) Z2
