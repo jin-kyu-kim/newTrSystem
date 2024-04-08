@@ -36,13 +36,27 @@ const ProjectHrCtAprvDetail = () => {
     const date = new Date();
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
+    let firstDayOfMonth = new Date( date.getFullYear(), date.getMonth() , 1 );
+    let lastMonth = new Date(firstDayOfMonth.setDate( firstDayOfMonth.getDate() - 1 )); // 전월 말일
     const day = date.getDate();
 
     let odrVal = day > 15 ? "2" : "1";
     let monthVal = month < 10 ? "0" + month : month;
+    let lastMonthVal = (lastMonth.getMonth() + 1) < 10 ? "0" + (lastMonth.getMonth() + 1) : lastMonth.getMonth() + 1;
     let dayVal = day < 10 ? "0" + day : day;
     let aplyYm = year + monthVal;
-    
+
+    useEffect(() => {
+        setParam({
+            ...param,
+            queryId: ProjectHrCtAprvDetailJson.mm.queryId,
+            prjctId: prjctId,
+            aplyYm: day > 15 ? aplyYm : lastMonth.getFullYear()+lastMonthVal,
+            aplyOdr: day > 15 ? "1" : "2",
+            bgtMngOdr: bgtMngOdr
+        })
+    }, []);
+
     // 조회
     useEffect(() => {
         if(!Object.values(param).every((value) => value === "")) {
