@@ -14,6 +14,7 @@ import ExpensInfo from "./expensClm/ExpensInfo";
 
 import ElecAtrzCtrtInfo from "./ctrtInfo/ElecAtrzCtrtInfo";
 import ElecAtrzCtrtInfoDetail from "./ctrtInfo/ElecAtrzCtrtInfoDetail";
+import { Button } from 'devextreme-react';
 
 const ElecAtrzNewReq = () => {
 
@@ -342,6 +343,13 @@ const ElecAtrzNewReq = () => {
                         onValueChanged={handleAttachmentChange}
                         maxFileSize={1.5 * 1024 * 1024 * 1024}
                     />
+                </div>
+
+                <div style={{textAlign: 'center', marginBottom: '100px'}}>
+                {ElecAtrzNewReqJson.header.map((item, index) => (
+                    <Button id={item.id} text={item.text} key={index} type={item.type} 
+                        onClick={onBtnClick} style={{marginRight: '3px'}}/>
+                ))}
                 </div>
             </div>
         </>

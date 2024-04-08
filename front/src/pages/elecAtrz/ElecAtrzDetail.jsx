@@ -14,6 +14,7 @@ const ElecAtrzDetail = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const detailData = location.state.data;
+    const sttsCd = location.state.sttsCd;
     const [ prjctData, setPrjctData ] = useState({});
     const [ atrzOpnn, setAtrzOpnn ] = useState([]);
     const { header, keyColumn, columns, queryId, atchFlQueryId } = electAtrzJson.electAtrzDetail;
@@ -422,6 +423,7 @@ const ElecAtrzDetail = () => {
                 <ElecAtrzTitleInfo
                     atrzLnEmpList={atrzOpnn}
                     contents={header}
+                    sttsCd={sttsCd}
                     formData={detailData}
                     prjctData={prjctData}
                     atrzParam={detailData}
@@ -456,6 +458,10 @@ const ElecAtrzDetail = () => {
             />
 
             <div style={{textAlign: 'center', marginBottom: '100px'}}>
+                {sttsCd === 'VTW00801' && header.filter(item => item.id === 'aprv' || item.id === 'rjct').map((item, index) => (
+                    <Button id={item.id} text={item.text} key={index} type={item.type} 
+                        onClick={onBtnClick} style={{marginRight: '3px'}}/>
+                ))}
                 <Button text='목록' type='normal' onClick={() => navigate('/elecAtrz/ElecAtrz')} />
             </div>
         </div>

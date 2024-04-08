@@ -4,7 +4,7 @@ import { TextBox } from "devextreme-react/text-box";
 import AtrzLnTable from "components/unit/AtrzLnTable";
 import ApprovalPopup from "components/unit/ApprovalPopup";
 
-const ElecAtrzTitleInfo = ({ atrzLnEmpList, getAtrzLn, contents, onClick, formData, prjctData, onHandleAtrzTitle, atrzParam }) => {
+const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick, formData, prjctData, onHandleAtrzTitle, atrzParam }) => {
   const [popVisible, setPopVisible] = useState(false);
 
   const onAtrzLnPopup = async () => {
@@ -17,17 +17,23 @@ const ElecAtrzTitleInfo = ({ atrzLnEmpList, getAtrzLn, contents, onClick, formDa
   }
 
   const setButtons = () => {
-    const defaultButtons = ['print', 'docHist'];
-    const buttonIdToShow = {
-      'VTW00801': ['aprv', 'rjct', 'print', 'docHist'],
-      'VTW03701': ['reAtrz', 'print', 'docHist'],
-    };
+    let buttonsToRender;
+    if (onHandleAtrzTitle) {
+      buttonsToRender = contents; // 기안 작성페이지의 경우 모든 contents 렌더
+    } else {
+      const defaultButtons = ['print', 'docHist'];
+      const buttonIdToShow = {
+        'VTW00801': ['aprv', 'rjct', 'print', 'docHist'],
+        'VTW03701': ['reAtrz', 'print', 'docHist'],
+      };
+      const currentButtons = buttonIdToShow[sttsCd] || defaultButtons;
+      buttonsToRender = contents.filter(item => currentButtons.includes(item.id));
+    }
 
-    const currentButtons = buttonIdToShow[formData.atrzDmndSttsCd] || defaultButtons;
-    const result = contents.filter(item => currentButtons.includes(item.id)).map((item, index) => (
-      <Button id={item.id} text={item.text} key={index} onClick={item.id === 'onAtrzLnPopup' ? onAtrzLnPopup : onClick} />
+    return buttonsToRender.map((item, index) => (
+      <Button id={item.id} text={item.text} type={item.type} style={{ marginRight: '3px' }} 
+       key={index} onClick={item.id === 'onAtrzLnPopup' ? onAtrzLnPopup : onClick} />
     ));
-    return result;
   };
 
   return (
