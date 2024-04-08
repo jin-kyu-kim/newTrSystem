@@ -24,6 +24,7 @@ const ProjectAprvDetail = () => {
     const aprvrEmpId = location.state.aprvrEmpId;
     const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
     const ProjectAprvDetail = ProjectAprvDetailJson;
+    const atrzDmndSttsCd = ProjectAprvDetail.atrzDmndSttsCd;
   
     const [aprvPopupVisible, setAprvPopupVisible] = useState(false);
     const [rjctPopupVisible, setRjctPopupVisible] = useState(false);
@@ -487,7 +488,7 @@ const ProjectAprvDetail = () => {
                             if(data.index === selectedIndex) {
                                 return (
                                     <React.Suspense fallback={<div>Loading...</div>}>
-                                        <Component prjctId={prjctId} ctrtYmd={ctrtYmd} stbleEndYmd={stbleEndYmd} bgtMngOdr={bgtMngOdr}/>
+                                        <Component prjctId={prjctId} ctrtYmd={ctrtYmd} stbleEndYmd={stbleEndYmd} bgtMngOdr={bgtMngOdr} atrzDmndSttsCd={atrzDmndSttsCd}/>
                                     </React.Suspense>
                                 );
                             }

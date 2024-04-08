@@ -24,6 +24,7 @@ const ProjectDetail = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [atrzLnSn, setAtrzLnSn] = useState();
   const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
+  const atrzDmndSttsCd = "VTW03703";
 
   const ProjectDetail = ProjectDetailJson;
 
@@ -287,7 +288,7 @@ const ProjectDetail = () => {
           if(data.index === selectedIndex) {
               return (
                 <React.Suspense fallback={<div>Loading...</div>}>
-                <Component prjctId={prjctId} ctrtYmd={ctrtYmd} stbleEndYmd={stbleEndYmd} bgtMngOdr={bgtMngOdr} bgtMngOdrTobe={bgtMngOdrTobe} />
+                <Component prjctId={prjctId} ctrtYmd={ctrtYmd} stbleEndYmd={stbleEndYmd} bgtMngOdr={bgtMngOdr} bgtMngOdrTobe={bgtMngOdrTobe} atrzDmndSttsCd={atrzDmndSttsCd}/>
               </React.Suspense>
             );
           }
