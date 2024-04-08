@@ -10,7 +10,7 @@ import CustomTable from "components/unit/CustomTable";
 import ProjectTotCostInfoJson from "./ProjectTotCostInfoJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
 
-const ProjectTotCostInfo = (prjctId) => {
+const ProjectTotCostInfo = ({prjctId, atrzDmndSttsCd}) => {
   const [data, setData] = useState([]);
   const { keyColumn, queryId, tableColumns, prjctColumns , summaryColumn , wordWrap, groupingColumn ,groupingData} = ProjectTotCostInfoJson;
   useEffect(() => {
@@ -35,7 +35,7 @@ const ProjectTotCostInfo = (prjctId) => {
 
   const pageHandle = async (item) => {
     try {
-      const modifiedItem = { ...item,queryId:queryId, prjctId: prjctId.prjctId };
+      const modifiedItem = { ...item,queryId:queryId, prjctId: prjctId, atrzDmndSttsCd: atrzDmndSttsCd};
       const response = await ApiRequest("/boot/common/queryIdSearch", modifiedItem);
       setData(response);
       if (response.length !== 0) {
