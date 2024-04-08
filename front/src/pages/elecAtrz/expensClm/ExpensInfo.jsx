@@ -71,8 +71,8 @@ const ExpensInfo = ({onSendData}) => {
             rciptPblcnYmd: null,
             taxBillPblcnYmd: null,
             dtlUseDtls: null,
-            clmAmt: null,
-            vatInclsAmt: null,
+            clmAmt: 0,
+            vatInclsAmt: 0,
             dpstDmndYmd: null,
             expensCd: null,
             cnptNm: null,
@@ -92,8 +92,8 @@ const ExpensInfo = ({onSendData}) => {
             rciptPblcnYmd: null,
             taxBillPblcnYmd: null,
             dtlUseDtls: null,
-            clmAmt: null,
-            vatInclsAmt: null,
+            clmAmt: 0,
+            vatInclsAmt: 0,
             dpstDmndYmd: null,
             expensCd: null,
             cnptNm: null,
@@ -124,7 +124,7 @@ const ExpensInfo = ({onSendData}) => {
         if (fieldName === "ctStlmSeCd") {
             if (e.target.value !== "VTW01904") {
                 newForms[index]["dpstDmndYmd"] = null
-                newForms[index]["vatInclsAmt"] = null;
+                newForms[index]["vatInclsAmt"] = 0;
                 newForms[index]["dpstActno"] = null;
                 newForms[index]["dpstrFlnm"] = null;
                 newForms[index]["bankCd"] = null;
@@ -192,7 +192,15 @@ const ExpensInfo = ({onSendData}) => {
         }
 
         setNextClmOdr(`${nextYear}${nextMonthString}-${nextOdr}`);
-    } 
+    }
+
+    const handleNumberInputChange = (e, index, fieldName) => {
+        const { value } = e.target;
+        const newValue = value.replace(/[^0-9]/g, ""); // 숫자 이외의 값 제거
+        const newForms = [...forms];
+        newForms[index][fieldName] = newValue;
+        setForms(newForms);
+      };
 
     return (
         
@@ -311,10 +319,10 @@ const ExpensInfo = ({onSendData}) => {
                                             fullWidth
                                             id="clmAmt"
                                             label="금액"
-                                            type="number"
+                                            type="text"
                                             variant="outlined"
-                                            value={forms[index].clmAmt}
-                                            onChange={(e) => handleInputChange(e, index, "clmAmt")}
+                                            value={parseInt(forms[index].clmAmt).toLocaleString()}
+                                            onChange={(e) => handleNumberInputChange(e, index, "clmAmt")}
                                         />
                                     </Grid>
                                     <Grid item xs={2}>
@@ -324,8 +332,8 @@ const ExpensInfo = ({onSendData}) => {
                                             label="금액(부가세포함)"
                                             type="text"
                                             variant={forms[index].ctStlmSeCd !== "VTW01904" ? "filled" : "outlined"}
-                                            value={forms[index].vatInclsAmt}
-                                            onChange={(e) => handleInputChange(e, index, "vatInclsAmt")}
+                                            value={parseInt(forms[index].vatInclsAmt).toLocaleString()}
+                                            onChange={(e) => handleNumberInputChange(e, index, "vatInclsAmt")}
                                             disabled={forms[index].ctStlmSeCd !== "VTW01904"}
                                         />
                                     </Grid>
