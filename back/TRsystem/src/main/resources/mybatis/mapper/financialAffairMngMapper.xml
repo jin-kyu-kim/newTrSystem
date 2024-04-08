@@ -15,13 +15,13 @@
             CONCAT(SUBSTR(#{endYmOdr},1, 6),'-',SUBSTR(#{endYmOdr}, 7, 1)) AS END_APLY_ODR,
             mm.EXPECT_MM,
             (
-                SELECT SUM(a.MD*8) / 88
+                SELECT SUM(a.MD*8) / 80
                 FROM PRJCT_MM_APLY a
                 WHERE a.PRJCT_ID = pma.PRJCT_ID
                 GROUP BY a.PRJCT_ID
             ) AS TOTAL_MD_SUM,
             (mm.EXPECT_MM - (
-                SELECT SUM(a.MD*8) / 88
+                SELECT SUM(a.MD*8) / 80
                 FROM PRJCT_MM_APLY a
                 WHERE a.PRJCT_ID = pma.PRJCT_ID
                 GROUP BY a.PRJCT_ID
