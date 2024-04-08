@@ -40,5 +40,9 @@ public class ElecAtrzController {
 		return ElecAtrzDomain.aprvElecAtrz(paramList);
 	}
 	
+	@PostMapping(value = "/boot/elecAtrz/insertPrjctCt")
+	public int insertPrjctCt(@RequestBody Map<String, Object> param) {
+		return ElecAtrzDomain.insertPrjctCt(param);
+	}
 	
 }

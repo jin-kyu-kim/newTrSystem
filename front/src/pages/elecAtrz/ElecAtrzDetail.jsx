@@ -20,6 +20,8 @@ const ElecAtrzDetail = () => {
     const [ cookies ] = useCookies(["userInfo"]);
     const [maxAtrzLnSn, setMaxAtrzLnSn] = useState();
     const [ dtlInfo, setDtlInfo ] = useState({});
+    const [ aplyYmd, setAplyYmd ] = useState();
+    const [ odr, setOdr ] = useState();
 
     const onBtnClick = (e) => {
 
@@ -44,6 +46,7 @@ const ElecAtrzDetail = () => {
         getPrjct();
         getAtrzLn();
         getMaxAtrzLnSn();
+        setAplyYmdOdr();
     }, []);
     
     const getVacInfo = async () => {
@@ -204,6 +207,14 @@ const ElecAtrzDetail = () => {
             const response = await ApiRequest("/boot/common/commonUpdate", param);
             if(response > 0) {
 
+                // 청구결재이면서 촤종 숭인인 경우 프로젝트 비용에 내용을 반영해준다.
+                if(detailData.elctrnAtrzTySeCd === "VTW04907" && nowAtrzLnSn > maxAtrzLnSn) {
+                    const clmResult = handlePrcjtCost();
+                    if(clmResult < 0) {
+                        alert("승인 처리에 실패하였습니다.");
+                    }
+                }
+
                 // 휴가 결재이면서 최종 숭인인 경우 휴가 내용 반영해준다. 
                 if(detailData.elctrnAtrzTySeCd === "VTW04901" && nowAtrzLnSn > maxAtrzLnSn) {
                     const vacResult = handleVacation();
@@ -256,6 +267,75 @@ const ElecAtrzDetail = () => {
             }
         }
     }
+
+    /**
+     * 청구결재 최종 승인 시 프로젝트 비용청구 테이블에 
+     */
+    const handlePrcjtCost = async () => {
+
+        const regDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
+        const regEmpId = cookies.userInfo.empId;
+
+        const param = {
+            aplyYm: aplyYmd,
+            aplyOdr: odr,
+            elctrnAtrzId: detailData.elctrnAtrzId,
+            prjctId: detailData.prjctId,
+            empId: detailData.atrzDmndEmpId,
+            regDt: regDt,
+            regEmpId: regEmpId
+        }
+        
+        try {
+            const result = await ApiRequest("/boot/elecAtrz/insertPrjctCt", param);
+            return result;
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    /**
+     * 청구결재용 청구 연월, 차수 생성
+     */
+    const setAplyYmdOdr = () => {
+        
+        const today = new Date();
+
+        let year = today.getFullYear();
+        let month = today.getMonth() + 1; 
+        const day = today.getDate();
+        let odr;
+        let nextOdr
+
+        if (day <= 15) {
+            odr = 2;
+        } else {
+
+            odr = 1;
+
+        }
+        
+        if (month === 1) {
+            if(day <= 15) {
+                month = 12; // 1월인 경우 이전 연도 12월로 설정
+                year--;
+            } else {
+
+            }
+        } else {
+            if(day <= 15) {
+                month--; // 2월 이상인 경우 이전 월로 설정
+            } 
+        }
+    
+        // 월을 두 자리 숫자로 표현합니다.
+        const monthString = (month < 10 ? '0' : '') + month;
+        
+        setAplyYmd(`${year}${monthString}`);
+        setOdr(odr);
+    } 
+
+
 
     /**
      * 휴가결재 최종 승인 시 휴가 일수 차감 

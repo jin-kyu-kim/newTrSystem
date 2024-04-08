@@ -197,4 +197,25 @@
 		  AND ELCTRN_ATRZ_ID = #{elctrnAtrzId}
 	</select>
 	
+	<select id="retrieveClmAtrzInfo" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT ea.ELCTRN_ATRZ_ID
+			 , ea.PRJCT_ID
+			 , ea.ATRZ_DMND_EMP_ID AS EMP_ID										-- 결재요청직원ID -> 직원ID(EMP_ID)
+			 , ea.ATRZ_DMND_STTS_CD
+			 , cad.EXPENS_CD														-- 경비코드
+			 , COALESCE(cad.RCIPT_PBLCN_YMD, cad.TAX_BILL_PBLCN_YMD) AS UTZTN_DT	-- 영수증 발행일자 / 세금계산서 발행일자 -> 이용일시(UTZTN_DT)
+			 , cad.CNPT_NM AS USE_OFFIC												-- 거래처명 -> 이용처 (USE_OFFIC)
+			 , cad.CLM_AMT AS UTZTN_AMT												-- 청구금액 -> 이용금액 (UTZTN_AMT)
+			 , cad.CLM_PRPOS AS ATDRN												-- 청구용도(참석자)
+			 , cad.DTL_USE_DTLS	AS CT_PRPOS 										-- 상세사용내용 -> 비용용도(CT_PRPOS)
+		 	 , cad.CT_STLM_SE_CD AS CT_ATRZ_SE_CD 									-- 비용결재구분코드 -> CT_ATRZ_SE_CD(비용결재구분코드)
+			 , al.APRVR_EMP_ID														-- 결재자직원ID
+		 	 , al.APRV_YMD															-- 승인일자
+		  FROM ELCTRN_ATRZ ea
+		  JOIN CLM_ATRZ_DTL cad ON (cad.ELCTRN_ATRZ_ID = ea.ELCTRN_ATRZ_ID)
+		  JOIN ATRZ_LN al ON (ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID AND ea.NOW_ATRZ_LN_SN = al.ATRZ_LN_SN)
+		 WHERE 1=1
+		   AND ea.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
+	</select>
+	
 </mapper>
