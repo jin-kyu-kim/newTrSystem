@@ -43,6 +43,23 @@ function ProjectStngInfo( prjctId ) {
     }
   };
 
+  const handleYnVal = async (e) => {
+    // const ynParam = [
+    //     { tbNm: "CTMMNY_INFO" },
+    //     e.data,
+    //     { ctmmnyId: e.key }
+    // ];
+    // try {
+    //     const response = await ApiRequest('/boot/common/commonUpdate', ynParam);
+    //     if(response === 1) pageHandle();
+    // } catch (error) {
+    //     console.log(error)
+    // }
+    console.log(e.value)
+    console.log(e.key);
+    console.log(e.value);
+    console.log("눌럿당 ㅋ");
+}
   return (
     <div className="container">
       <div
@@ -67,6 +84,7 @@ function ProjectStngInfo( prjctId ) {
         paging={true}
         wordWrap={true}
         noEdit={true}
+        handleYnVal={handleYnVal}
        
       />  
     </div>
