@@ -29,24 +29,28 @@
 		SELECT DISTINCT
 			ea.ELCTRN_ATRZ_ID,
 			ea.ATRZ_DMND_EMP_ID,
+			ea.ATRZ_DMND_STTS_CD,
 			ea.PRJCT_ID,
 			ea.ELCTRN_ATRZ_TY_SE_CD,
 			ea.NOW_ATRZ_LN_SN,
 			eadf.GNRL_ATRZ_TTL, -- 전자결재 유형
+			cad.CNPT_NM, -- 거래처명
 			(SELECT EMP_FLNM FROM EMP WHERE EMP_ID = ea.ATRZ_DMND_EMP_ID) ATRZ_DMND_EMP_NM, -- 기안자
 			(SELECT EMP_FLNM FROM EMP WHERE EMP_ID = al.APRVR_EMP_ID) APRVR_EMP_ID, -- 결재자
 			(SELECT CD_NM FROM CD WHERE CD_VALUE = al.ATRZ_STEP_CD) ATRZ_STEP_CD, -- 현재 결재단계
 			(SELECT CD_NM FROM CD WHERE CD_VALUE = al.ATRZ_STTS_CD) ATRZ_STTS_CD, -- 결재상태
-			DATE_FORMAT(ea.REG_DT, '%Y-%m-%d') AS REG_DT,
+			DATE_FORMAT(ea.REG_DT, '%Y-%m-%d %H:%i:%s') AS REG_DT,
 			COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cta.CTRT_ATRZ_TTL, cga.ATRZ_TTL, CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD), ' [',
 			DATE_FORMAT(va.VCATN_BGNG_YMD, '%Y-%m-%d'), ' ~ ', DATE_FORMAT(va.VCATN_END_YMD, '%Y-%m-%d'), ' (', va.VCATN_DE_CNT, '일)]')) AS TITLE,
 			COALESCE(ga.GNRL_ATRZ_CN, ca.CLM_ATRZ_CN, cta.CTRT_ATRZ_CN, cga.STLM_CN) AS CN,
+			COALESCE(ga.ATCHMNFL_ID, ca.ATCHMNFL_ID, cta.ATCHMNFL_ID, cga.ATCHMNFL_ID) AS ATCHMNFL_ID,
 			al.RJCT_PRVONSH
 		FROM ELCTRN_ATRZ ea
-			LEFT JOIN ATRZ_LN al ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID AND ea.NOW_ATRZ_LN_SN = al.ATRZ_LN_SN -- 현재 결재단계만
+			LEFT JOIN ATRZ_LN al ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID -- 현재 결재단계만
 			LEFT JOIN REFRN_MAN rm ON ea.ELCTRN_ATRZ_ID = rm.ELCTRN_ATRZ_ID -- 참조자의 경우
 			LEFT JOIN GNRL_ATRZ ga ON ea.ELCTRN_ATRZ_ID = ga.ELCTRN_ATRZ_ID -- 일반결재
 			LEFT JOIN CLM_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID -- 청구결재
+			LEFT JOIN CLM_ATRZ_DTL cad ON ea.ELCTRN_ATRZ_ID = cad.ELCTRN_ATRZ_ID -- 청구결재 상세
 			LEFT JOIN CTRT_ATRZ cta ON ea.ELCTRN_ATRZ_ID = cta.ELCTRN_ATRZ_ID -- 계약결재
 			LEFT JOIN CTRT_GIVE_ATRZ cga ON ea.ELCTRN_ATRZ_ID = cga.ELCTRN_ATRZ_ID -- 계약지급결재
 			LEFT JOIN VCATN_ATRZ va ON ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID -- 휴가결재
@@ -56,10 +60,12 @@
 			<when test='sttsCd != null and refer == null and sttsCd.startsWith("VTW037")'>
 				AND ATRZ_DMND_EMP_ID = #{empId}
 				AND ea.ATRZ_DMND_STTS_CD = #{sttsCd}
+				AND ea.NOW_ATRZ_LN_SN = al.ATRZ_LN_SN
 			</when>
 			<when test='sttsCd != null and refer == true and sttsCd.startsWith("VTW037")'>
 				AND rm.EMP_ID = #{empId}
 				AND ea.ATRZ_DMND_STTS_CD = #{sttsCd}
+				AND ea.NOW_ATRZ_LN_SN = al.ATRZ_LN_SN
 			</when>
 			<when test='sttsCd != null and sttsCd.startsWith("VTW008")'>
 				AND al.APRVR_EMP_ID = #{empId}

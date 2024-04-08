@@ -16,10 +16,11 @@ const ElecAtrzDetail = () => {
     const detailData = location.state.data;
     const [ prjctData, setPrjctData ] = useState({});
     const [ atrzOpnn, setAtrzOpnn ] = useState([]);
-    const { header, keyColumn, columns, queryId } = electAtrzJson.electAtrzDetail;
+    const { header, keyColumn, columns, queryId, atchFlQueryId } = electAtrzJson.electAtrzDetail;
     const [ cookies ] = useCookies(["userInfo"]);
-    const [maxAtrzLnSn, setMaxAtrzLnSn] = useState();
+    const [ maxAtrzLnSn, setMaxAtrzLnSn ] = useState();
     const [ dtlInfo, setDtlInfo ] = useState({});
+    const [ atachFileList, setAtachFileList ] = useState([]);
 
     const onBtnClick = (e) => {
 
@@ -44,7 +45,19 @@ const ElecAtrzDetail = () => {
         getPrjct();
         getAtrzLn();
         getMaxAtrzLnSn();
+        getAtchFiles();
     }, []);
+
+    const getAtchFiles = async () => {
+        try{
+            const response = await ApiRequest('/boot/common/queryIdSearch', {
+                queryId: atchFlQueryId, atchmnflId: detailData.atchmnflId
+            });
+            setAtachFileList(response);
+        } catch(error) {
+            console.log('error', error);
+        }
+    };
     
     const getVacInfo = async () => {
         try {
@@ -347,6 +360,12 @@ const ElecAtrzDetail = () => {
 
             <hr className='elecDtlLine' style={{marginTop: '100px'}}/>
             <span>* 첨부파일</span>
+            {atachFileList.length !== 0 && atachFileList.map((file, index) => (
+                <div key={index}>
+                    <Button icon="save" stylingMode="text" disabled={true} />
+                    <a href={`/upload/${file.strgFileNm}`} download={file.realFileNm} style={{ fontSize: '18px', color: 'blue', fontWeight: 'bold' }}>{file.realFileNm}</a>
+                </div>
+            ))}
 
             <hr className='elecDtlLine'/>
             <span style={{marginLeft: '8px'}}>결재 의견</span>
