@@ -18,7 +18,7 @@ const ProjectExpenseCard = (props) => {
     }
     const searchInfo = ProjectExpenseCardJson.searchInfo;
     const { keyColumn, queryId, tableColumns, wordWrap } = ProjectExpenseCardJson;
-    const [ comboList, setComboList ] = useState([]);
+    const [ comboList, setComboList ] = useState({});
     const [ cardUseDtls, setCardUseDtls ] = useState([]);
     const [ selectedItem, setSelectedItem ] = useState([]);
     const [ param, setParam ] = useState({
@@ -44,14 +44,11 @@ const ProjectExpenseCard = (props) => {
             const response = await ApiRequest("/boot/common/commonSelect", [
                 { tbNm: "PRJCT" }, { bizSttsCd: "VTW00402"},
             ]);
-            const processedData = response.map(({ prjctId, prjctNm }) => ({
-                key: prjctId,
-                value: prjctNm,
-            }));
-            setComboList({  
-                ...comboList,
-                prjctId: processedData 
-            })
+            setComboList(prevComboList => ({
+                ...prevComboList,
+                prjctId: response
+              }));
+            console.log('res', response)
         } catch (error) {
             console.log(error);
         }
@@ -60,10 +57,10 @@ const ProjectExpenseCard = (props) => {
     const getCdVal = async () => {
         try {
             const response = await ApiRequest("/boot/common/commonSelect", [{ tbNm: "CD" }, { upCdValue: "VTW045"}]);
-            setComboList({
-                ...comboList,
+            setComboList(prevComboList => ({
+                ...prevComboList,
                 expensCd: response
-            })
+            }));
         } catch (error) {
             console.log(error);
         }
@@ -134,6 +131,7 @@ const ProjectExpenseCard = (props) => {
                     wordWrapEnabled={wordWrap}
                     onSelectionChanged={onSelection}
                 >
+                    {console.log('col', comboList)}
                     <Selection mode="multiple" />
                     {tableColumns.map((col) => (
                         <Column

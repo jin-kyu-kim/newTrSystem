@@ -199,207 +199,272 @@ const ExpensInfo = ({onSendData}) => {
         
         <div className="expensInpt" style={{ marginTop: "15px", paddingTop: "5px", paddingBottom: "10px" }}>
             <h4>사용 경비 입력</h4>
-            {forms.map((form, index) => (
-                <div key={index}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <Grid container spacing={2}>
-                                <Grid item xs={1.5}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>지출방법</InputLabel>
-                                        <Select
-                                            label="지출방법"
-                                            value={forms[index].ctStlmSeCd}
-                                            onChange={(e) => handleInputChange(e, index, "ctStlmSeCd")}
-                                            autoWidth
-                                        >
-                                            {ctStlmSeCdList.map((item, index) => (
-                                            <MenuItem key={index} value={item.cdValue}>
-                                                {item.cdNm}
-                                            </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={2}>
-                                    <DateBox
-                                        label={forms[index].ctStlmSeCd !== "VTW01904" ? "영수증발행일" : "세금계산서발행일"}
-                                        placeholder="사용일자"
-                                        labelMode="floating"
-                                        stylingMode="outlined"
-                                        displayFormat="yyyy-MM-dd"
-                                        dateSerializationFormat="yyyyMMdd"
-                                        value={forms[index].ctStlmSeCd !== "VTW01904" ? forms[index].rciptPblcnYmd : forms[index].taxBillPblcnYmd}
-                                        onValueChanged={(e) => handleDateChange(e.value, index, forms[index].ctStlmSeCd !== "VTW01904" ? "rciptPblcnYmd" : "taxBillPblcnYmd")}
-                                    />
-                                </Grid>
-                                <Grid item xs={3}>
-                                    <TextField
-                                        fullWidth
-                                        id="dtlUseDtls"
-                                        label="상세내역 (목적)"
-                                        type="text"
-                                        variant="outlined"
-                                        value={forms[index].dtlUseDtls}
-                                        onChange={(e) => handleInputChange(e, index, "dtlUseDtls")}
-                                    />
-                                </Grid>
-                                <Grid item xs={1.5}>
-                                    <TextField
-                                        fullWidth
-                                        id="clmAmt"
-                                        label="금액"
-                                        type="number"
-                                        variant="outlined"
-                                        
-                                        value={forms[index].clmAmt}
-                                        onChange={(e) => handleInputChange(e, index, "clmAmt")}
-                                    />
-                                </Grid>
-                                <Grid item xs={2}>
-                                    <TextField
-                                        fullWidth
-                                        id="vatInclsAmt"
-                                        label="금액(부가세포함)"
-                                        type="text"
-                                        variant="outlined"
-                                        value={forms[index].vatInclsAmt}
-                                        onChange={(e) => handleInputChange(e, index, "vatInclsAmt")}
-                                        disabled={forms[index].ctStlmSeCd !== "VTW01904"}
-                                    />
-                                </Grid>
-                                <Grid item xs={2}>
-                                    <DateBox 
-                                        label="입금요청일"
-                                        labelMode="floating"
-                                        stylingMode="outlined"
-                                        displayFormat="yyyy-MM-dd"
-                                        dateSerializationFormat="yyyyMMdd"
-                                        value={forms[index].dpstDmndYmd}
-                                        onValueChanged={(e) => handleDateChange(e.value, index, "dpstDmndYmd")}
-                                        disabled={forms[index].ctStlmSeCd !== "VTW01904"}
-                                    />
-                                </Grid>
+            <div className="expens-form">
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={1.5}>
+                                <div className="expens-form-inputName">
+                                    지출방법
+                                </div>
                             </Grid>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Grid container spacing={2}>
-                                <Grid item xs={1.5}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>비용코드</InputLabel>
-                                        <Select
-                                            label="비용코드"
-                                            autoWidth
-                                            value={forms[index].expensCd}
-                                            onChange={(e) => handleInputChange(e, index, "expensCd")}
-                                            MenuProps={{
-                                                PaperProps: {
-                                                    style: {
-                                                        maxHeight: 200, // 최대 표시할 항목 수에 맞게 조정
-                                                    },
-                                                },
-                                            }}
-                                        >
-                                            {expensCdList.map((item, index) => (
-                                                <MenuItem key={index} value={item.cdValue}>{item.cdNm}</MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={2}>
-                                    <TextField
-                                        fullWidth
-                                        id="cnptNm"
-                                        label="거래처명"
-                                        type="text"
-                                        variant="outlined"
-                                        value={forms[index].cnptNm}
-                                        onChange={(e) => handleInputChange(e, index, "cnptNm")}
-                                    />
-                                </Grid>
-                                <Grid item xs={3}>
-                                    <TextField
-                                        fullWidth
-                                        id="clmPrpos"
-                                        label="용도 (참석자 명단)"
-                                        type="text"
-                                        variant="outlined"
-                                        value={forms[index].clmPrpos}
-                                        onChange={(e) => handleInputChange(e, index, "clmPrpos")}
-                                    />
-                                </Grid>
-                                <Grid item xs={1.5}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>은행코드</InputLabel>
-                                        <Select
-                                            label="은행코드"
-                                            value={forms[index].bankCd}
-                                            onChange={(e) => handleInputChange(e, index, "bankCd")}
-                                            disabled={forms[index].ctStlmSeCd !== "VTW01904"}
-                                            autoWidth
-                                            MenuProps={{
-                                                PaperProps: {
-                                                    style: {
-                                                        maxHeight: 200, // 최대 표시할 항목 수에 맞게 조정
-                                                    },
-                                                },
-                                            }}
-                                        >
-                                            {bankCdList.map((item, index) => (
-                                                <MenuItem key={index} value={item.cdValue}>{item.cdNm}</MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={2}>
-                                    <TextField
-                                        fullWidth
-                                        id="dpstrFlnm"
-                                        label="예금주"
-                                        type="text"
-                                        variant="outlined"
-                                        value={forms[index].dpstrFlnm}
-                                        onChange={(e) => handleInputChange(e, index, "dpstrFlnm")}
-                                        disabled={forms[index].ctStlmSeCd !== "VTW01904"}
-                                    />
-                                </Grid>
-                                <Grid item xs={2}>
-                                    <TextField
-                                        fullWidth
-                                        id="dpstActno"
-                                        label="입금계좌"
-                                        type="text"
-                                        variant="outlined"
-                                        value={forms[index].dpstActno}
-                                        onChange={(e) => handleInputChange(e, index, "dpstActno")}
-                                        disabled={forms[index].ctStlmSeCd !== "VTW01904"}
-                                    />
-                                </Grid>
+                            <Grid item xs={2}>
+                                <div className="expens-form-inputName">
+                                    사용일자
+                                </div>
+                            </Grid>
+                            <Grid item xs={3}>
+                                <div className="expens-form-inputName">
+                                    상세내역 (목적)
+                                </div>
+                            </Grid>
+                            <Grid item xs={1.5}>
+                                <div className="expens-form-inputName">
+                                    금액
+                                </div>
+                            </Grid>
+                            <Grid item xs={2}>
+                                <div className="expens-form-inputName">
+                                    금액(부가세포함)
+                                </div>
+                            </Grid>
+                            <Grid item xs={2}>
+                                <div className="expens-form-inputName">
+                                    입금요청일
+                                </div>
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid container justifyContent="right">
-                        {index === forms.length - 1 && (
+                    <Grid item xs={12}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={1.5}>
+                                <div className="expens-form-inputName">
+                                    비용코드
+                                </div>
+                            </Grid>
+                            <Grid item xs={2}>
+                                <div className="expens-form-inputName">
+                                    거래처명
+                                </div>
+                            </Grid>
+                            <Grid item xs={3}>
+                                <div className="expens-form-inputName">
+                                    용도 (참석자 명단)
+                                </div>
+                            </Grid>
+                            <Grid item xs={5.5}>
+                                <div className="expens-form-inputName">
+                                    은행 / 예금주 / 계좌번호
+                                </div>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <br/>
+                {forms.map((form, index) => (
+                    <div key={index}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={1.5}>
+                                        <FormControl fullWidth variant="outlined">
+                                            <InputLabel>지출방법</InputLabel>
+                                            <Select
+                                                label="지출방법"
+                                                value={forms[index].ctStlmSeCd}
+                                                onChange={(e) => handleInputChange(e, index, "ctStlmSeCd")}
+                                                autoWidth
+                                                
+                                            >
+                                                {ctStlmSeCdList.map((item, index) => (
+                                                <MenuItem key={index} value={item.cdValue}>
+                                                    {item.cdNm}
+                                                </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={2}>
+                                        <DateBox
+                                            label={forms[index].ctStlmSeCd !== "VTW01904" ? "영수증발행일" : "세금계산서발행일"}
+                                            labelMode="floating"
+                                            stylingMode="outlined"
+                                            displayFormat="yyyy-MM-dd"
+                                            dateSerializationFormat="yyyyMMdd"
+                                            value={forms[index].ctStlmSeCd !== "VTW01904" ? forms[index].rciptPblcnYmd : forms[index].taxBillPblcnYmd}
+                                            onValueChanged={(e) => handleDateChange(e.value, index, forms[index].ctStlmSeCd !== "VTW01904" ? "rciptPblcnYmd" : "taxBillPblcnYmd")}
+                                            width="100%"
+                                        />
+                                    </Grid>
+                                    <Grid item xs={3}>
+                                        <TextField
+                                            fullWidth
+                                            id="dtlUseDtls"
+                                            label="상세내역 (목적)"
+                                            type="text"
+                                            variant="outlined"
+                                            value={forms[index].dtlUseDtls}
+                                            onChange={(e) => handleInputChange(e, index, "dtlUseDtls")}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={1.5}>
+                                        <TextField
+                                            fullWidth
+                                            id="clmAmt"
+                                            label="금액"
+                                            type="number"
+                                            variant="outlined"
+                                            value={forms[index].clmAmt}
+                                            onChange={(e) => handleInputChange(e, index, "clmAmt")}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={2}>
+                                        <TextField
+                                            fullWidth
+                                            id="vatInclsAmt"
+                                            label="금액(부가세포함)"
+                                            type="text"
+                                            variant={forms[index].ctStlmSeCd !== "VTW01904" ? "filled" : "outlined"}
+                                            value={forms[index].vatInclsAmt}
+                                            onChange={(e) => handleInputChange(e, index, "vatInclsAmt")}
+                                            disabled={forms[index].ctStlmSeCd !== "VTW01904"}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={2}>
+                                        <DateBox 
+                                            label="입금요청일"
+                                            labelMode="floating"
+                                            stylingMode="outlined"
+                                            displayFormat="yyyy-MM-dd"
+                                            dateSerializationFormat="yyyyMMdd"
+                                            value={forms[index].dpstDmndYmd}
+                                            onValueChanged={(e) => handleDateChange(e.value, index, "dpstDmndYmd")}
+                                            disabled={forms[index].ctStlmSeCd !== "VTW01904"}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={1.5}>
+                                        <FormControl fullWidth variant="outlined">
+                                            <InputLabel>비용코드</InputLabel>
+                                            <Select
+                                                label="비용코드"
+                                                autoWidth
+                                                value={forms[index].expensCd}
+                                                onChange={(e) => handleInputChange(e, index, "expensCd")}
+                                                MenuProps={{
+                                                    PaperProps: {
+                                                        style: {
+                                                            maxHeight: 200, // 최대 표시할 항목 수에 맞게 조정
+                                                        },
+                                                    },
+                                                }}
+                                            >
+                                                {expensCdList.map((item, index) => (
+                                                    <MenuItem key={index} value={item.cdValue}>{item.cdNm}</MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={2}>
+                                        <TextField
+                                            fullWidth
+                                            id="cnptNm"
+                                            label="거래처명"
+                                            type="text"
+                                            variant="outlined"
+                                            value={forms[index].cnptNm}
+                                            onChange={(e) => handleInputChange(e, index, "cnptNm")}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={3}>
+                                        <TextField
+                                            fullWidth
+                                            id="clmPrpos"
+                                            label="용도 (참석자 명단)"
+                                            type="text"
+                                            variant="outlined"
+                                            value={forms[index].clmPrpos}
+                                            onChange={(e) => handleInputChange(e, index, "clmPrpos")}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={1.5}>
+                                        <FormControl fullWidth variant={forms[index].ctStlmSeCd !== "VTW01904" ? "filled" : "outlined"}>
+                                            <InputLabel>은행코드</InputLabel>
+                                            <Select
+                                                label="은행코드"
+                                                value={forms[index].bankCd}
+                                                onChange={(e) => handleInputChange(e, index, "bankCd")}
+                                                disabled={forms[index].ctStlmSeCd !== "VTW01904"}
+                                                autoWidth
+                                                MenuProps={{
+                                                    PaperProps: {
+                                                        style: {
+                                                            maxHeight: 200, // 최대 표시할 항목 수에 맞게 조정
+                                                        },
+                                                    },
+                                                }}
+
+                                            >
+                                                {bankCdList.map((item, index) => (
+                                                    <MenuItem key={index} value={item.cdValue}>{item.cdNm}</MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={2}>
+                                        <TextField
+                                            fullWidth
+                                            id="dpstrFlnm"
+                                            label="예금주"
+                                            type="text"
+                                            variant={forms[index].ctStlmSeCd !== "VTW01904" ? "filled" : "outlined"}
+                                            value={forms[index].dpstrFlnm}
+                                            onChange={(e) => handleInputChange(e, index, "dpstrFlnm")}
+                                            disabled={forms[index].ctStlmSeCd !== "VTW01904"}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={2}>
+                                        <TextField
+                                            fullWidth
+                                            id="dpstActno"
+                                            label="입금계좌"
+                                            type="text"
+                                            variant={forms[index].ctStlmSeCd !== "VTW01904" ? "filled" : "outlined"}
+                                            value={forms[index].dpstActno}
+                                            onChange={(e) => handleInputChange(e, index, "dpstActno")}
+                                            disabled={forms[index].ctStlmSeCd !== "VTW01904"}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                        <Grid container justifyContent="right">
+                            {index === forms.length - 1 && (
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    style={{ marginTop: "10px", marginRight: "10px", marginBottom: "10px"}}
+                                    onClick={addForm}
+                                >
+                                    추가
+                                </Button>
+                            )}
                             <Button
                                 variant="contained"
-                                color="primary"
-                                style={{ marginTop: "10px", marginRight: "10px", marginBottom: "10px"}}
-                                onClick={addForm}
+                                color="secondary"
+                                style={{ marginTop: "10px", marginBottom: "10px" }}
+                                onClick={() => removeForm(form)}
                             >
-                                추가
+                                삭제
                             </Button>
-                        )}
-                        <Button
-                            variant="contained"
-                            color="secondary"
-                            style={{ marginTop: "10px", marginBottom: "10px" }}
-                            onClick={() => removeForm(form)}
-                        >
-                            삭제
-                        </Button>
-                    </Grid>
-                </div>
-            ))}
+                        </Grid>
+                        <hr/>
+                    </div>
+                ))}
+            </div>
 
             <hr/>
             <div>* 현재 TR 입력 차수: </div>

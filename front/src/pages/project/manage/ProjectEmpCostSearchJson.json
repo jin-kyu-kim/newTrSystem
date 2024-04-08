@@ -82,7 +82,7 @@
   {
     "caption": "금액",
     "width": 30,
-    "dataField": "untpc",
+    "dataField": "calcCt",
     "area": "data",
     "dataType": "number",
     "summaryType": "sum",
