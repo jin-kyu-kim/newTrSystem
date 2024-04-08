@@ -55,7 +55,7 @@ public class ElecAtrzDomain {
 		elecAtrzParam.putAll(params);
 		elecAtrzParam.put("nowAtrzLnSn", 1);
 		elecAtrzParam.put("atrzDmndEmpId", regEmpId);
-		elecAtrzParam.put("deptId", deptId);
+		elecAtrzParam.put("atrzDmndEmpDeptId", deptId);
 		elecAtrzParam.remove("param");
 		
 		System.out.println(elecAtrzParam);
