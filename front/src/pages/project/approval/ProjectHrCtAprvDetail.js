@@ -151,7 +151,7 @@ const ProjectHrCtAprvDetail = () => {
         }else if(button.name === "aprvCncl"){
             const param = [
                 { tbNm: "PRJCT_MM_ATRZ" },
-                { atrzDmndSttsCd: "VTW03705",
+                { atrzDmndSttsCd: "VTW03702",
                   aprvrEmpId: null,
                   aprvYmd: null},
                 { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, atrzDmndSttsCd: "VTW03703"}
@@ -246,7 +246,7 @@ const ProjectHrCtAprvDetail = () => {
         }else if(button.name === "aprvCncl"){
             const param = [
                 { tbNm: "PRJCT_CT_ATRZ" },
-                { atrzDmndSttsCd: "VTW03705",
+                { atrzDmndSttsCd: "VTW03702",
                   aprvrEmpId: null,
                   aprvYmd: null},
                 { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, atrzDmndSttsCd: "VTW03703"}
