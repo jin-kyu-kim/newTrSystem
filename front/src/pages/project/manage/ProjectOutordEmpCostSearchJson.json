@@ -98,7 +98,7 @@
       "precision": 2
     }
   },{
-    "caption": "금액",
+    "caption": "가용금액",
     "width": 30,
     "dataField": "untpc",
     "area": "data",

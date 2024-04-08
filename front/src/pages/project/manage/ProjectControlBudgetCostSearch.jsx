@@ -11,9 +11,9 @@ import ProjectGeneralBudgetCostSearchJson from "./ProjectGeneralBudgetCostSearch
 import {useLocation} from "react-router-dom";
 import {add, format} from "date-fns";
 
-const ProjectControlBudgetCostSearch = () => {
+const ProjectControlBudgetCostSearch = ({prjctId}) => {
   const location = useLocation();
-  const prjctId = location.state.prjctId;
+  // const prjctId = location.state.prjctId;
   const ctrtYmd = location.state.ctrtYmd;
   const bgtMngOdr = location.state.bgtMngOdr;
   const [stbleEndYmd,setStbleEndYmd] = useState(location.state.stbleEndYmd);
@@ -23,9 +23,7 @@ const ProjectControlBudgetCostSearch = () => {
   });
 
   useEffect(() => {
-    if (prjctId && ctrtYmd && stbleEndYmd) {
       Cnsrtm();
-    }
   }, []);
 
   const param = {
