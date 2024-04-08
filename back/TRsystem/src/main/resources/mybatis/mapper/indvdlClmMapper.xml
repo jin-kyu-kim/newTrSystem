@@ -551,6 +551,20 @@
           AND APLY_ODR = #{aplyOdr}
     </update>
 
+    <!-- 프로젝트 비용 입력마감취소 (임시저장 -> 빈 코드값) -->
+    <update id="retrievePrjctCtInptDdlnRtrcn" parameterType="map">
+        UPDATE PRJCT_CT_ATRZ
+        SET
+            ATRZ_DMND_STTS_CD = NULL,
+            MDFCN_DT = now(),
+            MDFCN_EMP_ID = #{empId}
+        WHERE 1 = 1
+          AND ATRZ_DMND_STTS_CD = 'VTW03701'
+          AND EMP_ID = #{empId}
+          AND APLY_YM = #{aplyYm}
+          AND APLY_ODR = #{aplyOdr}
+    </update>
+
     <!-- 프로젝트 비용 승인요청 (임시저장 -> 결재중) -->
     <update id="retrievePrjctAprvDmnd" parameterType="map">
         UPDATE PRJCT_CT_ATRZ
@@ -564,4 +578,39 @@
           AND APLY_YM = #{aplyYm}
           AND APLY_ODR = #{aplyOdr}
     </update>
+
+    <!-- 프로젝트 비용 승인요청취소 (결재중 -> 임시저장) -->
+    <update id="retrievePrjctAprvDmndRtrcn" parameterType="map">
+        UPDATE PRJCT_CT_ATRZ
+        SET
+            ATRZ_DMND_STTS_CD = 'VTW03701',
+            MDFCN_DT = now(),
+            MDFCN_EMP_ID = #{empId}
+        WHERE 1 = 1
+          AND ATRZ_DMND_STTS_CD = 'VTW03702'
+          AND EMP_ID = #{empId}
+          AND APLY_YM = #{aplyYm}
+          AND APLY_ODR = #{aplyOdr}
+    </update>
+
+    <!-- 비용 결재 요청 상태 건수 조회 -->
+    <select id="retrieveCtAtrzDmndStts" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            COUNT(1) AS TOT_CNT
+             , COUNT(CASE WHEN pcaz.ATRZ_DMND_STTS_CD IS NULL THEN 1 END) AS CT_REG
+             , COUNT(CASE WHEN pcaz.ATRZ_DMND_STTS_CD = 'VTW03701' THEN 1 END) AS INPT_DDLN
+             , COUNT(CASE WHEN pcaz.ATRZ_DMND_STTS_CD = 'VTW03702' THEN 1 END) AS APRV_DMND
+             , COUNT(CASE WHEN pcaz.ATRZ_DMND_STTS_CD = 'VTW03703' THEN 1 END) AS APRV
+             , COUNT(CASE WHEN pcaz.ATRZ_DMND_STTS_CD = 'VTW03704' THEN 1 END) AS RJCT
+             , COUNT(CASE WHEN pcaz.ATRZ_DMND_STTS_CD = 'VTW03705' THEN 1 END) AS APRV_RTRCN
+        FROM PRJCT_CT_APLY pca
+                 JOIN PRJCT_CT_ATRZ pcaz
+                      ON pca.PRJCT_CT_APLY_SN = pcaz.PRJCT_CT_APLY_SN
+                          AND pca.EMP_ID = pcaz.EMP_ID
+                          AND pca.APLY_YM = pcaz.APLY_YM
+                          AND pca.APLY_ODR = pcaz.APLY_ODR
+        WHERE pca.EMP_ID = #{empId}
+          AND pca.APLY_YM = #{aplyYm}
+          AND pca.APLY_ODR = #{aplyOdr}
+    </select>
 </mapper>
