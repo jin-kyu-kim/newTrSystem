@@ -369,7 +369,7 @@ const ExpensInfo = ({onSendData, prjctId}) => {
                                                 }}
                                             >
                                                 {expensCdList.map((item, index) => (
-                                                    <MenuItem key={index} value={item.cdValue}>{item.cdNm}</MenuItem>
+                                                    <MenuItem key={index} value={item.expensCd}>{item.cdNm}</MenuItem>
                                                 ))}
                                             </Select>
                                         </FormControl>
