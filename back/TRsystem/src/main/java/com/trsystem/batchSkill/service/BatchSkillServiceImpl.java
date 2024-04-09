@@ -2,6 +2,8 @@ package com.trsystem.batchSkill.service;
 
 import com.trsystem.common.service.ApplicationYamlRead;
 import com.trsystem.common.service.CommonService;
+
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -183,7 +185,7 @@ public class BatchSkillServiceImpl implements BatchSkillService {
             // 트랜잭션 시작
             connection.setAutoCommit(false);
             
-            String callProcedure = "CALL nwTr.P_MOD_PRJCT_BGT_PRMPC(?, ?, ?)";
+            String callProcedure = "CALL nwTr.P_ADD_PRJCT_BGT_PRMPC(?, ?, ?)";
             
             try (CallableStatement callableStatement = connection.prepareCall(callProcedure)) {
             	
@@ -203,4 +205,22 @@ public class BatchSkillServiceImpl implements BatchSkillService {
 			return ;
 		}
 	}
+	
+	
+	@Transactional
+	public int executeCostUpdate() {
+		try {
+			String queryIdMM = "batchMapper.executeCostUpdateMM";
+			int resultMM = sqlSession.insert("com.trsystem.mybatis.mapper." + queryIdMM);
+			
+			String queryIdCT = "batchMapper.executeCostUpdateCT";
+			int resultCT = sqlSession.insert("com.trsystem.mybatis.mapper." + queryIdCT);
+		
+			return resultMM + resultCT;
+		} catch (Exception e) {
+			throw e;		
+		}
+	}
+	
+	
 }

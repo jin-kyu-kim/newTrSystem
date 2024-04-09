@@ -270,6 +270,8 @@ const EmpVacation = () => {
                 setAtrzLnReftnListValue(atrzLnReftnResult);
 
                 if (atrzLnReftnResult.length > 0) {
+                    artzListValue = [];
+
                     atrzLnReftnResult.map((item, index) => {
                         artzListValue.push({
                             ...popupAtrzValue,
@@ -306,16 +308,19 @@ const EmpVacation = () => {
                 const atrzLnSrngResult = await ApiRequest("/boot/common/queryIdSearch", { queryId: "indvdlClmMapper.retrieveAtrzLnSrngInq", prjctMngrEmpId: initParam.prjctMngrEmpId, prjctId: initParam.prjctId });
                 if (atrzLnSrngResult.length > 0) {
                     setPopupAtrzValue(popupAtrzValue.filter(item => item.approvalCode != "VTW00704"))
-
-                    setPopupAtrzValue(prevState => [...prevState,
-                    {
-                        approvalCode: "VTW00704",                   // 결재단계코드(심사)
-                        empId: atrzLnSrngResult[0].empId,
-                        empFlnm: atrzLnSrngResult[0].empFlnm,
-                        jbpsNm: atrzLnSrngResult[0].jbpsNm,
-                        listEmpFlnm: atrzLnSrngResult[0].listEmpFlnm
+                    
+                    if(!atrzLnSrngResult.find(item => item.empId == popupAtrzValue.empId)){
+                        setPopupAtrzValue(prevState => [...prevState,
+                        {
+                            approvalCode: "VTW00704",                   // 결재단계코드(심사)
+                            empId: atrzLnSrngResult[0].empId,
+                            empFlnm: atrzLnSrngResult[0].empFlnm,
+                            jbpsNm: atrzLnSrngResult[0].jbpsNm,
+                            listEmpFlnm: atrzLnSrngResult[0].listEmpFlnm
+                        }
+                        ])
                     }
-                    ])
+
                 }
             }
         } catch (error) {
@@ -667,6 +672,7 @@ const EmpVacation = () => {
                                     placeholderText="프로젝트를 선택해주세요"
                                     // value={insertElctrnValue[1].prjctId}
                                     onValueChange={onValuePrjctChange}
+                                    sttsBoolean={true}
                                 />
                             </div>
                         </div>
@@ -851,15 +857,15 @@ function createBody(selectVcatnInfoValue) {
     if (selectVcatnInfoValue.length > 0) {
         tableBody.push(
             <>
-                <TableRow key={"TableRow1"}>
-                    <TableCell key={"TableCell1"} rowSpan={3}>연차</TableCell>
-                    <TableCell key={"TableCell2"}>회계년도 기준</TableCell>
-                    <TableCell key={"TableCell3"}>{tableData.vcatnAltmntDaycnt}일</TableCell>
-                    <TableCell key={"TableCell4"}>{tableData.useDaycnt}일</TableCell>
-                    <TableCell key={"TableCell5"}>{tableData.vcatnRemndrDaycnt}일</TableCell>
-                    <TableCell key={"TableCell6"}>{flagYear}-04-01<br />~{flagYear + 1}-03-31</TableCell>
+                <TableRow>
+                    <TableCell rowSpan={3}>연차</TableCell>
+                    <TableCell>회계년도 기준</TableCell>
+                    <TableCell>{tableData.vcatnAltmntDaycnt}일</TableCell>
+                    <TableCell>{tableData.useDaycnt}일</TableCell>
+                    <TableCell>{tableData.vcatnRemndrDaycnt}일</TableCell>
+                    <TableCell>{flagYear}-04-01<br />~{flagYear + 1}-03-31</TableCell>
                 </TableRow>
-                <TableRow key={"TableRow2"}>
+                <TableRow>
                     <TableCell>
                         입사일 기준<br />
                         <span style={{ color: "red", fontSize: "11px", fontWeight: "bold" }}>(입사 1년차 미만자 해당)</span>
@@ -899,14 +905,14 @@ function createBody(selectVcatnInfoValue) {
                         }
                     </TableCell>
                 </TableRow>
-                <TableRow key={"TableRow3"}>
+                <TableRow>
                     <TableCell>총연차</TableCell>
                     <TableCell>{tableData.vcatnAltmntDaycnt + tableData.newVcatnAltmntDaycnt}일</TableCell>
                     <TableCell>{tableData.useDaycnt + tableData.newUseDaycnt}일</TableCell>
                     <TableCell>{tableData.vcatnRemndrDaycnt + tableData.newRemndrDaycnt}일</TableCell>
                     <TableCell>{flagYear}-04-01<br />~{flagYear + 1}-03-31</TableCell>
                 </TableRow>
-                <TableRow key={"TableRow4"} style={{ borderTop: "2px solid #CCCCCC", borderBottom: "2px solid #CCCCCC" }}>
+                <TableRow style={{ borderTop: "2px solid #CCCCCC", borderBottom: "2px solid #CCCCCC" }}>
                     <TableCell>공가</TableCell>
                     <TableCell>-</TableCell>
                     <TableCell>-</TableCell>

@@ -15,13 +15,13 @@
             CONCAT(SUBSTR(#{endYmOdr},1, 6),'-',SUBSTR(#{endYmOdr}, 7, 1)) AS END_APLY_ODR,
             mm.EXPECT_MM,
             (
-                SELECT SUM(a.MD*8) / 88
+                SELECT SUM(a.MD*8) / 80
                 FROM PRJCT_MM_APLY a
                 WHERE a.PRJCT_ID = pma.PRJCT_ID
                 GROUP BY a.PRJCT_ID
             ) AS TOTAL_MD_SUM,
             (mm.EXPECT_MM - (
-                SELECT SUM(a.MD*8) / 88
+                SELECT SUM(a.MD*8) / 80
                 FROM PRJCT_MM_APLY a
                 WHERE a.PRJCT_ID = pma.PRJCT_ID
                 GROUP BY a.PRJCT_ID
@@ -116,13 +116,12 @@
             (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = pah.APRVR_EMP_ID) AS APRVR_EMP_FLNM,
             d.DEPT_NM
         FROM PRJCT_MM_APLY pma
-        JOIN PRJCT_ATRZ_HIST pah
+        JOIN PRJCT_MM_ATRZ pah
             ON pma.PRJCT_ID = pah.PRJCT_ID
             AND pma.EMP_ID = pah.EMP_ID
             AND pma.APLY_YM = pah.APLY_YM
             AND pma.APLY_ODR = pah.APLY_ODR
             AND pah.ATRZ_DMND_STTS_CD = 'VTW03703' -- 결재요청상태코드 : 승인
-            AND pah.PRJCT_APRVR_CD = 'VTW04701' -- 프로젝트결재자코드 : PM
         JOIN EMP e
             ON pma.EMP_ID = e.EMP_ID
         JOIN CD c
@@ -378,13 +377,12 @@
                 pca.UTZTN_AMT,
                 CONCAT(SUBSTR(pca.UTZTN_DT, 1, 4),'-',SUBSTR(pca.UTZTN_DT, 5, 2),'-',SUBSTR(pca.UTZTN_DT, 7, 2)) AS UTZTN_DT
             FROM PRJCT_CT_APLY pca
-            JOIN PRJCT_ATRZ_HIST pah
+            JOIN PRJCT_CT_ATRZ pah
                 ON pca.PRJCT_ID = pah.PRJCT_ID
                 AND pca.EMP_ID = pah.EMP_ID
                 AND pca.APLY_YM = pah.APLY_YM
                 AND pca.APLY_ODR = pah.APLY_ODR
                 AND pah.ATRZ_DMND_STTS_CD = 'VTW03703' -- 결재요청상태코드 : 승인
-                AND pah.PRJCT_APRVR_CD = 'VTW04701' -- 프로젝트결재자코드 : PM
             JOIN EMP e
                 ON pca.EMP_ID = e.EMP_ID
             JOIN CD c
@@ -444,19 +442,19 @@
                 COUNT(DISTINCT CASE WHEN pah.ATRZ_DMND_STTS_CD IN ('VTW03702','VTW03703','VTW03704') THEN pma.EMP_ID END) AS MM_03702,
                 COUNT(DISTINCT CASE WHEN pah.ATRZ_DMND_STTS_CD IN ('VTW03703','VTW03704') THEN pma.EMP_ID END) AS MM_037034
             FROM PRJCT_MM_APLY pma
-            JOIN PRJCT_ATRZ_HIST pah
+            JOIN PRJCT_MM_ATRZ pah
                 ON pma.PRJCT_ID = pah.PRJCT_ID
                 AND pma.EMP_ID = pah.EMP_ID
                 AND pma.APLY_YM = pah.APLY_YM
                 AND pma.APLY_ODR = pah.APLY_ODR
-                AND pah.PRJCT_ATRZ_HIST_SN = (
-                    SELECT MAX(PRJCT_ATRZ_HIST_SN)
-                    FROM PRJCT_ATRZ_HIST a
-                    WHERE a.PRJCT_ID = pah.PRJCT_ID
-                        AND a.EMP_ID = pah.EMP_ID
-                        AND a.APLY_YM = pah.APLY_YM
-                        AND a.APLY_ODR = pah.APLY_ODR
-            )
+--                 AND pah.PRJCT_ATRZ_HIST_SN = (
+--                     SELECT MAX(PRJCT_ATRZ_HIST_SN)
+--                     FROM PRJCT_ATRZ_HIST a
+--                     WHERE a.PRJCT_ID = pah.PRJCT_ID
+--                         AND a.EMP_ID = pah.EMP_ID
+--                         AND a.APLY_YM = pah.APLY_YM
+--                         AND a.APLY_ODR = pah.APLY_ODR
+--             )
             WHERE 1 = 1
             <if test="aplyYm != null and !aplyYm.equals('')">
                 AND pma.APLY_YM = #{aplyYm}
@@ -476,14 +474,14 @@
                 COUNT(DISTINCT CASE WHEN pah.ATRZ_DMND_STTS_CD IN ('VTW03702','VTW03703','VTW03704') THEN pca.EMP_ID END) AS CT_03702,
                 COUNT(DISTINCT CASE WHEN pah.ATRZ_DMND_STTS_CD IN ('VTW03703','VTW03704') THEN pca.EMP_ID END) AS CT_037034
             FROM PRJCT_CT_APLY pca
-            JOIN PRJCT_ATRZ_HIST pah
+            JOIN PRJCT_CT_ATRZ pah
                 ON pca.PRJCT_ID = pah.PRJCT_ID
                 AND pca.EMP_ID = pah.EMP_ID
                 AND pca.APLY_YM = pah.APLY_YM
                 AND pca.APLY_ODR = pah.APLY_ODR
-                AND pah.PRJCT_ATRZ_HIST_SN = (
-                    SELECT MAX(PRJCT_ATRZ_HIST_SN)
-                    FROM PRJCT_ATRZ_HIST a
+                AND pah.PRJCT_CT_APLY_SN = (
+                    SELECT MAX(PRJCT_CT_APLY_SN)
+                    FROM PRJCT_CT_ATRZ a
                     WHERE a.PRJCT_ID = pah.PRJCT_ID
                         AND a.EMP_ID = pah.EMP_ID
                         AND a.APLY_YM = pah.APLY_YM
@@ -531,20 +529,20 @@
             SELECT T1.PRJCT_ID , T1.EMP_ID , T1.APLY_YM , T1.APLY_ODR ,T2.ATRZ_DMND_STTS_CD, count(1) AS CNT
             FROM PRJCT_CT_APLY T1
             JOIN (
-                SELECT A.PRJCT_ID , A.EMP_ID , A.APLY_YM , A.APLY_ODR, B.PRJCT_ATRZ_HIST_SN, B.ATRZ_DMND_STTS_CD
+                SELECT A.PRJCT_ID , A.EMP_ID , A.APLY_YM , A.APLY_ODR, B.PRJCT_CT_APLY_SN, B.ATRZ_DMND_STTS_CD
                 FROM PRJCT_INDVDL_CT_MM A
-                LEFT OUTER JOIN PRJCT_ATRZ_HIST B
+                LEFT OUTER JOIN PRJCT_CT_ATRZ B
                     ON A.PRJCT_ID = B.PRJCT_ID
                     AND A.EMP_ID = B.EMP_ID
                     AND A.APLY_YM = B.APLY_YM
                     AND A.APLY_ODR = B.APLY_ODR
-                    WHERE B.PRJCT_ATRZ_HIST_SN  = (
-                        SELECT max(PRJCT_ATRZ_HIST_SN)
-                        FROM PRJCT_ATRZ_HIST C
-                        WHERE A.PRJCT_ID = C.PRJCT_ID
-                        AND A.EMP_ID = C.EMP_ID
-                        AND A.APLY_YM = C.APLY_YM
-                        AND A.APLY_ODR = C.APLY_ODR
+                     WHERE B.PRJCT_CT_APLY_SN  = (
+                         SELECT max(PRJCT_CT_APLY_SN)
+                         FROM PRJCT_CT_ATRZ C
+                         WHERE A.PRJCT_ID = C.PRJCT_ID
+                         AND A.EMP_ID = C.EMP_ID
+                         AND A.APLY_YM = C.APLY_YM
+                         AND A.APLY_ODR = C.APLY_ODR
                     )
             ) T2
                 ON T1.PRJCT_ID = T2.PRJCT_ID
@@ -560,20 +558,20 @@
             SELECT T1.PRJCT_ID , T1.EMP_ID , T1.APLY_YM , T1.APLY_ODR ,T2.ATRZ_DMND_STTS_CD, SUM(COALESCE(T1.MD, 0)) AS MD_SUM, SUM(COALESCE(T1.YRYC_RATE , 0)) AS VAC_SUM
             FROM PRJCT_MM_APLY T1
             JOIN (
-                SELECT A.PRJCT_ID , A.EMP_ID , A.APLY_YM , A.APLY_ODR, B.PRJCT_ATRZ_HIST_SN, B.ATRZ_DMND_STTS_CD
+                SELECT A.PRJCT_ID , A.EMP_ID , A.APLY_YM , A.APLY_ODR, B.ATRZ_DMND_STTS_CD
                 FROM PRJCT_INDVDL_CT_MM A
-                LEFT OUTER JOIN PRJCT_ATRZ_HIST B
+                LEFT OUTER JOIN PRJCT_MM_ATRZ B
                     ON A.PRJCT_ID = B.PRJCT_ID
                     AND A.EMP_ID = B.EMP_ID
                     AND A.APLY_YM = B.APLY_YM
                     AND A.APLY_ODR = B.APLY_ODR
-                    WHERE B.PRJCT_ATRZ_HIST_SN  = (
-                        SELECT max(PRJCT_ATRZ_HIST_SN)
-                        FROM PRJCT_ATRZ_HIST C
-                        WHERE A.PRJCT_ID = C.PRJCT_ID
-                        AND A.EMP_ID = C.EMP_ID
-                        AND A.APLY_YM = C.APLY_YM
-                        AND A.APLY_ODR = C.APLY_ODR
+--                     WHERE B.PRJCT_ATRZ_HIST_SN  = (
+--                         SELECT max(PRJCT_ATRZ_HIST_SN)
+--                         FROM PRJCT_ATRZ_HIST C
+--                         WHERE A.PRJCT_ID = C.PRJCT_ID
+--                         AND A.EMP_ID = C.EMP_ID
+--                         AND A.APLY_YM = C.APLY_YM
+--                         AND A.APLY_ODR = C.APLY_ODR
                     )
             ) T2
                 ON T1.PRJCT_ID = T2.PRJCT_ID

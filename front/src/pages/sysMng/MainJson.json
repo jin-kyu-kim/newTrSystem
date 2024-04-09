@@ -18,13 +18,13 @@
         {"value": "프로젝트비용입력",
         "subColumns": [
             { "key": "cnt", "value": "요청"},
-            { "key": "prjReject", "value": "반려"},
-            { "key": "prjComplete", "value": "승인" }
+            { "key": "aplyReject", "value": "반려"},
+            { "key": "aplyComplete", "value": "승인" }
         ]}
   ],
   "atrzSttsQueryId": "sysMngMapper.retrieveAtrzAplySttus",
   "atrzSttsTableColumns": [
-    { "key": "cdNm", "value": "결제구분",  "alignment": "center" },
+    { "key": "cdNm", "value": "결재구분",  "alignment": "center" },
     { "key": "title", "value": "결재명",  "alignment": "center" },
     { "key": "atrzDmndEmpId", "value": "기안자",  "alignment": "center" },
     { "key": "regDt", "value": "기안일자",  "alignment": "center" },

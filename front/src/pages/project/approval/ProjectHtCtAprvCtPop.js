@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Scheduler from 'devextreme-react/scheduler';
+import Scheduler, {Resource} from 'devextreme-react/scheduler';
 import './ProjectHtCtAprvPop.css';
 
 const ProjectHrCtAprvCtPop = ({props, prjctNm, data, currentDate, setCurrentDate}) => {
@@ -39,7 +39,7 @@ const ProjectHrCtAprvCtPop = ({props, prjctNm, data, currentDate, setCurrentDate
                             <td>용도(참석자명단): {data.atdrn}</td>
                         </tr>
                         <tr>
-                            <td>사용처: {data.useOffic} | 결재정보: {data.atrzDmndSttsCd}</td>
+                            <td>사용처: {data.useOffic} | 결재정보: {data.atrzDmndSttsNm}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -50,6 +50,13 @@ const ProjectHrCtAprvCtPop = ({props, prjctNm, data, currentDate, setCurrentDate
         return results;
 
     }
+
+    const dataSource = [
+        {
+            id: 1,
+            color: "#00af2c"
+        }
+    ]
 
     const DataCell = (props) => {
         const {
@@ -88,6 +95,10 @@ const ProjectHrCtAprvCtPop = ({props, prjctNm, data, currentDate, setCurrentDate
                     }
                 }}
             >
+                <Resource
+                    dataSource={dataSource}
+                    fieldExpr="id"
+                />
             </Scheduler>
             <br/>
             {showDetails()}

@@ -256,7 +256,7 @@
             ,ATRZ.APLY_YM	            /* 신청연월 */
             ,ATRZ.APLY_ODR	            /* 신청차수 */
             ,ATRZ.APLY_YMD              /* 신청일자 */
-            ,ROUND(APLY.MD)	MD			/* 근무시간비율 */
+            ,ROUND(APLY.MD, 1)	MD		/* 근무시간비율 */
             ,ATRZ.RJCT_PRVONSH			/* 반려사유 */
             ,ATRZ.PRJCT_APRVR_CD	    /* 프로젝트결재자코드 */
             ,ATRZ.ATRZ_DMND_STTS_CD	    /* 결재요청상태코드 */
@@ -268,7 +268,7 @@
             ,''	VCATN_TY_CD				/* 휴가유형코드 */
             ,CONCAT(
                 ROUND(md * 8), '시간 | ',
-                (SELECT PRJCT_NM FROM PRJCT PRJCT WHERE PRJCT.PRJCT_ID = ATRZ.PRJCT_ID), ' ',
+                (SELECT PRJCT_NM FROM PRJCT PRJCT WHERE PRJCT.PRJCT_ID = ATRZ.PRJCT_ID), '',
                 IFNULL((SELECT EMP_FLNM FROM EMP EMP WHERE EMP.EMP_ID = APRVR_EMP_ID), ''), ' ',
                 IFNULL((SELECT CD_NM FROM CD WHERE CD_VALUE = ATRZ_DMND_STTS_CD), '')
             ) TEXT						/* 결재상태내용 */
@@ -315,7 +315,7 @@
             ,#{empId}			/* 직원ID */
             ,#{aplyYm}			/* 신청연월 */
             ,#{aplyOdr}			/* 신청차수 */
-            ,'N'            	/* 비용결재완료여부 */
+            ,NULL            	/* 비용결재완료여부 */
             ,'N'            	/* MM결재완료여부 */
             ,#{expensCd}		/* 경비코드 */
         )
@@ -551,6 +551,20 @@
           AND APLY_ODR = #{aplyOdr}
     </update>
 
+    <!-- 프로젝트 비용 입력마감취소 (임시저장 -> 빈 코드값) -->
+    <update id="retrievePrjctCtInptDdlnRtrcn" parameterType="map">
+        UPDATE PRJCT_CT_ATRZ
+        SET
+            ATRZ_DMND_STTS_CD = NULL,
+            MDFCN_DT = now(),
+            MDFCN_EMP_ID = #{empId}
+        WHERE 1 = 1
+          AND ATRZ_DMND_STTS_CD = 'VTW03701'
+          AND EMP_ID = #{empId}
+          AND APLY_YM = #{aplyYm}
+          AND APLY_ODR = #{aplyOdr}
+    </update>
+
     <!-- 프로젝트 비용 승인요청 (임시저장 -> 결재중) -->
     <update id="retrievePrjctAprvDmnd" parameterType="map">
         UPDATE PRJCT_CT_ATRZ
@@ -564,4 +578,55 @@
           AND APLY_YM = #{aplyYm}
           AND APLY_ODR = #{aplyOdr}
     </update>
+
+    <!-- 프로젝트 비용 승인요청취소 (결재중 -> 임시저장) -->
+    <update id="retrievePrjctAprvDmndRtrcn" parameterType="map">
+        UPDATE PRJCT_CT_ATRZ
+        SET
+            ATRZ_DMND_STTS_CD = 'VTW03701',
+            MDFCN_DT = now(),
+            MDFCN_EMP_ID = #{empId}
+        WHERE 1 = 1
+          AND ATRZ_DMND_STTS_CD = 'VTW03702'
+          AND EMP_ID = #{empId}
+          AND APLY_YM = #{aplyYm}
+          AND APLY_ODR = #{aplyOdr}
+    </update>
+
+    <!-- 비용 결재 요청 상태 건수 조회 -->
+    <select id="retrieveCtAtrzDmndStts" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            COUNT(1) AS TOT_CNT
+             , COUNT(CASE WHEN pcaz.ATRZ_DMND_STTS_CD IS NULL THEN 1 END) AS CT_REG
+             , COUNT(CASE WHEN pcaz.ATRZ_DMND_STTS_CD = 'VTW03701' THEN 1 END) AS INPT_DDLN
+             , COUNT(CASE WHEN pcaz.ATRZ_DMND_STTS_CD = 'VTW03702' THEN 1 END) AS APRV_DMND
+             , COUNT(CASE WHEN pcaz.ATRZ_DMND_STTS_CD = 'VTW03703' THEN 1 END) AS APRV
+             , COUNT(CASE WHEN pcaz.ATRZ_DMND_STTS_CD = 'VTW03704' THEN 1 END) AS RJCT
+             , COUNT(CASE WHEN pcaz.ATRZ_DMND_STTS_CD = 'VTW03705' THEN 1 END) AS APRV_RTRCN
+        FROM PRJCT_CT_APLY pca
+                 JOIN PRJCT_CT_ATRZ pcaz
+                      ON pca.PRJCT_CT_APLY_SN = pcaz.PRJCT_CT_APLY_SN
+                          AND pca.EMP_ID = pcaz.EMP_ID
+                          AND pca.APLY_YM = pcaz.APLY_YM
+                          AND pca.APLY_ODR = pcaz.APLY_ODR
+        WHERE pca.EMP_ID = #{empId}
+          AND pca.APLY_YM = #{aplyYm}
+          AND pca.APLY_ODR = #{aplyOdr}
+    </select>
+
+    <!-- 비용 결재 요청 상태 건수 조회 -->
+    <select id="retrieveElctrnAtrzDetail" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT DISTINCT
+            ea.ELCTRN_ATRZ_ID,
+            ea.ATRZ_DMND_EMP_ID,
+            ea.PRJCT_ID,
+            ea.ELCTRN_ATRZ_TY_SE_CD,
+            ea.NOW_ATRZ_LN_SN
+        FROM ELCTRN_ATRZ ea
+                 LEFT JOIN CLM_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID
+        WHERE 1 = 1
+          AND ea.PRJCT_ID = #{prjctId}
+          AND ea.ATRZ_DMND_EMP_ID = #{empId}
+          AND ea.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
+    </select>
 </mapper>

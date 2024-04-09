@@ -201,7 +201,48 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
         }
     };  
 
+
+    //날짜 형식 변환
+    const parseDate = (date) => {
+        if(date){
+            const formatetedDate = date.length === 8 ? 
+            `${date.slice(0, 4)}-${date.slice(4, 6)}-${date.slice(6, 8)}` 
+            : date;
+        
+        return new Date(formatetedDate);
+        }
+    }
+
+
     useEffect(() => {
+
+        const inptPrnmntYmd = parseDate(param.inptPrnmntYmd);
+        const withdrPrnmntYmd = parseDate(param.withdrPrnmntYmd);
+        const ctrtYmdDate = new Date(ctrtYmd);
+        const ctrtStbleEndYmd = new Date(stbleEndYmd);
+
+        if(inptPrnmntYmd < ctrtYmdDate){
+            alert("투입예정일은 사업시작일보다 이전일 수 없습니다");
+            return;
+        }
+        if(withdrPrnmntYmd < ctrtYmdDate){
+            alert("철수예정일은 사업시작일보다 이전일 수 없습니다");
+            return;
+        }
+        if(inptPrnmntYmd > ctrtStbleEndYmd){
+            alert("투입예정일은 경비종료일 이후일 수 없습니다");
+            return;
+        }
+        if(withdrPrnmntYmd > ctrtStbleEndYmd){
+            alert("철수예정일은 경비종료일 이후일 수 없습니다");
+            return;
+        }
+        if(inptPrnmntYmd > withdrPrnmntYmd){
+            alert("투입예정일은 철수예정일 이후일 수 없습니다");
+            return;
+        }
+
+
         if(data[popupInfo.keyColumn]){
             //수정일 경우
             const runOrder = async() => {
@@ -430,9 +471,9 @@ const onRowUpdateingMonthData = async() => {
                         </div>
                     </div> 
                     <CustomLabelValue props={popupInfo.labelValue.tkcgJob} value={data.tkcgJob} onSelect={handleChgState}/>
-                    <CustomLabelValue props={popupInfo.labelValue.userDfnValue} value={data.userDfnValue} onSelect={handleChgState} readOnly={popupInfo.labelValue.gramt.readOnly}/> 
-                    <CustomLabelValue props={popupInfo.labelValue.gramt} value={data.gramt} onSelect={handleChgState} readOnly={popupInfo.labelValue.gramt.readOnly}/>
-                    <CustomLabelValue props={popupInfo.labelValue.total} value={data.total} onSelect={handleChgState} readOnly={popupInfo.labelValue.total.readOnly}/>
+                    <CustomLabelValue props={popupInfo.labelValue.userDfnValue} value={data.userDfnValue} onSelect={handleChgState} readOnly={popupInfo.labelValue.gramt.readOnly} /> 
+                    <CustomLabelValue props={popupInfo.labelValue.gramt} value={data.gramt} onSelect={handleChgState} readOnly={popupInfo.labelValue.gramt.readOnly} />
+                    <CustomLabelValue props={popupInfo.labelValue.total} value={data.total} onSelect={handleChgState} readOnly={popupInfo.labelValue.total.readOnly} />
                     <CustomLabelValue props={popupInfo.labelValue.inptPrnmntYmd} value={data.inptPrnmntYmd} onSelect={handleChgState}/>
                     <CustomLabelValue props={popupInfo.labelValue.withdrPrnmntYmd} value={data.withdrPrnmntYmd} onSelect={handleChgState}/>
                 </div>
@@ -497,6 +538,7 @@ const onRowUpdateingMonthData = async() => {
                                                             transformedData.find(item => item.id === `${Object.keys(structuredData)[colIndex]}${months[rowIndex]}_untpc`)?.value || 0 
                                                             : data.userDfnValue}
                                                     readOnly={true}
+                                                    format={"#,### 원"}
                                                     />
                                             </td>
                                             }

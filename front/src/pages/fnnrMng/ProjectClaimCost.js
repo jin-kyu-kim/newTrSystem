@@ -7,6 +7,7 @@ import CustomTable from "../../components/unit/CustomTable";
 
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
+import {Button} from "devextreme-react/button";
 
 const ProjectClaimCost = () => {
   const [values, setValues] = useState([]);
@@ -55,7 +56,7 @@ const ProjectClaimCost = () => {
     }
   };
 
-  const onClick = ({button, data}) => {
+  const onClick = (button, data) => {
     if (button.name === "prjctId") {
       navigate("/fnnrMng/ProjectClaimCostDetail",{
             state: {
@@ -65,6 +66,13 @@ const ProjectClaimCost = () => {
       });
     }
   };
+
+  const buttonRender = (button, data) => {
+
+    return(
+        <Button name={button.name} text={button.text} onClick={(e) => onClick(button, data)} />
+    );
+  }
   
   return (
     <div className="container">
@@ -84,6 +92,7 @@ const ProjectClaimCost = () => {
         pageSize={pageSize}
         columns={tableColumns}
         values={values}
+        buttonRender={buttonRender}
         onClick={onClick}
         paging={true}
         wordWrap={wordWrap}
