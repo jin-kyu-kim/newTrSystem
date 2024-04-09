@@ -12,9 +12,10 @@ import PivotGrid, {
 
 import {useLocation} from "react-router-dom";
 
-const ProjectOutordEmpCostSearch = () => {
+const ProjectOutordEmpCostSearch = ({prjctId}) => {
   const location = useLocation();
-  const prjctId = location.state.prjctId;
+  // const prjctId = location.state.prjctId;
+
   const ctrtYmd = location.state.ctrtYmd;
   //TODO: const stbleEndYmd = location.state.stbleEndYmd;
   const stbleEndYmd = '2024-12-31'
@@ -56,12 +57,12 @@ const ProjectOutordEmpCostSearch = () => {
       <PivotGrid
         dataSource={dataSource}
         allowSortingBySummary={true}
-        height={560}
         showBorders={true}
         showColumnGrandTotals={true}
         allowFiltering={false}
         allowSorting={false}
         allowExpandAll={false}
+        showRowTotals={false}
       >
         <FieldPanel
           showRowFields={true}

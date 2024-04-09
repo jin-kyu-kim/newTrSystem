@@ -4,6 +4,7 @@ import { useCookies } from "react-cookie";
 import axios from "axios";
 
 import { SelectBox, Button, DateBox, TextBox, NumberBox, Scheduler, Form } from "devextreme-react";
+import { Resource } from 'devextreme-react/scheduler';
 
 // 날짜관련
 // npm install date-fns
@@ -16,6 +17,7 @@ import Moment from "moment"
 import ApiRequest from "utils/ApiRequest";
 import AutoCompleteProject from "components/unit/AutoCompleteProject";
 import CustomComboBox from "components/unit/CustomComboBox";
+import '../project/approval/ProjectHtCtAprvPop.css';
 
 /**
  * 2023.03.27(박지환)
@@ -247,6 +249,7 @@ const EmpWorkTime = () => {
             try {
                 const response = await ApiRequest("/boot/indvdlClm/insertPrjctMmAply", params);
                 selectData(searchPrjctIndvdlCtMmParam)
+                alert("승인요청되었습니다.")
             } catch (error) {
                 console.log("error: ", error);
             }
@@ -394,21 +397,35 @@ const EmpWorkTime = () => {
                     workHourCheckList.map((item, index) => {
                         workHourValue += workHourCheckList[index].md
                     })
-    
+
                     if(workHourValue > 1){
                         alert("근무시간은 8시간을 초과할 수 없습니다.")
                         return;
                     }
                 }
             }
-            setInsertWorkHourList(parseData)
+
+            setInsertWorkHourList(parseData);
         }
     }
+
+    const customDateCell = (props) => {
+        const { data: {startDate, text} } = props;
+        const dayClass = ['dx-template-wrapper'];
+        dayClass.push(isSaturday(Moment(String(startDate)).format("YYYY-MM-DD")) == true ? "saturday" : "");
+        dayClass.push(isSunday(Moment(String(startDate)).format("YYYY-MM-DD")) == true ? "sunday" : "");
+
+        return (
+            <div className={dayClass.join(' ')}>
+                <div className={'day-cell'}>{text}</div>
+            </div>
+        );
+    };
 
     function onAppointmentClick(e) {
         if (e.appointmentData.isInsertBoolean == false) e.cancel = true;
         else if (e.appointmentData.aplyType == "vcatnAply") e.cancel = true;
-        else if (e.appointmentData.atrzDmndSttsCd == "VTW03702" || e.appointmentData.atrzDmndSttsCd == "VTW03703") e.cancel = true;
+        else if (e.appointmentData.isInsertBoolean != true && e.appointmentData.atrzDmndSttsCd == "VTW03702" || e.appointmentData.atrzDmndSttsCd == "VTW03703") e.cancel = true;
         else e.cancel = false;
     }
 
@@ -509,6 +526,14 @@ const EmpWorkTime = () => {
     )
 
     function createScheduler(searchParam, insertWorkHourList) {
+        const atrzDmndStts = [
+            {
+                atrzDmndSttsCd: "VTW03702",
+                fontSize: "20px",
+                backgroudColor : "#EEEEEE"
+            }
+        ]
+        
         return (
             <div className="mx-auto" style={{ marginBottom: "20px", marginTop: "30px" }}>
                 <Scheduler
@@ -519,6 +544,7 @@ const EmpWorkTime = () => {
                     textExpr="text"
                     startDateExpr="aplyYmd"
                     endDateExpr="aplyYmd"
+                    dataCellComponent={customDateCell}
                     currentDate={
                         searchParam.searchBoolean == true
                             ? new Date(searchParam.searchYear + "-" + searchParam.searchMonth)
@@ -529,7 +555,12 @@ const EmpWorkTime = () => {
                     onAppointmentFormOpening={onAppointmentFormOpening}
                     onAppointmentDeleted={onAppointmentDeleted}
                     onCellClick={onCellClick}
-                />
+                >
+                    <Resource
+                        dataSource={atrzDmndStts}
+                        fieldExpr="atrzDmndSttsCd"
+                    />  
+                </Scheduler>
             </div>
         )
     }
@@ -606,14 +637,8 @@ const EmpWorkTime = () => {
                                         <AutoCompleteProject
                                             placeholderText="프로젝트를 선택해주세요"
                                             onValueChange={onRefValuePrjctChange}
+                                            sttsBoolean={true}
                                         />
-                                        {/* <CustomComboBox
-                                            label={prjctJson.prjctId.label}
-                                            props={prjctJson.prjctId.param}
-                                            onSelect={onRefValuePrjctChange}
-                                            placeholder={'프로젝트를 선택해주세요'}
-                                            value={cashValue?.prjctId}
-                                        /> */}
                                     </div>
                                 </div>
                                 <div className="row" style={{ marginTop: "30px" }}>
@@ -705,21 +730,3 @@ const textAlignMargin = {
     fontSize: "14px",
     marginLeft: "-30px"
 }
-
-const prjctJson = [{
-    "prjctId": {
-        "name": "prjctId",
-        "label": "프로젝트",
-        "placeholder": "\"[\"입력시 사용가능한 프로젝트 전체 조회",
-        "param": { "tbNm" : "PRJCT",
-        "condition": {
-            "bizSttsCd": "VTW00402"
-        },
-        "valueExpr" : "prjctId",
-        "displayExpr": "prjctNm",
-        "name": "prjctId"
-        },
-        "required": true
-    }
-    }
-]

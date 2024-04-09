@@ -267,12 +267,44 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdrTobe}) => {
             const response = await ApiRequest("/boot/common/commonInsert", param);
 
             if(response > 0) {
+
+                handlePrjctMngAuth().then((value) => {
+                    if(value > 0) {
+                        alert('프로젝트가 등록되었습니다.');
+                    } else {
+                        alert('프로젝트 등록에 실패하였습니다.');
+                    }
+                })
+
                 onHide();
             }
 
         } catch (error) {
             console.error('Error fetching data', error);
         }
+    }
+
+    /**
+     * 프로젝트 권한 테이블 insert
+     */
+    const handlePrjctMngAuth = async () => {
+
+        const date = new Date();
+
+        const param = [
+            { tbNm: "PRJCT_MNG_AUTHRT" },
+            { 
+                prjctId: data.prjctId,
+                empId: data.prjctMngrEmpId,
+                prjctMngAuthrtCd: "VTW05202",
+                regEmpId: empId,
+                regDt: date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0]
+            }
+        ]
+
+        const response = await ApiRequest("/boot/common/commonInsert", param);
+        return response
+
     }
 
     /**

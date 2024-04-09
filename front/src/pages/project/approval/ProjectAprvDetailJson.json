@@ -36,5 +36,6 @@
     "height": "50%",
     "title": "* 반려 사유"
   },
-  "queryId": "projectMapper.retrievePrjctAprvDtl"
+  "queryId": "projectMapper.retrievePrjctAprvDtl",
+  "atrzDmndSttsCd": "VTW03702"
 }

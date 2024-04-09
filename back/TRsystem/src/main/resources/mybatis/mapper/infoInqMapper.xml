@@ -3,39 +3,40 @@
 
 <mapper namespace="com.trsystem.mybatis.mapper.infoInqMapper">
 	<select id="retrieveEmpList" parameterType="map" resultType="com.trsystem.LowerHashMap">
-	       SELECT
-	              E.EMP_ID AS EMP_ID
-	            , E.EMPNO AS EMPNO
-	            , E.EMP_FLNM AS EMP_FLNM
-	            , E.EMP_TY_CD AS EMP_TY_CD
-	            , C.CD_NM AS JBPS_NM
-	            ,(
-	            	SELECT 
-	            		EH.JNCMP_YMD 
-	            	FROM 
-	            		EMP_HIST EH 
-	            	WHERE 
-	            		EH.EMP_ID = E.EMP_ID 
-	            	ORDER BY  
-	            		EH.EMP_HIST_SN DESC 
-	            	    LIMIT 1) AS JNCMP_YMD
-	            , GROUP_CONCAT(D.DEPT_NM) AS DEPT_ID
-	            , E.TELNO AS TELNO
-	            , E.EML AS EML
-	            , C2.CD_NM AS HDOF_STTS_NM
-	            , COUNT(*) OVER () AS TOTAL_ITEMS
-	            , C3.CD_NM AS BANK_NM
-	            , E.ACTNO AS ACTNO
-	            , C.CD_VALUE JBPS_CD
-	            , C3.CD_VALUE  AS BANK_CD
-	            , C2.CD_VALUE AS HDOF_STTS_CD
-	         FROM EMP E
-	            LEFT OUTER JOIN CD C ON C.CD_VALUE =E.JBPS_CD
-	            LEFT OUTER JOIN DEPT_HNF DF ON E.EMP_ID = DF.EMP_ID
-	            LEFT OUTER JOIN DEPT D ON D.DEPT_ID = DF.DEPT_ID
-	            LEFT OUTER JOIN CD C2 ON C2.CD_VALUE =E.HDOF_STTS_CD
-	            LEFT OUTER JOIN CD C3 ON C3.CD_VALUE =E.BANK_CD
-	            WHERE 1=1
+
+
+		SELECT
+		E.EMP_ID AS EMP_ID,
+		E.EMPNO AS EMPNO,
+		E.EMP_FLNM AS EMP_FLNM,
+		E.EMP_TY_CD AS EMP_TY_CD,
+		C.CD_NM AS JBPS_NM,
+		MAX(EH.JNCMP_YMD) AS JNCMP_YMD, -- 최신 JNCMP_YMD로 수정
+		GROUP_CONCAT(D.DEPT_NM) AS DEPT_ID,
+		E.TELNO AS TELNO,
+		E.EML AS EML,
+		C2.CD_NM AS HDOF_STTS_NM,
+		COUNT(*) OVER () AS TOTAL_ITEMS,
+		C3.CD_NM AS BANK_NM,
+		E.ACTNO AS ACTNO,
+		C.CD_VALUE AS JBPS_CD,
+		C3.CD_VALUE AS BANK_CD,
+		C2.CD_VALUE AS HDOF_STTS_CD
+		FROM
+		EMP E
+		LEFT OUTER JOIN
+		CD C ON C.CD_VALUE = E.JBPS_CD
+		LEFT OUTER JOIN
+		DEPT_HNF DF ON E.EMP_ID = DF.EMP_ID
+		LEFT OUTER JOIN
+		DEPT D ON D.DEPT_ID = DF.DEPT_ID
+		LEFT OUTER JOIN
+		CD C2 ON C2.CD_VALUE = E.HDOF_STTS_CD
+		LEFT OUTER JOIN
+		CD C3 ON C3.CD_VALUE = E.BANK_CD
+		LEFT OUTER JOIN
+		EMP_HIST EH ON EH.EMP_ID = E.EMP_ID
+		WHERE 1=1
 	                        <if test="empno != null and empno !=''">
 	                            AND E.EMPNO LIKE CONCAT('%', #{empno}, '%')
 	                        </if>
@@ -49,7 +50,7 @@
 	                        </if>
 	 
 	                        <if test="telNo != null and telNo !=''">
-	                            AND E.TELNO LIKE CONCAT('%', #{telNo}, '%')www
+	                            AND E.TELNO LIKE CONCAT('%', #{telNo}, '%')
 	                        </if>
 	                        <if test="deptId != null and deptId !=''">
 	                            AND D.DEPT_ID = #{deptId}
@@ -58,7 +59,11 @@
 	                        <if test="hdofSttsNm != null and hdofSttsNm !=''">
 	                            AND C2.CD_VALUE = #{hdofSttsNm}
 	                        </if>
-	                        GROUP BY E.EMP_ID
+		GROUP BY
+		E.EMP_ID, E.EMPNO, E.EMP_FLNM, E.EMP_TY_CD, C.CD_NM,
+		E.TELNO, E.EML, C2.CD_NM, C3.CD_NM, E.ACTNO, C.CD_VALUE, C3.CD_VALUE, C2.CD_VALUE
+		ORDER BY
+		E.JBPS_CD ASC
 	</select>
 	<!--직급발령정보 조회-->
 	<select id="retrieveEmpJbpsHist" parameterType="map" resultType="com.trsystem.LowerHashMap">

@@ -7,6 +7,7 @@ import CustomTable from "../../components/unit/CustomTable";
 import ProjectClaimCostIndividualJson from './ProjectClaimCostIndividualJson.json';
 import ProjectClaimCostIndividualCtPop from "./ProjectClaimCostIndividualCtPop";
 import ProjectClaimCostIndividualMmPop from "./ProjectClaimCostIndividualMmPop";
+import {Button} from "devextreme-react/button";
 
 const ProjectClaimCostIndividual = ({ prjctId, prjctNm, startYmOdr, endYmOdr, empFlnm }) => {
   const { mmKeyColumn, ctKeyColumn, queryId, mmColumns, ctColumns, mmSumColumns, ctSumColumns } = ProjectClaimCostIndividualJson;
@@ -58,7 +59,13 @@ const ProjectClaimCostIndividual = ({ prjctId, prjctNm, startYmOdr, endYmOdr, em
         }
     };
 
-    const onMmBtnClick = async ({button, data}) => {
+    const mmButtonRender = (button, data) => {
+        return(
+            <Button name={button.name} text={button.text} onClick={(e) => onMmBtnClick(button, data)} />
+        );
+    }
+
+    const onMmBtnClick = async (button, data) => {
         if (button.name === "empId") {
             setData(data);
         }
@@ -79,7 +86,13 @@ const ProjectClaimCostIndividual = ({ prjctId, prjctNm, startYmOdr, endYmOdr, em
         setMmDetailValues(response);
     }
 
-    const onCtBtnClick = async ({button, data}) => {
+    const ctButtonRender = (button, data) => {
+        return(
+            <Button name={button.name} text={button.text} onClick={(e) => onCtBtnClick(button, data)} />
+        );
+    }
+
+    const onCtBtnClick = async (button, data) => {
         if (button.name === "expenseAprv") {
             setData(data);
         }
@@ -115,6 +128,7 @@ const ProjectClaimCostIndividual = ({ prjctId, prjctNm, startYmOdr, endYmOdr, em
           columns={mmColumns}
           summary={true}
           summaryColumn={mmSumColumns}
+          buttonRender={mmButtonRender}
           onClick={onMmBtnClick}
         />
         &nbsp;
@@ -125,6 +139,7 @@ const ProjectClaimCostIndividual = ({ prjctId, prjctNm, startYmOdr, endYmOdr, em
           columns={ctColumns}
           summary={true}
           summaryColumn={ctSumColumns}
+          buttonRender={ctButtonRender}
           onClick={onCtBtnClick}
         />
           <Popup

@@ -1,7 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useLocation } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import { Button } from 'devextreme-react/button';
+import Popup from "devextreme-react/popup";
+import TextArea from "devextreme-react/text-area";
+
 import ElecAtrzTitleInfo from './common/ElecAtrzTitleInfo';
 import CustomTable from 'components/unit/CustomTable';
 import ElecAtrzTabDetail from './ElecAtrzTabDetail';
@@ -14,19 +17,25 @@ const ElecAtrzDetail = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const detailData = location.state.data;
+    const sttsCd = location.state.sttsCd;
     const [ prjctData, setPrjctData ] = useState({});
     const [ atrzOpnn, setAtrzOpnn ] = useState([]);
-    const { header, keyColumn, columns, queryId } = electAtrzJson.electAtrzDetail;
+    const { header, keyColumn, columns, queryId, atchFlQueryId } = electAtrzJson.electAtrzDetail;
     const [ cookies ] = useCookies(["userInfo"]);
-    const [maxAtrzLnSn, setMaxAtrzLnSn] = useState();
+    const [ maxAtrzLnSn, setMaxAtrzLnSn ] = useState();
     const [ dtlInfo, setDtlInfo ] = useState({});
+    const [ atachFileList, setAtachFileList ] = useState([]);
+    const [ aplyYmd, setAplyYmd ] = useState();
+    const [ odr, setOdr ] = useState();
+    const [rjctPopupVisible, setRjctPopupVisible] = useState(false);
+    const [opnnCn, setOpnnCn] = useState("");
 
     const onBtnClick = (e) => {
 
         switch (e.element.id) {
             case "aprv": ; aprvAtrz();
                 break;
-            case "rjct": ; rjctAtrz();
+            case "rjct": ; onRjctPopup();
                 break;
             case "print": console.log("출력 클릭"); 
                 break;
@@ -44,7 +53,20 @@ const ElecAtrzDetail = () => {
         getPrjct();
         getAtrzLn();
         getMaxAtrzLnSn();
+        getAtchFiles();
+        setAplyYmdOdr();
     }, []);
+
+    const getAtchFiles = async () => {
+        try{
+            const response = await ApiRequest('/boot/common/queryIdSearch', {
+                queryId: atchFlQueryId, atchmnflId: detailData.atchmnflId
+            });
+            setAtachFileList(response);
+        } catch(error) {
+            console.log('error', error);
+        }
+    };
     
     const getVacInfo = async () => {
         try {
@@ -204,6 +226,14 @@ const ElecAtrzDetail = () => {
             const response = await ApiRequest("/boot/common/commonUpdate", param);
             if(response > 0) {
 
+                // 청구결재이면서 촤종 숭인인 경우 프로젝트 비용에 내용을 반영해준다.
+                if(detailData.elctrnAtrzTySeCd === "VTW04907" && nowAtrzLnSn > maxAtrzLnSn) {
+                    const clmResult = handlePrcjtCost();
+                    if(clmResult < 0) {
+                        alert("승인 처리에 실패하였습니다.");
+                    }
+                }
+
                 // 휴가 결재이면서 최종 숭인인 경우 휴가 내용 반영해준다. 
                 if(detailData.elctrnAtrzTySeCd === "VTW04901" && nowAtrzLnSn > maxAtrzLnSn) {
                     const vacResult = handleVacation();
@@ -221,6 +251,20 @@ const ElecAtrzDetail = () => {
             console.error(error)
         }
     }
+    
+    const onRjctPopup = () => {
+        setRjctPopupVisible(true);
+    }
+
+    // 팝업 close
+    const handleClose = () => {
+        setRjctPopupVisible(false);
+    };
+
+    // 반려 의견 입력
+    const onTextAreaValueChanged = useCallback((e) => {
+        setOpnnCn(e.value);
+    }, []);
 
     const rjctAtrz = async () => {
         const isconfirm = window.confirm("요청을 반려하시겠습니까?");
@@ -234,6 +278,7 @@ const ElecAtrzDetail = () => {
                 { tbNm: "ATRZ_LN" },
                 { 
                     atrzSttsCd: "VTW00803",
+                    rjctPrvonsh: opnnCn,
                     rjctYmd: date,
                     mdfcnDt: mdfcnDt,
                     mdfcnEmpId: cookies.userInfo.empId,
@@ -249,13 +294,114 @@ const ElecAtrzDetail = () => {
 
             if(result > 0) {
 
-                alert("반려 처리되었습니다.");
-                navigate('/elecAtrz/ElecAtrz');
+                handleDmndStts(nowAtrzLnSn).then((value) => {
+                    console.log(value);
+                    if(value > 0) {
+                        alert("반려 처리되었습니다.");
+                        
+                        navigate('/elecAtrz/ElecAtrz');
+                    } else {
+                        alert("반려 처리에 실패하였습니다.");
+                        return;
+                    }
+                });
+
             } else {
                 alert("반려 처리에 실패하였습니다.");
             }
         }
     }
+
+    const handleDmndStts = async (nowAtrzLnSn) => {
+        const date = getToday();
+        const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
+        const param = [
+            { tbNm: "ELCTRN_ATRZ" },
+            { 
+                atrzDmndSttsCd: "VTW03704",
+                mdfcnDt: mdfcnDt,
+                mdfcnEmpId: cookies.userInfo.empId,
+            },
+            { 
+                elctrnAtrzId: detailData.elctrnAtrzId,
+                nowAtrzLnSn: nowAtrzLnSn
+            }
+        ]
+
+        const result = await ApiRequest("/boot/common/commonUpdate", param);
+   
+        return result;
+    }
+
+    /**
+     * 청구결재 최종 승인 시 프로젝트 비용청구 테이블에 
+     */
+    const handlePrcjtCost = async () => {
+
+        const regDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
+        const regEmpId = cookies.userInfo.empId;
+
+        const param = {
+            aplyYm: aplyYmd,
+            aplyOdr: odr,
+            elctrnAtrzId: detailData.elctrnAtrzId,
+            prjctId: detailData.prjctId,
+            empId: detailData.atrzDmndEmpId,
+            regDt: regDt,
+            regEmpId: regEmpId
+        }
+        
+        try {
+            const result = await ApiRequest("/boot/elecAtrz/insertPrjctCt", param);
+            return result;
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    /**
+     * 청구결재용 청구 연월, 차수 생성
+     */
+    const setAplyYmdOdr = () => {
+        
+        const today = new Date();
+
+        let year = today.getFullYear();
+        let month = today.getMonth() + 1; 
+        const day = today.getDate();
+        let odr;
+        let nextOdr
+
+        if (day <= 15) {
+            odr = 2;
+        } else {
+
+            odr = 1;
+
+        }
+        
+        if (month === 1) {
+            if(day <= 15) {
+                month = 12; // 1월인 경우 이전 연도 12월로 설정
+                year--;
+            } else {
+
+            }
+        } else {
+            if(day <= 15) {
+                month--; // 2월 이상인 경우 이전 월로 설정
+            } 
+        }
+    
+        // 월을 두 자리 숫자로 표현합니다.
+        const monthString = (month < 10 ? '0' : '') + month;
+        
+        setAplyYmd(`${year}${monthString}`);
+        setOdr(odr);
+    } 
+
+    
+
 
     /**
      * 휴가결재 최종 승인 시 휴가 일수 차감 
@@ -329,6 +475,7 @@ const ElecAtrzDetail = () => {
                 <ElecAtrzTitleInfo
                     atrzLnEmpList={atrzOpnn}
                     contents={header}
+                    sttsCd={sttsCd}
                     formData={detailData}
                     prjctData={prjctData}
                     atrzParam={detailData}
@@ -347,6 +494,12 @@ const ElecAtrzDetail = () => {
 
             <hr className='elecDtlLine' style={{marginTop: '100px'}}/>
             <span>* 첨부파일</span>
+            {atachFileList.length !== 0 && atachFileList.map((file, index) => (
+                <div key={index}>
+                    <Button icon="save" stylingMode="text" disabled={true} />
+                    <a href={`/upload/${file.strgFileNm}`} download={file.realFileNm} style={{ fontSize: '18px', color: 'blue', fontWeight: 'bold' }}>{file.realFileNm}</a>
+                </div>
+            ))}
 
             <hr className='elecDtlLine'/>
             <span style={{marginLeft: '8px'}}>결재 의견</span>
@@ -357,8 +510,30 @@ const ElecAtrzDetail = () => {
             />
 
             <div style={{textAlign: 'center', marginBottom: '100px'}}>
+                {sttsCd === 'VTW00801' && header.filter(item => item.id === 'aprv' || item.id === 'rjct').map((item, index) => (
+                    <Button id={item.id} text={item.text} key={index} type={item.type} 
+                        onClick={onBtnClick} style={{marginRight: '3px'}}/>
+                ))}
                 <Button text='목록' type='normal' onClick={() => navigate('/elecAtrz/ElecAtrz')} />
             </div>
+            <Popup
+                width={"80%"}
+                height={"80%"}
+                visible={rjctPopupVisible}
+                onHiding={handleClose}
+                showCloseButton={true}
+                title={"반려 사유"}
+            >
+                <TextArea 
+                    height="50%"
+                    valueChangeEvent="change"
+                    onValueChanged={onTextAreaValueChanged}
+                    placeholder="반려 사유를 입력해주세요."
+                />
+                <br/>
+                <Button text="반려" onClick={rjctAtrz}/>
+                <Button text="취소" onClick={handleClose}/>
+            </Popup>
         </div>
     );
 }
