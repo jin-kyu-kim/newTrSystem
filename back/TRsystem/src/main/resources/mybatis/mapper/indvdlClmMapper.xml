@@ -647,4 +647,20 @@
           AND pca.APLY_YM = #{aplyYm}
           AND pca.APLY_ODR = #{aplyOdr}
     </select>
+
+    <!-- 비용 결재 요청 상태 건수 조회 -->
+    <select id="retrieveElctrnAtrzDetail" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT DISTINCT
+            ea.ELCTRN_ATRZ_ID,
+            ea.ATRZ_DMND_EMP_ID,
+            ea.PRJCT_ID,
+            ea.ELCTRN_ATRZ_TY_SE_CD,
+            ea.NOW_ATRZ_LN_SN
+        FROM ELCTRN_ATRZ ea
+                 LEFT JOIN CLM_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID
+        WHERE 1 = 1
+          AND ea.PRJCT_ID = #{prjctId}
+          AND ea.ATRZ_DMND_EMP_ID = #{empId}
+          AND ea.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
+    </select>
 </mapper>
