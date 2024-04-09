@@ -237,7 +237,7 @@
 		  JOIN ( SELECT MAX(BGT_MNG_ODR) AS BGT_MNG_ODR FROM PRJCT_BGT_PRMPC pbp
 				  WHERE 1=1
 				    AND ATRZ_DMND_STTS_CD = 'VTW03703'
-				    AND PRJCT_ID = '7e87f844-b384-1905-88fd-11a29abcdd59') pbp ON (ep.BGT_MNG_ODR = pbp.BGT_MNG_ODR)
+				    AND PRJCT_ID = #{prjctId}) pbp ON (ep.BGT_MNG_ODR = pbp.BGT_MNG_ODR)
 		  JOIN CD cd ON (cd.CD_VALUE = ep.EXPENS_CD)
 		 WHERE 1=1
 		   AND PRJCT_ID = #{prjctId}
