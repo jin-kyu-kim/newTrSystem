@@ -84,9 +84,9 @@ const EmpDetailInfo = () => {
           width={1200}
           height={600}
         > 
-          <Button text="닫기" onClick={closePopup} />
+          <Button style= {{marginBottom: "20px"}}text="닫기" onClick={closePopup} />
         {isPopupVisible && (
-          <EmpInfoPop  closePopup={closePopup} />
+          <EmpInfoPop  closePopup={closePopup} naviEmpId={naviEmpId} />
         )}
   {/* 선택한 그룹의 정보 출력 */}
 </Popup>
