@@ -43,11 +43,14 @@ const ProjectHrCtAprvMmPop = ({props, prjctNm, data, currentDate, setCurrentDate
 
     }
 
-    const atrzDmndStts = [
+    const dataSource = [
         {
             id: 1,
-            text: "요청",
             color: "#00af2c"
+        },
+        {
+            id: 3,
+            color: "#B93232"
         }
     ]
 
@@ -88,7 +91,7 @@ const ProjectHrCtAprvMmPop = ({props, prjctNm, data, currentDate, setCurrentDate
                 }}
             >
                 <Resource
-                    dataSource={atrzDmndStts}
+                    dataSource={dataSource}
                     fieldExpr="id"
                 />  
             </Scheduler>

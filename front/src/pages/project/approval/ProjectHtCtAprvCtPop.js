@@ -55,6 +55,10 @@ const ProjectHrCtAprvCtPop = ({props, prjctNm, data, currentDate, setCurrentDate
         {
             id: 1,
             color: "#00af2c"
+        },
+        {
+            id: 3,
+            color: "#B93232"
         }
     ]
 
