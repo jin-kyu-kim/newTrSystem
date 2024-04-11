@@ -37,7 +37,7 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
     }
 
     for (let i = 0; i < columns.length; i++) {
-      const { key, value, width, alignment, button, buttons, visible, toggle, subColumns, chkBox , grouping} = columns[i];
+      const { key, value, width, alignment, button, buttons, visible, toggle, subColumns, chkBox , grouping, currency} = columns[i];
 
       if(subColumns){
         /*===============헤더 하위 뎁스 컬럼 설정===================*/
@@ -105,7 +105,7 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
           >
           </Column>
         );
-      }else if(grouping){
+      }else if(currency){
         /*=====================일반 셀 설정=========================*/
         result.push(
           <Column
@@ -114,7 +114,7 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
             caption={value}
             width={width}
             alignment={alignment || 'center'}
-            groupIndex={0}
+            format="#,##0 원"
           >
           </Column>
         );
@@ -127,6 +127,8 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
               caption={value}
               width={width}
               alignment={alignment || 'center'}
+             
+              
             >
             </Column>
           );
