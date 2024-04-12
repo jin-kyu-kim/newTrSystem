@@ -20,6 +20,10 @@
     background-repeat: no-repeat;
 }
 
+.holiday {
+    background-color: rgba(244, 227, 226, 1);
+}
+
 .sunday {
     background-color: rgba(244, 227, 226, 1);
 }
