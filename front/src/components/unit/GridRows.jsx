@@ -37,7 +37,7 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
     }
 
     for (let i = 0; i < columns.length; i++) {
-      const { key, value, width, alignment, button, buttons, visible, toggle, subColumns, chkBox , grouping, currency} = columns[i];
+      const { key, value, width, alignment, button, buttons, visible, toggle, subColumns, chkBox , grouping, currency, unit } = columns[i];
 
       if(subColumns){
         /*===============헤더 하위 뎁스 컬럼 설정===================*/
@@ -106,7 +106,7 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
           </Column>
         );
       }else if(currency){
-        /*=====================일반 셀 설정=========================*/
+        /*=====================금액 자리수 표시=========================*/
         result.push(
           <Column
             key={key}
@@ -118,6 +118,19 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
           >
           </Column>
         );
+      } else if(unit) {
+          /*=====================단위 표시=========================*/
+          result.push(
+              <Column
+                  key={key}
+                  dataField={key}
+                  caption={value}
+                  width={width}
+                  alignment={alignment || 'center'}
+                  format={(value) => `${value} ${unit}`}
+              >
+              </Column>
+          );
       } else {
         /*=====================일반 셀 설정=========================*/
           result.push(
