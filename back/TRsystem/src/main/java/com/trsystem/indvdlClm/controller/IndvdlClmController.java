@@ -26,10 +26,29 @@ public class IndvdlClmController {
     }
 
     // 프로젝트근무시간저장
-    @PostMapping(value = "/boot/indvdlClm/insertPrjctMmAply")
-    public List<Map<String, Object>> insertPrjctMmAply (@RequestBody List<Map<String, Object>> params){
-        return IndvdlClmDomain.insertPrjctMmAply(params);
+    @PostMapping(value = "/boot/indvdlClm/insertPrjctMmAply" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public List<Map<String, Object>> insertPrjctMmAply (@RequestPart(required = false) String insertWorkHourList,
+                                                        @RequestPart(required = false) String deleteWorkHourList) throws JsonProcessingException {
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        List<Map<String, Object>> insertWorkHourMap = new ArrayList<>();
+        List<Map<String, Object>> deleteWorkHourMap = new ArrayList<>();
+
+//        if(!insertWorkHourList.equals("")){
+            insertWorkHourMap = mapper.readValue(insertWorkHourList,ArrayList.class);
+//        }
+//        if(!deleteWorkHourList.equals("")){
+            deleteWorkHourMap = mapper.readValue(deleteWorkHourList,ArrayList.class);
+//        }
+
+        return IndvdlClmDomain.insertPrjctMmAply(insertWorkHourMap, deleteWorkHourMap);
     }
+//    // 프로젝트근무시간저장
+//    @PostMapping(value = "/boot/indvdlClm/insertPrjctMmAply")
+//    public List<Map<String, Object>> insertPrjctMmAply (@RequestBody List<Map<String, Object>> params, @RequestBody List<Map<String, Object>> deleteParams){
+//        return IndvdlClmDomain.insertPrjctMmAply(params, deleteParams);
+//    }
 
     // 휴가결재저장
     @PostMapping(value = "/boot/indvdlClm/insertVcatnAtrz", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -71,5 +90,11 @@ public class IndvdlClmController {
                 insertRefrnMap,
                 attachments
         );
+    }
+
+    // 프로젝트근무시간요청취소
+    @PostMapping(value = "/boot/indvdlClm/updatePrjctMmAply")
+    public List<Map<String, Object>> updatePrjctMmAply (@RequestBody List<Map<String, Object>> params){
+        return IndvdlClmDomain.updatePrjctMmAply(params);
     }
 }

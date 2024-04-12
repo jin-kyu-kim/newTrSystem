@@ -333,6 +333,8 @@
         WHERE EMP_ID = #{empId}
         AND APLY_YM = #{aplyYm}
         AND APLY_ODR = #{aplyOdr}
+        AND APLY_YMD = #{aplyYmd}
+        AND PRJCT_ID = #{prjctId}
     </delete>
 
     <!-- 프로젝트MM결재삭제 -->
@@ -341,6 +343,8 @@
         WHERE EMP_ID = #{empId}
         AND APLY_YM = #{aplyYm}
         AND APLY_ODR = #{aplyOdr}
+        AND APLY_YMD = #{aplyYmd}
+        AND PRJCT_ID = #{prjctId}
     </delete>
 
     <!-- 프로젝트MM신청저장 -->
@@ -389,7 +393,7 @@
 
     </insert>
 
-    <update id="retrievePrjctMmAtrzRtrcn" parameterType="map">
+    <update id="retrievePrjctMmSttsInq" parameterType="map">
         UPDATE PRJCT_MM_ATRZ
         SET
             ATRZ_DMND_STTS_CD = ''
@@ -398,7 +402,37 @@
         WHERE EMP_ID = #{empId}
         AND APLY_YM = #{aplyYm}
         AND APLY_ODR = #{aplyOdr}
+        AND APLY_YMD = #{aplyYmd}
+        AND PRJCT_ID = #{prjctId}
     </update>
+
+    <select id="retrievePrjctMmAtrzRtrcn" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            ATRZ.PRJCT_ID
+            ,ATRZ.EMP_ID
+            ,ATRZ.APLY_YM
+            ,ATRZ.APLY_ODR
+            ,ATRZ.APLY_YMD
+        FROM PRJCT_MM_ATRZ  ATRZ
+            ,PRJCT_MM_APLY 	APLY
+        WHERE ATRZ.EMP_ID = APLY.EMP_ID
+        AND ATRZ.APLY_YM = APLY.APLY_YM
+        AND ATRZ.APLY_ODR = APLY.APLY_ODR
+        AND ATRZ.APLY_YMD = APLY.APLY_YMD
+        AND ATRZ.PRJCT_ID = APLY.PRJCT_ID
+        AND ATRZ.EMP_ID = #{empId}
+        AND (ATRZ_DMND_STTS_CD = '' OR ATRZ_DMND_STTS_CD IS NULL OR ATRZ_DMND_STTS_CD = 'VTW03704')
+    </select>
+
+
+    <delete id="retrievePrjctMmAplySttsDel" parameterType="map">
+        DELETE FROM PRJCT_MM_APLY
+        WHERE EMP_ID = #{empId}
+        AND APLY_YM = #{aplyYm}
+        AND APLY_ODR = #{aplyOdr}
+        AND APLY_YMD = #{aplyYmd}
+        AND PRJCT_ID = #{prjctId}
+    </delete>
 
     <!-- =================================박지환_작업================================= -->
 
