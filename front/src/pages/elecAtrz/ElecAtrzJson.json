@@ -102,11 +102,11 @@
       {"key": "rm", "value": "비고"}
     ],
     "header": [
-      { "text": "승인", "id": "aprv" },
-      { "text": "반려", "id": "rjct" },
-      { "text": "재기안", "id": "reAtrz" },
-      { "text": "출력", "id": "print" },
-      { "text": "문서이력", "id": "docHist" }
+      { "text": "승인", "id": "aprv", "type": "default" },
+      { "text": "반려", "id": "rjct", "type": "danger" },
+      { "text": "재기안", "id": "reAtrz", "type": "default" },
+      { "text": "출력", "id": "print", "type": "success" },
+      { "text": "문서이력", "id": "docHist", "type": "normal" }
     ],
     "queryId": "elecAtrzMapper.retrieveAtrzLn",
     "atchFlQueryId": "indvdlClmMapper.retrieveAtchmnflInq",

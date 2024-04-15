@@ -97,8 +97,8 @@ const ElecAtrz = () => {
     );
   };
 
-  const sendDetail = (e) => {
-    navigate('/elecAtrz/ElecAtrzDetail', {state: {data: e.data}});
+  const sendDetail = (e, param) => {
+    navigate('/elecAtrz/ElecAtrzDetail', {state: {data: e.data, sttsCd: param.sttsCd}});
   };
 
   return (
@@ -132,7 +132,7 @@ const ElecAtrz = () => {
             values={selectedList}
             columns={titleRow}
             wordWrap={true}
-            onRowClick={sendDetail}
+            onRowClick={(e) => sendDetail(e, param)}
           />
         </div> )}
     </div>

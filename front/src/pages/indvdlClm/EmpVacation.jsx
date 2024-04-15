@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useCookies } from "react-cookie";
 
 // 날짜계산
@@ -7,6 +7,7 @@ import Moment from "moment"
 
 // DevExtrme import
 import { FileUploader, SelectBox, Button, TextBox, DateBox } from "devextreme-react";
+import dxFileUploader from "devextreme/ui/file_uploader";
 
 // 테이블 import
 // npm install @mui/material
@@ -116,6 +117,8 @@ function atrzLnAprv(jbttlCd, searchResult) {
 
 const EmpVacation = () => {
     const navigate = useNavigate();
+
+    const fileUploaderRef = useRef(null);
 
     // 세션정보
     const [cookies, setCookie] = useCookies(["userInfo", "deptInfo"]);
@@ -308,8 +311,8 @@ const EmpVacation = () => {
                 const atrzLnSrngResult = await ApiRequest("/boot/common/queryIdSearch", { queryId: "indvdlClmMapper.retrieveAtrzLnSrngInq", prjctMngrEmpId: initParam.prjctMngrEmpId, prjctId: initParam.prjctId });
                 if (atrzLnSrngResult.length > 0) {
                     setPopupAtrzValue(popupAtrzValue.filter(item => item.approvalCode != "VTW00704"))
-                    
-                    if(!atrzLnSrngResult.find(item => item.empId == popupAtrzValue.empId)){
+
+                    if (!atrzLnSrngResult.find(item => item.empId == popupAtrzValue.empId)) {
                         setPopupAtrzValue(prevState => [...prevState,
                         {
                             approvalCode: "VTW00704",                   // 결재단계코드(심사)
@@ -356,6 +359,8 @@ const EmpVacation = () => {
                 },
             });
 
+            clearFiles();
+
             elctrnAtrzId = uuid();
 
             setSearchVcatnListParam({
@@ -399,7 +404,7 @@ const EmpVacation = () => {
     }
 
     //
-    function onDeptChange(e){
+    function onDeptChange(e) {
         setAtrzLnAprvListParam({
             ...atrzLnAprvListParam,
             deptId: e
@@ -547,8 +552,14 @@ const EmpVacation = () => {
         setAttachments(e.value)
     }
 
+    // 첨부파일 화면 초기화
+    const clearFiles = () => {
+        let fileUploader = fileUploaderRef.current.instance; 
+        fileUploader.reset();
+    };
+
     return (
-        <div className="" style={{ marginLeft: "7%", marginRight: "7%" }}>
+        <div className="" style={{ marginLeft: "5%", marginRight: "5%" }}>
             <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
                 <h1 style={{ fontSize: "30px" }}>휴가</h1>
             </div>
@@ -575,7 +586,7 @@ const EmpVacation = () => {
                 </div>
 
                 <div style={{ display: "flex", marginTop: "30px" }}>
-                    <div style={{ width: "60%", marginRight: "25px" }}>
+                    <div style={{ width: "65%", marginRight: "25px" }}>
                         <div style={{ marginTop: "30px" }}>
                             <h5>* 휴가 정보</h5>
                         </div>
@@ -623,7 +634,7 @@ const EmpVacation = () => {
                             />
                         </div>
                     </div>
-                    <div style={{ width: "40%" }}>
+                    <div style={{ width: "35%" }}>
                         <div style={{ marginTop: "30px" }}>
                             <h5>* 휴가신청</h5>
                         </div>
@@ -641,16 +652,16 @@ const EmpVacation = () => {
                                     <>
                                         <div className="col-md-2" style={textAlign}>소속</div>
                                         <div className="col-md-10">
-                                            <SelectBox 
+                                            <SelectBox
                                                 defaultValue={cookies.deptInfo[0].deptId}
                                                 dataSource={cookies.deptInfo}
                                                 displayExpr="deptNm"
                                                 valueExpr="deptId"
-                                                onValueChange={onDeptChange} 
+                                                onValueChange={onDeptChange}
                                             />
                                         </div>
                                     </>
-                                    : 
+                                    :
                                     <>
                                         <div className="col-md-2" style={textAlign}>소속</div>
                                         <div className="col-md-10">
@@ -781,6 +792,7 @@ const EmpVacation = () => {
                                     labelText=""
                                     uploadMode="useButton"
                                     onValueChanged={changeAttchValue}
+                                    ref={fileUploaderRef}
                                 />
                             </div>
                         </div>
@@ -820,6 +832,8 @@ export default EmpVacation;
 
 
 /* ========================= 화면 레이아웃 영역  =========================*/
+
+
 
 /**
  * @returns 휴가정보에 표현될 테이블 헤더 영역

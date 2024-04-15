@@ -14,12 +14,14 @@ import ExpensInfo from "./expensClm/ExpensInfo";
 
 import ElecAtrzCtrtInfo from "./ctrtInfo/ElecAtrzCtrtInfo";
 import ElecAtrzCtrtInfoDetail from "./ctrtInfo/ElecAtrzCtrtInfoDetail";
+import { Button } from 'devextreme-react';
 
 const ElecAtrzNewReq = () => {
 
     const navigate = useNavigate();
     const location = useLocation();
     const prjctId = location.state.prjctId;
+    const deptId = location.state.deptId;
     const formData = location.state.formData;
     const [cookies] = useCookies(["userInfo", "userAuth"]);
 
@@ -188,6 +190,7 @@ const ElecAtrzNewReq = () => {
             atrzDmndSttsCd: stts,
             elctrnAtrzId: uuid(),
             prjctId: prjctId,
+            deptId: deptId,
             elctrnAtrzTySeCd: data.elctrnAtrzTySeCd,
             regDt: date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0],
             regEmpId: cookies.userInfo.empId,
@@ -236,7 +239,7 @@ const ElecAtrzNewReq = () => {
      * 목록 버튼 클릭시 전자결재 서식 목록으로 이동
      */
     const toAtrzNewReq = () => {
-        navigate("../elecAtrz/ElecAtrzForm", {state: {prjctId: prjctId}});
+        navigate("../elecAtrz/ElecAtrzForm", {state: {prjctId: prjctId, deptId: deptId}});
     }
 
     /**
@@ -312,6 +315,7 @@ const ElecAtrzNewReq = () => {
                     prjctData={prjctData}
                     formData={formData}
                     atrzParam={atrzParam}
+                    deptId={deptId}
                 />
                 <div dangerouslySetInnerHTML={{ __html: formData.docFormDc }} />
                     {["VTW04909","VTW04910"].includes(data.elctrnAtrzTySeCd) &&  (
@@ -322,7 +326,7 @@ const ElecAtrzNewReq = () => {
                     )}
                     {formData.elctrnAtrzTySeCd === "VTW04907" &&
                     <>
-                        <ExpensInfo onSendData={handleChildData}/>
+                        <ExpensInfo onSendData={handleChildData} prjctId={prjctId}/>
                     </>
                     }
                 <HtmlEditBox 
@@ -342,6 +346,13 @@ const ElecAtrzNewReq = () => {
                         onValueChanged={handleAttachmentChange}
                         maxFileSize={1.5 * 1024 * 1024 * 1024}
                     />
+                </div>
+
+                <div style={{textAlign: 'center', marginBottom: '100px'}}>
+                {ElecAtrzNewReqJson.header.map((item, index) => (
+                    <Button id={item.id} text={item.text} key={index} type={item.type} 
+                        onClick={onBtnClick} style={{marginRight: '3px'}}/>
+                ))}
                 </div>
             </div>
         </>

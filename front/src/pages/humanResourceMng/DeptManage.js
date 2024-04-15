@@ -29,7 +29,7 @@ const DeptManage = ({callBack}) => {
   const startday = moment().format('YYYYMMDD'); //현재 년월일 (부서 시작일자 자동 세팅용)
   const [deptId,setDeptId] = useState();
   const [deptNm, setDeptNm] = useState();
-  const [upDeptId, setUpdeptId] = useState();
+  const [upDeptId, setUpDeptId] = useState();
   const [deptMngrEmpFlnm, setDeptMngrEmpFlnm] = useState();  
   const [deptBgngYmd, setDeptBgngYmd] = useState();  
   const [deptEndYmd, setDeptEndYmd] = useState(); 
@@ -42,7 +42,7 @@ const DeptManage = ({callBack}) => {
         });
         setDeptId(null);
         setDeptNm(null);
-        setUpdeptId(null);
+        setUpDeptId(null);
         setDeptMngrEmpFlnm(null);
         setDeptBgngYmd(null);
         setDeptEndYmd(null);
@@ -77,7 +77,7 @@ const DeptManage = ({callBack}) => {
     if (e.itemData.deptId !== null) {
         setDeptId(e.itemData.deptId);
         setDeptNm(e.itemData.deptNm);
-        setUpdeptId(e.itemData.upDeptId);
+        setUpDeptId(e.itemData.upDeptId);
         setDeptMngrEmpFlnm(e.itemData.deptMngrEmpFlnm);
         setDeptBgngYmd(e.itemData.deptBgngYmd);
         setDeptEndYmd(e.itemData.deptEndYmd);
@@ -105,7 +105,7 @@ const DeptManage = ({callBack}) => {
     if(name === "deptNm") {
       setDeptNm(value);
   } else if(name === "upDeptId") {
-    setUpdeptId(value);
+    setUpDeptId(value);
   } else if(name === "deptMngrEmpFlnm") {
     setDeptMngrEmpFlnm(value);
   } else if(name === "deptBgngYmd") {
@@ -251,7 +251,7 @@ const DeptManage = ({callBack}) => {
     const reset = () => {
       setDeptId(null);
       setDeptNm(null);
-      setUpdeptId(null);
+      setUpDeptId(null);
       setDeptMngrEmpFlnm(null);
       setDeptBgngYmd(null);
       setDeptEndYmd(null);
@@ -279,7 +279,7 @@ const DeptManage = ({callBack}) => {
               dataSource={values}
               dataStructure="plain"
               width={300}  
-              searchMode={true}
+              searchMode={value}
               searchEnabled={true}
               keyExpr="deptId"
               displayExpr="deptNm"

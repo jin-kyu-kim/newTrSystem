@@ -129,7 +129,7 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
                  {state: {data : e.data }})
           }else if(e.data.elctrnAtrzTySeCd === "VTW04902"){ //일반결재
             navigate("/indvdlClm/EmpWorkTime", 
-            {state: { data : e.dataa }})   
+            {state: { data : e.data }})   
           }else{    //휴가 일반 제외 모든 결재
             navigate("/elecAtrz/ElecAtrzDetail", 
             {state: {data : e.data }})   

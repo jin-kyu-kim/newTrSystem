@@ -209,7 +209,7 @@
 		</if>
 		<if test='stts != null and stts.equals("APRVR")'>
 			<!--AND al.ATRZ_STTS_CD = #{sttsCd}-->
-			AND ea.ATRZ_DMND_STTS_CD ="VTW03702"
+			AND ea.ATRZ_DMND_STTS_CD ="VTW037"
 			AND al.APRVR_EMP_ID = #{empId}
 		</if>
 		ORDER BY REG_DT

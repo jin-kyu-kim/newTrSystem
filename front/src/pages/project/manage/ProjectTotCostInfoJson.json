@@ -5,9 +5,9 @@
   "wordWrap": true,
   
   "tableColumns": [
-    { "key": "prmpcAcctoTot", "value":"원가별집계", "width": 120, "alignment": "center" ,"grouping": true},
-    {  "key": "ctNm", "value": "원가항목", "width": 300, "alignment": "center" },
-    {  "key": "bgt", "value": "배정예산(원)", "width": 200, "alignment": "center" },
+    { "key": "prmpcAcctoTot", "value":"원가별집계", "width": 120, "alignment": "center" },
+    {  "key": "ctNm", "value": "원가항목", "width": 300, "alignment": "center"  },
+    {  "key": "bgt", "value": "배정예산(원)", "width": 200, "alignment": "center"},
     {  "key": "useBgt", "value": "누적사용(원)", "width": 200, "alignment": "center" },
     {  "key": "useFulBgt", "value":"가용(원)", "width": 200, "alignment": "center" },
     {  "key": "useRate", "value": "사용비율(%)", "width": 200, "alignment": "center" }
@@ -15,15 +15,12 @@
    
 ],
 
-  "summaryColumn": [
-    
-    { "value":"원가별집계",  "format": "총 합계 :" },
-    { "key": "bgt", "value": "배정예산(원)", "type"  : "sum", "format": "{0} 원", "precision": "0" },
-    { "key": "useBgt", "value": "누적사용(원)", "type"  : "sum", "format": "{0} 원", "precision": "0" },
-    { "key": "useFulBgt", "value":"가용(원)", "type"  : "sum", "format": "{0} 원", "precision": "0" },
-    { "key": "useRate", "value":"사용비율(%)", "type"  : "sum", "format": "{0} %", "precision": "0" }
-  ]
-  , "groupingData" : 
-  {"caption":"원가별집계", "dataField": "prmpcAcctoTot"}
+  "groupingColumn" : [
+      { "key": "bgt", "value": "배정예산(원)", "summaryType"  : "sum","valueFormat": "#,##0", "displayFormat" : "{0} 원" },
+      { "key": "useBgt", "value": "누적사용(원)", "summaryType"  : "sum", "valueFormat": "#,##0", "displayFormat" : "{0} 원" },
+      { "key": "useFulBgt", "value":"가용(원)", "summaryType"  : "sum", "valueFormat": "#,##0", "displayFormat" : "{0} 원" }
+    ],
+   "groupingData" : 
+  {"caption":"원가별집계", "dataField": "prmpcAcctoTot" , "format": "#,##0"}
 
 }
