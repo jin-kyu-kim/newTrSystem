@@ -105,17 +105,17 @@
       { "key": "useOffic", "value": "사용처", "width": "120" },
       { "key": "utztnAmt", "value": "이용금액", "width": "100" },
       { "key": "prjctId", "value": "프로젝트", "cellType": "selectBox", "displayExpr": "prjctNm", "valueExpr": "prjctId", 
-            "placeholder": "입력 시 사용가능한 프로젝트 전체 조회", "width": "300" },
+            "placeholder": "입력 시 사용가능한 프로젝트 전체 조회", "width": "280" },
       { "key": "expensCd", "value": "비용코드", "cellType": "selectBox", "displayExpr": "cdNm", "valueExpr": "expensCd", 
             "placeholder": "[비용코드 선택]", "width": "200" },
       { "key": "ctPrpos", "value": "상세내역(목적)", "cellType": "textBox", "placeholder": "상세내역(목적)", "width": "200" },
-      { "key": "atdrn", "value": "용도(참석자명단)", "cellType": "textBox", "placeholder": "용도(참석자명단)","width": "200" }
+      { "key": "atdrn", "value": "용도(참석자명단)", "cellType": "textBox", "placeholder": "용도(참석자명단)","width": "220" }
     ],
     "placeholderAndRequired": [
-      {"expensCd": "VTW04528", "required": { "atdrn": true, "ctPrpos": true }, "placeholder": "상세내역(참여인력)"},
-      {"expensCd": "VTW04530", "required": { "ctPrpos": true }, "placeholder": "상세내역(목적)"},
-      {"expensCd": "VTW04531", "required": { "atdrn": true, "ctPrpos": true }, "placeholder": "참석자명단"},
-      {"expensCd": "VTW04533", "required": { "ctPrpos": true }, "placeholder": "출발지-목적지"}
+      {"expensCd": "VTW04528", "required": { "atdrn": true, "ctPrpos": true }, "ctPrposPlaceholder": "상세내역(참여인력)", "atdrnPlaceholder": "용도"},
+      {"expensCd": "VTW04530", "required": { "ctPrpos": true }, "atdrnPlaceholder": "용도를 입력해주세요."},
+      {"expensCd": "VTW04531", "required": { "atdrn": true, "ctPrpos": true }, "ctPrposPlaceholder": "상세내역(목적)", "atdrnPlaceholder": "참석자 명단"},
+      {"expensCd": "VTW04533", "required": { "ctPrpos": true }, "atdrnPlaceholder": "출발지-목적지"}
     ],
     "buttonGroup":[
       { "type": "danger", "text": "선택한 사용내역 삭제하기", "onClick": "handleDelete" },

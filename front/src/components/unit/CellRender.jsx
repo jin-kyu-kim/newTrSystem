@@ -7,7 +7,7 @@ import ToggleButton from 'pages/sysMng/ToggleButton';
 const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig }) => {
 
     const {getCdList, isPrjctIdSelected, setIsPrjctIdSelected, hasError, chgPlaceholder, comboList, cdList,
-        setExpensCd, setValidationErrors} = cellRenderConfig ?? {};
+        expensCd, setExpensCd, setValidationErrors} = cellRenderConfig ?? {};
     
     if(col.cellType === 'button') {
         return(<Button text={col.button.text} name={col.button.name} type={col.button.type}
@@ -43,23 +43,11 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig }) =
                 disabled={col.key === 'expensCd' && !isPrjctIdSelected[props.data.cardUseSn]}
             />
         );
-    } else if (col.cellType === 'textBox') {
-        return (
-            <TextBox
-                placeholder={chgPlaceholder ? chgPlaceholder(col, props.data.cardUseSn) : col.placeholder}
-                name={col.key}
-                style={{ backgroundColor: hasError(props.data.cardUseSn, col.key) ? '#FFCCCC' : '' }}
-                onValueChanged={(newValue) => {
-                    props.data[col.key] = newValue.value
-                    setValidationErrors(prevErrors => prevErrors.filter(error => !(error.cardUseSn === props.data.cardUseSn && error.field === col.key)));
-                }} >
-            </TextBox>
-        );
-    } else {
+    } else if (col.cellType === 'textBox' && col.key === 'atdrn' && expensCd[props.data.cardUseSn] === 'VTW04531') {
         return (
             <TagBox
                 dataSource={comboList['emp']}
-                placeholder={col.placeholder}
+                placeholder={chgPlaceholder ? chgPlaceholder(col, props.data.cardUseSn) : col.placeholder}
                 searchEnabled={true}
                 showClearButton={true}
                 showSelectionControls={true}
@@ -69,8 +57,20 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig }) =
                 onValueChanged={(newValue) => {
                     props.data[col.key] = newValue.value.map(item => item.key).join(',')
                     setValidationErrors(prevErrors => prevErrors.filter(error => !(error.cardUseSn === props.data.cardUseSn && error.field === col.key)));
-                }}>
-            </TagBox>
+                }}
+            />
+        );
+    } else if (col.cellType === 'textBox') {
+        return (
+            <TextBox
+                name={col.key}
+                placeholder={chgPlaceholder ? chgPlaceholder(col, props.data.cardUseSn) : col.placeholder}
+                style={{ backgroundColor: hasError(props.data.cardUseSn, col.key) ? '#FFCCCC' : '' }}
+                onValueChanged={(newValue) => {
+                    props.data[col.key] = newValue.value
+                    setValidationErrors(prevErrors => prevErrors.filter(error => !(error.cardUseSn === props.data.cardUseSn && error.field === col.key)));
+                }} >
+            </TextBox>
         );
     }
 }

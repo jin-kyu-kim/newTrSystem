@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import SearchInfoSet from "../../components/composite/SearchInfoSet";
+import { validateFields, hasError } from './ProjectExpenseValidate';
 import CustomEditTable from 'components/unit/CustomEditTable';
 import ProjectExpenseSubmit from "./ProjectExpenseSubmit";
 import ProjectExpenseJson from "./ProjectExpenseJson.json";
@@ -19,41 +20,18 @@ const ProjectExpenseCard = (props) => {
         aplyYm: props.aplyYm,
         aplyOdr: props.aplyOdr
     });
+    
+    const searchHandle = async (initParam) => {
+        setParam({ ...param,  ...initParam });
+    };
+
     const [validationErrors, setValidationErrors] = useState([]);
-    const validateFields = () => {
-        const newErrors = [];
 
-        selectedItem.forEach(item => {
-            const expensRules = placeholderAndRequired.find(rule => rule.expensCd === item.expensCd);
-            if (expensRules) {
-                const requiredFields = expensRules.required;
-                if (requiredFields.ctPrpos && !item.ctPrpos) {
-                    newErrors.push({
-                        cardUseSn: item.cardUseSn,
-                        field: 'ctPrpos'
-                    });
-                }
-                if (requiredFields.atdrn && !item.atdrn) {
-                    newErrors.push({
-                        cardUseSn: item.cardUseSn,
-                        field: 'atdrn'
-                    });
-                }
-            }
-        });
-        setValidationErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
-    const hasError = (cardUseSn, fieldName) => {
-        return validationErrors.some(error => error.cardUseSn === cardUseSn && error.field === fieldName);
-    };
-
-    const chgPlaceholder = (col, cardUseSn) => {
-        // 비용코드에 따른 placeholder 변경
+    const chgPlaceholder = (col, cardUseSn) => { 
         const currentExpensCd = expensCd[cardUseSn];
         const matchedItem = placeholderAndRequired.find(item => item.expensCd === currentExpensCd);
-        return matchedItem ? matchedItem.ctPrposMsg : col.placeholder;
+        return matchedItem ? (col.key === 'atdrn' ? matchedItem.atdrnPlaceholder : matchedItem.ctPrposPlaceholder)
+        : col.placeholder;
     };
 
     useEffect(() => {
@@ -61,33 +39,34 @@ const ProjectExpenseCard = (props) => {
             getCardUseDtls();
         }
     }, [param]);
-    useEffect(() => { getSelectBoxList(); }, []);
 
-    const searchHandle = async (initParam) => {
-        setParam({ ...param,  ...initParam });
-    };
-
-    const getSelectBoxList = async () => {
-        const comBoInfo = ['prjctId', 'emp'];
-        const comSelectParam = [ [{ tbNm: "PRJCT" }, { bizSttsCd: "VTW00402"}], [{ tbNm: "EMP" }] ];
-        try {
-            for(let i=0; i<comSelectParam.length; i++){
-                let response = await ApiRequest("/boot/common/commonSelect", comSelectParam[i]);
-                if(comSelectParam[i][0].tbNm === "EMP"){
-                    response = response.map(({ empId, empno, empFlnm }) => ({
-                        key: empId,
-                        value: empno+' '+empFlnm,
+    useEffect(() => { 
+        const getSelectBoxList = async () => {
+            const comBoInfo = ['prjctId', 'emp'];
+            const comSelectParam = [ 
+                [{ tbNm: "PRJCT" }, { bizSttsCd: "VTW00402"}], 
+                [{ tbNm: "EMP" }] 
+            ];
+            try {
+                for(let i=0; i<comSelectParam.length; i++){
+                    let response = await ApiRequest("/boot/common/commonSelect", comSelectParam[i]);
+                    if(comSelectParam[i][0].tbNm === "EMP"){
+                        response = response.map(({ empId, empno, empFlnm }) => ({
+                            key: empId,
+                            value: empno+' '+empFlnm,
+                        }));
+                    }
+                    setComboList(prevComboList => ({
+                        ...prevComboList,
+                        [comBoInfo[i]]: response
                     }));
                 }
-                setComboList(prevComboList => ({
-                    ...prevComboList,
-                    [comBoInfo[i]]: response
-                }));
+            } catch (error) {
+                console.log(error);
             }
-        } catch (error) {
-            console.log(error);
-        }
-    };
+        };
+        getSelectBoxList(); 
+    }, []);
 
     const getCdList = async (prjctId, cardUseSn) => {
         try{
@@ -110,6 +89,7 @@ const ProjectExpenseCard = (props) => {
     const handleDelete = () => {
         const param = [{tbNm: "CARD_USE_DTLS"}];
         if(window.confirm('선택한 결제내역을 삭제하시겠습니까? 삭제 후 재등록 시 수동으로 입력하셔야 합니다.')){
+            
             Promise.all(selectedItem.map(async (item) => {
                 const currentParam = [...param, { cardUseSn: item.cardUseSn }];
                 try {
@@ -129,8 +109,9 @@ const ProjectExpenseCard = (props) => {
     const onSelection = (e) => {
         setSelectedItem(e.selectedRowsData);
     };
-    const cellRenderConfig = {getCdList, isPrjctIdSelected, setIsPrjctIdSelected, hasError, chgPlaceholder, comboList, cdList,
-        setExpensCd, setValidationErrors};
+
+    const cellRenderConfig = {getCdList, isPrjctIdSelected, setIsPrjctIdSelected, chgPlaceholder, comboList, cdList,
+        expensCd, setExpensCd, setValidationErrors, hasError: (cardUseSn, fieldName) => hasError(validationErrors, cardUseSn, fieldName)};
 
     return (
         <div className="container">
@@ -138,15 +119,15 @@ const ProjectExpenseCard = (props) => {
                 <SearchInfoSet callBack={searchHandle} props={searchInfo}/>
             </div>
             <ProjectExpenseSubmit selectedItem={selectedItem} sendTbInfo={sendTbInfo} 
-                validateFields={validateFields} handleDelete={handleDelete} buttonGroup={buttonGroup} />
+                validateFields={() => validateFields(selectedItem, placeholderAndRequired, setValidationErrors)} 
+                handleDelete={handleDelete} buttonGroup={buttonGroup} />
             
-            <div style={{fontSize: 15}}>
-                <p> ※ 일괄적용 버튼 클릭 시 체크박스로 선택한 항목 중 가장 위에서 선택한 항목으로 일괄적용 됩니다.<br/>
-                    <span style={{color: "red"}}>※ 사용금액이 20만원 이상일 경우<br/>
-                        1. '전자결재 > 경비 사전 보고'를 작성후 승인 받으시기 바랍니다.<br/>
-                        2. TR 제출시 승인받은 '결재 사전 보고' 결재문서를 출력하여 함께 제출하시기 바랍니다.
-                    </span>
-                </p>
+            <div style={{fontSize: 14, marginBottom: "20px"}}>
+                <p style={{marginBottom: '10px'}}> ※ 일괄적용 버튼 클릭 시 체크박스로 선택한 항목 중 가장 위에서 선택한 항목으로 일괄적용 됩니다.</p>
+                <span style={{color: "red"}}>※ 사용금액이 20만원 이상일 경우<br/>
+                    1. '전자결재 > 경비 사전 보고'를 작성후 승인 받으시기 바랍니다.<br/>
+                    2. TR 제출시 승인받은 '결재 사전 보고' 결재문서를 출력하여 함께 제출하시기 바랍니다.
+                </span>
             </div>
             <div className="wrap_table">
                 <CustomEditTable
