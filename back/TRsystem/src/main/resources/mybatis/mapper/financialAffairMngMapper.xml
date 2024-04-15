@@ -572,7 +572,7 @@
 --                         AND A.EMP_ID = C.EMP_ID
 --                         AND A.APLY_YM = C.APLY_YM
 --                         AND A.APLY_ODR = C.APLY_ODR
-                    )
+--                  )
             ) T2
                 ON T1.PRJCT_ID = T2.PRJCT_ID
                 AND T1.EMP_ID  = T2.EMP_ID
