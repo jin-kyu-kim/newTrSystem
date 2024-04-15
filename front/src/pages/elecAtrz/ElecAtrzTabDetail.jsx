@@ -83,6 +83,7 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData }) => {
                 keyColumn={"rowId"}
                 groupingData={groupingData}
                 groupingCustomizeText={groupingCustomizeText}
+                wordWrap={true}
             />
             </div>
         );
