@@ -6,10 +6,10 @@
   "noticeInsertPage": "/infoInq/NoticeInput",
   "referInsertPage": "/infoInq/ReferenceInput",
   "tableColumns": [
-    { "key": "rownum", "value": "번호", "width": 150, "alignment": "center" },
-    { "key": "noticeTtl", "value": "제목", "width": 450, "alignment": "center" },
-    { "key": "regEmpId", "value": "작성자", "width": 200, "alignment": "center" },
-    { "key": "regDt", "value": "작성일", "width": 200, "alignment": "center" }
+    { "key": "rownum", "value": "번호" },
+    { "key": "noticeTtl", "value": "제목" },
+    { "key": "regEmpId", "value": "작성자" },
+    { "key": "regDt", "value": "작성일" }
   ],
   "edit": {
     "columns": [
