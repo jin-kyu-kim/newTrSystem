@@ -122,7 +122,6 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
     };
 
     const onAplyRowClick = (e) => {   //결재 신청 현황 테이블 클릭 (전자결재 상세화면 개발 후 설정 예정)
-          console.log("eeee",e)
           if(e.data.tySe === "프로젝트 비용"){ //프로젝트비용
                   navigate("/indvdlClm/ProjectExpense", 
                  {state: {id : e.data.id }})
@@ -131,7 +130,7 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
             {state: {id : e.data.id }})   
           }else if(e.data.aprpvrId.startsWith("VTW049")){    //기타 전자결재 내역
             navigate("/elecAtrz/ElecAtrzDetail", 
-            {state: {data : e.data }})   
+            {state: {id : e.data.id }})   
           }
     };
 
@@ -144,34 +143,32 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
         {state: {id : e.data.id }})   
       }else if(e.data.aprpvrId.startsWith("VTW049")){    //기타 전자결재 내역
         navigate("/elecAtrz/ElecAtrzDetail", 
-        {state: {data : e.data }})   
+        {state: {id : e.data.id }})   
       }else if(e.data.tySe === "프로젝트 승인"){    //프로젝트 승인페이지(이동전 데이터 조회)
-        console.log("프로젝트 승인인가요>>?",e.data.id)
         projectSearch(e.data.id)
       }
     };
 
 //============================기타 이벤트=====================================
-const projectSearch = async (data) => { 
-  console.log("프로젝트이동입니다.",data)
-  try {
-    const response = await ApiRequest("/boot/common/queryIdSearch",{queryId : "projectMapper.retrievePrjctAprvList" ,prjctId: data ,empId: empId});
-    console.log("responseee",response)
-    navigate("/project/ProjectAprvDetail",
-    {state: { id: response[0].prjctId
-      , prjctNm: response[0].prjctNm
-      , bgtMngOdr: response[0].bgtMngOdr
-      , atrzLnSn: response[0].atrzLnSn
-      , atrzSttsCd: response[0].atrzSttsCd
-      , atrzStepCd: response[0].atrzStepCd
-      , nowAtrzStepCd: response[0].nowAtrzStepCd
-      , aprvrEmpId : response[0].aprvrEmpId
-      , ctrtYmd: response[0].ctrtYmd
-      , stbleEndYmd: response[0].stbleEndYmd}})
-  } catch (error) {
-    console.log(error);
-  }
-};
+    const projectSearch = async (data) => {     //프로젝트 승인 상세 화면 이동을 위한 데이터 조회
+      try {
+        const response = await ApiRequest("/boot/common/queryIdSearch",{queryId : "projectMapper.retrievePrjctAprvList" ,prjctId: data ,empId: empId});
+        console.log("responseee",response)
+        navigate("/project/ProjectAprvDetail",
+        {state: { id: response[0].prjctId
+          , prjctNm: response[0].prjctNm
+          , bgtMngOdr: response[0].bgtMngOdr
+          , atrzLnSn: response[0].atrzLnSn
+          , atrzSttsCd: response[0].atrzSttsCd
+          , atrzStepCd: response[0].atrzStepCd
+          , nowAtrzStepCd: response[0].nowAtrzStepCd
+          , aprvrEmpId : response[0].aprvrEmpId
+          , ctrtYmd: response[0].ctrtYmd
+          , stbleEndYmd: response[0].stbleEndYmd}})
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
 //============================화면그리는부분===================================
   return (
@@ -182,7 +179,7 @@ const projectSearch = async (data) => {
 
         <div className="mainLeftContainer" style={mainLeftContainerStyle}>
 {/* --------------------------------사용자정보 --------------------------------------------------*/}
-          <div className="empInfoContainer" style={empInfoStyle}>
+        <div className="empInfoContainer" style={empInfoStyle}>
           <div><p><strong> 사용자 정보 </strong></p></div>
           </div>
           <TableContainer >
@@ -207,7 +204,7 @@ const projectSearch = async (data) => {
           </TableContainer>
 
 {/* ----------------------------------공지사항 --------------------------------------------------*/}        
-          <div className="noticeContainer" style={{ marginTop: "20px", marginBottom: "10px" }}>
+        <div className="noticeContainer" style={{ marginTop: "20px", marginBottom: "10px" }}>
           <div><p><strong> 공지사항 </strong></p></div>
           <CustomEditTable
             noDataText="공지사항이 없습니다."
@@ -219,30 +216,30 @@ const projectSearch = async (data) => {
             paging={true}
           />
 {/* ----------------------------------버튼그룹 --------------------------------------------------*/}
-          <div className="buttonContainer" style={buttonContainerStyle}>
+        <div className="buttonContainer" style={buttonContainerStyle}>
           <Button style={ButtonStyle} onClick={goReference} text="자료실" name="jaryu" type="default"/>
           <Button style={ButtonStyle} onClick={goNotice} text="공지사항" type="default"/>
           <Button style={ButtonStyle} onClick={goKms} text="지식관리시스템" type="default"/>
           <Button style={ButtonStyle} onClick={goConference} text="회의실예약" type="default"/>
           </div>
           </div>
-        </div>
+      </div>
 
 {/* ----------------------------------TR입력 현황 ------------------------------------------------*/}
         <div className="mainRightContainer" style={mainRightContainerStyle}>
           <div className="tableDetailTable" style={tableDetailStyle}>
             <p><strong>{orderWorkBgngMm}-{flagOrder}차수 TR입력 현황 </strong></p>
             <CustomTable  keyColumn={trAplyKeyColumn}  columns={trAplyTableColumns}  values={trAplyValues}  onCellClick={onCellClick} />
-          </div>
+        </div>
           
 {/* ----------------------------------결제 신청 현황 ------------------------------------------------*/}
-            <div className="aplyTableList" style={{marginLeft:"20px",flex:"1",}}>
+        <div className="aplyTableList" style={{marginLeft:"20px",flex:"1",}}>
             <p> <strong>결재 신청 현황 </strong> </p>
             <CustomTable  keyColumn="id"  columns={atrzSttsTableColumns}  values={aplyValues} onRowClick={onAplyRowClick} noDataText='진행중인 결재가 없습니다.'/>
-            </div>
+        </div>
 
 {/* -----------------------------------결제리스트-----------------------------------------------------*/}
-            <div className="aplyTableList" style={{marginLeft:"20px",flex:"1",}}>
+          <div className="aplyTableList" style={{marginLeft:"20px",flex:"1",}}>
             <p> <strong>결재 리스트 </strong> </p>
             <CustomTable  keyColumn="id"  columns={atrzListTableColumns}  values={atrzValues} onRowClick={onAtrzRowClick} noDataText="진행중인 결재가 없습니다."/>
             </div>

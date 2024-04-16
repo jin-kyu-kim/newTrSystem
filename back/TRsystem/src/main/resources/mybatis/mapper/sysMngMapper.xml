@@ -243,7 +243,7 @@
 					AND ea.ATRZ_DMND_EMP_ID = #{empId}
 					)
 				AS RESULT 
-				ORDER BY REG_DT DESC
+				ORDER BY REG_DT ASC
 				LIMIT 4
 	</select>
 	
@@ -330,7 +330,7 @@
 				  , '프로젝트 승인' AS TY_SE																	-- 결재 구분	
 				  , p.PRJCT_NM AS TITLE																	-- 프로젝트명
 				  , e.EMP_FLNM	AS ATRZ_EMP_NM															-- 직원이름(기안자)
-				  , DATE_FORMAT(p.CTRT_YMD, '%Y-%m-%d') AS REG_DT 										-- 계약일자
+				  , DATE_FORMAT(p.REG_DT, '%Y-%m-%d') AS REG_DT 										-- 계약일자
 				  , (SELECT CD_NM FROM CD WHERE CD_VALUE = pald.ATRZ_STTS_CD) AS ATRZ_STTS_CD_NM		-- 결재상태코드명
 				  , pald.ATRZ_STTS_CD																	-- 결재상태코드
 			  FROM PRJCT_ATRZ_LN pal																	-- 프로젝트 결재선
@@ -338,11 +338,12 @@
 			  JOIN PRJCT p ON (p.PRJCT_ID = pal.PRJCT_ID AND p.PRJCT_ID = pald.PRJCT_ID)				-- 프로젝트테이블의 ID와 결재상세 테이블 ID JOIN
 			  JOIN EMP e  ON (e.EMP_ID = pal.REG_EMP_ID)												-- 사원 ID와 결재테이블 등록 ID JOIN
 			 WHERE 1=1
-			   AND (pald.APRVR_EMP_ID = #{empId} OR pal.REG_EMP_ID = #{empId})
+			   AND pald.APRVR_EMP_ID = #{empId} 
+			   AND pald.ATRZ_STTS_CD != 'VTW00803'														-- 결재상태코드 반려 아닐시
     		   AND pald.ATRZ_STTS_CD != 'VTW00805'														-- 결재상태코드 취소 아닐시
 				)
 				AS RESULT 
-				ORDER BY REG_DT DESC
+				ORDER BY REG_DT ASC
 				LIMIT 4
 				
 	</select>
