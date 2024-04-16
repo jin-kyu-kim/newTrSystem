@@ -21,7 +21,8 @@ const Main = ({}) => {
     const {
         noticeQueryId,noticeTableColumns ,      //공지
         trAplyTotQueryId, trAplyKeyColumn,trAplyTableColumns,     //TR입력현황
-        atrzSttsQueryId,atrzSttsTableColumns,   //결제 신청현황,결재 리스트
+        atrzSttsQueryId,atrzSttsTableColumns,   //결재 신청현황
+        atrzListQueryId,atrzListTableColumns    //결재 리스트
         } = MainJson; 
 
     const [cookies, setCookie] = useCookies(["userInfo", "userAuth","deptInfo"]);
@@ -208,13 +209,13 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
 {/* ----------------------------------결제 신청 현황 ------------------------------------------------*/}
             <div className="aplyTableList" style={{marginLeft:"20px",flex:"1",}}>
             <p> <strong>결재 신청 현황 </strong> </p>
-            <CustomTable  keyColumn="elctrnAtrzId"  columns={atrzSttsTableColumns}  values={aplyValues} onRowClick={onAplyRowClick} noDataText='진행중인 결재가 없습니다.'/>
+            <CustomTable  keyColumn="id"  columns={atrzSttsTableColumns}  values={aplyValues} onRowClick={onAplyRowClick} noDataText='진행중인 결재가 없습니다.'/>
             </div>
 
 {/* -----------------------------------결제리스트-----------------------------------------------------*/}
             <div className="aplyTableList" style={{marginLeft:"20px",flex:"1",}}>
             <p> <strong>결재 리스트 </strong> </p>
-            <CustomTable  keyColumn="elctrnAtrzId"  columns={atrzSttsTableColumns}  values={atrzValues} onRowClick={onAtrzRowClick} noDataText="진행중인 결재가 없습니다."/>
+            <CustomTable  keyColumn="id"  columns={atrzSttsTableColumns}  values={atrzValues} onRowClick={onAtrzRowClick} noDataText="진행중인 결재가 없습니다."/>
             </div>
         </div>
       </div>
