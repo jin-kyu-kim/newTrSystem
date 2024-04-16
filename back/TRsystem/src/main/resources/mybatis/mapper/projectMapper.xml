@@ -26,28 +26,26 @@
             JOIN PRJCT_MNG_AUTHRT PMA ON (PMA.PRJCT_ID = p.PRJCT_ID AND PMA.EMP_ID = #{empId})
             WHERE 1 = 1
         <if test="prjctStleCd != null and !prjctStleCd.equals('')">
-      AND PRJCT_STLE_CD = #{prjctStleCd}
+      AND p.PRJCT_STLE_CD = #{prjctStleCd}
         </if>
         <if test="prjctId != null and !prjctId.equals('')">
-      AND PRJCT_ID = #{prjctId}
+      AND p.PRJCT_ID = #{prjctId}
         </if>
         <if test="bizFlfmtTyCd != null and !bizFlfmtTyCd.equals('')">
-      AND BIZ_FLFMT_TY_CD = #{bizFlfmtTyCd}
+      AND p.BIZ_STTS_CD = #{bizFlfmtTyCd}
         </if>
-        <if test="ctrtYmd != null and bizEndYmd == null">
-      AND CTRT_YMD >= #{ctrtYmd}
+        <if test="ctrtYmd != null and bizEndYmd == '' and ctrtYmd !=''">
+      AND p.CTRT_YMD >= #{ctrtYmd}
         </if>
-        <if test="ctrtYmd == null and bizEndYmd != null">
-      AND BIZ_END_YMD &lt;= #{bizEndYmd}
+        <if test="ctrtYmd == '' and bizEndYmd != null and bizEndYmd !='' " >
+      AND p.BIZ_END_YMD &lt;= #{bizEndYmd}
         </if>
-        <if test="ctrtYmd != null and bizEndYmd != null">
+        <if test="ctrtYmd != null and bizEndYmd != null and ctrtYmd != '' and bizEndYmd != '' ">
             <if test="!ctrtYmd.equals('') and !bizEndYmd.equals('')">
-      AND CTRT_YMD BETWEEN #{ctrtYmd} AND #{bizEndYmd}
+      AND p.CTRT_YMD BETWEEN #{ctrtYmd} AND #{bizEndYmd}
             </if>
         </if>
-        <if test="prjctNm != null and !prjctNm.equals('')">
-            AND PRJCT_NM = #{prjctNm}
-        </if>
+     
         <if test="ctmmnyNm != null and !ctmmnyNm.equals('')">
             AND CTMMNY_ID IN (SELECT CTMMNY_ID FROM CTMMNY_INFO WHERE CTMMNY_NM LIKE CONCAT('%',#{ctmmnyNm},'%'))
         </if>
@@ -118,6 +116,10 @@
 		        <if test="atrzSttsCd != null and !atrzSttsCd.equals('')">
 		       AND ATRZ_STTS_CD = #{atrzSttsCd}
 		        </if>
+		          <if test=" prjctMngrEmpId != null and ! prjctMngrEmpId.equals('')">
+		       AND e.EMP_FLNM LIKE CONCAT('%', #{prjctMngrEmpId}, '%') 
+		        </if>
+		       
     		   AND pald.ATRZ_STTS_CD != 'VTW00805'
 			   ORDER BY pal.REG_DT DESC
 	  ) A
@@ -274,7 +276,7 @@
     </select>
 
     <select id="retrieveProjectEmpCostSearch" parameterType="map" resultType="com.trsystem.LowerHashMap">
-        SELECT Z1.YM, IFNULL(Z2.EXPECT_MM,0) EXPECT_MM, IFNULL(Z2.UNTPC,0) UNTPC, IFNULL(Z2.MM,0) MM, Z2.GIVE_CT
+        SELECT Z1.YM, IFNULL(Z2.EXPECT_MM,0) EXPECT_MM, IFNULL(Z2.UNTPC,0) UNTPC, IFNULL(Z2.MM,0) MM, IFNULL(Z2.GIVE_CT,0) GIVE_CT
              , ((IFNULL(Z2.UNTPC,0)*IFNULL(Z2.EXPECT_MM,0))- IFNULL(Z2.GIVE_CT,0)) AS CALC_CT
         FROM (SELECT DATE_FORMAT((#{ctrtYmd} + INTERVAL (a.a + (10 * b.a) + (100 * c.a)) MONTH), '%Y-%m') AS YM
              FROM (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT
@@ -780,11 +782,11 @@
 		  FROM PRJCT_CT_APLY pca
 		  JOIN EMP e ON (e.EMP_ID = pca.EMP_ID)
           JOIN (
-            SELECT GROUP_CONCAT(DISTINCT d.DEPT_NM) AS DEPT_NM, pma.EMP_ID
+            SELECT GROUP_CONCAT(DISTINCT d.DEPT_NM) AS DEPT_NM, pca.EMP_ID
             FROM DEPT d
             JOIN DEPT_HNF dh ON (d.DEPT_ID = dh.DEPT_ID)
-            JOIN PRJCT_MM_APLY pma ON (pma.EMP_ID = dh.EMP_ID)
-            GROUP BY pma.EMP_ID
+            JOIN PRJCT_CT_APLY pca ON (pca.EMP_ID = dh.EMP_ID)
+            GROUP BY pca.EMP_ID
           ) dept ON dept.EMP_ID = e.EMP_ID
          LEFT JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_ID = pca.PRJCT_ID AND (pcat.EMP_ID = pca.EMP_ID OR (pcat.EMP_ID IS NULL AND pca.EMP_ID IS NULL))
               AND pcat.APLY_YM = pca.APLY_YM AND pcat.APLY_ODR = pca.APLY_ODR AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN)
@@ -792,6 +794,8 @@
 		   AND pca.PRJCT_ID = #{prjctId}
 		   AND pca.APLY_YM = #{aplyYm}
 		   AND pca.APLY_ODR = #{aplyOdr}
+           AND pcat.ATRZ_DMND_STTS_CD IS NOT NULL
+           AND pcat.ATRZ_DMND_STTS_CD != 'VTW03701'
        <if test="empId != null">
             <if test="!empId.equals('')">
                 AND pca.EMP_ID = #{empId}
@@ -801,7 +805,11 @@
 	</select>
 	
 	<select id="retrieveProjectCtAplyDetail" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT 1 AS ID
+		SELECT CASE
+                   WHEN pcat.ATRZ_DMND_STTS_CD = 'VTW03702' THEN 1
+                   WHEN pcat.ATRZ_DMND_STTS_CD = 'VTW03703' THEN 2
+                   WHEN pcat.ATRZ_DMND_STTS_CD = 'VTW03704' THEN 3
+               END AS ID
 		     , CONCAT(CT_PRPOS, ' | ' ,UTZTN_AMT, '원 (', cd.CD_NM, ')') AS TEXT
 		     , DATE_FORMAT(UTZTN_DT, '%Y-%m-%d %H:%i:%s') AS START_DATE
 		     , DATE_FORMAT(UTZTN_DT, '%Y-%m-%d %H:%i:%s') AS END_DATE
@@ -822,36 +830,22 @@
 		   AND pca.APLY_YM = #{aplyYm}
 		   AND pca.APLY_ODR = #{aplyOdr}
 		   AND pca.EMP_ID = #{empId}
-           AND pcat.ATRZ_DMND_STTS_CD = 'VTW03702'
-        UNION ALL
-        SELECT 2 AS ID
-             , CONCAT(CT_PRPOS, ' | ' ,UTZTN_AMT, '원 (', cd.CD_NM, ')') AS TEXT
-             , DATE_FORMAT(UTZTN_DT, '%Y-%m-%d %H:%i:%s') AS START_DATE
-             , DATE_FORMAT(UTZTN_DT, '%Y-%m-%d %H:%i:%s') AS END_DATE
-             , CONCAT(pca.APLY_YM, '-', pca.APLY_ODR) AS APLY_SN
-             , e.EMP_FLNM
-             , pca.UTZTN_AMT
-             , pca.USE_OFFIC
-             , pca.ATDRN
-             , pca.CT_PRPOS
-             , cd.CD_NM AS ATRZ_DMND_STTS_NM
-        FROM PRJCT_CT_APLY pca
-        JOIN EMP e ON (e.EMP_ID = pca.EMP_ID)
-        JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_ID = pca.PRJCT_ID AND (pcat.EMP_ID = pca.EMP_ID OR (pcat.EMP_ID IS NULL AND pca.EMP_ID IS NULL))
-            AND pcat.APLY_YM = pca.APLY_YM AND pcat.APLY_ODR = pca.APLY_ODR AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN)
-        JOIN CD cd ON (pcat.ATRZ_DMND_STTS_CD = cd.CD_VALUE)
-        WHERE 1=1
-          AND pca.PRJCT_ID = #{prjctId}
-          AND pca.APLY_YM = #{aplyYm}
-          AND pca.APLY_ODR = #{aplyOdr}
-          AND pca.EMP_ID = #{empId}
-          AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703'
 	</select>
 	
 	<select id="retrieveProjectMmAplyDetail" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT 1 AS ID
+		SELECT CASE
+                   WHEN pah.ATRZ_DMND_STTS_CD = 'VTW03702' THEN 1
+                   WHEN pah.ATRZ_DMND_STTS_CD = 'VTW03703' THEN 2
+                   WHEN pah.ATRZ_DMND_STTS_CD = 'VTW03704' THEN 3
+             END AS ID
 		  	 , 8 * pma.MD AS MD
-			 , CONCAT(TRUNCATE(8 * MD, 0), ' hrs | ', e1.EMP_FLNM, ' (', cd.CD_NM, ')') AS TEXT
+			 , CONCAT(TRUNCATE(8 * MD, 0), ' hrs | ',
+                      CASE
+                          WHEN pah.ATRZ_DMND_STTS_CD = 'VTW03702' THEN e1.EMP_FLNM
+                          WHEN pah.ATRZ_DMND_STTS_CD = 'VTW03703' THEN e2.EMP_FLNM
+                          WHEN pah.ATRZ_DMND_STTS_CD = 'VTW03704' THEN e2.EMP_FLNM
+                      END,
+                      ' (', cd.CD_NM, ')') AS TEXT
 			 , pah.ATRZ_DMND_STTS_CD
 			 , DATE_FORMAT(pma.APLY_YMD, '%Y-%m-%d') AS START_DATE
 			 , DATE_FORMAT(pma.APLY_YMD, '%Y-%m-%d') AS END_DATE
@@ -880,40 +874,6 @@
 	     AND pma.EMP_ID = #{empId}
 	     AND pma.APLY_YM = #{aplyYm}
 	     AND pma.APLY_ODR = #{aplyOdr}
-         AND pah.ATRZ_DMND_STTS_CD = 'VTW03702'
-		UNION ALL
-		SELECT 2 AS ID
-			 , 8 * pma.MD AS MD
-			 , CONCAT(TRUNCATE(8 * MD, 0), ' hrs | ', e2.EMP_FLNM, ' (', cd.CD_NM, ')') AS TEXT
-			 , pah.ATRZ_DMND_STTS_CD
-			 , DATE_FORMAT(pma.APLY_YMD, '%Y-%m-%d') AS START_DATE
-			 , DATE_FORMAT(pma.APLY_YMD, '%Y-%m-%d') AS END_DATE
-			 , pah.APRV_YMD
-		  	 , e2.EMP_FLNM AS APRVR_EMP_FLNM
-		  	 , dept.DEPT_NM
-		  	 , cd.CD_NM AS ATRZ_DMND_STTS_NM
-		FROM PRJCT_MM_APLY pma
-		JOIN PRJCT_MM_ATRZ pah ON (pma.PRJCT_ID = pah.PRJCT_ID
-								 	AND pma.EMP_ID = pah.EMP_ID 
-								 	AND pma.APLY_YM = pah.APLY_YM
-                                    AND pma.APLY_YMD = pah.APLY_YMD
-								 	AND pma.APLY_ODR = pah.APLY_ODR)
-		JOIN EMP e1 ON (pah.EMP_ID = e1.EMP_ID)						 	
-		JOIN EMP e2 ON (pah.APRVR_EMP_ID = e2.EMP_ID)
-		JOIN CD cd ON (pah.ATRZ_DMND_STTS_CD = cd.CD_VALUE)
-        JOIN (
-            SELECT GROUP_CONCAT(DISTINCT d.DEPT_NM) AS DEPT_NM, pma.EMP_ID
-            FROM DEPT d
-                     JOIN DEPT_HNF dh ON (d.DEPT_ID = dh.DEPT_ID)
-                     JOIN PRJCT_MM_APLY pma ON (pma.EMP_ID = dh.EMP_ID)
-            GROUP BY pma.EMP_ID
-        ) dept ON dept.EMP_ID = pah.EMP_ID
-		WHERE 1=1 
-		  AND pma.PRJCT_ID = #{prjctId}
-		  AND pma.EMP_ID = #{empId}
-		  AND pma.APLY_YM = #{aplyYm}
-		  AND pma.APLY_ODR = #{aplyOdr}
-		  AND pah.ATRZ_DMND_STTS_CD = 'VTW03703'
 	</select>
 	
 	

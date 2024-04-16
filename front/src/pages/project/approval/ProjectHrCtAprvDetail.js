@@ -32,6 +32,7 @@ const ProjectHrCtAprvDetail = () => {
     const [mmDetailValues, setMmDetailValues] = useState([]);
     const [opnnCn, setOpnnCn] = useState("");
     const [currentDate, setCurrentDate] = useState(new Date());
+    const [holiday, setHoliday] = useState([]);
 
     const date = new Date();
     const year = date.getFullYear();
@@ -55,7 +56,15 @@ const ProjectHrCtAprvDetail = () => {
             aplyOdr: day > 15 ? "1" : "2",
             bgtMngOdr: bgtMngOdr
         })
+        isHoliday();
     }, []);
+
+    const isHoliday = async () => {
+        const response = await ApiRequest('/boot/common/commonSelect', [
+            {tbNm: "CRTR_DATE"}, {hldyClCd: "VTW05003"}
+        ]);
+        setHoliday(response);
+    }
 
     // 조회
     useEffect(() => {
@@ -393,7 +402,7 @@ const ProjectHrCtAprvDetail = () => {
                 onHiding={handleClose}
                 showCloseButton={true}
             >
-                <ProjectHrCtAprvCtPop props={ctDetailValues} prjctNm={prjctNm} data={data} currentDate={currentDate} setCurrentDate={setCurrentDate}/>
+                <ProjectHrCtAprvCtPop props={ctDetailValues} prjctNm={prjctNm} data={data} currentDate={currentDate} setCurrentDate={setCurrentDate} holiday={holiday}/>
             </Popup>
 
             <Popup
@@ -403,7 +412,7 @@ const ProjectHrCtAprvDetail = () => {
                 onHiding={handleClose}
                 showCloseButton={true}
             >
-                <ProjectHrCtAprvMmPop props={mmDetailValues} prjctNm={prjctNm} data={data} currentDate={currentDate} setCurrentDate={setCurrentDate}/>
+                <ProjectHrCtAprvMmPop props={mmDetailValues} prjctNm={prjctNm} data={data} currentDate={currentDate} setCurrentDate={setCurrentDate} holiday={holiday}/>
             </Popup>
 
             <Popup
