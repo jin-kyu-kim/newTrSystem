@@ -896,12 +896,13 @@
     </select>
 
     <select id="retrieveProjectCtChild" parameterType="map" resultType="com.trsystem.LowerHashMap">
-        SELECT pca.EMP_ID
-                , pca.PRJCT_CT_APLY_SN
-                , pca.UTZTN_DT
-                , pca.UTZTN_AMT
-                , pca.CT_PRPOS
-                , pcat.ATRZ_DMND_STTS_CD
+        SELECT pca.PRJCT_ID
+             , pca.EMP_ID
+             , pca.PRJCT_CT_APLY_SN
+             , pca.UTZTN_DT
+             , pca.UTZTN_AMT
+             , pca.CT_PRPOS
+             , pcat.ATRZ_DMND_STTS_CD
         FROM PRJCT_CT_APLY pca
         JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_ID = pca.PRJCT_ID AND pcat.EMP_ID = pca.EMP_ID
             AND pcat.APLY_YM = pca.APLY_YM AND pcat.APLY_ODR = pca.APLY_ODR AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN)
