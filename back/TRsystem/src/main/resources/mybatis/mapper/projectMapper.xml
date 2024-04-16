@@ -875,8 +875,43 @@
 	     AND pma.APLY_YM = #{aplyYm}
 	     AND pma.APLY_ODR = #{aplyOdr}
 	</select>
-	
-	
+
+    <select id="retrieveProjectMmChild" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT pma.PRJCT_ID
+             , pma.APLY_YM
+             , pma.APLY_ODR
+             , pma.EMP_ID
+             , pma.APLY_YMD
+             , 8 * pma.MD AS MD
+             , pmat.ATRZ_DMND_STTS_CD
+        FROM PRJCT_MM_APLY pma
+        JOIN PRJCT_MM_ATRZ pmat ON pmat.PRJCT_ID = pma.PRJCT_ID AND pmat.EMP_ID = pma.EMP_ID
+             AND pmat.APLY_YM = pma.APLY_YM AND pmat.APLY_ODR = pma.APLY_ODR AND pmat.APLY_YMD = pma.APLY_YMD
+        WHERE 1=1
+          AND pma.PRJCT_ID = #{prjctId}
+          AND pma.APLY_YM = #{aplyYm}
+          AND pma.APLY_ODR = #{aplyOdr}
+          AND pma.EMP_ID = #{empId}
+          AND pmat.ATRZ_DMND_STTS_CD IN ('VTW03702', 'VTW03703', 'VTW03704')
+    </select>
+
+    <select id="retrieveProjectCtChild" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT pca.EMP_ID
+                , pca.PRJCT_CT_APLY_SN
+                , pca.UTZTN_DT
+                , pca.UTZTN_AMT
+                , pca.CT_PRPOS
+                , pcat.ATRZ_DMND_STTS_CD
+        FROM PRJCT_CT_APLY pca
+        JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_ID = pca.PRJCT_ID AND pcat.EMP_ID = pca.EMP_ID
+            AND pcat.APLY_YM = pca.APLY_YM AND pcat.APLY_ODR = pca.APLY_ODR AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN)
+        WHERE 1=1
+   		    AND pca.PRJCT_ID = #{prjctId}
+            AND pca.APLY_YM = #{aplyYm}
+            AND pca.APLY_ODR = #{aplyOdr}
+            AND pca.EMP_ID = #{empId}
+            AND pcat.ATRZ_DMND_STTS_CD IN ('VTW03702', 'VTW03703', 'VTW03704')
+    </select>
 	
 	<select id="retrieveExcnPrmpcBill" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT 
