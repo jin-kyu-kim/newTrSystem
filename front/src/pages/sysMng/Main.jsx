@@ -2,10 +2,8 @@ import { useState, useEffect } from "react";
 import ApiRequest from "utils/ApiRequest";
 import { Button } from "devextreme-react";
 import CustomTable from "components/unit/CustomTable";
-import moment from "moment";
 import MainJson from "./MainJson"
 import { useNavigate } from "react-router-dom"; 
-import uuid from "react-uuid";
 import { useCookies } from "react-cookie";
 import {TableContainer, Table,TableRow,TableCell } from "@mui/material";
 import CustomEditTable from "components/unit/CustomEditTable";
@@ -70,8 +68,8 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
     try {
       const responseNotice = await ApiRequest("/boot/common/queryIdSearch",{queryId : noticeQueryId ,type: 'notice'});
       const responseTrAply = await ApiRequest("/boot/common/queryIdSearch", {queryId : trAplyTotQueryId, empId:empId ,aplyYm:orderWorkBgngMm ,aplyOdr: flagOrder});
-      const responseAply = await ApiRequest("/boot/common/queryIdSearch",{queryId : atrzSttsQueryId, empId:empId , stts:"ATRZ"});
-      const responseAtrz = await ApiRequest("/boot/common/queryIdSearch", {queryId : atrzSttsQueryId, empId:empId , stts:"APRVR" });
+      const responseAply = await ApiRequest("/boot/common/queryIdSearch",{queryId : atrzSttsQueryId, empId:empId });
+      const responseAtrz = await ApiRequest("/boot/common/queryIdSearch", {queryId : atrzListQueryId, empId:empId  });
       setNoticeValues(responseNotice);
       setTrAplyValues(responseTrAply);
       setAplyValues(responseAply);
@@ -125,24 +123,55 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
 
     const onAplyRowClick = (e) => {   //결재 신청 현황 테이블 클릭 (전자결재 상세화면 개발 후 설정 예정)
           console.log("eeee",e)
-          if(e.data.elctrnAtrzTySeCd === "VTW04901"){ //휴가결재
-                  navigate("/elecAtrz/ElecAtrzDetail", 
-                 {state: {data : e.data }})
-          }else if(e.data.elctrnAtrzTySeCd === "VTW04902"){ //일반결재
+          if(e.data.tySe === "프로젝트 비용"){ //프로젝트비용
+                  navigate("/indvdlClm/ProjectExpense", 
+                 {state: {id : e.data.id }})
+          }else if(e.data.tySe === "근무시간"){ //근무시간 현황
             navigate("/indvdlClm/EmpWorkTime", 
-            {state: { data : e.data }})   
-          }else{    //휴가 일반 제외 모든 결재
+            {state: {id : e.data.id }})   
+          }else if(e.data.aprpvrId.startsWith("VTW049")){    //기타 전자결재 내역
             navigate("/elecAtrz/ElecAtrzDetail", 
             {state: {data : e.data }})   
           }
     };
 
     const onAtrzRowClick = (e) => {   //결재 리스트 테이블 클릭
+      if(e.data.tySe === "프로젝트 비용"){ //프로젝트비용
+        navigate("/indvdlClm/ProjectExpense", 
+       {state: {id : e.data.id }})
+      }else if(e.data.tySe === "근무시간"){ //근무시간 현황
+        navigate("/indvdlClm/EmpWorkTime", 
+        {state: {id : e.data.id }})   
+      }else if(e.data.aprpvrId.startsWith("VTW049")){    //기타 전자결재 내역
         navigate("/elecAtrz/ElecAtrzDetail", 
-                {state: {data: e.data }})
+        {state: {data : e.data }})   
+      }else if(e.data.tySe === "프로젝트 승인"){    //프로젝트 승인페이지(이동전 데이터 조회)
+        console.log("프로젝트 승인인가요>>?",e.data.id)
+        projectSearch(e.data.id)
+      }
     };
-//============================기타 이벤트=====================================
 
+//============================기타 이벤트=====================================
+const projectSearch = async (data) => { 
+  console.log("프로젝트이동입니다.",data)
+  try {
+    const response = await ApiRequest("/boot/common/queryIdSearch",{queryId : "projectMapper.retrievePrjctAprvList" ,prjctId: data ,empId: empId});
+    console.log("responseee",response)
+    navigate("/project/ProjectAprvDetail",
+    {state: { id: response[0].prjctId
+      , prjctNm: response[0].prjctNm
+      , bgtMngOdr: response[0].bgtMngOdr
+      , atrzLnSn: response[0].atrzLnSn
+      , atrzSttsCd: response[0].atrzSttsCd
+      , atrzStepCd: response[0].atrzStepCd
+      , nowAtrzStepCd: response[0].nowAtrzStepCd
+      , aprvrEmpId : response[0].aprvrEmpId
+      , ctrtYmd: response[0].ctrtYmd
+      , stbleEndYmd: response[0].stbleEndYmd}})
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 //============================화면그리는부분===================================
   return (
@@ -215,7 +244,7 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
 {/* -----------------------------------결제리스트-----------------------------------------------------*/}
             <div className="aplyTableList" style={{marginLeft:"20px",flex:"1",}}>
             <p> <strong>결재 리스트 </strong> </p>
-            <CustomTable  keyColumn="id"  columns={atrzSttsTableColumns}  values={atrzValues} onRowClick={onAtrzRowClick} noDataText="진행중인 결재가 없습니다."/>
+            <CustomTable  keyColumn="id"  columns={atrzListTableColumns}  values={atrzValues} onRowClick={onAtrzRowClick} noDataText="진행중인 결재가 없습니다."/>
             </div>
         </div>
       </div>

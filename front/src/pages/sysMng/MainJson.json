@@ -30,7 +30,7 @@
     { "key": "regDt", "value": "기안일자",  "alignment": "center" },
     { "key": "atrzSttsCdNm", "value": "결재상태",  "alignment": "center" }
   ],
-  "atrzListQueryId": "sysMngMapper.retrieveAtrzAplySttus",
+  "atrzListQueryId": "sysMngMapper.retiveAtrzList",
   "atrzListTableColumns": [
     { "key": "tySe", "value": "결재구분",  "alignment": "center" },
     { "key": "title", "value": "결재명",  "alignment": "center" },
