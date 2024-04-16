@@ -140,6 +140,9 @@ const ExpensInfo = ({onSendData, prjctId}) => {
         setForms(newForms => [...newForms]);
     };
 
+    /**
+     * 청구 차수 및 날짜 계산
+     */
     const setExpensDate = () => {
         
         const today = new Date();
@@ -194,13 +197,38 @@ const ExpensInfo = ({onSendData, prjctId}) => {
         setNextClmOdr(`${nextYear}${nextMonthString}-${nextOdr}`);
     }
 
+    /**
+     * 숫자 input 값 처리
+     * @param {*} e 
+     * @param {*} index 
+     * @param {*} fieldName 
+     */
     const handleNumberInputChange = (e, index, fieldName) => {
         const { value } = e.target;
-        const newValue = value.replace(/[^0-9]/g, ""); // 숫자 이외의 값 제거
+
+
+        let newValue = value.replace(/[^0-9]/g, ""); // 숫자 이외의 값 제거
+        if(fieldName === "clmAmt" || fieldName === "vatInclsAmt") {
+            if(newValue === "") {
+                newValue = 0;
+            }
+        }
         const newForms = [...forms];
         newForms[index][fieldName] = newValue;
         setForms(newForms);
-      };
+    };
+
+    /**
+     * 부가세 계산(10%)
+     * @param {} index 
+     */
+    const onCalVat = (index) => {
+        console.log(forms[index].clmAmt);
+        const newForms = [...forms];
+        newForms[index]["vatInclsAmt"] = forms[index].clmAmt * 1.1;
+        setForms(newForms);
+    }
+    
 
     return (
         
@@ -320,18 +348,33 @@ const ExpensInfo = ({onSendData, prjctId}) => {
                                             label="금액"
                                             type="text"
                                             variant="outlined"
-                                            value={parseInt(forms[index].clmAmt).toLocaleString()}
+                                            value={
+                                                parseInt(forms[index].clmAmt) === NaN ? 0 : parseInt(forms[index].clmAmt).toLocaleString()
+                                            }
                                             onChange={(e) => handleNumberInputChange(e, index, "clmAmt")}
                                         />
                                     </Grid>
-                                    <Grid item xs={2}>
+                                    <Grid item xs={0.7}>
+                                        <div style={{width: "100%"}}>
+
+                                        <Button
+                                            variant="contained"
+                                            style={{marginTop: "10px" }}
+                                            disabled={forms[index].ctStlmSeCd !== "VTW01904"}
+                                            onClick={() => onCalVat(index)}
+                                            >+10%</Button>
+                                            </div>
+                                    </Grid>
+                                    <Grid item xs={1.3}>
                                         <TextField
                                             fullWidth
                                             id="vatInclsAmt"
                                             label="금액(부가세포함)"
                                             type="text"
                                             variant={forms[index].ctStlmSeCd !== "VTW01904" ? "filled" : "outlined"}
-                                            value={parseInt(forms[index].vatInclsAmt).toLocaleString()}
+                                            value={
+                                                parseInt(forms[index].vatInclsAmt) === NaN ? 0 : parseInt(forms[index].vatInclsAmt).toLocaleString()
+                                            }
                                             onChange={(e) => handleNumberInputChange(e, index, "vatInclsAmt")}
                                             disabled={forms[index].ctStlmSeCd !== "VTW01904"}
                                         />
@@ -369,7 +412,7 @@ const ExpensInfo = ({onSendData, prjctId}) => {
                                                 }}
                                             >
                                                 {expensCdList.map((item, index) => (
-                                                    <MenuItem key={index} value={item.cdValue}>{item.cdNm}</MenuItem>
+                                                    <MenuItem key={index} value={item.expensCd}>{item.cdNm}</MenuItem>
                                                 ))}
                                             </Select>
                                         </FormControl>

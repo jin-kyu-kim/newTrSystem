@@ -185,16 +185,19 @@
 		SELECT ROW_NUMBER() OVER() AS ROW_ID
 		 , cd1.CD_NM AS CT_STLM_SE_CD_NM	
 		 , CT_STLM_SE_CD
-		 , RCIPT_PBLCN_YMD				
+	 	 , IFNULL(RCIPT_PBLCN_YMD, TAX_BILL_PBLCN_YMD) AS RCIPT_PBLCN_YMD
 		 , cad.CNPT_NM	-- 거래처명
 		 , cad.CLM_AMT
-		 , cd2.CD_NM AS  EXPENS_CD_NM	
+		 , cd2.CD_NM AS EXPENS_CD_NM
 		 , cad.DTL_USE_DTLS
 		 , cad.CLM_PRPOS
+	 	 , cad.VAT_INCLS_AMT -- 금액(부가세 포함/세금별도)
+		 , IFNULL(CONCAT('(', DPSTR_FLNM, ') ', cd3.CD_NM, ' ', DPST_ACTNO, ' / ', DPST_DMND_YMD), '-') AS BANK
 	  FROM CLM_ATRZ ca
 	  JOIN CLM_ATRZ_DTL cad ON (ca.ELCTRN_ATRZ_ID = cad.ELCTRN_ATRZ_ID)
 	  JOIN CD cd1 ON (cad.CT_STLM_SE_CD = cd1.CD_VALUE)
 	  JOIN CD cd2 ON (cad.EXPENS_CD = cd2.CD_VALUE)
+      LEFT JOIN CD cd3 ON (cad.BANK_CD = cd3.CD_VALUE)
 	WHERE 1=1
 	   AND ca.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
 	</select>
@@ -241,6 +244,43 @@
 		  JOIN CD cd ON (cd.CD_VALUE = ep.EXPENS_CD)
 		 WHERE 1=1
 		   AND PRJCT_ID = #{prjctId}
+	</select>
+	
+	<select id="retrieveOutordEmpPlan" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT 
+			olp.PRJCT_ID,
+			olp.BGT_MNG_ODR,
+			olp.OUTORD_LBRCO_PRMPC_SN,
+			olp.OUTORD_EMP_ID,
+			olp.HNF_ROLE_CD,
+			olp.HNF_GRAD_CD,
+			olp.TKCG_JOB,
+			olp.UNTPC,
+			olp.INPT_PRNMNT_YMD,
+			olp.WITHDR_PRNMNT_YMD,
+			dtl.EXPECT_MM,
+			(olp.UNTPC * dtl.EXPECT_MM) AS USEFUL_AMT
+		  FROM OUTORD_LBRCO_PRMPC olp
+		  JOIN (SELECT MAX(BGT_MNG_ODR) AS BGT_MNG_ODR, PRJCT_ID 
+		  		  FROM PRJCT_BGT_PRMPC
+			 	 WHERE 1=1
+		   		   AND ATRZ_DMND_STTS_CD = 'VTW03703'
+			    GROUP BY PRJCT_ID) pbp 
+			ON (olp.PRJCT_ID = pbp.PRJCT_ID AND olp.BGT_MNG_ODR = pbp.BGT_MNG_ODR)
+		  JOIN (SELECT SUM(EXPECT_MM) AS EXPECT_MM, PRJCT_ID  
+		  		FROM OUTORD_LBRCO_PRMPC_DTL 
+		  		WHERE 1=1 
+		  		GROUP BY PRJCT_ID, BGT_MNG_ODR, OUTORD_LBRCO_PRMPC_SN) dtl 
+		  	ON (olp.PRJCT_ID = dtl.PRJCT_ID)
+		  WHERE 1=1
+		    AND olp.PRJCT_ID = #{prjctId}			
+	</select>
+	
+	<select id="retrieveRealOutordEmpPlan" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT EMP_ID, EMP_FLNM
+		  FROM EMP 
+		  WHERE 1=1
+		   AND EMP_TY_CD = 'VTW00203'
 	</select>
 	
 </mapper>
