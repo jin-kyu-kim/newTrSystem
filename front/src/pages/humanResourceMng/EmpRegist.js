@@ -7,7 +7,7 @@ import CustomLabelValue from "components/unit/CustomLabelValue";
 import ApiRequest from "utils/ApiRequest";
 import { left, right } from "@popperjs/core";
 import moment from "moment";
-
+import notify from 'devextreme/ui/notify';
 
 const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
 
@@ -147,11 +147,12 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
     };
 
     //커스텀라벨 초기화버튼 
-    const onReset = () =>{
+    const onReset = (e) =>{
       reset();
       callBackR();
+      notify("초기화되었습니다.","success",200);
     }
-
+   
     //기초정보 저장 
     const onClick = (e) => {
 
@@ -307,7 +308,7 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
           </div>
         </div>
       <div className="buttonContainer" style={buttonContainerStyle}>
-          <Button style={buttonStyle} onClick={onReset} >입력초기화</Button>
+          <Button style={buttonStyle} type="danger" text="초기화" onClick={onReset} >입력초기화</Button>
           <Button style={buttonStyle} onClick={onClick} >기초정보 저장</Button>
       </div>
     </div>

@@ -2,10 +2,8 @@ import { useState, useEffect } from "react";
 import ApiRequest from "utils/ApiRequest";
 import { Button } from "devextreme-react";
 import CustomTable from "components/unit/CustomTable";
-import moment from "moment";
 import MainJson from "./MainJson"
 import { useNavigate } from "react-router-dom"; 
-import uuid from "react-uuid";
 import { useCookies } from "react-cookie";
 import {TableContainer, Table,TableRow,TableCell } from "@mui/material";
 import CustomEditTable from "components/unit/CustomEditTable";
@@ -21,7 +19,8 @@ const Main = ({}) => {
     const {
         noticeQueryId,noticeTableColumns ,      //공지
         trAplyTotQueryId, trAplyKeyColumn,trAplyTableColumns,     //TR입력현황
-        atrzSttsQueryId,atrzSttsTableColumns,   //결제 신청현황,결재 리스트
+        atrzSttsQueryId,atrzSttsTableColumns,   //결재 신청현황
+        atrzListQueryId,atrzListTableColumns    //결재 리스트
         } = MainJson; 
 
     const [cookies, setCookie] = useCookies(["userInfo", "userAuth","deptInfo"]);
@@ -69,8 +68,8 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
     try {
       const responseNotice = await ApiRequest("/boot/common/queryIdSearch",{queryId : noticeQueryId ,type: 'notice'});
       const responseTrAply = await ApiRequest("/boot/common/queryIdSearch", {queryId : trAplyTotQueryId, empId:empId ,aplyYm:orderWorkBgngMm ,aplyOdr: flagOrder});
-      const responseAply = await ApiRequest("/boot/common/queryIdSearch",{queryId : atrzSttsQueryId, empId:empId , stts:"ATRZ"});
-      const responseAtrz = await ApiRequest("/boot/common/queryIdSearch", {queryId : atrzSttsQueryId, empId:empId , stts:"APRVR" });
+      const responseAply = await ApiRequest("/boot/common/queryIdSearch",{queryId : atrzSttsQueryId, empId:empId });
+      const responseAtrz = await ApiRequest("/boot/common/queryIdSearch", {queryId : atrzListQueryId, empId:empId  });
       setNoticeValues(responseNotice);
       setTrAplyValues(responseTrAply);
       setAplyValues(responseAply);
@@ -123,25 +122,53 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
     };
 
     const onAplyRowClick = (e) => {   //결재 신청 현황 테이블 클릭 (전자결재 상세화면 개발 후 설정 예정)
-          console.log("eeee",e)
-          if(e.data.elctrnAtrzTySeCd === "VTW04901"){ //휴가결재
-                  navigate("/elecAtrz/ElecAtrzDetail", 
-                 {state: {data : e.data }})
-          }else if(e.data.elctrnAtrzTySeCd === "VTW04902"){ //일반결재
+          if(e.data.tySe === "프로젝트 비용"){ //프로젝트비용
+                  navigate("/indvdlClm/ProjectExpense", 
+                 {state: {id : e.data.id }})
+          }else if(e.data.tySe === "근무시간"){ //근무시간 현황
             navigate("/indvdlClm/EmpWorkTime", 
-            {state: { data : e.data }})   
-          }else{    //휴가 일반 제외 모든 결재
+            {state: {id : e.data.id }})   
+          }else if(e.data.aprpvrId.startsWith("VTW049")){    //기타 전자결재 내역
             navigate("/elecAtrz/ElecAtrzDetail", 
-            {state: {data : e.data }})   
+            {state: {id : e.data.id }})   
           }
     };
 
     const onAtrzRowClick = (e) => {   //결재 리스트 테이블 클릭
+      if(e.data.tySe === "프로젝트 비용"){ //프로젝트비용
+        navigate("/indvdlClm/ProjectExpense", 
+       {state: {id : e.data.id }})
+      }else if(e.data.tySe === "근무시간"){ //근무시간 현황
+        navigate("/indvdlClm/EmpWorkTime", 
+        {state: {id : e.data.id }})   
+      }else if(e.data.aprpvrId.startsWith("VTW049")){    //기타 전자결재 내역
         navigate("/elecAtrz/ElecAtrzDetail", 
-                {state: {data: e.data }})
+        {state: {id : e.data.id }})   
+      }else if(e.data.tySe === "프로젝트 승인"){    //프로젝트 승인페이지(이동전 데이터 조회)
+        projectSearch(e.data.id)
+      }
     };
-//============================기타 이벤트=====================================
 
+//============================기타 이벤트=====================================
+    const projectSearch = async (data) => {     //프로젝트 승인 상세 화면 이동을 위한 데이터 조회
+      try {
+        const response = await ApiRequest("/boot/common/queryIdSearch",{queryId : "projectMapper.retrievePrjctAprvList" ,prjctId: data ,empId: empId});
+        console.log("responseee",response)
+        navigate("/project/ProjectAprvDetail",
+        {state: { id: response[0].prjctId
+          , prjctNm: response[0].prjctNm
+          , bgtMngOdr: response[0].bgtMngOdr
+          , atrzLnSn: response[0].atrzLnSn
+          , atrzSttsCd: response[0].atrzSttsCd
+          , atrzStepCd: response[0].atrzStepCd
+          , nowAtrzStepCd: response[0].nowAtrzStepCd
+          , aprvrEmpId : response[0].aprvrEmpId
+          , ctrtYmd: response[0].ctrtYmd
+          , stbleEndYmd: response[0].stbleEndYmd}})
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
 //============================화면그리는부분===================================
   return (
@@ -152,7 +179,7 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
 
         <div className="mainLeftContainer" style={mainLeftContainerStyle}>
 {/* --------------------------------사용자정보 --------------------------------------------------*/}
-          <div className="empInfoContainer" style={empInfoStyle}>
+        <div className="empInfoContainer" style={empInfoStyle}>
           <div><p><strong> 사용자 정보 </strong></p></div>
           </div>
           <TableContainer >
@@ -177,7 +204,7 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
           </TableContainer>
 
 {/* ----------------------------------공지사항 --------------------------------------------------*/}        
-          <div className="noticeContainer" style={{ marginTop: "20px", marginBottom: "10px" }}>
+        <div className="noticeContainer" style={{ marginTop: "20px", marginBottom: "10px" }}>
           <div><p><strong> 공지사항 </strong></p></div>
           <CustomEditTable
             noDataText="공지사항이 없습니다."
@@ -189,32 +216,32 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
             paging={true}
           />
 {/* ----------------------------------버튼그룹 --------------------------------------------------*/}
-          <div className="buttonContainer" style={buttonContainerStyle}>
+        <div className="buttonContainer" style={buttonContainerStyle}>
           <Button style={ButtonStyle} onClick={goReference} text="자료실" name="jaryu" type="default"/>
           <Button style={ButtonStyle} onClick={goNotice} text="공지사항" type="default"/>
           <Button style={ButtonStyle} onClick={goKms} text="지식관리시스템" type="default"/>
           <Button style={ButtonStyle} onClick={goConference} text="회의실예약" type="default"/>
           </div>
           </div>
-        </div>
+      </div>
 
 {/* ----------------------------------TR입력 현황 ------------------------------------------------*/}
         <div className="mainRightContainer" style={mainRightContainerStyle}>
           <div className="tableDetailTable" style={tableDetailStyle}>
             <p><strong>{orderWorkBgngMm}-{flagOrder}차수 TR입력 현황 </strong></p>
             <CustomTable  keyColumn={trAplyKeyColumn}  columns={trAplyTableColumns}  values={trAplyValues}  onCellClick={onCellClick} />
-          </div>
+        </div>
           
 {/* ----------------------------------결제 신청 현황 ------------------------------------------------*/}
-            <div className="aplyTableList" style={{marginLeft:"20px",flex:"1",}}>
+        <div className="aplyTableList" style={{marginLeft:"20px",flex:"1",}}>
             <p> <strong>결재 신청 현황 </strong> </p>
-            <CustomTable  keyColumn="elctrnAtrzId"  columns={atrzSttsTableColumns}  values={aplyValues} onRowClick={onAplyRowClick} noDataText='진행중인 결재가 없습니다.'/>
-            </div>
+            <CustomTable  keyColumn="id"  columns={atrzSttsTableColumns}  values={aplyValues} onRowClick={onAplyRowClick} noDataText='진행중인 결재가 없습니다.'/>
+        </div>
 
 {/* -----------------------------------결제리스트-----------------------------------------------------*/}
-            <div className="aplyTableList" style={{marginLeft:"20px",flex:"1",}}>
+          <div className="aplyTableList" style={{marginLeft:"20px",flex:"1",}}>
             <p> <strong>결재 리스트 </strong> </p>
-            <CustomTable  keyColumn="elctrnAtrzId"  columns={atrzSttsTableColumns}  values={atrzValues} onRowClick={onAtrzRowClick} noDataText="진행중인 결재가 없습니다."/>
+            <CustomTable  keyColumn="id"  columns={atrzListTableColumns}  values={atrzValues} onRowClick={onAtrzRowClick} noDataText="진행중인 결재가 없습니다."/>
             </div>
         </div>
       </div>
