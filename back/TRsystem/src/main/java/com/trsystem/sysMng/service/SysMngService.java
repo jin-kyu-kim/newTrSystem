@@ -161,9 +161,54 @@ public class SysMngService implements UserDetailsService {
                  return ResponseEntity.ok("실패");
              }
         }
+        
+        
 
       
     }
     
+    public ResponseEntity<String> changePwd(Map<String, Object> request) {
+        String empId = (String) request.get("empId");
+        String oldPwd = (String) request.get("oldPwd");
+        String newPwd = (String) request.get("newPwd");
+
+        UserDetails setInfo = loadUserByUsername(empId);
+
+        ResponseEntity<String> result;
+
+        // 입력된 비밀번호와 저장된 비밀번호 비교
+        if (passwordEncoder.matches(oldPwd, setInfo.getPassword())) {
+            // 인증 객체 생성
+            Authentication authentication = new UsernamePasswordAuthenticationToken(setInfo.getUsername(), setInfo.getPassword(), setInfo.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            Map<String, Object> tbNm = new HashMap<>();
+            tbNm.put("tbNm", "LGN_USER");
+
+            Map<String, Object> condition = new HashMap<>();
+            condition.put("empno", empId);
+
+            // 새로운 비밀번호로 요청 맵 업데이트
+            Map<String, Object> updateRequest = new HashMap<>();
+            updateRequest.put("pswd", passwordEncoder.encode(newPwd));
+
+            List<Map<String, Object>> param = new ArrayList<>();
+            param.add(tbNm);
+            param.add(updateRequest);
+            param.add(condition);
+
+            // 데이터 업데이트
+            int contrastResult = commonService.updateData(param);
+            return   ResponseEntity.ok("성공");
+                
+        } else {
+           return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
+    }
     
 }
+      
+    
+    
+    
