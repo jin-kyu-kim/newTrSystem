@@ -1,4 +1,4 @@
-import { Column, DataGrid, Editing, Lookup, MasterDetail, Selection, RequiredRule, StringLengthRule, Pager, Paging } from 'devextreme-react/data-grid';
+import { Column, DataGrid, Editing, Lookup, MasterDetail, Selection, RequiredRule, StringLengthRule, Pager, Paging, Export } from 'devextreme-react/data-grid';
 import { useCallback, useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import ToggleButton from 'pages/sysMng/ToggleButton';
@@ -7,7 +7,7 @@ import '../../pages/sysMng/sysMng.css'
 import moment from 'moment';
 
 const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal, masterDetail, doublePk, 
-    noEdit, onSelection, onRowClick, removeAdd, callback, handleData, handleExpanding, showPageSize }) => {
+    noEdit, onSelection, onRowClick, removeAdd, callback, handleData, handleExpanding, showPageSize,excel, onExcel }) => {
     const [ cookies ] = useCookies(["userInfo", "userAuth"]);
     const [ cdValList, setCdValList ] = useState({});
     const empId = cookies.userInfo.empId;
@@ -105,6 +105,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
     return (
         <div className="wrap_table">
             <DataGrid
+                dateSerializationFormat="yyyyMMdd"
                 className='editGridStyle'
                 keyExpr={keyColumn}
                 dataSource={values}
@@ -115,6 +116,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                 repaintChangesOnly={true}
                 noDataText=''
                 onRowClick={onRowClick}
+                onExporting={onExcel}
                 onRowExpanding={handleExpanding}
                 onSelectionChanged={onSelection && ((e) => onSelection(e))}
                 {...rowEventHandlers}
@@ -152,13 +154,18 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                 {onSelection && <Selection mode="multiple" selectAllMode="page"/>}
                 {columns.map((col) => (
                     <Column
+                     
                         key={col.key}
                         dataField={col.key}
                         caption={col.value}
                         dataType={col.type}
                         format={col.format}
+                      
                         alignment={'center'}
                         groupIndex={col.grouping && 0}
+                        sorting={{
+                            mode: "none"
+                          }}
                         cellRender={col.button ? (e) => buttonRender(e, col) : undefined} >
                         {col.editType === 'selectBox' ? 
                             <Lookup 
@@ -169,6 +176,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                         : null}
                         {col.isRequire && <RequiredRule message={`${col.value}는 필수항목입니다`}/>}
                         {col.length && <StringLengthRule max={col.length} message={`최대입력 길이는 ${col.length}입니다`}/>}
+                        
                     </Column>
                 ))}
                 <Paging defaultPageSize={20} />
@@ -179,6 +187,10 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                     showPageSizeSelector={showPageSize}
                     allowedPageSizes={[20, 50, 80, 100]}
                 />
+                {excel &&
+                    <Export enabled={true} >
+                    </Export>
+                }
             </DataGrid>
         </div>
     );
