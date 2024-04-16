@@ -3,13 +3,22 @@ import React from 'react';
 import Scheduler, {Resource} from 'devextreme-react/scheduler';
 import './ProjectHtCtAprvPop.css';
 
-const ProjectHrCtAprvCtPop = ({props, prjctNm, data, currentDate, setCurrentDate}) => {
+const ProjectHrCtAprvCtPop = ({props, prjctNm, data, currentDate, setCurrentDate, holiday}) => {
 
     const isWeekEnd = (date) => {
-        const day = date.getDay();
-        if(day === 0){
+        const month = date.getMonth() + 1;
+        let monthVal = month < 10 ? "0" + month : month;
+        const day = date.getDate();
+        let dayVal = day < 10 ? "0" + day : day;
+        let ymd = date.getFullYear() + monthVal + dayVal;
+        let index = holiday.findIndex(e => e.crtrYmd === ymd);
+
+        if(index !== -1){
+            return "holiday";
+        }else
+        if(date.getDay() === 0){
             return "sunday";
-        }else if(day === 6){
+        }else if(date.getDay() === 6){
             return "saturday";
         }
     };
@@ -55,6 +64,10 @@ const ProjectHrCtAprvCtPop = ({props, prjctNm, data, currentDate, setCurrentDate
         {
             id: 1,
             color: "#00af2c"
+        },
+        {
+            id: 3,
+            color: "#B93232"
         }
     ]
 

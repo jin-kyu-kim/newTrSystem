@@ -7,9 +7,9 @@
   "tableColumns": [
     { "key": "prmpcAcctoTot", "value":"원가별집계", "width": 120, "alignment": "center" },
     {  "key": "ctNm", "value": "원가항목", "width": 300, "alignment": "center"  },
-    {  "key": "bgt", "value": "배정예산(원)", "width": 200, "alignment": "center"},
-    {  "key": "useBgt", "value": "누적사용(원)", "width": 200, "alignment": "center" },
-    {  "key": "useFulBgt", "value":"가용(원)", "width": 200, "alignment": "center" },
+    {  "key": "bgt", "value": "배정예산(원)", "width": 200, "alignment": "center", "currency": true},
+    {  "key": "useBgt", "value": "누적사용(원)", "width": 200, "alignment": "center", "currency": true },
+    {  "key": "useFulBgt", "value":"가용(원)", "width": 200, "alignment": "center","currency": true },
     {  "key": "useRate", "value": "사용비율(%)", "width": 200, "alignment": "center" }
   
    
@@ -22,5 +22,5 @@
     ],
    "groupingData" : 
   {"caption":"원가별집계", "dataField": "prmpcAcctoTot" , "format": "#,##0"}
-
+   
 }
