@@ -26,28 +26,26 @@
             JOIN PRJCT_MNG_AUTHRT PMA ON (PMA.PRJCT_ID = p.PRJCT_ID AND PMA.EMP_ID = #{empId})
             WHERE 1 = 1
         <if test="prjctStleCd != null and !prjctStleCd.equals('')">
-      AND PRJCT_STLE_CD = #{prjctStleCd}
+      AND p.PRJCT_STLE_CD = #{prjctStleCd}
         </if>
         <if test="prjctId != null and !prjctId.equals('')">
-      AND PRJCT_ID = #{prjctId}
+      AND p.PRJCT_ID = #{prjctId}
         </if>
         <if test="bizFlfmtTyCd != null and !bizFlfmtTyCd.equals('')">
-      AND BIZ_FLFMT_TY_CD = #{bizFlfmtTyCd}
+      AND p.BIZ_STTS_CD = #{bizFlfmtTyCd}
         </if>
-        <if test="ctrtYmd != null and bizEndYmd == null">
-      AND CTRT_YMD >= #{ctrtYmd}
+        <if test="ctrtYmd != null and bizEndYmd == '' and ctrtYmd !=''">
+      AND p.CTRT_YMD >= #{ctrtYmd}
         </if>
-        <if test="ctrtYmd == null and bizEndYmd != null">
-      AND BIZ_END_YMD &lt;= #{bizEndYmd}
+        <if test="ctrtYmd == '' and bizEndYmd != null and bizEndYmd !='' " >
+      AND p.BIZ_END_YMD &lt;= #{bizEndYmd}
         </if>
-        <if test="ctrtYmd != null and bizEndYmd != null">
+        <if test="ctrtYmd != null and bizEndYmd != null and ctrtYmd != '' and bizEndYmd != '' ">
             <if test="!ctrtYmd.equals('') and !bizEndYmd.equals('')">
-      AND CTRT_YMD BETWEEN #{ctrtYmd} AND #{bizEndYmd}
+      AND p.CTRT_YMD BETWEEN #{ctrtYmd} AND #{bizEndYmd}
             </if>
         </if>
-        <if test="prjctNm != null and !prjctNm.equals('')">
-            AND PRJCT_NM = #{prjctNm}
-        </if>
+     
         <if test="ctmmnyNm != null and !ctmmnyNm.equals('')">
             AND CTMMNY_ID IN (SELECT CTMMNY_ID FROM CTMMNY_INFO WHERE CTMMNY_NM LIKE CONCAT('%',#{ctmmnyNm},'%'))
         </if>
@@ -118,6 +116,10 @@
 		        <if test="atrzSttsCd != null and !atrzSttsCd.equals('')">
 		       AND ATRZ_STTS_CD = #{atrzSttsCd}
 		        </if>
+		          <if test=" prjctMngrEmpId != null and ! prjctMngrEmpId.equals('')">
+		       AND e.EMP_FLNM LIKE CONCAT('%', #{prjctMngrEmpId}, '%') 
+		        </if>
+		       
     		   AND pald.ATRZ_STTS_CD != 'VTW00805'
 			   ORDER BY pal.REG_DT DESC
 	  ) A
