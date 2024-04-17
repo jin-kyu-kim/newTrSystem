@@ -253,6 +253,43 @@
 		   AND PRJCT_ID = #{prjctId}
 	</select>
 	
+	<select id="retrieveOutordEmpPlan" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT 
+			olp.PRJCT_ID,
+			olp.BGT_MNG_ODR,
+			olp.OUTORD_LBRCO_PRMPC_SN,
+			olp.OUTORD_EMP_ID,
+			olp.HNF_ROLE_CD,
+			olp.HNF_GRAD_CD,
+			olp.TKCG_JOB,
+			olp.UNTPC,
+			olp.INPT_PRNMNT_YMD,
+			olp.WITHDR_PRNMNT_YMD,
+			dtl.EXPECT_MM,
+			(olp.UNTPC * dtl.EXPECT_MM) AS USEFUL_AMT
+		  FROM OUTORD_LBRCO_PRMPC olp
+		  JOIN (SELECT MAX(BGT_MNG_ODR) AS BGT_MNG_ODR, PRJCT_ID 
+		  		  FROM PRJCT_BGT_PRMPC
+			 	 WHERE 1=1
+		   		   AND ATRZ_DMND_STTS_CD = 'VTW03703'
+			    GROUP BY PRJCT_ID) pbp 
+			ON (olp.PRJCT_ID = pbp.PRJCT_ID AND olp.BGT_MNG_ODR = pbp.BGT_MNG_ODR)
+		  JOIN (SELECT SUM(EXPECT_MM) AS EXPECT_MM, PRJCT_ID  
+		  		FROM OUTORD_LBRCO_PRMPC_DTL 
+		  		WHERE 1=1 
+		  		GROUP BY PRJCT_ID, BGT_MNG_ODR, OUTORD_LBRCO_PRMPC_SN) dtl 
+		  	ON (olp.PRJCT_ID = dtl.PRJCT_ID)
+		  WHERE 1=1
+		    AND olp.PRJCT_ID = #{prjctId}			
+	</select>
+	
+	<select id="retrieveRealOutordEmpPlan" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT EMP_ID, EMP_FLNM
+		  FROM EMP 
+		  WHERE 1=1
+		   AND EMP_TY_CD = 'VTW00203'
+	</select>
+	
 	<select id="retrieveDeadLineDate" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT DATE_FORMAT(MAX(CRTR_YMD), '%Y년 %m월 %d일') AS DEAD_LINE_DATE
 		  FROM CRTR_DATE

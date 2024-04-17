@@ -38,4 +38,9 @@ public class SysMngController {
     public ResponseEntity<String> resetPswd(@RequestBody Map<String, Object> loginInfo) {
         return userDetails.resetUserPswd(loginInfo);
     }
+    @PostMapping(value = "/boot/sysMng/changePwd")
+    public ResponseEntity<String> changePwd(@RequestBody Map<String, Object> changePwdInfo) {
+    	
+        return userDetails.changePwd(changePwdInfo);
+    }
 }

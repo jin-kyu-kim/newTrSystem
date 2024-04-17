@@ -1,17 +1,20 @@
 import { useState, useEffect } from "react";
+import React from 'react';
 import PivotGrid, { Export, FieldChooser } from 'devextreme-react/pivot-grid';
 import PivotGridDataSource from 'devextreme/ui/pivot_grid/data_source';
 import  EmpTimeAprvListJson from "./EmpTimeAprvListJson.json";
 import ApiRequest from "../../utils/ApiRequest";
 import SearchPrjctCostSet from "../../components/composite/SearchPrjctCostSet";
 import CustomPivotGrid from "components/unit/CustomPivotGrid";
-<style>
-        {`
-         .dx-pivotgrid-total-cell {
-          white-space: nowrap; 
-        }
-        `}
-      </style>
+const styles = `
+  .dx-button-content {
+    width: 200px;
+  
+  }
+  
+`;
+
+
        
 const EmpTimeAprvList = () => {
   const [values, setValues] = useState([]);
@@ -99,6 +102,10 @@ const EmpTimeAprvList = () => {
 
 
 return(
+  <React.Fragment>
+  <style>
+  {styles}
+</style>
   <div className="container">
       <div
         className="title p-1"
@@ -120,7 +127,7 @@ return(
                 />
      </div>
 
-
+     </React.Fragment>
 
 )
 }

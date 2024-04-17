@@ -56,17 +56,6 @@
     "expanded": true
   },
   {
-    "caption": "가용",
-    "dataField": "expectMm",
-    "dataType": "number",
-    "summaryType": "sum",
-    "area": "data",
-    "format": {
-      "type": "fixedPoint",
-      "precision": 2
-    }
-  },
-  {
     "caption": "투입",
     "dataField": "mm",
     "dataType": "number",
@@ -79,8 +68,33 @@
 
   },
   {
-    "caption": "금액",
-    "width": 30,
+    "caption": "가용",
+    "dataField": "expectMm",
+    "dataType": "number",
+    "summaryType": "sum",
+    "area": "data",
+    "format": {
+      "type": "fixedPoint",
+      "precision": 2
+    }
+  },
+  {
+    "caption": "사용금액",
+    "width": 50,
+    "dataField": "giveCt",
+    "area": "data",
+    "dataType": "number",
+    "summaryType": "sum",
+    "format": {
+       "type": "fixedPoint",
+        "thousandsSeparator": ","
+    }
+    
+  }
+ ,
+  {
+    "caption": "가용금액",
+    "width": 50,
     "dataField": "calcCt",
     "area": "data",
     "dataType": "number",
@@ -89,5 +103,7 @@
        "type": "fixedPoint",
         "thousandsSeparator": ","
     }
+    
   }
+
 ]

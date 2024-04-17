@@ -14,6 +14,7 @@ import ExpensInfo from "./expensClm/ExpensInfo";
 
 import ElecAtrzCtrtInfo from "./ctrtInfo/ElecAtrzCtrtInfo";
 import ElecAtrzCtrtInfoDetail from "./ctrtInfo/ElecAtrzCtrtInfoDetail";
+import ElecAtrzCtrtOutordHnfDetail from "./ctrtInfo/ElecAtrzCtrtOutordHnfDetail";
 import { Button } from 'devextreme-react';
 
 const ElecAtrzNewReq = () => {
@@ -32,7 +33,6 @@ const ElecAtrzNewReq = () => {
     const [attachments, setAttachments] = useState([]);
     const [atrzLnEmpList, setAtrzLnEmpList] = useState([]);
     const column = { "dataField": "gnrlAtrzCn", "placeholder": "내용을 입력해주세요."};
-
     /*
      * 첨부파일 저장 테이블 지정 
      * >> TODO. 현재는 전자결재문서를 elctrnAtrzTySeCd 이것으로 구분중이지만 
@@ -349,13 +349,19 @@ const ElecAtrzNewReq = () => {
                     atrzParam={atrzParam}
                 />
                 <div dangerouslySetInnerHTML={{ __html: formData.docFormDc }} />
-                    {["VTW04909","VTW04910"].includes(data.elctrnAtrzTySeCd) &&  (
+                    {["VTW04909","VTW04910"].includes(formData.elctrnAtrzTySeCd) &&  (   //VTW04909: 외주업체약 계약, VTW04910: 재료비 계약
                         <>
                         <ElecAtrzCtrtInfo prjctId={prjctId} data={data} onSendData={handleChildData} sttsCd={sttsCd}/>
                         <ElecAtrzCtrtInfoDetail prjctId={prjctId} data={data} onSendData={handleChildData} sttsCd={sttsCd}/>
                         </>
                     )}
-                    {formData.elctrnAtrzTySeCd === "VTW04907" &&
+                    {formData.elctrnAtrzTySeCd === "VTW04908" &&    //VTW04908: 외주인력 계약
+                    <>
+                        <ElecAtrzCtrtInfo prjctId={prjctId} data={data} onSendData={handleChildData}/>
+                        <ElecAtrzCtrtOutordHnfDetail prjctId={prjctId} data={data} onSendData={handleChildData} prjctData={prjctData}/>
+                    </>
+                    }
+                    {formData.elctrnAtrzTySeCd === "VTW04907" &&    //VTW04907: 비용사용(청구)
                     <>
                         <ExpensInfo onSendData={handleChildData} prjctId={prjctId} data={data}/>
                     </>

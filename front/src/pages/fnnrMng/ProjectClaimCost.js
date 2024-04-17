@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import ProjectJson from "./ProjectListJson.json";
+import ProjectCostClaimListJson from "./ProjectCostClaimListJson.json";
 import ApiRequest from "../../utils/ApiRequest";
 import SearchInfoSet from "../../components/composite/SearchInfoSet";
 import CustomTable from "../../components/unit/CustomTable";
@@ -20,7 +20,7 @@ const ProjectClaimCost = () => {
 
   const navigate = useNavigate();
 
-  const { keyColumn, queryId, tableColumns, searchInfo, wordWrap } = ProjectJson;
+  const { keyColumn, queryId, tableColumns, searchInfo, wordWrap } = ProjectCostClaimListJson;
 
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
@@ -95,7 +95,7 @@ const ProjectClaimCost = () => {
         buttonRender={buttonRender}
         onClick={onClick}
         paging={true}
-        wordWrap={wordWrap}
+        wordWrap={wordWrap} 
       />
     </div>
   );

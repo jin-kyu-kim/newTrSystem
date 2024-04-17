@@ -571,57 +571,25 @@
         WHERE EMP_ID = #{empId}
     </select>
 
-    <!-- 프로젝트 비용 입력마감 (빈 코드값 -> 임시저장) -->
-    <update id="retrievePrjctCtInptDdln" parameterType="map">
+    <!-- 프로젝트 비용 atrzDmndSttsCd 변경 -->
+    <update id="updatePrjctCtAtrzStts" parameterType="map">
         UPDATE PRJCT_CT_ATRZ
         SET
-            ATRZ_DMND_STTS_CD = 'VTW03701',
+            ATRZ_DMND_STTS_CD = CASE
+                WHEN #{actionType} = 'INPUT' THEN 'VTW03701'
+                WHEN #{actionType} = 'INPUT_CANCEL' THEN NULL
+                WHEN #{actionType} = 'APPROVE' THEN 'VTW03702'
+                WHEN #{actionType} = 'APPROVE_CANCEL' THEN 'VTW03701'
+            END,
             MDFCN_DT = now(),
             MDFCN_EMP_ID = #{empId}
         WHERE 1 = 1
-          AND ATRZ_DMND_STTS_CD IS NULL
-          AND EMP_ID = #{empId}
-          AND APLY_YM = #{aplyYm}
-          AND APLY_ODR = #{aplyOdr}
-    </update>
-
-    <!-- 프로젝트 비용 입력마감취소 (임시저장 -> 빈 코드값) -->
-    <update id="retrievePrjctCtInptDdlnRtrcn" parameterType="map">
-        UPDATE PRJCT_CT_ATRZ
-        SET
-            ATRZ_DMND_STTS_CD = NULL,
-            MDFCN_DT = now(),
-            MDFCN_EMP_ID = #{empId}
-        WHERE 1 = 1
-          AND ATRZ_DMND_STTS_CD = 'VTW03701'
-          AND EMP_ID = #{empId}
-          AND APLY_YM = #{aplyYm}
-          AND APLY_ODR = #{aplyOdr}
-    </update>
-
-    <!-- 프로젝트 비용 승인요청 (임시저장 -> 결재중) -->
-    <update id="retrievePrjctAprvDmnd" parameterType="map">
-        UPDATE PRJCT_CT_ATRZ
-        SET
-            ATRZ_DMND_STTS_CD = 'VTW03702',
-            MDFCN_DT = now(),
-            MDFCN_EMP_ID = #{empId}
-        WHERE 1 = 1
-          AND ATRZ_DMND_STTS_CD = 'VTW03701'
-          AND EMP_ID = #{empId}
-          AND APLY_YM = #{aplyYm}
-          AND APLY_ODR = #{aplyOdr}
-    </update>
-
-    <!-- 프로젝트 비용 승인요청취소 (결재중 -> 임시저장) -->
-    <update id="retrievePrjctAprvDmndRtrcn" parameterType="map">
-        UPDATE PRJCT_CT_ATRZ
-        SET
-            ATRZ_DMND_STTS_CD = 'VTW03701',
-            MDFCN_DT = now(),
-            MDFCN_EMP_ID = #{empId}
-        WHERE 1 = 1
-          AND ATRZ_DMND_STTS_CD = 'VTW03702'
+          AND (
+            (#{actionType} = 'INPUT' AND ATRZ_DMND_STTS_CD IS NULL) OR
+            (#{actionType} = 'INPUT_CANCEL' AND ATRZ_DMND_STTS_CD = 'VTW03701') OR
+            (#{actionType} = 'APPROVE' AND ATRZ_DMND_STTS_CD = 'VTW03701') OR
+            (#{actionType} = 'APPROVE_CANCEL' AND ATRZ_DMND_STTS_CD = 'VTW03702')
+            )
           AND EMP_ID = #{empId}
           AND APLY_YM = #{aplyYm}
           AND APLY_ODR = #{aplyOdr}
