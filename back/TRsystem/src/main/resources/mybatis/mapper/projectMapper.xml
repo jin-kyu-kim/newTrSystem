@@ -897,6 +897,8 @@
 
     <select id="retrieveProjectCtChild" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT pca.PRJCT_ID
+             , pca.APLY_YM
+             , pca.APLY_ODR
              , pca.EMP_ID
              , pca.PRJCT_CT_APLY_SN
              , pca.UTZTN_DT
@@ -1381,4 +1383,25 @@
         GROUP BY PRJCT_MNG_AUTHRT_CD
     </select>
 
+    <select id="retrieveMmAtrzDmndSttsCd" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            COUNT(*) AS TOTAL_COUNT
+        FROM PRJCT_MM_ATRZ
+        WHERE ATRZ_DMND_STTS_CD NOT IN ('VTW03703', 'VTW03704')
+          AND PRJCT_ID = #{prjctId}
+          AND APLY_YM = #{aplyYm}
+          AND APLY_ODR = #{aplyOdr}
+          AND EMP_ID = #{empId}
+    </select>
+
+    <select id="retrieveCtAtrzDmndSttsCd" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            COUNT(*) AS TOTAL_COUNT
+        FROM PRJCT_CT_ATRZ
+        WHERE ATRZ_DMND_STTS_CD NOT IN ('VTW03703', 'VTW03704')
+          AND PRJCT_ID = #{prjctId}
+          AND APLY_YM = #{aplyYm}
+          AND APLY_ODR = #{aplyOdr}
+          AND EMP_ID = #{empId}
+    </select>
 </mapper>

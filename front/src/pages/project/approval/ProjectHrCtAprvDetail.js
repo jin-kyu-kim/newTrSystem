@@ -142,12 +142,8 @@ const ProjectHrCtAprvDetail = () => {
                 if(confirmResult){
                     const response = await ApiRequest('/boot/common/commonUpdate', param);
                     if(response > 0) {
-                        // const param = [
-                        //     { tbNm: "PRJCT_INDVDL_CT_MM" },
-                        //     { mmAtrzCmptnYn: "Y"},
-                        //     { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr}
-                        // ];
-                        // await ApiRequest('/boot/common/commonUpdate', param);
+                        const param = { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr};
+                        await ApiRequest('/boot/prjct/updateMmAtrzCmptnYn', param);
                         handleMmAply();
                         getMmChildList(expandedMmKey);
                     }
@@ -199,6 +195,12 @@ const ProjectHrCtAprvDetail = () => {
                 if(confirmResult) {
                     const response = await ApiRequest('/boot/common/commonUpdate', param);
                     if (response > 0) {
+                        const param = [
+                            { tbNm: "PRJCT_INDVDL_CT_MM" },
+                            { mmAtrzCmptnYn: "N"},
+                            { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr}
+                        ];
+                        await ApiRequest('/boot/common/commonUpdate', param);
                         handleMmAply();
                         getMmChildList(expandedMmKey);
                     }
@@ -228,12 +230,8 @@ const ProjectHrCtAprvDetail = () => {
                 if(confirmResult){
                     const response = await ApiRequest('/boot/common/commonUpdate', param);
                     if(response > 0) {
-                        // const param = [
-                        //     { tbNm: "PRJCT_INDVDL_CT_MM" },
-                        //     { ctAtrzCmptnYn: "Y"},
-                        //     { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr}
-                        // ];
-                        // await ApiRequest('/boot/common/commonUpdate', param);
+                        const param = { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr};
+                        await ApiRequest('/boot/prjct/updateCtAtrzCmptnYn', param);
                         handleCtAply();
                         getCtChildList(expandedCtKey);
                     }
@@ -285,6 +283,12 @@ const ProjectHrCtAprvDetail = () => {
                 if(confirmResult) {
                     const response = await ApiRequest('/boot/common/commonUpdate', param);
                     if (response > 0) {
+                        const param = [
+                            { tbNm: "PRJCT_INDVDL_CT_MM" },
+                            { ctAtrzCmptnYn: "N"},
+                            { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr}
+                        ];
+                        await ApiRequest('/boot/common/commonUpdate', param);
                         handleCtAply();
                         getCtChildList(expandedCtKey);
                     }
@@ -331,6 +335,14 @@ const ProjectHrCtAprvDetail = () => {
             if(confirmResult) {
                 const response = await ApiRequest('/boot/common/commonUpdate', param);
                 if (response > 0) {
+                    let param = null;
+                    if(childData.current != null){
+                        param = { prjctId: childData.current.prjctId, empId: childData.current.empId,
+                                  aplyYm: childData.current.aplyYm, aplyOdr: childData.current.aplyOdr};
+                    } else {
+                        param = { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr};
+                    }
+                    await ApiRequest('/boot/prjct/updateMmAtrzCmptnYn', param);
                     childData.current = null;
                     handleMmAply();
                     getMmChildList(expandedMmKey);
@@ -373,6 +385,14 @@ const ProjectHrCtAprvDetail = () => {
             if(confirmResult) {
                 const response = await ApiRequest('/boot/common/commonUpdate', param);
                 if (response > 0) {
+                    let param = null;
+                    if(childData.current != null){
+                        param = { prjctId: childData.current.prjctId, empId: childData.current.empId,
+                                  aplyYm: childData.current.aplyYm, aplyOdr: childData.current.aplyOdr};
+                    } else {
+                        param = { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr};
+                    }
+                    await ApiRequest('/boot/prjct/updateCtAtrzCmptnYn', param);
                     childData.current = null;
                     handleCtAply();
                     getCtChildList(expandedCtKey);
@@ -469,12 +489,8 @@ const ProjectHrCtAprvDetail = () => {
                 if(confirmResult){
                     const response = await ApiRequest('/boot/common/commonUpdate', param);
                     if(response > 0) {
-                        // const param = [
-                        //     { tbNm: "PRJCT_INDVDL_CT_MM" },
-                        //     { mmAtrzCmptnYn: "Y"},
-                        //     { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr}
-                        // ];
-                        // await ApiRequest('/boot/common/commonUpdate', param);
+                        const param = { prjctId: data.prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr};
+                        await ApiRequest('/boot/prjct/updateMmAtrzCmptnYn', param);
                         handleMmAply();
                         getMmChildList(expandedMmKey);
                     }
@@ -526,6 +542,12 @@ const ProjectHrCtAprvDetail = () => {
                 if(confirmResult) {
                     const response = await ApiRequest('/boot/common/commonUpdate', param);
                     if (response > 0) {
+                        const param = [
+                            { tbNm: "PRJCT_INDVDL_CT_MM" },
+                            { mmAtrzCmptnYn: "N"},
+                            { prjctId: data.prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr}
+                        ];
+                        await ApiRequest('/boot/common/commonUpdate', param);
                         handleMmAply();
                         getMmChildList(expandedMmKey);
                     }
@@ -600,12 +622,8 @@ const ProjectHrCtAprvDetail = () => {
                 if(confirmResult){
                     const response = await ApiRequest('/boot/common/commonUpdate', param);
                     if(response > 0) {
-                        // const param = [
-                        //     { tbNm: "PRJCT_INDVDL_CT_MM" },
-                        //     { ctAtrzCmptnYn: "Y"},
-                        //     { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr}
-                        // ];
-                        // await ApiRequest('/boot/common/commonUpdate', param);
+                        const param = { prjctId: data.prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr};
+                        await ApiRequest('/boot/prjct/updateCtAtrzCmptnYn', param);
                         handleCtAply();
                         getCtChildList(expandedCtKey);
                     }
@@ -628,7 +646,7 @@ const ProjectHrCtAprvDetail = () => {
                     if(response > 0) {
                         const param = [
                             { tbNm: "PRJCT_INDVDL_CT_MM" },
-                            { mmAtrzCmptnYn: "N"},
+                            { ctAtrzCmptnYn: "N"},
                             { prjctId: data.prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr}
                         ];
                         await ApiRequest('/boot/common/commonUpdate', param);
@@ -657,6 +675,12 @@ const ProjectHrCtAprvDetail = () => {
                 if(confirmResult) {
                     const response = await ApiRequest('/boot/common/commonUpdate', param);
                     if (response > 0) {
+                        const param = [
+                            { tbNm: "PRJCT_INDVDL_CT_MM" },
+                            { ctAtrzCmptnYn: "N"},
+                            { prjctId: data.prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr}
+                        ];
+                        await ApiRequest('/boot/common/commonUpdate', param);
                         handleCtAply();
                         getCtChildList(expandedCtKey);
                     }
