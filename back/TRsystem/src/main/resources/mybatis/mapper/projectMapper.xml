@@ -820,11 +820,13 @@
      		 , pca.ATDRN
      		 , pca.CT_PRPOS
              , cd.CD_NM AS ATRZ_DMND_STTS_NM
+             , cd2.CD_NM AS EXPENS_CD
 		  FROM PRJCT_CT_APLY pca
 		  JOIN EMP e ON (e.EMP_ID = pca.EMP_ID)
           JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_ID = pca.PRJCT_ID AND (pcat.EMP_ID = pca.EMP_ID OR (pcat.EMP_ID IS NULL AND pca.EMP_ID IS NULL))
               AND pcat.APLY_YM = pca.APLY_YM AND pcat.APLY_ODR = pca.APLY_ODR AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN)
           JOIN CD cd ON (pcat.ATRZ_DMND_STTS_CD = cd.CD_VALUE)
+          JOIN CD cd2 ON (pca.EXPENS_CD = cd2.CD_VALUE)
 		 WHERE 1=1
    		   AND pca.PRJCT_ID = #{prjctId}
 		   AND pca.APLY_YM = #{aplyYm}
@@ -903,11 +905,14 @@
              , pca.PRJCT_CT_APLY_SN
              , pca.UTZTN_DT
              , pca.UTZTN_AMT
+             , cd.CD_NM AS EXPENS_CD
+             , pca.USE_OFFIC
              , pca.CT_PRPOS
              , pcat.ATRZ_DMND_STTS_CD
         FROM PRJCT_CT_APLY pca
         JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_ID = pca.PRJCT_ID AND pcat.EMP_ID = pca.EMP_ID
             AND pcat.APLY_YM = pca.APLY_YM AND pcat.APLY_ODR = pca.APLY_ODR AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN)
+        JOIN CD cd ON (pca.EXPENS_CD = cd.CD_VALUE)
         WHERE 1=1
    		    AND pca.PRJCT_ID = #{prjctId}
             AND pca.APLY_YM = #{aplyYm}
