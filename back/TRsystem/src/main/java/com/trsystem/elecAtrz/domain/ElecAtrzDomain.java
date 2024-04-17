@@ -105,15 +105,15 @@ public class ElecAtrzDomain {
 						 * 업체 관련(재료비, 외주업체)
 						 * target: ENTRPS_CTRT_DTL, ENTRPS_CTRT_DTL_CND
 						 */
-						deleteData("ENTRPS_CTRT_DTL", elctrnAtrzId);
 						deleteData("ENTRPS_CTRT_DTL_CND", elctrnAtrzId);
+						deleteData("ENTRPS_CTRT_DTL", elctrnAtrzId);
 					} else if(atrzTySeCd.equals("VTW04908")) {
 						/**
 						 * 외주인력 관련(외주인력)
 						 * target: HNF_CTRT_DTL, HNF_CTRT_DTL_CND
 						 */
-						deleteData("HNF_CTRT_DTL", elctrnAtrzId);
 						deleteData("HNF_CTRT_DTL_CND", elctrnAtrzId);
+						deleteData("HNF_CTRT_DTL", elctrnAtrzId);
 					}
 					
 					/**

@@ -298,4 +298,15 @@
 		   AND CRTR_YMD <![CDATA[ <= ]]> CURDATE()
 	</select>
 	
+	<select id="retrieveEntrpsCtrtDtlCnd" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT ELCTRN_ATRZ_ID
+			 , STR_TO_DATE(CONCAT(CTRT_YMD, '01'), "%Y%m%d") AS CTRT_YMD
+			 , ENTRPS_CTRT_DTL_SN
+			 , GIVE_ODR_CD
+			 , CTRT_AMT
+		  FROM ENTRPS_CTRT_DTL_CND
+		 WHERE 1=1
+		   AND ELCTRN_ATRZ_ID = #{elctrnAtrzId}
+	</select>
+	
 </mapper>
