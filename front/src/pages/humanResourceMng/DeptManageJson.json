@@ -10,8 +10,7 @@
         "height": "auto",
         "title":  "부서 등록"
     },
-	"listQueryId2": "humanResourceMngMapper.retrieveDeptList",
-    "listQueryId": "humanResourceMngMapper.retrieveDeptList2",
+    "listQueryId": "humanResourceMngMapper.retrieveDeptList",
 	"hnfQueryId": "humanResourceMngMapper.retrieveDeptHnfList",
     "hnfKeyColumn": "empId",
     "hafTableColumns": [
@@ -38,7 +37,7 @@
         },
         "upDeptId": {
             "type": "ComboBox",
-            "required": false,
+            "required": true,
             "label": "상위부서",
             "name": "upDeptId",
             "placeholder": "상위부서",
@@ -66,7 +65,7 @@
             "name": "deptEndYmd",
             "type": "DateBox",
             "label": "부서종료일자",
-            "required": false,
+            "required": true,
             "placeholder": "부서종료일"
         }
     }

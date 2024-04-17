@@ -9,7 +9,7 @@ import { left, right } from "@popperjs/core";
 import moment from "moment";
 import notify from 'devextreme/ui/notify';
 
-const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
+const EmpRegist = ({callBack, empInfo, read,callBackR,reForm}) => {
 
 //-----------------------------선언 구간 -----------------------------------
     const {labelValue,empDetailqueryId} = EmpRegistJson;
@@ -51,61 +51,67 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
         setJncmpYmd(startday);
         console.log(startday)
       }, []);
+     
+      useEffect(() => {
+        if (empInfo.empId !== undefined) {
+          setEmpIdd(empInfo.empId);
+          setEmpno(empInfo.empno);
+          setEmpFlnm(empInfo.empFlnm);
+          setTelno(empInfo.telno);
+          setBankCd(empInfo.bankCd);
+          setJbpsCd(empInfo.jbpsCd);
+          setHdofSttsCd(empInfo.hdofSttsCd);
+          setEml(empInfo.eml);
+          setActno(empInfo.actno);
+          setJncmpYmd(empInfo.jncmpYmd)
+        }
+      }, [empInfo]);
 
-    useEffect(() => {
-      if (empInfo.empId !== undefined) {
-        setEmpIdd(empInfo.empId);
-        setEmpno(empInfo.empno);
-        setEmpFlnm(empInfo.empFlnm);
-        setTelno(empInfo.telno);
-        setBankCd(empInfo.bankCd);
-        setJbpsCd(empInfo.jbpsCd);
-        setHdofSttsCd(empInfo.hdofSttsCd);
-        setEml(empInfo.eml);
-        setActno(empInfo.actno);
-        setJncmpYmd(empInfo.jncmpYmd)
-      }
-    }, [empInfo]);
-
-    useEffect(() => {
-      if(empMax !== undefined || empMax !== "" || empMax !== null){
-        const paramIns =[
-          { tbNm: "EMP" },
-          {
-            empId : uuid(),
-            empno : empMax,
-            actno : actno,
-            bankCd : bankCd,
-            empTyCd : empTyCd,
-            eml : eml,
-            empFlnm : empFlnm,
-            hdofSttsCd : hdofSttsCd,
-            jbpsCd : jbpsCd,
-            telno : telno,
-            regEmpId : empId,
-            regDt: now,
+        useEffect(()=>{
+          if(reForm === true){
+            reset();
           }
-        ]
-        insertEmp(paramIns);
-      }
-    }, [empMax]);
+        },[reForm])
 
-    useEffect(() => {
-      if(jbpsCd === "VTW00119")
-      {
-        setEmpTyCd("VTW00202")
-        setParam({empnoChk : "VM" ,queryId : "humanResourceMngMapper.retrieveEmpnoMax",});
-      }else{
-        setEmpTyCd("VTW00201")
-        setParam({empnoChk : "VK" ,queryId : "humanResourceMngMapper.retrieveEmpnoMax", });
-      }
-    }, [jbpsCd]);
+      useEffect(() => {
+        if(empMax !== undefined || empMax !== "" || empMax !== null){
+          const paramIns =[
+            { tbNm: "EMP" },
+            {
+              empId : uuid(),
+              empno : empMax,
+              actno : actno,
+              bankCd : bankCd,
+              empTyCd : empTyCd,
+              eml : eml,
+              empFlnm : empFlnm,
+              hdofSttsCd : hdofSttsCd,
+              jbpsCd : jbpsCd,
+              telno : telno,
+              regEmpId : empId,
+              regDt: now,
+            }
+          ]
+          insertEmp(paramIns);
+        }
+      }, [empMax]);
 
-    useEffect(() => {
-      if(!Object.values(updateParam).every((value) => value === "")){
-        updateEmp();
-      }
-    }, [updateParam]);
+      useEffect(() => {
+        if(jbpsCd === "VTW00119")
+        {
+          setEmpTyCd("VTW00202")
+          setParam({empnoChk : "VM" ,queryId : "humanResourceMngMapper.retrieveEmpnoMax",});
+        }else{
+          setEmpTyCd("VTW00201")
+          setParam({empnoChk : "VK" ,queryId : "humanResourceMngMapper.retrieveEmpnoMax", });
+        }
+      }, [jbpsCd]);
+
+      useEffect(() => {
+        if(!Object.values(updateParam).every((value) => value === "")){
+          updateEmp();
+        }
+      }, [updateParam]);
 
 //-----------------------------이벤트 구간 -----------------------------------
     const reset = () => {
@@ -171,7 +177,6 @@ const EmpRegist = ({callBack, empInfo, read,callBackR}) => {
         if (isconfirm) {
           if(empIdd === null ){
             empnoHandle(); //조회하러 이동
-            
           }else{
             if(jncmpYmd !== null || empInfo.jncmpYmd !== jncmpYmd){
               const paramHist =[
