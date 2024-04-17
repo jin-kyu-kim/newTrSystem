@@ -19,7 +19,7 @@
             },
             "usefulAmt": {
                 "name": "usefulAmt",
-                "type": "TextBox",
+                "type": "NumberBox",
                 "label": "가용금액",
                 "placeholder": "가용금액",
                 "required": true
@@ -109,6 +109,12 @@
                 "type" : "DateBox",
                 "label": "투입종료일",
                 "placeholder": "투입종료일"
+            },
+            "totAmt": {
+                "name": "totAmt",
+                "type" : "NumberBox",
+                "label": "총액",
+                "placeholder": "총액"
             }
         }       
     }
