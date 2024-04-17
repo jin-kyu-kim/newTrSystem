@@ -34,7 +34,6 @@
 		ea.ELCTRN_ATRZ_TY_SE_CD,
 		ea.NOW_ATRZ_LN_SN,
 		eadf.GNRL_ATRZ_TTL, -- 전자결재 유형
-		d.DEPT_NM,
 		-- 			cad.CNPT_NM, -- 거래처명
 		(SELECT EMP_FLNM FROM EMP WHERE EMP_ID = ea.ATRZ_DMND_EMP_ID) ATRZ_DMND_EMP_NM, -- 기안자
 		(SELECT EMP_FLNM FROM EMP WHERE EMP_ID = al.APRVR_EMP_ID) APRVR_EMP_ID, -- 결재자
@@ -56,7 +55,6 @@
 		LEFT JOIN CTRT_GIVE_ATRZ cga ON ea.ELCTRN_ATRZ_ID = cga.ELCTRN_ATRZ_ID -- 계약지급결재
 		LEFT JOIN VCATN_ATRZ va ON ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID -- 휴가결재
 		LEFT JOIN ELCTRN_ATRZ_DOC_FORM eadf ON ea.ATRZ_FORM_DOC_ID = eadf.ATRZ_FORM_DOC_ID -- 서식 제목
-		LEFT JOIN DEPT d ON ea.ATRZ_DMND_EMP_DEPT_ID = d.DEPT_ID
 		WHERE 1=1
 		<choose>
 			<when test='sttsCd != null and refer == null and sttsCd.startsWith("VTW037")'>
@@ -112,9 +110,17 @@
 	<select id="retrieveAtrzLn" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		(
 			SELECT
+				e.EMP_ID,
 				ln.ATRZ_STEP_CD AS APPROVAL_CODE,
 				cd.CD_NM AS ATRZ_STEP_CD_NM,
-				cd2.CD_NM AS ATRZ_STTS_CD_NM,
+				<choose>
+					<when test="sttsCd != null and sttsCd.equals('VTW03701')">
+						NULL AS ATRZ_STTS_CD_NM,
+					</when>
+					<otherwise>
+						cd2.CD_NM AS ATRZ_STTS_CD_NM,
+					</otherwise>
+				</choose>
 				e.EMP_FLNM,
 				(SELECT CD_NM FROM CD WHERE CD_VALUE = e.JBPS_CD) JBPS_NM,
 				NULL AS LIST_EMP_FLNM,
@@ -130,11 +136,12 @@
 		UNION ALL
 		(
 			SELECT
+				e.EMP_ID,
 				rm.REFRN_CNCRRNC_CL_CD AS APPROVAL_CODE,
 				NULL AS ATRZ_STEP_CD_NM,
 				NULL AS ATRZ_STTS_CD_NM,
-				NULL AS EMP_FLNM,
-				NULL AS JBPS_NM,
+				e.EMP_FLNM,
+				(SELECT CD_NM FROM CD WHERE CD_VALUE = e.JBPS_CD) JBPS_NM,
 				CONCAT(d.DEPT_NM, ' ', e.EMP_FLNM, ' ', (SELECT CD_NM FROM CD WHERE CD_VALUE = e.JBPS_CD)) LIST_EMP_FLNM,
 				NULL AS APRV_YMD,
 				NULL AS RJCT_PRVONSH
@@ -143,7 +150,7 @@
 					 LEFT JOIN DEPT_HNF dh ON e.EMP_ID = dh.EMP_ID
 					 LEFT JOIN DEPT d ON dh.DEPT_ID = d.DEPT_ID
 			WHERE rm.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
-			AND rm.REFRN_CNCRRNC_CL_CD LIKE '%VTW00706'
+			AND (rm.REFRN_CNCRRNC_CL_CD LIKE '%VTW00706' OR rm.REFRN_CNCRRNC_CL_CD LIKE '%VTW00707') 
 		)
 	</select>
 	
@@ -244,6 +251,14 @@
 		  JOIN CD cd ON (cd.CD_VALUE = ep.EXPENS_CD)
 		 WHERE 1=1
 		   AND PRJCT_ID = #{prjctId}
+	</select>
+	
+	<select id="retrieveDeadLineDate" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT DATE_FORMAT(MAX(CRTR_YMD), '%Y년 %m월 %d일') AS DEAD_LINE_DATE
+		  FROM CRTR_DATE
+		 WHERE 1=1
+	 	   AND CRTR_ODR = #{crtrOdr}
+		   AND CRTR_YMD <![CDATA[ <= ]]> CURDATE()
 	</select>
 	
 </mapper>
