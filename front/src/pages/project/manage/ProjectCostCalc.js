@@ -137,7 +137,7 @@ const calculateCustomSummary = (options) => {
       &nbsp;
       <p><strong>* 컨소시엄</strong></p>
       {cnsrtmData.map((data, index) => {
-           return <CustomHorizontalTable key={index} headers={CostCalc.Cnsrtm} column={data}/>
+           return <CustomHorizontalTable key={index} headers={CostCalc.Cnsrtm} column={data} format="#,##0"/>
         })}
       &nbsp;
       </div>
