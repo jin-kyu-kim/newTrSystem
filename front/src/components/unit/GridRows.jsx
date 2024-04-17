@@ -1,10 +1,9 @@
 import {Column} from "devextreme-react/data-grid";
 import { CheckBox } from "devextreme-react";
-import React, { useState } from 'react';
+import React from 'react';
 import {Button} from "devextreme-react/button";
 
 const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
-    const [isChecked, setIsChecked] = useState(true);
 
     const result = [];
 
