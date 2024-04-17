@@ -139,7 +139,7 @@ const EmpBasicInfo = ({naviEmpId}) => {
      return ;
     }
  
-    if (!/^[a-zA-Z\s]+$/.test(empDtlData.engFlnm)) {
+    if (empDtlData.chcrtFlnm !='' &&empDtlData.chcrtFlnm != null && !/^[a-zA-Z\s]+$/.test(empDtlData.engFlnm)) {
       alert("영문 이름은 영문자와 공백만 입력 가능합니다.");
       return;
   }
