@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from "react";
-import SearchInfoSet from "../../components/composite/SearchInfoSet";
 import { validateFields, hasError } from './ProjectExpenseValidate';
+import SearchInfoSet from "../../components/composite/SearchInfoSet";
 import CustomEditTable from 'components/unit/CustomEditTable';
 import ProjectExpenseSubmit from "./ProjectExpenseSubmit";
 import ProjectExpenseJson from "./ProjectExpenseJson.json";
 import ApiRequest from "../../utils/ApiRequest";
 
 const ProjectExpenseCard = (props) => {
-    const { keyColumn, queryId, cdListQueryId, sendTbInfo, tableColumns, searchInfo, placeholderAndRequired, buttonGroup } = ProjectExpenseJson.ProjectExpenseCardJson;
+    const { keyColumn, queryId, cdListQueryId, sendTbInfo, tableColumns, searchInfo, placeholderAndRequired, buttonGroup } = ProjectExpenseJson.ProjectExpenseTab;
     const [ cdList, setCdList ] = useState([]);
     const [ expensCd, setExpensCd ] = useState({});
     const [ comboList, setComboList ] = useState({});
     const [ cardUseDtls, setCardUseDtls ] = useState([]);
     const [ selectedItem, setSelectedItem ] = useState([]);
     const [ isPrjctIdSelected, setIsPrjctIdSelected ] = useState({}); // 비용코드 활성화 조건
+    const [validationErrors, setValidationErrors] = useState([]);
     const [ param, setParam ] = useState({
         queryId: queryId,
         empId: props.empId,
@@ -24,8 +25,6 @@ const ProjectExpenseCard = (props) => {
     const searchHandle = async (initParam) => {
         setParam({ ...param,  ...initParam });
     };
-
-    const [validationErrors, setValidationErrors] = useState([]);
 
     const chgPlaceholder = (col, cardUseSn) => { 
         const currentExpensCd = expensCd[cardUseSn];
@@ -40,33 +39,32 @@ const ProjectExpenseCard = (props) => {
         }
     }, [param]);
 
-    useEffect(() => { 
-        const getSelectBoxList = async () => {
-            const comBoInfo = ['prjctId', 'emp'];
-            const comSelectParam = [ 
-                [{ tbNm: "PRJCT" }, { bizSttsCd: "VTW00402"}], 
-                [{ tbNm: "EMP" }] 
-            ];
-            try {
-                for(let i=0; i<comSelectParam.length; i++){
-                    let response = await ApiRequest("/boot/common/commonSelect", comSelectParam[i]);
-                    if(comSelectParam[i][0].tbNm === "EMP"){
-                        response = response.map(({ empId, empno, empFlnm }) => ({
-                            key: empId,
-                            value: empno+' '+empFlnm,
-                        }));
-                    }
-                    setComboList(prevComboList => ({
-                        ...prevComboList,
-                        [comBoInfo[i]]: response
+    useEffect(() => { getSelectBoxList(); }, []);
+
+    const getSelectBoxList = async () => {
+        const comBoInfo = ['prjctId', 'emp'];
+        const comSelectParam = [ 
+            [{ tbNm: "PRJCT" }, { bizSttsCd: "VTW00402"}], 
+            [{ tbNm: "EMP" }] 
+        ];
+        try {
+            for(let i=0; i<comSelectParam.length; i++){
+                let response = await ApiRequest("/boot/common/commonSelect", comSelectParam[i]);
+                if(comSelectParam[i][0].tbNm === "EMP"){
+                    response = response.map(({ empId, empno, empFlnm }) => ({
+                        key: empId,
+                        value: empno+' '+empFlnm,
                     }));
                 }
-            } catch (error) {
-                console.log(error);
+                setComboList(prevComboList => ({
+                    ...prevComboList,
+                    [comBoInfo[i]]: response
+                }));
             }
-        };
-        getSelectBoxList(); 
-    }, []);
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     const getCdList = async (prjctId, cardUseSn) => {
         try{
