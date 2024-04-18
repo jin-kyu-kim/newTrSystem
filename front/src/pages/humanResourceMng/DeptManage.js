@@ -8,7 +8,6 @@ import TreeView from 'devextreme-react/tree-view';
 import { Popup } from "devextreme-react";
 import DeptManagePop from './DeptManagePop';
 import CustomLabelValue from "components/unit/CustomLabelValue";
-import CustomEmpComboBox from "components/unit/CustomEmpComboBox"
 import uuid from "react-uuid";
 import { useCookies } from "react-cookie";
 
@@ -300,7 +299,6 @@ const DeptManage = ({callBack}) => {
       setEmpPop(false)
       pageHandle();
     }
-
 
     const deleteDept = async () => {        //부서삭제버튼 이벤트
       const isconfirm = window.confirm("부서정보를 삭제하시겠습니까?");

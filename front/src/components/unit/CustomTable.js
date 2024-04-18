@@ -3,7 +3,7 @@ import GridRows from "./GridRows";
 import AllowedPageSize from "./AllowedPageSize";
 
 const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, onClick,
-                       wordWrap, onRowClick, excel, onExcel,onCellClick, grouping, groupingData, groupingCustomizeText }) => {
+                       wordWrap, onRowClick, excel, onExcel,onCellClick, grouping, groupingData, groupingCustomizeText,focusedRowIndex }) => {
   return (
     <div className="wrap_table">
       <DataGrid
@@ -17,6 +17,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
         columnAutoWidth={false}
         noDataText=""
         onRowDblClick={onRowDblClick}
+        focusedRowIndex={focusedRowIndex}
         onRowClick={onRowClick}
         onExporting={onExcel}
         onCellClick={onCellClick}

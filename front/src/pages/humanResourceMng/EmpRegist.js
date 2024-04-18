@@ -9,7 +9,7 @@ import { left, right } from "@popperjs/core";
 import moment from "moment";
 import notify from 'devextreme/ui/notify';
 
-const EmpRegist = ({callBack, empInfo, read,callBackR,reForm}) => {
+const EmpRegist = ({callBack, empInfo, read,callBackR,callBackF,reForm}) => {
 
 //-----------------------------선언 구간 -----------------------------------
     const {labelValue,empDetailqueryId} = EmpRegistJson;
@@ -156,6 +156,7 @@ const EmpRegist = ({callBack, empInfo, read,callBackR,reForm}) => {
     const onReset = (e) =>{
       reset();
       callBackR();
+      callBackF();
       notify("초기화되었습니다.","success",200);
     }
    
