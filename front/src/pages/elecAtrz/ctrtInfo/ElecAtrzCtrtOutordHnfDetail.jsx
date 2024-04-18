@@ -105,15 +105,15 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData }) =>
     /* =========================  부모창으로 데이터 전송  =========================*/
     useEffect(() => {
 
-        //pay 배열에 tbNm 추가
-        // const updatedTableData = tableData.map(item => ({
-        //     ...item,
-        //     pay: [{ tbNm: 'ENTRPS_CTRT_DTL_CND' }, ...item.pay.map(payItem => ({ ...payItem }))]
-        // }));
+        //hnfCtrtDtlMm 배열에 tbNm 추가
+        const updatedTableData = tableData.map(item => ({
+            ...item,
+            hnfCtrtDtlMm: [{ tbNm: 'HNF_CTRT_DTL_MM' }, ...item.hnfCtrtDtlMm.map(mmItem => ({ ...mmItem }))]
+        }));
         
         //테이블 배열에 tbNm 추가
         let newData;
-        newData = [{ tbNm: 'HNF_CTRT_DTL' }, ...tableData];
+        newData = [{ tbNm: 'HNF_CTRT_DTL' }, ...updatedTableData];
 
         //pay데이터의 날짜 데이터 포멧팅
         // newData.forEach(item => {
