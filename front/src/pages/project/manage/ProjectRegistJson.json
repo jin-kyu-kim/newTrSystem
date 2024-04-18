@@ -38,6 +38,7 @@
             "required": false,
             "placeholder": "총예산(VAT제외)", 
             "type": "NumberBox",
+            "format": "#,###",
             "max": 900000000000
         },
         "bddprPc": {
@@ -46,6 +47,7 @@
             "label": "투찰가",
             "required": false,
             "placeholder": "투찰가",
+            "format": "#,###",
             "max": 900000000000
         },
         "mmnySlsAm": {
@@ -54,6 +56,7 @@
             "label": "자사매출액",
             "required": false,
             "placeholder": "자사매출액",
+            "format": "#,###",
             "max": 900000000000
         },
         "ctmmnyInfo": {

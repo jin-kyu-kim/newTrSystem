@@ -135,4 +135,16 @@ public class ProjectBaseController {
     public int updateCtAtrzCmptnYn(@RequestBody Map<String, Object> param){
         return ProjectBaseDomain.updateCtAtrzCmptnYn(param);
     }
+    
+    /**
+     * 프로젝트 등록 및 수정된 후에 읽기/쓰기 권한을 부여한다.
+     * @param param
+     * @return
+     */
+    @PostMapping(value = "/boot/prjct/insertPrjctMngAuth")
+    public int insertPrjctMngAuth(@RequestBody Map<String, Object> param) {
+    	
+    	return ProjectBaseDomain.insertPrjctMngAuth(param);
+    	
+    }
 }
