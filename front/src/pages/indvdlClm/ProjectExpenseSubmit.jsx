@@ -6,6 +6,10 @@ const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handle
   const [ completedCount, setCompletedCount ] = useState(0);
   const [ prjctCtAplySn, setPrjctCtAplySn ] = useState([]);
 
+  // const updatedRowsData = e.selectedRowsData.map(({ utztnDtFormat, ...rest }) => ({
+  //     ...rest
+  // }));
+
   useEffect(() => {
     if (selectedItem.length !== 0 && prjctCtAplySn.length === selectedItem.length) {
       insertAtrzValue();
@@ -25,12 +29,12 @@ const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handle
       return;
     }
 
-    if (selectedItem.some(item => item.prjctId === null)) {
+    if (selectedItem.some(item => item.prjctId === null || (buttonGroup.length < 2 && !item.prjctId))) {
       alert('프로젝트를 선택해주세요');
       return;
     }
 
-    if (selectedItem.some(item => item.prjctId !== null && item.expensCd === null)) {
+    if (selectedItem.some(item => item.prjctId !== null && (item.expensCd === null || (buttonGroup.length < 2 && !item.expensCd)))) {
       alert('비용코드를 선택해주세요');
       return;
     }
@@ -154,7 +158,7 @@ const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handle
     <div style={{marginBottom: '20px'}}>
       {buttonGroup.map((btn, index) => (
         <Button type={btn.type} text={btn.text} style={{marginRight: '10px'}} key={index}
-          onClick={btn.onClick === 'handleDelete' ? handleDelete : handleSubmit} />
+          onClick={btn.onClick === 'handleDelete' ? handleDelete : handleSubmit} useSubmitBehavior={true} />
       ))}
     </div>
   );

@@ -55,7 +55,7 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig }) =
                 applyValueMode="useButtons"
                 style={{ backgroundColor: hasError(props.data.cardUseSn, col.key) ? '#FFCCCC' : '' }}
                 onValueChanged={(newValue) => {
-                    props.data[col.key] = newValue.value.map(item => item.key).join(',')
+                    props.data[col.key] = newValue.value
                     setValidationErrors(prevErrors => prevErrors.filter(error => !(error.cardUseSn === props.data.cardUseSn && error.field === col.key)));
                 }}
             />

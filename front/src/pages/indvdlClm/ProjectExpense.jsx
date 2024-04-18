@@ -10,12 +10,12 @@ const ProjectExpense = () => {
     const navigate = useNavigate();
     const { ExpenseInfo, keyColumn, ctAplyTableColumns, elcKeyColumn, columnCharge, buttonsConfig } = ProjectExpenseJson.ProjectExpenseMain;
     const [ index, setIndex ] = useState(0);
-    const [ totCnt, setTotCnt ] = useState(0); // 비용청구가 없을 경우
+    const [ atrzDmndSttsCnt, setAtrzDmndSttsCnt ] = useState({}); // 상태코드별 데이터 개수
     const [ ctAply, setCtAply ] = useState([]); // 차수 청구내역 (table1)
     const [ ctAtrz, setCtAtrz ] = useState([]); // 전자결재 청구내역 (table2)
+    const [ changeColumn, setChangeColumne ] = useState([]); // 결재상태 컬럼 -> 버튼렌더를 위해 필요
     const [ mmAplyCnt, setMmAplyCnt ] = useState(); // 비용 청구 건수 (없을 시 근무시간 먼저)
     const [ ctAtrzCmptnYn, setCtAtrzCmptnYn ] = useState(null); // 비용결재완료여부
-    const [ aprvDmndCnt, setAprvDmndCnt ] = useState(0); // ATRZ_DMND_STTS_CD : 결재중 개수
     const [ cookies ] = useCookies([]);
     const empId = cookies.userInfo.empId;
     const date = new Date();
@@ -32,12 +32,16 @@ const ProjectExpense = () => {
         }, [setIndex]
     );
 
-    useEffect(() => { getData(); }, []);
+    useEffect(() => { 
+        getData();
+        getAtrz();
+        // setSttsColType(ctAplyTableColumns.concat(ProjectExpenseJson.ProjectExpenseMain['ctAplyStts']))
+    }, []);
+
     const getData = async () => {
         const apiInfo = [
             { url: "commonSelect", param: [{ tbNm: "PRJCT_INDVDL_CT_MM" }, { empId, aplyYm, aplyOdr }], setter: setCtAtrzCmptnData },
             { url: "queryIdSearch", param: { queryId: "projectExpenseMapper.retrievePrjctCtAplyList", empId, aplyYm, aplyOdr }, setter: setCtAply }, // 비용 청구내역
-            { url: "queryIdSearch", param: { queryId: "projectExpenseMapper.retrieveElctrnAtrzClm", empId, aplyYm, aplyOdr }, setter: setCtAtrz }, // 전자결재 청구내역
             { url: "queryIdSearch", param: { queryId: "indvdlClmMapper.retrieveCtAtrzDmndStts", empId, aplyYm, aplyOdr }, setter: setCtAtrzDmndSttsData } // 결재요청상태코드별 건수
         ];
         for (let api of apiInfo) {
@@ -46,14 +50,18 @@ const ProjectExpense = () => {
         };
     };
 
+    const getAtrz = async () => {
+        const response = await ApiRequest('/boot/common/queryIdSearch', { queryId: "projectExpenseMapper.retrieveElctrnAtrzClm", empId, aplyYm, aplyOdr });
+        setCtAtrz(response);
+    }
+
     const setCtAtrzCmptnData = (data) => {
         if (data.length !== 0) setCtAtrzCmptnYn(data[0].ctAtrzCmptnYn); // 비용결재 완료여부
         else setMmAplyCnt(data.length); // 비용청구 건수
     };
 
     const setCtAtrzDmndSttsData = (data) => {
-        setTotCnt(data[0].totCnt);
-        setAprvDmndCnt(data[0].aprvDmnd); // 결재요청상태코드: VTW03702 (결재중 개수)
+        setAtrzDmndSttsCnt(data[0]);
     };
 
     const prjctCtAtrzUpdate = async (data, status) => {
@@ -70,7 +78,7 @@ const ProjectExpense = () => {
     const updateCtAtrzCmptnYn = async (data, status) => {
         const param = [
             { tbNm: "PRJCT_INDVDL_CT_MM" },
-            { ctAtrzCmptnYn: status }, // 마감 NULL -> N, 승인요청 N -> Y
+            { ctAtrzCmptnYn: status }, // 마감 NULL -> N, 승인요청 N -> N
             { empId, aplyYm, aplyOdr }
         ];
         const response = await ApiRequest("/boot/common/commonUpdate", param);
@@ -87,7 +95,7 @@ const ProjectExpense = () => {
                     window.alert('경비청구 건수가 없을 경우 근무시간을 먼저 승인 요청 해주시기 바랍니다.');
                     return;
                 }
-                handleAction(onClick, onClick.name === 'onInptDdlnClick' ? "N" : "Y");
+                handleAction(onClick, "N");
             }
         } else if (onClick.case === 'cancel') { // 마감취소, 승인요청취소
             if (window.confirm(onClick.msg)) {
@@ -98,14 +106,16 @@ const ProjectExpense = () => {
         }
     };
     const handleAction = (onClick, ynValue) => {
-        if (totCnt === 0) updateCtAtrzCmptnYn(onClick, ynValue);
+        if (atrzDmndSttsCnt.totCnt === 0) updateCtAtrzCmptnYn(onClick, ynValue);
         else prjctCtAtrzUpdate(onClick, ynValue);
     }
 
     const getButtonsShow = () => {
-        if (ctAtrzCmptnYn === 'Y' && aprvDmndCnt > 0) return buttonsConfig.hasApprovals;
+        if (ctAtrzCmptnYn === 'Y' && atrzDmndSttsCnt.aprvDmnd > 0) {
+            return buttonsConfig.hasApprovals;
+        };
+        if (ctAtrzCmptnYn === 'N' && atrzDmndSttsCnt.aprvDmnd === 0) return buttonsConfig.noApprovals;
         if (ctAtrzCmptnYn === 'Y') return buttonsConfig.completed;
-        if (ctAtrzCmptnYn === 'N' && aprvDmndCnt === 0) return buttonsConfig.noApprovals;
         return buttonsConfig.default;
     };
 

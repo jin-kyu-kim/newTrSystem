@@ -32,8 +32,8 @@ const ProjectExpenseExcel = (props) => {
             // 중복검사를 위한 기존 list
             try{
                 const response = await ApiRequest('/boot/common/commonSelect', [
-                    {tbNm: "CARD_USE_DTLS"}, {empId, aplyYm, aplyOdr}
-                ]);
+                    {tbNm: "CARD_USE_DTLS"}, {empId}
+                ]); 
                 const tmpList = response.map(item => item.aprvNo);
                 setAprvNoList(tmpList);
             } catch(error){
@@ -64,7 +64,7 @@ const ProjectExpenseExcel = (props) => {
                 if (!aprvNoList.includes(aprvNo)) {
 
                     if(!excel[i].__EMPTY_7.includes('-')){
-
+                        
                         const utztnAmt = excel[i].__EMPTY_7.replace(/,/g, "");
                         const date = excel[i].__EMPTY_4.replace(/\./g, "");
                         const time = excel[i].__EMPTY_5.replace(/:/g, "");
