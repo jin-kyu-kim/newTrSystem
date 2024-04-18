@@ -21,10 +21,11 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData }) =>
     const [popupVisible, setPopupVisible] = useState(false);
     const [tableData, setTableData] = useState([]);                 //그리드 전체 데이터
     const [selectedData, setSelectedData] = useState({});           //선택된 행의 데이터
+    const [summaryTableData, setSummaryTableData] = useState([]);    //요약 데이터
 
-    useEffect(() => {
-        console.log("tableData",tableData);
-    },[tableData]);
+    // useEffect(() => {
+    //     console.log("tableData",tableData);
+    // },[tableData]);
 
 
    /* =========================  월별 데이터 생성  =========================*/
@@ -43,7 +44,7 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData }) =>
             result.push({ value: yearMonth,
                 subColumns: [
                         { key: `mm-${yearMonth}`, value: "MM"},
-                        { key: `cash=${yearMonth}`, value: "금액"}
+                        { key: `cash-${yearMonth}`, value: "금액"}
                 ]
             })
 
@@ -55,6 +56,7 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData }) =>
     
     if(ctrtYmd && stbleEndYmd){
         monthlyData = makeMonthlyData(ctrtYmd, stbleEndYmd);
+        console.log("monthlyData",monthlyData);
     }
 
 
@@ -88,19 +90,38 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData }) =>
      * Popup data 처리
      */
     const handlePopupData = (data) => {
-        console.log("data",data);
         const existingIndex = tableData.findIndex(item => item.inptHnfId === data.inptHnfId);
+        
         if(existingIndex >=0){
             const updatedData = [...tableData];
             updatedData[existingIndex] = data;
             setTableData(updatedData);
         } else {
-            console.log(tableData.length)
             const maxSn = tableData.length > 0 ? Math.max(...tableData.map(item => item.inptHnfId || 0)) : 0;
             data.inptHnfId = maxSn + 1;  
             setTableData(prev => [...prev, data]);
         }
     }
+
+    /* =========================  SummaryTable 데이터 처리  =========================*/
+    // useEffect(() => {
+    //     console.log("요약테이블 !!");
+    //     if(tableData.length > 0){
+    //         tableData.map(item => { 
+    //             item.hnfCtrtDtlMm.map(mmItem => {
+    //                 console.log("mmItem",mmItem);
+    //             })
+    //         })
+    //     }
+
+    // },[tableData]);
+
+
+
+
+
+
+
 
     /* =========================  부모창으로 데이터 전송  =========================*/
     useEffect(() => {
@@ -115,16 +136,6 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData }) =>
         let newData;
         newData = [{ tbNm: 'HNF_CTRT_DTL' }, ...updatedTableData];
 
-        //pay데이터의 날짜 데이터 포멧팅
-        // newData.forEach(item => {
-        //     if (!item.pay || item.pay.length === 0) return;
-        //     item.pay.forEach(element => {
-        //         if (!element.ctrtYmd) return;
-        //         element.ctrtYmd = formatDateToYYYYMM(element.ctrtYmd);
-        //     });
-        // });
-
-        console.log("newData", newData)
         onSendData(newData);
     }, [tableData]);
 
@@ -147,6 +158,8 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData }) =>
                 values={tableData}
                 pagerVisible={false}
                 onClick={handlePopupVisible}
+                summary={true}
+                summaryColumn={ElecAtrzCtrtOutordHnfJson.summaryColumn}
                 />
 
             <Popup
@@ -164,6 +177,7 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData }) =>
                     stbleEndYmd={stbleEndYmd}
                     handlePopupData={handlePopupData} 
                     selectedData={selectedData}
+                    tableData={tableData}
                     // data={data}
                 />
             </Popup>

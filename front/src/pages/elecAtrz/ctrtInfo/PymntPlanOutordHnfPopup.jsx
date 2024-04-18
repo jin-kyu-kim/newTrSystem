@@ -5,7 +5,7 @@ import PymntPlanOutordHnfPopupJson from "./PymntPlanOutordHnfPopupJson.json";
 import NumberBox from 'devextreme-react/number-box';
 import { parse, format, addMonths } from 'date-fns';
 
-const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVisible, handlePopupData, selectedData }) => {
+const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVisible, handlePopupData, selectedData, tableData }) => {
 
     const labelValue = PymntPlanOutordHnfPopupJson.hnfCtrt.labelValue;
     labelValue.outordEmpId.param.queryId.prjctId = prjctId;
@@ -13,11 +13,6 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
     const [outordEmpData, setOutordEmpData] = useState({});
     const [structuredData, setStructuredData] = useState({});   //기간 구조 데이터
     const [inputValue, setInputValue] = useState([]); //월별 값 입력을 위한 상태
-
-    // useEffect(() => {
-    //     console.log("inputValue",inputValue);
-    // }, [inputValue]);
-
 
 /* =========================  사업기간에 따른 우측 input box 생성  =========================*/
     const makePeriod = (ctrtYmd, stbleEndYmd) => {
@@ -127,11 +122,19 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
             return;
         }
 
-        // //지급 총액이 가용금액을 초과할 경우
         if(outordEmpData.usefulAmt < outordEmpData.totAmt) {
             alert("총액은 가용금액을 초과할 수 없습니다.");
             return;
         }
+
+        const isEmployeeRegistered = tableData.some(item => {
+            if((item.outordEmpId === outordEmpData.outordEmpId)&&!(Object.keys(selectedData).length)) {
+                alert("이미 등록된 사원입니다.");
+                return true; // true를 반환하여 some 메서드 반복 중단
+            }
+            return false;
+        });
+        if (isEmployeeRegistered) return; // 등록된 사원이 있으면 함수 탈출
 
         handlePopupData(outordEmpData);
         handlePopupVisible();

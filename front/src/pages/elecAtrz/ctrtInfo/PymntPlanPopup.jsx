@@ -31,33 +31,13 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
 
 
     /**
-     * console.log useEffect
-     */
-    useEffect(() => {
-        // console.log("matrlCtrtData", matrlCtrtData)
-    },[matrlCtrtData]);
-
-    useEffect(() => {
-        // console.log("pay", pay)
-    },[pay]);
-
-    useEffect(() => {
-        // console.log("뭐야 !! ", handlePopupVisible)
-    },[handlePopupVisible]);
-
-
-    /**
      *  부모창에서 전달 된 데이터로 셋팅
      */
     useEffect(() => {
         
-            if(selectedData.matrlCtSn === 0) {
-                setMatrlCtrtData({});
-                setPay([]);
-            }else{
-                setMatrlCtrtData(selectedData);
-                setPay(selectedData.pay?selectedData.pay:[])
-            }
+        setMatrlCtrtData(selectedData);
+        setPay(selectedData.pay?selectedData.pay:[])
+
     }, [selectedData]);
 
 
