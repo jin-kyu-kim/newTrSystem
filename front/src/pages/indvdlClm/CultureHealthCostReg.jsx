@@ -165,8 +165,8 @@ const CultureHealthCostReg = () => {
         const confirmResult = window.confirm("등록하시겠습니까?");
         if (confirmResult) {
             const formData = new FormData();
-            const test = {tbNm: "CLTUR_PHSTRN_ACT_CT_REG", snColumn: "clturPhstrnActCtSn", snSearch:{empId: cookies.userInfo.empId}}
-            formData.append("tbNm", JSON.stringify(test));
+            const tbData = {tbNm: "CLTUR_PHSTRN_ACT_CT_REG", snColumn: "clturPhstrnActCtSn", snSearch:{empId: cookies.userInfo.empId}}
+            formData.append("tbNm", JSON.stringify(tbData));
             formData.append("data", JSON.stringify(initParam));
             Object.values(attachments)
                 .forEach((attachment) => formData.append("attachments", attachment));
@@ -178,6 +178,7 @@ const CultureHealthCostReg = () => {
                         },
                     })
                     if (response.status === 200) {
+                        await ApiRequest('/boot/indvdlClm/updateClturPhstrnActCt', initParam);
                         onResetClick()
                         searchTable();
                         window.alert("등록되었습니다.")

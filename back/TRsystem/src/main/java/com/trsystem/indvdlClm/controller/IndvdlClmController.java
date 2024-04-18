@@ -97,4 +97,10 @@ public class IndvdlClmController {
     public List<Map<String, Object>> updatePrjctMmAply (@RequestBody List<Map<String, Object>> params){
         return IndvdlClmDomain.updatePrjctMmAply(params);
     }
+
+    // 문화체련비 등록 시 청구금액 계산
+    @PostMapping(value = "/boot/indvdlClm/updateClturPhstrnActCt")
+    public int updateClturPhstrnActCt (@RequestBody Map<String, Object> param){
+        return IndvdlClmDomain.updateClturPhstrnActCt(param);
+    }
 }
