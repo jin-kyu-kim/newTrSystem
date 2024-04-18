@@ -1,45 +1,45 @@
 import { useState, useEffect } from "react";
+import React from 'react';
 import PivotGrid, { Export, FieldChooser } from 'devextreme-react/pivot-grid';
 import PivotGridDataSource from 'devextreme/ui/pivot_grid/data_source';
 import  EmpTimeAprvListJson from "./EmpTimeAprvListJson.json";
 import ApiRequest from "../../utils/ApiRequest";
 import SearchPrjctCostSet from "../../components/composite/SearchPrjctCostSet";
 import CustomPivotGrid from "components/unit/CustomPivotGrid";
-<style>
-        {`
-         .dx-pivotgrid-total-cell {
-          white-space: nowrap; 
-        }
-        `}
-      </style>
-       
+const styles = `
+  .dx-button-content {
+    width: 200px;
+  
+  }
+  
+`;
+
+
 const EmpTimeAprvList = () => {
   const [values, setValues] = useState([]);
   const [param, setParam] = useState({});
   const { keyColumn, queryId, tableColumns, searchParams  } = EmpTimeAprvListJson;
-  const [totalItems, setTotalItems] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
-
+  const [ searchIsVal, setSearchIsVal] = useState(false);
 
   useEffect(() => {
-    if (!Object.values(param).every((value) => value === "")) {
+
+  }, []); 
+         
+
+  useEffect(() => {
+    if (searchIsVal) { // 검색 버튼을 클릭했을 때만 pageHandle 함수 호출
       pageHandle();
+      setSearchIsVal(false); // 상태를 다시 false로 변경하여 다음 검색을 위해 준비
     }
-  }, [param]);
+  }, [searchIsVal]); // searchIsVal 상태가 변경될 때마다 실행
 
   // 검색으로 조회할 때
   const searchHandle = async (initParam) => {
-    setTotalPages(1);
-    setCurrentPage(1);
     setParam({
       ...initParam,
       queryId: queryId,
-      currentPage: currentPage,
-      startVal: 0,
-      pageSize: pageSize,
     });
+    setSearchIsVal(true);
   };
 
   const pageHandle = async () => {
@@ -47,11 +47,7 @@ const EmpTimeAprvList = () => {
       const response = await ApiRequest("/boot/common/queryIdSearch", param);
       setValues(response);
       if (response.length !== 0) {
-        setTotalPages(Math.ceil(response[0].totalItems / pageSize));
-        setTotalItems(response[0].totalItems);
       } else {
-        setTotalPages(1);
-        setTotalItems(0);
       }
     } catch (error) {
       console.log(error);
@@ -71,10 +67,18 @@ const EmpTimeAprvList = () => {
       {
          caption: '날짜',
         dataField: 'aplyYmd',
-        dataType: 'date',
         area: 'column',
-        groupInterval: 'day'
-      },
+      },   
+       
+      {
+        groupName: 'date',
+        groupInterval: 'month',
+    },
+    {
+      groupName: 'date',
+      groupInterval: 'day',
+      expanded: true,
+  },
    
       {
         caption: '이름',
@@ -99,6 +103,10 @@ const EmpTimeAprvList = () => {
 
 
 return(
+  <React.Fragment>
+  <style>
+  {styles}
+</style>
   <div className="container">
       <div
         className="title p-1"
@@ -116,11 +124,12 @@ return(
                   {/* <SearchOdrRange callBack={searchHandle} props={searchParams}/> */}
               </div>
               <CustomPivotGrid
+                    weekendColor={true}
                     values={dataSource}
                 />
      </div>
 
-
+     </React.Fragment>
 
 )
 }

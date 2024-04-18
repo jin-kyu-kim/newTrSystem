@@ -125,4 +125,14 @@ public class ProjectBaseController {
     public String aprvPrjctAtrz(@RequestBody List<Map<String, Object>> paramList) {
     	return ProjectBaseDomain.aprvPrjctAtrz(paramList);
     }
+
+    @PostMapping(value = "/boot/prjct/updateMmAtrzCmptnYn")
+    public int updateMmAtrzCmptnYn(@RequestBody Map<String, Object> param){
+        return ProjectBaseDomain.updateMmAtrzCmptnYn(param);
+    }
+
+    @PostMapping(value = "/boot/prjct/updateCtAtrzCmptnYn")
+    public int updateCtAtrzCmptnYn(@RequestBody Map<String, Object> param){
+        return ProjectBaseDomain.updateCtAtrzCmptnYn(param);
+    }
 }

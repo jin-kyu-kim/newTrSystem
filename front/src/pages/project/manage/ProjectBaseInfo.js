@@ -65,7 +65,7 @@ const ProjectBaseInfo = ({prjctId}) => {
         &nbsp;
         <p><strong>* 컨소시엄</strong></p>
         {CnsrtmData.map((data, index) => {
-           return <CustomHorizontalTable key={index} headers={BaseInfo.Cnsrtm} column={data}/>
+           return <CustomHorizontalTable key={index} headers={BaseInfo.Cnsrtm} column={data} format="#,##0"/>
         })}
       </div>
     </div>

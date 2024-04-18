@@ -14,12 +14,10 @@ const ElecAtrzForm = () => {
     const [formList, setFormList] = useState([])
     const [prjctList, setPrjctList] = useState([])
     const [deptList, setDeptList] = useState([])
-    const [deptId, setDeptId] = useState("")
 
     const [cookies] = useCookies(["userInfo", "userAuth", "deptInfo"]);
     useEffect(() => {
         setPrjctId(location.state ? location.state.prjctId : "");
-        setDeptId(location.state ? location.state.deptId : "");
 
         retrieveForm();
         retrievePrjctList();
@@ -70,10 +68,6 @@ const ElecAtrzForm = () => {
         setPrjctId(e.value)
     }
 
-    const handleChgDeptState = (e) => {
-        setDeptId(e.value)
-    }
-
     const validateForm = useCallback((e) => {
         e.component.validate();
     }, []);
@@ -83,11 +77,7 @@ const ElecAtrzForm = () => {
             alert("프로젝트를 먼저 선택해주세요.");
             return;
         }
-        if(deptId === "") {
-            alert("부서를 먼저 선택해주세요.");
-            return;
-        }
-        navigate("../elecAtrz/ElecAtrzNewReq", {state: {prjctId: prjctId, formData: data, deptId}});
+        navigate("../elecAtrz/ElecAtrzNewReq", {state: {prjctId: prjctId, formData: data}});
     }
 
     const validationRules = {
@@ -130,7 +120,7 @@ const ElecAtrzForm = () => {
                     text="프로젝트 선택"
                 >
                 </Item>
-                <Item>
+                {/* <Item>
                     <h4>2. 부서 선택</h4>
                 </Item>
                 <Item
@@ -144,10 +134,10 @@ const ElecAtrzForm = () => {
                         onValueChanged: handleChgDeptState
                     }}
                     >
-                </Item>
+                </Item> */}
             </Form>
             <div style={{paddingTop: "26px", paddingBotton:"10px"}}>
-                <h4>3. 서식 선택</h4>
+                <h4>2. 서식 선택</h4>
             </div>
             <div style={{paddingTop: "26px", paddingBotton:"10px"}}>
 
