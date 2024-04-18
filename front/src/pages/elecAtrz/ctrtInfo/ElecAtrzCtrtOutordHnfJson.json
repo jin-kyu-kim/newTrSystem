@@ -2,18 +2,33 @@
   "keyColumn": "inptHnfId", 
   "insertButton" : "외주인력 추가", 
   "tableColumns" : [
-        { "key": "a", "value": "투입계획" },
-        { "key": "b", "value": "지불계획" },
+        { "key": "outordEmpNm", "value": "계획투입인력" },
         { "key": "outordHnfCtrtSeCd", "value": "계약구분" },
-        { "key": "c", "value": "가용금액" },
-        { "key": "d", "value": "실제 투입인력" },
-        { "key": "hnfRoleCd", "value": "역할" },
-        { "key": "hnfGradCd", "value": "등급" },
+        { "key": "usefulAmt", "value": "가용금액", "currency": true },
+        { "key": "empFlnm", "value": "실제 투입인력" },
+        { "key": "totalMm", "value": "총 투입MM" },
+        { "key": "totAmt", "value": "총 지불액" },
+        { "key": "hnfRoleCdNm", "value": "역할" },
+        { "key": "hnfGradCdNm", "value": "등급" },
         { "key": "tkcgJob", "value": "담당업무" },
-        { "key": "untpc", "value": "단가" },
+        { "key": "untpc", "value": "단가", "currency": true},
         { "key": "inptPrnmntYmd", "value": "투입시작일" },
         { "key": "withdrPrnmntYmd", "value": "투입종료일" },
         {  "value": "추가", "width": 70, "button": {"text" : "수정", "name" : "update"} },
         {  "value": "삭제", "width": 70, "button": {"text" : "삭제", "name" : "delete"} } 
-        ]
+  ],
+  "summaryColumn": [
+        {
+          "key": "totAmt",
+          "value": "총 지불액",
+          "type": "sum",
+          "format": "총 {0} 원"
+        },
+        {
+          "key": "totalMm",
+          "value": "총 투입MM",
+          "type": "sum",
+          "format": "총 {0} MM"
+        }
+  ]
 }
