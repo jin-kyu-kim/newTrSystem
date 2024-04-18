@@ -267,7 +267,6 @@ const updateDeptEmp = async (updateParam,InsertHistParam) => {
             <CustomLabelValue props={labelValue.empFlnm} onSelect={handleChgState} value={deptAptParam.empFlnm} readOnly={true}/>
             <CustomLabelValue props={labelValue.jbpsCd} onSelect={handleChgState} value={deptAptParam.jbpsCd} readOnly={true}/>
             <CustomLabelValue props={labelValue.jbttlCd} onSelect={handleChgState} value={deptAptParam.jbttlCd}/>
-
             {deptAptParam.empId != null ? (
               <div className="buttonContainer" style={buttonContainerStyle}>
                 <Button style={editButtonStyle} onClick={deptAptInst} text="발령" />
