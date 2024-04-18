@@ -34,7 +34,7 @@ const ProjectHrCtAprvCtPop = ({props, prjctNm, data, currentDate, setCurrentDate
                 <table>
                     <thead>
                         <tr>
-                            <th>{data.startDate}({data.ctPrpos})</th>
+                            <th>{data.startDate} ({data.expensCd})</th>
                         </tr>
                     </thead>
                     <tbody>
