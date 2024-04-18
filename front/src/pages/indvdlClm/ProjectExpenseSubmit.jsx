@@ -6,10 +6,6 @@ const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handle
   const [ completedCount, setCompletedCount ] = useState(0);
   const [ prjctCtAplySn, setPrjctCtAplySn ] = useState([]);
 
-  // const updatedRowsData = e.selectedRowsData.map(({ utztnDtFormat, ...rest }) => ({
-  //     ...rest
-  // }));
-
   useEffect(() => {
     if (selectedItem.length !== 0 && prjctCtAplySn.length === selectedItem.length) {
       insertAtrzValue();
@@ -23,24 +19,12 @@ const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handle
     }
   }, [completedCount]);
 
+
   const handleSubmit = async () => {
-    if(selectedItem.length === 0) {
-      alert('선택된 사용내역이 없습니다.')
-      return;
-    }
 
-    if (selectedItem.some(item => item.prjctId === null || (buttonGroup.length < 2 && !item.prjctId))) {
-      alert('프로젝트를 선택해주세요');
-      return;
-    }
-
-    if (selectedItem.some(item => item.prjctId !== null && (item.expensCd === null || (buttonGroup.length < 2 && !item.expensCd)))) {
-      alert('비용코드를 선택해주세요');
-      return;
-    }
-
-    if (!validateFields()) {
-      alert('모든 필수 필드를 채워주세요.');
+    const validationResults = await validateFields();
+    if (!validationResults.isValid) {
+      validationResults.messages.length !== 0 && alert(validationResults.messages.join('\n'));
       return;
     }
 
@@ -99,7 +83,17 @@ const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handle
     const tbInfo = { tbNm: sendTbInfo.tbNm, snColumn: sendTbInfo.snColumn };
     const snArray = []; // SN 값을 저장할 임시 배열
   
-    for (const item of selectedItem) {
+    const updatedRowsData = selectedItem.map(item => {
+      const { utztnDtFormat, atdrn, ...rest } = item;
+      const atdrnString = atdrn.map(person => person.value).join(',');
+  
+      return {
+          ...rest,
+          atdrn: atdrnString
+      };
+    });
+  
+    for (const item of updatedRowsData) {
       const requestBody = [{ ...tbInfo }, { ...item, ctAtrzSeCd: "VTW01903" }];
   
       try {
