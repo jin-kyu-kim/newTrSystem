@@ -5,11 +5,11 @@
     "keyColumn":  "acbgSn" , 
     "tableColumns" :[
       { "key": "acbgSeCd", "value": "구분" ,"editType" : "selectBox", "comCd" : "VTW025" ,"isRequire" : true },
-      { "key": "schlNm", "value": "학교명" ,"isRequire" : true},
-      { "key": "majorIntltshNm", "value": "전공(계열)" ,"isRequire" : true},
+      { "key": "schlNm", "value": "학교명" ,"isRequire" : true, "length": 30},
+      { "key": "majorIntltshNm", "value": "전공(계열)" ,"isRequire" : true, "length": 30},
       { "key": "grdtnSttsCd", "value": "졸업구분" ,"editType" : "selectBox" ,"comCd" : "VTW026" ,"isRequire" : true},
       { "key": "pntPscoreSeCd", "value": "성적만점" ,"editType" : "selectBox" ,"comCd" :"VTW027" ,"isRequire" : true },
-      { "key": "scre", "value" : "성적" ,"type": "number" ,"isRequire" : true},
+      { "key": "scre", "value" : "성적" ,"type": "number" ,"isRequire" : true , "length" : 4},
       { "key": "mtcltnYr", "value": "입학년도", "type": "number" ,"length" : 4 ,"isRequire" : true},
       { "key": "grdtnYr", "value": "졸업년도" ,"type": "number" , "length" : 4 ,"isRequire" : true}
     ], 
@@ -22,8 +22,8 @@
     "tableColumns": [     
       { "key": "fgggKndCd", "value": "외국어" ,"editType" : "selectBox" ,"comCd" : "VTW028" ,"isRequire" : true },
       { "key": "pictrsLevelCd", "value": "회화수준","editType" : "selectBox" ,"comCd" : "VTW029" ,"isRequire" : true},
-      { "key": "athriTestNm", "value": "공인시험" ,"isRequire" : true },
-      { "key": "score", "value": "점수"  ,"type": "number" ,"isRequire" : true }
+      { "key": "athriTestNm", "value": "공인시험" ,"isRequire" : true , "length" : 30 },
+      { "key": "score", "value": "점수"  ,"type": "number" ,"isRequire" : true ,"length" : 4}
     ],
     "tbNm" : "EMP_FGGG_ABLTY"
   }, 
@@ -32,10 +32,10 @@
     "queryId": "infoInqMapper.retrieveEmpQlfcLcns",
     "keyColumn": "qlfcLcnsSn",
     "tableColumns": [   
-      { "key": "qlfcLcnsNm", "value": "자격면허" ,"isRequire" : true},
-      { "key": "qlfcLcnsId", "value": "면허코드" ,"isRequire" : true},
-      { "key": "gradNm", "value": "등급"  ,"isRequire" : true},
-      { "key": "acqsYmd", "value": "취득일", "type" : "date" ,"isRequire" : true }
+      { "key": "qlfcLcnsNm", "value": "자격면허" ,"isRequire" : true , "length" : 30},
+      { "key": "qlfcLcnsId", "value": "면허코드" ,"isRequire" : true, "length": 30},
+      { "key": "gradNm", "value": "등급"  ,"isRequire" : true, "length" : 30},
+      { "key": "acqsYmd", "value": "취득일", "type" : "date" ,"isRequire" : true ,  "format": "yyyy-MM-dd"}
     ],
     "tbNm": " EMP_QLFC_LCNS"
   },
@@ -44,11 +44,11 @@
     "queryId": "infoInqMapper.retrieveEmpEduHist",
     "keyColumn": "eduSn",
     "tableColumns": [   
-      { "key": "eduInstNm", "value": "교육기관" ,"isRequire" : true },
-      { "key": "eduNm", "value": "교육명" ,"isRequire" : true },
-      { "key": "eduBgngYmd", "value": "교육시작일자" ,"type" : "date"  ,"isRequire" : true},
-      { "key": "eduEndYmd", "value": "교육종료일자" ,"type" : "date"  ,"isRequire" : true},
-      { "key": "eduCn", "value": "교육내용"  ,"isRequire" : true}
+      { "key": "eduInstNm", "value": "교육기관" ,"isRequire" : true, "length" : 30 },
+      { "key": "eduNm", "value": "교육명" ,"isRequire" : true, "length" : 30},
+      { "key": "eduBgngYmd", "value": "교육시작일자" ,"type" : "date"  ,"isRequire" : true ,  "format": "yyyy-MM-dd"},
+      { "key": "eduEndYmd", "value": "교육종료일자" ,"type" : "date"  ,"isRequire" : true,  "format" : "yyyy-MM-dd"},
+      { "key": "eduCn", "value": "교육내용"  ,"isRequire" : true, "length": 600}
     ],
     "tbNm": "EMP_EDU"
   },
@@ -57,12 +57,12 @@
     "queryId": "infoInqMapper.retrieveEmpCareer",
     "keyColumn": "careerSn",
     "tableColumns": [
-      { "key": "workBgngYmd", "value": "근무시작일", "type" : "date" ,"isRequire" : true},
-      { "key": "workEndYmd", "value": "근무종료일", "type" : "date" ,"isRequire" : true },
-      { "key": "wrkplcNm", "value": "근무처" ,"isRequire" : true},
-      { "key": "mainCareerCn", "value": "주요경력사항" ,"isRequire" : true},
-      { "key": "lctnAddr", "value": "소재지" ,"isRequire" : true },
-      { "key": "rm", "value": "특기사항"  ,"isRequire" : true}
+      { "key": "workBgngYmd", "value": "근무시작일", "type" : "date" ,"isRequire" : true, "format": "yyyy-MM-dd" },
+      { "key": "workEndYmd", "value": "근무종료일", "type" : "date" ,"isRequire" : true,  "format": "yyyy-MM-dd" },
+      { "key": "wrkplcNm", "value": "근무처" ,"isRequire" : true, "length" : 30},
+      { "key": "mainCareerCn", "value": "주요경력사항" ,"isRequire" : true, "length" : 60},
+      { "key": "lctnAddr", "value": "소재지" ,"isRequire" : true  , "length" : 150},
+      { "key": "rm", "value": "특기사항"  ,"isRequire" : true , "length" : 600}
     ],
     "tbNm": "EMP_CAREER"
   },
@@ -71,14 +71,14 @@
     "queryId": "infoInqMapper.retrievePrjctHist",
     "keyColumn": "prjctHistSn",
     "tableColumns": [     
-      { "key": "prjctNm", "value": "프로젝트명" ,"isRequire" : true},
-      { "key": "prjctBgngYmd", "value": "시작일" ,"type" : "date" ,"isRequire" : true},
-      { "key": "prjctEndYmd", "value": "종료일" , "type" : "date" ,"isRequire" : true },
-      { "key": "tkcgJobCn", "value": "담당업무"  ,"isRequire" : true},
-      { "key": "orderInstNm", "value": "발주처"  ,"isRequire" : true },
+      { "key": "prjctNm", "value": "프로젝트명" ,"isRequire" : true, "length" : 60},
+      { "key": "tkcgJobCn", "value": "담당업무"  ,"isRequire" : true , "length": 600},
+      { "key": "prjctBgngYmd", "value": "시작일" ,"type" : "date" ,"isRequire" : true, "format": "yyyy-MM-dd"},
+      { "key": "prjctEndYmd", "value": "종료일" , "type" : "date" ,"isRequire" : true, "format": "yyyy-MM-dd" },
+      { "key": "orderInstNm", "value": "발주처"  ,"isRequire" : true , "length": 30},
       { "key": "jobClCd", "value": "업무분류" ,"isRequire" : true ,"editType" : "selectBox" ,"comCd" : "VTW030"},
       { "key": "tchnlgyClCd", "value": "기술분류"  ,"isRequire" : true ,"editType" : "selectBox" ,"comCd" : "VTW031" },
-      { "key": "rm", "value": "비고"  ,"isRequire" : true }
+      { "key": "rm", "value": "비고"  ,"isRequire" : true  ,"length" : 600}
     ], 
     "tbNm": "EMP_PRJCT_HIST"
   },

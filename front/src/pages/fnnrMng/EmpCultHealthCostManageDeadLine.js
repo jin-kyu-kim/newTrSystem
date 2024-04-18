@@ -81,7 +81,7 @@ useEffect(() => {
       autoFilterEnabled: true,
     }).then(() => {
       workbook.xlsx.writeBuffer().then((buffer) => {
-        saveAs(new Blob([buffer], { type: 'application/octet-stream' }), '근무시간 경비 통합승인내역'+formattedDateTime+'.xlsx');
+        saveAs(new Blob([buffer], { type: 'application/octet-stream' }), '문화 체련비 마감목록'+formattedDateTime+'.xlsx');
       });
     });
   };
