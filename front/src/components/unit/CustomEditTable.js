@@ -1,4 +1,4 @@
-import { Column, DataGrid, Editing, Lookup, MasterDetail, Selection, RequiredRule, StringLengthRule, Pager, Paging } from 'devextreme-react/data-grid';
+import { Column, DataGrid, Editing, Lookup, MasterDetail, Selection, RequiredRule, StringLengthRule, Pager, Paging, Export } from 'devextreme-react/data-grid';
 import { useCallback, useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import ApiRequest from 'utils/ApiRequest';
@@ -7,7 +7,7 @@ import moment from 'moment';
 import '../../pages/sysMng/sysMng.css'
 
 const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal, masterDetail, doublePk, noDataText,
-    noEdit, onSelection, onRowClick, callback, handleData, handleExpanding, cellRenderConfig, onBtnClick }) => {
+    noEdit, onSelection, onRowClick, callback, handleData, handleExpanding, cellRenderConfig, onBtnClick, excel, onExcel }) => {
 
     const [ cookies ] = useCookies(["userInfo", "userAuth"]);
     const [ cdValList, setCdValList ] = useState({});
@@ -114,6 +114,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
     return (
         <div className="wrap_table">
             <DataGrid
+                dateSerializationFormat="yyyyMMdd"
                 className='editGridStyle'
                 keyExpr={keyColumn}
                 dataSource={values}
@@ -124,6 +125,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                 wordWrapEnabled={true}
                 repaintChangesOnly={true}
                 onRowClick={onRowClick}
+                onExporting={onExcel}
                 onRowExpanding={handleExpanding}
                 {...highlightRows} 
                 {...rowEventHandlers}
@@ -153,6 +155,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                 {onSelection && <Selection mode="multiple" selectAllMode="page"/>}
                 {columns.map((col) => (
                     <Column
+                     
                         key={col.key}
                         dataField={col.key}
                         caption={col.value}
@@ -180,6 +183,10 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                     showPageSizeSelector={true}
                     allowedPageSizes={[20, 50, 80, 100]}
                 />
+                {excel &&
+                    <Export enabled={true} >
+                    </Export>
+                }
             </DataGrid>
         </div>
     );
