@@ -24,7 +24,7 @@ const EmpManage = ({}) => {
   const { listQueryId, listKeyColumn, listTableColumns,       //직원목록조회 
           ejhQueryId, ejhKeyColumn, ejhTableColumns,labelValue,searchInfo            //직원발령정보목록,발령용컴포넌트
         } = EmpManageJson; 
-
+  const [reForm,setReForm] = useState();
   const [year, setYear] = useState([]);
   const [month, setMonth] = useState([]);
   const [readOnly, setReadOnly] = useState(false);
@@ -51,6 +51,7 @@ const EmpManage = ({}) => {
         { "id": "2","value": "2","text": "2회차" }
         ];  
   const [excel, setExcel] = useState();  //엑셀용
+
 //----------------------------------초기 셋팅 영역 --------------------------------
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
@@ -79,9 +80,7 @@ const EmpManage = ({}) => {
     setEmpOdr(null);
     setEmpJbps(null);
   }, []);
-  useEffect(() => {
-    console.log("엑셀파일??",excel)
-  }, [excel]);
+
 
   useEffect(() => {
     if (jbpsHistParam.empId !== undefined) {
@@ -242,9 +241,9 @@ const EmpManage = ({}) => {
       const responseHist = await ApiRequest("/boot/common/commonInsert", paramHist);
         if (responseUpt > 0 && responseHist > 0) {
           alert("저장되었습니다.");
+          setReForm(true);
           empJbpsHistHandle();
           pageHandle();
-          setReset();
         }
     } catch (error) {
       console.error("Error fetching data", error);
@@ -300,10 +299,9 @@ const insertEmpFte = async () => {
         alert("저장되었습니다.");
         setEmpMax({});
         setEmpFteParam({});
+        setReForm(true);
         empJbpsHistHandle();
         pageHandle();
-        setReset();
-      
       }
   } catch (error) {
     console.error("Error fetching data", error);
@@ -347,7 +345,6 @@ const insertEmpFte = async () => {
             empHistSn: maxSn
           }
           ]
-
           cancelJbpsEmpHist(updParam,ehdParam,);
     } else{
       return;
@@ -382,18 +379,19 @@ const cancelJbpsEmpHist = async (updParam,ehdParam) => {       //삭제axios
     }
 
 //===========================reset(regist 콜백용)
- const setReset =()=>{
-    setReadOnly(false);
-    setEmpDetailParam({});
-    setJbpsHistParam({});
-    setHistValues([]);
-    setEmpYear(null);
-    setEmpMonth(null);
-    setEmpOdr(null);
-    setEmpJbps(null);
- }
+    const setReset =()=>{
+        setReadOnly(false);
+        setEmpDetailParam({});
+        setJbpsHistParam({});
+        setHistValues([]);
+        setEmpYear(null);
+        setEmpMonth(null);
+        setEmpOdr(null);
+        setEmpJbps(null);
+        setReForm(false);
+    }
 
-//================================비밀번호 초기화 (개발예정)
+//================================비밀번호 초기화 
     const onClickRestPwd  = async (e,data) => {
       const isconfirm = window.confirm("비밀번호를 초기화 하시겠습니까?"); 
       if (isconfirm) {
@@ -462,7 +460,7 @@ const cancelJbpsEmpHist = async (updParam,ehdParam) => {       //삭제axios
             신규 직원정보를 입력하면 TRS 접속 권한이 생기게 됩니다.<br/>
             신규 직원 사번은 자동 입력됩니다.
             </span>
-            <EmpRegist empInfo={empInfo} read={readOnly} callBack={pageHandle} callBackR={setReset}/>
+            <EmpRegist empInfo={empInfo} read={readOnly} callBack={pageHandle} callBackR={setReset} reForm={reForm}/>
         </div>
         <div className="empDownListTable" style={empDetailStyle}>
             <p> <strong>* 진급정보 </strong> </p>

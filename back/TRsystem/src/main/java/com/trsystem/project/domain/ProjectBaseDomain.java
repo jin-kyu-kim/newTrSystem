@@ -561,4 +561,39 @@ public class ProjectBaseDomain {
 		return atrzStepCd;
 	}
 
+	public static int updateMmAtrzCmptnYn(Map<String, Object> param){
+		Map<String, Object> searchParam = new HashMap<>(param);
+		searchParam.put("queryId", "projectMapper.retrieveMmAtrzDmndSttsCd");
+		List<Map<String, Object>> getCount = commonService.queryIdSearch(searchParam);
+		if((Long)getCount.get(0).get("totalCount") == 0){
+			Map<String, Object> tbnm = new HashMap<>();
+			tbnm.put("tbNm", "PRJCT_INDVDL_CT_MM");
+			Map<String, Object> yn = new HashMap<>();
+			yn.put("mmAtrzCmptnYn", "Y");
+			List updateParam = new ArrayList<>();
+			updateParam.add(tbnm);
+			updateParam.add(yn);
+			updateParam.add(param);
+			commonService.updateData(updateParam);
+		}
+		return 1;
+	}
+
+	public static int updateCtAtrzCmptnYn(Map<String, Object> param){
+		Map<String, Object> searchParam = new HashMap<>(param);
+		searchParam.put("queryId", "projectMapper.retrieveCtAtrzDmndSttsCd");
+		List<Map<String, Object>> getCount = commonService.queryIdSearch(searchParam);
+		if((Long)getCount.get(0).get("totalCount") == 0){
+			Map<String, Object> tbnm = new HashMap<>();
+			tbnm.put("tbNm", "PRJCT_INDVDL_CT_MM");
+			Map<String, Object> yn = new HashMap<>();
+			yn.put("ctAtrzCmptnYn", "Y");
+			List updateParam = new ArrayList<>();
+			updateParam.add(tbnm);
+			updateParam.add(yn);
+			updateParam.add(param);
+			commonService.updateData(updateParam);
+		}
+		return 1;
+	}
 }
