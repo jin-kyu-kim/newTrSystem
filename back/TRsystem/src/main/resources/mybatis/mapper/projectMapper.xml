@@ -721,11 +721,11 @@
 	<select id="retrieveOutordHnfPrmpc" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT 
 		   O.*,
-		   E.OUTORD_EMP_NM, 
+		   E.EMP_FLNM AS OUTORD_EMP_NM, 
 		   C.CD_NM AS HNF_ROLE_CD_NM, 
 		   D.CD_NM AS HNF_GRAD_CD_NM
 		FROM OUTORD_LBRCO_PRMPC O
-		LEFT JOIN OUTORD_EMP E ON E.OUTORD_EMP_ID = O.OUTORD_EMP_ID 
+		LEFT JOIN EMP E ON E.EMP_ID = O.OUTORD_EMP_ID 
 		JOIN CD C ON O.HNF_ROLE_CD = C.CD_VALUE
 		JOIN CD D ON O.HNF_GRAD_CD = D.CD_VALUE
 		WHERE 1=1
@@ -1408,5 +1408,14 @@
           AND APLY_YM = #{aplyYm}
           AND APLY_ODR = #{aplyOdr}
           AND EMP_ID = #{empId}
+    </select>
+    
+    <select id="retrieveoutordEmpPrmpc" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT EMP_ID AS OUTORD_EMP_ID
+		  	,EMP_FLNM AS OUTORD_EMP_NM
+		from EMP
+		WHERE 1=1
+		AND EMP_TY_CD = 'VTW00203'
+		AND HDOF_STTS_CD = 'VTW00301'
     </select>
 </mapper>
