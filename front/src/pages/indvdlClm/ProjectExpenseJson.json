@@ -64,7 +64,7 @@
       ]
     }
   },
-  "ProjectExpenseCardJson": {
+  "ProjectExpenseTab": {
     "menuName": "ProjectExpenseCard",
     "keyColumn": "cardUseSn",
     "queryId": "indvdlClmMapper.retrieveExpenseCardUseDtls",
@@ -101,7 +101,7 @@
       ]
     },
     "tableColumns": [
-      { "key": "utztnDt", "value": "사용일시", "width": "100" },
+      { "key": "utztnDtFormat", "value": "사용일시", "width": "100" },
       { "key": "useOffic", "value": "사용처", "width": "120" },
       { "key": "utztnAmt", "value": "이용금액", "width": "100" },
       { "key": "prjctId", "value": "프로젝트", "cellType": "selectBox", "displayExpr": "prjctNm", "valueExpr": "prjctId", 
@@ -121,10 +121,13 @@
       { "type": "danger", "text": "선택한 사용내역 삭제하기", "onClick": "handleDelete" },
       { "type": "default", "text": "선택한 사용내역 전자결재 작성" },
       { "type": "normal", "text": "선택한 사용내역 등록하기", "onClick": "handleSubmit" }
+    ],
+    "btnInfo":[
+      { "type": "default", "text": "입력", "onClick": "handleSubmit" }
     ]
   },
-  "labelValue" : {
-    "ctAtrzSeCd": {
+  "labelValue" : [
+    {
       "name": "ctAtrzSeCd",
       "type": "ComboBox",
       "label": "구분",
@@ -139,29 +142,12 @@
       },
       "required": true
     },
-    "utztnDt": {
-      "name": "utztnDt",
-      "type": "DateBox",
-      "label": "사용일시",
-      "placeholder": "사용일시",
-      "required": true
-    },
-    "useOffic": {
-      "name": "useOffic",
-      "type": "TextBox",
-      "label": "사용처",
-      "placeholder": "사용처",
-      "required": true
-    },
-    "utztnAmt": {
-      "name": "utztnAmt",
-      "type": "NumberBox",
-      "label": "금액",
-      "placeholder": "금액",
-      "required": true
-    },
-    "prjctId": {
+    { "name": "utztnDt", "type": "DateBox", "label": "사용일시", "placeholder": "사용일시", "required": true },
+    { "name": "useOffic", "type": "TextBox", "label": "사용처", "placeholder": "사용처", "required": true },
+    { "name": "utztnAmt", "type": "NumberBox", "label": "금액", "placeholder": "금액", "required": true },
+    {
       "name": "prjctId",
+      "type": "ComboBox",
       "label": "프로젝트",
       "placeholder": "\"[\"입력시 사용가능한 프로젝트 전체 조회",
       "param": { "tbNm" : "PRJCT",
@@ -174,14 +160,9 @@
       },
       "required": true
     },
-    "expensBox": {
-      "name": "expensCd",
-      "type": "TextBox",
-      "label": "비용코드",
-      "placeholder": "프로젝트가 입력되지 않았습니다.",
-      "required": true
-    },
-    "expensCd": {
+    {
+      "special": true,
+      "type": "selectBox",
       "name": "expensCd",
       "label": "비용코드",
       "placeholder": "[비용코드 입력]",
@@ -194,9 +175,12 @@
       },
       "required": true
     },
-    "elctrnAtrzId": {
+    { "special": true, "name": "ctPrpos", "type": "textBox", "label": "상세내역(목적)", "placeholder": "상세내역(목적)" },
+    { "special": true, "name": "atdrn", "type": "textBox", "label": "용도(참석자명단)", "placeholder": "용도(참석자명단)", "displayExpr": "value" },
+    {
+      "special": true,
+      "type": "selectBox",
       "name": "elctrnAtrzId",
-      "type": "ComboBox",
       "label": "전자결재",
       "placeholder": "[전자결재 선택]",
       "param": {
@@ -206,5 +190,5 @@
         "name": "elctrnAtrzId"
       }
     }
-  }
+  ]
 }
