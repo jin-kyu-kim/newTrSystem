@@ -1,6 +1,6 @@
 {
 	"menuName": "ProjectCostClaimList",
-	"queryId": "projectMapper.retrievePrjctList",
+	"queryId": "financialAffairMngMapper.retrieveAllPrjctList",
     "keyColumn": "prjctId",
     "wordWrap": true,
     "tableColumns": 

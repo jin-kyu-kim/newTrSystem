@@ -4,6 +4,51 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.trsystem.mybatis.mapper.financialAffairMngMapper">
+	
+	<!-- 프로젝트 비용청구 현황 -->
+    <select id="retrieveAllPrjctList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT ROW_NUMBER()OVER ()ROWNUM
+            , (SELECT CD_NM FROM CD WHERE CD_VALUE = PRJCT_STLE_CD) AS PRJCT_STLE_CD
+            , p.PRJCT_ID
+            , PRJCT_NM
+            , (SELECT CD_NM FROM CD WHERE CD_VALUE = BIZ_STTS_CD) AS BIZ_STTS_CD_NM
+            , BIZ_STTS_CD
+            , (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = PRJCT_MNGR_EMP_ID ) AS PRJCT_MNGR_EMP_ID
+            , (SELECT CTMMNY_NM FROM CTMMNY_INFO ci WHERE ci.CTMMNY_ID = p.CTMMNY_ID) AS CTMMNY_NM
+            , DATE_FORMAT(CTRT_YMD, '%Y-%m-%d') AS CTRT_YMD
+            , DATE_FORMAT(BIZ_END_YMD, '%Y-%m-%d') AS BIZ_END_YMD
+            , DATE_FORMAT(STBLE_END_YMD, '%Y-%m-%d') AS STBLE_END_YMD
+            , COUNT(*) OVER () AS TOTAL_ITEMS
+        FROM PRJCT p
+        WHERE 1 = 1
+        <if test="prjctStleCd != null and !prjctStleCd.equals('')">
+	      AND PRJCT_STLE_CD = #{prjctStleCd}
+        </if>
+        <if test="prjctId != null and !prjctId.equals('')">
+	      AND PRJCT_ID = #{prjctId}
+        </if>
+        <if test="bizFlfmtTyCd != null and !bizFlfmtTyCd.equals('')">
+	      AND BIZ_FLFMT_TY_CD = #{bizFlfmtTyCd}
+        </if>
+        <if test="ctrtYmd != null and bizEndYmd == null">
+	      AND CTRT_YMD >= #{ctrtYmd}
+        </if>
+        <if test="ctrtYmd == null and bizEndYmd != null">
+	      AND BIZ_END_YMD &lt;= #{bizEndYmd}
+        </if>
+        <if test="ctrtYmd != null and bizEndYmd != null">
+        <if test="!ctrtYmd.equals('') and !bizEndYmd.equals('')">
+	      AND CTRT_YMD BETWEEN #{ctrtYmd} AND #{bizEndYmd}
+        </if>
+	    </if>
+	    <if test="prjctNm != null and !prjctNm.equals('')">
+          AND PRJCT_NM = #{prjctNm}
+		</if>
+        <if test="ctmmnyNm != null and !ctmmnyNm.equals('')">
+          AND CTMMNY_ID IN (SELECT CTMMNY_ID FROM CTMMNY_INFO WHERE CTMMNY_NM LIKE CONCAT('%',#{ctmmnyNm},'%'))
+   	 	</if>	
+		ORDER BY p.REG_DT DESC
+	</select>
 
     <!--프로젝트청구현황개인별 수행인력-->
     <select id="retrievePrjctCtClmSttusIndvdlMMAccto" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -572,7 +617,7 @@
 --                         AND A.EMP_ID = C.EMP_ID
 --                         AND A.APLY_YM = C.APLY_YM
 --                         AND A.APLY_ODR = C.APLY_ODR
-                    )
+--                  )
             ) T2
                 ON T1.PRJCT_ID = T2.PRJCT_ID
                 AND T1.EMP_ID  = T2.EMP_ID
@@ -801,7 +846,7 @@
     </select>
 
     <select id="retrieveClturPhstrnCtClmList" parameterType="map" resultType="com.trsystem.LowerHashMap">
-        SELECT
+       SELECT
             C.EMP_ID AS EMP_ID,
             C.EMP_FLNM AS EMP_FLNM,
             C.YM AS YM,
@@ -814,6 +859,7 @@
                  SELECT
                      A.EMP_ID AS EMP_ID,
                      A.EMPNO,
+                      A.JBPS_CD,
                      CONCAT('(', A.EMPNO, ')', ' ', A.EMP_FLNM) AS EMP_FLNM,
                      A.YM AS YM,
                      '문화비' AS EXPENSE_TYPE,
@@ -826,6 +872,7 @@
                               A.EMP_ID,
                               A.EMP_FLNM,
                               A.EMPNO,
+                              A.JBPS_CD,
                               DATE_FORMAT(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH), '%Y%m') AS YM
                           FROM EMP A
                       ) A
@@ -836,6 +883,7 @@
                  SELECT
                      A.EMP_ID AS EMP_ID,
                      A.EMPNO,
+                     A.JBPS_CD,
                      CONCAT('(', A.EMPNO, ')', ' ', A.EMP_FLNM) AS EMP_FLNM,
                      A.YM AS YM,
                      '체력단련비' AS EXPENSE_TYPE,
@@ -848,6 +896,7 @@
                               A.EMP_ID,
                               A.EMP_FLNM,
                               A.EMPNO,
+                              A.JBPS_CD,
                               DATE_FORMAT(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH), '%Y%m') AS YM
                           FROM EMP A
                       ) A
@@ -855,7 +904,8 @@
                           LEFT JOIN CLTUR_PHSTRN_ACT_CT CPAC ON CPAC.EMP_ID = A.EMP_ID AND CPAC.CLM_YM = A.YM AND B.CLTUR_PHSTRN_SE_CD = 'VTW00902'
                  GROUP BY EMP_ID, EMPNO, EMP_FLNM, YM
              ) C
-        ORDER BY  EMP_FLNM, EXPENSE_TYPE
+        ORDER BY   JBPS_CD,EXPENSE_TYPE 
+        
     </select>
 
 

@@ -333,6 +333,8 @@
         WHERE EMP_ID = #{empId}
         AND APLY_YM = #{aplyYm}
         AND APLY_ODR = #{aplyOdr}
+        AND APLY_YMD = #{aplyYmd}
+        AND PRJCT_ID = #{prjctId}
     </delete>
 
     <!-- 프로젝트MM결재삭제 -->
@@ -341,6 +343,8 @@
         WHERE EMP_ID = #{empId}
         AND APLY_YM = #{aplyYm}
         AND APLY_ODR = #{aplyOdr}
+        AND APLY_YMD = #{aplyYmd}
+        AND PRJCT_ID = #{prjctId}
     </delete>
 
     <!-- 프로젝트MM신청저장 -->
@@ -389,7 +393,7 @@
 
     </insert>
 
-    <update id="retrievePrjctMmAtrzRtrcn" parameterType="map">
+    <update id="retrievePrjctMmSttsInq" parameterType="map">
         UPDATE PRJCT_MM_ATRZ
         SET
             ATRZ_DMND_STTS_CD = ''
@@ -398,7 +402,37 @@
         WHERE EMP_ID = #{empId}
         AND APLY_YM = #{aplyYm}
         AND APLY_ODR = #{aplyOdr}
+        AND APLY_YMD = #{aplyYmd}
+        AND PRJCT_ID = #{prjctId}
     </update>
+
+    <select id="retrievePrjctMmAtrzRtrcn" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            ATRZ.PRJCT_ID
+            ,ATRZ.EMP_ID
+            ,ATRZ.APLY_YM
+            ,ATRZ.APLY_ODR
+            ,ATRZ.APLY_YMD
+        FROM PRJCT_MM_ATRZ  ATRZ
+            ,PRJCT_MM_APLY 	APLY
+        WHERE ATRZ.EMP_ID = APLY.EMP_ID
+        AND ATRZ.APLY_YM = APLY.APLY_YM
+        AND ATRZ.APLY_ODR = APLY.APLY_ODR
+        AND ATRZ.APLY_YMD = APLY.APLY_YMD
+        AND ATRZ.PRJCT_ID = APLY.PRJCT_ID
+        AND ATRZ.EMP_ID = #{empId}
+        AND (ATRZ_DMND_STTS_CD = '' OR ATRZ_DMND_STTS_CD IS NULL OR ATRZ_DMND_STTS_CD = 'VTW03704')
+    </select>
+
+
+    <delete id="retrievePrjctMmAplySttsDel" parameterType="map">
+        DELETE FROM PRJCT_MM_APLY
+        WHERE EMP_ID = #{empId}
+        AND APLY_YM = #{aplyYm}
+        AND APLY_ODR = #{aplyOdr}
+        AND APLY_YMD = #{aplyYmd}
+        AND PRJCT_ID = #{prjctId}
+    </delete>
 
     <!-- =================================박지환_작업================================= -->
 
@@ -413,7 +447,8 @@
         CT_PRPOS,
         APLY_YM,
         APLY_ODR,
-        CONCAT(SUBSTR(UTZTN_DT, 5, 2),'월 ',SUBSTR(UTZTN_DT,7,2),'일 ',SUBSTR(UTZTN_DT,9,2),':',SUBSTR(UTZTN_DT,11,2)) AS UTZTN_DT,
+        CONCAT(SUBSTR(UTZTN_DT, 5, 2),'월 ',SUBSTR(UTZTN_DT,7,2),'일 ',SUBSTR(UTZTN_DT,9,2),':',SUBSTR(UTZTN_DT,11,2)) AS UTZTN_DT_FORMAT,
+        UTZTN_DT,
         USE_OFFIC,
         UTZTN_AMT,
         APRV_NO
@@ -537,57 +572,25 @@
         WHERE EMP_ID = #{empId}
     </select>
 
-    <!-- 프로젝트 비용 입력마감 (빈 코드값 -> 임시저장) -->
-    <update id="retrievePrjctCtInptDdln" parameterType="map">
+    <!-- 프로젝트 비용 atrzDmndSttsCd 변경 -->
+    <update id="updatePrjctCtAtrzStts" parameterType="map">
         UPDATE PRJCT_CT_ATRZ
         SET
-            ATRZ_DMND_STTS_CD = 'VTW03701',
+            ATRZ_DMND_STTS_CD = CASE
+                WHEN #{actionType} = 'INPUT' THEN 'VTW03701'
+                WHEN #{actionType} = 'INPUT_CANCEL' THEN NULL
+                WHEN #{actionType} = 'APPROVE' THEN 'VTW03702'
+                WHEN #{actionType} = 'APPROVE_CANCEL' THEN 'VTW03701'
+            END,
             MDFCN_DT = now(),
             MDFCN_EMP_ID = #{empId}
         WHERE 1 = 1
-          AND ATRZ_DMND_STTS_CD IS NULL
-          AND EMP_ID = #{empId}
-          AND APLY_YM = #{aplyYm}
-          AND APLY_ODR = #{aplyOdr}
-    </update>
-
-    <!-- 프로젝트 비용 입력마감취소 (임시저장 -> 빈 코드값) -->
-    <update id="retrievePrjctCtInptDdlnRtrcn" parameterType="map">
-        UPDATE PRJCT_CT_ATRZ
-        SET
-            ATRZ_DMND_STTS_CD = NULL,
-            MDFCN_DT = now(),
-            MDFCN_EMP_ID = #{empId}
-        WHERE 1 = 1
-          AND ATRZ_DMND_STTS_CD = 'VTW03701'
-          AND EMP_ID = #{empId}
-          AND APLY_YM = #{aplyYm}
-          AND APLY_ODR = #{aplyOdr}
-    </update>
-
-    <!-- 프로젝트 비용 승인요청 (임시저장 -> 결재중) -->
-    <update id="retrievePrjctAprvDmnd" parameterType="map">
-        UPDATE PRJCT_CT_ATRZ
-        SET
-            ATRZ_DMND_STTS_CD = 'VTW03702',
-            MDFCN_DT = now(),
-            MDFCN_EMP_ID = #{empId}
-        WHERE 1 = 1
-          AND ATRZ_DMND_STTS_CD = 'VTW03701'
-          AND EMP_ID = #{empId}
-          AND APLY_YM = #{aplyYm}
-          AND APLY_ODR = #{aplyOdr}
-    </update>
-
-    <!-- 프로젝트 비용 승인요청취소 (결재중 -> 임시저장) -->
-    <update id="retrievePrjctAprvDmndRtrcn" parameterType="map">
-        UPDATE PRJCT_CT_ATRZ
-        SET
-            ATRZ_DMND_STTS_CD = 'VTW03701',
-            MDFCN_DT = now(),
-            MDFCN_EMP_ID = #{empId}
-        WHERE 1 = 1
-          AND ATRZ_DMND_STTS_CD = 'VTW03702'
+          AND (
+            (#{actionType} = 'INPUT' AND ATRZ_DMND_STTS_CD IS NULL) OR
+            (#{actionType} = 'INPUT_CANCEL' AND ATRZ_DMND_STTS_CD = 'VTW03701') OR
+            (#{actionType} = 'APPROVE' AND ATRZ_DMND_STTS_CD = 'VTW03701') OR
+            (#{actionType} = 'APPROVE_CANCEL' AND ATRZ_DMND_STTS_CD = 'VTW03702')
+            )
           AND EMP_ID = #{empId}
           AND APLY_YM = #{aplyYm}
           AND APLY_ODR = #{aplyOdr}

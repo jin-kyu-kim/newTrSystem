@@ -8,6 +8,7 @@ import com.trsystem.common.service.CommonService;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,20 +61,151 @@ public class IndvdlClmDomain {
         return result;
     }
 
-    public static List<Map<String, Object>> insertPrjctMmAply(List<Map<String, Object>> params){
+//    public static List<Map<String, Object>> insertPrjctMmAply(List<Map<String, Object>> params){
+//        int result;
+////
+////        for(int i = 0; i < deleteParams.size(); i++){
+////            Map<String, Object> deletePrjctMmAtrzStateMap = new HashMap<>();
+////            deletePrjctMmAtrzStateMap = deleteParams.get(i);
+////            deletePrjctMmAtrzStateMap.put("queryId", "indvdlClmMapper.retrievePrjctMmAtrzDel");
+////            List<Map<String, Object>> deletePrjctMmAtrzState = commonService.queryIdSearch(deletePrjctMmAtrzStateMap);
+////
+////            Map<String, Object> deletePrjctMmAplyStateMap = new HashMap<>();
+////            deletePrjctMmAplyStateMap = deleteParams.get(i);
+////            deletePrjctMmAplyStateMap.put("queryId", "indvdlClmMapper.retrievePrjctMmAplyDel");
+////            List<Map<String, Object>> deletePrjctMmAplyState = commonService.queryIdSearch(deletePrjctMmAplyStateMap);
+////        }
+//
+////        if(params.size() > 0){
+////            // 승인요청취소상태 및 반려상태 데이터 조회
+////            Map<String, Object> selectPrjctMmAtrzStateMap = new HashMap<>();
+////            selectPrjctMmAtrzStateMap = params.get(0);
+////            selectPrjctMmAtrzStateMap.put("queryId", "indvdlClmMapper.retrievePrjctMmAtrzRtrcn");
+////            List<Map<String, Object>> selectPrjctMmAtrzState = commonService.queryIdSearch(selectPrjctMmAtrzStateMap);
+////
+////            for(int i = 0 ; i < selectPrjctMmAtrzState.size(); i++){
+////                Map<String, Object> deletePrjctMmAtrzStateMap = new HashMap<>();
+////                deletePrjctMmAtrzStateMap = params.get(i);
+////                deletePrjctMmAtrzStateMap.put("queryId", "indvdlClmMapper.retrievePrjctMmAtrzDel");
+////                List<Map<String, Object>> deletePrjctMmAtrzState = commonService.queryIdSearch(deletePrjctMmAtrzStateMap);
+////
+////                Map<String, Object> deletePrjctMmAplyStateMap = new HashMap<>();
+////                deletePrjctMmAplyStateMap = params.get(i);
+////                deletePrjctMmAplyStateMap.put("queryId", "indvdlClmMapper.retrievePrjctMmAplyDel");
+////                List<Map<String, Object>> deletePrjctMmAplyState = commonService.queryIdSearch(deletePrjctMmAplyStateMap);
+////            }
+////        }
+//
+//        for (int i = 0; i < params.size(); i++){
+//            // PRJCT_MM_ATRZ(프로젝트MM결재) 기존 데이터 삭제
+//            Map<String, Object> deletePrjctMmAtrzMap = new HashMap<>();
+//            deletePrjctMmAtrzMap = params.get(i);
+//
+//            if(!deletePrjctMmAtrzMap.get("atrzDmndSttsCd").equals("VTW03703")){
+//                deletePrjctMmAtrzMap.put("queryId", "indvdlClmMapper.retrievePrjctMmAtrzDel");
+//                List<Map<String, Object>> deletePrjctMmAtrzData = commonService.queryIdSearch(deletePrjctMmAtrzMap);
+//            }
+//
+//            // PRJCT_MM_APLY(프로젝트MM신청) 기존 데이터 삭제
+//            Map<String, Object> deletePrjctMmAplyMap = new HashMap<>();
+//            deletePrjctMmAplyMap = params.get(i);
+//            if(!deletePrjctMmAplyMap.get("atrzDmndSttsCd").equals("VTW03703")) {
+//                deletePrjctMmAplyMap.put("queryId", "indvdlClmMapper.retrievePrjctMmAplyDel");
+//                List<Map<String, Object>> deletePrjctMmAplyData = commonService.queryIdSearch(deletePrjctMmAplyMap);
+//            }
+//        }
+//
+//
+//        List<Map<String, Object>> insertMap = new ArrayList<>();
+//        for(int i = 0; i < params.size(); i++){
+//            params.get(i).put("tbNm", "PRJCT_INDVDL_CT_MM");
+//            insertMap.add(params.get(i));
+//
+//            // PRJCT_INDVDL_CT_MM(프로젝트개인비용MM) INSERT/UPDATE
+//            Map<String, Object> mergePrjctIndvdlCtMmMap = new HashMap<>();
+//            mergePrjctIndvdlCtMmMap = params.get(i);
+//            mergePrjctIndvdlCtMmMap.put("queryId", "indvdlClmMapper.retrievePrjctIndvdlCtMmStrg");
+//            List<Map<String, Object>> mergePrjctIndvdlCtMmData = commonService.queryIdSearch(mergePrjctIndvdlCtMmMap);
+//
+//            Map<String, Object> insertPrjctMmAplyMap = new HashMap<>();
+//            insertPrjctMmAplyMap = params.get(i);
+//            if(!insertPrjctMmAplyMap.get("atrzDmndSttsCd").equals("VTW03703")) {
+//                insertPrjctMmAplyMap.put("queryId", "indvdlClmMapper.retrievePrjctMmAplyStrg");
+//                List<Map<String, Object>> insertPrjctMmAplyResult = commonService.queryIdSearch(insertPrjctMmAplyMap);
+//            }
+//
+//            Map<String, Object> insertPrjctMmAtrzMap = new HashMap<>();
+//            insertPrjctMmAtrzMap = params.get(i);
+//            if(!insertPrjctMmAtrzMap.get("atrzDmndSttsCd").equals("VTW03703")) {
+//                insertPrjctMmAtrzMap.put("queryId", "indvdlClmMapper.retrievePrjctMmAtrzStrg");
+//                List<Map<String, Object>> insertPrjctMmAtrzResult = commonService.queryIdSearch(insertPrjctMmAtrzMap);
+//            }
+//        }
+//
+////        System.out.println("======================================");
+////        System.out.println("insertMap" + insertMap);
+////        System.out.println("======================================");
+//
+////        result = commonService.insertDataList(insertMap);
+//
+//        System.out.println("======================================");
+////        System.out.println("result" + result);
+//        System.out.println("======================================");
+//
+//        return null;
+//    }
+    public static List<Map<String, Object>> insertPrjctMmAply(List<Map<String, Object>> params, List<Map<String, Object>> deleteParams){
         int result;
-        if(params.size() > 0){
+
+        for(int i = 0; i < deleteParams.size(); i++){
+            Map<String, Object> deletePrjctMmAtrzStateMap = new HashMap<>();
+            deletePrjctMmAtrzStateMap = deleteParams.get(i);
+            deletePrjctMmAtrzStateMap.put("queryId", "indvdlClmMapper.retrievePrjctMmAtrzDel");
+            List<Map<String, Object>> deletePrjctMmAtrzState = commonService.queryIdSearch(deletePrjctMmAtrzStateMap);
+
+            Map<String, Object> deletePrjctMmAplyStateMap = new HashMap<>();
+            deletePrjctMmAplyStateMap = deleteParams.get(i);
+            deletePrjctMmAplyStateMap.put("queryId", "indvdlClmMapper.retrievePrjctMmAplyDel");
+            List<Map<String, Object>> deletePrjctMmAplyState = commonService.queryIdSearch(deletePrjctMmAplyStateMap);
+        }
+
+//        if(params.size() > 0){
+//            // 승인요청취소상태 및 반려상태 데이터 조회
+//            Map<String, Object> selectPrjctMmAtrzStateMap = new HashMap<>();
+//            selectPrjctMmAtrzStateMap = params.get(0);
+//            selectPrjctMmAtrzStateMap.put("queryId", "indvdlClmMapper.retrievePrjctMmAtrzRtrcn");
+//            List<Map<String, Object>> selectPrjctMmAtrzState = commonService.queryIdSearch(selectPrjctMmAtrzStateMap);
+//
+//            for(int i = 0 ; i < selectPrjctMmAtrzState.size(); i++){
+//                Map<String, Object> deletePrjctMmAtrzStateMap = new HashMap<>();
+//                deletePrjctMmAtrzStateMap = params.get(i);
+//                deletePrjctMmAtrzStateMap.put("queryId", "indvdlClmMapper.retrievePrjctMmAtrzDel");
+//                List<Map<String, Object>> deletePrjctMmAtrzState = commonService.queryIdSearch(deletePrjctMmAtrzStateMap);
+//
+//                Map<String, Object> deletePrjctMmAplyStateMap = new HashMap<>();
+//                deletePrjctMmAplyStateMap = params.get(i);
+//                deletePrjctMmAplyStateMap.put("queryId", "indvdlClmMapper.retrievePrjctMmAplyDel");
+//                List<Map<String, Object>> deletePrjctMmAplyState = commonService.queryIdSearch(deletePrjctMmAplyStateMap);
+//            }
+//        }
+
+        for (int i = 0; i < params.size(); i++){
             // PRJCT_MM_ATRZ(프로젝트MM결재) 기존 데이터 삭제
             Map<String, Object> deletePrjctMmAtrzMap = new HashMap<>();
-            deletePrjctMmAtrzMap = params.get(0);
-            deletePrjctMmAtrzMap.put("queryId", "indvdlClmMapper.retrievePrjctMmAtrzDel");
-            List<Map<String, Object>> deletePrjctMmAtrzData = commonService.queryIdSearch(deletePrjctMmAtrzMap);
+            deletePrjctMmAtrzMap = params.get(i);
+
+            if(!deletePrjctMmAtrzMap.get("atrzDmndSttsCd").equals("VTW03703")){
+                deletePrjctMmAtrzMap.put("queryId", "indvdlClmMapper.retrievePrjctMmAtrzDel");
+                List<Map<String, Object>> deletePrjctMmAtrzData = commonService.queryIdSearch(deletePrjctMmAtrzMap);
+            }
 
             // PRJCT_MM_APLY(프로젝트MM신청) 기존 데이터 삭제
             Map<String, Object> deletePrjctMmAplyMap = new HashMap<>();
-            deletePrjctMmAplyMap = params.get(0);
-            deletePrjctMmAplyMap.put("queryId", "indvdlClmMapper.retrievePrjctMmAplyDel");
-            List<Map<String, Object>> deletePrjctMmAplyData = commonService.queryIdSearch(deletePrjctMmAplyMap);
+            deletePrjctMmAplyMap = params.get(i);
+            if(!deletePrjctMmAplyMap.get("atrzDmndSttsCd").equals("VTW03703")) {
+                deletePrjctMmAplyMap.put("queryId", "indvdlClmMapper.retrievePrjctMmAplyDel");
+                List<Map<String, Object>> deletePrjctMmAplyData = commonService.queryIdSearch(deletePrjctMmAplyMap);
+            }
         }
 
 
@@ -90,13 +222,17 @@ public class IndvdlClmDomain {
 
             Map<String, Object> insertPrjctMmAplyMap = new HashMap<>();
             insertPrjctMmAplyMap = params.get(i);
-            insertPrjctMmAplyMap.put("queryId", "indvdlClmMapper.retrievePrjctMmAplyStrg");
-            List<Map<String, Object>> insertPrjctMmAplyResult = commonService.queryIdSearch(insertPrjctMmAplyMap);
+            if(!insertPrjctMmAplyMap.get("atrzDmndSttsCd").equals("VTW03703")) {
+                insertPrjctMmAplyMap.put("queryId", "indvdlClmMapper.retrievePrjctMmAplyStrg");
+                List<Map<String, Object>> insertPrjctMmAplyResult = commonService.queryIdSearch(insertPrjctMmAplyMap);
+            }
 
             Map<String, Object> insertPrjctMmAtrzMap = new HashMap<>();
             insertPrjctMmAtrzMap = params.get(i);
-            insertPrjctMmAtrzMap.put("queryId", "indvdlClmMapper.retrievePrjctMmAtrzStrg");
-            List<Map<String, Object>> insertPrjctMmAtrzResult = commonService.queryIdSearch(insertPrjctMmAtrzMap);
+            if(!insertPrjctMmAtrzMap.get("atrzDmndSttsCd").equals("VTW03703")) {
+                insertPrjctMmAtrzMap.put("queryId", "indvdlClmMapper.retrievePrjctMmAtrzStrg");
+                List<Map<String, Object>> insertPrjctMmAtrzResult = commonService.queryIdSearch(insertPrjctMmAtrzMap);
+            }
         }
 
 //        System.out.println("======================================");
@@ -313,5 +449,22 @@ public class IndvdlClmDomain {
 
         return result;
 
+    }
+
+    public static List<Map<String, Object>> updatePrjctMmAply(List<Map<String, Object>> params){
+        int result;
+
+        System.out.println("=============================");
+        System.out.println("params : " + params);
+        System.out.println("=============================");
+
+        for(int i = 0; i < params.size(); i++){
+            Map<String, Object> updatePrjctMmAtrzMap = new HashMap<>();
+            updatePrjctMmAtrzMap = params.get(i);
+            updatePrjctMmAtrzMap.put("queryId", "indvdlClmMapper.retrievePrjctMmSttsInq");
+            List<Map<String, Object>> updatePrjctMmAtrzResult = commonService.queryIdSearch(updatePrjctMmAtrzMap);
+        }
+
+        return null;
     }
 }

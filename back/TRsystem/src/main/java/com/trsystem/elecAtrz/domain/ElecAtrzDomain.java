@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.trsystem.common.service.CommonService;
 
@@ -32,6 +33,7 @@ public class ElecAtrzDomain {
 	 * @param params
 	 * @return
 	 */
+	@Transactional
 	public static String insertElecAtrz(Map<String, Object> params) {
 		
 		System.out.println(params);
@@ -41,7 +43,9 @@ public class ElecAtrzDomain {
 		String regEmpId = String.valueOf(params.get("regEmpId"));
 		String atrzTySeCd = String.valueOf(params.get("elctrnAtrzTySeCd"));
 		String elctrnAtrzId =  String.valueOf(params.get("elctrnAtrzId"));
-		String deptId = String.valueOf(params.get("deptId"));
+		String sttsCd = String.valueOf(params.get("sttsCd")); // 임시저장인 경우 
+		
+		System.out.println(sttsCd);
 		
 		Map<String, String> basicInfo = new HashMap<>();
 		basicInfo.put("regDt", regDt);
@@ -55,7 +59,6 @@ public class ElecAtrzDomain {
 		elecAtrzParam.putAll(params);
 		elecAtrzParam.put("nowAtrzLnSn", 1);
 		elecAtrzParam.put("atrzDmndEmpId", regEmpId);
-		elecAtrzParam.put("atrzDmndEmpDeptId", deptId);
 		elecAtrzParam.remove("param");
 		
 		System.out.println(elecAtrzParam);
@@ -72,9 +75,76 @@ public class ElecAtrzDomain {
 		
 		try {
 			
+			// 기존에 저장된 전자결재 아이디에 해당하는 값을 제거한다.
+			
 			// 전자결재 테이블 데이터 삽입
-			electrnAtrzResult = commonService.insertData(insertParams);
-			electrnAtrzResult = 1;
+//			if(sttsCd.equals("VTW03701")) {
+				// 임시저장의 경우 임시저장된 데이터들 지우기
+				
+				/**
+				 *  1. 결재선 지우기
+				 *  target: ATRZ_LN
+				 */
+				deleteData("ATRZ_LN", elctrnAtrzId);
+				
+				/**
+				 *  2. 참조/합의 결재선 지우기
+				 *  target: REFRN_MAN
+				 */
+				deleteData("REFRN_MAN", elctrnAtrzId);
+				
+				
+				// 계약결재
+				if(atrzTySeCd.equals("VTW04908") || atrzTySeCd.equals("VTW04909") || atrzTySeCd.equals("VTW04910")) {
+					// delete 계약결재와 관련된 테이블 slave -> master
+					// 업체와 인력 나눠서 delete 하는 메소드 다르게 진행
+					
+					if(atrzTySeCd.equals("VTW04909") || atrzTySeCd.equals("VTW04910")) {
+						
+						/**
+						 * 업체 관련(재료비, 외주업체)
+						 * target: ENTRPS_CTRT_DTL, ENTRPS_CTRT_DTL_CND
+						 */
+						deleteData("ENTRPS_CTRT_DTL_CND", elctrnAtrzId);
+						deleteData("ENTRPS_CTRT_DTL", elctrnAtrzId);
+					} else if(atrzTySeCd.equals("VTW04908")) {
+						/**
+						 * 외주인력 관련(외주인력)
+						 * target: HNF_CTRT_DTL, HNF_CTRT_DTL_CND
+						 */
+						deleteData("HNF_CTRT_DTL_CND", elctrnAtrzId);
+						deleteData("HNF_CTRT_DTL", elctrnAtrzId);
+					}
+					
+					/**
+					 * 계약결재 테이블 제거
+					 * target: CTRT_ATRZ
+					 */
+					deleteData("CTRT_ATRZ", elctrnAtrzId);
+					
+					
+				} else if(atrzTySeCd.equals("VTW04907")) {
+					/**
+					 *  delete 청구결재와 관련된 내용 slave -> master
+					 *  target: CLM_ATRZ, CLM_ATRZ_DTL
+					 */
+					deleteData("CLM_ATRZ_DTL", elctrnAtrzId);
+					deleteData("CLM_ATRZ", elctrnAtrzId);
+					
+				} else {
+					// 지급품의, 일반 결재 처리...
+				}
+				
+				
+//			} else {
+				/**
+				 * 전자결재 테이블 데이터 삭제(최상위)
+				 */
+				deleteData("ELCTRN_ATRZ", elctrnAtrzId);
+				
+				electrnAtrzResult = commonService.insertData(insertParams);
+//			}
+			
 			if(electrnAtrzResult > 0) {
 				
 				// 전자결재 결재선 데이터 입력
@@ -111,6 +181,28 @@ public class ElecAtrzDomain {
 
 		
 		return elctrnAtrzId;
+	}
+	
+	/**
+	 * target이 되는 테이블 명과 전자결재 아이디를 받아서 데이터를 지운다
+	 * @param tbNm
+	 * @param elctrnAtrzId
+	 * @return
+	 */
+	public static int deleteData(String tbNm, String elctrnAtrzId) {
+		int result = 0;
+		
+		Map<String, Object> tbParam = new HashMap<>();
+		Map<String, Object> conditionParam = new HashMap<>();
+		tbParam.put("tbNm", tbNm);
+		conditionParam.put("elctrnAtrzId", elctrnAtrzId);
+		
+		ArrayList<Map<String, Object>> deleteParams = new ArrayList<>();
+		deleteParams.add(0, tbParam);
+		deleteParams.add(1, conditionParam);
+		
+		result = commonService.deleteData(deleteParams);
+		return result;
 	}
 	
 	/**
@@ -549,7 +641,7 @@ public class ElecAtrzDomain {
 					
 					
 					updateParams.add(0, paramList.get(0));	// 업데이트할 타겟 테이블
-					updateParams.add(1, paramList.get(1));	// 업데이트할 테이블의 내용
+					updateParams.add(1, paramList.get(1));	// 업데이트할 테이블의 내용z
 					
 					updateParam.put("elctrnAtrzId", paramList.get(2).get("elctrnAtrzId"));
 					updateParam.put("aprvrEmpId", aprvrEmpId);
@@ -673,6 +765,6 @@ public class ElecAtrzDomain {
 		} catch (Exception e) {
 			return -1;
 		}
-		
 	}
+	
 } 

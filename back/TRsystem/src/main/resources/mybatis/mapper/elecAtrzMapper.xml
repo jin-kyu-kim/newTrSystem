@@ -34,7 +34,6 @@
 		ea.ELCTRN_ATRZ_TY_SE_CD,
 		ea.NOW_ATRZ_LN_SN,
 		eadf.GNRL_ATRZ_TTL, -- 전자결재 유형
-		d.DEPT_NM,
 		-- 			cad.CNPT_NM, -- 거래처명
 		(SELECT EMP_FLNM FROM EMP WHERE EMP_ID = ea.ATRZ_DMND_EMP_ID) ATRZ_DMND_EMP_NM, -- 기안자
 		(SELECT EMP_FLNM FROM EMP WHERE EMP_ID = al.APRVR_EMP_ID) APRVR_EMP_ID, -- 결재자
@@ -56,7 +55,6 @@
 		LEFT JOIN CTRT_GIVE_ATRZ cga ON ea.ELCTRN_ATRZ_ID = cga.ELCTRN_ATRZ_ID -- 계약지급결재
 		LEFT JOIN VCATN_ATRZ va ON ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID -- 휴가결재
 		LEFT JOIN ELCTRN_ATRZ_DOC_FORM eadf ON ea.ATRZ_FORM_DOC_ID = eadf.ATRZ_FORM_DOC_ID -- 서식 제목
-		LEFT JOIN DEPT d ON ea.ATRZ_DMND_EMP_DEPT_ID = d.DEPT_ID
 		WHERE 1=1
 		<choose>
 			<when test='sttsCd != null and refer == null and sttsCd.startsWith("VTW037")'>
@@ -97,8 +95,8 @@
 			COUNT(DISTINCT CASE WHEN ea.ATRZ_DMND_STTS_CD = 'VTW03702' AND ea.ATRZ_DMND_EMP_ID = #{empId} THEN ea.ELCTRN_ATRZ_ID END) AS PROGRESS,
 			COUNT(DISTINCT CASE WHEN ea.ATRZ_DMND_STTS_CD = 'VTW03703' AND ea.ATRZ_DMND_EMP_ID = #{empId} THEN ea.ELCTRN_ATRZ_ID END) AS TERMINATED_MY,
 			COUNT(DISTINCT CASE WHEN ea.ATRZ_DMND_STTS_CD = 'VTW03704' AND ea.ATRZ_DMND_EMP_ID = #{empId} THEN ea.ELCTRN_ATRZ_ID END) AS DENY,
-			COUNT(DISTINCT CASE WHEN al.ATRZ_STTS_CD = 'VTW00801' AND al.APRVR_EMP_ID = #{empId} THEN al.ELCTRN_ATRZ_ID END) AS PROGRESS_APPROVAL,
-			COUNT(DISTINCT CASE WHEN al.ATRZ_STTS_CD = 'VTW00802' AND al.APRVR_EMP_ID = #{empId} THEN al.ELCTRN_ATRZ_ID END) AS TERMINATED_APRVR_EMP,
+			COUNT(DISTINCT CASE WHEN al.ATRZ_STTS_CD = 'VTW00801' AND al.APRVR_EMP_ID = #{empId} AND ea.NOW_ATRZ_LN_SN = al.ATRZ_LN_SN THEN al.ELCTRN_ATRZ_ID END) AS PROGRESS_APPROVAL,
+			COUNT(DISTINCT CASE WHEN al.ATRZ_STTS_CD = 'VTW00802' AND al.APRVR_EMP_ID = #{empId} THEN CONCAT(al.ELCTRN_ATRZ_ID, '-', al.ATRZ_STEP_CD) END) AS TERMINATED_APRVR_EMP,
 			COUNT(DISTINCT CASE WHEN ea.ATRZ_DMND_STTS_CD = 'VTW03702' AND rm.EMP_ID = #{empId} THEN rm.ELCTRN_ATRZ_ID END) AS PROGRESS_REFER,
 			COUNT(DISTINCT CASE WHEN ea.ATRZ_DMND_STTS_CD = 'VTW03703' AND rm.EMP_ID = #{empId} THEN rm.ELCTRN_ATRZ_ID END) AS TERMINATED_REFER
 		FROM ELCTRN_ATRZ ea
@@ -112,9 +110,17 @@
 	<select id="retrieveAtrzLn" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		(
 			SELECT
+				e.EMP_ID,
 				ln.ATRZ_STEP_CD AS APPROVAL_CODE,
 				cd.CD_NM AS ATRZ_STEP_CD_NM,
-				cd2.CD_NM AS ATRZ_STTS_CD_NM,
+				<choose>
+					<when test="sttsCd != null and sttsCd.equals('VTW03701')">
+						NULL AS ATRZ_STTS_CD_NM,
+					</when>
+					<otherwise>
+						cd2.CD_NM AS ATRZ_STTS_CD_NM,
+					</otherwise>
+				</choose>
 				e.EMP_FLNM,
 				(SELECT CD_NM FROM CD WHERE CD_VALUE = e.JBPS_CD) JBPS_NM,
 				NULL AS LIST_EMP_FLNM,
@@ -130,11 +136,12 @@
 		UNION ALL
 		(
 			SELECT
+				e.EMP_ID,
 				rm.REFRN_CNCRRNC_CL_CD AS APPROVAL_CODE,
 				NULL AS ATRZ_STEP_CD_NM,
 				NULL AS ATRZ_STTS_CD_NM,
-				NULL AS EMP_FLNM,
-				NULL AS JBPS_NM,
+				e.EMP_FLNM,
+				(SELECT CD_NM FROM CD WHERE CD_VALUE = e.JBPS_CD) JBPS_NM,
 				CONCAT(d.DEPT_NM, ' ', e.EMP_FLNM, ' ', (SELECT CD_NM FROM CD WHERE CD_VALUE = e.JBPS_CD)) LIST_EMP_FLNM,
 				NULL AS APRV_YMD,
 				NULL AS RJCT_PRVONSH
@@ -143,7 +150,7 @@
 					 LEFT JOIN DEPT_HNF dh ON e.EMP_ID = dh.EMP_ID
 					 LEFT JOIN DEPT d ON dh.DEPT_ID = d.DEPT_ID
 			WHERE rm.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
-			AND rm.REFRN_CNCRRNC_CL_CD LIKE '%VTW00706'
+			AND (rm.REFRN_CNCRRNC_CL_CD LIKE '%VTW00706' OR rm.REFRN_CNCRRNC_CL_CD LIKE '%VTW00707') 
 		)
 	</select>
 	
@@ -185,16 +192,19 @@
 		SELECT ROW_NUMBER() OVER() AS ROW_ID
 		 , cd1.CD_NM AS CT_STLM_SE_CD_NM	
 		 , CT_STLM_SE_CD
-		 , RCIPT_PBLCN_YMD				
+	 	 , IFNULL(RCIPT_PBLCN_YMD, TAX_BILL_PBLCN_YMD) AS RCIPT_PBLCN_YMD
 		 , cad.CNPT_NM	-- 거래처명
 		 , cad.CLM_AMT
-		 , cd2.CD_NM AS  EXPENS_CD_NM	
+		 , cd2.CD_NM AS EXPENS_CD_NM
 		 , cad.DTL_USE_DTLS
 		 , cad.CLM_PRPOS
+	 	 , cad.VAT_INCLS_AMT -- 금액(부가세 포함/세금별도)
+		 , IFNULL(CONCAT('(', DPSTR_FLNM, ') ', cd3.CD_NM, ' ', DPST_ACTNO, ' / ', DPST_DMND_YMD), '-') AS BANK
 	  FROM CLM_ATRZ ca
 	  JOIN CLM_ATRZ_DTL cad ON (ca.ELCTRN_ATRZ_ID = cad.ELCTRN_ATRZ_ID)
 	  JOIN CD cd1 ON (cad.CT_STLM_SE_CD = cd1.CD_VALUE)
 	  JOIN CD cd2 ON (cad.EXPENS_CD = cd2.CD_VALUE)
+      LEFT JOIN CD cd3 ON (cad.BANK_CD = cd3.CD_VALUE)
 	WHERE 1=1
 	   AND ca.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
 	</select>
@@ -241,6 +251,62 @@
 		  JOIN CD cd ON (cd.CD_VALUE = ep.EXPENS_CD)
 		 WHERE 1=1
 		   AND PRJCT_ID = #{prjctId}
+	</select>
+	
+	<select id="retrieveOutordEmpPlan" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT 
+			olp.PRJCT_ID,
+			olp.BGT_MNG_ODR,
+			olp.OUTORD_LBRCO_PRMPC_SN,
+			olp.OUTORD_EMP_ID,
+			olp.HNF_ROLE_CD,
+			olp.HNF_GRAD_CD,
+			olp.TKCG_JOB,
+			olp.UNTPC,
+			olp.INPT_PRNMNT_YMD,
+			olp.WITHDR_PRNMNT_YMD,
+			dtl.EXPECT_MM,
+			(olp.UNTPC * dtl.EXPECT_MM) AS USEFUL_AMT
+		  FROM OUTORD_LBRCO_PRMPC olp
+		  JOIN (SELECT MAX(BGT_MNG_ODR) AS BGT_MNG_ODR, PRJCT_ID 
+		  		  FROM PRJCT_BGT_PRMPC
+			 	 WHERE 1=1
+		   		   AND ATRZ_DMND_STTS_CD = 'VTW03703'
+			    GROUP BY PRJCT_ID) pbp 
+			ON (olp.PRJCT_ID = pbp.PRJCT_ID AND olp.BGT_MNG_ODR = pbp.BGT_MNG_ODR)
+		  JOIN (SELECT SUM(EXPECT_MM) AS EXPECT_MM, PRJCT_ID  
+		  		FROM OUTORD_LBRCO_PRMPC_DTL 
+		  		WHERE 1=1 
+		  		GROUP BY PRJCT_ID, BGT_MNG_ODR, OUTORD_LBRCO_PRMPC_SN) dtl 
+		  	ON (olp.PRJCT_ID = dtl.PRJCT_ID)
+		  WHERE 1=1
+		    AND olp.PRJCT_ID = #{prjctId}			
+	</select>
+	
+	<select id="retrieveRealOutordEmpPlan" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT EMP_ID, EMP_FLNM
+		  FROM EMP 
+		  WHERE 1=1
+		   AND EMP_TY_CD = 'VTW00203'
+	</select>
+	
+	<select id="retrieveDeadLineDate" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT DATE_FORMAT(MAX(CRTR_YMD), '%Y년 %m월 %d일') AS DEAD_LINE_DATE
+		  FROM CRTR_DATE
+		 WHERE 1=1
+	 	   AND CRTR_ODR = #{crtrOdr}
+		   AND CRTR_YMD <![CDATA[ <= ]]> CURDATE()
+	</select>
+	
+	<select id="retrieveEntrpsCtrtDtlCnd" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT ELCTRN_ATRZ_ID
+			 , STR_TO_DATE(CONCAT(CTRT_YMD, '01'), "%Y%m%d") AS CTRT_YMD
+			 , ENTRPS_CTRT_DTL_SN
+			 , GIVE_ODR_CD
+			 , CTRT_AMT
+		  FROM ENTRPS_CTRT_DTL_CND
+		 WHERE 1=1
+		   AND ELCTRN_ATRZ_ID = #{elctrnAtrzId}
 	</select>
 	
 </mapper>

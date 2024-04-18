@@ -60,6 +60,12 @@ const EmpCultHealthCostManage = () => {
     const btnChk = window.confirm("문화체련비를 마감하시겠습니까?")
     if (btnChk) {
       alert("마감되었습니다.")
+      const currentDate = new Date(); // 현재 날짜와 시간을 나타내는 Date 객체 생성
+      const year = currentDate.getFullYear(); // 연도를 가져옴
+      const month = currentDate.getMonth() ; // 월을 가져오는데, 0부터 시작하므로 +1을 해줌
+      const formattedDate = `${year}${month < 10 ? '0' : ''}${month}`; // 월이 한 자리 수인 경우 앞에 0을 붙여줌
+
+console.log(formattedDate); // YYYYMM 형식의 현재 날짜 출력
     }
   };
   const handleSaved = () => {

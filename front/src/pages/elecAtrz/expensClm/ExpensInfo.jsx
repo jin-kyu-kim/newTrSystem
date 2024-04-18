@@ -3,13 +3,14 @@ import { FormControl, InputLabel, Select, MenuItem, TextField, Button, Grid, Tab
 import { DateBox } from "devextreme-react/date-box";
 import ApiRequest from "utils/ApiRequest";
 
-const ExpensInfo = ({onSendData, prjctId}) => {
+const ExpensInfo = ({onSendData, prjctId, data}) => {
 
     const [ctStlmSeCdList, setCtStlmSeCdList] = useState([]);
     const [bankCdList, setBankCdList] = useState([]);
     const [expensCdList, setExpensCdList] = useState([]);
     const [ clmOdr, setClmOdr ] = useState();
     const [ nextClmOdr, setNextClmOdr ] = useState();
+    const [ deadLineDate, setDeadLineDate ] = useState();
 
 
     useEffect(() => {
@@ -64,31 +65,58 @@ const ExpensInfo = ({onSendData, prjctId}) => {
         }
     }
     
-    const [forms, setForms] = useState([
-        {
-            clmAtrzDtlSn: 1,
-            ctStlmSeCd: null,
-            rciptPblcnYmd: null,
-            taxBillPblcnYmd: null,
-            dtlUseDtls: null,
-            clmAmt: 0,
-            vatInclsAmt: 0,
-            dpstDmndYmd: null,
-            expensCd: null,
-            cnptNm: null,
-            clmPrpos: null,
-            bankCd: null,
-            dpstrFlnm: null,
-            dpstActno: null
+    const [forms, setForms] = useState([]);
+
+    useEffect(() => {
+
+        if(data.atrzDmndSttsCd === "VTW03701") {
+            console.log("임시저장")
+            getTempData();
+        } else {
+            setForms([
+                {
+                    clmAtrzDtlSn: 1,
+                    ctStlmSeCd: null,
+                    rciptPblcnYmd: null,
+                    taxBillPblcnYmd: null,
+                    dtlUseDtls: null,
+                    clmAmt: 0,
+                    vatInclsAmt: 0,
+                    dpstDmndYmd: null,
+                    expensCd: null,
+                    cnptNm: null,
+                    clmPrpos: null,
+                    bankCd: null,
+                    dpstrFlnm: null,
+                    dpstActno: null
+                }
+            ]);
         }
-    ]);
+    }, []);
+
+    const getTempData = async () => {
+        const param = [
+            { tbNm: "CLM_ATRZ_DTL" },
+            { elctrnAtrzId: data.elctrnAtrzId }
+        ]
+
+        const response = await ApiRequest("/boot/common/commonSelect", param);
+
+        response.map((item) => {
+            delete item.bankCdNm;
+            delete item.ctStlmSeCdNm;
+            delete item.expensCdNm;
+        });
+
+        setForms(response);
+    }
 
     const addForm = () => {
         const newClmAtrzDtlSn = forms[forms.length - 1].clmAtrzDtlSn + 1;
 
         setForms([...forms, {
             clmAtrzDtlSn: newClmAtrzDtlSn,
-            ctStlmSeCd: "",
+            ctStlmSeCd: null,
             rciptPblcnYmd: null,
             taxBillPblcnYmd: null,
             dtlUseDtls: null,
@@ -112,11 +140,14 @@ const ExpensInfo = ({onSendData, prjctId}) => {
     },[forms]);
 
     const removeForm = (selectForm) => {
+
+        console.log(selectForm)
+
         if (forms.length === 1) { // 하나일 경우 지우지 않는다.
             return; 
         }
 
-        setForms(forms.filter((form) => form.clmAtrzDtlSn !== selectForm.clmAtrzDtlSn));
+        setForms([...forms.filter((form) => form.clmAtrzDtlSn !== selectForm.clmAtrzDtlSn)]);
     };
 
     const handleInputChange = (e, index, fieldName) => {
@@ -130,7 +161,9 @@ const ExpensInfo = ({onSendData, prjctId}) => {
                 newForms[index]["bankCd"] = null;
             }
         }
+        console.log("1", newForms);
         newForms[index][fieldName] = e.target.value;
+        console.log("2", newForms);
         setForms(newForms);
     };
 
@@ -140,6 +173,9 @@ const ExpensInfo = ({onSendData, prjctId}) => {
         setForms(newForms => [...newForms]);
     };
 
+    /**
+     * 청구 차수 및 날짜 계산
+     */
     const setExpensDate = () => {
         
         const today = new Date();
@@ -175,6 +211,7 @@ const ExpensInfo = ({onSendData, prjctId}) => {
         const monthString = (month < 10 ? '0' : '') + month;
         
         setClmOdr(`${year}${monthString}-${odr}`);
+        getDeadLineDate(odr);
 
         let nextYear = today.getFullYear();
         let nextMonth = today.getMonth() + 1; 
@@ -194,13 +231,53 @@ const ExpensInfo = ({onSendData, prjctId}) => {
         setNextClmOdr(`${nextYear}${nextMonthString}-${nextOdr}`);
     }
 
+    const getDeadLineDate = async (odr) => {
+        
+        const param = {
+            queryId: "elecAtrzMapper.retrieveDeadLineDate",
+            crtrOdr: odr
+        }
+
+        try {
+            const response = await ApiRequest("/boot/common/queryIdSearch", param);
+            setDeadLineDate(response[0].deadLineDate);
+        } catch(error) {
+            console.error(error);
+        }
+    }
+
+    /**
+     * 숫자 input 값 처리
+     * @param {*} e 
+     * @param {*} index 
+     * @param {*} fieldName 
+     */
     const handleNumberInputChange = (e, index, fieldName) => {
         const { value } = e.target;
-        const newValue = value.replace(/[^0-9]/g, ""); // 숫자 이외의 값 제거
+
+
+        let newValue = value.replace(/[^0-9]/g, ""); // 숫자 이외의 값 제거
+        if(fieldName === "clmAmt" || fieldName === "vatInclsAmt") {
+            if(newValue === "") {
+                newValue = 0;
+            }
+        }
         const newForms = [...forms];
         newForms[index][fieldName] = newValue;
         setForms(newForms);
-      };
+    };
+
+    /**
+     * 부가세 계산(10%)
+     * @param {} index 
+     */
+    const onCalVat = (index) => {
+        console.log(forms[index].clmAmt);
+        const newForms = [...forms];
+        newForms[index]["vatInclsAmt"] = forms[index].clmAmt * 1.1;
+        setForms(newForms);
+    }
+    
 
     return (
         
@@ -320,18 +397,33 @@ const ExpensInfo = ({onSendData, prjctId}) => {
                                             label="금액"
                                             type="text"
                                             variant="outlined"
-                                            value={parseInt(forms[index].clmAmt).toLocaleString()}
+                                            value={
+                                                parseInt(forms[index].clmAmt) === NaN ? 0 : parseInt(forms[index].clmAmt).toLocaleString()
+                                            }
                                             onChange={(e) => handleNumberInputChange(e, index, "clmAmt")}
                                         />
                                     </Grid>
-                                    <Grid item xs={2}>
+                                    <Grid item xs={0.7}>
+                                        <div style={{width: "100%"}}>
+
+                                        <Button
+                                            variant="contained"
+                                            style={{marginTop: "10px" }}
+                                            disabled={forms[index].ctStlmSeCd !== "VTW01904"}
+                                            onClick={() => onCalVat(index)}
+                                            >+10%</Button>
+                                            </div>
+                                    </Grid>
+                                    <Grid item xs={1.3}>
                                         <TextField
                                             fullWidth
                                             id="vatInclsAmt"
                                             label="금액(부가세포함)"
                                             type="text"
                                             variant={forms[index].ctStlmSeCd !== "VTW01904" ? "filled" : "outlined"}
-                                            value={parseInt(forms[index].vatInclsAmt).toLocaleString()}
+                                            value={
+                                                parseInt(forms[index].vatInclsAmt) === NaN ? 0 : parseInt(forms[index].vatInclsAmt).toLocaleString()
+                                            }
                                             onChange={(e) => handleNumberInputChange(e, index, "vatInclsAmt")}
                                             disabled={forms[index].ctStlmSeCd !== "VTW01904"}
                                         />
@@ -369,7 +461,7 @@ const ExpensInfo = ({onSendData, prjctId}) => {
                                                 }}
                                             >
                                                 {expensCdList.map((item, index) => (
-                                                    <MenuItem key={index} value={item.cdValue}>{item.cdNm}</MenuItem>
+                                                    <MenuItem key={index} value={item.expensCd}>{item.cdNm}</MenuItem>
                                                 ))}
                                             </Select>
                                         </FormControl>
@@ -493,7 +585,7 @@ const ExpensInfo = ({onSendData, prjctId}) => {
                     <tbody>
                         <tr>
                             <td>
-                                2024년 03월 31일 이전
+                                {deadLineDate} 이전
                             </td>
                             <td>
                                 {nextClmOdr} 차수
@@ -501,7 +593,7 @@ const ExpensInfo = ({onSendData, prjctId}) => {
                         </tr>
                         <tr>
                             <td>
-                                2024년 03월 31일 이후
+                                {deadLineDate}  이후
                             </td>
                             <td>
                                 해당차수 반영

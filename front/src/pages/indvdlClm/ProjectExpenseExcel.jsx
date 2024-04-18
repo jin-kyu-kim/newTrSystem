@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ExcelUpload from "../../components/unit/ExcelUpload";
 import Button from "devextreme-react/button";
 import ApiRequest from "../../utils/ApiRequest";
@@ -10,8 +10,12 @@ const button = {
 }
 
 const ProjectExpenseExcel = (props) => {
+    const empId = props.empId;
+    const aplyYm = props.aplyYm;
+    const aplyOdr = props.aplyOdr;
 
-    const [excel, setExcel] = useState();
+    const [ excel, setExcel ] = useState();
+    const [ aprvNoList, setAprvNoList ] = useState([]);
 
     const currentDate = new Date();
     const year = currentDate.getFullYear();
@@ -23,51 +27,68 @@ const ProjectExpenseExcel = (props) => {
 
     const formattedDate = `${year}${month}${day}${hours}${minutes}${seconds}`;
 
+    useEffect(() => {
+        const getCardUseDtl = async () => {
+            // 중복검사를 위한 기존 list
+            try{
+                const response = await ApiRequest('/boot/common/commonSelect', [
+                    {tbNm: "CARD_USE_DTLS"}, {empId}
+                ]); 
+                const tmpList = response.map(item => item.aprvNo);
+                setAprvNoList(tmpList);
+            } catch(error){
+                console.log('error', error);
+            }
+        };
+        getCardUseDtl();
+    }, []);
+
     const onClick = async () => {
         if (excel === undefined){
             window.alert("파일을 등록해주세요.");
             return;
         }
-
         let param = [];
 
         param.push({
             tbNm: "CARD_USE_DTLS",
             snColumn: "CARD_USE_SN",
-            snSearch: {
-                empId: props.empId,
-                aplyYm: props.aplyYm,
-                aplyOdr: props.aplyOdr
-            }
+            snSearch: {empId, aplyYm, aplyOdr}
         });
 
         if(excel[0].__EMPTY_4 === "승인일자" && excel[0].__EMPTY_5 === "승인시간") {
             for (let i = 1; i < excel?.length; i++) {
+                const aprvNo = excel[i].__EMPTY_20; // aprvNo[승인번호] -> __EMPTY_20
 
-                if(!excel[i].__EMPTY_7.includes('-')){
+                // 기존 aprvList에 승인번호가 포함되어 있지 않은 경우만 처리
+                if (!aprvNoList.includes(aprvNo)) {
 
-                    const utztnAmt = excel[i].__EMPTY_7.replace(/,/g, "");
-                    const date = excel[i].__EMPTY_4.replace(/\./g, "");
-                    const time = excel[i].__EMPTY_5.replace(/:/g, "");
+                    if(!excel[i].__EMPTY_7.includes('-')){
+                        
+                        const utztnAmt = excel[i].__EMPTY_7.replace(/,/g, "");
+                        const date = excel[i].__EMPTY_4.replace(/\./g, "");
+                        const time = excel[i].__EMPTY_5.replace(/:/g, "");
 
-                    const data = {
-                        "empId": props.empId,
-                        "aplyYm": props.aplyYm,
-                        "aplyOdr": props.aplyOdr,
-                        "utztnDt": date+time,
-                        "useOffic": excel[i].__EMPTY_6,
-                        "utztnAmt": utztnAmt,
-                        "aprvNo": excel[i].__EMPTY_20,
-                        "prjctCtInptPsbltyYn": "Y",
-                        "regEmpId": props.empId,
-                        "regDt": formattedDate,
-                        "ctStlmSeCd": "VTW01903"
-                    };
-
-                    param.push(data);
+                        const data = {
+                            empId, aplyYm, aplyOdr,
+                            "utztnDt": date+time,
+                            "useOffic": excel[i].__EMPTY_6,
+                            "utztnAmt": utztnAmt,
+                            "aprvNo": excel[i].__EMPTY_20,
+                            "prjctCtInptPsbltyYn": "Y",
+                            "regEmpId": props.empId,
+                            "regDt": formattedDate,
+                            "ctStlmSeCd": "VTW01903"
+                        };
+                        param.push(data);
+                    }
                 }
             }
             try {
+                if(param.length === 1) {
+                    alert('이미 등록된 사용내역입니다.');
+                    return;
+                }
                 const response = await ApiRequest("/boot/common/commonInsert", param);
 
                 if (response === 1) {
@@ -78,7 +99,6 @@ const ProjectExpenseExcel = (props) => {
                 window.alert("오류가 발생했습니다.");
                 console.error(error);
             }
-
         } else {
             window.alert("롯데법인카드 홈페이지에서 다운로드한 엑셀파일 양식과 동일해야 합니다.");
         }
@@ -98,5 +118,4 @@ const ProjectExpenseExcel = (props) => {
         </div>
     );
 };
-
 export default ProjectExpenseExcel;

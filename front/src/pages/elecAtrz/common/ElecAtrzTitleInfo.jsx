@@ -5,10 +5,9 @@ import AtrzLnTable from "components/unit/AtrzLnTable";
 import ApprovalPopup from "components/unit/ApprovalPopup";
 import { useCookies } from 'react-cookie';
 
-const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick, formData, prjctData, onHandleAtrzTitle, atrzParam, deptId }) => {
+const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick, formData, prjctData, onHandleAtrzTitle, atrzParam }) => {
   const [popVisible, setPopVisible] = useState(false);
   const [cookies] = useCookies(["userInfo", "userAuth", "deptInfo"]);
-  const [deptNm, setDeptNm] = useState("");
 
   const onAtrzLnPopup = async () => {
     setPopVisible(true);
@@ -39,13 +38,12 @@ const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick
     ));
   };
 
-    useEffect(() => {
-      if(onHandleAtrzTitle){
-        const deptList = cookies.deptInfo;
-        const dept = deptList.find(item => item.deptId === deptId);
-        setDeptNm(dept.deptNm);
-      }
-    }, []);
+    // useEffect(() => {
+    //   if(onHandleAtrzTitle){
+    //     const deptList = cookies.deptInfo;
+    //     const dept = deptList.find(item => item.deptId === deptId);
+    //   }
+    // }, []);
 
   return (
     <>
@@ -61,7 +59,7 @@ const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick
             <tr>
               <td>문서번호</td>
               <td> : </td>
-              <td>{formData.elctrnAtrzId}</td>
+              <td>{formData.atrzDmndSttsCd === "VTW03701" ? "" : formData.elctrnAtrzId}</td>
             </tr>
             <tr>
               <td>프로젝트</td>
@@ -73,12 +71,12 @@ const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick
             <tr>
               <td>기안자</td>
               <td> : </td>
-              <td>{formData.deptNm == null ? deptNm : formData.deptNm} / {formData.atrzDmndEmpNm == null ? cookies.userInfo.empNm : formData.atrzDmndEmpNm}</td>
+              <td>{formData.atrzDmndEmpNm == null ? cookies.userInfo.empNm : formData.atrzDmndEmpNm}</td>
             </tr>
             <tr>
               <td>기안일자</td>
               <td> : </td>
-              <td>{formData.regDt}</td>
+              <td>{formData.atrzDmndSttsCd === "VTW03701" ? "" : formData.regDt}</td>
             </tr>
           </table>
         </div>

@@ -7,13 +7,13 @@
         [
             { "key": "cdValue", "value": "상위코드", "isRequire" : true },
             { "key": "cdNm", "value": "상위코드명", "isRequire" : true },
-            { "key": "useYn", "value": "사용여부", "editType": "selectBox", "buttonType": "toggle", "button": true }
+            { "key": "useYn", "value": "사용여부", "editType": "selectBox", "cellType": "toggle" }
         ],
         "childTableColumns": 
         [
             { "key": "cdValue", "value": "하위코드", "isRequire" : true },
             { "key": "cdNm", "value": "하위코드명", "isRequire" : true },
-            { "key": "useYn", "value": "사용여부", "editType": "selectBox", "buttonType": "toggle", "button": true }
+            { "key": "useYn", "value": "사용여부", "editType": "selectBox", "cellType": "toggle" }
         ],
         "tbNm": "CD",
         "ynVal": [
@@ -54,7 +54,7 @@
             { "key": "ctmmnyNm", "value": "고객사명(한글)", "isRequire": true },
             { "key": "ctmmnyEngNm", "value": "고객사명(영문)" },
             { "key": "industCd", "value": "산업명", "editType": "selectBox", "comCd": "VTW016", "isRequire": true },
-            { "key": "useYn", "value": "사용여부", "editType": "selectBox", "buttonType": "toggle", "button": true }
+            { "key": "useYn", "value": "사용여부", "editType": "selectBox", "cellType": "toggle" }
         ],
         "tbNm": "CTMMNY_INFO",
         "ynVal": [

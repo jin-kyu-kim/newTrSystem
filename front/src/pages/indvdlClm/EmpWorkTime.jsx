@@ -194,14 +194,8 @@ const EmpWorkTime = () => {
 
 
 
-    // 근무시간정보
-    const [insertWorkHourList, setInsertWorkHourList] = useState();
-
-
-
-
-
     // 근무시간저장정보
+    const [insertWorkHourList, setInsertWorkHourList] = useState();
     const [insertWorkHourValue, setInsertWorkHourValue] = useState({
         workHour: 8,
         workBgngYmd: orderWorkBgngYmd,
@@ -211,6 +205,13 @@ const EmpWorkTime = () => {
     });
 
 
+
+
+
+    // 근무시간삭제정보
+    const [deleteWorkHourList, setDeleteWorkHourList] = useState([]);
+
+    
 
 
 
@@ -245,9 +246,18 @@ const EmpWorkTime = () => {
 
     // 승인요청버튼
     const insertPrjctMmAply = async (params) => {
+        const formData = new FormData();
+        
+        formData.append("insertWorkHourList", JSON.stringify(params));
+        formData.append("deleteWorkHourList", JSON.stringify(deleteWorkHourList));
+
         if (params.length > 0) {
             try {
-                const response = await ApiRequest("/boot/indvdlClm/insertPrjctMmAply", params);
+                const response = await axios.post("/boot/indvdlClm/insertPrjctMmAply", formData , {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    },
+                });
                 selectData(searchPrjctIndvdlCtMmParam)
                 alert("승인요청되었습니다.")
             } catch (error) {
@@ -263,7 +273,7 @@ const EmpWorkTime = () => {
     function onApprovalCancleclick() {
         const isconfirm = window.confirm("승인요청을 취소하시겠습니까?");
         if (isconfirm) {
-            deletePrjctMmAply(insertWorkHourList.filter(item => item.aplyType == "workAply" && item.aplyOdr == flagOrder));
+            deletePrjctMmAply(insertWorkHourList.filter(item => item.aplyType == "workAply" && item.aplyOdr == flagOrder && item.atrzDmndSttsCd != "VTW03703"));
         } else {
             return;
         }
@@ -273,12 +283,13 @@ const EmpWorkTime = () => {
     const deletePrjctMmAply = async (params) => {
         if (params.length > 0) {
             try {
-                const response = await ApiRequest("/boot/common/queryIdSearch", {
-                    queryId: "indvdlClmMapper.retrievePrjctMmAtrzRtrcn",
-                    empId: sessionEmpId,
-                    aplyYm: orderWorkBgngMm,
-                    aplyOdr: flagOrder,
-                });
+                const response = await ApiRequest("/boot/indvdlClm/updatePrjctMmAply", params);
+                // const response = await ApiRequest("/boot/common/queryIdSearch", {
+                //     queryId: "indvdlClmMapper.retrievePrjctMmAtrzRtrcn",
+                //     empId: sessionEmpId,
+                //     aplyYm: orderWorkBgngMm,
+                //     aplyOdr: flagOrder,
+                // });
                 selectData(searchPrjctIndvdlCtMmParam)
             } catch (error) {
                 console.log("error: ", error);
@@ -326,10 +337,10 @@ const EmpWorkTime = () => {
             let parseData = [];
             let startDate = parseInt(inputFormData.workBgngYmd);
             let endDate = parseInt(inputFormData.workEndYmd);
-    
+
             for (startDate; startDate <= endDate; startDate++) {
                 let vcatnData = insertWorkHourList.filter(item => item.aplyYmd == Moment(String(startDate)).format("YYYYMMDD"));
-    
+
                 if (holidayList.find((item) => item.locdate == startDate)) {
                     // parseData.push({
                     //     text: holidayList.find((item) => item.locdate == startDate).dateName,
@@ -337,10 +348,10 @@ const EmpWorkTime = () => {
                     //     isInsertBoolean: false
                     // })
                 } else if (isSaturday(Moment(String(startDate)).format("YYYY-MM-DD")) || isSunday(Moment(String(startDate)).format("YYYY-MM-DD"))) {
-    
+
                 } else if (vcatnData.length > 0 && vcatnData[0].aplyType == 'vcatnAply') {
                     if (vcatnData[0].vcatnTyCd == "VTW01201" || vcatnData[0].vcatnTyCd == "VTW01204") {
-    
+
                     } else {
                         // parseData.push({
                         //     text: insertWorkHourValue.prjctNm + " " + insertWorkHourValue.workHour > 4 ? 4 : insertWorkHourValue.workHour + "시간",
@@ -371,7 +382,7 @@ const EmpWorkTime = () => {
                     })
                 }
             }
-    
+
             // 현재 선택된 직전 근무시간 데이터 정합성 체크
             if (insertWorkHourList) {
                 for (let i = 0; i < insertWorkHourList.length; i++) {
@@ -384,21 +395,21 @@ const EmpWorkTime = () => {
                     parseData.push(insertWorkHourList[i]);
                 }
             }
-    
-    
+
+
             // 누적 선택된 근무시간 정합성 체크
             for (let i = 0; i < parseData.length; i++) {
                 let workHourCheckList = [];
                 let workHourValue = 0;
-    
+
                 workHourCheckList = parseData.filter(item => item.aplyYmd == parseData[i].aplyYmd)
-    
-                if(workHourCheckList){
+
+                if (workHourCheckList) {
                     workHourCheckList.map((item, index) => {
-                        workHourValue += workHourCheckList[index].md
+                        workHourValue += parseFloat(workHourCheckList[index].md)
                     })
 
-                    if(workHourValue > 1){
+                    if (workHourValue > 1) {
                         alert("근무시간은 8시간을 초과할 수 없습니다.")
                         return;
                     }
@@ -410,7 +421,7 @@ const EmpWorkTime = () => {
     }
 
     const customDateCell = (props) => {
-        const { data: {startDate, text} } = props;
+        const { data: { startDate, text } } = props;
         const dayClass = ['dx-template-wrapper'];
         dayClass.push(isSaturday(Moment(String(startDate)).format("YYYY-MM-DD")) == true ? "saturday" : "");
         dayClass.push(isSunday(Moment(String(startDate)).format("YYYY-MM-DD")) == true ? "sunday" : "");
@@ -439,6 +450,7 @@ const EmpWorkTime = () => {
     }
 
     function onAppointmentDeleted(e) {
+        setDeleteWorkHourList([...deleteWorkHourList, e.appointmentData])
         setInsertWorkHourList(insertWorkHourList.filter(item => (item.aplyYmd != e.appointmentData.aplyYmd || item.prjctId != e.appointmentData.prjctId)))
     }
 
@@ -488,7 +500,7 @@ const EmpWorkTime = () => {
                         onValueChanged={(e) => { onSearchChg("searchYear", "searchPrevYear", e) }}
                     />
                 </div>
-                <div className="col-md-1" style={{ marginRight: "-20px" }}>
+                <div className="col-md-2" style={{ marginRight: "-20px", width: "150px" }}>
                     <SelectBox
                         dataSource={getMonthList()}
                         defaultValue={new Date().getDate() < 15 ? new Date().getMonth() : new Date().getMonth() + 1}
@@ -498,7 +510,7 @@ const EmpWorkTime = () => {
                         onValueChanged={(e) => { onSearchChg("searchMonth", "searchPrevMonth", e) }}
                     />
                 </div>
-                <div className="col-md-3">
+                <div className="col-md-2">
                     <Button
                         onClick={searchHandle} text="검색" style={{ height: "48px", width: "50px" }}
                     />
@@ -517,6 +529,13 @@ const EmpWorkTime = () => {
                     }
                 </div>
             </div>
+            <div className="col-md-3">
+                    <div style={{display: "flex", alignItems: "center", marginTop: "20px"}}>
+                        <span style={{width : "50px", background: "#6495ed", textAlign: "center", color: "white", fontWeight:"bold"}}>결재중</span>
+                        <span style={{width : "50px", background: "#008000", marginLeft: "20px", textAlign: "center", color: "white", fontWeight:"bold"}}>승인</span>
+                        <span style={{width : "50px", background: "#ff4500", marginLeft: "20px", textAlign: "center", color: "white", fontWeight:"bold"}}>반려</span>
+                    </div>
+                </div>
             {createScheduler(searchParam, insertWorkHourList)}
             {createWorkHour(holidayList, insertWorkHourList)}
             <div style={{ marginTop: "20px" }} />
@@ -526,14 +545,32 @@ const EmpWorkTime = () => {
     )
 
     function createScheduler(searchParam, insertWorkHourList) {
-        const atrzDmndStts = [
-            {
-                atrzDmndSttsCd: "VTW03702",
-                fontSize: "20px",
-                backgroudColor : "#EEEEEE"
-            }
-        ]
+
+        // 6495ed 결재중
+        // 008000 승인
+        // ff4500 반려
+
         
+        const resourcesData = [
+            {
+                id: "VTW03702",
+                color: '#6495ed',
+            },
+            {
+                id: "VTW03703",
+                color: '#008000',
+            },
+            {
+                id: "VTW03704",
+                color: '#ff4500',
+            },
+            {
+                id: "",
+                color: '#6495ed',
+            },
+        ];
+
+
         return (
             <div className="mx-auto" style={{ marginBottom: "20px", marginTop: "30px" }}>
                 <Scheduler
@@ -557,9 +594,9 @@ const EmpWorkTime = () => {
                     onCellClick={onCellClick}
                 >
                     <Resource
-                        dataSource={atrzDmndStts}
+                        dataSource={resourcesData}
                         fieldExpr="atrzDmndSttsCd"
-                    />  
+                    />
                 </Scheduler>
             </div>
         )
@@ -606,10 +643,10 @@ const EmpWorkTime = () => {
 
     function createInsertWorkHour(selectPrjctIndvdlCtMmValue) {
         let refInsertWorkHourValue = insertWorkHourValue;
-        
+
         function onRefInsertWorkHourValue(param, e) {
             if (param == "workBgngYmd" || param == "workEndYmd") e = Moment(e).format('YYYYMMDD');
-            
+
             refInsertWorkHourValue[param] = e;
         }
 
@@ -644,14 +681,14 @@ const EmpWorkTime = () => {
                                 <div className="row" style={{ marginTop: "30px" }}>
                                     <div className="col-md-3" style={textAlign}>근무시작일자</div>
                                     <div className="col-md-2">
-                                            <DateBox
-                                                stylingMode="underlined"
-                                                displayFormat="yyyy-MM-dd"
-                                                defaultValue={refInsertWorkHourValue.workBgngYmd}
-                                                min={orderWorkBgngYmd}
-                                                max={orderWorkEndYmd}
-                                                onValueChange={(e) => { onRefInsertWorkHourValue("workBgngYmd", e) }}
-                                            />
+                                        <DateBox
+                                            stylingMode="underlined"
+                                            displayFormat="yyyy-MM-dd"
+                                            defaultValue={refInsertWorkHourValue.workBgngYmd}
+                                            min={orderWorkBgngYmd}
+                                            max={orderWorkEndYmd}
+                                            onValueChange={(e) => { onRefInsertWorkHourValue("workBgngYmd", e) }}
+                                        />
                                     </div>
                                 </div>
                                 <div className="row" style={{ marginTop: "30px" }}>

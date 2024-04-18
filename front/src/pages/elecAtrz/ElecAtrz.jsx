@@ -98,7 +98,14 @@ const ElecAtrz = () => {
   };
 
   const sendDetail = (e, param) => {
-    navigate('/elecAtrz/ElecAtrzDetail', {state: {data: e.data, sttsCd: param.sttsCd}});
+    console.log(e.data)
+    console.log(param)
+
+    if(e.data.atrzDmndSttsCd === 'VTW03701') {
+      navigate('/elecAtrz/ElecAtrzNewReq', {state: {formData: e.data, sttsCd: param.sttsCd, prjctId: e.data.prjctId}});
+    } else {
+      navigate('/elecAtrz/ElecAtrzDetail', {state: {data: e.data, sttsCd: param.sttsCd}});
+    }
   };
 
   return (

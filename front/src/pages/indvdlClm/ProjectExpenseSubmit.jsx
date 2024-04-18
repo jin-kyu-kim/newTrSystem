@@ -1,288 +1,166 @@
-import React, {useEffect, useState} from "react";
-import Button from "devextreme-react/button";
-import ApiRequest from "../../utils/ApiRequest";
-import axios from "axios";
+import { useEffect, useState } from "react";
+import { Button } from 'devextreme-react/button'
+import ApiRequest from "utils/ApiRequest";
 
-const button = {
-    borderRadius: '5px',
-    width: 'auto',
-    marginTop: '20px',
-    marginRight: '15px'
-}
+const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handleDelete, buttonGroup }) => {
+  const [ completedCount, setCompletedCount ] = useState(0);
+  const [ prjctCtAplySn, setPrjctCtAplySn ] = useState([]);
 
-const ProjectExpenseSubmit = (props) => {
-    const [smartPhoneCnt, setSmartPhoneCnt] = useState([1]);
-    const [dinnerList, setDinnerList] = useState([]);
-    const [response, setResponse] = useState(0);
-    const [atrzResponse, setAtrzResponse] = useState(0);
-    const [prjctCtAplySn, setPrjctCtAplySn] = useState();
+  // const updatedRowsData = e.selectedRowsData.map(({ utztnDtFormat, ...rest }) => ({
+  //     ...rest
+  // }));
 
-    const currentDate = new Date();
-    const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-    const day = String(currentDate.getDate()).padStart(2, "0");
-    const hours = String(currentDate.getHours()).padStart(2, "0");
-    const minutes = String(currentDate.getMinutes()).padStart(2, "0");
-    const seconds = String(currentDate.getSeconds()).padStart(2, "0");
+  useEffect(() => {
+    if (selectedItem.length !== 0 && prjctCtAplySn.length === selectedItem.length) {
+      insertAtrzValue();
+    }
+  }, [prjctCtAplySn]);
 
-    const formattedDate = `${year}${month}${day}${hours}${minutes}${seconds}`;
+  useEffect(() => {
+    if (selectedItem.length > 0 && completedCount === selectedItem.length) {
+      alert("등록되었습니다.");
+      window.location.reload();
+    }
+  }, [completedCount]);
 
-
-    // 필수값 유효성 검사
-    const checkRequiredValidation = () => {
-
-        let required = true;
-
-        for (let i = 0; i < props.requiredValidation.length; i++) {
-            const propertyName = props.requiredValidation[i];
-            const propertyValue = props.value[0][propertyName]; // 해당 속성의 값
-
-
-            if (!props.value[0].hasOwnProperty(propertyName) || propertyValue === null) {
-                required = false;
-                
-                break;
-            }
-        }
-
-        return required;
+  const handleSubmit = async () => {
+    if(selectedItem.length === 0) {
+      alert('선택된 사용내역이 없습니다.')
+      return;
     }
 
-    // 스마트폰지원 중복 유효성 검사
-    const checkSmartPhoneValidation = async () => {
-
-        const param = {
-            queryId: 'indvdlClmMapper.retrieveMoblphonDpcnYn',
-            aplyYm: props.value[0].aplyYm,
-            empId: props.value[0].empId,
-        };
-        try{
-            const response = await ApiRequest('/boot/common/queryIdSearch', param);
-            setSmartPhoneCnt(response[0].cnt);
-        }catch (error){
-            console.log(error);
-        }
-        return smartPhoneCnt;
+    if (selectedItem.some(item => item.prjctId === null || (buttonGroup.length < 2 && !item.prjctId))) {
+      alert('프로젝트를 선택해주세요');
+      return;
     }
 
-    // 야근식대 중복 유효성 검사
-    const getDinnerEmpList = async () => {
-
-        const param = {
-            queryId: 'indvdlClmMapper.retrieveDinnrDpcnYn',
-            utztnDt: props.value[0].utztnDt,
-        };
-
-        try{
-            const response = await ApiRequest('/boot/common/queryIdSearch', param);
-            setDinnerList(response);
-        }catch (error){
-            console.log(error);
-        }
+    if (selectedItem.some(item => item.prjctId !== null && (item.expensCd === null || (buttonGroup.length < 2 && !item.expensCd)))) {
+      alert('비용코드를 선택해주세요');
+      return;
     }
 
-    const checkDinnerValidation = () => {
-
-        getDinnerEmpList();
-
-        let noMatched = true;
-        const newEmpList = props.value[0].atdrn.split(',');
-
-        for (let i = 0; i < newEmpList.length; i++){
-            for (let j = 0; j < dinnerList.length; j++) {
-                const splitString = dinnerList[j].atdrn.split(',');
-                const matchEmpID = splitString.some(item => item === newEmpList[i]);
-
-                if(matchEmpID)
-                    noMatched = false;
-
-                break;
-
-            }
-        }
-
-        return noMatched;
+    if (!validateFields()) {
+      alert('모든 필수 필드를 채워주세요.');
+      return;
     }
 
-    const handleSubmit = async() => {
-        try{
+    if (!window.confirm("등록하시겠습니까?")) return;
 
-            const requiredValidation = checkRequiredValidation();
+    try {
+      const ynUpdated = await updateYn();
 
-            // 필수값 유효성 검사
-            if(!requiredValidation){
-                window.alert('필수값을 모두 입력해주세요.')
-                return;
-            }
+      if (ynUpdated) {
+        const mmInserted = await insertMM();
 
-            // 스마트폰지원 중복 유효성 검사
-            if(props.value[0].expensCd === 'VTW04509'){
-                checkSmartPhoneValidation();
-                if (smartPhoneCnt !== 0){
-                    window.alert('스마트폰지원은 한 달에 한 번 신청 가능합니다.')
-                    return;
-                }
-            }
+        if (mmInserted) await insertValue();
+      }
+    } catch (error) {
+      console.error("error", error);
+    }
+  };
 
-            // 야근식대 중복 유효성 검사
-            if(props.value[0].expensCd === 'VTW04531'){
-                const dinnerValidation = checkDinnerValidation();
-                if (!dinnerValidation){
-                    window.alert('야근식대는 같은 날 중복 신청할 수 없습니다.')
-                    return;
-                }
-            }
-            
-            // 이번 차수 유효성 검사
-            
-            // 중복 승인번호 유효성 검사
+  /** CARD_USE_DTLS - PRJCT_CT_INPT_PSBLTY_YN 값 => "N" */
+  const updateYn = async () => {
+    try {
+      const updates = selectedItem.map(item => ApiRequest("/boot/common/commonUpdate", [
+        { tbNm: "CARD_USE_DTLS" },
+        { prjctCtInptPsbltyYn: "N" },
+        { cardUseSn: item.cardUseSn }
+      ]));
+      await Promise.all(updates);
+      return true;
+    } catch (error) {
+      console.error('updateYn error', error);
+      return false;
+    }
+  };
 
-            const confirmResult = window.confirm("등록하시겠습니까?");
+  /** PRJCT_INDVDL_CT_MM (프로젝트개인비용MM) - insert */
+  const insertMM = async () => {
+    const param = selectedItem.map((item) => ({
+      prjctId: item.prjctId,
+      empId: item.empId,
+      aplyYm: item.aplyYm,
+      aplyOdr: item.aplyOdr,
+      ctAtrzCmptnYn: "N",
+      mmAtrzCmptnYn: "N",
+    }));
+    try{
+      const res = await ApiRequest("/boot/indvdlClm/insertPrjctMM", param);
+      return true;
+    } catch(error) {
+      console.log('insertMM  error', error);
+      return false;
+    }
+  };
 
-            if (confirmResult) {
+  /** PRJCT_CT_APLY (프로젝트비용신청) - insert */
+  const insertValue = async () => {
+    const tbInfo = { tbNm: sendTbInfo.tbNm, snColumn: sendTbInfo.snColumn };
+    const snArray = []; // SN 값을 저장할 임시 배열
+  
+    for (const item of selectedItem) {
+      const requestBody = [{ ...tbInfo }, { ...item, ctAtrzSeCd: "VTW01903" }];
+  
+      try {
+        await ApiRequest("/boot/common/commonInsert", requestBody);
+        const maxSn = await getPrjctCtAplySn();
+        snArray.push(maxSn);
+      } catch (error) {
+        console.error("insertValueAndFetchSn error", error);
+        break;
+      }
+    }
+    setPrjctCtAplySn(snArray);
+  };
 
-                let params = [];
-                props.value.forEach((data) => {
-                    params.push({
-                        "prjctId": data.prjctId,
-                        "empId": data.empId,
-                        "aplyYm": data.aplyYm,
-                        "aplyOdr": data.aplyOdr,
-                        "mmAtrzCmptnYn": "N"
-                    })
-                });
+  const getPrjctCtAplySn = async () => {
+    const param = setParam(selectedItem, {queryId: "indvdlClmMapper.retrievePrjctCtAplySn"})
+    try {
+      const response = await ApiRequest("/boot/common/queryIdSearch", param);
+      return response[0].prjctCtAplySn;
+    } catch (error) {
+      console.error("getPrjctCtAplySn error", error);
+      return null;
+    }
+  };
 
-                insertMM(params);
+  /** PRJCT_CT_ATRZ (프로젝트비용결재) - insert */
+  const insertAtrzValue = async () => {
+    const getParam = setParam(selectedItem);
 
-                // insertValue() 함수 호출 후 완료될 때까지 기다림
-                await insertValue();
+    for (const sn of prjctCtAplySn) {
+      const param = [
+        { tbNm: sendTbInfo.atrzTbNm },
+        { prjctCtAplySn: sn, ...getParam }
+      ];
+      try {
+        await ApiRequest("/boot/common/commonInsert", param);
+        setCompletedCount(prev => prev + 1);
+      } catch (error) {
+        console.error("insertAtrzValue error", error);
+        break;
+      }
+    }
+  };
 
-                // getPrjctCtAplySn() 및 insertAtrzValue() 함수 호출
-                await getPrjctCtAplySn();
-
-            }
-        } catch (e) {
-            window.alert("오류가 발생했습니다. 사용내역을 선택했는지 확인해 주세요.")
-        }
+  const setParam = (selectedItem, additionalProps) => {
+    const baseProps = {
+      prjctId: selectedItem[0].prjctId,
+      empId: selectedItem[0].empId,
+      aplyYm: selectedItem[0].aplyYm,
+      aplyOdr: selectedItem[0].aplyOdr,
     };
+    return { ...baseProps, ...additionalProps };
+  }; 
 
-
-
-    const insertMM = async (params) => {
-        const response = await axios.post("/boot/indvdlClm/insertPrjctMM", params);
-        return response;
-    }
-
-    const insertValue = async () => {
-        const params = [{tbNm: props.tbNm, snColumn: props.snColumn}];
-
-        props.value.forEach(value => {
-            if (typeof value.prjctId === "object") {
-                value.prjctId = value.prjctId[0].prjctId;
-            }
-            if (typeof value.utztnAmt === "string") {
-                value.utztnAmt = value.utztnAmt.replace(",", "");
-            }
-            params.push(value);
-        })
-
-        try {
-            const insertResponse = await ApiRequest("/boot/common/commonInsert", params);
-
-            setResponse(insertResponse);
-        } catch (error) {
-            console.error("API 요청 에러:", error);
-            throw error;
-        }
-
-        console.log('response',response)
-
-    }
-
-    const insertAtrzValue = async () => {
-        const atrzParams = [{tbNm: props.atrzTbNm}];
-
-        console.log('prjctCtAplySn',prjctCtAplySn)
-
-        atrzParams.push({
-            prjctCtAplySn: prjctCtAplySn,
-            prjctId: props.value[0].prjctId,
-            empId: props.value[0].empId,
-            aplyYm: props.value[0].aplyYm,
-            aplyOdr: props.value[0].aplyOdr
-        });
-
-        try {
-            const insertResponse = await ApiRequest("/boot/common/commonInsert", atrzParams);
-
-            setAtrzResponse(insertResponse);
-
-            console.log('atrzResponse', atrzResponse);
-
-            // insertAtrzValue() 함수 완료 후 실행되는 부분
-            if (insertResponse === 1) {
-                window.location.reload();
-                window.alert("등록되었습니다.");
-            }
-
-        } catch (error) {
-            console.error("API 요청 에러:", error);
-            throw error;
-        }
-        console.log('atrzResponse',atrzResponse)
-    }
-
-    useEffect(() => {
-        console.log('response[0].prjctCtAplySn', prjctCtAplySn);
-        if (prjctCtAplySn !== undefined && prjctCtAplySn !== null) {
-            // prjctCtAplySn 값이 정의되었을 때 로직 실행
-            insertAtrzValue();
-        }
-    }, [prjctCtAplySn]);
-
-    const getPrjctCtAplySn = async () => {
-
-        const param = {
-            queryId: 'indvdlClmMapper.retrievePrjctCtAplySn',
-            prjctId: props.value[0].prjctId,
-            empId: props.value[0].empId,
-            aplyYm: props.value[0].aplyYm,
-            aplyOdr: props.value[0].aplyOdr
-        };
-
-        try{
-            const response = await ApiRequest('/boot/common/queryIdSearch', param);
-            console.log('getPrjctCtAplySn response:', response);
-
-            setPrjctCtAplySn(response[0].prjctCtAplySn);
-
-        }catch (error){
-            console.log(error);
-        }
-    }
-
-    const handleValidating = (e) => {
-        console.log(e)
-        if (!e.validationGroup.validate().isValid) {
-            alert('aa')
-            e.preventDefault(); // 제출 동작을 취소합니다.
-        }
-
-        return;
-    };
-
-
-    return(
-        <Button
-            style={button}
-            type={props.type}
-            text={props.text}
-            onClick={handleSubmit}
-            useSubmitBehavior={true}
-            onValidating={handleValidating}
-        >
-        </Button>
-    );
+  return (
+    <div style={{marginBottom: '20px'}}>
+      {buttonGroup.map((btn, index) => (
+        <Button type={btn.type} text={btn.text} style={{marginRight: '10px'}} key={index}
+          onClick={btn.onClick === 'handleDelete' ? handleDelete : handleSubmit} useSubmitBehavior={true} />
+      ))}
+    </div>
+  );
 };
-
 export default ProjectExpenseSubmit;
