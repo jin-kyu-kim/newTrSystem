@@ -1,5 +1,7 @@
 {
   "ProjectExpenseMain": {
+    "aplyAndAtrzCtQueryId": "projectExpenseMapper.retrievePrjctCtAplyList",
+    "dmndSttsQueryId": "indvdlClmMapper.retrieveCtAtrzDmndStts",
     "ExpenseInfo":[
       {
         "TabName": "롯데법인카드 엑셀 업로드",
@@ -26,9 +28,14 @@
       { "key": "prjctNm", "value": "프로젝트", "width": 260 },
       { "key": "expensCdNm", "value": "비용코드" },
       { "key": "ctPrpos", "value": "상세내역(목적)" },
-      { "key": "atdrn", "value": "용도(참석자명단)", "width": 200 },
+      { "key": "atdrn", "value": "용도(참석자명단)", "width": 200 }
+    ],
+    "ctAplyBtnColumns": [
       { "key": "atrzDmndSttsCdNm", "value": "결재상태", "cellType": "button", 
         "button": { "text": "삭제", "name": "atrzDmndSttsCd", "type": "danger", "width": 80 }}
+    ],
+    "ctAplyStrColumns": [
+      { "key": "atrzDmndSttsCdNm", "value": "결재상태", "width": 80 }
     ],
     "elcKeyColumn": "elctrnAtrzId",
     "columnCharge": [
@@ -44,18 +51,18 @@
     ],
     "buttonsConfig": {
       "default": [
-        { "text": "입력마감", "type": "success", "onClick": { "name": "onInptDdlnClick", "case": "request", "actionType": "INPUT",
+        { "text": "입력마감", "type": "success", "onClick": { "name": "onInptDdlnClick", "actionType": "INPUT",
           "msg": "입력마감하시겠습니까?", "completeMsg": "입력마감 되었습니다."} }
       ],
       "noApprovals": [
-        { "text": "승인요청", "type": "default", "onClick": { "name": "onAprvDmndClick", "case": "request", "actionType": "APPROVE",
+        { "text": "승인요청", "type": "default", "onClick": { "name": "onAprvDmndClick", "actionType": "APPROVE",
           "msg": "승인요청하시겠습니까?", "completeMsg": "승인요청 되었습니다."} },
-        { "text": "입력마감취소", "type": "danger", "onClick": { "name": "onInptDdlnRtrcnClick", "case": "cancel", "actionType": "INPUT_CANCEL", 
+        { "text": "입력마감취소", "type": "danger", "onClick": { "name": "onInptDdlnRtrcnClick", "actionType": "INPUT_CANCEL", 
           "msg": "입력마감을 취소하시겠습니까?", "completeMsg": "입력마감이 취소되었습니다."} },
         { "onClick": "onPrintClick", "text": "출력(팝업)", "type": "success" }
       ],
       "hasApprovals": [
-        { "text": "승인요청취소", "type": "danger", "onClick": { "name": "onAprvDmndRtrcnClick", "case": "cancel", "actionType": "APPROVE_CANCEL",
+        { "text": "승인요청취소", "type": "danger", "onClick": { "name": "onAprvDmndRtrcnClick", "actionType": "APPROVE_CANCEL",
           "msg": "승인요청을 취소하시겠습니까?", "completeMsg": "승인요청이 취소되었습니다."}  },
         { "onClick": {"name": "onPrintClick"}, "text": "출력(팝업)", "type": "default" }
       ],

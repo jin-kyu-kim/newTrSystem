@@ -518,19 +518,17 @@
 
     <!-- 프로젝트비용 야근식대 중복 신청 여부 조회 -->
     <select id="retrieveDinnrDpcnYn" parameterType="map" resultType="com.trsystem.LowerHashMap">
-        SELECT ATDRN
-        FROM PRJCT_CT_APLY pca
-        JOIN PRJCT_CT_ATRZ pcaz
-            ON pca.PRJCT_CT_APLY_SN = pcaz.PRJCT_CT_APLY_SN
-            AND pca.EMP_ID = pcaz.EMP_ID
-            AND pca.APLY_YM = pcaz.APLY_YM
-            AND pca.APLY_ODR = pcaz.APLY_ODR
+        SELECT
+            pcatd.ATND_EMP_ID
+        FROM nwTr.PRJCT_CT_APLY pca
+            JOIN nwTr.PRJCT_CT_ATRZ pcaz ON pca.PRJCT_CT_APLY_SN = pcaz.PRJCT_CT_APLY_SN
+                AND pca.EMP_ID = pcaz.EMP_ID
+                AND pca.APLY_YM = pcaz.APLY_YM
+                AND pca.APLY_ODR = pcaz.APLY_ODR
+            JOIN nwTr.PRJCT_CT_ATDRN pcatd  ON pca.PRJCT_CT_APLY_SN = pcatd.PRJCT_CT_APLY_SN
         WHERE 1 = 1
-            AND pca.EXPENS_CD = 'VTW04531'
---             AND pcaz.ATRZ_DMND_STTS_CD NOT IN ('VTW03701','VTW03702','VTW03703')
-        <if test="utztnDt != null and !utztnDt.equals('')">
-            AND SUBSTR(pca.UTZTN_DT, 1, 8) = SUBSTR(#{utztnDt}, 1, 8)
-        </if>
+          AND pca.EXPENS_CD = 'VTW04531'
+          AND SUBSTR(pca.UTZTN_DT, 1, 8) = SUBSTR(#{utztnDt}, 1, 8);
     </select>
 
     <!-- 프로젝트비용 신청 순번 조회 -->

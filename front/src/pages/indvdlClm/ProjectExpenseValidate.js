@@ -122,6 +122,7 @@ const checkDinnerValidation = async (selectedItem) => {
     } catch (error) {
         console.log(error);
     }
+    console.log('dinnerList', dinnerList)
 
     let isMatch = false;
 
