@@ -263,14 +263,14 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdrTobe}) => {
             }
         ];
         try {
-            console.log(param)
             const response = await ApiRequest("/boot/common/commonInsert", param);
 
             if(response > 0) {
 
-                handlePrjctMngAuth().then((value) => {
+                await handlePrjctMngAuth().then((value) => {
                     if(value > 0) {
                         alert('프로젝트가 등록되었습니다.');
+                        // onHide();
                     } else {
                         alert('프로젝트 등록에 실패하였습니다.');
                     }
@@ -291,18 +291,16 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdrTobe}) => {
 
         const date = new Date();
 
-        const param = [
-            { tbNm: "PRJCT_MNG_AUTHRT" },
-            { 
-                prjctId: data.prjctId,
-                empId: data.prjctMngrEmpId,
-                prjctMngAuthrtCd: "VTW05202",
-                regEmpId: empId,
-                regDt: date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0]
-            }
-        ]
+        const param = {
+            prjctId: data.prjctId,
+            prjctMngrEmpId: data.prjctMngrEmpId,
+            deptId: data.deptId,
+            prjctMngAuthrtCd: "VTW05202",
+            regEmpId: empId,
+            regDt: date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0]
+        }
 
-        const response = await ApiRequest("/boot/common/commonInsert", param);
+        const response = await ApiRequest("/boot/prjct/insertPrjctMngAuth", param);
         return response
 
     }
