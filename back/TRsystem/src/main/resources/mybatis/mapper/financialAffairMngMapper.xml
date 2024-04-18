@@ -603,7 +603,7 @@
             SELECT T1.PRJCT_ID , T1.EMP_ID , T1.APLY_YM , T1.APLY_ODR ,T2.ATRZ_DMND_STTS_CD, SUM(COALESCE(T1.MD, 0)) AS MD_SUM, SUM(COALESCE(T1.YRYC_RATE , 0)) AS VAC_SUM
             FROM PRJCT_MM_APLY T1
             JOIN (
-                SELECT A.PRJCT_ID , A.EMP_ID , A.APLY_YM , A.APLY_ODR, B.ATRZ_DMND_STTS_CD
+                SELECT A.PRJCT_ID , A.EMP_ID , A.APLY_YM , A.APLY_ODR, B.ATRZ_DMND_STTS_CD, B.APLY_YMD
                 FROM PRJCT_INDVDL_CT_MM A
                 LEFT OUTER JOIN PRJCT_MM_ATRZ B
                     ON A.PRJCT_ID = B.PRJCT_ID
@@ -623,6 +623,7 @@
                 AND T1.EMP_ID  = T2.EMP_ID
                 AND T1.APLY_YM = T2.APLY_YM
                 AND T1.APLY_ODR = T2.APLY_ODR
+                AND T1.APLY_YMD = T2.APLY_YMD
                 AND T1.APLY_YM = #{aplyYm}
                 AND T1.APLY_ODR= #{aplyOdr}
             GROUP BY T1.PRJCT_ID , T1.EMP_ID , T1.APLY_YM , T1.APLY_ODR, T2.ATRZ_DMND_STTS_CD
