@@ -101,21 +101,22 @@
       ]
     },
     "tableColumns": [
-      { "key": "utztnDtFormat", "value": "사용일시", "width": "100" },
-      { "key": "useOffic", "value": "사용처", "width": "120" },
-      { "key": "utztnAmt", "value": "이용금액", "width": "100" },
+      { "key": "utztnDtFormat", "value": "사용일시", "width": "100", "required": true },
+      { "key": "useOffic", "value": "사용처", "width": "120", "required": true },
+      { "key": "utztnAmt", "value": "이용금액", "width": "100", "required": true },
       { "key": "prjctId", "value": "프로젝트", "cellType": "selectBox", "displayExpr": "prjctNm", "valueExpr": "prjctId", 
-            "placeholder": "입력 시 사용가능한 프로젝트 전체 조회", "width": "280" },
+            "placeholder": "입력 시 사용가능한 프로젝트 전체 조회", "width": "280", "required": true },
       { "key": "expensCd", "value": "비용코드", "cellType": "selectBox", "displayExpr": "cdNm", "valueExpr": "expensCd", 
             "placeholder": "[비용코드 선택]", "width": "200" },
       { "key": "ctPrpos", "value": "상세내역(목적)", "cellType": "textBox", "placeholder": "상세내역(목적)", "width": "200" },
       { "key": "atdrn", "value": "용도(참석자명단)", "cellType": "textBox", "placeholder": "용도(참석자명단)","width": "220" }
     ],
     "placeholderAndRequired": [
-      {"expensCd": "VTW04528", "required": { "atdrn": true, "ctPrpos": true }, "ctPrposPlaceholder": "상세내역(참여인력)", "atdrnPlaceholder": "용도"},
+      {"expensCd": "VTW04528", "required": { "ctPrpos": true, "atdrn": true }, "ctPrposPlaceholder": "상세내역(참여인력)", "atdrnPlaceholder": "용도"},
       {"expensCd": "VTW04530", "required": { "ctPrpos": true }, "atdrnPlaceholder": "용도를 입력해주세요."},
-      {"expensCd": "VTW04531", "required": { "atdrn": true, "ctPrpos": true }, "ctPrposPlaceholder": "상세내역(목적)", "atdrnPlaceholder": "참석자 명단"},
-      {"expensCd": "VTW04533", "required": { "ctPrpos": true }, "atdrnPlaceholder": "출발지-목적지"}
+      {"expensCd": "VTW04531", "required": { "ctPrpos": true, "atdrn": true }, "ctPrposPlaceholder": "상세내역(목적)", "atdrnPlaceholder": "참석자 명단"},
+      {"expensCd": "VTW04533", "required": { "ctPrpos": true }, "atdrnPlaceholder": "출발지-목적지"},
+      {"expensCd": "VTW04509", "message": "해당 차수에 이미 스마트폰 지원 신청이 있습니다."}
     ],
     "buttonGroup":[
       { "type": "danger", "text": "선택한 사용내역 삭제하기", "onClick": "handleDelete" },
@@ -176,7 +177,7 @@
       "required": true
     },
     { "special": true, "name": "ctPrpos", "type": "textBox", "label": "상세내역(목적)", "placeholder": "상세내역(목적)" },
-    { "special": true, "name": "atdrn", "type": "textBox", "label": "용도(참석자명단)", "placeholder": "용도(참석자명단)", "displayExpr": "value" },
+    { "special": true, "name": "atdrn", "type": "textBox", "label": "용도(참석자명단)", "placeholder": "용도(참석자명단)", "displayExpr": "displayValue" },
     {
       "special": true,
       "type": "selectBox",

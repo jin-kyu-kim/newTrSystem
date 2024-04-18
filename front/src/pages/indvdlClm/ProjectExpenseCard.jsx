@@ -14,7 +14,7 @@ const ProjectExpenseCard = (props) => {
     const [ cardUseDtls, setCardUseDtls ] = useState([]);
     const [ selectedItem, setSelectedItem ] = useState([]);
     const [ isPrjctIdSelected, setIsPrjctIdSelected ] = useState({}); // 비용코드 활성화 조건
-    const [validationErrors, setValidationErrors] = useState([]);
+    const [ validationErrors, setValidationErrors ] = useState([]);
     const [ param, setParam ] = useState({
         queryId: queryId,
         empId: props.empId,
@@ -53,7 +53,8 @@ const ProjectExpenseCard = (props) => {
                 if(comSelectParam[i][0].tbNm === "EMP"){
                     response = response.map(({ empId, empno, empFlnm }) => ({
                         key: empId,
-                        value: empno+' '+empFlnm,
+                        value: empFlnm,
+                        displayValue: empno+' '+empFlnm,
                     }));
                 }
                 setComboList(prevComboList => ({
@@ -117,7 +118,7 @@ const ProjectExpenseCard = (props) => {
                 <SearchInfoSet callBack={searchHandle} props={searchInfo}/>
             </div>
             <ProjectExpenseSubmit selectedItem={selectedItem} sendTbInfo={sendTbInfo} 
-                validateFields={() => validateFields(selectedItem, placeholderAndRequired, setValidationErrors)} 
+                validateFields={() => validateFields(selectedItem, placeholderAndRequired, setValidationErrors, buttonGroup)} 
                 handleDelete={handleDelete} buttonGroup={buttonGroup} />
             
             <div style={{fontSize: 14, marginBottom: "20px"}}>
