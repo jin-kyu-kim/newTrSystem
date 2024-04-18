@@ -19,14 +19,6 @@
         { "key": "jbpsNm", "value": "직위"},
         { "key": "jbttlNm", "value": "직책" }
     ],
-    "emplistQueryId": "infoInqMapper.retrieveEmpList",
-    "emplistKeyColumn": "empId",
-    "listTableColumns": [
-        { "key": "empno", "value": "사번", "width": 100, "alignment" : "center" },
-        { "key": "empFlnm", "value": "성명"},
-        { "key": "jbpsNm", "value": "직위"},
-        { "key": "deptId", "value": "소속"}
-    ],
     "labelValue" : {
         "deptNm": {
             "name": "deptNm",
@@ -49,10 +41,15 @@
         },
         "deptMngrEmpFlnm": {
             "name": "deptMngrEmpFlnm",
-            "type": "TextBox",
-            "required": false,
+            "type": "ComboBox",
+            "required": true,
             "label": "부서장명",
-            "placeholder": "부서장명"
+            "placeholder": "부서장명",
+            "param": { "tbNm" : "EMP",
+                        "valueExpr" : "empId",
+                        "displayExpr": "empFlnm",
+                        "name": "deptMngrEmpFlnm"
+                     }
         },
         "deptBgngYmd": {
             "name": "deptBgngYmd",
