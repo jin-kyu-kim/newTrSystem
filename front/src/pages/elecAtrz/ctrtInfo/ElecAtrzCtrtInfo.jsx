@@ -19,16 +19,13 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData, sttsCd }) => {
     const [infoData, setInfoData] = useState({});
 
     const giveDe = [
-        {"value": "5"},
-        {"value": "10"},
-        {"value": "15"},
+        {"value": 5},
+        {"value": 10},
+        {"value": 15},
         {"value": "지급일 지정"}
     ];
 
     useEffect(() => {
-        console.log(data)
-        console.log("sttsCd", sttsCd)
-        console.log(data.elctrnAtrzTySeCd)
         
         if(data.elctrnAtrzTySeCd !== undefined) {
 
@@ -227,6 +224,9 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData, sttsCd }) => {
                                 onValueChanged={(e) => {
                                     handleChgState({name: "giveDe", value: e.value})
                                 }}
+                                /**
+                                 * TODO: 지급일 지정의 숫자가 화면에 표출되도록 하기. 
+                                 */
                                 value={infoData.giveDe}
                                 dataSource={giveDe}
                             />
@@ -239,6 +239,9 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData, sttsCd }) => {
                                 max={31}
                                 showSpinButtons={true}
                                 step={1}
+                                /**
+                                 * TODO: 지급일 지정의 숫자가 화면에 표출되도록 하기. 
+                                 */
                                 value={infoData.giveDeEtc}
                                 readOnly={infoData.giveDe === "지급일 지정" ? false : true}
                                 onValueChanged={(e) => {
