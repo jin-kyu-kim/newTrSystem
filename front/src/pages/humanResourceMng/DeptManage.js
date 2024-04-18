@@ -125,11 +125,13 @@ const DeptManage = ({callBack}) => {
   };
 
   const insertDept = async() => {         //부서정보 등록버튼 이벤트
-
     if(deptNm === null) {
       alert("부서명을 입력해주세요");
         return;
-    } else if(deptBgngYmd === null) {
+    } else if(upDeptId === null) {
+      alert("상위부서를 선택해주세요");
+      return;
+    }else if(deptBgngYmd === null) {
       alert("부서 시작일자를 입력해주세요");
       return;
     } else if(deptEndYmd === null) {
@@ -151,17 +153,6 @@ const DeptManage = ({callBack}) => {
         deptBgngYmd: deptBgngYmd,
         deptEndYmd:deptEndYmd
       }];
-
-    if(deptNm === null) {
-      alert("부서명을 입력해주세요");
-        return;
-    } else if(deptBgngYmd === null) {
-      alert("부서 시작일자를 입력해주세요");
-      return;
-    } else if(deptEndYmd === null) {
-      alert("부서 종료일자를 입력해주세요");
-      return;
-    } 
       try {
         const response = await ApiRequest("/boot/common/commonInsert", param);
           if (response > 0) {
@@ -180,6 +171,20 @@ const DeptManage = ({callBack}) => {
   };
 
   const editDept = async() => {
+    console.log(deptNm,upDeptId,deptBgngYmd,deptEndYmd)
+    if(deptNm === null || deptNm ==="") {
+      alert("부서명을 입력해주세요");
+        return;
+    } else if(upDeptId === null) {
+      alert("상위부서를 선택해주세요");
+      return;
+    }else if(deptBgngYmd === null) {
+      alert("부서 시작일자를 입력해주세요");
+      return;
+    } else if(deptEndYmd === null) {
+      alert("부서 종료일자를 입력해주세요");
+      return;
+    } 
     const isconfirm = window.confirm("부서정보를 변경하시겠습니까?");
     if (isconfirm) {
       const updateParam =[

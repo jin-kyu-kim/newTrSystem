@@ -7,55 +7,8 @@
 
     <!--==================1.부서 관리==================-->
     <!--부서 목록 조회-->
-  	<select id="retrieveDeptList" parameterType="map" resultType="com.trsystem.LowerHashMap">
-	    SELECT
-	          ROW_NUMBER()OVER ()ROWNUM
-	        , DEPT_ID
-	        , DEPT_NM                                                                                   -- 부서명
-	        , UP_DEPT_ID
-	        , (SELECT d2.DEPT_NM FROM DEPT d2 WHERE d.UP_DEPT_ID = d2.DEPT_ID) AS UP_DEPT_NM            -- 상위부서명
-	        , (SELECT EMP_FLNM
-				FROM (SELECT e.EMP_FLNM
-					         , ROW_NUMBER() OVER (ORDER BY h.JBTTL_CD) AS RN
-					    FROM EMP e
-					    INNER JOIN DEPT_HNF h ON e.EMP_ID = h.EMP_ID
-					    WHERE h.DEPT_ID = d.DEPT_ID) a
-				WHERE RN = 1) AS DEPT_MNGR_EMP_FLNM                                                     -- 부서장명
-	        , DEPT_BGNG_YMD                                                                             -- 부서시작일자
-	        , DEPT_END_YMD                                                                              -- 부서종료일자
-	        , COUNT(*) OVER () AS TOTAL_ITEMS                                                           -- 총건수
-	     FROM DEPT d
-	     WHERE 1=1
-	    <if test="deptId!= null and !deptId.equals('')">
-			AND DEPT_ID LIKE CONCAT('%',#{deptId},'%')
-		</if> 
-		<if test="deptNm!= null and !deptNm.equals('')">
-			AND DEPT_NM LIKE CONCAT('%',#{deptNm},'%')
-		</if>
-        <if test="deptMngrEmpFlnm!= null and !deptMngrEmpFlnm.equals('')">
-			AND (SELECT EMP_FLNM
-		           FROM (SELECT e.EMP_FLNM
-		                         , ROW_NUMBER() OVER (ORDER BY h.JBTTL_CD) AS RN
-		                    FROM EMP e
-		                    INNER JOIN DEPT_HNF h ON e.EMP_ID = h.EMP_ID
-		                    WHERE h.DEPT_ID = d.DEPT_ID) a
-		            WHERE RN = 1
-		        ) LIKE CONCAT('%',#{deptMngrEmpFlnm},'%')
-		</if>
-        <if test="deptBgngYmd != null and bizEndYmd == null">
-			AND DEPT_BGNG_YMD > #{deptBgngYmd}
-		</if>
-        <if test="deptBgngYmd == null and deptEndYmd != null">
-			AND DEPT_END_YMD > #{deptEndYmd}
-		</if>
-        <if test="deptBgngYmd != null and deptEndYmd != null">
-			<if test="!deptBgngYmd.equals('') and !deptEndYmd.equals('')">
-				AND DEPT_BGNG_YMD BETWEEN #{deptBgngYmd} AND #{deptEndYmd}
-			</if>
-		</if>
-		ORDER BY REG_DT DESC </select>
-	   <!--트리구조 부서조회 임시-->
-	   <select id="retrieveDeptList2" parameterType="map" resultType="com.trsystem.LowerHashMap">
+	<!--트리구조 부서조회-->
+	   <select id="retrieveDeptList" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		WITH RECURSIVE DEPT_PATH(DEPT_ID,DEPT_NM,UP_DEPT_ID,DEPT_MNGR_EMP_FLNM,DEPT_BGNG_YMD,DEPT_END_YMD,DEPTH)  AS (
 		    SELECT 
 		    	DEPT_ID
@@ -197,7 +150,7 @@
 	<!--사번max값 조회용 쿼리-->
 	<select id="retrieveEmpnoMax" parameterType="map" resultType="com.trsystem.LowerHashMap">
 	SELECT
-		CONCAT(#{empnoChk},LPAD(MAX(substr(empno, 3))+1, '4', '0')) as  EMPNO_CHK
+		CONCAT(#{empnoChk},IFNULL(LPAD(MAX(substr(empno, 3))+1, '4', '0'),0001)) as  EMPNO_CHK
 	FROM
 		EMP
 	WHERE
