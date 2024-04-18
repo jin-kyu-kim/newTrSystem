@@ -255,32 +255,38 @@
 	
 	<select id="retrieveOutordEmpPlan" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT 
-			olp.PRJCT_ID,
-			olp.BGT_MNG_ODR,
-			olp.OUTORD_LBRCO_PRMPC_SN,
-			olp.OUTORD_EMP_ID,
-			olp.HNF_ROLE_CD,
-			olp.HNF_GRAD_CD,
-			olp.TKCG_JOB,
-			olp.UNTPC,
-			olp.INPT_PRNMNT_YMD,
-			olp.WITHDR_PRNMNT_YMD,
-			dtl.EXPECT_MM,
-			(olp.UNTPC * dtl.EXPECT_MM) AS USEFUL_AMT
-		  FROM OUTORD_LBRCO_PRMPC olp
-		  JOIN (SELECT MAX(BGT_MNG_ODR) AS BGT_MNG_ODR, PRJCT_ID 
-		  		  FROM PRJCT_BGT_PRMPC
-			 	 WHERE 1=1
-		   		   AND ATRZ_DMND_STTS_CD = 'VTW03703'
-			    GROUP BY PRJCT_ID) pbp 
-			ON (olp.PRJCT_ID = pbp.PRJCT_ID AND olp.BGT_MNG_ODR = pbp.BGT_MNG_ODR)
-		  JOIN (SELECT SUM(EXPECT_MM) AS EXPECT_MM, PRJCT_ID  
-		  		FROM OUTORD_LBRCO_PRMPC_DTL 
-		  		WHERE 1=1 
-		  		GROUP BY PRJCT_ID, BGT_MNG_ODR, OUTORD_LBRCO_PRMPC_SN) dtl 
-		  	ON (olp.PRJCT_ID = dtl.PRJCT_ID)
-		  WHERE 1=1
-		    AND olp.PRJCT_ID = #{prjctId}			
+		    olp.PRJCT_ID,
+		    olp.BGT_MNG_ODR,
+		    olp.OUTORD_LBRCO_PRMPC_SN,
+		    olp.OUTORD_EMP_ID,
+		    emp.EMP_FLNM as OUTORD_EMP_NM,
+		    olp.HNF_ROLE_CD,
+		    cd1.CD_NM as HNF_ROLE_CD_NM,
+		    olp.HNF_GRAD_CD,
+		    cd2.CD_NM as HNF_GRAD_CD_NM,
+		    olp.TKCG_JOB,
+		    olp.UNTPC,
+		    olp.INPT_PRNMNT_YMD,
+		    olp.WITHDR_PRNMNT_YMD,
+		    dtl.EXPECT_MM,
+		    (olp.UNTPC * dtl.EXPECT_MM) AS USEFUL_AMT
+		FROM OUTORD_LBRCO_PRMPC olp
+		JOIN (
+		    SELECT MAX(BGT_MNG_ODR) AS BGT_MNG_ODR, PRJCT_ID 
+		    FROM PRJCT_BGT_PRMPC
+		    WHERE ATRZ_DMND_STTS_CD = 'VTW03703'
+		    AND PRJCT_ID = #{prjctId}
+		    GROUP BY PRJCT_ID
+		) pbp ON olp.PRJCT_ID = pbp.PRJCT_ID AND olp.BGT_MNG_ODR = pbp.BGT_MNG_ODR
+		JOIN (
+		    SELECT SUM(EXPECT_MM) AS EXPECT_MM, PRJCT_ID, BGT_MNG_ODR, OUTORD_LBRCO_PRMPC_SN 
+		    FROM OUTORD_LBRCO_PRMPC_DTL 
+		    GROUP BY PRJCT_ID, BGT_MNG_ODR, OUTORD_LBRCO_PRMPC_SN
+		) dtl ON olp.PRJCT_ID = dtl.PRJCT_ID AND olp.BGT_MNG_ODR = dtl.BGT_MNG_ODR AND olp.OUTORD_LBRCO_PRMPC_SN = dtl.OUTORD_LBRCO_PRMPC_SN
+		JOIN EMP emp ON olp.OUTORD_EMP_ID  = emp.EMP_ID 
+		JOIN CD cd1 ON olp.HNF_ROLE_CD = cd1.CD_VALUE
+		JOIN CD cd2 ON olp.HNF_GRAD_CD = cd2.CD_VALUE
+		WHERE olp.PRJCT_ID = #{prjctId}		
 	</select>
 	
 	<select id="retrieveRealOutordEmpPlan" parameterType="map" resultType="com.trsystem.LowerHashMap">
