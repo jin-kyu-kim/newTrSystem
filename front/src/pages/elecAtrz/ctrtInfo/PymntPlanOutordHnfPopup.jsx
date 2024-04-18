@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Button } from "devextreme-react/button";
 import CustomLabelValue from "components/unit/CustomLabelValue";
 import PymntPlanOutordHnfPopupJson from "./PymntPlanOutordHnfPopupJson.json";
@@ -14,9 +14,9 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
     const [structuredData, setStructuredData] = useState({});   //기간 구조 데이터
     const [inputValue, setInputValue] = useState([]); //월별 값 입력을 위한 상태
 
-    useEffect(() => {
-        console.log("inputValue",inputValue);
-    }, [inputValue]);
+    // useEffect(() => {
+    //     console.log("inputValue",inputValue);
+    // }, [inputValue]);
 
 
 /* =========================  사업기간에 따른 우측 input box 생성  =========================*/
@@ -51,16 +51,11 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
         makeStructuredData();
     }
     ,[ctrtYmd, stbleEndYmd]);
-    //////////////////////////////////////////////////////////////////////////////
-
-    useEffect(() => {
-        console.log(outordEmpData);
-    }, [outordEmpData]);
-
+ 
 
     /* =========================  우측 input 값 담기  =========================*/
      //우측 월 값 담기
-     const handleInputChange = (e) => {
+     const handleInputChange = useCallback((e) => {
 
         const fullId    = e.element.id; 
         const mm = e.component.option('value');
@@ -105,40 +100,18 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
                         .map(item => (item.mm || 0) * (item.ctrtAmt || 0))
                         .reduce((acc, cur) => acc + cur, 0);
 
-
-        //총 금액 값 구하기.
-        // const totalSum = hnfCtrtDtlMm.reduce((acc, updatedItem) => {
-        //     // transformedData에서 대응하는 id+"_untpc"를 찾음
-        //     const transformedItem = transformedData.find(item => item.id === `${updatedItem.id}_untpc`);
- 
-        //     //대응하는 항목이 있고, 두 value 모두 숫자 타입인 경우 곱한 값 누적
-        //     if (transformedItem && typeof updatedItem.value === 'number' && typeof transformedItem.value === 'number') {
-        //         return acc + (updatedItem.value * transformedItem.value);
-        //     //대응하는 항목 없을경우 : 신규추가시 userDfnValue로 계산
-        //     }else{
-        //         return acc + (updatedItem.value * outordEmpData.userDfnValue);   
-        //     }
-        //   }, 0);
-
           
         // 부동 소수점 문제 해결을 위해 toFixed() 후 숫자로 변환
-        // const fixedTotalSum = Number(totalSum.toFixed(2));       
+        const fixedTotAmt = Number(totAmt.toFixed(2));       
 
-        // let multifulSum;   
-        // if(outordEmpData.userDfnValue){
-        //     multifulSum = fixedTotalSum; 
-        // }
 
         //총합에 sum값을 넣어주기   
         setOutordEmpData(currentData=>({
             ...currentData,
             "totalMm" : fixedSum,
-            "totAmt" : totAmt,
-            // ...(outordEmpData.userDfnValue ? { "gramt" : multifulSum } : {}),
-            // ...(outordEmpData.outordEmpId ? { "gramt" : Number((fixedSum * outordEmpData.untpc).toFixed(0))} : {}),
+            "totAmt" : fixedTotAmt,
         })); 
-    };
-    ///////////////////////////////////////////////////////////////////////////////
+    },[inputValue]);
     
 
 
@@ -148,19 +121,18 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
      */
     const savePlan = (e) => {
         e.preventDefault();
-        alert("저장되었습니다.");
-        // if(!(matrlCtrtData.totAmt > 0)) {
-        //     alert("지불 총액은 0 이상 입력해야 합니다.");
-        //     return;
-        // }
+        
+        if(!(outordEmpData.totAmt > 0)) {
+            alert("총액은 0 이상 입력해야 합니다.");
+            return;
+        }
 
         // //지급 총액이 가용금액을 초과할 경우
-        // if(matrlCtrtData.cntrctamount < matrlCtrtData.totAmt) {
-        //     alert("지불 총액은 계약금액을 초과할 수 없습니다.");
-        //     return;
-        // }
+        if(outordEmpData.usefulAmt < outordEmpData.totAmt) {
+            alert("총액은 가용금액을 초과할 수 없습니다.");
+            return;
+        }
 
-        // handlePlanData(matrlCtrtData);
         handlePopupData(outordEmpData);
         handlePopupVisible();
     }
@@ -170,7 +142,6 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
      *  입력값 변경시 데이터 핸들링
      */
     const handleChgState = ({name, value}) => {
-        // console.log(name, value)
         setOutordEmpData(outordEmpData => ({
             ...outordEmpData,
             [name]: value
@@ -182,17 +153,11 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
      *  부모창에서 전달 된 데이터로 셋팅
      */
     useEffect(() => {
-        // console.log("selectedData",selectedData)
-        // if(selectedData.inptHnfId === 0) {
-        //     console.log("초기화", selectedData);
-        //     setOutordEmpData({});
-        // }else{
-            console.log("수정", selectedData);
-            setOutordEmpData(selectedData);
-        // }
+
+        setOutordEmpData(selectedData);
+        setInputValue(selectedData.hnfCtrtDtlMm?selectedData.hnfCtrtDtlMm:[]); //수정 시 월별 값 셋팅
+
     }, [selectedData]);
-
-
 
 
     
@@ -243,7 +208,6 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
                                                     key={months[rowIndex]}
                                                     id={`${Object.keys(structuredData)[colIndex]}${months[rowIndex]}`} 
                                                     value={inputValue.find(item => item.id === `${Object.keys(structuredData)[colIndex]}${months[rowIndex]}`)?.mm || 0}
-                                                    onValueChanged={handleInputChange}
                                                     style={{ textAlign: 'right' }}
                                                     defaultValue={0}
                                                     step={0.01}
@@ -251,18 +215,17 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
                                                     showClearButton={false}
                                                     max={1}
                                                     min={0}
+                                                    onChange={handleInputChange}
                                                 />): ''}</td>
                                             <td style={{width:"30%", padding:"5px"}}>
                                                 {months[rowIndex] ? 
                                                     <NumberBox 
-                                                        // value= {data.mmnyLbrcoPrmpcSn ? 
-                                                        //         transformedData.find(item => item.id === `${Object.keys(structuredData)[colIndex]}${months[rowIndex]}_untpc`)?.value || 0 
-                                                        //         : data.userDfnValue}
                                                         id={`${Object.keys(structuredData)[colIndex]}${months[rowIndex]}_ctrtAmt`} 
                                                         value ={inputValue.find(item => item.id === `${Object.keys(structuredData)[colIndex]}${months[rowIndex]}`)?.ctrtAmt || 0}
-                                                        onValueChanged={handleInputChange}
                                                         readOnly={false}
                                                         format={"#,### 원"}
+                                                        onChange={handleInputChange}
+                                                        
                                                     /> : ''}
                                             </td>
                                         </>
