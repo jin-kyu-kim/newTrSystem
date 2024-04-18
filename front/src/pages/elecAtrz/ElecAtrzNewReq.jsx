@@ -22,8 +22,8 @@ const ElecAtrzNewReq = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const prjctId = location.state.prjctId;
-    const deptId = location.state.deptId;
     const formData = location.state.formData;
+    const sttsCd = location.state.sttsCd;
     const [cookies] = useCookies(["userInfo", "userAuth"]);
 
     const [data, setData] = useState(location.state.formData);
@@ -82,7 +82,7 @@ const ElecAtrzNewReq = () => {
     useEffect(() => {
         setAtrzParam(atrzParam => ({
             ...atrzParam,
-            atrzCn: data.gnrlAtrzCn
+            atrzCn: data.gnrlAtrzCn === undefined ? data.cn : data.gnrlAtrzCn
         }));
     }, [data]);
 
@@ -95,6 +95,14 @@ const ElecAtrzNewReq = () => {
          * 전자결재ID가 있는 경우,
          * 결재정보 조회로 넘어온 경우라면, 결재 정보를 보여준다.(임시저장이거나 결재 올라간거???)
          */
+        if(sttsCd === "VTW03701") {
+            console.log("임시저장");
+
+            setAtrzParam({
+                ...atrzParam,
+                title: data.title,
+            });
+        }
 
     }, []);
 
@@ -112,7 +120,28 @@ const ElecAtrzNewReq = () => {
                 console.log('error', error);
             }
         };
-        getAtrzEmp();
+
+        const getTempAtrzLn = async () => {
+            const param = {
+                queryId: "elecAtrzMapper.retrieveAtrzLn",
+                elctrnAtrzId: data.elctrnAtrzId,
+                sttsCd: sttsCd
+            }
+            try {
+                const response = await ApiRequest("/boot/common/queryIdSearch", param);
+                setAtrzLnEmpList(response);
+            } catch (error) {
+                console.error(error)
+            }
+        }
+
+        if(sttsCd === "VTW03701") {
+            getTempAtrzLn();
+        } else {
+            
+            getAtrzEmp();
+        }
+
     }, []);
 
     const getAtrzLn = (lnList) => {
@@ -137,29 +166,17 @@ const ElecAtrzNewReq = () => {
     };
 
     /**
-     * 결재요청 버튼 클릭시 전자결재 요청 함수 실행
+     * 결재요청 버튼 클릭시 결재요청 코드와 함께 전자결재 요청 함수 실행
      */
     const requestElecAtrz = async () => {
-        console.log("전자결재 요청");
 
-        // Todo
-        // elctrnAtrzTySeCd에 따라서 저장 테이블 다르게(계약, 청구, 일반, 휴가..)
-        // 결재선 지정이 되어있는지 확인, 안되어 있으면..?
         createAtrz(atrzParam, "VTW03702");
     }
 
     /**
-     * 임시저장 버튼 클릭시 임시저장 함수 실행
+     * 임시저장 버튼 클릭시 임시저장 코드와 함께 저장 함수 실행
      */
     const saveTemp = async () => {
-        console.log("임시저장");
-        
-        /**
-         * Todo
-         * 전자결재 테이블저장 하고, elctrnAtrzTySeCd에 따라서 저장 테이블 다르게(계약, 청구, 일반, 휴가..)
-         * 결재요청상태코드는 임시저장으로 저장
-         * 결재선은 당장은 없어도? 될 듯?z`
-         */
 
         createAtrz(atrzParam, "VTW03701");
     }
@@ -180,21 +197,20 @@ const ElecAtrzNewReq = () => {
         /**
          * 전자결재 & 첨부파일 저장
          */
-
         console.log(atrzLnEmpList)
 
         const insertParam = {
             param,
             atrzDmndSttsCd: stts,
-            elctrnAtrzId: uuid(),
+            elctrnAtrzId: data.elctrnAtrzId !== undefined ? data.elctrnAtrzId : uuid(),
             prjctId: prjctId,
-            deptId: deptId,
             elctrnAtrzTySeCd: data.elctrnAtrzTySeCd,
             regDt: date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0],
             regEmpId: cookies.userInfo.empId,
             atrzFormDocId: formData.atrzFormDocId,
-            atrzLnEmpList
-        }  
+            atrzLnEmpList,
+            sttsCd: sttsCd
+        }
 
         try {
             const response = await ApiRequest("/boot/elecAtrz/insertElecAtrz", insertParam);
@@ -202,10 +218,24 @@ const ElecAtrzNewReq = () => {
 
             if(response){
                 // 첨부파일 저장
+
+                /**
+                 * Todo
+                 * 임시저장을 가져와서 온 경우 : 첨부파일 아이디가 존재함..? 이걸 수정?
+                 */
                 const formDataAttach = new FormData();      
-                formDataAttach.append("tbNm", JSON.stringify({tbNm : insertTable})); 
-                formDataAttach.append("data", JSON.stringify({atchmnflId : uuid()}));
-                formDataAttach.append("idColumn", JSON.stringify({elctrnAtrzId: response})); //결재ID
+                formDataAttach.append("tbNm", JSON.stringify({tbNm : insertTable}));
+                if(data.atchmnflId !== undefined){
+                    formDataAttach.append("data", JSON.stringify({atchmnflId : data.atchmnflId}));
+                } else {
+                    formDataAttach.append("data", JSON.stringify({atchmnflId : uuid()}));
+                }
+
+                if(data.elctrnAtrzId !== undefined){
+                    formDataAttach.append("idColumn", JSON.stringify({elctrnAtrzId: data.elctrnAtrzId})); //결재ID
+                } else {
+                    formDataAttach.append("idColumn", JSON.stringify({elctrnAtrzId: response})); //결재ID
+                }
                 formDataAttach.append("deleteFiles", JSON.stringify([]));
                 Object.values(attachments)
                     .forEach((attachment) => formDataAttach.append("attachments", attachment));
@@ -220,7 +250,11 @@ const ElecAtrzNewReq = () => {
                 console.log(responseAttach);
 
                 if(responseAttach.status === 200){
-                    alert("전자결재 요청이 완료되었습니다.")
+                    if(stts === "VTW03701") {
+                        alert("임시저장이 완료되었습니다.");
+                    } else {
+                        alert("전자결재 요청이 완료되었습니다.")
+                    }
                     navigate("/elecAtrz/ElecAtrz");
                 }
 
@@ -237,7 +271,7 @@ const ElecAtrzNewReq = () => {
      * 목록 버튼 클릭시 전자결재 서식 목록으로 이동
      */
     const toAtrzNewReq = () => {
-        navigate("../elecAtrz/ElecAtrzForm", {state: {prjctId: prjctId, deptId: deptId}});
+        navigate("../elecAtrz/ElecAtrzForm", {state: {prjctId: prjctId}});
     }
 
     /**
@@ -285,6 +319,7 @@ const ElecAtrzNewReq = () => {
                 return false;
             }
         }
+        console.log(param)
         console.log(atrzLnEmpList)
 
         var atrzLn = atrzLnEmpList.find( ({ approvalCode }) => approvalCode == 'VTW00705');
@@ -293,10 +328,9 @@ const ElecAtrzNewReq = () => {
         // console.log(atrzLn)
 
         if(atrzLn === undefined){
-            alert("결재선을 입력해주세요.");
+            alert("결재선의 승인자를 입력해주세요.");
             return false;
         }
-
 
         return true;
     }
@@ -313,13 +347,12 @@ const ElecAtrzNewReq = () => {
                     prjctData={prjctData}
                     formData={formData}
                     atrzParam={atrzParam}
-                    deptId={deptId}                     
                 />
                 <div dangerouslySetInnerHTML={{ __html: formData.docFormDc }} />
                     {["VTW04909","VTW04910"].includes(formData.elctrnAtrzTySeCd) &&  (   //VTW04909: 외주업체약 계약, VTW04910: 재료비 계약
                         <>
-                        <ElecAtrzCtrtInfo prjctId={prjctId} data={data} onSendData={handleChildData}/>
-                        <ElecAtrzCtrtInfoDetail prjctId={prjctId} data={data} onSendData={handleChildData}/>
+                        <ElecAtrzCtrtInfo prjctId={prjctId} data={data} onSendData={handleChildData} sttsCd={sttsCd}/>
+                        <ElecAtrzCtrtInfoDetail prjctId={prjctId} data={data} onSendData={handleChildData} sttsCd={sttsCd}/>
                         </>
                     )}
                     {formData.elctrnAtrzTySeCd === "VTW04908" &&    //VTW04908: 외주인력 계약
@@ -330,14 +363,14 @@ const ElecAtrzNewReq = () => {
                     }
                     {formData.elctrnAtrzTySeCd === "VTW04907" &&    //VTW04907: 비용사용(청구)
                     <>
-                        <ExpensInfo onSendData={handleChildData} prjctId={prjctId}/>
+                        <ExpensInfo onSendData={handleChildData} prjctId={prjctId} data={data}/>
                     </>
                     }
                 <HtmlEditBox 
                     column={ {"dataField": "gnrlAtrzCn"}}
                     data={data}
                     setData={setData}
-                    value={data.gnrlAtrzCn}
+                    value={data.gnrlAtrzCn === undefined ? data.cn : data.gnrlAtrzCn}
                     placeholder={column.placeholder}
                 />
                 <hr/>
