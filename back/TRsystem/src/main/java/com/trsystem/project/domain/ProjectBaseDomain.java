@@ -644,7 +644,7 @@ public class ProjectBaseDomain {
 			if(!prjctMngrEmpId.equals(list.get(i))) {
 				infoParam.put("prjctId", param.get("prjctId"));
 				infoParam.put("empId", list.get(i));
-				infoParam.put("prjctMngAuthrtCd", param.get("prjctMngAuthrtCd"));
+				infoParam.put("prjctMngAuthrtCd", "VTW05201");
 				infoParam.put("regEmpId", param.get("regEmpId"));
 				infoParam.put("regDt", param.get("regDt"));
 				insertParams.add(infoParam);
