@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import Button from "devextreme-react/button";
 import CultureHealthCostJson from "./CultureHealthCostJson.json";
 import {FileUploader} from "devextreme-react";
@@ -10,11 +10,11 @@ import axios from "axios";
 import CustomLabelValue from "../../components/unit/CustomLabelValue";
 
 const empListContainerStyle = {
-    width: "60%",
+    width: "65%",
     marginTop: "20px",
 };
 const empDetailContainerStyle = {
-    width: "40%",
+    width: "35%",
     display: "flex",
     flexDirection: "column",
     marginTop: "20px",
@@ -32,7 +32,8 @@ const button = {
 const CultureHealthCostReg = () => {
     const [cookies] = useCookies([]);
     const [values, setValues] = useState([]);
-    const [attachments, setAttachments] = useState([null]);
+    const [attachments, setAttachments] = useState([]);
+    const fileUploaderRef = useRef(null);
     const [selectedItem, setSelectedItem] = useState(null);
     let now = new Date();
     const Json = CultureHealthCostJson;
@@ -64,15 +65,15 @@ const CultureHealthCostReg = () => {
     const getTargetMonth = (time) => {
         let lastMonth = getLastMonth(time);
         let dateNum = Number(time.getDate());
-        return dateNum > 5 ? lastMonth + ", " + time.getFullYear() + "/" + ('0' + (time.getMonth() + 1)).slice(-2)
-            : time.getFullYear() + "/" + ('0' + (time.getMonth() + 1)).slice(-2);
+        return dateNum > 5 ? time.getFullYear() + "/" + ('0' + (time.getMonth() + 1)).slice(-2)
+            : lastMonth + ", " + time.getFullYear() + "/" + ('0' + (time.getMonth() + 1)).slice(-2);
     }
 
     const handleChgValue = ({name, value}) => {
-        setInitParam({
+        setInitParam(initParam => ({
             ...initParam,
-            [name] : value,
-        });
+            [name] : value
+        }));
     };
 
     const handleAttachmentChange = (e) => {
@@ -81,6 +82,11 @@ const CultureHealthCostReg = () => {
             ...initParam,
             atchmnflId: uuid()
         });
+    };
+
+    const clearFiles = () => {
+        let fileUploader = fileUploaderRef.current.instance;
+        fileUploader.reset();
     };
 
     const searchTable = async () => {
@@ -107,8 +113,10 @@ const CultureHealthCostReg = () => {
                         tmpElement.actIem = element.actIem;
                         tmpElement.clturPhstrnSeCd = element.clturPhstrnSeCd;
                         tmpElement.actPurps = element.actPurps;
+                        tmpElement.frcsNm = element.frcsNm;
                         tmpElement.rm = element.rm;
                         if(element.atchmnflId !== null){
+                            tmpElement.atchmnflId = element.atchmnflId;
                             tmpElement.atchmnfl = [];
                             tmpElement.atchmnfl.push({
                                 atchmnflId: element.atchmnflId,
@@ -182,18 +190,19 @@ const CultureHealthCostReg = () => {
         }
     };
 
-    const onRowClick = useCallback((e) => {
-        const selectedRowsData = e.data.clturPhstrnActCtSn;
-        setSelectedItem(selectedRowsData);
+    const onFocusedRowChanged = useCallback((e) => {
+        setSelectedItem(e.row.data);
     }, []);
 
     const onDeleteClick = async() => {
         const confirmResult = window.confirm("삭제하시겠습니까?");
         if (confirmResult) {
-            const params = [{ tbNm: "CLTUR_PHSTRN_ACT_CT_REG" }, { clturPhstrnActCtSn: selectedItem }]
             try {
-                const response = await ApiRequest("/boot/common/commonDelete", params);
-                if (response === 1) {
+                const paramCh = [{ tbNm: "CLTUR_PHSTRN_ACT_CT_REG" }, { empId: selectedItem.empId, clturPhstrnActCtSn: selectedItem.clturPhstrnActCtSn }]
+                const responseCh = await ApiRequest("/boot/common/commonDelete", paramCh);
+                if (responseCh === 1) {
+                    const paramAt = [{ tbNm: "ATCHMNFL" }, { atchmnflId: selectedItem.atchmnflId }]
+                    await ApiRequest("/boot/common/commonDelete", paramAt);
                     searchTable();
                     window.alert("삭제되었습니다.")
                 }
@@ -205,14 +214,17 @@ const CultureHealthCostReg = () => {
     };
 
     const onResetClick = () => {
+        clearFiles();
         setInitParam({
             "clmAmt": 0,
             "clmYmd": now.getFullYear()+('0' + (now.getMonth() + 1)).slice(-2)+('0' + now.getDate()).slice(-2),
             "clturPhstrnSeCd": null,
             "actIem": null,
             "actPurps": null,
+            "frcsNm": null,
             "empId": cookies.userInfo.empId,
-            "regEmpId": cookies.userInfo.empId
+            "regEmpId": cookies.userInfo.empId,
+            "atchmnflId": null
         })
     }
 
@@ -234,7 +246,7 @@ const CultureHealthCostReg = () => {
             <div style={{display: "flex"}}>
                 <div className="empListContainer" style={empListContainerStyle}>
                     <div className="empListTable" style={{minWidth: "480px"}}>
-                        <div style={{height: "290px"}}>
+                        <div style={{height: "310px"}}>
                             <p><strong>* 청구 목록 </strong></p>
                             <span style={fontSize}>
                             1. 입력, 수정, 삭제 가능 조건 <br/>
@@ -247,8 +259,10 @@ const CultureHealthCostReg = () => {
                         </span>
                         </div>
                         <DataGrid
+                            keyExpr={'clturPhstrnActCtSn'}
                             dataSource={values}
-                            onRowClick={onRowClick}
+                            onFocusedRowChanged={onFocusedRowChanged}
+                            focusedRowEnabled={true}
                         >
                             <Column dataField='month' caption='대상월' minWidth={30} alignment="center"/>
                             <Column dataField='clmYmd' caption='청구일자' minWidth={30} alignment="center"/>
@@ -256,6 +270,7 @@ const CultureHealthCostReg = () => {
                             <Column dataField='actIem' caption='항목' minWidth={30} alignment="center"/>
                             <Column dataField='actPurps' caption='목적' minWidth={30} alignment="center"/>
                             <Column dataField='rm' caption='비고' minWidth={100} alignment="center"/>
+                            <Column dataField='frcsNm' caption='가맹점' minWidth={100} alignment="center"/>
                             <Column caption='첨부' minWidth={100} cellRender={fileCell} alignment="center"/>
                         </DataGrid>
                     </div>
@@ -264,7 +279,7 @@ const CultureHealthCostReg = () => {
                     </div>
                 </div>
                 <div style={empDetailContainerStyle}>
-                    <div style={{height: "290px"}}>
+                    <div style={{height: "290px", marginLeft: "15px"}}>
                         <p><strong>* 문화 체련비 등록</strong></p>
                         <div style={fontSize}>
                             <p>1. 체력 향상과 문화 교육을 위해 지원하는 경비입니다.</p>
@@ -287,6 +302,8 @@ const CultureHealthCostReg = () => {
                                           value={initParam?.actIem}/>
                         <CustomLabelValue props={labelValue.actPurps} onSelect={handleChgValue}
                                           value={initParam?.actPurps}/>
+                        <CustomLabelValue props={labelValue.frcsNm} onSelect={handleChgValue}
+                                          value={initParam?.frcsNm}/>
                         <FileUploader
                             selectButtonText="파일 선택"
                             labelText="또는 드래그"
@@ -295,6 +312,7 @@ const CultureHealthCostReg = () => {
                             uploadMode="useButton"
                             onValueChanged={handleAttachmentChange}
                             maxFileSize={1.5 * 1024 * 1024 * 1024}
+                            ref={fileUploaderRef}
                         >
                         </FileUploader>
                     </div>
