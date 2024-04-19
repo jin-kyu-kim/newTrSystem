@@ -67,7 +67,7 @@ const searchHandle = async (initParam) => {
         aplyYm: nowDate,
         aplyOdr: currentPhase,
         empId: initParam.empId,
-        hdofSttsCd: initParam.hdofSttsCd
+        hdofSttsCd: "VTW00301"
     })
     setParam({
         ...param,
@@ -75,7 +75,7 @@ const searchHandle = async (initParam) => {
         aplyYm: nowDate,
         aplyOdr: currentPhase,
         empId: initParam.empId,
-        hdofSttsCd: initParam.hdofSttsCd
+        hdofSttsCd: "VTW00301"
     })  
     return;
   }
@@ -117,19 +117,20 @@ const handleClose = () => {
   setPopupVisible(false);
 };
 //===========================테이블내 버튼 이벤트======================================
-const onBtnClick = ({button,data}) => {      //
+const onBtnClick = (button, data) => {      
+
     if(button.name === "workHrMv"){
         alert("근무시간페이지이동");
-        navigate("/fnnrMng/prjctCtClm/ProjectCostClaimDetail",          //경로 수정 예정
-        {state: { empId: values2.empId }})
+        navigate("/indvdlClm/EmpWorkTime",
+        {state: { empId: data.empId, jbpsCd: data.jbpsCd, deptNmAll: data.deptNmAll}})
     }
     if(button.name === "hrRtrcn"){                                   //취소상태로 변경 -> 반려?
         alert("시간취소!"); 
     }
-    if(button.name === "prjctScrnMv"){                                      //경로 수정 예정
+    if(button.name === "prjctScrnMv"){                                      
         alert("프로젝트비용이동");
-        navigate("/fnnrMng/prjctCtClm/ProjectCostClaimDetail",
-        {state: { empId: values2.empId }})
+        navigate("/indvdlClm/ProjectExpense",
+        {state: { empId: data.empId }})
     }
     if(button.name === "ctRtrcn"){                                    //취소상태로 변경 -> 반려?
         alert("비용취소");
@@ -137,7 +138,7 @@ const onBtnClick = ({button,data}) => {      //
      if(button.name === "companyPrice"){                                 //경로 수정 예정
         alert("회사비용이동");
         navigate("/fnnrMng/prjctCtClm/ProjectCostClaimDetail",
-        {state: { empId: values2.empId }})
+        {state: { empId: data.empId }})
     }
     if(button.name === "print"){                                        //팝업으로 띄울 예정
         setPopupVisible(true);
@@ -160,7 +161,7 @@ const onBtnClick = ({button,data}) => {      //
                 <SearchPrjctCostSet callBack={searchHandle} props={searchParams} />
                 <Button text="마감 및 엑셀다운"  onClick={ddlnExcelDwn}/>
             </div>
-            <div style={{ marginBottom: "20px" }}>
+            <div className="TimeExpenseInsertSttus" style={{ marginBottom: "20px" }}>
                 <CustomTable
                   keyColumn={keyColumn}
                   columns={totTableColumns}
@@ -168,7 +169,7 @@ const onBtnClick = ({button,data}) => {      //
                   paging={false}
                 />
             </div>
-            <div style={{ marginBottom: "20px" }}>
+            <div className="TimeExpenseInsertSttus" style={{ marginBottom: "20px" }}>
                 <CustomTable
                     keyColumn={keyColumn}
                     columns={tableColumns}
