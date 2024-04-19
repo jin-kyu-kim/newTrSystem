@@ -32,7 +32,6 @@ const ProjectExpense = () => {
             if (args.name === "selectedIndex") setIndex(args.value);
         }, [setIndex]
     );
-
     useEffect(() => { getData(); }, []);
 
     useEffect(() => {
@@ -98,10 +97,10 @@ const ProjectExpense = () => {
     };
 
     const onBtnClick = async (btn, props) => {
-        if (window.confirm("삭제하시겠습니까?")) {
-            const param = { prjctId: props.data.prjctId, prjctCtAplySn: props.data.prjctCtAplySn, empId, aplyYm, aplyOdr };
-            
-            if (btn.name === 'atrzDmndSttsCd') { // aply, atrz, atdrn row삭제
+        if (btn.name === 'atrzDmndSttsCd') { // aply, atrz, atdrn row삭제
+            if (window.confirm("삭제하시겠습니까?")) {
+
+                const param = { prjctId: props.data.prjctId, prjctCtAplySn: props.data.prjctCtAplySn, empId, aplyYm, aplyOdr };
                 const tables = ["PRJCT_CT_ATRZ", "PRJCT_CT_APLY", "PRJCT_CT_ATDRN" ];
                 const deleteRow = tables.map(tbNm => ApiRequest("/boot/common/commonDelete", [{ tbNm }, param]));
 
@@ -114,6 +113,8 @@ const ProjectExpense = () => {
                     console.error("error:", error);
                 });
             }
+        } else{ // 문서이동
+            // navigate("/elecAtrz/ElecAtrzDetail", {state: {elctrnAtrzId: props.data.elctrnAtrzId}})
         }
     }
 
