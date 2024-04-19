@@ -25,9 +25,9 @@
       { "key": "utztnDt", "value": "사용일시" },
       { "key": "useOffic", "value": "사용처" },
       { "key": "utztnAmt", "value": "금액" },
-      { "key": "prjctNm", "value": "프로젝트", "width": 260 },
+      { "key": "prjctNm", "value": "프로젝트", "width": 250 },
       { "key": "expensCdNm", "value": "비용코드" },
-      { "key": "ctPrpos", "value": "상세내역(목적)" },
+      { "key": "ctPrpos", "value": "상세내역(목적)", "width": 140 },
       { "key": "atdrn", "value": "용도(참석자명단)", "width": 200 }
     ],
     "ctAplyBtnColumns": [
@@ -35,7 +35,11 @@
         "button": { "text": "삭제", "name": "atrzDmndSttsCd", "type": "danger", "width": 80 }}
     ],
     "ctAplyStrColumns": [
-      { "key": "atrzDmndSttsCdNm", "value": "결재상태", "width": 80 }
+      { "key": "atrzDmndSttsCdNm", "value": "결재상태", "width": 100 }
+    ],
+    "rjctCnColumns": [
+      { "key": "atrzDmndSttsCdNm", "value": "결재상태", "width": 100 },
+      { "key": "rjctPrvonsh", "value": "반려사유", "width": 100 }
     ],
     "elcKeyColumn": "elctrnAtrzId",
     "columnCharge": [
