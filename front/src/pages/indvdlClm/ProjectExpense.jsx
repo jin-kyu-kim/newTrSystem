@@ -33,9 +33,7 @@ const ProjectExpense = () => {
         }, [setIndex]
     );
 
-    useEffect(() => {
-        getData();
-    }, []);
+    useEffect(() => { getData(); }, []);
 
     useEffect(() => {
         const columns = atrzDmndSttsCnt.ctReg > 0 ? 'ctAplyBtnColumns' : 'ctAplyStrColumns';
@@ -46,7 +44,7 @@ const ProjectExpense = () => {
         const apiInfo = [
             { url: "commonSelect", param: [{ tbNm: "PRJCT_INDVDL_CT_MM" }, { empId, aplyYm, aplyOdr }], setter: setCtAtrzCmptnData },
             { url: "queryIdSearch", param: { queryId: aplyAndAtrzCtQueryId, empId, aplyYm, aplyOdr }, setter: setCtAply }, // 비용 청구내역
-            { url: "queryIdSearch", param: { queryId: aplyAndAtrzCtQueryId, empId, aplyYm, aplyOdr, atrz: true }, setter: setCtAtrz }, // 전자결재 내역
+            { url: "queryIdSearch", param: { queryId: aplyAndAtrzCtQueryId, empId, aplyYm, aplyOdr, atrz: 'atrz' }, setter: setCtAtrz }, // 전자결재 내역
             { url: "queryIdSearch", param: { queryId: dmndSttsQueryId, empId, aplyYm, aplyOdr }, setter: setCtAtrzDmndSttsData } // 결재요청상태코드별 건수
         ];
         const promises = apiInfo.map(api => ApiRequest(`/boot/common/${api.url}`, api.param));
@@ -92,18 +90,17 @@ const ProjectExpense = () => {
     };
 
     const getButtonsShow = () => {
-        if (ctAtrzCmptnYn === 'N' && (atrzDmndSttsCnt.aprvDmnd > 0 || atrzDmndSttsCnt.rjct > 0)) {
-            return buttonsConfig.hasApprovals;
-        };
+        if (ctAtrzCmptnYn === 'N' && (atrzDmndSttsCnt.aprvDmnd > 0 || atrzDmndSttsCnt.rjct > 0)) return buttonsConfig.hasApprovals;
         if (ctAtrzCmptnYn === 'N' && atrzDmndSttsCnt.inptDdln > 0) return buttonsConfig.noApprovals;
         if (ctAtrzCmptnYn === 'Y') return buttonsConfig.completed;
+
         return buttonsConfig.default;
     };
 
     const onBtnClick = async (btn, props) => {
         if (window.confirm("삭제하시겠습니까?")) {
-
             const param = { prjctId: props.data.prjctId, prjctCtAplySn: props.data.prjctCtAplySn, empId, aplyYm, aplyOdr };
+            
             if (btn.name === 'atrzDmndSttsCd') { // aply, atrz, atdrn row삭제
                 const tables = ["PRJCT_CT_ATRZ", "PRJCT_CT_APLY", "PRJCT_CT_ATDRN" ];
                 const deleteRow = tables.map(tbNm => ApiRequest("/boot/common/commonDelete", [{ tbNm }, param]));
@@ -166,6 +163,7 @@ const ProjectExpense = () => {
                                     aplyYm={aplyYm}
                                     aplyOdr={aplyOdr}
                                     setIndex={setIndex}
+                                    getData={getData}
                                 />
                             </React.Suspense>
                         );
