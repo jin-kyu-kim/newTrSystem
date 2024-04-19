@@ -138,7 +138,6 @@ const EmpManage = ({}) => {
   };
  
   const onRowClick = (e) => {   //직원목록 로우 클릭 이벤트
-    console.log("로우선택시e",e)
     setEmpYear(null);
     setEmpMonth(null);
     setEmpOdr(null);

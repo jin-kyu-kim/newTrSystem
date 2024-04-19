@@ -48,7 +48,6 @@ export default function SideNavigationMenu(props) {
   }, [openMenu]);
 
   useEffect(() => {
-    console.log(status);
     const treeView = treeViewRef.current && treeViewRef.current.instance;
     if (!treeView) {
       return;
@@ -60,10 +59,16 @@ export default function SideNavigationMenu(props) {
     }
 
     if (compactMode) {
+      
       treeView.collapseAll();
     }
   }, [currentPath, compactMode]);
 
+    useEffect(()=>{ //초기 렌더링시 메뉴 닫아두기
+      const treeView = treeViewRef.current && treeViewRef.current.instance;
+      treeView.collapseAll();
+    },[])
+  
   return (
     <div
       className={'dx-swatch-additional side-navigation-menu'}
