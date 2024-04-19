@@ -15,6 +15,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
     const [contents, setContents] = useState([]);   
     const [structuredData, setStructuredData] = useState({});   //기간 구조 데이터
 
+
     //기간 데이터를 받아와서 년도별로 월을 나누어서 배열로 만들어주는 함수
     useEffect(() => {
         const periodData = period.reduce((acc, period) => {
@@ -116,7 +117,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
             ...currentData,
             "total" : fixedSum,
             ...(data.userDfnValue ? { "gramt" : multifulSum } : {}),
-            ...(data.outordEmpId ? { "gramt" : Number((fixedSum * data.untpc).toFixed(0))} : {}),
+            // ...(data.outordEmpId ? { "gramt" : Number((fixedSum * data.untpc).toFixed(0))} : {}),
         })); 
     };
 
@@ -439,7 +440,7 @@ const onRowUpdateingMonthData = async() => {
                         </div>
                     </div>
                     <CustomLabelValue props={popupInfo.labelValue.tkcgJob} value={data.tkcgJob} onSelect={handleChgState}/>
-                    <CustomLabelValue props={popupInfo.labelValue.untpc} value={data.untpc} onSelect={handleChgState}/>
+                    <CustomLabelValue props={popupInfo.labelValue.userDfnValue} value={data.userDfnValue} onSelect={handleChgState}/>
                     <CustomLabelValue props={popupInfo.labelValue.gramt} value={data.gramt} onSelect={handleChgState} readOnly={popupInfo.labelValue.total.readOnly}/>
                     <CustomLabelValue props={popupInfo.labelValue.total} value={data.total} onSelect={handleChgState} readOnly={popupInfo.labelValue.total.readOnly}/>
                     <CustomLabelValue props={popupInfo.labelValue.inptPrnmntYmd} value={data.inptPrnmntYmd} onSelect={handleChgState}/>
@@ -502,7 +503,7 @@ const onRowUpdateingMonthData = async() => {
                                         <>
                                         <th key={year} style={{ width: "50px", textAlign: "center" }}> {year}년 </th>
                                         <th key={index} style={{textAlign:"center"}}> {popupInfo.popupFormat} </th>
-                                        { popupInfo.menuName === "ProjectEmpCostJson" &&
+                                        { (popupInfo.menuName === "ProjectEmpCostJson" || popupInfo.menuName === "ProjectOutordEmpCostJson") &&
                                             <th style={{textAlign:"center", width: "10px"}}> 단가 </th>
                                         }
                                         </>
@@ -531,10 +532,10 @@ const onRowUpdateingMonthData = async() => {
                                             max={popupInfo.popupMax}
                                             min={popupInfo.popupMin}
                                             />): ''}</td>
-                                            { popupInfo.menuName === "ProjectEmpCostJson" &&
+                                            { (popupInfo.menuName === "ProjectEmpCostJson" || popupInfo.menuName === "ProjectOutordEmpCostJson") &&
                                             <td style={{width:"20%", padding:"5px"}}>
                                                 <NumberBox 
-                                                    value= {data.mmnyLbrcoPrmpcSn ? 
+                                                    value= {(data.mmnyLbrcoPrmpcSn || data.outordLbrcoPrmpcSn)? 
                                                             transformedData.find(item => item.id === `${Object.keys(structuredData)[colIndex]}${months[rowIndex]}_untpc`)?.value || 0 
                                                             : data.userDfnValue}
                                                     readOnly={true}

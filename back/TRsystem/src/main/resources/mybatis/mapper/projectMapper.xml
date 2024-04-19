@@ -722,11 +722,11 @@
 	<select id="retrieveOutordHnfPrmpc" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT 
 		   O.*,
-		   E.OUTORD_EMP_NM, 
+		   E.EMP_FLNM AS OUTORD_EMP_NM, 
 		   C.CD_NM AS HNF_ROLE_CD_NM, 
 		   D.CD_NM AS HNF_GRAD_CD_NM
 		FROM OUTORD_LBRCO_PRMPC O
-		LEFT JOIN OUTORD_EMP E ON E.OUTORD_EMP_ID = O.OUTORD_EMP_ID 
+		LEFT JOIN EMP E ON E.EMP_ID = O.OUTORD_EMP_ID 
 		JOIN CD C ON O.HNF_ROLE_CD = C.CD_VALUE
 		JOIN CD D ON O.HNF_GRAD_CD = D.CD_VALUE
 		WHERE 1=1
@@ -1304,79 +1304,66 @@
 
 
     <select id="retrievePrjctAtrzAuthrt" parameterType="map" resultType="com.trsystem.LowerHashMap" >
-
-        SELECT
-        EMP_ID,
-        EMPNO,
-        EMP_FLNM,
-        JBPS_NM,
-        DEPT_ID,
-        HDOF_STTS_NM,
-        READ_YN,
-        WRITE_YN
-        FROM(
-        SELECT
-        E.EMP_ID AS EMP_ID,
-        E.EMPNO AS EMPNO,
-        E.EMP_FLNM AS EMP_FLNM,
-        C.CD_NM AS JBPS_NM,
-        GROUP_CONCAT(D.DEPT_NM) AS DEPT_ID,
-        C2.CD_NM AS HDOF_STTS_NM,
-        CASE WHEN PMA.EMP_ID IS NOT NULL AND PMA.PRJCT_MNG_AUTHRT_CD = 'VTW05201' OR PMA.PRJCT_MNG_AUTHRT_CD = 'VTW05202'  THEN 'Y'
-        WHEN PMA.EMP_ID IS NULL THEN 'N'
-        ELSE 'N'
-        END AS READ_YN,
-        CASE WHEN PMA.EMP_ID IS NOT NULL AND PMA.PRJCT_MNG_AUTHRT_CD = 'VTW05202'  THEN 'Y'
-        WHEN PMA.EMP_ID IS NULL THEN 'N'
-        ELSE 'N'
-        END AS WRITE_YN
-        FROM
-        EMP E
-        LEFT OUTER JOIN
-        CD C ON C.CD_VALUE = E.JBPS_CD
-        LEFT OUTER JOIN
-        DEPT_HNF DF ON E.EMP_ID = DF.EMP_ID
-        LEFT OUTER JOIN
-        DEPT D ON D.DEPT_ID = DF.DEPT_ID
-        LEFT OUTER JOIN
-        CD C2 ON C2.CD_VALUE = E.HDOF_STTS_CD
-        LEFT OUTER JOIN
-        CD C3 ON C3.CD_VALUE = E.BANK_CD
-        LEFT OUTER JOIN
-        EMP_HIST EH ON EH.EMP_ID = E.EMP_ID
-        LEFT OUTER JOIN PRJCT_MNG_AUTHRT PMA
-        ON E.EMP_ID = PMA.EMP_ID   AND PMA.PRJCT_ID = #{prjctId}
-        LEFT OUTER JOIN PRJCT P ON P.PRJCT_ID = PMA.PRJCT_ID
-        WHERE 1=1
-
-        <if test="empno != null and empno !=''">
-            AND E.EMPNO LIKE CONCAT('%', #{empno}, '%')
-        </if>
-
-        <if test="empFlnm != null and empFlnm !=''">
-            AND E.EMP_FLNM LIKE CONCAT('%', #{empFlnm}, '%')
-        </if>
-
-        <if test="jbpsNm != null and jbpsNm !=''">
-            AND E.JBPS_CD = #{jbpsNm}
-        </if>
-
-        <if test="telNo != null and telNo !=''">
-            AND E.TELNO LIKE CONCAT('%', #{telNo}, '%')
-        </if>
-        <if test="deptId != null and deptId !=''">
-            AND D.DEPT_ID = #{deptId}
-        </if>
-
-        <if test="hdofSttsNm != null and hdofSttsNm !=''">
-            AND C2.CD_VALUE = #{hdofSttsNm}
-        </if>
-        GROUP BY
-        E.EMP_ID, E.EMPNO, E.EMP_FLNM, E.EMP_TY_CD, C.CD_NM,
-        E.TELNO, E.EML, C2.CD_NM, C3.CD_NM, E.ACTNO, C.CD_VALUE, C3.CD_VALUE, C2.CD_VALUE,READ_YN, WRITE_YN
-        ORDER BY
-        E.JBPS_CD ASC
-        ) A
+		SELECT EMP_ID
+		      , EMPNO
+		      , EMP_FLNM
+			  , JBPS_NM
+			  , DEPT_ID
+		      , HDOF_STTS_NM
+			  , READ_YN
+			  , WRITE_YN
+		  FROM  (
+		        SELECT E.EMP_ID AS EMP_ID
+					 , E.EMPNO AS EMPNO
+					 , E.EMP_FLNM AS EMP_FLNM
+					 , C.CD_NM AS JBPS_NM
+					 , GROUP_CONCAT(DISTINCT D.DEPT_NM) AS DEPT_ID
+					 , C2.CD_NM AS HDOF_STTS_NM
+					 , CASE WHEN PMA.EMP_ID IS NOT NULL AND PMA.PRJCT_MNG_AUTHRT_CD = 'VTW05201' OR PMA.PRJCT_MNG_AUTHRT_CD = 'VTW05202'  THEN 'Y'
+							WHEN PMA.EMP_ID IS NULL THEN 'N'
+							ELSE 'N'
+							END AS READ_YN
+					 , CASE WHEN PMA.EMP_ID IS NOT NULL AND PMA.PRJCT_MNG_AUTHRT_CD = 'VTW05202'  THEN 'Y'
+						    WHEN PMA.EMP_ID IS NULL THEN 'N'
+						    ELSE 'N'
+						    END AS WRITE_YN
+		          FROM EMP E
+		          LEFT OUTER JOIN CD C ON C.CD_VALUE = E.JBPS_CD
+		          LEFT OUTER JOIN DEPT_HNF DF ON E.EMP_ID = DF.EMP_ID
+		          LEFT OUTER JOIN DEPT D ON D.DEPT_ID = DF.DEPT_ID
+		          LEFT OUTER JOIN CD C2 ON C2.CD_VALUE = E.HDOF_STTS_CD
+		          LEFT OUTER JOIN CD C3 ON C3.CD_VALUE = E.BANK_CD
+		          LEFT OUTER JOIN EMP_HIST EH ON EH.EMP_ID = E.EMP_ID
+		          LEFT OUTER JOIN PRJCT_MNG_AUTHRT PMA ON E.EMP_ID = PMA.EMP_ID AND PMA.PRJCT_ID = #{prjctId}
+		          LEFT OUTER JOIN PRJCT P ON P.PRJCT_ID = PMA.PRJCT_ID
+		         WHERE 1=1
+		        <if test="empno != null and empno !=''">
+		            AND E.EMPNO LIKE CONCAT('%', #{empno}, '%')
+		        </if>
+		
+		        <if test="empFlnm != null and empFlnm !=''">
+		            AND E.EMP_FLNM LIKE CONCAT('%', #{empFlnm}, '%')
+		        </if>
+		
+		        <if test="jbpsNm != null and jbpsNm !=''">
+		            AND E.JBPS_CD = #{jbpsNm}
+		        </if>
+		
+		        <if test="telNo != null and telNo !=''">
+		            AND E.TELNO LIKE CONCAT('%', #{telNo}, '%')
+		        </if>
+		        <if test="deptId != null and deptId !=''">
+		            AND D.DEPT_ID = #{deptId}
+		        </if>
+		
+		        <if test="hdofSttsNm != null and hdofSttsNm !=''">
+		            AND C2.CD_VALUE = #{hdofSttsNm}
+		        </if>
+		        GROUP BY
+		        E.EMP_ID, E.EMPNO, E.EMP_FLNM, E.EMP_TY_CD, C.CD_NM,
+		        E.TELNO, E.EML, C2.CD_NM, C3.CD_NM, E.ACTNO, C.CD_VALUE, C3.CD_VALUE, C2.CD_VALUE,READ_YN, WRITE_YN
+		        ORDER BY E.JBPS_CD ASC
+		        ) A
     </select>
 
     <select id="retrieveYnPrjctAtrzAuthrt" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -1409,5 +1396,14 @@
           AND APLY_YM = #{aplyYm}
           AND APLY_ODR = #{aplyOdr}
           AND EMP_ID = #{empId}
+    </select>
+    
+    <select id="retrieveoutordEmpPrmpc" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT EMP_ID AS OUTORD_EMP_ID
+		  	,EMP_FLNM AS OUTORD_EMP_NM
+		from EMP
+		WHERE 1=1
+		AND EMP_TY_CD = 'VTW00203'
+		AND HDOF_STTS_CD = 'VTW00301'
     </select>
 </mapper>
