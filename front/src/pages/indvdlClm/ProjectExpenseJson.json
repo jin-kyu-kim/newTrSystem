@@ -199,7 +199,8 @@
         "queryId": "projectExpenseMapper.retrieveElctrnAtrzClm",
         "valueExpr" : "elctrnAtrzId",
         "displayExpr": "clmAtrzTtl",
-        "name": "elctrnAtrzId"
+        "name": "elctrnAtrzId",
+        "values": ["elctrnAtrzId"]
       }
     }
   ]

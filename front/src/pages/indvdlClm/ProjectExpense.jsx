@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button, TabPanel } from "devextreme-react";
 import ProjectExpenseJson from "./ProjectExpenseJson.json"
 import ApiRequest from "../../utils/ApiRequest";
@@ -8,6 +8,7 @@ import CustomTable from 'components/unit/CustomTable';
 
 const ProjectExpense = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { ExpenseInfo, keyColumn, ctAplyTableColumns, elcKeyColumn, columnCharge, buttonsConfig,
             aplyAndAtrzCtQueryId, dmndSttsQueryId } = ProjectExpenseJson.ProjectExpenseMain;
     const [index, setIndex] = useState(0);
@@ -18,7 +19,7 @@ const ProjectExpense = () => {
     const [mmAplyCnt, setMmAplyCnt] = useState(); // 비용 청구 건수 (없을 시 근무시간 먼저)
     const [ctAtrzCmptnYn, setCtAtrzCmptnYn] = useState(null); // 비용결재완료여부
     const [cookies] = useCookies([]);
-    const empId = cookies.userInfo.empId;
+    const empId = location.state ? location.state.empId: cookies.userInfo.empId;
     const date = new Date();
     const year = date.getFullYear();
     const month = date.getDate() > 15 ? date.getMonth() + 1 : date.getMonth();

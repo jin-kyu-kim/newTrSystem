@@ -1,10 +1,8 @@
 import ApiRequest from 'utils/ApiRequest';
 
 export const validateFields = async (selectedItem, placeholderAndRequired, setValidationErrors, buttonGroup) => {
-    console.log('selectedItem!!!', selectedItem)
-
-    const newErrors = [];
-    const errorMessages = new Set();
+    let newErrors = [];
+    let errorMessages = new Set();
 
     let smartPhoneErrors = 0;
     let dinnerErrors = false;
@@ -15,18 +13,25 @@ export const validateFields = async (selectedItem, placeholderAndRequired, setVa
         errorMessages.add('선택된 사용내역이 없습니다.');
     }
 
-    if (selectedItem.some(item => item.prjctId === null || (buttonGroup.length < 2 && !item.prjctId))) {
-        newErrors.push('error');
-        errorMessages.add('프로젝트를 선택해주세요');
-    }
-
-    if (selectedItem.some(item => item.prjctId !== null && (item.expensCd === null || (buttonGroup.length < 2 && !item.expensCd)))) {
-        newErrors.push('error');
-        errorMessages.add('비용코드를 선택해주세요');
-    }
+    const cashArr = [ "ctAtrzSeCdNm", "utztnDt", "useOffic", "utztnAmt" ];
 
     // 비용코드에 따른 필수값 검사
     selectedItem.forEach(item => {
+        const cashRequired = cashArr.every(key => item[key] !== null || item[key] !== undefined);
+
+        if(!cashRequired) {
+            newErrors.push('error');
+            errorMessages.add('필수항목을 모두 입력해주세요.');
+
+        } else if(item.prjctId === null || (buttonGroup.length < 2 && !item.prjctId)) {
+            newErrors.push('error');
+            errorMessages.add('프로젝트를 선택해주세요');
+
+        } else if(item.prjctId !== null && (item.expensCd === null || (buttonGroup.length < 2 && !item.expensCd))) {
+            newErrors.push('error');
+            errorMessages.add('비용코드를 선택해주세요');
+        }
+
         const expensRules = placeholderAndRequired.find(rule => rule.expensCd === item.expensCd);
 
         if (expensRules) {
@@ -37,14 +42,14 @@ export const validateFields = async (selectedItem, placeholderAndRequired, setVa
                     cardUseSn: item.cardUseSn || null, // 단건 입력에서는 cardUseSn이 없을 수 있으므로 null 처리
                     field: 'ctPrpos'
                 });
-                errorMessages.add('모든 필수항목을 입력해주세요.');
+                errorMessages.add('필수항목을 모두 입력해주세요.');
             }
             if (requiredFields.atdrn && (!item.atdrn || item.atdrn.length === 0)) {
                 newErrors.push({
                     cardUseSn: item.cardUseSn || null,
                     field: 'atdrn'
                 });
-                errorMessages.add('모든 필수항목을 입력해주세요.');
+                errorMessages.add('필수항목을 모두 입력해주세요.');
             }
 
             if (item.expensCd === 'VTW04509') {

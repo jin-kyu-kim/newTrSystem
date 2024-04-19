@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { TagBox, TextBox } from "devextreme-react";
+import { SelectBox } from "devextreme-react/select-box";
 import { validateFields, hasError } from './ProjectExpenseValidate';
 import ProjectExpenseSubmit from "./ProjectExpenseSubmit";
 import ProjectExpenseJson from "./ProjectExpenseJson.json";
@@ -11,9 +12,12 @@ const ProjectExpenseCash = (props) => {
     const { labelValue } = ProjectExpenseJson;
     const { sendTbInfo, placeholderAndRequired, btnInfo } = ProjectExpenseJson.ProjectExpenseTab;
     const [ validationErrors, setValidationErrors ] = useState([]);
-    const [ customParam, setCustomParam ] = useState({
-        queryId: "indvdlClmMapper.retrieveExpensCdPrjctAccto"
-    });
+    const [ atrzList, setAtrzList ] = useState([]);
+    const [ customParam, setCustomParam ] = useState({ queryId: "indvdlClmMapper.retrieveExpensCdPrjctAccto" });
+    const atrzParam = {
+        queryId: "projectExpenseMapper.retrieveElctrnAtrzClm",
+        empId: props.empId
+    };
     const [ empList, setEmpList ] = useState([]);
     const [ value, setValue ] = useState([{
         empId: props.empId,
@@ -45,6 +49,12 @@ const ProjectExpenseCash = (props) => {
         })
     }, [value[0].prjctId]);
     
+    const getAtrzList = async () => {
+        const response = await ApiRequest('/boot/common/queryIdSearch', {
+            queryId: "projectExpenseMapper.retrieveElctrnAtrzClm", 
+        })
+    }
+
     const handleChgValue = (data) => {
         setValue(prevValue => [{
             ...prevValue[0],
@@ -59,7 +69,7 @@ const ProjectExpenseCash = (props) => {
                     <CustomComboBox
                         label={item.label}
                         props={item.param}
-                        customParam={customParam}
+                        customParam={item.name === 'expensCd' ? customParam : atrzParam }
                         onSelect={handleChgValue}
                         placeholder={item.placeholder}
                         value={value[0][item.name]}

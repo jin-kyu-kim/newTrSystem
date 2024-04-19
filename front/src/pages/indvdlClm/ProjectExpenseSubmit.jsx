@@ -29,16 +29,16 @@ const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handle
 
     if (!window.confirm("등록하시겠습니까?")) return;
 
-    try {
-      const ynUpdated = await updateYn();
+    // try {
+    //   const ynUpdated = await updateYn();
 
-      if (ynUpdated) {
-        const mmInserted = await insertMM();
-        if (mmInserted) await insertValue();
-      }
-    } catch (error) {
-      console.error("error", error);
-    }
+    //   if (ynUpdated) {
+    //     const mmInserted = await insertMM();
+    //     if (mmInserted) await insertValue();
+    //   }
+    // } catch (error) {
+    //   console.error("error", error);
+    // }
   };
 
   /** CARD_USE_DTLS - PRJCT_CT_INPT_PSBLTY_YN 값 => "N" */
