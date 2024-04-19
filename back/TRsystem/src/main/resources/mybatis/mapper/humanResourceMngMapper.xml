@@ -162,11 +162,12 @@
 	<!--사번max값 조회용 쿼리-->
 	<select id="retrieveEmpnoMax" parameterType="map" resultType="com.trsystem.LowerHashMap">
 	SELECT
-		CONCAT(#{empnoChk},IFNULL(LPAD(MAX(substr(empno, 3))+1, '4', '0'),0001)) as  EMPNO_CHK
+		CONCAT(#{empnoChk},IFNULL(LPAD(MAX(substr(empno, 3))+1, '4', '0'),'0001')) as  EMPNO_CHK
 	FROM
 		EMP
 	WHERE
-		EMPNO LIKE CONCAT(#{empnoChk},'%');
+		EMPNO LIKE CONCAT(#{empnoChk},'%')
+		AND EMPNO NOT LIKE 'VKP%'
 	</select>
 
 

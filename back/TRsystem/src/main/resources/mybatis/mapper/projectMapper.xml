@@ -651,6 +651,7 @@
 	  SELECT e.EMP_ID, 
 	  		 e.EMP_FLNM, 
 	  		 e.JBPS_CD,
+	  		 e.EMPNO,
 	  		 c.CD_NM,
 	  		 c.USER_DFN_VALUE, 
 			 CONCAT(e.EMP_FLNM, ' - ' , c.CD_NM) as EMP_NAME_JBPS

@@ -40,17 +40,21 @@
                         "name": "upDeptId"
                      }
         },
-        "deptMngrEmpFlnm": {
-            "name": "deptMngrEmpFlnm",
+        "empId": {
+            "name": "empId",
             "type": "ComboBox",
             "required": true,
             "label": "부서장명",
             "placeholder": "부서장명",
-            "param": { "tbNm" : "EMP",
-                        "valueExpr" : "empId",
-                        "displayExpr": "empFlnm",
-                        "name": "deptMngrEmpFlnm"
-                     }
+            "param":{ 
+                "queryId" : {
+                    "queryId" : "projectMapper.retrieveMmnyHnf"
+                    },
+                "valueExpr" : "empId",
+                "displayExpr": "empNameJbps",
+                "values" : ["empId"],
+                "name" : "empId"
+                }
         },
         "deptBgngYmd": {
             "name": "deptBgngYmd",
