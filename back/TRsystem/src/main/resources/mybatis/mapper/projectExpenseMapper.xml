@@ -33,7 +33,9 @@
 		  AND pca.EMP_ID = #{empId}
 		  AND pca.APLY_YM = #{aplyYm}
 		  AND pca.APLY_ODR = #{aplyOdr}
-          AND pca.ELCTRN_ATRZ_ID IS NULL
+		<if test="atrz == null">
+			AND pca.ELCTRN_ATRZ_ID IS NULL
+		</if>
         <if test="atrz != null">
             AND pca.ELCTRN_ATRZ_ID IS NOT NULL
         </if>

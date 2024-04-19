@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Button } from 'devextreme-react/button'
 import ApiRequest from "utils/ApiRequest";
 
-const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handleDelete, buttonGroup, getCardUseDtls }) => {
+const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handleDelete, buttonGroup, getData }) => {
   const [ completedCount, setCompletedCount ] = useState(0);
   const [ prjctCtAplySn, setPrjctCtAplySn ] = useState([]);
 
@@ -15,7 +15,7 @@ const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handle
   useEffect(() => {
     if (selectedItem.length > 0 && completedCount === selectedItem.length) {
       alert("등록되었습니다.");
-      getCardUseDtls();
+      getData();
     }
   }, [completedCount]);
 
@@ -153,9 +153,9 @@ const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handle
   return (
     <div style={{marginBottom: '20px'}}>
       {buttonGroup.map((btn, index) => (
-        <Button type={btn.type} text={btn.text} style={{marginRight: '10px'}} key={index}
-          onClick={btn.onClick === 'handleDelete' ? handleDelete : handleSubmit} 
-          />
+        <Button onClick={btn.onClick === 'handleDelete' ? handleDelete : handleSubmit} 
+          useSubmitBehavior={true} type={btn.type} text={btn.text} 
+          style={{marginRight: '10px'}} key={index} />
       ))}
     </div>
   );
