@@ -34,7 +34,9 @@ const CultureHealthCostReg = () => {
     const [values, setValues] = useState([]);
     const [attachments, setAttachments] = useState([]);
     const fileUploaderRef = useRef(null);
+    const [deleteFiles, setDeleteFiles] = useState([]);
     const [selectedItem, setSelectedItem] = useState(null);
+    let selectedActIem = useRef(0);
     let now = new Date();
     const Json = CultureHealthCostJson;
     const {labelValue} = Json;
@@ -78,10 +80,17 @@ const CultureHealthCostReg = () => {
 
     const handleAttachmentChange = (e) => {
         setAttachments(e.value);
-        setInitParam({
-            ...initParam,
-            atchmnflId: uuid()
-        });
+        if(e.value.length === 0) {
+            setInitParam({
+                ...initParam,
+                atchmnflId: null
+            });
+        } else {
+            setInitParam({
+                ...initParam,
+                atchmnflId: uuid()
+            });
+        }
     };
 
     const clearFiles = () => {
@@ -120,6 +129,7 @@ const CultureHealthCostReg = () => {
                             tmpElement.atchmnfl = [];
                             tmpElement.atchmnfl.push({
                                 atchmnflId: element.atchmnflId,
+                                atchmnflSn: element.atchmnflSn,
                                 realFileNm: element.realFileNm,
                                 strgFileNm: element.strgFileNm
 
@@ -131,6 +141,7 @@ const CultureHealthCostReg = () => {
                         let copyIndex = tmpValueList[index];
                         copyIndex.atchmnfl.push({
                             atchmnflId: element.atchmnflId,
+                            atchmnflSn: element.atchmnflSn,
                             realFileNm: element.realFileNm,
                             strgFileNm: element.strgFileNm
                         });
@@ -146,7 +157,7 @@ const CultureHealthCostReg = () => {
         }
     }
 
-    const validateData = () => {
+    const validateFile = () => {
         let maxSize = 0;
         attachments.map((file) => {
             if (file !== null) {
@@ -161,31 +172,100 @@ const CultureHealthCostReg = () => {
         return errors.length === 0;
     };
 
+    const validateData = () => {
+        const errors = [];
+        const year = initParam.clmYmd.substring(0, 4);
+        const month = initParam.clmYmd.substring(4, 6) - 1;
+        const day = initParam.clmYmd.substring(6, 8);
+        const clmYmd = new Date(year, month, day);
+
+        if (now.getDate() >5) {
+            if(now.getFullYear() !== clmYmd.getFullYear() || now.getMonth() !== clmYmd.getMonth()){
+                alert('신청 불가능한 일자입니다.')
+                errors.push('Wrong Date');
+            }
+        }else{
+            let firstDayOfMonth = new Date( now.getFullYear(), now.getMonth() , 1 );
+            let lastMonth = new Date ( firstDayOfMonth.setDate( firstDayOfMonth.getDate() - 1 ) );
+            if(!(now.getFullYear() === clmYmd.getFullYear() && now.getMonth() === clmYmd.getMonth()) &&
+                !(lastMonth.getFullYear() === clmYmd.getFullYear() && lastMonth.getMonth() === clmYmd.getMonth())){
+                alert('신청 불가능한 일자입니다.')
+                errors.push('Wrong Date');
+            }
+        }
+
+        if (!initParam.clmYmd || !initParam.clmAmt || !initParam.clturPhstrnSeCd
+            || !initParam.actIem || !initParam.actPurps || !initParam.frcsNm || !initParam.frcsNm) {
+            alert('입력되지 않은 항목이 있습니다.')
+            errors.push('Data required');
+        }
+
+        if (!initParam.atchmnflId) {
+            alert('파일이 첨부되지 않았습니다.')
+            errors.push('File required');
+        }
+
+        return errors.length === 0;
+    };
+
     const handleSubmit = async() => {
         const confirmResult = window.confirm("등록하시겠습니까?");
         if (confirmResult) {
-            const formData = new FormData();
-            const test = {tbNm: "CLTUR_PHSTRN_ACT_CT_REG", snColumn: "clturPhstrnActCtSn", snSearch:{empId: cookies.userInfo.empId}}
-            formData.append("tbNm", JSON.stringify(test));
-            formData.append("data", JSON.stringify(initParam));
-            Object.values(attachments)
-                .forEach((attachment) => formData.append("attachments", attachment));
-            try {
-                if (validateData()) {
+            if (validateData() && validateFile()) {
+                if(!initParam.clturPhstrnActCtSn){
+                    const formData = new FormData();
+                    const tbData = {tbNm: "CLTUR_PHSTRN_ACT_CT_REG", snColumn: "clturPhstrnActCtSn", snSearch:{empId: initParam.empId}}
+                    formData.append("tbNm", JSON.stringify(tbData));
+                    formData.append("data", JSON.stringify(initParam));
+                    Object.values(attachments)
+                        .forEach((attachment) => formData.append("attachments", attachment));
+                    try {
+                        const response = await axios.post("/boot/common/insertlongText", formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            },
+                        })
+                        if (response.status === 200) {
+                            await ApiRequest('/boot/indvdlClm/plusClturPhstrnActCt', initParam);
+                            onResetClick()
+                            searchTable();
+                            window.alert("등록되었습니다.")
+                        }
+                    } catch (error) {
+                        console.error("API 요청 에러:", error);
+                        throw error;
+                    }
+                } else {
+                    const formData = new FormData();
+                    const tbData = {tbNm: "CLTUR_PHSTRN_ACT_CT_REG", snColumn: "clturPhstrnActCtSn", snSearch:{empId: cookies.userInfo.empId}}
+                    formData.append("tbNm", JSON.stringify(tbData));
+                    formData.append("data", JSON.stringify({
+                        "clmAmt": initParam.clmAmt,
+                        "clmYmd": initParam.clmYmd,
+                        "clturPhstrnSeCd": initParam.clturPhstrnSeCd,
+                        "actIem": initParam.actIem,
+                        "actPurps": initParam.actPurps,
+                        "frcsNm": initParam.frcsNm,
+                        "atchmnflId": initParam.atchmnflId
+                    }));
+                    formData.append("idColumn", JSON.stringify({empId: initParam.empId, clturPhstrnActCtSn: initParam.clturPhstrnActCtSn}));
+                    formData.append("deleteFiles", JSON.stringify(deleteFiles));
+                    Object.values(attachments)
+                        .forEach((attachment) => formData.append("attachments", attachment));
                     const response = await axios.post("/boot/common/insertlongText", formData, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
                         },
                     })
                     if (response.status === 200) {
+                        if(selectedActIem !== initParam.actIem){
+                            await ApiRequest('/boot/indvdlClm/editClturPhstrnActCt',selectedActIem, initParam);
+                        }
                         onResetClick()
                         searchTable();
-                        window.alert("등록되었습니다.")
+                        window.alert("수정되었습니다.")
                     }
                 }
-            } catch (error) {
-                console.error("API 요청 에러:", error);
-                throw error;
             }
         }
     };
@@ -201,10 +281,14 @@ const CultureHealthCostReg = () => {
                 const paramCh = [{ tbNm: "CLTUR_PHSTRN_ACT_CT_REG" }, { empId: selectedItem.empId, clturPhstrnActCtSn: selectedItem.clturPhstrnActCtSn }]
                 const responseCh = await ApiRequest("/boot/common/commonDelete", paramCh);
                 if (responseCh === 1) {
-                    const paramAt = [{ tbNm: "ATCHMNFL" }, { atchmnflId: selectedItem.atchmnflId }]
-                    await ApiRequest("/boot/common/commonDelete", paramAt);
-                    searchTable();
-                    window.alert("삭제되었습니다.")
+                    const paramMn = { empId: selectedItem.empId, clmYmd: selectedItem.clmYmd, clturPhstrnSeCd: selectedItem.clturPhstrnSeCd, clmAmt: selectedItem.clmAmt }
+                    const responseMn = await ApiRequest('/boot/indvdlClm/minusClturPhstrnActCt', paramMn);
+                    if (responseMn === 1) {
+                        const paramAt = [{ tbNm: "ATCHMNFL" }, { atchmnflId: selectedItem.atchmnflId }]
+                        await ApiRequest("/boot/common/commonDelete", paramAt);
+                        searchTable();
+                        window.alert("삭제되었습니다.");
+                    }
                 }
             } catch (error) {
                 console.error("API 요청 에러:", error);
@@ -212,6 +296,17 @@ const CultureHealthCostReg = () => {
             }
         }
     };
+
+    const onUpdateClick = async() => {
+        selectedActIem = selectedItem.actIem;
+        setInitParam(selectedItem);
+        // console.log(selectedItem.atchmnfl);
+        setDeleteFiles([{tbNm: "ATCHMNFL"}, selectedItem.atchmnfl]);
+    };
+
+    // useEffect(() => {
+    //     console.log(deleteFiles);
+    // }, [deleteFiles]);
 
     const onResetClick = () => {
         clearFiles();
@@ -275,6 +370,7 @@ const CultureHealthCostReg = () => {
                         </DataGrid>
                     </div>
                     <div style={{display: "flex", justifyContent: "flex-end"}}>
+                        <Button text="수정" onClick={onUpdateClick} disabled={!selectedItem} style={button}></Button>
                         <Button text="삭제" onClick={onDeleteClick} disabled={!selectedItem} type='danger' style={button}></Button>
                     </div>
                 </div>

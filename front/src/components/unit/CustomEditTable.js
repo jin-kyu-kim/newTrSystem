@@ -111,10 +111,12 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
         } 
     }};
 
+    const otherDateFormat = doublePk && { dateSerializationFormat: "yyyyMMdd" };
+
     return (
         <div className="wrap_table">
             <DataGrid
-                dateSerializationFormat="yyyyMMdd"
+                {...otherDateFormat}
                 className='editGridStyle'
                 keyExpr={keyColumn}
                 dataSource={values}

@@ -97,4 +97,22 @@ public class IndvdlClmController {
     public List<Map<String, Object>> updatePrjctMmAply (@RequestBody List<Map<String, Object>> params){
         return IndvdlClmDomain.updatePrjctMmAply(params);
     }
+
+    // 문화체련비 등록 시 청구금액 가산
+    @PostMapping(value = "/boot/indvdlClm/plusClturPhstrnActCt")
+    public int plusClturPhstrnActCt (@RequestBody Map<String, Object> param){
+        return IndvdlClmDomain.plusClturPhstrnActCt(param);
+    }
+
+    // 문화체련비 삭제 시 청구금액 감산
+    @PostMapping(value = "/boot/indvdlClm/minusClturPhstrnActCt")
+    public int minusClturPhstrnActCt (@RequestBody Map<String, Object> param){
+        return IndvdlClmDomain.minusClturPhstrnActCt(param);
+    }
+
+    // 문화체련비 변경 시 청구금액 재계산
+    @PostMapping(value = "/boot/indvdlClm/editClturPhstrnActCt")
+    public int editClturPhstrnActCt (@RequestBody int selectedActIem, @RequestBody Map<String, Object> param){
+        return IndvdlClmDomain.editClturPhstrnActCt(selectedActIem, param);
+    }
 }

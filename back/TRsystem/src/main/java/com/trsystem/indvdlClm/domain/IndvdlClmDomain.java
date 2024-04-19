@@ -467,4 +467,121 @@ public class IndvdlClmDomain {
 
         return null;
     }
+
+    public static int plusClturPhstrnActCt (Map<String, Object> param){
+        Map<String, Object> tbNm = new HashMap<>();
+        tbNm.put("tbNm", "CLTUR_PHSTRN_ACT_CT");
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("empId", param.get("empId"));
+        data.put("clmYm", param.get("clmYmd").toString().substring(0,6));
+
+        List<Map<String, Object>> searchParam = new ArrayList<>();
+        searchParam.add(tbNm);
+        searchParam.add(data);
+        List<Map<String, Object>> search = commonService.commonSelect(searchParam);
+
+        int result = 0;
+        if (!search.isEmpty()) {
+            Map<String, Object> shResult= search.get(0);
+            Map<String, Object> updateData = new HashMap<>();
+            int amt = 0;
+            if(param.get("clturPhstrnSeCd").equals("VTW00901")){
+                if(shResult.get("clturCtClmAmt") != null){
+                    amt = (int)shResult.get("clturCtClmAmt");
+                }
+                updateData.put("clturCtClmAmt", amt + (int)param.get("clmAmt"));
+            } else if (param.get("clturPhstrnSeCd").equals("VTW00902")) {
+                if(shResult.get("ftnessTrngCtClmAmt") != null){
+                    amt = (int)shResult.get("ftnessTrngCtClmAmt");
+                }
+                updateData.put("ftnessTrngCtClmAmt", amt + (int)param.get("clmAmt"));
+            }
+            updateData.put("clmAmt", (int)shResult.get("clmAmt")+(int)param.get("clmAmt"));
+
+            List<Map<String, Object>> updateParam = new ArrayList<>();
+            updateParam.add(tbNm);
+            updateParam.add(updateData);
+            updateParam.add(data);
+            result = commonService.updateData(updateParam);
+        } else {
+            Map<String, Object> insertData = new HashMap<>();
+            insertData.put("empId", param.get("empId"));
+            insertData.put("clmYm", param.get("clmYmd").toString().substring(0,6));
+            if(param.get("clturPhstrnSeCd").equals("VTW00901")){
+                insertData.put("clturCtClmAmt", param.get("clmAmt"));
+            } else if (param.get("clturPhstrnSeCd").equals("VTW00902")) {
+                insertData.put("ftnessTrngCtClmAmt", param.get("clmAmt"));
+            }
+            insertData.put("clmAmt", param.get("clmAmt"));
+
+            List<Map<String, Object>> insertParam = new ArrayList<>();
+            insertParam.add(tbNm);
+            insertParam.add(insertData);
+            result = commonService.insertData(insertParam);
+        }
+        return result;
+    }
+
+    public static int minusClturPhstrnActCt (Map<String, Object> param){
+        Map<String, Object> tbNm = new HashMap<>();
+        tbNm.put("tbNm", "CLTUR_PHSTRN_ACT_CT");
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("empId", param.get("empId"));
+        data.put("clmYm", param.get("clmYmd").toString().substring(0,6));
+
+        List<Map<String, Object>> searchParam = new ArrayList<>();
+        searchParam.add(tbNm);
+        searchParam.add(data);
+        List<Map<String, Object>> search = commonService.commonSelect(searchParam);
+
+        Map<String, Object> shResult= search.get(0);
+        Map<String, Object> updateData = new HashMap<>();
+        if(param.get("clturPhstrnSeCd").equals("VTW00901")){
+            updateData.put("clturCtClmAmt", (int)shResult.get("clturCtClmAmt") - (int)param.get("clmAmt"));
+        } else if (param.get("clturPhstrnSeCd").equals("VTW00902")) {
+            updateData.put("ftnessTrngCtClmAmt", (int)shResult.get("ftnessTrngCtClmAmt") - (int)param.get("clmAmt"));
+        }
+        updateData.put("clmAmt", (int)shResult.get("clmAmt") - (int)param.get("clmAmt"));
+
+        List<Map<String, Object>> updateParam = new ArrayList<>();
+        updateParam.add(tbNm);
+        updateParam.add(updateData);
+        updateParam.add(data);
+        int result = commonService.updateData(updateParam);
+
+        return result;
+    }
+
+    public static int editClturPhstrnActCt (int selectedActIem, Map<String, Object> param){
+        Map<String, Object> tbNm = new HashMap<>();
+        tbNm.put("tbNm", "CLTUR_PHSTRN_ACT_CT");
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("empId", param.get("empId"));
+        data.put("clmYm", param.get("clmYmd").toString().substring(0,6));
+
+        List<Map<String, Object>> searchParam = new ArrayList<>();
+        searchParam.add(tbNm);
+        searchParam.add(data);
+        List<Map<String, Object>> search = commonService.commonSelect(searchParam);
+
+        Map<String, Object> shResult= search.get(0);
+        Map<String, Object> updateData = new HashMap<>();
+        if(param.get("clturPhstrnSeCd").equals("VTW00901")){
+            updateData.put("clturCtClmAmt", (int)shResult.get("clturCtClmAmt") - selectedActIem + (int)param.get("clmAmt"));
+        } else if (param.get("clturPhstrnSeCd").equals("VTW00902")) {
+            updateData.put("ftnessTrngCtClmAmt", (int)shResult.get("ftnessTrngCtClmAmt") - selectedActIem + (int)param.get("clmAmt"));
+        }
+        updateData.put("clmAmt", (int)shResult.get("clmAmt") - selectedActIem + (int)param.get("clmAmt"));
+
+        List<Map<String, Object>> updateParam = new ArrayList<>();
+        updateParam.add(tbNm);
+        updateParam.add(updateData);
+        updateParam.add(data);
+        int result = commonService.updateData(updateParam);
+
+        return result;
+    }
 }

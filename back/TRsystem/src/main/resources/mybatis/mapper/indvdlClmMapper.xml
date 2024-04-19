@@ -439,22 +439,22 @@
     <!-- 프로젝트비용 카드사용내역 조회 -->
     <select id="retrieveExpenseCardUseDtls" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
-        CARD_USE_SN,
-        EMP_ID,
-        PRJCT_ID,
-        EXPENS_CD,
-        ATDRN,
-        CT_PRPOS,
-        APLY_YM,
-        APLY_ODR,
-        CONCAT(SUBSTR(UTZTN_DT, 5, 2),'월 ',SUBSTR(UTZTN_DT,7,2),'일 ',SUBSTR(UTZTN_DT,9,2),':',SUBSTR(UTZTN_DT,11,2)) AS UTZTN_DT_FORMAT,
-        UTZTN_DT,
-        USE_OFFIC,
-        UTZTN_AMT,
-        APRV_NO
+            CARD_USE_SN,
+            EMP_ID,
+            PRJCT_ID,
+            EXPENS_CD,
+            ATDRN,
+            CT_PRPOS,
+            APLY_YM,
+            APLY_ODR,
+            CONCAT(SUBSTR(UTZTN_DT, 5, 2),'월 ',SUBSTR(UTZTN_DT,7,2),'일 ',SUBSTR(UTZTN_DT,9,2),':',SUBSTR(UTZTN_DT,11,2)) AS UTZTN_DT_FORMAT,
+            UTZTN_DT,
+            USE_OFFIC,
+            UTZTN_AMT,
+            APRV_NO
         FROM CARD_USE_DTLS cud
         WHERE 1 = 1
-        AND cud.PRJCT_CT_INPT_PSBLTY_YN = 'Y'
+            AND cud.PRJCT_CT_INPT_PSBLTY_YN = 'Y'
         <if test="empId != null and !empId.equals('')">
             AND cud.EMP_ID = #{empId}
         </if>
@@ -518,19 +518,17 @@
 
     <!-- 프로젝트비용 야근식대 중복 신청 여부 조회 -->
     <select id="retrieveDinnrDpcnYn" parameterType="map" resultType="com.trsystem.LowerHashMap">
-        SELECT ATDRN
-        FROM PRJCT_CT_APLY pca
-        JOIN PRJCT_CT_ATRZ pcaz
-            ON pca.PRJCT_CT_APLY_SN = pcaz.PRJCT_CT_APLY_SN
-            AND pca.EMP_ID = pcaz.EMP_ID
-            AND pca.APLY_YM = pcaz.APLY_YM
-            AND pca.APLY_ODR = pcaz.APLY_ODR
+        SELECT
+            pcatd.ATND_EMP_ID
+        FROM nwTr.PRJCT_CT_APLY pca
+            JOIN nwTr.PRJCT_CT_ATRZ pcaz ON pca.PRJCT_CT_APLY_SN = pcaz.PRJCT_CT_APLY_SN
+                AND pca.EMP_ID = pcaz.EMP_ID
+                AND pca.APLY_YM = pcaz.APLY_YM
+                AND pca.APLY_ODR = pcaz.APLY_ODR
+            JOIN nwTr.PRJCT_CT_ATDRN pcatd  ON pca.PRJCT_CT_APLY_SN = pcatd.PRJCT_CT_APLY_SN
         WHERE 1 = 1
-            AND pca.EXPENS_CD = 'VTW04531'
---             AND pcaz.ATRZ_DMND_STTS_CD NOT IN ('VTW03701','VTW03702','VTW03703')
-        <if test="utztnDt != null and !utztnDt.equals('')">
-            AND SUBSTR(pca.UTZTN_DT, 1, 8) = SUBSTR(#{utztnDt}, 1, 8)
-        </if>
+          AND pca.EXPENS_CD = 'VTW04531'
+          AND SUBSTR(pca.UTZTN_DT, 1, 8) = SUBSTR(#{utztnDt}, 1, 8);
     </select>
 
     <!-- 프로젝트비용 신청 순번 조회 -->
@@ -590,7 +588,7 @@
             (#{actionType} = 'INPUT' AND ATRZ_DMND_STTS_CD IS NULL) OR
             (#{actionType} = 'INPUT_CANCEL' AND ATRZ_DMND_STTS_CD = 'VTW03701') OR
             (#{actionType} = 'APPROVE' AND ATRZ_DMND_STTS_CD = 'VTW03701') OR
-            (#{actionType} = 'APPROVE_CANCEL' AND ATRZ_DMND_STTS_CD = 'VTW03702')
+            (#{actionType} = 'APPROVE_CANCEL' AND ATRZ_DMND_STTS_CD IN ('VTW03702', 'VTW03704'))
             )
           AND EMP_ID = #{empId}
           AND APLY_YM = #{aplyYm}
@@ -616,6 +614,7 @@
         WHERE pca.EMP_ID = #{empId}
           AND pca.APLY_YM = #{aplyYm}
           AND pca.APLY_ODR = #{aplyOdr}
+          AND pca.ELCTRN_ATRZ_ID IS NULL
     </select>
 
     <!-- 비용 결재 요청 상태 건수 조회 -->
