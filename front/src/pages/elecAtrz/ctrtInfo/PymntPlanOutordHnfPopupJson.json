@@ -1,6 +1,6 @@
 {
     "menuName": "PymntPlanPopup",
-    "matrlCtrt": {
+    "hnfCtrt": {
         "labelValue": {
             "outordEmpId": {
                 "type": "ComboBox",
@@ -12,8 +12,8 @@
                             "queryId" : "elecAtrzMapper.retrieveOutordEmpPlan"
                             },
                         "valueExpr" : "outordEmpId",
-                        "displayExpr": "outordEmpId",
-                        "values" : ["prjctId","bgtMngOdr","outordLbrcoPrmpcSn","outordEmpId","hnfRoleCd","hnfGradCd","tkcgJob","untpc","inptPrnmntYmd","withdrPrnmntYmd", "expectMm", "usefulAmt"],
+                        "displayExpr": "outordEmpNm",
+                        "values" : ["prjctId","bgtMngOdr","outordLbrcoPrmpcSn","outordEmpId","outordEmpNm","hnfRoleCd","hnfRoleCdNm","hnfGradCd","hnfGradCdNm","tkcgJob","untpc","inptPrnmntYmd","withdrPrnmntYmd", "expectMm", "usefulAmt"],
                         "name" : "outordEmpId"
                         }
             },
@@ -35,7 +35,7 @@
                             },
                         "valueExpr" : "empId",
                         "displayExpr": "empFlnm",
-                        "values" : ["empId"],
+                        "values" : ["empId","empFlnm"],
                         "name" : "empId"
                         }
             },
