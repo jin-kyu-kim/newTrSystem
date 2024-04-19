@@ -78,10 +78,17 @@ const CultureHealthCostReg = () => {
 
     const handleAttachmentChange = (e) => {
         setAttachments(e.value);
-        setInitParam({
-            ...initParam,
-            atchmnflId: uuid()
-        });
+        if(e.value.length === 0) {
+            setInitParam({
+                ...initParam,
+                atchmnflId: null
+            });
+        } else {
+            setInitParam({
+                ...initParam,
+                atchmnflId: uuid()
+            });
+        }
     };
 
     const clearFiles = () => {
@@ -146,7 +153,7 @@ const CultureHealthCostReg = () => {
         }
     }
 
-    const validateData = () => {
+    const validateFile = () => {
         let maxSize = 0;
         attachments.map((file) => {
             if (file !== null) {
@@ -161,6 +168,36 @@ const CultureHealthCostReg = () => {
         return errors.length === 0;
     };
 
+    const validateData = () => {
+        const errors = [];
+        const year = initParam.clmYmd.substring(0, 4);
+        const month = initParam.clmYmd.substring(4, 6) - 1;
+        const day = initParam.clmYmd.substring(6, 8);
+        const clmYmd = new Date(year, month, day);
+
+        if (now.getDate() >5) {
+            if(now.getFullYear() !== clmYmd.getFullYear() || now.getMonth() !== clmYmd.getMonth()){
+                alert('신청 불가능한 일자입니다.')
+                errors.push('Wrong Date');
+            }
+        }else{
+            let firstDayOfMonth = new Date( now.getFullYear(), now.getMonth() , 1 );
+            let lastMonth = new Date ( firstDayOfMonth.setDate( firstDayOfMonth.getDate() - 1 ) );
+            if(!(now.getFullYear() === clmYmd.getFullYear() && now.getMonth() === clmYmd.getMonth()) &&
+                !(lastMonth.getFullYear() === clmYmd.getFullYear() && lastMonth.getMonth() === clmYmd.getMonth())){
+                alert('신청 불가능한 일자입니다.')
+                errors.push('Wrong Date');
+            }
+        }
+
+        if (!initParam.clmYmd || !initParam.clmAmt || !initParam.clturPhstrnSeCd
+            || !initParam.actIem || !initParam.actPurps || !initParam.frcsNm || !initParam.frcsNm || !initParam.atchmnflId) {
+            alert('입력되지 않은 항목이 있습니다.')
+            errors.push('required');
+        }
+        return errors.length === 0;
+    };
+
     const handleSubmit = async() => {
         const confirmResult = window.confirm("등록하시겠습니까?");
         if (confirmResult) {
@@ -171,7 +208,7 @@ const CultureHealthCostReg = () => {
             Object.values(attachments)
                 .forEach((attachment) => formData.append("attachments", attachment));
             try {
-                if (validateData()) {
+                if (validateData() && validateFile()) {
                     const response = await axios.post("/boot/common/insertlongText", formData, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
