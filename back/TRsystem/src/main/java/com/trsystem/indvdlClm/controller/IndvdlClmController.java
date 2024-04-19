@@ -109,4 +109,10 @@ public class IndvdlClmController {
     public int minusClturPhstrnActCt (@RequestBody Map<String, Object> param){
         return IndvdlClmDomain.minusClturPhstrnActCt(param);
     }
+
+    // 문화체련비 변경 시 청구금액 재계산
+    @PostMapping(value = "/boot/indvdlClm/editClturPhstrnActCt")
+    public int editClturPhstrnActCt (@RequestBody int selectedActIem, @RequestBody Map<String, Object> param){
+        return IndvdlClmDomain.editClturPhstrnActCt(selectedActIem, param);
+    }
 }

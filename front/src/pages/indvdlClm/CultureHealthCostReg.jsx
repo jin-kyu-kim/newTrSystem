@@ -34,7 +34,9 @@ const CultureHealthCostReg = () => {
     const [values, setValues] = useState([]);
     const [attachments, setAttachments] = useState([]);
     const fileUploaderRef = useRef(null);
+    const [deleteFiles, setDeleteFiles] = useState([]);
     const [selectedItem, setSelectedItem] = useState(null);
+    let selectedActIem = useRef(0);
     let now = new Date();
     const Json = CultureHealthCostJson;
     const {labelValue} = Json;
@@ -127,6 +129,7 @@ const CultureHealthCostReg = () => {
                             tmpElement.atchmnfl = [];
                             tmpElement.atchmnfl.push({
                                 atchmnflId: element.atchmnflId,
+                                atchmnflSn: element.atchmnflSn,
                                 realFileNm: element.realFileNm,
                                 strgFileNm: element.strgFileNm
 
@@ -138,6 +141,7 @@ const CultureHealthCostReg = () => {
                         let copyIndex = tmpValueList[index];
                         copyIndex.atchmnfl.push({
                             atchmnflId: element.atchmnflId,
+                            atchmnflSn: element.atchmnflSn,
                             realFileNm: element.realFileNm,
                             strgFileNm: element.strgFileNm
                         });
@@ -191,39 +195,77 @@ const CultureHealthCostReg = () => {
         }
 
         if (!initParam.clmYmd || !initParam.clmAmt || !initParam.clturPhstrnSeCd
-            || !initParam.actIem || !initParam.actPurps || !initParam.frcsNm || !initParam.frcsNm || !initParam.atchmnflId) {
+            || !initParam.actIem || !initParam.actPurps || !initParam.frcsNm || !initParam.frcsNm) {
             alert('입력되지 않은 항목이 있습니다.')
-            errors.push('required');
+            errors.push('Data required');
         }
+
+        if (!initParam.atchmnflId) {
+            alert('파일이 첨부되지 않았습니다.')
+            errors.push('File required');
+        }
+
         return errors.length === 0;
     };
 
     const handleSubmit = async() => {
         const confirmResult = window.confirm("등록하시겠습니까?");
         if (confirmResult) {
-            const formData = new FormData();
-            const tbData = {tbNm: "CLTUR_PHSTRN_ACT_CT_REG", snColumn: "clturPhstrnActCtSn", snSearch:{empId: cookies.userInfo.empId}}
-            formData.append("tbNm", JSON.stringify(tbData));
-            formData.append("data", JSON.stringify(initParam));
-            Object.values(attachments)
-                .forEach((attachment) => formData.append("attachments", attachment));
-            try {
-                if (validateData() && validateFile()) {
+            if (validateData() && validateFile()) {
+                if(!initParam.clturPhstrnActCtSn){
+                    const formData = new FormData();
+                    const tbData = {tbNm: "CLTUR_PHSTRN_ACT_CT_REG", snColumn: "clturPhstrnActCtSn", snSearch:{empId: initParam.empId}}
+                    formData.append("tbNm", JSON.stringify(tbData));
+                    formData.append("data", JSON.stringify(initParam));
+                    Object.values(attachments)
+                        .forEach((attachment) => formData.append("attachments", attachment));
+                    try {
+                        const response = await axios.post("/boot/common/insertlongText", formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            },
+                        })
+                        if (response.status === 200) {
+                            await ApiRequest('/boot/indvdlClm/plusClturPhstrnActCt', initParam);
+                            onResetClick()
+                            searchTable();
+                            window.alert("등록되었습니다.")
+                        }
+                    } catch (error) {
+                        console.error("API 요청 에러:", error);
+                        throw error;
+                    }
+                } else {
+                    const formData = new FormData();
+                    const tbData = {tbNm: "CLTUR_PHSTRN_ACT_CT_REG", snColumn: "clturPhstrnActCtSn", snSearch:{empId: cookies.userInfo.empId}}
+                    formData.append("tbNm", JSON.stringify(tbData));
+                    formData.append("data", JSON.stringify({
+                        "clmAmt": initParam.clmAmt,
+                        "clmYmd": initParam.clmYmd,
+                        "clturPhstrnSeCd": initParam.clturPhstrnSeCd,
+                        "actIem": initParam.actIem,
+                        "actPurps": initParam.actPurps,
+                        "frcsNm": initParam.frcsNm,
+                        "atchmnflId": initParam.atchmnflId
+                    }));
+                    formData.append("idColumn", JSON.stringify({empId: initParam.empId, clturPhstrnActCtSn: initParam.clturPhstrnActCtSn}));
+                    formData.append("deleteFiles", JSON.stringify(deleteFiles));
+                    Object.values(attachments)
+                        .forEach((attachment) => formData.append("attachments", attachment));
                     const response = await axios.post("/boot/common/insertlongText", formData, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
                         },
                     })
                     if (response.status === 200) {
-                        await ApiRequest('/boot/indvdlClm/plusClturPhstrnActCt', initParam);
+                        if(selectedActIem !== initParam.actIem){
+                            await ApiRequest('/boot/indvdlClm/editClturPhstrnActCt',selectedActIem, initParam);
+                        }
                         onResetClick()
                         searchTable();
-                        window.alert("등록되었습니다.")
+                        window.alert("수정되었습니다.")
                     }
                 }
-            } catch (error) {
-                console.error("API 요청 에러:", error);
-                throw error;
             }
         }
     };
@@ -242,10 +284,8 @@ const CultureHealthCostReg = () => {
                     const paramMn = { empId: selectedItem.empId, clmYmd: selectedItem.clmYmd, clturPhstrnSeCd: selectedItem.clturPhstrnSeCd, clmAmt: selectedItem.clmAmt }
                     const responseMn = await ApiRequest('/boot/indvdlClm/minusClturPhstrnActCt', paramMn);
                     if (responseMn === 1) {
-                        if(selectedItem.atchmnflId != null){
-                            const paramAt = [{ tbNm: "ATCHMNFL" }, { atchmnflId: selectedItem.atchmnflId }]
-                            await ApiRequest("/boot/common/commonDelete", paramAt);
-                        }
+                        const paramAt = [{ tbNm: "ATCHMNFL" }, { atchmnflId: selectedItem.atchmnflId }]
+                        await ApiRequest("/boot/common/commonDelete", paramAt);
                         searchTable();
                         window.alert("삭제되었습니다.");
                     }
@@ -256,6 +296,17 @@ const CultureHealthCostReg = () => {
             }
         }
     };
+
+    const onUpdateClick = async() => {
+        selectedActIem = selectedItem.actIem;
+        setInitParam(selectedItem);
+        // console.log(selectedItem.atchmnfl);
+        setDeleteFiles([{tbNm: "ATCHMNFL"}, selectedItem.atchmnfl]);
+    };
+
+    // useEffect(() => {
+    //     console.log(deleteFiles);
+    // }, [deleteFiles]);
 
     const onResetClick = () => {
         clearFiles();
@@ -319,6 +370,7 @@ const CultureHealthCostReg = () => {
                         </DataGrid>
                     </div>
                     <div style={{display: "flex", justifyContent: "flex-end"}}>
+                        <Button text="수정" onClick={onUpdateClick} disabled={!selectedItem} style={button}></Button>
                         <Button text="삭제" onClick={onDeleteClick} disabled={!selectedItem} type='danger' style={button}></Button>
                     </div>
                 </div>
