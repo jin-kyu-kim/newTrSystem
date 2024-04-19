@@ -178,7 +178,7 @@ const CultureHealthCostReg = () => {
                         },
                     })
                     if (response.status === 200) {
-                        await ApiRequest('/boot/indvdlClm/updateClturPhstrnActCt', initParam);
+                        await ApiRequest('/boot/indvdlClm/plusClturPhstrnActCt', initParam);
                         onResetClick()
                         searchTable();
                         window.alert("등록되었습니다.")
@@ -202,10 +202,16 @@ const CultureHealthCostReg = () => {
                 const paramCh = [{ tbNm: "CLTUR_PHSTRN_ACT_CT_REG" }, { empId: selectedItem.empId, clturPhstrnActCtSn: selectedItem.clturPhstrnActCtSn }]
                 const responseCh = await ApiRequest("/boot/common/commonDelete", paramCh);
                 if (responseCh === 1) {
-                    const paramAt = [{ tbNm: "ATCHMNFL" }, { atchmnflId: selectedItem.atchmnflId }]
-                    await ApiRequest("/boot/common/commonDelete", paramAt);
-                    searchTable();
-                    window.alert("삭제되었습니다.")
+                    const paramMn = { empId: selectedItem.empId, clmYmd: selectedItem.clmYmd, clturPhstrnSeCd: selectedItem.clturPhstrnSeCd, clmAmt: selectedItem.clmAmt }
+                    const responseMn = await ApiRequest('/boot/indvdlClm/minusClturPhstrnActCt', paramMn);
+                    if (responseMn === 1) {
+                        if(selectedItem.atchmnflId != null){
+                            const paramAt = [{ tbNm: "ATCHMNFL" }, { atchmnflId: selectedItem.atchmnflId }]
+                            await ApiRequest("/boot/common/commonDelete", paramAt);
+                        }
+                        searchTable();
+                        window.alert("삭제되었습니다.");
+                    }
                 }
             } catch (error) {
                 console.error("API 요청 에러:", error);

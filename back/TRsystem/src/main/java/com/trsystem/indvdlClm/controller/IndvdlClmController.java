@@ -98,9 +98,15 @@ public class IndvdlClmController {
         return IndvdlClmDomain.updatePrjctMmAply(params);
     }
 
-    // 문화체련비 등록 시 청구금액 계산
-    @PostMapping(value = "/boot/indvdlClm/updateClturPhstrnActCt")
-    public int updateClturPhstrnActCt (@RequestBody Map<String, Object> param){
-        return IndvdlClmDomain.updateClturPhstrnActCt(param);
+    // 문화체련비 등록 시 청구금액 가산
+    @PostMapping(value = "/boot/indvdlClm/plusClturPhstrnActCt")
+    public int plusClturPhstrnActCt (@RequestBody Map<String, Object> param){
+        return IndvdlClmDomain.plusClturPhstrnActCt(param);
+    }
+
+    // 문화체련비 삭제 시 청구금액 감산
+    @PostMapping(value = "/boot/indvdlClm/minusClturPhstrnActCt")
+    public int minusClturPhstrnActCt (@RequestBody Map<String, Object> param){
+        return IndvdlClmDomain.minusClturPhstrnActCt(param);
     }
 }
