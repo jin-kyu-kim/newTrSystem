@@ -40,12 +40,12 @@
       "progress": [
         {"key": "cnptNm", "value": "거래처"},
         {"key": "aprvrEmpId", "value": "현재결재권자", "width": 100},
-        {"key": "atrzStepCd" , "value": "현재결재단계", "width": 100},
+        {"key": "atrzStepCdNm" , "value": "현재결재단계", "width": 100},
         {"key": "yn", "value": "결재 회수가능여부", "width": 100}
       ],
       "progressRefer": [
         {"key": "aprvrEmpId", "value": "현재 결재권자"},
-        {"key": "atrzStepCd", "value": "현재 결재단계"}
+        {"key": "atrzStepCdNm", "value": "현재 결재단계"}
       ],
       "terminatedMy": [
         {"key": "atrzSttsCd", "value": "결재상태"},
@@ -55,7 +55,7 @@
         {"key": "atrzSttsCd", "value": "결재상태"}
       ],
       "terminatedRefer": [
-        {"key": "atrzStepCd", "value": "현재 결재단계"}
+        {"key": "atrzStepCdNm", "value": "현재 결재단계"}
       ],
       "deny": [
         {"key": "rjctPrvonsh", "value": "결재", "width": 100}

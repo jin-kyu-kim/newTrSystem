@@ -36,6 +36,7 @@
 		LEFT OUTER JOIN
 		EMP_HIST EH ON EH.EMP_ID = E.EMP_ID
 		WHERE 1=1
+							AND EMP_TY_CD NOT LIKE 'VTW00203%'
 	                        <if test="empno != null and empno !=''">
 	                            AND E.EMPNO LIKE CONCAT('%', #{empno}, '%')
 	                        </if>
