@@ -627,7 +627,7 @@
         UPDATE
             VCATN_MNG
         SET
-            ,USE_DAYCNT					= #{useDaycnt}	                /* 사용일수 */
+            USE_DAYCNT					= #{useDaycnt}	                /* 사용일수 */
             ,VCATN_REMNDR_DAYCNT	    = #{vcatnRemndrDaycnt}			/* 휴가잔여일수 */
             <if test="pblenVcatnUseDaycnt !=null and !pblenVcatnUseDaycnt.equals('')">
                 ,PBLEN_VCATN_USE_DAYCNT	= #{pblenVcatnUseDaycnt}		/* 공적휴가사용일수 */
@@ -644,7 +644,7 @@
         UPDATE
             VCATN_MNG
         SET
-            ,NEW_USE_DAYCNT	            = #{newUseDaycnt}				/* 신규사용일수 */
+            NEW_USE_DAYCNT	            = #{newUseDaycnt}				/* 신규사용일수 */
             ,NEW_REMNDR_DAYCNT	        = #{newRemndrDaycnt}			/* 신규잔여일수 */
             ,MDFCN_DT 					= SYSDATE()						/* 수정일시 */
             ,MDFCN_EMP_ID 				= #{mdfcnEmpId}					/* 수정직원ID */

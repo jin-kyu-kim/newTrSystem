@@ -142,36 +142,84 @@ const ElecAtrzDetail = () => {
         const isconfirm = window.confirm("요청을 승인하시겠습니까?");
         const date = getToday();
         const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
-
         const nowAtrzLnSn = detailData.nowAtrzLnSn;
+
+        /**
+         * 휴가 결재일 경우 승인처리를 따로 해준다.
+         */
         if(isconfirm) {
 
-            const param = [
-                { tbNm: "ATRZ_LN" },
-                { 
-                    atrzSttsCd: "VTW00802",
-                    aprvYmd: date,
-                    mdfcnDt: mdfcnDt,
-                    mdfcnEmpId: cookies.userInfo.empId,
-                },
-                { 
-                    elctrnAtrzId: detailData.elctrnAtrzId,
-                    aprvrEmpId: cookies.userInfo.empId,
-                    atrzLnSn: nowAtrzLnSn
+            if(detailData.elctrnAtrzTySeCd === "VTW04901") {    
+                /** 
+                 * 휴가결재  승인처리 
+                 */
+                const param = {
+                        empId: detailData.atrzDmndEmpId,
+                        elctrnAtrzId: detailData.elctrnAtrzId,
+                        vcatnTyCd: dtlInfo.vcatnTyCd,
+                        vcatnBgngYmd: dtlInfo.vcatnBgngYmd,
+                        vcatnEndYmd: dtlInfo.vcatnEndYmd,
+                        mdfcnEmpId: cookies.userInfo.empId,
+                        atrzStepCd: detailData.atrzStepCd,
+                        aprvParam: [
+                            { tbNm: "ATRZ_LN" },
+                            { 
+                                atrzSttsCd: "VTW00802",
+                                aprvYmd: date,
+                                mdfcnDt: mdfcnDt,
+                                mdfcnEmpId: cookies.userInfo.empId,
+                            },
+                            { 
+                                elctrnAtrzId: detailData.elctrnAtrzId,
+                                aprvrEmpId: cookies.userInfo.empId,
+                                atrzLnSn: nowAtrzLnSn
+                            }
+                        ]
                 }
-            ]
 
-            const response = aprvProcess(param).then((value) => {
+                const response = vacAprvProcess(param).then((value) => {
 
-                console.log("result", value)
-                if(value > 0) {
-                    // 단계 올리기
-                    upNowAtrzLnSn(value);
-                } else {
-                    alert("승인 처리에 실패하였습니다.");
-                    return;
-                }
-            });
+                    console.log(value)
+
+                    if(value[0].atrzLnSn > 0) {
+                        upNowAtrzLnSn(value[0].atrzLnSn);
+                    } else {
+                        alert("승인 처리에 실패하였습니다.");
+                        return;
+                    }
+                });
+
+            } else {
+                 /** 
+                  * 휴가결재 외 승인처리 
+                  */
+                const param = [
+                    { tbNm: "ATRZ_LN" },
+                    { 
+                        atrzSttsCd: "VTW00802",
+                        aprvYmd: date,
+                        mdfcnDt: mdfcnDt,
+                        mdfcnEmpId: cookies.userInfo.empId,
+                    },
+                    { 
+                        elctrnAtrzId: detailData.elctrnAtrzId,
+                        aprvrEmpId: cookies.userInfo.empId,
+                        atrzLnSn: nowAtrzLnSn
+                    }
+                ]
+
+                const response = aprvProcess(param).then((value) => {
+
+                    console.log("result", value)
+                    if(value > 0) {
+                        // 단계 올리기
+                        upNowAtrzLnSn(value);
+                    } else {
+                        alert("승인 처리에 실패하였습니다.");
+                        return;
+                    }
+                });
+            }
         }
     }
 
@@ -183,6 +231,11 @@ const ElecAtrzDetail = () => {
     const aprvProcess = async (param) => {
         const response = await ApiRequest("/boot/elecAtrz/aprvElecAtrz", param);
 
+        return response;
+    }
+
+    const vacAprvProcess = async (param) => {
+        const response = await ApiRequest("/boot/indvdlClm/updateVcatnMng", param);
         return response;
     }
 
@@ -234,7 +287,8 @@ const ElecAtrzDetail = () => {
                     }
                 }
 
-                // 휴가 결재이면서 최종 숭인인 경우 휴가 내용 반영해준다. 
+                // 휴가 결재이면서 최종 숭인인 경우 휴가 내용 반영해준다. => 지환전임님 로직으로 변경하면서 사용하지 않음 (ToDo)
+                /*
                 if(detailData.elctrnAtrzTySeCd === "VTW04901" && nowAtrzLnSn > maxAtrzLnSn) {
                     const vacResult = handleVacation();
                     if(vacResult < 0) {
@@ -243,6 +297,7 @@ const ElecAtrzDetail = () => {
                 }
                 alert("승인 처리되었습니다.");
                 navigate('/elecAtrz/ElecAtrz');
+                */
             } else {
                 alert("승인 처리에 실패하였습니다.");
                 return;

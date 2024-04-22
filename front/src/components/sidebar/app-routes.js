@@ -2,7 +2,7 @@ import { withNavigationWatcher } from './contexts/navigation';
 import React, { lazy } from "react";
 
 const routes = [
-    // 홈
+  // 홈
   {
     path: "home",
     name: "main",
@@ -81,7 +81,7 @@ const routes = [
     name: "EmpAuth",
     element: React.lazy(() => import("../../pages/sysMng/EmpAuthorization")),
   },
-   // 고객사관리
+  // 고객사관리
   {
     path: "/sysMng/CustomersList",
     name: "CustomersList",
@@ -147,8 +147,8 @@ const routes = [
     name: "MeetingRoomManage",
     element: React.lazy(() => import("../../pages/humanResourceMng/MeetingRoomManage")),
   },
-   // 인사관리 휴가사용내역
-   {
+  // 인사관리 휴가사용내역
+  {
     path: "/humanResourceMng/EmpVacUseList",
     name: "EmpVacUseList",
     element: React.lazy(() => import("../../pages/humanResourceMng/EmpVacUseList")),
@@ -171,7 +171,7 @@ const routes = [
     name: "EmpManage",
     element: React.lazy(() => import("../../pages/humanResourceMng/EmpManage")),
   },
- // 법제도
+  // 법제도
   {
     path: "/infoInq/LawRules",
     name: "LawRules",
@@ -207,12 +207,12 @@ const routes = [
     name: "EmpVacation",
     element: React.lazy(() => import("../../pages/indvdlClm/EmpVacation")),
   },
-   // 재무 관리 > 근무시간비용 입력현황
-   {
+  // 재무 관리 > 근무시간비용 입력현황
+  {
     path: "/fnnrMng/TimeExpenseInsertSttus",
     name: "TimeExpenseInsertSttus",
     element: React.lazy(() => import("../../pages/fnnrMng/TimeExpenseInsertSttus")),
-   },
+  },
   // 개인 청구 > 문화체력비용
   {
     path: "/indvdlClm/CultureHealthCost",
@@ -232,8 +232,8 @@ const routes = [
     element: React.lazy(() => import("../../pages/fnnrMng/EmpTimeAprvList")),
   },
 
-   // 재무 관리 > 근무시간, 경비통합
-   {
+  // 재무 관리 > 근무시간, 경비통합
+  {
     path: "/fnnrMng/EmpTRCostTotal",
     name: "EmpTRCostTotal",
     element: React.lazy(() => import("../../pages/fnnrMng/EmpTRCostTotal")),
@@ -255,7 +255,7 @@ const routes = [
     path: "/mngrMenu/ElecAtrzNewForm",
     name: "ElecAtrzNewForm",
     element: React.lazy(() => import("../../pages/mngrMenu/ElecAtrzNewForm")),
-  },  
+  },
   // 관리자메뉴 > 전자결재(관리자)
   {
     path: "/mngrMenu/ElecAtrzManage",
@@ -274,6 +274,12 @@ const routes = [
     name: "ElecAtrzNewReq",
     element: React.lazy(() => import("../../pages/elecAtrz/ElecAtrzNewReq")),
   },
+  // 전자결재 지급 목록 
+  {
+    path: "/elecAtrz/ElecGiveAtrz",
+    name: "ElecGiveAtrz",
+    element: React.lazy(() => import("../../pages/elecAtrz/ElecGiveAtrz")),
+  },
   // 전자결재 서식
   {
     path: "/elecAtrz/ElecAtrzForm",
@@ -285,30 +291,30 @@ const routes = [
     name: "ElecAtrzDetail",
     element: React.lazy(() => import("../../pages/elecAtrz/ElecAtrzDetail")),
   },
-     // 재무 관리 > 문화체련비 관리
-     {
-      path: "/fnnrMng/EmpCultHealthCostManage",
-      name: "EmpCultHealthCostManage",
-      element: React.lazy(() => import("../../pages/fnnrMng/EmpCultHealthCostManage")),
-    },
+  // 재무 관리 > 문화체련비 관리
+  {
+    path: "/fnnrMng/EmpCultHealthCostManage",
+    name: "EmpCultHealthCostManage",
+    element: React.lazy(() => import("../../pages/fnnrMng/EmpCultHealthCostManage")),
+  },
 
-       // 재무 관리 > 문화체련비 관리 > 문화체련비 관리 마감 목록
-   {
+  // 재무 관리 > 문화체련비 관리 > 문화체련비 관리 마감 목록
+  {
     path: "/fnnrMng/EmpCultHealthCostManageDeadLine",
     name: "EmpCultHealthCostManageDeadLine",
     element: React.lazy(() => import("../../pages/fnnrMng/EmpCultHealthCostManageDeadLine")),
   },
-    // 회의실 예약
-    {
-      path: "/infoInq/MeetingRoomReserv",
-      name: "MeetingRoomReserv",
-      element: React.lazy(() => import("../../pages/infoInq/MeetingRoomReserv")),
-    },
+  // 회의실 예약
+  {
+    path: "/infoInq/MeetingRoomReserv",
+    name: "MeetingRoomReserv",
+    element: React.lazy(() => import("../../pages/infoInq/MeetingRoomReserv")),
+  },
 ];
 
 export default routes.map(route => {
-    return {
-        ...route,
-        element: withNavigationWatcher(route.element, route.path)
-    };
+  return {
+    ...route,
+    element: withNavigationWatcher(route.element, route.path)
+  };
 });

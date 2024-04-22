@@ -40,12 +40,12 @@
       "progress": [
         {"key": "cnptNm", "value": "거래처"},
         {"key": "aprvrEmpId", "value": "현재결재권자", "width": 100},
-        {"key": "atrzStepCd" , "value": "현재결재단계", "width": 100},
+        {"key": "atrzStepCdNm" , "value": "현재결재단계", "width": 100},
         {"key": "yn", "value": "결재 회수가능여부", "width": 100}
       ],
       "progressRefer": [
         {"key": "aprvrEmpId", "value": "현재 결재권자"},
-        {"key": "atrzStepCd", "value": "현재 결재단계"}
+        {"key": "atrzStepCdNm", "value": "현재 결재단계"}
       ],
       "terminatedMy": [
         {"key": "atrzSttsCd", "value": "결재상태"},
@@ -55,7 +55,7 @@
         {"key": "atrzSttsCd", "value": "결재상태"}
       ],
       "terminatedRefer": [
-        {"key": "atrzStepCd", "value": "현재 결재단계"}
+        {"key": "atrzStepCdNm", "value": "현재 결재단계"}
       ],
       "deny": [
         {"key": "rjctPrvonsh", "value": "결재", "width": 100}
@@ -135,5 +135,22 @@
     ],
     "groupingData" : 
     {"caption":"구분", "dataField": "ctStlmSeCd", "totalTextColumn": "rciptPblcnYmd"}
+  },
+  "elecGiveAtrz": {
+    "keyColumn": "elctrnAtrzId",
+    "tableColumns": [
+      {"key": "elctrnAtrzId", "value": "문서번호"},
+      {"key": "ctrtKndCdNm", "value": "결재유형"},
+      {"key": "atrzDmndEmpNm", "value": "기안자"},
+      {"key": "regDt", "value": "기안요청일"},
+      {"key": "ctrtAtrzTtl", "value": "결재 명", "width": 200},
+      {"key": "hist", "value": "지급요청내역", "button": {"text": "지급요청내역", "name": "hist"}},
+      {"key": "give", "value": "지급품의", "button": {"text": "지급 품의", "name": "moveReq"}}
+    ],
+    "giveBox": [
+      { "title": "계약서 품의 (외주인력-계약직/계약직업체/프리랜서)", "key": "lbrco", "ctrtKndCd": "VTW04401" },
+      { "title": "계약서 품의 (외주업체)", "key": "entrps", "ctrtKndCd": "VTW04402" },
+      { "title": "계약서 품의 (재료비)", "key": "matrl", "ctrtKndCd": "VTW04403" }
+    ]
   }
 }
