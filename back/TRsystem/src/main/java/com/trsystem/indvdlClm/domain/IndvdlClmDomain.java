@@ -652,7 +652,7 @@ public class IndvdlClmDomain {
         updateVcatnMng.put("vcatnYr", refVcatnMngMap.get("vcatnYr"));
         updateVcatnMng.put("empId", empId);
         updateVcatnMng.put("mdfcnEmpId", mdfcnEmpId);
-        updateVcatnMng.put("status", "UPDATE");
+        updateVcatnMng.put("state", "UPDATE");
 
         // 휴가정합성 확인 후 신규휴가 updateMap
         Map<String, Object> updateNewVcatnMng = new HashMap<>();
@@ -660,7 +660,7 @@ public class IndvdlClmDomain {
         updateNewVcatnMng.put("vcatnYr", refNewVcatnMngMap.get("vcatnYr"));
         updateNewVcatnMng.put("empId", empId);
         updateNewVcatnMng.put("mdfcnEmpId", mdfcnEmpId);
-        updateNewVcatnMng.put("status", "UPDATE");
+        updateNewVcatnMng.put("state", "UPDATE");
         
         // case_A
         // 신규휴가만사용
