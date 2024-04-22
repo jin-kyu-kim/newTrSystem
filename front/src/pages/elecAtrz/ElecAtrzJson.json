@@ -135,5 +135,22 @@
     ],
     "groupingData" : 
     {"caption":"구분", "dataField": "ctStlmSeCd", "totalTextColumn": "rciptPblcnYmd"}
+  },
+  "elecGiveAtrz": {
+    "keyColumn": "elctrnAtrzId",
+    "tableColumns": [
+      {"key": "elctrnAtrzId", "value": "문서번호"},
+      {"key": "ctrtKndCdNm", "value": "결재유형"},
+      {"key": "atrzDmndEmpNm", "value": "기안자"},
+      {"key": "regDt", "value": "기안요청일"},
+      {"key": "ctrtAtrzTtl", "value": "결재 명", "width": 200},
+      {"key": "hist", "value": "지급요청내역", "button": {"text": "지급요청내역", "name": "hist"}},
+      {"key": "give", "value": "지급품의", "button": {"text": "지급 품의", "name": "moveReq"}}
+    ],
+    "giveBox": [
+      { "title": "계약서 품의 (외주인력-계약직/계약직업체/프리랜서)", "key": "lbrco", "ctrtKndCd": "VTW04401" },
+      { "title": "계약서 품의 (외주업체)", "key": "entrps", "ctrtKndCd": "VTW04402" },
+      { "title": "계약서 품의 (재료비)", "key": "matrl", "ctrtKndCd": "VTW04403" }
+    ]
   }
 }

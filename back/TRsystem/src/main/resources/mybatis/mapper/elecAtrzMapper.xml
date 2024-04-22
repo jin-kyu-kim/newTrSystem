@@ -315,5 +315,27 @@
 		 WHERE 1=1
 		   AND ELCTRN_ATRZ_ID = #{elctrnAtrzId}
 	</select>
+
+	<select id="retrieveCtrtAtrz" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT
+			ea.ELCTRN_ATRZ_ID,
+			(SELECT c.CD_NM FROM CD c WHERE c.cd_value = ca.CTRT_KND_CD) AS CTRT_KND_CD_NM, -- 결재유형
+			ca.CTRT_KND_CD,
+			(SELECT EMP_FLNM FROM EMP WHERE EMP_ID = ea.ATRZ_DMND_EMP_ID) ATRZ_DMND_EMP_NM,
+			DATE_FORMAT(ea.REG_DT, '%Y-%m-%d %H:%i:%s') AS REG_DT,
+			ca.CTRT_ATRZ_TTL
+		FROM ELCTRN_ATRZ ea
+		    JOIN CTRT_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID
+		WHERE ca.CTRT_KND_CD = #{ctrtKndCd}
+	</select>
+
+	<select id="retrieveCtrtAtrzCnt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT
+			ca.CTRT_KND_CD,
+			(SELECT c.CD_NM FROM CD c WHERE c.cd_value = ca.CTRT_KND_CD) AS CTRT_KND_CD_NM,
+			COUNT(*) AS CTRT_COUNT
+		FROM CTRT_ATRZ ca
+		GROUP BY ca.CTRT_KND_CD
+	</select>
 	
 </mapper>
