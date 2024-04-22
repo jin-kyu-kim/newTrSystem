@@ -10,23 +10,15 @@
         "height": "auto",
         "title":  "부서 등록"
     },
-	"listQueryId2": "humanResourceMngMapper.retrieveDeptList",
-    "listQueryId": "humanResourceMngMapper.retrieveDeptList2",
+    "listQueryId": "humanResourceMngMapper.retrieveDeptList",
 	"hnfQueryId": "humanResourceMngMapper.retrieveDeptHnfList",
     "hnfKeyColumn": "empId",
     "hafTableColumns": [
         { "key": "empno", "value": "사번"},
         { "key": "empFlnm", "value": "성명" },
         { "key": "jbpsNm", "value": "직위"},
-        { "key": "jbttlNm", "value": "직책" }
-    ],
-    "emplistQueryId": "infoInqMapper.retrieveEmpList",
-    "emplistKeyColumn": "empId",
-    "listTableColumns": [
-        { "key": "empno", "value": "사번", "width": 100, "alignment" : "center" },
-        { "key": "empFlnm", "value": "성명"},
-        { "key": "jbpsNm", "value": "직위"},
-        { "key": "deptId", "value": "소속"}
+        { "key": "jbttlNm", "value": "직책" },
+        { "key": "deptGnfdYmd", "value": "부서발령일자"}
     ],
     "labelValue" : {
         "deptNm": {
@@ -38,7 +30,7 @@
         },
         "upDeptId": {
             "type": "ComboBox",
-            "required": false,
+            "required": true,
             "label": "상위부서",
             "name": "upDeptId",
             "placeholder": "상위부서",
@@ -50,10 +42,15 @@
         },
         "deptMngrEmpFlnm": {
             "name": "deptMngrEmpFlnm",
-            "type": "TextBox",
-            "required": false,
+            "type": "ComboBox",
+            "required": true,
             "label": "부서장명",
-            "placeholder": "부서장명"
+            "placeholder": "부서장명",
+            "param": { "tbNm" : "EMP",
+                        "valueExpr" : "empId",
+                        "displayExpr": "empFlnm",
+                        "name": "deptMngrEmpFlnm"
+                     }
         },
         "deptBgngYmd": {
             "name": "deptBgngYmd",
@@ -66,7 +63,7 @@
             "name": "deptEndYmd",
             "type": "DateBox",
             "label": "부서종료일자",
-            "required": false,
+            "required": true,
             "placeholder": "부서종료일"
         }
     }

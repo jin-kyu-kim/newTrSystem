@@ -1,13 +1,15 @@
-import { Column, DataGrid, Editing, Lookup, MasterDetail, Selection, RequiredRule, StringLengthRule, Pager, Paging } from 'devextreme-react/data-grid';
+import { Column, DataGrid, Editing, Lookup, MasterDetail, Selection, RequiredRule, StringLengthRule, Pager, Paging, Export } from 'devextreme-react/data-grid';
 import { useCallback, useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
-import ToggleButton from 'pages/sysMng/ToggleButton';
+import { Button } from 'devextreme-react';
 import ApiRequest from 'utils/ApiRequest';
-import '../../pages/sysMng/sysMng.css'
+import CellRender from './CellRender';
 import moment from 'moment';
+import '../../pages/sysMng/sysMng.css'
 
-const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal, masterDetail, doublePk, 
-    noEdit, onSelection, onRowClick, removeAdd, callback, handleData, handleExpanding, showPageSize }) => {
+const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal, masterDetail, doublePk, noDataText, noEdit, 
+    onSelection, onRowClick, callback, handleData, handleExpanding, cellRenderConfig, onBtnClick, excel, onExcel, bulkApply }) => {
+
     const [ cookies ] = useCookies(["userInfo", "userAuth"]);
     const [ cdValList, setCdValList ] = useState({});
     const empId = cookies.userInfo.empId;
@@ -44,9 +46,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
             switch (editMode) {
                 case 'insert':
                     if(doublePk !== undefined){
-                        Object.assign(e.data, {
-                            [doublePk.nm]: doublePk.val
-                        });
+                        Object.assign(e.data, {[doublePk.nm]: doublePk.val} );
                     }
                     if(!doublePk){
                         isDuplicate = checkDuplicate(e.data[keyColumn]);
@@ -84,7 +84,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                 console.log(error)
             } 
         } else { handleData(values); }
-    }
+    };
 
     const checkDuplicate = (newKeyValue) => {
         let isDuplicate = false;
@@ -93,44 +93,48 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
         return isDuplicate;
     };
 
-    const buttonRender = (e, col) => {
-        if (col.buttonType === 'toggle') {
-            return ( <ToggleButton callback={handleYnVal} data={e} colData={col} /> )
-        }
-    }
-    const rowEventHandlers = ynVal
-        ? { onRowInserting: (e) => onEditRow('insert', e) }
-        : { onRowInserted: (e) => onEditRow('insert', e) };
+    const cellRender = (col, props) => {
+        return(
+            <CellRender
+                col={col}
+                props={props}
+                handleYnVal={handleYnVal}
+                onBtnClick={onBtnClick}
+                cellRenderConfig={cellRenderConfig}
+            />     
+        )
+    };
+    const otherDateFormat = doublePk && { dateSerializationFormat: "yyyyMMdd" };
+    const rowEventHandlers = ynVal ? { onRowInserting: (e) => onEditRow('insert', e) } : { onRowInserted: (e) => onEditRow('insert', e) };
+    
+    const highlightRows = keyColumn === 'noticeId' && {onRowPrepared: (e) => {
+        if (e.rowType === 'data' && [1, 3].includes(e.data.sgnalOrdr)) {
+            e.rowElement.style.backgroundColor = 'rgb(255, 253, 203)';
+        } 
+    }};
 
     return (
         <div className="wrap_table">
             <DataGrid
+                {...highlightRows}
+                {...otherDateFormat}
+                {...rowEventHandlers}
                 className='editGridStyle'
                 keyExpr={keyColumn}
                 dataSource={values}
                 showBorders={true}
+                noDataText={noDataText}
                 focusedRowEnabled={true}
                 columnAutoWidth={true}
                 wordWrapEnabled={true}
                 repaintChangesOnly={true}
-                noDataText=''
                 onRowClick={onRowClick}
+                onExporting={onExcel}
                 onRowExpanding={handleExpanding}
                 onSelectionChanged={onSelection && ((e) => onSelection(e))}
-                {...rowEventHandlers}
                 onRowUpdating={(e) => onEditRow('update', e)}
                 onRowRemoving={(e) => onEditRow('delete', e)}
-                onCellPrepared={(e) => {
-                    if (e.rowType === 'header') {
-                        e.cellElement.style.textAlign = 'center';
-                        e.cellElement.style.fontWeight = 'bold';
-                    }}}
-                onRowPrepared={(e) => {
-                    if (e.rowType === 'data' && [1, 3].includes(e.data.sgnalOrdr)) {
-                        e.rowElement.style.backgroundColor = 'rgb(255, 253, 203)';
-                    }
-                }}
-                >
+            >
                 {masterDetail && 
                 <MasterDetail
                     style={{backgroundColor: 'lightBlue'}}    
@@ -138,9 +142,9 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                     component={masterDetail}
                  />}
                 {!noEdit && 
-                    <Editing
+                <Editing
                     mode="form"
-                    allowAdding={removeAdd ? false : true}
+                    allowAdding={true}
                     allowDeleting={true}
                     allowUpdating={true}
                     refreshMode='reshape'
@@ -148,7 +152,8 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                         saveRowChanges: '저장',
                         cancelRowChanges: '취소',
                         confirmDeleteMessage: '삭제하시겠습니까?'
-                    }} /> }
+                    }} 
+                /> }
                 {onSelection && <Selection mode="multiple" selectAllMode="page"/>}
                 {columns.map((col) => (
                     <Column
@@ -157,9 +162,16 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                         caption={col.value}
                         dataType={col.type}
                         format={col.format}
+                        width={col.width}
                         alignment={'center'}
                         groupIndex={col.grouping && 0}
-                        cellRender={col.button ? (e) => buttonRender(e, col) : undefined} >
+                        // headerCellRender={col.headerBtn && (() => (
+                        //     <div>
+                        //         <span style={{marginRight: '10px'}}>{col.value}</span>
+                        //         <Button text={col.headerBtn.text} onClick={() => bulkApply(values, col)} type='success'/>
+                        //     </div>
+                        // ))}
+                        cellRender={col.cellType && ((props) => cellRender(col, props) )} >
                         {col.editType === 'selectBox' ? 
                             <Lookup 
                                 dataSource={cdValList[col.key]}
@@ -167,18 +179,18 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                                 valueExpr='cdValue'
                             />
                         : null}
-                        {col.isRequire && <RequiredRule message={`${col.value}는 필수항목입니다`}/>}
-                        {col.length && <StringLengthRule max={col.length} message={`최대입력 길이는 ${col.length}입니다`}/>}
+                        {col.isRequire && <RequiredRule message={`${col.value}는 필수항목입니다`} />}
+                        {col.length && <StringLengthRule max={col.length} message={`최대입력 길이는 ${col.length}입니다`} />}
                     </Column>
                 ))}
                 <Paging defaultPageSize={20} />
                 <Pager
                     displayMode="full"
                     showNavigationButtons={true}
-                    showInfo={false}
-                    showPageSizeSelector={showPageSize}
+                    showPageSizeSelector={true}
                     allowedPageSizes={[20, 50, 80, 100]}
                 />
+                {excel && <Export enabled={true} />}
             </DataGrid>
         </div>
     );

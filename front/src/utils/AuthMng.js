@@ -53,9 +53,11 @@ export async function signOut() {
     }
 }
 
-export async function changePassword(empno, oldPassword, newPassword) {
+export async function changePassword(empId, oldPwd, newPwd) {
     try {
         // Send request
+        const param = {empId:empId, oldPwd: oldPwd, newPwd: newPwd};
+        const response = await ApiRequest("/boot/sysMng/changePwd", param);
         return {
             isOk: true
         };

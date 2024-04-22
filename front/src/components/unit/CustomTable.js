@@ -1,9 +1,10 @@
-import DataGrid, { Column, Export, Pager, Paging, Summary, TotalItem, GroupItem, Grouping } from "devextreme-react/data-grid";
+import DataGrid, { Column, Export, Pager, Paging, Summary, TotalItem, GroupItem, Grouping, MasterDetail } from "devextreme-react/data-grid";
 import GridRows from "./GridRows";
 import AllowedPageSize from "./AllowedPageSize";
 
 const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, onClick,
-                       wordWrap, onRowClick, excel, onExcel,onCellClick, grouping, groupingData, groupingCustomizeText }) => {
+                       wordWrap, onRowClick, excel, onExcel,onCellClick, grouping, groupingData, groupingCustomizeText,
+                       masterDetail, handleExpanding, focusedRowIndex }) => {
   return (
     <div className="wrap_table">
       <DataGrid
@@ -16,7 +17,9 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
         focusedRowEnabled={true}
         columnAutoWidth={false}
         noDataText=""
+        onRowExpanding={handleExpanding}
         onRowDblClick={onRowDblClick}
+        focusedRowIndex={focusedRowIndex}
         onRowClick={onRowClick}
         onExporting={onExcel}
         onCellClick={onCellClick}
@@ -99,6 +102,12 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
       <Export enabled={true} >
       </Export>
       }
+      {masterDetail &&
+      <MasterDetail
+          style={{backgroundColor: 'lightBlue'}}
+          enabled={true}
+          component={masterDetail}
+      />}
       </DataGrid>
     </div>
   );

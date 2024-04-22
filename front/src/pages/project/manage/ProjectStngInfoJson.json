@@ -10,8 +10,8 @@
         { "key": "empFlnm", "value": "성명", "width": 100, "alignment": "center" },
         { "key": "jbpsNm", "value": "직위", "width": 200, "alignment": "center" },
         { "key": "deptId", "value": "소속", "width": 170, "alignment": "center" },
-        {"key": "readYn", "value"  : "조회권한","buttonType"  : "toggle", "button"  : true },
-        {"key": "writeYn", "value"  : "쓰기권한","buttonType"  : "toggle",  "button"  : true }
+        { "key": "readYn", "value"  : "조회권한", "cellType" : "toggle" },
+        { "key": "writeYn", "value"  : "쓰기권한", "cellType" : "toggle" }
 
     ],
     "searchInfo": {

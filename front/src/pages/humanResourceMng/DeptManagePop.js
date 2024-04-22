@@ -23,49 +23,6 @@ const DeptManagePop = ({callBack,data,deptId,deptNm}) => {
          hnfQueryId,hnfKeyColumn,hafTableColumns,
          searchInfo,labelValue}= DeptManagePopJson       
 
-  //화면 전체 배치
-  const tableContainerStyle = {
-    display: "flex",
-  };
-
-  //전체 부서 목록 배치
-  const deptEmpLeftContainerStyle = {
-    width: "50%", // 왼쪽 영역의 너비를 반으로 설정
-    marginTop: "20px",
-  };
-
-  const deptListStyle = {
-    minWidth: "480px",
-  };
-
-  //우측 전체 배치
-  const deptEmpRightContainerStyle = {
-    width: "50%", // 오른쪽 영역의 너비를 반으로 설정
-    display: "flex",
-    flexDirection: "column",
-    marginBottom: "20px",
-  };
-
-  //각 테이블 배치
-  const deptDetailStyle = {
-    flex: "1",
-    marginLeft: "20px", // 각 div 사이의 간격을 조절합니다.
-    marginTop: "40px",
-  };
-
-  //버튼 배치
-  const buttonContainerStyle = {
-    display: "flex",
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  };
-  
-  //부서 상세 버튼
-  const editButtonStyle={
-    marginRight:"10px",
-    marginBottom:"10px",
-  }
- 
 //========================초기 부서인력정보 조회=====================================
   useEffect(() => {
     setDeptEmpParam({
@@ -310,13 +267,11 @@ const updateDeptEmp = async (updateParam,InsertHistParam) => {
             <CustomLabelValue props={labelValue.empFlnm} onSelect={handleChgState} value={deptAptParam.empFlnm} readOnly={true}/>
             <CustomLabelValue props={labelValue.jbpsCd} onSelect={handleChgState} value={deptAptParam.jbpsCd} readOnly={true}/>
             <CustomLabelValue props={labelValue.jbttlCd} onSelect={handleChgState} value={deptAptParam.jbttlCd}/>
-
             {deptAptParam.empId != null ? (
               <div className="buttonContainer" style={buttonContainerStyle}>
                 <Button style={editButtonStyle} onClick={deptAptInst} text="발령" />
               </div>
             ) : null}
-
 
             <CustomTable keyColumn={hnfKeyColumn} columns={hafTableColumns} values={data} paging={true} onRowClick={onHnfRowClick}/>
 
@@ -335,3 +290,49 @@ const updateDeptEmp = async (updateParam,InsertHistParam) => {
 };
 
 export default DeptManagePop;
+
+
+//=================================================css설정==============================================
+  //화면 전체 배치
+  const tableContainerStyle = {
+    display: "flex",
+  };
+
+  //전체 부서 목록 배치
+  const deptEmpLeftContainerStyle = {
+    width: "50%", // 왼쪽 영역의 너비를 반으로 설정
+    marginTop: "20px",
+  };
+
+  const deptListStyle = {
+    minWidth: "480px",
+  };
+
+  //우측 전체 배치
+  const deptEmpRightContainerStyle = {
+    width: "50%", // 오른쪽 영역의 너비를 반으로 설정
+    display: "flex",
+    flexDirection: "column",
+    marginBottom: "20px",
+  };
+
+  //각 테이블 배치
+  const deptDetailStyle = {
+    flex: "1",
+    marginLeft: "20px", // 각 div 사이의 간격을 조절합니다.
+    marginTop: "40px",
+  };
+
+  //버튼 배치
+  const buttonContainerStyle = {
+    display: "flex",
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  };
+  
+  //부서 상세 버튼
+  const editButtonStyle={
+    marginRight:"10px",
+    marginBottom:"10px",
+  }
+ 

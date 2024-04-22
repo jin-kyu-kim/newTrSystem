@@ -44,5 +44,5 @@ public class ElecAtrzController {
 	public int insertPrjctCt(@RequestBody Map<String, Object> param) {
 		return ElecAtrzDomain.insertPrjctCt(param);
 	}
-	
+
 }

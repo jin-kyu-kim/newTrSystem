@@ -45,6 +45,13 @@
       "label": "목적",
       "placeholder": "목적",
       "required": true
+    },
+    "frcsNm": {
+      "name": "frcsNm",
+      "type": "TextBox",
+      "label": "가맹점",
+      "placeholder": "가맹점",
+      "required": true
     }
   }
 }

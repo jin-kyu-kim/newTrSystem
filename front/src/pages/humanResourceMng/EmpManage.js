@@ -10,6 +10,7 @@ import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom"; 
 import SearchEmpSet from "components/composite/SearchInfoSet";
 import { resetPassword } from "utils/AuthMng";
+import ExcelUpload from "components/unit/ExcelUpload";
 
 const EmpManage = ({}) => {
 
@@ -19,9 +20,11 @@ const EmpManage = ({}) => {
   const [param, setParam] = useState({});
   const [empFteParam,setEmpFteParam] = useState({}); //인턴->정규직 전환시 사번max값 조회용 param
   const [empMax,setEmpMax] =useState({});   //사번 MAX값
+
   const { listQueryId, listKeyColumn, listTableColumns,       //직원목록조회 
           ejhQueryId, ejhKeyColumn, ejhTableColumns,labelValue,searchInfo            //직원발령정보목록,발령용컴포넌트
         } = EmpManageJson; 
+  const [reForm,setReForm] = useState();
   const [year, setYear] = useState([]);
   const [month, setMonth] = useState([]);
   const [readOnly, setReadOnly] = useState(false);
@@ -47,6 +50,8 @@ const EmpManage = ({}) => {
         { "id": "1","value": "1","text": "1회차" },
         { "id": "2","value": "2","text": "2회차" }
         ];  
+  const [excel, setExcel] = useState();  //엑셀용
+
 //----------------------------------초기 셋팅 영역 --------------------------------
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
@@ -133,10 +138,12 @@ const EmpManage = ({}) => {
   };
  
   const onRowClick = (e) => {   //직원목록 로우 클릭 이벤트
+    console.log("로우선택시e",e)
     setEmpYear(null);
     setEmpMonth(null);
     setEmpOdr(null);
     setEmpJbps(null);
+    setFocusedRowIndex(e.rowIndex);
     for (const value of values) {
       if (value.empId === e.data.empId) {
         setEmpInfo(value);  
@@ -236,9 +243,9 @@ const EmpManage = ({}) => {
       const responseHist = await ApiRequest("/boot/common/commonInsert", paramHist);
         if (responseUpt > 0 && responseHist > 0) {
           alert("저장되었습니다.");
+          setReForm(true);
           empJbpsHistHandle();
           pageHandle();
-          setReset();
         }
     } catch (error) {
       console.error("Error fetching data", error);
@@ -294,10 +301,9 @@ const insertEmpFte = async () => {
         alert("저장되었습니다.");
         setEmpMax({});
         setEmpFteParam({});
+        setReForm(true);
         empJbpsHistHandle();
         pageHandle();
-        setReset();
-      
       }
   } catch (error) {
     console.error("Error fetching data", error);
@@ -341,7 +347,6 @@ const insertEmpFte = async () => {
             empHistSn: maxSn
           }
           ]
-
           cancelJbpsEmpHist(updParam,ehdParam,);
     } else{
       return;
@@ -376,18 +381,20 @@ const cancelJbpsEmpHist = async (updParam,ehdParam) => {       //삭제axios
     }
 
 //===========================reset(regist 콜백용)
- const setReset =()=>{
-    setReadOnly(false);
-    setEmpDetailParam({});
-    setJbpsHistParam({});
-    setHistValues([]);
-    setEmpYear(null);
-    setEmpMonth(null);
-    setEmpOdr(null);
-    setEmpJbps(null);
- }
+    const setReset =()=>{
+        setReadOnly(false);
+        setEmpDetailParam({});
+        setJbpsHistParam({});
+        setHistValues([]);
+        setEmpYear(null);
+        setEmpMonth(null);
+        setEmpOdr(null);
+        setEmpJbps(null);
+        setReForm(false);
+        releaseFocus();
+    }
 
-//================================비밀번호 초기화 (개발예정)
+//================================비밀번호 초기화 
     const onClickRestPwd  = async (e,data) => {
       const isconfirm = window.confirm("비밀번호를 초기화 하시겠습니까?"); 
       if (isconfirm) {
@@ -405,9 +412,20 @@ const cancelJbpsEmpHist = async (updParam,ehdParam) => {       //삭제axios
     
 //===============================발령정보 업로드 (개발예정)
     const empUpload =()=>{
-      alert("발령정보를 업로드 하시겠습니까?")
+      if (excel === undefined || excel === null){
+        window.alert("파일을 등록해주세요.");
+        return;
+    }else{
+      alert("발령등록!!")
     }
-
+    }
+    
+    const [focusedRowIndex, setFocusedRowIndex] = useState(null);
+    
+    const releaseFocus = () => {
+      setFocusedRowIndex(-1);
+      setEmpInfo([]);
+    };
 //=================================화면 그리는 부분 
   return (
     <div className="container">
@@ -424,85 +442,87 @@ const cancelJbpsEmpHist = async (updParam,ehdParam) => {       //삭제axios
         <div>검색된 건 수 : {totalItems} 건</div>
       <div className="tableContainer" style={tableContainerStyle}>
         <div className="empListContainer" style={empListContainerStyle}>
-          <div className="empListTable" style={empListStyle}>
-          <p>
-            <strong>* 직원목록 </strong>
-            </p>
-            <span style={{ fontSize: 12 }}>
-            목록을 선택시 직원의 기초정보를 조회및 수정 할 수 있습니다.<br/>
-            직원 성명을 선택시 상세내역 페이지로 이동합니다.<br/>
-            아이콘 클릭시 비밀번호 사번으로 초기화<br/>
-            </span>
-            <CustomTable
-             keyColumn={listKeyColumn}
-             columns={listTableColumns} 
-             values={values}
-             paging={true} 
-             onRowClick={onRowClick} 
-             onRowDblClick={onRowDblClick} 
-             onClick={onClickRestPwd}/>
-          </div>
+            <div className="empListTable" style={empListStyle}>
+                <p>
+                  <strong>* 직원목록 </strong>
+                </p>
+                  <span style={{ fontSize: 12 }}>
+                  목록을 선택시 직원의 기초정보를 조회및 수정 할 수 있습니다.<br/>
+                  직원 성명을 선택시 상세내역 페이지로 이동합니다.<br/>
+                  아이콘 클릭시 비밀번호 사번으로 초기화<br/>
+                  </span>
+                <CustomTable
+                focusedRowIndex={focusedRowIndex}
+                keyColumn={listKeyColumn}
+                columns={listTableColumns} 
+                values={values}
+                paging={true} 
+                onRowClick={onRowClick} 
+                onRowDblClick={onRowDblClick} 
+                onClick={onClickRestPwd}/>
+            </div>
         </div>
         <div className="empDetailContainer" style={empDetailContainerStyle}>
         <div className="empDetailTable" style={empDetailStyle}>
           <p> <strong>* 기초정보 </strong> </p>
-          <span style={{ fontSize: 12 }}>
-          신규 직원정보를 입력하면 TRS 접속 권한이 생기게 됩니다.<br/>
-          신규 직원 사번은 자동 입력됩니다.
-          </span>
-          <EmpRegist empInfo={empInfo} read={readOnly} callBack={pageHandle} callBackR={setReset}/>
+            <span style={{ fontSize: 12 }}>
+            신규 직원정보를 입력하면 TRS 접속 권한이 생기게 됩니다.<br/>
+            신규 직원 사번은 자동 입력됩니다.
+            </span>
+            <EmpRegist empInfo={empInfo} read={readOnly} callBack={pageHandle} callBackR={setReset} callBackF={releaseFocus} reForm={reForm}/>
         </div>
         <div className="empDownListTable" style={empDetailStyle}>
             <p> <strong>* 진급정보 </strong> </p>
-            <span style={{ fontSize: 12 }}>
-            주의!! 직위발령을 입력하지 않거나 잘못 입력 할 경우 '프로젝트관리'메뉴에 
-            실행원가 집행현황 자사인력<br/> 누적사용금액이 제대로 계산되지 않습니다.
-            </span>
+              <span style={{ fontSize: 12 }}>
+              주의!! 직위발령을 입력하지 않거나 잘못 입력 할 경우 '프로젝트관리'메뉴에 
+              실행원가 집행현황 자사인력<br/> 누적사용금액이 제대로 계산되지 않습니다.
+              </span>
             <div className="buttonContainer" style={{marginBottom: "10px" }}>
-            <Button style={buttonStyle} onClick={empUpload}>발령정보업로드 </Button>
+              <ExcelUpload excel={excel} setExcel={setExcel} />
+              <Button style={buttonStyle} type="default" onClick={empUpload}>발령정보업로드 </Button>
             </div>   
             <div className="dx-field">
             <div className="dx-field-label asterisk">진급발령년도</div>
-            <div className="dx-field-value">
-              <SelectBox
-                dataSource={year}
-                displayExpr="text"
-                valueExpr="value"
-                onValueChanged={(e) => { handleChgState("year", e) }}
-                placeholder="연도"
-                style={{margin: "0px 5px 0px 5px"}}
-                required = {true}
-                value={empYear}
-              />
-              </div>
+              <div className="dx-field-value">
+                  <SelectBox
+                    dataSource={year}
+                    displayExpr="text"
+                    valueExpr="value"
+                    onValueChanged={(e) => { handleChgState("year", e) }}
+                    placeholder="연도"
+                    style={{margin: "0px 5px 0px 5px"}}
+                    required = {true}
+                    value={empYear}
+                  />
+                </div>
               </div>
 
             <div className="dx-field">
-            <div className="dx-field-label asterisk">진급발령차수</div>
-            <div className="dx-field-value">
-              <SelectBox
-                  id="month"
-                  dataSource={month}
-                  displayExpr="text"
-                  valueExpr="value"
-                  onValueChanged={(e) => { handleChgState("month", e) }}
-                  placeholder="월"
-                  style={{margin: "0px 5px 0px 5px"}}
-                  required = {true}
-                  value={empMonth}
-              />
-              <SelectBox
-                  id="odr"
-                  dataSource={odrList}
-                  displayExpr="text"
-                  valueExpr="value"
-                  onValueChanged={(e) => { handleChgState("aplyOdr", e) }}
-                  placeholder="차수"
-                  style={{margin: "0px 5px 0px 5px"}}
-                  required = {true}
-                  value={empOdr}
-              />
-                </div>
+              <div className="dx-field-label asterisk">진급발령차수</div>
+                <div className="dx-field-value">
+                    <SelectBox
+                        id="month"
+                        dataSource={month}
+                        displayExpr="text"
+                        valueExpr="value"
+                        onValueChanged={(e) => { handleChgState("month", e) }}
+                        placeholder="월"
+                        style={{margin: "0px 5px 0px 5px"}}
+                        required = {true}
+                        value={empMonth}
+                    />
+                    <SelectBox
+                        id="odr"
+                        dataSource={odrList}
+                        displayExpr="text"
+                        valueExpr="value"
+                        onValueChanged={(e) => { handleChgState("aplyOdr", e) }}
+                        placeholder="차수"
+                        style={{margin: "0px 5px 0px 5px"}}
+                        required = {true}
+                        value={empOdr}
+                    />
+                  </div>
               </div>
               <CustomLabelValue props={labelValue.jbpsCd} onSelect={handleChgState} value={empJbps}/>
             

@@ -11,7 +11,8 @@
       { "key": "empno", "value": "사번"},
       { "key": "empFlnm", "value": "성명" },
       { "key": "jbpsNm", "value": "직위"},
-      { "key": "jbttlNm", "value": "직책" }
+      { "key": "jbttlNm", "value": "직책" },
+      { "key": "deptGnfdYmd", "value": "부서발령일자"}
   ],
   "emplistQueryId": "infoInqMapper.retrieveEmpList",
   "emplistKeyColumn": "empId",

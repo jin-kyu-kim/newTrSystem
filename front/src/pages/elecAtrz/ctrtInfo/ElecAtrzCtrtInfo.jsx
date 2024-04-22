@@ -9,19 +9,66 @@ import { NumberBox } from "devextreme-react";
 import { DateRangeBox } from "devextreme-react/date-range-box";
 import { Validator, RequiredRule, } from "devextreme-react/validator";
 
+import ApiRequest from "../../../utils/ApiRequest";
+
 import CustomCdComboBox from "../../../components/unit/CustomCdComboBox";
 
 
-const ElecAtrzCtrtInfo = ({data, prjctId, onSendData }) => {
+const ElecAtrzCtrtInfo = ({data, prjctId, onSendData, sttsCd }) => {
     const labelValue = ElecAtrzCtrtInfoJson.labelValue;
     const [infoData, setInfoData] = useState({});
 
     const giveDe = [
-        {"value": "5"},
-        {"value": "10"},
-        {"value": "15"},
+        {"value": 5},
+        {"value": 10},
+        {"value": 15},
         {"value": "지급일 지정"}
     ];
+
+    useEffect(() => {
+        
+        if(data.elctrnAtrzTySeCd !== undefined) {
+
+            let ctrtKndCd;
+
+            switch(data.elctrnAtrzTySeCd) {
+                case "VTW04908" : ctrtKndCd = "VTW04401"; break;
+                case "VTW04909" : ctrtKndCd = "VTW04402"; break;
+                case "VTW04910" : ctrtKndCd = "VTW04403"; break;
+            }
+
+            setInfoData(infoData => ({
+                ...infoData,
+                ctrtKndCd: ctrtKndCd
+            }));
+        }
+
+        if(sttsCd === "VTW03701") {
+            getTempData();
+        }
+
+    }, []);
+
+    /**
+     * 임시저장 데이터 조회
+     */
+    const getTempData = async () => {
+        const param = [
+            { tbNm: "CTRT_ATRZ" },
+            { elctrnAtrzId: data.elctrnAtrzId }
+        ]
+
+        const response = await ApiRequest("/boot/common/commonSelect", param);
+
+        response.map((item) => {
+            delete item.giveMthdSeCdNm;
+            delete item.ctrtKndCdNm;
+            delete item.cntrctrIdntfcSeCdNm;
+            delete item.dpstBankCdNm;
+        });
+
+        setInfoData(response[0]);
+    }
 
     /**
      *  부모창으로 데이터 전송
@@ -64,7 +111,7 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData }) => {
                     <div className="dx-field-label"> 계약구분</div>
                     <div className="dx-field-value">
                         <div className="dx-field-value-text">
-                            {data.elctrnAtrzTySeCdNm}
+                            {data.gnrlAtrzTtl}
                         </div>
                     </div>
                 </div>
@@ -177,6 +224,9 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData }) => {
                                 onValueChanged={(e) => {
                                     handleChgState({name: "giveDe", value: e.value})
                                 }}
+                                /**
+                                 * TODO: 지급일 지정의 숫자가 화면에 표출되도록 하기. 
+                                 */
                                 value={infoData.giveDe}
                                 dataSource={giveDe}
                             />
@@ -189,6 +239,9 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData }) => {
                                 max={31}
                                 showSpinButtons={true}
                                 step={1}
+                                /**
+                                 * TODO: 지급일 지정의 숫자가 화면에 표출되도록 하기. 
+                                 */
                                 value={infoData.giveDeEtc}
                                 readOnly={infoData.giveDe === "지급일 지정" ? false : true}
                                 onValueChanged={(e) => {
