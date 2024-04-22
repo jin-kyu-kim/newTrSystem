@@ -1,13 +1,14 @@
 import { Column, DataGrid, Editing, Lookup, MasterDetail, Selection, RequiredRule, StringLengthRule, Pager, Paging, Export } from 'devextreme-react/data-grid';
 import { useCallback, useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
+import { Button } from 'devextreme-react';
 import ApiRequest from 'utils/ApiRequest';
 import CellRender from './CellRender';
 import moment from 'moment';
 import '../../pages/sysMng/sysMng.css'
 
-const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal, masterDetail, doublePk, noDataText,
-    noEdit, onSelection, onRowClick, callback, handleData, handleExpanding, cellRenderConfig, onBtnClick, excel, onExcel }) => {
+const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal, masterDetail, doublePk, noDataText, noEdit, 
+    onSelection, onRowClick, callback, handleData, handleExpanding, cellRenderConfig, onBtnClick, excel, onExcel, bulkApply }) => {
 
     const [ cookies ] = useCookies(["userInfo", "userAuth"]);
     const [ cdValList, setCdValList ] = useState({});
@@ -103,6 +104,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
             />     
         )
     };
+    const otherDateFormat = doublePk && { dateSerializationFormat: "yyyyMMdd" };
     const rowEventHandlers = ynVal ? { onRowInserting: (e) => onEditRow('insert', e) } : { onRowInserted: (e) => onEditRow('insert', e) };
     
     const highlightRows = keyColumn === 'noticeId' && {onRowPrepared: (e) => {
@@ -111,12 +113,12 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
         } 
     }};
 
-    const otherDateFormat = doublePk && { dateSerializationFormat: "yyyyMMdd" };
-
     return (
         <div className="wrap_table">
             <DataGrid
+                {...highlightRows}
                 {...otherDateFormat}
+                {...rowEventHandlers}
                 className='editGridStyle'
                 keyExpr={keyColumn}
                 dataSource={values}
@@ -129,8 +131,6 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                 onRowClick={onRowClick}
                 onExporting={onExcel}
                 onRowExpanding={handleExpanding}
-                {...highlightRows} 
-                {...rowEventHandlers}
                 onSelectionChanged={onSelection && ((e) => onSelection(e))}
                 onRowUpdating={(e) => onEditRow('update', e)}
                 onRowRemoving={(e) => onEditRow('delete', e)}
@@ -157,7 +157,6 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                 {onSelection && <Selection mode="multiple" selectAllMode="page"/>}
                 {columns.map((col) => (
                     <Column
-                     
                         key={col.key}
                         dataField={col.key}
                         caption={col.value}
@@ -166,6 +165,12 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                         width={col.width}
                         alignment={'center'}
                         groupIndex={col.grouping && 0}
+                        // headerCellRender={col.headerBtn && (() => (
+                        //     <div>
+                        //         <span style={{marginRight: '10px'}}>{col.value}</span>
+                        //         <Button text={col.headerBtn.text} onClick={() => bulkApply(values, col)} type='success'/>
+                        //     </div>
+                        // ))}
                         cellRender={col.cellType && ((props) => cellRender(col, props) )} >
                         {col.editType === 'selectBox' ? 
                             <Lookup 
@@ -185,10 +190,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                     showPageSizeSelector={true}
                     allowedPageSizes={[20, 50, 80, 100]}
                 />
-                {excel &&
-                    <Export enabled={true} >
-                    </Export>
-                }
+                {excel && <Export enabled={true} />}
             </DataGrid>
         </div>
     );
