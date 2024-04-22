@@ -81,6 +81,7 @@ const ExpensInfo = ({onSendData, prjctId, data}) => {
                     taxBillPblcnYmd: null,
                     dtlUseDtls: null,
                     clmAmt: 0,
+                    tax: 0,
                     vatInclsAmt: 0,
                     dpstDmndYmd: null,
                     expensCd: null,
@@ -121,6 +122,7 @@ const ExpensInfo = ({onSendData, prjctId, data}) => {
             taxBillPblcnYmd: null,
             dtlUseDtls: null,
             clmAmt: 0,
+            tax: 0,
             vatInclsAmt: 0,
             dpstDmndYmd: null,
             expensCd: null,
@@ -153,17 +155,19 @@ const ExpensInfo = ({onSendData, prjctId, data}) => {
     const handleInputChange = (e, index, fieldName) => {
         const newForms = [...forms];
         if (fieldName === "ctStlmSeCd") {
-            if (e.target.value !== "VTW01904") {
+            if (!["VTW01904", "VTW01905", "VTW01906"].includes(e.target.value)) {
                 newForms[index]["dpstDmndYmd"] = null
                 newForms[index]["vatInclsAmt"] = 0;
                 newForms[index]["dpstActno"] = null;
                 newForms[index]["dpstrFlnm"] = null;
                 newForms[index]["bankCd"] = null;
             }
+            if (!["VTW01904"].includes(e.target.value)) {
+                newForms[index]["tax"] = 0;
+            }
+
         }
-        console.log("1", newForms);
         newForms[index][fieldName] = e.target.value;
-        console.log("2", newForms);
         setForms(newForms);
     };
 
@@ -252,7 +256,7 @@ const ExpensInfo = ({onSendData, prjctId, data}) => {
      * @param {*} index 
      * @param {*} fieldName 
      */
-    const handleNumberInputChange = (e, index, fieldName) => {
+    const handleNumberInputChange =  (e, index, fieldName) => {
         const { value } = e.target;
 
 
@@ -265,16 +269,26 @@ const ExpensInfo = ({onSendData, prjctId, data}) => {
         const newForms = [...forms];
         newForms[index][fieldName] = newValue;
         setForms(newForms);
+        
+        if(fieldName === "tax") {
+            onCalVat(index);
+        }
     };
 
     /**
-     * 부가세 계산(10%)
+     * 세금 계산(10%)
      * @param {} index 
      */
     const onCalVat = (index) => {
-        console.log(forms[index].clmAmt);
         const newForms = [...forms];
-        newForms[index]["vatInclsAmt"] = forms[index].clmAmt * 1.1;
+
+        if(newForms[index].ctStlmSeCd == "VTW01904") {
+            newForms[index]["vatInclsAmt"] = parseInt(newForms[index].clmAmt) + parseInt(newForms[index].tax);
+        } else if(newForms[index].ctStlmSeCd == "VTW01905" || newForms[index].ctStlmSeCd == "VTW01906") {
+            newForms[index]["vatInclsAmt"] = parseInt(newForms[index].clmAmt) - parseInt(newForms[index].tax)
+        }
+
+        // newForms[index]["vatInclsAmt"] = forms[index].clmAmt * 1.1;
         setForms(newForms);
     }
     
@@ -307,12 +321,12 @@ const ExpensInfo = ({onSendData, prjctId, data}) => {
                                     금액
                                 </div>
                             </Grid>
-                            <Grid item xs={2}>
+                            <Grid item xs={2.5}>
                                 <div className="expens-form-inputName">
                                     금액(부가세포함)
                                 </div>
                             </Grid>
-                            <Grid item xs={2}>
+                            <Grid item xs={1.5}>
                                 <div className="expens-form-inputName">
                                     입금요청일
                                 </div>
@@ -403,32 +417,35 @@ const ExpensInfo = ({onSendData, prjctId, data}) => {
                                             onChange={(e) => handleNumberInputChange(e, index, "clmAmt")}
                                         />
                                     </Grid>
-                                    <Grid item xs={0.7}>
-                                        <div style={{width: "100%"}}>
-
-                                        <Button
-                                            variant="contained"
-                                            style={{marginTop: "10px" }}
-                                            disabled={forms[index].ctStlmSeCd !== "VTW01904"}
-                                            onClick={() => onCalVat(index)}
-                                            >+10%</Button>
-                                            </div>
+                                    <Grid item xs={1}>
+                                        <TextField
+                                            fullWidth
+                                            id="tax"
+                                            label="세액"
+                                            type="text"
+                                            variant={["VTW01904", "VTW01905", "VTW01906"].includes(forms[index].ctStlmSeCd) ? "filled" : "outlined"}
+                                            value={
+                                                parseInt(forms[index].tax) === NaN ? 0 : parseInt(forms[index].tax).toLocaleString()
+                                            }
+                                            onChange={(e) => handleNumberInputChange(e, index, "tax")}
+                                            disabled={!["VTW01904"].includes(forms[index].ctStlmSeCd)}
+                                        />
                                     </Grid>
-                                    <Grid item xs={1.3}>
+                                    <Grid item xs={1.5}>
                                         <TextField
                                             fullWidth
                                             id="vatInclsAmt"
                                             label="금액(부가세포함)"
                                             type="text"
-                                            variant={forms[index].ctStlmSeCd !== "VTW01904" ? "filled" : "outlined"}
+                                            variant={["VTW01904", "VTW01905", "VTW01906"].includes(forms[index].ctStlmSeCd)  ? "filled" : "outlined"}
                                             value={
                                                 parseInt(forms[index].vatInclsAmt) === NaN ? 0 : parseInt(forms[index].vatInclsAmt).toLocaleString()
                                             }
                                             onChange={(e) => handleNumberInputChange(e, index, "vatInclsAmt")}
-                                            disabled={forms[index].ctStlmSeCd !== "VTW01904"}
+                                            disabled={!["VTW01904", "VTW01905", "VTW01906"].includes(forms[index].ctStlmSeCd)}
                                         />
                                     </Grid>
-                                    <Grid item xs={2}>
+                                    <Grid item xs={1.5}>
                                         <DateBox 
                                             label="입금요청일"
                                             labelMode="floating"
@@ -437,7 +454,7 @@ const ExpensInfo = ({onSendData, prjctId, data}) => {
                                             dateSerializationFormat="yyyyMMdd"
                                             value={forms[index].dpstDmndYmd}
                                             onValueChanged={(e) => handleDateChange(e.value, index, "dpstDmndYmd")}
-                                            disabled={forms[index].ctStlmSeCd !== "VTW01904"}
+                                            disabled={!["VTW01904", "VTW01905", "VTW01906"].includes(forms[index].ctStlmSeCd)}
                                         />
                                     </Grid>
                                 </Grid>
@@ -489,13 +506,13 @@ const ExpensInfo = ({onSendData, prjctId, data}) => {
                                         />
                                     </Grid>
                                     <Grid item xs={1.5}>
-                                        <FormControl fullWidth variant={forms[index].ctStlmSeCd !== "VTW01904" ? "filled" : "outlined"}>
+                                        <FormControl fullWidth variant={["VTW01904", "VTW01905", "VTW01906"].includes(forms[index].ctStlmSeCd) !== "VTW01904" ? "filled" : "outlined"}>
                                             <InputLabel>은행코드</InputLabel>
                                             <Select
                                                 label="은행코드"
                                                 value={forms[index].bankCd}
                                                 onChange={(e) => handleInputChange(e, index, "bankCd")}
-                                                disabled={forms[index].ctStlmSeCd !== "VTW01904"}
+                                                disabled={!["VTW01904", "VTW01905", "VTW01906"].includes(forms[index].ctStlmSeCd)}
                                                 autoWidth
                                                 MenuProps={{
                                                     PaperProps: {
@@ -504,7 +521,6 @@ const ExpensInfo = ({onSendData, prjctId, data}) => {
                                                         },
                                                     },
                                                 }}
-
                                             >
                                                 {bankCdList.map((item, index) => (
                                                     <MenuItem key={index} value={item.cdValue}>{item.cdNm}</MenuItem>
@@ -518,10 +534,10 @@ const ExpensInfo = ({onSendData, prjctId, data}) => {
                                             id="dpstrFlnm"
                                             label="예금주"
                                             type="text"
-                                            variant={forms[index].ctStlmSeCd !== "VTW01904" ? "filled" : "outlined"}
+                                            variant={["VTW01904", "VTW01905", "VTW01906"].includes(forms[index].ctStlmSeCd) !== "VTW01904" ? "filled" : "outlined"}
                                             value={forms[index].dpstrFlnm}
                                             onChange={(e) => handleInputChange(e, index, "dpstrFlnm")}
-                                            disabled={forms[index].ctStlmSeCd !== "VTW01904"}
+                                            disabled={!["VTW01904", "VTW01905", "VTW01906"].includes(forms[index].ctStlmSeCd)}
                                         />
                                     </Grid>
                                     <Grid item xs={2}>
@@ -530,10 +546,10 @@ const ExpensInfo = ({onSendData, prjctId, data}) => {
                                             id="dpstActno"
                                             label="입금계좌"
                                             type="text"
-                                            variant={forms[index].ctStlmSeCd !== "VTW01904" ? "filled" : "outlined"}
+                                            variant={["VTW01904", "VTW01905", "VTW01906"].includes(forms[index].ctStlmSeCd) ? "filled" : "outlined"}
                                             value={forms[index].dpstActno}
                                             onChange={(e) => handleInputChange(e, index, "dpstActno")}
-                                            disabled={forms[index].ctStlmSeCd !== "VTW01904"}
+                                            disabled={!["VTW01904", "VTW01905", "VTW01906"].includes(forms[index].ctStlmSeCd)}
                                         />
                                     </Grid>
                                 </Grid>
@@ -566,7 +582,7 @@ const ExpensInfo = ({onSendData, prjctId, data}) => {
 
             <hr/>
             <div>* 현재 TR 입력 차수: { clmOdr }</div>
-            <div>* 마감 여부: </div>
+            <div>* 마감 여부: {/*개인청구 비용에서 마감 누르면 여기에도 반영되게 해야한다.*/}</div>
             <br/>
             <div>1. 지출 방법: 개인법인카드, 개인현금</div>
             <br/>
