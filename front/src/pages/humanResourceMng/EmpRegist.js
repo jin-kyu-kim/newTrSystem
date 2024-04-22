@@ -49,7 +49,6 @@ const EmpRegist = ({callBack, empInfo, read,callBackR,callBackF,reForm}) => {
         setActno(null);
         setEmpTyCd(null);
         setJncmpYmd(startday);
-        console.log(startday)
       }, []);
      
       useEffect(() => {
@@ -74,7 +73,7 @@ const EmpRegist = ({callBack, empInfo, read,callBackR,callBackF,reForm}) => {
         },[reForm])
 
       useEffect(() => {
-        if(empMax !== undefined || empMax !== "" || empMax !== null){
+        if(!Object.values(empMax).every((value) => value === "")){
           const paramIns =[
             { tbNm: "EMP" },
             {
