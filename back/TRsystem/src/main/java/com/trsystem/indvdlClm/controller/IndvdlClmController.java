@@ -90,7 +90,7 @@ public class IndvdlClmController {
 
     // 휴가신청 승인_취소
     @PostMapping(value = "/boot/indvdlClm/updateVcatnMng")
-    public List<Map<String, Object>> updateVcatnMng (@RequestBody List<Map<String, Object>> params) throws SQLException{
+    public List<Map<String, Object>> updateVcatnMng (@RequestBody Map<String, Object> params) throws SQLException{
         return IndvdlClmDomain.updateVcatnMng(params);
     }
     
