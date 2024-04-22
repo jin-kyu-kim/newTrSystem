@@ -554,7 +554,7 @@ public class IndvdlClmDomain {
         return result;
     }
 
-    public static int editClturPhstrnActCt (int selectedActIem, Map<String, Object> param){
+    public static int editClturPhstrnActCt (Map<String, Object> param){
         Map<String, Object> tbNm = new HashMap<>();
         tbNm.put("tbNm", "CLTUR_PHSTRN_ACT_CT");
 
@@ -570,11 +570,11 @@ public class IndvdlClmDomain {
         Map<String, Object> shResult= search.get(0);
         Map<String, Object> updateData = new HashMap<>();
         if(param.get("clturPhstrnSeCd").equals("VTW00901")){
-            updateData.put("clturCtClmAmt", (int)shResult.get("clturCtClmAmt") - selectedActIem + (int)param.get("clmAmt"));
+            updateData.put("clturCtClmAmt", (int)shResult.get("clturCtClmAmt") - (int)param.get("selectedClmAmt") + (int)param.get("clmAmt"));
         } else if (param.get("clturPhstrnSeCd").equals("VTW00902")) {
-            updateData.put("ftnessTrngCtClmAmt", (int)shResult.get("ftnessTrngCtClmAmt") - selectedActIem + (int)param.get("clmAmt"));
+            updateData.put("ftnessTrngCtClmAmt", (int)shResult.get("ftnessTrngCtClmAmt") - (int)param.get("selectedClmAmt") + (int)param.get("clmAmt"));
         }
-        updateData.put("clmAmt", (int)shResult.get("clmAmt") - selectedActIem + (int)param.get("clmAmt"));
+        updateData.put("clmAmt", (int)shResult.get("clmAmt") - (int)param.get("selectedClmAmt") + (int)param.get("clmAmt"));
 
         List<Map<String, Object>> updateParam = new ArrayList<>();
         updateParam.add(tbNm);

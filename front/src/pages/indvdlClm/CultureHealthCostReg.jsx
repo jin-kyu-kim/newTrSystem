@@ -29,14 +29,14 @@ const button = {
     marginRight: '15px'
 }
 
-const CultureHealthCostReg = () => {
+const CultureHealthCostReg = (props) => {
     const [cookies] = useCookies([]);
     const [values, setValues] = useState([]);
     const [attachments, setAttachments] = useState([]);
     const fileUploaderRef = useRef(null);
-    const [deleteFiles, setDeleteFiles] = useState([]);
+    const deleteFiles = useRef([{tbNm: "ATCHMNFL"}]);
     const [selectedItem, setSelectedItem] = useState(null);
-    let selectedActIem = useRef(0);
+    let selectedClmAmt = useRef(0);
     let now = new Date();
     const Json = CultureHealthCostJson;
     const {labelValue} = Json;
@@ -239,17 +239,29 @@ const CultureHealthCostReg = () => {
                     const formData = new FormData();
                     const tbData = {tbNm: "CLTUR_PHSTRN_ACT_CT_REG", snColumn: "clturPhstrnActCtSn", snSearch:{empId: cookies.userInfo.empId}}
                     formData.append("tbNm", JSON.stringify(tbData));
-                    formData.append("data", JSON.stringify({
-                        "clmAmt": initParam.clmAmt,
-                        "clmYmd": initParam.clmYmd,
-                        "clturPhstrnSeCd": initParam.clturPhstrnSeCd,
-                        "actIem": initParam.actIem,
-                        "actPurps": initParam.actPurps,
-                        "frcsNm": initParam.frcsNm,
-                        "atchmnflId": initParam.atchmnflId
-                    }));
+                    if(attachments.length > 0){
+                        formData.append("data", JSON.stringify({
+                            "clmAmt": initParam.clmAmt,
+                            "clmYmd": initParam.clmYmd,
+                            "clturPhstrnSeCd": initParam.clturPhstrnSeCd,
+                            "actIem": initParam.actIem,
+                            "actPurps": initParam.actPurps,
+                            "frcsNm": initParam.frcsNm,
+                            "atchmnflId": initParam.atchmnflId
+                        }));
+                        formData.append("deleteFiles", JSON.stringify(deleteFiles.current));
+                    } else {
+                        formData.append("data", JSON.stringify({
+                            "clmAmt": initParam.clmAmt,
+                            "clmYmd": initParam.clmYmd,
+                            "clturPhstrnSeCd": initParam.clturPhstrnSeCd,
+                            "actIem": initParam.actIem,
+                            "actPurps": initParam.actPurps,
+                            "frcsNm": initParam.frcsNm,
+                        }));
+                        formData.append("deleteFiles", JSON.stringify([{tbNm: "ATCHMNFL"}]));
+                    }
                     formData.append("idColumn", JSON.stringify({empId: initParam.empId, clturPhstrnActCtSn: initParam.clturPhstrnActCtSn}));
-                    formData.append("deleteFiles", JSON.stringify(deleteFiles));
                     Object.values(attachments)
                         .forEach((attachment) => formData.append("attachments", attachment));
                     const response = await axios.post("/boot/common/insertlongText", formData, {
@@ -258,9 +270,12 @@ const CultureHealthCostReg = () => {
                         },
                     })
                     if (response.status === 200) {
-                        if(selectedActIem !== initParam.actIem){
-                            await ApiRequest('/boot/indvdlClm/editClturPhstrnActCt',selectedActIem, initParam);
+                        if(selectedClmAmt.current !== initParam.clmAmt){
+                            let param = initParam;
+                            param.selectedClmAmt = selectedClmAmt.current;
+                            await ApiRequest('/boot/indvdlClm/editClturPhstrnActCt', param);
                         }
+                        deleteFiles.current = [{tbNm: "ATCHMNFL"}];
                         onResetClick()
                         searchTable();
                         window.alert("수정되었습니다.")
@@ -298,15 +313,14 @@ const CultureHealthCostReg = () => {
     };
 
     const onUpdateClick = async() => {
-        selectedActIem = selectedItem.actIem;
+        deleteFiles.current = [{tbNm: "ATCHMNFL"}];
+        selectedClmAmt.current = selectedItem.clmAmt;
         setInitParam(selectedItem);
-        // console.log(selectedItem.atchmnfl);
-        setDeleteFiles([{tbNm: "ATCHMNFL"}, selectedItem.atchmnfl]);
+        for(let i = 0; i < selectedItem.atchmnfl.length; i++){
+            deleteFiles.current.push({ atchmnflId: selectedItem.atchmnfl[i].atchmnflId,
+                atchmnflSn: selectedItem.atchmnfl[i].atchmnflSn, strgFileNm: selectedItem.atchmnfl[i].strgFileNm });
+        }
     };
-
-    // useEffect(() => {
-    //     console.log(deleteFiles);
-    // }, [deleteFiles]);
 
     const onResetClick = () => {
         clearFiles();
