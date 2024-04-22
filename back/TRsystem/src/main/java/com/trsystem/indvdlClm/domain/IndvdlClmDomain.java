@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -283,107 +284,6 @@ public class IndvdlClmDomain {
             final String sortKey = "approvalCode";
 
             String elctrnAtrzValue = (String) elctrnAtrzId.get("elctrnAtrzId");
-            Collections.sort(insertAtrzLnMap, new Comparator<Map<String, Object>>() {
-                @Override
-                public int compare(Map<String, Object> map1, Map<String, Object> map2) {
-                    Comparable value1 = (Comparable) map1.get(sortKey);
-                    Comparable value2 = (Comparable) map2.get(sortKey);
-                    return value1.compareTo(value2);
-                }
-            });
-
-            // ELCTRN_ATRZ(전자결재) 테이블 저장
-            List<Map<String, Object>> insertElctrnList = new ArrayList<>();
-            insertElctrnMap.put("elctrnAtrzId", elctrnAtrzValue);
-            insertElctrnMap.put("atrzFormDocId", "9632d577-f0bd-11ee-9b25-000c2956283f");
-            insertElctrnMap.put("nowAtrzLnSn", "1");
-            insertElctrnList.add(0, elctrnTbMap);
-            insertElctrnList.add(1, insertElctrnMap);
-            queryResult = commonService.insertData(insertElctrnList);
-
-            // VCATN_ATRZ(휴가결재), ATCHMNFL(첨부파일) 테이블 저장
-            insertVcatnMap.put("elctrnAtrzId", elctrnAtrzValue);
-            insertVcatnMap.put("newVcatnUseDaycnt", newVcatnUseDaycntValue);
-            queryResult = commonService.insertFile(vcatnTbMap, insertVcatnMap, attachments, null, null);
-
-            // ATRZ_LN(결재선) 저장
-            List<Map<String, Object>> insertAtrzLnList = new ArrayList<>();
-            insertAtrzLnList.add(0, atrzLnTbMap);
-            for (int i = 0 ; i < insertAtrzLnMap.size(); i++){
-                insertAtrzLnMap.get(i).put("elctrnAtrzId", elctrnAtrzValue);
-                insertAtrzLnMap.get(i).put("atrzStepCd", insertAtrzLnMap.get(i).get("approvalCode"));
-                insertAtrzLnMap.get(i).put("aprvrEmpId", insertAtrzLnMap.get(i).get("empId"));
-                insertAtrzLnMap.get(i).put("atrzSttsCD", "VTW00801");
-                insertAtrzLnMap.get(i).put("atrzLnSn", i + 1);
-                insertAtrzLnList.add(i + 1, insertAtrzLnMap.get(i));
-            }
-            queryResult = commonService.insertData(insertAtrzLnList);
-
-            // REFRN_MAN(결재선) 저장
-            List<Map<String, Object>> insertRefrnManList = new ArrayList<>();
-            insertRefrnManList.add(0, refrnTbMap);
-            for (int i = 0 ; i < insertRefrnMap.size(); i++){
-                insertRefrnMap.get(i).put("elctrnAtrzId", elctrnAtrzValue);
-                insertRefrnMap.get(i).put("refrnCncrrncClCd", insertRefrnMap.get(i).get("approvalCode"));
-                insertRefrnMap.get(i).put("ccSn", i + 1);
-                insertRefrnManList.add(i + 1, insertRefrnMap.get(i));
-            }
-            queryResult = commonService.insertData(insertRefrnManList);
-
-            return "성공";
-        } else {
-            return errorMsg;
-        }
-
-//        int result = 0;
-//        String elctrnAtrzValue = (String) elctrnAtrzId.get("elctrnAtrzId");
-//
-//        final String sortKey = "approvalCode";
-//        Collections.sort(insertAtrzLnMap, new Comparator<Map<String, Object>>() {
-//            @Override
-//            public int compare(Map<String, Object> map1, Map<String, Object> map2) {
-//                Comparable value1 = (Comparable) map1.get(sortKey);
-//                Comparable value2 = (Comparable) map2.get(sortKey);
-//                return value1.compareTo(value2);
-//            }
-//        });
-//
-//        // ELCTRN_ATRZ(전자결재) 테이블 저장
-//        List<Map<String, Object>> insertElctrnList = new ArrayList<>();
-//        insertElctrnMap.put("elctrnAtrzId", elctrnAtrzValue);
-//        insertElctrnMap.put("atrzFormDocId", "9632d577-f0bd-11ee-9b25-000c2956283f");
-//        insertElctrnMap.put("nowAtrzLnSn", "1");
-//        insertElctrnList.add(0, elctrnTbMap);
-//        insertElctrnList.add(1, insertElctrnMap);
-//        result = commonService.insertData(insertElctrnList);
-//
-//        // VCATN_ATRZ(휴가결재), ATCHMNFL(첨부파일) 테이블 저장
-//        insertVcatnMap.put("elctrnAtrzId", elctrnAtrzValue);
-//        result = commonService.insertFile(vcatnTbMap, insertVcatnMap, attachments, null, null);
-//
-//        // ATRZ_LN(결재선) 저장
-//        List<Map<String, Object>> insertAtrzLnList = new ArrayList<>();
-//        insertAtrzLnList.add(0, atrzLnTbMap);
-//        for (int i = 0 ; i < insertAtrzLnMap.size(); i++){
-//            insertAtrzLnMap.get(i).put("elctrnAtrzId", elctrnAtrzValue);
-//            insertAtrzLnMap.get(i).put("atrzStepCd", insertAtrzLnMap.get(i).get("approvalCode"));
-//            insertAtrzLnMap.get(i).put("aprvrEmpId", insertAtrzLnMap.get(i).get("empId"));
-//            insertAtrzLnMap.get(i).put("atrzSttsCD", "VTW00801");
-//            insertAtrzLnMap.get(i).put("atrzLnSn", i + 1);
-//            insertAtrzLnList.add(i + 1, insertAtrzLnMap.get(i));
-//        }
-//        result = commonService.insertData(insertAtrzLnList);
-//
-//        // REFRN_MAN(결재선) 저장
-//        List<Map<String, Object>> insertRefrnManList = new ArrayList<>();
-//        insertRefrnManList.add(0, refrnTbMap);
-//        for (int i = 0 ; i < insertRefrnMap.size(); i++){
-//            insertRefrnMap.get(i).put("elctrnAtrzId", elctrnAtrzValue);
-//            insertRefrnMap.get(i).put("refrnCncrrncClCd", insertRefrnMap.get(i).get("approvalCode"));
-//            insertRefrnMap.get(i).put("ccSn", i + 1);
-//            insertRefrnManList.add(i + 1, insertRefrnMap.get(i));
-//        }
-//        result = commonService.insertData(insertRefrnManList);
 
             Collections.sort(insertAtrzLnMap, new Comparator<Map<String, Object>>() {
                 @Override
@@ -486,6 +386,9 @@ public class IndvdlClmDomain {
 //            insertRefrnManList.add(i + 1, insertRefrnMap.get(i));
 //        }
 //        result = commonService.insertData(insertRefrnManList);
+
+
+
 
 
 
@@ -643,7 +546,6 @@ public class IndvdlClmDomain {
         return null;
     }
 
-
     public static List<Map<String, Object>> updateVcatnMng(Map<String, Object> params) throws SQLException{
         int queryResult;
         int caseFlag = 0;
@@ -691,7 +593,6 @@ public class IndvdlClmDomain {
 
 
         List<Map<String, Object>> selectVcatnAtrz = new ArrayList<>();
-
 
         selectVcatnAtrz.add(0, new HashMap<>(){{ put("tbNm", "VCATN_ATRZ"); }});
         selectVcatnAtrz.add(1, new HashMap<>(){{ put("elctrnAtrzId", elctrnAtrzId); }});
@@ -831,7 +732,6 @@ public class IndvdlClmDomain {
         }
         
         int atrzLnSn = 0;
-
 
         if(errorMsg.isEmpty()){
             try {
