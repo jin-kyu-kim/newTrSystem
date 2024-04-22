@@ -17,6 +17,7 @@
 			, CT_PRPOS
 			, (select CD_NM from CD where CD_VALUE = pca.CT_ATRZ_SE_CD) AS 'CT_ATRZ_SE_CD_NM'
 			, (select CD_NM from CD where CD_VALUE = pca.EXPENS_CD) AS 'EXPENS_CD_NM'
+			, CT_ATRZ_SE_CD
 			, pca.EMP_ID
 			, pca.PRJCT_ID
 			, pca.APLY_YM

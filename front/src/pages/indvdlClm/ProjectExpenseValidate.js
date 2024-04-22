@@ -1,5 +1,7 @@
 import ApiRequest from 'utils/ApiRequest';
 
+const CASH_FIELDS = [ "ctAtrzSeCd", "utztnDt", "useOffic", "utztnAmt" ];
+
 export const validateFields = async (selectedItem, placeholderAndRequired, setValidationErrors, buttonGroup) => {
     let newErrors = [];
     let errorMessages = new Set();
@@ -13,13 +15,12 @@ export const validateFields = async (selectedItem, placeholderAndRequired, setVa
         errorMessages.add('선택된 사용내역이 없습니다.');
     }
 
-    const cashArr = [ "ctAtrzSeCdNm", "utztnDt", "useOffic", "utztnAmt" ];
+    // 전체 필수 항목 검사
+    for (const item of selectedItem) {
+        
+        const cashRequired = CASH_FIELDS.every(key => item[key] !== undefined);
 
-    // 비용코드에 따른 필수값 검사
-    selectedItem.forEach(item => {
-        const cashRequired = cashArr.every(key => item[key] !== null || item[key] !== undefined);
-
-        if(!cashRequired) {
+        if(buttonGroup.length < 2 && !cashRequired) {
             newErrors.push('error');
             errorMessages.add('필수항목을 모두 입력해주세요.');
 
@@ -32,8 +33,8 @@ export const validateFields = async (selectedItem, placeholderAndRequired, setVa
             errorMessages.add('비용코드를 선택해주세요');
         }
 
+        // 비용코드에 따라 달라지는 필수항목 검사
         const expensRules = placeholderAndRequired.find(rule => rule.expensCd === item.expensCd);
-
         if (expensRules) {
             const requiredFields = expensRules.required;
 
@@ -53,31 +54,38 @@ export const validateFields = async (selectedItem, placeholderAndRequired, setVa
             }
 
             if (item.expensCd === 'VTW04509') {
-
-                checkSmartPhoneValidation(selectedItem).then(result => {
-                    if (smartPhoneErrors !== 0) {
-                        smartPhoneErrors = result;
-                        errorMessages.add(expensRules.message);
-                    }
-                })
+                const smartPhoneResult = await checkSmartPhoneValidation(item);
+                if(smartPhoneResult !== 0) {
+                    smartPhoneErrors = smartPhoneResult;
+                    errorMessages.add(expensRules.message);
+                }
 
             } else if (item.expensCd === 'VTW04531' && item.atdrn && item.atdrn.length > 0) {
-
-                checkDinnerValidation(selectedItem).then(result => {
-                    if (result) {
-                        dinnerErrors = result;
+                try {
+                    const dinnerValidationResult = await checkDinnerValidation(item);
+                    if (dinnerValidationResult) {
+                        newErrors.push({
+                            cardUseSn: item.cardUseSn || null,
+                            field: 'atdrn'
+                        });
+                        dinnerErrors = true;
                         errorMessages.add('해당 사용일자에 이미 야근식대를 사용한 직원이 포함되어있습니다.');
                     }
-                })
+                } catch (error) {
+                    console.log(error);
+                }
 
                 overAmtErrors = checkDinnerAmt(item)
                 if(overAmtErrors){
+                    newErrors.push({
+                        cardUseSn: item.cardUseSn || null,
+                        field: 'atdrn'
+                    });
                     errorMessages.add('야근식대는 1인 최대 15,000원까지 가능합니다.');
                 }
             }
-
         }
-    });
+    };
     setValidationErrors(newErrors);
 
     return {
@@ -86,6 +94,7 @@ export const validateFields = async (selectedItem, placeholderAndRequired, setVa
     };
 };
 
+// 화면 표시를 위한 검사
 export const hasError = (validationErrors, cardUseSn, fieldName) => {
     if (cardUseSn !== null) {
         return validationErrors.some(error => error.cardUseSn === cardUseSn && error.field === fieldName);
@@ -94,7 +103,7 @@ export const hasError = (validationErrors, cardUseSn, fieldName) => {
     }
 };
 
-/** 스마트폰지원 중복 유효성 검사 */
+// 스마트폰지원 중복 유효성 검사
 const checkSmartPhoneValidation = async (selectedItem) => {
     let smartPhoneCnt = 0;
 
@@ -112,38 +121,35 @@ const checkSmartPhoneValidation = async (selectedItem) => {
     return smartPhoneCnt;
 }
 
-/** 야근식대 횟수 유효성 검사 */
-const checkDinnerValidation = async (selectedItem) => {
+// 야근식대 직원 유효성 검사
+const checkDinnerValidation = async (selectedOne) => {
     let dinnerList = [];
+    let isMatch = false;
 
     const param = {
         queryId: 'indvdlClmMapper.retrieveDinnrDpcnYn',
-        utztnDt: selectedItem[0].utztnDt,
+        utztnDt: selectedOne.utztnDt,
     };
     try {
         // 해당 사용일의 야근식대 전체 참석자
         const response = await ApiRequest('/boot/common/queryIdSearch', param);
-        dinnerList = response.map(dinner => dinner);
+        dinnerList = response;
     } catch (error) {
         console.log(error);
     }
-    console.log('dinnerList', dinnerList)
-
-    let isMatch = false;
-
-    if (selectedItem.some(item => item.atdrn)) {
-        selectedItem.map(one => {
-            isMatch = one.atdrn.some(person =>
-                dinnerList.some(dinner =>
-                    dinner.atdrn.split(',').includes(person.value)
-                )
-            )
-        })
+    
+    // atdrn 배열 추출
+    const atdrns = Object.values(selectedOne.atdrn).map(item => item.key);
+    for(const item of dinnerList) {
+        if(atdrns.includes(item.atndEmpId)) {
+            isMatch = true;
+            break;
+        }
     }
     return isMatch;
 }
 
-/** 야근식대 1인 금액 유효성 검사 */
+// 야근식대 1인 금액 유효성 검사
 const checkDinnerAmt = (selectedOne) => {
     let isOverAmt = false;
 

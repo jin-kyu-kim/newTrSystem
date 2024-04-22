@@ -10,15 +10,15 @@ const ProjectExpense = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { ExpenseInfo, keyColumn, ctAplyTableColumns, elcKeyColumn, columnCharge, buttonsConfig,
-            aplyAndAtrzCtQueryId, dmndSttsQueryId } = ProjectExpenseJson.ProjectExpenseMain;
-    const [index, setIndex] = useState(0);
-    const [atrzDmndSttsCnt, setAtrzDmndSttsCnt] = useState({}); // 상태코드별 데이터 개수
-    const [ctAply, setCtAply] = useState([]); // 차수 청구내역 (table1)
-    const [ctAtrz, setCtAtrz] = useState([]); // 전자결재 청구내역 (table2)
-    const [changeColumn, setChangeColumn] = useState([]); // 결재상태 컬럼 -> 버튼렌더를 위해 필요
-    const [mmAplyCnt, setMmAplyCnt] = useState(); // 비용 청구 건수 (없을 시 근무시간 먼저)
-    const [ctAtrzCmptnYn, setCtAtrzCmptnYn] = useState(null); // 비용결재완료여부
-    const [cookies] = useCookies([]);
+            aplyAndAtrzCtQueryId, dmndSttsQueryId,groupingColumn, groupingData } = ProjectExpenseJson.ProjectExpenseMain;
+    const [ index, setIndex ] = useState(0);
+    const [ atrzDmndSttsCnt, setAtrzDmndSttsCnt ] = useState({}); // 상태코드별 데이터 개수
+    const [ ctAply, setCtAply ] = useState([]); // 차수 청구내역 (table1)
+    const [ ctAtrz, setCtAtrz ] = useState([]); // 전자결재 청구내역 (table2)
+    const [ changeColumn, setChangeColumn ] = useState([]); // 결재상태 컬럼 -> 버튼렌더를 위해 필요
+    const [ mmAplyCnt, setMmAplyCnt ] = useState(); // 비용 청구 건수 (없을 시 근무시간 먼저)
+    const [ ctAtrzCmptnYn, setCtAtrzCmptnYn ] = useState(null); // 비용결재완료여부
+    const [ cookies ] = useCookies([]);
     const empId = location.state ? location.state.empId: cookies.userInfo.empId;
     const date = new Date();
     const year = date.getFullYear();
@@ -73,16 +73,16 @@ const ProjectExpense = () => {
         };
         const response = await ApiRequest("/boot/common/queryIdDataControl", param);
         if (response !== 0) {
-            if(data.name === 'onAprvDmndRtrcnClick') updateCtAtrzCmptnYn(data, "N");
+            if(data.name === 'onAprvDmndRtrcnClick') updateCtAtrzCmptnYn("N");
             getData();
             alert(data.completeMsg);
         }
     };
     
-    const updateCtAtrzCmptnYn = async (data, status) => {
+    const updateCtAtrzCmptnYn = async (status) => {
         const param = [
             { tbNm: "PRJCT_INDVDL_CT_MM" },
-            { ctAtrzCmptnYn: status }, // 마감 NULL -> N, 승인요청 N -> Y
+            { ctAtrzCmptnYn: status },
             { empId, aplyYm, aplyOdr }
         ];
         const response = await ApiRequest("/boot/common/commonUpdate", param);
@@ -129,6 +129,14 @@ const ProjectExpense = () => {
         }
     }
 
+    const groupingCustomizeText = (e) => {
+        const mapping = {
+          "VTW01902": "개인현금지급",
+          "VTW01903": "개인법인카드"
+        };
+        return mapping[e.value] || "기업법인카드";
+    }
+
     const RenderTopTable = ({ title, keyColumn, columns, values }) => {
         return (
             <div style={{ marginBottom: '20px' }}>
@@ -137,10 +145,12 @@ const ProjectExpense = () => {
                     keyColumn={keyColumn}
                     columns={columns}
                     values={values}
-                    paging={true}
+                    wordWrap={true}
                     pageSize={10}
                     onClick={onBtnClick}
-                    wordWrap={true}
+                    grouping={groupingColumn}
+                    groupingData={groupingData}
+                    groupingCustomizeText={groupingCustomizeText}
                 />
             </div>
         );
