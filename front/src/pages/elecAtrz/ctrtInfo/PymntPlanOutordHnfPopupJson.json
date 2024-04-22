@@ -50,7 +50,8 @@
                         },
                         "valueExpr" : "cdValue",
                         "displayExpr": "cdNm",
-                        "name": "outordHnfCtrtSeCd"
+                        "name": "outordHnfCtrtSeCd",
+                        "nameNm": "outordHnfCtrtSeCdNm"
                      }
             },
             "hnfRoleCd": {

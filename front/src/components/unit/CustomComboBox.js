@@ -73,6 +73,12 @@ const CustomComboBox = ({props, onSelect, label, placeholder, value, readOnly, r
                         });
                     }
                 } else {
+                    const selectedItem = values.find(item => item[props.valueExpr] === e.value);
+   
+                    if(props.nameNm && selectedItem){
+                        onSelect({name: props.nameNm, value: selectedItem.cdNm});
+                    }
+                    
                     onSelect({name: props.name, value: e.value});
                 }
             }}
