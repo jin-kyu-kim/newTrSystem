@@ -175,8 +175,7 @@
 	<!-- 박지환 작업 -->
 	<!--휴가배정정보조회-->
 	<select id="retrieveEmpVcatnInfo" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT *
-		FROM (
+		WITH VCANT_LIST AS(
 			SELECT
 				EMP.EMP_ID 							/* 사원ID */
 				,EMP.EMPNO 							/* 사원번호 */
@@ -204,7 +203,28 @@
 			RIGHT JOIN EMP EMP ON EMP.EMP_ID = VMNG.EMP_ID
 			LEFT JOIN DEPT_HNF HNF ON HNF.EMPNO = EMP.EMPNO
 			LEFT JOIN DEPT DEPT ON DEPT.DEPT_ID = HNF.DEPT_ID
-		) A
+			WHERE 1 = 1
+			<if test="deptId != null and !deptId.equals('')">
+				AND DEPT.DEPT_ID = #{deptId}
+			</if>
+		)
+		SELECT DISTINCT
+			VCATN.EMP_ID 						/* 사원ID */
+			,VCATN.EMPNO						/* 사원번호 */
+			,VCATN.EMP_FLNM 					/* 사원명 */
+			,VCATN.JOB_NM						/* 직급명 */
+			,VCATN.HDOF_STTS_NM					/* 재직상태명 */
+			,VCATN.VCATN_ALTMNT_SN 				/* 휴가배정순번 */
+			,VCATN.VCATN_YR 				 	/* 휴가연도 */
+			,VCATN.VCATN_ALTMNT_DAYCNT			/* 휴가배정일수 */
+			,VCATN.USE_DAYCNT					/* 사용일수 */
+			,VCATN.VCATN_REMNDR_DAYCNT			/* 휴가잔여일수 */
+			,VCATN.NEW_VCATN_ALTMNT_DAYCNT		/* 신규휴가배정일수 */
+			,VCATN.NEW_USE_DAYCNT				/* 신규사용일수 */
+			,VCATN.NEW_REMNDR_DAYCNT			/* 신규잔여일수 */
+			,VCATN.ALTMNT_BGNG_YMD				/* 배정시작일자 */
+			,VCATN.ALTMNT_USE_END_YMD			/* 배정사용종료일자 */
+		FROM VCANT_LIST		VCATN
 		WHERE 1 = 1
 		<if test="vcatnYr == null or vcatnYr.equals('')">
 			AND VCATN_YR = FLAG_YEAR
@@ -221,13 +241,50 @@
 		<if test="jobCd != null and !jobCd.equals('')">
 			AND JOB_CD  = #{jobCd}
 		</if>
-		<if test="deptCd != null and !deptCd.equals('')">
-			AND DEPT_ID = #{deptCd}
-		</if>
 		<if test="hdofSttsCd != null and !hdofSttsCd.equals('')">
 			AND HDOF_STTS_CD = #{hdofSttsCd}
 		</if>
 		ORDER BY EMPNO
+	</select>
+
+	<select id="retrieveEmpVcatnInfoList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT *
+		FROM (
+			SELECT
+			EMP.EMP_ID 							/* 사원ID */
+			,EMP.EMPNO 							/* 사원번호 */
+			,EMP.EMP_FLNM 						/* 사원명 */
+			,(SELECT CD_VALUE FROM CD WHERE EMP.JBPS_CD = CD.CD_VALUE)			JOB_CD 			/* 직급코드 */
+			,(SELECT CD_NM FROM CD WHERE EMP.JBPS_CD = CD.CD_VALUE)				JOB_NM 			/* 직급명 */
+			,DEPT.DEPT_ID 						/* 부서ID */
+			,DEPT.DEPT_NM 						/* 부서명 */
+			,(SELECT CD_VALUE FROM CD WHERE EMP.HDOF_STTS_CD = CD.CD_VALUE)		HDOF_STTS_CD 	/* 재직상태코드 */
+			,(SELECT CD_NM FROM CD WHERE EMP.HDOF_STTS_CD = CD.CD_VALUE)		HDOF_STTS_NM 	/* 재직상태명 */
+			,VMNG.VCATN_ALTMNT_SN 				/* 휴가배정순번 */
+			,VMNG.VCATN_YR 				 		/* 휴가연도 */
+			,VMNG.VCATN_ALTMNT_DAYCNT			/* 휴가배정일수 */
+			,VMNG.USE_DAYCNT					/* 사용일수 */
+			,VMNG.VCATN_REMNDR_DAYCNT			/* 휴가잔여일수 */
+			,VMNG.NEW_VCATN_ALTMNT_DAYCNT		/* 신규휴가배정일수 */
+			,VMNG.NEW_USE_DAYCNT				/* 신규사용일수 */
+			,VMNG.NEW_REMNDR_DAYCNT				/* 신규잔여일수 */
+			,VMNG.ALTMNT_BGNG_YMD				/* 배정시작일자 */
+			,VMNG.ALTMNT_USE_END_YMD			/* 배정사용종료일자 */
+			,CASE WHEN DATEDIFF(DATE_FORMAT(NOW(), '%Y%m%d'), DATE_FORMAT(CONCAT(DATE_FORMAT(NOW(), '%Y'), '0401'), '%Y%m%d')) <![CDATA[<]]> 0 THEN DATE_FORMAT(NOW(), '%Y') - 1
+			ELSE DATE_FORMAT(NOW(), '%Y')
+			END FLAG_YEAR						/* 회계년도 */
+			FROM VCATN_MNG	VMNG
+			RIGHT JOIN EMP EMP ON EMP.EMP_ID = VMNG.EMP_ID
+			LEFT JOIN DEPT_HNF HNF ON HNF.EMPNO = EMP.EMPNO
+			LEFT JOIN DEPT DEPT ON DEPT.DEPT_ID = HNF.DEPT_ID
+		) A
+		WHERE 1 = 1
+		<if test="vcatnYr == null or vcatnYr.equals('')">
+			AND VCATN_YR = FLAG_YEAR
+		</if>
+		<if test="vcatnYr != null and !vcatnYr.equals('')">
+			AND VCATN_YR = #{vcatnYr}
+		</if>
 	</select>
 
 	<!-- 휴가배정정보저장 -->

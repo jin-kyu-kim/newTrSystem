@@ -109,6 +109,10 @@ const ProjectExpenseCard = (props) => {
         setSelectedItem(e.selectedRowsData);
     };
 
+    const bulkApply = (values, col) => {
+        console.log('values', values)
+    };
+
     const cellRenderConfig = {getCdList, isPrjctIdSelected, setIsPrjctIdSelected, chgPlaceholder, comboList, cdList,
         expensCd, setExpensCd, setValidationErrors, hasError: (cardUseSn, fieldName) => hasError(validationErrors, cardUseSn, fieldName)};
 
@@ -134,6 +138,7 @@ const ProjectExpenseCard = (props) => {
                     values={cardUseDtls}
                     columns={tableColumns}
                     keyColumn={keyColumn}
+                    bulkApply={bulkApply}
                     onSelection={onSelection}
                     cellRenderConfig={cellRenderConfig}
                 />

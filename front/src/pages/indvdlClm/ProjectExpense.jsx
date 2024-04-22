@@ -1,24 +1,25 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useCookies } from "react-cookie";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useCookies } from "react-cookie";
 import { Button, TabPanel } from "devextreme-react";
 import ProjectExpenseJson from "./ProjectExpenseJson.json"
-import ApiRequest from "../../utils/ApiRequest";
+import ProjectExpensePopup from './ProjectExpensePopup';
 import CustomTable from 'components/unit/CustomTable';
+import ApiRequest from "../../utils/ApiRequest";
 
 const ProjectExpense = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { ExpenseInfo, keyColumn, ctAplyTableColumns, elcKeyColumn, columnCharge, buttonsConfig,
-            aplyAndAtrzCtQueryId, dmndSttsQueryId } = ProjectExpenseJson.ProjectExpenseMain;
-    const [index, setIndex] = useState(0);
-    const [atrzDmndSttsCnt, setAtrzDmndSttsCnt] = useState({}); // 상태코드별 데이터 개수
-    const [ctAply, setCtAply] = useState([]); // 차수 청구내역 (table1)
-    const [ctAtrz, setCtAtrz] = useState([]); // 전자결재 청구내역 (table2)
-    const [changeColumn, setChangeColumn] = useState([]); // 결재상태 컬럼 -> 버튼렌더를 위해 필요
-    const [mmAplyCnt, setMmAplyCnt] = useState(); // 비용 청구 건수 (없을 시 근무시간 먼저)
-    const [ctAtrzCmptnYn, setCtAtrzCmptnYn] = useState(null); // 비용결재완료여부
-    const [cookies] = useCookies([]);
+            aplyAndAtrzCtQueryId, dmndSttsQueryId,groupingColumn, groupingData } = ProjectExpenseJson.ProjectExpenseMain;
+    const [ index, setIndex ] = useState(0);
+    const [ atrzDmndSttsCnt, setAtrzDmndSttsCnt ] = useState({}); // 상태코드별 데이터 개수
+    const [ ctAply, setCtAply ] = useState([]); // 차수 청구내역 (table1)
+    const [ ctAtrz, setCtAtrz ] = useState([]); // 전자결재 청구내역 (table2)
+    const [ changeColumn, setChangeColumn ] = useState([]); // 결재상태 컬럼 -> 버튼렌더를 위해 필요
+    const [ mmAplyCnt, setMmAplyCnt ] = useState(); // 비용 청구 건수 (없을 시 근무시간 먼저)
+    const [ cookies ] = useCookies([]);
+    const [ popVisible, setPopVisible ] = useState(false);
     const empId = location.state ? location.state.empId: cookies.userInfo.empId;
     const date = new Date();
     const year = date.getFullYear();
@@ -56,8 +57,7 @@ const ProjectExpense = () => {
     };
 
     const setCtAtrzCmptnData = (data) => {
-        if (data.length !== 0) setCtAtrzCmptnYn(data[0].ctAtrzCmptnYn); // 비용결재 완료여부
-        else setMmAplyCnt(data.length); // 비용청구 건수
+        setMmAplyCnt(data.length); // 비용청구 건수
     };
 
     const setCtAtrzDmndSttsData = (data) => {
@@ -73,31 +73,37 @@ const ProjectExpense = () => {
         };
         const response = await ApiRequest("/boot/common/queryIdDataControl", param);
         if (response !== 0) {
-            if(data.name === 'onAprvDmndRtrcnClick') updateCtAtrzCmptnYn(data, "N");
+            const updateStts = data.name === 'onInptDdlnClick' ? "N" : 
+                            data.name === 'onInptDdlnRtrcnClick' ? null : undefined;
+            if(updateStts !== undefined) updateCtAtrzCmptnYn(updateStts);
             getData();
             alert(data.completeMsg);
         }
     };
     
-    const updateCtAtrzCmptnYn = async (data, status) => {
+    const updateCtAtrzCmptnYn = async (status) => {
         const param = [
             { tbNm: "PRJCT_INDVDL_CT_MM" },
-            { ctAtrzCmptnYn: status }, // 마감 NULL -> N, 승인요청 N -> Y
+            { ctAtrzCmptnYn: status },
             { empId, aplyYm, aplyOdr }
         ];
         const response = await ApiRequest("/boot/common/commonUpdate", param);
     };
 
     const onClickAction = async (onClick) => {
-        if (window.confirm(onClick.msg)) {
-            if (onClick.name === 'onInptDdlnClick' && mmAplyCnt === 0) {
-                alert('경비청구 건수가 없을 경우 근무시간을 먼저 승인 요청 해주시기 바랍니다.');
-                return;
+        if(onClick === 'onPrintClick'){
+            setPopVisible(true);
+        } else{
+            if (window.confirm(onClick.msg)) {
+                if (onClick.name === 'onInptDdlnClick' && mmAplyCnt === 0) {
+                    alert('경비청구 건수가 없을 경우 근무시간을 먼저 승인 요청 해주시기 바랍니다.');
+                    return;
+                }
+                prjctCtAtrzUpdate(onClick);
             }
-            prjctCtAtrzUpdate(onClick);
         }
-        // print
     };
+    const onPopHiding = async () => { setPopVisible(false); }
 
     const getButtonsShow = () => {
         if (atrzDmndSttsCnt.aprvDmnd > 0 || atrzDmndSttsCnt.rjct > 0) return buttonsConfig.hasApprovals;
@@ -129,6 +135,14 @@ const ProjectExpense = () => {
         }
     }
 
+    const groupingCustomizeText = (e) => {
+        const mapping = {
+          "VTW01902": "개인현금지급",
+          "VTW01903": "개인법인카드"
+        };
+        return mapping[e.value] || "기업법인카드";
+    }
+
     const RenderTopTable = ({ title, keyColumn, columns, values }) => {
         return (
             <div style={{ marginBottom: '20px' }}>
@@ -137,10 +151,11 @@ const ProjectExpense = () => {
                     keyColumn={keyColumn}
                     columns={columns}
                     values={values}
-                    paging={true}
-                    pageSize={10}
-                    onClick={onBtnClick}
                     wordWrap={true}
+                    onClick={onBtnClick}
+                    grouping={groupingColumn}
+                    groupingData={groupingData}
+                    groupingCustomizeText={groupingCustomizeText}
                 />
             </div>
         );
@@ -180,6 +195,10 @@ const ProjectExpense = () => {
                         );
                     }} />}
             </div>
+            <ProjectExpensePopup
+                visible={popVisible}
+                onPopHiding={onPopHiding}
+            />
         </div>
     );
 };
