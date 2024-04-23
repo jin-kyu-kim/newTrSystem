@@ -326,7 +326,9 @@
 			ca.CTRT_ATRZ_TTL
 		FROM ELCTRN_ATRZ ea
 		    JOIN CTRT_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID
-		WHERE ca.CTRT_KND_CD = #{ctrtKndCd}
+		WHERE 1=1
+			AND ca.CTRT_KND_CD = #{ctrtKndCd}
+			AND ea.PRJCT_ID = #{prjctId}
 	</select>
 
 	<select id="retrieveCtrtAtrzCnt" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -335,6 +337,8 @@
 			(SELECT c.CD_NM FROM CD c WHERE c.cd_value = ca.CTRT_KND_CD) AS CTRT_KND_CD_NM,
 			COUNT(*) AS CTRT_COUNT
 		FROM CTRT_ATRZ ca
+				 JOIN ELCTRN_ATRZ ea ON ca.ELCTRN_ATRZ_ID = ea.ELCTRN_ATRZ_ID
+		WHERE ea.PRJCT_ID = #{prjctId}
 		GROUP BY ca.CTRT_KND_CD
 	</select>
 	
