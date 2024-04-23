@@ -35,7 +35,7 @@ const ElecGiveAtrz = () => {
     const getAllCnt = async () => {
         try{
             const res = await ApiRequest('/boot/common/queryIdSearch', {
-                queryId: "elecAtrzMapper.retrieveCtrtAtrzCnt"
+                queryId: "elecAtrzMapper.retrieveCtrtAtrzCnt", prjctId: prjctId
             })
             res.map((one) => {
                 setCountList(prevCnt => ({
@@ -57,7 +57,8 @@ const ElecGiveAtrz = () => {
         try{
             const response = await ApiRequest('/boot/common/queryIdSearch', {
                 queryId: "elecAtrzMapper.retrieveCtrtAtrz",
-                ctrtKndCd: typeCd
+                ctrtKndCd: typeCd,
+                prjctId: prjctId
             })
             setSelectedList(response);
         } catch(error) {
