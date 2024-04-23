@@ -51,7 +51,7 @@ const ReferenceInput = () => {
                 }));
                 setTypeChk(prev => ({
                     ...prev,
-                    imprtnc: resData.imprtncNtcBgngYmd ? true : false
+                    imprtnc: resData.sgnalOrdr === 3 ? true : false
                 }));
                 setAttachments(tmpFileList);
             }
@@ -65,7 +65,7 @@ const ReferenceInput = () => {
     }, []);
 
     const [typeChk, setTypeChk] = useState({
-        imprtnc: data.imprtncNtcBgngYmd ? true : false,
+        imprtnc: data.sgnalOrdr === 3 ? true : false,
         useYn: data.useYn === "Y" ? true : false,
         move: false,
     });
