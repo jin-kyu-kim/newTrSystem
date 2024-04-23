@@ -323,6 +323,7 @@ const routes = [
     path: "/elecAtrz/ElecGiveAtrz",
     name: "ElecGiveAtrz",
     element: React.lazy(() => import("../../pages/elecAtrz/ElecGiveAtrz")),
+    isPrivate:true
   },
   // 전자결재 서식
   {
