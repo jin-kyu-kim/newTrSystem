@@ -859,18 +859,18 @@
         SELECT
             '체력단련비' AS CATEGORY
              , '01' AS NAME
-             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '4월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '5월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '6월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '7월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '8월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '9월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12월'
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '01'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '02'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '03'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '04'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '05'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '06'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '07'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '08'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '09'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12'
                  ELSE 0 END) AS MONTH
              , IFNULL(FTNESS_TRNG_CT_CLM_AMT, 0) AS DATA
         FROM CLTUR_PHSTRN_ACT_CT
@@ -883,18 +883,18 @@
         SELECT
             '체력단련비' AS CATEGORY
              , '02' AS NAME
-             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '4월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '5월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '6월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '7월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '8월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '9월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12월'
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '01'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '02'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '03'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '04'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '05'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '06'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '07'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '08'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '09'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12'
                      ELSE 0 END) AS MONTH
              , IFNULL(FTNESS_TRNG_CT_DPST_AMT, 0) AS DATA
         FROM CLTUR_PHSTRN_ACT_CT
@@ -907,18 +907,18 @@
         SELECT
             '체력단련비' AS CATEGORY
              , '03' AS NAME
-             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '4월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '5월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '6월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '7월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '8월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '9월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12월'
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '01'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '02'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '03'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '04'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '05'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '06'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '07'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '08'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '09'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12'
                      ELSE 0 END) AS MONTH
              , CONCAT('dt', IFNULL(FTNESS_TRNG_CT_DPST_YMD, '')) AS DATA
         FROM CLTUR_PHSTRN_ACT_CT
@@ -931,18 +931,18 @@
         SELECT
             '체력단련비' AS CATEGORY
              , '04' AS NAME
-             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '4월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '5월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '6월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '7월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '8월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '9월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12월'
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '01'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '02'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '03'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '04'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '05'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '06'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '07'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '08'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '09'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12'
                      ELSE 0 END) AS MONTH
              , IFNULL(FTNESS_TRNG_CT_CYFD_AMT, 0) AS DATA
         FROM CLTUR_PHSTRN_ACT_CT
@@ -955,18 +955,18 @@
         SELECT
             '문화비' AS CATEGORY
              , '01' AS NAME
-             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '4월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '5월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '6월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '7월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '8월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '9월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12월'
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '01'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '02'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '03'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '04'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '05'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '06'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '07'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '08'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '09'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12'
                      ELSE 0 END) AS MONTH
              , IFNULL(CLTUR_CT_CLM_AMT, 0) AS DATA
         FROM CLTUR_PHSTRN_ACT_CT
@@ -979,18 +979,18 @@
         SELECT
             '문화비' AS CATEGORY
              , '02' AS NAME
-             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '4월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '5월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '6월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '7월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '8월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '9월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12월'
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '01'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '02'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '03'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '04'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '05'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '06'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '07'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '08'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '09'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12'
                      ELSE 0 END) AS MONTH
              , IFNULL(CLTUR_CT_DPST_AMT, 0) AS DATA
         FROM CLTUR_PHSTRN_ACT_CT
@@ -1003,18 +1003,18 @@
         SELECT
             '문화비' AS CATEGORY
              , '03' AS NAME
-             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '4월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '5월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '6월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '7월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '8월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '9월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12월'
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '01'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '02'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '03'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '04'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '05'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '06'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '07'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '08'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '09'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12'
                      ELSE 0 END) AS MONTH
              , CONCAT('dt', IFNULL(CLTUR_CT_DPST_YMD, '')) AS DATA
         FROM CLTUR_PHSTRN_ACT_CT
@@ -1027,18 +1027,18 @@
         SELECT
             '문화비' AS CATEGORY
              , '04' AS NAME
-             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '4월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '5월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '6월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '7월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '8월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '9월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12월'
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '01'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '02'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '03'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '04'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '05'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '06'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '07'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '08'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '09'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12'
                      ELSE 0 END) AS MONTH
              , IFNULL(CLTUR_CT_CYFD_AMT, 0) AS DATA
         FROM CLTUR_PHSTRN_ACT_CT
@@ -1051,18 +1051,18 @@
         SELECT
             '합계' AS CATEGORY
              , '01' AS NAME
-             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '4월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '5월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '6월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '7월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '8월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '9월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12월'
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '01'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '02'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '03'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '04'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '05'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '06'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '07'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '08'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '09'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12'
                      ELSE 0 END) AS MONTH
              , IFNULL(CLM_AMT, 0) AS DATA
         FROM CLTUR_PHSTRN_ACT_CT
@@ -1075,18 +1075,18 @@
         SELECT
             '합계' AS CATEGORY
              , '02' AS NAME
-             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '4월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '5월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '6월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '7월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '8월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '9월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12월'
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '01'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '02'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '03'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '04'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '05'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '06'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '07'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '08'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '09'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12'
                      ELSE 0 END) AS MONTH
              , IFNULL(CLTUR_CT_DPST_AMT, 0) AS DATA
         FROM CLTUR_PHSTRN_ACT_CT
@@ -1099,18 +1099,18 @@
         SELECT
             '합계' AS CATEGORY
              , '04' AS NAME
-             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '4월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '5월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '6월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '7월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '8월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '9월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11월'
-                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12월'
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '01'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '02'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '03'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '04'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '05'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '06'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '07'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '08'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '09'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12'
                      ELSE 0 END) AS MONTH
              , IFNULL(CLTUR_CT_CYFD_AMT, 0) AS DATA
         FROM CLTUR_PHSTRN_ACT_CT

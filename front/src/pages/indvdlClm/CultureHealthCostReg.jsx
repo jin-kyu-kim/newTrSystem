@@ -285,6 +285,7 @@ const CultureHealthCostReg = (props) => {
                         window.alert("수정되었습니다.")
                     }
                 }
+                props.searchTable();
             }
         }
     };

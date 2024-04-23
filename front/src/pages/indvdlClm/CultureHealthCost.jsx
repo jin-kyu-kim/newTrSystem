@@ -85,6 +85,44 @@ const CultureHealthCost = () => {
     }
 
     const onCellPrepared = (e) => {
+        if(e.area === "column" && e.cell.text === "01"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "1월";
+        } else if (e.area === "column" && e.cell.text === "02"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "2월";
+        } else if (e.area === "column" && e.cell.text === "03"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "3월";
+        } else if (e.area === "column" && e.cell.text === "04"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "4월";
+        } else if (e.area === "column" && e.cell.text === "05"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "5월";
+        } else if (e.area === "column" && e.cell.text === "06"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "6월";
+        } else if (e.area === "column" && e.cell.text === "07"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "7월";
+        } else if (e.area === "column" && e.cell.text === "08"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "8월";
+        } else if (e.area === "column" && e.cell.text === "09"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "9월";
+        } else if (e.area === "column" && e.cell.text === "10"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "10월";
+        } else if (e.area === "column" && e.cell.text === "11"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "11월";
+        } else if (e.area === "column" && e.cell.text === "12"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "12월";
+        }
+
         if(e.area === "row" && e.cell.text === "01"){
             const textNode = e.cellElement.childNodes[0];
             textNode.textContent = "청구";
@@ -152,7 +190,7 @@ const CultureHealthCost = () => {
                     <Scrolling mode="virtual"/>
                 </PivotGrid>
             </div>
-            <CultureHealthCostReg year={year}></CultureHealthCostReg>
+            <CultureHealthCostReg year={year} searchTable={searchTable}></CultureHealthCostReg>
         </div>
     );
 };
