@@ -136,6 +136,7 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId }) => {
                             <div> </div>  
                         )}
 
+                        {expensClmInfo && expensClmInfo[0] ? (                      
                         <div style={{display: 'flex'}}>
                             {ctrt.key === 'CustomValue' && (
                                     ctrt.info.map((item, index) => (
@@ -144,8 +145,11 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId }) => {
                                             <span className='lt-rt-margin'>{item.text}</span>
                                         </div>
                             )))}
-
-                        </div>
+                        </div>     
+                         ) : (
+                             <div> </div>  
+                        )}
+          
                         </div>
                     </div>
                 ))}
