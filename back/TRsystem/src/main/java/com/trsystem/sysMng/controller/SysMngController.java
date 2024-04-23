@@ -1,9 +1,10 @@
 package com.trsystem.sysMng.controller;
 
+import com.trsystem.security.jwt.TokenDto;
 import com.trsystem.sysMng.domain.SysMngDomain;
 import com.trsystem.sysMng.service.SysMngService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,18 +30,17 @@ public class SysMngController {
     }
 
     @PostMapping(value = "/boot/sysMng/lgnSkll")
-    public ResponseEntity<UserDetails> loginCheck(@RequestBody Map<String, Object> loginInfo) {
-        return userDetails.login(loginInfo);
+    public ResponseEntity<TokenDto> loginCheck(@RequestBody Map<String, Object> loginInfo) {
+        TokenDto result = userDetails.login(loginInfo);
+        return ResponseEntity.status(HttpStatus.OK).header(result.getToken()).body(result);
     }
-   
-    
+
     @PostMapping(value = "/boot/sysMng/resetPswd")
     public ResponseEntity<String> resetPswd(@RequestBody Map<String, Object> loginInfo) {
         return userDetails.resetUserPswd(loginInfo);
     }
     @PostMapping(value = "/boot/sysMng/changePwd")
     public ResponseEntity<String> changePwd(@RequestBody Map<String, Object> changePwdInfo) {
-    	
         return userDetails.changePwd(changePwdInfo);
     }
 }
