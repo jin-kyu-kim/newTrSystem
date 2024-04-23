@@ -286,18 +286,8 @@ const ElecAtrzDetail = () => {
                         alert("승인 처리에 실패하였습니다.");
                     }
                 }
-
-                // 휴가 결재이면서 최종 숭인인 경우 휴가 내용 반영해준다. => 지환전임님 로직으로 변경하면서 사용하지 않음 (ToDo)
-                /*
-                if(detailData.elctrnAtrzTySeCd === "VTW04901" && nowAtrzLnSn > maxAtrzLnSn) {
-                    const vacResult = handleVacation();
-                    if(vacResult < 0) {
-                        alert("승인 처리에 실패하였습니다.");
-                    }
-                }
                 alert("승인 처리되었습니다.");
                 navigate('/elecAtrz/ElecAtrz');
-                */
             } else {
                 alert("승인 처리에 실패하였습니다.");
                 return;
@@ -454,75 +444,6 @@ const ElecAtrzDetail = () => {
         setAplyYmd(`${year}${monthString}`);
         setOdr(odr);
     } 
-
-    
-
-
-    /**
-     * 휴가결재 최종 승인 시 휴가 일수 차감 
-     */
-    const handleVacation = async () => {
-
-        // 해당 사람의 휴가 관리 테이블 조회
-        const VacMng = await getVacMngInfo();
-
-        if(detailData.elctrnAtrzTySeCd === "VTW04901") {
-
-            let updParam = {}
-            if(["VTW01204", "VTW01205", "VTW01206"].includes(dtlInfo.vcatnTyCd)) {
-                updParam = {
-                    pblenVcatnUseDaycnt: VacMng.pblenVcatnUseDaycnt + dtlInfo.vcatnDeCnt,
-                    mdfcnDt: new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0],
-                    mdfcnEmpId: cookies.userInfo.empId   
-                }
-            } else if (["VTW01201", "VTW01202", "VTW01203"].includes(dtlInfo.vcatnTyCd)){
-                updParam = {
-                    useDaycnt: VacMng.useDaycnt + dtlInfo.vcatnDeCnt,
-                    vcatnRemndrDaycnt: VacMng.vcatnRemndrDaycnt - dtlInfo.vcatnDeCnt,
-                    mdfcnDt: new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0],
-                    mdfcnEmpId: cookies.userInfo.empId   
-                }
-            }
-
-            const param = [
-                { tbNm: "VCATN_MNG" },
-                updParam,
-                { 
-                    empId: detailData.atrzDmndEmpId, 
-                    vcatnYr: '2024' 
-                },
-            ]
-
-            try {
-                const response = await ApiRequest("/boot/common/commonUpdate", param);
-                return response;
-
-            } catch (error) {
-                console.error(error)
-            }
-        } else {
-            return;
-        }
-    }
-
-    const getVacMngInfo = async () => {
-        try {
-            const response = await ApiRequest('/boot/common/commonSelect', [
-                { tbNm: "VCATN_MNG" }, 
-                { 
-                    empId: detailData.atrzDmndEmpId,
-                    vcatnYr: 2024
-                }
-            ]);
-            
-            return response[0];
-
-        } catch (error) {
-            console.log('error', error);
-        }
-    };
-
-
 
     return (
         <div className="container" style={{ marginTop: "10px" }}>
