@@ -27,16 +27,20 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
     else if (data.elctrnAtrzTySeCd === "VTW04909"){
         jsonData = ElecAtrzOutordCompanyJson
     }
-    const {keyColumn, tableColumns, summaryColumn, insertButton} = jsonData;
 
+    const {keyColumn, tableColumns, summaryColumn, insertButton} = jsonData;
 
     /**
      * 임시저장 조회
      */
     useEffect(() => {
+        /* 임시저장 조회 */
         if(sttsCd === "VTW03701") {
             getTempData();
+        }else if(["VTW03702","VTW03703","VTW03704","VTW03705"].includes(sttsCd)) {
+            getTempData();
         }
+        /* 전자결재 목록 조회 */
     }, [])
 
 
@@ -50,6 +54,7 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
         ]
 
         const dtlResponse = await ApiRequest("/boot/common/commonSelect", dtlParam);
+        console.log("dtlResponse", dtlResponse)
 
         dtlResponse.map((item) => {
         });
@@ -164,7 +169,9 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
             });
         });
 
-        onSendData(newData);
+        if(!!onSendData){
+            onSendData(newData);
+        }
     }, [tableData]);
 
 
@@ -200,7 +207,6 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
             updatedData[existingIndex] = data;
             setTableData(updatedData);
         } else {
-            console.log(tableData.length)
             const maxSn = tableData.length > 0 ? Math.max(...tableData.map(item => item.entrpsCtrtDtlSn || 0)) : 0;
             data.entrpsCtrtDtlSn = maxSn + 1;  
             setTableData(prev => [...prev, data]);
@@ -220,7 +226,7 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
            <CustomTable
             keyColumn={keyColumn}
             columns={tableColumns}
-            values={tableData}
+            values={tableData? tableData : []}
             pagerVisible={false}
             summary={true}
             summaryColumn={summaryColumn}
@@ -241,7 +247,7 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
                     handlePlanData={handlePopupData} 
                     selectedData={selectedData}
                     data={data}
-                    sttsCd={sttsCd}
+                    // sttsCd={sttsCd}
                 />
             </Popup>
         </div>

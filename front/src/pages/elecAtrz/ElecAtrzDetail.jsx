@@ -18,6 +18,7 @@ const ElecAtrzDetail = () => {
     const location = useLocation();
     const detailData = location.state.data;
     const sttsCd = location.state.sttsCd;
+    const prjctId = location.state.prjctId;
     const [ prjctData, setPrjctData ] = useState({});
     const [ atrzOpnn, setAtrzOpnn ] = useState([]);
     const { header, keyColumn, columns, queryId, atchFlQueryId } = electAtrzJson.electAtrzDetail;
@@ -458,11 +459,19 @@ const ElecAtrzDetail = () => {
                     onClick={onBtnClick}
                 />}
 
-            {/* 휴가, 청구의 경우에는 컴포넌트 렌더링 */}
-            {(['VTW04901', 'VTW04907'].includes(detailData.elctrnAtrzTySeCd)) && (
+            {/* 휴가           VTW04901, 
+                청구           VTW04907,
+                외주인력 계약   VTW04908,
+                외주업체 계약   VTW04909,
+                재료비 계약     VTW04910
+                ... TODO 청구 및 그 외 
+                의 경우에는 컴포넌트 렌더링 */}
+            {(['VTW04901', 'VTW04907', 'VTW04908', 'VTW04909', 'VTW04910'].includes(detailData.elctrnAtrzTySeCd)) && (
                 <ElecAtrzTabDetail
                     dtlInfo={dtlInfo}
                     detailData={detailData}
+                    sttsCd={sttsCd}
+                    prjctId={prjctId}
                 />
             )}
 
