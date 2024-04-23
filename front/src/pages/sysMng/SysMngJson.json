@@ -11,6 +11,7 @@
         ],
         "childTableColumns": 
         [
+            { "key": "upCdValue", "value": "상위코드", "isRequire" : true, "visible": false },
             { "key": "cdValue", "value": "하위코드", "isRequire" : true },
             { "key": "cdNm", "value": "하위코드명", "isRequire" : true },
             { "key": "useYn", "value": "사용여부", "editType": "selectBox", "cellType": "toggle" }

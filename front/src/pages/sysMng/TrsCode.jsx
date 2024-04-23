@@ -5,7 +5,7 @@ import ApiRequest from "../../utils/ApiRequest";
 import SysMng from "./SysMngJson.json";
 import "../../pages/sysMng/sysMng.css";
 
-const TrsCodeList = () => {
+const TrsCode = () => {
   const { keyColumn, queryId, tableColumns, childTableColumns, searchInfo, tbNm, ynVal } = SysMng.trsCodeJson;
   const [ expandedRowKey, setExpandedRowKey ] = useState(null);
   const [ values, setValues ] = useState([]);
@@ -73,7 +73,8 @@ const TrsCodeList = () => {
     }
   };
 
-  const masterDetail = () => {
+  const masterDetail = (e) => {
+    const upCdValue = e.data.data.cdValue;
     if(childList.length !== 0){
       return (
         <CustomEditTable
@@ -83,6 +84,7 @@ const TrsCodeList = () => {
           keyColumn={keyColumn}
           handleYnVal={handleYnVal}
           showPageSize={false}
+          upCdValue={upCdValue}
           columns={childTableColumns}
         />
       );
@@ -117,4 +119,4 @@ const TrsCodeList = () => {
     </div>
   );
 };
-export default TrsCodeList;
+export default TrsCode;

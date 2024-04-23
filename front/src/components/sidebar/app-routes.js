@@ -102,8 +102,8 @@ const routes = [
   },
   // 코드 관리
   {
-    path: "/sysMng/TrsCodeList",
-    name: "TrsCodeList",
+    path: "/sysMng/TrsCode",
+    name: "TrsCode",
     element: React.lazy(() => import("../../pages/sysMng/TrsCode")),
     isPrivate:true
   },
