@@ -48,8 +48,10 @@ const CultureHealthCostReg = (props) => {
     });
 
     useEffect(() => {
-        searchTable();
-    }, []);
+        if(props.year != null){
+            searchTable();
+        }
+    }, [props.year]);
 
     const getDate = (time) => {
         return time.getFullYear()+"/"+('0' + (time.getMonth() + 1)).slice(-2)+"/"+('0' + time.getDate()).slice(-2)
@@ -101,7 +103,8 @@ const CultureHealthCostReg = (props) => {
     const searchTable = async () => {
         const params = {
             queryId: Json.queryId,
-            empId: cookies.userInfo.empId
+            empId: cookies.userInfo.empId,
+            clmYmd: props.year
         }
         try{
             const response = await ApiRequest("/boot/common/queryIdSearch", params);
@@ -278,6 +281,7 @@ const CultureHealthCostReg = (props) => {
                         deleteFiles.current = [{tbNm: "ATCHMNFL"}];
                         onResetClick()
                         searchTable();
+                        setSelectedItem(null);
                         window.alert("수정되었습니다.")
                     }
                 }
