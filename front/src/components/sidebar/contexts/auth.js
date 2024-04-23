@@ -29,7 +29,6 @@ function AuthProvider(props) {
       setCookie("userAuth", result.data.userAuth);
       setCookie("userInfo", result.data.userInfo);
       setCookie("deptInfo", result.data.deptInfo);
-      console.log(result.data.deptInfo);
       navigate("/");
     }
     return result;
