@@ -346,7 +346,7 @@ const CultureHealthCostReg = (props) => {
         if (atchList != null) {
             return (<div>
                 {atchList.map((item, index) => (
-                    <div key={index}>
+                    <div key={index} style={{whiteSpace: 'pre-wrap'}}>
                         <a href={`/upload/${item.strgFileNm}`} download={item.realFileNm}>{item.realFileNm}</a>
                     </div>
                 ))}
@@ -355,13 +355,12 @@ const CultureHealthCostReg = (props) => {
     }
 
     return (
-        <div className="container">
-            <div style={{display: "flex"}}>
-                <div className="empListContainer" style={empListContainerStyle}>
-                    <div className="empListTable" style={{minWidth: "480px"}}>
-                        <div style={{height: "310px"}}>
-                            <p><strong>* 청구 목록 </strong></p>
-                            <span style={fontSize}>
+        <div style={{display: "flex", margin: "2%"}}>
+            <div className="empListContainer" style={empListContainerStyle}>
+                <div className="empListTable" style={{minWidth: "480px"}}>
+                    <div style={{height: "310px"}}>
+                        <p><strong>* 청구 목록 </strong></p>
+                        <span style={fontSize}>
                             1. 입력, 수정, 삭제 가능 조건 <br/>
                               <strong>매달 1일 부터 5일 : 이전달과 현재달 청구 건</strong><br/>
                               <strong>매달 6일부터 말일 : 현재 달 청구 건</strong><br/>
@@ -370,70 +369,69 @@ const CultureHealthCostReg = (props) => {
                                 style={{color: "red"}}>{getDate(now)}</span><br/>
                             * 입력, 수정 및 삭제 가능한 청구대상 월 : <span style={{color: "red"}}>{getTargetMonth(now)}</span><br/>
                         </span>
-                        </div>
-                        <DataGrid
-                            keyExpr={'clturPhstrnActCtSn'}
-                            dataSource={values}
-                            onFocusedRowChanged={onFocusedRowChanged}
-                            focusedRowEnabled={true}
-                        >
-                            <Column dataField='month' caption='대상월' minWidth={30} alignment="center"/>
-                            <Column dataField='clmYmd' caption='청구일자' minWidth={30} alignment="center"/>
-                            <Column dataField='clmAmt' caption='금액' minWidth={30} alignment="center"/>
-                            <Column dataField='actIem' caption='항목' minWidth={30} alignment="center"/>
-                            <Column dataField='actPurps' caption='목적' minWidth={30} alignment="center"/>
-                            <Column dataField='rm' caption='비고' minWidth={100} alignment="center"/>
-                            <Column dataField='frcsNm' caption='가맹점' minWidth={100} alignment="center"/>
-                            <Column caption='첨부' minWidth={100} cellRender={fileCell} alignment="center"/>
-                        </DataGrid>
                     </div>
-                    <div style={{display: "flex", justifyContent: "flex-end"}}>
-                        <Button text="수정" onClick={onUpdateClick} disabled={!selectedItem} style={button}></Button>
-                        <Button text="삭제" onClick={onDeleteClick} disabled={!selectedItem} type='danger' style={button}></Button>
+                    <DataGrid
+                        keyExpr={'clturPhstrnActCtSn'}
+                        dataSource={values}
+                        onFocusedRowChanged={onFocusedRowChanged}
+                        focusedRowEnabled={true}
+                    >
+                        <Column dataField='month' caption='대상월' minWidth={30} alignment="center" wordWrap={true}/>
+                        <Column dataField='clmYmd' caption='청구일자' minWidth={30} alignment="center" wordWrap={true}/>
+                        <Column dataField='clmAmt' caption='금액' minWidth={30} alignment="center" wordWrap={true}/>
+                        <Column dataField='actIem' caption='항목' minWidth={30} alignment="center" wordWrap={true}/>
+                        <Column dataField='actPurps' caption='목적' minWidth={30} alignment="center" wordWrap={true}/>
+                        <Column dataField='rm' caption='비고' minWidth={100} alignment="center" wordWrap={true}/>
+                        <Column dataField='frcsNm' caption='가맹점' minWidth={100} alignment="center" wordWrap={true}/>
+                        <Column caption='첨부' minWidth={100} cellRender={fileCell} alignment="center"/>
+                    </DataGrid>
+                </div>
+                <div style={{display: "flex", justifyContent: "flex-end"}}>
+                    <Button text="수정" onClick={onUpdateClick} disabled={!selectedItem} style={button}></Button>
+                    <Button text="삭제" onClick={onDeleteClick} disabled={!selectedItem} type='danger' style={button}></Button>
+                </div>
+            </div>
+            <div style={empDetailContainerStyle}>
+                <div style={{height: "290px", marginLeft: "15px"}}>
+                    <p><strong>* 문화 체련비 등록</strong></p>
+                    <div style={fontSize}>
+                        <p>1. 체력 향상과 문화 교육을 위해 지원하는 경비입니다.</p>
+                        <p>2. 월 20만원 한도로 지급된 법인카드를 통해서만 이용 가능합니다.</p>
+                        <p>3. <strong>체력단련비 : 헬스/요가/수영/필라테스</strong>와 같이 월단위 이상 수강/강습을 지원합니다.<br/>
+                            <strong>(일회성 경비나 쿠폰은 문화비로 전환하여 지급합니다.)</strong><br/></p>
+                        <p>4. <strong>문화비 :</strong> 문화 교육과 어학 강습을 지원하며 월 단위 이상 관인학원에 한합니다.<br/>
+                            <strong>(문화비의 경우 매월 상여로 처리하며 연말정산 시 본인이 세금을 부담합니다.)</strong></p>
                     </div>
                 </div>
-                <div style={empDetailContainerStyle}>
-                    <div style={{height: "290px", marginLeft: "15px"}}>
-                        <p><strong>* 문화 체련비 등록</strong></p>
-                        <div style={fontSize}>
-                            <p>1. 체력 향상과 문화 교육을 위해 지원하는 경비입니다.</p>
-                            <p>2. 월 20만원 한도로 지급된 법인카드를 통해서만 이용 가능합니다.</p>
-                            <p>3. <strong>체력단련비 : 헬스/요가/수영/필라테스</strong>와 같이 월단위 이상 수강/강습을 지원합니다.<br/>
-                                <strong>(일회성 경비나 쿠폰은 문화비로 전환하여 지급합니다.)</strong><br/></p>
-                            <p>4. <strong>문화비 :</strong> 문화 교육과 어학 강습을 지원하며 월 단위 이상 관인학원에 한합니다.<br/>
-                                <strong>(문화비의 경우 매월 상여로 처리하며 연말정산 시 본인이 세금을 부담합니다.)</strong></p>
-                        </div>
-                    </div>
-                    <div className="dx-fieldset" style={{width: '100%'}}>
-                        <span style={{color: "red", fontSize: 14, fontWeight: "bold"}}>*법인카드로 결제한 날짜를 입력해 주세요.</span>
-                        <CustomLabelValue props={labelValue.clmYmd} onSelect={handleChgValue}
-                                          value={initParam?.clmYmd}/>
-                        <CustomLabelValue props={labelValue.clmAmt} onSelect={handleChgValue}
-                                          value={initParam?.clmAmt}/>
-                        <CustomLabelValue props={labelValue.clturPhstrnSeCd} onSelect={handleChgValue}
-                                          value={initParam?.clturPhstrnSeCd}/>
-                        <CustomLabelValue props={labelValue.actIem} onSelect={handleChgValue}
-                                          value={initParam?.actIem}/>
-                        <CustomLabelValue props={labelValue.actPurps} onSelect={handleChgValue}
-                                          value={initParam?.actPurps}/>
-                        <CustomLabelValue props={labelValue.frcsNm} onSelect={handleChgValue}
-                                          value={initParam?.frcsNm}/>
-                        <FileUploader
-                            selectButtonText="파일 선택"
-                            labelText="또는 드래그"
-                            multiple={true}
-                            accept="*/*"
-                            uploadMode="useButton"
-                            onValueChanged={handleAttachmentChange}
-                            maxFileSize={1.5 * 1024 * 1024 * 1024}
-                            ref={fileUploaderRef}
-                        >
-                        </FileUploader>
-                    </div>
-                    <div style={{display: "flex", justifyContent: "flex-end"}}>
-                        <Button style={button} type='default' text="저장" onClick={handleSubmit}></Button>
-                        <Button style={button} text="초기화" onClick={onResetClick}></Button>
-                    </div>
+                <div className="dx-fieldset">
+                    <span style={{color: "red", fontSize: 14, fontWeight: "bold"}}>*법인카드로 결제한 날짜를 입력해 주세요.</span>
+                    <CustomLabelValue props={labelValue.clmYmd} onSelect={handleChgValue}
+                                      value={initParam?.clmYmd}/>
+                    <CustomLabelValue props={labelValue.clmAmt} onSelect={handleChgValue}
+                                      value={initParam?.clmAmt}/>
+                    <CustomLabelValue props={labelValue.clturPhstrnSeCd} onSelect={handleChgValue}
+                                      value={initParam?.clturPhstrnSeCd}/>
+                    <CustomLabelValue props={labelValue.actIem} onSelect={handleChgValue}
+                                      value={initParam?.actIem}/>
+                    <CustomLabelValue props={labelValue.actPurps} onSelect={handleChgValue}
+                                      value={initParam?.actPurps}/>
+                    <CustomLabelValue props={labelValue.frcsNm} onSelect={handleChgValue}
+                                      value={initParam?.frcsNm}/>
+                    <FileUploader
+                        selectButtonText="파일 선택"
+                        labelText="또는 드래그"
+                        multiple={true}
+                        accept="*/*"
+                        uploadMode="useButton"
+                        onValueChanged={handleAttachmentChange}
+                        maxFileSize={1.5 * 1024 * 1024 * 1024}
+                        ref={fileUploaderRef}
+                    >
+                    </FileUploader>
+                </div>
+                <div style={{display: "flex", justifyContent: "flex-end"}}>
+                    <Button style={button} type='default' text="저장" onClick={handleSubmit}></Button>
+                    <Button style={button} text="초기화" onClick={onResetClick}></Button>
                 </div>
             </div>
         </div>

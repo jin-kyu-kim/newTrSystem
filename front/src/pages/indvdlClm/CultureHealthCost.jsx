@@ -85,6 +85,20 @@ const CultureHealthCost = () => {
     }
 
     const onCellPrepared = (e) => {
+        if(e.area === "row" && e.cell.text === "01"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "청구";
+        } else if (e.area === "row" && e.cell.text === "02"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "지급";
+        } else if (e.area === "row" && e.cell.text === "03"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "지급날짜";
+        } else if (e.area === "row" && e.cell.text === "04"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "잔액";
+        }
+
         if( e.area === 'row' && e.cell.expanded === true){
             const childNodes = e.cellElement.childNodes;
             Array.from(childNodes).forEach(node => {
@@ -110,7 +124,7 @@ const CultureHealthCost = () => {
             >
                 <h1 style={{fontSize: "40px"}}>문화체련비</h1>
             </div>
-            <div className="col-md-2" style={{marginRight: "-20px", marginLeft: "2%", marginBottom: "2%"}}>
+            <div className="col-md-2" style={{marginLeft: "2%", marginBottom: "2%"}}>
                 <SelectBox
                     placeholder="[년도]"
                     defaultValue={now.getFullYear()}
@@ -119,11 +133,11 @@ const CultureHealthCost = () => {
                         setYear(e)
                     }}/>
             </div>
-            <div>
+            <div style={{margin: "2%"}}>
                 <PivotGrid
                     dataSource={dataSource}
                     allowSortingBySummary={true}
-                    height={560}
+                    height={450}
                     showBorders={true}
                     allowFiltering={false}
                     allowSorting={false}

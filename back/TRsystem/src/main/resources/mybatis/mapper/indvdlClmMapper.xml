@@ -858,7 +858,7 @@
     <select id="retrieveFtnessTrngCtClmAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
             '체력단련비' AS CATEGORY
-             , '청구' AS NAME
+             , '01' AS NAME
              , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
                      WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
                      WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
@@ -882,7 +882,7 @@
     <select id="retrieveFtnessTrngCtDpstAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
             '체력단련비' AS CATEGORY
-             , '지급' AS NAME
+             , '02' AS NAME
              , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
                      WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
                      WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
@@ -906,7 +906,7 @@
     <select id="retrieveFtnessTrngCtDpstYmd" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
             '체력단련비' AS CATEGORY
-             , '지급날짜' AS NAME
+             , '03' AS NAME
              , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
                      WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
                      WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
@@ -930,7 +930,7 @@
     <select id="retrieveFtnessTrngCtCyfdAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
             '체력단련비' AS CATEGORY
-             , '잔액' AS NAME
+             , '04' AS NAME
              , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
                      WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
                      WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
@@ -954,7 +954,7 @@
     <select id="retrieveClturCtClmAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
             '문화비' AS CATEGORY
-             , '청구' AS NAME
+             , '01' AS NAME
              , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
                      WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
                      WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
@@ -978,7 +978,7 @@
     <select id="retrieveClturCtDpstAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
             '문화비' AS CATEGORY
-             , '지급' AS NAME
+             , '02' AS NAME
              , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
                      WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
                      WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
@@ -1002,7 +1002,7 @@
     <select id="retrieveClturCtDpstYmd" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
             '문화비' AS CATEGORY
-             , '지급날짜' AS NAME
+             , '03' AS NAME
              , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
                      WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
                      WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
@@ -1026,7 +1026,7 @@
     <select id="retrieveClturCtCyfdAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
             '문화비' AS CATEGORY
-             , '잔액' AS NAME
+             , '04' AS NAME
              , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
                      WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
                      WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
@@ -1049,8 +1049,8 @@
     <!-- 문체비 합계테이블: 전체 청구 조회 -->
     <select id="retrieveClmAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
-            '전체' AS CATEGORY
-             , '청구' AS NAME
+            '합계' AS CATEGORY
+             , '01' AS NAME
              , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
                      WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
                      WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
@@ -1073,8 +1073,8 @@
     <!-- 문체비 합계테이블: 전체 지급 조회 -->
     <select id="retrieveDpstAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
-            '전체' AS CATEGORY
-             , '지급' AS NAME
+            '합계' AS CATEGORY
+             , '02' AS NAME
              , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
                      WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
                      WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
@@ -1097,8 +1097,8 @@
     <!-- 문체비 합계테이블: 전체 잔액 조회 -->
     <select id="retrieveCyfdAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
-            '전체' AS CATEGORY
-             , '잔액' AS NAME
+            '합계' AS CATEGORY
+             , '04' AS NAME
              , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
                      WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
                      WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
