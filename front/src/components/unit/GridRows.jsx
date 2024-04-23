@@ -35,8 +35,18 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
         }
     }
 
+    // 날짜 형식을 변환하는 함수
+    const formatDate = (dateStr) => {
+      return `${dateStr.substring(0, 4)}-${dateStr.substring(4, 6)}-${dateStr.substring(6, 8)}`;
+    };
+    
+    const DateCell = (data) => {
+        return <span>{formatDate(data.value)}</span>;
+    };
+
+
     for (let i = 0; i < columns.length; i++) {
-      const { key, value, width, alignment, button, buttons, visible, toggle, subColumns, chkBox , grouping, currency, unit } = columns[i];
+      const { key, value, width, alignment, button, buttons, visible, toggle, subColumns, chkBox , grouping, currency, unit, dateFormat } = columns[i];
 
       if(subColumns){
         /*===============헤더 하위 뎁스 컬럼 설정===================*/
@@ -130,7 +140,21 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
               >
               </Column>
           );
-      } else {
+      } else if(dateFormat){
+        /*=====================날짜 표시=========================*/
+        result.push(
+          <Column
+              key={key}
+              dataField={key}
+              caption={value}
+              width={width}
+              alignment={alignment || 'center'}
+              cellRender={DateCell}
+          >
+          </Column>
+      );
+      }
+      else {
         /*=====================일반 셀 설정=========================*/
           result.push(
             <Column

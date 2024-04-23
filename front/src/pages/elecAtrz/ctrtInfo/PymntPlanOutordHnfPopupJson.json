@@ -22,7 +22,8 @@
                 "type": "NumberBox",
                 "label": "가용금액",
                 "placeholder": "가용금액",
-                "required": true
+                "required": true,
+                "format": "#,###"
             },
             "emp": {
                 "type": "ComboBox",
@@ -109,13 +110,16 @@
                 "name": "withdrPrnmntYmd",
                 "type" : "DateBox",
                 "label": "투입종료일",
-                "placeholder": "투입종료일"
+                "placeholder": "투입종료일",
+                "required": true
             },
             "totAmt": {
                 "name": "totAmt",
                 "type" : "NumberBox",
                 "label": "총액",
-                "placeholder": "총액"
+                "placeholder": "총액",
+                "format": "#,###",
+                "required": true
             }
         }       
     }
