@@ -23,7 +23,7 @@ const Main = ({}) => {
         atrzListQueryId,atrzListTableColumns    //결재 리스트
         } = MainJson; 
 
-    const [cookies, setCookie] = useCookies(["userInfo", "userAuth","deptInfo"]);
+    const [cookies] = useCookies(["userInfo", "userAuth","deptInfo"]);
     const empId = cookies.userInfo.empId;
     const empno = cookies.userInfo.empno;
     const empNm = cookies.userInfo.empNm;
