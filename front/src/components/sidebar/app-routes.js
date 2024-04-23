@@ -2,7 +2,7 @@ import { withNavigationWatcher } from './contexts/navigation';
 import React from "react";
 
 const routes = [
-    // 홈
+  // 홈
   {
     path: "/home",
     name: "main",
@@ -93,7 +93,7 @@ const routes = [
     element: React.lazy(() => import("../../pages/sysMng/EmpAuthorization")),
     isPrivate:true
   },
-   // 고객사관리
+  // 고객사관리
   {
     path: "/sysMng/CustomersList",
     name: "CustomersList",
@@ -170,8 +170,8 @@ const routes = [
     element: React.lazy(() => import("../../pages/humanResourceMng/MeetingRoomManage")),
     isPrivate:true
   },
-   // 인사관리 휴가사용내역
-   {
+  // 인사관리 휴가사용내역
+  {
     path: "/humanResourceMng/EmpVacUseList",
     name: "EmpVacUseList",
     element: React.lazy(() => import("../../pages/humanResourceMng/EmpVacUseList")),
@@ -198,7 +198,7 @@ const routes = [
     element: React.lazy(() => import("../../pages/humanResourceMng/EmpManage")),
     isPrivate:true
   },
- // 법제도
+  // 법제도
   {
     path: "/infoInq/LawRules",
     name: "LawRules",
@@ -240,8 +240,8 @@ const routes = [
     element: React.lazy(() => import("../../pages/indvdlClm/EmpVacation")),
     isPrivate:true
   },
-   // 재무 관리 > 근무시간비용 입력현황
-   {
+  // 재무 관리 > 근무시간비용 입력현황
+  {
     path: "/fnnrMng/TimeExpenseInsertSttus",
     name: "TimeExpenseInsertSttus",
     element: React.lazy(() => import("../../pages/fnnrMng/TimeExpenseInsertSttus")),
@@ -269,8 +269,8 @@ const routes = [
     isPrivate:true
   },
 
-   // 재무 관리 > 근무시간, 경비통합
-   {
+  // 재무 관리 > 근무시간, 경비통합
+  {
     path: "/fnnrMng/EmpTRCostTotal",
     name: "EmpTRCostTotal",
     element: React.lazy(() => import("../../pages/fnnrMng/EmpTRCostTotal")),
@@ -318,6 +318,12 @@ const routes = [
     element: React.lazy(() => import("../../pages/elecAtrz/ElecAtrzNewReq")),
     isPrivate:true
   },
+  // 전자결재 지급 목록 
+  {
+    path: "/elecAtrz/ElecGiveAtrz",
+    name: "ElecGiveAtrz",
+    element: React.lazy(() => import("../../pages/elecAtrz/ElecGiveAtrz")),
+  },
   // 전자결재 서식
   {
     path: "/elecAtrz/ElecAtrzForm",
@@ -352,8 +358,8 @@ const routes = [
 ];
 
 export default routes.map(route => {
-    return {
-        ...route,
-        element: withNavigationWatcher(route.element, route.path)
-    };
+  return {
+    ...route,
+    element: withNavigationWatcher(route.element, route.path)
+  };
 });

@@ -36,16 +36,12 @@ public class ElecAtrzDomain {
 	@Transactional
 	public static String insertElecAtrz(Map<String, Object> params) {
 		
-		System.out.println(params);
-		
 		// 공통
 		String regDt = String.valueOf(params.get("regDt"));
 		String regEmpId = String.valueOf(params.get("regEmpId"));
 		String atrzTySeCd = String.valueOf(params.get("elctrnAtrzTySeCd"));
 		String elctrnAtrzId =  String.valueOf(params.get("elctrnAtrzId"));
 		String sttsCd = String.valueOf(params.get("sttsCd")); // 임시저장인 경우 
-		
-		System.out.println(sttsCd);
 		
 		Map<String, String> basicInfo = new HashMap<>();
 		basicInfo.put("regDt", regDt);
@@ -77,10 +73,6 @@ public class ElecAtrzDomain {
 			
 			// 기존에 저장된 전자결재 아이디에 해당하는 값을 제거한다.
 			
-			// 전자결재 테이블 데이터 삽입
-//			if(sttsCd.equals("VTW03701")) {
-				// 임시저장의 경우 임시저장된 데이터들 지우기
-				
 				/**
 				 *  1. 결재선 지우기
 				 *  target: ATRZ_LN
@@ -92,7 +84,6 @@ public class ElecAtrzDomain {
 				 *  target: REFRN_MAN
 				 */
 				deleteData("REFRN_MAN", elctrnAtrzId);
-				
 				
 				// 계약결재
 				if(atrzTySeCd.equals("VTW04908") || atrzTySeCd.equals("VTW04909") || atrzTySeCd.equals("VTW04910")) {
@@ -167,6 +158,9 @@ public class ElecAtrzDomain {
 					
 					
 				} else {
+					/**
+					 * ToDo: 일반 결재, 지급품의(계약청구) 개발 예정.(화면 미구현으로 인한 지연)
+					 */
 					System.out.println("개발중");
 				}
 				
@@ -239,8 +233,6 @@ public class ElecAtrzDomain {
 			}
 		}); 
 		
-		System.out.println(paramList);
-		
 		tbParam.put("tbNm", "ATRZ_LN");
 		
 		insertParams.add(0, tbParam);
@@ -281,7 +273,7 @@ public class ElecAtrzDomain {
 			}
 			
 		} catch (Exception e) {
-			
+			return -1;
 		}
 		
 		return atrzLnResult; 
@@ -378,7 +370,6 @@ public class ElecAtrzDomain {
 			return result;
 		}
 		
-		
 		return result;
 	}
 	
@@ -394,16 +385,12 @@ public class ElecAtrzDomain {
 		
 		int result = -1;
 		
-		System.out.println(ctrtAtrzParam);
-		
 		// 깊은 복사
 		Map<String, Object> infoParam = new HashMap<>();
 
 		infoParam.putAll(ctrtAtrzParam);
 		
 		infoParam.remove("arrayData");
-		
-		System.out.println(infoParam);
 		
 		Map<String, Object> tbParam = new HashMap<>();
 		
@@ -422,8 +409,6 @@ public class ElecAtrzDomain {
 		
 		try {
 			result = commonService.insertData(insertParams);
-			
-			System.out.println(atrzTySeCd);
 			
 			if(atrzTySeCd.equals("VTW04908")) {
 				
@@ -457,8 +442,6 @@ public class ElecAtrzDomain {
 	 */
 	public static int insertMatrlCtrtDetail(List<Map<String, Object>> paramList, String elctrnAtrzId) {
 	
-		System.out.println("재료비 계약 상세");
-		System.out.println(paramList);
 		int ctrtDtlresult = -1;
 		ArrayList<Map<String, Object>> copiedParams = new ArrayList<>();		
 		ArrayList<Map<String, Object>> insertParams = new ArrayList<>();
@@ -478,8 +461,6 @@ public class ElecAtrzDomain {
 				copiedParams.add(copiedMap);
 		}
 		
-		System.out.println(copiedParams);
-			
 		tbParam.put("tbNm", paramList.get(0).get("tbNm"));
 		insertParams.add(0, tbParam);
 		
@@ -497,8 +478,6 @@ public class ElecAtrzDomain {
 			infoParam.put("totAmt", copiedParams.get(i).get("totAmt"));
 			insertParams.add(i, infoParam);
 		}
-		
-		System.out.println(insertParams);
 		
 		try {
 			ctrtDtlresult = commonService.insertData(insertParams);
@@ -567,9 +546,8 @@ public class ElecAtrzDomain {
 				
 				for(int i = 1; i < paramList.size(); i++) {
 					
-					int aaa = insertEntrpsCtrtDetailCondtion((List<Map<String, Object>>)paramList.get(i).get("pay"), paramList.get(i).get("entrpsCtrtDtlSn").toString(), elctrnAtrzId);
+					int ctrtResult = insertEntrpsCtrtDetailCondtion((List<Map<String, Object>>)paramList.get(i).get("pay"), paramList.get(i).get("entrpsCtrtDtlSn").toString(), elctrnAtrzId);
 				}
-				
 				
 			}
 			
@@ -611,6 +589,11 @@ public class ElecAtrzDomain {
 		return result;
 	}
 	
+	/**
+	 * 전자결재 승인 메소드
+	 * @param paramList
+	 * @return
+	 */
 	public static int aprvElecAtrz(List<Map<String, Object>> paramList) {
 		
 		String aprvrEmpId = String.valueOf(paramList.get(2).get("aprvrEmpId"));	// 현재 승인자
@@ -667,18 +650,23 @@ public class ElecAtrzDomain {
 					updateParams.add(1, updateParam); // 업데이트할 정보
 					updateParams.add(2, conditionParam); // 업데이트할 테이블의 조건
 
-
 					uptResult = commonService.updateData(updateParams);
 				}
 				
 			}
 		} catch(Exception e) {
-			
+			return uptResult;
 		}
 		
 		return atrzLnSn;
 	}
 	
+	/**
+	 * 청구결재 최종 승인시 프로젝트 비용청구 테이블에 insert 해준다.
+	 * Target Table: PRJCT_CT_APLY, PRJCT_CT_ATRZ
+	 * @param param
+	 * @return
+	 */
 	public static int insertPrjctCt(Map<String, Object> param) {
 		int result = -1;
 		

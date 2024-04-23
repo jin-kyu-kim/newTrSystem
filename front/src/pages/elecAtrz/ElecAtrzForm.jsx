@@ -77,7 +77,8 @@ const ElecAtrzForm = () => {
             alert("프로젝트를 먼저 선택해주세요.");
             return;
         }
-        navigate("../elecAtrz/ElecAtrzNewReq", {state: {prjctId: prjctId, formData: data}});
+        const url = data.docSeCd === 'VTW03405' ? '../elecAtrz/ElecGiveAtrz' : '../elecAtrz/ElecAtrzNewReq';
+        navigate(url, {state: {prjctId: prjctId, formData: data}});
     }
 
     const validationRules = {

@@ -7,6 +7,7 @@
     <!-- =================================박지환_작업================================= -->
     <!-- 휴가목록조회 -->
     <select id="retrieveVcatnListInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        /* indvdlClmMapper.retrieveVcatnListInq */
         SELECT
             EMP.EMP_ID						/* 직원ID */
             ,EMP.EMP_FLNM					/* 직원명 */
@@ -37,8 +38,32 @@
 
     <!-- 휴가정보조회 -->
     <select id="retrieveVcatnInfoInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
+<!--        SELECT-->
+<!--            EMP.EMP_ID						/* 직원ID */-->
+<!--            ,EMP.EMP_FLNM					/* 직원명 */-->
+<!--            ,VMNG.VCATN_YR 					/* 휴가연도 */-->
+<!--            ,VMNG.VCATN_ALTMNT_DAYCNT 		/* 휴가배정일수 */-->
+<!--            ,VMNG.USE_DAYCNT 				/* 사용일수 */-->
+<!--            ,VMNG.VCATN_REMNDR_DAYCNT 		/* 휴가잔여일수 */-->
+<!--            ,VMNG.NEW_VCATN_ALTMNT_DAYCNT 	/* 신규휴가배정일수 */-->
+<!--            ,VMNG.NEW_USE_DAYCNT 			/* 신규사용일수 */-->
+<!--            ,VMNG.NEW_REMNDR_DAYCNT 		/* 신규잔여일수 */-->
+<!--            ,VMNG.PBLEN_VCATN_USE_DAYCNT 	/* 공적휴가사용일수 */-->
+<!--            ,VMNG.ALTMNT_BGNG_YMD 			/* 배정시작일자 */-->
+<!--            ,VMNG.ALTMNT_USE_END_YMD 		/* 배정사용종료일자 */-->
+<!--        FROM VCATN_MNG 	VMNG-->
+<!--            ,EMP 		EMP-->
+<!--        WHERE VMNG.EMP_ID = EMP.EMP_ID-->
+<!--        <if test="empId !=null and !empId.equals('')">-->
+<!--            AND EMP.EMP_ID = #{empId}-->
+<!--        </if>-->
+<!--        <if test="searchYear !=null and !searchYear.equals('')">-->
+<!--            AND VMNG.VCATN_YR = #{searchYear}-->
+<!--        </if>-->
+        /* indvdlClmMapper.retrieveVcatnInfoInq */
         SELECT
-            EMP.EMP_ID						/* 직원ID */
+            'ACCOUNT' VCATN_FLAG
+            ,EMP.EMP_ID						/* 직원ID */
             ,EMP.EMP_FLNM					/* 직원명 */
             ,VMNG.VCATN_YR 					/* 휴가연도 */
             ,VMNG.VCATN_ALTMNT_DAYCNT 		/* 휴가배정일수 */
@@ -53,16 +78,46 @@
         FROM VCATN_MNG 	VMNG
             ,EMP 		EMP
         WHERE VMNG.EMP_ID = EMP.EMP_ID
+        AND NEW_VCATN_YN = 'N'
         <if test="empId !=null and !empId.equals('')">
             AND EMP.EMP_ID = #{empId}
         </if>
         <if test="searchYear !=null and !searchYear.equals('')">
             AND VMNG.VCATN_YR = #{searchYear}
         </if>
+        UNION ALL
+        SELECT
+            'NEW' VCATN_FLAG
+            ,EMP.EMP_ID						/* 직원ID */
+            ,EMP.EMP_FLNM					/* 직원명 */
+            ,VMNG.VCATN_YR 					/* 휴가연도 */
+            ,VMNG.VCATN_ALTMNT_DAYCNT 		/* 휴가배정일수 */
+            ,VMNG.USE_DAYCNT 				/* 사용일수 */
+            ,VMNG.VCATN_REMNDR_DAYCNT 		/* 휴가잔여일수 */
+            ,VMNG.NEW_VCATN_ALTMNT_DAYCNT 	/* 신규휴가배정일수 */
+            ,VMNG.NEW_USE_DAYCNT 			/* 신규사용일수 */
+            ,VMNG.NEW_REMNDR_DAYCNT 		/* 신규잔여일수 */
+            ,VMNG.PBLEN_VCATN_USE_DAYCNT 	/* 공적휴가사용일수 */
+            ,VMNG.ALTMNT_BGNG_YMD 			/* 배정시작일자 */
+            ,VMNG.ALTMNT_USE_END_YMD 		/* 배정사용종료일자 */
+        FROM VCATN_MNG 	VMNG
+            ,EMP 		EMP
+        WHERE VMNG.EMP_ID = EMP.EMP_ID
+        AND NEW_VCATN_YN = 'Y'
+        <if test="vcatnBgngYmd == null or vcatnBgngYmd.equals('')">
+            AND DATE_FORMAT(SYSDATE(), '%Y%m%d') BETWEEN ALTMNT_BGNG_YMD AND ALTMNT_USE_END_YMD
+        </if>
+        <if test="vcatnBgngYmd != null and !vcatnBgngYmd.equals('')">
+            AND #{vcatnBgngYmd} BETWEEN ALTMNT_BGNG_YMD AND ALTMNT_USE_END_YMD
+        </if>
+        <if test="empId !=null and !empId.equals('')">
+            AND EMP.EMP_ID = #{empId}
+        </if>
     </select>
 
     <!-- 휴가저장정보조회 -->
     <select id="retrieveVcatnStrgInfoInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        /* indvdlClmMapper.retrieveVcatnStrgInfoInq */
         SELECT
             'ACCOUNT' TYPE				/* 회계_신규휴가 구분 */
             ,VCATN_ALTMNT_SN			/* 휴가배정순번 */
@@ -79,7 +134,9 @@
             ,ALTMNT_USE_END_YMD         /* 배정사용종료일자 */
         FROM VCATN_MNG
         WHERE EMP_ID = #{empId}
-        AND VCATN_YR = #{flagYear}
+        AND #{vcatnBgngYmd} BETWEEN ALTMNT_BGNG_YMD AND ALTMNT_USE_END_YMD
+<!--        AND VCATN_YR = #{flagYear}-->
+        AND NEW_VCATN_YN = 'N'
         UNION ALL
         SELECT
             'NEW'                       /* 회계_신규휴가 구분 */
@@ -98,14 +155,16 @@
         FROM VCATN_MNG
         WHERE EMP_ID = #{empId}
         AND #{vcatnBgngYmd} BETWEEN ALTMNT_BGNG_YMD AND ALTMNT_USE_END_YMD
+        AND NEW_VCATN_YN = 'Y'
     </select>
 
     <!-- 휴가첨부파일조회 -->
     <select id="retrieveAtchmnflInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        /* indvdlClmMapper.retrieveAtchmnflInq */
         SELECT
             ATCHMNFL_ID			/* 첨부파일ID */
             ,ATCHMNFL_SN		/* 첨부파일순번 */
-            ,STRG_FILE_NM		/* 저장피알명 */
+            ,STRG_FILE_NM		/* 저장파일명 */
             ,REAL_FILE_NM		/* 실제파일명 */
             ,FILE_STRG_COURS	/* 파일저장경로 */
         FROM ATCHMNFL
@@ -114,6 +173,7 @@
 
     <!-- 결재선심사권자조회 -->
     <select id="retrieveAtrzLnSrngInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        /* indvdlClmMapper.retrieveAtrzLnSrngInq */
         SELECT
             EMP.EMP_ID
             ,EMP.EMPNO
@@ -136,6 +196,7 @@
 
     <!-- 결재선승인목록조회 -->
     <select id="retrieveAtrzLnAprvListInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        /* indvdlClmMapper.retrieveAtrzLnAprvListInq */
         WITH RECURSIVE DEPT_LINE AS (
             SELECT
                 DEPT_ID,
@@ -165,6 +226,7 @@
 
     <!-- 결재선승인권자조회 -->
     <select id="retrieveAtrzLnAprvInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        /* indvdlClmMapper.retrieveAtrzLnAprvInq */
         SELECT
             EMP.EMP_ID
             ,EMP_FLNM
@@ -194,6 +256,7 @@
 
     <!-- 결재선참조자조회 -->
     <select id="retrieveElctrnAtrzRefrnInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        /* indvdlClmMapper.retrieveElctrnAtrzRefrnInq */
         SELECT
             EMP.EMP_ID
             ,EMP.EMPNO
@@ -216,6 +279,7 @@
 
     <!-- 프로젝트MM신청조회 -->
     <select id="retrievePrjctIndvdlCtAply" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        /* indvdlClmMapper.retrievePrjctIndvdlCtAply */
         WITH RECURSIVE VCATN_CNT AS (
             SELECT
                 ATRZ.ELCTRN_ATRZ_ID
@@ -234,6 +298,7 @@
                 WHERE ATRZ.ELCTRN_ATRZ_ID = ELCTRN.ELCTRN_ATRZ_ID
                 AND ELCTRN.ATRZ_DMND_EMP_ID = EMP.EMP_ID
                 AND ATRZ.VCATN_TY_CD != 'VTW01207'
+                AND ELCTRN.ATRZ_DMND_STTS_CD = 'VTW03703'
                 AND ELCTRN.ATRZ_DMND_EMP_ID = #{empId}
                 AND SUBSTR(ATRZ.VCATN_BGNG_YMD, 1, 6) = #{aplyYm}
         UNION ALL
@@ -292,7 +357,9 @@
             ,''
             ,''
             ,VCATN_YMD
-            ,''
+            ,CASE WHEN VCATN_TY_CD IN ('VTW01201', 'VTW01204') THEN 1.0
+                ELSE 0.5
+                END
             ,''
             ,''
             ,''
@@ -309,6 +376,7 @@
 
     <!-- 프로젝트개인비용저장 -->
     <insert id="retrievePrjctIndvdlCtMmStrg" parameterType="map">
+        /* indvdlClmMapper.retrievePrjctIndvdlCtMmStrg */
         INSERT INTO PRJCT_INDVDL_CT_MM
         VALUES (
             #{prjctId}			/* 프로젝트ID */
@@ -327,8 +395,10 @@
             ,MM_ATRZ_CMPTN_YN 	= 'N'
     </insert>
 
+
     <!-- 프로젝트MM신청삭제 -->
     <delete id="retrievePrjctMmAplyDel" parameterType="map">
+        /* indvdlClmMapper.retrievePrjctMmAplyDel */
         DELETE FROM PRJCT_MM_APLY
         WHERE EMP_ID = #{empId}
         AND APLY_YM = #{aplyYm}
@@ -337,8 +407,10 @@
         AND PRJCT_ID = #{prjctId}
     </delete>
 
+
     <!-- 프로젝트MM결재삭제 -->
     <delete id="retrievePrjctMmAtrzDel" parameterType="map">
+        /* indvdlClmMapper.retrievePrjctMmAtrzDel */
         DELETE FROM PRJCT_MM_ATRZ
         WHERE EMP_ID = #{empId}
         AND APLY_YM = #{aplyYm}
@@ -347,8 +419,10 @@
         AND PRJCT_ID = #{prjctId}
     </delete>
 
+
     <!-- 프로젝트MM신청저장 -->
     <insert id="retrievePrjctMmAplyStrg" parameterType="map">
+        /* indvdlClmMapper.retrievePrjctMmAplyStrg */
         INSERT INTO PRJCT_MM_APLY
         VALUES
         (
@@ -370,6 +444,7 @@
 
     <!-- 프로젝트MM결재저장 -->
     <insert id="retrievePrjctMmAtrzStrg" parameterType="map">
+        /* indvdlClmMapper.retrievePrjctMmAtrzStrg */
         INSERT INTO PRJCT_MM_ATRZ
         VALUES
         (
@@ -393,7 +468,10 @@
 
     </insert>
 
+
+    <!-- 프로젝트MM결재수정 -->
     <update id="retrievePrjctMmSttsInq" parameterType="map">
+        /* indvdlClmMapper.retrievePrjctMmSttsInq */
         UPDATE PRJCT_MM_ATRZ
         SET
             ATRZ_DMND_STTS_CD = ''
@@ -406,7 +484,10 @@
         AND PRJCT_ID = #{prjctId}
     </update>
 
+
+    <!-- 프로젝트MM결재조회 -->
     <select id="retrievePrjctMmAtrzRtrcn" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        /* indvdlClmMapper.retrievePrjctMmAtrzRtrcn */
         SELECT
             ATRZ.PRJCT_ID
             ,ATRZ.EMP_ID
@@ -425,7 +506,9 @@
     </select>
 
 
+    <!-- 프로젝트MM결재삭제 -->
     <delete id="retrievePrjctMmAplySttsDel" parameterType="map">
+        /* indvdlClmMapper.retrievePrjctMmAplySttsDel */
         DELETE FROM PRJCT_MM_APLY
         WHERE EMP_ID = #{empId}
         AND APLY_YM = #{aplyYm}
@@ -433,6 +516,143 @@
         AND APLY_YMD = #{aplyYmd}
         AND PRJCT_ID = #{prjctId}
     </delete>
+
+
+    <!-- 월별정보조회 -->
+    <select id="retrieveMnbyYmdInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        /* indvdlClmMapper.retrieveMnbyYmdInq */
+        SELECT
+            CRTR_YMD		/* 일자 */
+            ,CRTR_ODR		/* 차수 */
+            ,HLDY_CL_CD 	/* 일자종류코드 */
+            ,(SELECT CD_NM FROM CD WHERE CD_VALUE = CRTR_DATE.HLDY_CL_CD)	HLDY_CL_NM	/* 일자종류명 */
+            ,HLDY_NM 		/* 공휴일명 */
+            ,RM				/* 내용 */
+        FROM CRTR_DATE
+        WHERE SUBSTR(CRTR_YMD, 1, 6) = #{aplyYm}
+    </select>
+
+
+    <!-- 휴가년도기준월별정보조회 -->
+    <select id="retrieveVcatnYearInfoInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        /* indvdlClmMapper.retrieveVcatnYearInfoInq */
+        SELECT
+            CRTR_YMD		/* 일자 */
+            ,CRTR_ODR		/* 차수 */
+            ,HLDY_CL_CD 	/* 일자종류코드 */
+            ,(SELECT CD_NM FROM CD WHERE CD_VALUE = CRTR_DATE.HLDY_CL_CD)	HLDY_CL_NM	/* 일자종류명 */
+            ,HLDY_NM 		/* 공휴일명 */
+            ,RM				/* 내용 */
+        FROM CRTR_DATE
+        WHERE SUBSTR(CRTR_YMD, 1, 4) BETWEEN DATE_FORMAT(SYSDATE(), '%Y') - 1 AND DATE_FORMAT(SYSDATE(), '%Y') + 1
+        AND HLDY_CL_CD = 'VTW05003'
+    </select>
+
+
+    <!-- 휴가신청기준프로젝트MM정보조회 -->
+    <select id="retrieveVcatnPrjctMmYnInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        /* indvdlClmMapper.retrieveVcatnPrjctMmYnInq */
+        SELECT
+            DATE_FORMAT(APLY_YMD, '%Y-%m-%d')	APLY_YMD		                            /* 신청일자 */
+            ,ATRZ_DMND_STTS_CD		                                                        /* 결재요청상태코드 */
+            ,(SELECT CD_NM FROM CD WHERE CD_VALUE = ATRZ_DMND_STTS_CD) ATRZ_DMND_STTS_NM	/* 결재요청상태코드명 */
+            ,MM_ATRZ_CMPTN_YN		                                                        /* MM결재완료여부 */
+        FROM PRJCT_MM_ATRZ			ATRZ
+            ,PRJCT_INDVDL_CT_MM		INDVDL
+        WHERE ATRZ.EMP_ID = INDVDL.EMP_ID
+        AND ATRZ.EMP_ID = #{empId}
+        AND APLY_YMD BETWEEN #{vcatnBgngYmd} AND #{vcatnEndYmd}
+    </select>
+
+
+    <!-- 휴가신청기준휴가정보조회 -->
+    <select id="retrieveVcatnUseKndInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        /* indvdlClmMapper.retrieveVcatnUseKndInq */
+        WITH RECURSIVE VCATN_LIST AS(
+            SELECT
+                CASE
+                WHEN NEW_VCATN_YN = 'Y' THEN 'NEW'
+                ELSE 'ACCOUNT'
+                END VCATN_FLAG
+                ,DATE_FORMAT(#{vcatnBgngYmd}, '%Y%m%d') AS FLAG_DATE
+                ,VCATN_ALTMNT_SN	        /* 휴가배정순번 */
+                ,EMP_ID	                    /* 직원ID */
+                ,VCATN_YR	                /* 휴가연도 */
+                ,VCATN_ALTMNT_DAYCNT	    /* 휴가배정일수 */
+                ,USE_DAYCNT	                /* 사용일수 */
+                ,PBLEN_VCATN_USE_DAYCNT	    /* 공적휴가사용일수 */
+                ,VCATN_REMNDR_DAYCNT	    /* 휴가잔여일수 */
+                ,NEW_VCATN_ALTMNT_DAYCNT	/* 신규휴가배정일수 */
+                ,NEW_USE_DAYCNT	            /* 신규사용일수 */
+                ,NEW_REMNDR_DAYCNT	        /* 신규잔여일수 */
+                ,ALTMNT_BGNG_YMD	        /* 배정시작일자 */
+                ,ALTMNT_USE_END_YMD         /* 배정사용종료일자 */
+                ,NEW_VCATN_YN
+            FROM VCATN_MNG
+            WHERE EMP_ID = #{empId}
+            AND (DATE_FORMAT(#{vcatnBgngYmd}, '%Y%m%d') BETWEEN ALTMNT_BGNG_YMD AND ALTMNT_USE_END_YMD OR DATE_FORMAT(#{vcatnEndYmd}, '%Y%m%d') BETWEEN ALTMNT_BGNG_YMD AND ALTMNT_USE_END_YMD)
+        UNION ALL
+            SELECT
+                VCATN_FLAG
+                ,DATE_FORMAT(DATE_ADD(FLAG_DATE, INTERVAL 1 DAY), '%Y%m%d')
+                ,VCATN_ALTMNT_SN	        /* 휴가배정순번 */
+                ,EMP_ID	                    /* 직원ID */
+                ,VCATN_YR	                /* 휴가연도 */
+                ,VCATN_ALTMNT_DAYCNT	    /* 휴가배정일수 */
+                ,USE_DAYCNT	                /* 사용일수 */
+                ,PBLEN_VCATN_USE_DAYCNT	    /* 공적휴가사용일수 */
+                ,VCATN_REMNDR_DAYCNT	    /* 휴가잔여일수 */
+                ,NEW_VCATN_ALTMNT_DAYCNT	/* 신규휴가배정일수 */
+                ,NEW_USE_DAYCNT	            /* 신규사용일수 */
+                ,NEW_REMNDR_DAYCNT	        /* 신규잔여일수 */
+                ,ALTMNT_BGNG_YMD	        /* 배정시작일자 */
+                ,ALTMNT_USE_END_YMD         /* 배정사용종료일자 */
+                ,NEW_VCATN_YN
+            FROM VCATN_LIST
+            WHERE FLAG_DATE <![CDATA[<]]> #{vcatnEndYmd}
+        )
+        SELECT *
+        FROM VCATN_LIST		VLIST
+            ,CRTR_DATE		CRTR
+        WHERE (DATE_FORMAT(FLAG_DATE, '%Y%m%d') BETWEEN ALTMNT_BGNG_YMD AND ALTMNT_USE_END_YMD)
+        AND CRTR.CRTR_YMD = FLAG_DATE
+        AND CRTR.HLDY_CL_CD = 'VTW05001'
+        ORDER BY NEW_VCATN_YN, FLAG_DATE
+    </select>
+
+
+    <!-- 휴가배정관리수정_(회계휴가_공가) -->
+    <update id="retrieveVcatnAltmntMngMdfcn" parameterType="map">
+        /* indvdlClmMapper.retrieveVcatnAltmntMngMdfcn */
+        UPDATE
+            VCATN_MNG
+        SET
+            USE_DAYCNT					= #{useDaycnt}	                /* 사용일수 */
+            ,VCATN_REMNDR_DAYCNT	    = #{vcatnRemndrDaycnt}			/* 휴가잔여일수 */
+            <if test="pblenVcatnUseDaycnt !=null and !pblenVcatnUseDaycnt.equals('')">
+                ,PBLEN_VCATN_USE_DAYCNT	= #{pblenVcatnUseDaycnt}		/* 공적휴가사용일수 */
+            </if>
+            ,MDFCN_DT 					= SYSDATE()						/* 수정일시 */
+            ,MDFCN_EMP_ID 				= #{mdfcnEmpId}					/* 수정직원ID */
+        WHERE EMP_ID = #{empId}
+        AND VCATN_YR = #{vcatnYr}
+    </update>
+
+    <!-- 휴가배정관리수정_(신규휴가) -->
+    <update id="retrieveNewVcatnAltmntMngMdfcn" parameterType="map">
+        /* indvdlClmMapper.retrieveVcatnAltmntMngMdfcn */
+        UPDATE
+            VCATN_MNG
+        SET
+            NEW_USE_DAYCNT	            = #{newUseDaycnt}				/* 신규사용일수 */
+            ,NEW_REMNDR_DAYCNT	        = #{newRemndrDaycnt}			/* 신규잔여일수 */
+            ,MDFCN_DT 					= SYSDATE()						/* 수정일시 */
+            ,MDFCN_EMP_ID 				= #{mdfcnEmpId}					/* 수정직원ID */
+        WHERE EMP_ID = #{empId}
+        AND VCATN_YR = #{vcatnYr}
+    </update>
+
+
 
     <!-- =================================박지환_작업================================= -->
 

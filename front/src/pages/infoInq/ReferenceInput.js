@@ -49,7 +49,10 @@ const ReferenceInput = () => {
                     strgFileNm: data.strgFileNm,
                     atchmnflSn: data.atchmnflSn
                 }));
-                setTypeChk({...typeChk, imprtnc: data.imprtncNtcBgngYmd !== null ? true : false})
+                setTypeChk(prev => ({
+                    ...prev,
+                    imprtnc: resData.imprtncNtcBgngYmd ? true : false
+                }));
                 setAttachments(tmpFileList);
             }
         } catch (error) {
@@ -62,7 +65,7 @@ const ReferenceInput = () => {
     }, []);
 
     const [typeChk, setTypeChk] = useState({
-        imprtnc: data.imprtncNtcBgngYmd !== undefined ? true : false,
+        imprtnc: data.imprtncNtcBgngYmd ? true : false,
         useYn: data.useYn === "Y" ? true : false,
         move: false,
     });

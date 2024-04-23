@@ -61,7 +61,6 @@ const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handle
   const insertMM = async () => {
     const param = selectedItem.map((item) => ({
       ...setParam(item),
-      ctAtrzCmptnYn: "N",
       mmAtrzCmptnYn: "N",
     }));
     
