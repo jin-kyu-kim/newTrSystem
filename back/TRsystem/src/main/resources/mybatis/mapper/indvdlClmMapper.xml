@@ -789,6 +789,7 @@
         FROM CLTUR_PHSTRN_ACT_CT_REG c
                  LEFT JOIN  ATCHMNFL a ON c.ATCHMNFL_ID = a.ATCHMNFL_ID
         WHERE EMP_ID = #{empId}
+        AND CLM_YMD LIKE CONCAT(#{clmYmd}, '%')
     </select>
 
     <!-- 프로젝트 비용 atrzDmndSttsCd 변경 -->
@@ -851,5 +852,269 @@
           AND ea.PRJCT_ID = #{prjctId}
           AND ea.ATRZ_DMND_EMP_ID = #{empId}
           AND ea.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
+    </select>
+
+    <!-- 문체비 합계테이블: 체력단련비 청구 조회 -->
+    <select id="retrieveFtnessTrngCtClmAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            '체력단련비' AS CATEGORY
+             , '청구' AS NAME
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '4월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '5월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '6월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '7월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '8월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '9월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12월'
+                 ELSE 0 END) AS MONTH
+             , IFNULL(FTNESS_TRNG_CT_CLM_AMT, 0) AS DATA
+        FROM CLTUR_PHSTRN_ACT_CT
+        WHERE EMP_ID = #{empId}
+          AND CLM_YM LIKE CONCAT(#{clmYm}, '%')
+    </select>
+
+    <!-- 문체비 합계테이블: 체력단련비 지급 조회 -->
+    <select id="retrieveFtnessTrngCtDpstAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            '체력단련비' AS CATEGORY
+             , '지급' AS NAME
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '4월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '5월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '6월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '7월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '8월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '9월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12월'
+                     ELSE 0 END) AS MONTH
+             , IFNULL(FTNESS_TRNG_CT_DPST_AMT, 0) AS DATA
+        FROM CLTUR_PHSTRN_ACT_CT
+        WHERE EMP_ID = #{empId}
+          AND CLM_YM LIKE CONCAT(#{clmYm}, '%')
+    </select>
+
+    <!-- 문체비 합계테이블: 체력단련비 지급날짜 조회 -->
+    <select id="retrieveFtnessTrngCtDpstYmd" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            '체력단련비' AS CATEGORY
+             , '지급날짜' AS NAME
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '4월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '5월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '6월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '7월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '8월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '9월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12월'
+                     ELSE 0 END) AS MONTH
+             , CONCAT('dt', IFNULL(FTNESS_TRNG_CT_DPST_YMD, '')) AS DATA
+        FROM CLTUR_PHSTRN_ACT_CT
+        WHERE EMP_ID = #{empId}
+          AND CLM_YM LIKE CONCAT(#{clmYm}, '%')
+    </select>
+
+    <!-- 문체비 합계테이블: 체력단련비 잔액 조회 -->
+    <select id="retrieveFtnessTrngCtCyfdAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            '체력단련비' AS CATEGORY
+             , '잔액' AS NAME
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '4월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '5월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '6월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '7월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '8월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '9월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12월'
+                     ELSE 0 END) AS MONTH
+             , IFNULL(FTNESS_TRNG_CT_CYFD_AMT, 0) AS DATA
+        FROM CLTUR_PHSTRN_ACT_CT
+        WHERE EMP_ID = #{empId}
+          AND CLM_YM LIKE CONCAT(#{clmYm}, '%')
+    </select>
+
+    <!-- 문체비 합계테이블: 문화비 청구 조회 -->
+    <select id="retrieveClturCtClmAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            '문화비' AS CATEGORY
+             , '청구' AS NAME
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '4월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '5월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '6월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '7월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '8월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '9월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12월'
+                     ELSE 0 END) AS MONTH
+             , IFNULL(CLTUR_CT_CLM_AMT, 0) AS DATA
+        FROM CLTUR_PHSTRN_ACT_CT
+        WHERE EMP_ID = #{empId}
+          AND CLM_YM LIKE CONCAT(#{clmYm}, '%')
+    </select>
+
+    <!-- 문체비 합계테이블: 문화비 지급 조회 -->
+    <select id="retrieveClturCtDpstAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            '문화비' AS CATEGORY
+             , '지급' AS NAME
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '4월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '5월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '6월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '7월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '8월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '9월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12월'
+                     ELSE 0 END) AS MONTH
+             , IFNULL(CLTUR_CT_DPST_AMT, 0) AS DATA
+        FROM CLTUR_PHSTRN_ACT_CT
+        WHERE EMP_ID = #{empId}
+          AND CLM_YM LIKE CONCAT(#{clmYm}, '%')
+    </select>
+
+    <!-- 문체비 합계테이블: 체력단련비 지급날짜 조회 -->
+    <select id="retrieveClturCtDpstYmd" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            '문화비' AS CATEGORY
+             , '지급날짜' AS NAME
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '4월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '5월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '6월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '7월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '8월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '9월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12월'
+                     ELSE 0 END) AS MONTH
+             , CONCAT('dt', IFNULL(CLTUR_CT_DPST_YMD, '')) AS DATA
+        FROM CLTUR_PHSTRN_ACT_CT
+        WHERE EMP_ID = #{empId}
+          AND CLM_YM LIKE CONCAT(#{clmYm}, '%')
+    </select>
+
+    <!-- 문체비 합계테이블: 문화비 잔액 조회 -->
+    <select id="retrieveClturCtCyfdAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            '문화비' AS CATEGORY
+             , '잔액' AS NAME
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '4월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '5월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '6월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '7월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '8월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '9월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12월'
+                     ELSE 0 END) AS MONTH
+             , IFNULL(CLTUR_CT_CYFD_AMT, 0) AS DATA
+        FROM CLTUR_PHSTRN_ACT_CT
+        WHERE EMP_ID = #{empId}
+          AND CLM_YM LIKE CONCAT(#{clmYm}, '%')
+    </select>
+
+    <!-- 문체비 합계테이블: 전체 청구 조회 -->
+    <select id="retrieveClmAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            '전체' AS CATEGORY
+             , '청구' AS NAME
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '4월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '5월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '6월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '7월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '8월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '9월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12월'
+                     ELSE 0 END) AS MONTH
+             , IFNULL(CLM_AMT, 0) AS DATA
+        FROM CLTUR_PHSTRN_ACT_CT
+        WHERE EMP_ID = #{empId}
+          AND CLM_YM LIKE CONCAT(#{clmYm}, '%')
+    </select>
+
+    <!-- 문체비 합계테이블: 전체 지급 조회 -->
+    <select id="retrieveDpstAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            '전체' AS CATEGORY
+             , '지급' AS NAME
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '4월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '5월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '6월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '7월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '8월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '9월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12월'
+                     ELSE 0 END) AS MONTH
+             , IFNULL(CLTUR_CT_DPST_AMT, 0) AS DATA
+        FROM CLTUR_PHSTRN_ACT_CT
+        WHERE EMP_ID = #{empId}
+          AND CLM_YM LIKE CONCAT(#{clmYm}, '%')
+    </select>
+
+    <!-- 문체비 합계테이블: 전체 잔액 조회 -->
+    <select id="retrieveCyfdAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            '전체' AS CATEGORY
+             , '잔액' AS NAME
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '1월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '2월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '3월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '4월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '5월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '6월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '7월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '8월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '9월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11월'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12월'
+                     ELSE 0 END) AS MONTH
+             , IFNULL(CLTUR_CT_CYFD_AMT, 0) AS DATA
+        FROM CLTUR_PHSTRN_ACT_CT
+        WHERE EMP_ID = #{empId}
+          AND CLM_YM LIKE CONCAT(#{clmYm}, '%')
     </select>
 </mapper>
