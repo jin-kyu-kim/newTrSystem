@@ -105,7 +105,6 @@ const EmpManage = ({}) => {
 
   useEffect(() => {   //사번 max값 조회후 세팅 시 인서트로 이동
     if (!Object.values(empMax).every((value) => value === "")) {
-      console.log("empmaxax",empMax)
       const isconfirm = window.confirm(`정직원으로 발령시 사번이 ${empMax}으로 변경됩니다. \n발령하시겠습니까?`); 
       if (isconfirm) {
         insertEmpFte();
