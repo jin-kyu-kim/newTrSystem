@@ -68,10 +68,10 @@ export const navigation = [
         path: '/project/ProjectOutordAprv'
       },{
         text: '파트너업체관리',
-        path: 'project/ProjectOutordCompany'
+        path: '/project/ProjectOutordCompany'
       },{
         text: '파트너직원관리',
-        path: 'project/ProjectOutordEmp'
+        path: '/project/ProjectOutordEmp'
       },
     ]
   }, {
