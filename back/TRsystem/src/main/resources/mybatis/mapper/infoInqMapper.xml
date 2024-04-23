@@ -4,7 +4,6 @@
 <mapper namespace="com.trsystem.mybatis.mapper.infoInqMapper">
 	<select id="retrieveEmpList" parameterType="map" resultType="com.trsystem.LowerHashMap">
 
-
 		SELECT
 		E.EMP_ID AS EMP_ID,
 		E.EMPNO AS EMPNO,
@@ -37,6 +36,7 @@
 		LEFT OUTER JOIN
 		EMP_HIST EH ON EH.EMP_ID = E.EMP_ID
 		WHERE 1=1
+							AND EMP_TY_CD NOT LIKE 'VTW00203%'
 	                        <if test="empno != null and empno !=''">
 	                            AND E.EMPNO LIKE CONCAT('%', #{empno}, '%')
 	                        </if>
@@ -58,6 +58,12 @@
 	 
 	                        <if test="hdofSttsNm != null and hdofSttsNm !=''">
 	                            AND C2.CD_VALUE = #{hdofSttsNm}
+	                        </if>
+	                        <if test="hdofSttsNm == null and hdofSttsNm !=''">
+								AND C2.CD_Value = "VTW00301"
+							</if>
+	                         <if test="empId != null and empId !=''">
+	                            AND E.EMP_ID = #{empId}
 	                        </if>
 		GROUP BY
 		E.EMP_ID, E.EMPNO, E.EMP_FLNM, E.EMP_TY_CD, C.CD_NM,

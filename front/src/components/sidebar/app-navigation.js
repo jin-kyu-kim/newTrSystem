@@ -10,23 +10,23 @@ export const navigation = [
     items: [
       {
         text: '개인정보관리',
-        path: 'infoInq/EmpDetailInfo'
+        path: '/infoInq/EmpDetailInfo'
       },
       {
         text: '직원조회',
-        path: 'infoInq/EmpList'
+        path: '/infoInq/EmpList'
       },{
         text: '공지사항',
-        path: 'infoInq/NoticeList'
+        path: '/infoInq/NoticeList'
       },{
         text: '자료실',
-        path: 'infoInq/ReferenceList'
+        path: '/infoInq/ReferenceList'
       },{
         text: '회의실예약',
-        path: 'infoInq/MeetingRoomReserv'
+        path: '/infoInq/MeetingRoomReserv'
       },{
         text: '법제도',
-        path: 'infoInq/LawRules'
+        path: '/infoInq/LawRules'
       },
       
     ]
@@ -36,17 +36,17 @@ export const navigation = [
     items: [
       {
         text: '근무시간',
-        path: 'indvdlClm/EmpWorkTime'
+        path: '/indvdlClm/EmpWorkTime'
       },
       {
         text: '프로젝트비용',
-        path: 'indvdlClm/ProjectExpense'
+        path: '/indvdlClm/ProjectExpense'
       },{
         text: '휴가',
-        path: 'indvdlClm/EmpVacation'
+        path: '/indvdlClm/EmpVacation'
       },{
         text: '문화체련비',
-        path: 'indvdlClm/CultureHealthCost'
+        path: '/indvdlClm/CultureHealthCost'
       }
     ]
   }, {
@@ -55,17 +55,17 @@ export const navigation = [
     items: [
       {
         text: '프로젝트관리',
-        path: 'project/ProjectList'
+        path: '/project/ProjectList'
       },
       {
         text: '프로젝트승인',
-        path: 'project/ProjectAprv'
+        path: '/project/ProjectAprv'
       },{
         text: '프로젝트시간비용승인',
-        path: 'project/ProjectHrCtAprv'
+        path: '/project/ProjectHrCtAprv'
       },{
         text: '외주비용승인',
-        path: 'project/ProjectOutordAprv'
+        path: '/project/ProjectOutordAprv'
       },{
         text: '파트너업체관리',
         path: 'project/ProjectOutordCompany'
@@ -80,22 +80,22 @@ export const navigation = [
     items: [
       {
         text: '부서관리',
-        path: 'humanResourceMng/DeptManage'
+        path: '/humanResourceMng/DeptManage'
       },{
         text: '직원관리',
-        path: 'humanResourceMng/EmpManage'
+        path: '/humanResourceMng/EmpManage'
       },{
         text: '휴가배정관리',
-        path: 'humanResourceMng/EmpVcatnAltmntMng'
+        path: '/humanResourceMng/EmpVcatnAltmntMng'
       },{
         text: '월별휴가정보',
-        path: 'humanResourceMng/EmpMonthVacInfo'
+        path: '/humanResourceMng/EmpMonthVacInfo'
       },{
         text: '휴가사용내역',
-        path: 'humanResourceMng/EmpVacUseList'
+        path: '/humanResourceMng/EmpVacUseList'
       },{
         text: '회의실예약관리',
-        path: 'humanResourceMng/MeetingRoomManage'
+        path: '/humanResourceMng/MeetingRoomManage'
       },
     ]
   }, {
@@ -104,24 +104,24 @@ export const navigation = [
     items: [
       {
         text: '프로젝트비용청구현황',
-        path: 'fnnrMng/ProjectClaimCost'
+        path: '/fnnrMng/ProjectClaimCost'
       },
       {
         text: '근무시간승인내역',
-        path: 'fnnrMng/EmpTimeAprvList'
+        path: '/fnnrMng/EmpTimeAprvList'
       },{
         text: '경비승인내역',
-        path: 'fnnrMng/EmpExpenseAprvList'
+        path: '/fnnrMng/EmpExpenseAprvList'
       },
       {
         text: '근무시간,경비통합',
-        path: 'fnnrMng/EmpTRCostTotal'
+        path: '/fnnrMng/EmpTRCostTotal'
       },{
         text: '문화체련비관리',
-        path: 'fnnrMng/EmpCultHealthCostManage'
+        path: '/fnnrMng/EmpCultHealthCostManage'
       },{
         text: '근무시간비용입력현황',
-        path: 'fnnrMng/TimeExpenseInsertSttus'
+        path: '/fnnrMng/TimeExpenseInsertSttus'
       },{
         text: '비용엑셀업로드',
         path: '/46'
@@ -138,17 +138,17 @@ export const navigation = [
     items: [
       {
         text: '권한관리',
-        path: 'sysMng/EmpAuth'
+        path: '/sysMng/EmpAuth'
       },
       {
         text: '권한부여관리',
-        path: 'sysMng/EmpAuthorization'
+        path: '/sysMng/EmpAuthorization'
       },{
         text: '코드관리',
-        path: 'sysMng/TrsCode'
+        path: '/sysMng/TrsCode'
       },{
         text: '고객사관리',
-        path: 'sysMng/CustomersList'
+        path: '/sysMng/CustomersList'
       }
     ]
   }, {
@@ -164,10 +164,10 @@ export const navigation = [
         path: '/72'
       },{
         text: '전자결재서식관리',
-        path: 'mngrMenu/ElecAtrzFormManage'
+        path: '/mngrMenu/ElecAtrzFormManage'
       },{
         text: '전자결재',
-        path: 'mngrMenu/ElecAtrzManage'
+        path: '/mngrMenu/ElecAtrzManage'
       },{
         text: '개발및연구',
         path: '/75'

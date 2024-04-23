@@ -51,7 +51,7 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig }) =
                 searchEnabled={true}
                 showClearButton={true}
                 showSelectionControls={true}
-                displayExpr='value'
+                displayExpr='displayValue'
                 applyValueMode="useButtons"
                 style={{ backgroundColor: hasError(props.data.cardUseSn, col.key) ? '#FFCCCC' : '' }}
                 onValueChanged={(newValue) => {

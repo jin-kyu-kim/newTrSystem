@@ -7,17 +7,22 @@ import Moment from "moment"
 
 // DevExtrme import
 import { FileUploader, SelectBox, Button, TextBox, DateBox } from "devextreme-react";
-import dxFileUploader from "devextreme/ui/file_uploader";
 
 // 테이블 import
 // npm install @mui/material
 // npm install @emotion/styled
-import { Select, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+
+// 날짜관련
+// npm install date-fns
+import { isSaturday, isSunday, startOfMonth, endOfMonth, addMonths, addDays } from 'date-fns'
+
 
 // 랜덤채번 import
 import uuid from "react-uuid";
 
 import { useNavigate } from "react-router-dom";
+import { useLocation } from 'react-router';
 
 import axios from "axios";
 import CustomTable from "components/unit/CustomTable";
@@ -50,11 +55,8 @@ import ApiRequest from "utils/ApiRequest";
 
 const { listQueryId, listKeyColumn, listTableColumns } = EmpVacationJson;
 
-// 현재년도
-const nowYear = new Date().getFullYear();
-
 // 회계년도
-const flagYear = Moment().format('YYYYMMDD') >= nowYear + "0401" ? nowYear : nowYear - 1
+const flagYear = Moment().format('YYYYMMDD') >= new Date().getFullYear() + "0401" ? new Date().getFullYear() : new Date().getFullYear() - 1
 
 // 전자결재, 휴가결재 
 let elctrnAtrzId = uuid();
@@ -117,15 +119,41 @@ function atrzLnAprv(jbttlCd, searchResult) {
 
 const EmpVacation = () => {
     const navigate = useNavigate();
+    const location = useLocation();
 
+    const detailData = location ? location : "";
+
+    // 첨부파일데이터
     const fileUploaderRef = useRef(null);
 
-    // 세션정보
+    // 세션설정
     const [cookies, setCookie] = useCookies(["userInfo", "deptInfo"]);
     const sessionEmpId = cookies.userInfo.empId
     const sessionEmpNm = cookies.userInfo.empNm
     let sessionDeptNm = cookies.deptInfo[0].deptNm
     let jbttlCd = cookies.deptInfo[0].jbttlCd
+
+
+
+
+
+    const [selectCrtrDateList, setSelectCrtrDateList] = useState();
+
+    useEffect(() => {
+        getVcatnInfo();
+    }, [])
+
+    const getVcatnInfo = async () => {
+        try {
+            setSelectCrtrDateList(await ApiRequest("/boot/common/queryIdSearch", { queryId: "indvdlClmMapper.retrieveVcatnYearInfoInq" }));
+        } catch (error) {
+            console.error("getVcatnInfo_error : " + error);
+        }
+    }
+
+
+
+
 
     // 휴가목록조회
     const [selectVcatnListValue, setSelectVcatnListValue] = useState([]);
@@ -224,7 +252,6 @@ const EmpVacation = () => {
 
 
     // 전자결재 승인권자목록정보
-    const [atrzLnAprvListValue, setAtrzLnAprvListValue] = useState({});
     const [atrzLnAprvListParam, setAtrzLnAprvListParam] = useState({
         queryId: "indvdlClmMapper.retrieveAtrzLnAprvListInq",
         searchType: "atrzLnAprvList",
@@ -259,6 +286,9 @@ const EmpVacation = () => {
 
     // 전자결재 심사권자 결재선정보
     const [atrzLnSrngValue, setAtrzLnSrngValue] = useState({});
+
+
+
 
 
     // 목록 및 코드조회
@@ -327,9 +357,117 @@ const EmpVacation = () => {
                 }
             }
         } catch (error) {
-            console.log("async_error : ", error);
+            console.log(initParam.searchType + "_error : ", error);
         }
     };
+
+
+    // 저장버튼
+    function onSaveClick() {
+        let errorMsg;
+
+        if (!insertElctrnValue.prjctId) errorMsg = "프로젝트를 선택하세요."
+        else if (!insertVcatnValue.vcatnTyCd) errorMsg = "휴가유형을 선택하세요."
+        else if (!insertVcatnValue.vcatnBgngYmd) errorMsg = "휴가시작기간을 선택하세요."
+        else if (!insertVcatnValue.vcatnEndYmd && (insertVcatnValue.vcatnTyCd == "VTW01201" || insertVcatnValue.vcatnTyCd == "VTW01204")) errorMsg = "휴가종료기간을 선택하세요."
+
+        if (errorMsg) {
+            alert(errorMsg);
+            return;
+        } else {
+            const isconfirm = window.confirm("저장하시겠습니까?");
+            if (isconfirm) {
+                // 휴가신청 정합성체크
+                let response = getVcatnVali();
+                if (response) {
+                    alert(response);
+                    return;
+                } else {
+                    insertVcatnAtrz(insertElctrnValue);
+                    setAtrzLnSrngValue();
+                }
+            } else {
+                return;
+            }
+        }
+    }
+
+    // 휴가신청 정합성체크
+    function getVcatnVali() {
+        let errorMsg;
+        const flagOrder = Moment(new Date()).format("YYYYMMDD") <= (Moment(new Date()).format("YYYY") + "0331") ? 1 : 2     // 회계년도기준차수
+        const nowAccountDate = flagOrder == 1 ? parseInt(Moment(new Date()).format("YYYY")) - 1 + "0331" : (Moment(new Date()).format("YYYY") + "0331");            // 회계년도기준일자
+        const newAccountDate = flagOrder == 1 ? parseInt(Moment(new Date()).format("YYYY")) + "0331" : parseInt(Moment(new Date()).format("YYYY")) + 1 + "0331"     // 다음회계년도기준일자
+        let newVcatnList = selectVcatnInfoValue.filter(item => item.vcatnFlag == "NEW")[0];            // 신규휴가정보
+        let accountVcatnList = selectVcatnInfoValue.filter(item => item.vcatnFlag == "ACCOUNT")[0];    // 회계휴가정보
+
+        // case_3
+        // 동일회계년도 근무시간 결재중 휴가신청
+        // case_4
+        // 동일회계년도 근무시간 마감 휴가신청
+
+        if (insertVcatnValue.vcatnBgngYmd > insertVcatnValue.vcatnEndYmd) {
+            errorMsg = "휴가시작일자와 휴가종료일자를 확인해주세요."
+        }
+
+        // case_A 
+        // 신규배정휴가가 존재하지 않고 회계년도휴가가 존재하는경우
+        if (!newVcatnList && accountVcatnList.length) {
+            // case_1
+            // 현재회계년도 이전일자 휴가신청
+            if (insertVcatnValue.vcatnBgngYmd <= nowAccountDate) {
+                errorMsg = "이전회계년도 휴가는 등록하실 수 없습니다. 인사관리부서에 문의해주세요."
+            }
+            // case_2
+            // 현재회계년도 이후일자 휴가신청
+            else if (insertVcatnValue.vcatnEndYmd > newAccountDate) {
+                errorMsg = "회계년도기준 휴가사용기한을 확인해주세요"
+            }
+        }
+        // case_B
+        // 신규배정휴가가 존재하고 회계년도휴가가 존재하지 않는 경우
+        else if (newVcatnList && !accountVcatnList) {
+            // case_1 
+            // 신규휴가일수가 부족한 경우
+            if (insertVcatnValue.vcatnDeCnt > newVcatnList.newRemndrDaycnt) {
+                errorMsg = "입사일기준 잔여휴가일수가 부족합니다."
+            }
+            // case_2
+            // 신규휴가사용기간 이외 일자 휴가신청
+            else if (
+                insertVcatnValue.vcatnBgngYmd < newVcatnList.altmntBgngYmd ||
+                insertVcatnValue.vcatnBgngYmd > newVcatnList.altmntUseEndYmd ||
+                insertVcatnValue.vcatnEndYmd < newVcatnList.altmntBgngYmd ||
+                insertVcatnValue.vcatnEndYmd > newVcatnList.altmntUseEndYmd) {
+                errorMsg = "입사일기준 휴가사용기한을 확인해주세요"
+            }
+        }
+        // case_C
+        // 신규배정휴가가 존재하고 회계년도휴가도 존재하는 경우
+        else if (newVcatnList && accountVcatnList) {
+            // case_C1
+            // 현재회계년도 이후일자 휴가신청
+            if (insertVcatnValue.vcatnEndYmd > newAccountDate) {
+                errorMsg = "회계년도/입사일기준 휴가사용기한을 확인해주세요"
+            }
+            // case_C2
+            // 신규휴가사용기간 이전휴가 신청
+            else if (insertVcatnValue.vcatnBgngYmd < newVcatnList.altmntBgngYmd) {
+                errorMsg = "입사일기준 휴가사용기한을 확인해주세요"
+            }
+            // case_C3
+            // 휴가일자가 신규휴가사용기간에만 속할 경우
+            else if (insertVcatnValue.vcatnEndYmd <= nowAccountDate) {
+                // case_1
+                // 신규배정휴가에서 휴가신청이 불가능한 경우
+                if (newVcatnList.newRemndrDaycnt < insertVcatnValue.vcatnDeCnt) {
+                    errorMsg = "입사일기준 잔여휴가일수가 부족합니다."
+                }
+            }
+        }
+
+        return errorMsg;
+    }
 
 
     // 휴가신청전자결재저장 별도 도메인
@@ -354,91 +492,123 @@ const EmpVacation = () => {
 
         try {
             const response = await axios.post("/boot/indvdlClm/insertVcatnAtrz", formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                },
+                headers: { 'Content-Type': 'multipart/form-data' },
             });
 
-            clearFiles();
-
-            elctrnAtrzId = uuid();
-
-            setSearchVcatnListParam({
-                ...searchVcatnListParam,
-                isSearch: true
-            })
-            setInsertVcatnValue({
-                elctrnAtrzId: "",
-                emgncCttpc: "",
-                rm: "",
-                vcatnBgngYmd: "",
-                vcatnDeCnt: "",
-                vcatnEndYmd: "",
-                vcatnPrvonsh: "",
-                vcatnTyCd: "",
-            })
-            setInsertElctrnValue({
-                ...insertElctrnValue,
-                prjctId: null
-            })
-        } catch (error) {
-            console.log("error: ", error);
-        }
-    }
-
-    // 휴가목록 검색조건 설정
-    function onSearchVcatnParam(param, e) {
-        setSearchVcatnListParam({
-            ...searchVcatnListParam,
-            searchYear: e,
-            isSearch: false,
-        })
-    }
-
-    // 검색버튼
-    function onSearchClick(e) {
-        setSearchVcatnListParam({
-            ...searchVcatnListParam,
-            isSearch: true
-        })
-    }
-
-    //
-    function onDeptChange(e) {
-        setAtrzLnAprvListParam({
-            ...atrzLnAprvListParam,
-            deptId: e
-        })
-    }
-
-    // 저장버튼
-    function onSaveClick() {
-        let errorMsg;
-
-        if (!insertElctrnValue.prjctId) {
-            errorMsg = "프로젝트를 선택하세요."
-        } else if (!insertVcatnValue.vcatnTyCd) {
-            errorMsg = "휴가유형을 선택하세요."
-        } else if (!insertVcatnValue.vcatnBgngYmd) {
-            errorMsg = "휴가시작기간을 선택하세요."
-        } else if (!insertVcatnValue.vcatnEndYmd && (insertVcatnValue.vcatnTyCd == "VTW01201" || insertVcatnValue.vcatnTyCd == "VTW01204")) {
-            errorMsg = "휴가종료기간을 선택하세요."
-        }
-
-        if (errorMsg) {
-            alert(errorMsg);
-            return;
-        } else {
-            const isconfirm = window.confirm("저장하시겠습니까?");
-            if (isconfirm) {
-                insertVcatnAtrz(insertElctrnValue);
-                setAtrzLnSrngValue()
+            console.log("response : ", response);
+            if(!response && response.data == "성공"){
+                alert("저장되었습니다.");
+    
+                // 전자결재ID 채번
+                elctrnAtrzId = uuid();
+    
+                // 첨부파일초기화
+                clearFiles();
+    
+                setSearchVcatnListParam({
+                    ...searchVcatnListParam,
+                    isSearch: true
+                })
+                setInsertVcatnValue({
+                    elctrnAtrzId: "",
+                    emgncCttpc: "",
+                    rm: "",
+                    vcatnBgngYmd: "",
+                    vcatnDeCnt: "",
+                    vcatnEndYmd: "",
+                    vcatnPrvonsh: "",
+                    vcatnTyCd: "",
+                })
+                setInsertElctrnValue({
+                    ...insertElctrnValue,
+                    prjctId: null
+                })
             } else {
-                return;
+                alert(response.data);
+            }
+
+        } catch (error) {
+            console.log("insertVcatnAtrz_error: ", error);
+        }
+    }
+
+    // 휴가정보 저장정보 설정
+    function onInsertVcatnValue(param, e) {
+        // 날짜 parsing
+        if (param == "vcatnBgngYmd" || param == "vcatnEndYmd") e = Moment(e).format('YYYYMMDD');
+
+        if (param == "vcatnTyCd") {
+            // 반차선택
+            if ((e == "VTW01202" || e == "VTW01203" || e == "VTW01205" || e == "VTW01206")) {
+                setInsertVcatnValue({
+                    ...insertVcatnValue,
+                    vcatnDeCnt: String(0.5),
+                    vcatnBgngYmd: null,
+                    vcatnEndYmd: null,
+                    [param]: e,
+                })
+            } else {
+                setInsertVcatnValue({
+                    ...insertVcatnValue,
+                    vcatnDeCnt: null,
+                    vcatnBgngYmd: null,
+                    vcatnEndYmd: null,
+                    [param]: e,
+                })
+            }
+        } else {
+            // 반차선택시 휴가종료일자 설정
+            if (param == "vcatnBgngYmd" &&
+                (insertVcatnValue.vcatnTyCd == "VTW01202" ||
+                    insertVcatnValue.vcatnTyCd == "VTW01203" ||
+                    insertVcatnValue.vcatnTyCd == "VTW01205" ||
+                    insertVcatnValue.vcatnTyCd == "VTW01206")
+            ) {
+                setInsertVcatnValue({
+                    ...insertVcatnValue,
+                    vcatnEndYmd: e,
+                    [param]: e,
+                })
+            } else {
+                setInsertVcatnValue({
+                    ...insertVcatnValue,
+                    [param]: e,
+                })
             }
         }
-
     }
+
+    // 휴가일수설정
+    useEffect(() => {
+        if (insertVcatnValue.vcatnBgngYmd && insertVcatnValue.vcatnEndYmd) {
+            let startDate = parseInt(insertVcatnValue.vcatnBgngYmd);
+            let endDate = parseInt(insertVcatnValue.vcatnEndYmd);
+            let weekendDayCnt = 0;
+
+            var d1 = new Date(Moment(String(startDate)).format("YYYY-MM-DD"));
+            var d2 = new Date(Moment(String(endDate)).format("YYYY-MM-DD"));
+                
+            var diff = d2.getTime() - d1.getTime();
+            var daydiff = diff / (1000 * 60 * 60 * 24) + 1;
+
+            if (insertVcatnValue.vcatnTyCd && (insertVcatnValue.vcatnTyCd == "VTW01201" || insertVcatnValue.vcatnTyCd == "VTW01204")) {
+                for (let i = 0; i < daydiff; i ++) {
+                    let valiCheckDate = Moment((addDays(new Date(Moment(String(startDate)).format("YYYY-MM-DD")), i))).format("YYYY-MM-DD");
+
+                    if (isSaturday(valiCheckDate) || isSunday(valiCheckDate)) {
+                        weekendDayCnt++;
+                    } else if (selectCrtrDateList.find((item => item.crtrYmd == Moment(String(valiCheckDate)).format("YYYYMMDD")))) {
+                        weekendDayCnt++;
+                    }
+                }
+                setInsertVcatnValue({
+                    ...insertVcatnValue,
+                    vcatnDeCnt: String(daydiff - weekendDayCnt)
+                })
+            }
+        }
+    }, [insertVcatnValue.vcatnBgngYmd, insertVcatnValue.vcatnEndYmd])
+
 
     // 프로젝트ID 설정
     function onValuePrjctChange(e) {
@@ -453,66 +623,12 @@ const EmpVacation = () => {
         })
     }
 
-    // 휴가정보 저장정보 설정
-    function onInsertVcatnValue(param, e) {
-        let vcatnDeCnt = "";
-
-        // 날짜 parsing
-        if (param == "vcatnBgngYmd" || param == "vcatnEndYmd") e = Moment(e).format('YYYYMMDD');
-
-        // 휴가일수계산
-        if (param == "vcatnBgngYmd" && insertVcatnValue.vcatnEndYmd != undefined) {
-            vcatnDeCnt = insertVcatnValue.vcatnEndYmd - e + 1
-        } else if (param == "vcatnEndYmd" && insertVcatnValue.vcatnBgngYmd != undefined) {
-            vcatnDeCnt = e - insertVcatnValue.vcatnBgngYmd + 1
-        } else if (insertVcatnValue.vcatnEndYmd != undefined && insertVcatnValue.vcatnBgngYmd != undefined) {
-            vcatnDeCnt = insertVcatnValue.vcatnEndYmd - insertVcatnValue.vcatnBgngYmd + 1
-        }
-
-        if (param == "vcatnTyCd") {
-            if ((e == "VTW01202" || e == "VTW01203" || e == "VTW01205" || e == "VTW01206")) {
-                setInsertVcatnValue({
-                    ...insertVcatnValue,
-                    vcatnDeCnt: 0.5,
-                    [param]: e,
-                })
-            } else {
-                setInsertVcatnValue({
-                    ...insertVcatnValue,
-                    vcatnDeCnt: null,
-                    vcatnBgngYmd: null,
-                    vcatnEndYmd: null,
-                    [param]: e,
-                })
-            }
-        } else {
-            if (
-                param == "vcatnBgngYmd" &&
-                (insertVcatnValue.vcatnTyCd == "VTW01202" ||
-                    insertVcatnValue.vcatnTyCd == "VTW01203" ||
-                    insertVcatnValue.vcatnTyCd == "VTW01205" ||
-                    insertVcatnValue.vcatnTyCd == "VTW01206")) {
-                setInsertVcatnValue({
-                    ...insertVcatnValue,
-                    vcatnEndYmd: e,
-                    [param]: e,
-                })
-            } else {
-                setInsertVcatnValue({
-                    ...insertVcatnValue,
-                    vcatnDeCnt: vcatnDeCnt,
-                    [param]: e,
-                })
-            }
-        }
-    }
-
-    // 휴가목록 선택
+    // 휴가목록선택
     function onRowClick(e) {
         navigate("/elecAtrz/ElecAtrzDetail", { state: { data: { elctrnAtrzId: e.data.elctrnAtrzId, elctrnAtrzTySeCd: "VTW04901" } } })
     }
 
-    // 테이블버튼클릭
+    // 버튼클릭
     function onButtonClick(e, data) {
         if (e.text == "파일") {
             setPopupAttachValue({
@@ -520,13 +636,9 @@ const EmpVacation = () => {
                 visible: true,
             })
         } else if (e.text == "휴가 취소요청") {
+            // ELCTRN_ATRZ_TY_SE_CD 04915로 전자결재ID 새로채번해서 전달
             alert("휴가 취소요청 팝업 호출");
         }
-    }
-
-    // 결재선버튼클릭
-    function onAtrzClick(e) {
-        setPopupVisibleAtrzValue(true);
     }
 
     // 결재선버튼 callback
@@ -535,15 +647,7 @@ const EmpVacation = () => {
         setPopupVisibleAtrzValue(false);
     }
 
-    // 첨부파일버튼 callback
-    function onAttchHiding(e) {
-        setPopupAttachValue({
-            attachId: "",
-            visible: e
-        })
-    }
-
-    // 첨부파일
+    // 첨부파일변경
     const changeAttchValue = (e) => {
         setInsertVcatnValue({
             ...insertVcatnValue,
@@ -554,7 +658,7 @@ const EmpVacation = () => {
 
     // 첨부파일 화면 초기화
     const clearFiles = () => {
-        let fileUploader = fileUploaderRef.current.instance; 
+        let fileUploader = fileUploaderRef.current.instance;
         fileUploader.reset();
     };
 
@@ -572,12 +676,24 @@ const EmpVacation = () => {
                         placeholder="[년도]"
                         defaultValue={flagYear}
                         dataSource={getYearList(10, 1)}
-                        onValueChange={(e) => { onSearchVcatnParam("vcatnYr", e) }} />
+                        onValueChange={(e) => {
+                            setSearchVcatnListParam({
+                                ...searchVcatnListParam,
+                                searchYear: e,
+                                isSearch: false,
+                            })
+                        }} />
                 </div>
                 <div className="col-md-1">
                     <Button
                         text="검색"
-                        onClick={onSearchClick}
+                        onClick={(e) => {
+                            setSearchVcatnListParam({
+                                ...searchVcatnListParam,
+                                isSearch: true
+                            })
+                        }}
+                        // onClick={onSearchClick}
                         style={{ height: "48px", width: "50px" }}
                     />
                 </div>
@@ -657,7 +773,12 @@ const EmpVacation = () => {
                                                 dataSource={cookies.deptInfo}
                                                 displayExpr="deptNm"
                                                 valueExpr="deptId"
-                                                onValueChange={onDeptChange}
+                                                onValueChange={(e) => {
+                                                    setAtrzLnAprvListParam({
+                                                        ...atrzLnAprvListParam,
+                                                        deptId: e
+                                                    })
+                                                }}
                                             />
                                         </div>
                                     </>
@@ -681,7 +802,6 @@ const EmpVacation = () => {
                             <div className="col-md-10">
                                 <AutoCompleteProject
                                     placeholderText="프로젝트를 선택해주세요"
-                                    // value={insertElctrnValue[1].prjctId}
                                     onValueChange={onValuePrjctChange}
                                     sttsBoolean={true}
                                 />
@@ -797,7 +917,7 @@ const EmpVacation = () => {
                             </div>
                         </div>
                         <div style={{ display: "inline-block", float: "right", marginTop: "25px" }}>
-                            <Button style={{ height: "48px", width: "100px", marginRight: "15px" }} onClick={onAtrzClick}>결재선지정</Button>
+                            <Button style={{ height: "48px", width: "100px", marginRight: "15px" }} onClick={(e) => { setPopupVisibleAtrzValue(true) }}>결재선지정</Button>
                             <Button style={{ height: "48px", width: "60px" }} onClick={onSaveClick}>저장</Button>
                         </div>
 
@@ -807,7 +927,12 @@ const EmpVacation = () => {
                             visible={popupAttachValue.visible}
                             attachId={popupAttachValue.attachId}
                             title={"전자결재 파일 첨부"}
-                            onHiding={onAttchHiding}
+                            onHiding={(e) => {
+                                setPopupAttachValue({
+                                    attachId: "",
+                                    visible: e
+                                })
+                            }}
                         />
 
                         <ApprovalPopup
@@ -828,12 +953,7 @@ export default EmpVacation;
 
 
 
-
-
-
 /* ========================= 화면 레이아웃 영역  =========================*/
-
-
 
 /**
  * @returns 휴가정보에 표현될 테이블 헤더 영역
@@ -865,18 +985,18 @@ function createHeader() {
  * @returns 휴가정보에 표현될 테이블 바디 영역
  */
 function createBody(selectVcatnInfoValue) {
-    const tableBody = [];
-    const tableData = selectVcatnInfoValue[0];
+    const accountTableData = selectVcatnInfoValue.filter(item => item.vcatnFlag == "ACCOUNT")[0];
+    const newTableData = selectVcatnInfoValue.filter(item => item.vcatnFlag == "NEW")[0];
 
     if (selectVcatnInfoValue.length > 0) {
-        tableBody.push(
+        return (
             <>
                 <TableRow>
                     <TableCell rowSpan={3}>연차</TableCell>
                     <TableCell>회계년도 기준</TableCell>
-                    <TableCell>{tableData.vcatnAltmntDaycnt}일</TableCell>
-                    <TableCell>{tableData.useDaycnt}일</TableCell>
-                    <TableCell>{tableData.vcatnRemndrDaycnt}일</TableCell>
+                    <TableCell>{accountTableData ? accountTableData.vcatnAltmntDaycnt : 0}일</TableCell>
+                    <TableCell>{accountTableData ? accountTableData.useDaycnt : 0}일</TableCell>
+                    <TableCell>{accountTableData ? accountTableData.vcatnRemndrDaycnt : 0}일</TableCell>
                     <TableCell>{flagYear}-04-01<br />~{flagYear + 1}-03-31</TableCell>
                 </TableRow>
                 <TableRow>
@@ -884,61 +1004,74 @@ function createBody(selectVcatnInfoValue) {
                         입사일 기준<br />
                         <span style={{ color: "red", fontSize: "11px", fontWeight: "bold" }}>(입사 1년차 미만자 해당)</span>
                     </TableCell>
-                    <TableCell>
-                        {
-                            tableData.newVcatnAltmntDaycnt != "" && tableData.newVcatnAltmntDaycnt != undefined
-                                ? tableData.newVcatnAltmntDaycnt
-                                : 0
-                        }일
+                    <TableCell>{newTableData ? newTableData.newVcatnAltmntDaycnt : 0}일
+                    </TableCell>
+                    <TableCell>{newTableData ? newTableData.newUseDaycnt : 0}일
+                    </TableCell>
+                    <TableCell>{newTableData ? newTableData.newRemndrDaycnt : 0}일
                     </TableCell>
                     <TableCell>
                         {
-                            tableData.newUseDaycnt != "" && tableData.newUseDaycnt != undefined
-                                ? tableData.newUseDaycnt
-                                : 0
-                        }일
-                    </TableCell>
-                    <TableCell>
-                        {
-                            tableData.newRemndrDaycnt != "" && tableData.newRemndrDaycnt != undefined
-                                ? tableData.newRemndrDaycnt
-                                : 0
-                        }일
-                    </TableCell>
-                    <TableCell>
-                        {
-                            tableData.altmntBgngYmd != "" && tableData.altmntUseEndYmd != "" && tableData.altmntBgngYmd != null && tableData.altmntUseEndYmd != null
-                                ? Moment(tableData.altmntBgngYmd).format('YYYY-MM-DD')
+                            newTableData
+                                ? Moment(newTableData.altmntBgngYmd).format('YYYY-MM-DD')
                                 : ""
                         }
                         <br />
                         {
-                            tableData.altmntBgngYmd != "" && tableData.altmntUseEndYmd != "" && tableData.altmntBgngYmd != null && tableData.altmntUseEndYmd != null
-                                ? "~" + Moment(tableData.altmntUseEndYmd).format('YYYY-MM-DD')
+                            newTableData
+                                ? "~" + Moment(newTableData.altmntUseEndYmd).format('YYYY-MM-DD')
                                 : ""
                         }
                     </TableCell>
                 </TableRow>
                 <TableRow>
                     <TableCell>총연차</TableCell>
-                    <TableCell>{tableData.vcatnAltmntDaycnt + tableData.newVcatnAltmntDaycnt}일</TableCell>
-                    <TableCell>{tableData.useDaycnt + tableData.newUseDaycnt}일</TableCell>
-                    <TableCell>{tableData.vcatnRemndrDaycnt + tableData.newRemndrDaycnt}일</TableCell>
-                    <TableCell>{flagYear}-04-01<br />~{flagYear + 1}-03-31</TableCell>
+                    <TableCell>
+                        {
+                            accountTableData && newTableData
+                                ? accountTableData.vcatnAltmntDaycnt + newTableData.newVcatnAltmntDaycnt
+                                : accountTableData
+                                    ? accountTableData.vcatnAltmntDaycnt
+                                    : newTableData
+                                        ? newTableData.newVcatnAltmntDaycnt
+                                        : 0
+                        }일
+                    </TableCell>
+                    <TableCell>
+                        {
+                            accountTableData && newTableData
+                                ? accountTableData.useDaycnt + newTableData.newUseDaycnt
+                                : accountTableData
+                                    ? accountTableData.useDaycnt
+                                    : newTableData
+                                        ? newTableData.newUseDaycnt
+                                        : 0
+                        }일
+                    </TableCell>
+                    <TableCell>
+                        {
+                            accountTableData && newTableData
+                                ? accountTableData.vcatnRemndrDaycnt + newTableData.newRemndrDaycnt
+                                : accountTableData
+                                    ? accountTableData.vcatnRemndrDaycnt
+                                    : newTableData
+                                        ? newTableData.newRemndrDaycnt
+                                        : 0
+                        }일
+                    </TableCell>
+                    <TableCell></TableCell>
                 </TableRow>
                 <TableRow style={{ borderTop: "2px solid #CCCCCC", borderBottom: "2px solid #CCCCCC" }}>
                     <TableCell>공가</TableCell>
-                    <TableCell>-</TableCell>
-                    <TableCell>-</TableCell>
-                    <TableCell>{tableData.pblenVcatnUseDaycnt}일</TableCell>
-                    <TableCell>-</TableCell>
-                    <TableCell>-</TableCell>
+                    <TableCell></TableCell>
+                    <TableCell></TableCell>
+                    <TableCell>{accountTableData ? accountTableData.pblenVcatnUseDaycnt : 0}일</TableCell>
+                    <TableCell></TableCell>
+                    <TableCell></TableCell>
                 </TableRow>
             </>
         )
     }
-
-    return tableBody;
 }
 
 function elctrnLine(popupAtrzValue) {
@@ -1027,10 +1160,10 @@ function elctrnLine(popupAtrzValue) {
                                     ?
                                     atrzLnReftnListValue.map((item, index) => {
                                         return (
-                                            <>
+                                            <div key={index}>
                                                 {atrzLnReftnListValue[index].listEmpFlnm}
                                                 <br />
-                                            </>
+                                            </div>
                                         )
                                     })
                                     : <></>

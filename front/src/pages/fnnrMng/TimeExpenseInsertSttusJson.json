@@ -63,31 +63,31 @@
     ],
     "tableColumns": 
 	[
-        { "key": "empno", "value": "사번", "width": 80, "alignment" : "center"},
-        { "key": "empFlnm", "value": "성명", "width": 90, "alignment" : "center" },
-        { "key": "jbpsNm", "value": "직위", "width": 80, "alignment" : "center" },
+        { "key": "empno", "value": "사번", "width": 70, "alignment" : "center"},
+        { "key": "empFlnm", "value": "성명", "width": 80, "alignment" : "center" },
+        { "key": "jbpsNm", "value": "직위", "width": 70, "alignment" : "center" },
         { "key": "deptNm", "value": "소속", "width": 100, "alignment" : "center" },
         { "key": "telno", "value": "전화번호", "width": 100, "alignment" : "center"  },
-        { "key": "hdofSttsNm", "value": "재직상태", "width": 100, "alignment" : "center"  },
-        {"value": "근무시간",
+        { "key": "hdofSttsNm", "value": "재직상태", "width": 60, "alignment" : "center"  },
+        {"value": "근무시간", "width": 400,
         "subColumns": [
-            { "value": "입력화면", "button": {"text": "이동", "name": "workHrMv"} },
-            { "key": "mdSum", "value": "입력"},
-            { "key": "vacSum", "value": "휴가" },
-            { "key": "mmReject", "value": "반려" },
-            { "key": "mmComplete", "value": "승인"},
-            { "value": "취소", "button": {"text": "시간취소", "name": "hrRtrcn"}}
+            { "value": "입력화면", "button": {"text": "이동", "name": "workHrMv"}, "width": 80 },
+            { "key": "mdSum", "value": "입력", "width": 40 },
+            { "key": "vacSum", "value": "휴가", "width": 40 },
+            { "key": "mmReject", "value": "반려", "width": 40 },
+            { "key": "mmComplete", "value": "승인", "width": 40},
+            { "value": "취소", "button": {"text": "시간취소", "name": "hrRtrcn"}, "width": 80 }
         ]},
         {"value": "프로젝트비용",
         "subColumns": [
-            { "value": "입력화면", "button": {"text": "이동", "name": "prjctScrnMv"} },
-            { "key": "cnt", "value": "입력"},
-            { "key": "prjReject", "value": "반려"},
-            { "key": "prjComplete", "value": "승인" },
-            { "value": "취소", "button": {"text": "비용취소", "name": "ctRtrcn"} }
+            { "value": "입력화면", "button": {"text": "이동", "name": "prjctScrnMv"}, "width": 80},
+            { "key": "cnt", "value": "입력", "width": 40},
+            { "key": "prjReject", "value": "반려", "width": 40},
+            { "key": "prjComplete", "value": "승인", "width": 40 },
+            { "value": "취소", "button": {"text": "비용취소", "name": "ctRtrcn"}, "width": 80 }
         ]},
         {  "value": "회사지불비용", "width": 80, "button": {"text" : "이동", "name" : "companyPrice"} },
-        {  "value": "출력", "width": 80, "button": {"text" : "출력", "name" : "print"} }
+        {  "value": "출력", "button": {"text" : "출력", "name" : "print"} }
   ],
   "searchParams":
   {

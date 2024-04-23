@@ -9,7 +9,7 @@ import { left, right } from "@popperjs/core";
 import moment from "moment";
 import notify from 'devextreme/ui/notify';
 
-const EmpRegist = ({callBack, empInfo, read,callBackR,reForm}) => {
+const EmpRegist = ({callBack, empInfo, read,callBackR,callBackF,reForm}) => {
 
 //-----------------------------선언 구간 -----------------------------------
     const {labelValue,empDetailqueryId} = EmpRegistJson;
@@ -49,7 +49,6 @@ const EmpRegist = ({callBack, empInfo, read,callBackR,reForm}) => {
         setActno(null);
         setEmpTyCd(null);
         setJncmpYmd(startday);
-        console.log(startday)
       }, []);
      
       useEffect(() => {
@@ -74,7 +73,7 @@ const EmpRegist = ({callBack, empInfo, read,callBackR,reForm}) => {
         },[reForm])
 
       useEffect(() => {
-        if(empMax !== undefined || empMax !== "" || empMax !== null){
+        if(!Object.values(empMax).every((value) => value === "")){
           const paramIns =[
             { tbNm: "EMP" },
             {
@@ -156,6 +155,7 @@ const EmpRegist = ({callBack, empInfo, read,callBackR,reForm}) => {
     const onReset = (e) =>{
       reset();
       callBackR();
+      callBackF();
       notify("초기화되었습니다.","success",200);
     }
    

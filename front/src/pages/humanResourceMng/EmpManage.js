@@ -141,6 +141,7 @@ const EmpManage = ({}) => {
     setEmpMonth(null);
     setEmpOdr(null);
     setEmpJbps(null);
+    setFocusedRowIndex(e.rowIndex);
     for (const value of values) {
       if (value.empId === e.data.empId) {
         setEmpInfo(value);  
@@ -368,7 +369,6 @@ const cancelJbpsEmpHist = async (updParam,ehdParam) => {       //삭제axios
 
 //===========================더블클릭시 회원정보창으로 이동
     const onRowDblClick = (e) => {
-      console.log("eee",e);
       navigate("/infoInq/EmpDetailInfo", 
               { state: { 
                 empId: e.data.empId,
@@ -388,6 +388,7 @@ const cancelJbpsEmpHist = async (updParam,ehdParam) => {       //삭제axios
         setEmpOdr(null);
         setEmpJbps(null);
         setReForm(false);
+        releaseFocus();
     }
 
 //================================비밀번호 초기화 
@@ -395,7 +396,6 @@ const cancelJbpsEmpHist = async (updParam,ehdParam) => {       //삭제axios
       const isconfirm = window.confirm("비밀번호를 초기화 하시겠습니까?"); 
       if (isconfirm) {
         const response =  await resetPassword(data.empId,data.empno)
-        console.log("datata",response)
         if(response.isOk){
           window.alert("비밀번호가 초기화되었습니다");
         }else {
@@ -416,7 +416,12 @@ const cancelJbpsEmpHist = async (updParam,ehdParam) => {       //삭제axios
     }
     }
     
-
+    const [focusedRowIndex, setFocusedRowIndex] = useState(null);
+    
+    const releaseFocus = () => {
+      setFocusedRowIndex(-1);
+      setEmpInfo([]);
+    };
 //=================================화면 그리는 부분 
   return (
     <div className="container">
@@ -443,6 +448,7 @@ const cancelJbpsEmpHist = async (updParam,ehdParam) => {       //삭제axios
                   아이콘 클릭시 비밀번호 사번으로 초기화<br/>
                   </span>
                 <CustomTable
+                focusedRowIndex={focusedRowIndex}
                 keyColumn={listKeyColumn}
                 columns={listTableColumns} 
                 values={values}
@@ -459,7 +465,7 @@ const cancelJbpsEmpHist = async (updParam,ehdParam) => {       //삭제axios
             신규 직원정보를 입력하면 TRS 접속 권한이 생기게 됩니다.<br/>
             신규 직원 사번은 자동 입력됩니다.
             </span>
-            <EmpRegist empInfo={empInfo} read={readOnly} callBack={pageHandle} callBackR={setReset} reForm={reForm}/>
+            <EmpRegist empInfo={empInfo} read={readOnly} callBack={pageHandle} callBackR={setReset} callBackF={releaseFocus} reForm={reForm}/>
         </div>
         <div className="empDownListTable" style={empDetailStyle}>
             <p> <strong>* 진급정보 </strong> </p>

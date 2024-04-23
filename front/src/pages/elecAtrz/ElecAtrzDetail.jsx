@@ -142,36 +142,84 @@ const ElecAtrzDetail = () => {
         const isconfirm = window.confirm("요청을 승인하시겠습니까?");
         const date = getToday();
         const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
-
         const nowAtrzLnSn = detailData.nowAtrzLnSn;
+
+        /**
+         * 휴가 결재일 경우 승인처리를 따로 해준다.
+         */
         if(isconfirm) {
 
-            const param = [
-                { tbNm: "ATRZ_LN" },
-                { 
-                    atrzSttsCd: "VTW00802",
-                    aprvYmd: date,
-                    mdfcnDt: mdfcnDt,
-                    mdfcnEmpId: cookies.userInfo.empId,
-                },
-                { 
-                    elctrnAtrzId: detailData.elctrnAtrzId,
-                    aprvrEmpId: cookies.userInfo.empId,
-                    atrzLnSn: nowAtrzLnSn
+            if(detailData.elctrnAtrzTySeCd === "VTW04901") {    
+                /** 
+                 * 휴가결재  승인처리 
+                 */
+                const param = {
+                        empId: detailData.atrzDmndEmpId,
+                        elctrnAtrzId: detailData.elctrnAtrzId,
+                        vcatnTyCd: dtlInfo.vcatnTyCd,
+                        vcatnBgngYmd: dtlInfo.vcatnBgngYmd,
+                        vcatnEndYmd: dtlInfo.vcatnEndYmd,
+                        mdfcnEmpId: cookies.userInfo.empId,
+                        atrzStepCd: detailData.atrzStepCd,
+                        aprvParam: [
+                            { tbNm: "ATRZ_LN" },
+                            { 
+                                atrzSttsCd: "VTW00802",
+                                aprvYmd: date,
+                                mdfcnDt: mdfcnDt,
+                                mdfcnEmpId: cookies.userInfo.empId,
+                            },
+                            { 
+                                elctrnAtrzId: detailData.elctrnAtrzId,
+                                aprvrEmpId: cookies.userInfo.empId,
+                                atrzLnSn: nowAtrzLnSn
+                            }
+                        ]
                 }
-            ]
 
-            const response = aprvProcess(param).then((value) => {
+                const response = vacAprvProcess(param).then((value) => {
 
-                console.log("result", value)
-                if(value > 0) {
-                    // 단계 올리기
-                    upNowAtrzLnSn(value);
-                } else {
-                    alert("승인 처리에 실패하였습니다.");
-                    return;
-                }
-            });
+                    console.log(value)
+
+                    if(value[0].atrzLnSn > 0) {
+                        upNowAtrzLnSn(value[0].atrzLnSn);
+                    } else {
+                        alert("승인 처리에 실패하였습니다.");
+                        return;
+                    }
+                });
+
+            } else {
+                 /** 
+                  * 휴가결재 외 승인처리 
+                  */
+                const param = [
+                    { tbNm: "ATRZ_LN" },
+                    { 
+                        atrzSttsCd: "VTW00802",
+                        aprvYmd: date,
+                        mdfcnDt: mdfcnDt,
+                        mdfcnEmpId: cookies.userInfo.empId,
+                    },
+                    { 
+                        elctrnAtrzId: detailData.elctrnAtrzId,
+                        aprvrEmpId: cookies.userInfo.empId,
+                        atrzLnSn: nowAtrzLnSn
+                    }
+                ]
+
+                const response = aprvProcess(param).then((value) => {
+
+                    console.log("result", value)
+                    if(value > 0) {
+                        // 단계 올리기
+                        upNowAtrzLnSn(value);
+                    } else {
+                        alert("승인 처리에 실패하였습니다.");
+                        return;
+                    }
+                });
+            }
         }
     }
 
@@ -183,6 +231,11 @@ const ElecAtrzDetail = () => {
     const aprvProcess = async (param) => {
         const response = await ApiRequest("/boot/elecAtrz/aprvElecAtrz", param);
 
+        return response;
+    }
+
+    const vacAprvProcess = async (param) => {
+        const response = await ApiRequest("/boot/indvdlClm/updateVcatnMng", param);
         return response;
     }
 
@@ -230,14 +283,6 @@ const ElecAtrzDetail = () => {
                 if(detailData.elctrnAtrzTySeCd === "VTW04907" && nowAtrzLnSn > maxAtrzLnSn) {
                     const clmResult = handlePrcjtCost();
                     if(clmResult < 0) {
-                        alert("승인 처리에 실패하였습니다.");
-                    }
-                }
-
-                // 휴가 결재이면서 최종 숭인인 경우 휴가 내용 반영해준다. 
-                if(detailData.elctrnAtrzTySeCd === "VTW04901" && nowAtrzLnSn > maxAtrzLnSn) {
-                    const vacResult = handleVacation();
-                    if(vacResult < 0) {
                         alert("승인 처리에 실패하였습니다.");
                     }
                 }
@@ -399,75 +444,6 @@ const ElecAtrzDetail = () => {
         setAplyYmd(`${year}${monthString}`);
         setOdr(odr);
     } 
-
-    
-
-
-    /**
-     * 휴가결재 최종 승인 시 휴가 일수 차감 
-     */
-    const handleVacation = async () => {
-
-        // 해당 사람의 휴가 관리 테이블 조회
-        const VacMng = await getVacMngInfo();
-
-        if(detailData.elctrnAtrzTySeCd === "VTW04901") {
-
-            let updParam = {}
-            if(["VTW01204", "VTW01205", "VTW01206"].includes(dtlInfo.vcatnTyCd)) {
-                updParam = {
-                    pblenVcatnUseDaycnt: VacMng.pblenVcatnUseDaycnt + dtlInfo.vcatnDeCnt,
-                    mdfcnDt: new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0],
-                    mdfcnEmpId: cookies.userInfo.empId   
-                }
-            } else if (["VTW01201", "VTW01202", "VTW01203"].includes(dtlInfo.vcatnTyCd)){
-                updParam = {
-                    useDaycnt: VacMng.useDaycnt + dtlInfo.vcatnDeCnt,
-                    vcatnRemndrDaycnt: VacMng.vcatnRemndrDaycnt - dtlInfo.vcatnDeCnt,
-                    mdfcnDt: new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0],
-                    mdfcnEmpId: cookies.userInfo.empId   
-                }
-            }
-
-            const param = [
-                { tbNm: "VCATN_MNG" },
-                updParam,
-                { 
-                    empId: detailData.atrzDmndEmpId, 
-                    vcatnYr: '2024' 
-                },
-            ]
-
-            try {
-                const response = await ApiRequest("/boot/common/commonUpdate", param);
-                return response;
-
-            } catch (error) {
-                console.error(error)
-            }
-        } else {
-            return;
-        }
-    }
-
-    const getVacMngInfo = async () => {
-        try {
-            const response = await ApiRequest('/boot/common/commonSelect', [
-                { tbNm: "VCATN_MNG" }, 
-                { 
-                    empId: detailData.atrzDmndEmpId,
-                    vcatnYr: 2024
-                }
-            ]);
-            
-            return response[0];
-
-        } catch (error) {
-            console.log('error', error);
-        }
-    };
-
-
 
     return (
         <div className="container" style={{ marginTop: "10px" }}>

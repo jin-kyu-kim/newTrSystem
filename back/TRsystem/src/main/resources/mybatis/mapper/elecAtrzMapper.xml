@@ -37,7 +37,8 @@
 		-- 			cad.CNPT_NM, -- 거래처명
 		(SELECT EMP_FLNM FROM EMP WHERE EMP_ID = ea.ATRZ_DMND_EMP_ID) ATRZ_DMND_EMP_NM, -- 기안자
 		(SELECT EMP_FLNM FROM EMP WHERE EMP_ID = al.APRVR_EMP_ID) APRVR_EMP_ID, -- 결재자
-		(SELECT CD_NM FROM CD WHERE CD_VALUE = al.ATRZ_STEP_CD) ATRZ_STEP_CD, -- 현재 결재단계
+		(SELECT CD_NM FROM CD WHERE CD_VALUE = al.ATRZ_STEP_CD) ATRZ_STEP_CD_NM, -- 현재 결재단계
+		ATRZ_STEP_CD, -- 현재 결재단계
 		(SELECT CD_NM FROM CD WHERE CD_VALUE = al.ATRZ_STTS_CD) ATRZ_STTS_CD, -- 결재상태
 		DATE_FORMAT(ea.REG_DT, '%Y-%m-%d %H:%i:%s') AS REG_DT,
 		COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cta.CTRT_ATRZ_TTL, cga.ATRZ_TTL, CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD), ' [',
@@ -255,32 +256,38 @@
 	
 	<select id="retrieveOutordEmpPlan" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT 
-			olp.PRJCT_ID,
-			olp.BGT_MNG_ODR,
-			olp.OUTORD_LBRCO_PRMPC_SN,
-			olp.OUTORD_EMP_ID,
-			olp.HNF_ROLE_CD,
-			olp.HNF_GRAD_CD,
-			olp.TKCG_JOB,
-			olp.UNTPC,
-			olp.INPT_PRNMNT_YMD,
-			olp.WITHDR_PRNMNT_YMD,
-			dtl.EXPECT_MM,
-			(olp.UNTPC * dtl.EXPECT_MM) AS USEFUL_AMT
-		  FROM OUTORD_LBRCO_PRMPC olp
-		  JOIN (SELECT MAX(BGT_MNG_ODR) AS BGT_MNG_ODR, PRJCT_ID 
-		  		  FROM PRJCT_BGT_PRMPC
-			 	 WHERE 1=1
-		   		   AND ATRZ_DMND_STTS_CD = 'VTW03703'
-			    GROUP BY PRJCT_ID) pbp 
-			ON (olp.PRJCT_ID = pbp.PRJCT_ID AND olp.BGT_MNG_ODR = pbp.BGT_MNG_ODR)
-		  JOIN (SELECT SUM(EXPECT_MM) AS EXPECT_MM, PRJCT_ID  
-		  		FROM OUTORD_LBRCO_PRMPC_DTL 
-		  		WHERE 1=1 
-		  		GROUP BY PRJCT_ID, BGT_MNG_ODR, OUTORD_LBRCO_PRMPC_SN) dtl 
-		  	ON (olp.PRJCT_ID = dtl.PRJCT_ID)
-		  WHERE 1=1
-		    AND olp.PRJCT_ID = #{prjctId}			
+		    olp.PRJCT_ID,
+		    olp.BGT_MNG_ODR,
+		    olp.OUTORD_LBRCO_PRMPC_SN,
+		    olp.OUTORD_EMP_ID,
+		    emp.EMP_FLNM as OUTORD_EMP_NM,
+		    olp.HNF_ROLE_CD,
+		    cd1.CD_NM as HNF_ROLE_CD_NM,
+		    olp.HNF_GRAD_CD,
+		    cd2.CD_NM as HNF_GRAD_CD_NM,
+		    olp.TKCG_JOB,
+		    olp.UNTPC,
+		    olp.INPT_PRNMNT_YMD,
+		    olp.WITHDR_PRNMNT_YMD,
+		    dtl.EXPECT_MM,
+		    (olp.UNTPC * dtl.EXPECT_MM) AS USEFUL_AMT
+		FROM OUTORD_LBRCO_PRMPC olp
+		JOIN (
+		    SELECT MAX(BGT_MNG_ODR) AS BGT_MNG_ODR, PRJCT_ID 
+		    FROM PRJCT_BGT_PRMPC
+		    WHERE ATRZ_DMND_STTS_CD = 'VTW03703'
+		    AND PRJCT_ID = #{prjctId}
+		    GROUP BY PRJCT_ID
+		) pbp ON olp.PRJCT_ID = pbp.PRJCT_ID AND olp.BGT_MNG_ODR = pbp.BGT_MNG_ODR
+		JOIN (
+		    SELECT SUM(EXPECT_MM) AS EXPECT_MM, PRJCT_ID, BGT_MNG_ODR, OUTORD_LBRCO_PRMPC_SN 
+		    FROM OUTORD_LBRCO_PRMPC_DTL 
+		    GROUP BY PRJCT_ID, BGT_MNG_ODR, OUTORD_LBRCO_PRMPC_SN
+		) dtl ON olp.PRJCT_ID = dtl.PRJCT_ID AND olp.BGT_MNG_ODR = dtl.BGT_MNG_ODR AND olp.OUTORD_LBRCO_PRMPC_SN = dtl.OUTORD_LBRCO_PRMPC_SN
+		JOIN EMP emp ON olp.OUTORD_EMP_ID  = emp.EMP_ID 
+		JOIN CD cd1 ON olp.HNF_ROLE_CD = cd1.CD_VALUE
+		JOIN CD cd2 ON olp.HNF_GRAD_CD = cd2.CD_VALUE
+		WHERE olp.PRJCT_ID = #{prjctId}		
 	</select>
 	
 	<select id="retrieveRealOutordEmpPlan" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -307,6 +314,32 @@
 		  FROM ENTRPS_CTRT_DTL_CND
 		 WHERE 1=1
 		   AND ELCTRN_ATRZ_ID = #{elctrnAtrzId}
+	</select>
+
+	<select id="retrieveCtrtAtrz" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT
+			ea.ELCTRN_ATRZ_ID,
+			(SELECT c.CD_NM FROM CD c WHERE c.cd_value = ca.CTRT_KND_CD) AS CTRT_KND_CD_NM, -- 결재유형
+			ca.CTRT_KND_CD,
+			(SELECT EMP_FLNM FROM EMP WHERE EMP_ID = ea.ATRZ_DMND_EMP_ID) ATRZ_DMND_EMP_NM,
+			DATE_FORMAT(ea.REG_DT, '%Y-%m-%d %H:%i:%s') AS REG_DT,
+			ca.CTRT_ATRZ_TTL
+		FROM ELCTRN_ATRZ ea
+		    JOIN CTRT_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID
+		WHERE 1=1
+			AND ca.CTRT_KND_CD = #{ctrtKndCd}
+			AND ea.PRJCT_ID = #{prjctId}
+	</select>
+
+	<select id="retrieveCtrtAtrzCnt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT
+			ca.CTRT_KND_CD,
+			(SELECT c.CD_NM FROM CD c WHERE c.cd_value = ca.CTRT_KND_CD) AS CTRT_KND_CD_NM,
+			COUNT(*) AS CTRT_COUNT
+		FROM CTRT_ATRZ ca
+				 JOIN ELCTRN_ATRZ ea ON ca.ELCTRN_ATRZ_ID = ea.ELCTRN_ATRZ_ID
+		WHERE ea.PRJCT_ID = #{prjctId}
+		GROUP BY ca.CTRT_KND_CD
 	</select>
 	
 </mapper>

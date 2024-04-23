@@ -555,11 +555,19 @@
             , AA.EMP_ID
             , AA.EMP_FLNM
             , (SELECT CD_NM FROM CD WHERE CD_VALUE = AA.JBPS_CD) AS JBPS_NM
+            , AA.JBPS_CD
             , (
                 SELECT DEPT_NM
                 FROM DEPT
                 WHERE DEPT_ID = (SELECT dh.DEPT_ID FROM DEPT_HNF dh WHERE dh.EMP_ID = AA.EMP_ID LIMIT 1)
             )AS DEPT_NM
+            , (
+    	       SELECT GROUP_CONCAT(DISTINCT DEPT_NM) DEPT_NM_ALL
+		       FROM DEPT d
+		       JOIN DEPT_HNF dh ON d.DEPT_ID = dh.DEPT_ID
+		       JOIN EMP e ON dh.EMP_ID = e.EMP_ID 
+		       WHERE e.EMP_ID = AA.EMP_ID
+            ) AS DEPT_NM_ALL
             , AA.TELNO
             , (SELECT CD_NM FROM CD WHERE CD_VALUE = AA.HDOF_STTS_CD) AS HDOF_STTS_NM
             , IFNULL(BB.CNT,0)AS CNT
@@ -603,7 +611,7 @@
             SELECT T1.PRJCT_ID , T1.EMP_ID , T1.APLY_YM , T1.APLY_ODR ,T2.ATRZ_DMND_STTS_CD, SUM(COALESCE(T1.MD, 0)) AS MD_SUM, SUM(COALESCE(T1.YRYC_RATE , 0)) AS VAC_SUM
             FROM PRJCT_MM_APLY T1
             JOIN (
-                SELECT A.PRJCT_ID , A.EMP_ID , A.APLY_YM , A.APLY_ODR, B.ATRZ_DMND_STTS_CD
+                SELECT A.PRJCT_ID , A.EMP_ID , A.APLY_YM , A.APLY_ODR, B.ATRZ_DMND_STTS_CD, B.APLY_YMD
                 FROM PRJCT_INDVDL_CT_MM A
                 LEFT OUTER JOIN PRJCT_MM_ATRZ B
                     ON A.PRJCT_ID = B.PRJCT_ID
@@ -623,6 +631,7 @@
                 AND T1.EMP_ID  = T2.EMP_ID
                 AND T1.APLY_YM = T2.APLY_YM
                 AND T1.APLY_ODR = T2.APLY_ODR
+                AND T1.APLY_YMD = T2.APLY_YMD
                 AND T1.APLY_YM = #{aplyYm}
                 AND T1.APLY_ODR= #{aplyOdr}
             GROUP BY T1.PRJCT_ID , T1.EMP_ID , T1.APLY_YM , T1.APLY_ODR, T2.ATRZ_DMND_STTS_CD

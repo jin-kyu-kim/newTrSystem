@@ -14,7 +14,7 @@ const ProjectExpenseCard = (props) => {
     const [ cardUseDtls, setCardUseDtls ] = useState([]);
     const [ selectedItem, setSelectedItem ] = useState([]);
     const [ isPrjctIdSelected, setIsPrjctIdSelected ] = useState({}); // 비용코드 활성화 조건
-    const [validationErrors, setValidationErrors] = useState([]);
+    const [ validationErrors, setValidationErrors ] = useState([]);
     const [ param, setParam ] = useState({
         queryId: queryId,
         empId: props.empId,
@@ -53,7 +53,8 @@ const ProjectExpenseCard = (props) => {
                 if(comSelectParam[i][0].tbNm === "EMP"){
                     response = response.map(({ empId, empno, empFlnm }) => ({
                         key: empId,
-                        value: empno+' '+empFlnm,
+                        value: empFlnm,
+                        displayValue: empno+' '+empFlnm,
                     }));
                 }
                 setComboList(prevComboList => ({
@@ -108,6 +109,10 @@ const ProjectExpenseCard = (props) => {
         setSelectedItem(e.selectedRowsData);
     };
 
+    const bulkApply = (values, col) => {
+        console.log('values', values)
+    };
+
     const cellRenderConfig = {getCdList, isPrjctIdSelected, setIsPrjctIdSelected, chgPlaceholder, comboList, cdList,
         expensCd, setExpensCd, setValidationErrors, hasError: (cardUseSn, fieldName) => hasError(validationErrors, cardUseSn, fieldName)};
 
@@ -117,8 +122,8 @@ const ProjectExpenseCard = (props) => {
                 <SearchInfoSet callBack={searchHandle} props={searchInfo}/>
             </div>
             <ProjectExpenseSubmit selectedItem={selectedItem} sendTbInfo={sendTbInfo} 
-                validateFields={() => validateFields(selectedItem, placeholderAndRequired, setValidationErrors)} 
-                handleDelete={handleDelete} buttonGroup={buttonGroup} />
+                validateFields={() => validateFields(selectedItem, placeholderAndRequired, setValidationErrors, buttonGroup)} 
+                handleDelete={handleDelete} buttonGroup={buttonGroup} getData={props.getData} />
             
             <div style={{fontSize: 14, marginBottom: "20px"}}>
                 <p style={{marginBottom: '10px'}}> ※ 일괄적용 버튼 클릭 시 체크박스로 선택한 항목 중 가장 위에서 선택한 항목으로 일괄적용 됩니다.</p>
@@ -133,6 +138,7 @@ const ProjectExpenseCard = (props) => {
                     values={cardUseDtls}
                     columns={tableColumns}
                     keyColumn={keyColumn}
+                    bulkApply={bulkApply}
                     onSelection={onSelection}
                     cellRenderConfig={cellRenderConfig}
                 />

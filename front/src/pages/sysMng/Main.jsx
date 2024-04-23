@@ -8,7 +8,8 @@ import { useCookies } from "react-cookie";
 import {TableContainer, Table,TableRow,TableCell } from "@mui/material";
 import CustomEditTable from "components/unit/CustomEditTable";
 import Moment from "moment"
-import { isSaturday, isSunday, startOfMonth, endOfMonth } from 'date-fns'
+import { startOfMonth, endOfMonth } from 'date-fns'
+import {useAuth} from "../../components/sidebar/contexts/auth";
 const Main = ({}) => {
 
 //------------------------선언구간----------------------------------------
@@ -23,13 +24,18 @@ const Main = ({}) => {
         atrzListQueryId,atrzListTableColumns    //결재 리스트
         } = MainJson; 
 
-    const [cookies, setCookie] = useCookies(["userInfo", "userAuth","deptInfo"]);
+    const [cookies] = useCookies(["userInfo", "userAuth","deptInfo"]);
+    if(!cookies){
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        const { signOut } = useAuth();
+        signOut();
+    }
     const empId = cookies.userInfo.empId;
     const empno = cookies.userInfo.empno;
     const empNm = cookies.userInfo.empNm;
     const jbpsNm = cookies.userInfo.jbpsNm;
     let deptNm ="";
-    const test = cookies.deptInfo.map((item, index)=>{
+    cookies.deptInfo.map((item, index)=>{
       if(index != 0){
         deptNm +=","
       }

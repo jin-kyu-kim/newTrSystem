@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { Popup } from "devextreme-react";
 import TimeExpenseInsertList from "./TimeExpenseInsertList";
+import "./FnnrMngStyle.css";
 
 const TimeExpenseInsertSttus = ({}) => {
 //====================선언구간====================================================
@@ -18,7 +19,7 @@ const [values2, setValues2] = useState([]); //하단values
 const [paramtot, setParamtot] = useState({}); //상단 조회용 param
 const [param, setParam] = useState({}); //하단 조회용 param
 const { keyColumn, queryId, totTableColumns, tableColumns, searchParams, totQueryId } = TimeExpenseInsertSttusJson;
-const [currentPhase, setCurrentPhase] = useState(''); //차수설정용
+// const [currentPhase, setCurrentPhase] = useState(''); //차수설정용
 const navigate = useNavigate();
 const nowDate = moment().format('YYYYMM') //현재 년월
 const [popupVisible, setPopupVisible] = useState(false);
@@ -26,19 +27,27 @@ const [popupVisible, setPopupVisible] = useState(false);
 useEffect(() => {
     // 현재 날짜를 가져오는 함수
     const getCurrentDate = () => {
-    const now = new Date();
-    const dayOfMonth = now.getDate();
-    return dayOfMonth;
+      const now = new Date();
+      const dayOfMonth = now.getDate();
+      return dayOfMonth;
     };
     // 현재 날짜를 가져오기
     const dayOfMonth = getCurrentDate();
+
+
     // 15일을 기준으로 차수를 결정
-    if (dayOfMonth <= 15) {
-      setCurrentPhase('1');
-    } else {
-      setCurrentPhase('2');
-    }
+    // if (dayOfMonth <= 15) {
+    //   setCurrentPhase('2');
+    // } else {
+    //   setCurrentPhase('1');
+    // }
   }, []);
+
+  const now = new Date();
+  const dayOfMonth = now.getDate();
+  const currentPhase = dayOfMonth <= 15 ? '2' : '1';
+
+
 //====================초기검색=====================================================
 useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
@@ -47,14 +56,18 @@ useEffect(() => {
   }, [param]);
 //=================== 검색으로 조회할 때============================================
 const searchHandle = async (initParam) => {
+  
+  console.log(initParam);
+  
   if(initParam.yearItem == null || initParam.monthItem == null) {
+
     setParamtot({
         ...paramtot,
         queryId: totQueryId,
         aplyYm: nowDate,
         aplyOdr: currentPhase,
         empId: initParam.empId,
-        hdofSttsCd: initParam.hdofSttsCd
+        hdofSttsCd: "VTW00301"
     })
     setParam({
         ...param,
@@ -62,10 +75,10 @@ const searchHandle = async (initParam) => {
         aplyYm: nowDate,
         aplyOdr: currentPhase,
         empId: initParam.empId,
-        hdofSttsCd: initParam.hdofSttsCd
+        hdofSttsCd: "VTW00301"
     })  
     return;
-};
+  }
     setParamtot({
         ...paramtot,
         queryId: totQueryId,
@@ -86,6 +99,9 @@ const searchHandle = async (initParam) => {
 };
 
 const pageHandle = async () => {
+  console.log(paramtot)
+  console.log(param);
+
   try {
     const responsetot = await ApiRequest("/boot/common/queryIdSearch", paramtot); //상단 total 검색
     const response = await ApiRequest("/boot/common/queryIdSearch", param); //하단 목록 검색
@@ -101,19 +117,20 @@ const handleClose = () => {
   setPopupVisible(false);
 };
 //===========================테이블내 버튼 이벤트======================================
-const onBtnClick = ({button,data}) => {      //
+const onBtnClick = (button, data) => {      
+
     if(button.name === "workHrMv"){
         alert("근무시간페이지이동");
-        navigate("/fnnrMng/prjctCtClm/ProjectCostClaimDetail",          //경로 수정 예정
-        {state: { empId: values2.empId }})
+        navigate("/indvdlClm/EmpWorkTime",
+        {state: { empId: data.empId, jbpsCd: data.jbpsCd, deptNmAll: data.deptNmAll}})
     }
     if(button.name === "hrRtrcn"){                                   //취소상태로 변경 -> 반려?
         alert("시간취소!"); 
     }
-    if(button.name === "prjctScrnMv"){                                      //경로 수정 예정
+    if(button.name === "prjctScrnMv"){                                      
         alert("프로젝트비용이동");
-        navigate("/fnnrMng/prjctCtClm/ProjectCostClaimDetail",
-        {state: { empId: values2.empId }})
+        navigate("/indvdlClm/ProjectExpense",
+        {state: { empId: data.empId }})
     }
     if(button.name === "ctRtrcn"){                                    //취소상태로 변경 -> 반려?
         alert("비용취소");
@@ -121,7 +138,7 @@ const onBtnClick = ({button,data}) => {      //
      if(button.name === "companyPrice"){                                 //경로 수정 예정
         alert("회사비용이동");
         navigate("/fnnrMng/prjctCtClm/ProjectCostClaimDetail",
-        {state: { empId: values2.empId }})
+        {state: { empId: data.empId }})
     }
     if(button.name === "print"){                                        //팝업으로 띄울 예정
         setPopupVisible(true);
@@ -144,7 +161,7 @@ const onBtnClick = ({button,data}) => {      //
                 <SearchPrjctCostSet callBack={searchHandle} props={searchParams} />
                 <Button text="마감 및 엑셀다운"  onClick={ddlnExcelDwn}/>
             </div>
-            <div style={{ marginBottom: "20px" }}>
+            <div className="TimeExpenseInsertSttus" style={{ marginBottom: "20px" }}>
                 <CustomTable
                   keyColumn={keyColumn}
                   columns={totTableColumns}
@@ -152,7 +169,7 @@ const onBtnClick = ({button,data}) => {      //
                   paging={false}
                 />
             </div>
-            <div style={{ marginBottom: "20px" }}>
+            <div className="TimeExpenseInsertSttus" style={{ marginBottom: "20px" }}>
                 <CustomTable
                     keyColumn={keyColumn}
                     columns={tableColumns}

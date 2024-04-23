@@ -2,13 +2,9 @@ import { useEffect, useState } from "react";
 import { Button } from 'devextreme-react/button'
 import ApiRequest from "utils/ApiRequest";
 
-const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handleDelete, buttonGroup }) => {
+const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handleDelete, buttonGroup, getData }) => {
   const [ completedCount, setCompletedCount ] = useState(0);
   const [ prjctCtAplySn, setPrjctCtAplySn ] = useState([]);
-
-  // const updatedRowsData = e.selectedRowsData.map(({ utztnDtFormat, ...rest }) => ({
-  //     ...rest
-  // }));
 
   useEffect(() => {
     if (selectedItem.length !== 0 && prjctCtAplySn.length === selectedItem.length) {
@@ -19,28 +15,15 @@ const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handle
   useEffect(() => {
     if (selectedItem.length > 0 && completedCount === selectedItem.length) {
       alert("등록되었습니다.");
-      window.location.reload();
+      getData();
     }
   }, [completedCount]);
 
+
   const handleSubmit = async () => {
-    if(selectedItem.length === 0) {
-      alert('선택된 사용내역이 없습니다.')
-      return;
-    }
-
-    if (selectedItem.some(item => item.prjctId === null || (buttonGroup.length < 2 && !item.prjctId))) {
-      alert('프로젝트를 선택해주세요');
-      return;
-    }
-
-    if (selectedItem.some(item => item.prjctId !== null && (item.expensCd === null || (buttonGroup.length < 2 && !item.expensCd)))) {
-      alert('비용코드를 선택해주세요');
-      return;
-    }
-
-    if (!validateFields()) {
-      alert('모든 필수 필드를 채워주세요.');
+    const validationResults = await validateFields();
+    if (!validationResults.isValid) {
+      validationResults.messages.length !== 0 && alert(validationResults.messages.join('\n'));
       return;
     }
 
@@ -51,7 +34,6 @@ const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handle
 
       if (ynUpdated) {
         const mmInserted = await insertMM();
-
         if (mmInserted) await insertValue();
       }
     } catch (error) {
@@ -78,13 +60,10 @@ const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handle
   /** PRJCT_INDVDL_CT_MM (프로젝트개인비용MM) - insert */
   const insertMM = async () => {
     const param = selectedItem.map((item) => ({
-      prjctId: item.prjctId,
-      empId: item.empId,
-      aplyYm: item.aplyYm,
-      aplyOdr: item.aplyOdr,
-      ctAtrzCmptnYn: "N",
+      ...setParam(item),
       mmAtrzCmptnYn: "N",
     }));
+    
     try{
       const res = await ApiRequest("/boot/indvdlClm/insertPrjctMM", param);
       return true;
@@ -99,13 +78,27 @@ const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handle
     const tbInfo = { tbNm: sendTbInfo.tbNm, snColumn: sendTbInfo.snColumn };
     const snArray = []; // SN 값을 저장할 임시 배열
   
-    for (const item of selectedItem) {
-      const requestBody = [{ ...tbInfo }, { ...item, ctAtrzSeCd: "VTW01903" }];
+    const updatedRowsData = selectedItem.map(({ utztnDtFormat, ...rest }) => rest);
+  
+    for (const item of updatedRowsData) {
+      const atdrnString = item.atdrn.map(person => person.value).join(',');
+      const requestBody = [{ ...tbInfo }, { ...item, atdrn: atdrnString, ctAtrzSeCd: "VTW01903" }];
   
       try {
         await ApiRequest("/boot/common/commonInsert", requestBody);
-        const maxSn = await getPrjctCtAplySn();
+        const maxSn = await getPrjctCtAplySn(item);
         snArray.push(maxSn);
+
+        // 참석자 별도 insert
+        for (const person of item.atdrn) {
+          const atdrnRes = await ApiRequest("/boot/common/commonInsert", [
+              { tbNm: "PRJCT_CT_ATDRN", snColumn: "PRJCT_CT_ATDRN_SN" },
+              { 
+                prjctCtAplySn: maxSn, atndEmpId: person.key, atndEmpFlnm: person.value,
+                ...setParam(item)
+              }
+          ]);
+        }
       } catch (error) {
         console.error("insertValueAndFetchSn error", error);
         break;
@@ -114,8 +107,8 @@ const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handle
     setPrjctCtAplySn(snArray);
   };
 
-  const getPrjctCtAplySn = async () => {
-    const param = setParam(selectedItem, {queryId: "indvdlClmMapper.retrievePrjctCtAplySn"})
+  const getPrjctCtAplySn = async (oneRow) => {
+    const param = setParam(oneRow, {queryId: "indvdlClmMapper.retrievePrjctCtAplySn"})
     try {
       const response = await ApiRequest("/boot/common/queryIdSearch", param);
       return response[0].prjctCtAplySn;
@@ -127,9 +120,11 @@ const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handle
 
   /** PRJCT_CT_ATRZ (프로젝트비용결재) - insert */
   const insertAtrzValue = async () => {
-    const getParam = setParam(selectedItem);
+    let i = 0;
 
     for (const sn of prjctCtAplySn) {
+      const getParam = setParam(selectedItem[i++]);
+
       const param = [
         { tbNm: sendTbInfo.atrzTbNm },
         { prjctCtAplySn: sn, ...getParam }
@@ -144,12 +139,12 @@ const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handle
     }
   };
 
-  const setParam = (selectedItem, additionalProps) => {
+  const setParam = (oneRow, additionalProps) => {
     const baseProps = {
-      prjctId: selectedItem[0].prjctId,
-      empId: selectedItem[0].empId,
-      aplyYm: selectedItem[0].aplyYm,
-      aplyOdr: selectedItem[0].aplyOdr,
+      prjctId: oneRow.prjctId,
+      empId: oneRow.empId,
+      aplyYm: oneRow.aplyYm,
+      aplyOdr: oneRow.aplyOdr,
     };
     return { ...baseProps, ...additionalProps };
   }; 
@@ -157,8 +152,9 @@ const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handle
   return (
     <div style={{marginBottom: '20px'}}>
       {buttonGroup.map((btn, index) => (
-        <Button type={btn.type} text={btn.text} style={{marginRight: '10px'}} key={index}
-          onClick={btn.onClick === 'handleDelete' ? handleDelete : handleSubmit} useSubmitBehavior={true} />
+        <Button onClick={btn.onClick === 'handleDelete' ? handleDelete : handleSubmit} 
+          useSubmitBehavior={true} type={btn.type} text={btn.text} 
+          style={{marginRight: '10px'}} key={index} />
       ))}
     </div>
   );
