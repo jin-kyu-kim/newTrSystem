@@ -1,20 +1,13 @@
 package com.trsystem.project.domain;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.trsystem.batchSkill.service.BatchSkillService;
+import com.trsystem.common.service.CommonService;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.trsystem.batchSkill.service.BatchSkillService;
-import com.trsystem.common.service.CommonService;
-
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
@@ -600,7 +593,7 @@ public class ProjectBaseDomain {
 		}
 		return 1;
 	}
-	
+
 	/**
 	 * 프로젝트 읽기/쓰기 권한을 부여하는 메소드
 	 * @param param
@@ -608,38 +601,38 @@ public class ProjectBaseDomain {
 	 */
 	public static int insertPrjctMngAuth(Map<String, Object> param) {
 		int result = 0;
-		
+
 		String prjctMngrEmpId =  String.valueOf(param.get("prjctMngrEmpId"));	// PM의 EMP ID
-		
+
 		// 1. 권한을 부여할 emp 목록 조회해오기.
 		List<Map<String, Object>> empList = retrieveAprvrEmpId(param);
 		Set<String> empSet = new HashSet<>();
-		
+
 		// 2. 중복을 제거한 set 만든다.(부서에 따라 empId가 중복 될 경우가 존재)
 		for(int i = 0; i < empList.size(); i++) {
 			empSet.add(String.valueOf(empList.get(i).get("empId")));
 		}
-		
+
 		ArrayList<String> list = new ArrayList<String>(empSet);
-		
+
 		Map<String, Object> tbParam = new HashMap<>();		// 테이블 파라미터
 		Map<String, Object> pmDataParam = new HashMap<>();	// pm 파라미터
 		ArrayList<Map<String, Object>> insertParams = new ArrayList<>();
-		
+
 		tbParam.put("tbNm", "PRJCT_MNG_AUTHRT");
-		
+
 		pmDataParam.put("prjctId", param.get("prjctId"));
 		pmDataParam.put("empId", param.get("prjctMngrEmpId"));
 		pmDataParam.put("prjctMngAuthrtCd", param.get("prjctMngAuthrtCd"));
 		pmDataParam.put("regEmpId", param.get("regEmpId"));
 		pmDataParam.put("regDt", param.get("regDt"));
-		
+
 		insertParams.add(0, tbParam);
 		insertParams.add(pmDataParam);
-		
+
 		for(int i = 0; i < list.size(); i++) {
 			Map<String, Object> infoParam = new HashMap<>();
-			
+
 			// 권한 생성할 인력 중 PM의 아이디와 다른 사람만(이미 들어있기 때문에)
 			if(!prjctMngrEmpId.equals(list.get(i))) {
 				infoParam.put("prjctId", param.get("prjctId"));
@@ -649,9 +642,8 @@ public class ProjectBaseDomain {
 				infoParam.put("regDt", param.get("regDt"));
 				insertParams.add(infoParam);
 			}
-			
 		}
-		
+
 		try {
 			result = commonService.insertData(insertParams);
 		} catch (Exception e) {

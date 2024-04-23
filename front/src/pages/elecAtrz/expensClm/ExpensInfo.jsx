@@ -275,8 +275,6 @@ const ExpensInfo = ({onSendData, prjctId, data}) => {
         console.log(forms[index].clmAmt);
         const newForms = [...forms];
 
-        !["VTW01904", "VTW01905", "VTW01906"].includes(forms[index].ctStlmSeCd)
-
         if(forms[index].ctStlmSeCd === "VTW01904") {
             newForms[index]["vatInclsAmt"] = forms[index].clmAmt * 1.1;
         } else if(forms[index].ctStlmSeCd === "VTW01905") {

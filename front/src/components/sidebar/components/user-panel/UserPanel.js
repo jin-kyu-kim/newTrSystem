@@ -4,10 +4,11 @@ import ContextMenu, { Position } from 'devextreme-react/context-menu';
 import List from 'devextreme-react/list';
 import './UserPanel.scss';
 import { useCookies } from "react-cookie";
-import {signOut} from "../../../../utils/AuthMng"
+import { useAuth } from "../../contexts/auth";
 
 export default function UserPanel({ menuMode }) {
   const navigate = useNavigate();
+  const { signOut } = useAuth();
   const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
   const empno = cookies.userInfo.empno;
   const empNm = cookies.userInfo.empNm;
@@ -15,8 +16,6 @@ export default function UserPanel({ menuMode }) {
   const navigateToProfile = useCallback(() => {
     navigate("/infoInq/empDetailInfo");
   }, [navigate]);
-  
-
 
   const menuItems = useMemo(() => ([
     {
@@ -30,8 +29,6 @@ export default function UserPanel({ menuMode }) {
       onClick: signOut
     }
   ]), [navigateToProfile, signOut]);
-
-
 
   return (
     <div className={'user-panel'}>
