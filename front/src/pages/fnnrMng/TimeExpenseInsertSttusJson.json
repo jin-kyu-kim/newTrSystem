@@ -76,7 +76,7 @@
             { "key": "vacSum", "value": "휴가", "width": 40 },
             { "key": "mmReject", "value": "반려", "width": 40 },
             { "key": "mmComplete", "value": "승인", "width": 40},
-            { "value": "취소", "button": {"text": "시간취소", "name": "hrRtrcn"}, "width": 80 }
+            { "value": "취소", "button": {"text": "시간취소", "name": "hrRtrcn", "able": {"key": "mdSum", "exceptValue": 0} }, "width": 80 }
         ]},
         {"value": "프로젝트비용",
         "subColumns": [
@@ -84,7 +84,7 @@
             { "key": "cnt", "value": "입력", "width": 40},
             { "key": "prjReject", "value": "반려", "width": 40},
             { "key": "prjComplete", "value": "승인", "width": 40 },
-            { "value": "취소", "button": {"text": "비용취소", "name": "ctRtrcn"}, "width": 80 }
+            { "value": "취소", "button": {"text": "비용취소", "name": "ctRtrcn", "able": {"key": "cnt", "exceptValue": 0}}, "width": 80 }
         ]},
         {  "value": "회사지불비용", "width": 80, "button": {"text" : "이동", "name" : "companyPrice"} },
         {  "value": "출력", "button": {"text" : "출력", "name" : "print"} }

@@ -950,9 +950,9 @@
 		  JOIN PRJCT_CT_ATRZ pcat ON (pca.PRJCT_CT_APLY_SN = pcat.PRJCT_CT_APLY_SN)
 		 WHERE 1=1
 	      AND (pca.CT_ATRZ_SE_CD = 'VTW01902' OR pca.CT_ATRZ_SE_CD = 'VTW01903')
-		   AND pca.EMP_ID = '75034125-f287-11ee-9b25-000c2956283f'
-		   AND pca.APLY_YM = '202404'
-		   AND pca.APLY_ODR = '1'
+		   AND pca.EMP_ID = #{empId}
+		   AND pca.APLY_YM = #{aplyYm}
+		   AND pca.APLY_ODR = #{aplyOdr}
 		   AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703'
 	</select>
     
@@ -976,7 +976,6 @@
 		   AND pca.APLY_YM = #{aplyYm}
 		   AND pca.APLY_ODR = #{aplyOdr}
 		   AND (pca.CT_ATRZ_SE_CD = 'VTW01902' OR pca.CT_ATRZ_SE_CD = 'VTW01903')	-- 현금/개인법인카드
-		AND picm.CT_ATRZ_CMPTN_YN = 'Y' 
 		AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703' 
 		UNION
 		SELECT CONCAT(p.PRJCT_NM, '(', p.PRJCT_CD_IDNTFR , ')') PRJCT_NM_CD

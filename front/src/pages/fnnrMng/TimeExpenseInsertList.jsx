@@ -10,6 +10,8 @@ import CustomHorizontalTable from "components/unit/CustomHorizontalTable";
 import PivotGrid, { FieldChooser, FieldPanel, Scrolling } from 'devextreme-react/pivot-grid';
 import PivotGridDataSource from 'devextreme/ui/pivot_grid/data_source';
 
+import ProjectExpenseCashCardReport from "../indvdlClm/ProjectExpenseCashCardReport";
+
 const TimeExpenseInsertList = ({data}) => {
 //====================선언구간====================================================
 const { baseInfo, totAply } = TimeExpenseInsertSttusJson;
@@ -82,7 +84,7 @@ const printRef = useRef(null);
 //====================== 데이터 설정 ===============================================
 useEffect(() => {
 
-  retrieveCtData(data);
+  // retrieveCtData(data);
 
 }, [data]);
 
@@ -114,7 +116,7 @@ const print = useCallback(() => {
   printRef.current.instance.print();
 }, []);
 
-  const dataSource = new PivotGridDataSource(pivotGridConfig);
+  // const dataSource = new PivotGridDataSource(pivotGridConfig);
 
   const printf = () => {
 
@@ -140,7 +142,7 @@ const print = useCallback(() => {
           </DataGrid>
           </div>
         <div style={{ marginBottom: "20px" }}>
-          <span>* 현금 및 개인법인카드 사용비용</span>
+          {/* <span>* 현금 및 개인법인카드 사용비용</span>
           <PivotGrid
             id="sales"
             dataSource={dataSource}
@@ -165,7 +167,8 @@ const print = useCallback(() => {
             />
             <FieldChooser enabled={false} />
             <Scrolling mode="virtual" />
-          </PivotGrid>
+          </PivotGrid> */}
+          <ProjectExpenseCashCardReport basicInfo={data}/>
         </div>
       </div>
     )
