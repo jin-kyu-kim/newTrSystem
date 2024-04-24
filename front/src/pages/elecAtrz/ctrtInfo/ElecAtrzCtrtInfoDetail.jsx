@@ -10,7 +10,6 @@ import PymntPlanPopup from "./PymntPlanPopup"
 import ApiRequest from "utils/ApiRequest";
 
 /**
- *  "VTW04908" : 외주인력
  *  "VTW04909" : 외주업체
  *  "VTW04910" : 재료비
  */
@@ -70,23 +69,18 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
      * 임시저장된 데이터
      */
     const getTempData = async () => {
-        const dtlParam = [
-            { tbNm: "ENTRPS_CTRT_DTL" },
-            { elctrnAtrzId: data.elctrnAtrzId }
-        ]
-
-        const dtlResponse = await ApiRequest("/boot/common/commonSelect", dtlParam);
-        // console.log("dtlResponse", dtlResponse)
-
-        dtlResponse.map((item) => {
-        });
+        const dtlParam = 
+            { queryId: "elecAtrzMapper.retrieveEntrpsCtrtDtl",
+              elctrnAtrzId: data.elctrnAtrzId,
+              elctrnAtrzTySeCd: data.elctrnAtrzTySeCd}    
+        const dtlResponse = await ApiRequest("/boot/common/queryIdSearch", dtlParam);
 
         const ctrtDataDtl = dtlResponse[0];
 
         const dtlCndParam = {
             queryId: "elecAtrzMapper.retrieveEntrpsCtrtDtlCnd",
-            elctrnAtrzId: data.elctrnAtrzId 
-        }
+            elctrnAtrzId: data.elctrnAtrzId }
+
         const dtlCndResponse = await ApiRequest("/boot/common/queryIdSearch", dtlCndParam);
 
         dtlCndResponse.map((item) => {
@@ -124,13 +118,13 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
 
             //중도금
             } else  {
-                if(pay[i].giveOdrCd === "VTW03202") {  
+                if(pay[i].giveOdrCd === "VTW03205") {  
                     prtPayYm = pay[i].ctrtYmd.getFullYear() + "" + month;
                 }
                 prtPayAmt += pay[i].ctrtAmt;
             }
         }
-
+        
         const result = {
             ...ctrtDataDtl,
             pay,
@@ -143,7 +137,6 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
             "prtPayAmt": prtPayAmt,
             "totAmt": advPayAmt + surplusAmt + prtPayAmt
         }
-
         handlePopupData(result);
     }
 
