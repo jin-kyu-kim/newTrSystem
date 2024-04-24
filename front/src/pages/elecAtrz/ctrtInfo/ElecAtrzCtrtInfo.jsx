@@ -45,6 +45,8 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData, sttsCd }) => {
 
         if(sttsCd === "VTW03701") {
             getTempData();
+        }else if(["VTW03702","VTW03703","VTW03704","VTW03705"].includes(sttsCd)) {
+            getTempData();
         }
 
     }, []);
@@ -87,7 +89,9 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData, sttsCd }) => {
             delete updatedInfoData.giveDeEtc;
         }
 
-        onSendData(updatedInfoData);
+        if(!!onSendData){
+            onSendData(updatedInfoData);
+        }
     }, [infoData]);
 
 
@@ -115,15 +119,12 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData, sttsCd }) => {
                         </div>
                     </div>
                 </div>
-                <CustomLabelValue props={labelValue.ctrtTrgtNm} value={infoData.ctrtTrgtNm} onSelect={handleChgState} />
+                <CustomLabelValue props={labelValue.ctrtTrgtNm} value={infoData.ctrtTrgtNm} onSelect={handleChgState}/>
                 <CustomLabelValue props={labelValue.cntrctrAddr} value={infoData.cntrctrAddr} onSelect={handleChgState}/>
                 <div className="dx-field">
                     <div className="dx-field-label">사업자등록번호 또는 주민등록번호</div>
                     <div className="dx-field-value">
                         <div style={{float: "left", marginRight: "20px", width: "20%"}}>
-                            {/* <SelectBox
-                                placeholder="구분"
-                            /> */}
                             <CustomCdComboBox
                                 param="VTW046"
                                 placeholderText="구분"
