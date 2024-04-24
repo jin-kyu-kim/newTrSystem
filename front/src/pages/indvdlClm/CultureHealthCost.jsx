@@ -35,8 +35,13 @@ const CultureHealthCost = () => {
                 area: "data",
                 format: "fixedPoint",
                 customizeText: function(cellInfo) {
-                    return cellInfo.valueText.startsWith('0dt') ?
-                        cellInfo.valueText.substring(3,7)+"."+cellInfo.valueText.substring(7,9)+"."+cellInfo.valueText.substring(9,11) : cellInfo.valueText;
+                    if(cellInfo.valueText.includes('0dt') || cellInfo.valueText.includes('dt')){
+                        let text = cellInfo.valueText.replaceAll('0dt','');
+                        text = text.replaceAll('dt','');
+                        return text.substring(0,4)+"."+text.substring(4,6)+"."+text.substring(6,8);
+                    } else {
+                        return cellInfo.valueText;
+                    }
                 },
                 expanded: true
             }
