@@ -114,7 +114,7 @@
           { "key": "md", "value": "신청시간", "unit": "hrs" },
           { "width": "130", "buttons": [{ "text": "승인", "name": "aprv", "visible": {"key": "atrzDmndSttsCd", "value": "VTW03702"}},
                                         { "text": "승인취소", "name": "aprvCncl", "visible": {"key": "atrzDmndSttsCd", "value": "VTW03703"}}]},
-          { "width": "130", "buttons": [{ "text": "반려", "name": "rjct", "visible": {"key": "atrzDmndSttsCd", "value": "VTW03702"}},
+          { "width": "130", "buttons": [{ "text": "반려", "name": "rjct", "visible": {"key": "atrzDmndSttsCd", "value": "VTW03702"}, "able": "time"},
                                         { "text": "반려취소", "name": "rjctCncl", "visible": {"key": "atrzDmndSttsCd", "value": "VTW03704"}}]}
         ]
     },
@@ -128,7 +128,7 @@
             { "key": "ctPrpos", "value": "상세내역(목적)" },
             { "width": "130", "buttons": [{ "text": "승인", "name": "aprv", "visible": {"key": "atrzDmndSttsCd", "value": "VTW03702"}},
                 { "text": "승인취소", "name": "aprvCncl", "visible": {"key": "atrzDmndSttsCd", "value": "VTW03703"}, "able": {"key": "elctrnAtrzId", "value": true}}]},
-            { "width": "130", "buttons": [{ "text": "반려", "name": "rjct", "visible": {"key": "atrzDmndSttsCd", "value": "VTW03702"}},
+            { "width": "130", "buttons": [{ "text": "반려", "name": "rjct", "visible": {"key": "atrzDmndSttsCd", "value": "VTW03702"}, "able": "time"},
                 { "text": "반려취소", "name": "rjctCncl", "visible": {"key": "atrzDmndSttsCd", "value": "VTW03704"}}]}
         ]
     }
