@@ -91,7 +91,7 @@ const ProjectExpense = () => {
     };
 
     const onClickAction = async (onClick) => {
-        if(onClick === 'onPrintClick'){
+        if(onClick.name === 'onPrintClick'){
             setPopVisible(true);
         } else{
             if (window.confirm(onClick.msg)) {
@@ -172,7 +172,7 @@ const ProjectExpense = () => {
                 <RenderTopTable title={`* ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} />
                 <RenderTopTable title='* 전자결재 청구 내역' keyColumn={elcKeyColumn} columns={columnCharge} values={ctAtrz} />
 
-                {atrzDmndSttsCnt.ctReg === 0 ? <span style={{ fontSize: "20px", marginLeft: "30px" }}>입력 마감되었습니다.</span>
+                {atrzDmndSttsCnt.ctReg === 0 && mmAplyCnt !== 0 ? <span style={{ fontSize: "20px", marginLeft: "30px" }}>입력 마감되었습니다.</span>
                 : <TabPanel
                     dataSource={ExpenseInfo}
                     selectedIndex={index}
@@ -198,6 +198,7 @@ const ProjectExpense = () => {
             <ProjectExpensePopup
                 visible={popVisible}
                 onPopHiding={onPopHiding}
+                basicInfo={{aplyYm, aplyOdr, empId, cookies}}
             />
         </div>
     );

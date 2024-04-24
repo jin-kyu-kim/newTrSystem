@@ -133,7 +133,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                 onRowExpanding={handleExpanding}
                 onSelectionChanged={onSelection && ((e) => onSelection(e))}
                 onRowUpdating={(e) => onEditRow('update', e)}
-                onRowRemoving={(e) => onEditRow('delete', e)}
+                onRowRemoved={(e) => onEditRow('delete', e)}
             >
                 {masterDetail && 
                 <MasterDetail

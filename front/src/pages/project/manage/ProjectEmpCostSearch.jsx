@@ -76,7 +76,6 @@ const ProjectEmpCostSearch = ({prjctId}) => {
           showFilterFields={false}
           allowFieldDragging={false}
         />
-
         <FieldChooser enabled={false} />
         <Scrolling mode="virtual" />
         <Export enabled={true} />
