@@ -804,7 +804,23 @@
         </if>
 		 GROUP BY e.EMP_ID
 	</select>
-	
+
+    <update id="updateCtAply" parameterType="map">
+        UPDATE PRJCT_CT_ATRZ pcat
+        JOIN PRJCT_CT_APLY pca ON (pcat.EMP_ID = pca.EMP_ID AND pcat.APLY_YM = pca.APLY_YM
+            AND pcat.APLY_ODR = pca.APLY_ODR AND pcat.PRJCT_ID = pca.PRJCT_ID AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN)
+        SET
+            pcat.ATRZ_DMND_STTS_CD = 'VTW03702'
+          , pcat.APRVR_EMP_ID = null
+          , pcat.APRV_YMD = null
+        WHERE pcat.EMP_ID = #{empId}
+          AND pcat.APLY_YM = #{aplyYm}
+          AND pcat.APLY_ODR = #{aplyOdr}
+          AND pcat.PRJCT_ID = #{prjctId}
+          AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703'
+          AND pca.ELCTRN_ATRZ_ID IS NULL
+    </update>
+
 	<select id="retrieveProjectCtAplyDetail" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT CASE
                    WHEN pcat.ATRZ_DMND_STTS_CD = 'VTW03702' THEN 1
@@ -909,6 +925,7 @@
              , cd.CD_NM AS EXPENS_CD
              , pca.USE_OFFIC
              , pca.CT_PRPOS
+             , pca.ELCTRN_ATRZ_ID
              , pcat.ATRZ_DMND_STTS_CD
         FROM PRJCT_CT_APLY pca
         JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_ID = pca.PRJCT_ID AND pcat.EMP_ID = pca.EMP_ID

@@ -9,7 +9,7 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
 
     const ButtonRender = (button, data, onClick) => {
         let disabled = false;
-        if(button.able != null && data != null && data[button.able.key] != button.able.value){
+        if(button.able != null && data != null && data[button.able.key] !== button.able.value){
             disabled = true;
         }
         return(
@@ -21,9 +21,11 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
         let button = null;
         let disabled = false;
         buttons.forEach((item) => {
-            if (data != null && data[item.visible.key] == item.visible.value ) {
+            if (data != null && data[item.visible.key] === item.visible.value ) {
                 button = item;
-                if(item.able != null && data[item.able.key] != item.able.value){
+                if(item.able != null && typeof item.able.value != "boolean" && data[item.able.key] !== item.able.value){
+                    disabled = true;
+                } else if (item.able != null && item.able.value === true && data[item.able.key]){
                     disabled = true;
                 }
             }
