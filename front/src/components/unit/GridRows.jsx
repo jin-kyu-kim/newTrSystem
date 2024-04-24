@@ -11,6 +11,24 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
         let disabled = false;
         if(button.able != null && data != null && data[button.able.key] !== button.able.value){
             disabled = true;
+        } else if (button.able === "time"){
+            const date = new Date();
+            const month = date.getMonth() + 1;
+            let firstDayOfMonth = new Date( date.getFullYear(), date.getMonth() , 1 );
+            let lastMonth = new Date(firstDayOfMonth.setDate( firstDayOfMonth.getDate() - 1 )); // 전월 말일
+            const day = date.getDate();
+            let monthVal = month < 10 ? "0" + month : month;
+            let lastMonthVal = (lastMonth.getMonth() + 1) < 10 ? "0" + (lastMonth.getMonth() + 1) : lastMonth.getMonth() + 1;
+
+            if(day > 15){
+                if(data["aplyYm"] !== date.getFullYear()+monthVal || data["aplyOdr"] !== 1){
+                    disabled = true;
+                }
+            } else {
+                if(data["aplyYm"] !== lastMonth.getFullYear()+lastMonthVal || data["aplyOdr"] !== 2){
+                    disabled = true;
+                }
+            }
         }
         return(
             <Button name = {button.name} text={button.text} onClick={(e) => {onClick(button, data)}} disabled={disabled}/>

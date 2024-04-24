@@ -14,7 +14,7 @@
             { "width": "140", "button": { "text": "승인목록", "name": "aprvList" }},
             { "width": "130", "buttons": [{ "text": "승인", "name": "aprv", "visible": {"key": "sttsCd", "value": "VTW03702"}},
                                          { "text": "승인취소", "name": "aprvCncl", "visible": {"key": "sttsCd", "value": "VTW03703"}}]},
-            { "width": "130", "buttons": [{ "text": "반려", "name": "rjct", "visible": {"key": "sttsCd", "value": "VTW03702"}},
+            { "width": "130", "buttons": [{ "text": "반려", "name": "rjct", "visible": {"key": "sttsCd", "value": "VTW03702"}, "able": "time"},
                                           { "text": "반려취소", "name": "rjctCncl", "visible": {"key": "sttsCd", "value": "VTW03704"}}]}
         ],
         "summaryColumn": [
@@ -65,7 +65,7 @@
             { "width": "140", "button": { "text": "승인목록", "name": "ctList" }},
             { "width": "130", "buttons": [{ "text": "승인", "name": "aprv", "visible": {"key": "sttsCd", "value": "VTW03702"}},
                                           { "text": "승인취소", "name": "aprvCncl", "visible": {"key": "sttsCd", "value": "VTW03703"}}]},
-            { "width": "130", "buttons": [{ "text": "반려", "name": "rjct", "visible": {"key": "sttsCd", "value": "VTW03702"}},
+            { "width": "130", "buttons": [{ "text": "반려", "name": "rjct", "visible": {"key": "sttsCd", "value": "VTW03702"}, "able": "time"},
                                           { "text": "반려취소", "name": "rjctCncl", "visible": {"key": "sttsCd", "value": "VTW03704"}}]}
         ],
         "summaryColumn": [
