@@ -412,7 +412,9 @@ public class ElecAtrzDomain {
 			
 			if(atrzTySeCd.equals("VTW04908")) {
 				
-				// 외주인력 처리
+				// 외주인력 처리 HNF_CTRT_DTL
+				
+				
 				
 			} else if(atrzTySeCd.equals("VTW04909")) {
 				
@@ -526,17 +528,21 @@ public class ElecAtrzDomain {
 		}
 			
 		tbParam.put("tbNm", paramList.get(0).get("tbNm"));
+		insertParams.add(0, tbParam);
 		
 		for(int i = 1; i < copiedParams.size(); i++) {
 			
 			copiedParams.get(i).remove("pay");
 			infoParam.put("elctrnAtrzId", elctrnAtrzId);
+			infoParam.put("prductNm", copiedParams.get(i).get("prductNm"));
 			infoParam.put("entrpsCtrtDtlSn", copiedParams.get(i).get("entrpsCtrtDtlSn"));
 			infoParam.put("tkcgJob", copiedParams.get(i).get("tkcgJob"));
 			infoParam.put("inptPrnmntHnfCnt", copiedParams.get(i).get("inptPrnmntHnfCnt"));
-			infoParam.put("inptBgngYmd", copiedParams.get(i).get("inptBgngYmd"));
-			infoParam.put("inptEndYmd", copiedParams.get(i).get("inptEndYmd"));
+			infoParam.put("inptBgngYmd", copiedParams.get(i).get("ctrtBgngYmd"));
+			infoParam.put("inptEndYmd", copiedParams.get(i).get("ctrtEndYmd"));
 			infoParam.put("totAmt", copiedParams.get(i).get("totAmt"));
+			infoParam.put("expectCtrtEntrpsNm", copiedParams.get(i).get("outordEntrpsNm"));
+			
 			
 			insertParams.add(i, infoParam);
 		}
