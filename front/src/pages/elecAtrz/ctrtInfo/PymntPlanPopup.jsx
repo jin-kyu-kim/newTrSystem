@@ -11,7 +11,7 @@ import ElecAtrzOutordCompanyPopupJson from "./ElecAtrzOutordCompanyPopupJson.jso
  *  "VTW04909" : 외주업체
  *  "VTW04910" : 재료비
  */
-const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedData, data}) => {
+const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedData, data, sttsCd}) => {
 
     let jsonData = {};
     if(data.elctrnAtrzTySeCd === "VTW04910"){
@@ -28,8 +28,11 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
     const { keyColumn, tableColumns } = jsonData.matrlCtrt
     const [matrlCtrtData, setMatrlCtrtData] = useState({});
     const [pay, setPay] = useState([]);
+    let controlReadOnly = false;
 
-
+    if(["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707"].includes(sttsCd)){
+        controlReadOnly = true;
+    }
     /**
      *  부모창에서 전달 된 데이터로 셋팅
      */
@@ -101,7 +104,7 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
      *  입력값 변경시 데이터 핸들링
      */
     const handleChgState = ({name, value}) => {
-        console.log(name, value)
+        // console.log(name, value)
         setMatrlCtrtData(matrlCtrtData => ({
             ...matrlCtrtData,
             [name]: value
@@ -128,6 +131,8 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
         handlePopupVisible();
     }
 
+    // 수정테이블 수정가능 여부
+    const isEditable = !["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707"].includes(sttsCd);
     
     return (
     <>
@@ -137,24 +142,24 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
                     <div className="project-change-content-inner-left">
                     {data.elctrnAtrzTySeCd === "VTW04910" ? 
                         <div className="dx-fieldset">
-                            <CustomLabelValue props={matrlPlanParam}  value={matrlCtrtData.matrlPlan} onSelect={handleChgState} />
+                            <CustomLabelValue props={matrlPlanParam}  value={matrlCtrtData.matrlPlan} onSelect={handleChgState} readOnly={controlReadOnly}/>
                             <CustomLabelValue props={labelValue.cntrctamount} onSelect={handleChgState} readOnly={true} value={matrlCtrtData.cntrctamount}/>
-                            <CustomLabelValue props={labelValue.prductNm} onSelect={handleChgState} value={matrlCtrtData.prductNm}/>
-                            <CustomLabelValue props={labelValue.dtlCn} onSelect={handleChgState} value={matrlCtrtData.dtlCn}/>
-                            <CustomLabelValue props={labelValue.untpc} onSelect={handleChgState} value={matrlCtrtData.untpc}/>
-                            <CustomLabelValue props={labelValue.qy} onSelect={handleChgState} value={matrlCtrtData.qy}/>
-                            <CustomLabelValue props={labelValue.tot} onSelect={handleChgState} value={matrlCtrtData.untpc*matrlCtrtData.qy}/>
-                            <CustomLabelValue props={labelValue.dlvgdsPrnmntYmd} onSelect={handleChgState} value={matrlCtrtData.dlvgdsPrnmntYmd}/>
+                            <CustomLabelValue props={labelValue.prductNm} onSelect={handleChgState} value={matrlCtrtData.prductNm} readOnly={controlReadOnly}/>
+                            <CustomLabelValue props={labelValue.dtlCn} onSelect={handleChgState} value={matrlCtrtData.dtlCn} readOnly={controlReadOnly}/>
+                            <CustomLabelValue props={labelValue.untpc} onSelect={handleChgState} value={matrlCtrtData.untpc} readOnly={controlReadOnly}/>
+                            <CustomLabelValue props={labelValue.qy} onSelect={handleChgState} value={matrlCtrtData.qy} readOnly={controlReadOnly}/>
+                            <CustomLabelValue props={labelValue.tot} onSelect={handleChgState} value={matrlCtrtData.untpc*matrlCtrtData.qy} readOnly={controlReadOnly}/>
+                            <CustomLabelValue props={labelValue.dlvgdsPrnmntYmd} onSelect={handleChgState} value={matrlCtrtData.dlvgdsPrnmntYmd} readOnly={controlReadOnly}/>
                             <CustomLabelValue props={labelValue.totAmt} onSelect={handleChgState} readOnly={true} value={matrlCtrtData.totAmt}/>
                         </div> : 
                         <div className="dx-fieldset">
-                            <CustomLabelValue props={matrlPlanParam}  value={matrlCtrtData.outordEntrpsNm} onSelect={handleChgState} />
+                            <CustomLabelValue props={matrlPlanParam}  value={matrlCtrtData.outordEntrpsNm} onSelect={handleChgState} readOnly={controlReadOnly} />
                             <CustomLabelValue props={labelValue.expectCt} onSelect={handleChgState} readOnly={true} value={matrlCtrtData.expectCt}/>
-                            <CustomLabelValue props={labelValue.prductNm} onSelect={handleChgState} value={matrlCtrtData.prductNm? matrlCtrtData.prductNm : matrlCtrtData.outordEntrpsNm}/>
-                            <CustomLabelValue props={labelValue.tkcgJob} onSelect={handleChgState} value={matrlCtrtData.tkcgJob}/>
-                            <CustomLabelValue props={labelValue.inptPrnmntHnfCnt} onSelect={handleChgState} value={matrlCtrtData.inptPrnmntHnfCnt}/>
-                            <CustomLabelValue props={labelValue.ctrtBgngYmd} onSelect={handleChgState} value={matrlCtrtData.ctrtBgngYmd}/>
-                            <CustomLabelValue props={labelValue.ctrtEndYmd} onSelect={handleChgState} value={matrlCtrtData.ctrtEndYmd}/>
+                            <CustomLabelValue props={labelValue.prductNm} onSelect={handleChgState} value={matrlCtrtData.prductNm? matrlCtrtData.prductNm : matrlCtrtData.outordEntrpsNm} readOnly={controlReadOnly}/>
+                            <CustomLabelValue props={labelValue.tkcgJob} onSelect={handleChgState} value={matrlCtrtData.tkcgJob} readOnly={controlReadOnly}/>
+                            <CustomLabelValue props={labelValue.inptPrnmntHnfCnt} onSelect={handleChgState} value={matrlCtrtData.inptPrnmntHnfCnt} readOnly={controlReadOnly}/>
+                            <CustomLabelValue props={labelValue.ctrtBgngYmd} onSelect={handleChgState} value={matrlCtrtData.ctrtBgngYmd} readOnly={controlReadOnly}/>
+                            <CustomLabelValue props={labelValue.ctrtEndYmd} onSelect={handleChgState} value={matrlCtrtData.ctrtEndYmd} readOnly={controlReadOnly}/>
                             <CustomLabelValue props={labelValue.totAmt} onSelect={handleChgState} readOnly={true} value={matrlCtrtData.totAmt}/>
                          </div>
                         }
@@ -166,12 +171,17 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
                             allowEdit={true}
                             values={pay}
                             handleData={handleData}
+                            noEdit={!isEditable}
                             />
                     </div>
                 </div>
                 <div>
-                    <Button text="저장" useSubmitBehavior={true}/>
-                    <Button text="취소" onClick={handlePopupVisible}/>
+                    {(!["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707"].includes(sttsCd)) && (
+                        <>
+                        <Button text="저장" useSubmitBehavior={true}/>
+                        <Button text="취소" onClick={handlePopupVisible}/>
+                        </>
+                    )}
                 </div>
             </div>
         </form>

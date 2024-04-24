@@ -3,13 +3,12 @@ import electAtrzJson from './ElecAtrzJson.json';
 import ApiRequest from 'utils/ApiRequest';
 import './ElecAtrz.css';
 import CustomTable from 'components/unit/CustomTable';
-import ElecAtrzCtrtInfo from './ctrtInfo/ElecAtrzCtrtInfo';
 import ElecAtrzCtrtInfoDetail from './ctrtInfo/ElecAtrzCtrtInfoDetail';
 
 
 const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId }) => {
-    const { vacDtl, clmColumns,  groupingColumn, keyColumnClm, groupingData, ctrtInfo } = electAtrzJson.electAtrzDetail;
-    const [ expensClmInfo, setExpensClmInfo ] = useState([]);
+    const { vacDtl, clmColumns,  groupingColumn, groupingData, ctrtInfo } = electAtrzJson.electAtrzDetail;
+    const [ data, setData ] = useState([]);
     console.log("detailData", detailData);
 
 
@@ -24,7 +23,7 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId }) => {
                         {queryId: "elecAtrzMapper.retrieveElctrnAtrzExpensClm"
                          ,elctrnAtrzId: detailData.elctrnAtrzId}
                     );
-                    setExpensClmInfo(response);
+                    setData(response);
                     console.log("response",response);
     
                 } catch (error) {
@@ -40,7 +39,7 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId }) => {
                     const response = await ApiRequest('/boot/common/commonSelect', 
                                      [{ tbNm: "CTRT_ATRZ" }, { elctrnAtrzId: detailData.elctrnAtrzId }]
                     );
-                    setExpensClmInfo(response);
+                    setData(response);
                     console.log("response",response);
     
                 } catch (error) {
@@ -76,7 +75,7 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId }) => {
             <div>
             <CustomTable
                 columns={columns}
-                values={expensClmInfo}
+                values={data}
                 grouping={groupingColumn}
                 keyColumn={"rowId"}
                 groupingData={groupingData}
@@ -122,6 +121,9 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId }) => {
      *  재료비, 외주업체 화면 그리기
      */
     const CtrtInfo = ({ctrtInfo})=>{
+        if(detailData.elctrnAtrzTySeCd === 'VTW04910'){ //재료비
+            ctrtInfo = ctrtInfo.filter(item => item.value !== '계약기간');
+        }
         return(
             <div className="elecAtrzNewReq-ctrtInfo">
                 
@@ -130,18 +132,18 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId }) => {
                         <div className="dtl-first-col">{ctrt.value}</div>
                         <div className="dtl-val-col">
 
-                        {expensClmInfo && expensClmInfo[0] && expensClmInfo[0][ctrt.key] ? (
-                            <>{expensClmInfo[0][ctrt.key]}</>
+                        {data && data[0] && data[0][ctrt.key] ? (
+                            <>{data[0][ctrt.key]}</>
                         ) : (
                             <div> </div>  
                         )}
 
-                        {expensClmInfo && expensClmInfo[0] ? (                      
+                        {data && data[0] ? (                      
                         <div style={{display: 'flex'}}>
                             {ctrt.key === 'CustomValue' && (
                                     ctrt.info.map((item, index) => (
                                         <div style={{display: 'flex'}} key={index}>
-                                            <div>{expensClmInfo[0][item.key]}</div>
+                                            <div>{data[0][item.key]}</div>
                                             <span className='lt-rt-margin'>{item.text}</span>
                                         </div>
                             )))}
@@ -171,7 +173,7 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId }) => {
             case 'VTW04910':
                 return  <>
                         <h3>계약정보</h3>
-                        <CtrtInfo ctrtInfo={ctrtInfo} expensClmInfo={expensClmInfo}/>
+                        <CtrtInfo ctrtInfo={ctrtInfo} data={data}/>
                         <ElecAtrzCtrtInfoDetail data={detailData} sttsCd={sttsCd} prjctId={prjctId}/>
                         </>
             default:
