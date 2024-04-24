@@ -17,6 +17,7 @@ const ProjectExpenseCash = (props) => {
         empId: props.empId
     };
     const [ empList, setEmpList ] = useState([]);
+    const [ dateVal, setDateVal ] = useState({utztnDt: ''});
     const [ value, setValue ] = useState([{
         empId: props.empId,
         aplyYm: props.aplyYm,
@@ -48,10 +49,17 @@ const ProjectExpenseCash = (props) => {
     }, [value[0].prjctId]);
     
     const handleChgValue = (data) => {
+        let newValue = data.value;
+
+        if(data.name === 'utztnDt'){
+            newValue = newValue + "000000";
+            setDateVal({[data.name]: data.value});
+        }
         setValue(prevValue => [{
             ...prevValue[0],
-            [data.name]: data.value
+            [data.name]: newValue
         }]);
+        
     }
 
     const SpecialTypeRender = ({item}) => {
@@ -109,11 +117,11 @@ const ProjectExpenseCash = (props) => {
             </span>
 
             <div className="dx-fieldset" style={{width: '80%'}}>
-                {labelValue.map(item => 
+                {labelValue.map((item, index) => 
                     (!item.special ? 
-                        <CustomLabelValue props={item} onSelect={handleChgValue} value={value[0][item.name]} />
+                        <CustomLabelValue props={item} onSelect={handleChgValue} value={item.name === 'utztnDt' ? dateVal[item.name] : value[0][item.name]} key={index} />
                     : 
-                        <div className="dx-field">
+                        <div className="dx-field" key={index} >
                             <div className="dx-field-label asterisk">{item.label}</div>
                             <div className="dx-field-value">
                                 <SpecialTypeRender item={item} />
