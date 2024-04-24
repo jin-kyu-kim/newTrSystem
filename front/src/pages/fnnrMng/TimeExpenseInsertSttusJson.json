@@ -96,5 +96,20 @@
     "aplyOdr": true,
     "empId": true,
     "hdofSttsCd": true
-  }
+  },
+  "baseInfo":
+  [
+    {"key": "trOdr", "value": "TR 차수"},
+    { "key": "", "value": "" },
+    {"key": "empno", "value": "사번"},
+    {"key": "empFlnm", "value": "성명"},
+    {"key": "deptNm", "value": "소속"},
+    {"key": "jbpsNm", "value": "직위"}
+  ],
+  "totAply":
+  [
+    {"key": "mdSum", "value": "총 근무시간"},
+    {"key": "ctSum", "value": "총 지급금액"},
+    {"key": "cnt", "value": "영수증 갯수", "format": "amount"}
+  ]
 }
