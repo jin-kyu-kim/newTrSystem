@@ -43,7 +43,6 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
 
     }, [selectedData]);
 
-
     /**
      *  선금, 중도금, 잔금 데이터 핸들링
      */
@@ -127,6 +126,11 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
             return;
         }
 
+        if(matrlCtrtData.expectCt < matrlCtrtData.totAmt){
+            alert("지불 총액은 계약금액을 초과할 수 없습니다.");
+            return;
+        }
+
         handlePlanData(matrlCtrtData);
         handlePopupVisible();
     }
@@ -142,7 +146,7 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
                     <div className="project-change-content-inner-left">
                     {data.elctrnAtrzTySeCd === "VTW04910" ? 
                         <div className="dx-fieldset">
-                            <CustomLabelValue props={matrlPlanParam}  value={matrlCtrtData.matrlPlan} onSelect={handleChgState} readOnly={controlReadOnly}/>
+                            <CustomLabelValue props={matrlPlanParam}  value={matrlCtrtData.expectCtrtEntrpsNm} onSelect={handleChgState} readOnly={controlReadOnly}/>
                             <CustomLabelValue props={labelValue.cntrctamount} onSelect={handleChgState} readOnly={true} value={matrlCtrtData.cntrctamount}/>
                             <CustomLabelValue props={labelValue.prductNm} onSelect={handleChgState} value={matrlCtrtData.prductNm} readOnly={controlReadOnly}/>
                             <CustomLabelValue props={labelValue.dtlCn} onSelect={handleChgState} value={matrlCtrtData.dtlCn} readOnly={controlReadOnly}/>
@@ -153,7 +157,7 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
                             <CustomLabelValue props={labelValue.totAmt} onSelect={handleChgState} readOnly={true} value={matrlCtrtData.totAmt}/>
                         </div> : 
                         <div className="dx-fieldset">
-                            <CustomLabelValue props={matrlPlanParam}  value={matrlCtrtData.outordEntrpsNm} onSelect={handleChgState} readOnly={controlReadOnly} />
+                            <CustomLabelValue props={matrlPlanParam}  value={matrlCtrtData.expectCtrtEntrpsNm} onSelect={handleChgState} readOnly={controlReadOnly} />
                             <CustomLabelValue props={labelValue.expectCt} onSelect={handleChgState} readOnly={true} value={matrlCtrtData.expectCt}/>
                             <CustomLabelValue props={labelValue.prductNm} onSelect={handleChgState} value={matrlCtrtData.prductNm? matrlCtrtData.prductNm : matrlCtrtData.outordEntrpsNm} readOnly={controlReadOnly}/>
                             <CustomLabelValue props={labelValue.tkcgJob} onSelect={handleChgState} value={matrlCtrtData.tkcgJob} readOnly={controlReadOnly}/>

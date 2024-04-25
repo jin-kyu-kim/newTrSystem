@@ -11,10 +11,10 @@
                         "queryId" : {
                             "queryId" : "elecAtrzMapper.retrieveMatrlPlan"
                             },
-                        "valueExpr" : "matrlPlan",
-                        "displayExpr": "matrlPlan",
-                        "values" : ["cntrctamount","matrlCtSn","dlvgdsEntrpsNm","dtlCn","matrlPlan","prductNm","prjctId","qy","tot","untpc"],
-                        "name" : "matrlPlan"
+                        "valueExpr" : "expectCtrtEntrpsNm",
+                        "displayExpr": "expectCtrtEntrpsNm",
+                        "values" : ["cntrctamount","matrlCtSn","dlvgdsEntrpsNm","dtlCn","expectCtrtEntrpsNm","prductNm","prjctId","qy","tot","untpc"],
+                        "name" : "expectCtrtEntrpsNm"
                         }
             },
             "cntrctamount": {
