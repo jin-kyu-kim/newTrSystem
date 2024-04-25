@@ -1,11 +1,12 @@
 import React from 'react';
-import PivotGrid, { FieldChooser, Export, PivotGridTypes, } from 'devextreme-react/pivot-grid';
+import PivotGrid, { FieldChooser, Export, PivotGridTypes, FieldPanel, } from 'devextreme-react/pivot-grid';
 import { Workbook } from 'exceljs';
 import { saveAs } from 'file-saver-es';
 import { exportPivotGrid } from 'devextreme/excel_exporter';
 
 
-const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fileName }) => {
+const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fileName, sorting, filtering, 
+    isExport, grandTotals }) => {
 
     const isDataCell = (cell) => (cell.area === 'data' && cell.rowType === 'D' && cell.columnType === 'D');
 
@@ -57,21 +58,8 @@ const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fi
 
         exportPivotGrid({
             component: e.component,
-            worksheet,
-            // customizeCell: ({ pivotCell, excelCell }) => {
-            //     console.log('eee',pivotCell,excelCell);
-            //     const appearance = weekendCellColor(pivotCell, 'excel');
-            //     console.log('aaaa',weekendCellColor(pivotCell, 'excel'));
-            //     Object.assign(excelCell, getExcelCellFormat(appearance));
-            //
-            //     const borderStyle = { style: 'thin', color: { argb: 'FF7E7E7E' } };
-            //     excelCell.border = {
-            //         bottom: borderStyle,
-            //         left: borderStyle,
-            //         right: borderStyle,
-            //         top: borderStyle,
-            //     };
-            // },
+            worksheet
+            
         }).then(() => {
             workbook.xlsx.writeBuffer().then((buffer) => {
                 saveAs(new Blob([buffer], { type: 'application/octet-stream' }), 'excelName'+'.xlsx');
@@ -81,11 +69,9 @@ const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fi
 
     // cell을 클릭해도 접히지 않도록 설정
     const onCellClick = (e) => {
-
         if (e.area === 'row' && e.cell && e.cell.expanded === true) {
             e.cancel = blockCollapse;
         }
-
     }
 
     // 토, 일요일 컬럼 색칠
@@ -93,8 +79,6 @@ const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fi
 
         let cell = null;
         colorFor === 'pivot' ? cell = data.cell : cell = data;
-
-        // console.log('color',cell);
 
         if(weekendColor === true){
             if (data.area === 'column'){
@@ -140,21 +124,11 @@ const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fi
     }
 
     const onCellPrepared = (e) => {
-
         // ColumnGrandTotals 명칭 변경
         if(columnGTName != null && e.area === 'column' && e.cell.type === 'GT' && e.cell.text === 'Grand Total'){
             e.cell.text = columnGTName;
             e.cellElement.innerText = columnGTName;
         }
-
-        // 날짜 컬럼 렌더링을 위한 null 데이터 display : none 처리
-        // console.log('ee',e.area, e.cell);
-        // if (e.area === 'row' && e.cell && e.cell.text && e.cell.text.includes('null_')) {
-        //     // console.log(e);
-        //     e.cellElement.style.display = 'none';
-        // } else if (e.area === 'data' && e.cell && e.cell.rowPath && e.cell.rowPath[0].includes('null_')) {
-        //     e.cellElement.style.display = 'none';
-        // }
 
         // row collapse block 상태일 때 화살표 아이콘 삭제
         if(blockCollapse === true && e.area === 'row' && e.cell.expanded === true){
@@ -174,30 +148,36 @@ const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fi
             });
 
         }
-
         weekendCellColor(e, 'pivot');
-
     };
 
     return (
         <PivotGrid
             allowSortingBySummary={true}
-            allowSorting={true}
-            allowFiltering={true}
+            allowSorting={sorting}
+            allowFiltering={filtering}
             allowExpandAll={true}
             showColumnTotals={false}
             showColumnGrandTotals={true}
-            showRowGrandTotals={false}
+            showRowGrandTotals={grandTotals}
             dataSource={values}
             showBorders={true}
             onExporting={onExporting}
             onCellPrepared={onCellPrepared}
             onCellClick={onCellClick}
         >
+            <FieldPanel
+                showRowFields={true}
+                visible={true}
+                showTotals={false}
+                showColumnFields={false}
+                showDataFields={false}
+                showFilterFields={false}
+                allowFieldDragging={false}
+            />
             <FieldChooser enabled={false} />
-            <Export enabled={true} />
+            <Export enabled={isExport} />
         </PivotGrid>
     );
 }
 export default CustomPivotGrid;
-

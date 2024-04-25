@@ -9,8 +9,26 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
 
     const ButtonRender = (button, data, onClick) => {
         let disabled = false;
-        if(button.able != null && data != null && data[button.able.key] != button.able.value){
+        if(button.able != null && data != null && data[button.able.key] !== button.able.value){
             disabled = true;
+        } else if (button.time){
+            const date = new Date();
+            const month = date.getMonth() + 1;
+            let firstDayOfMonth = new Date( date.getFullYear(), date.getMonth() , 1 );
+            let lastMonth = new Date(firstDayOfMonth.setDate( firstDayOfMonth.getDate() - 1 )); // 전월 말일
+            const day = date.getDate();
+            let monthVal = month < 10 ? "0" + month : month;
+            let lastMonthVal = (lastMonth.getMonth() + 1) < 10 ? "0" + (lastMonth.getMonth() + 1) : lastMonth.getMonth() + 1;
+
+            if(day > 15){
+                if(data["aplyYm"] !== date.getFullYear()+monthVal || data["aplyOdr"] !== 1){
+                    disabled = true;
+                }
+            } else {
+                if(data["aplyYm"] !== lastMonth.getFullYear()+lastMonthVal || data["aplyOdr"] !== 2){
+                    disabled = true;
+                }
+            }
         }
         return(
             <Button name = {button.name} text={button.text} onClick={(e) => {onClick(button, data)}} disabled={disabled}/>
@@ -21,10 +39,30 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
         let button = null;
         let disabled = false;
         buttons.forEach((item) => {
-            if (data != null && data[item.visible.key] == item.visible.value ) {
+            if (data != null && data[item.visible.key] === item.visible.value ) {
                 button = item;
-                if(item.able != null && data[item.able.key] != item.able.value){
+                if(item.able != null && typeof item.able.value != "boolean" && data[item.able.key] !== item.able.value){
                     disabled = true;
+                } else if (item.able != null && item.able.value === true && data[item.able.key]){
+                    disabled = true;
+                } else if (button.time){
+                    const date = new Date();
+                    const month = date.getMonth() + 1;
+                    let firstDayOfMonth = new Date( date.getFullYear(), date.getMonth() , 1 );
+                    let lastMonth = new Date(firstDayOfMonth.setDate( firstDayOfMonth.getDate() - 1 )); // 전월 말일
+                    const day = date.getDate();
+                    let monthVal = month < 10 ? "0" + month : month;
+                    let lastMonthVal = (lastMonth.getMonth() + 1) < 10 ? "0" + (lastMonth.getMonth() + 1) : lastMonth.getMonth() + 1;
+
+                    if(day > 15){
+                        if(data["aplyYm"] !== date.getFullYear()+monthVal || data["aplyOdr"] !== 1){
+                            disabled = true;
+                        }
+                    } else {
+                        if(data["aplyYm"] !== lastMonth.getFullYear()+lastMonthVal || data["aplyOdr"] !== 2){
+                            disabled = true;
+                        }
+                    }
                 }
             }
         });
