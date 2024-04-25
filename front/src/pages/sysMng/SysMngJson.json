@@ -40,7 +40,7 @@
                 }
             ],
             "textBoxItem": [
-                { "placeholder": "코드", "name": "cdValue" },
+                { "placeholder": "코드", "name": "cdVal" },
                 { "placeholder": "코드명", "name": "cdNm" }
             ]
         }
