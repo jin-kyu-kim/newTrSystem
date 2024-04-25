@@ -62,10 +62,29 @@
            LU.EMPNO,
            (SELECT E.EMP_FLNM FROM EMP E WHERE LU.EMP_ID =  E.EMP_ID) EMP_NM,
            (SELECT CD_NM FROM CD WHERE CD_VALUE = (SELECT E.JBPS_CD FROM EMP E WHERE LU.EMP_ID =  E.EMP_ID)) JBPS_NM,
-           (SELECT JBPS_CD FROM EMP E WHERE E.EMPNO = #{empno}) JBPS_CD,
+			<if test="empno != null">
+				<if test="!empno.equals('')">
+					(SELECT JBPS_CD FROM EMP E WHERE E.EMPNO = #{empno}) JBPS_CD,
+				</if>
+			</if>
+			<if test="empId != null">
+				<if test="!empId.equals('')">
+					(SELECT JBPS_CD FROM EMP E WHERE E.EMP_ID = #{empId}) JBPS_CD,
+				</if>
+			</if>
            PSWD
     FROM LGN_USER LU
-    WHERE EMPNO = #{empno}
+    WHERE 1=1
+	<if test="empno != null">
+	 <if test="!empno.equals('')">
+      AND   EMPNO = #{empno}
+	 </if>
+	</if>
+	<if test="empId != null">
+	 <if test="!empId.equals('')">
+      AND   EMP_ID = #{empId}
+	 </if>
+	</if>
     </select>
 
     <select id="userAuth" parameterType="String" resultType="com.trsystem.LowerHashMap">

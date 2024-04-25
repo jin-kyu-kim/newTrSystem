@@ -41,19 +41,15 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize
                         -> authorize
                         .requestMatchers(new MvcRequestMatcher(introspector,"/boot/sysMng/lgnSkll")).permitAll()
-                        .requestMatchers(new MvcRequestMatcher(introspector,"/boot/prjct/**")).permitAll()
-                        .requestMatchers(new MvcRequestMatcher(introspector,"/boot/common/**")).permitAll()
-                        .requestMatchers(new MvcRequestMatcher(introspector,"/boot/infoInq/**")).permitAll()
-                        .requestMatchers(new MvcRequestMatcher(introspector,"/boot/sysMng/**")).permitAll()
-                        .requestMatchers(new MvcRequestMatcher(introspector,"/boot/indvdlClm/**")).permitAll()
-                        .requestMatchers(new MvcRequestMatcher(introspector,"/boot/humanResourceMng/**")).permitAll()
-                        .requestMatchers(new MvcRequestMatcher(introspector,"/boot/humanResourceMng/**")).hasAuthority("VTW00307")
-
-//                        .requestMatchers("/boot/prjct/**").hasRole("USER")
-//                        .requestMatchers("/boot/**").hasRole("USER")
-//                        .requestMatchers("/boot/**").hasRole("USER")
-//                        .requestMatchers("/board/{boardId}/comment/**").hasRole("USER")
-//                        .requestMatchers("/board/{boardId}/file/**").hasRole("USER")
+                        .requestMatchers(new MvcRequestMatcher(introspector,"/boot/sysMng/tokenExtension")).hasAuthority("USER")
+                        .requestMatchers(new MvcRequestMatcher(introspector,"/boot/common/**")).hasAuthority("USER")
+                        .requestMatchers(new MvcRequestMatcher(introspector,"/boot/infoInq/**")).hasAuthority("USER")
+                        .requestMatchers(new MvcRequestMatcher(introspector,"/boot/elecAtrz/**")).hasAuthority("USER")
+                        .requestMatchers(new MvcRequestMatcher(introspector,"/boot/indvdlClm/**")).hasAuthority("USER")
+                        .requestMatchers(new MvcRequestMatcher(introspector,"/boot/sysMng/**")).hasAuthority("VTW04801")
+                        .requestMatchers(new MvcRequestMatcher(introspector,"/boot/prjct/**")).hasAnyAuthority("VTW04807", "VTW04801")
+                        .requestMatchers(new MvcRequestMatcher(introspector,"/boot/humanResourceMng/**")).hasAnyAuthority("VTW04805","VTW04801")
+                        .requestMatchers(new MvcRequestMatcher(introspector,"/boot/financialAffairMng/**")).hasAnyAuthority("VTW04804","VTW04801")
                 )
 
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -37,50 +37,44 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         Thread currentThread = Thread.currentThread();
-        log.info("현재 실행 중인 스레드: " + currentThread.getName());
-
         // get token
         String header = request.getHeader(HEADER_STRING);
         String username = null;
         String authToken = null;
 
         if (header != null && header.startsWith(TOKEN_PREFIX)) {
-            authToken = header.replace(TOKEN_PREFIX," ");
+            authToken = header.replace(TOKEN_PREFIX, " ");
             try {
                 username = this.jwtTokenUtil.getUsernameFromToken(authToken);
             } catch (IllegalArgumentException ex) {
-                log.info("fail get user id");
-                ex.printStackTrace();
+                log.info("Failed to get user id", ex);
+                sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid token format.");
+                return; // 요청 처리 중단
             } catch (ExpiredJwtException ex) {
-                log.info("Token expired");
-                ex.printStackTrace();
+                log.info("Token expired", ex);
+                sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Token expired.");
+                return; // 요청 처리 중단
             } catch (MalformedJwtException ex) {
-                log.info("Invalid JWT !!");
-                System.out.println();
-                ex.printStackTrace();
+                log.info("Invalid JWT", ex);
+                sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT.");
+                return; // 요청 처리 중단
             } catch (Exception e) {
-                log.info("Unable to get JWT Token !!");
-                e.getStackTrace();
+                log.info("Unable to get JWT Token", e);
+                sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error.");
+                return; // 요청 처리 중단
             }
         } else {
-            log.info("JWT does not begin with Bearer !!");
+            log.info("JWT does not begin with Bearer");
         }
 
         if ((username != null) && (SecurityContextHolder.getContext().getAuthentication() == null)) {
-            //log.info(SecurityContextHolder.getContext().getAuthentication().getName());
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
             if (this.jwtTokenUtil.validateToken(authToken, userDetails)) {
-
-                // All things going well
-                // Authentication stuff
                 UsernamePasswordAuthenticationToken authenticationToken =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-
                 authenticationToken
                         .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                log.info("authenticated user " + username + ", setting security context");
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
             } else {
                 log.info("Invalid JWT Token !!");
             }
@@ -88,5 +82,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.info("Username is null or context is not null !!");
         }
         filterChain.doFilter(request, response);
+    }
+
+    private void sendErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
+        response.setStatus(status);
+        response.setContentType("application/json");
+        response.getWriter().write("{\"error\":\"" + message + "\"}");
     }
 }

@@ -27,7 +27,6 @@ const LoginForm = ({ handleLogin }) => {
 
   const handleClick = async () => {
     const valid = validateForm()
-    console.log("login");
     if(valid){
       const data = await signIn(empno, pswd);
       if(!data.isOk){
