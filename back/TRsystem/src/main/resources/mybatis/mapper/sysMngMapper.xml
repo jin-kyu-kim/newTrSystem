@@ -14,10 +14,10 @@
         FROM CD
         WHERE 1=1
             AND UP_CD_VALUE IS NULL
-        <if test="upCdValue != null and upCdValue !=''">
-            AND UP_CD_VALUE = #{upCdValue}
+        <if test="cdVal != null and cdVal !=''">
+            AND CD_VALUE LIKE CONCAT('%', #{cdVal}, '%')
         </if>
-        <if test="cdValue != null and cdValue !=''">
+		<if test="cdValue != null and cdValue !=''">
             AND CD_VALUE LIKE CONCAT('%', #{cdValue}, '%')
         </if>
         <if test="cdNm != null and cdNm !=''">

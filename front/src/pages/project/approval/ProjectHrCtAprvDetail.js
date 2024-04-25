@@ -243,18 +243,18 @@ const ProjectHrCtAprvDetail = () => {
             setData(data);
             setCtRjctPopupVisible(true);
         }else if(button.name === "aprvCncl"){
-            const param = [
-                { tbNm: "PRJCT_CT_ATRZ" },
-                { atrzDmndSttsCd: "VTW03702",
-                  aprvrEmpId: null,
-                  aprvYmd: null},
-                { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, atrzDmndSttsCd: "VTW03703"}
-            ];
+            const param = {
+                queryId: 'projectMapper.updateCtAply',
+                prjctId: prjctId,
+                empId: data.empId,
+                aplyYm: data.aplyYm,
+                aplyOdr: data.aplyOdr,
+            };
             try {
                 const confirmResult = window.confirm("승인 취소하시겠습니까?");
                 if(confirmResult){
-                    const response = await ApiRequest('/boot/common/commonUpdate', param);
-                    if(response > 0) {
+                    const response = await ApiRequest('/boot/common/queryIdSearch', param);
+                    if(response) {
                         const param = [
                             { tbNm: "PRJCT_INDVDL_CT_MM" },
                             { ctAtrzCmptnYn: "N"},

@@ -112,4 +112,10 @@ public class IndvdlClmController {
     public int editClturPhstrnActCt (@RequestBody Map<String, Object> param){
         return IndvdlClmDomain.editClturPhstrnActCt(param);
     }
+
+    // 문화체련비 합계테이블 조회
+    @PostMapping(value = "/boot/indvdlClm/retrieveClturPhstrnActCt")
+    public List<Map<String, Object>> retrieveClturPhstrnActCt (@RequestBody Map<String, Object> param){
+        return IndvdlClmDomain.retrieveClturPhstrnActCt(param);
+    }
 }

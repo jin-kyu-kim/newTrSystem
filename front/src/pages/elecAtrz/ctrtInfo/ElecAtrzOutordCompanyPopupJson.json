@@ -11,10 +11,10 @@
                         "queryId" : {
                             "queryId" : "elecAtrzMapper.retrieveOutordCompanyPlan"
                             },
-                        "valueExpr" : "outordEntrpsNm",
-                        "displayExpr": "outordEntrpsNm",
-                        "values" : ["outordEntrpsNm","outordEntrpsId","outordEntrpsCtPrmpcSn","tkcgJob","dtlDtls","ctrtBgngYmd","ctrtEndYmd","inptPrnmntHnfCnt","expectCt"],
-                        "name" : "outordEntrpsNm"
+                        "valueExpr" : "expectCtrtEntrpsNm",
+                        "displayExpr": "expectCtrtEntrpsNm",
+                        "values" : ["expectCtrtEntrpsNm","outordEntrpsId","outordEntrpsCtPrmpcSn","tkcgJob","dtlDtls","ctrtBgngYmd","ctrtEndYmd","inptPrnmntHnfCnt","expectCt"],
+                        "name" : "expectCtrtEntrpsNm"
                         }
             },
             "expectCt": {

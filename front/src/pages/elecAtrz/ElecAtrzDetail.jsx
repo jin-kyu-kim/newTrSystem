@@ -18,8 +18,10 @@ const ElecAtrzDetail = () => {
     const location = useLocation();
     const detailData = location.state.data;
     const sttsCd = location.state.sttsCd;
+    const prjctId = location.state.prjctId;
     const [ prjctData, setPrjctData ] = useState({});
     const [ atrzOpnn, setAtrzOpnn ] = useState([]);
+    const [ atrzOpnnVal, setAtrzOpnnVal ] = useState([]);
     const { header, keyColumn, columns, queryId, atchFlQueryId } = electAtrzJson.electAtrzDetail;
     const [ cookies ] = useCookies(["userInfo"]);
     const [ maxAtrzLnSn, setMaxAtrzLnSn ] = useState();
@@ -45,8 +47,6 @@ const ElecAtrzDetail = () => {
                 break;
         }
     }
-
-    console.log('detailData', detailData);
 
     useEffect(() => {
         getVacInfo();
@@ -97,7 +97,10 @@ const ElecAtrzDetail = () => {
         }
         try {
             const response = await ApiRequest("/boot/common/queryIdSearch", param);
+            const opnnList = response.filter(item => item.atrzSttsCdNm !== null);
+
             setAtrzOpnn(response);
+            setAtrzOpnnVal(opnnList);
         } catch (error) {
             console.error(error)
         }
@@ -133,7 +136,6 @@ const ElecAtrzDetail = () => {
     
         return year + month + day;
     }
-    
 
     /**
      * 승인 처리
@@ -176,10 +178,7 @@ const ElecAtrzDetail = () => {
                             }
                         ]
                 }
-
                 const response = vacAprvProcess(param).then((value) => {
-
-                    console.log(value)
 
                     if(value[0].atrzLnSn > 0) {
                         upNowAtrzLnSn(value[0].atrzLnSn);
@@ -245,11 +244,7 @@ const ElecAtrzDetail = () => {
      * @returns 
      */
     const upNowAtrzLnSn = async (nowAtrzLnSn) => {
-
         let updParam = {};
-        console.log("maxAtrzLnSn", maxAtrzLnSn)
-        console.log("nowAtrzLnSn", nowAtrzLnSn)
-
         if(nowAtrzLnSn > maxAtrzLnSn) {
             // max보다 승인이 끝난 뒤 결재선 순번이 크면 최종승인임.
             updParam = {
@@ -274,7 +269,6 @@ const ElecAtrzDetail = () => {
                 elctrnAtrzId: detailData.elctrnAtrzId
             }
         ]
-    
         try {
             const response = await ApiRequest("/boot/common/commonUpdate", param);
             if(response > 0) {
@@ -334,7 +328,6 @@ const ElecAtrzDetail = () => {
                     atrzLnSn: nowAtrzLnSn
                 }
             ]
-
             const result = await ApiRequest("/boot/common/commonUpdate", param);
 
             if(result > 0) {
@@ -372,9 +365,7 @@ const ElecAtrzDetail = () => {
                 nowAtrzLnSn: nowAtrzLnSn
             }
         ]
-
         const result = await ApiRequest("/boot/common/commonUpdate", param);
-   
         return result;
     }
 
@@ -408,7 +399,6 @@ const ElecAtrzDetail = () => {
      * 청구결재용 청구 연월, 차수 생성
      */
     const setAplyYmdOdr = () => {
-        
         const today = new Date();
 
         let year = today.getFullYear();
@@ -420,9 +410,7 @@ const ElecAtrzDetail = () => {
         if (day <= 15) {
             odr = 2;
         } else {
-
             odr = 1;
-
         }
         
         if (month === 1) {
@@ -458,11 +446,19 @@ const ElecAtrzDetail = () => {
                     onClick={onBtnClick}
                 />}
 
-            {/* 휴가, 청구의 경우에는 컴포넌트 렌더링 */}
-            {(['VTW04901', 'VTW04907'].includes(detailData.elctrnAtrzTySeCd)) && (
+            {/* 휴가           VTW04901, 
+                청구           VTW04907,
+                외주인력 계약   VTW04908,
+                외주업체 계약   VTW04909,
+                재료비 계약     VTW04910
+                ... TODO 청구 및 그 외 
+                의 경우에는 컴포넌트 렌더링 */}
+            {(['VTW04901', 'VTW04907', 'VTW04908', 'VTW04909', 'VTW04910'].includes(detailData.elctrnAtrzTySeCd)) && (
                 <ElecAtrzTabDetail
                     dtlInfo={dtlInfo}
                     detailData={detailData}
+                    sttsCd={sttsCd}
+                    prjctId={prjctId}
                 />
             )}
 
@@ -482,15 +478,17 @@ const ElecAtrzDetail = () => {
             <CustomTable
                 keyColumn={keyColumn}
                 columns={columns}
-                values={atrzOpnn}
+                values={atrzOpnnVal}
             />
-
             <div style={{textAlign: 'center', marginBottom: '100px'}}>
                 {sttsCd === 'VTW00801' && header.filter(item => item.id === 'aprv' || item.id === 'rjct').map((item, index) => (
                     <Button id={item.id} text={item.text} key={index} type={item.type} 
                         onClick={onBtnClick} style={{marginRight: '3px'}}/>
                 ))}
-                <Button text='목록' type='normal' onClick={() => navigate('/elecAtrz/ElecAtrz')} />
+                 <Button text='목록' type='normal' 
+                    onClick={() => {location.state.docSeCd !=='VTW03405'
+                                    ? navigate('/elecAtrz/ElecAtrz') 
+                                    : navigate('/elecAtrz/ElecGiveAtrz',{state :{prjctId: prjctId, formData: location.state.formData}}) }} />
             </div>
             <Popup
                 width={"80%"}

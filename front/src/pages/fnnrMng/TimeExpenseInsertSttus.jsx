@@ -23,6 +23,7 @@ const { keyColumn, queryId, totTableColumns, tableColumns, searchParams, totQuer
 const navigate = useNavigate();
 const nowDate = moment().format('YYYYMM') //현재 년월
 const [popupVisible, setPopupVisible] = useState(false);
+const [selectedData, setSelectedData] = useState({});
 //======================초기차수 설정 ===============================================
 useEffect(() => {
     // 현재 날짜를 가져오는 함수
@@ -117,7 +118,7 @@ const handleClose = () => {
   setPopupVisible(false);
 };
 //===========================테이블내 버튼 이벤트======================================
-const onBtnClick = (button, data) => {      
+const onBtnClick = async (button, data) => {      
 
     if(button.name === "workHrMv"){
         alert("근무시간페이지이동");
@@ -140,7 +141,9 @@ const onBtnClick = (button, data) => {
         navigate("/fnnrMng/prjctCtClm/ProjectCostClaimDetail",
         {state: { empId: data.empId }})
     }
-    if(button.name === "print"){                                        //팝업으로 띄울 예정
+    if(button.name === "print"){      
+        console.log(data);
+        setSelectedData(data);
         setPopupVisible(true);
     }
   };
@@ -179,13 +182,13 @@ const onBtnClick = (button, data) => {
                     wordWrap={true}
                 />
                 <Popup
-                      width="90%"
-                      height="90%"
+                      width="95%"
+                      height="95%"
                       visible={popupVisible}
                       onHiding={handleClose}
                       showCloseButton={true}
                   >
-                   <TimeExpenseInsertList data={values}/>
+                   <TimeExpenseInsertList data={selectedData}/>
                 </Popup>
             </div>
         </div>

@@ -9,8 +9,26 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
 
     const ButtonRender = (button, data, onClick) => {
         let disabled = false;
-        if(button.able != null && data != null && data[button.able.key] != button.able.value){
+        if(button.able != null && data != null && data[button.able.key] !== button.able.value){
             disabled = true;
+        } else if (button.time){
+            const date = new Date();
+            const month = date.getMonth() + 1;
+            let firstDayOfMonth = new Date( date.getFullYear(), date.getMonth() , 1 );
+            let lastMonth = new Date(firstDayOfMonth.setDate( firstDayOfMonth.getDate() - 1 )); // 전월 말일
+            const day = date.getDate();
+            let monthVal = month < 10 ? "0" + month : month;
+            let lastMonthVal = (lastMonth.getMonth() + 1) < 10 ? "0" + (lastMonth.getMonth() + 1) : lastMonth.getMonth() + 1;
+
+            if(day > 15){
+                if(data["aplyYm"] !== date.getFullYear()+monthVal || data["aplyOdr"] !== 1){
+                    disabled = true;
+                }
+            } else {
+                if(data["aplyYm"] !== lastMonth.getFullYear()+lastMonthVal || data["aplyOdr"] !== 2){
+                    disabled = true;
+                }
+            }
         }
         return(
             <Button name = {button.name} text={button.text} onClick={(e) => {onClick(button, data)}} disabled={disabled}/>
@@ -21,10 +39,30 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
         let button = null;
         let disabled = false;
         buttons.forEach((item) => {
-            if (data != null && data[item.visible.key] == item.visible.value ) {
+            if (data != null && data[item.visible.key] === item.visible.value ) {
                 button = item;
-                if(item.able != null && data[item.able.key] != item.able.value){
+                if(item.able != null && typeof item.able.value != "boolean" && data[item.able.key] !== item.able.value){
                     disabled = true;
+                } else if (item.able != null && item.able.value === true && data[item.able.key]){
+                    disabled = true;
+                } else if (button.time){
+                    const date = new Date();
+                    const month = date.getMonth() + 1;
+                    let firstDayOfMonth = new Date( date.getFullYear(), date.getMonth() , 1 );
+                    let lastMonth = new Date(firstDayOfMonth.setDate( firstDayOfMonth.getDate() - 1 )); // 전월 말일
+                    const day = date.getDate();
+                    let monthVal = month < 10 ? "0" + month : month;
+                    let lastMonthVal = (lastMonth.getMonth() + 1) < 10 ? "0" + (lastMonth.getMonth() + 1) : lastMonth.getMonth() + 1;
+
+                    if(day > 15){
+                        if(data["aplyYm"] !== date.getFullYear()+monthVal || data["aplyOdr"] !== 1){
+                            disabled = true;
+                        }
+                    } else {
+                        if(data["aplyYm"] !== lastMonth.getFullYear()+lastMonthVal || data["aplyOdr"] !== 2){
+                            disabled = true;
+                        }
+                    }
                 }
             }
         });
@@ -35,8 +73,18 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
         }
     }
 
+    // 날짜 형식을 변환하는 함수
+    const formatDate = (dateStr) => {
+      return `${dateStr.substring(0, 4)}-${dateStr.substring(4, 6)}-${dateStr.substring(6, 8)}`;
+    };
+    
+    const DateCell = (data) => {
+        return <span>{formatDate(data.value)}</span>;
+    };
+
+
     for (let i = 0; i < columns.length; i++) {
-      const { key, value, width, alignment, button, buttons, visible, toggle, subColumns, chkBox , grouping, currency, unit } = columns[i];
+      const { key, value, width, alignment, button, buttons, visible, toggle, subColumns, chkBox , grouping, currency, unit, dateFormat } = columns[i];
 
       if(subColumns){
         /*===============헤더 하위 뎁스 컬럼 설정===================*/
@@ -130,7 +178,21 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
               >
               </Column>
           );
-      } else {
+      } else if(dateFormat){
+        /*=====================날짜 표시=========================*/
+        result.push(
+          <Column
+              key={key}
+              dataField={key}
+              caption={value}
+              width={width}
+              alignment={alignment || 'center'}
+              cellRender={DateCell}
+          >
+          </Column>
+      );
+      }
+      else {
         /*=====================일반 셀 설정=========================*/
           result.push(
             <Column
