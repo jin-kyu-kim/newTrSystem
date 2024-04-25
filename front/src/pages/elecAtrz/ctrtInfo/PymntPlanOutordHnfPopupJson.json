@@ -2,7 +2,7 @@
     "menuName": "PymntPlanPopup",
     "hnfCtrt": {
         "labelValue": {
-            "outordEmpId": {
+            "expectInptHnfId": {
                 "type": "ComboBox",
                 "label": "계획 투입 인력",
                 "required": true,
@@ -11,10 +11,10 @@
                         "queryId" : {
                             "queryId" : "elecAtrzMapper.retrieveOutordEmpPlan"
                             },
-                        "valueExpr" : "outordEmpId",
+                        "valueExpr" : "expectInptHnfId",
                         "displayExpr": "outordEmpNm",
-                        "values" : ["prjctId","bgtMngOdr","outordLbrcoPrmpcSn","outordEmpId","outordEmpNm","hnfRoleCd","hnfRoleCdNm","hnfGradCd","hnfGradCdNm","tkcgJob","untpc","inptPrnmntYmd","withdrPrnmntYmd", "expectMm", "usefulAmt"],
-                        "name" : "outordEmpId"
+                        "values" : ["prjctId","bgtMngOdr","outordLbrcoPrmpcSn","expectInptHnfId","outordEmpNm","hnfRoleCd","hnfRoleCdNm","hnfGradCd","hnfGradCdNm","tkcgJob","untpc","inptPrnmntYmd","withdrPrnmntYmd", "expectMm", "usefulAmt"],
+                        "name" : "expectInptHnfId"
                         }
             },
             "usefulAmt": {
@@ -25,7 +25,7 @@
                 "required": true,
                 "format": "#,###"
             },
-            "emp": {
+            "inptHnfId": {
                 "type": "ComboBox",
                 "label": "실제 투입 인력",
                 "required": true,
@@ -34,10 +34,10 @@
                         "queryId" : {
                             "queryId" : "elecAtrzMapper.retrieveRealOutordEmpPlan"
                             },
-                        "valueExpr" : "empId",
+                        "valueExpr" : "inptHnfId",
                         "displayExpr": "empFlnm",
-                        "values" : ["empId","empFlnm"],
-                        "name" : "empId"
+                        "values" : ["inptHnfId","empFlnm"],
+                        "name" : "inptHnfId"
                         }
             },
             "outordHnfCtrtSeCd": {

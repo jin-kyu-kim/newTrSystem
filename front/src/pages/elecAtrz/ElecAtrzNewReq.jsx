@@ -426,8 +426,8 @@ const ElecAtrzNewReq = () => {
                     )}
                     {["VTW04908"].includes(formData.elctrnAtrzTySeCd) &&    //VTW04908: 외주인력 계약
                     <>
-                        <ElecAtrzCtrtInfo prjctId={prjctId} data={data} onSendData={handleChildData}/>
-                        <ElecAtrzCtrtOutordHnfDetail prjctId={prjctId} data={data} onSendData={handleChildData} prjctData={prjctData}/>
+                        <ElecAtrzCtrtInfo prjctId={prjctId} data={data} onSendData={handleChildData} sttsCd={sttsCd}/>
+                        <ElecAtrzCtrtOutordHnfDetail prjctId={prjctId} data={data} onSendData={handleChildData} prjctData={prjctData} sttsCd={sttsCd}/>
                     </>
                     }
                     {["VTW04907"].includes(formData.elctrnAtrzTySeCd) &&    //VTW04907: 비용사용(청구,출장비청구)
@@ -435,12 +435,12 @@ const ElecAtrzNewReq = () => {
                         <ExpensInfo onSendData={handleChildData} prjctId={prjctId} data={data}/>
                     </>
                     }
-                    {["VTW04914"].includes(formData.elctrnAtrzTySeCd) &&    //VTW04914: TODO.외주/재료비 지급
+                    {/* {["VTW04914"].includes(formData.elctrnAtrzTySeCd) &&    //VTW04914: TODO.외주/재료비 지급
                     <>
                         <ElecAtrzCtrtInfo prjctId={prjctId} data={data} onSendData={handleChildData} sttsCd={sttsCd}/>
                         <ElecAtrzCtrtInfoDetail prjctId={prjctId} data={data} onSendData={handleChildData} sttsCd={sttsCd}/>
                     </>
-                    }
+                    } */}
                 <HtmlEditBox 
                     column={ {"dataField": "gnrlAtrzCn"}}
                     data={data}
