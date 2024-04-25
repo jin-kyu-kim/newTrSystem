@@ -4,12 +4,9 @@ import "devextreme/dist/css/dx.material.blue.light.css"; // Material 테마
 import { Button, TextBox } from "devextreme-react";
 import Vtw from "../../assets/img/logo.png";
 import Slogan from "../../assets/img/slogan.png";
-import {useCookies} from "react-cookie";
 import {useAuth} from "../../components/sidebar/contexts/auth";
 
 const LoginForm = ({ handleLogin }) => {
-  const [cookies, setCookie] = useCookies(["userInfo", "userAuth", "deptInfo"]);
-
   const [empno, setEmpno] = useState("");
   const [pswd, setPassword] = useState("");
   const [validationErrors, setValidationErrors] = useState({});
@@ -41,7 +38,7 @@ const LoginForm = ({ handleLogin }) => {
   };
 
   return (
-      <div style={{margin : 0}}>
+      <div>
         <div className="login" >
         <h1 className="login-header">
           <img src={Vtw} alt="VTW" />

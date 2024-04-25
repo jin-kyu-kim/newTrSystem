@@ -79,6 +79,20 @@ const routes = [
     element: React.lazy(() => import("../../pages/project/approval/ProjectAprvDetail")),
     isPrivate:true
   },
+  // 프로젝트 외주업체 관리 - 업체목록
+  {
+    path: "/project/ProjectOutordCompany",
+    name: "ProjectOutordCompany",
+    element: React.lazy(() => import("../../pages/project/manage/ProjectOutordCompany")),
+    isPrivate:true
+  },
+  // 프로젝트 외주업체 관리 - 직원목록
+  {
+    path: "/project/ProjectOutordEmp",
+    name: "ProjectOutordEmp",
+    element: React.lazy(() => import("../../pages/project/manage/ProjectOutordEmp")),
+    isPrivate:true
+  },
   // 권한관리
   {
     path: "/sysMng/EmpAuth",
@@ -102,8 +116,8 @@ const routes = [
   },
   // 코드 관리
   {
-    path: "/sysMng/TrsCodeList",
-    name: "TrsCodeList",
+    path: "/sysMng/TrsCode",
+    name: "TrsCode",
     element: React.lazy(() => import("../../pages/sysMng/TrsCode")),
     isPrivate:true
   },
