@@ -9,8 +9,6 @@ import ElecAtrzCtrtInfoDetail from './ctrtInfo/ElecAtrzCtrtInfoDetail';
 const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId }) => {
     const { vacDtl, clmColumns,  groupingColumn, groupingData, ctrtInfo } = electAtrzJson.electAtrzDetail;
     const [ data, setData ] = useState([]);
-    console.log("detailData", detailData);
-
 
     /* ===================================  필요 데이터 조회  ====================================*/
     useEffect(() => {
@@ -171,6 +169,7 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId }) => {
                 return <ClmTab columns={clmColumns} groupingColumn={groupingColumn}/>;
             case 'VTW04909':
             case 'VTW04910':
+            case 'VTW04914':
                 return  <>
                         <h3>계약정보</h3>
                         <CtrtInfo ctrtInfo={ctrtInfo} data={data}/>
