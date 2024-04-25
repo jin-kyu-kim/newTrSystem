@@ -485,7 +485,10 @@ const ElecAtrzDetail = () => {
                     <Button id={item.id} text={item.text} key={index} type={item.type} 
                         onClick={onBtnClick} style={{marginRight: '3px'}}/>
                 ))}
-                <Button text='목록' type='normal' onClick={() => navigate('/elecAtrz/ElecAtrz')} />
+                 <Button text='목록' type='normal' 
+                    onClick={() => {location.state.docSeCd !=='VTW03405'
+                                    ? navigate('/elecAtrz/ElecAtrz') 
+                                    : navigate('/elecAtrz/ElecGiveAtrz',{state :{prjctId: prjctId, formData: location.state.formData}}) }} />
             </div>
             <Popup
                 width={"80%"}

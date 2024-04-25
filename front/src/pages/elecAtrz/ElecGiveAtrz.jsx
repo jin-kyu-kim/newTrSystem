@@ -4,6 +4,7 @@ import CustomTable from 'components/unit/CustomTable';
 import ElecAtrzJson from '../elecAtrz/ElecAtrzJson.json';
 import ApiRequest from 'utils/ApiRequest';
 import './ElecAtrz.css';
+import { Button } from 'devextreme-react/button';
 
 const ElecGiveAtrz = () => {
     const [ selectedList, setSelectedList ] = useState([]);
@@ -89,6 +90,9 @@ const ElecGiveAtrz = () => {
     return (
         <div className="container">
             <div className="col-md-10 mx-auto" style={{marginTop: '30px'}}>
+                <div className="buttons" align="right" style={{ margin: "20px" }}>
+                    <Button text="목록" style={{}} onClick={(e)=>{navigate('/elecAtrz/ElecAtrzForm', {state : {prjctId: prjctId}})}}/>
+                </div>
                 <h2 style={{ marginRight: '50px' }}>{formData.gnrlAtrzTtl}</h2>
                 <span>프로젝트: {prjctData.prjctNm}</span>
             
@@ -106,7 +110,7 @@ const ElecGiveAtrz = () => {
                     wordWrap={true}
                     onClick={onClickBtn}
                     onRowDblClick={(e) => navigate('/elecAtrz/ElecAtrzDetail', {
-                        state: {data: e.data}
+                        state: {data: e.data, prjctId: prjctId, sttsCd: e.data.atrzDmndSttsCd, docSeCd:formData.docSeCd, formData: formData}
                     })}
                 />}
             </div>
