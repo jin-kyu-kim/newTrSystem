@@ -25,7 +25,7 @@ const Main = ({}) => {
         } = MainJson; 
 
     const [cookies] = useCookies(["userInfo", "userAuth","deptInfo"]);
-    if(!cookies){
+    if(!cookies.userInfo){
         // eslint-disable-next-line react-hooks/rules-of-hooks
         const { signOut } = useAuth();
         signOut();
@@ -67,10 +67,9 @@ let orderWorkBgngYmd = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).
 let orderWorkEndYmd = flagOrder == 1 ? String(Moment(new Date()).format("YYYYMM") + "15") : Moment(endOfMonth(new Date(Moment(Moment(new Date()).format("YYYYMM") - 1 + "15").format("YYYY-MM-DD")))).format("YYYYMMDD")
 let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMM")) : String(Moment(new Date()).format("YYYYMM") - 1)
 
-
 //{*-------------------------- 이벤트 영역 -----------------------------------*}
 
-  const pageHandle = async () => { 
+  const pageHandle = async () => {
     try {
       const responseNotice = await ApiRequest("/boot/common/queryIdSearch",{queryId : noticeQueryId ,type: 'notice'});
       const responseTrAply = await ApiRequest("/boot/common/queryIdSearch", {queryId : trAplyTotQueryId, empId:empId ,aplyYm:orderWorkBgngMm ,aplyOdr: flagOrder});
