@@ -11,7 +11,7 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
         let disabled = false;
         if(button.able != null && data != null && data[button.able.key] !== button.able.value){
             disabled = true;
-        } else if (button.able === "time"){
+        } else if (button.time){
             const date = new Date();
             const month = date.getMonth() + 1;
             let firstDayOfMonth = new Date( date.getFullYear(), date.getMonth() , 1 );
@@ -45,7 +45,7 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
                     disabled = true;
                 } else if (item.able != null && item.able.value === true && data[item.able.key]){
                     disabled = true;
-                } else if (item.able === "time"){
+                } else if (button.time){
                     const date = new Date();
                     const month = date.getMonth() + 1;
                     let firstDayOfMonth = new Date( date.getFullYear(), date.getMonth() , 1 );
