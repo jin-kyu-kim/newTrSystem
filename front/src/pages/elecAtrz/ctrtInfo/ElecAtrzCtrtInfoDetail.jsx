@@ -58,10 +58,10 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
         /* 임시저장 조회 */
         if(sttsCd === "VTW03701") {
             getTempData();
+        /* 전자결재 목록 조회 */
         }else if(["VTW03702","VTW03703","VTW03704","VTW03705"].includes(sttsCd)) {
             getTempData();
         }
-        /* 전자결재 목록 조회 */
     }, [])
 
 
@@ -98,7 +98,6 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
 
         for(let i = 0; i < pay.length; i++) {
 
-            // console.log(pay)
             let month
             if(pay[i].ctrtYmd.getMonth() + 1 < 10) {
                 month = "0" + (pay[i].ctrtYmd.getMonth() + 1)
@@ -139,17 +138,6 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
         }
         handlePopupData(result);
     }
-
-    /**
-     * console.log useEffect
-     */
-    // useEffect(() => {
-    //     console.log(popupVisible);
-    // }, [popupVisible]);
-
-    // useEffect(() => {
-    //     console.log("tableData", tableData);
-    // }, [tableData]);
 
     /**
      *  날짜데이터 포멧팅

@@ -103,7 +103,7 @@ public class ElecAtrzDomain {
 						 * 외주인력 관련(외주인력)
 						 * target: HNF_CTRT_DTL, HNF_CTRT_DTL_CND
 						 */
-						deleteData("HNF_CTRT_DTL_CND", elctrnAtrzId);
+						deleteData("HNF_CTRT_DTL_MM", elctrnAtrzId);
 						deleteData("HNF_CTRT_DTL", elctrnAtrzId);
 					}
 					
@@ -477,6 +477,7 @@ public class ElecAtrzDomain {
 			infoParam.put("qy", copiedParams.get(i).get("qy"));
 			infoParam.put("dlvgdsPrnmntYmd", copiedParams.get(i).get("dlvgdsPrnmntYmd"));
 			infoParam.put("totAmt", copiedParams.get(i).get("totAmt"));
+			infoParam.put("expectCtrtEntrpsNm", copiedParams.get(i).get("expectCtrtEntrpsNm"));
 			insertParams.add(i, infoParam);
 		}
 		
@@ -540,7 +541,7 @@ public class ElecAtrzDomain {
 			infoParam.put("inptBgngYmd", copiedParams.get(i).get("ctrtBgngYmd"));
 			infoParam.put("inptEndYmd", copiedParams.get(i).get("ctrtEndYmd"));
 			infoParam.put("totAmt", copiedParams.get(i).get("totAmt"));
-			infoParam.put("expectCtrtEntrpsNm", copiedParams.get(i).get("outordEntrpsNm"));
+			infoParam.put("expectCtrtEntrpsNm", copiedParams.get(i).get("expectCtrtEntrpsNm"));
 			
 			
 			insertParams.add(i, infoParam);
@@ -630,14 +631,14 @@ public class ElecAtrzDomain {
 			copiedParams.get(i).remove("hnfCtrtDtlMm");
 			infoParam.put("elctrnAtrzId", elctrnAtrzId);
 			infoParam.put("outordHnfCtrtSeCd", copiedParams.get(i).get("outordHnfCtrtSeCd"));	// 외주인력계약구분코드
-			infoParam.put("inptHnfId", copiedParams.get(i).get("empId"));						// 투입인력
+			infoParam.put("inptHnfId", copiedParams.get(i).get("inptHnfId"));						// 투입인력
 			infoParam.put("hnfRoleCd", copiedParams.get(i).get("hnfRoleCd"));					// 인력 역할 코드
 			infoParam.put("hnfGradCd", copiedParams.get(i).get("hnfGradCd"));					// 인력 등급 코드
 			infoParam.put("tkcgJob", copiedParams.get(i).get("tkcgJob"));						// 담당 업무
 			infoParam.put("untpc", copiedParams.get(i).get("untpc"));							// 단가
 			infoParam.put("inptPrnmntYmd", copiedParams.get(i).get("inptPrnmntYmd"));			// 투입예정일자
 			infoParam.put("withdrPrnmntYmd", copiedParams.get(i).get("withdrPrnmntYmd"));		// 철수예정일자
-			infoParam.put("expectInptHnfId", copiedParams.get(i).get("outordEmpId"));			// 계획투입인력
+			infoParam.put("expectInptHnfId", copiedParams.get(i).get("expectInptHnfId"));			// 계획투입인력
 			
 			insertParams.add(i, infoParam);
 		}
@@ -676,11 +677,14 @@ public class ElecAtrzDomain {
 		insertParams.add(0, paramList.get(0));
 		for(int i = 1; i < paramList.size(); i++) {
 			
-			insertParams.get(i).put("elctrnAtrzId", elctrnAtrzId);
-			insertParams.get(i).put("inptHnfId", empId);
-			insertParams.get(i).put("inptYm", paramList.get(i).get("id"));
-			insertParams.get(i).put("mm", paramList.get(i).get("mm"));
-			insertParams.get(i).put("ctrtAmt", paramList.get(i).get("ctrtAmt"));
+			Map<String, Object> infoParam = new HashMap<>();
+			infoParam.put("elctrnAtrzId", elctrnAtrzId);
+			infoParam.put("inptHnfId", empId);
+			infoParam.put("inptYm", paramList.get(i).get("id"));
+			infoParam.put("mm", paramList.get(i).get("mm"));
+			infoParam.put("ctrtAmt", paramList.get(i).get("ctrtAmt"));
+			
+			insertParams.add(i, infoParam);
 		}
 		
 		System.err.println(paramList);
