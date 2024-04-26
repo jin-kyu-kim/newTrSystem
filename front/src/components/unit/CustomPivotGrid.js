@@ -153,6 +153,7 @@ const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fi
 
     return (
         <PivotGrid
+            width={1000}
             allowSortingBySummary={true}
             allowSorting={sorting}
             allowFiltering={filtering}

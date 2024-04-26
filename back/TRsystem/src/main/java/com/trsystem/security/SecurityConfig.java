@@ -48,6 +48,7 @@ public class SecurityConfig {
                         .requestMatchers(new MvcRequestMatcher(introspector,"/boot/indvdlClm/**")).permitAll()
                         .requestMatchers(new MvcRequestMatcher(introspector,"/boot/humanResourceMng/**")).permitAll()
                         .requestMatchers(new MvcRequestMatcher(introspector,"/boot/humanResourceMng/**")).hasAuthority("VTW00307")
+                        .requestMatchers(new MvcRequestMatcher(introspector,"/boot/financialAffairMng/**")).permitAll()
 
 //                        .requestMatchers("/boot/prjct/**").hasRole("USER")
 //                        .requestMatchers("/boot/**").hasRole("USER")
