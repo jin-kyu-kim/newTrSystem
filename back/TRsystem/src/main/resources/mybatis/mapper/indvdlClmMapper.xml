@@ -795,25 +795,31 @@
     <!-- 프로젝트 비용 atrzDmndSttsCd 변경 -->
     <update id="updatePrjctCtAtrzStts" parameterType="map">
         UPDATE PRJCT_CT_ATRZ
+            JOIN PRJCT_CT_APLY ON PRJCT_CT_ATRZ.PRJCT_CT_APLY_SN = PRJCT_CT_APLY.PRJCT_CT_APLY_SN
+                AND PRJCT_CT_ATRZ.EMP_ID = PRJCT_CT_APLY.EMP_ID
+                AND PRJCT_CT_ATRZ.PRJCT_ID = PRJCT_CT_APLY.PRJCT_ID
+                AND PRJCT_CT_ATRZ.APLY_YM = PRJCT_CT_APLY.APLY_YM
+                AND PRJCT_CT_ATRZ.APLY_ODR = PRJCT_CT_APLY.APLY_ODR
         SET
-            ATRZ_DMND_STTS_CD = CASE
+            PRJCT_CT_ATRZ.ATRZ_DMND_STTS_CD = CASE
                 WHEN #{actionType} = 'INPUT' THEN 'VTW03701'
                 WHEN #{actionType} = 'INPUT_CANCEL' THEN NULL
                 WHEN #{actionType} = 'APPROVE' THEN 'VTW03702'
                 WHEN #{actionType} = 'APPROVE_CANCEL' THEN 'VTW03701'
             END,
-            MDFCN_DT = now(),
-            MDFCN_EMP_ID = #{empId}
-        WHERE 1 = 1
+            PRJCT_CT_ATRZ.MDFCN_DT = now(),
+            PRJCT_CT_ATRZ.MDFCN_EMP_ID = #{empId}
+        WHERE 1=1
           AND (
             (#{actionType} = 'INPUT' AND ATRZ_DMND_STTS_CD IS NULL) OR
             (#{actionType} = 'INPUT_CANCEL' AND ATRZ_DMND_STTS_CD = 'VTW03701') OR
             (#{actionType} = 'APPROVE' AND ATRZ_DMND_STTS_CD = 'VTW03701') OR
             (#{actionType} = 'APPROVE_CANCEL' AND ATRZ_DMND_STTS_CD IN ('VTW03702', 'VTW03704'))
             )
-          AND EMP_ID = #{empId}
-          AND APLY_YM = #{aplyYm}
-          AND APLY_ODR = #{aplyOdr}
+          AND PRJCT_CT_ATRZ.EMP_ID = #{empId}
+          AND PRJCT_CT_ATRZ.APLY_YM = #{aplyYm}
+          AND PRJCT_CT_ATRZ.APLY_ODR = #{aplyOdr}
+          AND PRJCT_CT_APLY.ELCTRN_ATRZ_ID IS NULL
     </update>
 
     <!-- 비용 결재 요청 상태 건수 조회 -->
