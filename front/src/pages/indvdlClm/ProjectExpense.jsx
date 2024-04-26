@@ -17,7 +17,6 @@ const ProjectExpense = () => {
     const [ ctAply, setCtAply ] = useState([]); // 차수 청구내역 (table1)
     const [ ctAtrz, setCtAtrz ] = useState([]); // 전자결재 청구내역 (table2)
     const [ changeColumn, setChangeColumn ] = useState([]); // 결재상태 컬럼 -> 버튼렌더를 위해 필요
-    const [ mmAplyCnt, setMmAplyCnt ] = useState(); // 비용 청구 건수 (없을 시 근무시간 먼저)
     const [ ctAtrzCmptnYn, setCtAtrzCmptnYn ] = useState(); // 비용결재완료여부
     const [ mmAtrzCmptnYn, setMmAtrzCmptnYn ] = useState(); // 근무시간
     const [ cookies ] = useCookies([]);
@@ -37,7 +36,6 @@ const ProjectExpense = () => {
         }, [setIndex]
     );
     useEffect(() => { getData(); }, []);
-
     useEffect(() => { // 결재상태에 따른 컬럼 list변경
         const columns = atrzDmndSttsCnt.ctReg > 0 ? 'ctAplyBtnColumns' : (atrzDmndSttsCnt.rjct > 0 ? 'rjctCnColumns' : 'ctAplyStrColumns');
         setChangeColumn(ctAplyTableColumns.concat(ProjectExpenseJson.ProjectExpenseMain[columns]))
@@ -58,10 +56,8 @@ const ProjectExpense = () => {
         });
     };
     const setCtAtrzCmptnData = (data) => {
-        console.log('data', data)
         setCtAtrzCmptnYn(data[0].ctAtrzCmptnYn) // 비용결재 완료여부
-        setMmAtrzCmptnYn(data[0].mmAtrzCmptnYn) // 근무시간 결재 신청
-        setMmAplyCnt(data.length); // 비용청구 건수
+        setMmAtrzCmptnYn(data[0].mmAtrzCmptnYn) // 근무시간 결재 신청 N
     };
 
     const setCtAtrzDmndSttsData = (data) => {
@@ -75,9 +71,11 @@ const ProjectExpense = () => {
             actionType: data.actionType, // PRJCT_CT_ATRZ : 결재요청상태 update (입력마감 / 승인요청)
             empId, aplyYm, aplyOdr
         };
-        const response = await ApiRequest("/boot/common/queryIdDataControl", param);
-        const updateStts = data.name === 'onInptDdlnClick' ? "N" :
-            data.name === 'onInptDdlnRtrcnClick' ? null : undefined;
+        if(ctAply.length !== 0){
+            const response = await ApiRequest("/boot/common/queryIdDataControl", param);
+        }
+        const updateStts = data.name === 'onInptDdlnClick' ? "N" : (data.name === 'onInptDdlnRtrcnClick' ? null
+            : ctAply.length === 0 && data.name === 'onAprvDmndRtrcnClick' ? null : undefined);
         if (updateStts !== undefined) updateCtAtrzCmptnYn(updateStts);
         getData();
         alert(data.completeMsg);
@@ -90,6 +88,7 @@ const ProjectExpense = () => {
             { empId, aplyYm, aplyOdr }
         ];
         const response = await ApiRequest("/boot/common/commonUpdate", param);
+        if(response === 1) getData();
     };
 
     const onClickAction = async (onClick) => {
@@ -104,10 +103,14 @@ const ProjectExpense = () => {
     const onPopHiding = async () => { setPopVisible(false); }
 
     const getButtonsShow = () => {
-        if (atrzDmndSttsCnt.aprvDmnd > 0 || atrzDmndSttsCnt.rjct > 0) return buttonsConfig.hasApprovals;
-        if (atrzDmndSttsCnt.inptDdln > 0) return buttonsConfig.noApprovals;
-        if (atrzDmndSttsCnt.rjct === 0 && atrzDmndSttsCnt.aprv > 0) return buttonsConfig.completed;
-
+        if(ctAply.length === 0){ // 비용청구가 없을 경우
+            if (ctAtrzCmptnYn === 'N') return buttonsConfig.hasApprovals;
+            if (ctAtrzCmptnYn === 'Y') return buttonsConfig.completed;
+        } else{
+            if (atrzDmndSttsCnt.aprvDmnd > 0 || atrzDmndSttsCnt.rjct > 0) return buttonsConfig.hasApprovals;
+            if (atrzDmndSttsCnt.inptDdln > 0) return buttonsConfig.noApprovals;
+            if (atrzDmndSttsCnt.rjct === 0 && atrzDmndSttsCnt.aprv > 0) return buttonsConfig.completed;
+        }
         return buttonsConfig.default;
     };
 
@@ -132,10 +135,7 @@ const ProjectExpense = () => {
     }
 
     const groupingCustomizeText = (e) => {
-        const mapping = {
-            "VTW01902": "개인현금지급",
-            "VTW01903": "개인법인카드"
-        };
+        const mapping = { "VTW01902": "개인현금지급", "VTW01903": "개인법인카드" };
         return mapping[e.value] || "기업법인카드";
     }
 
@@ -168,7 +168,7 @@ const ProjectExpense = () => {
                 <RenderTopTable title={`* ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} />
                 <RenderTopTable title='* 전자결재 청구 내역' keyColumn={elcKeyColumn} columns={columnCharge} values={ctAtrz} />
 
-                {mmAplyCnt === 0 || atrzDmndSttsCnt.ctReg > 0 || ctAtrzCmptnYn === null
+                {atrzDmndSttsCnt.ctReg > 0 || ctAtrzCmptnYn === null
                     ? <TabPanel
                         dataSource={ExpenseInfo}
                         selectedIndex={index}
