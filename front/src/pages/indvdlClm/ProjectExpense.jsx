@@ -163,7 +163,7 @@ const ProjectExpense = () => {
 
     return (
         <div className="container">
-            <div>
+            <div style={{marginBottom: '100px'}}>
                 <div className="mx-auto" style={{ display: 'flex', marginTop: "20px", marginBottom: "30px" }}>
                     <h1 style={{ fontSize: "30px", marginRight: "20px" }}>프로젝트비용</h1>
                     {getButtonsShow().map(({ onClick, text, type }, index) => (
@@ -198,7 +198,7 @@ const ProjectExpense = () => {
             <ProjectExpensePopup
                 visible={popVisible}
                 onPopHiding={onPopHiding}
-                basicInfo={{aplyYm, aplyOdr, empId, cookies}}
+                basicInfo={{aplyYm, aplyOdr, empId}}
             />
         </div>
     );

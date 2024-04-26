@@ -161,6 +161,9 @@ const EmpExpenseAprvIndividual = ({ empNo, aplyYm, aplyOdr, expensCd }) => {
                 columnGTName={'소계'}
                 blockCollapse={true}
                 weekendColor={true}
+                isExport={true}
+                sorting={true}
+                grandTotals={false}
                 fileName={makeExcelFileName}
             />
         </div>
