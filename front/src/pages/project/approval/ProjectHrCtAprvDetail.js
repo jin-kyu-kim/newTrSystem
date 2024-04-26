@@ -610,17 +610,24 @@ const ProjectHrCtAprvDetail = () => {
     // 경비 세부리스트의 승인, 승인취소, 반려, 반려취소 버튼 누를 시
     const onCtChildBtnClick = async (button, data) => {
         if(button.name === "aprv"){
-            const param = [
-                { tbNm: "PRJCT_CT_ATRZ" },
-                { atrzDmndSttsCd: "VTW03703",
-                  aprvrEmpId: cookies.userInfo.empId,
-                  aprvYmd: year + monthVal + dayVal},
-                { prjctId: data.prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, prjctCtAplySn: data.prjctCtAplySn }
-            ];
             try {
                 const confirmResult = window.confirm("승인하시겠습니까?");
                 if(confirmResult){
-                    const response = await ApiRequest('/boot/common/commonUpdate', param);
+                    let response = 0;
+                    if((day > 15 && data.aplyYm === date.getFullYear()+monthVal && data.aplyOdr === 1) ||
+                        (15 >= day && data.aplyYm === lastMonth.getFullYear()+lastMonthVal && data.aplyOdr === 2)){
+                        const param = [
+                            { tbNm: "PRJCT_CT_ATRZ" },
+                            { atrzDmndSttsCd: "VTW03703",
+                                aprvrEmpId: cookies.userInfo.empId,
+                                aprvYmd: year + monthVal + dayVal},
+                            { prjctId: data.prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, prjctCtAplySn: data.prjctCtAplySn }
+                        ];
+                        response = await ApiRequest('/boot/common/commonUpdate', param);
+                    } else {
+                        const param = { prjctId: data.prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, prjctCtAplySn: data.prjctCtAplySn };
+                        response = await ApiRequest('/boot/prjct/apprvOldCt', param);
+                    }
                     if(response > 0) {
                         const param = { prjctId: data.prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr};
                         await ApiRequest('/boot/prjct/updateCtAtrzCmptnYn', param);
