@@ -2,16 +2,18 @@ import React, { useState, useEffect } from "react";
 import { FormControl, InputLabel, Select, MenuItem, TextField, Button, Grid, TableCell } from "@mui/material";
 import { DateBox } from "devextreme-react/date-box";
 import ApiRequest from "utils/ApiRequest";
+import { useCookies } from "react-cookie";
 
 const ExpensInfo = ({onSendData, prjctId, data}) => {
 
-    const [ctStlmSeCdList, setCtStlmSeCdList] = useState([]);
-    const [bankCdList, setBankCdList] = useState([]);
-    const [expensCdList, setExpensCdList] = useState([]);
+    const [ ctStlmSeCdList, setCtStlmSeCdList ] = useState([]);
+    const [ bankCdList, setBankCdList ] = useState([]);
+    const [ expensCdList, setExpensCdList ] = useState([]);
     const [ clmOdr, setClmOdr ] = useState();
     const [ nextClmOdr, setNextClmOdr ] = useState();
     const [ deadLineDate, setDeadLineDate ] = useState();
-
+    const [ cookies ] = useCookies(["userInfo"]);
+    const [ ctAtrzCmptnYn, setCtAtrzCmptnYn ] = useState();
 
     useEffect(() => {
         retrieveCtStlmSeCd();
@@ -213,6 +215,10 @@ const ExpensInfo = ({onSendData, prjctId, data}) => {
         setClmOdr(`${year}${monthString}-${odr}`);
         getDeadLineDate(odr);
 
+        let aplyYm = `${year}${monthString}`
+
+        chkCtAtrzCmptnYn(aplyYm, odr);
+
         let nextYear = today.getFullYear();
         let nextMonth = today.getMonth() + 1; 
         if(nextMonth > 12) {
@@ -287,7 +293,24 @@ const ExpensInfo = ({onSendData, prjctId, data}) => {
 
         setForms(newForms);
     }
-    
+
+    const chkCtAtrzCmptnYn = async (aplyYm, odr) => {
+
+        const param = [
+            { tbNm: "PRJCT_INDVDL_CT_MM"},
+            { 
+                prjctId: prjctId,
+                empId: cookies.userInfo.empId,
+                aplyYm: aplyYm,
+                aplyOdr: odr
+            }
+        ]
+
+        const response = await ApiRequest("/boot/common/commonSelect", param);
+        if(response.length != 0) {
+            setCtAtrzCmptnYn(response[0].ctAtrzCmptnYn);
+        }
+    }
 
     return (
         
@@ -579,7 +602,7 @@ const ExpensInfo = ({onSendData, prjctId, data}) => {
 
             <hr/>
             <div>* 현재 TR 입력 차수: { clmOdr }</div>
-            <div>* 마감 여부: </div>
+            <div>* 마감 여부: {ctAtrzCmptnYn != null ? "마감" : "작성중" } </div>
             <br/>
             <div>1. 지출 방법: 개인법인카드, 개인현금</div>
             <br/>
@@ -601,7 +624,7 @@ const ExpensInfo = ({onSendData, prjctId, data}) => {
                                 {deadLineDate} 이전
                             </td>
                             <td>
-                                {nextClmOdr} 차수
+                                {ctAtrzCmptnYn != null ? nextClmOdr : clmOdr } 차수
                             </td>
                         </tr>
                         <tr>

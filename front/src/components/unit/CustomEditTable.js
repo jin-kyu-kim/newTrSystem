@@ -51,11 +51,13 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                         isDuplicate = checkDuplicate(e.data[keyColumn]);
                         if (isDuplicate) return;
                     }
-                    handleYnVal !== undefined ? (upCdValue
-                        ? (e.data.useYn === undefined && (e.data = { ...e.data, upCdValue: upCdValue, regDt: date.format('YYYY-MM-DD'), regEmpId: empId, useYn: "N" }))
-                        : (e.data.useYn === undefined && (e.data = { ...e.data, regDt: date.format('YYYY-MM-DD'), regEmpId: empId, useYn: "N" }))
-                    ) : e.data = { ...e.data, regDt: date.format('YYYY-MM-DD'), regEmpId: empId }
-
+                    e.data = {
+                        ...e.data,
+                        regEmpId: empId,
+                        regDt: date.format('YYYY-MM-DD'),
+                        ...upCdValue && { upCdValue },
+                        ...(handleYnVal !== undefined && e.data.useYn === undefined && { useYn: 'N' })
+                    };
                     editParam[1] = e.data;
                     editInfo = { url: 'commonInsert', complete: '저장' }
                     break;
@@ -64,9 +66,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                         isDuplicate = checkDuplicate(e.newData[keyColumn]);
                         if (isDuplicate) return;
                     }
-                    e.newData = upCdValue ? { ...e.newData, upCdValue: upCdValue, mdfcnDt: date.format('YYYY-MM-DD'), mdfcnEmpId: empId }
-                        : { ...e.newData, mdfcnDt: date.format('YYYY-MM-DD'), mdfcnEmpId: empId }
-                        
+                    e.newData = { ...e.newData, mdfcnDt: date.format('YYYY-MM-DD'), mdfcnEmpId: empId }
                     editParam[1] = e.newData;
                     editParam[2] = keyInfo;
                     editInfo = { url: 'commonUpdate', complete: '수정' }
@@ -135,7 +135,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                 onRowExpanding={handleExpanding}
                 onSelectionChanged={onSelection && ((e) => onSelection(e))}
                 onRowUpdating={(e) => onEditRow('update', e)}
-                onRowRemoving={(e) => onEditRow('delete', e)}
+                onRowRemoved={(e) => onEditRow('delete', e)}
             >
                 {masterDetail &&
                     <MasterDetail

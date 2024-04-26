@@ -854,6 +854,125 @@
           AND ea.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
     </select>
 
+    <!-- 개인비용청구 최종 개수, 총 금액 -->
+    <select id="retrieveExpenseTotal" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            COUNT(*) AS TOTAL_COUNT,
+            SUM(pca.UTZTN_AMT) AS TOTAL_UTZTN_AMT
+        FROM PRJCT_CT_ATRZ pcrz
+                 JOIN PRJCT_CT_APLY pca
+                      ON pcrz.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN
+        WHERE 1=1
+          AND pcrz.APLY_YM = #{aplyYm}
+          AND pcrz.EMP_ID = #{empId}
+          AND pcrz.APLY_ODR  = #{aplyOdr}
+          AND pcrz.ATRZ_DMND_STTS_CD = 'VTW03703'
+    </select>
+
+    <!-- 개인비용청구 총 근무 시간 -->
+    <select id="retrieveTimeTotal" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT SUM(MD) AS TOT_TIME
+        FROM PRJCT_MM_APLY pma
+                 JOIN (
+            SELECT pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR
+            FROM PRJCT_MM_ATRZ pmrz
+            WHERE pmrz.EMP_ID = #{empId}
+              AND pmrz.APLY_YM = #{aplyYm}
+              AND pmrz.APLY_ODR = #{aplyOdr}
+              AND pmrz.ATRZ_DMND_STTS_CD = 'VTW03703'
+            GROUP BY pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR
+        ) filtered ON pma.PRJCT_ID = filtered.PRJCT_ID
+            AND pma.EMP_ID = filtered.EMP_ID
+            AND pma.APLY_YM = filtered.APLY_YM
+            AND pma.APLY_ODR = filtered.APLY_ODR
+    </select>
+
+    <select id="retrievePrjctWorkTime" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        <![CDATA[
+        WITH RECURSIVE date_range AS (
+            SELECT CAST(CONCAT(#{aplyYm}, '01') AS DATE) AS date_value
+            UNION ALL
+            SELECT DATE_ADD(date_value, INTERVAL 1 DAY)
+            FROM date_range
+            WHERE DATE_ADD(date_value, INTERVAL 1 DAY) <= LAST_DAY(date_value)
+        ),
+        all_projects AS (
+            SELECT DISTINCT p.PRJCT_NM
+            FROM PRJCT_MM_APLY pma
+            JOIN PRJCT p ON p.PRJCT_ID = pma.PRJCT_ID
+        ),
+        filter_prjct AS (
+            SELECT
+                p.PRJCT_NM,
+                DATE_FORMAT(pma.APLY_YMD, '%Y%m%d') AS ymd_format,
+                pma.MD
+            FROM PRJCT_MM_APLY pma
+            JOIN PRJCT p ON p.PRJCT_ID = pma.PRJCT_ID
+            JOIN (
+                SELECT pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR
+                FROM PRJCT_MM_ATRZ pmrz
+                WHERE pmrz.EMP_ID = #{empId}
+                    AND pmrz.APLY_YM = #{aplyYm}
+                    AND pmrz.APLY_ODR = #{aplyOdr}
+                    AND pmrz.ATRZ_DMND_STTS_CD = 'VTW03703'
+                GROUP BY pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR
+            ) filtered ON pma.PRJCT_ID = filtered.PRJCT_ID
+                AND pma.EMP_ID = filtered.EMP_ID
+                AND pma.APLY_YM = filtered.APLY_YM
+                AND pma.APLY_ODR = filtered.APLY_ODR
+            )
+        SELECT
+            ap.PRJCT_NM,
+            SUBSTRING(DATE_FORMAT(dr.date_value, '%Y%m%d'), 7, 2) AS APLY_DAY,
+            COALESCE(fp.MD, 0) * 8 AS MD
+        FROM date_range dr
+            CROSS JOIN all_projects ap
+            LEFT JOIN filter_prjct fp ON fp.ymd_format = DATE_FORMAT(dr.date_value, '%Y%m%d') AND ap.PRJCT_NM = fp.PRJCT_NM
+        WHERE
+            (#{aplyOdr} = 1 AND DAY(dr.date_value) <= 15)
+           OR (#{aplyOdr} = 2 AND DAY(dr.date_value) >= 16)
+        ORDER BY dr.date_value
+        ]]>
+    </select>
+
+    <select id="retrieveCtrtDay" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        <![CDATA[
+        WITH RECURSIVE date_range AS (
+            SELECT CAST(CONCAT(#{aplyYm}, '01') AS DATE) AS date_value
+            UNION ALL
+            SELECT DATE_ADD(date_value, INTERVAL 1 DAY)
+            FROM date_range
+            WHERE DATE_ADD(date_value, INTERVAL 1 DAY) <= LAST_DAY(date_value)
+        ),
+        holidays AS (
+            SELECT
+                SUBSTRING(DATE_FORMAT(CRTR_YMD, '%Y%m%d'), 7, 2) AS APLY_DAY,
+                (SELECT CD_NM FROM CD WHERE CD_VALUE = CRTR_DATE.HLDY_CL_CD) AS PRJCT_NM,
+                1 AS MD
+            FROM CRTR_DATE
+            WHERE SUBSTR(CRTR_YMD, 1, 6) = #{aplyYm}
+                AND HLDY_CL_CD = 'VTW05003'
+        ),
+        all_days AS (
+            SELECT
+                dr.date_value,
+                COALESCE(h.PRJCT_NM, '공휴일') AS PRJCT_NM,
+                COALESCE(h.MD, 0) * 8 AS MD
+            FROM date_range dr
+            LEFT JOIN holidays h ON SUBSTRING(DATE_FORMAT(dr.date_value, '%Y%m%d'), 7, 2) = h.APLY_DAY
+        )
+        SELECT
+            PRJCT_NM,
+            SUBSTRING(DATE_FORMAT(date_value, '%Y%m%d'), 7, 2) AS APLY_DAY,
+            MD
+        FROM all_days
+        WHERE
+            (#{aplyOdr} = 1 AND DAY(date_value) <= 15)
+            OR (#{aplyOdr} = 2 AND DAY(date_value) >= 16)
+        ORDER BY APLY_DAY
+        ]]>
+    </select>
+
     <!-- 문체비 합계테이블: 체력단련비 청구 조회 -->
     <select id="retrieveFtnessTrngCtClmAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT

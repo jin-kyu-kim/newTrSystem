@@ -143,6 +143,10 @@
         {"key": "cntrctrIdntfcSeCdNm", "text": "("},
         {"key": "cntrctrIdntfcNo", "text": ")"}
       ]},
+      {"key": "CustomValue", "value" : "계약기간", "info" :[
+        {"key": "ctrtBgngYmd", "text": "~"},
+        {"key": "ctrtEndYmd", "text": ""}
+      ]},
       {"key": "CustomValue", "value": "입금계좌", "info" : [
         {"key": "dpstBankCdNm", "text": "("},
         {"key": "dpstrFlnm", "text": "/"},
