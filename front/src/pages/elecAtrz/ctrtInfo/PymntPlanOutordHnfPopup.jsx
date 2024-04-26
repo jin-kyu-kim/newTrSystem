@@ -8,11 +8,12 @@ import { parse, format, addMonths } from 'date-fns';
 const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVisible, handlePopupData, selectedData, tableData }) => {
 
     const labelValue = PymntPlanOutordHnfPopupJson.hnfCtrt.labelValue;
-    labelValue.outordEmpId.param.queryId.prjctId = prjctId;
+    labelValue.expectInptHnfId.param.queryId.prjctId = prjctId;
 
     const [outordEmpData, setOutordEmpData] = useState({});
     const [structuredData, setStructuredData] = useState({});   //기간 구조 데이터
     const [inputValue, setInputValue] = useState([]); //월별 값 입력을 위한 상태
+
 
 /* =========================  사업기간에 따른 우측 input box 생성  =========================*/
     const makePeriod = (ctrtYmd, stbleEndYmd) => {
@@ -51,7 +52,7 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
      //우측 월 값 담기
     const handleInputChange = useCallback((e) => {
 
-        if(!outordEmpData.outordEmpId){
+        if(!outordEmpData.expectInptHnfId){
             alert("계획투입인원을 먼저 선택해주세요.");
             return;
         }
@@ -94,16 +95,20 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
     }, [inputValue, outordEmpData, setOutordEmpData]);
     
     const calculateTotalMm = (values) => {
-        const sum = values.filter(item => typeof item.mm === 'number')
-                          .map(item => item.mm)
-                          .reduce((acc, cur) => acc + cur, 0);
-        return Number(sum.toFixed(2));
+        if(!!values){
+            const sum = values.filter(item => typeof item.mm === 'number')
+                            .map(item => item.mm)
+                            .reduce((acc, cur) => acc + cur, 0);
+            return Number(sum.toFixed(2));
+        }
     };
     
     const calculateTotalAmt = (values) => {
-        const totAmt = values.map(item => (item.mm || 0) * (item.ctrtAmt || 0))
-                             .reduce((acc, cur) => acc + cur, 0);
-        return Number(totAmt.toFixed(2));
+        if(!!values){
+            const totAmt = values.map(item => (item.mm || 0) * (item.ctrtAmt || 0))
+                                .reduce((acc, cur) => acc + cur, 0);
+            return Number(totAmt.toFixed(2));
+        }
     };
     
 
@@ -126,7 +131,7 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
         }
 
         const isEmployeeRegistered = tableData.some(item => {
-            if((item.outordEmpId === outordEmpData.outordEmpId)&&!(Object.keys(selectedData).length)) {
+            if((item.expectInptHnfId === outordEmpData.expectInptHnfId)&&!(Object.keys(selectedData).length)) {
                 alert("이미 등록된 사원입니다.");
                 return true; // true를 반환하여 some 메서드 반복 중단
             }
@@ -155,6 +160,12 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
      */
     useEffect(() => {
 
+        const totAmt = calculateTotalAmt(selectedData.hnfCtrtDtlMm)
+        const totalMm = calculateTotalMm(selectedData.hnfCtrtDtlMm)
+
+        selectedData.totAmt = totAmt;
+        selectedData.totalMm = totalMm;
+
         setOutordEmpData(selectedData);
         setInputValue(selectedData.hnfCtrtDtlMm?selectedData.hnfCtrtDtlMm:[]); //수정 시 월별 값 셋팅
 
@@ -167,9 +178,9 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
                 <div className="project-regist-content">
                     <div className="project-change-content-inner-left">
                         <div className="dx-fieldset">
-                            <CustomLabelValue props={labelValue.outordEmpId} onSelect={handleChgState} value={outordEmpData.outordEmpId}/>
+                            <CustomLabelValue props={labelValue.expectInptHnfId} onSelect={handleChgState} value={outordEmpData.expectInptHnfId}/>
                             <CustomLabelValue props={labelValue.usefulAmt} onSelect={handleChgState} readOnly={true} value={outordEmpData.usefulAmt}/>
-                            <CustomLabelValue props={labelValue.emp} onSelect={handleChgState} value={outordEmpData.empId}/>
+                            <CustomLabelValue props={labelValue.inptHnfId} onSelect={handleChgState} value={outordEmpData.inptHnfId}/>
                             <CustomLabelValue props={labelValue.outordHnfCtrtSeCd} onSelect={handleChgState} value={outordEmpData.outordHnfCtrtSeCd}/>
                             <CustomLabelValue props={labelValue.hnfRoleCd} onSelect={handleChgState} value={outordEmpData.hnfRoleCd}/>
                             <CustomLabelValue props={labelValue.hnfGradCd} onSelect={handleChgState} value={outordEmpData.hnfGradCd}/>

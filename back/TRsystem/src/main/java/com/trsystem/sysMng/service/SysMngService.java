@@ -5,6 +5,7 @@ import com.trsystem.security.jwt.CustomUserDetailsService;
 import com.trsystem.security.jwt.JwtTokenUtil;
 import com.trsystem.security.jwt.TokenDto;
 import com.trsystem.sysMng.domain.SysMngUser;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,12 +61,27 @@ public class SysMngService {
             Authentication authentication = new UsernamePasswordAuthenticationToken(setInfo.getUsername(), setInfo.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
             SecurityContextHolder.getContext();
-            return TokenDto.fromEntity(setInfo, token);
+            return TokenDto.fromEntity(setInfo, token, jwtTokenUtil.getExpirationDateFromToken(token));
         } else {
             return null;
         }
     }
+    public TokenDto tokenExtension(String token) {
 
+        String empId = jwtTokenUtil.getUsernameFromToken(token);
+        SysMngUser setInfo = userDetailsService.loadUserByUsername(empId);
+
+        // 입력된 비밀번호와 저장된 비밀번호 비교
+        if (!empId.isEmpty()) {
+            token = jwtTokenUtil.generateToken(setInfo);
+            Authentication authentication = new UsernamePasswordAuthenticationToken(setInfo.getUsername(), setInfo.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            SecurityContextHolder.getContext();
+            return TokenDto.fromEntity(setInfo, token, jwtTokenUtil.getExpirationDateFromToken(token));
+        } else {
+            throw new ExpiredJwtException(null, null, "이미 만료되었습니다.");
+        }
+    }
 
     public ResponseEntity<String> resetUserPswd(Map<String, Object> request) {
         Map<String, Object> tbNm = new HashMap<>();
@@ -128,10 +144,6 @@ public class SysMngService {
                  return ResponseEntity.ok("실패");
              }
         }
-        
-        
-
-
     }
     
     public ResponseEntity<String> changePwd(Map<String, Object> request) {
@@ -171,9 +183,7 @@ public class SysMngService {
         } else {
            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
-
     }
-    
 }
       
 

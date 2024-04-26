@@ -13,6 +13,7 @@ import Content from './components/sidebar/Content';
 import { Suspense } from "react";
 import { CookiesProvider } from "react-cookie";
 import {locale} from 'devextreme/localization';
+import ErrorBoundary from "./utils/ErrorBoundary";
 
 function App() {
       const { user, loading } = useAuth();
@@ -30,13 +31,15 @@ function App() {
   const renderRoutes = () => {
           return (
             <Router>
-              <CookiesProvider>
-                <NavigationProvider>
+              <ErrorBoundary>
+                <CookiesProvider>
+                  <NavigationProvider>
                   <AuthProvider>
-                    <Content/>
+                  <Content/>
                   </AuthProvider>
-                </NavigationProvider>
-              </CookiesProvider>
+                  </NavigationProvider>
+                </CookiesProvider>
+              </ErrorBoundary>
             </Router>
           );
       };
