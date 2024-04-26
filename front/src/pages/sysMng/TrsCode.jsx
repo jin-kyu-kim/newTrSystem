@@ -82,6 +82,7 @@ const TrsCode = () => {
           ynVal={ynVal}
           values={childList}
           keyColumn={keyColumn}
+          callback={pageHandle}
           handleYnVal={handleYnVal}
           showPageSize={false}
           upCdValue={upCdValue}
