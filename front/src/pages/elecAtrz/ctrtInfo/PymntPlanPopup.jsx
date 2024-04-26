@@ -30,9 +30,7 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
     const [pay, setPay] = useState([]);
     let controlReadOnly = false;
 
-    if(["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707"].includes(sttsCd)){
-        controlReadOnly = true;
-    }
+
     /**
      *  부모창에서 전달 된 데이터로 셋팅
      */
@@ -133,6 +131,12 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
 
         handlePlanData(matrlCtrtData);
         handlePopupVisible();
+    }
+
+
+    // readonly 여부
+    if(["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707"].includes(sttsCd)){
+        controlReadOnly = true;
     }
 
     // 수정테이블 수정가능 여부

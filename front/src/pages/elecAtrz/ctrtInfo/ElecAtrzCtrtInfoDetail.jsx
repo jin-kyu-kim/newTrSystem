@@ -61,6 +61,8 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
         /* 전자결재 목록 조회 */
         }else if(["VTW03702","VTW03703","VTW03704","VTW03705"].includes(sttsCd)) {
             getTempData();
+        }else if(["VTW03405"].includes(sttsCd)){   //지급
+            getTempData();
         }
     }, [])
 
