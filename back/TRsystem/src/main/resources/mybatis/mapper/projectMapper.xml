@@ -1408,7 +1408,7 @@
         SELECT
             COUNT(*) AS TOTAL_COUNT
         FROM PRJCT_CT_ATRZ
-        WHERE ATRZ_DMND_STTS_CD NOT IN ('VTW03703', 'VTW03704')
+        WHERE ATRZ_DMND_STTS_CD NOT IN ('VTW03703', 'VTW03704', 'VTW03708')
           AND PRJCT_ID = #{prjctId}
           AND APLY_YM = #{aplyYm}
           AND APLY_ODR = #{aplyOdr}

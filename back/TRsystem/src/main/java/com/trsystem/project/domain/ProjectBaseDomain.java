@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Data
@@ -591,6 +592,85 @@ public class ProjectBaseDomain {
 			updateParam.add(param);
 			commonService.updateData(updateParam);
 		}
+		return 1;
+	}
+
+	public static int apprvOldCt(Map<String, Object> param){
+		// 날짜 확인
+		LocalDate currentDate = LocalDate.now();
+		int year = currentDate.getYear();
+		int month = currentDate.getMonthValue();
+		String ym = String.format("%04d%02d", year, month);
+
+		LocalDate lastMonthDate = currentDate.minusMonths(1).withDayOfMonth(1).minusDays(1);
+		int lastYear = lastMonthDate.getYear();
+		int lastMonth = lastMonthDate.getMonthValue();
+		String lastYm = String.format("%04d%02d", lastYear, lastMonth);
+
+		int dayOfMonth = currentDate.getDayOfMonth();
+
+		// (PRJCT_CT_APLY)
+		// ID로 서치
+		List<Map<String, Object>> searchAply = new ArrayList<>();
+		Map<String, Object> tbAply = new HashMap<>();
+		tbAply.put("tbNm", "PRJCT_CT_APLY");
+		searchAply.add(tbAply);
+		searchAply.add(param);
+		List<Map<String, Object>> listAply = commonService.commonSelect(searchAply);
+
+		// 가져온 값의 aplyYm, aplyOdr 바꿔서 인서트
+		List<Map<String, Object>> insertAply = new ArrayList<>();
+		tbAply.put("snColumn", "prjctCtAplySn");
+		Map<String, Object> snSearch = new HashMap<>();
+		Map<String, Object> dataAply = listAply.get(0);
+		snSearch.put("prjctId", param.get("prjctId"));
+		snSearch.put("empId", param.get("empId"));
+		if(dayOfMonth > 15){
+			snSearch.put("aplyYm", ym);
+			snSearch.put("aplyOdr", 1);
+			dataAply.put("aplyYm", ym);
+			dataAply.put("aplyOdr", 1);
+		} else {
+			snSearch.put("aplyYm", lastYm);
+			snSearch.put("aplyOdr", 2);
+			dataAply.put("aplyYm", lastYm);
+			dataAply.put("aplyOdr", 2);
+		}
+		tbAply.put("snSearch", snSearch);
+		insertAply.add(tbAply);
+		insertAply.add(dataAply);
+		commonService.insertData(insertAply);
+
+		// (PRJCT_CT_ATRZ)
+		// ID로 서치
+		List<Map<String, Object>> searchAtrz = new ArrayList<>();
+		Map<String, Object> tbAtrz = new HashMap<>();
+		tbAtrz.put("tbNm", "PRJCT_CT_ATRZ");
+		searchAtrz.add(tbAtrz);
+		searchAtrz.add(param);
+		List<Map<String, Object>> listAtrz = commonService.commonSelect(searchAtrz);
+
+		// 가져온 값으로 기존 값 업데이트 -> 코드 VTW03708(이월)
+		List<Map<String, Object>> updateAtrz = new ArrayList<>();
+		updateAtrz.add(tbAtrz);
+		Map<String, Object> paramAtrz = new HashMap<>();
+		paramAtrz.put("atrzDmndSttsCd", "VTW03708");
+		updateAtrz.add(paramAtrz);
+		updateAtrz.add(param);
+		commonService.updateData(updateAtrz);
+
+		// 가져온 값의 aplyYm, aplyOdr 바꿔서 인서트
+		List<Map<String, Object>> insertAtrz = new ArrayList<>();
+		tbAtrz.put("snColumn", "prjctCtAplySn");
+		tbAtrz.put("snSearch", snSearch);
+		Map<String, Object> dataAtrz = listAtrz.get(0);
+		dataAtrz.put("aplyYm", dataAply.get("aplyYm"));
+		dataAtrz.put("aplyOdr", dataAply.get("aplyOdr"));
+		dataAtrz.put("atrzDmndSttsCd", "VTW03703");
+		insertAtrz.add(tbAtrz);
+		insertAtrz.add(dataAtrz);
+		commonService.insertData(insertAtrz);
+
 		return 1;
 	}
 
