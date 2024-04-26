@@ -114,12 +114,11 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo }) => {
                         values={dataSource}
                         blockCollapse={true}
                         grandTotals={true}
+                        width={1000}
                     />
                 )
             default:
-                return(
-                    <ProjectExpenseCashCardReport basicInfo={basicInfo} />
-                )
+                return( <ProjectExpenseCashCardReport basicInfo={basicInfo} /> )
         }
     };
 
@@ -149,7 +148,7 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo }) => {
     };
 
     return (
-        <div>
+        <div style={{marginBottom: '100px'}}>
             <Popup
                 width={1050}
                 height={1000}
