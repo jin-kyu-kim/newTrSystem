@@ -135,12 +135,12 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
 
 
     // readonly 여부
-    if(["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707"].includes(sttsCd)){
+    if(["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)){
         controlReadOnly = true;
     }
 
     // 수정테이블 수정가능 여부
-    const isEditable = !["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707"].includes(sttsCd);
+    const isEditable = !["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd);
     
     return (
     <>
@@ -184,7 +184,7 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
                     </div>
                 </div>
                 <div>
-                    {(!["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707"].includes(sttsCd)) && (
+                    {(!["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)) && (
                         <>
                         <Button text="저장" useSubmitBehavior={true}/>
                         <Button text="취소" onClick={handlePopupVisible}/>
