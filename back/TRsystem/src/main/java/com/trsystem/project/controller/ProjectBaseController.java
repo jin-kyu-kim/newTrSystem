@@ -14,28 +14,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ProjectBaseController {
 
-    //프로젝트 초안 생성 후 생성 프로젝트 조회
-    @PostMapping(value = "/boot/prjct/prjctMng/prjctBsisInfoReg/prjctBsisInfoReg")
-    public Map<String, Object> insertProject(@RequestBody Map<String, Object> projectDto) throws Exception {
-        List<Map<String, Object>> aa = new ArrayList<>();
-        aa.add(projectDto);
-        boolean test = ProjectBaseDomain.validMmnyHnfPrmpc(aa);
-
-        return null;
-    }
-
-    //프로젝트 자사직원 원가 상세정보 입력 후 자사직원 투입정보 조회
-    @PostMapping(value = "/boot/prjct/prjctReg/mmnyHnfPrmpc/mmnyHnfPrmpcStrg")
-    public Map<String, Object> insertMmnyEmp(@RequestBody List<Map<String, Object>> mmnyLbrcoPrmpc) {
-        return null;
-    }
-
-    //프로젝트 통제성 경비 상세정보 입력 후 통제성경비 정보 조회
-    @PostMapping(value = "/boot/prjct/prjctReg/cntrlExpensPrmpc/cntrlExpensPrmpcStrg")
-    public Map<String, Object> insertExpensPrmpc(@RequestBody List<Map<String, Object>> expensPrmpc) {
-        return null;
-    }
-    
     //프로젝트 관리 변경원가 등록 시 프로젝트예산원가 생성 
     @PostMapping(value = "/boot/prjct/insertProjectCostChg")
     public int insertProjectCostChg(@RequestBody List<Map<String, Object>> params) {
@@ -134,5 +112,22 @@ public class ProjectBaseController {
     @PostMapping(value = "/boot/prjct/updateCtAtrzCmptnYn")
     public int updateCtAtrzCmptnYn(@RequestBody Map<String, Object> param){
         return ProjectBaseDomain.updateCtAtrzCmptnYn(param);
+    }
+
+    @PostMapping(value = "/boot/prjct/apprvOldCt")
+    public int apprvOldCt(@RequestBody Map<String, Object> param){
+        return ProjectBaseDomain.apprvOldCt(param);
+    }
+
+    /**
+     * 프로젝트 등록 및 수정된 후에 읽기/쓰기 권한을 부여한다.
+     * @param param
+     * @return
+     */
+    @PostMapping(value = "/boot/prjct/insertPrjctMngAuth")
+    public int insertPrjctMngAuth(@RequestBody Map<String, Object> param) {
+    	
+    	return ProjectBaseDomain.insertPrjctMngAuth(param);
+    	
     }
 }

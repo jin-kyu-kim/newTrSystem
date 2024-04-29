@@ -18,8 +18,10 @@ const ElecAtrzDetail = () => {
     const location = useLocation();
     const detailData = location.state.data;
     const sttsCd = location.state.sttsCd;
+    const prjctId = location.state.prjctId;
     const [ prjctData, setPrjctData ] = useState({});
     const [ atrzOpnn, setAtrzOpnn ] = useState([]);
+    const [ atrzOpnnVal, setAtrzOpnnVal ] = useState([]);
     const { header, keyColumn, columns, queryId, atchFlQueryId } = electAtrzJson.electAtrzDetail;
     const [ cookies ] = useCookies(["userInfo"]);
     const [ maxAtrzLnSn, setMaxAtrzLnSn ] = useState();
@@ -45,8 +47,6 @@ const ElecAtrzDetail = () => {
                 break;
         }
     }
-
-    console.log('detailData', detailData);
 
     useEffect(() => {
         getVacInfo();
@@ -97,7 +97,10 @@ const ElecAtrzDetail = () => {
         }
         try {
             const response = await ApiRequest("/boot/common/queryIdSearch", param);
+            const opnnList = response.filter(item => item.atrzSttsCdNm !== null);
+
             setAtrzOpnn(response);
+            setAtrzOpnnVal(opnnList);
         } catch (error) {
             console.error(error)
         }
@@ -133,7 +136,6 @@ const ElecAtrzDetail = () => {
     
         return year + month + day;
     }
-    
 
     /**
      * 승인 처리
@@ -142,36 +144,81 @@ const ElecAtrzDetail = () => {
         const isconfirm = window.confirm("요청을 승인하시겠습니까?");
         const date = getToday();
         const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
-
         const nowAtrzLnSn = detailData.nowAtrzLnSn;
+
+        /**
+         * 휴가 결재일 경우 승인처리를 따로 해준다.
+         */
         if(isconfirm) {
 
-            const param = [
-                { tbNm: "ATRZ_LN" },
-                { 
-                    atrzSttsCd: "VTW00802",
-                    aprvYmd: date,
-                    mdfcnDt: mdfcnDt,
-                    mdfcnEmpId: cookies.userInfo.empId,
-                },
-                { 
-                    elctrnAtrzId: detailData.elctrnAtrzId,
-                    aprvrEmpId: cookies.userInfo.empId,
-                    atrzLnSn: nowAtrzLnSn
+            if(detailData.elctrnAtrzTySeCd === "VTW04901") {    
+                /** 
+                 * 휴가결재  승인처리 
+                 */
+                const param = {
+                        empId: detailData.atrzDmndEmpId,
+                        elctrnAtrzId: detailData.elctrnAtrzId,
+                        vcatnTyCd: dtlInfo.vcatnTyCd,
+                        vcatnBgngYmd: dtlInfo.vcatnBgngYmd,
+                        vcatnEndYmd: dtlInfo.vcatnEndYmd,
+                        mdfcnEmpId: cookies.userInfo.empId,
+                        atrzStepCd: detailData.atrzStepCd,
+                        aprvParam: [
+                            { tbNm: "ATRZ_LN" },
+                            { 
+                                atrzSttsCd: "VTW00802",
+                                aprvYmd: date,
+                                mdfcnDt: mdfcnDt,
+                                mdfcnEmpId: cookies.userInfo.empId,
+                            },
+                            { 
+                                elctrnAtrzId: detailData.elctrnAtrzId,
+                                aprvrEmpId: cookies.userInfo.empId,
+                                atrzLnSn: nowAtrzLnSn
+                            }
+                        ]
                 }
-            ]
+                const response = vacAprvProcess(param).then((value) => {
 
-            const response = aprvProcess(param).then((value) => {
+                    if(value[0].atrzLnSn > 0) {
+                        upNowAtrzLnSn(value[0].atrzLnSn);
+                    } else {
+                        alert("승인 처리에 실패하였습니다.");
+                        return;
+                    }
+                });
 
-                console.log("result", value)
-                if(value > 0) {
-                    // 단계 올리기
-                    upNowAtrzLnSn(value);
-                } else {
-                    alert("승인 처리에 실패하였습니다.");
-                    return;
-                }
-            });
+            } else {
+                 /** 
+                  * 휴가결재 외 승인처리 
+                  */
+                const param = [
+                    { tbNm: "ATRZ_LN" },
+                    { 
+                        atrzSttsCd: "VTW00802",
+                        aprvYmd: date,
+                        mdfcnDt: mdfcnDt,
+                        mdfcnEmpId: cookies.userInfo.empId,
+                    },
+                    { 
+                        elctrnAtrzId: detailData.elctrnAtrzId,
+                        aprvrEmpId: cookies.userInfo.empId,
+                        atrzLnSn: nowAtrzLnSn
+                    }
+                ]
+
+                const response = aprvProcess(param).then((value) => {
+
+                    console.log("result", value)
+                    if(value > 0) {
+                        // 단계 올리기
+                        upNowAtrzLnSn(value);
+                    } else {
+                        alert("승인 처리에 실패하였습니다.");
+                        return;
+                    }
+                });
+            }
         }
     }
 
@@ -186,17 +233,18 @@ const ElecAtrzDetail = () => {
         return response;
     }
 
+    const vacAprvProcess = async (param) => {
+        const response = await ApiRequest("/boot/indvdlClm/updateVcatnMng", param);
+        return response;
+    }
+
     /**
      * 결재가 완료된 후 결재선 순번에 따라 현재 결재선 순번을 높여준다. 
      * @param {} nowAtrzLnSn : 현재 결재선 순번
      * @returns 
      */
     const upNowAtrzLnSn = async (nowAtrzLnSn) => {
-
         let updParam = {};
-        console.log("maxAtrzLnSn", maxAtrzLnSn)
-        console.log("nowAtrzLnSn", nowAtrzLnSn)
-
         if(nowAtrzLnSn > maxAtrzLnSn) {
             // max보다 승인이 끝난 뒤 결재선 순번이 크면 최종승인임.
             updParam = {
@@ -221,7 +269,6 @@ const ElecAtrzDetail = () => {
                 elctrnAtrzId: detailData.elctrnAtrzId
             }
         ]
-    
         try {
             const response = await ApiRequest("/boot/common/commonUpdate", param);
             if(response > 0) {
@@ -230,14 +277,6 @@ const ElecAtrzDetail = () => {
                 if(detailData.elctrnAtrzTySeCd === "VTW04907" && nowAtrzLnSn > maxAtrzLnSn) {
                     const clmResult = handlePrcjtCost();
                     if(clmResult < 0) {
-                        alert("승인 처리에 실패하였습니다.");
-                    }
-                }
-
-                // 휴가 결재이면서 최종 숭인인 경우 휴가 내용 반영해준다. 
-                if(detailData.elctrnAtrzTySeCd === "VTW04901" && nowAtrzLnSn > maxAtrzLnSn) {
-                    const vacResult = handleVacation();
-                    if(vacResult < 0) {
                         alert("승인 처리에 실패하였습니다.");
                     }
                 }
@@ -289,7 +328,6 @@ const ElecAtrzDetail = () => {
                     atrzLnSn: nowAtrzLnSn
                 }
             ]
-
             const result = await ApiRequest("/boot/common/commonUpdate", param);
 
             if(result > 0) {
@@ -327,9 +365,7 @@ const ElecAtrzDetail = () => {
                 nowAtrzLnSn: nowAtrzLnSn
             }
         ]
-
         const result = await ApiRequest("/boot/common/commonUpdate", param);
-   
         return result;
     }
 
@@ -363,7 +399,6 @@ const ElecAtrzDetail = () => {
      * 청구결재용 청구 연월, 차수 생성
      */
     const setAplyYmdOdr = () => {
-        
         const today = new Date();
 
         let year = today.getFullYear();
@@ -375,9 +410,7 @@ const ElecAtrzDetail = () => {
         if (day <= 15) {
             odr = 2;
         } else {
-
             odr = 1;
-
         }
         
         if (month === 1) {
@@ -400,75 +433,6 @@ const ElecAtrzDetail = () => {
         setOdr(odr);
     } 
 
-    
-
-
-    /**
-     * 휴가결재 최종 승인 시 휴가 일수 차감 
-     */
-    const handleVacation = async () => {
-
-        // 해당 사람의 휴가 관리 테이블 조회
-        const VacMng = await getVacMngInfo();
-
-        if(detailData.elctrnAtrzTySeCd === "VTW04901") {
-
-            let updParam = {}
-            if(["VTW01204", "VTW01205", "VTW01206"].includes(dtlInfo.vcatnTyCd)) {
-                updParam = {
-                    pblenVcatnUseDaycnt: VacMng.pblenVcatnUseDaycnt + dtlInfo.vcatnDeCnt,
-                    mdfcnDt: new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0],
-                    mdfcnEmpId: cookies.userInfo.empId   
-                }
-            } else if (["VTW01201", "VTW01202", "VTW01203"].includes(dtlInfo.vcatnTyCd)){
-                updParam = {
-                    useDaycnt: VacMng.useDaycnt + dtlInfo.vcatnDeCnt,
-                    vcatnRemndrDaycnt: VacMng.vcatnRemndrDaycnt - dtlInfo.vcatnDeCnt,
-                    mdfcnDt: new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0],
-                    mdfcnEmpId: cookies.userInfo.empId   
-                }
-            }
-
-            const param = [
-                { tbNm: "VCATN_MNG" },
-                updParam,
-                { 
-                    empId: detailData.atrzDmndEmpId, 
-                    vcatnYr: '2024' 
-                },
-            ]
-
-            try {
-                const response = await ApiRequest("/boot/common/commonUpdate", param);
-                return response;
-
-            } catch (error) {
-                console.error(error)
-            }
-        } else {
-            return;
-        }
-    }
-
-    const getVacMngInfo = async () => {
-        try {
-            const response = await ApiRequest('/boot/common/commonSelect', [
-                { tbNm: "VCATN_MNG" }, 
-                { 
-                    empId: detailData.atrzDmndEmpId,
-                    vcatnYr: 2024
-                }
-            ]);
-            
-            return response[0];
-
-        } catch (error) {
-            console.log('error', error);
-        }
-    };
-
-
-
     return (
         <div className="container" style={{ marginTop: "10px" }}>
             {atrzOpnn.length !== 0 && 
@@ -482,11 +446,19 @@ const ElecAtrzDetail = () => {
                     onClick={onBtnClick}
                 />}
 
-            {/* 휴가, 청구의 경우에는 컴포넌트 렌더링 */}
-            {(['VTW04901', 'VTW04907'].includes(detailData.elctrnAtrzTySeCd)) && (
+            {/* 휴가           VTW04901, 
+                청구           VTW04907,
+                외주인력 계약   VTW04908,
+                외주업체 계약   VTW04909,
+                재료비 계약     VTW04910
+                ... TODO 청구 및 그 외 
+                의 경우에는 컴포넌트 렌더링 */}
+            {(['VTW04901', 'VTW04907', 'VTW04908', 'VTW04909', 'VTW04910'].includes(detailData.elctrnAtrzTySeCd)) && (
                 <ElecAtrzTabDetail
                     dtlInfo={dtlInfo}
                     detailData={detailData}
+                    sttsCd={sttsCd}
+                    prjctId={prjctId}
                 />
             )}
 
@@ -506,15 +478,17 @@ const ElecAtrzDetail = () => {
             <CustomTable
                 keyColumn={keyColumn}
                 columns={columns}
-                values={atrzOpnn}
+                values={atrzOpnnVal}
             />
-
             <div style={{textAlign: 'center', marginBottom: '100px'}}>
                 {sttsCd === 'VTW00801' && header.filter(item => item.id === 'aprv' || item.id === 'rjct').map((item, index) => (
                     <Button id={item.id} text={item.text} key={index} type={item.type} 
                         onClick={onBtnClick} style={{marginRight: '3px'}}/>
                 ))}
-                <Button text='목록' type='normal' onClick={() => navigate('/elecAtrz/ElecAtrz')} />
+                 <Button text='목록' type='normal' 
+                    onClick={() => {location.state.docSeCd !=='VTW03405'
+                                    ? navigate('/elecAtrz/ElecAtrz') 
+                                    : navigate('/elecAtrz/ElecGiveAtrz',{state :{prjctId: prjctId, formData: location.state.formData}}) }} />
             </div>
             <Popup
                 width={"80%"}

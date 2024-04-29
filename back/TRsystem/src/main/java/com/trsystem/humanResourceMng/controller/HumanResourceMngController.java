@@ -2,6 +2,7 @@ package com.trsystem.humanResourceMng.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trsystem.humanResourceMng.domain.HumanResourceMngDomain;
+import com.trsystem.indvdlClm.domain.IndvdlClmDomain;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;

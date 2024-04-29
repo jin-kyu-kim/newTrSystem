@@ -1,8 +1,8 @@
 {
     "menuName": "PymntPlanPopup",
-    "matrlCtrt": {
+    "hnfCtrt": {
         "labelValue": {
-            "outordEmpId": {
+            "expectInptHnfId": {
                 "type": "ComboBox",
                 "label": "계획 투입 인력",
                 "required": true,
@@ -11,10 +11,10 @@
                         "queryId" : {
                             "queryId" : "elecAtrzMapper.retrieveOutordEmpPlan"
                             },
-                        "valueExpr" : "outordEmpId",
-                        "displayExpr": "outordEmpId",
-                        "values" : ["prjctId","bgtMngOdr","outordLbrcoPrmpcSn","outordEmpId","hnfRoleCd","hnfGradCd","tkcgJob","untpc","inptPrnmntYmd","withdrPrnmntYmd", "expectMm", "usefulAmt"],
-                        "name" : "outordEmpId"
+                        "valueExpr" : "expectInptHnfId",
+                        "displayExpr": "outordEmpNm",
+                        "values" : ["prjctId","bgtMngOdr","outordLbrcoPrmpcSn","expectInptHnfId","outordEmpNm","hnfRoleCd","hnfRoleCdNm","hnfGradCd","hnfGradCdNm","tkcgJob","untpc","inptPrnmntYmd","withdrPrnmntYmd", "expectMm", "usefulAmt"],
+                        "name" : "expectInptHnfId"
                         }
             },
             "usefulAmt": {
@@ -22,9 +22,10 @@
                 "type": "NumberBox",
                 "label": "가용금액",
                 "placeholder": "가용금액",
-                "required": true
+                "required": true,
+                "format": "#,###"
             },
-            "emp": {
+            "inptHnfId": {
                 "type": "ComboBox",
                 "label": "실제 투입 인력",
                 "required": true,
@@ -33,10 +34,10 @@
                         "queryId" : {
                             "queryId" : "elecAtrzMapper.retrieveRealOutordEmpPlan"
                             },
-                        "valueExpr" : "empId",
+                        "valueExpr" : "inptHnfId",
                         "displayExpr": "empFlnm",
-                        "values" : ["empId"],
-                        "name" : "empId"
+                        "values" : ["inptHnfId","empFlnm"],
+                        "name" : "inptHnfId"
                         }
             },
             "outordHnfCtrtSeCd": {
@@ -50,7 +51,8 @@
                         },
                         "valueExpr" : "cdValue",
                         "displayExpr": "cdNm",
-                        "name": "outordHnfCtrtSeCd"
+                        "name": "outordHnfCtrtSeCd",
+                        "nameNm": "outordHnfCtrtSeCdNm"
                      }
             },
             "hnfRoleCd": {
@@ -64,7 +66,8 @@
                         },
                         "valueExpr" : "cdValue",
                         "displayExpr": "cdNm",
-                        "name": "hnfRoleCd"
+                        "name": "hnfRoleCd",
+                        "nameNm": "hnfRoleCdNm"
                      }
             },
             "hnfGradCd": {
@@ -78,7 +81,8 @@
                         },
                         "valueExpr" : "cdValue",
                         "displayExpr": "cdNm",
-                        "name": "hnfGradCd"
+                        "name": "hnfGradCd",
+                        "nameNm": "hnfGradCdNm"
                      }
             },
             "tkcgJob": {
@@ -108,13 +112,16 @@
                 "name": "withdrPrnmntYmd",
                 "type" : "DateBox",
                 "label": "투입종료일",
-                "placeholder": "투입종료일"
+                "placeholder": "투입종료일",
+                "required": true
             },
             "totAmt": {
                 "name": "totAmt",
                 "type" : "NumberBox",
                 "label": "총액",
-                "placeholder": "총액"
+                "placeholder": "총액",
+                "format": "#,###",
+                "required": true
             }
         }       
     }

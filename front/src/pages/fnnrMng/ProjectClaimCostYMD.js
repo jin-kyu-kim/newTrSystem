@@ -124,6 +124,9 @@ const ProjectClaimCostYMD = ({ prjctId, prjctNm, startYmOdr, endYmOdr, empId, ex
                 columnGTName={'소계'}
                 blockCollapse={true}
                 weekendColor={true}
+                isExport={true}
+                sorting={true}
+                grandTotals={false}
                 fileName={makeExcelFileName}
             />
         </div>

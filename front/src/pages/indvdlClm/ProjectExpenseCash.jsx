@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { TagBox, TextBox } from "devextreme-react";
-import { RequiredRule, Validator } from "devextreme-react/validator";
 import { validateFields, hasError } from './ProjectExpenseValidate';
 import ProjectExpenseSubmit from "./ProjectExpenseSubmit";
 import ProjectExpenseJson from "./ProjectExpenseJson.json";
@@ -12,10 +11,13 @@ const ProjectExpenseCash = (props) => {
     const { labelValue } = ProjectExpenseJson;
     const { sendTbInfo, placeholderAndRequired, btnInfo } = ProjectExpenseJson.ProjectExpenseTab;
     const [ validationErrors, setValidationErrors ] = useState([]);
-    const [ customParam, setCustomParam ] = useState({
-        queryId: "indvdlClmMapper.retrieveExpensCdPrjctAccto"
-    });
+    const [ customParam, setCustomParam ] = useState({ queryId: "indvdlClmMapper.retrieveExpensCdPrjctAccto" });
+    const atrzParam = {
+        queryId: "projectExpenseMapper.retrieveElctrnAtrzClm",
+        empId: props.empId
+    };
     const [ empList, setEmpList ] = useState([]);
+    const [ dateVal, setDateVal ] = useState({utztnDt: ''});
     const [ value, setValue ] = useState([{
         empId: props.empId,
         aplyYm: props.aplyYm,
@@ -28,7 +30,8 @@ const ProjectExpenseCash = (props) => {
                 const response = await ApiRequest("/boot/common/commonSelect", [{ tbNm: "EMP" }]);
                 const processedData = response.map(({ empId, empno, empFlnm }) => ({
                     key: empId,
-                    value: empno+' '+empFlnm,
+                    value: empFlnm,
+                    displayValue: empno+' '+empFlnm,
                 }));
                 setEmpList(processedData);
             } catch (error) {
@@ -46,20 +49,27 @@ const ProjectExpenseCash = (props) => {
     }, [value[0].prjctId]);
     
     const handleChgValue = (data) => {
+        let newValue = data.value;
+
+        if(data.name === 'utztnDt'){
+            newValue = newValue + "000000";
+            setDateVal({[data.name]: data.value});
+        }
         setValue(prevValue => [{
             ...prevValue[0],
-            [data.name]: data.value
+            [data.name]: newValue
         }]);
+        
     }
 
     const SpecialTypeRender = ({item}) => {
         switch (item.type) {
             case 'selectBox':
-                return(
+                return (
                     <CustomComboBox
                         label={item.label}
                         props={item.param}
-                        customParam={customParam}
+                        customParam={item.name === 'expensCd' ? customParam : atrzParam }
                         onSelect={handleChgValue}
                         placeholder={item.placeholder}
                         value={value[0][item.name]}
@@ -67,7 +77,7 @@ const ProjectExpenseCash = (props) => {
                         readOnly={item.name === 'expensCd' && !value[0].prjctId}
                     />
                 )
-            case 'textBox':
+            default: // textBox
                 return item.name === 'atdrn' && value[0].expensCd === 'VTW04531' ? (
                     <TagBox
                         dataSource={empList}
@@ -79,10 +89,21 @@ const ProjectExpenseCash = (props) => {
                         displayExpr={item.displayExpr}
                         showSelectionControls={true}
                         applyValueMode="useButtons"
-                        onValueChanged={(e) => handleChgValue({name: item.name, value: e.value}) }
-                    /> )
-                : ( <TextBox value={value[0][item.name]} onValueChanged={(e) => handleChgValue({name: item.name, value: e.value})} 
-                        placeholder={item.placeholder} style={{ backgroundColor: hasError(validationErrors, null, item.name) ? '#FFCCCC' : '' }}/> )
+                        onValueChanged={(e) => {
+                            handleChgValue({name: item.name, value: e.value})
+                            setValidationErrors(prevErrors => prevErrors.filter(error => !(error.field === item.name)))
+                        }} /> 
+                ) : ( 
+                    <TextBox 
+                        value={value[0][item.name]} 
+                        style={{ backgroundColor: hasError(validationErrors, null, item.name) ? '#FFCCCC' : '' }}
+                        placeholder={item.placeholder} 
+                        onValueChanged={(e) => {
+                            handleChgValue({name: item.name, value: e.value})
+                            setValidationErrors(prevErrors => prevErrors.filter(error => !(error.field === item.name)))
+                        }} 
+                    /> 
+                )
         }
     }
 
@@ -96,11 +117,11 @@ const ProjectExpenseCash = (props) => {
             </span>
 
             <div className="dx-fieldset" style={{width: '80%'}}>
-                {labelValue.map(item => 
+                {labelValue.map((item, index) => 
                     (!item.special ? 
-                        <CustomLabelValue props={item} onSelect={handleChgValue} value={value[0][item.name]} />
+                        <CustomLabelValue props={item} onSelect={handleChgValue} value={item.name === 'utztnDt' ? dateVal[item.name] : value[0][item.name]} key={index} />
                     : 
-                        <div className="dx-field">
+                        <div className="dx-field" key={index} >
                             <div className="dx-field-label asterisk">{item.label}</div>
                             <div className="dx-field-value">
                                 <SpecialTypeRender item={item} />
@@ -111,8 +132,8 @@ const ProjectExpenseCash = (props) => {
             </div>
 
             <div style={{marginTop: '20px', marginLeft: '430px'}}>
-                <ProjectExpenseSubmit selectedItem={value} sendTbInfo={sendTbInfo} buttonGroup={btnInfo} width={'1000px'}
-                    validateFields={() => validateFields(value, placeholderAndRequired, setValidationErrors)} />
+                <ProjectExpenseSubmit validateFields={() => validateFields(value, placeholderAndRequired, setValidationErrors, btnInfo)} 
+                    getData={props.getData} selectedItem={value} sendTbInfo={sendTbInfo} buttonGroup={btnInfo} width={'1000px'} />
             </div>
         </div>
     );

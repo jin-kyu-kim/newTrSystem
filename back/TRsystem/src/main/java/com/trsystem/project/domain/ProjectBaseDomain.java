@@ -7,10 +7,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
@@ -595,5 +593,160 @@ public class ProjectBaseDomain {
 			commonService.updateData(updateParam);
 		}
 		return 1;
+	}
+
+	public static int apprvOldCt(Map<String, Object> param){
+		// 날짜 확인
+		LocalDate currentDate = LocalDate.now();
+		int year = currentDate.getYear();
+		int month = currentDate.getMonthValue();
+		String ym = String.format("%04d%02d", year, month);
+
+		LocalDate lastMonthDate = currentDate.minusMonths(1).withDayOfMonth(1).minusDays(1);
+		int lastYear = lastMonthDate.getYear();
+		int lastMonth = lastMonthDate.getMonthValue();
+		String lastYm = String.format("%04d%02d", lastYear, lastMonth);
+
+		int dayOfMonth = currentDate.getDayOfMonth();
+
+		// PRJCT_INDVDL_CT_MM 테이블에 데이터 존재하는지 확인
+		List<Map<String, Object>> searchCtMm = new ArrayList<>();
+		Map<String, Object> tbCtMm = new HashMap<>();
+		tbCtMm.put("tbNm", "PRJCT_INDVDL_CT_MM");
+		Map<String, Object> paramCtMm = new HashMap<>();
+		paramCtMm.put("prjctId", param.get("prjctId"));
+		paramCtMm.put("empId", param.get("empId"));
+		if(dayOfMonth > 15){
+			paramCtMm.put("aplyYm", ym);
+			paramCtMm.put("aplyOdr", 1);
+		} else {
+			paramCtMm.put("aplyYm", lastYm);
+			paramCtMm.put("aplyOdr", 2);
+		}
+		searchCtMm.add(tbCtMm);
+		searchCtMm.add(paramCtMm);
+		List<Map<String, Object>> listCtMm = commonService.commonSelect(searchCtMm);
+
+		// PRJCT_INDVDL_CT_MM 테이블에 데이터 없으면 생성
+		if(listCtMm.isEmpty()){
+			List<Map<String, Object>> insertCtMm = new ArrayList<>();
+			paramCtMm.put("mmAtrzCmptnYn", "N");
+			insertCtMm.add(tbCtMm);
+			insertCtMm.add(paramCtMm);
+			commonService.insertData(insertCtMm);
+		}
+
+		// (PRJCT_CT_APLY)
+		// ID로 서치
+		List<Map<String, Object>> searchAply = new ArrayList<>();
+		Map<String, Object> tbAply = new HashMap<>();
+		tbAply.put("tbNm", "PRJCT_CT_APLY");
+		searchAply.add(tbAply);
+		searchAply.add(param);
+		List<Map<String, Object>> listAply = commonService.commonSelect(searchAply);
+
+		// 가져온 값의 aplyYm, aplyOdr 바꿔서 인서트
+		List<Map<String, Object>> insertAply = new ArrayList<>();
+		tbAply.put("snColumn", "prjctCtAplySn");
+		Map<String, Object> dataAply = listAply.get(0);
+		if(dayOfMonth > 15){
+			dataAply.put("aplyYm", ym);
+			dataAply.put("aplyOdr", 1);
+		} else {
+			dataAply.put("aplyYm", lastYm);
+			dataAply.put("aplyOdr", 2);
+		}
+		insertAply.add(tbAply);
+		insertAply.add(dataAply);
+		commonService.insertData(insertAply);
+
+		// (PRJCT_CT_ATRZ)
+		// ID로 서치
+		List<Map<String, Object>> searchAtrz = new ArrayList<>();
+		Map<String, Object> tbAtrz = new HashMap<>();
+		tbAtrz.put("tbNm", "PRJCT_CT_ATRZ");
+		searchAtrz.add(tbAtrz);
+		searchAtrz.add(param);
+		List<Map<String, Object>> listAtrz = commonService.commonSelect(searchAtrz);
+
+		// 가져온 값으로 기존 값 업데이트 -> 코드 VTW03708(이월)
+		List<Map<String, Object>> updateAtrz = new ArrayList<>();
+		updateAtrz.add(tbAtrz);
+		Map<String, Object> paramAtrz = new HashMap<>();
+		paramAtrz.put("atrzDmndSttsCd", "VTW03708");
+		updateAtrz.add(paramAtrz);
+		updateAtrz.add(param);
+		commonService.updateData(updateAtrz);
+
+		// 가져온 값의 aplyYm, aplyOdr 바꿔서 인서트
+		List<Map<String, Object>> insertAtrz = new ArrayList<>();
+		tbAtrz.put("snColumn", "prjctCtAplySn");
+		Map<String, Object> dataAtrz = listAtrz.get(0);
+		dataAtrz.put("aplyYm", dataAply.get("aplyYm"));
+		dataAtrz.put("aplyOdr", dataAply.get("aplyOdr"));
+		dataAtrz.put("atrzDmndSttsCd", "VTW03703");
+		insertAtrz.add(tbAtrz);
+		insertAtrz.add(dataAtrz);
+		commonService.insertData(insertAtrz);
+
+		return 1;
+	}
+
+	/**
+	 * 프로젝트 읽기/쓰기 권한을 부여하는 메소드
+	 * @param param
+	 * @return
+	 */
+	public static int insertPrjctMngAuth(Map<String, Object> param) {
+		int result = 0;
+
+		String prjctMngrEmpId =  String.valueOf(param.get("prjctMngrEmpId"));	// PM의 EMP ID
+
+		// 1. 권한을 부여할 emp 목록 조회해오기.
+		List<Map<String, Object>> empList = retrieveAprvrEmpId(param);
+		Set<String> empSet = new HashSet<>();
+
+		// 2. 중복을 제거한 set 만든다.(부서에 따라 empId가 중복 될 경우가 존재)
+		for(int i = 0; i < empList.size(); i++) {
+			empSet.add(String.valueOf(empList.get(i).get("empId")));
+		}
+
+		ArrayList<String> list = new ArrayList<String>(empSet);
+
+		Map<String, Object> tbParam = new HashMap<>();		// 테이블 파라미터
+		Map<String, Object> pmDataParam = new HashMap<>();	// pm 파라미터
+		ArrayList<Map<String, Object>> insertParams = new ArrayList<>();
+
+		tbParam.put("tbNm", "PRJCT_MNG_AUTHRT");
+
+		pmDataParam.put("prjctId", param.get("prjctId"));
+		pmDataParam.put("empId", param.get("prjctMngrEmpId"));
+		pmDataParam.put("prjctMngAuthrtCd", param.get("prjctMngAuthrtCd"));
+		pmDataParam.put("regEmpId", param.get("regEmpId"));
+		pmDataParam.put("regDt", param.get("regDt"));
+
+		insertParams.add(0, tbParam);
+		insertParams.add(pmDataParam);
+
+		for(int i = 0; i < list.size(); i++) {
+			Map<String, Object> infoParam = new HashMap<>();
+
+			// 권한 생성할 인력 중 PM의 아이디와 다른 사람만(이미 들어있기 때문에)
+			if(!prjctMngrEmpId.equals(list.get(i))) {
+				infoParam.put("prjctId", param.get("prjctId"));
+				infoParam.put("empId", list.get(i));
+				infoParam.put("prjctMngAuthrtCd", "VTW05201");
+				infoParam.put("regEmpId", param.get("regEmpId"));
+				infoParam.put("regDt", param.get("regDt"));
+				insertParams.add(infoParam);
+			}
+		}
+
+		try {
+			result = commonService.insertData(insertParams);
+		} catch (Exception e) {
+			return result;
+		}
+		return result;
 	}
 }

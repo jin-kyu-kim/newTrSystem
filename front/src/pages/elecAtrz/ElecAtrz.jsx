@@ -101,10 +101,10 @@ const ElecAtrz = () => {
     console.log(e.data)
     console.log(param)
 
-    if(e.data.atrzDmndSttsCd === 'VTW03701') {
+    if(e.data.atrzDmndSttsCd === 'VTW03701') {  //임시저장
       navigate('/elecAtrz/ElecAtrzNewReq', {state: {formData: e.data, sttsCd: param.sttsCd, prjctId: e.data.prjctId}});
     } else {
-      navigate('/elecAtrz/ElecAtrzDetail', {state: {data: e.data, sttsCd: param.sttsCd}});
+      navigate('/elecAtrz/ElecAtrzDetail', {state: {data: e.data, sttsCd: param.sttsCd, prjctId: e.data.prjctId}});
     }
   };
 

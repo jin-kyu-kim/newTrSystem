@@ -43,10 +43,14 @@
             "label": "성명",
             "required": true,
             "placeholder": "성명",
-            "param": { "tbNm" : "OUTORD_EMP",
+            "param": { 
+                        "queryId" : {
+                            "queryId" : "projectMapper.retrieveoutordEmpPrmpc"
+                            },
                         "valueExpr" : "outordEmpId",
                         "displayExpr": "outordEmpNm",
-                        "name": "outordEmpId"
+                        "values" : ["outordEmpId","outordEmpNm"],
+                        "name" : "outordEmpId"
                      }
         },
         "hnfRoleCdNm": {
@@ -70,8 +74,8 @@
             "required": true,
             "placeholder": "담당업무"
         },
-        "untpc": {
-            "name": "untpc",
+        "userDfnValue": {
+            "name": "userDfnValue",
             "type": "NumberBox",
             "label": "단가",
             "required": true,

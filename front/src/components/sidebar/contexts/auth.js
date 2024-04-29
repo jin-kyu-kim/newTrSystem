@@ -1,38 +1,57 @@
 import React, { useState, useEffect, createContext, useContext, useCallback } from 'react';
-import { getUser, signIn as sendSignInRequest } from '../api/auth';
+import {getUser, signIn as sendSignInRequest, setTokenExtension} from '../api/auth';
+import { useCookies } from "react-cookie";
+import { useNavigate } from "react-router-dom";
 
 
 function AuthProvider(props) {
   const [user, setUser] = useState();
   const [loading, setLoading] = useState(true);
+  const [cookies, setCookie] = useCookies(["userInfo", "userAuth", "deptInfo"]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     (async function () {
       const result = await getUser();
       if (result.isOk) {
         setUser(result.data);
+      }else{
+        setUser(null);
       }
-
       setLoading(false);
     })();
-  }, []);
+  }, [user]);
 
   const signIn = useCallback(async (email, password) => {
     const result = await sendSignInRequest(email, password);
     if (result.isOk) {
       setUser(result.data);
+      setCookie("userAuth", result.data.data.authorities);
+      setCookie("userInfo", result.data.data.userInfo);
+      setCookie("deptInfo", result.data.data.deptInfo);
+      navigate("/");
     }
-
     return result;
   }, []);
 
   const signOut = useCallback(() => {
-    setUser(undefined);
-  }, []);
+    localStorage.clear();
+    setCookie("userInfo", undefined, { path: '/', expires: new Date(0) });
+    setCookie("userAuth", undefined, { path: '/', expires: new Date(0) });
+    setCookie("deptInfo", undefined, { path: '/', expires: new Date(0) });
+    setUser(null);
+    navigate("/LoginFrom");
+  }, [navigate, setCookie]);
 
+  const tokenExtension = useCallback(async ()=>{
+    const result =await setTokenExtension(localStorage.getItem("token"));
+    setCookie("userAuth", result.authorities);
+    setCookie("userInfo", result.userInfo);
+    setCookie("deptInfo", result.deptInfo);
+  })
 
   return (
-    <AuthContext.Provider value={{ user, signIn, signOut, loading }} {...props} />
+    <AuthContext.Provider value={{ user, signIn, signOut, tokenExtension, loading }} {...props} />
   );
 }
 
