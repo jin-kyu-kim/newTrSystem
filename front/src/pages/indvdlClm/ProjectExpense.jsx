@@ -48,7 +48,10 @@ const ProjectExpense = () => {
     const searchHandle = async (initParam) => {
         setAplyYm(initParam.year + initParam.month);
         setAplyOdr(initParam.aplyOdr);
-        setPopVisible(true);
+
+        if(Object.keys(initParam).length !== 0){
+            setPopVisible(true);
+        }
     };
 
     const getData = async () => {

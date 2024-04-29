@@ -42,20 +42,27 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
     let odrVal = day > 15 ? "1" : "2";
     let monthVal = month < 10 ? "0" + month : month;
 
-    setInitParam({
-      year: year,
-      month: monthVal,
-      aplyOdr: odrVal
-    });
+    if(searchParams.yearList){
+      setInitParam({
+        year: year,
+        month: monthVal,
+        aplyOdr: odrVal
+      });
+    }
     setYmOdrData({
       year: yearList,
       month: monthList,
       aplyOdr: odrList
-    })
+    });
+
+    callBack(initParam);
   }, []);
 
   const handleChgState = ({ name, value }) => {
-    setInitParam(prev => ({ ...prev, [name]: value }));
+    setInitParam({
+      ...initParam,
+      [name]: value,
+    });
   };
 
   const handleStartDateChange = (newStartDate) => {
