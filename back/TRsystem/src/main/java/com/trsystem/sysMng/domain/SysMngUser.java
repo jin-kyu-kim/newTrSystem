@@ -17,6 +17,7 @@ public class SysMngUser implements UserDetails {
 
     private final String username;
     private final String password;
+    private final String intlPwsdYn;
     private final Map<String, Object> userInfo;
     private final List<Map<String, Object>> deptInfo;
     private final Collection<? extends GrantedAuthority> authorities;
