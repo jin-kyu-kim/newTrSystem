@@ -6,28 +6,29 @@ import ProjectExpenseJson from "./ProjectExpenseJson.json"
 import ProjectExpensePopup from './ProjectExpensePopup';
 import CustomTable from 'components/unit/CustomTable';
 import ApiRequest from "../../utils/ApiRequest";
+import SearchInfoSet from 'components/composite/SearchInfoSet';
 
 const ProjectExpense = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { ExpenseInfo, keyColumn, ctAplyTableColumns, elcKeyColumn, columnCharge, buttonsConfig,
-        aplyAndAtrzCtQueryId, dmndSttsQueryId, groupingColumn, groupingData } = ProjectExpenseJson.ProjectExpenseMain;
+        aplyAndAtrzCtQueryId, dmndSttsQueryId, groupingColumn, groupingData, searchInfo } = ProjectExpenseJson.ProjectExpenseMain;
     const [ index, setIndex ] = useState(0);
     const [ atrzDmndSttsCnt, setAtrzDmndSttsCnt ] = useState({}); // 상태코드별 데이터 개수
     const [ ctAply, setCtAply ] = useState([]); // 차수 청구내역 (table1)
     const [ ctAtrz, setCtAtrz ] = useState([]); // 전자결재 청구내역 (table2)
     const [ changeColumn, setChangeColumn ] = useState([]); // 결재상태 컬럼 -> 버튼렌더를 위해 필요
     const [ ctAtrzCmptnYn, setCtAtrzCmptnYn ] = useState(); // 비용결재완료여부
-    const [ mmAtrzCmptnYn, setMmAtrzCmptnYn ] = useState(); // 근무시간
     const [ cookies ] = useCookies([]);
     const [ popVisible, setPopVisible ] = useState(false);
+    
     const empId = location.state ? location.state.empId : cookies.userInfo.empId;
     const date = new Date();
     const year = date.getFullYear();
     const month = date.getDate() > 15 ? date.getMonth() + 1 : date.getMonth();
     const monthVal = month < 10 ? "0" + month : month;
-    const aplyYm = year + monthVal;
-    const aplyOdr = date.getDate() > 15 ? "1" : "2";
+    const [ aplyYm, setAplyYm ] = useState(year + monthVal);
+    const [ aplyOdr, setAplyOdr ] = useState(date.getDate() > 15 ? "1" : "2");
 
     const itemTitleRender = (a) => <span>{a.TabName}</span>;
     const onSelectionChanged = useCallback(
@@ -35,11 +36,20 @@ const ProjectExpense = () => {
             if (args.name === "selectedIndex") setIndex(args.value);
         }, [setIndex]
     );
+
     useEffect(() => { getData(); }, []);
+
     useEffect(() => { // 결재상태에 따른 컬럼 list변경
         const columns = atrzDmndSttsCnt.ctReg > 0 ? 'ctAplyBtnColumns' : (atrzDmndSttsCnt.rjct > 0 ? 'rjctCnColumns' : 'ctAplyStrColumns');
         setChangeColumn(ctAplyTableColumns.concat(ProjectExpenseJson.ProjectExpenseMain[columns]))
     }, [atrzDmndSttsCnt]);
+
+
+    const searchHandle = async (initParam) => {
+        setAplyYm(initParam.year + initParam.month);
+        setAplyOdr(initParam.aplyOdr);
+        setPopVisible(true);
+    };
 
     const getData = async () => {
         const apiInfo = [
@@ -56,8 +66,7 @@ const ProjectExpense = () => {
         });
     };
     const setCtAtrzCmptnData = (data) => {
-        setCtAtrzCmptnYn(data[0].ctAtrzCmptnYn) // 비용결재 완료여부
-        setMmAtrzCmptnYn(data[0].mmAtrzCmptnYn) // 근무시간 결재 신청 N
+        setCtAtrzCmptnYn(data[0]?.ctAtrzCmptnYn);
     };
 
     const setCtAtrzDmndSttsData = (data) => {
@@ -93,6 +102,8 @@ const ProjectExpense = () => {
 
     const onClickAction = async (onClick) => {
         if (onClick.name === 'onPrintClick') {
+            setAplyYm(year + monthVal);
+            setAplyOdr(date.getDate() > 15 ? "1" : "2");
             setPopVisible(true);
         } else {
             if (window.confirm(onClick.msg)) {
@@ -142,7 +153,7 @@ const ProjectExpense = () => {
     const RenderTopTable = ({ title, keyColumn, columns, values }) => {
         return (
             <div style={{ marginBottom: '20px' }}>
-                <p>{title}</p>
+                <span>{title}</span>
                 <CustomTable
                     keyColumn={keyColumn}
                     columns={columns}
@@ -165,9 +176,16 @@ const ProjectExpense = () => {
                     {getButtonsShow().map(({ onClick, text, type }, index) => (
                         <Button key={index} text={text} type={type} onClick={() => onClickAction(onClick)} style={{ marginRight: '5px' }} />))}
                 </div>
+
+                <div style={{marginBottom: '50px', width: 600 }}>
+                    <SearchInfoSet
+                        callBack={searchHandle}
+                        props={searchInfo}
+                    />
+                </div>
                 <RenderTopTable title={`* ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} />
                 <RenderTopTable title='* 전자결재 청구 내역' keyColumn={elcKeyColumn} columns={columnCharge} values={ctAtrz} />
-
+                
                 {atrzDmndSttsCnt.ctReg > 0 || ctAtrzCmptnYn === null
                     ? <TabPanel
                         dataSource={ExpenseInfo}
@@ -194,8 +212,9 @@ const ProjectExpense = () => {
             </div>
             <ProjectExpensePopup
                 visible={popVisible}
-                aprvInfo={atrzDmndSttsCnt}
                 onPopHiding={onPopHiding}
+                aprvInfo={atrzDmndSttsCnt}
+                noDataCase={{cnt: ctAply.length, yn: ctAtrzCmptnYn}}
                 basicInfo={{ aplyYm, aplyOdr, empId }}
             />
         </div>
