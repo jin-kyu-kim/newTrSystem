@@ -1,21 +1,18 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "react-datepicker/dist/react-datepicker.css";
-
 import ApiRequest from "../../utils/ApiRequest";
 import NoticeJson from "../infoInq/NoticeJson.json";
-import CustomTable from "../../components/unit/CustomTable";
 import SearchInfoSet from 'components/composite/SearchInfoSet';
+import CustomEditTable from "components/unit/CustomEditTable";
 
 const NoticeList = () => {
     const [values, setValues] = useState([]);
     const [param, setParam] = useState({});
     const [totalItems, setTotalItems] = useState(0);
-    const [currentPage, setCurrentPage] = useState(1);
     const [pageSize] = useState(10);
     const navigate = useNavigate();
 
-    const { keyColumn, queryId, tableColumns, searchInfo } = NoticeJson;
+    const { keyColumn, queryId, tableColumns, searchInfo, noticeInsertPage } = NoticeJson;
     
     useEffect(() => {
         if (!Object.values(param).every((value) => value === "")) {
@@ -23,15 +20,11 @@ const NoticeList = () => {
         }
     }, [param]);
 
-    // 검색으로 조회할 때
     const searchHandle = async (initParam) => {
-        setCurrentPage(1);
         setParam({
             ...initParam,
-            queryId: queryId,
-            currentPage: currentPage,
-            startVal: 0,
-            pageSize: pageSize,
+            type: 'notice',
+            queryId: queryId
         });
     };
 
@@ -49,7 +42,7 @@ const NoticeList = () => {
         }
     };
 
-    const onRowDblClick = (e) => {
+    const onRowClick = (e) => {
         navigate("/infoInq/NoticeDetail", 
                   {state: { id: e.key }})
       };
@@ -68,17 +61,19 @@ const NoticeList = () => {
             <div style={{ marginBottom: "20px" }}>
                 <SearchInfoSet 
                     props={searchInfo}
+                    insertPage={noticeInsertPage}
                     callBack={searchHandle}
                 /> 
             </div>
 
             <div>검색된 건 수 : {totalItems} 건</div>
-            <CustomTable
+            <CustomEditTable
+                noEdit={true}
                 keyColumn={keyColumn}
                 pageSize={pageSize}
                 columns={tableColumns}
                 values={values}
-                onRowDblClick={onRowDblClick}
+                onRowClick={onRowClick}
                 paging={true}
             />
         </div>

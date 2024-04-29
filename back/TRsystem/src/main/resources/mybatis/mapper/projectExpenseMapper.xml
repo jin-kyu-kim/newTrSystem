@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.trsystem.mybatis.mapper.projectExpenseMapper">
+	<select id="retrievePrjctCtAplyList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT
+			pca.PRJCT_CT_APLY_SN
+			, pca.EXPENS_CD
+			, CASE
+				WHEN LENGTH(UTZTN_DT) = 17 THEN SUBSTR(UTZTN_DT,1,7)
+				WHEN LENGTH(UTZTN_DT) = 14 THEN CONCAT(SUBSTR(UTZTN_DT, 5, 2),'월 ',SUBSTR(UTZTN_DT,7,2),'일')
+			END  AS UTZTN_DT
+			, USE_OFFIC
+			, UTZTN_AMT
+			, ATDRN
+			, CT_PRPOS
+			, (select CD_NM from CD where CD_VALUE = pca.CT_ATRZ_SE_CD) AS 'CT_ATRZ_SE_CD_NM'
+			, (select CD_NM from CD where CD_VALUE = pca.EXPENS_CD) AS 'EXPENS_CD_NM'
+			, pca.EMP_ID
+			, pca.PRJCT_ID
+			, pca.APLY_YM
+			, pca.APLY_ODR
+			, (select CD_NM from CD where CD_VALUE = pcaz.ATRZ_DMND_STTS_CD) AS 'ATRZ_DMND_STTS_CD_NM'
+			, (SELECT PRJCT_NM FROM PRJCT WHERE PRJCT_ID = pca.PRJCT_ID) AS PRJCT_NM
+		FROM PRJCT_CT_APLY pca
+		JOIN PRJCT_CT_ATRZ pcaz
+			ON pca.PRJCT_CT_APLY_SN = pcaz.PRJCT_CT_APLY_SN
+			AND pca.EMP_ID = pcaz.EMP_ID
+			AND pca.APLY_YM = pcaz.APLY_YM
+			AND pca.APLY_ODR = pcaz.APLY_ODR
+		WHERE pca.EMP_ID = #{empId}
+		  AND pca.APLY_YM = #{aplyYm}
+		  AND pca.APLY_ODR = #{aplyOdr}
+	</select>
+
+	<select id="retrieveElctrnAtrzClm" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT
+			ea.ELCTRN_ATRZ_ID
+			 , (select CD_NM from CD where CD_VALUE = cad.CT_STLM_SE_CD) AS CT_STLM_SE_CD
+			 , CONCAT(SUBSTR(RCIPT_PBLCN_YMD, 5, 2),'월 ',SUBSTR(RCIPT_PBLCN_YMD,7,2),'일') AS RCIPT_PBLCN_YMD
+			 , cad.CNPT_NM
+			 , cad.CLM_AMT
+			 , ea.PRJCT_ID
+			 , (select CD_NM from CD where CD_VALUE = cad.EXPENS_CD) AS  EXPENS_CD_NM
+			 , cad.DTL_USE_DTLS
+			 , cad.CLM_PRPOS
+			 , ea.PRJCT_ID
+			 , ea.ELCTRN_ATRZ_TY_SE_CD
+			 , ea.NOW_ATRZ_LN_SN
+			 , ea.ATRZ_DMND_EMP_ID
+		     , (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = ea.ATRZ_DMND_EMP_ID) AS ATRZ_DMND_EMP_NM
+			 , DATE_FORMAT(ea.REG_DT, '%Y-%m-%d') AS REG_DT
+			 , ca.CLM_ATRZ_TTL
+		FROM ELCTRN_ATRZ ea
+		JOIN CLM_ATRZ ca
+		    ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID
+		JOIN CLM_ATRZ_DTL cad
+		    ON (ea.ELCTRN_ATRZ_ID = cad.ELCTRN_ATRZ_ID)
+		WHERE 1 = 1
+		  AND ea.ATRZ_DMND_STTS_CD = 'VTW03703'
+		  AND ea.ATRZ_DMND_EMP_ID = #{empId}
+	</select>
+</mapper>
+

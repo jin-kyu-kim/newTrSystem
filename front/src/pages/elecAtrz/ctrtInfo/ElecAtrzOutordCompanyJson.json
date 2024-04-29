@@ -1,0 +1,43 @@
+{
+    "menuName": "ElecAtrzOutordCompanyJson",
+    "queryId": "projectMapper.retrieveElctrnAtrzMatrlCtDetail",
+    "keyColumn": "entrpsCtrtDtlSn",
+    "insertButton" : "담당업무 추가",
+    "tableColumns": [
+      { "key": "tkcgJob", "value": "담당업무" },
+      { "key": "expectCt", "value": "가용금액" },
+      { "key": "totAmt", "value": "총 사용액" },
+      { "value": "선금",
+        "subColumns": [
+          { "key": "advPayYm", "value": "날짜" },
+          { "key": "advPayAmt", "value": "금액" }
+        ]},
+      { "value": "중도금",
+        "subColumns": [
+            { "key": "prtPayYm", "value": "날짜" },
+            { "key": "prtPayAmt", "value": "금액" }
+        ]},
+      { "value": "잔금",
+        "subColumns": [
+            { "key": "surplusYm", "value": "날짜" },
+            { "key": "surplusAmt", "value": "금액" }
+        ]},
+        {  "value": "추가", "width": 80, "button": {"text" : "수정", "name" : "update"} },
+        {  "value": "삭제", "width": 80, "button": {"text" : "삭제", "name" : "delete"} }
+    ],
+    "summaryColumn": [
+      {
+        "key": "expectCt",
+        "value": "가용금액",
+        "type": "max",
+        "format": "Total: {0}원"
+      },
+      {
+        "key": "totAmt",
+        "value": "총 사용액",
+        "type": "sum",
+        "format": "Total: {0}원"
+      }
+    ]
+  }
+  

@@ -1,40 +1,70 @@
-import React, { useCallback, useState } from "react";
-import { useNavigate } from 'react-router-dom';
-import { TabPanel } from "devextreme-react";
-import { useLocation } from "react-router-dom";
-import ApiRequest from "../../utils/ApiRequest";
+import React, {useCallback, useEffect, useState} from "react";
+import { Popup, TabPanel } from "devextreme-react";
 import { useCookies } from "react-cookie";
-
 import EmpInfoJson from "./EmpInfoJson.json";
-
 import Button from "devextreme-react/button";
+import { useLocation, useNavigate } from 'react-router-dom';
+import EmpInfoPop from "./EmpInfoPop";
 
 const EmpDetailInfo = () => {
     
-    const navigate = useNavigate();
-    const location = useLocation();
-
     const [selectedIndex, setSelectedIndex] = useState(0);
     
     const EmpDetailInfo = EmpInfoJson.EmpDetailInfo;
 
+    const navigate = useNavigate();
+    const location = useLocation();
+    const [naviEmpId, setNaviEmpId] = useState([]);
+    const [showNewButton, setShowNewButton] = useState(false);
+    const [isPopupVisible, setIsPopupVisible] = useState(false);
+    useEffect(() => {
+
+        if (location.state !== null){
+            setNaviEmpId(location.state.empId);
+            const naviTapIndex = location.state.index;
+
+            setSelectedIndex(naviTapIndex);
+            setShowNewButton(true);
+        }
+    },[]);
+
     /*유저세션*/
     const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
     
-    const empId = cookies.userInfo.empId;
-    const deptId = cookies.userInfo.deptId;
+     const empId = cookies.userInfo.empId;
+     const deptId = cookies.userInfo.deptId;
    
     //탭 변경시 인덱스 설정 
     const onSelectionChanged = useCallback(
         (args) => {
           if (args.name === "selectedIndex") {
             setSelectedIndex(args.value);
+
+              if (location.state !== null && args.value == 0 && empId !== naviEmpId){
+                  setSelectedIndex(args.previousValue);
+              }
           }
         },
-        [setSelectedIndex]
+        []
       );
 
+
+
     const itemTitleRender = (a) => <span>{a.TabName}</span>;
+    
+    const onClick = () => {
+        navigate("/humanResourceMng/EmpManage");
+    };
+
+    const openInfoPopup = () => {
+      setIsPopupVisible(true); // 팝업 열기
+      // window.open("../pages/infoInq/EmpInfoPop", "_blank", "width=700,height=600");
+  };
+
+  const closePopup = () => {
+    setIsPopupVisible(false);
+  };
+
 
     return (
         <div>
@@ -47,15 +77,45 @@ const EmpDetailInfo = () => {
           </div>
         </div>
         <div className="buttons" align="right" style={{ margin: "20px" }}>
+        <Popup
+          title="직원정보 출력"
+          visible={isPopupVisible}
+          onHiding={closePopup}
+          width={1200}
+          height={600}
+        > 
+          <Button style= {{marginBottom: "20px"}}text="닫기" onClick={closePopup} />
+        {isPopupVisible && (
+          <EmpInfoPop  closePopup={closePopup} naviEmpId={naviEmpId} />
+        )}
+  {/* 선택한 그룹의 정보 출력 */}
+</Popup>
+
+          
+          
           <Button
-            width={110}
+            width={130}
             text="Contained"
             type="default"
             stylingMode="contained"
             style={{ margin: "2px" }}
+            onClick={openInfoPopup}
           >
             전체이력조회출력
           </Button>
+
+            {showNewButton && (
+                <Button
+                    width={110}
+                    text="New Button"
+                    type="default"
+                    stylingMode="contained"
+                    style={{ margin: "2px" }}
+                    onClick={onClick}
+                >
+                    목록
+                </Button>
+            )}
         </div>
         <div
           style={{
@@ -75,15 +135,19 @@ const EmpDetailInfo = () => {
             animationEnabled={true}
             itemComponent={({ data }) => {
             const Component = React.lazy(() => import(`${data.url}`));
-            return (
+            if(data.index=== selectedIndex){
+              return (
                 <React.Suspense fallback={<div>Loading...</div>}>
-                    <Component/>
+                    <Component naviEmpId={naviEmpId}/>
                 </React.Suspense>
             );
+            }
+            
           }}
           />
         </div>
       </div>
+      
     );
 };
 

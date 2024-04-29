@@ -1,24 +1,30 @@
 {
-  "menuName": "MatalCost",
-  "queryId": "projectMapper.retrievePrjctList",
-  "keyColumn": "prjctId",
+  "menuName": "ProjectOutordCompanyCostSearch",
+  "queryId": "projectMapper.retrievePrjctOutordEntrpsCt",
+  "keyColumn": "outordEntrpsCtPrmpcSn",
   "tableColumns": [
-    { "key": "prjctStleCd", "value": "번호" },
-    { "key": "bizFlfmtTyCd", "value": "회사명" },
-    { "key": "prjctNm", "value": "업무내용" },
-    { "key": "cntrctamount", "value": "배정예산" },
-    { "key": "totalItems", "value": "누적지급액" },
-    { "key": "rownum", "value": "잔여액" }
+    { "key": "outordEntrpsNm", "value": "업체명" },
+    { "key": "tkcgJob", "value": "담당업무" },
+    { "key": "inptPrnmntHnfCnt", "value": "투입예정인력수" },
+    { "key": "expectCt", "value": "배정예산","format": {"type": "fixedPoint", "precision": 0, "groupSeparator": ","} },
+    { "key": "useAmt", "value": "누적사용","format": {"type": "fixedPoint", "precision": 0, "groupSeparator": ","} },
+    { "key": "avail", "value": "가용" }
   ],
   "summaryColumn": [
     {
-      "key": "totalItems",
-      "value": "누적사용",
-      "type": "max",
+      "key": "expectCt",
+      "value": "배정예산",
+      "type": "sum",
       "format": "Total: {0}원"
     },
     {
-      "key": "rownum",
+      "key": "useAmt",
+      "value": "누적사용",
+      "type": "sum",
+      "format": "Total: {0}원"
+    },
+    {
+      "key": "avail",
       "value": "가용",
       "type": "sum",
       "format": "Total: {0}원"

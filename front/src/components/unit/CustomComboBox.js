@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 
 import SelectBox from "devextreme-react/select-box"
 import ApiRequest from "../../utils/ApiRequest";
+import { Validator, RequiredRule, } from "devextreme-react/validator";
 
-const CustomComboBox = ({props, onSelect, placeholder, value, readOnly}) => {
+const CustomComboBox = ({props, onSelect, label, placeholder, value, readOnly, required, customParam}) => {
 
     const [values, setValues] = useState([]);
 
@@ -12,9 +13,11 @@ const CustomComboBox = ({props, onSelect, placeholder, value, readOnly}) => {
 
         if(props) {
 
-            if(props.queryId) {
+            if(props.queryId && !customParam) {
                 param = props.queryId
-            }else{
+            } else if (props.queryId && customParam) {
+                param = customParam
+            } else{
                 param = [
                     { tbNm: props.tbNm },
                     props.condition ? props.condition : {}
@@ -38,7 +41,15 @@ const CustomComboBox = ({props, onSelect, placeholder, value, readOnly}) => {
         } catch(error) {
             console.error(error);
         }
-    }   
+    }
+    
+    const validate = () => {
+        if(required) {
+            return (
+                <RequiredRule message={`${label}은 필수 입력 값입니다.`}/>
+            )
+        }
+    }
 
     return (
         <SelectBox
@@ -50,12 +61,16 @@ const CustomComboBox = ({props, onSelect, placeholder, value, readOnly}) => {
             onValueChanged={(e)=> {
                 if(props.queryId) {
                     const selectedItem = values.find(item => item[props.name] === e.value);
+
                     if(selectedItem) {
-                        [props.name, props.name2, props.name3].forEach(propName => {
-                            if(propName){
-                                onSelect({name: propName, value: selectedItem[propName]});
-                            }
-                    });
+                        props.values.forEach(propName => {
+                            onSelect({name: propName, value: selectedItem[propName]});
+                        });
+                    }
+                    else{
+                        props.values.forEach(propName => {
+                            onSelect({name: propName, value: undefined});
+                        });
                     }
                 } else {
                     onSelect({name: props.name, value: e.value});
@@ -64,8 +79,10 @@ const CustomComboBox = ({props, onSelect, placeholder, value, readOnly}) => {
             searchEnabled={true}
             value={value}
             readOnly={readOnly}
-            showClearButton={props.clearButton}
-        />
+            showClearButton={true}
+        >
+            <Validator>{validate()}</Validator>
+        </SelectBox>
     );
 
 }

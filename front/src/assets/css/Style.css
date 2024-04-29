@@ -79,7 +79,7 @@
   width: 70%;
 }
 
-.asterisk::after { color: red; content: "*"; font-size: inherit; margin-left: 0.4rem; }
+.asterisk::before { color: red; content: "*"; font-size: inherit; margin-left: 0.4rem; }
 
 /* NoticeInput.css */
 .notice-table {
@@ -190,4 +190,102 @@
   padding: 10px;
   width: 100px;
   height: 40px
+}
+
+.dx-widget.dx-button.dx-button-mode-text.dx-button-normal.dx-button-has-text.dx-button-has-icon.dx-datagrid-export-button {
+  box-shadow: 0 1px 3px rgba(0,0,0,.24);
+  border-radius: 5px;
+  width: 120px;
+  height: 40px;
+  color: rgba(0, 0, 0, .87);
+  cursor: pointer;
+}
+
+.dx-icon-xlsxfile:before{
+  content: "엑셀 다운로드" !important;
+  font-size: 14px;
+  font-weight: 400;
+  text-align: center;
+  font-family: Roboto, RobotoFallback, "Noto Kufi Arabic", Helvetica, Arial, sans-serif;
+}
+
+.elecAtrz-from-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.elecAtrz-from-container-box {
+  width: 23%;
+  margin: 10px;
+}
+
+.elecAtrzNewReq-ctrtInfo > .dx-fieldset > .dx-field > .dx-field-label{
+  text-align: center;
+  width: 20%
+}
+
+.elecAtrzNewReq-ctrtInfo > .dx-fieldset > .dx-field > .dx-field-value{
+  width: 50%
+}
+
+.elecAtrzNewReq-ctrtInfo > .dx-fieldset > .dx-field > .dx-field-value > .dx-field-value-text{
+  padding: 9px 0px 9px 0px;
+  font-size: 16px;
+}
+
+
+
+
+.atrz-popup-header {
+  display: flex;
+  background-color: #d8dbde; 
+  padding: 10px 0; 
+  margin-top: 20px;
+  font-weight: bold;
+}
+
+.atrz-popup-row {
+  display: flex;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 10px 0;
+}
+
+.atrz-popup-cell:nth-child(1) {
+  text-align: center;
+  flex: 0 0 15%;
+  padding: 5px 0;
+}
+
+.atrz-popup-cell:nth-child(2) {
+  text-align: center;
+  flex: 0 0 30%;
+  padding: 5px 0;
+}
+
+.atrz-popup-cell:nth-child(3) {
+  text-align: center;
+  flex: 0 0 55%;
+  padding: 5px 0;
+  display: flex;
+}
+
+.aprvrEmp {
+  margin-right: 10px;
+}
+
+/* 추가 버튼 스타일 */
+.atrz-popup-button {
+  border: 1px solid #e8e6e6;
+  background-color: #e4f4fc;
+  padding: 10px 0; 
+  cursor: pointer;
+}
+
+.popup-delete-btn {
+  background-color: transparent;
+  color: red;
+  border: none;
+  cursor: pointer; 
+  padding: 0;
+  margin-left: 10px;
 }

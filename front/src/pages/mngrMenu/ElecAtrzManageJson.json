@@ -1,0 +1,83 @@
+{
+    "elecManageMain" : {
+        "atrzSquareList" : [
+            {"key": "progress", "text" : "진행문서", "squareColor": "rgb(216, 237, 246)", "toolTip" : "진행중인 문서를 조회합니다."},
+            {"key" : "terminatedAprvrEmp", "text" : "완료문서", "squareColor": "rgb(216, 237, 246)", "toolTip" : "완료된 문서를 조회합니다."},
+            {"key" : "deny", "text" : "반려문서", "squareColor": "rgb(255, 218, 218)", "toolTip" : "반려문서를 조회합니다."}
+        ],
+        "keyColumn": "elctrnAtrzId",
+        "queryId": "sysMngMapper.retrieveElecAtrzMng",
+        "countQueryId": "sysMngMapper.elecAtrzMngCount",
+        "baseColumns": [
+            {"key": "elctrnAtrzId", "value": "문서번호", "width": 150},
+            {"key": "gnrlAtrzTtl", "value": "결재유형", "width": 200},
+            {"key": "atrzDmndEmpNm", "value": "기안자", "width": 100},
+            {"key": "regDt", "value": "기안요청일", "width": 150},
+            {"key": "title", "value": "결재 명", "width": 400}
+        ],
+        "progress" : [
+          {"key": "cnptNm", "value": "거래처"},
+          {"key": "aprvrEmpNm", "value": "현재결재권자", "width": 100},
+          {"key": "atrzDmndSttsCdNm" , "value": "현재결제단계", "width": 100},
+          {"key": "yn", "value": "결재 회수가능여부", "width": 100}
+        ],
+        "terminatedAprvrEmp" : [
+            {"key" : "cnptNm", "value":"거래처", "width": 100},
+            {"key" : "atchmnFl", "value":"첨부파일", "button":{"text":"첨부파일", "name" : "atchmnFl"}},
+            {"key" : "docHist", "value":"문서이력", "button":{"text":"문서이력", "name" : "docHist"}}
+        ],
+        "deny" : [
+          {"key": "CN", "value": "결재", "width": 100}
+        ],
+        "searchInfo" : {
+            "searchParams": {
+                "dateRange": true,
+                "startDtNm": "",
+                "endDtNm": ""
+            },
+            "selectBoxItem": [
+                {
+                  "placeholder": "[문서서식]",
+                  "param":{
+                    "tbNm": "CD",
+                    "valueExpr": "cdValue",
+                    "displayExpr": "cdNm",
+                    "name": "elctrnAtrzTySeCd",
+                    "condition": {
+                      "upCdValue": "VTW049"
+                    },
+                    "clearButton": true
+                  }
+                },
+                {
+                  "placeholder": "[프로젝트 명]",
+                  "param":{
+                    "tbNm": "PRJCT",
+                    "valueExpr": "prjctId",
+                    "displayExpr": "prjctNm",
+                    "name": "prjctId",
+                    "clearButton": true
+                  }
+              }
+            ],
+            "textBoxItem": [
+                {"placeholder": "기안자", "name" : "atrzDmndEmpNm"},
+                {"placeholder": "거래처", "name" : "cnptNm"},
+                {"placeholder": "결재명", "name": "title"}
+            ]
+        },
+        "atchmnFlPopupqueryId": "sysMngMapper.retrieveElecAtrzAtchmnFl",
+        "atchmnFlPopupColumns" : [
+            {"key" : "atchmnflId", "value" : "첨부파일"}
+        ],
+        "docHistPopupqueryId": "sysMngMapper.retrieveElecAtrzAtchmnFl",
+        "docHistPopupColumns" : [
+            {"value" : "번호"},
+            {"value" : "이력 구분"},
+            {"value" : "이력 날짜"},
+            {"value" : "사번"},
+            {"value" : "성명"},
+            {"value" : "연결문서 확인", "button" : {"text" : "확인"}}
+        ]
+    }
+}

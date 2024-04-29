@@ -1,0 +1,27 @@
+{
+    "menuName": "ElecAtrzCtrtInfo",
+    "labelValue": {
+        "ctrtTrgtNm": {
+            "name": "ctrtTrgtNm",
+            "type": "TextBox",
+            "label": "업체명/계약자명",
+            "placeholder": "계약당사자"
+        },
+        "cntrctrAddr": {
+            "name": "cntrctrAddr",
+            "type": "TextBox",
+            "label": "계약자주소",
+            "placeholder": "계약자주소"
+        },
+        "giveDePrvonsh": {
+            "name": "giveDePrvonsh",
+            "type": "TextBox",
+            "label": "지급일 사유",
+            "placeholder": "지급일 사유"
+        }
+    }
+
+
+
+
+}

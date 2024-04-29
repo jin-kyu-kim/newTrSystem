@@ -1,0 +1,41 @@
+{ 
+  "noticeQueryId": "sysMngMapper.retrieveNotice",
+  "noticeTableColumns": [
+    { "key": "noticeTtl", "value": "제목",  "alignment": "center" },
+    { "key": "regDt", "value": "작성일","alignment": "center" }
+  ],
+  "trAplyTotQueryId": "sysMngMapper.retrieveInptSttus",
+  "trAplyKeyColumn": "empId",
+  "trAplyTableColumns": 
+	[
+        {"value": "근무시간",
+        "subColumns": [
+            { "key": "total", "value": "필수시간"},
+            { "key": "sum", "value": "요청"},
+            { "key": "mmReject", "value": "반려" },
+            { "key": "mmComplete", "value": "승인"}
+        ]},
+        {"value": "프로젝트비용입력",
+        "subColumns": [
+            { "key": "cnt", "value": "요청"},
+            { "key": "aplyReject", "value": "반려"},
+            { "key": "aplyComplete", "value": "승인" }
+        ]}
+  ],
+  "atrzSttsQueryId": "sysMngMapper.retrieveAtrzAplySttus",
+  "atrzSttsTableColumns": [
+    { "key": "tySe", "value": "결재구분",  "alignment": "center" },
+    { "key": "title", "value": "결재명",  "alignment": "center" },
+    { "key": "atrzEmpNm", "value": "기안자",  "alignment": "center", "width" : 100 },
+    { "key": "regDt", "value": "기안일자",  "alignment": "center" , "width" : 150},
+    { "key": "atrzSttsCdNm", "value": "결재상태",  "alignment": "center" , "width" : 100}
+  ],
+  "atrzListQueryId": "sysMngMapper.retiveAtrzList",
+  "atrzListTableColumns": [
+    { "key": "tySe", "value": "결재구분",  "alignment": "center" },
+    { "key": "title", "value": "결재명",  "alignment": "center" },
+    { "key": "atrzEmpNm", "value": "기안자",  "alignment": "center" , "width" : 100},
+    { "key": "regDt", "value": "기안일자",  "alignment": "center", "width" : 150 },
+    { "key": "atrzSttsCdNm", "value": "결재상태",  "alignment": "center", "width" : 100 }
+  ]
+}

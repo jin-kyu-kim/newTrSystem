@@ -1,63 +1,10 @@
-import DataGrid, { Column, Pager, Paging, Summary, TotalItem, Editing, RequiredRule } from "devextreme-react/data-grid";
-import { Button } from "devextreme-react/button";
-import ToggleButton from "../../pages/sysMng/ToggleButton"
+import DataGrid, { Column, Export, Pager, Paging, Summary, TotalItem, GroupItem, Grouping, MasterDetail } from "devextreme-react/data-grid";
+import GridRows from "./GridRows";
+import AllowedPageSize from "./AllowedPageSize";
 
-const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, 
-                      handleYnVal, editRow, onEditRow, onClick,onRowClick }) => {
-
-  const gridRows = () => {
-    const result = [];
-    for (let i = 0; i < columns.length; i++) {
-      const { key, value, width, alignment, button, visible, toggle} = columns[i];
-      if (button) {
-        result.push(
-          <Column
-            key={key}
-            dataField={key}
-            caption={value}
-            width={width}
-            alignment={alignment || 'center'}
-            cellRender={({ data }) => buttonRender(button, data)}>
-          </Column>
-        );
-      } else {
-        if (!visible) {
-          result.push(
-            <Column
-              key={key}
-              dataField={key}
-              caption={value}
-              width={width}
-              alignment={alignment || 'center'}>
-              {editRow && <RequiredRule message="필수 입력 항목입니다" />}
-            </Column>
-          );
-        }
-        if (toggle) {
-          result.push(
-            <Column
-              key={key}
-              dataField={key}
-              caption={value}
-              width={width}
-              alignment={alignment || 'center'}
-              cellRender={({ data, key }) => (
-                <ToggleButton callback={handleYnVal} data={data} idColumn={key} />
-              )} />
-          );
-        }
-      }
-    }
-    return result;
-  }
-
-  const buttonRender = (button, data) => {
-    return(
-      <Button text={button} onClick={() => {onClick(data)}}/>
-      
-    )
-  }
-
+const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, onClick,
+                       wordWrap, onRowClick, excel, onExcel,onCellClick, grouping, groupingData, groupingCustomizeText,
+                       masterDetail, handleExpanding, focusedRowIndex }) => {
   return (
     <div className="wrap_table">
       <DataGrid
@@ -70,37 +17,30 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
         focusedRowEnabled={true}
         columnAutoWidth={false}
         noDataText=""
+        onRowExpanding={handleExpanding}
         onRowDblClick={onRowDblClick}
+        focusedRowIndex={focusedRowIndex}
         onRowClick={onRowClick}
-        onRowInserted={(e) => onEditRow('insert', e)}
-        onRowUpdating={(e) => onEditRow('update', e)}
-        onRowRemoved={(e) => onEditRow('delete', e)}
+        onExporting={onExcel}
+        onCellClick={onCellClick}
         onCellPrepared={(e) => {
           if (e.rowType === 'header') {
             e.cellElement.style.textAlign = 'center';
             e.cellElement.style.fontWeight = 'bold';
           }
         }}
+        wordWrapEnabled={wordWrap}
       >
-        {editRow &&
-          <Editing
-            mode="row"
-            allowAdding={true}
-            allowDeleting={true}
-            allowUpdating={true}
-          />
-        }
-        
+        {GridRows({columns, onClick})}
         <Paging defaultPageSize={pageSize} enabled={paging} />
         <Pager
           displayMode="full"
           showNavigationButtons={true}
           showInfo={false}
           showPageSizeSelector={true}
-          allowedPageSizes={[20, 50, 80, 100]}
+          allowedPageSizes={AllowedPageSize(values)}
         />
-        {gridRows()}
-
+        
         {summary&&
           <Summary>
             {summaryColumn.map(item => (
@@ -109,12 +49,65 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
                 column={item.value}
                 summaryType={item.type}
                 displayFormat={item.format}
-                valueFormat={{ type: 'fixedPoint', precision: 0 }} // 천 단위 구분자 설정
+                valueFormat={{ type: 'fixedPoint', precision: item.precision }} // 천 단위 구분자 설정
               />
             ))}
           </Summary>
         }
 
+        {grouping &&
+          <Column
+            dataField={groupingData.dataField}
+            caption={groupingData.caption} 
+            customizeText={groupingCustomizeText}
+            groupIndex={0}
+        />
+        }
+
+        {grouping &&
+          <Grouping autoExpandAll={true} />
+        }
+
+        {grouping &&
+          <Summary> 
+          {grouping.map(item => (
+            <GroupItem
+              column={item.key}
+              summaryType={item.summaryType}
+              valueFormat={item.valueFormat}
+              displayFormat={item.displayFormat}
+              alignByColumn={true}
+            />
+            ))}
+        
+          <TotalItem
+            column={groupingData.totalTextColumn}
+            customizeText={() => {
+              return "총 계";
+            }}
+          />
+          {grouping.map(item => (
+            <TotalItem
+                name={item.key}
+                column={item.key}
+                summaryType={item.summaryType}
+                valueFormat={item.valueFormat}
+                displayFormat={item.displayFormat}
+              />
+          ))}
+          </Summary>
+        }
+        
+      {excel &&
+      <Export enabled={true} >
+      </Export>
+      }
+      {masterDetail &&
+      <MasterDetail
+          style={{backgroundColor: 'lightBlue'}}
+          enabled={true}
+          component={masterDetail}
+      />}
       </DataGrid>
     </div>
   );

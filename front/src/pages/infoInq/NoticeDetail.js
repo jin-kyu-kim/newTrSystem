@@ -10,8 +10,10 @@ const NoticeDetail = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const noticeId = location.state.id;
-    const { detailQueryId, buttonGroup } = NoticeJson.detail;
-    const [oneData, setOneData] = useState([]);
+    const { detailQueryId, noticeButtonGroup } = NoticeJson.detail;
+
+    const [oneData, setOneData] = useState({});
+    const [fileList, setFileList] = useState([]);
 
     const getOneData = async () => {
         const params = {
@@ -21,7 +23,14 @@ const NoticeDetail = () => {
         try {
             const response = await ApiRequest("/boot/common/queryIdSearch", params);
             if (response.length !== 0) {
-                setOneData(response);
+                setOneData(response[0]);
+                const tmpFileList = response.map((data) => ({
+                    realFileNm: data.realFileNm,
+                    strgFileNm: data.strgFileNm
+                }));
+                if (fileList.length === 0) {
+                    setFileList(prevFileList => [...prevFileList, ...tmpFileList]);
+                }
             }
         } catch (error) {
             console.log(error);
@@ -30,22 +39,24 @@ const NoticeDetail = () => {
 
     useEffect(() => {
         getOneData();
-        getFiles();
     }, []);
 
     const deleteNotice = async () => {
-        const params = [{ tbNm: "NOTICE" }, { noticeId: noticeId }]
-        try {
-            const response = await ApiRequest("/boot/common/commonDelete", params);
-            if (response === 1) {
-                navigate("/infoInq/NoticeList")
-            } else { alert('삭제 실패') }
-        } catch (error) {
-            console.log(error);
+        const result = window.confirm("삭제하시겠습니까?") 
+        if(result){
+            const params = [{ tbNm: "NOTICE" }, { noticeId: noticeId }]
+            const fileParams = [{ tbNm: "ATCHMNFL" }, { atchmnflId: oneData.atchmnflId }]
+            try {
+                const response = await ApiRequest("/boot/common/deleteWithFile", {
+                    params: params, fileParams: fileParams
+                });
+                if (response >= 1) {
+                    navigate("/infoInq/NoticeList")
+                } else { alert('삭제 실패') }
+            } catch (error) {
+                console.log(error);
+            }
         }
-    }
-    const getFiles = async () => {
-
     }
 
     return (
@@ -60,33 +71,29 @@ const NoticeDetail = () => {
             <Container style={{ width: '90%', margin: '0 auto' }}>
                 {oneData.length !== 0 ?
                     <>
-                        <h1 style={{ marginBottom: "20px" }}>{oneData[0].noticeTtl}</h1>
-                        <div>{oneData[0].regEmpId} | {oneData[0].regDt}</div><hr />
+                        <h1 style={{ marginBottom: "20px" }}>{oneData.noticeTtl}</h1>
+                        <div>{oneData.regEmpNm} | {oneData.regDt}</div><hr />
+                        <div dangerouslySetInnerHTML={{ __html: oneData.noticeCn }} />
 
-                        <div dangerouslySetInnerHTML={{ __html: oneData[0].noticeCn }} />
-                        {oneData.map((data, index) => (
-                            data.realFileNm && data.fileStrgCours && (
-                                <div key={index}>
-                                    {data.realFileNm.match(/\.(jpeg|jpg|png|gif)$/i) ? (
-                                        <>
-                                            <div>
-                                                <img src={data.fileStrgCours} alt="첨부 이미지" className="img-fluid" />
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <p>*첨부 파일:</p>
-                                        </>
-                                    )}
-                                </div>
-                            )
+                        {fileList.length !== 0 && fileList.filter(file => file.realFileNm !== null && file.realFileNm !== undefined).filter(file => file.realFileNm.endsWith('.jpg') || file.realFileNm.endsWith('.jpeg') || file.realFileNm.endsWith('.png') || file.realFileNm.endsWith('.gif')).map((file, index) => (
+                            <div key={index} style={{ textAlign: 'center' }}>
+                                <img src={`/upload/${file.strgFileNm}`}
+                                    style={{ width: '80%', marginBottom: '20px' }} alt={file.realFileNm} />
+                            </div>
                         ))}<hr />
-                    </>
-                    : <></>
+
+                        <div style={{ fontWeight: 'bold' }}>* 첨부파일</div>
+                        {fileList.length !== 0 && fileList.filter(file => file.realFileNm !== null && file.realFileNm !== undefined).filter(file => !(file.realFileNm.endsWith('.jpg') || file.realFileNm.endsWith('.jpeg') || file.realFileNm.endsWith('.png') || file.realFileNm.endsWith('.gif'))).map((file, index) => (
+                            <div key={index}>
+                                <a href={`/upload/${file.strgFileNm}`} download={file.realFileNm} style={{ fontSize: '18px', color: 'blue', fontWeight: 'bold' }}>{file.realFileNm}</a>
+                            </div>
+                        ))}
+                        <hr />
+                    </> : ''
                 }
             </Container>
-            <div style={{ textAlign: 'center' }}>
-                {buttonGroup.map((button, index) => (
+            <div style={{ textAlign: 'center', marginBottom: '100px' }}>
+                {noticeButtonGroup.map((button, index) => (
                     <Button
                         key={index}
                         style={{ marginRight: '3px' }}

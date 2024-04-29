@@ -1,17 +1,16 @@
 package com.trsystem.project.domain;
 
+import com.trsystem.batchSkill.service.BatchSkillService;
+import com.trsystem.common.service.CommonService;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.trsystem.common.service.CommonService;
-
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -19,10 +18,12 @@ import lombok.NoArgsConstructor;
 public class ProjectBaseDomain {
 	
     private static CommonService commonService;
-	
+	private static BatchSkillService batchSkillService;
+    
     @Autowired
-	public ProjectBaseDomain(CommonService commonService) {
+	public ProjectBaseDomain(CommonService commonService, BatchSkillService batchSkillService) {
 		ProjectBaseDomain.commonService = commonService;
+		ProjectBaseDomain.batchSkillService = batchSkillService;
 	}
 
     public static boolean validMmnyHnfPrmpc(List<Map<String, Object>> mmnyLbrcoPrmpc){
@@ -71,7 +72,6 @@ public class ProjectBaseDomain {
     
     public static int insertProjectCostChg(List<Map<String, Object>> params, int bgtMngOdr) {
     	
-    	int targetOdr;
     	int fail = -1;
     	
     	List<Map<String, Object>> insertParams = new ArrayList<>();
@@ -103,12 +103,16 @@ public class ProjectBaseDomain {
 	    	} else {
 	    		// 승인된 차수가 1개 이상 존재한다는 뜻
 	    		if(Integer.parseInt(String.valueOf(params.get(1).get("bgtMngOdr"))) == bgtMngOdr) {
-	    			bgtMngOdr += 1;
-	    			param.put("bgtMngOdr", bgtMngOdr);
+	    			int bgtMngOdrTobe = bgtMngOdr + 1;
+	    			param.put("bgtMngOdr", bgtMngOdrTobe);
 	    			insertParams.add(param);
 	    			
 	        		commonService.insertData(insertParams);
-	        		return bgtMngOdr;
+	        		
+	        		// bgtMngOdr에 해당하는 차수의 예산 값들을 bgtMngOdrTobe에 copy 해준다.
+	        		batchSkillService.executeAddPrjctBgtPrmpc(String.valueOf(params.get(1).get("prjctId")), bgtMngOdr, bgtMngOdrTobe);
+	        		
+	        		return bgtMngOdrTobe;
 	    		} else {
 	    			return bgtMngOdr;
 	    		}
@@ -162,7 +166,13 @@ public class ProjectBaseDomain {
         	aprvDtlParam.put("atrzLnSn", params.get(2).get("atrzLnSn"));
         	aprvDtlParam.put("regDt", params.get(2).get("regDt"));
         	aprvDtlParam.put("regEmpId", params.get(2).get("empId"));
-        	aprvDtlParam.put("atrzSttsCd", atrzSttsCd);
+        	
+        	if(i == empIdParams.size() - 1) {
+        		
+        		aprvDtlParam.put("atrzSttsCd", atrzSttsCd);
+        	} else {
+        		aprvDtlParam.put("atrzSttsCd", "VTW00806");
+        	}
     		
         	// 다른 부분
         	aprvDtlParam.put("atrzStepCd", atrzStepCd[i]);
@@ -212,39 +222,54 @@ public class ProjectBaseDomain {
       	}
     	
     }
-    
-    /*
+
+    /**
      * 결재자 EmpId 계층 쿼리 조회
+     * @param params
+     * @return
      */
     public static List<Map<String, Object>> retrieveAprvrEmpId(Map<String, Object> params) {
     	
-    	String deptId;
-    	
     	final String queryId = "projectMapper.retrieveAprvrEmpId";
     	
-    	// 2. deptId로 결재자(팀장급)의 Id를 찾는다.
     	List<Map<String, Object>> aprvrEmpIdlist = new ArrayList<>();
     	Map<String, Object> queryIdMap = new HashMap<>();
+    	
     	queryIdMap.put("queryId", queryId);
     	
-    	try {
-    		// 1. 나의 deptId를 찾는다. 
-    		List<Map<String, Object>> commonSelectParams = new ArrayList<>();
+    	// 1. deptId가 없는 경우 가져오기.
+    	Map<String, Object> tbParam = new HashMap<>();
+    	Map<String, Object> infoParam = new HashMap<>();
+    	List<Map<String, Object>> selectParams = new ArrayList<>();
+    	
+    	
+    	
+    	// deptId가 null일 경우 프로젝트에서 직접 찾는다.
+    	if(String.valueOf(params.get("deptId")).equals("null") || String.valueOf(params.get("deptId")).equals(null)) {
     		
-    		Map<String, Object> tbNm = new HashMap<>();
-    		tbNm.put("tbNm", "DEPT_HNF");
+    		tbParam.put("tbNm", "PRJCT");
+    		infoParam.put("prjctId", params.get("prjctId"));
+    		
+    		selectParams.add(0, tbParam);
+    		selectParams.add(infoParam);
+    		
+    		List<Map<String, Object>> result = commonService.commonSelect(selectParams);
+    		
+    		System.out.println(result.get(0));
+    		
+    		queryIdMap.put("deptId", result.get(0).get("deptId"));
+    	} else {
+    		
+    		queryIdMap.put("deptId", params.get("deptId"));
+    	}
+    	
 
-    		Map<String, Object> condition = new HashMap<>();
-    		condition.put("empId", params.get("empId"));
-    		
-    		commonSelectParams.add(tbNm);
-    		commonSelectParams.add(condition);
-    		
-    		deptId = (String) commonService.commonSelect(commonSelectParams).get(0).get("deptId");
-    		
-    		queryIdMap.put("deptId", deptId);
-    		
-    		// 2. deptId에 해당하는 계층쿼리를 조회한다.
+
+    	
+    	try {
+        	// 2. deptId로 결재자(팀장급)의 Id를 찾는다.
+    		// 넘겨받은 deptId = 프로젝트가 속한 부서의 deptId.
+    		// deptId에 해당하는 계층쿼리를 조회한다.
     		aprvrEmpIdlist = commonService.queryIdSearch(queryIdMap);
     		
     	} catch (Exception e) {
@@ -337,5 +362,238 @@ public class ProjectBaseDomain {
 		
     	return result;
 	}
+	
+	/**
+	 * 변경차수가 반려일 경우 초기화를 선택하였을 때
+//	 * @param params
+	 */
+	public static int resetPrmpc(Map<String, Object> param) {
+		int result = 0;
+		int aprvBgtMngOdr = 0;
+		int bgtMngOdrTobe = Integer.parseInt(String.valueOf(param.get("bgtMngOdrTobe")));
+		
+		// 승인된 차수가 존재하는 경우에 승인된 차수 따로 빼둬서 데이터를 넣을 때 사용한다.
+		if(param.get("bgtMngOdr") != null) {
+			aprvBgtMngOdr = Integer.parseInt(String.valueOf(param.get("bgtMngOdr")));
+		}
+		
+    	List<Map<String, Object>> insertParams = new ArrayList<>();
+    	Map<String, Object> tbParam = new HashMap<>();
+    	Map<String, Object> infoParam = new HashMap<>();
+    	
+    	tbParam.put("tbNm", "PRJCT_BGT_PRMPC");
+    	insertParams.add(0, tbParam);
+    	
+    	infoParam.put("prjctId", param.get("prjctId"));
+    	infoParam.put("totAltmntBgt", param.get("totAltmntBgt"));
+    	infoParam.put("regDt", param.get("regDt"));
+    	infoParam.put("regEmpId", param.get("regEmpId"));
+    	infoParam.put("atrzDmndSttsCd", param.get("atrzDmndSttsCd"));
+    	
+    	// 새로운 차수를 생성하도록 한다.
+		infoParam.put("bgtMngOdr", bgtMngOdrTobe + 1);
 
+		System.out.println(infoParam);
+		try {
+	    	insertParams.add(1, infoParam);
+	    	result = commonService.insertData(insertParams);
+	    	
+	    	// 승인된 차수가 없을 경우 생성 후 마친다.
+	    	if(aprvBgtMngOdr > 0 && result > 0) {
+	    		
+	    		// 승인된 차수의 예산 값들을 새로 만들어진 차수에 copy 해준다.
+	    		batchSkillService.executeAddPrjctBgtPrmpc(String.valueOf(param.get("prjctId")), aprvBgtMngOdr, bgtMngOdrTobe + 1);
+	    	}
+	    	
+	    	return bgtMngOdrTobe + 1;
+		} catch (Exception e) {
+	    	return result;
+		}
+	}
+
+	public static List<Map<String, Object>> retrievePjrctCost(Map<String, Object>param){
+		List<Map<String, Object>> result = new ArrayList<>();
+        Map<String, Object> searchParam = new HashMap<>(param);
+		searchParam.put("queryId", "projectMapper.retrievedistinctCost");
+
+		//원가 비용코드값 수
+		List<Map<String, Object>> getCost = commonService.queryIdSearch(searchParam);
+
+		List<Map<String, Object>> getData;
+		for(Map<String, Object> data : getCost){
+			param.put("expensCd", data.get("expensCd").toString());
+			param.put("expensNm", data.get("expensNm").toString());
+			getData = commonService.queryIdSearch(param);
+			for(Map<String, Object> cdVal: getData){
+				cdVal.putAll(data);
+				result.add(cdVal);
+			}
+		}
+		return result;
+	}
+
+	public static List<Map<String, Object>> retrievePjrctEmpCost(Map<String, Object>param){
+		List<Map<String, Object>> result = new ArrayList<>();
+		Map<String, Object> searchParam = new HashMap<>(param);
+		searchParam.put("queryId", "projectMapper.retrievedistinctEmpCost");
+
+		List<Map<String, Object>> getCost = commonService.queryIdSearch(searchParam);
+		List<Map<String, Object>> getData;
+		for(Map<String, Object> data : getCost){
+			param.put("empId", data.get("empId").toString());
+			getData = commonService.queryIdSearch(param);
+			for(Map<String, Object> cdVal: getData){
+				cdVal.putAll(data);
+				result.add(cdVal);
+			}
+		}
+		return result;
+	}
+	public static List<Map<String, Object>> retrievePjrctOutordEmpCost(Map<String, Object>param){
+		List<Map<String, Object>> result = new ArrayList<>();
+		Map<String, Object> searchParam = new HashMap<>(param);
+		searchParam.put("queryId", "projectMapper.retrievePjrctOutordEmpCost");
+
+		List<Map<String, Object>> getCost = commonService.queryIdSearch(searchParam);
+		List<Map<String, Object>> getData;
+		for(Map<String, Object> data : getCost){
+			param.put("outordEmpId", data.get("outordEmpId").toString());
+			getData = commonService.queryIdSearch(param);
+			for(Map<String, Object> cdVal: getData){
+				cdVal.putAll(data);
+				result.add(cdVal);
+			}
+		}
+		return result;
+	}
+	
+	public static String aprvPrjctAtrz(List<Map<String, Object>> paramList) {
+		
+		// 현재 승인자
+		String aprvrEmpId = String.valueOf(paramList.get(2).get("aprvrEmpId"));
+		
+		// 현재 승인자의 결재 단계
+		String atrzStepCd = String.valueOf(paramList.get(2).get("atrzStepCd"));
+
+		int uptResult = -1;
+
+		
+		Map<String, Object> selectParam = new HashMap<>();
+		selectParam.put("queryId", "projectMapper.retrievePrjctAtrzLn");
+		selectParam.put("prjctId", paramList.get(2).get("prjctId"));
+		selectParam.put("atrzLnSn", paramList.get(2).get("atrzLnSn"));
+		selectParam.put("atrzStepCd", atrzStepCd);
+		List<Map<String, Object>> atrzLine = commonService.queryIdSearch(selectParam);
+		
+		try {
+			// update 해준다.
+
+			for(int i = 0; i < atrzLine.size(); i++) {
+				
+				Map<String, Object> updateParam = new HashMap<>();
+				Map<String, Object> conditionParam = new HashMap<>();
+				List<Map<String, Object>> updateParams = new ArrayList<>();
+				
+				if(String.valueOf(atrzLine.get(i).get("atrzStepCd")).equals(atrzStepCd) && 
+					String.valueOf(atrzLine.get(i).get("aprvrEmpId")).equals(aprvrEmpId)) {
+					// 라인의 단계와 현재 단계가 같으면서 현재 결재자가 같은 경우에 결재선 승인함.
+					System.out.println(atrzLine.get(i));
+					System.out.println(atrzStepCd);
+					
+					updateParams.add(0, paramList.get(0));	// 업데이트할 타겟 테이블
+					updateParams.add(1, paramList.get(1));	// 업데이트할 테이블의 내용
+
+					
+					updateParam.put("prjctId", paramList.get(2).get("prjctId"));
+					updateParam.put("atrzLnSn", paramList.get(2).get("atrzLnSn"));
+					updateParam.put("aprvrEmpId", aprvrEmpId);
+					updateParam.put("atrzStepCd", atrzStepCd);
+					
+					updateParams.add(2, updateParam);
+					
+					uptResult = commonService.updateData(updateParams);
+					
+					if(uptResult < 0) {
+						return null;
+					}
+					
+					switch(atrzStepCd) {
+					case "VTW00701" : 
+						atrzStepCd = "VTW00702"; 
+						break;
+					case "VTW00702":
+						atrzStepCd = "VTW00703";
+						break;
+					case "VTW00703":
+						atrzStepCd = "VTW00704";
+						break;
+					case "VTW00704":
+						atrzStepCd = "VTW00705";
+						break;
+					case "VTW00705":
+						atrzStepCd = "VTW00708";
+						break;
+					}
+					
+				} else {
+					updateParams.add(0, paramList.get(0));	// 업데이트할 타겟 테이블
+					
+					conditionParam.put("atrzStepCd", atrzStepCd);
+					conditionParam.put("prjctId", paramList.get(2).get("prjctId"));
+					conditionParam.put("atrzLnSn", paramList.get(2).get("atrzLnSn"));
+					
+					updateParam.put("atrzSttsCd", "VTW00801");
+					
+					updateParams.add(1, updateParam); // 업데이트할 정보
+					updateParams.add(2, conditionParam); // 업데이트할 테이블의 조건
+					
+					
+					uptResult = commonService.updateData(updateParams);
+				}
+				
+			}
+
+			
+		} catch (Exception e) {
+			return null;
+		}
+		
+		return atrzStepCd;
+	}
+
+	public static int updateMmAtrzCmptnYn(Map<String, Object> param){
+		Map<String, Object> searchParam = new HashMap<>(param);
+		searchParam.put("queryId", "projectMapper.retrieveMmAtrzDmndSttsCd");
+		List<Map<String, Object>> getCount = commonService.queryIdSearch(searchParam);
+		if((Long)getCount.get(0).get("totalCount") == 0){
+			Map<String, Object> tbnm = new HashMap<>();
+			tbnm.put("tbNm", "PRJCT_INDVDL_CT_MM");
+			Map<String, Object> yn = new HashMap<>();
+			yn.put("mmAtrzCmptnYn", "Y");
+			List updateParam = new ArrayList<>();
+			updateParam.add(tbnm);
+			updateParam.add(yn);
+			updateParam.add(param);
+			commonService.updateData(updateParam);
+		}
+		return 1;
+	}
+
+	public static int updateCtAtrzCmptnYn(Map<String, Object> param){
+		Map<String, Object> searchParam = new HashMap<>(param);
+		searchParam.put("queryId", "projectMapper.retrieveCtAtrzDmndSttsCd");
+		List<Map<String, Object>> getCount = commonService.queryIdSearch(searchParam);
+		if((Long)getCount.get(0).get("totalCount") == 0){
+			Map<String, Object> tbnm = new HashMap<>();
+			tbnm.put("tbNm", "PRJCT_INDVDL_CT_MM");
+			Map<String, Object> yn = new HashMap<>();
+			yn.put("ctAtrzCmptnYn", "Y");
+			List updateParam = new ArrayList<>();
+			updateParam.add(tbnm);
+			updateParam.add(yn);
+			updateParam.add(param);
+			commonService.updateData(updateParam);
+		}
+		return 1;
+	}
 }

@@ -6,23 +6,22 @@ import CustomAddTable from "../../../components/unit/CustomAddTable";
 import Box, { Item } from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
 
-const ProjectOutordCompanyCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr, bgtMngOdrTobe }) => {
+const ProjectOutordCompanyCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdr, bgtMngOdrTobe, deptId, targetOdr, bizSttsCd, atrzLnSn }) => {
   const [values, setValues] = useState([]);
+  const [cdValues, setCdValues] = useState([]);
   const { manuName, tableColumns } = ProjectOutordCompanyCostJson;
 
   useEffect(() => {
     OutordCompany();
+    OutordCompanyList();
   }, []);
 
   const OutordCompany = async () => {
-
     const param = {
       queryId: "projectMapper.retrieveOutordEntrpsPrmpc",
       prjctId: prjctId,
       bgtMngOdr: bgtMngOdrTobe,
     };
-
-    console.log("param! 봐보래이", param);
 
     try {
         const response = await ApiRequest("/boot/common/queryIdSearch", param);
@@ -31,6 +30,21 @@ const ProjectOutordCompanyCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr, bgtM
         console.error(error);
     }
   }   
+
+  const OutordCompanyList = async () => {
+
+    const param = [
+      { tbNm:"OUTORD_ENTRPS" },
+      {  },
+  ];
+
+    try {
+        const response = await ApiRequest("/boot/common/commonSelect", param);
+        setCdValues(response);
+    } catch(error) {
+        console.error(error);
+    }
+}
  
 
   return (
@@ -54,7 +68,22 @@ const ProjectOutordCompanyCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdr, bgtM
             <p style={{ textAlign: "right", marginBottom: "0px" }}>
             검색 (성명, 역할, 등급, 담당업무, 예정일, 맨먼스등 다양하게 검색가능) 
             </p>
-            <CustomAddTable manuName={manuName} columns={tableColumns} values={values} prjctId={prjctId} json={ProjectOutordCompanyCostJson} bgtMngOdr={bgtMngOdr} bgtMngOdrTobe={bgtMngOdrTobe}/>
+            <CustomAddTable 
+                manuName={manuName} 
+                columns={tableColumns} 
+                values={values} 
+                prjctId={prjctId} 
+                json={ProjectOutordCompanyCostJson} 
+                bgtMngOdr={bgtMngOdr} 
+                bgtMngOdrTobe={bgtMngOdrTobe}
+                cdValues={cdValues}
+                ctrtYmd={ctrtYmd}
+                stbleEndYmd={stbleEndYmd}
+                deptId={deptId}
+                targetOdr={targetOdr}
+                bizSttsCd={bizSttsCd}
+                atrzLnSn={atrzLnSn}
+                />
           </div>
         </div>
       </div>

@@ -3,15 +3,11 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { TabPanel } from "devextreme-react";
 import Button from "devextreme-react/button";
 import { useCookies } from "react-cookie";
-import DataGrid, { Column} from "devextreme-react/data-grid";
-
+import Popup from "devextreme-react/popup";
 
 import ApiRequest from "utils/ApiRequest";
 import ProjectAprvDetailJson from "./ProjectAprvDetailJson.json";
-import LinkButton from "components/unit/LinkButton";
-import CustomPopup from "../../../components/unit/CustomPopup";
 import TextArea from "devextreme-react/text-area";
-import { set } from "date-fns";
 
 const ProjectAprvDetail = () => {
 
@@ -22,10 +18,13 @@ const ProjectAprvDetail = () => {
     const atrzSttsCd = location.state.atrzSttsCd;
     const atrzStepCd = location.state.atrzStepCd;
     const nowAtrzStepCd = location.state.nowAtrzStepCd;
+    const ctrtYmd = location.state.ctrtYmd;
+    const stbleEndYmd = location.state.stbleEndYmd;
     const bgtMngOdr = location.state.bgtMngOdr;
     const aprvrEmpId = location.state.aprvrEmpId;
     const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
     const ProjectAprvDetail = ProjectAprvDetailJson;
+    const atrzDmndSttsCd = ProjectAprvDetail.atrzDmndSttsCd;
   
     const [aprvPopupVisible, setAprvPopupVisible] = useState(false);
     const [rjctPopupVisible, setRjctPopupVisible] = useState(false);
@@ -34,16 +33,13 @@ const ProjectAprvDetail = () => {
     const [data, setData] = useState([]);
     const [btnVisible, setBtnVisible] = useState(false);
 
-    const dataS = ProjectAprvDetail.dataSource;
-
-    console.log(bgtMngOdr)
-
     useEffect(() => {
         console.log(aprvrEmpId)
         console.log(cookies.userInfo.empId)
 
-        if(aprvrEmpId === cookies.userInfo.empId) handleBtnVisible();
-
+        if(atrzSttsCd === 'VTW00801') {
+            if(aprvrEmpId === cookies.userInfo.empId) handleBtnVisible();
+        }
 
         const param = {
             "queryId": ProjectAprvDetail.queryId,
@@ -60,6 +56,7 @@ const ProjectAprvDetail = () => {
     },[]);
 
     const handleBtnVisible = () => {
+
         setBtnVisible(true);
     };
 
@@ -96,37 +93,42 @@ const ProjectAprvDetail = () => {
                     prjctId: prjctId,
                     atrzLnSn: atrzLnSn,
                     aprvrEmpId: cookies.userInfo.empId,
+                    atrzStepCd: atrzStepCd
                 }
             ]
             
             // const response = await ApiRequest("/boot/common/commonUpdate", atrzLnDtlParam);
             const result = await requestProcess(atrzLnDtlParam).then((value) => {
                 
-                if(value > 0) {
-                    let nowStep;
+                // if(value > 0) {
+                if(value != null) {
+                    // let nowStep;
 
-                    switch(atrzStepCd) {
-                        case "VTW00701":
-                            nowStep = "VTW00702";
-                            break;
-                        case "VTW00702":
-                            nowStep = "VTW00703";
-                            break;
-                        case "VTW00703":
-                            nowStep = "VTW00704";
-                            break;
-                        case "VTW00704":
-                            nowStep = "VTW00705";
-                            break;
-                    }
-
+                    // switch(atrzStepCd) {
+                    //     case "VTW00701":
+                    //         nowStep = "VTW00702";
+                    //         break;
+                    //     case "VTW00702":
+                    //         nowStep = "VTW00703";
+                    //         break;
+                    //     case "VTW00703":
+                    //         nowStep = "VTW00704";
+                    //         break;
+                    //     case "VTW00704":
+                    //         nowStep = "VTW00705";
+                    //         break;
+                    //     case "VTW00705":
+                    //         nowStep = "VTW00708";
+                    //         break;
+                    // }
+                    const nowStep = value;
                     handleNowAtrzStepCd(nowStep);
                     // 마지막 결재자일 경우
                     if(atrzStepCd === "VTW00705") { 
                         
-                        // PRJCT_BGT_PRMPC 테이블 결재완료로 수정
-                        // ATRZ_DMND_STTS_CD -> VTW03303(결재완료)
-                        handleBgtPrmpc("VTW03303");
+                        // PRJCT_BGT_PRMPC 테이블 승인으로 수정
+                        // ATRZ_DMND_STTS_CD -> VTW03703(승인)
+                        handleBgtPrmpc("VTW03703");
     
                         // PRJCT 테이블
                         // BIZ_STTS_CD 컬럼 -> VTW00402(수행)
@@ -167,7 +169,7 @@ const ProjectAprvDetail = () => {
                 {
                     prjctId: prjctId,
                     atrzLnSn: atrzLnSn,
-                    aprvrEmpId: cookies.userInfo.empId,
+                    atrzStepCd: atrzStepCd
                 }
             ]
 
@@ -176,9 +178,9 @@ const ProjectAprvDetail = () => {
             if(response > 0) {
 
                 // 반려되면
-                // PRJCT_BGT_PRMPC 테이블 결재완료가 아니라 임시저장으로 수정 << todo
-                // 컬럼 ATRZ_DMND_STTS_CD -> VTW03301
-                handleBgtPrmpc("VTW03301");
+                // PRJCT_BGT_PRMPC 테이블 반려로 수정 << todo
+                // 컬럼 ATRZ_DMND_STTS_CD -> VTW03704
+                handleBgtPrmpc("VTW03704");
 
                 alert("반려 되었습니다.");
                 navigate("../project/ProjectAprv");
@@ -190,7 +192,9 @@ const ProjectAprvDetail = () => {
     }
 
     const requestProcess = async (param) => {
-        const response = await ApiRequest("/boot/common/commonUpdate", param);
+        // const response = await ApiRequest("/boot/common/commonUpdate", param);
+        const response = await ApiRequest("/boot/prjct/aprvPrjctAtrz", param)
+        console.log(response)
         return response;
     
     }
@@ -215,7 +219,7 @@ const ProjectAprvDetail = () => {
 
     /**
      * 반려 시 PRJCT_BGT_PRMPC 테이블 수정
-     * atrzDmndSttsCd 결재요청상태구분코드: 임시저장(VTW03301) 으로 수정
+     * atrzDmndSttsCd 결재요청상태구분코드: 임시저장(VTW03701) 으로 수정
      * 승인목록에서 조회한 bgtMngOdr 값으로 수정
      */
     const handleBgtPrmpc = async (cdValue) => {
@@ -457,7 +461,7 @@ const ProjectAprvDetail = () => {
                     <div className="buttons" align="right" style={{ marginTop: "5px", marginBottom: "5px" }}>
                         <Button text="승인" visible={btnVisible} onClick={onAprvPopup}/>
                         <Button text="반려" visible={btnVisible} onClick={onRjctPopup}/>
-                        <LinkButton location={-1} name={"목록"} type={"normal"} stylingMode={"outline"}/>
+                        <Button text="목록" onClick={() => navigate("../project/ProjectAprv")}/>
                     </div>
                     </div>
                 </div>
@@ -481,37 +485,53 @@ const ProjectAprvDetail = () => {
                     itemComponent = {
                         ({ data }) => {
                             const Component = React.lazy(() => import(`../${data.url}.js`));
-                            return (
-                                <React.Suspense fallback={<div>Loading...</div>}>
-                                    <Component prjctId={prjctId} atrzLnSn={atrzLnSn} bgtMngOdr={bgtMngOdr}/>
-                                </React.Suspense>
-                            );
+                            if(data.index === selectedIndex) {
+                                return (
+                                    <React.Suspense fallback={<div>Loading...</div>}>
+                                        <Component prjctId={prjctId} ctrtYmd={ctrtYmd} stbleEndYmd={stbleEndYmd} bgtMngOdr={bgtMngOdr} atrzDmndSttsCd={atrzDmndSttsCd}/>
+                                    </React.Suspense>
+                                );
+                            }
                         }
                     }
                 />
             </div>
-            <CustomPopup props={ProjectAprvDetail.aprvPopup} visible={aprvPopupVisible} handleClose={handleClose}>
+            <Popup
+                width={ProjectAprvDetail.aprvPopup.width}
+                height={ProjectAprvDetail.aprvPopup.height}
+                visible={aprvPopupVisible}
+                onHiding={handleClose}
+                showCloseButton={true}
+                title={ProjectAprvDetail.aprvPopup.title}
+            >
                 <TextArea 
-                height="50%"
-                valueChangeEvent="change"
-                onValueChanged={onTextAreaValueChanged}
-                placeholder="승인 의견을 입력해주세요."
+                    height="50%"
+                    valueChangeEvent="change"
+                    onValueChanged={onTextAreaValueChanged}
+                    placeholder="승인 의견을 입력해주세요."
                 />
                 <br/>
                 <Button text="승인" onClick={onClickAprv}/>
                 <Button text="취소" onClick={handleClose}/>
-            </CustomPopup>
-            <CustomPopup props={ProjectAprvDetail.aprvPopup} visible={rjctPopupVisible} handleClose={handleClose}>
+            </Popup>
+            <Popup
+                width={ProjectAprvDetail.rjctPopup.width}
+                height={ProjectAprvDetail.rjctPopup.height}
+                visible={rjctPopupVisible}
+                onHiding={handleClose}
+                showCloseButton={true}
+                title={ProjectAprvDetail.rjctPopup.title}
+            >
                 <TextArea 
-                height="50%"
-                valueChangeEvent="change"
-                onValueChanged={onTextAreaValueChanged}
-                placeholder="반려 사유를 입력해주세요."
+                    height="50%"
+                    valueChangeEvent="change"
+                    onValueChanged={onTextAreaValueChanged}
+                    placeholder="반려 사유를 입력해주세요."
                 />
                 <br/>
                 <Button text="반려" onClick={onClickRjct}/>
                 <Button text="취소" onClick={handleClose}/>
-            </CustomPopup>
+            </Popup>
         </div>
     )
 

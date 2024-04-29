@@ -4,16 +4,12 @@ import { useLocation } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
 import { Button } from "devextreme-react/button";
 import TextArea from 'devextreme-react/text-area';
-import ToolbarItem from "devextreme-react/popup";
+import Popup from "devextreme-react/popup";
 
 import ProjectChangeJson from "./ProjectChangeJson.json";
 
-import LinkButton from "../../../components/unit/LinkButton.js";
-import CustomPopup from "../../../components/unit/CustomPopup";
-
 import { useCookies } from "react-cookie";
 import ApiRequest from "utils/ApiRequest";
-import { set } from "date-fns";
 
 const ProjectChange = () => {
   const location = useLocation();
@@ -21,12 +17,13 @@ const ProjectChange = () => {
 
   const prjctId = location.state ? location.state.prjctId : null;
   const ctrtYmd = location.state ? location.state.ctrtYmd : null;
-  const bizEndYmd = location.state ? location.state.bizEndYmd : null;
+  const stbleEndYmd = location.state ? location.state.stbleEndYmd : null;
   const bgtMngOdr = location.state ? location.state.bgtMngOdr : null;
   const bgtMngOdrTobe = location.state ? location.state.bgtMngOdrTobe : null;
   const targetOdr = location.state ? location.state.targetOdr : null;
   const bizSttsCd = location.state ? location.state.bizSttsCd : null;
   const atrzLnSn = location.state ? location.state.atrzLnSn : null;
+  const deptId = location.state ? location.state.deptId : null;
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const [atrzAplyPrvonshCn, setAtrzAplyPrvonshCn] = useState(null);
@@ -38,8 +35,7 @@ const ProjectChange = () => {
 
   const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
   const empId = cookies.userInfo.empId;
-  const deptId = cookies.userInfo.deptId;
-  const buttonState = { prjctId: prjctId, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd, bgtMngOdr:bgtMngOdr, };
+  const buttonState = { prjctId: prjctId, ctrtYmd: ctrtYmd, stbleEndYmd: stbleEndYmd, bgtMngOdr:bgtMngOdr, };
   // console.log("buttonState?",buttonState);
   const [requestBtnVisible, setAprvBtnVisible] = useState(true);
   const [cancelBtnVisible, setCancelBtnVisible] = useState(false);
@@ -60,7 +56,7 @@ const ProjectChange = () => {
     const response = ApiRequest("/boot/common/commonSelect", param);
     response.then((value) => {
 
-      if(value[0].atrzDmndSttsCd === "VTW03302") {
+      if(value[0].atrzDmndSttsCd === "VTW03702") {
         setAprvBtnVisible(false);
         setCancelBtnVisible(true);
       }
@@ -131,9 +127,9 @@ const ProjectChange = () => {
       if(response > 0) {
 
         /**
-         * VTW03301	임시저장
-          VTW03302	결재요청
-          VTW03303	결재완료
+         * VTW03701	임시저장
+          VTW03702	결재요청
+          VTW03703	결재완료
         */
 
         // 승인요청 되면 PRJCT 수정해주기
@@ -144,8 +140,8 @@ const ProjectChange = () => {
         }
 
         // 승인요청 되면 PRJCT_BGT_PRMPC 수정해주기
-        // ATRZ_DMND_STTS_CD 컬럼 -> VTW03302(결재요청)
-        handleBgtPrmpc("VTW03302");
+        // ATRZ_DMND_STTS_CD 컬럼 -> VTW03702(결재요청)
+        handleBgtPrmpc("VTW03702");
 
         alert("승인요청이 완료되었습니다.");
         setPopupVisible(false);
@@ -160,7 +156,7 @@ const ProjectChange = () => {
 
   /**
    * PRJCT_BGT_PRMPC(프로젝트예산변경요청) 테이블의 ATRZ_DMND_STTS_CD(승인요청상태코드)를 변경한다.
-   * @param {"VTW03301", "VTW03302", "VTW03303"} cdValue : ATRZ_DMND_STTS_CD(승인요청상태코드)
+   * @param {"VTW03701", "VTW03702", "VTW03703"} cdValue : ATRZ_DMND_STTS_CD(승인요청상태코드)
    */
   const handleBgtPrmpc = async (cdValue) => {
     const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
@@ -215,7 +211,7 @@ const ProjectChange = () => {
     console.log("prjctId!! 변경! ", prjctId);
     navigate("../project/ProjectDetail",
         {
-        state: { prjctId: prjctId, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd, bgtMngOdr:bgtMngOdr },
+        state: { prjctId: prjctId, ctrtYmd: ctrtYmd, stbleEndYmd: stbleEndYmd, bgtMngOdr:bgtMngOdr, bgtMngOdrTobe:bgtMngOdrTobe, deptId: deptId, targetOdr: targetOdr, bizSttsCd :bizSttsCd , atrzLnSn: atrzLnSn },
         })
   };
 
@@ -255,7 +251,7 @@ const ProjectChange = () => {
           }
           
           // 임시저장으로 수정
-          handleBgtPrmpc("VTW03301");
+          handleBgtPrmpc("VTW03701");
           
         } else {
           alert("승인요청 취소가 실패되었습니다.");
@@ -291,7 +287,6 @@ const ProjectChange = () => {
       <div className="buttons" align="right" style={{ margin: "20px" }}>
         <Button text="승인요청" onClick={onPopup} visible={requestBtnVisible}></Button>
         <Button text="승인요청취소" onClick={onAprvCancel} visible={cancelBtnVisible}/>
-        {/* <LinkButton location={-1} name={"이전"} type={"normal"} state={buttonState}/> */}
         <Button text="이전" onClick={toDetail}/>
       </div>
       <div
@@ -317,10 +312,15 @@ const ProjectChange = () => {
               <Component 
                 prjctId={prjctId}
                 ctrtYmd={ctrtYmd}
-                bizEndYmd={bizEndYmd}
+                stbleEndYmd={stbleEndYmd}
                 bgtMngOdrTobe={bgtMngOdrTobe}
                 revise={true}
                 tabId={data.tabId}
+                change={true}
+                deptId={deptId}
+                targetOdr={targetOdr}
+                bizSttsCd={bizSttsCd}
+                atrzLnSn={atrzLnSn}
               />
             </Suspense>
           );
@@ -328,7 +328,14 @@ const ProjectChange = () => {
         }}
         />
       </div>
-      <CustomPopup props={popup} visible={popupVisible} handleClose={handleClose}>
+      <Popup
+        width={popup.width}
+        height={popup.height}
+        visible={popupVisible} 
+        onHiding={handleClose}
+        showCloseButton={true}
+        title={popup.title}
+      >
         <TextArea 
           height="50%"
           valueChangeEvent="change"
@@ -338,7 +345,7 @@ const ProjectChange = () => {
         <br/>
         <Button text="승인요청" onClick={onSubmit}/>
         <Button text="요청취소" onClick={handleClose}/>
-      </CustomPopup>
+      </Popup>
     </div>
   );
 };

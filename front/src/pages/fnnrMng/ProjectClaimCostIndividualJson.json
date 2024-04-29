@@ -1,0 +1,49 @@
+{
+    "menuName": "ProjectClaimCostIndvdl",
+	"queryId": {
+      "empMMQueryId": "financialAffairMngMapper.retrievePrjctCtClmSttusIndvdlMMAccto",
+      "empCtQueryId": "financialAffairMngMapper.retrievePrjctCtClmSttusIndvdlCtAccto",
+      "mmPopupQueryId": "financialAffairMngMapper.retrievePrjctCtClmSttusIndvdlMMAcctoDetail",
+      "ctPopupQueryId": "financialAffairMngMapper.retrievePrjctCtClmSttusIndvdlCtAcctoDetail"
+    },
+    "mmKeyColumn": "empId",
+    "ctKeyColumn": "expensCd",
+    "mmColumns":
+	[
+        { "key": "deptNm", "value": "소속", "width": 200, "alignment" : "left" },
+        { "key": "empFlnm", "value": "성명", "width": 100, "alignment" : "center"  },
+        { "key": "startAplyOdr", "value": "시작차수", "width": 100, "alignment" : "center" },
+        { "key": "endAplyOdr", "value": "종료차수", "width": 100, "alignment" : "center" },
+        { "key": "expectMm", "value": "배정", "width": 140, "alignment" : "right" },
+        { "key": "totalMdSum", "value": "누적사용", "width": 140, "alignment" : "right" },
+        { "key": "useMm", "value": "가용", "width": 140, "alignment" : "right"  },
+        { "key": "clmMd", "value": "당차수청구", "width": 140, "alignment" : "right"  },
+        { "key": "empId", "value": "상태", "width": 130, "alignment" : "center", "button": { "text": "청구현황",
+                                                                                            "name": "empId"
+                                                                                        } }
+    ],
+    "mmSumColumns": [
+        { "key": "deptNm", "value": "소속", "type"  : "sum", "format": "계" },
+        { "key": "expectMm", "value": "배정", "type"  : "sum", "format": "{0} MM", "precision": "1" },
+        { "key": "mm", "value": "누적사용", "type"  : "sum", "format": "{0} MM", "precision": "1" },
+        { "key": "useMM", "value": "가용", "type"  : "sum", "format": "{0} MM", "precision": "1" },
+        { "key": "clmMd", "value": "당차수청구", "type"  : "sum", "format": "{0} MM", "precision": "0" }
+    ],
+    "ctColumns":
+	[
+        { "key": "expensNm", "value": "비용코드", "width": 300, "alignment" : "left" },
+        { "key": "startAplyOdr", "value": "시작차수", "width": 100, "alignment" : "center" },
+        { "key": "endAplyOdr", "value": "종료차수", "width": 100, "alignment" : "center" },
+        { "key": "totalAmtSum", "value": "누적사용", "width": 280, "alignment" : "right", "dataType": "number" },
+        { "key": "totalAmt", "value": "당차수청구", "width": 280, "alignment" : "right" },
+        { "key": "expensCd", "value": "상태", "width": 130, "alignment" : "center", "button": { "text": "청구현황",
+                                                                                            "name": "expenseAprv"
+                                                                                        } }
+    ],
+    "ctSumColumns": [
+        { "key": "deptNm", "value": "소속", "type"  : "sum", "format": "계" },
+        { "key": "totalAmtSum", "value": "누적사용", "type"  : "sum", "format": "{0} 원", "precision": "0" },
+        { "key": "totalAmt", "value": "당차수청구", "type"  : "sum", "format": "{0} 원", "precision": "0" }
+
+    ]
+}

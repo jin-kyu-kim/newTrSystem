@@ -1,0 +1,137 @@
+{
+    "menuName": "EmpTRCostTotal",
+    "queryId": "financialAffairMngMapper.retrieveWorkHrAprvList",
+    "keyColumn": "empId",
+    "prjctColumns": [
+      {  "key": "prjctNm", "value": "프로젝트", "width": 120, "alignment": "center", "grouping" : true,"groupSummary": {
+        "type": "sum",
+        "format": "Total: {0}",
+        "precision": "2"
+      }},
+        { "key": "empFlnm", "value": "성명", "width": 120, "alignment": "center" },
+        { "value": "근무시간",  "subColumns": [
+          { "key" : "prjctNonInsert", "value": "프로젝트 미투입", "width": 150, "alignment": "center" },
+          {  "key": "prjctInsert","value": "프로젝트 투입", "width": 150, "alignment": "center" }
+        ]  
+        },
+        {  "key": "vacation","value": "휴가", "width": 120, "alignment": "center" },
+        {  "value": "총 근무시간( 근무시간+휴가)","subColumns": [
+            {  "key": "totalPrjctNonInsert" ,"value": "프로젝트  미투입", "width": 150, "alignment": "center" },
+            {  "key": "totalPrjctInsert","value": "프로젝트  투입", "width": 150, "alignment": "center" }
+          ]   },
+          {  "value": "비용","subColumns": [
+            { "key":"prjctNonInsertExpense", "value": "프로젝트미투입", "width": 150, "alignment": "center" },
+            { "key":"prjctInsertExpense", "value": "프로젝트투입", "width": 150, "alignment": "center" }
+          ]   }
+       
+    ],
+    "nameColumns": [
+      { "key": "empFlnm", "value": "성명", "width": 120, "alignment": "center" ,"grouping" : true },
+      {  "key": "prjctNm", "value": "프로젝트", "width": 120, "alignment": "center"  },
+      { "value": "근무시간",  "subColumns": [
+        { "key" : "prjctNonInsert", "value": "프로젝트 미투입", "width": 150, "alignment": "center" },
+        {  "key": "prjctInsert","value": "프로젝트 투입", "width": 150, "alignment": "center" }
+      ]  
+      },
+      {  "key": "vacation","value": "휴가", "width": 120, "alignment": "center" },
+      {  "value": "총 근무시간( 근무시간+휴가)","subColumns": [
+          {  "key": "totalPrjctNonInsert" ,"value": "프로젝트  미투입", "width": 150, "alignment": "center" },
+          {  "key": "totalPrjctInsert","value": "프로젝트  투입", "width": 150, "alignment": "center" }
+        ]   },
+        {  "value": "비용","subColumns": [
+          { "key":"prjctNonInsertExpense", "value": "프로젝트미투입", "width": 150, "alignment": "center" },
+          { "key":"prjctInsertExpense", "value": "프로젝트투입", "width": 150, "alignment": "center" }
+        ]   }
+     
+  ],
+  "smallSummaryColumn": [
+    { "value": "성명",  "format": "총 합계 :" },
+    { "key": "prjctNonInsert", "value": "프로젝트 미투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
+    { "key": "prjctInsert", "value": "프로젝트 투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
+    { "key": "vacation", "value": "휴가", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
+    { "key": "totalPrjctNonInsert", "value": "프로젝트  미투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
+    { "key": "totalPrjctInsert", "value": "프로젝트  투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
+    { "key": "prjctNonInsertExpense", "value": "프로젝트미투입", "type"  : "sum", "format": "{0} 원"  ,"precision": "0"   },
+    { "key": "prjctInsertExpense", "value": "프로젝트투입", "type"  : "sum", "format": "{0} 원","precision": "" }
+  ],
+  
+
+    "summaryColumn": [
+      { "value": "성명",  "format": "총 합계 :" },
+      { "key": "prjctNonInsert", "value": "프로젝트 미투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
+      { "key": "prjctInsert", "value": "프로젝트 투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
+      { "key": "vacation", "value": "휴가", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
+      { "key": "totalPrjctNonInsert", "value": "프로젝트  미투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
+      { "key": "totalPrjctInsert", "value": "프로젝트  투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
+      { "key": "prjctNonInsertExpense", "value": "프로젝트미투입", "type"  : "sum", "format": "{0} 원"  ,"precision": "0"   },
+      { "key": "prjctInsertExpense", "value": "프로젝트투입", "type"  : "sum", "format": "{0} 원","precision": "" }
+    ],
+
+    "summaryColumn2": [
+      { "value": "프로젝트",  "format": "총 합계 :" },
+      { "key": "prjctNonInsert", "value": "프로젝트 미투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
+      { "key": "prjctInsert", "value": "프로젝트 투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
+      { "key": "vacation", "value": "휴가", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
+      { "key": "totalPrjctNonInsert", "value": "프로젝트  미투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
+      { "key": "totalPrjctInsert", "value": "프로젝트  투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
+      { "key": "prjctNonInsertExpense", "value": "프로젝트미투입", "type"  : "sum", "format": "{0} 원"  ,"precision": "0"   },
+      { "key": "prjctInsertExpense", "value": "프로젝트투입", "type"  : "sum", "format": "{0} 원","precision": "" }
+    ],
+  
+
+   
+
+    "searchParams":
+  {
+    "yearItem": true,
+    "monthItem": true,
+    "aplyOdr": true,
+    "empNm" : false
+
+  },
+    "searchInfo": {
+        "searchParams": {
+            "insertButton": false
+        },
+        "commonCd": "VTW001",
+        "selectBoxItem": [
+            {
+                "placeholder": "[재직 상태]",
+                "param":{
+                  "tbNm": "CD",
+                  "valueExpr": "cdValue",
+                  "displayExpr": "cdNm",
+                  "name": "hdofSttsNm",
+                  "condition": {
+                    "upCdValue": "VTW002"
+                  },
+                  "clearButton": true
+                }
+            },
+       
+            {
+                "placeholder": "[프로젝트 명]",
+                "param":{
+                  "tbNm": "PRJCT",
+                  "valueExpr": "prjctId",
+                  "displayExpr": "prjctNm",
+                  "name": "prjctId",
+                  "clearButton": true
+                }
+            }
+           
+        ],
+        "textBoxItem": [
+            {
+                "placeholder": "사번",
+                "name": "empno"
+            },
+            {
+                "placeholder": "성명",
+                "name": "empFlnm"
+            }
+           
+        ]
+    }
+
+}

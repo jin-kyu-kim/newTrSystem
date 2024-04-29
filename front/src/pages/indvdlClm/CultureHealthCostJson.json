@@ -1,0 +1,50 @@
+{
+  "menuName": "CultureHealthCost",
+  "keyColumn": "clturPhstrnActCtSn",
+  "queryId": "indvdlClmMapper.retrieveClturPhstrnActCtList",
+  "labelValue" : {
+    "clmYmd": {
+      "name": "clmYmd",
+      "type": "DateBox",
+      "label": "청구일자",
+      "placeholder": "청구일자",
+      "required": true
+    },
+    "clmAmt": {
+      "name": "clmAmt",
+      "type": "NumberBox",
+      "label": "청구금액",
+      "placeholder": "청구금액",
+      "required": true
+    },
+    "clturPhstrnSeCd": {
+      "name": "clturPhstrnSeCd",
+      "type": "ComboBox",
+      "label": "구분",
+      "placeholder": "구분",
+      "param": { "tbNm" : "CD",
+        "condition": {
+          "upCdValue": "VTW009"
+        },
+        "valueExpr" : "cdValue",
+        "displayExpr": "cdNm",
+        "name": "clturPhstrnSeCd"
+      },
+      "required": true
+    },
+    "actIem": {
+      "name": "actIem",
+      "type": "TextBox",
+      "label": "항목",
+      "placeholder": "항목",
+      "required": true
+    },
+    "actPurps": {
+      "name": "actPurps",
+      "type": "TextBox",
+      "label": "목적",
+      "placeholder": "목적",
+      "required": true
+    }
+  }
+}

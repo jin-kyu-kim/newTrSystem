@@ -2,7 +2,7 @@
   {
     "caption": "성명",
     "width": 120,
-    "dataField": "outordEmpId",
+    "dataField": "empNm",
     "area": "row",
     "showTotals": false,
     "expanded": true
@@ -49,21 +49,15 @@
   },
   {
     "caption": "단가",
-    "dataField": "untpc",
+    "dataField": "outorUntpc",
     "width": 100,
     "area": "row",
     "expanded": true,
     "showTotals": false
+    
   },
   {
-    "caption": " ",
-    "dataField": "flag",
-    "area": "row",
-    "expanded": true,
-    "showTotals": false
-  },
-  {
-    "dataField": "inptYm",
+    "dataField": "ym",
     "dataType": "inptYm",
     "format": "YYYY-mm",
     "groupInterval": "year",
@@ -72,10 +66,47 @@
     "expanded": true
   },
   {
-    "caption": "Total",
-    "dataField": "mm",
+    "caption": "예산",
+    "dataField": "expectMm",
     "dataType": "number",
     "summaryType": "sum",
-    "area": "data"
+    "area": "data",
+    "format": {
+      "type": "fixedPoint",
+      "precision": 2
+    }
+  },
+  {
+    "caption": "사용",
+    "dataField": "mm",
+    "area": "data",
+    "dataType": "number",
+    "summaryType": "sum",
+    "format": {
+      "type": "fixedPoint",
+      "precision": 2
+    }
+  },
+  {
+    "caption": "가용",
+    "dataField": "calcCt",
+    "area": "data",
+    "dataType": "number",
+    "summaryType": "sum",
+    "format": {
+      "type": "fixedPoint",
+      "precision": 2
+    }
+  },{
+    "caption": "금액",
+    "width": 30,
+    "dataField": "untpc",
+    "area": "data",
+    "dataType": "number",
+    "summaryType": "sum",
+    "format": {
+       "type": "fixedPoint",
+        "thousandsSeparator": ","
+    }
   }
 ]

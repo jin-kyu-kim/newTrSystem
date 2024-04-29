@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "devextreme-react";
-import { parse, format, addMonths } from 'date-fns';
+import { parse, format, addMonths, subMonths } from 'date-fns';
 
 import ApiRequest from "../../utils/ApiRequest";
-import CustomPopup from "../unit/CustomPopup";
 import ProjectChangePopup from "../../pages/project/manage/ProjectChangePopup";
+import { Popup } from "devextreme-react";
 
 import DataGrid, {
   Column,
@@ -17,34 +17,31 @@ import DataGrid, {
 } from "devextreme-react/data-grid";
 
 const CustomCostTable = ({
-  keyColumn,
   columns,
   values,
-  summaryColumn,
-  popup,
-  labelValue,
   json,
   ctrtYmd,
-  bizEndYmd,
+  stbleEndYmd,
   prjctId,
   bgtMngOdrTobe,
-  onHide,
+  deptId,
+  targetOdr, 
+  bizSttsCd, 
+  atrzLnSn
 }) => {
+
   const navigate = useNavigate();
   const [period, setPeriod] = useState([]); //사업시작일, 사업종료일을 받아와서 월별로 나눈 배열을 담을 상태
   const dataGridRef = useRef(null); // DataGrid 인스턴스에 접근하기 위한 ref
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [summaryColumns, setSummaryColumns] = useState(summaryColumn); 
+  const [summaryColumns, setSummaryColumns] = useState(json.summaryColumn); 
   const [transformedData, setTransformedData] = useState([]);
   const editColumn = ["수정", "삭제"];
-  // console.log("보라 values", values);
 
   useEffect(() => {
     const deleteArray = [...json.pkColumns, ...json.nomalColumns, ...json.CdComboboxColumnNm];
     deleteArray.push("total");
-
-    // console.log("deleteArray", deleteArray);
 
     let temp = {...selectedItem};
 
@@ -54,20 +51,17 @@ const CustomCostTable = ({
 
     const transformedData = Object.keys(temp).map((key) => {
         // 키에서 연도와 월을 분리하고 형식을 변경합니다.
-        const formattedKey = key.replace('년 ', '-').replace('월', '');        
-        console.log("formattedKey???머얄망", formattedKey);       
+        const formattedKey = key.replace('년 ', '').replace('월', '');             
         return {
           id: formattedKey,
           value: temp[key]
         };
       });
-      
       setTransformedData(transformedData);
 
   }, [selectedItem]);
 
   const showPopup = (data) => {
-    // console.log("popup data!!", data);
     setIsPopupVisible(true);
     setSelectedItem(data); // 팝업에 표시할 데이터 설정
   };
@@ -84,34 +78,23 @@ const CustomCostTable = ({
     // 상태 업데이트 함수를 사용하여 summaryColumn 상태 업데이트
     setSummaryColumns(prevSummaryColumns => [...prevSummaryColumns, ...newSummaryColumns]);
   };
-
-  //파라미터로 받아온 사업시작, 사업종료월을 파라미터로 포함된 월의 갯수를 배열로 반환
-  useEffect(() => {
-      const getPeriod = (startDate, endDate) => {
-        const start = startDate ? parse(startDate, 'yyyy-MM-dd', new Date()) : new Date();
-        const end = endDate ? parse(endDate, 'yyyy-MM-dd', new Date()) : addMonths(start, 15);
-        let periods = [];
-        let currentDate = start;
-        while (currentDate  <= end) {
-          periods.push(format(currentDate, 'yyyy년 MM월'));
-          currentDate = addMonths(currentDate, 1); 
-        }
-        setPeriod(periods);
-        updateSummaryColumn(periods);
-    };
-    getPeriod(ctrtYmd, bizEndYmd);
-  }, []);
-
-  //gridRows가 실행되는 시점 잡아주기.
-  useEffect(() => {
-    if(period){
-      gridRows();
-    }
-  } ,[period]);
-
   
+  //기간 set
+  useEffect(() => {
+    const start = parse(ctrtYmd || format(new Date(), 'yyyy-MM-dd'), 'yyyy-MM-dd', new Date());
+    const end = stbleEndYmd ? parse(stbleEndYmd, 'yyyy-MM-dd', new Date()) : addMonths(start, 15);
+    const periods = [];
+  
+    for (let currentDate = start; currentDate <= end; currentDate = addMonths(currentDate, 1)) {
+      periods.push(format(currentDate, 'yyyy년 MM월'));
+    }
+  
+    setPeriod(periods);
+    updateSummaryColumn(periods);
+  }, [ctrtYmd, stbleEndYmd]); 
+
+
   const onCellRenderEdit = ({data}) => {
-    // console.log("data",data);
     return (
       <Button
         onClick={() => showPopup(data)}
@@ -172,7 +155,15 @@ const CustomCostTable = ({
   const handleCancel = () => {
     navigate("../project/ProjectChange",
         {
-    state: { prjctId: prjctId, bgtMngOdrTobe: bgtMngOdrTobe, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd},
+    state: { prjctId: prjctId, 
+            bgtMngOdrTobe: bgtMngOdrTobe, 
+            ctrtYmd: ctrtYmd, 
+            stbleEndYmd: stbleEndYmd, 
+            deptId : deptId,  
+            targetOdr : targetOdr,
+            bizSttsCd : bizSttsCd,
+            atrzLnSn : atrzLnSn
+            },
     })
   };
 
@@ -187,7 +178,13 @@ const CustomCostTable = ({
           caption={column.value}
           alignment={"center"}
           fixed={true}
-        ></Column>
+          dataType={column.subType ==="NumberBox" ? "number" : 
+                    column.subType ==="Date" ? "date" :
+                     "string"}
+          format={column.subType === "Date" ? "yyyy-MM-dd" : 
+                  column.subType === "NumberBox" ? column.format :
+                  ""}
+        ></Column>     
       );
     });
     period.map((periodItem, index) => {
@@ -199,6 +196,8 @@ const CustomCostTable = ({
           alignment={"center"}
           // visibility={"hidden"}
           fixed={true}
+          format={json.popupNumberBoxFormat}
+
         ></Column>
       );
     });
@@ -221,13 +220,12 @@ const CustomCostTable = ({
     });
     return result;
   };
-  
 
   return (
     <div className="">
       <DataGrid
         ref={dataGridRef}
-        keyExpr={keyColumn}
+        keyExpr={json.keyColumn}
         id={"dataGrid"}
         className={"table"}
         dataSource={values}
@@ -262,30 +260,38 @@ const CustomCostTable = ({
               column={item.value}
               summaryType={item.type}
               displayFormat={item.format}
-              valueFormat={{ type: "fixedPoint", precision: 0 }} // 천 단위 구분자 설정
+              valueFormat={{ type: "fixedPoint", precision: json.precision }} // 천 단위 구분자 설정
             />
           ))}
         </Summary>
         <ColumnFixing enabled={true} />
       </DataGrid>
 
-      <CustomPopup props={popup} visible={isPopupVisible} handleClose={hidePopup} onHide={onHide}>
+      <Popup width={json.popup.width}
+             height={json.popup.height}
+             visible={isPopupVisible} 
+             onHiding={hidePopup}
+             showCloseButton={true}
+             title={json.popup.title}
+             >
         <ProjectChangePopup 
           selectedItem={selectedItem} 
           period={period} 
-          labelValue={labelValue} 
           popupInfo={json} 
-          onHide={onHide} 
           prjctId={prjctId} 
           bgtMngOdrTobe={bgtMngOdrTobe}
           ctrtYmd={ctrtYmd}
-          bizEndYmd={bizEndYmd}
+          stbleEndYmd={stbleEndYmd}
           transformedData={transformedData}
+          deptId={deptId}
+          targetOdr={targetOdr}
+          bizSttsCd={bizSttsCd}
+          atrzLnSn={atrzLnSn}
           />
-       </CustomPopup>   
+       </Popup>
 
       <div style={{ textAlign: "right" }}>
-        <Button onClick={handleAddRow}>행 추가</Button>
+        <Button onClick={handleAddRow}>{json.AddRowBtn}</Button>
       </div>
     </div>
   );

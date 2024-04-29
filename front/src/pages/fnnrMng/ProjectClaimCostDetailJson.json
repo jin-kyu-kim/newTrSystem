@@ -1,0 +1,32 @@
+{
+  "menuName": "ProjectClaimCostDetail",
+  "searchInfo": {
+    "searchParams": {
+      "insertButton": false,
+      "dateRange": true,
+      "startDtNm": "startYmOdr",
+      "endDtNm": "endYmOdr"
+    },
+    "textBoxItem": [
+      {
+        "placeholder": "기안자 성명",
+        "name": "empFlnm"
+      }
+    ]
+  },
+  "tabMenu":
+  [
+    {
+      "TabName": "개인별조회",
+      "tabId": "ProjectClaimCostIndividual",
+      "url": "pages/fnnrMng/ProjectClaimCostIndividual"
+
+    },
+    {
+      "TabName": "일자별조회",
+      "tabId": "ProjectClaimCostYMD",
+      "url": "pages/fnnrMng/ProjectClaimCostYMD"
+    }
+  ]
+}
+

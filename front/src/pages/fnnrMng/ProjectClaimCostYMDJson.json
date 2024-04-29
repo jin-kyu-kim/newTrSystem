@@ -1,0 +1,19 @@
+{
+    "menuName": "ProjectClaimCostYMD",
+    "keyColumn": "empId",
+    "tableColumns":
+	[
+        { "key": "cliamDate", "value": "날짜" },
+        { "key": "aplyYmd", "value": "신청일자" },
+        { "key": "empFlnm", "value": "직원성명" },
+        { "key": "md", "value": "ManDay" },
+        { "key": "mmAtrzCmptnYn", "value": "MM결재완료여부" },
+        { "key": "utztnDt", "value": "이용일시" },
+        { "key": "expensCd", "value": "경비코드" },
+        { "key": "utztnAmt", "value": "이용금액" },
+        { "key": "useOffic", "value": "사용처" },
+        { "key": "cdPrpos", "value": "비용용도" },
+        { "key": "atdrn", "value": "참석자" },
+        { "key": "ctAtrzCmptnYn", "value": "비용결재완료여부" }
+    ]
+}

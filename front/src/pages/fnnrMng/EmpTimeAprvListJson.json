@@ -1,0 +1,23 @@
+{
+    "menuName": "EmpTimeAprvList",
+    "queryId": "financialAffairMngMapper.retrievePrjctMmAplyList",
+    "keyColumn": "prjctId",
+    "tableColumns": [
+          { "key": "aplyYmd", "value": "날짜", "width": 120, "alignment": "center" },
+          { "key": "prjctNm", "value": "프로젝트명", "width": 500, "alignment": "center" },
+          { "key": "empFlnm", "value": "이름", "width": 200, "alignment": "center" },
+          { "key": "md", "value": "시간", "width": 170, "alignment": "center" }
+    ],
+
+    "searchParams":
+  {
+    "yearItem": true,
+    "monthItem": true,
+    "aplyOdr": true,
+    "prjctId" : true
+
+  }
+
+
+    
+    }

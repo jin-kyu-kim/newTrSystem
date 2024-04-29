@@ -1,0 +1,64 @@
+{
+    "menuName": "EmpTRCostTotal",
+    "queryId": "financialAffairMngMapper.retrieveClturPhstrnCtClmList",
+    "keyColumn": "empId",
+    "wordWrap": true,
+   
+    "tableColumns": [
+      { "key": "empFlnm", "value": "성명", "width": 400, "alignment": "center", "grouping" : true  },
+      {  "key": "ym", "value": "월별", "width": 120, "alignment": "center" },
+      {  "key": "expenseType", "value": "구분", "width": 120, "alignment": "center" },
+      {  "key": "amount", "value": "이월금액", "width": 120, "alignment": "center" },
+      {  "key": "clmAmt", "value": "청구금액", "width": 120, "alignment": "center" },
+      {  "key": "clturCtDpstAmt", "value": "지급금액", "width": 120, "alignment": "center" },
+      {  "key": "balance", "value": "잔액", "width": 120, "alignment": "center" }
+     
+  ],
+
+   
+    "searchInfo": {
+        "searchParams": {
+            "insertButton": false
+        },
+        "commonCd": "VTW001",
+        "selectBoxItem": [
+            {
+                "placeholder": "[재직 상태]",
+                "param":{
+                  "tbNm": "CD",
+                  "valueExpr": "cdValue",
+                  "displayExpr": "cdNm",
+                  "name": "hdofSttsNm",
+                  "condition": {
+                    "upCdValue": "VTW002"
+                  },
+                  "clearButton": true
+                }
+            },
+       
+            {
+                "placeholder": "[프로젝트 명]",
+                "param":{
+                  "tbNm": "PRJCT",
+                  "valueExpr": "prjctId",
+                  "displayExpr": "prjctNm",
+                  "name": "prjctId",
+                  "clearButton": true
+                }
+            }
+           
+        ],
+        "textBoxItem": [
+            {
+                "placeholder": "사번",
+                "name": "empno"
+            },
+            {
+                "placeholder": "성명",
+                "name": "empFlnm"
+            }
+           
+        ]
+    }
+
+}

@@ -1,0 +1,87 @@
+{
+    "menuName": "PymntPlanPopup",
+    "matrlCtrt": {
+        "labelValue": {
+            "matrlPlan": {
+                "type": "ComboBox",
+                "label": "계획 투입 재료비",
+                "required": true,
+                "placeholder": "계획 투입 재료비",
+                "param":{ 
+                        "queryId" : {
+                            "queryId" : "elecAtrzMapper.retrieveMatrlPlan"
+                            },
+                        "valueExpr" : "matrlPlan",
+                        "displayExpr": "matrlPlan",
+                        "values" : ["cntrctamount","matrlCtSn","dlvgdsEntrpsNm","dtlCn","matrlPlan","prductNm","prjctId","qy","tot","untpc"],
+                        "name" : "matrlPlan"
+                        }
+            },
+            "cntrctamount": {
+                "name": "cntrctamount",
+                "type": "TextBox",
+                "label": "가용금액",
+                "placeholder": "가용금액",
+                "required": true
+            },
+            "prductNm": {
+                "name": "prductNm",
+                "type": "TextBox",
+                "label": "제품명",
+                "placeholder": "제품명",
+                "required": true
+            },
+            "dtlCn": {
+                "name": "dtlCn",
+                "type": "TextBox",
+                "label": "상세스펙",
+                "placeholder": "상세스펙",
+                "required": true
+            },
+            "untpc": {
+                "name": "untpc",
+                "type": "NumberBox",
+                "label": "단가",
+                "format": "#,###",
+                "placeholder": "단가",
+                "max": 900000000000,
+                "required": true
+            },
+            "qy": {
+                "name": "qy",
+                "type": "TextBox",
+                "label": "수량",
+                "placeholder": "수량",
+                "required": true
+            },
+            "tot": {
+                "name": "tot",
+                "type": "NumberBox",
+                "label": "총액",
+                "format": "#,###",
+                "placeholder": "총액",
+                "max": 900000000000,
+                "required": true
+            },
+            "dlvgdsPrnmntYmd": {
+                "name": "dlvgdsPrnmntYmd",
+                "type": "DateBox",
+                "label": "납품예정일",
+                "placeholder": "납품예정일",
+                "required": true
+            },
+            "totAmt": {
+                "name": "totAmt",
+                "type" : "NumberBox",
+                "label": "지급 총액",
+                "format": "#,###"
+            }
+        },
+        "keyColumn": "giveOdrCd",
+        "tableColumns": [
+            {"key": "giveOdrCd", "value": "지급 차수", "isRequire": true, "editType" : "selectBox" ,"comCd" : "VTW032" },
+            {"key": "ctrtYmd", "value": "지급 일자", "type": "date", "format": "yyyy-MM", "isRequire": true},
+            {"key": "ctrtAmt", "value": "지급 금액", "type": "number", "format":"#,###", "isRequire": true}
+        ]
+    }
+}

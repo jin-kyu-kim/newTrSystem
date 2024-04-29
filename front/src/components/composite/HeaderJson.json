@@ -21,27 +21,17 @@
       {
         "id": 4,
         "title": "자료실",
-        "link": "/"
+        "link": "infoInq/ReferenceList"
       },
       {
         "id": 5,
-        "title": "사내교육영상",
-        "link": "/"
-      },
-      {
-        "id": 6,
         "title": "회의실예약",
         "link": "/"
       },
       {
-        "id": 7,
+        "id": 6,
         "title": "법제도",
         "link": "/infoInq/LawRules"
-      },
-      {
-        "id": 8,
-        "title": "지식관리시스템",
-        "link": "/"
       }
     ]
   },
@@ -57,7 +47,7 @@
       {
         "id": 2,
         "title": "프로젝트비용",
-        "link": "/"
+        "link": "indvdlClm/ProjectExpense"
       },
       {
         "id": 3,
@@ -67,7 +57,7 @@
       {
         "id": 4,
         "title": "문화체련비",
-        "link": "/"
+        "link": "indvdlClm/CultureHealthCost"
       }
     ]
   },
@@ -93,7 +83,7 @@
       {
         "id": 4,
         "title": "외주비용승인",
-        "link": "/"
+        "link": "project/ProjectOutordAprv"
       },
       {
         "id": 5,
@@ -150,27 +140,27 @@
       {
         "id": 1,
         "title": "프로젝트비용청구현황",
-        "link": "/fnnrMng/prjctCtClm/ProjectCostClaimList"
+        "link": "/fnnrMng/ProjectClaimCost"
       },
       {
         "id": 2,
         "title": "근무시간승인내역",
-        "link": "/"
+        "link": "/fnnrMng/EmpTimeAprvList"
       },
       {
         "id": 3,
         "title": "경비승인내역",
-        "link": "/"
+        "link": "/fnnrMng/EmpExpenseAprvList"
       },
       {
         "id": 4,
         "title": "근무시간,경비통합",
-        "link": "/"
+        "link": "/fnnrMng/EmpTRCostTotal"
       },
       {
         "id": 5,
         "title": "문화체련비관리",
-        "link": "/"
+        "link": "/fnnrMng/EmpCultHealthCostManage"
       },
       {
         "id": 6,
@@ -187,7 +177,7 @@
   {
     "id": 6,
     "title": "전자결재",
-    "link": "/"
+    "link": "/elecAtrz/ElecAtrz"
   },
   {
     "id": 7,
@@ -196,17 +186,22 @@
       {
         "id": 1,
         "title": "권한관리",
-        "link": "/"
+        "link": "sysMng/EmpAuth"
       },
       {
         "id": 2,
-        "title": "코드관리",
-        "link": "/sysMng/TrsCodeList"
+        "title": "권한부여관리",
+        "link": "sysMng/EmpAuthorization"
       },
       {
         "id": 3,
+        "title": "코드관리",
+        "link": "sysMng/TrsCode"
+      },
+      {
+        "id": 4 ,
         "title": "고객사관리",
-        "link": "/sysMng/CustomersList"
+        "link": "sysMng/CustomersList"
       }
     ]
   },
@@ -227,12 +222,12 @@
       {
         "id": 3,
         "title": "전자결재서식관리",
-        "link": "/"
+        "link": "mngrMenu/ElecAtrzFormManage"
       },
       {
         "id": 4,
         "title": "전자결재",
-        "link": "/"
+        "link": "mngrMenu/ElecAtrzManage"
       },
       {
         "id": 5,

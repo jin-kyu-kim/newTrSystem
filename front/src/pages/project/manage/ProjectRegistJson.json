@@ -37,21 +37,24 @@
             "label": "총예산",
             "required": false,
             "placeholder": "총예산(VAT제외)", 
-            "type": "NumberBox"
+            "type": "NumberBox",
+            "max": 900000000000
         },
         "bddprPc": {
             "name": "bddprPc",
             "type": "NumberBox",
             "label": "투찰가",
             "required": false,
-            "placeholder": "투찰가"
+            "placeholder": "투찰가",
+            "max": 900000000000
         },
         "mmnySlsAm": {
             "name": "mmnySlsAm",
             "type": "NumberBox",
             "label": "자사매출액",
             "required": false,
-            "placeholder": "자사매출액" 
+            "placeholder": "자사매출액",
+            "max": 900000000000
         },
         "ctmmnyInfo": {
             "type": "ComboBox",
@@ -145,6 +148,7 @@
     },
     "updateColumns" : {
         "prjctNm": "",
+        "prjctStleCd": "",
         "deptId": "",
         "totBgt": "",
         "bddprPc": "",

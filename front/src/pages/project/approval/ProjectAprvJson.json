@@ -16,8 +16,10 @@
     "searchParams":
 	{
         "ctmmnyNameItem": false,
-        "prjctDatePickerItem": false,
         "prjctStleCdItem": false,
+        "prjctDatePickerItem": false,
+        "atrzSttsCdItem": true,
+        "bizFlfmtTyCdItem": false,
         "insertBtnItem": false,
         "popupVisible" : false
     }

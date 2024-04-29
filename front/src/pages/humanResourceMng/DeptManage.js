@@ -1,39 +1,425 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import ApiRequest from "utils/ApiRequest";
 import { Button } from "devextreme-react";
 import CustomTable from "components/unit/CustomTable";
 import DeptManageJson from  "./DeptManageJson.json";
-import SearchHumanResourceMngtSet from "components/composite/SearchHumanResoureceMngSet";
-import DeptRegist from "./DeptRegist";
-import CustomPopup from "components/unit/CustomPopup";
+import moment from "moment";
+import TreeView from 'devextreme-react/tree-view';
+import { Popup } from "devextreme-react";
+import DeptManagePop from './DeptManagePop';
+import CustomLabelValue from "components/unit/CustomLabelValue";
+import uuid from "react-uuid";
+import { useCookies } from "react-cookie";
 
 const DeptManage = ({callBack}) => {
-  const [values, setValues] = useState([]);
-  const [values2, setValues2] = useState([]);
-  const [values3, setValues3] = useState([]);
+
   const [param, setParam] = useState({});
-  const { listQueryId, searchParams, listKeyColumn, listTableColumns,       //부서목록조회 
-          downDeptQueryId, downDeptTableColumns,                            //하위부서목록
-          hnfQueryId, hnfKeyColumn, hafTableColumns,                        //부서인력목록
-          popup } = DeptManageJson; 
-  const [deptParam2, setDeptParam2] = useState({});
-  const [deptParam3, setDeptParam3] = useState({});
-
-  const [deptInfo, setDeptInfo] = useState([]);
-  const [isPopup, setPopup] = useState(false);
-  const [popupVisible, setPopupVisible] = useState(false);
-  const [initParam, setInitParam] = useState({});
-
+  const [values, setValues] = useState([]);                         //부서목록트리
+  const [hnfValues, setHnfValues] = useState([]);                   //부서인력정보 목록
+  const { listQueryId,hnfQueryId, hnfKeyColumn, hafTableColumns, labelValue} = DeptManageJson; //부서인력목록용 json data
+  const [deptHnfParam, setDeptHnfParam] = useState({});             //부서인력정보 검색용 세팅
+  const [deptInfo, setDeptInfo] = useState({});                     //팝업 및 상세정보에 넘길 정보 셋팅용
+  const [empPopup,setEmpPop] = useState(false);                     //부서내 직원관리 팝업 세팅
   const [totalItems, setTotalItems] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
-  const [hnfPageSize, setHnfPageSize] = useState(20);
-  const [downDeptPageSize, setDownDeptPageSize] = useState(20);
+  const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
+  const [value, setValue] = useState('contains');
+  const empId = cookies.userInfo.empId;
+  const date = new Date();
+  const now =  date.toISOString().split("T")[0] +" " +date.toTimeString().split(" ")[0];
+  const gnfdDate = moment().format('YYYYMMDD'); //현재 년월일
+  const [deptId,setDeptId] = useState();        //부서id
+  const [deptNm, setDeptNm] = useState();       //부서명 설정용
+  const [upDeptId, setUpDeptId] = useState();   //상위부서 설정용
+  const [deptMngrEmpFlnm, setDeptMngrEmpFlnm] = useState({});   //부서장네임 설정용
+  const [deptBgngYmd, setDeptBgngYmd] = useState();     //부서시작일자
+  const [deptEndYmd, setDeptEndYmd] = useState();       //부서종료일자
+  const [deptHnfSet,setDeptHnfSet] = useState({}); //부서장 등록시 설정용
+  //-------------------------- 초기 설정 ----------------
+    useEffect(() => {
+        setParam({
+          ...param,
+          queryId: listQueryId,
+        });
+        setDeptId(null);
+        setDeptNm(null);
+        setUpDeptId(null);
+        setDeptMngrEmpFlnm({});
+        setDeptBgngYmd(null);
+        setDeptEndYmd(null);
+        
+    }, []);
 
-  // const [readOnly, setReadOnly] = useState(true);
+    useEffect(() => {
+        pageHandle();
+    }, [param]);
 
-  //========================테이블 배치
+  useEffect(() => { //setParam 이후에 함수가 실행되도록 하는 useEffect
+    if (deptHnfParam.deptId !== undefined) {
+      deptHnfListHandle();
+    }
+  }, [deptHnfParam]);
+  
+
+  //-------------------------- 이벤트 영역 -----------
+
+  const pageHandle = async () => { //부서 목록 조회
+    try {
+      const response = await ApiRequest("/boot/common/queryIdSearch", param);
+      setValues(response);
+      setTotalItems(response[0].totalItems);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
+  const deptListTree = (e) => { //부서목록 트리 아이템 클릭이벤트
+    console.log("부서클릭!",e)
+    if (e.itemData.deptId !== null) {
+        setDeptId(e.itemData.deptId);
+        setDeptNm(e.itemData.deptNm);
+        setUpDeptId(e.itemData.upDeptId);
+        setDeptMngrEmpFlnm({empId : e.itemData.empFlnm});
+        setDeptBgngYmd(e.itemData.deptBgngYmd);
+        setDeptEndYmd(e.itemData.deptEndYmd);
+    }
+
+    setDeptHnfParam({               //부서인력정보 조회용 셋팅
+      deptId: e.itemData.deptId,
+      queryId: hnfQueryId,
+      deptNm: e.itemData.deptNm,
+    });
+  };
+  
+  //========================부서인력 목록=====================================
+  const deptHnfListHandle = async () => {
+    try {
+      const response = await ApiRequest("/boot/common/queryIdSearch", deptHnfParam );
+      setHnfValues(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+//input박스 데이터 변경시 data에 새로 저장됨
+    const handleChgState = ({ name, value }) => {
+      if(name === "deptNm") {
+        setDeptNm(value);
+    } else if(name === "upDeptId") {
+      setUpDeptId(value);
+    } 
+      // else if(name === "deptMngrEmpFlnm") {
+      // setDeptMngrEmpFlnm(value); } 
+      else if(name === "deptBgngYmd") {
+      setDeptBgngYmd(value);
+    } else if(name === "deptEndYmd") {
+      setDeptEndYmd(value);
+    } 
+      setDeptInfo({
+          ...deptInfo,
+          [name]: value,
+        });
+    };
+//==================부서장명 변경시==================
+    const handleMngrChgState = ({ name, value }) => {
+      setDeptMngrEmpFlnm({
+        ...deptMngrEmpFlnm,
+        [name]: value,
+      });
+    };
+
+
+  const newDept = () => {               //신규등록버튼 이벤트
+    reset();
+    setDeptHnfParam({});
+    
+  };
+
+//==================================부서정보 등록버튼 이벤트===================================
+  const insertDept = async() => {     //부서등록
+    if(deptNm === null) {
+      alert("부서명을 입력해주세요");
+        return;
+    } else if(upDeptId === null) {
+      alert("상위부서를 선택해주세요");
+      return;
+    } else if(!deptMngrEmpFlnm.empId) {
+      alert("부서장을 선택해주세요");
+      return;
+    }else if(deptBgngYmd === null) {
+      alert("부서 시작일자를 입력해주세요");
+      return;
+    } else if(deptEndYmd === null) {
+      alert("부서 종료일자를 입력해주세요");
+      return;
+    } 
+    else{
+    const isconfirm = window.confirm("부서정보를 등록하시겠습니까?");
+    console.log("부서등록 프로세스1")
+    if (isconfirm) {
+      const param = [
+      { tbNm: "DEPT" }, 
+      { 
+        deptId: uuid(),
+        endYn: "N",
+        regEmpId : empId,
+        regDt: now,
+        deptNm:deptNm,
+        upDeptId:upDeptId,
+        deptBgngYmd: deptBgngYmd,
+        deptEndYmd:deptEndYmd
+      }];
+      
+      try {
+        const response = await ApiRequest("/boot/common/commonInsert", param);
+          if (response > 0) {
+          setDeptHnfSet({deptId : param[1].deptId})
+          }
+      } catch (error) {
+        console.error("Error fetching data", error);
+      }
+    }else{
+      return;
+    }
+  };    
+  };
+  useEffect(()=>{
+    if(deptHnfSet.deptId !== null || deptHnfSet.deptId !== undefined){
+      deptMngrSearch();
+    }
+  },[deptHnfSet])
+
+  const deptMngrSearch = async() => {  //부서장 사번 검색
+    const paramSearchMngr = ({queryId : "infoInqMapper.retrieveEmpList",empId :deptMngrEmpFlnm.empId });
+    try {
+      const responseMngr = await ApiRequest("/boot/common/queryIdSearch",paramSearchMngr);
+        if (responseMngr[0].empId === deptMngrEmpFlnm.empId) {
+          insertDeptInst(responseMngr);
+        }
+    } catch (error) {
+      console.error("Error fetching data", error);
+    }
+};
+  const insertDeptInst = async(responseMngr) => {  //부서장등록
+    const InsertParam =[
+      { tbNm: "DEPT_HNF" },
+      {
+         deptId : deptHnfSet.deptId,
+         empId : deptMngrEmpFlnm.empId,
+         jbttlCd : "VTW01001",
+         empno : responseMngr[0].empno,
+         deptGnfdYmd : gnfdDate,
+         regDt : now,
+         regEmpId: empId,        
+      },
+    ]
+    const InsertHistParam=[ //히스토리 정보
+      { tbNm: "DEPT_HNF_HIST", snColumn: "DEPT_HNF_HIST_SN", snSearch: {deptId : deptHnfSet.deptId, empId : deptMngrEmpFlnm.empId}},
+      {
+         deptId : deptHnfSet.deptId,
+         empId : deptMngrEmpFlnm.empId,
+         jbttlCd : "VTW01001",
+         empno : responseMngr[0].empno,
+         deptGnfdYmd : gnfdDate,
+         regDt : now,
+         regEmpId: empId,        
+      },
+    ]
+      try {
+        const response = await ApiRequest("/boot/common/commonInsert", InsertParam); //부서장발령인서트
+         const histResponse = await ApiRequest("/boot/common/commonInsert", InsertHistParam); //발령 히스토리 인서트
+          if (response > 0 && histResponse > 0) {
+            alert("등록되었습니다.");
+            reset();
+            setDeptHnfParam({});
+            pageHandle();
+          }
+      } catch (error) {
+        console.error("Error fetching data", error);
+      }
+  };
+//==================================부서정보 수정버튼 이벤트===================================
+  const editDept = async() => {
+    if(deptNm === null || deptNm ==="") {
+      alert("부서명을 입력해주세요");
+        return;
+    } else if(upDeptId === null) {
+      alert("상위부서를 선택해주세요");
+      return;
+    } else if(deptBgngYmd === null) {
+      alert("부서 시작일자를 입력해주세요");
+      return;
+    } else if(deptEndYmd === null) {
+      alert("부서 종료일자를 입력해주세요");
+      return;
+    } 
+
+    const isconfirm = window.confirm("부서정보를 변경하시겠습니까?");
+    if (isconfirm) {
+
+      for(const value of hnfValues){
+        if(value.jbttlCd === "VTW01001"){
+          if(value.empId !== deptMngrEmpFlnm.empId){
+            alert("부서장 변경은 인력관리 팝업에서 진행해주시기 바랍니다.")
+            setDeptMngrEmpFlnm({empId : value.empId});
+            return;
+          }
+        }
+      }
+
+      const updateParam =[
+        { tbNm: "DEPT" },
+        {  
+          deptNm:deptNm,
+          upDeptId:upDeptId,
+          deptBgngYmd: deptBgngYmd,
+          deptEndYmd:deptEndYmd, 
+          mdfcnEmpId : empId, 
+          mdfcnDt: now,
+        },
+        { deptId: deptId}
+      ]
+        try {
+          const response = await ApiRequest("/boot/common/commonUpdate", updateParam);
+          if (response > 0 ) {
+            alert("변경되었습니다.");
+            reset();
+            pageHandle(); 
+          }
+      } catch (error) {
+        console.error("Error fetching data", error);
+      }
+
+      }
+    else{
+        return;
+      }
+  };
+//=================부서 직원 관리 팝업 버튼 이벤트============================
+    const empPopupView = () =>{
+      setEmpPop(true)
+    };
+    const empHandleClose = () => {
+      setEmpPop(false)
+      pageHandle();
+    }
+
+    const deleteDept = async () => {        //부서삭제버튼 이벤트
+      const isconfirm = window.confirm("부서정보를 삭제하시겠습니까?");
+      if (isconfirm) {
+        const paramDel =[ { tbNm: "DEPT" },{ deptId: deptId} ]
+        const paramDelHnf =[ { tbNm: "DEPT_HNF" },{ deptId: deptId} ]
+        const paramDelHist =[ { tbNm: "DEPT_HNF_HIST" },{ deptId: deptId} ]
+        deleteDeptHist(paramDel,paramDelHnf,paramDelHist);
+      }  
+    };
+
+    const deleteDeptHist = async (paramDel,paramDelHnf,paramDelHist) => { //삭제axios
+      try {
+        const responseDelHist = await ApiRequest("/boot/common/commonDelete", paramDelHist);
+        const responseDelHnf = await ApiRequest("/boot/common/commonDelete", paramDelHnf);
+        const responseDel = await ApiRequest("/boot/common/commonDelete", paramDel);
+          if (responseDel > 0  ) {
+            alert("삭제되었습니다.");
+            reset();
+            setDeptHnfParam({});
+            pageHandle();
+          }else{
+            alert("특정 프로젝트에 부서가 속해있거나 하위부서가 존재합니다.\n수정이나 삭제 후 시도하십시요.");
+          }
+      } catch (error) {
+        console.error("Error fetching data", error);
+      }
+    };
+
+//=============================datareset============================
+    const reset = () => {
+      setDeptId(null);
+      setDeptNm(null);
+      setUpDeptId(null);
+      setDeptMngrEmpFlnm({});
+      setDeptBgngYmd(null);
+      setDeptEndYmd(null);
+      setDeptHnfSet({});
+      setHnfValues([]);
+    };
+
+//============================화면그리는부분===================================
+  return (
+    <div className="container">
+      <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }}>
+        <h1 style={{ fontSize: "40px" }}>부서 관리</h1>
+      </div>
+      <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
+        <span>* 부서를 조회합니다.</span>
+      </div>
+      <div style={{ marginBottom: "20px" }}>
+      </div>
+      <div>검색된 건 수 : {totalItems} 건 </div>
+      <div className="tableContainer" style={tableContainerStyle}>
+        <div className="deptListContainer" style={deptListContainerStyle}>
+          <div className="deptListTable" style={deptListStyle}>
+          <div><p><strong>* 부서목록 </strong></p></div>
+            <TreeView id="deptList"
+              dataSource={values}
+              dataStructure="plain"
+              width={300}  
+              searchMode={value}
+              searchEnabled={true}
+              keyExpr="deptId"
+              displayExpr="deptNm"
+              parentIdExpr="upDeptId"
+              expandedExpr="totalItems"
+              onItemClick={deptListTree}
+              />
+          </div>
+        </div>
+        <div className="deptDetailContainer" style={deptDetailContainerStyle}>
+          <div className="deptDetailTable" style={deptDetailStyle}>
+          <div className="detailButtonContainer" style={buttonContainerStyle}> 
+            <p><strong>* 부서상세정보 </strong></p>
+            {deptId != null ? (
+              <div className="buttonContainer" style={buttonContainerStyle}>
+                <Button style={editButtonStyle} onClick={newDept} text="신규등록" />
+                <Button style={editButtonStyle} onClick={editDept} text="수정" />
+                <Button style={deleteButtonStyle} onClick={deleteDept} text="삭제" />
+              </div>
+            ) : 
+            <div className="buttonContainer" style={buttonContainerStyle}>
+                <Button style={editButtonStyle} onClick={insertDept} text="등록" />
+              </div>
+            }
+            </div>
+              <CustomLabelValue props={labelValue.deptNm} onSelect={handleChgState} value={deptNm} />
+              <CustomLabelValue props={labelValue.upDeptId} onSelect={handleChgState} value={upDeptId} />
+              <CustomLabelValue props={labelValue.empId} onSelect={handleMngrChgState} value={deptMngrEmpFlnm.empId} />
+              <CustomLabelValue props={labelValue.deptBgngYmd} onSelect={handleChgState} value={deptBgngYmd}/>
+              <CustomLabelValue props={labelValue.deptEndYmd} onSelect={handleChgState} value={deptEndYmd}/>
+          </div>
+            <div className="deptHnfListTable" style={deptDetailStyle}>
+            <div className="deptHnfButtonContainer" style={buttonContainerStyle}>
+            <p> <strong>* 부서인력정보 </strong> </p>
+            <Popup
+              width="90%"
+              height="90%"
+              visible={empPopup}
+              onHiding={empHandleClose}
+              showCloseButton={true}
+              deferRendering={false}
+            >
+            <DeptManagePop data={hnfValues} deptId={deptHnfParam.deptId} deptNm={deptHnfParam.deptNm} callBack={deptHnfListHandle}/>
+            </Popup>
+            {deptHnfParam.deptId != null ? (
+              <Button style={addButtonStyle} text="관리" onClick={empPopupView}/>
+            ) : null}
+          </div>
+            <CustomTable keyColumn={hnfKeyColumn} columns={hafTableColumns} values={hnfValues} paging={true} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
   //화면 전체 배치
   const tableContainerStyle = {
@@ -88,224 +474,5 @@ const DeptManage = ({callBack}) => {
     marginRight:"10px",
     marginBottom:"10px",
   }
-
-  //========================부서 목록 조회
-  useEffect(() => {
-    if (!Object.values(param).every((value) => value === "")) {
-      pageHandle();
-    }
-  }, [param]);
-
-  const searchHandle = async (initParam) => {
-    setTotalPages(1);
-    setCurrentPage(1);
-    setParam({
-      ...initParam,
-      queryId: listQueryId,
-      currentPage: currentPage,
-      startVal: 0,
-      pageSize: pageSize,
-    });
-  };
-
-  const pageHandle = async () => {
-    try {
-      const response = await ApiRequest("/boot/common/queryIdSearch", param);
-      setValues(response);
-      if (response.length !== 0) {
-        console.log("건수: " + totalItems);
-        setTotalItems(response[0].totalItems);
-      } else {
-        setTotalItems(0);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  //========================부서 상세 정보
-
-  // useEffect(() => {
-  //   callBack(initParam);
-  // }, []);
-
-  //부서 정보 수정 
-  const editDept = () => {
-    setPopupVisible(true);
-    setPopup(true);
-  };
-
-  const handleClose = () => {
-    setPopupVisible(false);
-  };
-
-  const onHide = () => {
-    //callBack(initParam);
-    setPopupVisible(false);
-  }
-  
-  //부서 삭제
-  const deleteDept = async () => {
-    const isconfirm = window.confirm("이 부서를 삭제하시겠습니까?");
-    if (isconfirm) {
-      console.log("부서 삭제 : " + deptInfo.deptId);
-      const paramDel =[ { tbNm: "DEPT" },{ deptId: deptInfo.deptId,} ]
-      const paramDelHnf =[ { tbNm: "DEPT_HNF" },{ deptId: deptInfo.deptId,} ]
-      const paramDelHist =[ { tbNm: "DEPT_HNF_HIST" },{ deptId: deptInfo.deptId,} ]
-      deleteDeptHist(paramDel,paramDelHnf,paramDelHist);
-    }
-    
-  };
-//=============================삭제axios
-const deleteDeptHist = async (paramDel,paramDelHnf,paramDelHist) => {
-  try {
-    const responseDelHist = await ApiRequest("/boot/common/commonDelete", paramDelHist);
-    const responseDelHnf = await ApiRequest("/boot/common/commonDelete", paramDelHnf);
-    const responseDel = await ApiRequest("/boot/common/commonDelete", paramDel);
-      if (responseDel > 0  ) {
-        alert("삭제되었습니다.");
-        setDeptInfo([]);
-        pageHandle();
-      }else{
-        alert("특정 프로젝트에 부서가 속해있습니다.\n수정이나 삭제 후 시도하십시요.");
-      }
-  } catch (error) {
-    console.error("Error fetching data", error);
-  }
-};
-
- //========================하위 부서 목록
-  const deptDownListHandle = async () => {
-    try {
-      const response2 = await ApiRequest(
-        "/boot/common/queryIdSearch",
-        deptParam2
-      );
-      setValues2(response2);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-   //========================부서인력 목록
-  const deptHnfListHandle = async () => {
-    try {
-      const response3 = await ApiRequest(
-        "/boot/common/queryIdSearch",
-        deptParam3
-      );
-      setValues3(response3);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-
-  //부서목록에서 로우 클릭시 발생하는 이벤트
-  const onRowClick = (e) => {
-    for (const value of values) {
-      if (value.deptId === e.data.deptId) {
-        setDeptInfo(value);
-        break;
-      }
-    }
-    setDeptParam2({
-      deptId: e.data.deptId,
-      queryId: downDeptQueryId,
-    });
-
-    setDeptParam3({
-      deptId: e.data.deptId,
-      queryId: hnfQueryId,
-    });
-  };
-
-  //setParam 이후에 함수가 실행되도록 하는 useEffect  
-  useEffect(() => {
-    console.log("수정후 어디로가나 5")
-    if (deptParam2.deptId !== undefined) {
-      deptDownListHandle();
-    }
-  }, [deptParam2]);
-
-  useEffect(() => {
-    console.log("수정후 어디로가나 6")
-    if (deptParam3.deptId !== undefined) {
-      deptHnfListHandle();
-    }
-  }, [deptParam3]);
-  
-  return (
-    <div className="container">
-      <div
-        className="title p-1"
-        style={{ marginTop: "20px", marginBottom: "10px" }}
-      >
-        <h1 style={{ fontSize: "40px" }}>부서 관리</h1>
-      </div>
-      <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
-        <span>* 부서를 조회합니다.</span>
-      </div>
-      <div style={{ marginBottom: "20px" }}>
-        <SearchHumanResourceMngtSet callBack={searchHandle} props={searchParams} popup={popup} />
-      </div>
-      <div>검색된 건 수 : {totalItems} 건</div>
-      <div className="tableContainer" style={tableContainerStyle}>
-        <div className="deptListContainer" style={deptListContainerStyle}>
-          <div className="deptListTable" style={deptListStyle}>
-            <CustomTable
-              keyColumn={listKeyColumn}
-              pageSize={pageSize}
-              columns={listTableColumns}
-              values={values}
-              paging={true}
-              onRowClick={onRowClick}
-            />
-          </div>
-        </div>
-        <div className="deptDetailContainer" style={deptDetailContainerStyle}>
-          <div className="deptDetailTable" style={deptDetailStyle}>
-          <div className="detailButtonContainer" style={buttonContainerStyle}> 
-            <p>
-            <strong>* 부서상세정보 </strong>
-            </p>
-            {deptInfo.deptId != null ? (
-              <div className="buttonContainer" style={buttonContainerStyle}>
-                <Button style={editButtonStyle} onClick={editDept} text="수정" />
-                <Button style={deleteButtonStyle} onClick={deleteDept} text="삭제" />
-              </div>
-            ) : null}
-            </div>
-            <DeptRegist  deptInfo={deptInfo}  deptId={deptInfo.deptId} isNew={false} />
-          </div>
-          <div className="deptDownListTable" style={deptDetailStyle}>
-          <p>
-            <strong>* 하위부서목록 </strong>
-          </p>
-          <CustomTable keyColumn={listKeyColumn} pageSize={downDeptPageSize} columns={downDeptTableColumns} values={values2} paging={true} />
-          </div>
-          <div className="deptHnfListTable" style={deptDetailStyle}>
-            <div className="deptHnfButtonContainer" style={buttonContainerStyle}> 
-            <p>
-              <strong>* 부서인력정보 </strong>
-            </p>
-            {deptInfo.deptId != null ? (
-              <Button style={addButtonStyle} text="관리" />
-            ) : null}
-          </div>
-          <CustomTable keyColumn={hnfKeyColumn} pageSize={hnfPageSize} columns={hafTableColumns} values={values3} paging={true} />
-          </div>
-          {/* 부서 수정 버튼 클릭시 활성화 되는 팝업 - 개발 필요 */}
-          {isPopup ?
-           <CustomPopup props={popup} visible={popupVisible} handleClose={handleClose} >
-             <DeptRegist  onHide={onHide} deptInfo={deptInfo} deptId={deptInfo.deptId} isNew={true} callBack={pageHandle}/> 
-           </CustomPopup>
-           : <></>
-          }
-        </div>
-      </div>
-    </div>
-  );
-};
 
 export default DeptManage;

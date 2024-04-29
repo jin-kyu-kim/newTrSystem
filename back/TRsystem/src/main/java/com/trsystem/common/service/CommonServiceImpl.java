@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -56,11 +57,30 @@ public class CommonServiceImpl implements CommonService {
             Connection connection = DriverManager.getConnection(applicationYamlRead.getUrl(), applicationYamlRead.getUsername(), applicationYamlRead.getPassword());
             // 트랜잭션 시작
             connection.setAutoCommit(false);
-            try {
+            try (Statement statement = connection.createStatement()){
+                ResultSet resultParamSet = statement.executeQuery("SELECT * FROM "  + tbNm + " WHERE 1=0"); // 빈 결과를 가져옴
+                ResultSetMetaData metaData = resultParamSet.getMetaData();
+                int columnCount = metaData.getColumnCount();
+
+                Map<String, Object> insertParam;
+                Map<String, Object> validInsertParam;
                 for (int i = 1; i < params.size(); i++) {
-                    Map<String, Object> insertParam = params.get(i);
-                    List<String> keys = new ArrayList<>(insertParam.keySet());
-                    List<Object> inParams = new ArrayList<>(insertParam.values());
+                    insertParam = params.get(i);
+                    validInsertParam = new HashMap<>();
+
+                    for (String key : insertParam.keySet()) {
+                        String upVal = key.replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase();
+                        for (int j = 1; j <= columnCount; j++) {
+                            String columnLabel = metaData.getColumnLabel(j);
+                            if (upVal.equalsIgnoreCase(columnLabel)) {
+                                validInsertParam.put(key, insertParam.get(key));
+                                break;
+                            }
+                        }
+                    }
+
+                    List<String> keys = new ArrayList<>(validInsertParam.keySet());
+                    List<Object> inParams = new ArrayList<>(validInsertParam.values());
 
                     // INSERT문 생성
                     StringBuilder queryBuilder = new StringBuilder("INSERT INTO ").append(tbNm).append(" ( ");
@@ -217,7 +237,10 @@ public class CommonServiceImpl implements CommonService {
         String tbNm = params.get(0).get("tbNm").toString();
 
         try (Connection connection = DriverManager.getConnection(applicationYamlRead.getUrl(), applicationYamlRead.getUsername(), applicationYamlRead.getPassword())) {
-            Map<String, Object> insertParam = params.get(1);
+            Map<String, Object> insertParam = new HashMap<>();
+            if(params.size()>1){
+                insertParam = params.get(1);
+            }
             List<Object> inParams = new ArrayList<>(insertParam.values());
             List<String> keys = new ArrayList<>(insertParam.keySet());
 
@@ -300,7 +323,7 @@ public class CommonServiceImpl implements CommonService {
     public int commonGetMax(List<Map<String, Object>> params) {
         List<Map<String, Object>> resultSet = new ArrayList<>();
         String tbNm = params.get(0).get("tbNm").toString();
-        String snColumn = params.get(0).get("snColumn").toString();
+        String snColumn = params.get(0).get("snColumn").toString().replaceAll("([a-z])([A-Z]+)", "$1_$2").toUpperCase();
         int value = -1;
 
         try (Connection connection = DriverManager.getConnection(applicationYamlRead.getUrl(), applicationYamlRead.getUsername(), applicationYamlRead.getPassword())) {
@@ -357,6 +380,7 @@ public class CommonServiceImpl implements CommonService {
     private PreparedStatement querySetter(PreparedStatement preparedStatement, List<Object> params) {
         try {
             // for 루프에서 값을 바인딩
+            int j = 0;
             for (int i = 0; i < params.size(); i++) {
                 if (params.get(i) == "") {
                     System.out.println(params.get(i));
@@ -366,9 +390,9 @@ public class CommonServiceImpl implements CommonService {
                 if (params.get(i) instanceof String && ((String) params.get(i)).contains("&") && !((String) params.get(i)).contains("<p>")) {
                     String[] dateRange = ((String) params.get(i)).split("&");
                     if (dateRange.length == 2) {
-                        preparedStatement.setObject(i + 1, dateRange[0]);
-                        preparedStatement.setObject(i + 2, dateRange[1]);
-                        i++;
+                        preparedStatement.setObject(j+1, dateRange[0]);
+                        preparedStatement.setObject(j+2, dateRange[1]);
+                        j += 2;
                         continue;
                     } else {
                         throw new IllegalArgumentException("Invalid date range format");
@@ -376,20 +400,24 @@ public class CommonServiceImpl implements CommonService {
                 }
 
                 if (params.get(i) instanceof String) {
-                    preparedStatement.setString(i + 1, (String) params.get(i));
+                    preparedStatement.setString(j+1, (String) params.get(i));
                 } else if (params.get(i) instanceof Integer) {
-                    preparedStatement.setInt(i + 1, (Integer) params.get(i));
-                } else if (params.get(i) instanceof Double) {
-                    preparedStatement.setDouble(i + 1, (Double) params.get(i));
+                    preparedStatement.setInt(j+1, (Integer) params.get(i));
+                }  else if (params.get(i) instanceof Long) { // bigint (Long) 처리
+                    preparedStatement.setLong(j+1, (Long) params.get(i));
+                }else if (params.get(i) instanceof Double) {
+                    preparedStatement.setDouble(j+1, (Double) params.get(i));
                 } else if (params.get(i) instanceof Timestamp) {
-                    preparedStatement.setTimestamp(i + 1, (Timestamp) params.get(i));
+                    preparedStatement.setTimestamp(j+1, (Timestamp) params.get(i));
                 }  else if (params.get(i) instanceof Instant) {
-                    preparedStatement.setTimestamp(i + 1, Timestamp.from((Instant) params.get(i)));
+                    preparedStatement.setTimestamp(j+1, Timestamp.from((Instant) params.get(i)));
                 }  else if (params.get(i) == null) {
-                    preparedStatement.setString(i + 1, null);
-                } else {
+                    preparedStatement.setString(j+1, null);
+                }  else {
+                    j++;
                     return null;
                 }
+                j++;
             }
             return preparedStatement;
         } catch (SQLException e) {
@@ -402,32 +430,76 @@ public class CommonServiceImpl implements CommonService {
         return sqlSession.selectList("com.trsystem.mybatis.mapper." + queryId, param);
     }
 
+    public int queryIdDataControl(Map<String, Object> param) {
+        String queryId = param.get("queryId").toString();
+        String status = param.get("state").toString();
+
+        switch (status){
+            case "INSERT" :
+                return sqlSession.insert("com.trsystem.mybatis.mapper." + queryId, param);
+            case "UPDATE" :
+                return sqlSession.update("com.trsystem.mybatis.mapper." + queryId, param);
+            case "DELETE" :
+                return sqlSession.delete("com.trsystem.mybatis.mapper." + queryId, param);
+        }
+        return -1;
+    }
+
     @Transactional
-    public int insertFile(String tbNm, Map<String, Object> params, List<MultipartFile> attachments) {
+    public int insertFile(Map<String, Object> tbData, Map<String, Object> params, List<MultipartFile> attachments,
+                          Map<String, Object> idData, List<Map<String, Object>> deleteFiles) {
         int atchResult = 0;//첨부파일 insert결과
         int result = 0;
-
-        String atchmnflId = null;
-        int atchmnflSn = 1;
 
         Map<String, Object> atchmnflMap = new HashMap<>();
         Map<String, Object> tableMap = new HashMap<>();
         List<Map<String, Object>> atchmnflParam = new ArrayList<>();
         List<Map<String, Object>> insertParam = new ArrayList<>();
-        tableMap.put("tbNm", tbNm);
 
+        String atchmnflId = null;
+        int atchmnflSn = 1;
+
+        //2. 파일 내부 디렉토리에 업로드
+//        String uploadDir = "../../front/public/upload";
+        String uploadDir = "TRsystem/upload";
+        // 2-1 파일일 디렉토리가 없으면 생성
+        Path directory = Path.of(uploadDir);
+
+        // 수정 - 첨부파일 개별 삭제
+        if(idData != null){
+            List<Map<String, Object>> deleteParam = new ArrayList<>();
+            Map<String, Object> directoryFile = new HashMap<>();
+
+            tableMap.put("tbNm", "ATCHMNFL");
+            tableMap.put("snColumn", "atchmnflSn");
+            deleteParam.add(tableMap);
+            atchmnflSn = commonGetMax(deleteParam) + 1;
+            tableMap.clear();
+
+            if(deleteFiles.size() > 1){
+                for (int i=1; i<deleteFiles.size(); i++) {
+                    deleteParam.clear();
+                    directoryFile.clear();
+
+                    deleteParam.add(deleteFiles.get(0));
+                    directoryFile.put("atchmnflSn", deleteFiles.get(i).get("atchmnflSn"));
+                    deleteParam.add(directoryFile);
+                    deleteData(deleteParam);
+
+                    File file = new File(directory + "/" + deleteFiles.get(i).get("strgFileNm"));
+                    if (file.exists()) {
+                        file.delete();
+                    }
+                }
+            }
+        }
 
         try{
-            //2. 파일 내부 디렉토리에 업로드
-            String uploadDir = "./src/main/resources/upload";
-            // 2-1 파일일 디렉토리가 없으면 생성
-            Path directory = Path.of(uploadDir);
             if (Files.notExists(directory)) {
                 Files.createDirectories(directory);
             }
 
             if (attachments != null) {
-
                 //1. 기존에 채번된 첨부파일 ID가 있는지 확인
                 if(!params.containsKey("atchmnflId") || params.get("atchmnflId") == null || params.get("atchmnflId").equals("")){
                     // 1-1 없다면 첨부파일 ID 생성 순번은 1부터 시작
@@ -452,9 +524,9 @@ public class CommonServiceImpl implements CommonService {
                     atchmnflMap.put("realFileNm", file.getOriginalFilename());
                     atchmnflMap.put("fileStrgCours", uploadDir); // 파일저장경로
                     atchmnflMap.put("regDt", currentTimestamp);
-                    atchmnflMap.put("regEmpId", params.get("regEmpId").toString());
+//                    atchmnflMap.put("regEmpId", params.get("regEmpId").toString());
                     atchmnflMap.put("mdfcnDt", currentTimestamp);
-                    atchmnflMap.put("mdfcnEmpId", params.get("regEmpId").toString());
+//                    atchmnflMap.put("mdfcnEmpId", params.get("regEmpId").toString());
 
                     atchmnflParam.clear();
                     tableMap.put("tbNm", "ATCHMNFL");
@@ -465,17 +537,47 @@ public class CommonServiceImpl implements CommonService {
                 }
             }
 
-            //4. 입력된 첨부파일 ID를 parameter에 지정
-            params.put("atchmnflId", atchmnflId);
-            tableMap.put("tbNm", tbNm);
-            insertParam.add(tableMap);
-            insertParam.add(params);
+            if(idData == null){
+                //4. 입력된 첨부파일 ID를 parameter에 지정
+                params.put("atchmnflId", atchmnflId);
 
-            //5. 사용하려는 테이블에 INSERT
-            result = insertData(insertParam);
+                //5. 사용하려는 테이블에 INSERT
+                insertParam.add(tbData);
+                insertParam.add(params);
+                result = insertData(insertParam);
+            } else {
+                //5. 사용하려는 테이블에 UPDATE
+                insertParam.add(tbData);
+                insertParam.add(params);
+                insertParam.add(idData);
+                result = updateData(insertParam);
+            }
+
             return result;
         }catch (IOException e){
             return result;
         }
+    }
+
+    @Transactional
+    public int deleteFile(Map<String, Object> deleteData) {
+        List<Map<String, Object>> params = (List<Map<String, Object>>) deleteData.get("params");
+        List<Map<String, Object>> fileParams = (List<Map<String, Object>>) deleteData.get("fileParams");
+
+        int result = 0;
+        String uploadDir = "TRsystem/upload";
+        Path directory = Path.of(uploadDir);
+
+        result += deleteData(params);
+
+        List<Map<String, Object>> fileNameList = commonSelect(fileParams);
+        for (Map<String, Object> strgName : fileNameList) {
+            File file = new File(directory + "/" + strgName.get("strgFileNm"));
+            if (file.exists()) {
+                file.delete();
+            }
+        }
+        result += deleteData(fileParams);
+        return result;
     }
 }

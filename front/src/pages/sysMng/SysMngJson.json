@@ -5,20 +5,23 @@
         "keyColumn": "cdValue",
         "tableColumns": 
         [
-            { "key": "cdValue", "value": "상위코드", "width": 300, "alignment" : "center" },
-            { "key": "cdNm", "value": "상위코드명", "width": 300, "alignment" : "center" },
-            { "key": "useYn", "value": "사용여부", "width": 200, "alignment" : "center", "toggle": true, "visible": true }
+            { "key": "cdValue", "value": "상위코드", "isRequire" : true },
+            { "key": "cdNm", "value": "상위코드명", "isRequire" : true },
+            { "key": "useYn", "value": "사용여부", "editType": "selectBox", "cellType": "toggle" }
         ],
         "childTableColumns": 
         [
-            { "key": "cdValue", "value": "하위코드", "width": 300, "alignment" : "center" },
-            { "key": "cdNm", "value": "하위코드명", "width": 300, "alignment" : "center" },
-            { "key": "useYn", "value": "사용여부", "width": 200, "alignment" : "center", "toggle": true, "visible": true }
+            { "key": "cdValue", "value": "하위코드", "isRequire" : true },
+            { "key": "cdNm", "value": "하위코드명", "isRequire" : true },
+            { "key": "useYn", "value": "사용여부", "editType": "selectBox", "cellType": "toggle" }
+        ],
+        "tbNm": "CD",
+        "ynVal": [
+            {"cdValue": "Y", "cdNm": "사용"},
+            {"cdValue": "N", "cdNm": "미사용"}
         ],
         "searchInfo":{
             "searchParams": {
-              "insertButton":false,
-              "resetButton":false
             },
             "selectBoxItem": [
                 {
@@ -27,22 +30,17 @@
                       "queryId": {
                         "queryId": "sysMngMapper.TrsCodeList"
                       },
+                      "values": ["cdValue"],
                       "valueExpr": "cdValue",
                       "displayExpr": "cdNm",
                       "name": "cdValue",
-                      "clearButton": false
+                      "clearButton": true
                     }
                 }
             ],
             "textBoxItem": [
-                {
-                    "placeholder": "코드",
-                    "name": "cdValue"
-                },
-                {
-                    "placeholder": "코드명",
-                    "name": "cdNm"
-                }
+                { "placeholder": "코드", "name": "cdValue" },
+                { "placeholder": "코드명", "name": "cdNm" }
             ]
         }
     },
@@ -52,28 +50,19 @@
         "keyColumn": "ctmmnyId",
         "tableColumns": 
         [
-            { "key": "ctmmnyId", "value": "고객사ID", "width": 200, "alignment" : "center" },
-            { "key": "ctmmnyNm", "value": "고객사명(한글)", "width": 300, "alignment" : "center" },
-            { "key": "ctmmnyEngNm", "value": "고객사명(영문)", "width": 300, "alignment" : "center" },
-            { "key": "industCd", "value": "산업명", "width": 200, "alignment" : "center"  },
-            { "key": "useYn", "value": "사용여부", "width": 100, "alignment" : "center", "toggle": true, "visible": true }
+            { "key": "ctmmnyId", "value": "고객사ID", "isRequire": true, "length": 4 },
+            { "key": "ctmmnyNm", "value": "고객사명(한글)", "isRequire": true },
+            { "key": "ctmmnyEngNm", "value": "고객사명(영문)" },
+            { "key": "industCd", "value": "산업명", "editType": "selectBox", "comCd": "VTW016", "isRequire": true },
+            { "key": "useYn", "value": "사용여부", "editType": "selectBox", "cellType": "toggle" }
         ],
-        "searchParams":
-        {
-            "prjctStleCdItem" : true
-        },
-        "Cnsrtm":
-        [
-            { "key": "ctmmnyId", "value": "고객사ID", "width": 250, "alignment" : "center" },
-            { "key": "ctmmnyNm", "value": "고객사명(한글)", "width": 350, "alignment" : "center" },
-            { "key": "ctmmnyEngNm", "value": "고객사명(영문)", "width": 350, "alignment" : "center" },
-            { "key": "industCd", "value": "산업명", "width": 200, "alignment" : "center"  },
-            { "key": "useYn", "value": "사용여부", "width": 100, "alignment" : "center"  }
+        "tbNm": "CTMMNY_INFO",
+        "ynVal": [
+            {"cdValue": "Y", "cdNm": "사용"},
+            {"cdValue": "N", "cdNm": "미사용"}
         ],
         "searchInfo":{
             "searchParams": {
-              "insertButton":false,
-              "resetButton":false
             },
             "selectBoxItem": [
                 {
@@ -86,16 +75,30 @@
                       "condition": {
                         "upCdValue": "VTW016"
                       },
-                      "clearButton": false
+                      "clearButton": true
                     }
                 }
             ],
             "textBoxItem": [
-                {
-                    "placeholder": "고객사명",
-                    "name": "ctmmnyNm"
-                }
+                { "placeholder": "고객사명", "name": "ctmmnyNm" }
             ]
         }
+    },
+    "empAuthJson": {
+        "tabMenu": [
+            { "tabName": "기본 권한", "default": true, "displayExpr": "cdNm" },
+            { "tabName": "생성 권한", "displayExpr": "authrtGroupNm" }
+        ],
+        "authQueryId": "sysMngMapper.authCdList",
+        "columns": [
+            { "key": "empno", "value": "사번"},
+            { "key": "empFlnm", "value": "성명"},
+            { "key": "jbpsNm", "value": "직위"},
+            { "key": "deptId", "value": "소속"}
+        ],
+        "formColumn": [
+            {"dataField": "authrtGroupNm", "editorType": "dxTextBox", "caption": "권한명", "message": "권한명은 필수입니다."},
+            {"dataField": "authrtGroupCn", "editorType": "dxTextArea", "caption": "권한설명", "message": "권한설명을 입력해주세요."}
+        ]
     }
 }

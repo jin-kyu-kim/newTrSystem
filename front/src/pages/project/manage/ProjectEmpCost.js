@@ -5,11 +5,10 @@ import ProjectEmpCostJson from "./ProjectEmpCostJson.json";
 import CustomCostTable from "components/unit/CustomCostTable";
 import Box, { Item } from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
-import { format } from 'date-fns';
+import { format, parse } from 'date-fns';
 
-const ProjectEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
+const ProjectEmpCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdrTobe, deptId, targetOdr, bizSttsCd, atrzLnSn}) => {
   const [values, setValues] = useState([]);
-  const { manuName, tableColumns, keyColumn, summaryColumn, popup} = ProjectEmpCostJson;
   let groupingDtl = [];
 
   useEffect(() => {
@@ -21,15 +20,23 @@ const ProjectEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
   }, []);
 
   const EmpCostDtl = async () => {
+
+    const copyCtrtYmd = ctrtYmd ? JSON.parse(JSON.stringify(ctrtYmd)): "";
+    const copyStbleEndYmd = stbleEndYmd ? JSON.parse(JSON.stringify(stbleEndYmd)):"";
+    const ctrtYmdPrarm = copyCtrtYmd.replace(/-(\d{2})-\d{2}/, '$1');
+    const stbleEndYmdPrarm = copyStbleEndYmd.replace(/-(\d{2})-\d{2}/, '$1');
+
     const param = [
       { tbNm: "MMNY_INPT_MM" },
       { prjctId: prjctId,
         bgtMngOdr: bgtMngOdrTobe,
-      }, 
+        inptYm : ctrtYmdPrarm+"&"+stbleEndYmdPrarm,
+      },    
     ];
 
   try {
     const response = await ApiRequest("/boot/common/commonSelect", param);
+
     response.reduce((acc, item) => {
       // mmnyLbrcoPrmpcSn 값으로 그룹핑
       acc[item.mmnyLbrcoPrmpcSn] = acc[item.mmnyLbrcoPrmpcSn] || [];
@@ -37,33 +44,39 @@ const ProjectEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
       groupingDtl = acc;
       return acc;
     }, {});
-    
-
+        
   } catch (error) {
     console.error(error);
   }
 };
 
   const EmpCost = async () => {
-    const param = [
-      { tbNm: "MMNY_LBRCO_PRMPC" },
-      { prjctId: prjctId, 
-        bgtMngOdr: bgtMngOdrTobe,
-      }, 
-    ];
+
+    const param = {
+      queryId: "projectMapper.retrieveMmnyHnfPrmpc",
+      prjctId: prjctId,
+      bgtMngOdr: bgtMngOdrTobe,
+    }
+
     try {
-      const response = await ApiRequest("/boot/common/commonSelect", param);
+      const response = await ApiRequest("/boot/common/queryIdSearch", param);
+ 
         //월별정보 및 총 합계 response에 추가
         for(let j=0; j<Object.keys(groupingDtl).length; j++){
           let total = 0;
+          let gramt = 0;
           for(let k=0; k<Object.values(groupingDtl)[j].length; k++){
-            response[j][format(Object.values(groupingDtl)[j][k].inptYm, 'yyyy년 MM월')] = Object.values(groupingDtl)[j][k].expectMm;
-            response[j][format(Object.values(groupingDtl)[j][k].inptYm, 'yyyy년 MM월') + '_untpc'] = Object.values(groupingDtl)[j][k].untpc;
+            response[j][format(parse(Object.values(groupingDtl)[j][k].inptYm, 'yyyyMM', new Date()), 'yyyy년 MM월')] = Object.values(groupingDtl)[j][k].expectMm;
+            response[j][format(parse(Object.values(groupingDtl)[j][k].inptYm, 'yyyyMM', new Date()), 'yyyy년 MM월') + '_untpc'] = Object.values(groupingDtl)[j][k].untpc;
             total += Object.values(groupingDtl)[j][k].expectMm;
+            gramt += (Object.values(groupingDtl)[j][k].untpc)*(Object.values(groupingDtl)[j][k].expectMm);
           }    
-          response[j].total = total;     
+          const fixedSum = Number(total.toFixed(2)); //js의 부동소수 이슈로 인한 자릿수 조정.
+          response[j].total = fixedSum;     
+          response[j].gramt = gramt;
         }
         setValues(response);
+        
 
     } catch (error) {
       console.error(error);
@@ -92,18 +105,18 @@ const ProjectEmpCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
             검색 (성명, 역할, 등급, 담당업무, 예정일, 맨먼스등 다양하게 검색가능) 
             </p>
             <CustomCostTable
-              keyColumn={keyColumn}
-              manuName={manuName}
-              columns={tableColumns}
+              columns={ProjectEmpCostJson.tableColumns}
               values={values}
               prjctId={prjctId}
-              summaryColumn={summaryColumn}
-              popup={popup}
               costTableInfoJson={ProjectEmpCostJson}
               ctrtYmd={ctrtYmd}
-              bizEndYmd={bizEndYmd}
+              stbleEndYmd={stbleEndYmd}
               bgtMngOdrTobe={bgtMngOdrTobe}
               json={ProjectEmpCostJson}
+              deptId={deptId}
+              targetOdr={targetOdr}
+              bizSttsCd={bizSttsCd}
+              atrzLnSn={atrzLnSn}
             />
           </div>
         </div>

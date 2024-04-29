@@ -2,11 +2,12 @@
 import React, { useEffect, useState, } from "react";
 
 import SelectBox from "devextreme-react/select-box";
+import { Validator, RequiredRule, } from "devextreme-react/validator";
 
 import cdJson from "./cd.json";
 import ApiRequest from "../../utils/ApiRequest";
 
-const CustomCdComboBox = ({ param, placeholderText, onSelect, name, value, readOnly, between, showClearValue }) => {
+const CustomCdComboBox = ({ param, placeholderText, onSelect, name, value, readOnly, between, label, required, showClearValue }) => {
   const [cdVal, setCdVal] = useState([]);
 
   useEffect(() => {
@@ -50,6 +51,13 @@ const CustomCdComboBox = ({ param, placeholderText, onSelect, name, value, readO
     }
   };
 
+  const validate = () => {
+    if(required) {
+        return (
+            <RequiredRule message={`${label}은(는) 필수 입력 값입니다.`}/>
+        )
+    }
+}
 
   return (
     // <div className="dx-field-value">
@@ -67,6 +75,7 @@ const CustomCdComboBox = ({ param, placeholderText, onSelect, name, value, readO
         readOnly={readOnly}
         showClearButton={true}
       >
+        <Validator>{validate()}</Validator>
       </SelectBox>
     // </div>
   );

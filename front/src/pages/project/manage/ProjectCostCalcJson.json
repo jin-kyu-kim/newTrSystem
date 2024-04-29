@@ -3,20 +3,20 @@
         { "BizSumry1" : [
             { "key": "prjctNm", "value": "프로젝트 명" },
             { "key": "", "value": "" },
-            { "key": "deptId", "value": "발주처" },
-            { "key": "prjctMngrEmpId", "value": "주관부서" },
-            { "key": "prjctMngrEmpId", "value": "PM" },
-            { "key": "prjctMngrEmpId", "value": "작성자" }
+            { "key": "ctmmnyNm", "value": "발주처" },
+            { "key": "picFlnm", "value": "주관부서" },
+            { "key": "prjctMngrEmpNm", "value": "PM" },
+            { "key": "empFlnm", "value": "작성자" }
             ],
           "BizSumry2" : [
             { "key": "", "value": "예산" },
-            { "key": "totBgt", "value": "총예산(VAT 제외)" },
+            { "key": "totBgt", "value": "총예산(VAT 제외)"  },
             { "key": "bddprPc", "value": "투찰가" },
             { "key": "mmnySlsAm", "value": "자사매출액" }
           ],
           "BizSumry3" : [
-            { "key": "", "value": "사업기간" },
-            { "key": "mmnyQotaAmt", "value": "" }
+            { "key": "prjctPeriod", "value": "사업기간" },
+            { "key": "", "value": "" }
           ]
         },     
       "Cnsrtm":
@@ -26,10 +26,83 @@
         { "key": "altmntAmt", "value": "금액" },
         { "key": "cmmnExpensAmt", "value": "공통경비" }
       ],
-      "PrmpcAnls":
+      "PrmpcAnls1":
       [
         { "key": "", "value": "구분" },
         { "key": "picEml", "value": "실행예산" },
         { "key": "totBgt", "value": "비율" }
-      ]
+      ],
+      "PrmpcAnls" : 
+      {
+        "queryId": "projectMapper.retrievePrjctList",
+        "keyColumn": "id",
+        "tableColumns": [
+          { "key": "costKind", "value": "원가항목" },
+          { "key": "costAmt", "value": "배정예산(원)" },
+          { "key": "rate", "value": "비율(%)" }
+        ],
+        "searchParams": {
+          "prjctMngrEmpIdItem": false
+        },
+        "params": [
+          {
+            "id": 1,
+            "costKind": "자사매출액",
+            "tbCostNm": "PRJCT",
+            "queryId": "projectMapper.retrieveExcnPrmpcBill",
+            "group": 1
+          },
+          {
+            "id": 2,
+            "costKind": "",
+            "tbCostNm": "PRJCT_CNSRTM",
+            "queryId": "projectMapper.retrieveExcnPrmpcBill",
+            "group": 1
+          },
+          {
+            "id": 3,
+            "costKind": "자사인력",
+            "tbCostNm": "MMNY_LBRCO_PRMPC",
+            "queryId": "projectMapper.retrieveExcnPrmpcBill",
+            "group": 2
+          },
+          {
+            "id": 4,
+            "costKind": "외주인력",
+            "tbCostNm": "OUTORD_LBRCO_PRMPC",
+            "queryId": "projectMapper.retrieveExcnPrmpcBill",
+            "group": 3
+          },
+          {
+            "id": 5,
+            "costKind": "외주업체",
+            "tbCostNm": "OUTORD_ENTRPS_CT_PRMPC",
+            "queryId": "projectMapper.retrieveExcnPrmpcBill",
+            "group": 3
+          },
+          {
+            "id": 6,
+            "costKind": "재료비",
+            "tbCostNm": "MATRL_CT_PRMPC",
+            "queryId": "projectMapper.retrieveExcnPrmpcBill",
+            "group": 3
+          },
+          {
+            "id": 7,
+            "costKind": "통제성경비",
+            "tbCostNm": "EXPENS_PRMPC",
+            "queryId": "projectMapper.retrieveExcnPrmpcBill",
+            "control": "Y",
+            "group": 4
+          },
+          {
+            "id": 8,
+            "costKind": "일반경비",
+            "tbCostNm": "EXPENS_PRMPC",
+            "queryId": "projectMapper.retrieveExcnPrmpcBill",
+            "general": "Y",
+            "group": 4
+          }
+        ]
+      }      
     }

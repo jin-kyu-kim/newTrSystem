@@ -1,30 +1,28 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import HtmlEditor, { Toolbar, MediaResizing, ImageUpload, Item } from "devextreme-react/html-editor";
-import { Validator, RequiredRule } from 'devextreme-react/validator'
 
-const HtmlEditBox = ({ column, data, setData, value, placeholder }) => {
-  const [editorValue, setEditorValue] = useState(value);
-
-  useEffect(() => {
-    setEditorValue(value);
-  }, [value]);
+const HtmlEditBox = ({ column, data, setData, placeholder, value }) => {
+  const [valueContent, setValueContent] = useState(value);
+  
+  const valueChanged = useCallback(
+    (e) => {
+      setValueContent(e.value);
+    },
+    [valueContent],
+  );
 
   return (
     <div>
       <HtmlEditor
         height="725px"
         id={column.dataField}
-        value={editorValue}
         placeholder={placeholder}
-        focusStateEnabled={true}
-        onValueChanged={(e) => {
-          setEditorValue(e.value);
-          setData({ ...data, [column.dataField]: e.value });
+        value={valueContent ?? value}  //valueContent가 null이나 undefined일 경우 value를 사용 그 외 falsy(0,"",false)한 값은 valueContent를 사용
+        onValueChanged={valueChanged}
+        onFocusOut={(e) => {
+          setData({ ...data, [column.dataField]: valueContent });
         }}
       >
-        <Validator>
-          <RequiredRule message='내용은 필수입니다'  />
-        </Validator>
         <MediaResizing enabled={true} />
         <ImageUpload fileUploadMode="base64" />
         <Toolbar>
@@ -58,6 +56,17 @@ const HtmlEditBox = ({ column, data, setData, value, placeholder }) => {
           <Item name="codeBlock" />
           <Item name="blockquote" />
           <Item name="separator" />
+          <Item name="insertTable" />
+          <Item name="deleteTable" />
+          <Item name="insertRowAbove" />
+          <Item name="insertRowBelow" />
+          <Item name="deleteRow" />
+          <Item name="insertColumnLeft" />
+          <Item name="insertColumnRight" />
+          <Item name="deleteColumn" />
+          <Item name="separator" />
+          <Item name="cellProperties" />
+          <Item name="tableProperties" />
         </Toolbar>
       </HtmlEditor>
     </div>
@@ -65,6 +74,18 @@ const HtmlEditBox = ({ column, data, setData, value, placeholder }) => {
 };
 const sizeValues = ["8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt"];
 const fontValues = [
+  "함초롱바탕",
+  "나눔고딕",
+  "굴림체",
+  "맑은 고딕",
+  "돋움체",
+  "궁서체",
+  "바탕체",
+  "함초롱바탕",
+  "나눔스퀘어",
+  "나눔스퀘어 Bold",
+  "나눔고딕 ExtraBold",
+  "나눔명조 ExtraBold",
   "Arial",
   "Courier New",
   "Georgia",

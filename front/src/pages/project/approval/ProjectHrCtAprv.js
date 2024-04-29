@@ -1,10 +1,14 @@
 import { useEffect, useState, } from "react";
 import { useNavigate } from "react-router-dom"; 
 
+import {Button} from "devextreme-react/button"
+
 import ProjectHrCtAprvJson from "./ProjectHrCtAprvJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
 import CustomTable from "../../../components/unit/CustomTable";
 import SearchPrjctSet from "../../../components/composite/SearchPrjctSet";
+
+import { useCookies } from "react-cookie";
 
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -17,6 +21,9 @@ const ProjectHrCtAprv = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [pageSize, setPageSize] = useState(20);
+    const [cookies] = useCookies(["userInfo", "userAuth"]);
+    
+  const userEmpId = cookies.userInfo.empId;
     
     const {keyColumn, queryId, tableColumns, searchParams} = ProjectHrCtAprvJson;
     const navigate = useNavigate ();
@@ -37,6 +44,7 @@ const ProjectHrCtAprv = () => {
             currentPage: currentPage,
             startVal: 0,
             pageSize: pageSize,
+            empId: userEmpId,
         });
     }
 
@@ -57,16 +65,33 @@ const ProjectHrCtAprv = () => {
         }
     };
 
-    const onBtnClick = (e) => {
-        console.log(e.component.option("value").data);
+    const onBtnClick = (button, data) => {
+
         navigate("/project/ProjectHrCtAprvDetail", 
-                { state: { 
-                          prjctId: e.component.option("value").data.prjctId,
-                          prjctNm: e.component.option("value").data.prjctNm,
-                          
-                         
-                         } 
-                });
+            { state: {
+                prjctId: data.prjctId,
+                prjctNm: data.prjctNm,
+                bgtMngOdr: data.bgtMngOdr
+            } 
+        });
+    }
+
+    const buttonRender = (button, data) => {
+        /**
+         * 예시)
+         */
+        console.log(data);
+        let render = true;
+        if(data.prjctStleCd === "실행") {
+            render = false
+        }
+
+        return(
+            render && <Button name={button.name} text={button.text} onClick={(e) => onBtnClick(button, data)} />
+        );
+        // return(
+        //     <Button name={button.name} text={button.text} onClick={(e) => onBtnClick(button, data)} />
+        // );
     }
 
     return (
@@ -86,7 +111,7 @@ const ProjectHrCtAprv = () => {
             <div>
                 검색된 건 수 : {totalItems} 건
             </div>
-            <CustomTable keyColumn={keyColumn} columns={tableColumns} values={values} paging={true} onBtnClick={onBtnClick}/>
+            <CustomTable keyColumn={keyColumn} columns={tableColumns} values={values} paging={true} buttonRender={buttonRender} onClick={onBtnClick}/>
         </div>
     );
 };

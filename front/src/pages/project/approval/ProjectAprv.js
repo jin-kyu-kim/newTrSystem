@@ -60,7 +60,7 @@ const ProjectAprv = () => {
     }
   };
 
-  const onRowDblClick = (e) => {
+  const onRowClick = (e) => {
     navigate("/project/ProjectAprvDetail", 
       {state: { id: e.data.prjctId
               , prjctNm: e.data.prjctNm
@@ -69,10 +69,11 @@ const ProjectAprv = () => {
               , atrzSttsCd: e.data.atrzSttsCd
               , atrzStepCd: e.data.atrzStepCd
               , nowAtrzStepCd: e.data.nowAtrzStepCd
-              , aprvrEmpId : e.data.aprvrEmpId } }
+              , aprvrEmpId : e.data.aprvrEmpId
+              , ctrtYmd: e.data.ctrtYmd
+              , stbleEndYmd: e.data.stbleEndYmd } }
     );
   }
-
 
   return (
     <div className="container">
@@ -89,7 +90,7 @@ const ProjectAprv = () => {
         <SearchPrjctSet callBack={searchHandle} props={searchParams}/>
       </div>
       <div>검색된 건 수 : {totalItems} 건</div>
-      <CustomTable  keyColumn={keyColumn} columns={tableColumns} values={values} onRowDblClick={onRowDblClick} paging={true}/>
+      <CustomTable  keyColumn={keyColumn} columns={tableColumns} values={values} onRowClick={onRowClick} paging={true}/>
     </div>
   );
 };

@@ -7,34 +7,129 @@
             { "key": "deptNm", "value": "소속"  },
             { "key": "empFlnm", "value": "성명" , "width": "100"},
             { "key": "aplySn", "value": "차수" , "width": "100"},
-            { "key": "expectMm", "value": "배정" , "width": "100"},
-            { "key": "rownum", "value": "누적사용" , "width": "100"},
-            { "key": "rownum", "value": "가용" , "width": "100"},
-            { "key": "rownum", "value": "당차수청구" , "width": "100"},
-            { "key": "empId", "value": "상태" , "width": "140", "button": "승인목록"}
+            { "key": "expectMm", "value": "배정" , "width": "120", "unit": "MM"},
+            { "key": "excnMm", "value": "누적사용" , "width": "130", "unit": "MM"},
+            { "key": "avbleMm", "value": "가용" , "width": "100", "unit": "MM"},
+            { "key": "totMd", "value": "당차수청구" , "width": "140", "unit": "hrs"},
+            { "width": "140", "button": { "text": "승인목록", "name": "aprvList" }},
+            { "width": "130", "buttons": [{ "text": "승인", "name": "aprv", "visible": {"key": "sttsCd", "value": "VTW03702"}},
+                                         { "text": "승인취소", "name": "aprvCncl", "visible": {"key": "sttsCd", "value": "VTW03703"}}]},
+            { "width": "130", "buttons": [{ "text": "반려", "name": "rjct", "visible": {"key": "sttsCd", "value": "VTW03702"}},
+                                          { "text": "반려취소", "name": "rjctCncl", "visible": {"key": "sttsCd", "value": "VTW03704"}}]}
         ],
         "summaryColumn": [
+            {
+                "key": "deptNm",
+                "value": "소속",
+                "type"  : "sum",
+                "format": "계"
+            },
             {
                 "key": "expectMm",
                 "value": "배정",
                 "type"  : "sum",
-                "format:": "{0.#} MM"
+                "format": "{0} MM",
+                "precision": "2"
+            },
+            {
+                "key": "excnMm",
+                "value": "누적사용",
+                "type"  : "sum",
+                "format": "{0} MM",
+                "precision": "2"
+            },
+            {
+                "key": "avbleMm",
+                "value": "가용",
+                "type"  : "sum",
+                "format": "{0} MM",
+                "precision": "2"
+            },
+            {
+                "key": "totMd",
+                "value": "당차수청구",
+                "type"  : "sum",
+                "format": "{0} hrs"
             }
         ]
     },
     "ct": {
-        "queryId": "projectMapper.",
-        "keyColumn": "",
+        "queryId": "projectMapper.retrieveCtAply",
+        "keyColumn": "empId",
         "tableColumns": [
-
+            { "key": "deptNm", "value": "소속"  },
+            { "key": "empFlnm", "value": "성명" , "width": "100"},
+            { "key": "aplySn", "value": "차수" , "width": "100"},
+            { "key": "totUtztnAmt", "value": "누적사용" , "width": "200", "currency": true},
+            { "key": "totAplyAmt", "value": "당차수청구" , "width": "200", "currency": true},
+            { "width": "140", "button": { "text": "승인목록", "name": "ctList" }},
+            { "width": "130", "buttons": [{ "text": "승인", "name": "aprv", "visible": {"key": "sttsCd", "value": "VTW03702"}},
+                                          { "text": "승인취소", "name": "aprvCncl", "visible": {"key": "sttsCd", "value": "VTW03703"}}]},
+            { "width": "130", "buttons": [{ "text": "반려", "name": "rjct", "visible": {"key": "sttsCd", "value": "VTW03702"}},
+                                          { "text": "반려취소", "name": "rjctCncl", "visible": {"key": "sttsCd", "value": "VTW03704"}}]}
+        ],
+        "summaryColumn": [
+            {
+                "key": "deptNm",
+                "value": "소속",
+                "type"  : "sum",
+                "format": "계"
+            },
+            {
+                "key": "totUtztnAmt",
+                "value": "누적사용",
+                "type"  : "sum",
+                "format": "{0} 원",
+                "precision": "0"
+            },
+            {
+                "key": "totAplyAmt",
+                "value": "당차수청구",
+                "type"  : "sum",
+                "format": "{0} 원",
+                "precision": "0"
+            }
         ]
     },
-
     "searchParams":
 	{
         "yearItem": true,
         "monthItem": true,
         "aplyOdr": true,
         "empId": true
+    },
+    "popup": {
+        "width": "90%",
+        "height": "90%"
+    },
+    "rjctPopup": {
+        "width": "70%",
+        "height": "50%",
+        "title": "* 반려 사유"
+    },
+    "detailMm": {
+        "keyColumn": "empId",
+        "tableColumns": [
+          { "key": "aplyYmd", "value": "신청일자" },
+          { "key": "md", "value": "신청시간", "unit": "hrs" },
+          { "width": "130", "buttons": [{ "text": "승인", "name": "aprv", "visible": {"key": "atrzDmndSttsCd", "value": "VTW03702"}},
+                                        { "text": "승인취소", "name": "aprvCncl", "visible": {"key": "atrzDmndSttsCd", "value": "VTW03703"}}]},
+          { "width": "130", "buttons": [{ "text": "반려", "name": "rjct", "visible": {"key": "atrzDmndSttsCd", "value": "VTW03702"}},
+                                        { "text": "반려취소", "name": "rjctCncl", "visible": {"key": "atrzDmndSttsCd", "value": "VTW03704"}}]}
+        ]
+    },
+    "detailCt": {
+        "keyColumn": "empId",
+        "tableColumns": [
+            { "key": "utztnDt", "value": "사용일자" },
+            { "key": "utztnAmt", "value": "금액" },
+            { "key": "expensCd", "value": "비용코드" },
+            { "key": "useOffic", "value": "사용처" },
+            { "key": "ctPrpos", "value": "상세내역(목적)" },
+            { "width": "130", "buttons": [{ "text": "승인", "name": "aprv", "visible": {"key": "atrzDmndSttsCd", "value": "VTW03702"}},
+                { "text": "승인취소", "name": "aprvCncl", "visible": {"key": "atrzDmndSttsCd", "value": "VTW03703"}}]},
+            { "width": "130", "buttons": [{ "text": "반려", "name": "rjct", "visible": {"key": "atrzDmndSttsCd", "value": "VTW03702"}},
+                { "text": "반려취소", "name": "rjctCncl", "visible": {"key": "atrzDmndSttsCd", "value": "VTW03704"}}]}
+        ]
     }
 }

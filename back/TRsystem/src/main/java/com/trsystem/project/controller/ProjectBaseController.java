@@ -93,4 +93,46 @@ public class ProjectBaseController {
     }
     
     
+    /**
+     * 변경차수가 반려일 경우 초기화를 선택하였을 때
+     */
+    @PostMapping(value = "/boot/prjct/resetPrmpc")
+    public int resetPrmpc(@RequestBody Map<String, Object> param) {
+        return ProjectBaseDomain.resetPrmpc(param);
+    }
+
+    @PostMapping(value = "/boot/prjct/retrievePjrctCost")
+    public List<Map<String, Object>> retrievePjrctCost(@RequestBody Map<String, Object> param) {
+        return ProjectBaseDomain.retrievePjrctCost(param);
+    }
+
+    @PostMapping(value = "/boot/prjct/retrievePjrctEmpCost")
+    public List<Map<String, Object>> retrievePjrctEmpCost(@RequestBody Map<String, Object> param) {
+        return ProjectBaseDomain.retrievePjrctEmpCost(param);
+    }
+
+    @PostMapping(value = "/boot/prjct/retrievePjrctOutordEmpCost")
+    public List<Map<String, Object>> retrievePjrctOutordEmpCost(@RequestBody Map<String, Object> param) {
+        return ProjectBaseDomain.retrievePjrctOutordEmpCost(param);
+    }
+    
+    /**
+     * 프로젝트 결재선 DTL 승인여부 반영
+     * @param paramList
+     * @return
+     */
+    @PostMapping(value = "/boot/prjct/aprvPrjctAtrz")
+    public String aprvPrjctAtrz(@RequestBody List<Map<String, Object>> paramList) {
+    	return ProjectBaseDomain.aprvPrjctAtrz(paramList);
+    }
+
+    @PostMapping(value = "/boot/prjct/updateMmAtrzCmptnYn")
+    public int updateMmAtrzCmptnYn(@RequestBody Map<String, Object> param){
+        return ProjectBaseDomain.updateMmAtrzCmptnYn(param);
+    }
+
+    @PostMapping(value = "/boot/prjct/updateCtAtrzCmptnYn")
+    public int updateCtAtrzCmptnYn(@RequestBody Map<String, Object> param){
+        return ProjectBaseDomain.updateCtAtrzCmptnYn(param);
+    }
 }

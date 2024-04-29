@@ -5,11 +5,10 @@ import ProjectControlBudgetCostJson from "./ProjectControlBudgetCostJson.json";
 import CustomCostTable from "components/unit/CustomCostTable";
 import Box, { Item } from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
-import { format } from 'date-fns';
+import { format,parse } from 'date-fns';
 
-const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }) => {
-  const [values, setValues] = useState([]);
-  const { manuName, tableColumns, keyColumn, summaryColumn, popup } = ProjectControlBudgetCostJson;
+const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdrTobe, deptId, targetOdr, bizSttsCd, atrzLnSn }) => {
+  const [values, setValues] = useState([]); 
   let groupingDtl = [];
 
   useEffect(() => {
@@ -21,17 +20,22 @@ const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }
   }, []);
 
   const ControlBudgetDtl = async () => {
+    const copyCtrtYmd = ctrtYmd ? JSON.parse(JSON.stringify(ctrtYmd)): "";
+    const copyStbleEndYmd = stbleEndYmd ? JSON.parse(JSON.stringify(stbleEndYmd)) : "";
+    const ctrtYmdPrarm = copyCtrtYmd.replace(/-(\d{2})-\d{2}/, '$1');
+    const stbleEndYmdPrarm = copyStbleEndYmd.replace(/-(\d{2})-\d{2}/, '$1');
+
     const param = [
       { tbNm: "EXPENS_MNBY_PRMPC_DTLS" },
       { prjctId: prjctId,
         bgtMngOdr: bgtMngOdrTobe,
-        expensCd: ProjectControlBudgetCostJson.cdBetween
+        expensCd: ProjectControlBudgetCostJson.cdBetween,
+        useYm : ctrtYmdPrarm+"&"+stbleEndYmdPrarm,
       }, 
     ];
 
   try {
     const response = await ApiRequest("/boot/common/commonSelect", param);
-    console.log("response!!", response);
       response.reduce((acc, item) => {
         //expensPrmpcSn 값으로 그룹핑
         acc[item.expensPrmpcSn] = acc[item.expensPrmpcSn] || [];
@@ -39,7 +43,6 @@ const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }
         groupingDtl = acc;
         return acc;
     }, {});
-    
 
   } catch (error) {
     console.error(error);
@@ -61,7 +64,7 @@ const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }
       for(let j=0; j<Object.keys(groupingDtl).length; j++){
         let total = 0;
         for(let k=0; k<Object.values(groupingDtl)[j].length; k++){
-          response[j][format(Object.values(groupingDtl)[j][k].useYm, 'yyyy년 MM월')] = Object.values(groupingDtl)[j][k].expectCt;
+          response[j][format(parse(Object.values(groupingDtl)[j][k].useYm, 'yyyyMM', new Date()), 'yyyy년 MM월')] = Object.values(groupingDtl)[j][k].expectCt;
           total += Object.values(groupingDtl)[j][k].expectCt;
         }         
         response[j].total = total;    
@@ -95,17 +98,17 @@ const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, bizEndYmd, bgtMngOdrTobe }
               검색 (비용코드, 상세내역 등 다양하게 검색가능)
             </p>
             <CustomCostTable
-              keyColumn={keyColumn}
-              manuName={manuName}
-              columns={tableColumns}
+              columns={ProjectControlBudgetCostJson.tableColumns}
               values={values}
               prjctId={prjctId}
-              summaryColumn={summaryColumn}
-              popup={popup}
               ctrtYmd={ctrtYmd}
-              bizEndYmd={bizEndYmd}
+              stbleEndYmd={stbleEndYmd}
               bgtMngOdrTobe={bgtMngOdrTobe}
               json={ProjectControlBudgetCostJson}
+              deptId={deptId}
+              targetOdr={targetOdr}
+              bizSttsCd={bizSttsCd}
+              atrzLnSn={atrzLnSn}
             />
           </div>
         </div>

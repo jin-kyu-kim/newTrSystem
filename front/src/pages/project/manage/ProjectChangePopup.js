@@ -7,17 +7,13 @@ import CustomCdComboBox from '../../../components/unit/CustomCdComboBox';
 import NumberBox from 'devextreme-react/number-box';
 import Button from "devextreme-react/button";
 
-const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdrTobe, ctrtYmd, bizEndYmd, transformedData}) => {
+const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdrTobe, ctrtYmd, stbleEndYmd, transformedData, deptId, targetOdr, bizSttsCd, atrzLnSn}) => {
     const navigate = useNavigate();
     const [inputValue, setInputValue] = useState(transformedData); //월별 값 입력을 위한 상태
     const [data, setData] = useState([]);
     const [param, setParam] = useState([]);
     const [contents, setContents] = useState([]);   
     const [structuredData, setStructuredData] = useState({});   //기간 구조 데이터
-    
-    useEffect(() => {  
-        console.log("data",data);
-    }, [data]);
 
     //기간 데이터를 받아와서 년도별로 월을 나누어서 배열로 만들어주는 함수
     useEffect(() => {
@@ -81,7 +77,6 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
 
         } else {    //신규 데이터      
                 updatedValues.push({ id, value });    // 새로운 값 객체 추가        
-                // transformedData.push({ [id+"_untpc"] : data.userDfnValue });    // 새로운 값 객체 추가               
         }
         setInputValue(updatedValues); // 업데이트된 배열로 상태 설정
        
@@ -97,7 +92,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
         const totalSum = updatedValues.reduce((acc, updatedItem) => {
             // transformedData에서 대응하는 id+"_untpc"를 찾음
             const transformedItem = transformedData.find(item => item.id === `${updatedItem.id}_untpc`);
-            
+ 
             //대응하는 항목이 있고, 두 value 모두 숫자 타입인 경우 곱한 값 누적
             if (transformedItem && typeof updatedItem.value === 'number' && typeof transformedItem.value === 'number') {
                 return acc + (updatedItem.value * transformedItem.value);
@@ -106,11 +101,10 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
                 return acc + (updatedItem.value * data.userDfnValue);   
             }
           }, 0);
+
           
         // 부동 소수점 문제 해결을 위해 toFixed() 후 숫자로 변환
-        const fixedTotalSum = Number(totalSum.toFixed(2));
-        console.log("fixedTotalSum",fixedTotalSum);
-          
+        const fixedTotalSum = Number(totalSum.toFixed(2));       
 
         let multifulSum;   
         if(data.userDfnValue){
@@ -122,6 +116,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
             ...currentData,
             "total" : fixedSum,
             ...(data.userDfnValue ? { "gramt" : multifulSum } : {}),
+            ...(data.outordEmpId ? { "gramt" : Number((fixedSum * data.untpc).toFixed(0))} : {}),
         })); 
     };
 
@@ -130,7 +125,14 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
     const handleCancel = (e) => {
         navigate("../project/ProjectChange",
             {
-        state: { prjctId: prjctId, bgtMngOdrTobe: bgtMngOdrTobe, ctrtYmd: ctrtYmd, bizEndYmd: bizEndYmd},
+        state: { prjctId: prjctId, 
+                bgtMngOdrTobe: bgtMngOdrTobe, 
+                ctrtYmd: ctrtYmd, 
+                stbleEndYmd: stbleEndYmd, 
+                deptId : deptId,  
+                targetOdr : targetOdr,
+                bizSttsCd : bizSttsCd,
+                atrzLnSn : atrzLnSn},
         })
     };
 
@@ -153,7 +155,8 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
       }
 
     //저장버튼 클릭시
-    const handleSave = () => {
+    const handleSave = (e) => {
+        e.preventDefault();
         //수정일 경우
         if(data[popupInfo.keyColumn]){
             setParam(currentParam => {
@@ -198,7 +201,47 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
         }
     };  
 
+
+    //날짜 형식 변환
+    const parseDate = (date) => {
+        if(date){
+            const formatetedDate = date.length === 8 ? 
+            `${date.slice(0, 4)}-${date.slice(4, 6)}-${date.slice(6, 8)}` 
+            : date;
+        
+        return new Date(formatetedDate);
+        }
+    }
+
+
     useEffect(() => {
+
+        const inptPrnmntYmd = parseDate(param.inptPrnmntYmd);
+        const withdrPrnmntYmd = parseDate(param.withdrPrnmntYmd);
+        const ctrtYmdDate = new Date(ctrtYmd);
+        const ctrtStbleEndYmd = new Date(stbleEndYmd);
+
+        if(inptPrnmntYmd < ctrtYmdDate){
+            alert("투입예정일은 사업시작일보다 이전일 수 없습니다");
+            return;
+        }
+        if(withdrPrnmntYmd < ctrtYmdDate){
+            alert("철수예정일은 사업시작일보다 이전일 수 없습니다");
+            return;
+        }
+        if(inptPrnmntYmd > ctrtStbleEndYmd){
+            alert("투입예정일은 경비종료일 이후일 수 없습니다");
+            return;
+        }
+        if(withdrPrnmntYmd > ctrtStbleEndYmd){
+            alert("철수예정일은 경비종료일 이후일 수 없습니다");
+            return;
+        }
+        if(inptPrnmntYmd > withdrPrnmntYmd){
+            alert("투입예정일은 철수예정일 이후일 수 없습니다");
+            return;
+        }
+
 
         if(data[popupInfo.keyColumn]){
             //수정일 경우
@@ -219,8 +262,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
         }
       }, [param]);
     
-    const onRowInserting = async() => {
-        
+    const onRowInserting = async() => {      
         //api param 설정
         const paramInfo = [
             { tbNm: popupInfo.table },
@@ -292,11 +334,24 @@ const onRowUpdateingMonthData = async() => {
 
     const pkColumns = pick(param, popupInfo.pkColumnsDtl);
 
-    const makeParam = inputValue.map(item => ({
-        [popupInfo.nomalColumnsDtlYm] : item.id,
-        [popupInfo.nomalColumnsDtlValue] : item.value,
-        ...(data.userDfnValue ? { "untpc" : data.userDfnValue } : {}),  //TODO. 자사인력 단가 경우의 수 따져봐라
-    }));
+    const transformedDataMap = transformedData.reduce((acc, cur) => {
+        acc[cur.id] = cur.value; // 각 항목의 id를 키로, value를 값으로 설정
+        return acc;
+    }, {});
+
+    // inputValue를 순회하여 새로운 배열을 생성
+    const makeParam = inputValue.map(item => {
+        let untpcValue ;
+        if(popupInfo.table ==="MMNY_LBRCO_PRMPC"){
+            const idUnptc = `${item.id}_untpc`; // untpc용 ID 생성
+            untpcValue = transformedDataMap.hasOwnProperty(idUnptc) ? transformedDataMap[idUnptc] : data.userDfnValue; // transformedDataMap에 untpc ID가 있으면 그 값을, 없으면 data.userDfnValue를 사용
+        }
+        return {
+            [popupInfo.nomalColumnsDtlYm]: item.id,
+            [popupInfo.nomalColumnsDtlValue]: item.value,
+            ...(untpcValue ? {"untpc": untpcValue} : {}), // 조건에 따른 untpc 값 설정
+        };
+    });
 
     //api param 설정
     const paramInfo = [
@@ -341,11 +396,13 @@ const onRowUpdateingMonthData = async() => {
                                 onSelect={handleChgState}
                                 value={data.expensCd}
                                 between={popupInfo.cdBetween}
+                                required={true}
+                                label={"비용코드"}
                             />
                         </div>
                     </div>
                     <CustomLabelValue props={popupInfo.labelValue.dtlDtls} value={data.dtlDtls} onSelect={handleChgState}/>
-                    <CustomLabelValue props={popupInfo.labelValue.total} value={data.total} onSelect={handleChgState}/>
+                    <CustomLabelValue props={popupInfo.labelValue.total} value={data.total} onSelect={handleChgState} readOnly={popupInfo.labelValue.total.readOnly}/>
                 </div>
             );
         //외주인력
@@ -362,6 +419,8 @@ const onRowUpdateingMonthData = async() => {
                                 name="hnfRoleCd"
                                 onSelect={handleChgState}
                                 value={data.hnfRoleCd}
+                                required={true}
+                                label={"역할"}
                             />
                         </div>
                     </div>
@@ -374,14 +433,15 @@ const onRowUpdateingMonthData = async() => {
                                 name="hnfGradCd"
                                 onSelect={handleChgState}
                                 value={data.hnfGradCd}
+                                required={true}
+                                label={"등급"}
                             />
                         </div>
-                        
                     </div>
                     <CustomLabelValue props={popupInfo.labelValue.tkcgJob} value={data.tkcgJob} onSelect={handleChgState}/>
                     <CustomLabelValue props={popupInfo.labelValue.untpc} value={data.untpc} onSelect={handleChgState}/>
-                    <CustomLabelValue props={popupInfo.labelValue.gramt} value={data.gramt} onSelect={handleChgState}/>
-                    <CustomLabelValue props={popupInfo.labelValue.total} value={data.total} onSelect={handleChgState}/>
+                    <CustomLabelValue props={popupInfo.labelValue.gramt} value={data.gramt} onSelect={handleChgState} readOnly={popupInfo.labelValue.total.readOnly}/>
+                    <CustomLabelValue props={popupInfo.labelValue.total} value={data.total} onSelect={handleChgState} readOnly={popupInfo.labelValue.total.readOnly}/>
                     <CustomLabelValue props={popupInfo.labelValue.inptPrnmntYmd} value={data.inptPrnmntYmd} onSelect={handleChgState}/>
                     <CustomLabelValue props={popupInfo.labelValue.withdrPrnmntYmd} value={data.withdrPrnmntYmd} onSelect={handleChgState}/>
                 </div>
@@ -405,13 +465,15 @@ const onRowUpdateingMonthData = async() => {
                                 name="hnfRoleCd"
                                 onSelect={handleChgState}
                                 value={data.hnfRoleCd}
+                                required={true}
+                                label={"역할"}
                             />
                         </div>
                     </div> 
                     <CustomLabelValue props={popupInfo.labelValue.tkcgJob} value={data.tkcgJob} onSelect={handleChgState}/>
-                    <CustomLabelValue props={popupInfo.labelValue.userDfnValue} value={data.userDfnValue} onSelect={handleChgState} readOnly={popupInfo.labelValue.gramt.readOnly}/> 
-                    <CustomLabelValue props={popupInfo.labelValue.gramt} value={data.gramt} onSelect={handleChgState} readOnly={popupInfo.labelValue.gramt.readOnly}/>
-                    <CustomLabelValue props={popupInfo.labelValue.total} value={data.total} onSelect={handleChgState} readOnly={popupInfo.labelValue.total.readOnly}/>
+                    <CustomLabelValue props={popupInfo.labelValue.userDfnValue} value={data.userDfnValue} onSelect={handleChgState} readOnly={popupInfo.labelValue.gramt.readOnly} /> 
+                    <CustomLabelValue props={popupInfo.labelValue.gramt} value={data.gramt} onSelect={handleChgState} readOnly={popupInfo.labelValue.gramt.readOnly} />
+                    <CustomLabelValue props={popupInfo.labelValue.total} value={data.total} onSelect={handleChgState} readOnly={popupInfo.labelValue.total.readOnly} />
                     <CustomLabelValue props={popupInfo.labelValue.inptPrnmntYmd} value={data.inptPrnmntYmd} onSelect={handleChgState}/>
                     <CustomLabelValue props={popupInfo.labelValue.withdrPrnmntYmd} value={data.withdrPrnmntYmd} onSelect={handleChgState}/>
                 </div>
@@ -423,12 +485,11 @@ const onRowUpdateingMonthData = async() => {
     }, [popupInfo, data]); 
 
     return (
+        <form onSubmit={handleSave}> 
         <div className="popup-content">
             <div className="project-regist-content">
-                <div className="project-change-content-inner-left">
-                    
+                <div className="project-change-content-inner-left"> 
                     {contents}
-
                 </div>
                 <div className="project-change-content-inner-right">
                     <div className="dx-fieldset">
@@ -458,24 +519,27 @@ const onRowUpdateingMonthData = async() => {
                                             {months[rowIndex] ? 
                                             (<NumberBox 
                                             key={months[rowIndex]}
-                                            id={`${Object.keys(structuredData)[colIndex]}-${months[rowIndex]}`} 
+                                            id={`${Object.keys(structuredData)[colIndex]}${months[rowIndex]}`} 
                                             format={popupInfo.popupNumberBoxFormat}
-                                            value={inputValue.find(item => item.id === `${Object.keys(structuredData)[colIndex]}-${months[rowIndex]}`)?.value || 0}
+                                            value={inputValue.find(item => item.id === `${Object.keys(structuredData)[colIndex]}${months[rowIndex]}`)?.value || 0}
                                             onValueChanged={handleInputChange}
                                             style={{ textAlign: 'right' }}
                                             defaultValue={0}
                                             showSpinButtons={true}
                                             step={popupInfo.popupStep}
                                             showClearButton={false}
+                                            max={popupInfo.popupMax}
+                                            min={popupInfo.popupMin}
                                             />): ''}</td>
                                             { popupInfo.menuName === "ProjectEmpCostJson" &&
                                             <td style={{width:"20%", padding:"5px"}}>
                                                 <NumberBox 
-                                                    // value={data.userDfnValue} 
                                                     value= {data.mmnyLbrcoPrmpcSn ? 
-                                                            transformedData.find(item => item.id === `${Object.keys(structuredData)[colIndex]}-${months[rowIndex]}_untpc`)?.value || 0 
+                                                            transformedData.find(item => item.id === `${Object.keys(structuredData)[colIndex]}${months[rowIndex]}_untpc`)?.value || 0 
                                                             : data.userDfnValue}
-                                                    readOnly={true}/>
+                                                    readOnly={true}
+                                                    format={"#,### 원"}
+                                                    />
                                             </td>
                                             }
                                         </>
@@ -490,10 +554,11 @@ const onRowUpdateingMonthData = async() => {
                 </div>
             </div>
             <div className="button-container">
-                <Button text="저장" type="default" stylingMode="contained" onClick={handleSave}/>
+                <Button text="저장" type="default" stylingMode="contained" useSubmitBehavior={true}/>
                 <Button text="취소" onClick={handleCancel}/>
             </div>
         </div>
+        </form>
     );
 };
 

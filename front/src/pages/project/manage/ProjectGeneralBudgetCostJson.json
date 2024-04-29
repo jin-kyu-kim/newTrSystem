@@ -14,7 +14,7 @@
 	[
         {"key": "expensCdNm", "value": "비용코드명"},
         {"key": "dtlDtls", "value": "상세내역"},
-        {"key": "total", "value": "총금액"}
+        {"key": "total", "value": "총금액", "subType":"NumberBox", "format": "#,### 원"}
 	],
     "summaryColumn":
     [
@@ -29,6 +29,9 @@
     "popupFormat": "경비",
     "popupNumberBoxFormat": "#,##0 원",
     "popupStep": 1,
+    "popupMax" : 9000000000000000,
+    "popupMin" : 0,
+    "precision": 0,
     "labelValue" : {
         "expensCdNm": {
             "name": "expensCdNm",
@@ -49,8 +52,11 @@
             "type": "NumberBox",
             "label": "총금액",
             "required": true,
-            "placeholder": "총금액"
+            "placeholder": "총금액",
+            "readOnly": true,
+            "format": "#,### 원"
         }
     },
-    "format" :"Total: {0}원"
+    "format" :"Total: {0}원",
+    "AddRowBtn": "경비 추가"
 }
