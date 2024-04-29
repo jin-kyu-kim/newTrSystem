@@ -618,13 +618,8 @@ public class ProjectBaseDomain {
 		Map<String, Object> paramCtMm = new HashMap<>();
 		paramCtMm.put("prjctId", param.get("prjctId"));
 		paramCtMm.put("empId", param.get("empId"));
-		if(dayOfMonth > 15){
-			paramCtMm.put("aplyYm", ym);
-			paramCtMm.put("aplyOdr", 1);
-		} else {
-			paramCtMm.put("aplyYm", lastYm);
-			paramCtMm.put("aplyOdr", 2);
-		}
+		paramCtMm.put("aplyYm", nowYm);
+		paramCtMm.put("aplyOdr", nowOdr);
 		searchCtMm.add(tbCtMm);
 		searchCtMm.add(paramCtMm);
 		List<Map<String, Object>> listCtMm = commonService.commonSelect(searchCtMm);
