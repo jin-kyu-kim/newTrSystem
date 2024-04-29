@@ -281,6 +281,7 @@ const ElecAtrzNewReq = () => {
         try {
             const response = await ApiRequest("/boot/elecAtrz/insertElecAtrz", insertParam);
             console.log(response);
+            const token = localStorage.getItem("token");
 
             if(response){
                 // 첨부파일 저장
@@ -311,7 +312,7 @@ const ElecAtrzNewReq = () => {
                     }
 
                 const responseAttach = await axios.post("/boot/common/insertlongText", formDataAttach, {
-                    headers: { 'Content-Type': 'multipart/form-data' },
+                    headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
                 });
                 console.log(responseAttach);
 
@@ -330,6 +331,11 @@ const ElecAtrzNewReq = () => {
 
         } catch (error) {
             console.error(error)
+            if (error.response.status === 401) {
+                // 로그인 상태를 해제하고 로그인 페이지로 이동
+                localStorage.removeItem("token");
+                localStorage.removeItem("isLoggedIn");
+            } 
         }
     }
 
