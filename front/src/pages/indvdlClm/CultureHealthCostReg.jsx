@@ -31,6 +31,7 @@ const button = {
 
 const CultureHealthCostReg = (props) => {
     const [cookies] = useCookies([]);
+    const token = localStorage.getItem("token");
     const [values, setValues] = useState([]);
     const [attachments, setAttachments] = useState([]);
     const fileUploaderRef = useRef(null);
@@ -184,7 +185,7 @@ const CultureHealthCostReg = (props) => {
 
         if (now.getDate() >5) {
             if(now.getFullYear() !== clmYmd.getFullYear() || now.getMonth() !== clmYmd.getMonth()){
-                alert('신청 불가능한 일자입니다.')
+                alert('등록 불가능한 일자입니다.')
                 errors.push('Wrong Date');
             }
         }else{
@@ -192,7 +193,7 @@ const CultureHealthCostReg = (props) => {
             let lastMonth = new Date ( firstDayOfMonth.setDate( firstDayOfMonth.getDate() - 1 ) );
             if(!(now.getFullYear() === clmYmd.getFullYear() && now.getMonth() === clmYmd.getMonth()) &&
                 !(lastMonth.getFullYear() === clmYmd.getFullYear() && lastMonth.getMonth() === clmYmd.getMonth())){
-                alert('신청 불가능한 일자입니다.')
+                alert('등록 불가능한 일자입니다.')
                 errors.push('Wrong Date');
             }
         }
@@ -211,6 +212,31 @@ const CultureHealthCostReg = (props) => {
         return errors.length === 0;
     };
 
+    const validateDelete = () => {
+        const errors = [];
+        const year = selectedItem.clmYmd.substring(0, 4);
+        const month = selectedItem.clmYmd.substring(4, 6) - 1;
+        const day = selectedItem.clmYmd.substring(6, 8);
+        const clmYmd = new Date(year, month, day);
+
+        if (now.getDate() >5) {
+            if(now.getFullYear() !== clmYmd.getFullYear() || now.getMonth() !== clmYmd.getMonth()){
+                alert('삭제 불가능한 일자입니다.')
+                errors.push('Wrong Date');
+            }
+        }else{
+            let firstDayOfMonth = new Date( now.getFullYear(), now.getMonth() , 1 );
+            let lastMonth = new Date ( firstDayOfMonth.setDate( firstDayOfMonth.getDate() - 1 ) );
+            if(!(now.getFullYear() === clmYmd.getFullYear() && now.getMonth() === clmYmd.getMonth()) &&
+                !(lastMonth.getFullYear() === clmYmd.getFullYear() && lastMonth.getMonth() === clmYmd.getMonth())){
+                alert('삭제 불가능한 일자입니다.')
+                errors.push('Wrong Date');
+            }
+        }
+
+        return errors.length === 0;
+    }
+
     const handleSubmit = async() => {
         const confirmResult = window.confirm("등록하시겠습니까?");
         if (confirmResult) {
@@ -225,18 +251,18 @@ const CultureHealthCostReg = (props) => {
                     try {
                         const response = await axios.post("/boot/common/insertlongText", formData, {
                             headers: {
-                                'Content-Type': 'multipart/form-data'
+                                'Content-Type': 'multipart/form-data',
+                                "Authorization": `Bearer ${token}`
                             },
                         })
                         if (response.status === 200) {
                             await ApiRequest('/boot/indvdlClm/plusClturPhstrnActCt', initParam);
-                            onResetClick()
+                            onResetClick();
                             searchTable();
                             window.alert("등록되었습니다.")
                         }
                     } catch (error) {
                         console.error("API 요청 에러:", error);
-                        throw error;
                     }
                 } else {
                     const formData = new FormData();
@@ -269,7 +295,8 @@ const CultureHealthCostReg = (props) => {
                         .forEach((attachment) => formData.append("attachments", attachment));
                     const response = await axios.post("/boot/common/insertlongText", formData, {
                         headers: {
-                            'Content-Type': 'multipart/form-data'
+                            'Content-Type': 'multipart/form-data',
+                            "Authorization": `Bearer ${token}`
                         },
                     })
                     if (response.status === 200) {
@@ -279,13 +306,13 @@ const CultureHealthCostReg = (props) => {
                             await ApiRequest('/boot/indvdlClm/editClturPhstrnActCt', param);
                         }
                         deleteFiles.current = [{tbNm: "ATCHMNFL"}];
-                        onResetClick()
+                        onResetClick();
                         searchTable();
                         setSelectedItem(null);
                         window.alert("수정되었습니다.")
                     }
                 }
-                props.searchTable();
+                props.searchGrid();
             }
         }
     };
@@ -297,22 +324,25 @@ const CultureHealthCostReg = (props) => {
     const onDeleteClick = async() => {
         const confirmResult = window.confirm("삭제하시겠습니까?");
         if (confirmResult) {
-            try {
-                const paramCh = [{ tbNm: "CLTUR_PHSTRN_ACT_CT_REG" }, { empId: selectedItem.empId, clturPhstrnActCtSn: selectedItem.clturPhstrnActCtSn }]
-                const responseCh = await ApiRequest("/boot/common/commonDelete", paramCh);
-                if (responseCh === 1) {
-                    const paramMn = { empId: selectedItem.empId, clmYmd: selectedItem.clmYmd, clturPhstrnSeCd: selectedItem.clturPhstrnSeCd, clmAmt: selectedItem.clmAmt }
-                    const responseMn = await ApiRequest('/boot/indvdlClm/minusClturPhstrnActCt', paramMn);
-                    if (responseMn === 1) {
-                        const paramAt = [{ tbNm: "ATCHMNFL" }, { atchmnflId: selectedItem.atchmnflId }]
-                        await ApiRequest("/boot/common/commonDelete", paramAt);
-                        searchTable();
-                        window.alert("삭제되었습니다.");
+            if (validateDelete()) {
+                try {
+                    const paramCh = [{ tbNm: "CLTUR_PHSTRN_ACT_CT_REG" }, { empId: selectedItem.empId, clturPhstrnActCtSn: selectedItem.clturPhstrnActCtSn }]
+                    const responseCh = await ApiRequest("/boot/common/commonDelete", paramCh);
+                    if (responseCh === 1) {
+                        const paramMn = { empId: selectedItem.empId, clmYmd: selectedItem.clmYmd, clturPhstrnSeCd: selectedItem.clturPhstrnSeCd, clmAmt: selectedItem.clmAmt }
+                        const responseMn = await ApiRequest('/boot/indvdlClm/minusClturPhstrnActCt', paramMn);
+                        if (responseMn === 1) {
+                            const paramAt = [{ tbNm: "ATCHMNFL" }, { atchmnflId: selectedItem.atchmnflId }]
+                            await ApiRequest("/boot/common/commonDelete", paramAt);
+                            searchTable();
+                            props.searchGrid();
+                            setSelectedItem(null);
+                            window.alert("삭제되었습니다.");
+                        }
                     }
+                } catch (error) {
+                    console.error("API 요청 에러:", error);
                 }
-            } catch (error) {
-                console.error("API 요청 에러:", error);
-                console.log(error);
             }
         }
     };
