@@ -13,17 +13,17 @@ import ApiRequest from "utils/ApiRequest";
  *  "VTW04909" : 외주업체
  *  "VTW04910" : 재료비
  */
-const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
+const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd, ctrtTyCd}) => {
     
     const [popupVisible, setPopupVisible] = useState(false);
     const [tableData, setTableData] = useState([]);                 //그리드 전체 데이터
     const [selectedData, setSelectedData] = useState({});           //선택된 행의 데이터
 
     let jsonData = {};
-    if(data.elctrnAtrzTySeCd === "VTW04910"){
+    if(ctrtTyCd? ctrtTyCd : data.elctrnAtrzTySeCd === "VTW04910"){
         jsonData = ElecAtrzMatrlCtJson
     }
-    else if (data.elctrnAtrzTySeCd === "VTW04909"){
+    else if (ctrtTyCd? ctrtTyCd : data.elctrnAtrzTySeCd === "VTW04909"){
         jsonData = ElecAtrzOutordCompanyJson
     }
 
@@ -33,7 +33,7 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
     /*
     *상태코드에 따른 버튼 변경
     */
-    if(["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707"].includes(sttsCd)){
+    if(["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)){
         tableColumns = tableColumns.filter(item => item.value !== '삭제');
 
         tableColumns = tableColumns.map((item) => {
@@ -58,10 +58,12 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
         /* 임시저장 조회 */
         if(sttsCd === "VTW03701") {
             getTempData();
+        /* 전자결재 목록 조회 */
         }else if(["VTW03702","VTW03703","VTW03704","VTW03705"].includes(sttsCd)) {
             getTempData();
+        }else if(["VTW03405"].includes(sttsCd)){   //지급
+            getTempData();
         }
-        /* 전자결재 목록 조회 */
     }, [])
 
 
@@ -72,7 +74,7 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
         const dtlParam = 
             { queryId: "elecAtrzMapper.retrieveEntrpsCtrtDtl",
               elctrnAtrzId: data.elctrnAtrzId,
-              elctrnAtrzTySeCd: data.elctrnAtrzTySeCd}    
+              elctrnAtrzTySeCd: ctrtTyCd ? ctrtTyCd : data.elctrnAtrzTySeCd}    
         const dtlResponse = await ApiRequest("/boot/common/queryIdSearch", dtlParam);
 
         const ctrtDataDtl = dtlResponse[0];
@@ -98,7 +100,6 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
 
         for(let i = 0; i < pay.length; i++) {
 
-            // console.log(pay)
             let month
             if(pay[i].ctrtYmd.getMonth() + 1 < 10) {
                 month = "0" + (pay[i].ctrtYmd.getMonth() + 1)
@@ -139,17 +140,6 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
         }
         handlePopupData(result);
     }
-
-    /**
-     * console.log useEffect
-     */
-    // useEffect(() => {
-    //     console.log(popupVisible);
-    // }, [popupVisible]);
-
-    // useEffect(() => {
-    //     console.log("tableData", tableData);
-    // }, [tableData]);
 
     /**
      *  날짜데이터 포멧팅
@@ -236,7 +226,7 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
     return (
         <div className="elecAtrzNewReq-ctrtInfo">
             <div style={{ textAlign: "right", marginBottom:"10px" }}>
-                {!["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707"].includes(sttsCd) && (
+                {!["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd) && (
                 <Button name="insert" onClick={()=>handlePopupVisible({name:"insert"})}>{insertButton}</Button>
                 )}
             </div>
@@ -265,6 +255,7 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
                     selectedData={selectedData}
                     data={data}
                     sttsCd={sttsCd}
+                    ctrtTyCd={ctrtTyCd}
                 />
             </Popup>
         </div>

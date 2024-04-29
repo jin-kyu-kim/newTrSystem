@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef,useCallback} from "react";
+import { useState, useEffect } from "react";
 import ApiRequest from "utils/ApiRequest";
 
 import PivotGrid, { FieldChooser, FieldPanel, Scrolling } from 'devextreme-react/pivot-grid';
@@ -81,8 +81,6 @@ const ProjectExpenseCashCardReport = ({basicInfo}) => {
         try {
             const response = await ApiRequest("/boot/financialAffairMng/retrieveCtData", param);
         
-            console.log(response);
-        
             setPivotGridConfig({
                 ...pivotGridConfig,
                 store: response,
@@ -96,7 +94,6 @@ const ProjectExpenseCashCardReport = ({basicInfo}) => {
 
     return (
     <div style={{ marginBottom: "20px" }}>
-        <span>* 현금 및 개인법인카드 사용비용</span>
         <PivotGrid
             id="sales"
             dataSource={dataSource}

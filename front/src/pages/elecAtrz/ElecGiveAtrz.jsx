@@ -78,11 +78,15 @@ const ElecGiveAtrz = () => {
     };
 
     const onClickBtn = (btn, data) => {
+
+        formData.elctrnAtrzId = data.elctrnAtrzId;
+
         if(btn.name === 'moveReq'){
             navigate('/elecAtrz/ElecAtrzNewReq', {state: {
                 prjctId: prjctId,
                 formData: formData,
-                data: data
+                sttsCd: formData.docSeCd,
+                ctrtTyCd: data.elctrnAtrzTySeCd
             }})
         }
     }

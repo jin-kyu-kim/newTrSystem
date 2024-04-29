@@ -28,8 +28,9 @@ import axios from "axios";
 import CustomTable from "components/unit/CustomTable";
 import ApprovalPopup from "components/unit/ApprovalPopup"
 import AutoCompleteProject from "components/unit/AutoCompleteProject";
-import EmpVacationJson from "../indvdlClm/EmpVacationJson.json"
-import EmpVacationAttchList from "../indvdlClm/EmpVacationAttchList"
+import EmpVacationCanclePopup from "pages/indvdlClm/EmpVacationCanclePopup";
+import EmpVacationJson from "pages/indvdlClm/EmpVacationJson.json"
+import EmpVacationAttchList from "pages/indvdlClm/EmpVacationAttchList"
 import ApiRequest from "utils/ApiRequest";
 
 /**
@@ -134,15 +135,18 @@ const EmpVacation = () => {
     let jbttlCd = cookies.deptInfo[0].jbttlCd
 
 
+    
 
 
-
+    // 월별 근무일_공휴일 조회
     const [selectCrtrDateList, setSelectCrtrDateList] = useState();
 
+    // 월별 근무일_공휴일 조회
     useEffect(() => {
         getVcatnInfo();
     }, [])
 
+    // 월별 근무일_공휴일 조회
     const getVcatnInfo = async () => {
         try {
             setSelectCrtrDateList(await ApiRequest("/boot/common/queryIdSearch", { queryId: "indvdlClmMapper.retrieveVcatnYearInfoInq" }));
@@ -236,16 +240,23 @@ const EmpVacation = () => {
 
 
 
-    // 첨부파일팝업 전달 첨부파일ID
+    // 첨부파일팝업 첨부파일ID 정보
     const [popupAttachValue, setPopupAttachValue] = useState({ visible: false });
 
 
 
 
 
-    // 결재선팝업에 전달할 결재선정보
+    // 결재선팝업 결재선 정보
     const [popupAtrzValue, setPopupAtrzValue] = useState([]);
     const [popupAtrzVisibleValue, setPopupVisibleAtrzValue] = useState(false);
+
+
+
+
+
+    // 휴가취소요청 정보
+    const [popupVcatnAtrzCancleValue, setPopupVcatnAtrzCancleValue] = useState({ visible: false });
 
 
 
@@ -635,9 +646,12 @@ const EmpVacation = () => {
                 attachId: data.atchmnflId,
                 visible: true,
             })
-        } else if (e.text == "휴가 취소요청") {
-            // ELCTRN_ATRZ_TY_SE_CD 04915로 전자결재ID 새로채번해서 전달
-            alert("휴가 취소요청 팝업 호출");
+        } else if (e.text == "취소요청") {
+            setPopupVcatnAtrzCancleValue({
+                data: data,
+                empId : sessionEmpId,
+                visible: true,
+            })
         }
     }
 
@@ -661,6 +675,19 @@ const EmpVacation = () => {
         let fileUploader = fileUploaderRef.current.instance;
         fileUploader.reset();
     };
+
+    const test = async () => {
+        const test = {
+                elctrnAtrzId: "b95a3548-fbb0-ae4c-92ab-8f1cbc0e23d4"
+            }
+        
+
+        try{
+            const response = await ApiRequest("/boot/indvdlClm/approvalReInsertVcatnAtrz", test);
+        } catch (error) {
+            console.log("deleteVcatnAtrz_error : ", error);
+        }
+    }
 
     return (
         <div className="" style={{ marginLeft: "5%", marginRight: "5%" }}>
@@ -919,6 +946,7 @@ const EmpVacation = () => {
                         <div style={{ display: "inline-block", float: "right", marginTop: "25px" }}>
                             <Button style={{ height: "48px", width: "100px", marginRight: "15px" }} onClick={(e) => { setPopupVisibleAtrzValue(true) }}>결재선지정</Button>
                             <Button style={{ height: "48px", width: "60px" }} onClick={onSaveClick}>저장</Button>
+                            <Button style={{ height: "48px", width: "60px" }} onClick={test}>test</Button>
                         </div>
 
                         <EmpVacationAttchList
@@ -942,6 +970,25 @@ const EmpVacation = () => {
                             atrzLnEmpList={popupAtrzValue}
                             onHiding={onAtrzHiding}
                         />
+
+                        {popupVcatnAtrzCancleValue.visible == true 
+                            ? 
+                                <EmpVacationCanclePopup
+                                    width={"900px"}
+                                    height={"520px"}
+                                    title={"* 휴가결재 취소 요청"}
+                                    visible={popupVcatnAtrzCancleValue.visible}
+                                    dataMap={popupVcatnAtrzCancleValue.data}
+                                    empId= {popupVcatnAtrzCancleValue.empId}
+                                    onHiding={(e) => {
+                                        setPopupVcatnAtrzCancleValue({
+                                            visible: e
+                                        })
+                                    }}
+                                />
+                            : 
+                                <></>
+                        }
                     </div>
                 </div>
             </div>

@@ -19,6 +19,16 @@
         "url": "./ProjectExpenseCash"
       }
     ],
+    "searchInfo": {
+      "searchParams": { 
+        "btnName": "과거비용승인이력(팝업)",
+        "yearList": [
+          { "name": "year", "visible": true, "placeholder": "[연도]", "displayExpr": "value", "valueExpr": "value" },
+          { "name": "month", "visible": true, "placeholder": "[월]", "displayExpr": "value", "valueExpr": "value" },
+          { "name": "aplyOdr", "visible": true, "placeholder": "[차수]", "displayExpr": "text", "valueExpr": "value" }
+        ]
+      }
+    },
     "keyColumn": "prjctCtAplySn",
     "ctAplyTableColumns": [
       { "key": "ctAtrzSeCdNm", "value": "구분", "width": 120 },
@@ -225,6 +235,12 @@
       { "dataField": "prjctNm", "caption": "프로젝트명", "area": "row", "expanded": true, "showTotals": false },
       { "dataField": "aplyDay", "area": "column" },
       { "dataField": "md", "area": "data", "summaryType": "sum" }
-    ]}
+    ]},
+    { "title": "* 현금 및 개인법인카드 사용비용", "key": "expense" }
+  ],
+  "projectExpensePopQueryIdList": [
+    "indvdlClmMapper.retrieveVcatnDay",
+    "indvdlClmMapper.retrieveCtrtDay",
+    "indvdlClmMapper.retrievePrjctWorkDay"
   ]
 }

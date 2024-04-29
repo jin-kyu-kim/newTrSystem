@@ -11,13 +11,13 @@ import ElecAtrzOutordCompanyPopupJson from "./ElecAtrzOutordCompanyPopupJson.jso
  *  "VTW04909" : 외주업체
  *  "VTW04910" : 재료비
  */
-const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedData, data, sttsCd}) => {
+const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedData, data, sttsCd, ctrtTyCd}) => {
 
     let jsonData = {};
-    if(data.elctrnAtrzTySeCd === "VTW04910"){
+    if(ctrtTyCd ? ctrtTyCd : data.elctrnAtrzTySeCd === "VTW04910"){
         jsonData = ElecAtrzMatrlCtPopupJson
     }
-    else if (data.elctrnAtrzTySeCd === "VTW04909"){
+    else if (ctrtTyCd ? ctrtTyCd : data.elctrnAtrzTySeCd === "VTW04909"){
         jsonData = ElecAtrzOutordCompanyPopupJson
     }
 
@@ -30,9 +30,7 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
     const [pay, setPay] = useState([]);
     let controlReadOnly = false;
 
-    if(["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707"].includes(sttsCd)){
-        controlReadOnly = true;
-    }
+
     /**
      *  부모창에서 전달 된 데이터로 셋팅
      */
@@ -135,8 +133,14 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
         handlePopupVisible();
     }
 
+
+    // readonly 여부
+    if(["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)){
+        controlReadOnly = true;
+    }
+
     // 수정테이블 수정가능 여부
-    const isEditable = !["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707"].includes(sttsCd);
+    const isEditable = !["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd);
     
     return (
     <>
@@ -144,7 +148,7 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
             <div className="popup-content">
                 <div className="project-regist-content">
                     <div className="project-change-content-inner-left">
-                    {data.elctrnAtrzTySeCd === "VTW04910" ? 
+                    {data.elctrnAtrzTySeCd === "VTW04910" || ctrtTyCd === "VTW04910" ? 
                         <div className="dx-fieldset">
                             <CustomLabelValue props={matrlPlanParam}  value={matrlCtrtData.expectCtrtEntrpsNm} onSelect={handleChgState} readOnly={controlReadOnly}/>
                             <CustomLabelValue props={labelValue.cntrctamount} onSelect={handleChgState} readOnly={true} value={matrlCtrtData.cntrctamount}/>
@@ -180,7 +184,7 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
                     </div>
                 </div>
                 <div>
-                    {(!["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707"].includes(sttsCd)) && (
+                    {(!["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)) && (
                         <>
                         <Button text="저장" useSubmitBehavior={true}/>
                         <Button text="취소" onClick={handlePopupVisible}/>

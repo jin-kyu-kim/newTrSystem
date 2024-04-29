@@ -43,9 +43,7 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData, sttsCd }) => {
             }));
         }
 
-        if(sttsCd === "VTW03701") {
-            getTempData();
-        }else if(["VTW03702","VTW03703","VTW03704","VTW03705"].includes(sttsCd)) {
+        if(sttsCd === "VTW03701") { //임시저장
             getTempData();
         }
 

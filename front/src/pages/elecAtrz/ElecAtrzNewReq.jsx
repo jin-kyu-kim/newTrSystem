@@ -15,6 +15,8 @@ import ExpensInfo from "./expensClm/ExpensInfo";
 import ElecAtrzCtrtInfo from "./ctrtInfo/ElecAtrzCtrtInfo";
 import ElecAtrzCtrtInfoDetail from "./ctrtInfo/ElecAtrzCtrtInfoDetail";
 import ElecAtrzCtrtOutordHnfDetail from "./ctrtInfo/ElecAtrzCtrtOutordHnfDetail";
+import ElecAtrzTabDetail from "./ElecAtrzTabDetail";
+import ElectGiveAtrzClm from "./ElectGiveAtrzClm";
 import { Button } from 'devextreme-react';
 
 const ElecAtrzNewReq = () => {
@@ -24,6 +26,7 @@ const ElecAtrzNewReq = () => {
     const prjctId = location.state.prjctId;
     const formData = location.state.formData;
     const sttsCd = location.state.sttsCd;
+    const ctrtTyCd = location.state.ctrtTyCd;
     const [cookies] = useCookies(["userInfo", "userAuth"]);
 
     /** 첨부파일 관련 */
@@ -38,6 +41,7 @@ const ElecAtrzNewReq = () => {
 
     const [atrzLnEmpList, setAtrzLnEmpList] = useState([]);
     const column = { "dataField": "gnrlAtrzCn", "placeholder": "내용을 입력해주세요."};
+    
 
     /*
      * 첨부파일 저장 테이블 지정 
@@ -276,6 +280,8 @@ const ElecAtrzNewReq = () => {
             sttsCd: sttsCd
         }
 
+        console.log("insertParam", insertParam);
+
         try {
             const response = await ApiRequest("/boot/elecAtrz/insertElecAtrz", insertParam);
             console.log(response);
@@ -337,6 +343,8 @@ const ElecAtrzNewReq = () => {
     const toAtrzNewReq = () => {
         if(sttsCd === "VTW03701") {
             navigate("../elecAtrz/ElecAtrz", {state: {prjctId: prjctId}});
+        }else if(sttsCd === "VTW03405"){    
+            navigate("../elecAtrz/ElecGiveAtrz", {state: {prjctId: prjctId, formData:formData}});
         }else{
         navigate("../elecAtrz/ElecAtrzForm", {state: {prjctId: prjctId}});
         }
@@ -403,6 +411,7 @@ const ElecAtrzNewReq = () => {
 
         return true;
     }
+
     
     return (
         <>
@@ -418,16 +427,16 @@ const ElecAtrzNewReq = () => {
                     atrzParam={atrzParam}
                 />
                 <div dangerouslySetInnerHTML={{ __html: formData.docFormDc }} />
-                    {["VTW04909","VTW04910"].includes(formData.elctrnAtrzTySeCd) &&  (   //VTW04909: 외주업체 계약, VTW04910: 재료비 계약
+                    {["VTW04909","VTW04910"].includes(formData.elctrnAtrzTySeCd) && !["VTW03405"].includes(formData.docSeCd) &&   //VTW04909: 외주업체 계약, VTW04910: 재료비 계약
                         <>
                         <ElecAtrzCtrtInfo prjctId={prjctId} data={data} onSendData={handleChildData} sttsCd={sttsCd}/>
                         <ElecAtrzCtrtInfoDetail prjctId={prjctId} data={data} onSendData={handleChildData} sttsCd={sttsCd}/>
                         </>
-                    )}
-                    {["VTW04908"].includes(formData.elctrnAtrzTySeCd) &&    //VTW04908: 외주인력 계약
+                    }
+                    {["VTW04908"].includes(formData.elctrnAtrzTySeCd) && !["VTW03405"].includes(formData.docSeCd) &&   //VTW04908: 외주인력 계약
                     <>
-                        <ElecAtrzCtrtInfo prjctId={prjctId} data={data} onSendData={handleChildData}/>
-                        <ElecAtrzCtrtOutordHnfDetail prjctId={prjctId} data={data} onSendData={handleChildData} prjctData={prjctData}/>
+                        <ElecAtrzCtrtInfo prjctId={prjctId} data={data} onSendData={handleChildData} sttsCd={sttsCd}/>
+                        <ElecAtrzCtrtOutordHnfDetail prjctId={prjctId} data={data} onSendData={handleChildData} prjctData={prjctData} sttsCd={sttsCd}/>
                     </>
                     }
                     {["VTW04907"].includes(formData.elctrnAtrzTySeCd) &&    //VTW04907: 비용사용(청구,출장비청구)
@@ -435,12 +444,13 @@ const ElecAtrzNewReq = () => {
                         <ExpensInfo onSendData={handleChildData} prjctId={prjctId} data={data}/>
                     </>
                     }
-                    {["VTW04914"].includes(formData.elctrnAtrzTySeCd) &&    //VTW04914: TODO.외주/재료비 지급
+                    {["VTW04914"].includes(formData.elctrnAtrzTySeCd) && ["VTW03405"].includes(formData.docSeCd) &&   //VTW04914: 외주/재료비 지급
                     <>
-                        <ElecAtrzCtrtInfo prjctId={prjctId} data={data} onSendData={handleChildData} sttsCd={sttsCd}/>
-                        <ElecAtrzCtrtInfoDetail prjctId={prjctId} data={data} onSendData={handleChildData} sttsCd={sttsCd}/>
+                        <ElectGiveAtrzClm detailData={data} sttsCd={sttsCd} prjctId={prjctId} onSendData={handleChildData}/>
+                        <ElecAtrzTabDetail detailData={data} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd}/>
                     </>
                     }
+
                 <HtmlEditBox 
                     column={ {"dataField": "gnrlAtrzCn"}}
                     data={data}

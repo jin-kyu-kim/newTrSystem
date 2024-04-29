@@ -117,7 +117,6 @@ const EmpWorkTime = () => {
         searchBoolean: false
     });
 
-
     // 프로젝트개인비용MM 신청여부 조회
     useEffect(() => {
         selectData(searchPrjctIndvdlCtMmParam);
@@ -450,7 +449,7 @@ const EmpWorkTime = () => {
                         onValueChanged={(e) => { SearchMonthValueRef.current = e.value }}
                     />
                 </div>
-                <div className="col-md-2">
+                <div className="col-md-4">
                     <Button
                         onClick={searchHandle} text="검색" style={{ height: "48px", width: "50px" }}
                     />

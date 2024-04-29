@@ -15,9 +15,6 @@ import Moment from "moment"
     empList : 직원목록
  */
 const InitScheduler = ({ mtgRoomList, mtgRoomRsvtAtdrnList, mtgCodeList, empList, onOptionChanged }) => {
-    // DevExtrme 한글화설정
-    loadMessages(koMessages);
-    locale('ko');
 
     // 선택한 회의실 상세정보
     const [selectValue, setSelectValue] = useState([]);

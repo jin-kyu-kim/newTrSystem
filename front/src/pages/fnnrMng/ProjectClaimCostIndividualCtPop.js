@@ -70,6 +70,9 @@ const ProjectClaimCostIndividualCtPop = ({props, prjctNm, startYmOdr, endYmOdr, 
                 values={dataSource}
                 columnGTName={'소계'}
                 blockCollapse={true}
+                isExport={true}
+                sorting={true}
+                grandTotals={false}
                 weekendColor={true}
             />
         </div>
