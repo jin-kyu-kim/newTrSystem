@@ -204,9 +204,10 @@
 				,VMNG.NEW_REMNDR_DAYCNT				/* 신규잔여일수 */
 				,VMNG.ALTMNT_BGNG_YMD				/* 배정시작일자 */
 				,VMNG.ALTMNT_USE_END_YMD			/* 배정사용종료일자 */
+				,IFNULL(VMNG.NEW_VCATN_YN, 'N')	NEW_VCATN_YN	/* 신규휴가여부 */
 				,CASE WHEN DATEDIFF(DATE_FORMAT(NOW(), '%Y%m%d'), DATE_FORMAT(CONCAT(DATE_FORMAT(NOW(), '%Y'), '0401'), '%Y%m%d')) <![CDATA[<]]> 0 THEN DATE_FORMAT(NOW(), '%Y') - 1
-				ELSE DATE_FORMAT(NOW(), '%Y')
-				END FLAG_YEAR						/* 회계년도 */
+					ELSE DATE_FORMAT(NOW(), '%Y')
+					END FLAG_YEAR						/* 회계년도 */
 			FROM VCATN_MNG	VMNG
 			RIGHT JOIN EMP EMP ON EMP.EMP_ID = VMNG.EMP_ID
 			LEFT JOIN DEPT_HNF HNF ON HNF.EMPNO = EMP.EMPNO
@@ -232,6 +233,7 @@
 			,VCATN.NEW_REMNDR_DAYCNT			/* 신규잔여일수 */
 			,VCATN.ALTMNT_BGNG_YMD				/* 배정시작일자 */
 			,VCATN.ALTMNT_USE_END_YMD			/* 배정사용종료일자 */
+			,VCATN.NEW_VCATN_YN 				/* 신규휴가여부 */
 		FROM VCANT_LIST		VCATN
 		WHERE 1 = 1
 		<if test="vcatnYr == null or vcatnYr.equals('')">
@@ -259,28 +261,28 @@
 		SELECT *
 		FROM (
 			SELECT
-			EMP.EMP_ID 							/* 사원ID */
-			,EMP.EMPNO 							/* 사원번호 */
-			,EMP.EMP_FLNM 						/* 사원명 */
-			,(SELECT CD_VALUE FROM CD WHERE EMP.JBPS_CD = CD.CD_VALUE)			JOB_CD 			/* 직급코드 */
-			,(SELECT CD_NM FROM CD WHERE EMP.JBPS_CD = CD.CD_VALUE)				JOB_NM 			/* 직급명 */
-			,DEPT.DEPT_ID 						/* 부서ID */
-			,DEPT.DEPT_NM 						/* 부서명 */
-			,(SELECT CD_VALUE FROM CD WHERE EMP.HDOF_STTS_CD = CD.CD_VALUE)		HDOF_STTS_CD 	/* 재직상태코드 */
-			,(SELECT CD_NM FROM CD WHERE EMP.HDOF_STTS_CD = CD.CD_VALUE)		HDOF_STTS_NM 	/* 재직상태명 */
-			,VMNG.VCATN_ALTMNT_SN 				/* 휴가배정순번 */
-			,VMNG.VCATN_YR 				 		/* 휴가연도 */
-			,VMNG.VCATN_ALTMNT_DAYCNT			/* 휴가배정일수 */
-			,VMNG.USE_DAYCNT					/* 사용일수 */
-			,VMNG.VCATN_REMNDR_DAYCNT			/* 휴가잔여일수 */
-			,VMNG.NEW_VCATN_ALTMNT_DAYCNT		/* 신규휴가배정일수 */
-			,VMNG.NEW_USE_DAYCNT				/* 신규사용일수 */
-			,VMNG.NEW_REMNDR_DAYCNT				/* 신규잔여일수 */
-			,VMNG.ALTMNT_BGNG_YMD				/* 배정시작일자 */
-			,VMNG.ALTMNT_USE_END_YMD			/* 배정사용종료일자 */
-			,CASE WHEN DATEDIFF(DATE_FORMAT(NOW(), '%Y%m%d'), DATE_FORMAT(CONCAT(DATE_FORMAT(NOW(), '%Y'), '0401'), '%Y%m%d')) <![CDATA[<]]> 0 THEN DATE_FORMAT(NOW(), '%Y') - 1
-			ELSE DATE_FORMAT(NOW(), '%Y')
-			END FLAG_YEAR						/* 회계년도 */
+				EMP.EMP_ID 							/* 사원ID */
+				,EMP.EMPNO 							/* 사원번호 */
+				,EMP.EMP_FLNM 						/* 사원명 */
+				,(SELECT CD_VALUE FROM CD WHERE EMP.JBPS_CD = CD.CD_VALUE)			JOB_CD 			/* 직급코드 */
+				,(SELECT CD_NM FROM CD WHERE EMP.JBPS_CD = CD.CD_VALUE)				JOB_NM 			/* 직급명 */
+				,DEPT.DEPT_ID 						/* 부서ID */
+				,DEPT.DEPT_NM 						/* 부서명 */
+				,(SELECT CD_VALUE FROM CD WHERE EMP.HDOF_STTS_CD = CD.CD_VALUE)		HDOF_STTS_CD 	/* 재직상태코드 */
+				,(SELECT CD_NM FROM CD WHERE EMP.HDOF_STTS_CD = CD.CD_VALUE)		HDOF_STTS_NM 	/* 재직상태명 */
+				,VMNG.VCATN_ALTMNT_SN 				/* 휴가배정순번 */
+				,VMNG.VCATN_YR 				 		/* 휴가연도 */
+				,VMNG.VCATN_ALTMNT_DAYCNT			/* 휴가배정일수 */
+				,VMNG.USE_DAYCNT					/* 사용일수 */
+				,VMNG.VCATN_REMNDR_DAYCNT			/* 휴가잔여일수 */
+				,VMNG.NEW_VCATN_ALTMNT_DAYCNT		/* 신규휴가배정일수 */
+				,VMNG.NEW_USE_DAYCNT				/* 신규사용일수 */
+				,VMNG.NEW_REMNDR_DAYCNT				/* 신규잔여일수 */
+				,VMNG.ALTMNT_BGNG_YMD				/* 배정시작일자 */
+				,VMNG.ALTMNT_USE_END_YMD			/* 배정사용종료일자 */
+				,CASE WHEN DATEDIFF(DATE_FORMAT(NOW(), '%Y%m%d'), DATE_FORMAT(CONCAT(DATE_FORMAT(NOW(), '%Y'), '0401'), '%Y%m%d')) <![CDATA[<]]> 0 THEN DATE_FORMAT(NOW(), '%Y') - 1
+					ELSE DATE_FORMAT(NOW(), '%Y')
+					END FLAG_YEAR						/* 회계년도 */
 			FROM VCATN_MNG	VMNG
 			RIGHT JOIN EMP EMP ON EMP.EMP_ID = VMNG.EMP_ID
 			LEFT JOIN DEPT_HNF HNF ON HNF.EMPNO = EMP.EMPNO
@@ -383,9 +385,8 @@
 			,RSVT.MTG_TTL 						/* 회의내용 */
 			,STR_TO_DATE(CONCAT(USE_YMD, USE_BGNG_HM), '%Y%m%d%H%i%s')  START_DATE	/* 사용시작일자 */
 			,STR_TO_DATE(CONCAT(USE_YMD, USE_END_HM), '%Y%m%d%H%i%s')   END_DATE	/* 사용종료일자 */
-			FROM
-		MTG_ROOM_RSVT		RSVT
-			,EMP			EMP
+			FROM MTG_ROOM_RSVT		RSVT
+				,EMP			EMP
 		WHERE RSVT.RSVT_EMP_ID = EMP.EMP_ID
 		AND EXISTS (
 			SELECT 1
@@ -399,16 +400,27 @@
 
 	<!-- 회의참석자조회 -->
 	<select id="retrieveMtgAtdrnInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		WITH EMP_DEPT_LIST AS(
+			SELECT
+				EMP.EMP_ID
+				,EMP.EMPNO
+				,EMP.EMP_FLNM
+				,EMP.JBPS_CD
+				,(SELECT CD_NM FROM CD WHERE CD_VALUE = EMP.JBPS_CD) JBPS_NM
+				,EMP.HDOF_STTS_CD
+				,(SELECT CD_NM FROM CD WHERE CD_VALUE = EMP.HDOF_STTS_CD) HDOF_STTS_NM
+				,CONCAT(GROUP_CONCAT(DEPT.DEPT_NM SEPARATOR ', '), ' ', EMP.EMP_FLNM, ' ', (SELECT CD_NM FROM CD WHERE CD_VALUE = EMP.JBPS_CD)) LIST_EMP_FLNM
+			FROM DEPT DEPT
+			JOIN DEPT_HNF HNF ON DEPT.DEPT_ID = HNF.DEPT_ID
+			JOIN EMP EMP ON EMP.EMP_ID = HNF.EMP_ID
+			GROUP BY EMP.EMP_ID
+			ORDER BY EMP.EMP_ID
+		)
 		SELECT
 			EMP.EMP_ID 					/* 사원ID */
 			,EMP.EMPNO 					/* 사원번호 */
 			,EMP.EMP_FLNM 				/* 사원명 */
-			,CONCAT(
-				(SELECT DEPT_NM
-					FROM DEPT DEPT
-						,DEPT_HNF HNF
-					WHERE EMP.EMP_ID = HNF.EMP_ID
-					AND DEPT.DEPT_ID = HNF.DEPT_ID), ' ', EMP_FLNM, ' ', (SELECT CD_NM FROM CD WHERE CD_VALUE = EMP.JBPS_CD)) LIST_EMP_FLNM 	/* 사원명 */
+			,EMP.LIST_EMP_FLNM			/* 부서_사원_직급명 */
 			,RSVT.USE_YMD 				/* 사용일자 */
 			,ATDRN.MTG_ATDRN_SN			/* 회의참석자일련번호 */
 			,ATDRN.MTG_ROOM_RSVT_SN		/* 회의실예약순번 */
@@ -416,11 +428,11 @@
 			,(SELECT CD_NM FROM CD WHERE CD_VALUE = RSVT.MTG_ROOM_CD)	/* 회의실명 */
 		FROM MTG_ROOM_RSVT			RSVT
 			,MTG_ROOM_RSVT_ATDRN	ATDRN
-			,EMP 					EMP
+			,EMP_DEPT_LIST 			EMP
 		WHERE RSVT.MTG_ROOM_RSVT_SN = ATDRN.MTG_ROOM_RSVT_SN
 		AND ATDRN.ATND_EMP_ID = EMP.EMP_ID
-		<if test="changeDate !=null and !changeDate.equals('')">
-			AND (RSVT.USE_YMD BETWEEN #{changeDate} - 7 AND #{changeDate} + 7)
+		<if test="mtgRoomRsvtSn !=null and !mtgRoomRsvtSn.equals('')">
+			AND ATDRN.MTG_ROOM_RSVT_SN = #{mtgRoomRsvtSn}
 		</if>
 	</select>
 
@@ -444,23 +456,89 @@
 
 	<!-- 직원목록조회 -->
 	<select id="retrieveEmpList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+<!--		SELECT-->
+<!--			EMP.EMP_ID-->
+<!--			,EMP.EMPNO-->
+<!--			,EMP_FLNM-->
+<!--			,JBPS_CD-->
+<!--			,(SELECT CD_NM FROM CD WHERE CD_VALUE = JBPS_CD)	JBPS_NM-->
+<!--			,DEPT.DEPT_ID-->
+<!--			,DEPT.DEPT_NM-->
+<!--			,CONCAT(DEPT_NM, ' ', EMP_FLNM, ' ', (SELECT CD_NM FROM CD WHERE CD_VALUE = EMP.JBPS_CD)) LIST_EMP_FLNM-->
+<!--		FROM-->
+<!--			EMP			EMP-->
+<!--			,DEPT 		DEPT-->
+<!--			,DEPT_HNF	HNF-->
+<!--		WHERE HDOF_STTS_CD = 'VTW00301'-->
+<!--		AND EMP.EMP_ID = HNF.EMP_ID-->
+<!--		AND DEPT.DEPT_ID = HNF.DEPT_ID-->
 		SELECT
 			EMP.EMP_ID
 			,EMP.EMPNO
-			,EMP_FLNM
-			,JBPS_CD
-			,(SELECT CD_NM FROM CD WHERE CD_VALUE = JBPS_CD)	JBPS_NM
-			,DEPT.DEPT_ID
-			,DEPT.DEPT_NM
-			,CONCAT(DEPT_NM, ' ', EMP_FLNM, ' ', (SELECT CD_NM FROM CD WHERE CD_VALUE = EMP.JBPS_CD)) LIST_EMP_FLNM
-		FROM
-			EMP			EMP
-			,DEPT 		DEPT
-			,DEPT_HNF	HNF
-		WHERE HDOF_STTS_CD = 'VTW00301'
-		AND EMP.EMP_ID = HNF.EMP_ID
-		AND DEPT.DEPT_ID = HNF.DEPT_ID
+			,EMP.EMP_FLNM
+			,EMP.JBPS_CD
+			,(SELECT CD_NM FROM CD WHERE CD_VALUE = EMP.JBPS_CD) JBPS_NM
+			,EMP.HDOF_STTS_CD
+			,(SELECT CD_NM FROM CD WHERE CD_VALUE = EMP.HDOF_STTS_CD) HDOF_STTS_NM
+			,CONCAT(GROUP_CONCAT(DEPT.DEPT_NM SEPARATOR ', '), ' ', EMP.EMP_FLNM, ' ', (SELECT CD_NM FROM CD WHERE CD_VALUE = EMP.JBPS_CD)) LIST_EMP_FLNM
+		FROM DEPT DEPT
+		JOIN DEPT_HNF HNF ON DEPT.DEPT_ID = HNF.DEPT_ID
+		JOIN EMP EMP ON EMP.EMP_ID = HNF.EMP_ID
+		GROUP BY EMP.EMP_ID
+		ORDER BY EMP.EMP_ID
 	</select>
+
+	<!-- 회의실예약순번MAX 조회 -->
+	<select id="retrieveMtgRoomSnInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT IFNULL(MAX(MTG_ROOM_RSVT_SN), 1) + 1 MAX_SN
+		FROM MTG_ROOM_RSVT
+	</select>
+
+	<!-- 회의실예약정보 저장 -->
+	<insert id="retrieveMtgRoomStrgMdfcn" parameterType="map">
+		/* humanResourceMngMapper.retrieveMtgRoomStrgMdfcn */
+		INSERT INTO MTG_ROOM_RSVT
+			VALUES (
+			#{mtgRoomRsvtSn}
+			,#{mtgRoomCd}
+			,#{rsvtEmpId}
+			,#{useYmd}
+			,#{useBgngHm}
+			,#{useEndHm}
+			,#{mtgTtl}
+			,SYSDATE()
+			,#{regEmpId}
+			,SYSDATE()
+			,#{regEmpId}
+		)
+		ON DUPLICATE KEY UPDATE
+			MTG_ROOM_RSVT_SN	= #{mtgRoomRsvtSn}
+			,MTG_ROOM_CD		= #{mtgRoomCd}
+			,RSVT_EMP_ID		= #{rsvtEmpId}
+			,USE_YMD			= #{useYmd}
+			,USE_BGNG_HM		= #{useBgngHm}
+			,USE_END_HM			= #{useEndHm}
+			,MTG_TTL			= #{mtgTtl}
+			,MDFCN_DT			= SYSDATE()
+			,MDFCN_EMP_ID		= #{regEmpId}
+	</insert>
+
+	<!-- 회의참석자정보 저장 -->
+	<insert id="retrieveMtgRoomAtdrnStrgMdfcn" parameterType="map">
+		/* humanResourceMngMapper.retrieveMtgRoomAtdrnStrgMdfcn */
+		INSERT INTO MTG_ROOM_RSVT_ATDRN
+		VALUES (
+			#{mtgAtdrnSn}
+			,#{mtgRoomRsvtSn}
+			,#{atndEmpId}
+		)
+		ON DUPLICATE KEY UPDATE
+			MTG_ATDRN_SN		= #{mtgAtdrnSn}
+			,MTG_ROOM_RSVT_SN	= #{mtgRoomRsvtSn}
+			,ATND_EMP_ID		= #{atndEmpId}
+	</insert>
+
+
 
 	
 </mapper>	

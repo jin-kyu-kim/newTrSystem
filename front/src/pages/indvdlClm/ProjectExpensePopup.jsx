@@ -8,7 +8,7 @@ import CustomPivotGrid from "../../components/unit/CustomPivotGrid";
 import ApiRequest from "../../utils/ApiRequest";
 import ReactToPrint from 'react-to-print';
 
-const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo }) => {
+const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo }) => {
     const { projectExpensePopup, projectExpensePopQueryIdList } = ProjectExpenseJson;
     const [ empInfo, setEmpInfo ] = useState({});
     const [ totalInfo, setTotalInfo ] = useState({});
@@ -124,25 +124,26 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo }) => {
 
     const contentArea = () => {
         return (
-            <div ref={contentRef} >
-                <div style={{ textAlign: 'right' }}>
-                    <ReactToPrint 
-		                trigger={() => (
-                            <Button text='출력' type='success' icon='print' />
-                        )}
-                        content={() => contentRef.current} 
-                        pageStyle="@page { size: A4; ratio:100%; }" 
-                    />
-                </div>
-
-                {projectExpensePopup.map((pop) => (
-                    <div key={pop.key}>
-                        <span>{pop.title}</span>
-                        <div style={{ marginTop: "10px", marginBottom: "20px" }}>
-                            {renderTable(pop)}
+            <div>
+                {aprvInfo.totCnt === aprvInfo.aprv ? 
+                    <div ref={contentRef} >
+                        <div style={{ textAlign: 'right' }}>
+                            <ReactToPrint 
+                                trigger={() => ( <Button text='출력' type='success' icon='print' /> )}
+                                content={() => contentRef.current} 
+                                pageStyle="@page { size: A4; ratio:100%; }" 
+                            />
                         </div>
+                        {projectExpensePopup.map((pop) => (
+                            <div key={pop.key}>
+                                <span>{pop.title}</span>
+                                <div style={{ marginTop: "10px", marginBottom: "20px" }}>
+                                    {renderTable(pop)}
+                                </div>
+                            </div>
+                        ))}
                     </div>
-                ))}
+                : <span>결재 진행중인 청구내역이 있습니다.</span> }
             </div>
         );
     };
