@@ -618,28 +618,6 @@ public class ProjectBaseDomain {
 		Map<String, Object> paramCtMm = new HashMap<>();
 		paramCtMm.put("prjctId", param.get("prjctId"));
 		paramCtMm.put("empId", param.get("empId"));
-		paramCtMm.put("aplyYm", nowYm);
-		paramCtMm.put("aplyOdr", nowOdr);
-		searchCtMm.add(tbCtMm);
-		searchCtMm.add(paramCtMm);
-		List<Map<String, Object>> listCtMm = commonService.commonSelect(searchCtMm);
-
-		// PRJCT_INDVDL_CT_MM 테이블에 데이터 없으면 생성
-		if(listCtMm.isEmpty()){
-			List<Map<String, Object>> insertCtMm = new ArrayList<>();
-			paramCtMm.put("mmAtrzCmptnYn", "N");
-			insertCtMm.add(tbCtMm);
-			insertCtMm.add(paramCtMm);
-			commonService.insertData(insertCtMm);
-		}
-
-		// PRJCT_INDVDL_CT_MM 테이블에 데이터 존재하는지 확인
-		List<Map<String, Object>> searchCtMm = new ArrayList<>();
-		Map<String, Object> tbCtMm = new HashMap<>();
-		tbCtMm.put("tbNm", "PRJCT_INDVDL_CT_MM");
-		Map<String, Object> paramCtMm = new HashMap<>();
-		paramCtMm.put("prjctId", param.get("prjctId"));
-		paramCtMm.put("empId", param.get("empId"));
 		if(dayOfMonth > 15){
 			paramCtMm.put("aplyYm", ym);
 			paramCtMm.put("aplyOdr", 1);
