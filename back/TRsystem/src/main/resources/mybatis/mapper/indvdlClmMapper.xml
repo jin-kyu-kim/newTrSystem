@@ -13,14 +13,30 @@
             ,EMP.EMP_FLNM					/* 직원명 */
             ,VCATN.VCATN_TY_CD				/* 휴가유형코드 */
             ,(SELECT CD_NM FROM CD WHERE CD_VALUE = VCATN.VCATN_TY_CD)	VCATN_TY_NM					/* 휴가유형코드명 */
-            ,DATE_FORMAT(VCATN.VCATN_BGNG_YMD, '%Y-%m-%d') VCATN_BGNG_YMD							/* 휴가시작일자 */
-            ,DATE_FORMAT(VCATN.VCATN_END_YMD, '%Y-%m-%d' )VCATN_END_YMD								/* 휴가종료일자 */
+            ,DATE_FORMAT(VCATN.VCATN_BGNG_YMD, '%Y%m%d') VCATN_BGNG_YMD							    /* 휴가시작일자 */
+            ,DATE_FORMAT(VCATN.VCATN_END_YMD, '%Y%m%d' ) VCATN_END_YMD								/* 휴가종료일자 */
+            ,DATE_FORMAT(VCATN.VCATN_BGNG_YMD, '%Y-%m-%d') PARSE_VCATN_BGNG_YMD						/* 테이블휴가시작일자 */
+            ,DATE_FORMAT(VCATN.VCATN_END_YMD, '%Y-%m-%d' ) PARSE_VCATN_END_YMD						/* 테이블휴가종료일자 */
             ,VCATN.VCATN_DE_CNT				/* 휴가일수 */
-            ,VCATN.VCATN_PRVONSH			/* 휴가사유 */
+            ,VCATN.NEW_VCATN_USE_DAYCNT     /* 신규휴가사용일수 */
+            ,CASE
+                WHEN VCATN.RTRCN_PRVONSH IS NOT NULL THEN VCATN.RTRCN_PRVONSH
+                ELSE VCATN.VCATN_PRVONSH
+                END VCATN_PRVONSH           /* 휴가사유 */
+            ,VCATN.RTRCN_PRVONSH            /* 휴가취쇼사유 */
             ,ELCTRN.ATRZ_DMND_STTS_CD		/* 결재요청상태코드 */
-            ,(SELECT CD_NM FROM CD WHERE CD_VALUE = ELCTRN.ATRZ_DMND_STTS_CD)	ATRZ_DMND_STTS_NM	/* 결재요청상태코드명 */
+            ,CASE
+                WHEN VCATN.RTRCN_PRVONSH IS NOT NULL THEN CONCAT('취소 ', (SELECT CD_NM FROM CD WHERE CD_VALUE = ELCTRN.ATRZ_DMND_STTS_CD))
+                ELSE (SELECT CD_NM FROM CD WHERE CD_VALUE = ELCTRN.ATRZ_DMND_STTS_CD)
+                END ATRZ_DMND_STTS_NM       /* 결재요청상태코드명 */
             ,ELCTRN.ELCTRN_ATRZ_ID		    /* 전자결재ID */
             ,VCATN.ATCHMNFL_ID				/* 첨부파일ID */
+            ,ELCTRN.RTRCN_ELCTRN_ATRZ_ID	/* 취소전자결재ID */
+            ,CASE
+                WHEN (SELECT ATRZ.RTRCN_ELCTRN_ATRZ_ID FROM ELCTRN_ATRZ ATRZ WHERE ATRZ.RTRCN_ELCTRN_ATRZ_ID = VCATN.ELCTRN_ATRZ_ID) IS NOT NULL THEN 'FALSE'
+                WHEN ELCTRN.RTRCN_ELCTRN_ATRZ_ID IS NOT NULL THEN 'FALSE'
+                ELSE 'TRUE'
+                END CANCLE_BUTTONCTR
         FROM VCATN_ATRZ		VCATN
             ,ELCTRN_ATRZ	ELCTRN
             ,EMP 			EMP
@@ -275,6 +291,7 @@
         AND DEPT.DEPT_ID = HNF.DEPT_ID
         AND DEPT.DEPT_ID = #{repDeptId}
         AND EMP.EMP_FLNM IN ('이진원', '안주리')
+        ORDER BY EMPNO
     </select>
 
     <!-- 프로젝트MM신청조회 -->
