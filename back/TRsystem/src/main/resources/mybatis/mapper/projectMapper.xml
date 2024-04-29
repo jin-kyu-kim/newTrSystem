@@ -796,7 +796,7 @@
 		   AND pca.APLY_YM = #{aplyYm}
 		   AND pca.APLY_ODR = #{aplyOdr}
            AND pcat.ATRZ_DMND_STTS_CD IS NOT NULL
-           AND pcat.ATRZ_DMND_STTS_CD != 'VTW03701'
+           AND pcat.ATRZ_DMND_STTS_CD NOT IN ('VTW03701', 'VTW03708')
        <if test="empId != null">
             <if test="!empId.equals('')">
                 AND pca.EMP_ID = #{empId}
@@ -804,7 +804,23 @@
         </if>
 		 GROUP BY e.EMP_ID
 	</select>
-	
+
+    <update id="updateCtAply" parameterType="map">
+        UPDATE PRJCT_CT_ATRZ pcat
+        JOIN PRJCT_CT_APLY pca ON (pcat.EMP_ID = pca.EMP_ID AND pcat.APLY_YM = pca.APLY_YM
+            AND pcat.APLY_ODR = pca.APLY_ODR AND pcat.PRJCT_ID = pca.PRJCT_ID AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN)
+        SET
+            pcat.ATRZ_DMND_STTS_CD = 'VTW03702'
+          , pcat.APRVR_EMP_ID = null
+          , pcat.APRV_YMD = null
+        WHERE pcat.EMP_ID = #{empId}
+          AND pcat.APLY_YM = #{aplyYm}
+          AND pcat.APLY_ODR = #{aplyOdr}
+          AND pcat.PRJCT_ID = #{prjctId}
+          AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703'
+          AND pca.ELCTRN_ATRZ_ID IS NULL
+    </update>
+
 	<select id="retrieveProjectCtAplyDetail" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT CASE
                    WHEN pcat.ATRZ_DMND_STTS_CD = 'VTW03702' THEN 1
@@ -909,6 +925,7 @@
              , cd.CD_NM AS EXPENS_CD
              , pca.USE_OFFIC
              , pca.CT_PRPOS
+             , pca.ELCTRN_ATRZ_ID
              , pcat.ATRZ_DMND_STTS_CD
         FROM PRJCT_CT_APLY pca
         JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_ID = pca.PRJCT_ID AND pcat.EMP_ID = pca.EMP_ID
@@ -1391,7 +1408,7 @@
         SELECT
             COUNT(*) AS TOTAL_COUNT
         FROM PRJCT_CT_ATRZ
-        WHERE ATRZ_DMND_STTS_CD NOT IN ('VTW03703', 'VTW03704')
+        WHERE ATRZ_DMND_STTS_CD NOT IN ('VTW03703', 'VTW03704', 'VTW03708')
           AND PRJCT_ID = #{prjctId}
           AND APLY_YM = #{aplyYm}
           AND APLY_ODR = #{aplyOdr}
@@ -1405,5 +1422,66 @@
 		WHERE 1=1
 		AND EMP_TY_CD = 'VTW00203'
 		AND HDOF_STTS_CD = 'VTW00301'
+    </select>
+    
+    <!--파트너 업체관리 -->
+     <select id="retrieveOutordEntrpsList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT                                                                                          
+			  OUTORD_ENTRPS_ID					                                                        -- 외주업체ID
+			, OUTORD_ENTRPS_NM					                                                        -- 외주업체명
+			, BRNO 								                                                        -- 사업자등록번호
+			, TELNO 							                                                        -- 전화번호
+			, PIC_FLNM							                                                        -- 담당자명
+			, oe.ATCHMNFL_ID					                                                        -- 첨부파일ID
+			,GROUP_CONCAT(SUBSTR(a.REAL_FILE_NM, 1, INSTR(a.REAL_FILE_NM, '.') - 1)) AS FILE_NM			-- 첨부파일명
+			, COUNT(*) OVER () AS TOTAL_ITEMS
+		from 
+			OUTORD_ENTRPS oe																			-- 외주업체
+			LEFT JOIN  ATCHMNFL a ON oe.ATCHMNFL_ID = a.ATCHMNFL_ID
+		WHERE 1=1
+		<if test="outordEntrpsNm != null and outordEntrpsNm !=''">
+	            AND oe.OUTORD_ENTRPS_NM LIKE CONCAT('%', #{outordEntrpsNm}, '%')
+	        </if>
+	        <if test="telno != null and telno !=''">
+	            AND oe.TELNO LIKE CONCAT('%', #{telno}, '%')
+	        </if>
+	        <if test="picFlnm != null and picFlnm !=''">
+	            AND oe.PIC_FLNM LIKE CONCAT('%', #{picFlnm}, '%')
+	        </if>
+		GROUP BY OUTORD_ENTRPS_ID,OUTORD_ENTRPS_NM,BRNO,TELNO,PIC_FLNM,ATCHMNFL_ID
+    </select>
+    
+    <!--파트너 직원관리 -->
+     <select id="retrieveOutordEmpList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT 
+			EMP_ID
+			, EMPNO
+			, OUTORD_HNF_OGDP_NM																		-- 외주인력 소속
+			, C.CD_NM AS GRAD_NM
+			, OUTORD_HNF_GRAD_CD																		-- 외주인력 등급코드
+			, e.ATCHMNFL_ID		
+			, EMP_FLNM
+			, BRDT
+			, TELNO 
+			, EML
+			,GROUP_CONCAT(SUBSTR(a.REAL_FILE_NM, 1, INSTR(a.REAL_FILE_NM, '.') - 1)) AS FILE_NM			-- 첨부파일명
+			, COUNT(*) OVER () AS TOTAL_ITEMS
+		FROM 
+			EMP e 
+			LEFT JOIN  ATCHMNFL a ON e.ATCHMNFL_ID = a.ATCHMNFL_ID
+			LEFT OUTER JOIN CD C ON C.CD_VALUE = e.OUTORD_HNF_GRAD_CD
+		WHERE 
+			1=1
+			AND EMP_TY_CD  = 'VTW00203'
+		<if test="outordHnfGradCd != null and outordHnfGradCd !=''">
+	            AND e.OUTORD_HNF_GRAD_CD LIKE CONCAT('%', #{outordHnfGradCd}, '%')
+	        </if>
+	        <if test="telno != null and telno !=''">
+	            AND e.TELNO LIKE CONCAT('%', #{telno}, '%')
+	        </if>
+	        <if test="empFlnm != null and empFlnm !=''">
+	            AND e.emp_FLNM LIKE CONCAT('%', #{empFlnm}, '%')
+	        </if>
+		GROUP BY EMP_ID,EMPNO,EMP_FLNM,BRDT,TELNO,EML
     </select>
 </mapper>

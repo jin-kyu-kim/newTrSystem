@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import DataGrid, { Column,Export,Lookup,Selection,button } from 'devextreme-react/data-grid';
 import TimeExpenseInsertSttusJson from "./TimeExpenseInsertSttusJson.json";
 import Button from "devextreme-react/button";
@@ -12,6 +12,9 @@ import { Popup } from "devextreme-react";
 import TimeExpenseInsertList from "./TimeExpenseInsertList";
 import "./FnnrMngStyle.css";
 
+import ProjectExpensePopup from "../indvdlClm/ProjectExpensePopup";
+
+
 const TimeExpenseInsertSttus = ({}) => {
 //====================선언구간====================================================
 const [values, setValues] = useState([]);   //상단values
@@ -22,7 +25,41 @@ const { keyColumn, queryId, totTableColumns, tableColumns, searchParams, totQuer
 // const [currentPhase, setCurrentPhase] = useState(''); //차수설정용
 const navigate = useNavigate();
 const nowDate = moment().format('YYYYMM') //현재 년월
-const [popupVisible, setPopupVisible] = useState(false);
+const [popupVisible, setPopupVisible] = useState(false); // 지울것
+const [ popVisible, setPopVisible ] = useState(false);
+const [selectedData, setSelectedData] = useState({});
+const [ test, setTest ] = useState("");
+
+/*
+const [checkBoxValue, setCheckBoxValue] = useState({
+  "mm03701": "true",
+  "mm03701Min": "true",
+  "mm03702": "true",
+  "mm03702Min": "true",
+  "mm037034": "true",
+  "mm037034Min": "true",
+  "ct03701": "true",
+  "ct03701Min": "true",
+  "ct03702": "true",
+  "ct03702Min": "true",
+  "ct037034": "true",
+  "ct037034Min": "true",
+});
+*/
+const [checkBoxValue, setCheckBoxValue] = useState({
+  "mm03701": true,
+  "mm03701Min": true,
+  "mm03702": true,
+  "mm03702Min": true,
+  "mm037034": true,
+  "mm037034Min": true,
+  "ct03701": true,
+  "ct03701Min": true,
+  "ct03702": true,
+  "ct03702Min": true,
+  "ct037034": true,
+  "ct037034Min": true,
+});
 //======================초기차수 설정 ===============================================
 useEffect(() => {
     // 현재 날짜를 가져오는 함수
@@ -46,7 +83,6 @@ useEffect(() => {
   const now = new Date();
   const dayOfMonth = now.getDate();
   const currentPhase = dayOfMonth <= 15 ? '2' : '1';
-
 
 //====================초기검색=====================================================
 useEffect(() => {
@@ -85,7 +121,8 @@ const searchHandle = async (initParam) => {
         aplyYm: initParam.yearItem + initParam.monthItem,
         aplyOdr: initParam.aplyOdr,
         empId: initParam.empId,
-        hdofSttsCd: initParam.hdofSttsCd
+        hdofSttsCd: initParam.hdofSttsCd,
+
     })
 
     setParam({
@@ -94,7 +131,8 @@ const searchHandle = async (initParam) => {
         aplyYm: initParam.yearItem + initParam.monthItem,
         aplyOdr: initParam.aplyOdr,
         empId: initParam.empId,
-        hdofSttsCd: initParam.hdofSttsCd
+        hdofSttsCd: initParam.hdofSttsCd,
+        ...checkBoxValue
     })
 };
 
@@ -116,8 +154,9 @@ const pageHandle = async () => {
 const handleClose = () => {
   setPopupVisible(false);
 };
+const onPopHiding = async () => { setPopVisible(false); }
 //===========================테이블내 버튼 이벤트======================================
-const onBtnClick = (button, data) => {      
+const onBtnClick = async (button, data) => {      
 
     if(button.name === "workHrMv"){
         alert("근무시간페이지이동");
@@ -140,10 +179,47 @@ const onBtnClick = (button, data) => {
         navigate("/fnnrMng/prjctCtClm/ProjectCostClaimDetail",
         {state: { empId: data.empId }})
     }
-    if(button.name === "print"){                                        //팝업으로 띄울 예정
-        setPopupVisible(true);
+    if(button.name === "print"){      
+        console.log(data);
+        setSelectedData(data);
+        // setPopupVisible(true);
+        setPopVisible(true);
     }
   };
+//==============================================================================================
+// const handleCheckBoxChange = (e, key, data) => {
+//   console.log(key);
+//   console.log(e)
+
+//   console.log(data)
+//   handleCondition(key);
+//   // setParamtot({
+//   //   ...paramtot,
+//   //   mm037034Min: key
+//   // })
+// };
+
+const handleCheckBoxChange = useCallback((e, key) => {
+  console.log(key, e.value)
+
+  let value;
+  if(e.value) {
+    value = "true"
+  } else {
+    value = "false"
+  }
+
+  setCheckBoxValue(checkBoxValue => ({
+    ...checkBoxValue,
+    [key]: e.value
+  }));
+
+}, []);
+
+const handleCondition = async (data) => {
+  // setTest("a");
+}
+
 //=============================마감 및 엑셀다운로드 이벤트======================================
     const ddlnExcelDwn = () => {
         alert("마감 및 엑셀 다운로드"); //기능 개발 예정
@@ -167,6 +243,8 @@ const onBtnClick = (button, data) => {
                   columns={totTableColumns}
                   values={values}
                   paging={false}
+                  handleCheckBoxChange={handleCheckBoxChange}
+                  checkBoxValue={checkBoxValue}
                 />
             </div>
             <div className="TimeExpenseInsertSttus" style={{ marginBottom: "20px" }}>
@@ -179,14 +257,19 @@ const onBtnClick = (button, data) => {
                     wordWrap={true}
                 />
                 <Popup
-                      width="90%"
-                      height="90%"
+                      width="95%"
+                      height="95%"
                       visible={popupVisible}
                       onHiding={handleClose}
                       showCloseButton={true}
                   >
-                   <TimeExpenseInsertList data={values}/>
+                   <TimeExpenseInsertList data={selectedData}/>
                 </Popup>
+                {/* <ProjectExpensePopup
+                    visible={popupVisible}
+                    onPopHiding={onPopHiding}
+                    basicInfo={selectedData}
+                /> */}
             </div>
         </div>
  );

@@ -806,30 +806,37 @@
         FROM CLTUR_PHSTRN_ACT_CT_REG c
                  LEFT JOIN  ATCHMNFL a ON c.ATCHMNFL_ID = a.ATCHMNFL_ID
         WHERE EMP_ID = #{empId}
+        AND CLM_YMD LIKE CONCAT(#{clmYmd}, '%')
     </select>
 
     <!-- 프로젝트 비용 atrzDmndSttsCd 변경 -->
     <update id="updatePrjctCtAtrzStts" parameterType="map">
         UPDATE PRJCT_CT_ATRZ
+            JOIN PRJCT_CT_APLY ON PRJCT_CT_ATRZ.PRJCT_CT_APLY_SN = PRJCT_CT_APLY.PRJCT_CT_APLY_SN
+                AND PRJCT_CT_ATRZ.EMP_ID = PRJCT_CT_APLY.EMP_ID
+                AND PRJCT_CT_ATRZ.PRJCT_ID = PRJCT_CT_APLY.PRJCT_ID
+                AND PRJCT_CT_ATRZ.APLY_YM = PRJCT_CT_APLY.APLY_YM
+                AND PRJCT_CT_ATRZ.APLY_ODR = PRJCT_CT_APLY.APLY_ODR
         SET
-            ATRZ_DMND_STTS_CD = CASE
+            PRJCT_CT_ATRZ.ATRZ_DMND_STTS_CD = CASE
                 WHEN #{actionType} = 'INPUT' THEN 'VTW03701'
                 WHEN #{actionType} = 'INPUT_CANCEL' THEN NULL
                 WHEN #{actionType} = 'APPROVE' THEN 'VTW03702'
                 WHEN #{actionType} = 'APPROVE_CANCEL' THEN 'VTW03701'
             END,
-            MDFCN_DT = now(),
-            MDFCN_EMP_ID = #{empId}
-        WHERE 1 = 1
+            PRJCT_CT_ATRZ.MDFCN_DT = now(),
+            PRJCT_CT_ATRZ.MDFCN_EMP_ID = #{empId}
+        WHERE 1=1
           AND (
             (#{actionType} = 'INPUT' AND ATRZ_DMND_STTS_CD IS NULL) OR
             (#{actionType} = 'INPUT_CANCEL' AND ATRZ_DMND_STTS_CD = 'VTW03701') OR
             (#{actionType} = 'APPROVE' AND ATRZ_DMND_STTS_CD = 'VTW03701') OR
             (#{actionType} = 'APPROVE_CANCEL' AND ATRZ_DMND_STTS_CD IN ('VTW03702', 'VTW03704'))
             )
-          AND EMP_ID = #{empId}
-          AND APLY_YM = #{aplyYm}
-          AND APLY_ODR = #{aplyOdr}
+          AND PRJCT_CT_ATRZ.EMP_ID = #{empId}
+          AND PRJCT_CT_ATRZ.APLY_YM = #{aplyYm}
+          AND PRJCT_CT_ATRZ.APLY_ODR = #{aplyOdr}
+          AND PRJCT_CT_APLY.ELCTRN_ATRZ_ID IS NULL
     </update>
 
     <!-- 비용 결재 요청 상태 건수 조회 -->
@@ -868,5 +875,636 @@
           AND ea.PRJCT_ID = #{prjctId}
           AND ea.ATRZ_DMND_EMP_ID = #{empId}
           AND ea.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
+    </select>
+
+    <!-- 개인비용청구 최종 개수, 총 금액 -->
+    <select id="retrieveExpenseTotal" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            COUNT(*) AS TOTAL_COUNT,
+            SUM(pca.UTZTN_AMT) AS TOTAL_UTZTN_AMT
+        FROM PRJCT_CT_ATRZ pcrz
+                 JOIN PRJCT_CT_APLY pca
+                      ON pcrz.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN
+        WHERE 1=1
+          AND pcrz.APLY_YM = #{aplyYm}
+          AND pcrz.EMP_ID = #{empId}
+          AND pcrz.APLY_ODR  = #{aplyOdr}
+          AND pcrz.ATRZ_DMND_STTS_CD = 'VTW03703'
+    </select>
+
+    <!-- 직원 기본정보 조회 -->
+    <select id="retrievePopEmpInfo" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            e.EMPNO,
+            EMP_FLNM,
+            d.DEPT_NM,
+            (SELECT CD_NM FROM CD c WHERE CD_VALUE = e.JBPS_CD) AS JBPS_NM
+        FROM EMP e
+            JOIN DEPT_HNF dh ON e.EMP_ID = dh.EMP_ID
+            JOIN DEPT d ON dh.DEPT_ID = d.DEPT_ID
+        WHERE e.EMP_ID = #{empId}
+    </select>
+
+    <!-- 개인비용청구 공휴일, 연차 포함 총 근무 시간 -->
+    <select id="retrieveTotalWorkTime" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT (
+            SELECT SUM(MD)
+            FROM PRJCT_MM_APLY pma
+            JOIN (
+                SELECT pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR
+                FROM PRJCT_MM_ATRZ pmrz
+                WHERE pmrz.EMP_ID = #{empId}
+                    AND pmrz.APLY_YM = #{aplyYm}
+                    AND pmrz.APLY_ODR = #{aplyOdr}
+                    AND pmrz.ATRZ_DMND_STTS_CD = 'VTW03703'
+                GROUP BY pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR
+            ) filtered ON pma.PRJCT_ID = filtered.PRJCT_ID
+                AND pma.EMP_ID = filtered.EMP_ID
+                AND pma.APLY_YM = filtered.APLY_YM
+                AND pma.APLY_ODR = filtered.APLY_ODR
+            ) + COALESCE(( -- 공휴일 수
+                SELECT COUNT(*)
+                FROM CRTR_DATE
+                WHERE SUBSTR(CRTR_YMD, 1, 6) = #{aplyYm}
+                    AND HLDY_CL_CD = 'VTW05003'
+                    AND SUBSTRING(CRTR_YMD, 7, 2) BETWEEN '01' AND (
+                        CASE
+                            WHEN #{aplyOdr} = 1 THEN '15'
+                            WHEN #{aplyOdr} = 2 THEN LAST_DAY(CONCAT(SUBSTR(#{aplyYm}, 1, 4), '-', SUBSTR(#{aplyYm}, 5, 2), '-01'))
+                        END
+                    )
+            ), 0) + COALESCE(( -- 연차 사용 일수
+            SELECT SUM(va.VCATN_DE_CNT)
+            FROM VCATN_ATRZ va
+                JOIN ELCTRN_ATRZ ea ON va.ELCTRN_ATRZ_ID = ea.ELCTRN_ATRZ_ID
+            WHERE ea.ATRZ_DMND_STTS_CD = 'VTW03703'
+                AND ea.ATRZ_DMND_EMP_ID = #{empId}
+                AND SUBSTR(va.VCATN_BGNG_YMD, 1, 6) = #{aplyYm}
+                AND SUBSTRING(va.VCATN_BGNG_YMD, 7, 2) BETWEEN '01' AND (
+                    CASE
+                        WHEN #{aplyOdr} = 1 THEN '15'
+                        WHEN #{aplyOdr} = 2 THEN LAST_DAY(CONCAT(SUBSTR(#{aplyYm}, 1, 4), '-', SUBSTR(#{aplyYm}, 5, 2), '-01'))
+                    END
+                )
+            ), 0) AS TOT_TIME
+    </select>
+
+    <!-- 비용청구 팝업 근무일 일자별 시간 -->
+    <select id="retrievePrjctWorkDay" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            p.PRJCT_NM,
+            SUBSTRING(DATE_FORMAT(pma.APLY_YMD, '%Y%m%d'), 7, 2) AS APLY_DAY,
+            pma.MD * 8 AS MD
+        FROM PRJCT_MM_APLY pma
+                 JOIN PRJCT p ON p.PRJCT_ID = pma.PRJCT_ID
+                 JOIN (
+            SELECT pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR
+            FROM PRJCT_MM_ATRZ pmrz
+            WHERE pmrz.EMP_ID = #{empId}
+              AND pmrz.APLY_YM = #{aplyYm}
+              AND pmrz.APLY_ODR = #{aplyOdr}
+              AND pmrz.ATRZ_DMND_STTS_CD = 'VTW03703'
+            GROUP BY pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR
+        ) filtered ON pma.PRJCT_ID = filtered.PRJCT_ID
+            AND pma.EMP_ID = filtered.EMP_ID
+            AND pma.APLY_YM = filtered.APLY_YM
+            AND pma.APLY_ODR = filtered.APLY_ODR
+    </select>
+
+    <!-- 비용청구 팝업 공휴일 일자별 시간 -->
+    <select id="retrieveCtrtDay" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            (SELECT CD_NM FROM CD WHERE CD_VALUE = CRTR_DATE.HLDY_CL_CD) AS PRJCT_NM,
+            SUBSTRING(DATE_FORMAT(CRTR_YMD, '%Y%m%d'), 7, 2) AS APLY_DAY,
+            8 AS MD
+        FROM CRTR_DATE
+        WHERE SUBSTR(CRTR_YMD, 1, 6) = #{aplyYm}
+          AND HLDY_CL_CD = 'VTW05003'
+    </select>
+
+    <!-- 비용청구 팝업 휴가 일자별 시간 -->
+    <select id="retrieveVcatnDay" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        <![CDATA[
+        WITH RECURSIVE VCATN_RANGE AS (
+            SELECT
+                va.ELCTRN_ATRZ_ID,
+                DATE(va.VCATN_BGNG_YMD) AS VCATN_DATE,
+                DATE(va.VCATN_END_YMD) AS VCATN_END_YMD,
+                va.VCATN_TY_CD,
+               (SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD) AS VCATN_TY_NM,
+                    CASE
+                    WHEN va.VCATN_TY_CD IN ('VTW01201', 'VTW01204') THEN 8
+                    ELSE 4
+                END AS VCATN_TIME
+            FROM VCATN_ATRZ va
+            JOIN ELCTRN_ATRZ ea ON va.ELCTRN_ATRZ_ID = ea.ELCTRN_ATRZ_ID
+            WHERE va.VCATN_TY_CD != 'VTW01207'
+                AND ea.ATRZ_DMND_STTS_CD = 'VTW03703'
+                AND ea.ATRZ_DMND_EMP_ID = #{empId}
+                AND DATE(va.VCATN_BGNG_YMD) <= LAST_DAY(CONCAT(SUBSTR(#{aplyYm}, 1, 4), '-', SUBSTR(#{aplyYm}, 5, 2), '-01'))
+                AND DATE(va.VCATN_END_YMD) >= CONCAT(SUBSTR(#{aplyYm}, 1, 4), '-', SUBSTR(#{aplyYm}, 5, 2), '-01')
+            UNION ALL
+            SELECT
+                ELCTRN_ATRZ_ID,
+                DATE_ADD(VCATN_DATE, INTERVAL 1 DAY),
+                VCATN_END_YMD,
+                VCATN_TY_CD,
+                VCATN_TY_NM,
+                VCATN_TIME
+            FROM VCATN_RANGE
+            WHERE DATE_ADD(VCATN_DATE, INTERVAL 1 DAY) <= VCATN_END_YMD
+        )
+        SELECT DISTINCT
+            VCATN_TY_NM AS PRJCT_NM,
+            SUBSTRING(DATE_FORMAT(VCATN_DATE, '%Y%m%d'), 7, 2) AS APLY_DAY,
+            VCATN_TIME AS MD
+        FROM VCATN_RANGE
+        WHERE MONTH(VCATN_DATE) = SUBSTR(#{aplyYm}, 5, 2) AND YEAR(VCATN_DATE) = SUBSTR(#{aplyYm}, 1, 4)
+        ORDER BY APLY_DAY
+        ]]>
+    </select>
+
+    <!-- 문체비 합계테이블: 체력단련비 청구 조회 -->
+    <select id="retrieveFtnessTrngCtClmAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            '체력단련비' AS CATEGORY
+             , '01' AS NAME
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '01'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '02'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '03'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '04'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '05'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '06'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '07'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '08'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '09'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12'
+                 ELSE 0 END) AS MONTH
+             , IFNULL(FTNESS_TRNG_CT_CLM_AMT, 0) AS DATA
+        FROM CLTUR_PHSTRN_ACT_CT
+        WHERE EMP_ID = #{empId}
+          AND CLM_YM LIKE CONCAT(#{clmYm}, '%')
+        UNION ALL
+        SELECT
+            '체력단련비' AS CATEGORY
+             , '01' AS NAME
+             , MONTHS.MONTH AS MONTH
+             , 0 AS DATA
+        FROM (
+            SELECT '01' AS MONTH UNION ALL
+            SELECT '02' UNION ALL
+            SELECT '03' UNION ALL
+            SELECT '04' UNION ALL
+            SELECT '05' UNION ALL
+            SELECT '06' UNION ALL
+            SELECT '07' UNION ALL
+            SELECT '08' UNION ALL
+            SELECT '09' UNION ALL
+            SELECT '10' UNION ALL
+            SELECT '11' UNION ALL
+            SELECT '12'
+            ) AS MONTHS
+    </select>
+
+    <!-- 문체비 합계테이블: 체력단련비 지급 조회 -->
+    <select id="retrieveFtnessTrngCtDpstAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            '체력단련비' AS CATEGORY
+             , '02' AS NAME
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '01'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '02'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '03'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '04'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '05'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '06'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '07'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '08'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '09'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12'
+                     ELSE 0 END) AS MONTH
+             , IFNULL(FTNESS_TRNG_CT_DPST_AMT, 0) AS DATA
+        FROM CLTUR_PHSTRN_ACT_CT
+        WHERE EMP_ID = #{empId}
+          AND CLM_YM LIKE CONCAT(#{clmYm}, '%')
+        UNION ALL
+        SELECT
+            '체력단련비' AS CATEGORY
+             , '02' AS NAME
+             , MONTHS.MONTH AS MONTH
+             , 0 AS DATA
+        FROM (
+            SELECT '01' AS MONTH UNION ALL
+            SELECT '02' UNION ALL
+            SELECT '03' UNION ALL
+            SELECT '04' UNION ALL
+            SELECT '05' UNION ALL
+            SELECT '06' UNION ALL
+            SELECT '07' UNION ALL
+            SELECT '08' UNION ALL
+            SELECT '09' UNION ALL
+            SELECT '10' UNION ALL
+            SELECT '11' UNION ALL
+            SELECT '12'
+            ) AS MONTHS
+    </select>
+
+    <!-- 문체비 합계테이블: 체력단련비 지급날짜 조회 -->
+    <select id="retrieveFtnessTrngCtDpstYmd" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            '체력단련비' AS CATEGORY
+             , '03' AS NAME
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '01'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '02'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '03'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '04'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '05'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '06'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '07'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '08'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '09'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12'
+                     ELSE 0 END) AS MONTH
+             , CONCAT('dt', IFNULL(FTNESS_TRNG_CT_DPST_YMD, '')) AS DATA
+        FROM CLTUR_PHSTRN_ACT_CT
+        WHERE EMP_ID = #{empId}
+          AND CLM_YM LIKE CONCAT(#{clmYm}, '%')
+        UNION ALL
+        SELECT
+            '체력단련비' AS CATEGORY
+             , '03' AS NAME
+             , MONTHS.MONTH AS MONTH
+             , 'dt' AS DATA
+        FROM (
+            SELECT '01' AS MONTH UNION ALL
+            SELECT '02' UNION ALL
+            SELECT '03' UNION ALL
+            SELECT '04' UNION ALL
+            SELECT '05' UNION ALL
+            SELECT '06' UNION ALL
+            SELECT '07' UNION ALL
+            SELECT '08' UNION ALL
+            SELECT '09' UNION ALL
+            SELECT '10' UNION ALL
+            SELECT '11' UNION ALL
+            SELECT '12'
+            ) AS MONTHS
+    </select>
+
+    <!-- 문체비 합계테이블: 체력단련비 잔액 조회 -->
+    <select id="retrieveFtnessTrngCtCyfdAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            '체력단련비' AS CATEGORY
+             , '04' AS NAME
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '01'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '02'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '03'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '04'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '05'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '06'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '07'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '08'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '09'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12'
+                     ELSE 0 END) AS MONTH
+             , IFNULL(FTNESS_TRNG_CT_CYFD_AMT, 0) AS DATA
+        FROM CLTUR_PHSTRN_ACT_CT
+        WHERE EMP_ID = #{empId}
+          AND CLM_YM LIKE CONCAT(#{clmYm}, '%')
+        UNION ALL
+        SELECT
+            '체력단련비' AS CATEGORY
+             , '04' AS NAME
+             , MONTHS.MONTH AS MONTH
+             , 0 AS DATA
+        FROM (
+            SELECT '01' AS MONTH UNION ALL
+            SELECT '02' UNION ALL
+            SELECT '03' UNION ALL
+            SELECT '04' UNION ALL
+            SELECT '05' UNION ALL
+            SELECT '06' UNION ALL
+            SELECT '07' UNION ALL
+            SELECT '08' UNION ALL
+            SELECT '09' UNION ALL
+            SELECT '10' UNION ALL
+            SELECT '11' UNION ALL
+            SELECT '12'
+            ) AS MONTHS
+    </select>
+
+    <!-- 문체비 합계테이블: 문화비 청구 조회 -->
+    <select id="retrieveClturCtClmAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            '문화비' AS CATEGORY
+             , '01' AS NAME
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '01'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '02'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '03'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '04'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '05'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '06'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '07'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '08'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '09'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12'
+                     ELSE 0 END) AS MONTH
+             , IFNULL(CLTUR_CT_CLM_AMT, 0) AS DATA
+        FROM CLTUR_PHSTRN_ACT_CT
+        WHERE EMP_ID = #{empId}
+          AND CLM_YM LIKE CONCAT(#{clmYm}, '%')
+        UNION ALL
+        SELECT
+            '문화비' AS CATEGORY
+             , '01' AS NAME
+             , MONTHS.MONTH AS MONTH
+             , 0 AS DATA
+        FROM (
+            SELECT '01' AS MONTH UNION ALL
+            SELECT '02' UNION ALL
+            SELECT '03' UNION ALL
+            SELECT '04' UNION ALL
+            SELECT '05' UNION ALL
+            SELECT '06' UNION ALL
+            SELECT '07' UNION ALL
+            SELECT '08' UNION ALL
+            SELECT '09' UNION ALL
+            SELECT '10' UNION ALL
+            SELECT '11' UNION ALL
+            SELECT '12'
+            ) AS MONTHS
+    </select>
+
+    <!-- 문체비 합계테이블: 문화비 지급 조회 -->
+    <select id="retrieveClturCtDpstAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            '문화비' AS CATEGORY
+             , '02' AS NAME
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '01'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '02'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '03'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '04'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '05'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '06'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '07'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '08'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '09'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12'
+                     ELSE 0 END) AS MONTH
+             , IFNULL(CLTUR_CT_DPST_AMT, 0) AS DATA
+        FROM CLTUR_PHSTRN_ACT_CT
+        WHERE EMP_ID = #{empId}
+          AND CLM_YM LIKE CONCAT(#{clmYm}, '%')
+        UNION ALL
+        SELECT
+            '문화비' AS CATEGORY
+             , '02' AS NAME
+             , MONTHS.MONTH AS MONTH
+             , 0 AS DATA
+        FROM (
+            SELECT '01' AS MONTH UNION ALL
+            SELECT '02' UNION ALL
+            SELECT '03' UNION ALL
+            SELECT '04' UNION ALL
+            SELECT '05' UNION ALL
+            SELECT '06' UNION ALL
+            SELECT '07' UNION ALL
+            SELECT '08' UNION ALL
+            SELECT '09' UNION ALL
+            SELECT '10' UNION ALL
+            SELECT '11' UNION ALL
+            SELECT '12'
+            ) AS MONTHS
+    </select>
+
+    <!-- 문체비 합계테이블: 문화비 지급날짜 조회 -->
+    <select id="retrieveClturCtDpstYmd" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            '문화비' AS CATEGORY
+             , '03' AS NAME
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '01'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '02'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '03'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '04'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '05'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '06'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '07'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '08'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '09'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12'
+                     ELSE 0 END) AS MONTH
+             , CONCAT('dt', IFNULL(CLTUR_CT_DPST_YMD, '')) AS DATA
+        FROM CLTUR_PHSTRN_ACT_CT
+        WHERE EMP_ID = #{empId}
+          AND CLM_YM LIKE CONCAT(#{clmYm}, '%')
+        UNION ALL
+        SELECT
+            '문화비' AS CATEGORY
+             , '03' AS NAME
+             , MONTHS.MONTH AS MONTH
+             , 'dt' AS DATA
+        FROM (
+            SELECT '01' AS MONTH UNION ALL
+            SELECT '02' UNION ALL
+            SELECT '03' UNION ALL
+            SELECT '04' UNION ALL
+            SELECT '05' UNION ALL
+            SELECT '06' UNION ALL
+            SELECT '07' UNION ALL
+            SELECT '08' UNION ALL
+            SELECT '09' UNION ALL
+            SELECT '10' UNION ALL
+            SELECT '11' UNION ALL
+            SELECT '12'
+            ) AS MONTHS
+    </select>
+
+    <!-- 문체비 합계테이블: 문화비 잔액 조회 -->
+    <select id="retrieveClturCtCyfdAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            '문화비' AS CATEGORY
+             , '04' AS NAME
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '01'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '02'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '03'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '04'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '05'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '06'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '07'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '08'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '09'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12'
+                     ELSE 0 END) AS MONTH
+             , IFNULL(CLTUR_CT_CYFD_AMT, 0) AS DATA
+        FROM CLTUR_PHSTRN_ACT_CT
+        WHERE EMP_ID = #{empId}
+          AND CLM_YM LIKE CONCAT(#{clmYm}, '%')
+        UNION ALL
+        SELECT
+            '문화비' AS CATEGORY
+             , '04' AS NAME
+             , MONTHS.MONTH AS MONTH
+             , 0 AS DATA
+        FROM (
+            SELECT '01' AS MONTH UNION ALL
+            SELECT '02' UNION ALL
+            SELECT '03' UNION ALL
+            SELECT '04' UNION ALL
+            SELECT '05' UNION ALL
+            SELECT '06' UNION ALL
+            SELECT '07' UNION ALL
+            SELECT '08' UNION ALL
+            SELECT '09' UNION ALL
+            SELECT '10' UNION ALL
+            SELECT '11' UNION ALL
+            SELECT '12'
+            ) AS MONTHS
+    </select>
+
+    <!-- 문체비 합계테이블: 전체 청구 조회 -->
+    <select id="retrieveClmAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            '합계' AS CATEGORY
+             , '01' AS NAME
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '01'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '02'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '03'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '04'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '05'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '06'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '07'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '08'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '09'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12'
+                     ELSE 0 END) AS MONTH
+             , IFNULL(CLM_AMT, 0) AS DATA
+        FROM CLTUR_PHSTRN_ACT_CT
+        WHERE EMP_ID = #{empId}
+          AND CLM_YM LIKE CONCAT(#{clmYm}, '%')
+        UNION ALL
+        SELECT
+            '합계' AS CATEGORY
+             , '01' AS NAME
+             , MONTHS.MONTH AS MONTH
+             , 0 AS DATA
+        FROM (
+            SELECT '01' AS MONTH UNION ALL
+            SELECT '02' UNION ALL
+            SELECT '03' UNION ALL
+            SELECT '04' UNION ALL
+            SELECT '05' UNION ALL
+            SELECT '06' UNION ALL
+            SELECT '07' UNION ALL
+            SELECT '08' UNION ALL
+            SELECT '09' UNION ALL
+            SELECT '10' UNION ALL
+            SELECT '11' UNION ALL
+            SELECT '12'
+            ) AS MONTHS
+    </select>
+
+    <!-- 문체비 합계테이블: 전체 지급 조회 -->
+    <select id="retrieveDpstAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            '합계' AS CATEGORY
+             , '02' AS NAME
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '01'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '02'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '03'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '04'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '05'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '06'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '07'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '08'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '09'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12'
+                     ELSE 0 END) AS MONTH
+             , IFNULL(CLTUR_CT_DPST_AMT, 0) AS DATA
+        FROM CLTUR_PHSTRN_ACT_CT
+        WHERE EMP_ID = #{empId}
+          AND CLM_YM LIKE CONCAT(#{clmYm}, '%')
+        UNION ALL
+        SELECT
+            '합계' AS CATEGORY
+             , '02' AS NAME
+             , MONTHS.MONTH AS MONTH
+             , 0 AS DATA
+        FROM (
+            SELECT '01' AS MONTH UNION ALL
+            SELECT '02' UNION ALL
+            SELECT '03' UNION ALL
+            SELECT '04' UNION ALL
+            SELECT '05' UNION ALL
+            SELECT '06' UNION ALL
+            SELECT '07' UNION ALL
+            SELECT '08' UNION ALL
+            SELECT '09' UNION ALL
+            SELECT '10' UNION ALL
+            SELECT '11' UNION ALL
+            SELECT '12'
+            ) AS MONTHS
+    </select>
+
+    <!-- 문체비 합계테이블: 전체 잔액 조회 -->
+    <select id="retrieveCyfdAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            '합계' AS CATEGORY
+             , '04' AS NAME
+             , (CASE WHEN CLM_YM LIKE CONCAT(#{clmYm}, '01') THEN '01'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '02') THEN '02'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '03') THEN '03'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '04') THEN '04'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '05') THEN '05'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '06') THEN '06'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '07') THEN '07'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '08') THEN '08'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '09') THEN '09'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '10') THEN '10'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '11') THEN '11'
+                     WHEN CLM_YM LIKE CONCAT(#{clmYm}, '12') THEN '12'
+                     ELSE 0 END) AS MONTH
+             , IFNULL(CLTUR_CT_CYFD_AMT, 0) AS DATA
+        FROM CLTUR_PHSTRN_ACT_CT
+        WHERE EMP_ID = #{empId}
+          AND CLM_YM LIKE CONCAT(#{clmYm}, '%')
+        UNION ALL
+        SELECT
+            '합계' AS CATEGORY
+             , '04' AS NAME
+             , MONTHS.MONTH AS MONTH
+             , 0 AS DATA
+        FROM (
+            SELECT '01' AS MONTH UNION ALL
+            SELECT '02' UNION ALL
+            SELECT '03' UNION ALL
+            SELECT '04' UNION ALL
+            SELECT '05' UNION ALL
+            SELECT '06' UNION ALL
+            SELECT '07' UNION ALL
+            SELECT '08' UNION ALL
+            SELECT '09' UNION ALL
+            SELECT '10' UNION ALL
+            SELECT '11' UNION ALL
+            SELECT '12'
+            ) AS MONTHS
     </select>
 </mapper>

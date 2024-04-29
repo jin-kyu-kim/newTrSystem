@@ -4,6 +4,7 @@ import CustomTable from 'components/unit/CustomTable';
 import ElecAtrzJson from '../elecAtrz/ElecAtrzJson.json';
 import ApiRequest from 'utils/ApiRequest';
 import './ElecAtrz.css';
+import { Button } from 'devextreme-react/button';
 
 const ElecGiveAtrz = () => {
     const [ selectedList, setSelectedList ] = useState([]);
@@ -35,7 +36,7 @@ const ElecGiveAtrz = () => {
     const getAllCnt = async () => {
         try{
             const res = await ApiRequest('/boot/common/queryIdSearch', {
-                queryId: "elecAtrzMapper.retrieveCtrtAtrzCnt"
+                queryId: "elecAtrzMapper.retrieveCtrtAtrzCnt", prjctId: prjctId
             })
             res.map((one) => {
                 setCountList(prevCnt => ({
@@ -57,7 +58,8 @@ const ElecGiveAtrz = () => {
         try{
             const response = await ApiRequest('/boot/common/queryIdSearch', {
                 queryId: "elecAtrzMapper.retrieveCtrtAtrz",
-                ctrtKndCd: typeCd
+                ctrtKndCd: typeCd,
+                prjctId: prjctId
             })
             setSelectedList(response);
         } catch(error) {
@@ -76,11 +78,15 @@ const ElecGiveAtrz = () => {
     };
 
     const onClickBtn = (btn, data) => {
+
+        formData.elctrnAtrzId = data.elctrnAtrzId;
+        formData.elctrnAtrzTySeCd = data.elctrnAtrzTySeCd;
+
         if(btn.name === 'moveReq'){
             navigate('/elecAtrz/ElecAtrzNewReq', {state: {
                 prjctId: prjctId,
                 formData: formData,
-                data: data
+                sttsCd: formData.docSeCd
             }})
         }
     }
@@ -88,6 +94,9 @@ const ElecGiveAtrz = () => {
     return (
         <div className="container">
             <div className="col-md-10 mx-auto" style={{marginTop: '30px'}}>
+                <div className="buttons" align="right" style={{ margin: "20px" }}>
+                    <Button text="목록" style={{}} onClick={(e)=>{navigate('/elecAtrz/ElecAtrzForm', {state : {prjctId: prjctId}})}}/>
+                </div>
                 <h2 style={{ marginRight: '50px' }}>{formData.gnrlAtrzTtl}</h2>
                 <span>프로젝트: {prjctData.prjctNm}</span>
             
@@ -105,7 +114,7 @@ const ElecGiveAtrz = () => {
                     wordWrap={true}
                     onClick={onClickBtn}
                     onRowDblClick={(e) => navigate('/elecAtrz/ElecAtrzDetail', {
-                        state: {data: e.data}
+                        state: {data: e.data, prjctId: prjctId, sttsCd: e.data.atrzDmndSttsCd, docSeCd:formData.docSeCd, formData: formData}
                     })}
                 />}
             </div>

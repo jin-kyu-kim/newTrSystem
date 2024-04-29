@@ -151,4 +151,10 @@ public class IndvdlClmController {
         return IndvdlClmDomain.deleteVcatnAtrz(dataMap);
     }
     /* =================================박지환_작업================================= */
+
+    // 문화체련비 합계테이블 조회
+    @PostMapping(value = "/boot/indvdlClm/retrieveClturPhstrnActCt")
+    public List<Map<String, Object>> retrieveClturPhstrnActCt (@RequestBody Map<String, Object> param){
+        return IndvdlClmDomain.retrieveClturPhstrnActCt(param);
+    }
 }

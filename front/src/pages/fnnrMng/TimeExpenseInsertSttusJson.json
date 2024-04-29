@@ -5,7 +5,7 @@
     "keyColumn": "empId",
     "totTableColumns" : 
     [
-        { "key":"allVtw" ,"value": "전체", "alignment" : "center", "chkBox" : true},
+        { "key":"allVtw" ,"value": "전체", "alignment" : "center", "chkBox" : { "checked": true }},
         { 
             "value": "근무시간", "alignment" : "center", 
                 "subColumns" : 
@@ -13,22 +13,22 @@
                     { "value" : "입력여부", "alignment" : "center", 
                         "subColumns" : 
                         [
-                            {"key":"mm03701", "value" : "입력", "alignment" : "center", "chkBox" : true},
-                            {"key":"mm03701Min", "value" : "미입력", "alignment" : "center", "chkBox" : true}
+                            {"key":"mm03701", "value" : "입력", "alignment" : "center", "chkBox" : { "checked": true }},
+                            {"key":"mm03701Min", "value" : "미입력", "alignment" : "center", "chkBox" : { "checked": true }}
                         ]
                     },
                     { "value" : "승인요청여부", "alignment" : "center",
                         "subColumns" : 
                         [
-                            {"key":"mm03702", "value" : "요청", "alignment" : "center", "chkBox" : true},
-                            {"key":"mm03702Min", "value" : "미요청", "alignment" : "center", "chkBox" : true}
+                            {"key":"mm03702", "value" : "요청", "alignment" : "center", "chkBox" : { "checked": true }},
+                            {"key":"mm03702Min", "value" : "미요청", "alignment" : "center", "chkBox" : { "checked": true }}
                         ]
                     },
                     { "value" : "승인여부", "alignment" : "center",
                         "subColumns" : 
                         [
-                            {"key":"mm037034", "value" : "승인및반려", "alignment" : "center", "chkBox" : true},
-                            {"key":"mm037034Min", "value" : "미승인", "alignment" : "center", "chkBox" : true}
+                            {"key":"mm037034", "value" : "승인및반려", "alignment" : "center", "chkBox" : { "checked": true }},
+                            {"key":"mm037034Min", "value" : "미승인", "alignment" : "center", "chkBox" : { "checked": true }}
                         ]
                     }
                 ]
@@ -40,22 +40,22 @@
                     { "value" : "입력여부", "alignment" : "center", 
                         "subColumns" : 
                         [
-                            {"key":"ct03701", "value" : "입력", "alignment" : "center", "chkBox" : true},
-                            {"key":"ct03701Min", "value" : "미입력", "alignment" : "center", "chkBox" : true}
+                            {"key":"ct03701", "value" : "입력", "alignment" : "center", "chkBox" : { "checked": true }},
+                            {"key":"ct03701Min", "value" : "미입력", "alignment" : "center", "chkBox" : { "checked": true }}
                         ]
                     },
                     { "value" : "승인요청여부", "alignment" : "center",
                         "subColumns" : 
                         [
-                            {"key":"ct03702", "value" : "요청", "alignment" : "center", "chkBox" : true},
-                            {"key":"ct03702Min", "value" : "미요청", "alignment" : "center", "chkBox" : true}
+                            {"key":"ct03702", "value" : "요청", "alignment" : "center", "chkBox" : { "checked": true }},
+                            {"key":"ct03702Min", "value" : "미요청", "alignment" : "center", "chkBox" : { "checked": true }}
                         ]
                     },
                     { "value" : "승인여부", "alignment" : "center",
                         "subColumns" : 
                         [
-                            {"key":"ct037034", "value" : "승인및반려", "alignment" : "center", "chkBox" : true},
-                            {"key":"ct037034Min", "value" : "미승인", "alignment" : "center", "chkBox" : true}
+                            {"key":"ct037034", "value" : "승인및반려", "alignment" : "center", "chkBox" : { "checked": true }},
+                            {"key":"ct037034Min", "value" : "미승인", "alignment" : "center", "chkBox" : { "checked": true }}
                         ]
                     }
                 ]
@@ -76,7 +76,7 @@
             { "key": "vacSum", "value": "휴가", "width": 40 },
             { "key": "mmReject", "value": "반려", "width": 40 },
             { "key": "mmComplete", "value": "승인", "width": 40},
-            { "value": "취소", "button": {"text": "시간취소", "name": "hrRtrcn"}, "width": 80 }
+            { "value": "취소", "button": {"text": "시간취소", "name": "hrRtrcn", "able": {"key": "mdSum", "exceptValue": 0} }, "width": 80 }
         ]},
         {"value": "프로젝트비용",
         "subColumns": [
@@ -84,7 +84,7 @@
             { "key": "cnt", "value": "입력", "width": 40},
             { "key": "prjReject", "value": "반려", "width": 40},
             { "key": "prjComplete", "value": "승인", "width": 40 },
-            { "value": "취소", "button": {"text": "비용취소", "name": "ctRtrcn"}, "width": 80 }
+            { "value": "취소", "button": {"text": "비용취소", "name": "ctRtrcn", "able": {"key": "cnt", "exceptValue": 0}}, "width": 80 }
         ]},
         {  "value": "회사지불비용", "width": 80, "button": {"text" : "이동", "name" : "companyPrice"} },
         {  "value": "출력", "button": {"text" : "출력", "name" : "print"} }
@@ -96,5 +96,20 @@
     "aplyOdr": true,
     "empId": true,
     "hdofSttsCd": true
-  }
+  },
+  "baseInfo":
+  [
+    {"key": "trOdr", "value": "TR 차수"},
+    { "key": "", "value": "" },
+    {"key": "empno", "value": "사번"},
+    {"key": "empFlnm", "value": "성명"},
+    {"key": "deptNm", "value": "소속"},
+    {"key": "jbpsNm", "value": "직위"}
+  ],
+  "totAply":
+  [
+    {"key": "mdSum", "value": "총 근무시간"},
+    {"key": "ctSum", "value": "총 지급금액"},
+    {"key": "cnt", "value": "영수증 갯수", "format": "amount"}
+  ]
 }

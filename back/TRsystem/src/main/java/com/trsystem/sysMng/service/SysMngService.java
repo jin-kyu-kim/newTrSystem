@@ -1,20 +1,24 @@
 package com.trsystem.sysMng.service;
 
 import com.trsystem.common.service.CommonService;
+import com.trsystem.security.jwt.CustomUserDetailsService;
+import com.trsystem.security.jwt.JwtTokenUtil;
+import com.trsystem.security.jwt.TokenDto;
 import com.trsystem.sysMng.domain.SysMngUser;
-import org.apache.ibatis.session.SqlSession;
+import io.jsonwebtoken.ExpiredJwtException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,80 +26,61 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class SysMngService implements UserDetailsService {
-
-    private final SqlSession sqlSession;
+@RequiredArgsConstructor
+@Transactional
+@Slf4j
+public class SysMngService {
 
     private final PasswordEncoder passwordEncoder;
-
-    private static SysMngUser sysMngUser;
     private static CommonService commonService;
 
+    private final AuthenticationManager authenticationManager;
+
+    private final CustomUserDetailsService userDetailsService;
+
+    private final JwtTokenUtil jwtTokenUtil;
+
     @Autowired
-    public SysMngService(PasswordEncoder passwordEncoder, SqlSession sqlSession, CommonService commonService) {
+    public SysMngService(PasswordEncoder passwordEncoder, CommonService commonService, AuthenticationManager authenticationManager, CustomUserDetailsService userDetailsService, JwtTokenUtil jwtTokenUtil) {
         this.passwordEncoder = passwordEncoder;
-        this.sqlSession = sqlSession;
         SysMngService.commonService = commonService;
+        this.authenticationManager = authenticationManager;
+        this.userDetailsService = userDetailsService;
+        this.jwtTokenUtil = jwtTokenUtil;
     }
 
-    public ResponseEntity<UserDetails> login(Map<String, Object> request) {
-        Map<String, Object> userInfo = new HashMap<>();
-        Map<String, Object> relInfo = new HashMap<>();
+    public TokenDto login(Map<String, Object> request) {
         String empno = request.get("empno").toString();
         String password = request.get("password").toString();
 
-        UserDetails setInfo = loadUserByUsername(empno);
+        SysMngUser setInfo = userDetailsService.loadUserByUsername(empno);
 
         // 입력된 비밀번호와 저장된 비밀번호 비교
         if (passwordEncoder.matches(password, setInfo.getPassword())) {
-            Authentication authentication = new UsernamePasswordAuthenticationToken(null, setInfo.getAuthorities());
+            String token = jwtTokenUtil.generateToken(setInfo);
+            Authentication authentication = new UsernamePasswordAuthenticationToken(setInfo.getUsername(), setInfo.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
             SecurityContextHolder.getContext();
-            return ResponseEntity.ok(setInfo) ;
+            return TokenDto.fromEntity(setInfo, token, jwtTokenUtil.getExpirationDateFromToken(token));
         } else {
-
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            return null;
         }
     }
+    public TokenDto tokenExtension(String token) {
 
-    @Override
-    public UserDetails loadUserByUsername(String empno) throws UsernameNotFoundException {
-        Map<String, Object> reltSet = new HashMap<>();
-        Map<String, Object> user =  sqlSession.selectOne("com.trsystem.mybatis.mapper.sysMngMapper.userInfo",empno);
+        String empId = jwtTokenUtil.getUsernameFromToken(token);
+        SysMngUser setInfo = userDetailsService.loadUserByUsername(empId);
 
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found with username: " + empno);
+        // 입력된 비밀번호와 저장된 비밀번호 비교
+        if (!empId.isEmpty()) {
+            token = jwtTokenUtil.generateToken(setInfo);
+            Authentication authentication = new UsernamePasswordAuthenticationToken(setInfo.getUsername(), setInfo.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            SecurityContextHolder.getContext();
+            return TokenDto.fromEntity(setInfo, token, jwtTokenUtil.getExpirationDateFromToken(token));
+        } else {
+            throw new ExpiredJwtException(null, null, "이미 만료되었습니다.");
         }
-
-        List<Map<String, Object>> authorities = sqlSession.selectList("com.trsystem.mybatis.mapper.sysMngMapper.userAuth",user.get("empId").toString());
-        List<Map<String, Object>> deptInfo = sqlSession.selectList("com.trsystem.mybatis.mapper.sysMngMapper.userDept",user.get("empId").toString());
-        reltSet.put("userInfo",user);
-        reltSet.put("authorities",authorities);
-        reltSet.put("deptInfo",deptInfo);
-
-        return buildUserDetails(reltSet);
-    }
-
-    private UserDetails buildUserDetails(Map<String, Object> userData) {
-        // 사용자의 정보로부터 username과 password를 가져옵니다.
-        Map<String, Object> userInfo = (Map<String, Object>) userData.get("userInfo");
-        String empId = (String) userInfo.get("empId");
-        String pswd = (String) userInfo.get("pswd");
-
-        // 사용자의 권한 정보를 가져옵니다.
-        List<String> authorities = (List<String>) userData.get("authorities");
-        List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
-        for (String authority : authorities) {
-            authorityList.add(new SimpleGrantedAuthority(authority));
-        }
-        // UserDetails 객체를 생성하여 반환합니다.
-        return new SysMngUser(
-                (String) empId,
-                (String) pswd,
-                userInfo,
-                (List<Map<String, Object>>) userData.get("deptInfo"),
-                authorityList
-        );
     }
 
     public ResponseEntity<String> resetUserPswd(Map<String, Object> request) {
@@ -103,24 +88,22 @@ public class SysMngService implements UserDetailsService {
         Map<String, Object> condition = new HashMap<>();
         String empno = (String) request.get("empno");
         String empId = (String) request.get("empId");
-        
+
         tbNm.put("tbNm", "LGN_USER");
         //request.clear();
         request.put("pswd",passwordEncoder.encode(empno));
-        
+
         condition.put("empId", empId);
 
         List<Map<String, Object>> param = new ArrayList<>();
         param.add(tbNm);
         param.add(condition);
-        
+
         //param.add(request);
-        
-        
-        
-        //lgn_user에 데이터가 있는지 확인 
-        List<Map<String, Object>> search = commonService.commonSelect(param); 
-        
+
+        //lgn_user에 데이터가 있는지 확인
+        List<Map<String, Object>> search = commonService.commonSelect(param);
+
         int result;
         if(search.size() > 0) {
         	if(empno != search.get(0).get("empno").toString()) {
@@ -149,7 +132,7 @@ public class SysMngService implements UserDetailsService {
 	                    return ResponseEntity.ok("실패");
 	                }
         	}
-        }else { 
+        }else {
         	param.clear();
         	param.add(tbNm);
         	param.add(request);
@@ -161,10 +144,6 @@ public class SysMngService implements UserDetailsService {
                  return ResponseEntity.ok("실패");
              }
         }
-        
-        
-
-      
     }
     
     public ResponseEntity<String> changePwd(Map<String, Object> request) {
@@ -172,7 +151,7 @@ public class SysMngService implements UserDetailsService {
         String oldPwd = (String) request.get("oldPwd");
         String newPwd = (String) request.get("newPwd");
 
-        UserDetails setInfo = loadUserByUsername(empId);
+        UserDetails setInfo = userDetailsService.loadUserByUsername(empId);
 
         ResponseEntity<String> result;
 
@@ -204,11 +183,9 @@ public class SysMngService implements UserDetailsService {
         } else {
            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
-
     }
-    
 }
       
-    
-    
+
+
     

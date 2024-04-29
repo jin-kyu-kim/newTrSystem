@@ -8,11 +8,12 @@ import { parse, format, addMonths } from 'date-fns';
 const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVisible, handlePopupData, selectedData, tableData }) => {
 
     const labelValue = PymntPlanOutordHnfPopupJson.hnfCtrt.labelValue;
-    labelValue.outordEmpId.param.queryId.prjctId = prjctId;
+    labelValue.expectInptHnfId.param.queryId.prjctId = prjctId;
 
     const [outordEmpData, setOutordEmpData] = useState({});
     const [structuredData, setStructuredData] = useState({});   //기간 구조 데이터
     const [inputValue, setInputValue] = useState([]); //월별 값 입력을 위한 상태
+
 
 /* =========================  사업기간에 따른 우측 input box 생성  =========================*/
     const makePeriod = (ctrtYmd, stbleEndYmd) => {
@@ -44,69 +45,71 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
 
     useEffect(() => {
         makeStructuredData();
-    }
-    ,[ctrtYmd, stbleEndYmd]);
+    },[ctrtYmd, stbleEndYmd]);
  
 
     /* =========================  우측 input 값 담기  =========================*/
      //우측 월 값 담기
-     const handleInputChange = useCallback((e) => {
+    const handleInputChange = useCallback((e) => {
 
-        const fullId    = e.element.id; 
+        if(!outordEmpData.expectInptHnfId){
+            alert("계획투입인원을 먼저 선택해주세요.");
+            return;
+        }
+
+        const fullId = e.element.id;
         const mm = e.component.option('value');
-        const [id, key] = fullId.split('_'); 
-        const index = inputValue.findIndex(item => item.id === id);  // 입력 값 객체의 인덱스 찾기
-        const hnfCtrtDtlMm = JSON.parse(JSON.stringify(inputValue)); // 상태 변경을 위한 배열 복사
-
-        if (index >= 0) { // 기존 데이터 변경
-            const updatedValue = { ...hnfCtrtDtlMm[index] };
-            
-            if (key && mm !== null) { // untpc와 같은 키가 있으면 업데이트
-                updatedValue[key] = mm;
-            } else if (!key) { // 일반 value 업데이트
-                updatedValue.mm = mm;
-            }
-            
-            hnfCtrtDtlMm[index] = updatedValue; // 변경된 값 객체로 업데이트
+        const [id, key] = fullId.split('_');
+        const index = inputValue.findIndex(item => item.id === id);
+    
+        setInputValue(currentValues => {
+            const newValues = JSON.parse(JSON.stringify(currentValues));
+            if (index >= 0) { // 기존 데이터 변경
+                const updatedValue = { ...newValues[index], [key || 'mm']: mm };
                 
-            } else { // 신규 데이터
-                if (key) { // untpc와 같은 키가 있는 신규 데이터
-                    hnfCtrtDtlMm.push({ id, [key]: mm }); // 새로운 값 객체 추가
-                } else { // 일반 신규 데이터
-                    hnfCtrtDtlMm.push({ id, mm }); // 새로운 값 객체 추가
+                // 첫 번째 NumberBox의 mm 값이 변경될 때, ctrtAmt도 자동으로 설정
+                if (!key) { // mm 값이 업데이트된 경우
+                    updatedValue['ctrtAmt'] = outordEmpData.untpc * mm; //Tip. 만약 투입MM으로 비율 계산을 할 필요가 없이 단가만 넣으려면 outordEmpData.untpc로 변경
                 }
+    
+                newValues[index] = updatedValue;
+            } else { // 신규 데이터
+                const newEntry = { id, [key || 'mm']: mm };
+                if (!key) {
+                    newEntry['ctrtAmt'] = outordEmpData.untpc * mm;  //Tip. 만약 투입MM으로 비율 계산을 할 필요가 없이 단가만 넣으려면 outordEmpData.untpc로 변경
+                }
+                newValues.push(newEntry);
             }
-
-            setInputValue(hnfCtrtDtlMm); // 업데이트된 배열로 상태 설정
-            setOutordEmpData(outordEmpData => ({
-                ...outordEmpData,
-                hnfCtrtDtlMm
+    
+            // 최신 상태의 값으로 OutordEmpData 업데이트도 여기서 처리
+            setOutordEmpData(currentData => ({
+                ...currentData,
+                hnfCtrtDtlMm: newValues,
+                totalMm: calculateTotalMm(newValues),
+                totAmt: calculateTotalAmt(newValues)
             }));
-        
-
-        //총 투입 MM 값 구하기
-        const sum = hnfCtrtDtlMm.filter(item => typeof item.mm === 'number')
-            .map(item => item.mm)
-            .reduce((acc, cur) => acc + cur, 0);
-        const fixedSum = Number(sum.toFixed(2)); //js의 부동소수 이슈로 인한 자릿수 조정.
-
-
-        const totAmt = hnfCtrtDtlMm
-                        .map(item => (item.mm || 0) * (item.ctrtAmt || 0))
-                        .reduce((acc, cur) => acc + cur, 0);
-
-          
-        // 부동 소수점 문제 해결을 위해 toFixed() 후 숫자로 변환
-        const fixedTotAmt = Number(totAmt.toFixed(2));       
-
-
-        //총합에 sum값을 넣어주기   
-        setOutordEmpData(currentData=>({
-            ...currentData,
-            "totalMm" : fixedSum,
-            "totAmt" : fixedTotAmt,
-        })); 
-    },[inputValue]);
+    
+            return newValues;
+        });
+    
+    }, [inputValue, outordEmpData, setOutordEmpData]);
+    
+    const calculateTotalMm = (values) => {
+        if(!!values){
+            const sum = values.filter(item => typeof item.mm === 'number')
+                            .map(item => item.mm)
+                            .reduce((acc, cur) => acc + cur, 0);
+            return Number(sum.toFixed(2));
+        }
+    };
+    
+    const calculateTotalAmt = (values) => {
+        if(!!values){
+            const totAmt = values.map(item => (item.mm || 0) * (item.ctrtAmt || 0))
+                                .reduce((acc, cur) => acc + cur, 0);
+            return Number(totAmt.toFixed(2));
+        }
+    };
     
 
 
@@ -128,7 +131,7 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
         }
 
         const isEmployeeRegistered = tableData.some(item => {
-            if((item.outordEmpId === outordEmpData.outordEmpId)&&!(Object.keys(selectedData).length)) {
+            if((item.expectInptHnfId === outordEmpData.expectInptHnfId)&&!(Object.keys(selectedData).length)) {
                 alert("이미 등록된 사원입니다.");
                 return true; // true를 반환하여 some 메서드 반복 중단
             }
@@ -157,11 +160,16 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
      */
     useEffect(() => {
 
+        const totAmt = calculateTotalAmt(selectedData.hnfCtrtDtlMm)
+        const totalMm = calculateTotalMm(selectedData.hnfCtrtDtlMm)
+
+        selectedData.totAmt = totAmt;
+        selectedData.totalMm = totalMm;
+
         setOutordEmpData(selectedData);
         setInputValue(selectedData.hnfCtrtDtlMm?selectedData.hnfCtrtDtlMm:[]); //수정 시 월별 값 셋팅
 
     }, [selectedData]);
-
 
     
     return (
@@ -170,9 +178,9 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
                 <div className="project-regist-content">
                     <div className="project-change-content-inner-left">
                         <div className="dx-fieldset">
-                            <CustomLabelValue props={labelValue.outordEmpId} onSelect={handleChgState} value={outordEmpData.outordEmpId}/>
+                            <CustomLabelValue props={labelValue.expectInptHnfId} onSelect={handleChgState} value={outordEmpData.expectInptHnfId}/>
                             <CustomLabelValue props={labelValue.usefulAmt} onSelect={handleChgState} readOnly={true} value={outordEmpData.usefulAmt}/>
-                            <CustomLabelValue props={labelValue.emp} onSelect={handleChgState} value={outordEmpData.empId}/>
+                            <CustomLabelValue props={labelValue.inptHnfId} onSelect={handleChgState} value={outordEmpData.inptHnfId}/>
                             <CustomLabelValue props={labelValue.outordHnfCtrtSeCd} onSelect={handleChgState} value={outordEmpData.outordHnfCtrtSeCd}/>
                             <CustomLabelValue props={labelValue.hnfRoleCd} onSelect={handleChgState} value={outordEmpData.hnfRoleCd}/>
                             <CustomLabelValue props={labelValue.hnfGradCd} onSelect={handleChgState} value={outordEmpData.hnfGradCd}/>
@@ -218,6 +226,7 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
                                                     showClearButton={false}
                                                     max={1}
                                                     min={0}
+                                                    format="#,##0.00"
                                                     onChange={handleInputChange}
                                                 />): ''}</td>
                                             <td style={{width:"30%", padding:"5px"}}>
@@ -226,9 +235,9 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
                                                         id={`${Object.keys(structuredData)[colIndex]}${months[rowIndex]}_ctrtAmt`} 
                                                         value ={inputValue.find(item => item.id === `${Object.keys(structuredData)[colIndex]}${months[rowIndex]}`)?.ctrtAmt || 0}
                                                         readOnly={false}
-                                                        format={"#,### 원"}
-                                                        onChange={handleInputChange}
-                                                        
+                                                        format="#,##0 원"
+                                                        defaultValue={0}
+                                                        onChange={handleInputChange}                                                      
                                                     /> : ''}
                                             </td>
                                         </>

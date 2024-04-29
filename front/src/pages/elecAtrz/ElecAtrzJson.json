@@ -134,7 +134,30 @@
       { "key": "clmAmt", "value": "금액", "summaryType": "sum", "valueFormat": "#,##0", "displayFormat" : "{0} 원" }
     ],
     "groupingData" : 
-    {"caption":"구분", "dataField": "ctStlmSeCd", "totalTextColumn": "rciptPblcnYmd"}
+    {"caption":"구분", "dataField": "ctStlmSeCd", "totalTextColumn": "rciptPblcnYmd"},
+    "ctrtInfo":[
+      {"key": "ctrtKndCdNm", "value": "계약구분"},
+      {"key": "ctrtTrgtNm", "value": "업체명/계약자명"},
+      {"key": "cntrctrAddr", "value": "계약자주소"},
+      {"key": "CustomValue", "value": "사업자등록번호/주민등록번호" , "info" :[
+        {"key": "cntrctrIdntfcSeCdNm", "text": "("},
+        {"key": "cntrctrIdntfcNo", "text": ")"}
+      ]},
+      {"key": "CustomValue", "value" : "계약기간", "info" :[
+        {"key": "ctrtBgngYmd", "text": "~"},
+        {"key": "ctrtEndYmd", "text": ""}
+      ]},
+      {"key": "CustomValue", "value": "입금계좌", "info" : [
+        {"key": "dpstBankCdNm", "text": "("},
+        {"key": "dpstrFlnm", "text": "/"},
+        {"key": "dpstActno", "text": ")"}
+      ]},
+      {"key": "CustomValue", "value": "지급일", "info": [
+        {"key": "giveMthdSeCdNm", "text": "("},
+        {"key": "giveDe", "text": "일)"}
+      ]},
+      {"key": "giveDePrvonsh", "value": "지급일 사유"}
+    ]
   },
   "elecGiveAtrz": {
     "keyColumn": "elctrnAtrzId",

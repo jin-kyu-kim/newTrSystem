@@ -125,6 +125,9 @@ return(
               </div>
               <CustomPivotGrid
                     weekendColor={true}
+                    isExport={true}
+                    sorting={true}
+                    grandTotals={false}
                     values={dataSource}
                 />
      </div>

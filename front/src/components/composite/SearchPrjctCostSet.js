@@ -85,7 +85,7 @@ const SearchPrjctCostSet = ({ callBack, props }) => {
             monthList.push({"value": i});
         }
 
-        let odrVal = day > 15 ? "2" : "1";
+        let odrVal = day > 15 ? "1" : "2";
         let monthVal = month < 10 ? "0" + month : month;
 
         setInitParams({

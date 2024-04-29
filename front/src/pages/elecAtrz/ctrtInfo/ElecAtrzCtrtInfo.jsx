@@ -43,7 +43,7 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData, sttsCd }) => {
             }));
         }
 
-        if(sttsCd === "VTW03701") {
+        if(sttsCd === "VTW03701") { //임시저장
             getTempData();
         }
 
@@ -67,8 +67,16 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData, sttsCd }) => {
             delete item.dpstBankCdNm;
         });
 
+        if(![5,10,15].includes(response[0].giveDe)){
+            response[0].giveDeEtc = response[0].giveDe;
+            response[0].giveDe = "지급일 지정";   
+        }
         setInfoData(response[0]);
     }
+
+    useEffect(() => {
+        console.log("infoData", infoData); 
+    }, [infoData]);
 
     /**
      *  부모창으로 데이터 전송
@@ -87,7 +95,9 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData, sttsCd }) => {
             delete updatedInfoData.giveDeEtc;
         }
 
-        onSendData(updatedInfoData);
+        if(!!onSendData){
+            onSendData(updatedInfoData);
+        }
     }, [infoData]);
 
 
@@ -115,15 +125,12 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData, sttsCd }) => {
                         </div>
                     </div>
                 </div>
-                <CustomLabelValue props={labelValue.ctrtTrgtNm} value={infoData.ctrtTrgtNm} onSelect={handleChgState} />
+                <CustomLabelValue props={labelValue.ctrtTrgtNm} value={infoData.ctrtTrgtNm} onSelect={handleChgState}/>
                 <CustomLabelValue props={labelValue.cntrctrAddr} value={infoData.cntrctrAddr} onSelect={handleChgState}/>
                 <div className="dx-field">
                     <div className="dx-field-label">사업자등록번호 또는 주민등록번호</div>
                     <div className="dx-field-value">
                         <div style={{float: "left", marginRight: "20px", width: "20%"}}>
-                            {/* <SelectBox
-                                placeholder="구분"
-                            /> */}
                             <CustomCdComboBox
                                 param="VTW046"
                                 placeholderText="구분"
@@ -224,9 +231,6 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData, sttsCd }) => {
                                 onValueChanged={(e) => {
                                     handleChgState({name: "giveDe", value: e.value})
                                 }}
-                                /**
-                                 * TODO: 지급일 지정의 숫자가 화면에 표출되도록 하기. 
-                                 */
                                 value={infoData.giveDe}
                                 dataSource={giveDe}
                             />
@@ -239,9 +243,6 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData, sttsCd }) => {
                                 max={31}
                                 showSpinButtons={true}
                                 step={1}
-                                /**
-                                 * TODO: 지급일 지정의 숫자가 화면에 표출되도록 하기. 
-                                 */
                                 value={infoData.giveDeEtc}
                                 readOnly={infoData.giveDe === "지급일 지정" ? false : true}
                                 onValueChanged={(e) => {
