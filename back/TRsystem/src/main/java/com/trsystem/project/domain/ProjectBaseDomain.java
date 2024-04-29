@@ -666,7 +666,15 @@ public class ProjectBaseDomain {
 		Map<String, Object> tbAply = new HashMap<>();
 		tbAply.put("tbNm", "PRJCT_CT_APLY");
 		searchAply.add(tbAply);
-		searchAply.add(param);
+
+		Map<String, Object> paramAply = new HashMap<>();
+		paramAply.put("prjctId", param.get("prjctId"));
+		paramAply.put("empId", param.get("empId"));
+		paramAply.put("aplyYm", param.get("aplyYm"));
+		paramAply.put("aplyOdr", param.get("aplyOdr"));
+		paramAply.put("prjctCtAplySn", param.get("prjctCtAplySn"));
+		searchAply.add(paramAply);
+
 		List<Map<String, Object>> listAply = commonService.commonSelect(searchAply);
 
 		// 가져온 값의 aplyYm, aplyOdr 바꿔서 인서트
@@ -691,7 +699,7 @@ public class ProjectBaseDomain {
 		Map<String, Object> tbAtrz = new HashMap<>();
 		tbAtrz.put("tbNm", "PRJCT_CT_ATRZ");
 		searchAtrz.add(tbAtrz);
-		searchAtrz.add(param);
+		searchAtrz.add(paramAply);
 		List<Map<String, Object>> listAtrz = commonService.commonSelect(searchAtrz);
 
 		// 가져온 값으로 기존 값 업데이트 -> 코드 VTW03708(이월)
@@ -700,7 +708,7 @@ public class ProjectBaseDomain {
 		Map<String, Object> paramAtrz = new HashMap<>();
 		paramAtrz.put("atrzDmndSttsCd", "VTW03708");
 		updateAtrz.add(paramAtrz);
-		updateAtrz.add(param);
+		updateAtrz.add(paramAply);
 		commonService.updateData(updateAtrz);
 
 		// 가져온 값의 aplyYm, aplyOdr 바꿔서 인서트
@@ -709,6 +717,8 @@ public class ProjectBaseDomain {
 		Map<String, Object> dataAtrz = listAtrz.get(0);
 		dataAtrz.put("aplyYm", dataAply.get("aplyYm"));
 		dataAtrz.put("aplyOdr", dataAply.get("aplyOdr"));
+		dataAtrz.put("aprvrEmpId", param.get("aprvrEmpId"));
+		dataAtrz.put("aprvYmd", ym + String.format("%02d", dayOfMonth));
 		dataAtrz.put("atrzDmndSttsCd", "VTW03703");
 		insertAtrz.add(tbAtrz);
 		insertAtrz.add(dataAtrz);

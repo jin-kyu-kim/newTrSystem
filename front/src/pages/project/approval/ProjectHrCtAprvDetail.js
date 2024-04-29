@@ -73,6 +73,7 @@ const ProjectHrCtAprvDetail = () => {
         if(!Object.values(param).every((value) => value === "")) {
             handleMmAply();
             handleCtAply();
+            getCtChildList(ctChild.current);
         }
     }, [param])
 
@@ -625,7 +626,7 @@ const ProjectHrCtAprvDetail = () => {
                         ];
                         response = await ApiRequest('/boot/common/commonUpdate', param);
                     } else {
-                        const param = { prjctId: data.prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, prjctCtAplySn: data.prjctCtAplySn };
+                        const param = { prjctId: data.prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, prjctCtAplySn: data.prjctCtAplySn, aprvrEmpId: cookies.userInfo.empId };
                         response = await ApiRequest('/boot/prjct/apprvOldCt', param);
                     }
                     if(response > 0) {
