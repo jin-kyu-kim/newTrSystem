@@ -6,7 +6,7 @@ import CustomTable from 'components/unit/CustomTable';
 import ElecAtrzCtrtInfoDetail from './ctrtInfo/ElecAtrzCtrtInfoDetail';
 
 
-const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId }) => {
+const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd }) => {
     const { vacDtl, clmColumns,  groupingColumn, groupingData, ctrtInfo } = electAtrzJson.electAtrzDetail;
     const [ data, setData ] = useState([]);
 
@@ -31,7 +31,7 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId }) => {
             getExpensClm();
 
         /* 재료비 계약, 외주업체 계약, 외주인력 계약 */
-        } else if(["VTW04908","VTW04909","VTW04910"].includes(detailData.elctrnAtrzTySeCd)){
+        } else if(["VTW04908","VTW04909","VTW04910","VTW04914"].includes(detailData.elctrnAtrzTySeCd)){
             const getCtrtInfo = async () => {
                 try {
                     const response = await ApiRequest('/boot/common/commonSelect', 
@@ -119,7 +119,7 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId }) => {
      *  재료비, 외주업체 화면 그리기
      */
     const CtrtInfo = ({ctrtInfo})=>{
-        if(detailData.elctrnAtrzTySeCd === 'VTW04910'){ //재료비
+        if(detailData.elctrnAtrzTySeCd === 'VTW04910' || ctrtTyCd === 'VTW04910'){ //재료비
             ctrtInfo = ctrtInfo.filter(item => item.value !== '계약기간');
         }
         return(
@@ -172,8 +172,8 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId }) => {
             case 'VTW04914':
                 return  <>
                         <h3>계약정보</h3>
-                        <CtrtInfo ctrtInfo={ctrtInfo} data={data}/>
-                        <ElecAtrzCtrtInfoDetail data={detailData} sttsCd={sttsCd} prjctId={prjctId}/>
+                        <CtrtInfo ctrtInfo={ctrtInfo} data={data} ctrtTyCd={ctrtTyCd}/>
+                        <ElecAtrzCtrtInfoDetail data={detailData} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd}/>
                         </>
             default:
                 return null;
