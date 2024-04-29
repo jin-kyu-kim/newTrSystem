@@ -38,7 +38,11 @@ const CultureHealthCost = () => {
                     if(cellInfo.valueText.includes('0dt') || cellInfo.valueText.includes('dt')){
                         let text = cellInfo.valueText.replaceAll('0dt','');
                         text = text.replaceAll('dt','');
-                        return text.substring(0,4)+"."+text.substring(4,6)+"."+text.substring(6,8);
+                        text = text.substring(0,4)+"."+text.substring(4,6)+"."+text.substring(6,8);
+                        if(text === '..'){
+                            text = '-';
+                        }
+                        return text;
                     } else {
                         return cellInfo.valueText;
                     }
@@ -54,11 +58,11 @@ const CultureHealthCost = () => {
 
     useEffect(() => {
         if(year != null){
-            searchTable();
+            searchGrid();
         }
     }, [year]);
 
-    const searchTable = async () => {
+    const searchGrid = async () => {
         try{
             const param = { empId: cookies.userInfo.empId, clmYm: year }
             const response = await ApiRequest('/boot/indvdlClm/retrieveClturPhstrnActCt', param);
@@ -195,7 +199,7 @@ const CultureHealthCost = () => {
                     <Scrolling mode="virtual"/>
                 </PivotGrid>
             </div>
-            <CultureHealthCostReg year={year} searchTable={searchTable}></CultureHealthCostReg>
+            <CultureHealthCostReg year={year} searchGrid={searchGrid}></CultureHealthCostReg>
         </div>
     );
 };
