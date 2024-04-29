@@ -63,7 +63,7 @@
             { "key": "totUtztnAmt", "value": "누적사용" , "width": "200", "currency": true},
             { "key": "totAplyAmt", "value": "당차수청구" , "width": "200", "currency": true},
             { "width": "140", "button": { "text": "승인목록", "name": "ctList" }},
-            { "width": "130", "buttons": [{ "text": "승인", "name": "aprv", "visible": {"key": "sttsCd", "value": "VTW03702"}},
+            { "width": "130", "buttons": [{ "text": "승인", "name": "aprv", "visible": {"key": "sttsCd", "value": "VTW03702"}, "time": true},
                                           { "text": "승인취소", "name": "aprvCncl", "visible": {"key": "sttsCd", "value": "VTW03703"}, "time": true}]},
             { "width": "130", "buttons": [{ "text": "반려", "name": "rjct", "visible": {"key": "sttsCd", "value": "VTW03702"}, "time": true},
                                           { "text": "반려취소", "name": "rjctCncl", "visible": {"key": "sttsCd", "value": "VTW03704"}, "time": true}]}
