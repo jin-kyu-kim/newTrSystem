@@ -47,18 +47,19 @@ const [checkBoxValue, setCheckBoxValue] = useState({
 });
 */
 const [checkBoxValue, setCheckBoxValue] = useState({
-  "mm03701": true,
-  "mm03701Min": true,
-  "mm03702": true,
-  "mm03702Min": true,
-  "mm037034": true,
-  "mm037034Min": true,
-  "ct03701": true,
-  "ct03701Min": true,
-  "ct03702": true,
-  "ct03702Min": true,
-  "ct037034": true,
-  "ct037034Min": true,
+  "allVtw": false,
+  "mm03701": false,
+  "mm03701Min": false,
+  "mm03702": false,
+  "mm03702Min": false,
+  "mm037034": false,
+  "mm037034Min": false,
+  "ct03701": false,
+  "ct03701Min": false,
+  "ct03702": false,
+  "ct03702Min": false,
+  "ct037034": false,
+  "ct037034Min": false,
 });
 //======================초기차수 설정 ===============================================
 useEffect(() => {
@@ -202,17 +203,29 @@ const onBtnClick = async (button, data) => {
 const handleCheckBoxChange = useCallback((e, key) => {
   console.log(key, e.value)
 
-  let value;
-  if(e.value) {
-    value = "true"
+  if(key === "allVtw") {
+    setCheckBoxValue(checkBoxValue => ({
+      ...checkBoxValue,
+      "allVtw": e.value,
+      "mm03701": e.value,
+      "mm03701Min": e.value,
+      "mm03702": e.value,
+      "mm03702Min": e.value,
+      "mm037034": e.value,
+      "mm037034Min": e.value,
+      "ct03701": e.value,
+      "ct03701Min": e.value,
+      "ct03702": e.value,
+      "ct03702Min": e.value,
+      "ct037034": e.value,
+      "ct037034Min": e.value,
+    }))
   } else {
-    value = "false"
+    setCheckBoxValue(checkBoxValue => ({
+      ...checkBoxValue,
+      [key]: e.value
+    }));
   }
-
-  setCheckBoxValue(checkBoxValue => ({
-    ...checkBoxValue,
-    [key]: e.value
-  }));
 
 }, []);
 
