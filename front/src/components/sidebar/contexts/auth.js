@@ -33,7 +33,7 @@ function AuthProvider(props) {
         await setIntlPwsdYn(result.data.data.userInfo.empId, 'N');
         navigate("/infoInq/empDetailInfo");
       }else{
-        navigate("/");
+        navigate("/home");
       }
     }
     return result;
