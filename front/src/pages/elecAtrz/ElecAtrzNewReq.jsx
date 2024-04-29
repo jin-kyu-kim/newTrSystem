@@ -16,6 +16,7 @@ import ElecAtrzCtrtInfo from "./ctrtInfo/ElecAtrzCtrtInfo";
 import ElecAtrzCtrtInfoDetail from "./ctrtInfo/ElecAtrzCtrtInfoDetail";
 import ElecAtrzCtrtOutordHnfDetail from "./ctrtInfo/ElecAtrzCtrtOutordHnfDetail";
 import ElecAtrzTabDetail from "./ElecAtrzTabDetail";
+import ElectGiveAtrzClm from "./ElectGiveAtrzClm";
 import { Button } from 'devextreme-react';
 
 const ElecAtrzNewReq = () => {
@@ -25,6 +26,7 @@ const ElecAtrzNewReq = () => {
     const prjctId = location.state.prjctId;
     const formData = location.state.formData;
     const sttsCd = location.state.sttsCd;
+    const ctrtTyCd = location.state.ctrtTyCd;
     const [cookies] = useCookies(["userInfo", "userAuth"]);
 
     /** 첨부파일 관련 */
@@ -278,6 +280,8 @@ const ElecAtrzNewReq = () => {
             sttsCd: sttsCd
         }
 
+        console.log("insertParam", insertParam);
+
         try {
             const response = await ApiRequest("/boot/elecAtrz/insertElecAtrz", insertParam);
             console.log(response);
@@ -440,9 +444,10 @@ const ElecAtrzNewReq = () => {
                         <ExpensInfo onSendData={handleChildData} prjctId={prjctId} data={data}/>
                     </>
                     }
-                    {["VTW04909","VTW04910"].includes(formData.elctrnAtrzTySeCd) && ["VTW03405"].includes(formData.docSeCd) &&   //VTW04914: TODO.외주/재료비 지급
+                    {["VTW04914"].includes(formData.elctrnAtrzTySeCd) && ["VTW03405"].includes(formData.docSeCd) &&   //VTW04914: 외주/재료비 지급
                     <>
-                    <ElecAtrzTabDetail detailData={data} sttsCd={sttsCd} prjctId={prjctId} />
+                        <ElectGiveAtrzClm detailData={data} sttsCd={sttsCd} prjctId={prjctId} onSendData={handleChildData}/>
+                        <ElecAtrzTabDetail detailData={data} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd}/>
                     </>
                     }
 

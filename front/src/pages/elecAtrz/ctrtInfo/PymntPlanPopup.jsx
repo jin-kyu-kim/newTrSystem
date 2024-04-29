@@ -11,13 +11,13 @@ import ElecAtrzOutordCompanyPopupJson from "./ElecAtrzOutordCompanyPopupJson.jso
  *  "VTW04909" : 외주업체
  *  "VTW04910" : 재료비
  */
-const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedData, data, sttsCd}) => {
+const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedData, data, sttsCd, ctrtTyCd}) => {
 
     let jsonData = {};
-    if(data.elctrnAtrzTySeCd === "VTW04910"){
+    if(ctrtTyCd ? ctrtTyCd : data.elctrnAtrzTySeCd === "VTW04910"){
         jsonData = ElecAtrzMatrlCtPopupJson
     }
-    else if (data.elctrnAtrzTySeCd === "VTW04909"){
+    else if (ctrtTyCd ? ctrtTyCd : data.elctrnAtrzTySeCd === "VTW04909"){
         jsonData = ElecAtrzOutordCompanyPopupJson
     }
 
@@ -148,7 +148,7 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
             <div className="popup-content">
                 <div className="project-regist-content">
                     <div className="project-change-content-inner-left">
-                    {data.elctrnAtrzTySeCd === "VTW04910" ? 
+                    {data.elctrnAtrzTySeCd === "VTW04910" || ctrtTyCd === "VTW04910" ? 
                         <div className="dx-fieldset">
                             <CustomLabelValue props={matrlPlanParam}  value={matrlCtrtData.expectCtrtEntrpsNm} onSelect={handleChgState} readOnly={controlReadOnly}/>
                             <CustomLabelValue props={labelValue.cntrctamount} onSelect={handleChgState} readOnly={true} value={matrlCtrtData.cntrctamount}/>
