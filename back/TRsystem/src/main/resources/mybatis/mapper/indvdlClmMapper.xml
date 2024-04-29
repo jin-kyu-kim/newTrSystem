@@ -13,14 +13,30 @@
             ,EMP.EMP_FLNM					/* 직원명 */
             ,VCATN.VCATN_TY_CD				/* 휴가유형코드 */
             ,(SELECT CD_NM FROM CD WHERE CD_VALUE = VCATN.VCATN_TY_CD)	VCATN_TY_NM					/* 휴가유형코드명 */
-            ,DATE_FORMAT(VCATN.VCATN_BGNG_YMD, '%Y-%m-%d') VCATN_BGNG_YMD							/* 휴가시작일자 */
-            ,DATE_FORMAT(VCATN.VCATN_END_YMD, '%Y-%m-%d' )VCATN_END_YMD								/* 휴가종료일자 */
+            ,DATE_FORMAT(VCATN.VCATN_BGNG_YMD, '%Y%m%d') VCATN_BGNG_YMD							    /* 휴가시작일자 */
+            ,DATE_FORMAT(VCATN.VCATN_END_YMD, '%Y%m%d' ) VCATN_END_YMD								/* 휴가종료일자 */
+            ,DATE_FORMAT(VCATN.VCATN_BGNG_YMD, '%Y-%m-%d') PARSE_VCATN_BGNG_YMD						/* 테이블휴가시작일자 */
+            ,DATE_FORMAT(VCATN.VCATN_END_YMD, '%Y-%m-%d' ) PARSE_VCATN_END_YMD						/* 테이블휴가종료일자 */
             ,VCATN.VCATN_DE_CNT				/* 휴가일수 */
-            ,VCATN.VCATN_PRVONSH			/* 휴가사유 */
+            ,VCATN.NEW_VCATN_USE_DAYCNT     /* 신규휴가사용일수 */
+            ,CASE
+                WHEN VCATN.RTRCN_PRVONSH IS NOT NULL THEN VCATN.RTRCN_PRVONSH
+                ELSE VCATN.VCATN_PRVONSH
+                END VCATN_PRVONSH           /* 휴가사유 */
+            ,VCATN.RTRCN_PRVONSH            /* 휴가취쇼사유 */
             ,ELCTRN.ATRZ_DMND_STTS_CD		/* 결재요청상태코드 */
-            ,(SELECT CD_NM FROM CD WHERE CD_VALUE = ELCTRN.ATRZ_DMND_STTS_CD)	ATRZ_DMND_STTS_NM	/* 결재요청상태코드명 */
+            ,CASE
+                WHEN VCATN.RTRCN_PRVONSH IS NOT NULL THEN CONCAT('취소 ', (SELECT CD_NM FROM CD WHERE CD_VALUE = ELCTRN.ATRZ_DMND_STTS_CD))
+                ELSE (SELECT CD_NM FROM CD WHERE CD_VALUE = ELCTRN.ATRZ_DMND_STTS_CD)
+                END ATRZ_DMND_STTS_NM       /* 결재요청상태코드명 */
             ,ELCTRN.ELCTRN_ATRZ_ID		    /* 전자결재ID */
             ,VCATN.ATCHMNFL_ID				/* 첨부파일ID */
+            ,ELCTRN.RTRCN_ELCTRN_ATRZ_ID	/* 취소전자결재ID */
+            ,CASE
+                WHEN (SELECT ATRZ.RTRCN_ELCTRN_ATRZ_ID FROM ELCTRN_ATRZ ATRZ WHERE ATRZ.RTRCN_ELCTRN_ATRZ_ID = VCATN.ELCTRN_ATRZ_ID) IS NOT NULL THEN 'FALSE'
+                WHEN ELCTRN.RTRCN_ELCTRN_ATRZ_ID IS NOT NULL THEN 'FALSE'
+                ELSE 'TRUE'
+                END CANCLE_BUTTONCTR
         FROM VCATN_ATRZ		VCATN
             ,ELCTRN_ATRZ	ELCTRN
             ,EMP 			EMP
@@ -275,6 +291,7 @@
         AND DEPT.DEPT_ID = HNF.DEPT_ID
         AND DEPT.DEPT_ID = #{repDeptId}
         AND EMP.EMP_FLNM IN ('이진원', '안주리')
+        ORDER BY EMPNO
     </select>
 
     <!-- 프로젝트MM신청조회 -->
@@ -795,25 +812,31 @@
     <!-- 프로젝트 비용 atrzDmndSttsCd 변경 -->
     <update id="updatePrjctCtAtrzStts" parameterType="map">
         UPDATE PRJCT_CT_ATRZ
+            JOIN PRJCT_CT_APLY ON PRJCT_CT_ATRZ.PRJCT_CT_APLY_SN = PRJCT_CT_APLY.PRJCT_CT_APLY_SN
+                AND PRJCT_CT_ATRZ.EMP_ID = PRJCT_CT_APLY.EMP_ID
+                AND PRJCT_CT_ATRZ.PRJCT_ID = PRJCT_CT_APLY.PRJCT_ID
+                AND PRJCT_CT_ATRZ.APLY_YM = PRJCT_CT_APLY.APLY_YM
+                AND PRJCT_CT_ATRZ.APLY_ODR = PRJCT_CT_APLY.APLY_ODR
         SET
-            ATRZ_DMND_STTS_CD = CASE
+            PRJCT_CT_ATRZ.ATRZ_DMND_STTS_CD = CASE
                 WHEN #{actionType} = 'INPUT' THEN 'VTW03701'
                 WHEN #{actionType} = 'INPUT_CANCEL' THEN NULL
                 WHEN #{actionType} = 'APPROVE' THEN 'VTW03702'
                 WHEN #{actionType} = 'APPROVE_CANCEL' THEN 'VTW03701'
             END,
-            MDFCN_DT = now(),
-            MDFCN_EMP_ID = #{empId}
-        WHERE 1 = 1
+            PRJCT_CT_ATRZ.MDFCN_DT = now(),
+            PRJCT_CT_ATRZ.MDFCN_EMP_ID = #{empId}
+        WHERE 1=1
           AND (
             (#{actionType} = 'INPUT' AND ATRZ_DMND_STTS_CD IS NULL) OR
             (#{actionType} = 'INPUT_CANCEL' AND ATRZ_DMND_STTS_CD = 'VTW03701') OR
             (#{actionType} = 'APPROVE' AND ATRZ_DMND_STTS_CD = 'VTW03701') OR
             (#{actionType} = 'APPROVE_CANCEL' AND ATRZ_DMND_STTS_CD IN ('VTW03702', 'VTW03704'))
             )
-          AND EMP_ID = #{empId}
-          AND APLY_YM = #{aplyYm}
-          AND APLY_ODR = #{aplyOdr}
+          AND PRJCT_CT_ATRZ.EMP_ID = #{empId}
+          AND PRJCT_CT_ATRZ.APLY_YM = #{aplyYm}
+          AND PRJCT_CT_ATRZ.APLY_ODR = #{aplyOdr}
+          AND PRJCT_CT_APLY.ELCTRN_ATRZ_ID IS NULL
     </update>
 
     <!-- 비용 결재 요청 상태 건수 조회 -->
@@ -869,10 +892,71 @@
           AND pcrz.ATRZ_DMND_STTS_CD = 'VTW03703'
     </select>
 
-    <!-- 개인비용청구 총 근무 시간 -->
-    <select id="retrieveTimeTotal" parameterType="map" resultType="com.trsystem.LowerHashMap">
-        SELECT SUM(MD) AS TOT_TIME
+    <!-- 직원 기본정보 조회 -->
+    <select id="retrievePopEmpInfo" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            e.EMPNO,
+            EMP_FLNM,
+            d.DEPT_NM,
+            (SELECT CD_NM FROM CD c WHERE CD_VALUE = e.JBPS_CD) AS JBPS_NM
+        FROM EMP e
+            JOIN DEPT_HNF dh ON e.EMP_ID = dh.EMP_ID
+            JOIN DEPT d ON dh.DEPT_ID = d.DEPT_ID
+        WHERE e.EMP_ID = #{empId}
+    </select>
+
+    <!-- 개인비용청구 공휴일, 연차 포함 총 근무 시간 -->
+    <select id="retrieveTotalWorkTime" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT (
+            SELECT SUM(MD)
+            FROM PRJCT_MM_APLY pma
+            JOIN (
+                SELECT pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR
+                FROM PRJCT_MM_ATRZ pmrz
+                WHERE pmrz.EMP_ID = #{empId}
+                    AND pmrz.APLY_YM = #{aplyYm}
+                    AND pmrz.APLY_ODR = #{aplyOdr}
+                    AND pmrz.ATRZ_DMND_STTS_CD = 'VTW03703'
+                GROUP BY pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR
+            ) filtered ON pma.PRJCT_ID = filtered.PRJCT_ID
+                AND pma.EMP_ID = filtered.EMP_ID
+                AND pma.APLY_YM = filtered.APLY_YM
+                AND pma.APLY_ODR = filtered.APLY_ODR
+            ) + COALESCE(( -- 공휴일 수
+                SELECT COUNT(*)
+                FROM CRTR_DATE
+                WHERE SUBSTR(CRTR_YMD, 1, 6) = #{aplyYm}
+                    AND HLDY_CL_CD = 'VTW05003'
+                    AND SUBSTRING(CRTR_YMD, 7, 2) BETWEEN '01' AND (
+                        CASE
+                            WHEN #{aplyOdr} = 1 THEN '15'
+                            WHEN #{aplyOdr} = 2 THEN LAST_DAY(CONCAT(SUBSTR(#{aplyYm}, 1, 4), '-', SUBSTR(#{aplyYm}, 5, 2), '-01'))
+                        END
+                    )
+            ), 0) + COALESCE(( -- 연차 사용 일수
+            SELECT SUM(va.VCATN_DE_CNT)
+            FROM VCATN_ATRZ va
+                JOIN ELCTRN_ATRZ ea ON va.ELCTRN_ATRZ_ID = ea.ELCTRN_ATRZ_ID
+            WHERE ea.ATRZ_DMND_STTS_CD = 'VTW03703'
+                AND ea.ATRZ_DMND_EMP_ID = #{empId}
+                AND SUBSTR(va.VCATN_BGNG_YMD, 1, 6) = #{aplyYm}
+                AND SUBSTRING(va.VCATN_BGNG_YMD, 7, 2) BETWEEN '01' AND (
+                    CASE
+                        WHEN #{aplyOdr} = 1 THEN '15'
+                        WHEN #{aplyOdr} = 2 THEN LAST_DAY(CONCAT(SUBSTR(#{aplyYm}, 1, 4), '-', SUBSTR(#{aplyYm}, 5, 2), '-01'))
+                    END
+                )
+            ), 0) AS TOT_TIME
+    </select>
+
+    <!-- 비용청구 팝업 근무일 일자별 시간 -->
+    <select id="retrievePrjctWorkDay" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            p.PRJCT_NM,
+            SUBSTRING(DATE_FORMAT(pma.APLY_YMD, '%Y%m%d'), 7, 2) AS APLY_DAY,
+            pma.MD * 8 AS MD
         FROM PRJCT_MM_APLY pma
+                 JOIN PRJCT p ON p.PRJCT_ID = pma.PRJCT_ID
                  JOIN (
             SELECT pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR
             FROM PRJCT_MM_ATRZ pmrz
@@ -887,88 +971,55 @@
             AND pma.APLY_ODR = filtered.APLY_ODR
     </select>
 
-    <select id="retrievePrjctWorkTime" parameterType="map" resultType="com.trsystem.LowerHashMap">
-        <![CDATA[
-        WITH RECURSIVE date_range AS (
-            SELECT CAST(CONCAT(#{aplyYm}, '01') AS DATE) AS date_value
-            UNION ALL
-            SELECT DATE_ADD(date_value, INTERVAL 1 DAY)
-            FROM date_range
-            WHERE DATE_ADD(date_value, INTERVAL 1 DAY) <= LAST_DAY(date_value)
-        ),
-        all_projects AS (
-            SELECT DISTINCT p.PRJCT_NM
-            FROM PRJCT_MM_APLY pma
-            JOIN PRJCT p ON p.PRJCT_ID = pma.PRJCT_ID
-        ),
-        filter_prjct AS (
-            SELECT
-                p.PRJCT_NM,
-                DATE_FORMAT(pma.APLY_YMD, '%Y%m%d') AS ymd_format,
-                pma.MD
-            FROM PRJCT_MM_APLY pma
-            JOIN PRJCT p ON p.PRJCT_ID = pma.PRJCT_ID
-            JOIN (
-                SELECT pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR
-                FROM PRJCT_MM_ATRZ pmrz
-                WHERE pmrz.EMP_ID = #{empId}
-                    AND pmrz.APLY_YM = #{aplyYm}
-                    AND pmrz.APLY_ODR = #{aplyOdr}
-                    AND pmrz.ATRZ_DMND_STTS_CD = 'VTW03703'
-                GROUP BY pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR
-            ) filtered ON pma.PRJCT_ID = filtered.PRJCT_ID
-                AND pma.EMP_ID = filtered.EMP_ID
-                AND pma.APLY_YM = filtered.APLY_YM
-                AND pma.APLY_ODR = filtered.APLY_ODR
-            )
+    <!-- 비용청구 팝업 공휴일 일자별 시간 -->
+    <select id="retrieveCtrtDay" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
-            ap.PRJCT_NM,
-            SUBSTRING(DATE_FORMAT(dr.date_value, '%Y%m%d'), 7, 2) AS APLY_DAY,
-            COALESCE(fp.MD, 0) * 8 AS MD
-        FROM date_range dr
-            CROSS JOIN all_projects ap
-            LEFT JOIN filter_prjct fp ON fp.ymd_format = DATE_FORMAT(dr.date_value, '%Y%m%d') AND ap.PRJCT_NM = fp.PRJCT_NM
-        WHERE
-            (#{aplyOdr} = 1 AND DAY(dr.date_value) <= 15)
-           OR (#{aplyOdr} = 2 AND DAY(dr.date_value) >= 16)
-        ORDER BY dr.date_value
-        ]]>
+            (SELECT CD_NM FROM CD WHERE CD_VALUE = CRTR_DATE.HLDY_CL_CD) AS PRJCT_NM,
+            SUBSTRING(DATE_FORMAT(CRTR_YMD, '%Y%m%d'), 7, 2) AS APLY_DAY,
+            8 AS MD
+        FROM CRTR_DATE
+        WHERE SUBSTR(CRTR_YMD, 1, 6) = #{aplyYm}
+          AND HLDY_CL_CD = 'VTW05003'
     </select>
 
-    <select id="retrieveCtrtDay" parameterType="map" resultType="com.trsystem.LowerHashMap">
+    <!-- 비용청구 팝업 휴가 일자별 시간 -->
+    <select id="retrieveVcatnDay" parameterType="map" resultType="com.trsystem.LowerHashMap">
         <![CDATA[
-        WITH RECURSIVE date_range AS (
-            SELECT CAST(CONCAT(#{aplyYm}, '01') AS DATE) AS date_value
+        WITH RECURSIVE VCATN_RANGE AS (
+            SELECT
+                va.ELCTRN_ATRZ_ID,
+                DATE(va.VCATN_BGNG_YMD) AS VCATN_DATE,
+                DATE(va.VCATN_END_YMD) AS VCATN_END_YMD,
+                va.VCATN_TY_CD,
+               (SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD) AS VCATN_TY_NM,
+                    CASE
+                    WHEN va.VCATN_TY_CD IN ('VTW01201', 'VTW01204') THEN 8
+                    ELSE 4
+                END AS VCATN_TIME
+            FROM VCATN_ATRZ va
+            JOIN ELCTRN_ATRZ ea ON va.ELCTRN_ATRZ_ID = ea.ELCTRN_ATRZ_ID
+            WHERE va.VCATN_TY_CD != 'VTW01207'
+                AND ea.ATRZ_DMND_STTS_CD = 'VTW03703'
+                AND ea.ATRZ_DMND_EMP_ID = #{empId}
+                AND DATE(va.VCATN_BGNG_YMD) <= LAST_DAY(CONCAT(SUBSTR(#{aplyYm}, 1, 4), '-', SUBSTR(#{aplyYm}, 5, 2), '-01'))
+                AND DATE(va.VCATN_END_YMD) >= CONCAT(SUBSTR(#{aplyYm}, 1, 4), '-', SUBSTR(#{aplyYm}, 5, 2), '-01')
             UNION ALL
-            SELECT DATE_ADD(date_value, INTERVAL 1 DAY)
-            FROM date_range
-            WHERE DATE_ADD(date_value, INTERVAL 1 DAY) <= LAST_DAY(date_value)
-        ),
-        holidays AS (
             SELECT
-                SUBSTRING(DATE_FORMAT(CRTR_YMD, '%Y%m%d'), 7, 2) AS APLY_DAY,
-                (SELECT CD_NM FROM CD WHERE CD_VALUE = CRTR_DATE.HLDY_CL_CD) AS PRJCT_NM,
-                1 AS MD
-            FROM CRTR_DATE
-            WHERE SUBSTR(CRTR_YMD, 1, 6) = #{aplyYm}
-                AND HLDY_CL_CD = 'VTW05003'
-        ),
-        all_days AS (
-            SELECT
-                dr.date_value,
-                COALESCE(h.PRJCT_NM, '공휴일') AS PRJCT_NM,
-                COALESCE(h.MD, 0) * 8 AS MD
-            FROM date_range dr
-            LEFT JOIN holidays h ON SUBSTRING(DATE_FORMAT(dr.date_value, '%Y%m%d'), 7, 2) = h.APLY_DAY
+                ELCTRN_ATRZ_ID,
+                DATE_ADD(VCATN_DATE, INTERVAL 1 DAY),
+                VCATN_END_YMD,
+                VCATN_TY_CD,
+                VCATN_TY_NM,
+                VCATN_TIME
+            FROM VCATN_RANGE
+            WHERE DATE_ADD(VCATN_DATE, INTERVAL 1 DAY) <= VCATN_END_YMD
         )
-        SELECT
-            PRJCT_NM,
-            SUBSTRING(DATE_FORMAT(date_value, '%Y%m%d'), 7, 2) AS APLY_DAY,
-            MD
-        FROM all_days
-        WHERE
-            (#{aplyOdr} = 1 AND DAY(date_value) <= 15)
-            OR (#{aplyOdr} = 2 AND DAY(date_value) >= 16)
+        SELECT DISTINCT
+            VCATN_TY_NM AS PRJCT_NM,
+            SUBSTRING(DATE_FORMAT(VCATN_DATE, '%Y%m%d'), 7, 2) AS APLY_DAY,
+            VCATN_TIME AS MD
+        FROM VCATN_RANGE
+        WHERE MONTH(VCATN_DATE) = SUBSTR(#{aplyYm}, 5, 2) AND YEAR(VCATN_DATE) = SUBSTR(#{aplyYm}, 1, 4)
         ORDER BY APLY_DAY
         ]]>
     </select>

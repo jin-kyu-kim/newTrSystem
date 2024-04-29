@@ -1,52 +1,63 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "devextreme-react";
 import { Popup } from "devextreme-react/popup";
-import ProjectExpenseJson from "../indvdlClm/ProjectExpenseJson.json";
 import PivotGridDataSource from 'devextreme/ui/pivot_grid/data_source';
+import ProjectExpenseCashCardReport from "../indvdlClm/ProjectExpenseCashCardReport";
+import ProjectExpenseJson from "../indvdlClm/ProjectExpenseJson.json";
 import CustomPivotGrid from "../../components/unit/CustomPivotGrid";
 import ApiRequest from "../../utils/ApiRequest";
+import ReactToPrint from 'react-to-print';
 
-const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo }) => {
-    const { projectExpensePopup } = ProjectExpenseJson;
-    const { deptInfo, userInfo } = basicInfo.cookies;
+const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo }) => {
+    const { projectExpensePopup, projectExpensePopQueryIdList } = ProjectExpenseJson;
+    const [ empInfo, setEmpInfo ] = useState({});
     const [ totalInfo, setTotalInfo ] = useState({});
-    const [data, setData] = useState([]);
-    const empInfo = {
-        empno: userInfo.empno,
-        empFlnm: userInfo.empNm,
-        deptNm: deptInfo[0].deptNm,
-        jbpsNm: userInfo.jbpsNm
-    }
+    const [ data, setData ] = useState([]);
+    const contentRef = useRef(null);
+    
     const commonParams = {
         aplyYm: basicInfo.aplyYm,
         aplyOdr: basicInfo.aplyOdr,
         empId: basicInfo.empId
     };
-
-    useEffect(() => {
-        getTotalExpense();
-        getTotalTime();
-        getData();
-    }, []);
-
     const fetchApiData = async (queryId) => { // parameter 재조합
         return ApiRequest('/boot/common/queryIdSearch', {
-            ...commonParams,
-            queryId
+            ...commonParams,  queryId
         });
     };
 
-    const getTotalTime = async () => {
-        const res = await fetchApiData("indvdlClmMapper.retrieveTimeTotal");
+    useEffect(() => {
+        getEmpInfo();
+        getTotalWorkTime();
+        getExpenseTotalInfo();
+        getDailyWorkHours();
+    }, []);
+
+    const getEmpInfo = async () => {
+        const response = await ApiRequest('/boot/common/queryIdSearch', {
+            queryId: "indvdlClmMapper.retrievePopEmpInfo", empId: basicInfo.empId})
+        setEmpInfo(response[0]);
+    }
+
+    /** 공휴일, 휴가 포함 총 근무시간 */
+    const getTotalWorkTime = async () => {
+        const res = await fetchApiData("indvdlClmMapper.retrieveTotalWorkTime");
         if (res[0] !== null) {
             setTotalInfo(prevInfo => ({
                 ...prevInfo,
-                totTime: res[0].totTime * 8 + ' hr.'
+                totTime: res[0].totTime
             }));
         }
     };
 
-    const getTotalExpense = async () => {
+    const getDailyWorkHours = async () => {
+        const requests = projectExpensePopQueryIdList.map(queryId => fetchApiData(queryId));
+        const results = await Promise.all(requests);
+        setData(results.flat());
+    }
+
+    /** 총 시간, 영수증 개수, 금액 */
+    const getExpenseTotalInfo = async () => {
         const res = await fetchApiData("indvdlClmMapper.retrieveExpenseTotal");
         if (res[0] !== null) {
             setTotalInfo(prevInfo => ({
@@ -54,20 +65,6 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo }) => {
                 totalUtztnAmt: res[0].totalUtztnAmt,
                 totalCount: res[0].totalCount + ' 개'
             }));
-        }
-    };
-
-    const getData = async () => {
-        try {
-            const [workTimeResponse, ctrtDayResponse] = await Promise.all([
-                fetchApiData("indvdlClmMapper.retrievePrjctWorkTime"),
-                fetchApiData("indvdlClmMapper.retrieveCtrtDay")
-            ]);
-    
-            const combinedData = [...workTimeResponse, ...ctrtDayResponse];
-            setData(combinedData);
-        } catch (error) {
-            console.error('error', error);
         }
     };
 
@@ -107,7 +104,7 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo }) => {
                         </div>
                     </div>
                 );
-            default:
+            case "time":
                 const dataSource = new PivotGridDataSource({
                     fields: pop.info,
                     store: data
@@ -117,34 +114,44 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo }) => {
                         values={dataSource}
                         blockCollapse={true}
                         grandTotals={true}
+                        width={1000}
                     />
                 )
+            default:
+                return( <ProjectExpenseCashCardReport basicInfo={basicInfo} /> )
         }
     };
 
     const contentArea = () => {
         return (
             <div>
-                <div style={{ textAlign: 'right' }}>
-                    <Button text="출력" type="success" />
-                </div>
-
-                {projectExpensePopup.map((pop) => (
-                    <div>
-                        <span>{pop.title}</span>
-                        <div style={{ marginTop: "10px", marginBottom: "20px" }}>
-                            {renderTable(pop)}
+                {aprvInfo.totCnt === aprvInfo.aprv ? 
+                    <div ref={contentRef} >
+                        <div style={{ textAlign: 'right' }}>
+                            <ReactToPrint 
+                                trigger={() => ( <Button text='출력' type='success' icon='print' /> )}
+                                content={() => contentRef.current} 
+                                pageStyle="@page { size: A4; ratio:100%; }" 
+                            />
                         </div>
+                        {projectExpensePopup.map((pop) => (
+                            <div key={pop.key}>
+                                <span>{pop.title}</span>
+                                <div style={{ marginTop: "10px", marginBottom: "20px" }}>
+                                    {renderTable(pop)}
+                                </div>
+                            </div>
+                        ))}
                     </div>
-                ))}
+                : <span>결재 진행중인 청구내역이 있습니다.</span> }
             </div>
         );
     };
 
     return (
-        <div>
+        <div style={{marginBottom: '100px'}}>
             <Popup
-                width={1100}
+                width={1050}
                 height={1000}
                 visible={visible}
                 onHiding={onPopHiding}

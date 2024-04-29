@@ -6,7 +6,7 @@ import { exportPivotGrid } from 'devextreme/excel_exporter';
 
 
 const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fileName, sorting, filtering, 
-    isExport, grandTotals }) => {
+    isExport, grandTotals, width }) => {
 
     const isDataCell = (cell) => (cell.area === 'data' && cell.rowType === 'D' && cell.columnType === 'D');
 
@@ -153,6 +153,7 @@ const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fi
 
     return (
         <PivotGrid
+            width={width}
             allowSortingBySummary={true}
             allowSorting={sorting}
             allowFiltering={filtering}

@@ -225,6 +225,12 @@
       { "dataField": "prjctNm", "caption": "프로젝트명", "area": "row", "expanded": true, "showTotals": false },
       { "dataField": "aplyDay", "area": "column" },
       { "dataField": "md", "area": "data", "summaryType": "sum" }
-    ]}
+    ]},
+    { "title": "* 현금 및 개인법인카드 사용비용", "key": "expense" }
+  ],
+  "projectExpensePopQueryIdList": [
+    "indvdlClmMapper.retrieveVcatnDay",
+    "indvdlClmMapper.retrieveCtrtDay",
+    "indvdlClmMapper.retrievePrjctWorkDay"
   ]
 }
