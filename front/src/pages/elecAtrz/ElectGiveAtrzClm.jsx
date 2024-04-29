@@ -8,8 +8,10 @@ const ElectGiveAtrzClm = ({onSendData}) => {
     const location = useLocation();
     const formData = location.state.formData;
     const labelValue = ElectGiveAtrzClmJson.labelValue;
-    labelValue.giveYmd.param.queryId.elctrnAtrzId = formData.elctrnAtrzId
-    const [clmData, setClmData] = useState({"ctrtElctrnAtrzId":formData.elctrnAtrzId});
+    labelValue.giveYmd.param.queryId.ctrtElctrnAtrzId = formData.ctrtElctrnAtrzId
+    const [clmData, setClmData]
+     = useState({"ctrtElctrnAtrzId":formData.ctrtElctrnAtrzId
+                ,"tbNm": "CTRT_GIVE_ATRZ"});
 
     console.log("location", location)
 

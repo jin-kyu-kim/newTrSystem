@@ -669,7 +669,8 @@
 		  FROM PRJCT
 		 WHERE PRJCT_CD_IDNTFR LIKE CONCAT(#{ctmmnyId},'%')
 	</select>
-	
+
+    <!-- 프로젝트비용승인: 인력 데이터그리드 조회 -->
 	<select id="retrieveMmAply" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT dept.DEPT_NM
 		     , e.EMP_FLNM
@@ -765,7 +766,7 @@
 		
 	</select>
 
-	
+    <!-- 프로젝트비용승인: 경비 데이터그리드 조회 -->
 	<select id="retrieveCtAply" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT dept.DEPT_NM
 			 , e.EMP_FlNM
@@ -805,6 +806,7 @@
 		 GROUP BY e.EMP_ID
 	</select>
 
+    <!-- 프로젝트비용승인: 경비 전체 승인 취소 (전자결재 제외) -->
     <update id="updateCtAply" parameterType="map">
         UPDATE PRJCT_CT_ATRZ pcat
         JOIN PRJCT_CT_APLY pca ON (pcat.EMP_ID = pca.EMP_ID AND pcat.APLY_YM = pca.APLY_YM
@@ -821,6 +823,7 @@
           AND pca.ELCTRN_ATRZ_ID IS NULL
     </update>
 
+    <!-- 프로젝트비용승인: 경비 상세 팝업 조회 -->
 	<select id="retrieveProjectCtAplyDetail" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT CASE
                    WHEN pcat.ATRZ_DMND_STTS_CD = 'VTW03702' THEN 1
@@ -850,7 +853,8 @@
 		   AND pca.APLY_ODR = #{aplyOdr}
 		   AND pca.EMP_ID = #{empId}
 	</select>
-	
+
+    <!-- 프로젝트비용승인: 인력 상세 팝업 조회 -->
 	<select id="retrieveProjectMmAplyDetail" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT CASE
                    WHEN pah.ATRZ_DMND_STTS_CD = 'VTW03702' THEN 1
@@ -895,6 +899,7 @@
 	     AND pma.APLY_ODR = #{aplyOdr}
 	</select>
 
+    <!-- 프로젝트비용승인: 인력 세부리스트 조회 -->
     <select id="retrieveProjectMmChild" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT pma.PRJCT_ID
              , pma.APLY_YM
@@ -914,6 +919,7 @@
           AND pmat.ATRZ_DMND_STTS_CD IN ('VTW03702', 'VTW03703', 'VTW03704')
     </select>
 
+    <!-- 프로젝트비용승인: 경비 세부리스트 조회 -->
     <select id="retrieveProjectCtChild" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT pca.PRJCT_ID
              , pca.APLY_YM
@@ -1393,6 +1399,7 @@
         GROUP BY PRJCT_MNG_AUTHRT_CD
     </select>
 
+    <!-- 프로젝트비용승인: 인력 결재완료여부 변경 -->
     <select id="retrieveMmAtrzDmndSttsCd" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
             COUNT(*) AS TOTAL_COUNT
@@ -1404,6 +1411,7 @@
           AND EMP_ID = #{empId}
     </select>
 
+    <!-- 프로젝트비용승인: 경비 결재완료여부 변경 -->
     <select id="retrieveCtAtrzDmndSttsCd" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
             COUNT(*) AS TOTAL_COUNT
@@ -1484,4 +1492,46 @@
 	        </if>
 		GROUP BY EMP_ID,EMPNO,EMP_FLNM,BRDT,TELNO,EML
     </select>
+
+    <!-- 프로젝트비용승인 : 지난 차수 데이터 승인: 개인비용MM 없으면 인서트 -->
+    <insert id="insertCtMm" parameterType="map">
+        INSERT IGNORE INTO PRJCT_INDVDL_CT_MM (PRJCT_ID, EMP_ID, APLY_YM, APLY_ODR, MM_ATRZ_CMPTN_YN, CT_ATRZ_CMPTN_YN)
+        VALUES(	#{prjctId}, #{empId}, #{aplyYm}, #{aplyOdr}, 'N', 'Y')
+    </insert>
+
+    <!-- 프로젝트비용승인 : 지난 차수 데이터 승인: 경비 신청 조회-->
+    <select id="retrievePrjctCtAply" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT *
+        FROM PRJCT_CT_APLY
+        WHERE 1=1
+          AND PRJCT_ID = #{prjctId}
+          AND EMP_ID = #{empId}
+          AND APLY_YM = #{aplyYm}
+          AND APLY_ODR = #{aplyOdr}
+          AND PRJCT_CT_APLY_SN = #{prjctCtAplySn}
+    </select>
+
+    <!-- 프로젝트비용승인 : 지난 차수 데이터 승인: 경비 결재 조회-->
+    <select id="retrievePrjctCtAtrz" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT *
+        FROM PRJCT_CT_ATRZ
+        WHERE 1=1
+          AND PRJCT_ID = #{prjctId}
+          AND EMP_ID = #{empId}
+          AND APLY_YM = #{aplyYm}
+          AND APLY_ODR = #{aplyOdr}
+          AND PRJCT_CT_APLY_SN = #{prjctCtAplySn}
+    </select>
+
+    <!-- 프로젝트비용승인 : 지난 차수 데이터 승인: 경비 결재 기존데이터 업데이트 -->
+    <update id="updatePrjctCtAtrz" parameterType="map">
+        UPDATE PRJCT_CT_ATRZ pcat
+        SET
+            pcat.ATRZ_DMND_STTS_CD = 'VTW03708'
+        WHERE pcat.EMP_ID = #{empId}
+          AND pcat.APLY_YM = #{aplyYm}
+          AND pcat.APLY_ODR = #{aplyOdr}
+          AND pcat.PRJCT_ID = #{prjctId}
+          AND pcat.PRJCT_CT_APLY_SN = #{prjctCtAplySn}
+    </update>
 </mapper>

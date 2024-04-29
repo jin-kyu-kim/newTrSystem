@@ -32,10 +32,11 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd }) =
 
         /* 재료비 계약, 외주업체 계약, 외주인력 계약 */
         } else if(["VTW04908","VTW04909","VTW04910","VTW04914"].includes(detailData.elctrnAtrzTySeCd)){
+            const elctrnAtrzId = detailData.ctrtElctrnAtrzId ? detailData.ctrtElctrnAtrzId : detailData.elctrnAtrzId;
             const getCtrtInfo = async () => {
                 try {
                     const response = await ApiRequest('/boot/common/commonSelect', 
-                                     [{ tbNm: "CTRT_ATRZ" }, { elctrnAtrzId: detailData.elctrnAtrzId }]
+                                     [{ tbNm: "CTRT_ATRZ" }, { elctrnAtrzId: elctrnAtrzId }]
                     );
                     setData(response);
                     console.log("response",response);

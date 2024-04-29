@@ -73,7 +73,7 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd, ctrtTyCd}) =
     const getTempData = async () => {
         const dtlParam = 
             { queryId: "elecAtrzMapper.retrieveEntrpsCtrtDtl",
-              elctrnAtrzId: data.elctrnAtrzId,
+              elctrnAtrzId: data.ctrtElctrnAtrzId ? data.ctrtElctrnAtrzId : data.elctrnAtrzId,
               elctrnAtrzTySeCd: ctrtTyCd ? ctrtTyCd : data.elctrnAtrzTySeCd}    
         const dtlResponse = await ApiRequest("/boot/common/queryIdSearch", dtlParam);
 
@@ -81,7 +81,7 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd, ctrtTyCd}) =
 
         const dtlCndParam = {
             queryId: "elecAtrzMapper.retrieveEntrpsCtrtDtlCnd",
-            elctrnAtrzId: data.elctrnAtrzId }
+            elctrnAtrzId: data.ctrtElctrnAtrzId ? data.ctrtElctrnAtrzId : data.elctrnAtrzId }
 
         const dtlCndResponse = await ApiRequest("/boot/common/queryIdSearch", dtlCndParam);
 

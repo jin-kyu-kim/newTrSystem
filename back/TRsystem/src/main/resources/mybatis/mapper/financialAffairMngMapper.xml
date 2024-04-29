@@ -526,6 +526,7 @@
                 AND pca.EMP_ID = pah.EMP_ID
                 AND pca.APLY_YM = pah.APLY_YM
                 AND pca.APLY_ODR = pah.APLY_ODR
+                <!--
                 AND pah.PRJCT_CT_APLY_SN = (
                     SELECT MAX(PRJCT_CT_APLY_SN)
                     FROM PRJCT_CT_ATRZ a
@@ -533,7 +534,9 @@
                         AND a.EMP_ID = pah.EMP_ID
                         AND a.APLY_YM = pah.APLY_YM
                         AND a.APLY_ODR = pah.APLY_ODR
-            )
+            	)
+            	-->
+            	AND pca.PRJCT_CT_APLY_SN = pah.PRJCT_CT_APLY_SN
             WHERE 1 = 1
             <if test="aplyYm != null and !aplyYm.equals('')">
                 AND pca.APLY_YM = #{aplyYm}
@@ -572,13 +575,13 @@
             ) AS DEPT_NM_ALL
             , AA.TELNO
             , (SELECT CD_NM FROM CD WHERE CD_VALUE = AA.HDOF_STTS_CD) AS HDOF_STTS_NM
-            , IFNULL(BB.CNT, 0) AS CNT
-            , IFNULL(BB.PRJ_REJECT, 0) AS PRJ_REJECT
-            , IFNULL(BB.PRJ_COMPLETE, 0) AS PRJ_COMPLETE
+            , IFNULL(BB.CT_CNT, 0) AS CT_CNT
+            , IFNULL(BB.CT_REJECT, 0) AS CT_REJECT
+            , IFNULL(BB.CT_COMPLETE, 0) AS CT_COMPLETE
             , IFNULL(CC.MD_SUM,0)*8 AS MD_SUM
             , IFNULL(CC.VAC_SUM,0)*8 AS VAC_SUM
-            , (CASE WHEN CC.ATRZ_DMND_STTS_CD = 'VTW03704' THEN CC.MD_SUM  ELSE 0 END)*8 AS MM_REJECT
-            , (CASE WHEN CC.ATRZ_DMND_STTS_CD = 'VTW03703' THEN CC.MD_SUM  ELSE 0 END)*8 AS MM_COMPLETE
+            , IFNULL(CC.MM_REJECT, 0) AS MM_REJECT
+            , IFNULL(CC.MM_COMPLETE, 0) AS MM_COMPLETE
             , CONCAT(BB.APLY_YM, '-', BB.APLY_ODR) AS TR_ODR
             , BB.APLY_YM
             , BB.APLY_ODR
@@ -589,18 +592,18 @@
 			SELECT T1.EMP_ID
 				 , T1.APLY_YM
 				 , T1.APLY_ODR
-				 , IFNULL(T1.CNT, 0) AS CNT
-				 , IFNULL(T2.PRJ_COMPLETE, 0) AS PRJ_COMPLETE
-				 , IFNULL(T3.PRJ_REJECT, 0) AS PRJ_REJECT
+				 , IFNULL(T1.CT_CNT, 0) AS CT_CNT
+				 , IFNULL(T2.CT_COMPLETE, 0) AS CT_COMPLETE
+				 , IFNULL(T3.CT_REJECT, 0) AS CT_REJECT
 				 , T1.CT_ATRZ_CMPTN_YN
 			  FROM (
 				  SELECT pca.EMP_ID
 					   , pca.APLY_YM 
 					   , pca.APLY_ODR 
-					   , COUNT(1) CNT
+					   , COUNT(1) CT_CNT
 					   , picm.CT_ATRZ_CMPTN_YN
 				    FROM PRJCT_CT_APLY pca
-				    JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN)
+				    JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
 				    JOIN PRJCT_INDVDL_CT_MM picm ON (pca.PRJCT_ID = picm.PRJCT_ID AND pca.EMP_ID = picm.EMP_ID AND pca.APLY_YM = picm.APLY_YM AND pca.APLY_ODR = picm.APLY_ODR)
 				   WHERE 1=1
 				     AND pca.APLY_YM = #{aplyYm}
@@ -611,10 +614,10 @@
 				  SELECT pca.EMP_ID
 					   , pca.APLY_YM 
 					   , pca.APLY_ODR 
-					   , COUNT(1) AS PRJ_COMPLETE
+					   , COUNT(1) AS CT_COMPLETE
 		 			   , picm.CT_ATRZ_CMPTN_YN
 				    FROM PRJCT_CT_APLY pca
-				    JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN)
+				    JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
 		  		    JOIN PRJCT_INDVDL_CT_MM picm ON (pca.PRJCT_ID = picm.PRJCT_ID AND pca.EMP_ID = picm.EMP_ID AND pca.APLY_YM = picm.APLY_YM AND pca.APLY_ODR = picm.APLY_ODR)
 				   WHERE 1=1
 				     AND pca.APLY_YM = #{aplyYm}
@@ -626,10 +629,10 @@
 				  SELECT pca.EMP_ID
 					   , pca.APLY_YM 
 					   , pca.APLY_ODR 
-					   , COUNT(1) AS PRJ_REJECT
+					   , COUNT(1) AS CT_REJECT
 		  			   , picm.CT_ATRZ_CMPTN_YN
 				    FROM PRJCT_CT_APLY pca
-				    JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN)
+				    JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
 				    JOIN PRJCT_INDVDL_CT_MM picm ON (pca.PRJCT_ID = picm.PRJCT_ID AND pca.EMP_ID = picm.EMP_ID AND pca.APLY_YM = picm.APLY_YM AND pca.APLY_ODR = picm.APLY_ODR)
 				   WHERE 1=1
 				     AND pca.APLY_YM = #{aplyYm}
@@ -640,7 +643,15 @@
         ) BB
             ON BB.EMP_ID = AA.EMP_ID
         LEFT OUTER JOIN (
-            SELECT T1.EMP_ID , T1.APLY_YM , T1.APLY_ODR ,T2.ATRZ_DMND_STTS_CD, SUM(COALESCE(T1.MD, 0)) AS MD_SUM, SUM(COALESCE(T1.YRYC_RATE , 0)) AS VAC_SUM, T2.MM_ATRZ_CMPTN_YN
+            SELECT T1.EMP_ID
+            	 , T1.APLY_YM
+            	 , T1.APLY_ODR
+            	 , T2.ATRZ_DMND_STTS_CD
+            	 , SUM(COALESCE(T1.MD, 0)) AS MD_SUM
+            	 , SUM(COALESCE(T1.YRYC_RATE , 0)) AS VAC_SUM
+	          	 , CASE WHEN T2.ATRZ_DMND_STTS_CD = 'VTW03703' THEN SUM(COALESCE(T1.MD, 0)) ELSE 0 END *8 AS MM_COMPLETE
+         		 , CASE WHEN T2.ATRZ_DMND_STTS_CD = 'VTW03704' THEN SUM(COALESCE(T1.MD, 0)) ELSE 0 END *8 AS MM_REJECT
+            	 , T2.MM_ATRZ_CMPTN_YN
             FROM PRJCT_MM_APLY T1
             JOIN (
                 SELECT A.PRJCT_ID, A.EMP_ID , A.APLY_YM , A.APLY_ODR, B.ATRZ_DMND_STTS_CD, B.APLY_YMD, A.MM_ATRZ_CMPTN_YN
@@ -669,28 +680,94 @@
         <if test="empId != null and empId !=''">
             AND AA.EMP_ID = #{empId}
         </if>
-        <choose>
-			<when test="mm03701 == true and mm03701Min == true">
-			  AND (MD_SUM > 0 OR IFNULL(MD_SUM, 0) = 0)
-			</when>
-			<when test="mm03701 == true">
-			  AND MD_SUM > 0
-			</when>
-			<when test="mm03701Min == true">
-			  AND IFNULL(MD_SUM, 0) = 0
-			</when>
-		</choose>
-        <choose>
-			<when test="ct03701 == true and ct03701Min == true">
-			  AND (CNT > 0 OR IFNULL(CNT, 0) = 0)
-			</when>
-			<when test="ct03701 == true">
-			  AND CNT > 0
-			</when>
-			<when test="ct03701Min == true">
-			  AND IFNULL(CNT, 0) = 0
-			</when>
-		</choose>
+		<if test="allVtw != true">
+	        <choose>
+				<when test="mm03701 == true and mm03701Min == true">
+				  AND (MD_SUM > 0 OR IFNULL(MD_SUM, 0) = 0)
+				</when>
+				<when test="mm03701 == true">
+				  AND MD_SUM > 0
+				</when>
+				<when test="mm03701Min == true">
+				  AND IFNULL(MD_SUM, 0) = 0
+				</when>
+			</choose>
+	        <choose>
+				<when test="ct03701 == true and ct03701Min == true">
+				  AND (CT_CNT > 0 OR IFNULL(CT_CNT, 0) = 0)
+				</when>
+				<when test="ct03701 == true">
+				  AND CT_CNT > 0
+				</when>
+				<when test="ct03701Min == true">
+				  AND IFNULL(CT_CNT, 0) = 0
+				</when>
+			</choose>
+	        <choose>
+				<when test="mm03702 == true and mm03702Min == true">
+				<![CDATA[
+				  AND ((CC.MM_ATRZ_CMPTN_YN IS NULL AND BB.CT_CNT > 0) OR CC.MM_ATRZ_CMPTN_YN IS NOT NULL)
+	  			]]>
+				</when>
+				<when test="mm03702 == true">
+				  AND CC.MM_ATRZ_CMPTN_YN IS NOT NULL
+				</when>
+				<when test="mm03702Min == true">
+				<![CDATA[
+				  AND (CC.MM_ATRZ_CMPTN_YN IS NULL AND BB.CT_CNT > 0)
+	  			]]>
+				</when>
+			</choose>
+	        <choose>
+				<when test="ct03702 == true and ct03702Min == true">
+				<![CDATA[
+				  AND ((BB.CT_ATRZ_CMPTN_YN IS NULL AND BB.CT_CNT > 0) OR BB.CT_ATRZ_CMPTN_YN IS NOT NULL)
+	  			]]>
+				</when>
+				<when test="ct03702 == true">
+				  AND BB.CT_ATRZ_CMPTN_YN IS NOT NULL 
+				</when>
+				<when test="ct03702Min == true">
+				<![CDATA[
+				  AND (BB.CT_ATRZ_CMPTN_YN IS NULL AND BB.CT_CNT > 0)
+				]]>
+				</when>
+			</choose>
+	        <choose>
+				<when test="mm037034 == true and mm037034Min == true">
+				<![CDATA[ 
+				  AND (CC.MM_REJECT > 0 OR CC.MM_COMPLETE > 0 OR CC.MM_REJECT <= 0 OR CC.MM_COMPLETE <= 0)
+				]]>
+				</when>
+				<when test="mm037034 == true">
+				<![CDATA[ 
+				  AND (CC.MM_REJECT > 0 OR CC.MM_COMPLETE > 0)
+	  			]]>
+				</when>
+				<when test="mm037034Min == true">
+				<![CDATA[ 
+				  AND (CC.MM_REJECT <= 0 AND CC.MM_COMPLETE <=0)
+	  			]]>
+				</when>
+			</choose>
+	        <choose>
+				<when test="ct037034 == true and ct037034Min == true">
+				<![CDATA[ 
+				  AND (BB.CT_REJECT > 0 OR BB.CT_COMPLETE > 0 OR BB.CT_REJECT <= 0 OR BB.CT_COMPLETE <= 0)
+				]]>
+				</when>
+				<when test="ct037034 == true">
+				<![CDATA[ 
+				  AND (BB.CT_REJECT > 0 OR BB.CT_COMPLETE > 0)
+	  			]]>
+				</when>
+				<when test="ct037034Min == true">
+				<![CDATA[ 
+				  AND (BB.CT_REJECT <= 0 AND BB.CT_COMPLETE <=0)
+	  			]]>
+				</when>
+			</choose>			
+		</if>
     </select>
 
     <!--/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
