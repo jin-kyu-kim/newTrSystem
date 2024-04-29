@@ -427,7 +427,7 @@
 			   CTRT_AMT AS VAT_EXCL_AMT
 		FROM ENTRPS_CTRT_DTL_CND
 		WHERE 1=1
-		AND ELCTRN_ATRZ_ID= #{elctrnAtrzId}
+		AND ELCTRN_ATRZ_ID= #{ctrtElctrnAtrzId}
 	</select>
 	
 	
