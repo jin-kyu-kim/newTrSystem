@@ -81,9 +81,9 @@
         {"value": "프로젝트비용",
         "subColumns": [
             { "value": "입력화면", "button": {"text": "이동", "name": "prjctScrnMv"}, "width": 80},
-            { "key": "cnt", "value": "입력", "width": 40},
-            { "key": "prjReject", "value": "반려", "width": 40},
-            { "key": "prjComplete", "value": "승인", "width": 40 },
+            { "key": "ctCnt", "value": "입력", "width": 40},
+            { "key": "ctReject", "value": "반려", "width": 40},
+            { "key": "ctComplete", "value": "승인", "width": 40 },
             { "value": "취소", "button": {"text": "비용취소", "name": "ctRtrcn", "able": {"key": "cnt", "exceptValue": 0}}, "width": 80 }
         ]},
         {  "value": "회사지불비용", "width": 80, "button": {"text" : "이동", "name" : "companyPrice"} },
