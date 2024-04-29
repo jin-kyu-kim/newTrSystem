@@ -10,7 +10,6 @@ export async function signIn(empno, password) {
           "Content-Type": "application/json",
         },
       });
-
       if(response){
       localStorage.setItem("isLoggedIn", true);
       localStorage.setItem("token", response.data.token);
@@ -25,10 +24,16 @@ export async function signIn(empno, password) {
         data: response
       };
     }
-  } catch {
+  } catch (error){
+    let errorData;
+    if(error.response.data){
+      errorData = error.response.data;
+    }else{
+      errorData = "로그인 오류"
+    }
     return {
       isOk: false,
-      data: {msg:"Authentication failed"}
+      data: errorData
     };
   }
 }
@@ -55,7 +60,7 @@ export async function getUser() {
   }
 }
 
-export async function setTokenExtension(token) {
+export async function setTokenExtension() {
   try {
     const response = await ApiRequest("/boot/sysMng/tokenExtension", null);
     if(response){
@@ -69,4 +74,14 @@ export async function setTokenExtension(token) {
   } catch(error) {
     console.error("Extension Error", error.message);
   }
+}
+
+export async function setIntlPwsdYn(empId, intlPwsdYn) {
+  const param = [
+    { tbNm: "LGN_USER" },
+    { intlPwsdYn: intlPwsdYn },
+    { empId}
+  ];
+
+    await ApiRequest("/boot/common/commonUpdate", param);
 }
