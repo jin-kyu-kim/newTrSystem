@@ -1,34 +1,22 @@
-import { useEffect, useState } from 'react';
-import { NumberBox } from "devextreme-react/number-box";
-import SelectBox from "devextreme-react/select-box";
-import TextBox from "devextreme-react/text-box";
-import { DateBox } from 'devextreme-react/date-box';
-import { Button } from "devextreme-react";
-import Box, { Item } from "devextreme-react/box"
+import { useEffect, useState, useRef } from 'react';
+import { useNavigate } from "react-router-dom";
+
+import { NumberBox, SelectBox, TextBox, DateBox, Button, Box } from "devextreme-react";
+import { Item } from "devextreme-react/box"
+
+// 날짜관련
+// npm install moment
+import Moment from "moment"
+
 import CustomTable from "components/unit/CustomTable";
 import CustomCdComboBox from "components/unit/CustomCdComboBox";
-import AutoCompleteName from "components/unit/AutoCompleteName"
 import CustomEmpComboBox from "components/unit/CustomEmpComboBox"
-import ApiRequest from "../../utils/ApiRequest";
-import EmpVcatnAltmntMngJson from "../humanResourceMng/EmpVcatnAltmntMngJson.json"
-import Moment from "moment"     // npm install moment
+import EmpVcatnAltmntMngJson from "pages/humanResourceMng/EmpVcatnAltmntMngJson.json"
+import ApiRequest from "utils/ApiRequest";
+import { Select } from '@mui/material';
+
 
 const { listQueryId, listKeyColumn, listTableColumns, insertQueryId } = EmpVcatnAltmntMngJson;
-
-
-/* ========================= 화면레이아웃  =========================*/
-const divStyle = {
-    marginTop: "10px"
-}
-
-const textAlign = {
-    textAlign: "center",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    fontSize: "14px"
-}
-/* ========================= 화면레이아웃  =========================*/
 
 
 // 현재년도
@@ -59,169 +47,136 @@ function getYearList(startYear, endYear) {
  * @description 휴가배정관리 화면을 구현한다
  */
 const EmpVcatnAltmntMng = () => {
-    // 직원별휴가목록조회
-    const [selectEmpVacListValue, setSelectEmpVacListValue] = useState([]);
-    const [selectEmpVacListParam, setSelectEmpVacListParam] = useState({
-        queryId: listQueryId,
-        searchType: "empVac",
-    });
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        getEmpVacList();
+        getDeptList();
+        getCodeList();
+    }, [])
+
+
+
+
 
     // 직원별휴가목록조회
-    useEffect(() => {
-        if (!Object.values(selectEmpVacListParam).every((value) => value === "")) {
-            selectData(selectEmpVacListParam);
-        }
-    }, [selectEmpVacListParam]);
+    const [selectEmpVacListValue, setSelectEmpVacListValue] = useState([]);
 
     // 부서목록조회
     const [selectDeptListValue, setSelectDeptListValue] = useState([]);
-    const [searchDeptListParam, setSearchDeptListParam] = useState({
-        queryId: "humanResourceMngMapper.retrieveDeptInq",
-        searchType: "deptList",
-    });
 
     // 부서목록조회
-    useEffect(() => {
-        if (!Object.values(searchDeptListParam).every((value) => value === "")) {
-            selectData(searchDeptListParam);
-        };
-    }, [searchDeptListParam]);
+    const [selectJobCdListValue, setSelectJobCdListValue] = useState([]);
+
+    // 부서목록조회
+    const [selectHdofSttsCdListValue, setSelectHdofSttsCdListValue] = useState([]);
+
+
+    // 직원별휴가목록조회
+    const getEmpVacList = async () => {
+        try {
+            setSelectEmpVacListValue(await ApiRequest("/boot/common/queryIdSearch", { queryId: "humanResourceMngMapper.retrieveEmpVcatnInfo" }));
+        } catch (error) {
+            console.log("getEmpVacList_error : ", error);
+        }
+    };
+
+
+    // 부서목록조회
+    const getDeptList = async () => {
+        try {
+            setSelectDeptListValue(await ApiRequest('/boot/common/commonSelect', [{ tbNm: "DEPT" }]));
+        } catch (error) {
+            console.log('getDeptList_error', error);
+        }
+    };
+
+    // 코드조회
+    const getCodeList = async () => {
+        try {
+            setSelectJobCdListValue(await ApiRequest('/boot/common/commonSelect', [{ tbNm: "CD" }, { upCdValue: "VTW001" }]));
+            setSelectHdofSttsCdListValue(await ApiRequest('/boot/common/commonSelect', [{ tbNm: "CD" }, { upCdValue: "VTW003" }]));
+        } catch (error) {
+            console.log('getDeptList_error', error);
+        }
+    };
 
 
     // 조회조건
-    const [searchParam, setSearchParam] = useState({
-        queryId: "",
-        vcatnYr: "",
-        empno: "",
-        empFlnm: "",
-        jobCd: "",
-        deptId: "",
-        hdofSttsCd: ""
-    });
+    const [searchParam, setSearchParam] = useState({ queryId: "humanResourceMngMapper.retrieveEmpVcatnInfo" });
+
+    // 휴가배정정보
+    const [selectValue, setSelectValue] = useState({ empId: "", useDaycnt: "", newUseDaycnt: "" });
 
 
-    // 직원목록에서 선택된 상세 데이터정보
-    const [selectValue, setSelectValue] = useState([]);
+    const [paramFlag, setParamFlag] = useState({ readOnlyCtr: true, insertVcantFlag: 0 });
 
-    // 저장에 사용될 데이터정보
-    const [insertValue, setInsertValue] = useState([]);
 
-    // param 변경 시 validation 확인 후 저장로직 호출
-    useEffect(() => {
-        if (!Object.values(insertValue).every((value) => value === "")) {
-            insertPageHandle(insertValue);
-        }
-    }, [insertValue]);
+
 
     // 조회
-    const selectData = async (initParam) => {
+    const onSearch = async () => {
         try {
-            if (initParam.searchType == "deptList") setSelectDeptListValue(await ApiRequest("/boot/common/queryIdSearch", initParam));
-            else if (initParam.searchType == "empVac") setSelectEmpVacListValue(await ApiRequest("/boot/common/queryIdSearch", initParam));
+            setSelectEmpVacListValue(await ApiRequest("/boot/common/queryIdSearch", searchParam));
+            setSelectValue();
         } catch (error) {
-            console.log(error);
+            console.log("getEmpVacList_error : ", error);
         }
     };
 
 
-    /* ========================= 검색조건  =========================*/
-    // CustomCdComboBox 검색조건 설정
-    const handleChgState = ({ name, value }) => {
-        setSearchParam({
-            ...searchParam,
-            [name]: value
-        });
-    };
-
-    // SelectBox & TextBox 검색조건 설정
-    function onSearchChg(param, e) {
-        setSearchParam({
-            ...searchParam,
-            [param]: e
-        })
-    }
-
-    // 조회
-    const searchHandle = () => {
-        setSelectEmpVacListParam({
-            ...searchParam,
-            queryId: listQueryId,
-            searchType: "empVac",
-        });
-        setSelectValue({
-
-        })
-    }
-    /* ========================= 검색조건  =========================*/
 
 
 
     // 좌측의 직원목록에서 더블클릭한 행의 데이터 셋팅
     function onRowDblClick(e) {
-        setSelectValue({
-            empId: e.data.empId,
-            empno: e.data.empno,
-            empFlnm: e.data.empFlnm,
-            vcatnYr: e.data.vcatnYr,
-            vcatnAltmntDaycnt: e.data.vcatnAltmntDaycnt,
-            useDaycnt: e.data.useDaycnt,
-            vcatnRemndrDaycnt: e.data.vcatnRemndrDaycnt,
-            newVcatnAltmntDaycnt: e.data.newVcatnAltmntDaycnt,
-            newUseDaycnt: e.data.newUseDaycnt,
-            newRemndrDaycnt: e.data.newRemndrDaycnt,
-            altmntBgngYmd: e.data.altmntBgngYmd,
-            altmntUseEndYmd: e.data.altmntUseEndYmd,
-            visibleCtr: true,
-            nameReadOnlyCtr: true,
-            isNew: false,
+        setSelectValue(e.data);
+        setParamFlag({
+            insertVcantFlag: 0,
+            readOnlyCtr: true,
         })
     }
 
-    // 우측의 SelectBox 성명 변경
-    function onSelectEmpFlnmChg(e) {
-        setSelectValue({
-            ...selectValue,
-            empno: e[0].empno,
-            empId: e[0].empId,
-            visibleCtr: ((e == null || e == "") ? false : true)
-        })
-    }
+    useEffect(() => {
+        console.log("selectValue : ", selectValue);
+    }, [selectValue])
 
-    /**
-     * @param {string} param 검색조건으로 설정할 key값
-     * @param {*} e 검색조건으로 설정할 value값
-    */
-    function onSelectChg(param, e) {
-        if (param == "altmntBgngYmd" || param == "altmntUseEndYmd") e = Moment(e).format('YYYYMMDD');
-        setSelectValue({
-            ...selectValue,
-            [param]: e
-        })
-    }
 
-    /**
-     * @param {*} e 
-     * @description 휴가배정정보를 저장한다.
-     */
+
+
+
+
+
+
+    // 휴가배정정보저장
     function btnSaveClick(e) {
-        const isconfirm = window.confirm("휴가정보를 저장 하시겠습니까?");
-        if (isconfirm) {
-            insertVcatn();
-        } else {
+        let errorMsg;
+
+        if (!selectValue.empId) errorMsg = "사원을 선택하세요."
+        else if (!selectValue.altmntBgngYmd) errorMsg = "시작사용기간을 입력하세요."
+        else if (!selectValue.altmntUseEndYmd) errorMsg = "종료사용기간을 입력하세요."
+        else if (setParamFlag.insertVcantFlag == 1) {
+            if (!selectValue.vcatnAltmntDaycnt) errorMsg = "배정일수를 입력하세요."
+        }
+        else if (setParamFlag.insertVcantFlag == 2) {
+            if (!selectValue.newVcatnAltmntDaycnt) errorMsg = "배정일수를 입력하세요."
+        }
+
+        if (errorMsg) {
+            alert(errorMsg);
             return;
+        } else {
+            const isconfirm = window.confirm("휴가정보를 저장 하시겠습니까?");
+            if (isconfirm) {
+
+            } else {
+                return;
+            }
         }
     }
 
-    // 저장
-    function insertVcatn() {
-        setInsertValue({
-            ...selectValue,
-            queryId: insertQueryId,
-            vcatnRemndrDaycnt: selectValue.isNew == false ? selectValue.vcatnAltmntDaycnt - selectValue.useDaycnt : vcatnAltmntDaycnt,
-            newRemndrDaycnt: selectValue.isNew == false ? selectValue.newVcatnAltmntDaycnt - selectValue.newUseDaycnt : newVcatnAltmntDaycnt,
-            empId: selectValue.empId,
-        })
-    }
+
+
 
     // 조회후 데이터 셋팅
     const insertPageHandle = async (initParam) => {
@@ -240,33 +195,113 @@ const EmpVcatnAltmntMng = () => {
 
         try {
             const response = await ApiRequest("/boot/common/queryIdSearch", initParam);
-            searchHandle();
-            setSelectValue({
-                ...selectValue
-            })
+            // searchHandle();
+            // setSelectValue({
+            //     ...selectValue
+            // })
         } catch (error) {
             console.log(error);
         }
     };
 
-    // 초기화
-    function btnCancleClick(e) {
-        setSelectValue({
-            vcatnYr: flagYear,
-            isNew: true
+
+
+    function onButtonClick(e, data) {
+        console.log("data : ", data);
+        navigate("/indvdlClm/EmpVacation", {
+            empId: data.empId,
+            empFlnm: data.empFlnm,
+            deptList: [
+
+            ]
         })
     }
 
-    const onLinkedVac = (data) => {
-        alert("휴가상세화면으로 링크");
+
+    function createForm(flag) {
+        return(
+            <>
+                <div className="row" style={{ marginBottom: "20px" }}>
+                    <div className="col-md-2" style={textAlign}>휴가종류</div>
+                    <div className="col-md-4">
+                        <SelectBox
+                            placeholder=""
+                            dataSource={[{ id: "N", value: "회계년도휴가" }, { id: "Y", value: "신규휴가" }]}
+                            valueExpr="id"
+                            displayExpr="value"
+                            readOnly={flag == 0 ? true : false}
+                            onValueChange={(e) => {
+                                setParamFlag({ ...paramFlag, setInsertVcantFlag: e });
+                                setSelectValue({
+                                    ...selectValue,
+                                    vcatnAltmntDaycnt: "",
+                                    newVcatnAltmntDaycnt: "",
+                                    altmntBgngYmd: e == 1 ? flagYear + "0401" : null,
+                                    altmntUseEndYmd: e == 1 ? (flagYear + 1) + "0331" : null,
+                                })
+                            }}
+                        />
+                    </div>
+                </div>
+                <div className="row" style={divStyle}>
+                    <div className="col-md-2" style={textAlign}>성명</div>
+                    <div className="col-md-6">
+                        <CustomEmpComboBox
+                            value={selectValue ? selectValue.empId : ""}
+                            readOnly={paramFlag.readOnlyCtr}
+                            onValueChange={(e) => { setSelectValue({ ...selectValue, empno: e[0].empno, empId: e[0].empId }) }}
+                            useEventBoolean={true}
+                        />
+                    </div>
+                    <div className="col-md-4">
+                        <TextBox
+                            readOnly={true}
+                            value={selectValue ? selectValue.empno : ""}
+                        />
+                    </div>
+                </div>
+                <div className="row" style={{ marginTop: "20px" }}>
+                    <div className="col-md-2" style={textAlign}>사용기한</div>
+                    <div className="col-md-4">
+                        <DateBox
+                            value={selectValue ? selectValue.altmntBgngYmd : ""}
+                            readOnly={paramFlag.readOnlyCtr}
+                            displayFormat="yyyy-MM-dd"
+                            onValueChange={(e) => { setSelectValue({ ...selectValue, altmntBgngYmd: Moment(e).format('YYYYMMDD') }) }} />
+                    </div>
+                    <div className="col-md-2" style={textAlign}>~</div>
+                    <div className="col-md-4">
+                        <DateBox
+                            value={selectValue ? selectValue.altmntUseEndYmd : ""}
+                            readOnly={paramFlag.readOnlyCtr}
+                            displayFormat="yyyy-MM-dd"
+                            onValueChange={(e) => { setSelectValue({ ...selectValue, altmntUseEndYmd: Moment(e).format('YYYYMMDD') }) }} />
+                    </div>
+                </div>
+                <div className="row" style={{ marginTop: "20px" }}>
+                    <div className="col-md-2" style={textAlign}>사용일수</div>
+                    <div className="col-md-4">
+                        <TextBox value={selectValue ? String(selectValue.useDaycnt) : null} readOnly={true} />
+                    </div>
+                    <div className="col-md-2" style={textAlign}>배정일수</div>
+                    <div className="col-md-4">
+                        <NumberBox
+                            step={0.5}
+                            showSpinButtons={true}
+                            showClearButton={true}
+                            readOnly={paramFlag.readOnlyCtr}
+                            value={selectValue ? Number(selectValue.vcatnAltmntDaycnt) : null}
+                            onValueChange={(e) => { setSelectValue({ ...selectValue, vcatnAltmntDaycnt: e }) }}
+                        />
+                    </div>
+                </div>
+            </>
+        )
     }
 
-    useEffect(() => {
-        console.log("searchParam : ", searchParam);
-    }, [searchParam])
 
     return (
-        <div className="" style={{ marginLeft: "7%", marginRight: "7%" }}>
+        <div style={{ marginLeft: "3%", marginRight: "3%" }}>
             <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
                 <h1 style={{ fontSize: "30px" }}>휴가배정관리</h1>
             </div>
@@ -275,55 +310,60 @@ const EmpVcatnAltmntMng = () => {
             </div>
 
             <Box direction="flex">
-                <Item className="" ratio={1}>
+                <Item ratio={1}>
                     <SelectBox
                         placeholder="[년도]"
                         defaultValue={flagYear}
-                        showClearButton={true}
                         dataSource={getYearList(10, 1)}
-                        onValueChange={(e) => { onSearchChg("vcatnYr", e) }} />
+                        onValueChange={(e) => { setSearchParam({ ...searchParam, vcatnYr: e }) }}
+                    />
                 </Item>
-                <Item className="" ratio={1}>
+                <Item ratio={1}>
                     <TextBox
                         placeholder="[사번]"
                         showClearButton={true}
-                        onValueChange={(e) => { onSearchChg("empno", e) }} />
+                        onValueChange={(e) => { setSearchParam({ ...searchParam, empno: e }) }}
+                    />
                 </Item>
-                <Item className="" ratio={1}>
+                <Item ratio={1}>
                     <TextBox
                         placeholder="[성명]"
                         showClearButton={true}
-                        onValueChange={(e) => { onSearchChg("empFlnm", e) }} />
+                        onValueChange={(e) => { setSearchParam({ ...searchParam, empFlnm: e }) }}
+                    />
                 </Item>
-                <Item className="" ratio={1}>
-                    <CustomCdComboBox
-                        placeholderText="[직위]"
-                        param="VTW001"
-                        name="jobCd"
-                        value={searchParam.jobCd} showClearValue={true}
-                        onSelect={handleChgState} />
+                <Item ratio={1}>
+                    <SelectBox
+                        placeholder="[직위]"
+                        showClearValue={true}
+                        dataSource={selectJobCdListValue}
+                        valueExpr="cdValue"
+                        displayExpr="cdNm"
+                        onValueChange={(e) => { setSearchParam({ ...searchParam, jobCd: e }) }}
+                    />
                 </Item>
-                <Item className="" ratio={1}>
+                <Item ratio={1}>
                     <SelectBox
                         placeholder="[소속]"
                         showClearButton={true}
                         dataSource={selectDeptListValue}
                         valueExpr="deptId"
                         displayExpr="deptNm"
-                        onValueChange={(e) => { onSearchChg("deptId", e) }}
+                        onValueChange={(e) => { setSearchParam({ ...searchParam, deptId: e }) }}
                     />
                 </Item>
-                <Item className="" ratio={1}>
-                    <CustomCdComboBox
-                        placeholderText="[재직]"
-                        param="VTW003"
-                        name="hdofSttsCd"
-                        value={searchParam.hdofSttsCd}
+                <Item ratio={1}>
+                    <SelectBox
+                        placeholder="[재직]"
                         showClearValue={true}
-                        onSelect={handleChgState} />
+                        dataSource={selectHdofSttsCdListValue}
+                        valueExpr="cdValue"
+                        displayExpr="cdNm"
+                        onValueChange={(e) => { setSearchParam({ ...searchParam, hdofSttsCd: e }) }}
+                    />
                 </Item>
-                <Item className="searchBtnItem" ratio={1}>
-                    <Button onClick={searchHandle} text="검색" style={{ height: "48px", width: "50px" }} />
+                <Item ratio={1}>
+                    <Button onClick={onSearch} text="검색" style={{ height: "48px", width: "50px" }} />
                 </Item>
             </Box>
 
@@ -336,9 +376,8 @@ const EmpVcatnAltmntMng = () => {
                             keyColumn={listKeyColumn}
                             columns={listTableColumns}
                             values={selectEmpVacListValue}
-                            onRowClick={onRowDblClick}
-                            onClick={onLinkedVac}
-                        // noDataText="조회된 데이터가 없습니다."
+                            onRowDblClick={onRowDblClick}
+                            onClick={onButtonClick}
                         />
                     </div>
                 </div>
@@ -346,89 +385,219 @@ const EmpVcatnAltmntMng = () => {
                     <div style={divStyle}><h4>* 개인별 휴가 배정 입력</h4></div>
                     <div style={divStyle}>휴가 배정일을 입력 시 사용일 및 잔여일은 자동 계산됩니다.</div>
                     <div style={{ marginTop: "10px", flexDirection: "row" }}>
+                    {createForm(1)}
+                        {/* {
+                            paramFlag.readOnlyCtr == false && setParamFlag.insertVcantFlag != 0
+                                ?
+                                <div className="row" style={{ marginBottom: "20px" }}>
+                                    <div className="col-md-2" style={textAlign}>휴가종류</div>
+                                    <div className="col-md-4">
+                                        <SelectBox
+                                            placeholder="휴가종류를 선택하세요."
+                                            defaultValue="N"
+                                            dataSource={[{ id: "N", value: "회계년도휴가" }, { id: "Y", value: "신규휴가" }]}
+                                            valueExpr="id"
+                                            displayExpr="value"
+                                            onValueChange={(e) => {
+                                                setParamFlag({ ...paramFlag, setInsertVcantFlag: e });
+                                                setSelectValue({
+                                                    ...selectValue,
+                                                    vcatnAltmntDaycnt: "",
+                                                    newVcatnAltmntDaycnt: "",
+                                                    altmntBgngYmd: e == 1 ? flagYear + "0401" : null,
+                                                    altmntUseEndYmd: e == 1 ? (flagYear + 1) + "0331" : null,
+                                                })
+                                            }}
+                                        />
+                                    </div>
+                                    {
+                                        setParamFlag.insertVcantFlag == 1
+                                            ?
+                                            <>
+                                                <div className="col-md-2" style={textAlign}>배정년도</div>
+                                                <div className="col-md-4">
+                                                    <SelectBox
+                                                        placeholder="[년도]"
+                                                        defaultValue={flagYear}
+                                                        dataSource={getYearList(0, 1)}
+                                                    />
+                                                </div>
+                                            </>
+                                            :
+                                            <>
+                                                <div className="col-md-2" style={textAlign}>배정년도</div>
+                                                <div className="col-md-4">
+                                                    <TextBox
+                                                        readOnly={true}
+                                                    />
+                                                </div>
+                                            </>
+                                    }
+                                </div>
+                                : <></>
+                        }
                         <div className="row" style={divStyle}>
                             <div className="col-md-2" style={textAlign}>성명</div>
                             <div className="col-md-6">
                                 <CustomEmpComboBox
-                                    value={selectValue.empId}
-                                    readOnly={selectValue.nameReadOnlyCtr}
-                                    onValueChange={onSelectEmpFlnmChg}
+                                    value={selectValue ? selectValue.empId : ""}
+                                    readOnly={paramFlag.readOnlyCtr}
+                                    onValueChange={(e) => { setSelectValue({ ...selectValue, empno: e[0].empno, empId: e[0].empId }) }}
                                     useEventBoolean={true}
                                 />
                             </div>
                             <div className="col-md-4">
                                 <TextBox
                                     readOnly={true}
-                                    value={selectValue.empno}
-                                    visible={selectValue.visibleCtr} />
-                            </div>
-                        </div>
-                        <div style={{ marginTop: "20px", fontSize: "11px", fontWeight: "700" }}>*회계년도기준</div>
-                        <div className="row">
-                            <div className="col-md-2" style={textAlign}>사용일수</div>
-                            <div className="col-md-4">
-                                <TextBox value={selectValue.useDaycnt} readOnly={true} />
-                            </div>
-                            <div className="col-md-2" style={textAlign}>배정일수</div>
-                            <div className="col-md-4">
-                                <NumberBox
-                                    step={0.5}
-                                    showSpinButtons={true}
-                                    showClearButton={true}
-                                    value={selectValue.vcatnAltmntDaycnt}
-                                    onValueChange={(e) => { onSelectChg("vcatnAltmntDaycnt", e) }}
+                                    value={selectValue ? selectValue.empno : ""}
                                 />
                             </div>
                         </div>
-                        <div style={{ marginTop: "20px", fontSize: "11px", fontWeight: "700" }}>*입사년도기준</div>
-                        <div className="row">
-                            <div className="col-md-2" style={textAlign}>사용일수</div>
-                            <div className="col-md-4">
-                                <TextBox readOnly={true} value={selectValue.newUseDaycnt} />
-                            </div>
-                            <div className="col-md-2" style={textAlign}>배정일수</div>
-                            <div className="col-md-4">
-                                <NumberBox
-                                    step={0.5}
-                                    showSpinButtons={true}
-                                    showClearButton={true}
-                                    value={selectValue.newVcatnAltmntDaycnt}
-                                    onValueChange={(e) => { onSelectChg("newVcatnAltmntDaycnt", e) }}
-                                />
-                            </div>
-                        </div>
-                        <div className="row" style={divStyle}>
-                            <div className="col-md-2" style={textAlign}>사용기한</div>
-                            <div className="col-md-4">
-                                <DateBox 
-                                    value={selectValue.altmntBgngYmd} 
-                                    displayFormat="yyyy-MM-dd"
-                                    onValueChange={(e) => { onSelectChg("altmntBgngYmd", e) }} />
-                            </div>
-                            <div className="col-md-2" style={textAlign}>~</div>
-                            <div className="col-md-4">
-                                <DateBox 
-                                    value={selectValue.altmntUseEndYmd} 
-                                    displayFormat="yyyy-MM-dd"
-                                    onValueChange={(e) => { onSelectChg("altmntUseEndYmd", e) }} />
-                            </div>
-                        </div>
-                        <div className="row" style={divStyle}>
-                            <div className="col-md-2" style={{ textAlign: "left", display: "flex", alignItems: "center", fontSize: "14px" }}>휴가배정년도</div>
-                            <div className="col-md-4">
-                                <SelectBox
-                                    placeholder="[년도]"
-                                    dataSource={getYearList(1, 1)}
-                                    value={selectValue.vcatnYr}
-                                    showClearButton={true}
-                                    readOnly={selectValue.isNew == false ? true : false}
-                                    onValueChange={(e) => { onSelectChg("vcatnYr", e) }} />
-                            </div>
-                        </div>
+                        {
+                            setParamFlag.insertVcantFlag == 1
+                                ?
+                                <>
+                                    <div className="row" style={{ marginTop: "20px" }}>
+                                        <div className="col-md-2" style={textAlign}>사용기한</div>
+                                        <div className="col-md-4">
+                                            <DateBox
+                                                value={selectValue ? selectValue.altmntBgngYmd : ""}
+                                                displayFormat="yyyy-MM-dd"
+                                                onValueChange={(e) => { setSelectValue({ ...selectValue, altmntBgngYmd: Moment(e).format('YYYYMMDD') }) }} />
+                                        </div>
+                                        <div className="col-md-2" style={textAlign}>~</div>
+                                        <div className="col-md-4">
+                                            <DateBox
+                                                value={selectValue ? selectValue.altmntUseEndYmd : ""}
+                                                displayFormat="yyyy-MM-dd"
+                                                onValueChange={(e) => { setSelectValue({ ...selectValue, altmntUseEndYmd: Moment(e).format('YYYYMMDD') }) }} />
+                                        </div>
+                                    </div>
+                                    <div style={{ marginTop: "20px", fontSize: "11px", fontWeight: "700" }}>*회계년도기준</div>
+                                    <div className="row">
+                                        <div className="col-md-2" style={textAlign}>사용일수</div>
+                                        <div className="col-md-4">
+                                            <TextBox value={selectValue ? String(selectValue.useDaycnt) : null} readOnly={true} />
+                                        </div>
+                                        <div className="col-md-2" style={textAlign}>배정일수</div>
+                                        <div className="col-md-4">
+                                            <NumberBox
+                                                step={0.5}
+                                                showSpinButtons={true}
+                                                showClearButton={true}
+                                                value={selectValue ? Number(selectValue.vcatnAltmntDaycnt) : null}
+                                                onValueChange={(e) => { setSelectValue({ ...selectValue, vcatnAltmntDaycnt: e }) }}
+                                            />
+                                        </div>
+                                    </div>
+                                </>
+                                : setParamFlag.insertVcantFlag == 2
+                                    ?
+                                    <>
+                                        <div className="row" style={{ marginTop: "20px" }}>
+                                            <div className="col-md-2" style={textAlign}>사용기한</div>
+                                            <div className="col-md-4">
+                                                <DateBox
+                                                    value={selectValue ? selectValue.altmntBgngYmd : ""}
+                                                    displayFormat="yyyy-MM-dd"
+                                                    onValueChange={(e) => { setSelectValue({ ...selectValue, altmntBgngYmd: Moment(e).format('YYYYMMDD') }) }} />
+                                            </div>
+                                            <div className="col-md-2" style={textAlign}>~</div>
+                                            <div className="col-md-4">
+                                                <DateBox
+                                                    value={selectValue ? selectValue.altmntUseEndYmd : ""}
+                                                    displayFormat="yyyy-MM-dd"
+                                                    onValueChange={(e) => { setSelectValue({ ...selectValue, altmntUseEndYmd: Moment(e).format('YYYYMMDD') }) }} />
+                                            </div>
+                                        </div>
+                                        <div style={{ marginTop: "20px", fontSize: "11px", fontWeight: "700" }}>*입사년도기준</div>
+                                        <div className="row">
+                                            <div className="col-md-2" style={textAlign}>사용일수</div>
+                                            <div className="col-md-4">
+                                                <TextBox readOnly={true} value={selectValue ? String(selectValue.newUseDaycnt) : null} />
+                                            </div>
+                                            <div className="col-md-2" style={textAlign}>배정일수</div>
+                                            <div className="col-md-4">
+                                                <NumberBox
+                                                    step={0.5}
+                                                    showSpinButtons={true}
+                                                    showClearButton={true}
+                                                    value={selectValue ? Number(selectValue.newVcatnAltmntDaycnt) : null}
+                                                    onValueChange={(e) => { setSelectValue({ ...selectValue, newVcatnAltmntDaycnt: e }) }}
+                                                />
+                                            </div>
+                                        </div>
+                                    </>
+                                    :
+                                    <>
+                                        <div className="row" style={{ marginTop: "20px" }}>
+                                            <div className="col-md-2" style={textAlign}>사용기한</div>
+                                            <div className="col-md-4">
+                                                <DateBox
+                                                    value={selectValue ? selectValue.altmntBgngYmd : ""}
+                                                    displayFormat="yyyy-MM-dd"
+                                                    onValueChange={(e) => { setSelectValue({ ...selectValue, altmntBgngYmd: Moment(e).format('YYYYMMDD') }) }} />
+                                            </div>
+                                            <div className="col-md-2" style={textAlign}>~</div>
+                                            <div className="col-md-4">
+                                                <DateBox
+                                                    value={selectValue ? selectValue.altmntUseEndYmd : ""}
+                                                    displayFormat="yyyy-MM-dd"
+                                                    onValueChange={(e) => { setSelectValue({ ...selectValue, altmntUseEndYmd: Moment(e).format('YYYYMMDD') }) }} />
+                                            </div>
+                                        </div>
+                                        <div style={{ marginTop: "20px", fontSize: "11px", fontWeight: "700" }}>*회계년도기준</div>
+                                        <div className="row">
+                                            <div className="col-md-2" style={textAlign}>사용일수</div>
+                                            <div className="col-md-4">
+                                                <TextBox value={selectValue ? String(selectValue.useDaycnt) : null} readOnly={true} />
+                                            </div>
+                                            <div className="col-md-2" style={textAlign}>배정일수</div>
+                                            <div className="col-md-4">
+                                                <NumberBox
+                                                    step={0.5}
+                                                    showSpinButtons={true}
+                                                    showClearButton={true}
+                                                    value={selectValue ? Number(selectValue.vcatnAltmntDaycnt) : null}
+                                                    onValueChange={(e) => { setSelectValue({ ...selectValue, vcatnAltmntDaycnt: e }) }}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div style={{ marginTop: "20px", fontSize: "11px", fontWeight: "700" }}>*입사년도기준</div>
+                                        <div className="row">
+                                            <div className="col-md-2" style={textAlign}>사용일수</div>
+                                            <div className="col-md-4">
+                                                <TextBox readOnly={true} value={selectValue ? String(selectValue.newUseDaycnt) : null} />
+                                            </div>
+                                            <div className="col-md-2" style={textAlign}>배정일수</div>
+                                            <div className="col-md-4">
+                                                <NumberBox
+                                                    step={0.5}
+                                                    showSpinButtons={true}
+                                                    showClearButton={true}
+                                                    value={selectValue ? Number(selectValue.newVcatnAltmntDaycnt) : null}
+                                                    onValueChange={(e) => { setSelectValue({ ...selectValue, newVcatnAltmntDaycnt: e }) }}
+                                                />
+                                            </div>
+                                        </div>
+                                    </>
+                        } */}
                         <div style={{ display: "inline-block", float: "right", marginTop: "25px" }}>
                             <Button style={{ height: "48px", width: "120px", marginRight: "15px" }} >엑셀업로드</Button>
                             <Button style={{ height: "48px", width: "70px", marginRight: "15px" }} onClick={btnSaveClick}>저장</Button>
-                            <Button style={{ height: "48px", width: "70px" }} onClick={btnCancleClick}>초기화</Button>
+                            <Button style={{ height: "48px", width: "70px" }} onClick={(e) => {
+                                setParamFlag({
+                                    insertVcantFlag: 1,
+                                    readOnlyCtr: false
+                                })
+                                setSelectValue({
+                                    empId: "",
+                                    useDaycnt: "",
+                                    newUseDaycnt: "",
+                                    altmntBgngYmd: flagYear + "0401",
+                                    altmntUseEndYmd: (flagYear + 1) + "0331"
+                                });
+                            }}>신규</Button>
                         </div>
                     </div>
                 </div>
@@ -438,3 +607,17 @@ const EmpVcatnAltmntMng = () => {
 };
 
 export default EmpVcatnAltmntMng;
+
+/* ========================= 화면레이아웃  =========================*/
+const divStyle = {
+    marginTop: "10px"
+}
+
+const textAlign = {
+    textAlign: "center",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    fontSize: "14px"
+}
+/* ========================= 화면레이아웃  =========================*/

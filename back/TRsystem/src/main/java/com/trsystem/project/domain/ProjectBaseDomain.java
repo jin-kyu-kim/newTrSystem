@@ -608,6 +608,30 @@ public class ProjectBaseDomain {
 		String lastYm = String.format("%04d%02d", lastYear, lastMonth);
 
 		int dayOfMonth = currentDate.getDayOfMonth();
+		String nowYm = dayOfMonth > 15 ? ym : lastYm;
+		int nowOdr = dayOfMonth > 15 ? 1 : 2;
+
+		// PRJCT_INDVDL_CT_MM 테이블에 데이터 존재하는지 확인
+		List<Map<String, Object>> searchCtMm = new ArrayList<>();
+		Map<String, Object> tbCtMm = new HashMap<>();
+		tbCtMm.put("tbNm", "PRJCT_INDVDL_CT_MM");
+		Map<String, Object> paramCtMm = new HashMap<>();
+		paramCtMm.put("prjctId", param.get("prjctId"));
+		paramCtMm.put("empId", param.get("empId"));
+		paramCtMm.put("aplyYm", nowYm);
+		paramCtMm.put("aplyOdr", nowOdr);
+		searchCtMm.add(tbCtMm);
+		searchCtMm.add(paramCtMm);
+		List<Map<String, Object>> listCtMm = commonService.commonSelect(searchCtMm);
+
+		// PRJCT_INDVDL_CT_MM 테이블에 데이터 없으면 생성
+		if(listCtMm.isEmpty()){
+			List<Map<String, Object>> insertCtMm = new ArrayList<>();
+			paramCtMm.put("mmAtrzCmptnYn", "N");
+			insertCtMm.add(tbCtMm);
+			insertCtMm.add(paramCtMm);
+			commonService.insertData(insertCtMm);
+		}
 
 		// PRJCT_INDVDL_CT_MM 테이블에 데이터 존재하는지 확인
 		List<Map<String, Object>> searchCtMm = new ArrayList<>();
@@ -648,14 +672,15 @@ public class ProjectBaseDomain {
 		// 가져온 값의 aplyYm, aplyOdr 바꿔서 인서트
 		List<Map<String, Object>> insertAply = new ArrayList<>();
 		tbAply.put("snColumn", "prjctCtAplySn");
+		Map<String, Object> snSearch = new HashMap<>();
+		snSearch.put("prjctId", param.get("prjctId"));
+		snSearch.put("empId", param.get("empId"));
+		snSearch.put("aplyYm", nowYm);
+		snSearch.put("aplyOdr", nowOdr);
+		tbAply.put("snSearch", snSearch);
 		Map<String, Object> dataAply = listAply.get(0);
-		if(dayOfMonth > 15){
-			dataAply.put("aplyYm", ym);
-			dataAply.put("aplyOdr", 1);
-		} else {
-			dataAply.put("aplyYm", lastYm);
-			dataAply.put("aplyOdr", 2);
-		}
+		dataAply.put("aplyYm", nowYm);
+		dataAply.put("aplyOdr", nowOdr);
 		insertAply.add(tbAply);
 		insertAply.add(dataAply);
 		commonService.insertData(insertAply);
