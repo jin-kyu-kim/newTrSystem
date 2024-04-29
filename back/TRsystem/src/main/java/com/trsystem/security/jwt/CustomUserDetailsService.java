@@ -54,6 +54,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         Map<String, Object> userInfo = (Map<String, Object>) userData.get("userInfo");
         String empId = (String) userInfo.get("empId");
         String pswd = (String) userInfo.get("pswd");
+        String intlPwsdYn = (String) userInfo.get("intlPwsdYn");
 
         // 사용자의 권한 정보를 가져옵니다.
         List<Map<String, Object>> authorities = (List<Map<String, Object>>) userData.get("authorities");
@@ -65,11 +66,15 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
         // UserDetails 객체를 생성하여 반환합니다.
         return new SysMngUser(
-                (String) empId,
-                (String) pswd,
+                empId,
+                pswd,
+                intlPwsdYn,
                 userInfo,
                 deptInfo,
                 authorityList
         );
     }
+
+
+
 }

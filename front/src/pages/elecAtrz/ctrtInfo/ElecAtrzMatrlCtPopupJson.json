@@ -19,9 +19,10 @@
             },
             "cntrctamount": {
                 "name": "cntrctamount",
-                "type": "TextBox",
+                "type": "NumberBox",
                 "label": "가용금액",
                 "placeholder": "가용금액",
+                "format": "#,###",
                 "required": true
             },
             "prductNm": {

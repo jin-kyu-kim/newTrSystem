@@ -8,13 +8,13 @@ import CustomPivotGrid from "../../components/unit/CustomPivotGrid";
 import ApiRequest from "../../utils/ApiRequest";
 import ReactToPrint from 'react-to-print';
 
-const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo }) => {
+const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noDataCase }) => {
     const { projectExpensePopup, projectExpensePopQueryIdList } = ProjectExpenseJson;
     const [ empInfo, setEmpInfo ] = useState({});
     const [ totalInfo, setTotalInfo ] = useState({});
     const [ data, setData ] = useState([]);
     const contentRef = useRef(null);
-    
+
     const commonParams = {
         aplyYm: basicInfo.aplyYm,
         aplyOdr: basicInfo.aplyOdr,
@@ -31,7 +31,7 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo }) => {
         getTotalWorkTime();
         getExpenseTotalInfo();
         getDailyWorkHours();
-    }, []);
+    }, [basicInfo]);
 
     const getEmpInfo = async () => {
         const response = await ApiRequest('/boot/common/queryIdSearch', {
@@ -125,7 +125,7 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo }) => {
     const contentArea = () => {
         return (
             <div>
-                {aprvInfo.totCnt === aprvInfo.aprv ? 
+                {(aprvInfo.totCnt === aprvInfo.aprv || noDataCase.cnt === 0 && noDataCase.yn === 'Y') ? 
                     <div ref={contentRef} >
                         <div style={{ textAlign: 'right' }}>
                             <ReactToPrint 

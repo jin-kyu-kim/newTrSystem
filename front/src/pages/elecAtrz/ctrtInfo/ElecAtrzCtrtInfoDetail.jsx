@@ -13,17 +13,17 @@ import ApiRequest from "utils/ApiRequest";
  *  "VTW04909" : 외주업체
  *  "VTW04910" : 재료비
  */
-const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
+const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd, ctrtTyCd}) => {
     
     const [popupVisible, setPopupVisible] = useState(false);
     const [tableData, setTableData] = useState([]);                 //그리드 전체 데이터
     const [selectedData, setSelectedData] = useState({});           //선택된 행의 데이터
 
     let jsonData = {};
-    if(data.elctrnAtrzTySeCd === "VTW04910"){
+    if(ctrtTyCd? ctrtTyCd : data.elctrnAtrzTySeCd === "VTW04910"){
         jsonData = ElecAtrzMatrlCtJson
     }
-    else if (data.elctrnAtrzTySeCd === "VTW04909"){
+    else if (ctrtTyCd? ctrtTyCd : data.elctrnAtrzTySeCd === "VTW04909"){
         jsonData = ElecAtrzOutordCompanyJson
     }
 
@@ -73,15 +73,15 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
     const getTempData = async () => {
         const dtlParam = 
             { queryId: "elecAtrzMapper.retrieveEntrpsCtrtDtl",
-              elctrnAtrzId: data.elctrnAtrzId,
-              elctrnAtrzTySeCd: data.elctrnAtrzTySeCd}    
+              elctrnAtrzId: data.ctrtElctrnAtrzId ? data.ctrtElctrnAtrzId : data.elctrnAtrzId,
+              elctrnAtrzTySeCd: ctrtTyCd ? ctrtTyCd : data.elctrnAtrzTySeCd}    
         const dtlResponse = await ApiRequest("/boot/common/queryIdSearch", dtlParam);
 
         const ctrtDataDtl = dtlResponse[0];
 
         const dtlCndParam = {
             queryId: "elecAtrzMapper.retrieveEntrpsCtrtDtlCnd",
-            elctrnAtrzId: data.elctrnAtrzId }
+            elctrnAtrzId: data.ctrtElctrnAtrzId ? data.ctrtElctrnAtrzId : data.elctrnAtrzId }
 
         const dtlCndResponse = await ApiRequest("/boot/common/queryIdSearch", dtlCndParam);
 
@@ -255,6 +255,7 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
                     selectedData={selectedData}
                     data={data}
                     sttsCd={sttsCd}
+                    ctrtTyCd={ctrtTyCd}
                 />
             </Popup>
         </div>
