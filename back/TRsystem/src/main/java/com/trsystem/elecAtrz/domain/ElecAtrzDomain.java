@@ -41,7 +41,7 @@ public class ElecAtrzDomain {
 		String regEmpId = String.valueOf(params.get("regEmpId"));
 		String atrzTySeCd = String.valueOf(params.get("elctrnAtrzTySeCd"));
 		String elctrnAtrzId =  String.valueOf(params.get("elctrnAtrzId"));
-		String sttsCd = String.valueOf(params.get("sttsCd")); // 임시저장인 경우 
+		String sttsCd = String.valueOf(params.get("sttsCd")); 
 		
 		Map<String, String> basicInfo = new HashMap<>();
 		basicInfo.put("regDt", regDt);
@@ -122,12 +122,21 @@ public class ElecAtrzDomain {
 					deleteData("CLM_ATRZ_DTL", elctrnAtrzId);
 					deleteData("CLM_ATRZ", elctrnAtrzId);
 					
+					
+					
+				} else if(atrzTySeCd.equals("VTW04914")) {
+					
+					/**
+					 *  계약청구
+					 *  target : CTRT_GIVE_ATRZ
+					 */
+					deleteData("CTRT_GIVE_ATRZ", elctrnAtrzId);
+					
 				} else {
 					// 지급품의, 일반 결재 처리...
 				}
 				
 				
-//			} else {
 				/**
 				 * 전자결재 테이블 데이터 삭제(최상위)
 				 */
@@ -155,8 +164,15 @@ public class ElecAtrzDomain {
 					
 					map.putAll(((Map<String, Object>) params.get("param")));
 					atrzTyResult = insertClmAtrz(map, elctrnAtrzId);
+				} else if(atrzTySeCd.equals("VTW04914")) {
 					
+					// 청구결재 INSERT 로직 추가
+					Map<String, Object> map = new HashMap<>();
 					
+					map.putAll(((Map<String, Object>) params.get("param")));
+					
+					atrzTyResult = insertGiveAtrz(map, elctrnAtrzId); 
+							
 				} else {
 					/**
 					 * ToDo: 일반 결재, 지급품의(계약청구) 개발 예정.(화면 미구현으로 인한 지연)
@@ -864,4 +880,45 @@ public class ElecAtrzDomain {
 		}
 	}
 	
+	//TODO. 계약지급 메소드 생성 필요
+	/**
+	 * 결재 지급 처리 메소드
+	 * @param giveAtrzParam
+	 * @param elctrnAtrzId	전자결재ID
+	 * @return
+	 */
+	public static int insertGiveAtrz(Map<String, Object> giveAtrzParam, String elctrnAtrzId) {
+		System.out.println(giveAtrzParam);
+		int result = -1;
+		
+		ArrayList<Map<String, Object>> insertParams = new ArrayList<>();
+		
+		Map<String, Object> tbParam = new HashMap<>();
+		Map<String, Object> infoParam=  new HashMap<>();
+		
+		tbParam.put("tbNm", "CTRT_GIVE_ATRZ");
+		
+		infoParam.put("atrzTtl", giveAtrzParam.get("title"));
+		infoParam.put("stlmCn", giveAtrzParam.get("atrzCn"));
+		infoParam.put("elctrnAtrzId", elctrnAtrzId);
+//		infoParam.put("atchmnflId", giveAtrzParam.get("title"));
+		infoParam.put("giveAmt", giveAtrzParam.get("giveAmt"));
+		infoParam.put("giveYmd", giveAtrzParam.get("giveYmd"));
+		infoParam.put("ctrtElctrnAtrzId", giveAtrzParam.get("ctrtElctrnAtrzId"));
+		infoParam.put("vatExclAmt", giveAtrzParam.get("vatExclAmt"));
+		infoParam.put("taxBillPblcnYmd", giveAtrzParam.get("taxBillPblcnYmd"));
+		
+		insertParams.add(0, tbParam);
+		insertParams.add(1, infoParam);
+		
+		try {
+			result = commonService.insertData(insertParams);
+			
+		} catch (Exception e) {
+			return result;
+		}
+		
+		return result;
+		
+	}
 } 
