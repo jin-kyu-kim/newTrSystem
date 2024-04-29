@@ -680,92 +680,94 @@
         <if test="empId != null and empId !=''">
             AND AA.EMP_ID = #{empId}
         </if>
-        <choose>
-			<when test="mm03701 == true and mm03701Min == true">
-			  AND (MD_SUM > 0 OR IFNULL(MD_SUM, 0) = 0)
-			</when>
-			<when test="mm03701 == true">
-			  AND MD_SUM > 0
-			</when>
-			<when test="mm03701Min == true">
-			  AND IFNULL(MD_SUM, 0) = 0
-			</when>
-		</choose>
-        <choose>
-			<when test="ct03701 == true and ct03701Min == true">
-			  AND (CT_CNT > 0 OR IFNULL(CT_CNT, 0) = 0)
-			</when>
-			<when test="ct03701 == true">
-			  AND CT_CNT > 0
-			</when>
-			<when test="ct03701Min == true">
-			  AND IFNULL(CT_CNT, 0) = 0
-			</when>
-		</choose>
-        <choose>
-			<when test="mm03702 == true and mm03702Min == true">
-			<![CDATA[
-			  AND ((CC.MM_ATRZ_CMPTN_YN IS NULL AND BB.CT_CNT > 0) OR CC.MM_ATRZ_CMPTN_YN IS NOT NULL)
-  			]]>
-			</when>
-			<when test="mm03702 == true">
-			  AND CC.MM_ATRZ_CMPTN_YN IS NOT NULL
-			</when>
-			<when test="mm03702Min == true">
-			<![CDATA[
-			  AND (CC.MM_ATRZ_CMPTN_YN IS NULL AND BB.CT_CNT > 0)
-  			]]>
-			</when>
-		</choose>
-        <choose>
-			<when test="ct03702 == true and ct03702Min == true">
-			<![CDATA[
-			  AND ((BB.CT_ATRZ_CMPTN_YN IS NULL AND BB.CT_CNT > 0) OR BB.CT_ATRZ_CMPTN_YN IS NOT NULL)
-  			]]>
-			</when>
-			<when test="ct03702 == true">
-			  AND BB.CT_ATRZ_CMPTN_YN IS NOT NULL 
-			</when>
-			<when test="ct03702Min == true">
-			<![CDATA[
-			  AND (BB.CT_ATRZ_CMPTN_YN IS NULL AND BB.CT_CNT > 0)
-			]]>
-			</when>
-		</choose>
-        <choose>
-			<when test="mm037034 == true and mm037034Min == true">
-			<![CDATA[ 
-			  AND (CC.MM_REJECT > 0 OR CC.MM_COMPLETE > 0 OR CC.MM_REJECT <= 0 OR CC.MM_COMPLETE <= 0)
-			]]>
-			</when>
-			<when test="mm037034 == true">
-			<![CDATA[ 
-			  AND (CC.MM_REJECT > 0 OR CC.MM_COMPLETE > 0)
-  			]]>
-			</when>
-			<when test="mm037034Min == true">
-			<![CDATA[ 
-			  AND (CC.MM_REJECT <= 0 AND CC.MM_COMPLETE <=0)
-  			]]>
-			</when>
-		</choose>
-        <choose>
-			<when test="ct037034 == true and ct037034Min == true">
-			<![CDATA[ 
-			  AND (BB.CT_REJECT > 0 OR BB.CT_COMPLETE > 0 OR BB.CT_REJECT <= 0 OR BB.CT_COMPLETE <= 0)
-			]]>
-			</when>
-			<when test="ct037034 == true">
-			<![CDATA[ 
-			  AND (BB.CT_REJECT > 0 OR BB.CT_COMPLETE > 0)
-  			]]>
-			</when>
-			<when test="ct037034Min == true">
-			<![CDATA[ 
-			  AND (BB.CT_REJECT <= 0 AND BB.CT_COMPLETE <=0)
-  			]]>
-			</when>
-		</choose>
+		<if test="allVtw != true">
+	        <choose>
+				<when test="mm03701 == true and mm03701Min == true">
+				  AND (MD_SUM > 0 OR IFNULL(MD_SUM, 0) = 0)
+				</when>
+				<when test="mm03701 == true">
+				  AND MD_SUM > 0
+				</when>
+				<when test="mm03701Min == true">
+				  AND IFNULL(MD_SUM, 0) = 0
+				</when>
+			</choose>
+	        <choose>
+				<when test="ct03701 == true and ct03701Min == true">
+				  AND (CT_CNT > 0 OR IFNULL(CT_CNT, 0) = 0)
+				</when>
+				<when test="ct03701 == true">
+				  AND CT_CNT > 0
+				</when>
+				<when test="ct03701Min == true">
+				  AND IFNULL(CT_CNT, 0) = 0
+				</when>
+			</choose>
+	        <choose>
+				<when test="mm03702 == true and mm03702Min == true">
+				<![CDATA[
+				  AND ((CC.MM_ATRZ_CMPTN_YN IS NULL AND BB.CT_CNT > 0) OR CC.MM_ATRZ_CMPTN_YN IS NOT NULL)
+	  			]]>
+				</when>
+				<when test="mm03702 == true">
+				  AND CC.MM_ATRZ_CMPTN_YN IS NOT NULL
+				</when>
+				<when test="mm03702Min == true">
+				<![CDATA[
+				  AND (CC.MM_ATRZ_CMPTN_YN IS NULL AND BB.CT_CNT > 0)
+	  			]]>
+				</when>
+			</choose>
+	        <choose>
+				<when test="ct03702 == true and ct03702Min == true">
+				<![CDATA[
+				  AND ((BB.CT_ATRZ_CMPTN_YN IS NULL AND BB.CT_CNT > 0) OR BB.CT_ATRZ_CMPTN_YN IS NOT NULL)
+	  			]]>
+				</when>
+				<when test="ct03702 == true">
+				  AND BB.CT_ATRZ_CMPTN_YN IS NOT NULL 
+				</when>
+				<when test="ct03702Min == true">
+				<![CDATA[
+				  AND (BB.CT_ATRZ_CMPTN_YN IS NULL AND BB.CT_CNT > 0)
+				]]>
+				</when>
+			</choose>
+	        <choose>
+				<when test="mm037034 == true and mm037034Min == true">
+				<![CDATA[ 
+				  AND (CC.MM_REJECT > 0 OR CC.MM_COMPLETE > 0 OR CC.MM_REJECT <= 0 OR CC.MM_COMPLETE <= 0)
+				]]>
+				</when>
+				<when test="mm037034 == true">
+				<![CDATA[ 
+				  AND (CC.MM_REJECT > 0 OR CC.MM_COMPLETE > 0)
+	  			]]>
+				</when>
+				<when test="mm037034Min == true">
+				<![CDATA[ 
+				  AND (CC.MM_REJECT <= 0 AND CC.MM_COMPLETE <=0)
+	  			]]>
+				</when>
+			</choose>
+	        <choose>
+				<when test="ct037034 == true and ct037034Min == true">
+				<![CDATA[ 
+				  AND (BB.CT_REJECT > 0 OR BB.CT_COMPLETE > 0 OR BB.CT_REJECT <= 0 OR BB.CT_COMPLETE <= 0)
+				]]>
+				</when>
+				<when test="ct037034 == true">
+				<![CDATA[ 
+				  AND (BB.CT_REJECT > 0 OR BB.CT_COMPLETE > 0)
+	  			]]>
+				</when>
+				<when test="ct037034Min == true">
+				<![CDATA[ 
+				  AND (BB.CT_REJECT <= 0 AND BB.CT_COMPLETE <=0)
+	  			]]>
+				</when>
+			</choose>			
+		</if>
     </select>
 
     <!--/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->

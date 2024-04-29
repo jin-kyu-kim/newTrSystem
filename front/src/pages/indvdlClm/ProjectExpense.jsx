@@ -74,7 +74,7 @@ const ProjectExpense = () => {
         if(ctAply.length !== 0){
             const response = await ApiRequest("/boot/common/queryIdDataControl", param);
         }
-        const updateStts = data.name === 'onInptDdlnClick' ? "N" : (data.name === 'onInptDdlnRtrcnClick' ? null
+        const updateStts = data.name === 'onAprvDmndClick' ? "N" : (data.name === 'onInptDdlnRtrcnClick' || data.name === 'onInptDdlnClick' ? null
             : ctAply.length === 0 && data.name === 'onAprvDmndRtrcnClick' ? null : undefined);
         if (updateStts !== undefined) updateCtAtrzCmptnYn(updateStts);
         getData();

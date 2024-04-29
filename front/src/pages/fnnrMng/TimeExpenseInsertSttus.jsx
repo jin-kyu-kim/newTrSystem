@@ -17,69 +17,36 @@ import ProjectExpensePopup from "../indvdlClm/ProjectExpensePopup";
 
 const TimeExpenseInsertSttus = ({}) => {
 //====================선언구간====================================================
-const [values, setValues] = useState([]);   //상단values
-const [values2, setValues2] = useState([]); //하단values
+const [totValues, setTotValues] = useState([]);   //상단values
+const [dtlValues, setDtlValues] = useState([]); //하단values
+
 const [paramtot, setParamtot] = useState({}); //상단 조회용 param
 const [param, setParam] = useState({}); //하단 조회용 param
+
 const { keyColumn, queryId, totTableColumns, tableColumns, searchParams, totQueryId } = TimeExpenseInsertSttusJson;
 // const [currentPhase, setCurrentPhase] = useState(''); //차수설정용
 const navigate = useNavigate();
 const nowDate = moment().format('YYYYMM') //현재 년월
-const [popupVisible, setPopupVisible] = useState(false); // 지울것
 const [ popVisible, setPopVisible ] = useState(false);
 const [selectedData, setSelectedData] = useState({});
-const [ test, setTest ] = useState("");
+const [ atrzDmndSttsCnt, setAtrzDmndSttsCnt ] = useState({}); // 상태코드별 데이터 개수
 
-/*
 const [checkBoxValue, setCheckBoxValue] = useState({
-  "mm03701": "true",
-  "mm03701Min": "true",
-  "mm03702": "true",
-  "mm03702Min": "true",
-  "mm037034": "true",
-  "mm037034Min": "true",
-  "ct03701": "true",
-  "ct03701Min": "true",
-  "ct03702": "true",
-  "ct03702Min": "true",
-  "ct037034": "true",
-  "ct037034Min": "true",
-});
-*/
-const [checkBoxValue, setCheckBoxValue] = useState({
-  "allVtw": false,
-  "mm03701": false,
-  "mm03701Min": false,
-  "mm03702": false,
-  "mm03702Min": false,
-  "mm037034": false,
-  "mm037034Min": false,
-  "ct03701": false,
-  "ct03701Min": false,
-  "ct03702": false,
-  "ct03702Min": false,
-  "ct037034": false,
-  "ct037034Min": false,
+  "allVtw": true,
+  "mm03701": true,
+  "mm03701Min": true,
+  "mm03702": true,
+  "mm03702Min": true,
+  "mm037034": true,
+  "mm037034Min": true,
+  "ct03701": true,
+  "ct03701Min": true,
+  "ct03702": true,
+  "ct03702Min": true,
+  "ct037034": true,
+  "ct037034Min": true,
 });
 //======================초기차수 설정 ===============================================
-useEffect(() => {
-    // 현재 날짜를 가져오는 함수
-    const getCurrentDate = () => {
-      const now = new Date();
-      const dayOfMonth = now.getDate();
-      return dayOfMonth;
-    };
-    // 현재 날짜를 가져오기
-    const dayOfMonth = getCurrentDate();
-
-
-    // 15일을 기준으로 차수를 결정
-    // if (dayOfMonth <= 15) {
-    //   setCurrentPhase('2');
-    // } else {
-    //   setCurrentPhase('1');
-    // }
-  }, []);
 
   const now = new Date();
   const dayOfMonth = now.getDate();
@@ -93,8 +60,6 @@ useEffect(() => {
   }, [param]);
 //=================== 검색으로 조회할 때============================================
 const searchHandle = async (initParam) => {
-  
-  console.log(initParam);
   
   if(initParam.yearItem == null || initParam.monthItem == null) {
 
@@ -138,24 +103,41 @@ const searchHandle = async (initParam) => {
 };
 
 const pageHandle = async () => {
-  console.log(paramtot)
-  console.log(param);
 
   try {
     const responsetot = await ApiRequest("/boot/common/queryIdSearch", paramtot); //상단 total 검색
     const response = await ApiRequest("/boot/common/queryIdSearch", param); //하단 목록 검색
 
-    setValues(responsetot);
-    setValues2(response);
+    setTotValues(responsetot);
+    setDtlValues(response);
   } catch (error) {
     console.log(error);
   }
 };
 //==========================팝업 관련 이벤트==========================================
-const handleClose = () => {
-  setPopupVisible(false);
-};
+
 const onPopHiding = async () => { setPopVisible(false); }
+const onPopAppear = async () => { setPopVisible(true); }
+const onSetBasicInfo = async (data) => {
+  setSelectedData(data);
+}
+
+const getAtrzDmndSttsCnt = async (data) => {
+  const param = {
+    queryId: "indvdlClmMapper.retrieveCtAtrzDmndStts",
+    empId: data.empId,
+    aplyYm: data.aplyYm,
+    aplyOdr: data.aplyOdr
+  }
+
+  try {
+    const response = await ApiRequest("/boot/common/queryIdSearch", param);
+    setAtrzDmndSttsCnt(response[0])
+  } catch (error) {
+    console.error(error);
+  }
+
+}
 //===========================테이블내 버튼 이벤트======================================
 const onBtnClick = async (button, data) => {      
 
@@ -182,26 +164,15 @@ const onBtnClick = async (button, data) => {
     }
     if(button.name === "print"){      
         console.log(data);
-        setSelectedData(data);
+        await onSetBasicInfo(data);
+        await getAtrzDmndSttsCnt(data);
         // setPopupVisible(true);
-        setPopVisible(true);
+        await onPopAppear(true);
     }
   };
 //==============================================================================================
-// const handleCheckBoxChange = (e, key, data) => {
-//   console.log(key);
-//   console.log(e)
-
-//   console.log(data)
-//   handleCondition(key);
-//   // setParamtot({
-//   //   ...paramtot,
-//   //   mm037034Min: key
-//   // })
-// };
 
 const handleCheckBoxChange = useCallback((e, key) => {
-  console.log(key, e.value)
 
   if(key === "allVtw") {
     setCheckBoxValue(checkBoxValue => ({
@@ -221,17 +192,21 @@ const handleCheckBoxChange = useCallback((e, key) => {
       "ct037034Min": e.value,
     }))
   } else {
-    setCheckBoxValue(checkBoxValue => ({
-      ...checkBoxValue,
-      [key]: e.value
-    }));
+    if(!e.value) {
+      setCheckBoxValue(checkBoxValue => ({
+        ...checkBoxValue,
+        "allVtw": e.value,
+        [key]: e.value
+      }));
+    } else {
+
+      setCheckBoxValue(checkBoxValue => ({
+        ...checkBoxValue,
+        [key]: e.value
+      }));
+    }
   }
-
 }, []);
-
-const handleCondition = async (data) => {
-  // setTest("a");
-}
 
 //=============================마감 및 엑셀다운로드 이벤트======================================
     const ddlnExcelDwn = () => {
@@ -254,7 +229,7 @@ const handleCondition = async (data) => {
                 <CustomTable
                   keyColumn={keyColumn}
                   columns={totTableColumns}
-                  values={values}
+                  values={totValues}
                   paging={false}
                   handleCheckBoxChange={handleCheckBoxChange}
                   checkBoxValue={checkBoxValue}
@@ -264,25 +239,17 @@ const handleCondition = async (data) => {
                 <CustomTable
                     keyColumn={keyColumn}
                     columns={tableColumns}
-                    values={values2}
+                    values={dtlValues}
                     paging={true}
                     onClick={onBtnClick}
                     wordWrap={true}
                 />
-                <Popup
-                      width="95%"
-                      height="95%"
-                      visible={popupVisible}
-                      onHiding={handleClose}
-                      showCloseButton={true}
-                  >
-                   <TimeExpenseInsertList data={selectedData}/>
-                </Popup>
-                {/* <ProjectExpensePopup
-                    visible={popupVisible}
+                <ProjectExpensePopup
+                    visible={popVisible}
+                    aprvInfo={atrzDmndSttsCnt}
                     onPopHiding={onPopHiding}
                     basicInfo={selectedData}
-                /> */}
+                />
             </div>
         </div>
  );
