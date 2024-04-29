@@ -796,7 +796,7 @@
 		   AND pca.APLY_YM = #{aplyYm}
 		   AND pca.APLY_ODR = #{aplyOdr}
            AND pcat.ATRZ_DMND_STTS_CD IS NOT NULL
-           AND pcat.ATRZ_DMND_STTS_CD != 'VTW03701'
+           AND pcat.ATRZ_DMND_STTS_CD NOT IN ('VTW03701', 'VTW03708')
        <if test="empId != null">
             <if test="!empId.equals('')">
                 AND pca.EMP_ID = #{empId}
@@ -1408,7 +1408,7 @@
         SELECT
             COUNT(*) AS TOTAL_COUNT
         FROM PRJCT_CT_ATRZ
-        WHERE ATRZ_DMND_STTS_CD NOT IN ('VTW03703', 'VTW03704')
+        WHERE ATRZ_DMND_STTS_CD NOT IN ('VTW03703', 'VTW03704', 'VTW03708')
           AND PRJCT_ID = #{prjctId}
           AND APLY_YM = #{aplyYm}
           AND APLY_ODR = #{aplyOdr}

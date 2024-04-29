@@ -150,6 +150,9 @@ const EmpExpenseAprvProject = ({ prjctId, aplyYm, aplyOdr }) => {
                 columnGTName={'소계'}
                 blockCollapse={true}
                 weekendColor={true}
+                isExport={true}
+                grandTotals={false}
+                sorting={true}
                 fileName={makeExcelFileName}
             />
         </div>
