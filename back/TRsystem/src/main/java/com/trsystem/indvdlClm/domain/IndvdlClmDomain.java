@@ -1,5 +1,6 @@
 package com.trsystem.indvdlClm.domain;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -772,16 +773,52 @@ public class IndvdlClmDomain {
     // 휴가신청취소승인
     public static List<Map<String, Object>> approvalReInsertVcatnAtrz (Map<String, Object> params) throws ParseException {
         int queryResult = 0;
+        int caseFlag = 0;
+        String empId = (String) params.get("empId");
         String elctrnAtrzId = (String) params.get("elctrnAtrzId");
 
+        // 휴가사용일수전자결재조회
         List<Map<String, Object>> selectElctrnAtrzList = new ArrayList<>();
         selectElctrnAtrzList.add(0, new HashMap<>(){{ put("tbNm", "VCATN_ATRZ"); }});
         selectElctrnAtrzList.add(1, new HashMap<>(){{ put("elctrnAtrzId", elctrnAtrzId); }});
         List<Map<String, Object>> selectElctrnAtrzListResult = commonService.commonSelect(selectElctrnAtrzList);
 
+        System.out.println("======================");
+        System.out.println("selectElctrnAtrzListResult : " + selectElctrnAtrzListResult);
+        System.out.println("======================");
+
+        // 날짜비교 포맷팅
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
         Date vcatnBgngYmd = formatter.parse((String) selectElctrnAtrzListResult.get(0).get("vcatnBgngYmd"));
         Date flagYmd = formatter.parse(selectElctrnAtrzListResult.get(0).get("vcatnBgngYmd").toString().substring(0,4) + "0401");
+
+        // 휴가사용종류조회
+        Map<String, Object> selectVcatnMng = new HashMap<>();
+        selectVcatnMng.put("queryId", "indvdlClmMapper.retrieveVcatnStrgInfoInq");
+        selectVcatnMng.put("vcatnBgngYmd", selectElctrnAtrzListResult.get(0).get("vcatnBgngYmd"));
+        selectVcatnMng.put("empId", "b5d4d2c0-b0b0-778d-4a4a-b12dd93c53c4");
+//        selectVcatnMng.put("empId", empId);
+        List<Map<String, Object>> selectVcatnMngResult = commonService.queryIdSearch(selectVcatnMng);
+
+        System.out.println("=========================");
+        System.out.println("selectVcatnMngResult : " + selectVcatnMngResult);
+        System.out.println("=========================");
+
+        Map<String, Object> refNewVcatnMngMap = new HashMap<>();                // 신규휴가정보
+        Map<String, Object> refVcatnMngMap= new HashMap<>();                    // 회계휴가정보
+
+        for (int i = 0; i < selectVcatnMngResult.size(); i++){
+            if(selectVcatnMngResult.get(i).toString().indexOf("NEW") > -1){
+                refNewVcatnMngMap.putAll(selectVcatnMngResult.get(i));
+            } else if(selectVcatnMngResult.get(i).toString().indexOf("ACCOUNT") > -1){
+                refVcatnMngMap.putAll(selectVcatnMngResult.get(i));
+            }
+        }
+
+        System.out.println("=========================");
+        System.out.println("refNewVcatnMngMap : " + refNewVcatnMngMap);
+        System.out.println("refVcatnMngMap : " + refVcatnMngMap);
+        System.out.println("=========================");
 
         /**
          * date1.compareTo(date2)
@@ -796,11 +833,29 @@ public class IndvdlClmDomain {
         System.out.println("date1.compareTo(date2) : " + vcatnBgngYmd.compareTo(flagYmd));
         System.out.println("================");
 
+
+        // 회계휴가수정정보
         Map<String, Object> updateVcatnMngMap = new HashMap<>();
+        updateVcatnMngMap.put("queryId", "indvdlClmMapper.retrieveVcatnAltmntMngMdfcn");
+        updateVcatnMngMap.put("empId", "b5d4d2c0-b0b0-778d-4a4a-b12dd93c53c4");
+//        updateVcatnMngMap.put("empId", empId);
+//        updateVcatnMngMap.put("mdfcnEmpId", "세션ID넣어주세요");
+        updateVcatnMngMap.put("state", "UPDATE");
+
+
+        // 신규휴가수정정보
+        Map<String, Object> updateNewVcatnMngMap = new HashMap<>();
+        updateNewVcatnMngMap.put("queryId", "indvdlClmMapper.retrieveNewVcatnAltmntMngMdfcn");
+        updateNewVcatnMngMap.put("empId", "b5d4d2c0-b0b0-778d-4a4a-b12dd93c53c4");
+//        updateNewVcatnMngMap.put("empId", empId);
+//        updateNewVcatnMngMap.put("mdfcnEmpId", "세션ID넣어주세요");
+        updateNewVcatnMngMap.put("state", "UPDATE");
+
 
         // case_A
         // 공가인경우
         if(selectElctrnAtrzListResult.get(0).get("vcatnTyCd").equals("VTW01204") || selectElctrnAtrzListResult.get(0).get("vcatnTyCd").equals("VTW01205")){
+            caseFlag = 1;
             if(vcatnBgngYmd.compareTo(flagYmd) >= 0){
                 updateVcatnMngMap.put("vcatnYr", selectElctrnAtrzListResult.get(0).get("vcatnBgngYmd").toString().substring(0,4));
                 updateVcatnMngMap.put("pblenVcatnUseDaycnt", selectElctrnAtrzListResult.get(0).get("vcatnDeCnt"));
@@ -812,19 +867,67 @@ public class IndvdlClmDomain {
         // case_B
         // 공가가아닌경우
         else {
+            Double vcatnDeCnt = Double.parseDouble(String.valueOf(selectElctrnAtrzListResult.get(0).get("vcatnDeCnt")));
+            Double newVcatnDeCnt = Double.parseDouble(String.valueOf(selectElctrnAtrzListResult.get(0).get("newVcatnUseDaycnt")));
+
             // case_B1
             // 신규휴가만 사용한 경우
-            if(selectElctrnAtrzListResult.get(0).get("vcatnDeCnt").equals(selectElctrnAtrzListResult.get(0).get("newVcatnUseDaycnt"))){
-                updateVcatnMngMap.put("newUseDaycnt", selectElctrnAtrzListResult.get(0).get("vcatnDeCnt"));
-                updateVcatnMngMap.put("newRemndrDaycnt", selectElctrnAtrzListResult.get(0).get("vcatnDeCnt"));
+            if(vcatnDeCnt.equals(newVcatnDeCnt)){
+                caseFlag = 2;
+                updateNewVcatnMngMap.put("newVcatnYn", "Y");
+                updateNewVcatnMngMap.put("newUseDaycnt", Double.parseDouble(String.valueOf(refNewVcatnMngMap.get("newUseDaycnt"))) - Double.parseDouble(String.valueOf(selectElctrnAtrzListResult.get(0).get("vcatnDeCnt"))));
+                updateNewVcatnMngMap.put("newRemndrDaycnt", Double.parseDouble(String.valueOf(refNewVcatnMngMap.get("newRemndrDaycnt"))) + Double.parseDouble(String.valueOf(selectElctrnAtrzListResult.get(0).get("vcatnDeCnt"))));
             }
 
             // case_B2
             // 회계휴가만 사용한 경우
+            else if(newVcatnDeCnt.equals(Double.parseDouble(String.valueOf(0)))){
+                caseFlag = 3;
+                updateVcatnMngMap.put("newVcatnYn", "N");
+                updateVcatnMngMap.put("vcatnYr", selectElctrnAtrzListResult.get(0).get("vcatnBgngYmd").toString().substring(0,4));
+                updateVcatnMngMap.put("useDaycnt", Double.parseDouble(String.valueOf(refVcatnMngMap.get("useDaycnt"))) - Double.parseDouble(String.valueOf(selectElctrnAtrzListResult.get(0).get("vcatnDeCnt"))));
+                updateVcatnMngMap.put("vcatnRemndrDaycnt", Double.parseDouble(String.valueOf(refVcatnMngMap.get("vcatnRemndrDaycnt"))) + Double.parseDouble(String.valueOf(selectElctrnAtrzListResult.get(0).get("vcatnDeCnt"))));
+                updateVcatnMngMap.put("pblenVcatnUseDaycnt", "");
+            }
 
             // case_B3
             // 신규휴가, 회계휴가 사용한 경우
+            else{
+                caseFlag = 4;
+                updateVcatnMngMap.put("useDaycnt",
+                        Double.parseDouble(String.valueOf(refVcatnMngMap.get("useDaycnt")))
+                        - (
+                            Double.parseDouble(String.valueOf(selectElctrnAtrzListResult.get(0).get("vcatnDeCnt")))
+                            - Double.parseDouble(String.valueOf(selectElctrnAtrzListResult.get(0).get("newVcatnUseDaycnt")))
+                        )
+                );
+                updateVcatnMngMap.put("vcatnRemndrDaycnt",
+                        Double.parseDouble(String.valueOf(refVcatnMngMap.get("vcatnRemndrDaycnt")))
+                        + (
+                            Double.parseDouble(String.valueOf(selectElctrnAtrzListResult.get(0).get("vcatnDeCnt")))
+                            - Double.parseDouble(String.valueOf(selectElctrnAtrzListResult.get(0).get("newVcatnUseDaycnt")))
+                        )
+                );
+                updateNewVcatnMngMap.put("newUseDaycnt", Double.parseDouble(String.valueOf(refNewVcatnMngMap.get("newUseDaycnt"))) - Double.parseDouble(String.valueOf(selectElctrnAtrzListResult.get(0).get("newVcatnUseDaycnt"))));
+                updateNewVcatnMngMap.put("newRemndrDaycnt", Double.parseDouble(String.valueOf(refNewVcatnMngMap.get("newRemndrDaycnt"))) + Double.parseDouble(String.valueOf(selectElctrnAtrzListResult.get(0).get("newVcatnUseDaycnt"))));
+                updateVcatnMngMap.put("pblenVcatnUseDaycnt", "");
+            }
+        }
 
+        System.out.println("===========================");
+        System.out.println("caseFlag : " + caseFlag);
+        System.out.println("updateVcatnMngMap : " + updateVcatnMngMap);
+        System.out.println("updateNewVcatnMngMap : " + updateNewVcatnMngMap);
+        System.out.println("===========================");
+
+        switch (caseFlag){
+            case 1: commonService.queryIdDataControl(updateVcatnMngMap);
+            case 2: commonService.queryIdDataControl(updateNewVcatnMngMap);
+            case 3: commonService.queryIdDataControl(updateVcatnMngMap);
+            case 4: {
+                commonService.queryIdDataControl(updateVcatnMngMap);
+                commonService.queryIdDataControl(updateNewVcatnMngMap);
+            }
         }
 
         return null;
