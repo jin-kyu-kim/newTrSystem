@@ -39,7 +39,6 @@ private static CommonService commonService;
 		
 		try {
 			params.put("queryId", "financialAffairMngMapper.retrieveCtData");
-			System.out.println(params);
 			
 			ctDataList = commonService.queryIdSearch(params);
 			
@@ -51,6 +50,7 @@ private static CommonService commonService;
 			if(ctDataList.size() > 0) {
 				
 				params.put("prjctCtAplySn", ctDataList.get(0).get("prjctCtAplySn"));
+				params.put("prjctId", ctDataList.get(0).get("prjctId"));
 				params.put("queryId", "financialAffairMngMapper.retrieveCtPivotData");
 				
 			} else {
@@ -62,7 +62,6 @@ private static CommonService commonService;
 			/**
 			 * 2. 실제 데이터 중 하나를 사용해서 day column을 만들기
 			 */
-			System.out.println(params);
 			pivotCtDataList = commonService.queryIdSearch(params);
 		
 			return pivotCtDataList;
