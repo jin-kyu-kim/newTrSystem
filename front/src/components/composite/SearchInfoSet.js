@@ -97,7 +97,7 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
       >
         {/* 연월/차수가 있는 경우 */}
         {searchParams.yearList && searchParams.yearList.map((item) => (
-          <Item ratio={0} baseSize={"120"}>
+          <Item ratio={0} baseSize={"120"} visible={item.visible}>
             <SelectBox
               dataSource={ymOdrData[item.name]}
               name={item.name}
