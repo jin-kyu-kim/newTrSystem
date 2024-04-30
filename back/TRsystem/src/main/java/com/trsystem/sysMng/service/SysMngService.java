@@ -67,6 +67,7 @@ public class SysMngService {
             // 입력된 비밀번호와 저장된 비밀번호 비교
             if (passwordEncoder.matches(password, setInfo.getPassword())) {
                 String token = jwtTokenUtil.generateToken(setInfo);
+
                 resetLoginAttempts(empno);
                 return TokenDto.fromEntity(setInfo, token, jwtTokenUtil.getExpirationDateFromToken(token));
             } else {
