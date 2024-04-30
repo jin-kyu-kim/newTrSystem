@@ -676,8 +676,8 @@
 			    JOIN PRJCT_MM_ATRZ pcat ON (pcat.APLY_YMD = pca.APLY_YMD AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
 			    JOIN PRJCT_INDVDL_CT_MM picm ON (pca.PRJCT_ID = picm.PRJCT_ID AND pca.EMP_ID = picm.EMP_ID AND pca.APLY_YM = picm.APLY_YM AND pca.APLY_ODR = picm.APLY_ODR)
 			   WHERE 1=1
-			     AND pca.APLY_YM = '202403'
-			     AND pca.APLY_ODR = '2'
+			     AND pca.APLY_YM = #{aplyYm}
+			     AND pca.APLY_ODR = #{aplyOdr}
 			     AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703'
 			  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR, picm.MM_ATRZ_CMPTN_YN
 			  UNION
