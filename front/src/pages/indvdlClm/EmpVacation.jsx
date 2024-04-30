@@ -122,17 +122,15 @@ const EmpVacation = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const detailData = location ? location : "";
-
     // 첨부파일데이터
     const fileUploaderRef = useRef(null);
 
     // 세션설정
     const [cookies, setCookie] = useCookies(["userInfo", "deptInfo"]);
-    const sessionEmpId = cookies.userInfo.empId
-    const sessionEmpNm = cookies.userInfo.empNm
-    let sessionDeptNm = cookies.deptInfo[0].deptNm
-    let jbttlCd = cookies.deptInfo[0].jbttlCd
+    let sessionEmpId = location.state ? location.state.empId : cookies.userInfo.empId
+    let sessionEmpNm = location.state ? location.state.empFlnm : cookies.userInfo.empNm
+    let sessionDeptNm = location.state ? location.state.deptList[0].deptNm : cookies.deptInfo[0].deptNm
+    let jbttlCd = location.state ? location.state.deptList[0].jbttlCd : cookies.deptInfo[0].jbttlCd
 
 
     
@@ -678,7 +676,7 @@ const EmpVacation = () => {
 
     const test = async () => {
         const test = {
-                elctrnAtrzId: "b95a3548-fbb0-ae4c-92ab-8f1cbc0e23d4"
+                elctrnAtrzId: "13e967cc-2f3e-eb22-6a28-c77f2d19d864"
             }
         
 
@@ -790,14 +788,14 @@ const EmpVacation = () => {
                         </div>
                         <div className="row" style={{ marginTop: "30px" }}>
                             {
-                                cookies.deptInfo.length > 1
+                                (location.state && location.state.deptList.length > 1) || cookies.deptInfo.length > 1
                                     ?
                                     <>
                                         <div className="col-md-2" style={textAlign}>소속</div>
                                         <div className="col-md-10">
                                             <SelectBox
-                                                defaultValue={cookies.deptInfo[0].deptId}
-                                                dataSource={cookies.deptInfo}
+                                                defaultValue={location.state ? location.state.deptList[0].deptId : cookies.deptInfo[0].deptId}
+                                                dataSource={location.state ? location.state.deptList : cookies.deptInfo}
                                                 displayExpr="deptNm"
                                                 valueExpr="deptId"
                                                 onValueChange={(e) => {
@@ -946,7 +944,7 @@ const EmpVacation = () => {
                         <div style={{ display: "inline-block", float: "right", marginTop: "25px" }}>
                             <Button style={{ height: "48px", width: "100px", marginRight: "15px" }} onClick={(e) => { setPopupVisibleAtrzValue(true) }}>결재선지정</Button>
                             <Button style={{ height: "48px", width: "60px" }} onClick={onSaveClick}>저장</Button>
-                            <Button style={{ height: "48px", width: "60px" }} onClick={test}>test</Button>
+                            {/* <Button style={{ height: "48px", width: "60px" }} onClick={test}>test</Button> */}
                         </div>
 
                         <EmpVacationAttchList
@@ -992,6 +990,7 @@ const EmpVacation = () => {
                     </div>
                 </div>
             </div>
+            <br/><br/><br/><br/><br/>
         </div>
     )
 }
