@@ -8,15 +8,23 @@ import { Button } from "devextreme-react";
 const ElectGiveAtrzClm = ({ detailData, sttsCd, onSendData}) => {
     const location = useLocation();
     const formData = location.state.formData;
-    const labelValue = ElectGiveAtrzClmJson.labelValue;
+    const [labelValue, setLabelValue] = useState(ElectGiveAtrzClmJson.labelValue);
 
-    useEffect(()=>{
-        if(formData.atrzDmndSttsCd === "VTW03701"){ //임시저장
-            labelValue.giveYmd.param.queryId.ctrtElctrnAtrzId = detailData.ctrtElctrnAtrzId
-        }else{
-            labelValue.giveYmd.param.queryId.ctrtElctrnAtrzId = formData.ctrtElctrnAtrzId
+    useEffect(() => {
+        // 객체를 새로 생성하여 불변성을 유지
+        const newLabelValue = {...labelValue};
+        
+        if (formData.atrzDmndSttsCd === "VTW03701") { // 임시저장
+            newLabelValue.giveYmd.param.queryId.ctrtElctrnAtrzId = detailData.ctrtElctrnAtrzId;
+        } else {
+            newLabelValue.giveYmd.param.queryId.ctrtElctrnAtrzId = formData.ctrtElctrnAtrzId;
         }
-    },[detailData, formData])
+
+        setLabelValue(newLabelValue); // 상태 업데이트
+    }, [detailData, formData]);
+
+
+
 
     const [clmData, setClmData]
      = useState({"ctrtElctrnAtrzId":formData.ctrtElctrnAtrzId
@@ -83,6 +91,10 @@ const ElectGiveAtrzClm = ({ detailData, sttsCd, onSendData}) => {
             <h3>계약청구</h3>
             <div style={{ width: '50%'}}>
             <div className="dx-fieldset">
+                {/* {(formData.atrzDmndSttsCd === "VTW03701") && (labelValue.giveYmd.param.queryId.ctrtElctrnAtrzId) &&
+                 <CustomLabelValue props={labelValue.giveYmd} onSelect={handleChgState} value={clmData.giveYmd} readOnly={controlReadOnly} />
+            
+                } */}
                 <CustomLabelValue props={labelValue.giveYmd} onSelect={handleChgState} value={clmData.giveYmd} readOnly={controlReadOnly} />
                 <CustomLabelValue props={labelValue.vatExclAmt} onSelect={handleChgState} value={clmData.vatExclAmt} readOnly={true}/>
                 <CustomLabelValue props={labelValue.giveAmt} onSelect={handleChgState} value={!clmData.giveYmd? "" : clmData.giveAmt} readOnly={true}/>
