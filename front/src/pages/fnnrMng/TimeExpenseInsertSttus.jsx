@@ -23,6 +23,9 @@ const [dtlValues, setDtlValues] = useState([]); //하단values
 const [paramtot, setParamtot] = useState({}); //상단 조회용 param
 const [param, setParam] = useState({}); //하단 조회용 param
 
+const [ ctAply, setCtAply ] = useState([]); // 차수 청구내역
+const [ ctAtrzCmptnYn, setCtAtrzCmptnYn ] = useState(); // 비용결재완료여부
+
 const { keyColumn, queryId, totTableColumns, tableColumns, searchParams, totQueryId } = TimeExpenseInsertSttusJson;
 // const [currentPhase, setCurrentPhase] = useState(''); //차수설정용
 const navigate = useNavigate();
@@ -136,15 +139,53 @@ const getAtrzDmndSttsCnt = async (data) => {
   } catch (error) {
     console.error(error);
   }
-
 }
+
+const getCtAply = async (data) => {
+  const param = {
+    queryId: "projectExpenseMapper.retrievePrjctCtAplyList",
+    empId: data.empId, 
+    aplyYm: data.aplyYm, 
+    aplyOdr: data.aplyOdr, 
+    aply: 'aply'
+  }
+  
+  try {
+    const response = await ApiRequest("/boot/common/queryIdSearch", param);
+    setCtAply(response);
+  } catch(error) {
+    console.error(error);
+  }
+}
+
+const getCtAtrzCmptnYn = async(data) => {
+  const param = [
+    { tbNm: "PRJCT_INDVDL_CT_MM" }, 
+    { 
+      empId: data.empId, 
+      aplyYm: data.empId, 
+      aplyOdr: data.aplyOdr 
+    }
+  ]
+
+  const response = await ApiRequest("/boot/common/commonSelect", param);
+  setCtAtrzCmptnYn(data[0]?.ctAtrzCmptnYn);
+}
+
 //===========================테이블내 버튼 이벤트======================================
-const onBtnClick = async (button, data) => {      
+const onBtnClick = async (button, data) => {
+    const admin = {
+      empId: data.empId,
+      jbpsCd: data.jbpsCd,
+      deptNmAll: data.deptNmAll,
+      aplyYm: data.aplyYm,
+      aplyOdr: data.aplyOdr
+    }
 
     if(button.name === "workHrMv"){
         alert("근무시간페이지이동");
         navigate("/indvdlClm/EmpWorkTime",
-        {state: { empId: data.empId, jbpsCd: data.jbpsCd, deptNmAll: data.deptNmAll}})
+        {state: { admin: admin }})
     }
     if(button.name === "hrRtrcn"){                                   //취소상태로 변경 -> 반려?
         alert("시간취소!"); 
@@ -152,7 +193,7 @@ const onBtnClick = async (button, data) => {
     if(button.name === "prjctScrnMv"){                                      
         alert("프로젝트비용이동");
         navigate("/indvdlClm/ProjectExpense",
-        {state: { empId: data.empId }})
+        {state: { admin: admin }})
     }
     if(button.name === "ctRtrcn"){                                    //취소상태로 변경 -> 반려?
         alert("비용취소");
@@ -166,6 +207,8 @@ const onBtnClick = async (button, data) => {
         console.log(data);
         await onSetBasicInfo(data);
         await getAtrzDmndSttsCnt(data);
+        await getCtAply(data);
+        await getCtAtrzCmptnYn(data);
         // setPopupVisible(true);
         await onPopAppear(true);
     }
@@ -246,8 +289,9 @@ const handleCheckBoxChange = useCallback((e, key) => {
                 />
                 <ProjectExpensePopup
                     visible={popVisible}
-                    aprvInfo={atrzDmndSttsCnt}
                     onPopHiding={onPopHiding}
+                    aprvInfo={atrzDmndSttsCnt}
+                    noDataCase={{cnt: ctAply.length, yn: ctAtrzCmptnYn}}
                     basicInfo={selectedData}
                 />
             </div>
