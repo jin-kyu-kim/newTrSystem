@@ -14,10 +14,10 @@ import ElecAtrzOutordCompanyPopupJson from "./ElecAtrzOutordCompanyPopupJson.jso
 const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedData, data, sttsCd, ctrtTyCd}) => {
 
     let jsonData = {};
-    if(ctrtTyCd ? ctrtTyCd : data.elctrnAtrzTySeCd === "VTW04910"){
+    if((ctrtTyCd ? ctrtTyCd : data.elctrnAtrzTySeCd) === "VTW04910"){
         jsonData = ElecAtrzMatrlCtPopupJson
     }
-    else if (ctrtTyCd ? ctrtTyCd : data.elctrnAtrzTySeCd === "VTW04909"){
+    else if ((ctrtTyCd ? ctrtTyCd : data.elctrnAtrzTySeCd) === "VTW04909"){
         jsonData = ElecAtrzOutordCompanyPopupJson
     }
 
@@ -29,7 +29,6 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
     const [matrlCtrtData, setMatrlCtrtData] = useState({});
     const [pay, setPay] = useState([]);
     let controlReadOnly = false;
-
 
     /**
      *  부모창에서 전달 된 데이터로 셋팅
@@ -134,13 +133,11 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
     }
 
 
-    // readonly 여부
-    if(["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)){
-        controlReadOnly = true;
-    }
-
     // 수정테이블 수정가능 여부
-    const isEditable = !["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd);
+    const isEditable = !["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd) 
+                        && data.elctrnAtrzTySeCd !== "VTW04914";
+
+    controlReadOnly = !isEditable
     
     return (
     <>
@@ -184,7 +181,7 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
                     </div>
                 </div>
                 <div>
-                    {(!["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)) && (
+                    {isEditable&& (
                         <>
                         <Button text="저장" useSubmitBehavior={true}/>
                         <Button text="취소" onClick={handlePopupVisible}/>

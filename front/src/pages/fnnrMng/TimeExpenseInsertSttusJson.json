@@ -81,10 +81,10 @@
         {"value": "프로젝트비용",
         "subColumns": [
             { "value": "입력화면", "button": {"text": "이동", "name": "prjctScrnMv"}, "width": 80},
-            { "key": "cnt", "value": "입력", "width": 40},
-            { "key": "prjReject", "value": "반려", "width": 40},
-            { "key": "prjComplete", "value": "승인", "width": 40 },
-            { "value": "취소", "button": {"text": "비용취소", "name": "ctRtrcn", "able": {"key": "cnt", "exceptValue": 0}}, "width": 80 }
+            { "key": "ctCnt", "value": "입력", "width": 40},
+            { "key": "ctReject", "value": "반려", "width": 40},
+            { "key": "ctComplete", "value": "승인", "width": 40 },
+            { "value": "취소", "button": {"text": "비용취소", "name": "ctRtrcn", "able": {"key": "ctCnt", "exceptValue": 0}}, "width": 80 }
         ]},
         {  "value": "회사지불비용", "width": 80, "button": {"text" : "이동", "name" : "companyPrice"} },
         {  "value": "출력", "button": {"text" : "출력", "name" : "print"} }
@@ -96,20 +96,5 @@
     "aplyOdr": true,
     "empId": true,
     "hdofSttsCd": true
-  },
-  "baseInfo":
-  [
-    {"key": "trOdr", "value": "TR 차수"},
-    { "key": "", "value": "" },
-    {"key": "empno", "value": "사번"},
-    {"key": "empFlnm", "value": "성명"},
-    {"key": "deptNm", "value": "소속"},
-    {"key": "jbpsNm", "value": "직위"}
-  ],
-  "totAply":
-  [
-    {"key": "mdSum", "value": "총 근무시간"},
-    {"key": "ctSum", "value": "총 지급금액"},
-    {"key": "cnt", "value": "영수증 갯수", "format": "amount"}
-  ]
+  }
 }

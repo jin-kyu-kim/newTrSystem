@@ -41,6 +41,43 @@ const ElecAtrzNewReq = () => {
 
     const [atrzLnEmpList, setAtrzLnEmpList] = useState([]);
     const column = { "dataField": "gnrlAtrzCn", "placeholder": "내용을 입력해주세요."};
+
+    // console.log("formData", formData.atrzFormDocId)
+    // console.log("location", location.state)
+    
+    /**
+     * 계약 지급인 경우 계약코드 select
+     */
+    useEffect(()=>{
+        if(!ctrtTyCd){
+            if(formData.atrzDmndSttsCd === "VTW03701"){   //임시저장
+                
+            const getCtrtInfo = async () => {
+                    try {
+                        const response = await ApiRequest('/boot/common/queryIdSearch', 
+                                {queryId: "elecAtrzMapper.retrieveElctrnAtrzId"
+                                ,elctrnAtrzId: formData.elctrnAtrzId}
+                        );
+                        
+                        if(response.length>0){
+                            setData(prev => {
+                                const newState = {
+                                    ...prev,
+                                    ctrtElctrnAtrzId: response[0].ctrtElctrnAtrzId,
+                                    ctrtTyCd: response[0].elctrnAtrzTySeCd
+                                };
+                                return newState;
+                            });
+                        }
+                    } catch (error) {
+                        console.log('error', error);
+                    } 
+                }     
+                getCtrtInfo();       
+            };
+           
+        }
+    },[])
     
 
     /*
@@ -191,7 +228,7 @@ const ElecAtrzNewReq = () => {
         const getTempAtrzLn = async () => {
             const param = {
                 queryId: "elecAtrzMapper.retrieveAtrzLn",
-                elctrnAtrzId: data.elctrnAtrzId,
+                elctrnAtrzId: data.ctrtElctrnAtrzId ? data.ctrtElctrnAtrzId : data.elctrnAtrzId,
                 sttsCd: sttsCd
             }
             try {
@@ -285,6 +322,7 @@ const ElecAtrzNewReq = () => {
         try {
             const response = await ApiRequest("/boot/elecAtrz/insertElecAtrz", insertParam);
             console.log(response);
+            const token = localStorage.getItem("token");
 
             if(response){
                 // 첨부파일 저장
@@ -315,7 +353,7 @@ const ElecAtrzNewReq = () => {
                     }
 
                 const responseAttach = await axios.post("/boot/common/insertlongText", formDataAttach, {
-                    headers: { 'Content-Type': 'multipart/form-data' },
+                    headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
                 });
                 console.log(responseAttach);
 
@@ -334,6 +372,11 @@ const ElecAtrzNewReq = () => {
 
         } catch (error) {
             console.error(error)
+            if (error.response.status === 401) {
+                // 로그인 상태를 해제하고 로그인 페이지로 이동
+                localStorage.removeItem("token");
+                localStorage.removeItem("isLoggedIn");
+            } 
         }
     }
 
@@ -411,7 +454,6 @@ const ElecAtrzNewReq = () => {
 
         return true;
     }
-
     
     return (
         <>
@@ -445,6 +487,12 @@ const ElecAtrzNewReq = () => {
                     </>
                     }
                     {["VTW04914"].includes(formData.elctrnAtrzTySeCd) && ["VTW03405"].includes(formData.docSeCd) &&   //VTW04914: 외주/재료비 지급
+                    <>
+                        <ElectGiveAtrzClm detailData={data} sttsCd={sttsCd} prjctId={prjctId} onSendData={handleChildData}/>
+                        <ElecAtrzTabDetail detailData={data} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd}/>
+                    </>
+                    }
+                    {["VTW04914"].includes(formData.elctrnAtrzTySeCd) && !(formData.docSeCd) && (data.ctrtElctrnAtrzId) && //VTW04914: 외주/재료비 지급 임시저장
                     <>
                         <ElectGiveAtrzClm detailData={data} sttsCd={sttsCd} prjctId={prjctId} onSendData={handleChildData}/>
                         <ElecAtrzTabDetail detailData={data} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd}/>

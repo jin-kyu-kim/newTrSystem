@@ -10,6 +10,7 @@ import CustomEditTable from "components/unit/CustomEditTable";
 import Moment from "moment"
 import { startOfMonth, endOfMonth } from 'date-fns'
 import {useAuth} from "../../components/sidebar/contexts/auth";
+
 const Main = ({}) => {
 
 //------------------------선언구간----------------------------------------
@@ -57,7 +58,9 @@ const Main = ({}) => {
         },[])
 
         useEffect(()=> {
+          if (!Object.values(dataSession).every((value) => value === "")) {
             pageHandle();
+          }
         },[dataSession])
 //{*-------------------------- 차수 및 날짜 설정 -----------------------------------*}
 
@@ -70,15 +73,19 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
 //{*-------------------------- 이벤트 영역 -----------------------------------*}
 
   const pageHandle = async () => {
+    const params = [
+      {queryId : noticeQueryId ,type: 'notice'}
+      ,{queryId : trAplyTotQueryId, empId:empId ,aplyYm:orderWorkBgngMm ,aplyOdr: flagOrder}
+      ,{queryId : atrzSttsQueryId, empId:empId}
+      ,{queryId : atrzListQueryId, empId:empId}
+    ];
+    
     try {
-      const responseNotice = await ApiRequest("/boot/common/queryIdSearch",{queryId : noticeQueryId ,type: 'notice'});
-      const responseTrAply = await ApiRequest("/boot/common/queryIdSearch", {queryId : trAplyTotQueryId, empId:empId ,aplyYm:orderWorkBgngMm ,aplyOdr: flagOrder});
-      const responseAply = await ApiRequest("/boot/common/queryIdSearch",{queryId : atrzSttsQueryId, empId:empId });
-      const responseAtrz = await ApiRequest("/boot/common/queryIdSearch", {queryId : atrzListQueryId, empId:empId  });
-      setNoticeValues(responseNotice);
-      setTrAplyValues(responseTrAply);
-      setAplyValues(responseAply);
-      setAtrzValues(responseAtrz);
+      const response = await ApiRequest('/boot/sysMng/mainSearch',params)
+       setNoticeValues(response.retrieveNotice);
+       setTrAplyValues(response.retrieveInptSttus);
+       setAplyValues(response.retrieveAtrzAplySttus);
+       setAtrzValues(response.retiveAtrzList);
     } catch (error) {
       console.log(error);
     }
@@ -175,13 +182,14 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
       }
     };
 
+//==========================================================================
+
 //============================화면그리는부분===================================
   return (
     <div className="container" style={{ width : "80%"}}>    
       <div style={{ marginBottom: "20px" }}>
       </div>
       <div className="mainContainer" style={mainContainerStyle}>
-
         <div className="mainLeftContainer" style={mainLeftContainerStyle}>
 {/* --------------------------------사용자정보 --------------------------------------------------*/}
         <div className="empInfoContainer" style={empInfoStyle}>
