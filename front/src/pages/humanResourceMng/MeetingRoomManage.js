@@ -19,7 +19,9 @@ const MeetingRoomManage = () => {
     // 세션설정
     const [cookies, setCookie] = useCookies(["userInfo", "deptInfo"]);
 
-    
+    console.log(cookies);
+
+
 
     // 회의실종류코드조회
     const [selectMtgRoomCodeList, setSelectMtgRoomCodeList] = useState();
@@ -62,6 +64,10 @@ const MeetingRoomManage = () => {
 
 
 
+    // 권한정보
+    const [authValue, setAuthValue] = useState();
+
+
     // 팝업 visible처리정보
     const [popupMeetingRoomValue, setPopupMeetingRoomValue] = useState({ visible: false, state: "" });
 
@@ -74,13 +80,6 @@ const MeetingRoomManage = () => {
 
     // 팝업전달 회의참석자정보
     const popupMtgRoomRsvtAtdrn = useRef(null);
-
-    // 팝업 visible처리정보
-    const popupVisible = useRef();
-    popupVisible.current = false;
-
-
-
 
 
 
@@ -103,6 +102,7 @@ const MeetingRoomManage = () => {
         popupMtgRoomRsvt.current = "";
         popupMtgRoomRsvtAtdrn.current = "";
         setPopupMeetingRoomValue({ visible: true, state: "insert" })
+        setAuthValue("new")
         e.cancel = true;
     }
 
@@ -111,9 +111,17 @@ const MeetingRoomManage = () => {
 
     // 기존회의실정보조회
     function onAppointmentFormOpening(e) {
-        popupVisible.current = true;
         popupMtgRoomRsvt.current = selectMtgRoomValue.filter(item => item.mtgRoomRsvtSn == e.appointmentData.mtgRoomRsvtSn);
         selectMtgRoomRsvtAtdrn(e.appointmentData.mtgRoomRsvtSn);
+
+        if(cookies.userAuth.find((item) => item == "VTW04805")){
+            setAuthValue("all")
+        } else if(!cookies.userAuth.find((item) => item == "VTW04805") && e.appointmentData.rsvtEmpId == cookies.userInfo.empId){
+            setAuthValue("self")
+        } else {
+            setAuthValue("none")
+        }
+
         e.cancel = true;
     }
 
@@ -121,7 +129,6 @@ const MeetingRoomManage = () => {
     const selectMtgRoomRsvtAtdrn = async (param) => {
         popupMtgRoomRsvtAtdrn.current = await ApiRequest("/boot/common/queryIdSearch", { queryId: "humanResourceMngMapper.retrieveMtgAtdrnInq", mtgRoomRsvtSn: param });
         setPopupMeetingRoomValue({ visible: true, state: "update" })
-        popupVisible.current = true;
     }
 
 
@@ -156,7 +163,7 @@ const MeetingRoomManage = () => {
     return (
         <div className="" style={{ marginLeft: "2%", marginRight: "2%" }}>
             <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
-                <h1 style={{ fontSize: "30px" }}>회의실예약(관리자)</h1>
+                <h1 style={{ fontSize: "30px" }}>회의실예약 {cookies.userAuth.find((item) => item == "VTW04805") ? <>(관리자)</> : ""}</h1>
             </div>
             <div className="mx-auto" style={{ marginBottom: "10px" }}>
                 <span>* 회의실 예약 내역 조회, 예약 및 예약수정이 가능합니다.</span>
@@ -184,9 +191,6 @@ const MeetingRoomManage = () => {
                     })
                     : <></>
                 }
-            </div>
-            <div>
-                {popupVisible.current ? popupVisible.current : popupVisible.current}
             </div>
             <div className="mx-auto" style={{ marginBottom: "20px", marginTop: "20px" }}>
                 <Scheduler id="scheduler"
@@ -240,11 +244,11 @@ const MeetingRoomManage = () => {
                         width={"900px"}
                         height={"650px"}
                         title={"회의실 예약"}
-                        // visible={popupVisible.current ? popupVisible.current : false}
                         visible={popupMeetingRoomValue.visible}
                         mtgRoomRsvtValue={popupMtgRoomRsvt.current && popupMtgRoomRsvt.current != "" ? popupMtgRoomRsvt.current : selectMtgRoomValue}
                         mtgRoomRsvtAtdrnValue={popupMtgRoomRsvtAtdrn.current}
                         state={popupMeetingRoomValue.state}
+                        authState={authValue}
                         onHiding={(e, state) => {
                             setPopupMeetingRoomValue({ visible: e })
                             setSearchMtgRoomParam({ ...searchMtgRoomParam, searchBoolean: state })

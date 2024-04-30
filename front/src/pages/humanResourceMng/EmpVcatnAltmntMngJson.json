@@ -5,9 +5,9 @@
         {"key": "empno", "value": "사번", "width":100},
         {"key": "empFlnm", "value": "성명"},
         {"key": "jobNm", "value": "직위"},
-        {"key": "vcatnAltmntDaycnt", "value": "배정", "width":70},
-        {"key": "useDaycnt", "value": "사용", "width":70},
-        {"key": "vcatnRemndrDaycnt", "value": "잔여", "width":70},
+        {"key": "tableAltmntDaycnt", "value": "배정", "width":70},
+        {"key": "tableUseDaycnt", "value": "사용", "width":70},
+        {"key": "tableRemndrDaycnt", "value": "잔여", "width":70},
         {"key": "hdofSttsNm", "value": "재직상태", "width":100},
         {"key": "link", "value": "화면", "width":100, "button":{"text" : "이동"}}
     ],
