@@ -10,6 +10,7 @@ import CustomEditTable from "components/unit/CustomEditTable";
 import Moment from "moment"
 import { startOfMonth, endOfMonth } from 'date-fns'
 import {useAuth} from "../../components/sidebar/contexts/auth";
+
 const Main = ({}) => {
 
 //------------------------선언구간----------------------------------------
@@ -176,13 +177,14 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
       }
     };
 
+//==========================================================================
+
 //============================화면그리는부분===================================
   return (
     <div className="container" style={{ width : "80%"}}>    
       <div style={{ marginBottom: "20px" }}>
       </div>
       <div className="mainContainer" style={mainContainerStyle}>
-
         <div className="mainLeftContainer" style={mainLeftContainerStyle}>
 {/* --------------------------------사용자정보 --------------------------------------------------*/}
         <div className="empInfoContainer" style={empInfoStyle}>
