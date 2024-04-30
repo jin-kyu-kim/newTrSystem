@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.security.auth.login.FailedLoginException;
 import java.util.Map;
 
 @RestController
@@ -34,7 +35,7 @@ public class SysMngController {
     }
 
     @PostMapping(value = "/boot/sysMng/lgnSkll")
-    public ResponseEntity<TokenDto> loginCheck(@RequestBody Map<String, Object> loginInfo) {
+    public ResponseEntity<TokenDto> loginCheck(@RequestBody Map<String, Object> loginInfo) throws FailedLoginException {
         TokenDto result = userDetails.login(loginInfo);
         return ResponseEntity.status(HttpStatus.OK).header(result.getToken()).body(result);
     }

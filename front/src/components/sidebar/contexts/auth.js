@@ -1,5 +1,5 @@
 import React, { useState, useEffect, createContext, useContext, useCallback } from 'react';
-import {getUser, signIn as sendSignInRequest, setTokenExtension} from '../api/auth';
+import {getUser, signIn as sendSignInRequest, setTokenExtension, setIntlPwsdYn} from '../api/auth';
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 
@@ -29,7 +29,12 @@ function AuthProvider(props) {
       setCookie("userAuth", result.data.data.authorities);
       setCookie("userInfo", result.data.data.userInfo);
       setCookie("deptInfo", result.data.data.deptInfo);
-      navigate("/");
+      if(result.data.data.userInfo.intlPwsdYn && result.data.data.userInfo.intlPwsdYn === 'Y'){
+        await setIntlPwsdYn(result.data.data.userInfo.empId, 'N');
+        navigate("/infoInq/empDetailInfo");
+      }else{
+        navigate("/home");
+      }
     }
     return result;
   }, []);

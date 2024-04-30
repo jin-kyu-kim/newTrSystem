@@ -191,7 +191,7 @@ const ElecAtrzNewReq = () => {
         const getTempAtrzLn = async () => {
             const param = {
                 queryId: "elecAtrzMapper.retrieveAtrzLn",
-                elctrnAtrzId: data.elctrnAtrzId,
+                elctrnAtrzId: data.ctrtElctrnAtrzId ? data.ctrtElctrnAtrzId : data.elctrnAtrzId,
                 sttsCd: sttsCd
             }
             try {

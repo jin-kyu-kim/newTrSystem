@@ -611,66 +611,30 @@ public class ProjectBaseDomain {
 		String nowYm = dayOfMonth > 15 ? ym : lastYm;
 		int nowOdr = dayOfMonth > 15 ? 1 : 2;
 
-		// PRJCT_INDVDL_CT_MM 테이블에 데이터 존재하는지 확인
-		List<Map<String, Object>> searchCtMm = new ArrayList<>();
-		Map<String, Object> tbCtMm = new HashMap<>();
-		tbCtMm.put("tbNm", "PRJCT_INDVDL_CT_MM");
+		// PRJCT_INDVDL_CT_MM 테이블에 데이터 존재하는지 확인하고 없으면 생성
 		Map<String, Object> paramCtMm = new HashMap<>();
+		paramCtMm.put("queryId", "projectMapper.insertCtMm");
 		paramCtMm.put("prjctId", param.get("prjctId"));
 		paramCtMm.put("empId", param.get("empId"));
 		paramCtMm.put("aplyYm", nowYm);
 		paramCtMm.put("aplyOdr", nowOdr);
-		searchCtMm.add(tbCtMm);
-		searchCtMm.add(paramCtMm);
-		List<Map<String, Object>> listCtMm = commonService.commonSelect(searchCtMm);
-
-		// PRJCT_INDVDL_CT_MM 테이블에 데이터 없으면 생성
-		if(listCtMm.isEmpty()){
-			List<Map<String, Object>> insertCtMm = new ArrayList<>();
-			paramCtMm.put("mmAtrzCmptnYn", "N");
-			insertCtMm.add(tbCtMm);
-			insertCtMm.add(paramCtMm);
-			commonService.insertData(insertCtMm);
-		}
-
-		// PRJCT_INDVDL_CT_MM 테이블에 데이터 존재하는지 확인
-		List<Map<String, Object>> searchCtMm = new ArrayList<>();
-		Map<String, Object> tbCtMm = new HashMap<>();
-		tbCtMm.put("tbNm", "PRJCT_INDVDL_CT_MM");
-		Map<String, Object> paramCtMm = new HashMap<>();
-		paramCtMm.put("prjctId", param.get("prjctId"));
-		paramCtMm.put("empId", param.get("empId"));
-		if(dayOfMonth > 15){
-			paramCtMm.put("aplyYm", ym);
-			paramCtMm.put("aplyOdr", 1);
-		} else {
-			paramCtMm.put("aplyYm", lastYm);
-			paramCtMm.put("aplyOdr", 2);
-		}
-		searchCtMm.add(tbCtMm);
-		searchCtMm.add(paramCtMm);
-		List<Map<String, Object>> listCtMm = commonService.commonSelect(searchCtMm);
-
-		// PRJCT_INDVDL_CT_MM 테이블에 데이터 없으면 생성
-		if(listCtMm.isEmpty()){
-			List<Map<String, Object>> insertCtMm = new ArrayList<>();
-			paramCtMm.put("mmAtrzCmptnYn", "N");
-			insertCtMm.add(tbCtMm);
-			insertCtMm.add(paramCtMm);
-			commonService.insertData(insertCtMm);
-		}
+		commonService.queryIdSearch(paramCtMm);
 
 		// (PRJCT_CT_APLY)
 		// ID로 서치
-		List<Map<String, Object>> searchAply = new ArrayList<>();
-		Map<String, Object> tbAply = new HashMap<>();
-		tbAply.put("tbNm", "PRJCT_CT_APLY");
-		searchAply.add(tbAply);
-		searchAply.add(param);
-		List<Map<String, Object>> listAply = commonService.commonSelect(searchAply);
+		Map<String, Object> paramAply = new HashMap<>();
+		paramAply.put("queryId", "projectMapper.retrievePrjctCtAply");
+		paramAply.put("prjctId", param.get("prjctId"));
+		paramAply.put("empId", param.get("empId"));
+		paramAply.put("aplyYm", param.get("aplyYm"));
+		paramAply.put("aplyOdr", param.get("aplyOdr"));
+		paramAply.put("prjctCtAplySn", param.get("prjctCtAplySn"));
+		List<Map<String, Object>> listAply = commonService.queryIdSearch(paramAply);
 
 		// 가져온 값의 aplyYm, aplyOdr 바꿔서 인서트
 		List<Map<String, Object>> insertAply = new ArrayList<>();
+		Map<String, Object> tbAply = new HashMap<>();
+		tbAply.put("tbNm", "PRJCT_CT_APLY");
 		tbAply.put("snColumn", "prjctCtAplySn");
 		Map<String, Object> snSearch = new HashMap<>();
 		snSearch.put("prjctId", param.get("prjctId"));
@@ -679,37 +643,32 @@ public class ProjectBaseDomain {
 		snSearch.put("aplyOdr", nowOdr);
 		tbAply.put("snSearch", snSearch);
 		Map<String, Object> dataAply = listAply.get(0);
-		dataAply.put("aplyYm", nowYm);
-		dataAply.put("aplyOdr", nowOdr);
+		dataAply.put("APLY_YM", nowYm);
+		dataAply.put("APLY_ODR", nowOdr);
 		insertAply.add(tbAply);
 		insertAply.add(dataAply);
 		commonService.insertData(insertAply);
 
 		// (PRJCT_CT_ATRZ)
 		// ID로 서치
-		List<Map<String, Object>> searchAtrz = new ArrayList<>();
-		Map<String, Object> tbAtrz = new HashMap<>();
-		tbAtrz.put("tbNm", "PRJCT_CT_ATRZ");
-		searchAtrz.add(tbAtrz);
-		searchAtrz.add(param);
-		List<Map<String, Object>> listAtrz = commonService.commonSelect(searchAtrz);
+		paramAply.put("queryId", "projectMapper.retrievePrjctCtAtrz");
+		List<Map<String, Object>> listAtrz = commonService.queryIdSearch(paramAply);
 
-		// 가져온 값으로 기존 값 업데이트 -> 코드 VTW03708(이월)
-		List<Map<String, Object>> updateAtrz = new ArrayList<>();
-		updateAtrz.add(tbAtrz);
-		Map<String, Object> paramAtrz = new HashMap<>();
-		paramAtrz.put("atrzDmndSttsCd", "VTW03708");
-		updateAtrz.add(paramAtrz);
-		updateAtrz.add(param);
-		commonService.updateData(updateAtrz);
+		// 기존 값 업데이트 -> 코드 VTW03708(이월)
+		paramAply.put("queryId", "projectMapper.updatePrjctCtAtrz");
+		commonService.queryIdSearch(paramAply);
 
 		// 가져온 값의 aplyYm, aplyOdr 바꿔서 인서트
 		List<Map<String, Object>> insertAtrz = new ArrayList<>();
+		Map<String, Object> tbAtrz = new HashMap<>();
+		tbAtrz.put("tbNm", "PRJCT_CT_ATRZ");
 		tbAtrz.put("snColumn", "prjctCtAplySn");
 		Map<String, Object> dataAtrz = listAtrz.get(0);
-		dataAtrz.put("aplyYm", dataAply.get("aplyYm"));
-		dataAtrz.put("aplyOdr", dataAply.get("aplyOdr"));
-		dataAtrz.put("atrzDmndSttsCd", "VTW03703");
+		dataAtrz.put("APLY_YM", dataAply.get("aplyYm"));
+		dataAtrz.put("APLY_ODR", dataAply.get("aplyOdr"));
+		dataAtrz.put("APRVR_EMP_ID", param.get("aprvrEmpId"));
+		dataAtrz.put("APRV_YMD", ym + String.format("%02d", dayOfMonth));
+		dataAtrz.put("ATRZ_DMND_STTS_CD", "VTW03703");
 		insertAtrz.add(tbAtrz);
 		insertAtrz.add(dataAtrz);
 		commonService.insertData(insertAtrz);
