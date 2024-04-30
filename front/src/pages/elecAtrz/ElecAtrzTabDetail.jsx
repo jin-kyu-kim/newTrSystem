@@ -4,11 +4,13 @@ import ApiRequest from 'utils/ApiRequest';
 import './ElecAtrz.css';
 import CustomTable from 'components/unit/CustomTable';
 import ElecAtrzCtrtInfoDetail from './ctrtInfo/ElecAtrzCtrtInfoDetail';
+import ElectGiveAtrzClm from './ElectGiveAtrzClm';
 
 
 const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd }) => {
     const { vacDtl, clmColumns,  groupingColumn, groupingData, ctrtInfo } = electAtrzJson.electAtrzDetail;
     const [ data, setData ] = useState([]);
+
 
     /* ===================================  필요 데이터 조회  ====================================*/
     useEffect(() => {
@@ -124,7 +126,7 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd }) =
      */
     const CtrtInfo = ({ctrtInfo, data, ctrtTyCd})=>{
 
-        if(detailData.elctrnAtrzTySeCd === 'VTW04910' || ctrtTyCd === 'VTW04910' || !data.ctrtBgngYmd )
+        if(data && (detailData.elctrnAtrzTySeCd === 'VTW04910' || ctrtTyCd === 'VTW04910' ))
             { 
                 ctrtInfo = ctrtInfo.filter(item => item.value !== '계약기간');
             }
@@ -191,6 +193,12 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd }) =
 
     return (
         <div>
+            {(["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)) 
+                && (detailData.elctrnAtrzTySeCd ==="VTW04914" ) 
+                && (detailData.atrzDmndSttsCd)
+                && (
+                <ElectGiveAtrzClm detailData={detailData} sttsCd={sttsCd} prjctId={prjctId}/>
+                )}
             {renderSpecialComponent()}
         </div>
     );

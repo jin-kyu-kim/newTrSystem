@@ -20,12 +20,11 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd, ctrtTyCd}) =
     const [selectedData, setSelectedData] = useState({});           //선택된 행의 데이터
 
     let jsonData = {};
-    if(ctrtTyCd? ctrtTyCd : data.elctrnAtrzTySeCd === "VTW04910"){
+    if((ctrtTyCd ? ctrtTyCd : data.elctrnAtrzTySeCd) === "VTW04910"){
         jsonData = ElecAtrzMatrlCtJson
-    }else if (ctrtTyCd? ctrtTyCd : data.elctrnAtrzTySeCd === "VTW04909"){
+    }else if ((ctrtTyCd? ctrtTyCd : data.elctrnAtrzTySeCd) === "VTW04909"){
         jsonData = ElecAtrzOutordCompanyJson
     }
-    // console.log("data!!! 디테일이야 ", data)
 
     const {keyColumn, summaryColumn, insertButton} = jsonData;
     let tableColumns = jsonData.tableColumns;

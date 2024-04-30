@@ -8,34 +8,43 @@ import { Button } from "devextreme-react";
 const ElectGiveAtrzClm = ({ detailData, sttsCd, onSendData}) => {
     const location = useLocation();
     const formData = location.state.formData;
-    const labelValue = ElectGiveAtrzClmJson.labelValue;
-
-    useEffect(()=>{
-        if(formData.atrzDmndSttsCd === "VTW03701"){ //임시저장
-            labelValue.giveYmd.param.queryId.ctrtElctrnAtrzId = detailData.ctrtElctrnAtrzId
-        }else{
-            labelValue.giveYmd.param.queryId.ctrtElctrnAtrzId = formData.ctrtElctrnAtrzId
-        }
-    },[detailData, formData])
-
-    const [clmData, setClmData]
-     = useState({"ctrtElctrnAtrzId":formData.ctrtElctrnAtrzId
+    const [clmData, setClmData] = 
+      useState({"ctrtElctrnAtrzId": formData ? formData.ctrtElctrnAtrzId : detailData.ctrtElctrnAtrzId
                 ,"tbNm": "CTRT_GIVE_ATRZ"});
+    const [labelValue, setLabelValue] = useState(ElectGiveAtrzClmJson.labelValue);
 
+    // console.log("detailData clm 이라고!", detailData)
+    // console.log("sttsCd", sttsCd)
+    // console.log("formData", formData)
+
+    useEffect(() => {
+        // 객체를 새로 생성하여 불변성을 유지
+        const newLabelValue = {...labelValue};
+        
+        if (!formData || formData.atrzDmndSttsCd === "VTW03701") { // 임시저장
+            newLabelValue.giveYmd.param.queryId.ctrtElctrnAtrzId = detailData.ctrtElctrnAtrzId;
+        } else {
+            newLabelValue.giveYmd.param.queryId.ctrtElctrnAtrzId = formData.ctrtElctrnAtrzId;
+        }
+
+        setLabelValue(newLabelValue); // 상태 업데이트
+    }, [detailData, formData]);
+
+    
+    /* readOnly 조절 */
     let controlReadOnly = false;
 
-    //TODO. 임시저장을 제외한 조회시 readOnly 지정 필요.
-    // if(formData.atrzDmndSttsCd === "VTW03701"){
-    //     controlReadOnly = true;
-    // }
+    if(!formData){
+        controlReadOnly = true;
+    }
 
 
     useEffect(()=>{
-        if(formData.atrzDmndSttsCd === "VTW03701"){
+        if(!formData || formData.atrzDmndSttsCd === "VTW03701"){
             const getCtrtInfo = async () => {
                     try {
                         const response = await ApiRequest('/boot/common/commonSelect', 
-                        [{ tbNm: "CTRT_GIVE_ATRZ" }, { elctrnAtrzId: formData.elctrnAtrzId }]               
+                        [{ tbNm: "CTRT_GIVE_ATRZ" }, { elctrnAtrzId: formData? formData.elctrnAtrzId : detailData.elctrnAtrzId }]               
                     );
                         setClmData(response[0])
                         
@@ -50,7 +59,9 @@ const ElectGiveAtrzClm = ({ detailData, sttsCd, onSendData}) => {
 
     useEffect(()=>{
         console.log("clmData", clmData)
-        onSendData(clmData);
+        if(onSendData){
+            onSendData(clmData);
+        }
     },[clmData]);
 
      /**
@@ -82,19 +93,21 @@ const ElectGiveAtrzClm = ({ detailData, sttsCd, onSendData}) => {
         <div>
             <h3>계약청구</h3>
             <div style={{ width: '50%'}}>
-            <div className="dx-fieldset">
-                <CustomLabelValue props={labelValue.giveYmd} onSelect={handleChgState} value={clmData.giveYmd} readOnly={controlReadOnly} />
-                <CustomLabelValue props={labelValue.vatExclAmt} onSelect={handleChgState} value={clmData.vatExclAmt} readOnly={true}/>
-                <CustomLabelValue props={labelValue.giveAmt} onSelect={handleChgState} value={!clmData.giveYmd? "" : clmData.giveAmt} readOnly={true}/>
-                <CustomLabelValue props={labelValue.taxBillPblcnYmd} onSelect={handleChgState} value={clmData.taxBillPblcnYmd} readOnly={controlReadOnly}/>
-            </div>
-            {/* {!controlReadOnly && */}
-                <div>
-                    <Button text="-3.3%" onClick={()=>texCal("-3.3")}></Button>
-                    <Button text="-8.8%" onClick={()=>texCal("-8.8")}></Button>
-                    <Button text="+10%" onClick={()=>texCal("+10")}></Button>
+                <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", width:"100%"}}>
+                    <div className="dx-fieldset" style={{flex: 1, display: "flex", flexDirection: "column"}}>
+                        <CustomLabelValue props={labelValue.giveYmd} onSelect={handleChgState} value={clmData.giveYmd} readOnly={controlReadOnly} />
+                        <CustomLabelValue props={labelValue.vatExclAmt} onSelect={handleChgState} value={clmData.vatExclAmt} readOnly={true}/>
+                        <CustomLabelValue props={labelValue.giveAmt} onSelect={handleChgState} value={!clmData.giveYmd? "" : clmData.giveAmt} readOnly={true}/>
+                        <CustomLabelValue props={labelValue.taxBillPblcnYmd} onSelect={handleChgState} value={clmData.taxBillPblcnYmd} readOnly={controlReadOnly}/>
+                    </div>
+                    {!controlReadOnly &&
+                        <div style={{flex: "0 0 auto", marginTop: "80px"}}>
+                            <Button text="-3.3%" onClick={()=>texCal("-3.3")}></Button>
+                            <Button text="-8.8%" onClick={()=>texCal("-8.8")}></Button>
+                            <Button text="+10%" onClick={()=>texCal("+10")}></Button>
+                        </div>
+                    }
                 </div>
-            {/* } */}
             </div>
         </div>
 

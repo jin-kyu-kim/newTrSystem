@@ -41,6 +41,9 @@ const ElecAtrzNewReq = () => {
 
     const [atrzLnEmpList, setAtrzLnEmpList] = useState([]);
     const column = { "dataField": "gnrlAtrzCn", "placeholder": "내용을 입력해주세요."};
+
+    // console.log("formData", formData.atrzFormDocId)
+    // console.log("location", location.state)
     
     /**
      * 계약 지급인 경우 계약코드 select
@@ -68,7 +71,7 @@ const ElecAtrzNewReq = () => {
                         }
                     } catch (error) {
                         console.log('error', error);
-                    }
+                    } 
                 }     
                 getCtrtInfo();       
             };
@@ -451,7 +454,6 @@ const ElecAtrzNewReq = () => {
 
         return true;
     }
-
     
     return (
         <>
@@ -490,7 +492,7 @@ const ElecAtrzNewReq = () => {
                         <ElecAtrzTabDetail detailData={data} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd}/>
                     </>
                     }
-                    {["VTW04914"].includes(formData.elctrnAtrzTySeCd) && !(formData.docSeCd) &&   //VTW04914: 외주/재료비 지급 생성
+                    {["VTW04914"].includes(formData.elctrnAtrzTySeCd) && !(formData.docSeCd) && (data.ctrtElctrnAtrzId) && //VTW04914: 외주/재료비 지급 임시저장
                     <>
                         <ElectGiveAtrzClm detailData={data} sttsCd={sttsCd} prjctId={prjctId} onSendData={handleChildData}/>
                         <ElecAtrzTabDetail detailData={data} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd}/>
