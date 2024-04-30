@@ -30,7 +30,7 @@ const ProjectExpenseCard = (props) => {
         const currentExpensCd = expensCd[cardUseSn];
         const matchedItem = placeholderAndRequired.find(item => item.expensCd === currentExpensCd);
         return matchedItem ? (col.key === 'atdrn' ? matchedItem.atdrnPlaceholder : matchedItem.ctPrposPlaceholder)
-        : col.placeholder;
+            : col.placeholder;
     };
 
     useEffect(() => {
@@ -87,6 +87,7 @@ const ProjectExpenseCard = (props) => {
 
     const handleDelete = () => {
         const param = [{tbNm: "CARD_USE_DTLS"}];
+        
         if(window.confirm('선택한 결제내역을 삭제하시겠습니까? 삭제 후 재등록 시 수동으로 입력하셔야 합니다.')){
             
             Promise.all(selectedItem.map(async (item) => {

@@ -176,7 +176,7 @@ export const navigation = [
         auth: 'VTW04801'
       },{
         text: '코드관리',
-        path: '/sysMng/TrsCodeList',
+        path: '/sysMng/TrsCode',
         auth: 'VTW04801'
       },{
         text: '고객사관리',

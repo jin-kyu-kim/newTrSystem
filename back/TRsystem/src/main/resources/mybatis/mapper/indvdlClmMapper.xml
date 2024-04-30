@@ -915,7 +915,7 @@
     <!-- 개인비용청구 공휴일, 연차 포함 총 근무 시간 -->
     <select id="retrieveTotalWorkTime" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT (
-            SELECT SUM(MD) * 8
+            SELECT COALESCE(SUM(MD) * 8, 0) AS MD
             FROM PRJCT_MM_APLY pma
             JOIN (
                 SELECT pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR
@@ -934,12 +934,10 @@
                 FROM CRTR_DATE
                 WHERE SUBSTR(CRTR_YMD, 1, 6) = #{aplyYm}
                     AND HLDY_CL_CD = 'VTW05003'
-                    AND SUBSTRING(CRTR_YMD, 7, 2) BETWEEN '01' AND (
-                        CASE
-                            WHEN #{aplyOdr} = 1 THEN '15'
-                            WHEN #{aplyOdr} = 2 THEN LAST_DAY(CONCAT(SUBSTR(#{aplyYm}, 1, 4), '-', SUBSTR(#{aplyYm}, 5, 2), '-01'))
-                        END
-                    )
+                    AND CASE
+                        WHEN #{aplyOdr} = 1 THEN SUBSTR(DATE_FORMAT(CRTR_YMD, '%Y%m%d'), 7, 2) BETWEEN '01' AND '15'
+                        ELSE SUBSTR(DATE_FORMAT(CRTR_YMD, '%Y%m%d'), 7, 2) BETWEEN '16' AND '31'
+                    END
             ), 0) + COALESCE(( -- 연차 사용 일수
                 SELECT
                     SUM(CASE
