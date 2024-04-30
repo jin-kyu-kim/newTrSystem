@@ -35,8 +35,17 @@ const CultureHealthCost = () => {
                 area: "data",
                 format: "fixedPoint",
                 customizeText: function(cellInfo) {
-                    return cellInfo.valueText.startsWith('0dt') ?
-                        cellInfo.valueText.substring(3,7)+"."+cellInfo.valueText.substring(7,9)+"."+cellInfo.valueText.substring(9,11) : cellInfo.valueText;
+                    if(cellInfo.valueText.includes('0dt') || cellInfo.valueText.includes('dt')){
+                        let text = cellInfo.valueText.replaceAll('0dt','');
+                        text = text.replaceAll('dt','');
+                        text = text.substring(0,4)+"."+text.substring(4,6)+"."+text.substring(6,8);
+                        if(text === '..'){
+                            text = '-';
+                        }
+                        return text;
+                    } else {
+                        return cellInfo.valueText;
+                    }
                 },
                 expanded: true
             }
@@ -49,11 +58,11 @@ const CultureHealthCost = () => {
 
     useEffect(() => {
         if(year != null){
-            searchTable();
+            searchGrid();
         }
     }, [year]);
 
-    const searchTable = async () => {
+    const searchGrid = async () => {
         try{
             const param = { empId: cookies.userInfo.empId, clmYm: year }
             const response = await ApiRequest('/boot/indvdlClm/retrieveClturPhstrnActCt', param);
@@ -85,6 +94,58 @@ const CultureHealthCost = () => {
     }
 
     const onCellPrepared = (e) => {
+        if(e.area === "column" && e.cell.text === "01"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "1월";
+        } else if (e.area === "column" && e.cell.text === "02"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "2월";
+        } else if (e.area === "column" && e.cell.text === "03"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "3월";
+        } else if (e.area === "column" && e.cell.text === "04"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "4월";
+        } else if (e.area === "column" && e.cell.text === "05"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "5월";
+        } else if (e.area === "column" && e.cell.text === "06"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "6월";
+        } else if (e.area === "column" && e.cell.text === "07"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "7월";
+        } else if (e.area === "column" && e.cell.text === "08"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "8월";
+        } else if (e.area === "column" && e.cell.text === "09"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "9월";
+        } else if (e.area === "column" && e.cell.text === "10"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "10월";
+        } else if (e.area === "column" && e.cell.text === "11"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "11월";
+        } else if (e.area === "column" && e.cell.text === "12"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "12월";
+        }
+
+        if(e.area === "row" && e.cell.text === "01"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "청구";
+        } else if (e.area === "row" && e.cell.text === "02"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "지급";
+        } else if (e.area === "row" && e.cell.text === "03"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "지급날짜";
+        } else if (e.area === "row" && e.cell.text === "04"){
+            const textNode = e.cellElement.childNodes[0];
+            textNode.textContent = "잔액";
+        }
+
         if( e.area === 'row' && e.cell.expanded === true){
             const childNodes = e.cellElement.childNodes;
             Array.from(childNodes).forEach(node => {
@@ -110,7 +171,7 @@ const CultureHealthCost = () => {
             >
                 <h1 style={{fontSize: "40px"}}>문화체련비</h1>
             </div>
-            <div className="col-md-2" style={{marginRight: "-20px", marginLeft: "2%", marginBottom: "2%"}}>
+            <div className="col-md-2" style={{marginLeft: "2%", marginBottom: "2%"}}>
                 <SelectBox
                     placeholder="[년도]"
                     defaultValue={now.getFullYear()}
@@ -119,11 +180,11 @@ const CultureHealthCost = () => {
                         setYear(e)
                     }}/>
             </div>
-            <div>
+            <div style={{margin: "2%"}}>
                 <PivotGrid
                     dataSource={dataSource}
                     allowSortingBySummary={true}
-                    height={560}
+                    height={450}
                     showBorders={true}
                     allowFiltering={false}
                     allowSorting={false}
@@ -138,7 +199,7 @@ const CultureHealthCost = () => {
                     <Scrolling mode="virtual"/>
                 </PivotGrid>
             </div>
-            <CultureHealthCostReg year={year}></CultureHealthCostReg>
+            <CultureHealthCostReg year={year} searchGrid={searchGrid}></CultureHealthCostReg>
         </div>
     );
 };

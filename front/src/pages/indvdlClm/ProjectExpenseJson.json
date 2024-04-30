@@ -19,6 +19,16 @@
         "url": "./ProjectExpenseCash"
       }
     ],
+    "searchInfo": {
+      "searchParams": { 
+        "btnName": "과거비용승인이력(팝업)",
+        "yearList": [
+          { "name": "year", "visible": true, "placeholder": "[연도]", "displayExpr": "value", "valueExpr": "value" },
+          { "name": "month", "visible": true, "placeholder": "[월]", "displayExpr": "value", "valueExpr": "value" },
+          { "name": "aplyOdr", "visible": true, "placeholder": "[차수]", "displayExpr": "text", "valueExpr": "value" }
+        ]
+      }
+    },
     "keyColumn": "prjctCtAplySn",
     "ctAplyTableColumns": [
       { "key": "ctAtrzSeCdNm", "value": "구분", "width": 120 },
@@ -67,7 +77,7 @@
           "msg": "승인요청하시겠습니까?", "completeMsg": "승인요청 되었습니다."} },
         { "text": "입력마감취소", "type": "danger", "onClick": { "name": "onInptDdlnRtrcnClick", "actionType": "INPUT_CANCEL", 
           "msg": "입력마감을 취소하시겠습니까?", "completeMsg": "입력마감이 취소되었습니다."} },
-        { "onClick": "onPrintClick", "text": "출력(팝업)", "type": "success" }
+        { "onClick": {"name": "onPrintClick"}, "text": "출력(팝업)", "type": "success" }
       ],
       "hasApprovals": [
         { "text": "승인요청취소", "type": "danger", "onClick": { "name": "onAprvDmndRtrcnClick", "actionType": "APPROVE_CANCEL",
@@ -207,5 +217,30 @@
         "values": ["elctrnAtrzId"]
       }
     }
+  ],
+  "projectExpensePopup": [
+    { "title": "* 기본정보", "key": "basic", "info": [
+      { "key": "aplyOdr", "value": "TR차수" },
+      { "key": "empno", "value": "사번" },
+      { "key": "empFlnm", "value": "성명" },
+      { "key": "deptNm", "value": "소속" },
+      { "key": "jbpsNm", "value": "직위" }
+    ]},
+    { "title": "* 총계", "key": "total", "info": [
+      { "key": "totTime", "value": "총 근무시간" },
+      { "key": "totalUtztnAmt", "value": "총 지급금액" },
+      { "key": "totalCount", "value": "영수증 갯수" }
+    ]},
+    { "title": "* 근무시간", "key": "time", "info": [
+      { "dataField": "prjctNm", "caption": "프로젝트명", "area": "row", "expanded": true, "showTotals": false },
+      { "dataField": "aplyDay", "area": "column" },
+      { "dataField": "md", "area": "data", "summaryType": "sum" }
+    ]},
+    { "title": "* 현금 및 개인법인카드 사용비용", "key": "expense" }
+  ],
+  "projectExpensePopQueryIdList": [
+    "indvdlClmMapper.retrieveVcatnDay",
+    "indvdlClmMapper.retrieveCtrtDay",
+    "indvdlClmMapper.retrievePrjctWorkDay"
   ]
 }

@@ -7,8 +7,28 @@ import './SideNavigationMenu.scss';
 
 
 import * as events from 'devextreme/events';
+import {useCookies} from "react-cookie";
+
 
 export default function SideNavigationMenu(props) {
+
+  const [cookies, setCookie] = useCookies(["userAuth"]);
+  const userAuths = cookies.userAuth;
+
+  const isAdmin = userAuths.includes('VTW04801');
+  function setVisiblePropertyBasedOnAuthArray(navigation, userAuths, isAdmin) {
+    return navigation.map(item => {
+      // 하위 항목이 있는지 확인
+      const hasItems = item.items && item.items.length > 0;
+
+      return {
+        ...item,
+        visible: isAdmin || !item.auth || userAuths.includes(item.auth),
+        items: hasItems ? setVisiblePropertyBasedOnAuthArray(item.items, userAuths) : [],
+      };
+    });
+  }
+
   const {
     children,
     selectedItemChanged,
@@ -19,16 +39,20 @@ export default function SideNavigationMenu(props) {
   } = props;
 
   const { isLarge } = useScreenSize();
-  function normalizePath () {
-    return navigation.map((item) => (
-      { ...item, expanded: isLarge, path: item.path && !(/^\//.test(item.path)) ? `/${item.path}` : item.path }
-    ))
-  }
-
-  const items = useMemo(
-    normalizePath,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+  // function normalizePath () {
+  //   return navigation.map((item) => (
+  //     { ...item, expanded: isLarge, path: item.path && !(/^\//.test(item.path)) ? `/${item.path}` : item.path }
+  //   ))
+  // }
+  //
+  // const items = useMemo(
+  //   normalizePath,
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  //   []
+  // );
+  const visibleNavigation = useMemo(
+      () => setVisiblePropertyBasedOnAuthArray(navigation, userAuths, isAdmin),
+      [userAuths]
   );
 
   const { navigationData: { currentPath } } = useNavigation();
@@ -78,7 +102,7 @@ export default function SideNavigationMenu(props) {
       <div className={'menu-container'}>
         <TreeView
           ref={treeViewRef}
-          items={items}
+          items={visibleNavigation}
           keyExpr={'path'}
           selectionMode={'single'}
           focusStateEnabled={false}

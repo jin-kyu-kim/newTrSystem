@@ -4,11 +4,14 @@
     "listTableColumns": [
         {"key": "vcatnTyNm", "value": "구분", "width":100},
         {"key": "vcatnDeCnt", "value": "일수", "width":70},
-        {"key": "vcatnBgngYmd", "value": "시작일자"},
-        {"key": "vcatnEndYmd", "value": "종료일자"},
+        {"key": "parseVcatnBgngYmd", "value": "시작일자"},
+        {"key": "parseVcatnEndYmd", "value": "종료일자"},
         {"key": "vcatnPrvonsh", "value": "신청/취소사유"},
-        {"key": "atrzDmndSttsNm", "value": "결재상태", "width":100},
-        {"key": "atchmnflId", "value": "첨부파일", "width":100, "button":{"text" : "파일"}},
-        {"key": "cancle", "value": "취소", "width":160, "button":{"text" : "휴가 취소요청"}}
+        {"key": "atrzDmndSttsNm", "value": "결재상태", "width":150},
+        {"value": "첨부파일","width": "100", "buttons": [ 
+            {"text": "파일", "visible": {"key": "vcatnTyCd", "value": "VTW01204"}}, 
+            {"text": "파일", "visible": {"key": "vcatnTyCd", "value": "VTW01205"}} 
+        ]},
+        {"value": "취소","width": "130", "buttons": [ { "text": "취소요청", "visible": {"key": "cancleButtonctr", "value": "TRUE"}} ]}
     ]
 }

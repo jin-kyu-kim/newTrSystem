@@ -3,14 +3,34 @@ import { CheckBox } from "devextreme-react";
 import React from 'react';
 import {Button} from "devextreme-react/button";
 
-const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
+const GridRows = ( {columns, editRow, handleYnVal, onClick, handleCheckBoxChange, checkBoxValue}) => {
 
     const result = [];
 
     const ButtonRender = (button, data, onClick) => {
         let disabled = false;
-        if(button.able != null && data != null && data[button.able.key] != button.able.value){
+        if(button.able != null && data != null && button.able.value !== undefined && data[button.able.key] != button.able.value){
             disabled = true;
+        } else if(button.able != null && data != null  && button.able.exceptValue !== undefined && data[button.able.key] == button.able.exceptValue){
+            disabled = true;
+        } else if (button.time){
+            const date = new Date();
+            const month = date.getMonth() + 1;
+            let firstDayOfMonth = new Date( date.getFullYear(), date.getMonth() , 1 );
+            let lastMonth = new Date(firstDayOfMonth.setDate( firstDayOfMonth.getDate() - 1 )); // 전월 말일
+            const day = date.getDate();
+            let monthVal = month < 10 ? "0" + month : month;
+            let lastMonthVal = (lastMonth.getMonth() + 1) < 10 ? "0" + (lastMonth.getMonth() + 1) : lastMonth.getMonth() + 1;
+
+            if(day > 15){
+                if(data["aplyYm"] !== date.getFullYear()+monthVal || data["aplyOdr"] !== 1){
+                    disabled = true;
+                }
+            } else {
+                if(data["aplyYm"] !== lastMonth.getFullYear()+lastMonthVal || data["aplyOdr"] !== 2){
+                    disabled = true;
+                }
+            }
         }
         return(
             <Button name = {button.name} text={button.text} onClick={(e) => {onClick(button, data)}} disabled={disabled}/>
@@ -21,10 +41,30 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
         let button = null;
         let disabled = false;
         buttons.forEach((item) => {
-            if (data != null && data[item.visible.key] == item.visible.value ) {
+            if (data != null && data[item.visible.key] === item.visible.value ) {
                 button = item;
-                if(item.able != null && data[item.able.key] != item.able.value){
+                if(item.able != null && typeof item.able.value != "boolean" && data[item.able.key] !== item.able.value){
                     disabled = true;
+                } else if (item.able != null && item.able.value === true && data[item.able.key]){
+                    disabled = true;
+                } else if (button.time){
+                    const date = new Date();
+                    const month = date.getMonth() + 1;
+                    let firstDayOfMonth = new Date( date.getFullYear(), date.getMonth() , 1 );
+                    let lastMonth = new Date(firstDayOfMonth.setDate( firstDayOfMonth.getDate() - 1 )); // 전월 말일
+                    const day = date.getDate();
+                    let monthVal = month < 10 ? "0" + month : month;
+                    let lastMonthVal = (lastMonth.getMonth() + 1) < 10 ? "0" + (lastMonth.getMonth() + 1) : lastMonth.getMonth() + 1;
+
+                    if(day > 15){
+                        if(data["aplyYm"] !== date.getFullYear()+monthVal || data["aplyOdr"] !== 1){
+                            disabled = true;
+                        }
+                    } else {
+                        if(data["aplyYm"] !== lastMonth.getFullYear()+lastMonthVal || data["aplyOdr"] !== 2){
+                            disabled = true;
+                        }
+                    }
                 }
             }
         });
@@ -61,7 +101,7 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
               width={width}
               alignment={alignment}
             > 
-                {GridRows({columns, onClick})}
+                {GridRows({columns, onClick, handleCheckBoxChange, checkBoxValue})}
             </Column>
         );
       } else if(button){
@@ -92,14 +132,22 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
           );
       } else if(chkBox){
         /*=====================헤더 체크박스 설정====================*/
-        const CheckBoxHeaderCellComponent = ({ data, callback, idColumn }) => {
+        const CheckBoxHeaderCellComponent = ({ data, idColumn, handleCheckBoxChange, checkBoxValue }) => {
           return(
-              <CheckBox text={value} name={key} visible={true} alignment={alignment} onValueChange={handleCheckBoxChange}/>
+              <CheckBox 
+                text={value} 
+                name={key} 
+                visible={true} 
+                alignment={alignment} 
+                onValueChanged={(e) => handleCheckBoxChange(e, key)} 
+                /*value={checkBoxValue[key] == "true" ? true : false}*/
+                value={checkBoxValue[key]}
+              />
           );
         }
 
-        const handleCheckBoxChange = (e) => {
-        }
+        // const handleCheckBoxChange = (e) => {
+        // }
 
         result.push(
           <Column
@@ -108,8 +156,9 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick}) => {
             width={width}
             alignment={alignment || 'center'}
             caption={value}
+            allowSorting={false}
             headerCellRender={({ data, key }) => (
-              <CheckBoxHeaderCellComponent callback={handleYnVal} data={data} idColumn={key}/>
+              <CheckBoxHeaderCellComponent data={data} idColumn={key} handleCheckBoxChange={handleCheckBoxChange} checkBoxValue={checkBoxValue}/>
             )}
           >
           </Column>

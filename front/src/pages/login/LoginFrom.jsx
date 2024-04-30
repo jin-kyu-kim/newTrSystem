@@ -27,11 +27,10 @@ const LoginForm = ({ handleLogin }) => {
 
   const handleClick = async () => {
     const valid = validateForm()
-    console.log("login");
     if(valid){
       const data = await signIn(empno, pswd);
       if(!data.isOk){
-        window.alert("비밀번호를 확인해주십시오");
+        window.alert(data.data);
         setPassword("");
       }
     }

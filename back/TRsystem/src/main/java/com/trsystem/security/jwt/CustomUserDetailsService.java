@@ -27,7 +27,13 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public SysMngUser loadUserByUsername(String empno) throws UsernameNotFoundException {
         Map<String, Object> reltSet = new HashMap<>();
-        Map<String, Object> user =  sqlSession.selectOne("com.trsystem.mybatis.mapper.sysMngMapper.userInfo",empno);
+        Map<String, Object> param = new HashMap<>();
+        if(empno.length()> 10){
+            param.put("empId", empno);
+        }else{
+            param.put("empno", empno);
+        }
+        Map<String, Object> user =  sqlSession.selectOne("com.trsystem.mybatis.mapper.sysMngMapper.userInfo",param);
 
         if (user == null) {
             throw new UsernameNotFoundException("User not found with username: " + empno);
@@ -48,21 +54,27 @@ public class CustomUserDetailsService implements UserDetailsService {
         Map<String, Object> userInfo = (Map<String, Object>) userData.get("userInfo");
         String empId = (String) userInfo.get("empId");
         String pswd = (String) userInfo.get("pswd");
+        String intlPwsdYn = (String) userInfo.get("intlPwsdYn");
 
         // 사용자의 권한 정보를 가져옵니다.
         List<Map<String, Object>> authorities = (List<Map<String, Object>>) userData.get("authorities");
         List<Map<String, Object>> deptInfo = (List<Map<String, Object>>) userData.get("deptInfo");
         List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
+        authorityList.add(new SimpleGrantedAuthority("USER"));
         for (Map<String, Object> authority : authorities) {
             authorityList.add(new SimpleGrantedAuthority(authority.get("authrtCd").toString()));
         }
         // UserDetails 객체를 생성하여 반환합니다.
         return new SysMngUser(
-                (String) empId,
-                (String) pswd,
+                empId,
+                pswd,
+                intlPwsdYn,
                 userInfo,
                 deptInfo,
                 authorityList
         );
     }
+
+
+
 }

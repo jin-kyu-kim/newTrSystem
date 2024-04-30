@@ -19,7 +19,6 @@ const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handle
     }
   }, [completedCount]);
 
-
   const handleSubmit = async () => {
     const validationResults = await validateFields();
     if (!validationResults.isValid) {
@@ -44,13 +43,16 @@ const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handle
   /** CARD_USE_DTLS - PRJCT_CT_INPT_PSBLTY_YN 값 => "N" */
   const updateYn = async () => {
     try {
-      const updates = selectedItem.map(item => ApiRequest("/boot/common/commonUpdate", [
-        { tbNm: "CARD_USE_DTLS" },
-        { prjctCtInptPsbltyYn: "N" },
-        { cardUseSn: item.cardUseSn }
-      ]));
-      await Promise.all(updates);
+      if(selectedItem[0].cardUseSn){
+        const updates = selectedItem.map(item => ApiRequest("/boot/common/commonUpdate", [
+          { tbNm: "CARD_USE_DTLS" },
+          { prjctCtInptPsbltyYn: "N" },
+          { cardUseSn: item.cardUseSn }
+        ]));
+        await Promise.all(updates);
+      }
       return true;
+
     } catch (error) {
       console.error('updateYn error', error);
       return false;
@@ -60,8 +62,7 @@ const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handle
   /** PRJCT_INDVDL_CT_MM (프로젝트개인비용MM) - insert */
   const insertMM = async () => {
     const param = selectedItem.map((item) => ({
-      ...setParam(item),
-      mmAtrzCmptnYn: "N",
+      ...setParam(item)
     }));
     
     try{
@@ -81,23 +82,31 @@ const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handle
     const updatedRowsData = selectedItem.map(({ utztnDtFormat, ...rest }) => rest);
   
     for (const item of updatedRowsData) {
-      const atdrnString = item.atdrn.map(person => person.value).join(',');
-      const requestBody = [{ ...tbInfo }, { ...item, atdrn: atdrnString, ctAtrzSeCd: "VTW01903" }];
+      const atdrnString = selectedItem[0].atdrn ? item.atdrn.map(person => person.value).join(',') : null;
+      const requestBody = [
+        { ...tbInfo, snSearch: {empId: item.empId, prjctId: item.prjctId, aplyYm: item.aplyYm, aplyOdr: item.aplyOdr} }, 
+        { ...item, atdrn: atdrnString, ctAtrzSeCd: "VTW01903" }];
   
       try {
         await ApiRequest("/boot/common/commonInsert", requestBody);
-        const maxSn = await getPrjctCtAplySn(item);
+
+        const maxSn = await ApiRequest('/boot/common/commonGetMax', [
+          { tbNm: sendTbInfo.tbNm, snColumn: sendTbInfo.snColumn },
+          { empId: item.empId, prjctId: item.prjctId, aplyYm: item.aplyYm, aplyOdr: item.aplyOdr }
+        ])
         snArray.push(maxSn);
 
         // 참석자 별도 insert
-        for (const person of item.atdrn) {
-          const atdrnRes = await ApiRequest("/boot/common/commonInsert", [
-              { tbNm: "PRJCT_CT_ATDRN", snColumn: "PRJCT_CT_ATDRN_SN" },
-              { 
-                prjctCtAplySn: maxSn, atndEmpId: person.key, atndEmpFlnm: person.value,
-                ...setParam(item)
-              }
-          ]);
+        if(item.atdrn){
+          for (const person of item.atdrn) {
+            const atdrnRes = await ApiRequest("/boot/common/commonInsert", [
+                { tbNm: "PRJCT_CT_ATDRN", snColumn: "PRJCT_CT_ATDRN_SN" },
+                { 
+                  prjctCtAplySn: maxSn, atndEmpId: person.key, atndEmpFlnm: person.value,
+                  ...setParam(item)
+                }
+            ]);
+          }
         }
       } catch (error) {
         console.error("insertValueAndFetchSn error", error);
@@ -105,17 +114,6 @@ const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handle
       }
     }
     setPrjctCtAplySn(snArray);
-  };
-
-  const getPrjctCtAplySn = async (oneRow) => {
-    const param = setParam(oneRow, {queryId: "indvdlClmMapper.retrievePrjctCtAplySn"})
-    try {
-      const response = await ApiRequest("/boot/common/queryIdSearch", param);
-      return response[0].prjctCtAplySn;
-    } catch (error) {
-      console.error("getPrjctCtAplySn error", error);
-      return null;
-    }
   };
 
   /** PRJCT_CT_ATRZ (프로젝트비용결재) - insert */

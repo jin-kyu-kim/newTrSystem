@@ -7,12 +7,14 @@ import CustomTable from 'components/unit/CustomTable';
 import ElecAtrzCtrtOutordHnfJson from "./ElecAtrzCtrtOutordHnfJson.json";
 import PymntPlanOutordHnfPopup from "./PymntPlanOutordHnfPopup";
 
+import ApiRequest from "utils/ApiRequest";
+
 /**
  * data : 해당 전자결제 문서에 대한 데이터
  * prjctId : 해당 프로젝트 ID
  * onSendData : 부모창으로 데이터 전송 위한 함수
  */
-const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData }) => {
+const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, sttsCd }) => {
 
     const ctrtYmd = prjctData.ctrtYmd;
     const stbleEndYmd = prjctData.stbleEndYmd; 
@@ -21,6 +23,7 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData }) =>
     const [tableData, setTableData] = useState([]);                 //그리드 전체 데이터
     const [selectedData, setSelectedData] = useState({});           //선택된 행의 데이터
     const [summaryTableData, setSummaryTableData] = useState([]);    //요약 데이터
+    let tableColumns = ElecAtrzCtrtOutordHnfJson.tableColumns;
 
     const summaryColumn = [
         {
@@ -37,6 +40,27 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData }) =>
           "format": "총 {0} 원"
         }
   ]
+
+  /*
+    *상태코드에 따른 버튼 변경
+    */
+    if(["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707"].includes(sttsCd)){
+        tableColumns = tableColumns.filter(item => item.value !== '삭제');
+
+        tableColumns = tableColumns.map((item) => {
+                        if(item.value === "수정"){
+                            return {
+                                ...item,
+                                button:{
+                                    ...item.button,
+                                    text: "상세"
+                                }
+                            };
+                        }
+                        return item;
+                    });
+    }
+
 
    /* =========================  월별 데이터 생성  =========================*/
     const makeMonthlyData = (start, end) => {
@@ -72,6 +96,60 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData }) =>
     if(ctrtYmd && stbleEndYmd){
         monthlyData = makeMonthlyData(ctrtYmd, stbleEndYmd);
     }
+
+
+    /* =========================  임시저장 조회  =========================*/
+    useEffect(() => {
+        /* 임시저장 조회 */
+        if(sttsCd === "VTW03701") {
+            getTempData();
+        /* 전자결재 목록 조회 */
+        }else if(["VTW03702","VTW03703","VTW03704","VTW03705"].includes(sttsCd)) {
+            getTempData();
+        }
+    }, [])
+
+    
+    const getTempData = async () => {
+        const dtlParam = 
+            { queryId: "elecAtrzMapper.retrieveOutorHnfDtl",
+              elctrnAtrzId: data.elctrnAtrzId,
+              elctrnAtrzTySeCd: data.elctrnAtrzTySeCd}    
+        const dtlResponse = await ApiRequest("/boot/common/queryIdSearch", dtlParam);
+
+        const ctrtDataDtl = dtlResponse[0];
+
+        console.log("ctrtDataDtl",ctrtDataDtl);
+
+        const dtlCndParam = [
+            { tbNm: "HNF_CTRT_DTL_MM" }, 
+            { elctrnAtrzId: data.elctrnAtrzId }
+        ]
+
+        const dtlCndResponse = await ApiRequest("/boot/common/commonSelect", dtlCndParam);
+
+        console.log("dtlCndResponse",dtlCndResponse);
+
+        dtlCndResponse.forEach(item => {
+            delete item.elctrnAtrzId;
+            delete item.inptHnfId;
+            item.id = item.inptYm; 
+            delete item.inptYm;
+        });
+        
+        const hnfCtrtDtlMm = dtlCndResponse;
+
+
+        const result = {
+            ...ctrtDataDtl,
+            hnfCtrtDtlMm
+        }
+
+        console.log("result",result);
+        handlePopupData(result);
+    }
+
+
 
 
     /* =========================  Table 버튼 handling  =========================*/
@@ -112,7 +190,7 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData }) =>
             setTableData(updatedData);
         } else {
             const maxSn = tableData.length > 0 ? Math.max(...tableData.map(item => item.inptHnfId || 0)) : 0;
-            data.inptHnfId = maxSn + 1;  
+            // data.inptHnfId = maxSn + 1;  
             setTableData(prev => [...prev, data]);
         }
     }

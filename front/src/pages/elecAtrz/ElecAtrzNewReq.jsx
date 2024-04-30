@@ -15,8 +15,9 @@ import ExpensInfo from "./expensClm/ExpensInfo";
 import ElecAtrzCtrtInfo from "./ctrtInfo/ElecAtrzCtrtInfo";
 import ElecAtrzCtrtInfoDetail from "./ctrtInfo/ElecAtrzCtrtInfoDetail";
 import ElecAtrzCtrtOutordHnfDetail from "./ctrtInfo/ElecAtrzCtrtOutordHnfDetail";
+import ElecAtrzTabDetail from "./ElecAtrzTabDetail";
+import ElectGiveAtrzClm from "./ElectGiveAtrzClm";
 import { Button } from 'devextreme-react';
-import { set } from "date-fns";
 
 const ElecAtrzNewReq = () => {
 
@@ -25,6 +26,7 @@ const ElecAtrzNewReq = () => {
     const prjctId = location.state.prjctId;
     const formData = location.state.formData;
     const sttsCd = location.state.sttsCd;
+    const ctrtTyCd = location.state.ctrtTyCd;
     const [cookies] = useCookies(["userInfo", "userAuth"]);
 
     /** 첨부파일 관련 */
@@ -39,6 +41,8 @@ const ElecAtrzNewReq = () => {
 
     const [atrzLnEmpList, setAtrzLnEmpList] = useState([]);
     const column = { "dataField": "gnrlAtrzCn", "placeholder": "내용을 입력해주세요."};
+    
+
     /*
      * 첨부파일 저장 테이블 지정 
      * >> TODO. 현재는 전자결재문서를 elctrnAtrzTySeCd 이것으로 구분중이지만 
@@ -47,7 +51,7 @@ const ElecAtrzNewReq = () => {
     let insertTable = "";
     if(["VTW04907"].includes(data.elctrnAtrzTySeCd)){
         insertTable = "CLM_ATRZ";
-    }else if(["VTW04909","VTW04910"].includes(data.elctrnAtrzTySeCd)){
+    }else if(["VTW04908","VTW04909","VTW04910"].includes(data.elctrnAtrzTySeCd)){
         insertTable = "CTRT_ATRZ";
     }
 
@@ -187,7 +191,7 @@ const ElecAtrzNewReq = () => {
         const getTempAtrzLn = async () => {
             const param = {
                 queryId: "elecAtrzMapper.retrieveAtrzLn",
-                elctrnAtrzId: data.elctrnAtrzId,
+                elctrnAtrzId: data.ctrtElctrnAtrzId ? data.ctrtElctrnAtrzId : data.elctrnAtrzId,
                 sttsCd: sttsCd
             }
             try {
@@ -276,9 +280,12 @@ const ElecAtrzNewReq = () => {
             sttsCd: sttsCd
         }
 
+        console.log("insertParam", insertParam);
+
         try {
             const response = await ApiRequest("/boot/elecAtrz/insertElecAtrz", insertParam);
             console.log(response);
+            const token = localStorage.getItem("token");
 
             if(response){
                 // 첨부파일 저장
@@ -309,7 +316,7 @@ const ElecAtrzNewReq = () => {
                     }
 
                 const responseAttach = await axios.post("/boot/common/insertlongText", formDataAttach, {
-                    headers: { 'Content-Type': 'multipart/form-data' },
+                    headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
                 });
                 console.log(responseAttach);
 
@@ -328,6 +335,11 @@ const ElecAtrzNewReq = () => {
 
         } catch (error) {
             console.error(error)
+            if (error.response.status === 401) {
+                // 로그인 상태를 해제하고 로그인 페이지로 이동
+                localStorage.removeItem("token");
+                localStorage.removeItem("isLoggedIn");
+            } 
         }
     }
 
@@ -335,7 +347,13 @@ const ElecAtrzNewReq = () => {
      * 목록 버튼 클릭시 전자결재 서식 목록으로 이동
      */
     const toAtrzNewReq = () => {
+        if(sttsCd === "VTW03701") {
+            navigate("../elecAtrz/ElecAtrz", {state: {prjctId: prjctId}});
+        }else if(sttsCd === "VTW03405"){    
+            navigate("../elecAtrz/ElecGiveAtrz", {state: {prjctId: prjctId, formData:formData}});
+        }else{
         navigate("../elecAtrz/ElecAtrzForm", {state: {prjctId: prjctId}});
+        }
     }
 
     /**
@@ -399,6 +417,7 @@ const ElecAtrzNewReq = () => {
 
         return true;
     }
+
     
     return (
         <>
@@ -414,23 +433,30 @@ const ElecAtrzNewReq = () => {
                     atrzParam={atrzParam}
                 />
                 <div dangerouslySetInnerHTML={{ __html: formData.docFormDc }} />
-                    {["VTW04909","VTW04910"].includes(formData.elctrnAtrzTySeCd) &&  (   //VTW04909: 외주업체약 계약, VTW04910: 재료비 계약
+                    {["VTW04909","VTW04910"].includes(formData.elctrnAtrzTySeCd) && !["VTW03405"].includes(formData.docSeCd) &&   //VTW04909: 외주업체 계약, VTW04910: 재료비 계약
                         <>
                         <ElecAtrzCtrtInfo prjctId={prjctId} data={data} onSendData={handleChildData} sttsCd={sttsCd}/>
                         <ElecAtrzCtrtInfoDetail prjctId={prjctId} data={data} onSendData={handleChildData} sttsCd={sttsCd}/>
                         </>
-                    )}
-                    {formData.elctrnAtrzTySeCd === "VTW04908" &&    //VTW04908: 외주인력 계약
+                    }
+                    {["VTW04908"].includes(formData.elctrnAtrzTySeCd) && !["VTW03405"].includes(formData.docSeCd) &&   //VTW04908: 외주인력 계약
                     <>
-                        <ElecAtrzCtrtInfo prjctId={prjctId} data={data} onSendData={handleChildData}/>
-                        <ElecAtrzCtrtOutordHnfDetail prjctId={prjctId} data={data} onSendData={handleChildData} prjctData={prjctData}/>
+                        <ElecAtrzCtrtInfo prjctId={prjctId} data={data} onSendData={handleChildData} sttsCd={sttsCd}/>
+                        <ElecAtrzCtrtOutordHnfDetail prjctId={prjctId} data={data} onSendData={handleChildData} prjctData={prjctData} sttsCd={sttsCd}/>
                     </>
                     }
-                    {formData.elctrnAtrzTySeCd === "VTW04907" &&    //VTW04907: 비용사용(청구)
+                    {["VTW04907"].includes(formData.elctrnAtrzTySeCd) &&    //VTW04907: 비용사용(청구,출장비청구)
                     <>
                         <ExpensInfo onSendData={handleChildData} prjctId={prjctId} data={data}/>
                     </>
                     }
+                    {["VTW04914"].includes(formData.elctrnAtrzTySeCd) && ["VTW03405"].includes(formData.docSeCd) &&   //VTW04914: 외주/재료비 지급
+                    <>
+                        <ElectGiveAtrzClm detailData={data} sttsCd={sttsCd} prjctId={prjctId} onSendData={handleChildData}/>
+                        <ElecAtrzTabDetail detailData={data} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd}/>
+                    </>
+                    }
+
                 <HtmlEditBox 
                     column={ {"dataField": "gnrlAtrzCn"}}
                     data={data}
