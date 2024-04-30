@@ -14,6 +14,7 @@ const ApiRequest = async (url, data) => {
   } catch (error) {
     if (error.response) {
       // 401 Unauthorized 상태 코드가 반환된 경우 로그인 페이지로 리다이렉트
+      console.log(error.response);
       if (error.response.status === 401) {
         // 로그인 상태를 해제하고 로그인 페이지로 이동
         localStorage.removeItem("token");

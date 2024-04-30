@@ -13,19 +13,19 @@ import ApiRequest from "utils/ApiRequest";
  *  "VTW04909" : 외주업체
  *  "VTW04910" : 재료비
  */
-const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
+const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd, ctrtTyCd}) => {
     
     const [popupVisible, setPopupVisible] = useState(false);
     const [tableData, setTableData] = useState([]);                 //그리드 전체 데이터
     const [selectedData, setSelectedData] = useState({});           //선택된 행의 데이터
 
     let jsonData = {};
-    if(data.elctrnAtrzTySeCd === "VTW04910"){
+    if(ctrtTyCd? ctrtTyCd : data.elctrnAtrzTySeCd === "VTW04910"){
         jsonData = ElecAtrzMatrlCtJson
-    }
-    else if (data.elctrnAtrzTySeCd === "VTW04909"){
+    }else if (ctrtTyCd? ctrtTyCd : data.elctrnAtrzTySeCd === "VTW04909"){
         jsonData = ElecAtrzOutordCompanyJson
     }
+    // console.log("data!!! 디테일이야 ", data)
 
     const {keyColumn, summaryColumn, insertButton} = jsonData;
     let tableColumns = jsonData.tableColumns;
@@ -33,7 +33,8 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
     /*
     *상태코드에 따른 버튼 변경
     */
-    if(["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)){
+    if(["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)
+        || data.elctrnAtrzTySeCd === "VTW04914"){
         tableColumns = tableColumns.filter(item => item.value !== '삭제');
 
         tableColumns = tableColumns.map((item) => {
@@ -64,24 +65,25 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
         }else if(["VTW03405"].includes(sttsCd)){   //지급
             getTempData();
         }
-    }, [])
+    }, [data.ctrtElctrnAtrzId])
 
 
     /**
      * 임시저장된 데이터
      */
     const getTempData = async () => {
+
         const dtlParam = 
             { queryId: "elecAtrzMapper.retrieveEntrpsCtrtDtl",
-              elctrnAtrzId: data.elctrnAtrzId,
-              elctrnAtrzTySeCd: data.elctrnAtrzTySeCd}    
+              elctrnAtrzId: data.ctrtElctrnAtrzId ? data.ctrtElctrnAtrzId : data.elctrnAtrzId,
+              elctrnAtrzTySeCd: ctrtTyCd ? ctrtTyCd : data.elctrnAtrzTySeCd}    
         const dtlResponse = await ApiRequest("/boot/common/queryIdSearch", dtlParam);
 
         const ctrtDataDtl = dtlResponse[0];
 
         const dtlCndParam = {
             queryId: "elecAtrzMapper.retrieveEntrpsCtrtDtlCnd",
-            elctrnAtrzId: data.elctrnAtrzId }
+            elctrnAtrzId: data.ctrtElctrnAtrzId ? data.ctrtElctrnAtrzId : data.elctrnAtrzId }
 
         const dtlCndResponse = await ApiRequest("/boot/common/queryIdSearch", dtlCndParam);
 
@@ -226,7 +228,9 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
     return (
         <div className="elecAtrzNewReq-ctrtInfo">
             <div style={{ textAlign: "right", marginBottom:"10px" }}>
-                {!["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd) && (
+                {(!["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)) && (
+                    data.elctrnAtrzTySeCd !=="VTW04914" 
+                ) && (
                 <Button name="insert" onClick={()=>handlePopupVisible({name:"insert"})}>{insertButton}</Button>
                 )}
             </div>
@@ -255,6 +259,7 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd }) => {
                     selectedData={selectedData}
                     data={data}
                     sttsCd={sttsCd}
+                    ctrtTyCd={ctrtTyCd}
                 />
             </Popup>
         </div>

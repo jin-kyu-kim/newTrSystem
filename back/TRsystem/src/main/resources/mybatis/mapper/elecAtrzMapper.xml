@@ -418,8 +418,28 @@
 		 		FROM HNF_CTRT_DTL_MM 
 		 		GROUP BY INPT_HNF_ID) MM ON A.INPT_HNF_ID = MM.INPT_HNF_ID
 		WHERE 1=1
-		AND A.ELCTRN_ATRZ_ID =#{elctrnAtrzId}
+		AND A.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
 	</select>
+	
+	<select id="retrieveGiveAtrzClmYmd" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT CONCAT(SUBSTRING(CAST(CTRT_YMD AS CHAR), 1, 4), '.', SUBSTRING(CAST(CTRT_YMD AS CHAR), 5, 2), ' (', CAST(CTRT_AMT AS CHAR), '원)') AS GIVE_YMD_FORMAT,
+		       CTRT_YMD AS GIVE_YMD,
+			   CTRT_AMT AS VAT_EXCL_AMT,
+			   ENTRPS_CTRT_DTL_SN,
+			   GIVE_ODR_CD
+		FROM ENTRPS_CTRT_DTL_CND
+		WHERE 1=1
+		AND ELCTRN_ATRZ_ID= #{ctrtElctrnAtrzId}
+	</select>
+	
+	<select id="retrieveElctrnAtrzId" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT CTRT_ELCTRN_ATRZ_ID, ELCTRN_ATRZ_TY_SE_CD
+		FROM CTRT_GIVE_ATRZ a
+		JOIN ELCTRN_ATRZ b ON a.CTRT_ELCTRN_ATRZ_ID = b.ELCTRN_ATRZ_ID 
+		WHERE 1=1
+		AND a.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
+	</select>
+	
 	
 	
 </mapper>

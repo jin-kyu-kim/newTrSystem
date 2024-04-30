@@ -29,12 +29,10 @@ function CheckAuth(isPrivate){
 
 const PrivateRoute = ({ children,isPrivate }) => {
     const isAuthenticated = CheckAuth(isPrivate);
-    console.log(isAuthenticated)
     // 인증이 안 된 경우 로그인 페이지로 리다이렉트
     if(isAuthenticated === "TRUE"){
         return children
     }else if(isAuthenticated === "HOME"){
-        console.log("접근이 제한된 화면입니다.")
         return <Navigate to="/home" />
     }else{
         return <Navigate to="/LoginFrom" />
