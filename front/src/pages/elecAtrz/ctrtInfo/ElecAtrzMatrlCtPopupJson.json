@@ -50,7 +50,7 @@
             },
             "qy": {
                 "name": "qy",
-                "type": "TextBox",
+                "type": "NumberBox",
                 "label": "수량",
                 "placeholder": "수량",
                 "required": true

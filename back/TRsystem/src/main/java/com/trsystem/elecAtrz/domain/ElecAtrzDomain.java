@@ -907,6 +907,8 @@ public class ElecAtrzDomain {
 		infoParam.put("ctrtElctrnAtrzId", giveAtrzParam.get("ctrtElctrnAtrzId"));
 		infoParam.put("vatExclAmt", giveAtrzParam.get("vatExclAmt"));
 		infoParam.put("taxBillPblcnYmd", giveAtrzParam.get("taxBillPblcnYmd"));
+		infoParam.put("giveOdrCd", giveAtrzParam.get("giveOdrCd"));
+		infoParam.put("entrpsCtrtDtlSn", giveAtrzParam.get("entrpsCtrtDtlSn"));
 		
 		insertParams.add(0, tbParam);
 		insertParams.add(1, infoParam);

@@ -22,10 +22,10 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd, ctrtTyCd}) =
     let jsonData = {};
     if(ctrtTyCd? ctrtTyCd : data.elctrnAtrzTySeCd === "VTW04910"){
         jsonData = ElecAtrzMatrlCtJson
-    }
-    else if (ctrtTyCd? ctrtTyCd : data.elctrnAtrzTySeCd === "VTW04909"){
+    }else if (ctrtTyCd? ctrtTyCd : data.elctrnAtrzTySeCd === "VTW04909"){
         jsonData = ElecAtrzOutordCompanyJson
     }
+    // console.log("data!!! 디테일이야 ", data)
 
     const {keyColumn, summaryColumn, insertButton} = jsonData;
     let tableColumns = jsonData.tableColumns;
@@ -33,7 +33,8 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd, ctrtTyCd}) =
     /*
     *상태코드에 따른 버튼 변경
     */
-    if(["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)){
+    if(["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)
+        || data.elctrnAtrzTySeCd === "VTW04914"){
         tableColumns = tableColumns.filter(item => item.value !== '삭제');
 
         tableColumns = tableColumns.map((item) => {
@@ -64,13 +65,14 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd, ctrtTyCd}) =
         }else if(["VTW03405"].includes(sttsCd)){   //지급
             getTempData();
         }
-    }, [])
+    }, [data.ctrtElctrnAtrzId])
 
 
     /**
      * 임시저장된 데이터
      */
     const getTempData = async () => {
+
         const dtlParam = 
             { queryId: "elecAtrzMapper.retrieveEntrpsCtrtDtl",
               elctrnAtrzId: data.ctrtElctrnAtrzId ? data.ctrtElctrnAtrzId : data.elctrnAtrzId,
@@ -226,7 +228,9 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd, ctrtTyCd}) =
     return (
         <div className="elecAtrzNewReq-ctrtInfo">
             <div style={{ textAlign: "right", marginBottom:"10px" }}>
-                {!["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd) && (
+                {(!["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)) && (
+                    data.elctrnAtrzTySeCd !=="VTW04914" 
+                ) && (
                 <Button name="insert" onClick={()=>handlePopupVisible({name:"insert"})}>{insertButton}</Button>
                 )}
             </div>

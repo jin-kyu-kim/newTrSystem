@@ -11,7 +11,7 @@
                         },
                     "valueExpr" : "giveYmd",
                     "displayExpr": "giveYmdFormat",
-                    "values" : ["giveYmdFormat", "giveYmd", "vatExclAmt"],
+                    "values" : ["giveYmdFormat", "giveYmd", "vatExclAmt", "entrpsCtrtDtlSn", "giveOdrCd"],
                     "name" : "giveYmd"
                     }
         },
