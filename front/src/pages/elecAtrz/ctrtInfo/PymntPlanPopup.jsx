@@ -14,10 +14,10 @@ import ElecAtrzOutordCompanyPopupJson from "./ElecAtrzOutordCompanyPopupJson.jso
 const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedData, data, sttsCd, ctrtTyCd}) => {
 
     let jsonData = {};
-    if(ctrtTyCd ? ctrtTyCd : data.elctrnAtrzTySeCd === "VTW04910"){
+    if((ctrtTyCd ? ctrtTyCd : data.elctrnAtrzTySeCd) === "VTW04910"){
         jsonData = ElecAtrzMatrlCtPopupJson
     }
-    else if (ctrtTyCd ? ctrtTyCd : data.elctrnAtrzTySeCd === "VTW04909"){
+    else if ((ctrtTyCd ? ctrtTyCd : data.elctrnAtrzTySeCd) === "VTW04909"){
         jsonData = ElecAtrzOutordCompanyPopupJson
     }
 
@@ -29,11 +29,6 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
     const [matrlCtrtData, setMatrlCtrtData] = useState({});
     const [pay, setPay] = useState([]);
     let controlReadOnly = false;
-
-    // console.log("sttsCd", sttsCd)
-    // console.log("selectedData", selectedData)
-    // console.log("data", data)
-
 
     /**
      *  부모창에서 전달 된 데이터로 셋팅

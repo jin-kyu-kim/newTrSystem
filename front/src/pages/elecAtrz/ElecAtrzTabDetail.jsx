@@ -11,8 +11,6 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd }) =
     const { vacDtl, clmColumns,  groupingColumn, groupingData, ctrtInfo } = electAtrzJson.electAtrzDetail;
     const [ data, setData ] = useState([]);
 
-    // console.log("detailData!!! tab 이라구!!", detailData)
-
 
     /* ===================================  필요 데이터 조회  ====================================*/
     useEffect(() => {
@@ -128,7 +126,7 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd }) =
      */
     const CtrtInfo = ({ctrtInfo, data, ctrtTyCd})=>{
 
-        if(detailData.elctrnAtrzTySeCd === 'VTW04910' || ctrtTyCd === 'VTW04910' || !data.ctrtBgngYmd )
+        if(data && (detailData.elctrnAtrzTySeCd === 'VTW04910' || ctrtTyCd === 'VTW04910' ))
             { 
                 ctrtInfo = ctrtInfo.filter(item => item.value !== '계약기간');
             }
