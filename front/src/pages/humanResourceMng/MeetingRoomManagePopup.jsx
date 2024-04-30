@@ -14,13 +14,14 @@ import { TextBox, DateBox, SelectBox, Popup, TagBox, TextArea, Button } from "de
 
 import axios from "axios";
 
-const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgRoomRsvtAtdrnValue, onHiding, title, state }) => {
+const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgRoomRsvtAtdrnValue, onHiding, title, state, authState }) => {
     // 세션설정
     const [cookies, setCookie] = useCookies(["userInfo", "deptInfo"]);
     const sessionEmpId = cookies.userInfo.empId
 
 
     // console.log("state: ", state);
+    // console.log("authState: ", authState);
     // console.log("mtgRoomRsvtValue: ", mtgRoomRsvtValue);
     // console.log("mtgRoomRsvtAtdrnValue: ", mtgRoomRsvtAtdrnValue);
 
@@ -111,8 +112,6 @@ const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgR
             || (item.useBgngHm < insertMtgRoomRsvtValue.useEndHm && item.useEndHm >= insertMtgRoomRsvtValue.useEndHm) 
             || (item.useBgngHm >= insertMtgRoomRsvtValue.useBgngHm && item.useBgngHm <= insertMtgRoomRsvtValue.useEndHm))
         )
-
-        console.log("mtgRoomRsvtValueFilter : ", mtgRoomRsvtValueFilter);
 
         if(mtgRoomRsvtValueFilter && mtgRoomRsvtValueFilter.length > 0){
             alert("선택하신 시간에 예약된 회의가 있습니다.\n예약현황을 확인하신 후 예약하시기 바랍니다.");
@@ -251,11 +250,16 @@ const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgR
                 </div>
                 <div style={{ display: "inline-block", float: "right", marginTop: "25px" }}>
                     {
-                        state == "update" 
+                        authState == "self" || authState == "all"
                         ? <Button style={{ height: "48px", width: "90px", marginRight: "15px" }} onClick={deleteMtgRoomRsvt}>예약취소</Button>
                         : <></>
                     }
-                    <Button style={{ height: "48px", width: "60px" }} onClick={insertMtgRoomRsvt}>저장</Button>
+                    {
+                        authState != "none"
+                        ? <Button style={{ height: "48px", width: "60px" }} onClick={insertMtgRoomRsvt}>저장</Button>
+                        : <></>
+                    }
+                    
                 </div>
             </>
         )

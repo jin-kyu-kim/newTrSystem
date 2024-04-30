@@ -644,20 +644,23 @@
         UPDATE
             VCATN_MNG
         SET
-            USE_DAYCNT					= #{useDaycnt}	                /* 사용일수 */
-            ,VCATN_REMNDR_DAYCNT	    = #{vcatnRemndrDaycnt}			/* 휴가잔여일수 */
-            <if test="pblenVcatnUseDaycnt !=null and !pblenVcatnUseDaycnt.equals('')">
+            MDFCN_DT 					= SYSDATE()						/* 수정일시 */
+            ,MDFCN_EMP_ID 				= #{mdfcnEmpId}					/* 수정직원ID */
+            <if test="pblenVcatnUseDaycnt == null or pblenVcatnUseDaycnt.equals('')">
+                ,USE_DAYCNT					= #{useDaycnt}              /* 사용일수 */
+                ,VCATN_REMNDR_DAYCNT	    = #{vcatnRemndrDaycnt}      /* 휴가잔여일수 */
+            </if>
+            <if test="pblenVcatnUseDaycnt != null and !pblenVcatnUseDaycnt.equals('')">
                 ,PBLEN_VCATN_USE_DAYCNT	= #{pblenVcatnUseDaycnt}		/* 공적휴가사용일수 */
             </if>
-            ,MDFCN_DT 					= SYSDATE()						/* 수정일시 */
-            ,MDFCN_EMP_ID 				= #{mdfcnEmpId}					/* 수정직원ID */
         WHERE EMP_ID = #{empId}
         AND VCATN_YR = #{vcatnYr}
+        AND NEW_VCATN_YN = #{newVcatnYn}
     </update>
 
     <!-- 휴가배정관리수정_(신규휴가) -->
     <update id="retrieveNewVcatnAltmntMngMdfcn" parameterType="map">
-        /* indvdlClmMapper.retrieveVcatnAltmntMngMdfcn */
+        /* indvdlClmMapper.retrieveNewVcatnAltmntMngMdfcn */
         UPDATE
             VCATN_MNG
         SET
