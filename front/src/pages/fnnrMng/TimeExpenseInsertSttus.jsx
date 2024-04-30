@@ -168,8 +168,42 @@ const getCtAtrzCmptnYn = async(data) => {
     }
   ]
 
-  const response = await ApiRequest("/boot/common/commonSelect", param);
-  setCtAtrzCmptnYn(data[0]?.ctAtrzCmptnYn);
+  try {
+    const response = await ApiRequest("/boot/common/commonSelect", param);
+    setCtAtrzCmptnYn(response[0]?.ctAtrzCmptnYn);
+  } catch(error) {
+    console.error(error);
+  }
+}
+
+const toEmpWorkTime = async (admin) => {
+  const param = {
+    queryId: "financialAffairMngMapper.getWorkDay",
+    aplyYm: paramtot.aplyYm,
+    aplyOdr: paramtot.aplyOdr
+  }
+
+  try {
+
+    const response = await ApiRequest("/boot/common/queryIdSearch", param);
+    
+    let lastIndex = response.length - 1;
+    
+    const workTimeAdmin = {
+      ...admin,
+      orderWorkBgngYmd: response[0].crtrYmd,
+      orderWorkEndYmd: response[lastIndex].crtrYmd
+    }
+
+    alert("근무시간페이지이동");
+    navigate("/indvdlClm/EmpWorkTime",
+    {state: { admin: workTimeAdmin }})
+
+
+  } catch (error) {
+    console.error(error);
+  }
+
 }
 
 //===========================테이블내 버튼 이벤트======================================
@@ -178,14 +212,14 @@ const onBtnClick = async (button, data) => {
       empId: data.empId,
       jbpsCd: data.jbpsCd,
       deptNmAll: data.deptNmAll,
-      aplyYm: data.aplyYm,
-      aplyOdr: data.aplyOdr
+      aplyYm: paramtot.aplyYm,
+      aplyOdr: paramtot.aplyOdr,
+      empno: data.empno
     }
 
     if(button.name === "workHrMv"){
-        alert("근무시간페이지이동");
-        navigate("/indvdlClm/EmpWorkTime",
-        {state: { admin: admin }})
+      
+       await toEmpWorkTime(admin);
     }
     if(button.name === "hrRtrcn"){                                   //취소상태로 변경 -> 반려?
         alert("시간취소!"); 
@@ -209,7 +243,6 @@ const onBtnClick = async (button, data) => {
         await getAtrzDmndSttsCnt(data);
         await getCtAply(data);
         await getCtAtrzCmptnYn(data);
-        // setPopupVisible(true);
         await onPopAppear(true);
     }
   };
