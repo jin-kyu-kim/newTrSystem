@@ -1248,6 +1248,10 @@
 		   AND cd.CRTR_YMD LIKE CONCAT(#{aplyYm},'%')
 		   AND cd.CRTR_ODR = #{aplyOdr}
 		   AND pca.PRJCT_CT_APLY_SN = #{prjctCtAplySn}
+   		   AND pca.EMP_ID = #{empId}
+		   AND pca.APLY_YM = #{aplyYm}
+		   AND pca.APLY_ODR = #{aplyOdr}
+		   AND pca.PRJCT_ID = #{prjctId}
 	</select>
 
     <select id="getWorkDay" parameterType="map" resultType="com.trsystem.LowerHashMap">

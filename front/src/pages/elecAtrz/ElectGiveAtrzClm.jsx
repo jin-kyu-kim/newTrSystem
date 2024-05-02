@@ -11,24 +11,29 @@ const ElectGiveAtrzClm = ({ detailData, sttsCd, onSendData}) => {
     const [clmData, setClmData] = 
       useState({"ctrtElctrnAtrzId": formData ? formData.ctrtElctrnAtrzId : detailData.ctrtElctrnAtrzId
                 ,"tbNm": "CTRT_GIVE_ATRZ"});
-    const [labelValue, setLabelValue] = useState(ElectGiveAtrzClmJson.labelValue);
+    // const [labelValue, setLabelValue] = useState(ElectGiveAtrzClmJson.labelValue);
+    const labelValue = ElectGiveAtrzClmJson.labelValue;
 
     // console.log("detailData clm 이라고!", detailData)
     // console.log("sttsCd", sttsCd)
-    // console.log("formData", formData)
+    // console.log("formData clm 이라고", formData)
 
-    useEffect(() => {
-        // 객체를 새로 생성하여 불변성을 유지
-        const newLabelValue = {...labelValue};
+    // useEffect(() => {
+    //     // 객체를 새로 생성하여 불변성을 유지
+    //     const newLabelValue = {...labelValue};
         
         if (!formData || formData.atrzDmndSttsCd === "VTW03701") { // 임시저장
-            newLabelValue.giveYmd.param.queryId.ctrtElctrnAtrzId = detailData.ctrtElctrnAtrzId;
+            labelValue.giveYmd.param.queryId.ctrtElctrnAtrzId = detailData.ctrtElctrnAtrzId;
         } else {
-            newLabelValue.giveYmd.param.queryId.ctrtElctrnAtrzId = formData.ctrtElctrnAtrzId;
+            labelValue.giveYmd.param.queryId.ctrtElctrnAtrzId = formData.ctrtElctrnAtrzId;
         }
 
-        setLabelValue(newLabelValue); // 상태 업데이트
-    }, [detailData, formData]);
+    //     setLabelValue(newLabelValue); // 상태 업데이트
+    // }, [detailData, formData]);
+
+    // useEffect(()=>{
+    //     console.log("labelValue", labelValue)
+    // },[labelValue])
 
     
     /* readOnly 조절 */
@@ -42,9 +47,10 @@ const ElectGiveAtrzClm = ({ detailData, sttsCd, onSendData}) => {
     useEffect(()=>{
         if(!formData || formData.atrzDmndSttsCd === "VTW03701"){
             const getCtrtInfo = async () => {
+                    const param = [{ tbNm: "CTRT_GIVE_ATRZ" }, { elctrnAtrzId: formData? formData.elctrnAtrzId : detailData.elctrnAtrzId }] 
                     try {
                         const response = await ApiRequest('/boot/common/commonSelect', 
-                        [{ tbNm: "CTRT_GIVE_ATRZ" }, { elctrnAtrzId: formData? formData.elctrnAtrzId : detailData.elctrnAtrzId }]               
+                        param          
                     );
                         setClmData(response[0])
                         
@@ -95,11 +101,15 @@ const ElectGiveAtrzClm = ({ detailData, sttsCd, onSendData}) => {
             <div style={{ width: '50%'}}>
                 <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", width:"100%"}}>
                     <div className="dx-fieldset" style={{flex: 1, display: "flex", flexDirection: "column"}}>
+                        {labelValue.giveYmd.param.queryId.ctrtElctrnAtrzId ? 
+                        <>
                         <CustomLabelValue props={labelValue.giveYmd} onSelect={handleChgState} value={clmData.giveYmd} readOnly={controlReadOnly} />
                         <CustomLabelValue props={labelValue.vatExclAmt} onSelect={handleChgState} value={clmData.vatExclAmt} readOnly={true}/>
                         <CustomLabelValue props={labelValue.giveAmt} onSelect={handleChgState} value={!clmData.giveYmd? "" : clmData.giveAmt} readOnly={true}/>
                         <CustomLabelValue props={labelValue.taxBillPblcnYmd} onSelect={handleChgState} value={clmData.taxBillPblcnYmd} readOnly={controlReadOnly}/>
-                    </div>
+                        </>
+                        : ""}
+                        </div>
                     {!controlReadOnly &&
                         <div style={{flex: "0 0 auto", marginTop: "80px"}}>
                             <Button text="-3.3%" onClick={()=>texCal("-3.3")}></Button>

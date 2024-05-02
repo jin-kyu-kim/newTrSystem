@@ -94,12 +94,12 @@ const ElectAtrzRenderForm = ({formList, onFormClick}) => {
                             <div>
                                 <Button style={{
                                     position: "relative",
-                                    width: "auto",
-                                    height: "100px",
-                                    padding: "10px 20px",
-                                    margin: "10px",
+                                    width: "100%",
+                                    height: "110px",
+                                    padding: "10px 10px",
                                     cursor: "pointer",
-                                    backgroundColor: "white"
+                                    backgroundColor: "white",
+                                    whiteSpace: "normal"
                                 }} text={data.gnrlAtrzTtl} onClick={() => onFormClick(data)}/>
                             </div>
                         </div>
