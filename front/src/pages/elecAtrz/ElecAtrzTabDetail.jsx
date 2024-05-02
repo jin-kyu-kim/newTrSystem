@@ -13,7 +13,10 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
     const [ data, setData ] = useState([]);
 
 
-    // console.log("detailData 탭디테일!!", detailData);
+    console.log("detailData 탭디테일!!", detailData);
+    console.log("ctrtTyCd 탭디테일!!", ctrtTyCd);
+    console.log("prjctData 탭디테일!!", prjctData);
+    console.log("sttsCd 탭디테일!!", sttsCd);
 
     /* ===================================  필요 데이터 조회  ====================================*/
     useEffect(() => {
@@ -179,23 +182,17 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
             case 'VTW04907':
                 return <ClmTab columns={clmColumns} groupingColumn={groupingColumn}/>;
             case 'VTW04908':
-                return ( <>
-                         <CtrtInfo ctrtInfo={ctrtInfo} data={data} ctrtTyCd={ctrtTyCd}/>
-                         {/* { (detailData.ctrtElctrnAtrzId && detailData.elctrnAtrzTySeCd === "VTW04908") && */}
-                         <ElecAtrzCtrtOutordHnfDetail data={detailData} sttsCd={sttsCd} prjctData={prjctData} prjctId={prjctId} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd } />
-                         {/* } */}
-                         </> 
-                         )
             case 'VTW04909':
             case 'VTW04910':
             case 'VTW04914':
                 return  <>
                         <h3>계약정보</h3>
+
                         <CtrtInfo ctrtInfo={ctrtInfo} data={data} ctrtTyCd={ctrtTyCd}/>
-                        {(detailData.ctrtElctrnAtrzId && detailData.elctrnAtrzTySeCd === "VTW04914") || ["VTW04909","VTW04910"].includes(detailData.elctrnAtrzTySeCd) 
+                        {((detailData.ctrtElctrnAtrzId && detailData.elctrnAtrzTySeCd === "VTW04914" && ctrtTyCd !== "VTW04908") || ["VTW04909","VTW04910"].includes(detailData.elctrnAtrzTySeCd))
                         ? 
                         <ElecAtrzCtrtInfoDetail data={detailData} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd } /> 
-                        : ""}
+                        : <ElecAtrzCtrtOutordHnfDetail data={detailData} sttsCd={sttsCd} prjctData={prjctData} prjctId={prjctId} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd } />}
                         </>
             default:
                 return null;
@@ -206,7 +203,7 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
         <div>
             {(["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)) 
                 && (detailData.elctrnAtrzTySeCd ==="VTW04914" ) 
-                && (detailData.atrzDmndSttsCd)
+                // && (detailData.atrzDmndSttsCd)
                 && (
                 <ElectGiveAtrzClm detailData={detailData} sttsCd={sttsCd} prjctId={prjctId}/>
                 )}

@@ -16,7 +16,6 @@ import ElecAtrzCtrtInfo from "./ctrtInfo/ElecAtrzCtrtInfo";
 import ElecAtrzCtrtInfoDetail from "./ctrtInfo/ElecAtrzCtrtInfoDetail";
 import ElecAtrzCtrtOutordHnfDetail from "./ctrtInfo/ElecAtrzCtrtOutordHnfDetail";
 import ElecAtrzTabDetail from "./ElecAtrzTabDetail";
-import ElectGiveAtrzClm from "./ElectGiveAtrzClm";
 import { Button } from 'devextreme-react';
 
 const ElecAtrzNewReq = () => {
@@ -42,8 +41,8 @@ const ElecAtrzNewReq = () => {
     const [atrzLnEmpList, setAtrzLnEmpList] = useState([]);
     const column = { "dataField": "gnrlAtrzCn", "placeholder": "내용을 입력해주세요."};
 
-    // console.log("formData", formData.atrzFormDocId)
-    // console.log("location", location.state)
+    // console.log("location NEW REQ !!!", location.state)
+    // console.log("ctrtTyCd  NEW REQ !!!", ctrtTyCd)
     
     /**
      * 계약 지급인 경우 계약코드 select
@@ -497,16 +496,9 @@ const ElecAtrzNewReq = () => {
                         <ExpensInfo onSendData={handleChildData} prjctId={prjctId} data={data}/>
                     </>
                     }
-                    {["VTW04914"].includes(formData.elctrnAtrzTySeCd) && ["VTW03405"].includes(formData.docSeCd) &&   //VTW04914: 외주/재료비 지급
+                    {["VTW04914"].includes(formData.elctrnAtrzTySeCd) && ["VTW04909","VTW04910","VTW04908"].includes(ctrtTyCd)&& prjctData && //VTW04914: 외주업체/재료비 지급
                     <>
-                        <ElectGiveAtrzClm detailData={data} sttsCd={sttsCd} prjctId={prjctId} onSendData={handleChildData}/>
-                        <ElecAtrzTabDetail detailData={data} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd}/>
-                    </>
-                    }
-                    {["VTW04914"].includes(formData.elctrnAtrzTySeCd) && !(formData.docSeCd) && (data.ctrtElctrnAtrzId) && //VTW04914: 외주/재료비 지급 임시저장
-                    <>
-                        <ElectGiveAtrzClm detailData={data} sttsCd={sttsCd} prjctId={prjctId} onSendData={handleChildData}/>
-                        <ElecAtrzTabDetail detailData={data} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd}/>
+                        <ElecAtrzTabDetail detailData={data} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd} prjctData={prjctData}/>
                     </>
                     }
 
