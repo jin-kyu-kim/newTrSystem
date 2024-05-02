@@ -19,40 +19,38 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
   const month = date.getMonth() + 1;
   const day = date.getDate();
 
-  const startYear = year - 10;
-  const EndYear = year + 1;
-
-  const yearList = [];
-  const monthList = [];
-  const odrList = [
-    { "id": "1", "value": "1", "text": "1회차" },
-    { "id": "2", "value": "2", "text": "2회차" }
-  ];
+  const getYmList = (startYear, endYear) => ({
+    yearList: Array.from({ length: endYear - startYear + 1 }, (_, i) => ({ value: startYear + i })),
+    monthList: Array.from({ length: 12 }, (_, i) => ({ value: (i < 9 ? "0" : "") + (i + 1) })),
+  });
 
   useEffect(() => {
-    for (let i = startYear; i <= EndYear; i++) {
-      yearList.push({ "value": i });
-    }
-    for (let i = 1; i <= 12; i++) {
-      if (i < 10) {
-        i = "0" + i;
-      }
-      monthList.push({ "value": i });
-    }
-    let odrVal = day > 15 ? "1" : "2";
-    let monthVal = month < 10 ? "0" + month : month;
+    const { yearList, monthList } = getYmList(year - 10, year + 1);
+    const odrVal = day > 15 ? "1" : "2";
+    let currentYear = year;
+    let currentMonth = month;
 
-    if(searchParams.yearList){
+    if (odrVal === "2") {
+      currentMonth -= 1;
+      if (currentMonth < 1) {
+        currentMonth = 12;
+        currentYear -= 1;
+      }
+    }
+    const monthVal = currentMonth < 10 ? "0" + currentMonth : currentMonth.toString();
+
+    if (searchParams.yearList) {
       setInitParam({
         year: year,
         month: monthVal,
         aplyOdr: odrVal
       });
     }
+
     setYmOdrData({
       year: yearList,
       month: monthList,
-      aplyOdr: odrList
+      aplyOdr: [{ "id": "1", "value": "1", "text": "1회차" }, { "id": "2", "value": "2", "text": "2회차" }]
     });
 
     callBack(initParam);
@@ -95,9 +93,8 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
         width="100%"
         height={40}
       >
-        {/* 연월/차수가 있는 경우 */}
         {searchParams.yearList && searchParams.yearList.map((item) => (
-          <Item ratio={0} baseSize={"120"}>
+          <Item ratio={0} baseSize={"120"} visible={item.visible}>
             <SelectBox
               dataSource={ymOdrData[item.name]}
               name={item.name}
