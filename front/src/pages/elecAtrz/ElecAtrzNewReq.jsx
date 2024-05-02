@@ -142,6 +142,17 @@ const ElecAtrzNewReq = () => {
         console.log("childData", childData);
         console.log("atrzParam", atrzParam)
 
+
+        // 일반 전자결재시 테이블 삽입. "GNRL_ATRZ"
+        if(!["VTW04908", "VTW04908", "VTW04910", "VTW04907", "VTW04914"].includes(data.elctrnAtrzTySeCd)){
+            setAtrzParam(atrzParam => ({
+                ...atrzParam,
+                ...childData,
+                tbNm : "GNRL_ATRZ"
+            }));
+        }
+
+        
         setAtrzParam(atrzParam => ({
             ...atrzParam,
             ...childData
