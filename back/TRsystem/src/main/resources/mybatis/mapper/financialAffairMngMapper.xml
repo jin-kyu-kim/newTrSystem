@@ -645,16 +645,17 @@
 	        SELECT T1.EMP_ID
 	         	 , T1.APLY_YM
 	         	 , T1.APLY_ODR
-	         	 , IFNULL(T1.MM_CNT, 0) AS MD_SUM
-	         	 , IFNULL(T2.MM_COMPLETE, 0) * 8 AS MM_COMPLETE
-	         	 , IFNULL(T3.MM_REJECT, 0) * 8 AS MM_REJECT
-	         	 , IFNULL(T2.VAC, 0) * 8 AS VAC_SUM
+	         	 , IFNULL(SUM(T1.MM_CNT), 0) AS MD_SUM
+	         	 , IFNULL(SUM(T2.MM_COMPLETE), 0) * 8 AS MM_COMPLETE
+	         	 , IFNULL(SUM(T3.MM_REJECT), 0) * 8 AS MM_REJECT
+	         	 , IFNULL(SUM(T2.VAC), 0) * 8 AS VAC_SUM
 	         	 , T1.MM_ATRZ_CMPTN_YN
 	        FROM (
 				SELECT pca.EMP_ID
 				     , pca.APLY_YM 
 				     , pca.APLY_ODR 
 				     , COUNT(1) MM_CNT
+				     , pca.APLY_YMD
 				     , 0 AS VAC
 				     , picm.MM_ATRZ_CMPTN_YN
 			      FROM PRJCT_MM_APLY pca
@@ -663,28 +664,13 @@
 			     WHERE 1=1
 			       AND pca.APLY_YM = #{aplyYm}
 			       AND pca.APLY_ODR = #{aplyOdr}
-			    GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR, picm.MM_ATRZ_CMPTN_YN
-	        ) T1 
-	        LEFT JOIN (
-			  SELECT pca.EMP_ID
-				   , pca.APLY_YM 
-				   , pca.APLY_ODR 
-				   , COUNT(1) AS MM_COMPLETE
-				   , 0 AS VAC
-				   , picm.MM_ATRZ_CMPTN_YN
-			    FROM PRJCT_MM_APLY pca
-			    JOIN PRJCT_MM_ATRZ pcat ON (pcat.APLY_YMD = pca.APLY_YMD AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
-			    JOIN PRJCT_INDVDL_CT_MM picm ON (pca.PRJCT_ID = picm.PRJCT_ID AND pca.EMP_ID = picm.EMP_ID AND pca.APLY_YM = picm.APLY_YM AND pca.APLY_ODR = picm.APLY_ODR)
-			   WHERE 1=1
-			     AND pca.APLY_YM = #{aplyYm}
-			     AND pca.APLY_ODR = #{aplyOdr}
-			     AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703'
-			  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR, picm.MM_ATRZ_CMPTN_YN
-			  UNION
+			    GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR, picm.MM_ATRZ_CMPTN_YN, pca.APLY_YMD
+			    UNION
 			  SELECT dv.ATRZ_DMND_EMP_ID
 			       , dv.APLY_YM
 			       , dv.APLY_ODR
-			       , 0 AS MM_COMPLETE
+			       , 0 AS MM_CNT
+			       , dv.APLY_YMD
 			       , 1 AS VAC
 			  	   , picm.MM_ATRZ_CMPTN_YN
 			    FROM (
@@ -741,12 +727,92 @@
 			  AND dv.APLY_YM = #{aplyYm}
 			  AND dv.APLY_ODR = #{aplyOdr}
 			  AND dv.ATRZ_DMND_STTS_CD = 'VTW03703'
-	        ) T2 ON (T1.EMP_ID = T2.EMP_ID)
+	        ) T1 
+	        LEFT JOIN (
+			  SELECT pca.EMP_ID
+				   , pca.APLY_YM 
+				   , pca.APLY_ODR 
+				   , COUNT(1) AS MM_COMPLETE
+				   , pca.APLY_YMD
+				   , 0 AS VAC
+				   , picm.MM_ATRZ_CMPTN_YN
+			    FROM PRJCT_MM_APLY pca
+			    JOIN PRJCT_MM_ATRZ pcat ON (pcat.APLY_YMD = pca.APLY_YMD AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
+			    JOIN PRJCT_INDVDL_CT_MM picm ON (pca.PRJCT_ID = picm.PRJCT_ID AND pca.EMP_ID = picm.EMP_ID AND pca.APLY_YM = picm.APLY_YM AND pca.APLY_ODR = picm.APLY_ODR)
+			   WHERE 1=1
+			     AND pca.APLY_YM = #{aplyYm}
+			     AND pca.APLY_ODR = #{aplyOdr}
+			     AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703'
+			  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR, picm.MM_ATRZ_CMPTN_YN, pca.APLY_YMD
+			  UNION
+			  SELECT dv.ATRZ_DMND_EMP_ID
+			       , dv.APLY_YM
+			       , dv.APLY_ODR
+			       , 0 AS MM_COMPLETE
+			       , dv.APLY_YMD
+			       , 1 AS VAC
+			  	   , picm.MM_ATRZ_CMPTN_YN
+			    FROM (
+					  WITH RECURSIVE DAILY_VACATION AS (SELECT
+					          ELC.ELCTRN_ATRZ_ID ,
+					          ELC.ATRZ_DMND_STTS_CD,
+					          VAC.VCATN_TY_CD,
+					          DATE(VAC.VCATN_BGNG_YMD) as dt,
+					          DATE(VAC.VCATN_END_YMD) as end_dt,
+					          ELC.ATRZ_DMND_EMP_ID,
+					          ELC.PRJCT_ID
+					     FROM ELCTRN_ATRZ ELC
+					     JOIN VCATN_ATRZ VAC 
+					       ON ELC.ELCTRN_ATRZ_ID = VAC.ELCTRN_ATRZ_ID
+					    WHERE 1=1
+					      AND ELC.ATRZ_DMND_STTS_CD = 'VTW03703'
+					      AND VAC.VCATN_TY_CD != 'VTW01207'
+					    UNION ALL
+					   SELECT
+					          dr.ELCTRN_ATRZ_ID ,
+					          dr.ATRZ_DMND_STTS_CD,
+					          dr.VCATN_TY_CD,
+					          DATE_ADD(dr.dt, INTERVAL 1 DAY) as dt,
+					          dr.end_dt,
+					          dr.ATRZ_DMND_EMP_ID,
+					          dr.PRJCT_ID
+					    FROM DAILY_VACATION dr
+					    <![CDATA[ 
+					   WHERE dr.dt < dr.end_dt)
+					    ]]>
+					  SELECT ELCTRN_ATRZ_ID
+						   , ATRZ_DMND_STTS_CD
+						   , VCATN_TY_CD
+						   , dt
+						   , DATE_FORMAT(dt, '%Y%m%d') AS APLY_YMD
+						   , SUBSTR(DATE_FORMAT(dt, '%Y%m%d'), 1, 6) AS APLY_YM
+						   , CASE 
+						 	 WHEN SUBSTR(DATE_FORMAT(dt, '%Y%m%d'), 7, 8) BETWEEN '01' AND '15' THEN '1'
+						 	 ELSE '2'
+						 END AS APLY_ODR
+						   , ATRZ_DMND_EMP_ID
+						   , PRJCT_ID
+					   FROM DAILY_VACATION
+				) dv
+			 JOIN CRTR_DATE crd ON crd.CRTR_YMD = dv.APLY_YMD AND crd.HLDY_CL_CD = 'VTW05001'
+			 JOIN PRJCT_INDVDL_CT_MM picm 
+			   ON (
+				   picm.PRJCT_ID = dv.PRJCT_ID 
+				   AND picm.APLY_YM = dv.APLY_YM
+				   AND picm.APLY_ODR = dv.APLY_ODR
+				   AND picm.EMP_ID = dv.ATRZ_DMND_EMP_ID
+				)
+			WHERE 1=1
+			  AND dv.APLY_YM = #{aplyYm}
+			  AND dv.APLY_ODR = #{aplyOdr}
+			  AND dv.ATRZ_DMND_STTS_CD = 'VTW03703'
+	        ) T2 ON (T1.EMP_ID = T2.EMP_ID AND T1.APLY_YMD = T2.APLY_YMD)
 	        LEFT JOIN (
 	 			  SELECT pca.EMP_ID
 					   , pca.APLY_YM 
 					   , pca.APLY_ODR 
 					   , COUNT(1) AS MM_REJECT
+					   , pca.APLY_YMD
 	   			       , 0 AS VAC
 		 			   , picm.MM_ATRZ_CMPTN_YN
 				    FROM PRJCT_MM_APLY pca
@@ -756,8 +822,9 @@
 				     AND pca.APLY_YM = #{aplyYm}
 				     AND pca.APLY_ODR = #{aplyOdr}
 				     AND pcat.ATRZ_DMND_STTS_CD = 'VTW03704'
-				  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR, picm.MM_ATRZ_CMPTN_YN        
-	        ) T3 ON (T1.EMP_ID = T3.EMP_ID)
+				  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR, picm.MM_ATRZ_CMPTN_YN, pca.APLY_YMD      
+	        ) T3 ON (T1.EMP_ID = T3.EMP_ID AND T1.APLY_YMD = T3.APLY_YMD)
+	        GROUP BY T1.EMP_ID, T1.APLY_YM, T1.APLY_ODR, T1.MM_ATRZ_CMPTN_YN
 	    ) CC
 	        ON CC.EMP_ID = AA.EMP_ID
 	    WHERE 1 = 1
@@ -1183,5 +1250,11 @@
 		   AND pca.PRJCT_CT_APLY_SN = #{prjctCtAplySn}
 	</select>
 
-
+    <select id="getWorkDay" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT CRTR_YMD 
+		  FROM CRTR_DATE cd
+		 WHERE 1=1
+		   AND CRTR_YMD LIKE CONCAT(#{aplyYm}, '%') 
+		   AND CRTR_ODR = #{aplyOdr}
+	</select>
 </mapper>

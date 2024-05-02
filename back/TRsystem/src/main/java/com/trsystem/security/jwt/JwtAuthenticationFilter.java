@@ -1,5 +1,6 @@
 package com.trsystem.security.jwt;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
@@ -10,14 +11,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * JWT 토큰의 유효성을 검사하고, 인증
@@ -27,11 +29,10 @@ import java.io.IOException;
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final UserDetailsService userDetailsService;
     private final JwtTokenUtil jwtTokenUtil;
-
     @Value("${jwt.header}") private String HEADER_STRING;
     @Value("${jwt.prefix}") private String TOKEN_PREFIX;
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -46,6 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             authToken = header.replace(TOKEN_PREFIX, " ");
             try {
                 username = this.jwtTokenUtil.getUsernameFromToken(authToken);
+
             } catch (IllegalArgumentException ex) {
                 log.info("Failed to get user id", ex);
                 sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid token format.");
@@ -68,13 +70,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         if ((username != null) && (SecurityContextHolder.getContext().getAuthentication() == null)) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-            if (this.jwtTokenUtil.validateToken(authToken, userDetails)) {
-                UsernamePasswordAuthenticationToken authenticationToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authenticationToken
-                        .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+            if (this.jwtTokenUtil.validateToken(authToken, username)) {
+                Claims claims = jwtTokenUtil.getAllClaimsFromToken(authToken);
+                List<String> roles = claims.get("roles", List.class);
+                List<SimpleGrantedAuthority> authorities = roles.stream()
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());
+
+                Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             } else {
                 log.info("Invalid JWT Token !!");
             }
