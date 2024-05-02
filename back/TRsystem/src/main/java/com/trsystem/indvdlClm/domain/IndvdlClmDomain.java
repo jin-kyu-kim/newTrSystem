@@ -45,9 +45,14 @@ public class IndvdlClmDomain {
         this.emailSendService = emailSendService;
     }
 
+    @Transactional
     public static int insertPrjctMM(List<Map<String, Object>> params){
+        int result = 0;
 
-        List<Map<String, Object>> newList = params.stream().distinct().collect(Collectors.toList());
+        List<Map<String, Object>> mmParam = (List<Map<String, Object>>) params.get(0).get("param");
+        List<Map<String, Object>> ctParams = (List<Map<String, Object>>) params.get(1).get("updatedData");
+
+        List<Map<String, Object>> newList = mmParam.stream().distinct().collect(Collectors.toList());
         List<Map<String, Object>> insertList = new ArrayList<>();
         HashMap<String, Object> tbNm = new HashMap<String, Object>();
         tbNm.put("tbNm", "PRJCT_INDVDL_CT_MM");
@@ -63,7 +68,75 @@ public class IndvdlClmDomain {
                 insertList.add(newList.get(i));
             }
         }
-        int result = commonService.insertData(insertList);
+        result = commonService.insertData(insertList);
+
+        result += insertCtAply(mmParam, ctParams);
+        return result;
+    }
+
+    @Transactional
+    public static int insertCtAply(List<Map<String, Object>> basicParam, List<Map<String, Object>> ctParams){
+        int result = 0;
+
+        for(int i=0; i<ctParams.size(); i++) {
+            List<Map<String, Object>> aplyParam = new ArrayList<>();
+            List<Map<String, Object>> atrzParam = new ArrayList<>();
+
+            // 필수 컬럼 (참석자, atrz)
+            String prjctId = String.valueOf(ctParams.get(i).get("prjctId"));
+            String empId = String.valueOf(ctParams.get(i).get("empId"));
+            String aplyYm = String.valueOf(ctParams.get(i).get("aplyYm"));
+            String aplyOdr = String.valueOf(ctParams.get(i).get("aplyOdr"));
+
+            // 참석자가 있을 경우 직원명 데이터 재조합 후 sn과 함께 insert
+            List<Map<String, Object>> atdrn = (List<Map<String, Object>>) ctParams.get(i).get("atdrn");
+            if(atdrn != null && atdrn.size() != 0){
+                String atdrnStr = atdrn.stream()
+                        .map(map -> map.get("value").toString())
+                        .collect(Collectors.joining(","));
+
+                ctParams.get(i).put("atdrn", atdrnStr);
+            }
+
+            // aply insert
+            aplyParam.add(Map.of("tbNm", "PRJCT_CT_APLY", "snColumn", "PRJCT_CT_APLY_SN", "snSearch", basicParam.get(i)));
+            aplyParam.add(ctParams.get(i));
+            result += commonService.insertData(aplyParam);
+
+            List<Map<String, Object>> maxParam = new ArrayList<>();
+            maxParam.add(Map.of("tbNm", "PRJCT_CT_APLY", "snColumn", "PRJCT_CT_APLY_SN"));
+            maxParam.add(Map.of("prjctId", prjctId, "empId", empId, "aplyYm", aplyYm, "aplyOdr", aplyOdr));
+            int maxSn = commonService.commonGetMax(maxParam);
+
+            if(atdrn != null && atdrn.size() != 0){
+                List<Map<String, Object>> atdrnParam = new ArrayList<>();
+                Map<String, Object> atdrnTabMap = new HashMap<>();
+                Map<String, Object> atdrnMap = new HashMap<>();
+
+                for (Map<String, Object> onePerson : atdrn) {
+                    atdrnTabMap.put("tbNm", "PRJCT_CT_ATDRN");
+                    atdrnTabMap.put("snColumn", "PRJCT_CT_ATDRN_SN");
+
+                    atdrnMap.put("prjctCtAplySn", maxSn);
+                    atdrnMap.put("atndEmpId", onePerson.get("key"));
+                    atdrnMap.put("atndEmpFlnm", onePerson.get("value"));
+                    atdrnMap.put("prjctId", prjctId);
+                    atdrnMap.put("empId", empId);
+                    atdrnMap.put("aplyYm", aplyYm);
+                    atdrnMap.put("aplyOdr", aplyOdr);
+
+                    atdrnParam.add(atdrnTabMap);
+                    atdrnParam.add(atdrnMap);
+
+                    result += commonService.insertData(atdrnParam);
+                }
+            }
+
+            // atrz insert
+            atrzParam.add(Map.of("tbNm", "PRJCT_CT_ATRZ"));
+            atrzParam.add(Map.of("prjctCtAplySn", maxSn, "prjctId", prjctId, "empId", empId, "aplyYm", aplyYm, "aplyOdr", aplyOdr));
+            result += commonService.insertData(atrzParam);
+        }
         return result;
     }
 

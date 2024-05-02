@@ -197,6 +197,7 @@ const ProjectExpense = () => {
                         props={searchInfo}
                     /> }
                 </div>
+
                 {admin != undefined ?
                 <RenderTopTable title={`*${admin.empno} ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} /> :
                 <RenderTopTable title={`* ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} /> }
