@@ -14,7 +14,10 @@ import ApiRequest from "utils/ApiRequest";
  * prjctId : 해당 프로젝트 ID
  * onSendData : 부모창으로 데이터 전송 위한 함수
  */
-const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, sttsCd }) => {
+const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, sttsCd, ctrtTyCd }) => {
+    // console.log("prjctData 이거뭐냐", prjctData);
+    // console.log("sttsCd 이거뭐냐", sttsCd);
+    // console.log("data 이거뭐냐", data);
 
     const ctrtYmd = prjctData.ctrtYmd;
     const stbleEndYmd = prjctData.stbleEndYmd; 
@@ -44,7 +47,8 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
   /*
     *상태코드에 따른 버튼 변경
     */
-    if(["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707"].includes(sttsCd)){
+    if(["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707"].includes(sttsCd)
+       || data.elctrnAtrzTySeCd === "VTW04914"){
         tableColumns = tableColumns.filter(item => item.value !== '삭제');
 
         tableColumns = tableColumns.map((item) => {
@@ -239,7 +243,7 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
 
     /* =========================  부모창으로 데이터 전송  =========================*/
     useEffect(() => {
-
+        
         //hnfCtrtDtlMm 배열에 tbNm 추가
         const updatedTableData = tableData.map(item => ({
             ...item,
@@ -249,8 +253,10 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
         //테이블 배열에 tbNm 추가
         let newData;
         newData = [{ tbNm: 'HNF_CTRT_DTL' }, ...updatedTableData];
-
-        onSendData(newData);
+        
+        if(onSendData){
+            onSendData(newData);
+        }
     }, [tableData]);
 
 
@@ -268,13 +274,17 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
             />
 
             <div style={{ textAlign: "right", marginBottom:"10px" }}>
-                <Button name="insert" onClick={()=>handlePopupVisible({name:"insert"})}>{ElecAtrzCtrtOutordHnfJson.insertButton}</Button>
+                {(!["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)) && (
+                        data.elctrnAtrzTySeCd !=="VTW04914" 
+                    ) && (
+                    <Button name="insert" onClick={()=>handlePopupVisible({name:"insert"})}>{ElecAtrzCtrtOutordHnfJson.insertButton}</Button>
+                )}
             </div>
 
             <CustomTable
                 keyColumn={ElecAtrzCtrtOutordHnfJson.keyColumn}
-                columns={ElecAtrzCtrtOutordHnfJson.tableColumns}
-                values={tableData}
+                columns={tableColumns}
+                values={tableData ? tableData : []}
                 pagerVisible={false}
                 onClick={handlePopupVisible}
                 summary={true}
@@ -297,7 +307,9 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
                     handlePopupData={handlePopupData} 
                     selectedData={selectedData}
                     tableData={tableData}
-                    // data={data}
+                    data={data}
+                    sttsCd={sttsCd}
+                    ctrtTyCd={ctrtTyCd}
                 />
             </Popup>
         </div>

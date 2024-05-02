@@ -5,12 +5,15 @@ import './ElecAtrz.css';
 import CustomTable from 'components/unit/CustomTable';
 import ElecAtrzCtrtInfoDetail from './ctrtInfo/ElecAtrzCtrtInfoDetail';
 import ElectGiveAtrzClm from './ElectGiveAtrzClm';
+import ElecAtrzCtrtOutordHnfDetail from './ctrtInfo/ElecAtrzCtrtOutordHnfDetail';
 
 
-const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd }) => {
+const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prjctData }) => {
     const { vacDtl, clmColumns,  groupingColumn, groupingData, ctrtInfo } = electAtrzJson.electAtrzDetail;
     const [ data, setData ] = useState([]);
 
+
+    // console.log("detailData 탭디테일!!", detailData);
 
     /* ===================================  필요 데이터 조회  ====================================*/
     useEffect(() => {
@@ -175,6 +178,14 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd }) =
                 return <VacInfoTab vacDtl={vacDtl} dtlInfo={dtlInfo} />;
             case 'VTW04907':
                 return <ClmTab columns={clmColumns} groupingColumn={groupingColumn}/>;
+            case 'VTW04908':
+                return ( <>
+                         <CtrtInfo ctrtInfo={ctrtInfo} data={data} ctrtTyCd={ctrtTyCd}/>
+                         {/* { (detailData.ctrtElctrnAtrzId && detailData.elctrnAtrzTySeCd === "VTW04908") && */}
+                         <ElecAtrzCtrtOutordHnfDetail data={detailData} sttsCd={sttsCd} prjctData={prjctData} prjctId={prjctId} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd } />
+                         {/* } */}
+                         </> 
+                         )
             case 'VTW04909':
             case 'VTW04910':
             case 'VTW04914':
