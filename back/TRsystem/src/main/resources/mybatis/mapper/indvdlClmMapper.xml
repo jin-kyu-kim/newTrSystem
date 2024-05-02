@@ -906,21 +906,6 @@
           AND ea.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
     </select>
 
-    <!-- 개인비용청구 최종 개수, 총 금액 -->
-    <select id="retrieveExpenseTotal" parameterType="map" resultType="com.trsystem.LowerHashMap">
-        SELECT
-            COUNT(*) AS TOTAL_COUNT,
-            SUM(pca.UTZTN_AMT) AS TOTAL_UTZTN_AMT
-        FROM PRJCT_CT_ATRZ pcrz
-                 JOIN PRJCT_CT_APLY pca
-                      ON pcrz.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN
-        WHERE 1=1
-          AND pcrz.APLY_YM = #{aplyYm}
-          AND pcrz.EMP_ID = #{empId}
-          AND pcrz.APLY_ODR  = #{aplyOdr}
-          AND pcrz.ATRZ_DMND_STTS_CD = 'VTW03703'
-    </select>
-
     <!-- 직원 기본정보 조회 -->
     <select id="retrievePopEmpInfo" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
@@ -929,15 +914,34 @@
             d.DEPT_NM,
             (SELECT CD_NM FROM CD c WHERE CD_VALUE = e.JBPS_CD) AS JBPS_NM
         FROM EMP e
-            JOIN DEPT_HNF dh ON e.EMP_ID = dh.EMP_ID
-            JOIN DEPT d ON dh.DEPT_ID = d.DEPT_ID
+                 JOIN DEPT_HNF dh ON e.EMP_ID = dh.EMP_ID
+                 JOIN DEPT d ON dh.DEPT_ID = d.DEPT_ID
         WHERE e.EMP_ID = #{empId}
+    </select>
+
+    <!-- 개인비용청구 최종 개수, 총 금액 -->
+    <select id="retrieveExpenseTotal" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            CONCAT(COUNT(*), '개') AS TOTAL_COUNT,
+            FORMAT(SUM(pca.UTZTN_AMT), 0) AS TOTAL_UTZTN_AMT
+        FROM PRJCT_CT_ATRZ pcrz
+                 JOIN PRJCT_CT_APLY pca
+                      ON pcrz.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN
+                          AND pcrz.EMP_ID = pca.EMP_ID
+                          AND pcrz.PRJCT_ID = pca.PRJCT_ID
+                          AND pcrz.APLY_YM = pca.APLY_YM
+                          AND pcrz.APLY_ODR = pca.APLY_ODR
+        WHERE 1=1
+          AND pcrz.APLY_YM = #{aplyYm}
+          AND pcrz.EMP_ID = #{empId}
+          AND pcrz.APLY_ODR  = #{aplyOdr}
+          AND pcrz.ATRZ_DMND_STTS_CD = 'VTW03703'
     </select>
 
     <!-- 개인비용청구 공휴일, 연차 포함 총 근무 시간 -->
     <select id="retrieveTotalWorkTime" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT (
-            SELECT SUM(MD)
+            SELECT COALESCE(SUM(MD) * 8, 0) AS MD
             FROM PRJCT_MM_APLY pma
             JOIN (
                 SELECT pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR
@@ -952,30 +956,60 @@
                 AND pma.APLY_YM = filtered.APLY_YM
                 AND pma.APLY_ODR = filtered.APLY_ODR
             ) + COALESCE(( -- 공휴일 수
-                SELECT COUNT(*)
+                SELECT COUNT(*) * 8
                 FROM CRTR_DATE
                 WHERE SUBSTR(CRTR_YMD, 1, 6) = #{aplyYm}
                     AND HLDY_CL_CD = 'VTW05003'
-                    AND SUBSTRING(CRTR_YMD, 7, 2) BETWEEN '01' AND (
-                        CASE
-                            WHEN #{aplyOdr} = 1 THEN '15'
-                            WHEN #{aplyOdr} = 2 THEN LAST_DAY(CONCAT(SUBSTR(#{aplyYm}, 1, 4), '-', SUBSTR(#{aplyYm}, 5, 2), '-01'))
-                        END
-                    )
-            ), 0) + COALESCE(( -- 연차 사용 일수
-            SELECT SUM(va.VCATN_DE_CNT)
-            FROM VCATN_ATRZ va
-                JOIN ELCTRN_ATRZ ea ON va.ELCTRN_ATRZ_ID = ea.ELCTRN_ATRZ_ID
-            WHERE ea.ATRZ_DMND_STTS_CD = 'VTW03703'
-                AND ea.ATRZ_DMND_EMP_ID = #{empId}
-                AND SUBSTR(va.VCATN_BGNG_YMD, 1, 6) = #{aplyYm}
-                AND SUBSTRING(va.VCATN_BGNG_YMD, 7, 2) BETWEEN '01' AND (
-                    CASE
-                        WHEN #{aplyOdr} = 1 THEN '15'
-                        WHEN #{aplyOdr} = 2 THEN LAST_DAY(CONCAT(SUBSTR(#{aplyYm}, 1, 4), '-', SUBSTR(#{aplyYm}, 5, 2), '-01'))
+                    AND CASE
+                        WHEN #{aplyOdr} = 1 THEN SUBSTR(DATE_FORMAT(CRTR_YMD, '%Y%m%d'), 7, 2) BETWEEN '01' AND '15'
+                        ELSE SUBSTR(DATE_FORMAT(CRTR_YMD, '%Y%m%d'), 7, 2) BETWEEN '16' AND '31'
                     END
-                )
-            ), 0) AS TOT_TIME
+            ), 0) + COALESCE(( -- 연차 사용 일수
+                SELECT
+                    SUM(CASE
+                            WHEN dv.VCATN_TY_CD IN ('VTW01201', 'VTW01204') THEN 8
+                            ELSE 4
+                        END) AS MD
+                FROM (
+                <![CDATA[
+                    WITH RECURSIVE DAILY_VACATION AS (
+                        SELECT
+                            VAC.VCATN_TY_CD,
+                            (SELECT CD_NM FROM CD WHERE CD_VALUE = VAC.VCATN_TY_CD) AS PRJCT_NM,
+                            DATE(VAC.VCATN_BGNG_YMD) as dt,
+                            DATE(VAC.VCATN_END_YMD) as end_dt,
+                            ELC.ATRZ_DMND_EMP_ID
+                        FROM ELCTRN_ATRZ ELC
+                        JOIN VCATN_ATRZ VAC ON ELC.ELCTRN_ATRZ_ID = VAC.ELCTRN_ATRZ_ID
+                        WHERE 1=1
+                            AND ELC.ATRZ_DMND_EMP_ID = #{empId}
+                            AND ELC.ATRZ_DMND_STTS_CD = 'VTW03703'
+                            AND VAC.VCATN_TY_CD != 'VTW01207'
+                UNION ALL
+                SELECT
+                    dr.VCATN_TY_CD,
+                    dr.PRJCT_NM,
+                    DATE_ADD(dr.dt, INTERVAL 1 DAY) as dt,
+                    dr.end_dt,
+                    dr.ATRZ_DMND_EMP_ID
+                FROM DAILY_VACATION dr
+                WHERE dr.dt < dr.end_dt
+            ) ]]>
+            SELECT
+                VCATN_TY_CD,
+                PRJCT_NM
+                , dt
+                , DATE_FORMAT(dt, '%Y%m%d') AS APLY_YMD
+                , ATRZ_DMND_EMP_ID
+            FROM DAILY_VACATION
+            WHERE SUBSTR(DATE_FORMAT(dt, '%Y%m%d'), 1, 6) = #{aplyYm}
+                AND CASE
+                    WHEN #{aplyOdr} = 1 THEN SUBSTR(DATE_FORMAT(dt, '%Y%m%d'), 7, 2) BETWEEN '01' AND '15'
+                    ELSE SUBSTR(DATE_FORMAT(dt, '%Y%m%d'), 7, 2) BETWEEN '16' AND '31'
+                END
+            ) dv
+            JOIN CRTR_DATE crd ON crd.CRTR_YMD = dv.APLY_YMD AND crd.HLDY_CL_CD = 'VTW05001'
+        ), 0) AS TOT_TIME
     </select>
 
     <!-- 비용청구 팝업 근무일 일자별 시간 -->
@@ -1009,48 +1043,61 @@
         FROM CRTR_DATE
         WHERE SUBSTR(CRTR_YMD, 1, 6) = #{aplyYm}
           AND HLDY_CL_CD = 'VTW05003'
+          AND (
+            (#{aplyOdr} = 1 AND SUBSTRING(DATE_FORMAT(CRTR_YMD, '%Y%m%d'), 7, 2) BETWEEN '01' AND '15')
+                OR
+            (#{aplyOdr} = 2 AND SUBSTRING(DATE_FORMAT(CRTR_YMD, '%Y%m%d'), 7, 2) >= '16')
+        )
     </select>
 
     <!-- 비용청구 팝업 휴가 일자별 시간 -->
     <select id="retrieveVcatnDay" parameterType="map" resultType="com.trsystem.LowerHashMap">
-        <![CDATA[
-        WITH RECURSIVE VCATN_RANGE AS (
+        SELECT
+            dv.PRJCT_NM
+            , SUBSTRING(DATE_FORMAT(APLY_YMD, '%Y%m%d'), 7, 2) AS APLY_DAY
+            , CASE
+                WHEN dv.VCATN_TY_CD IN ('VTW01201', 'VTW01204') THEN 8
+                ELSE 4
+            END AS MD
+        FROM (
+            <![CDATA[
+            WITH RECURSIVE DAILY_VACATION AS (
             SELECT
-                va.ELCTRN_ATRZ_ID,
-                DATE(va.VCATN_BGNG_YMD) AS VCATN_DATE,
-                DATE(va.VCATN_END_YMD) AS VCATN_END_YMD,
-                va.VCATN_TY_CD,
-               (SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD) AS VCATN_TY_NM,
-                    CASE
-                    WHEN va.VCATN_TY_CD IN ('VTW01201', 'VTW01204') THEN 8
-                    ELSE 4
-                END AS VCATN_TIME
-            FROM VCATN_ATRZ va
-            JOIN ELCTRN_ATRZ ea ON va.ELCTRN_ATRZ_ID = ea.ELCTRN_ATRZ_ID
-            WHERE va.VCATN_TY_CD != 'VTW01207'
-                AND ea.ATRZ_DMND_STTS_CD = 'VTW03703'
-                AND ea.ATRZ_DMND_EMP_ID = #{empId}
-                AND DATE(va.VCATN_BGNG_YMD) <= LAST_DAY(CONCAT(SUBSTR(#{aplyYm}, 1, 4), '-', SUBSTR(#{aplyYm}, 5, 2), '-01'))
-                AND DATE(va.VCATN_END_YMD) >= CONCAT(SUBSTR(#{aplyYm}, 1, 4), '-', SUBSTR(#{aplyYm}, 5, 2), '-01')
+                VAC.VCATN_TY_CD,
+                (SELECT CD_NM FROM CD WHERE CD_VALUE = VAC.VCATN_TY_CD) AS PRJCT_NM,
+                DATE(VAC.VCATN_BGNG_YMD) as dt,
+                DATE(VAC.VCATN_END_YMD) as end_dt,
+                ELC.ATRZ_DMND_EMP_ID
+            FROM ELCTRN_ATRZ ELC
+            JOIN VCATN_ATRZ VAC ON ELC.ELCTRN_ATRZ_ID = VAC.ELCTRN_ATRZ_ID
+            WHERE 1=1
+                AND ELC.ATRZ_DMND_EMP_ID = #{empId}
+                AND ELC.ATRZ_DMND_STTS_CD = 'VTW03703'
+                AND VAC.VCATN_TY_CD != 'VTW01207'
             UNION ALL
             SELECT
-                ELCTRN_ATRZ_ID,
-                DATE_ADD(VCATN_DATE, INTERVAL 1 DAY),
-                VCATN_END_YMD,
-                VCATN_TY_CD,
-                VCATN_TY_NM,
-                VCATN_TIME
-            FROM VCATN_RANGE
-            WHERE DATE_ADD(VCATN_DATE, INTERVAL 1 DAY) <= VCATN_END_YMD
-        )
-        SELECT DISTINCT
-            VCATN_TY_NM AS PRJCT_NM,
-            SUBSTRING(DATE_FORMAT(VCATN_DATE, '%Y%m%d'), 7, 2) AS APLY_DAY,
-            VCATN_TIME AS MD
-        FROM VCATN_RANGE
-        WHERE MONTH(VCATN_DATE) = SUBSTR(#{aplyYm}, 5, 2) AND YEAR(VCATN_DATE) = SUBSTR(#{aplyYm}, 1, 4)
-        ORDER BY APLY_DAY
-        ]]>
+                dr.VCATN_TY_CD,
+                dr.PRJCT_NM,
+                DATE_ADD(dr.dt, INTERVAL 1 DAY) as dt,
+                dr.end_dt,
+                dr.ATRZ_DMND_EMP_ID
+            FROM DAILY_VACATION dr
+            WHERE dr.dt < dr.end_dt
+        ) ]]>
+        SELECT
+            VCATN_TY_CD,
+            PRJCT_NM
+            , dt
+            , DATE_FORMAT(dt, '%Y%m%d') AS APLY_YMD
+            , ATRZ_DMND_EMP_ID
+        FROM DAILY_VACATION
+        WHERE SUBSTR(DATE_FORMAT(dt, '%Y%m%d'), 1, 6) = #{aplyYm}
+            AND CASE
+                WHEN #{aplyOdr} = 1 THEN SUBSTR(DATE_FORMAT(dt, '%Y%m%d'), 7, 2) BETWEEN '01' AND '15'
+                ELSE SUBSTR(DATE_FORMAT(dt, '%Y%m%d'), 7, 2) BETWEEN '16' AND '31'
+            END
+        ) dv
+        JOIN CRTR_DATE crd ON crd.CRTR_YMD = dv.APLY_YMD AND crd.HLDY_CL_CD = 'VTW05001';
     </select>
 
     <!-- 문체비 합계테이블: 체력단련비 청구 조회 -->
