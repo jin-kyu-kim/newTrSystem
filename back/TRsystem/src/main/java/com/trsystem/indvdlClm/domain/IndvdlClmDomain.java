@@ -66,21 +66,7 @@ public class IndvdlClmDomain {
         return result;
     }
 
-    public static int insertPrjctHis(List<Map<String, Object>> params){
-        List<Map<String, Object>> histList = new ArrayList<>();
-        HashMap<String, Object> tbNmHist = new HashMap<String, Object>();
-        tbNmHist.put("tbNm", "PRJCT_ATRZ_HIST");
-        histList.add(tbNmHist);
-        for(int i = 0; i < params.size(); i++){
-            Map<String, Object> newParam = params.get(i);
-            newParam.put("atrzDmndSttsCd","VTW03701");
-            newParam.put("prjctAtrzHistSn", 1);
-            histList.add(newParam);
-        }
-        int result = commonService.insertData(histList);
-        return result;
-    }
-
+    // 문화체련비 등록 시 청구금액 가산
     public static int plusClturPhstrnActCt (Map<String, Object> param){
         Map<String, Object> tbNm = new HashMap<>();
         tbNm.put("tbNm", "CLTUR_PHSTRN_ACT_CT");
@@ -136,6 +122,7 @@ public class IndvdlClmDomain {
         return result;
     }
 
+    // 문화체련비 삭제 시 청구금액 감산
     public static int minusClturPhstrnActCt (Map<String, Object> param){
         Map<String, Object> tbNm = new HashMap<>();
         tbNm.put("tbNm", "CLTUR_PHSTRN_ACT_CT");
@@ -167,6 +154,7 @@ public class IndvdlClmDomain {
         return result;
     }
 
+    // 문화체련비 변경 시 청구금액 재계산
     public static int editClturPhstrnActCt (Map<String, Object> param){
         Map<String, Object> tbNm = new HashMap<>();
         tbNm.put("tbNm", "CLTUR_PHSTRN_ACT_CT");
@@ -197,10 +185,6 @@ public class IndvdlClmDomain {
 
         return result;
     }
-
-
-
-
 
 
 
@@ -1006,77 +990,77 @@ public class IndvdlClmDomain {
         Map<String, Object> paramFtClm = new HashMap<>();
         paramFtClm.put("queryId", "indvdlClmMapper.retrieveFtnessTrngCtClmAmt");
         paramFtClm.put("empId", param.get("empId"));
-        paramFtClm.put("clmYm", param.get("clmYm"));
+        paramFtClm.put("year", param.get("year"));
         List<Map<String, Object>> resultFtClm = commonService.queryIdSearch(paramFtClm);
         data.addAll(resultFtClm);
         // 체력단련비 지급
         Map<String, Object> paramFtDpst = new HashMap<>();
         paramFtDpst.put("queryId", "indvdlClmMapper.retrieveFtnessTrngCtDpstAmt");
         paramFtDpst.put("empId", param.get("empId"));
-        paramFtDpst.put("clmYm", param.get("clmYm"));
+        paramFtDpst.put("year", param.get("year"));
         List<Map<String, Object>> resultFtDpst = commonService.queryIdSearch(paramFtDpst);
         data.addAll(resultFtDpst);
         // 체력단련비 지급날짜
         Map<String, Object> paramFtDpstYmd = new HashMap<>();
         paramFtDpstYmd.put("queryId", "indvdlClmMapper.retrieveFtnessTrngCtDpstYmd");
         paramFtDpstYmd.put("empId", param.get("empId"));
-        paramFtDpstYmd.put("clmYm", param.get("clmYm"));
+        paramFtDpstYmd.put("year", param.get("year"));
         List<Map<String, Object>> resultFtDpstYmd = commonService.queryIdSearch(paramFtDpstYmd);
         data.addAll(resultFtDpstYmd);
         // 체력단련비 잔액
         Map<String, Object> paramFtCyfd = new HashMap<>();
         paramFtCyfd.put("queryId", "indvdlClmMapper.retrieveFtnessTrngCtCyfdAmt");
         paramFtCyfd.put("empId", param.get("empId"));
-        paramFtCyfd.put("clmYm", param.get("clmYm"));
+        paramFtCyfd.put("year", param.get("year"));
         List<Map<String, Object>> resultFtCyfd = commonService.queryIdSearch(paramFtCyfd);
         data.addAll(resultFtCyfd);
         // 문화비 청구
         Map<String, Object> paramClturClm = new HashMap<>();
         paramClturClm.put("queryId", "indvdlClmMapper.retrieveClturCtClmAmt");
         paramClturClm.put("empId", param.get("empId"));
-        paramClturClm.put("clmYm", param.get("clmYm"));
+        paramClturClm.put("year", param.get("year"));
         List<Map<String, Object>> resultClturClm = commonService.queryIdSearch(paramClturClm);
         data.addAll(resultClturClm);
         // 문화비 지급
         Map<String, Object> paramClturDpst = new HashMap<>();
         paramClturDpst.put("queryId", "indvdlClmMapper.retrieveClturCtDpstAmt");
         paramClturDpst.put("empId", param.get("empId"));
-        paramClturDpst.put("clmYm", param.get("clmYm"));
+        paramClturDpst.put("year", param.get("year"));
         List<Map<String, Object>> resultClturDpst = commonService.queryIdSearch(paramClturDpst);
         data.addAll(resultClturDpst);
         // 문화비 지급날짜
         Map<String, Object> paramClturDpstYmd = new HashMap<>();
         paramClturDpstYmd.put("queryId", "indvdlClmMapper.retrieveClturCtDpstYmd");
         paramClturDpstYmd.put("empId", param.get("empId"));
-        paramClturDpstYmd.put("clmYm", param.get("clmYm"));
+        paramClturDpstYmd.put("year", param.get("year"));
         List<Map<String, Object>> resultClturDpstYmd = commonService.queryIdSearch(paramClturDpstYmd);
         data.addAll(resultClturDpstYmd);
         // 문화비 잔액
         Map<String, Object> paramClturCyfd = new HashMap<>();
         paramClturCyfd.put("queryId", "indvdlClmMapper.retrieveClturCtCyfdAmt");
         paramClturCyfd.put("empId", param.get("empId"));
-        paramClturCyfd.put("clmYm", param.get("clmYm"));
+        paramClturCyfd.put("year", param.get("year"));
         List<Map<String, Object>> resultClturCyfd = commonService.queryIdSearch(paramClturCyfd);
         data.addAll(resultClturCyfd);
         // 전체 청구 합계
         Map<String, Object> paramClm = new HashMap<>();
         paramClm.put("queryId", "indvdlClmMapper.retrieveClmAmt");
         paramClm.put("empId", param.get("empId"));
-        paramClm.put("clmYm", param.get("clmYm"));
+        paramClm.put("year", param.get("year"));
         List<Map<String, Object>> resultClm = commonService.queryIdSearch(paramClm);
         data.addAll(resultClm);
         // 전체 지급 합계
         Map<String, Object> paramDpst = new HashMap<>();
         paramDpst.put("queryId", "indvdlClmMapper.retrieveDpstAmt");
         paramDpst.put("empId", param.get("empId"));
-        paramDpst.put("clmYm", param.get("clmYm"));
+        paramDpst.put("year", param.get("year"));
         List<Map<String, Object>> resultDpst = commonService.queryIdSearch(paramDpst);
         data.addAll(resultDpst);
         // 전체 잔액 합계
         Map<String, Object> paramCyfd = new HashMap<>();
         paramCyfd.put("queryId", "indvdlClmMapper.retrieveCyfdAmt");
         paramCyfd.put("empId", param.get("empId"));
-        paramCyfd.put("clmYm", param.get("clmYm"));
+        paramCyfd.put("year", param.get("year"));
         List<Map<String, Object>> resultCyfd = commonService.queryIdSearch(paramCyfd);
         data.addAll(resultCyfd);
 
