@@ -533,7 +533,6 @@ public class ElecAtrzDomain {
 		ArrayList<Map<String, Object>> insertParams = new ArrayList<>();
 		
 		Map<String, Object> tbParam = new HashMap<>();
-		Map<String, Object> infoParam = new HashMap<>();
 		
 		for(Map<String, Object> originalMap: paramList) {
 			
@@ -551,6 +550,8 @@ public class ElecAtrzDomain {
 		insertParams.add(0, tbParam);
 		
 		for(int i = 1; i < copiedParams.size(); i++) {
+			
+			Map<String, Object> infoParam = new HashMap<>();
 			
 			copiedParams.get(i).remove("pay");
 			infoParam.put("elctrnAtrzId", elctrnAtrzId);
@@ -629,7 +630,7 @@ public class ElecAtrzDomain {
 		ArrayList<Map<String, Object>> insertParams = new ArrayList<>();
 		
 		Map<String, Object> tbParam = new HashMap<>();
-		Map<String, Object> infoParam = new HashMap<>();
+
 		
 		for(Map<String, Object> originalMap: paramList) {
 			
@@ -647,6 +648,7 @@ public class ElecAtrzDomain {
 		insertParams.add(0, tbParam);
 		
 		for(int i = 1; i < copiedParams.size(); i++) {
+			Map<String, Object> infoParam = new HashMap<>();
 			
 			copiedParams.get(i).remove("hnfCtrtDtlMm");
 			infoParam.put("elctrnAtrzId", elctrnAtrzId);
@@ -668,7 +670,7 @@ public class ElecAtrzDomain {
 				
 				for(int i = 1; i < paramList.size(); i++) {
 					
-					int ctrtResult = insertHnfCtrtDetailMm((List<Map<String, Object>>)paramList.get(i).get("hnfCtrtDtlMm"), paramList.get(i).get("empId").toString(), elctrnAtrzId);
+					int ctrtResult = insertHnfCtrtDetailMm((List<Map<String, Object>>)paramList.get(i).get("hnfCtrtDtlMm"), paramList.get(i).get("inptHnfId").toString(), elctrnAtrzId);
 				}
 				
 			}
@@ -687,7 +689,7 @@ public class ElecAtrzDomain {
 	 * @param elctrnAtrzId: 전자결재 ID
 	 * @return
 	 */
-	public static int insertHnfCtrtDetailMm(List<Map<String, Object>> paramList, String empId, String elctrnAtrzId) {
+	public static int insertHnfCtrtDetailMm(List<Map<String, Object>> paramList, String inptHnfId, String elctrnAtrzId) {
 		int result = -1;
 		
 		System.out.println("Last Table");
@@ -699,7 +701,7 @@ public class ElecAtrzDomain {
 			
 			Map<String, Object> infoParam = new HashMap<>();
 			infoParam.put("elctrnAtrzId", elctrnAtrzId);
-			infoParam.put("inptHnfId", empId);
+			infoParam.put("inptHnfId", inptHnfId);
 			infoParam.put("inptYm", paramList.get(i).get("id"));
 			infoParam.put("mm", paramList.get(i).get("mm"));
 			infoParam.put("ctrtAmt", paramList.get(i).get("ctrtAmt"));
