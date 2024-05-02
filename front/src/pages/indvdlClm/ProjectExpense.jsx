@@ -20,18 +20,18 @@ const ProjectExpense = () => {
     const [ changeColumn, setChangeColumn ] = useState([]); // 결재상태 컬럼 -> 버튼렌더를 위해 필요
     const [ ctAtrzCmptnYn, setCtAtrzCmptnYn ] = useState(); // 비용결재완료여부
     const [ mmAtrzCmptnYn, setMmAtrzCmptnYn ] = useState(); // 근무시간여부
-    const [ histYmOdr, setHistYmOdr ] = useState({});
     
     const [ cookies ] = useCookies([]);
     const [ popVisible, setPopVisible ] = useState(false);
+    const [ histYmOdr, setHistYmOdr ] = useState({});
     const admin = location.state ? location.state.admin : undefined;
     const empId = admin != undefined ? admin.empId : cookies.userInfo.empId;
     const date = new Date();
     const year = date.getFullYear();
     const month = date.getDate() > 15 ? date.getMonth() + 1 : date.getMonth();
     const monthVal = month < 10 ? "0" + month : month;
-    const aplyYm = year + monthVal;
-    const aplyOdr = date.getDate() > 15 ? "1" : "2";
+    const aplyYm = admin != undefined ? admin.aplyYm : year + monthVal;
+    const aplyOdr = admin != undefined ? admin.aplyOdr : date.getDate() > 15 ? "1" : "2";
 
     const itemTitleRender = (a) => <span>{a.TabName}</span>;
     const onSelectionChanged = useCallback(
@@ -46,7 +46,6 @@ const ProjectExpense = () => {
         const columns = atrzDmndSttsCnt.ctReg > 0 ? 'ctAplyBtnColumns' : (atrzDmndSttsCnt.rjct > 0 ? 'rjctCnColumns' : 'ctAplyStrColumns');
         setChangeColumn(ctAplyTableColumns.concat(ProjectExpenseJson.ProjectExpenseMain[columns]))
     }, [atrzDmndSttsCnt]);
-
 
     const searchHandle = async (initParam) => {
         setHistYmOdr({
@@ -203,7 +202,7 @@ const ProjectExpense = () => {
                 <RenderTopTable title={`* ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} /> }
                 <RenderTopTable title='* 전자결재 청구 내역' keyColumn={elcKeyColumn} columns={columnCharge} values={ctAtrz} />
 
-                {atrzDmndSttsCnt.ctReg > 0 || ctAtrzCmptnYn === null
+                {atrzDmndSttsCnt.ctReg > 0 || ctAtrzCmptnYn === null || ctAtrzCmptnYn === undefined
                     ? <TabPanel
                         dataSource={ExpenseInfo}
                         selectedIndex={index}
