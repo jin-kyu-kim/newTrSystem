@@ -33,6 +33,8 @@ const ElecAtrzDetail = () => {
     const [opnnCn, setOpnnCn] = useState("");
     const [data, setData] = useState(location.state.data);
 
+    // console.log("location 디테일!!!", location);
+
     const onBtnClick = (e) => {
 
         switch (e.element.id) {
@@ -83,7 +85,7 @@ const ElecAtrzDetail = () => {
     const getPrjct = async () => {
         try {
             const response = await ApiRequest("/boot/common/commonSelect", [
-                { tbNm: "PRJCT" }, { prjctId: detailData.prjctId }
+                { tbNm: "PRJCT" }, { prjctId: prjctId? prjctId : detailData.prjctId }
             ]);
             setPrjctData(response[0]);
         } catch (error) {
@@ -536,6 +538,7 @@ const ElecAtrzDetail = () => {
                     detailData={detailData}
                     sttsCd={sttsCd}
                     prjctId={prjctId}
+                    prjctData={prjctData}
                 />
             )}
             {(['VTW04914'].includes(detailData.elctrnAtrzTySeCd)) && (data.ctrtElctrnAtrzId) &&(
