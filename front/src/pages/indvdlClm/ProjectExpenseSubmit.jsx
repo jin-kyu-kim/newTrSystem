@@ -85,7 +85,7 @@ const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handle
       const atdrnString = selectedItem[0].atdrn ? item.atdrn.map(person => person.value).join(',') : null;
       const requestBody = [
         { ...tbInfo, snSearch: {empId: item.empId, prjctId: item.prjctId, aplyYm: item.aplyYm, aplyOdr: item.aplyOdr} }, 
-        { ...item, atdrn: atdrnString, ctAtrzSeCd: "VTW01903" }];
+        { ...item, atdrn: atdrnString, ctAtrzSeCd: buttonGroup.length > 1 ? "VTW01903" : item.ctAtrzSeCd }];
   
       try {
         await ApiRequest("/boot/common/commonInsert", requestBody);
