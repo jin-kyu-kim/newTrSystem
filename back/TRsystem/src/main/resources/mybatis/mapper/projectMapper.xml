@@ -818,7 +818,9 @@
         WHERE pcat.EMP_ID = #{empId}
           AND pcat.APLY_YM = #{aplyYm}
           AND pcat.APLY_ODR = #{aplyOdr}
+          <if test="prjctId != null and prjctId.equals('')">
           AND pcat.PRJCT_ID = #{prjctId}
+		  </if>
           AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703'
           AND pca.ELCTRN_ATRZ_ID IS NULL
     </update>

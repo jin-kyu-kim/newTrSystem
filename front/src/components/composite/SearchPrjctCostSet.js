@@ -65,7 +65,7 @@ const SearchPrjctCostSet = ({ callBack, props }) => {
     useEffect(() => {
 
         const date = new Date();
-        const year = date.getFullYear();
+        let year = date.getFullYear();
         let month = date.getMonth() + 1;
         const day = date.getDate();
 
