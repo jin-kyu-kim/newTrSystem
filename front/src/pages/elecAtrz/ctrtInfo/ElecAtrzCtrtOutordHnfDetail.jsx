@@ -111,14 +111,16 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
         }else if(["VTW03702","VTW03703","VTW03704","VTW03705"].includes(sttsCd)) {
             getTempData();
         }
-    }, [])
+        else if(["VTW03405"].includes(sttsCd)){   //지급
+            getTempData();
+        }
+    }, [data.ctrtElctrnAtrzId])
 
-    
     const getTempData = async () => {
         const dtlParam = 
             { queryId: "elecAtrzMapper.retrieveOutorHnfDtl",
-              elctrnAtrzId: data.elctrnAtrzId,
-              elctrnAtrzTySeCd: data.elctrnAtrzTySeCd}    
+              elctrnAtrzId: data.ctrtElctrnAtrzId ? data.ctrtElctrnAtrzId : data.elctrnAtrzId,
+              elctrnAtrzTySeCd: ctrtTyCd ? ctrtTyCd : data.elctrnAtrzTySeCd}    
         const dtlResponse = await ApiRequest("/boot/common/queryIdSearch", dtlParam);
 
         const ctrtDataDtl = dtlResponse[0];
@@ -127,7 +129,7 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
 
         const dtlCndParam = [
             { tbNm: "HNF_CTRT_DTL_MM" }, 
-            { elctrnAtrzId: data.elctrnAtrzId }
+            { elctrnAtrzId: data.ctrtElctrnAtrzId ? data.ctrtElctrnAtrzId : data.elctrnAtrzId }
         ]
 
         const dtlCndResponse = await ApiRequest("/boot/common/commonSelect", dtlCndParam);
