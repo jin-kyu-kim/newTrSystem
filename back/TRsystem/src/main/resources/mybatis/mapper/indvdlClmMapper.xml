@@ -816,28 +816,6 @@
         </if>
     </select>
 
-    <!-- 문체비 목록 조회 -->
-    <select id="retrieveClturPhstrnActCtList" parameterType="map" resultType="com.trsystem.LowerHashMap">
-        SELECT
-            EMP_ID
-             , CLTUR_PHSTRN_ACT_CT_SN
-             , CLM_YMD
-             , CLM_AMT
-             , ACT_IEM
-             , CLTUR_PHSTRN_SE_CD
-             , ACT_PURPS
-             , FRCS_NM
-             , RM
-             , c.ATCHMNFL_ID
-             , a.ATCHMNFL_SN
-             , a.REAL_FILE_NM
-             , a.STRG_FILE_NM
-        FROM CLTUR_PHSTRN_ACT_CT_REG c
-                 LEFT JOIN  ATCHMNFL a ON c.ATCHMNFL_ID = a.ATCHMNFL_ID
-        WHERE EMP_ID = #{empId}
-        AND CLM_YMD LIKE CONCAT(#{clmYmd}, '%')
-    </select>
-
     <!-- 프로젝트 비용 atrzDmndSttsCd 변경 -->
     <update id="updatePrjctCtAtrzStts" parameterType="map">
         UPDATE PRJCT_CT_ATRZ
@@ -1099,6 +1077,35 @@
         ) dv
         JOIN CRTR_DATE crd ON crd.CRTR_YMD = dv.APLY_YMD AND crd.HLDY_CL_CD = 'VTW05001';
     </select>
+
+    <!-- 문체비: 목록 조회 -->
+    <select id="retrieveClturPhstrnActCtList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            EMP_ID
+             , CLTUR_PHSTRN_ACT_CT_SN
+             , CLM_YMD
+             , CLM_AMT
+             , ACT_IEM
+             , CLTUR_PHSTRN_SE_CD
+             , ACT_PURPS
+             , FRCS_NM
+             , RM
+             , c.ATCHMNFL_ID
+             , a.ATCHMNFL_SN
+             , a.REAL_FILE_NM
+             , a.STRG_FILE_NM
+        FROM CLTUR_PHSTRN_ACT_CT_REG c
+                 LEFT JOIN  ATCHMNFL a ON c.ATCHMNFL_ID = a.ATCHMNFL_ID
+        WHERE EMP_ID = #{empId}
+          AND CLM_YMD LIKE CONCAT(#{clmYmd}, '%')
+    </select>
+
+    <!-- 문체비: 합계컬럼 없으면 추가 -->
+    <insert id="insertClPh" parameterType="map">
+        INSERT IGNORE INTO CLTUR_PHSTRN_ACT_CT (EMP_ID, CLTUR_PHSTRN_ACT_MNG_YM, CLM_AMT, FTNESS_TRNG_CT_CLM_AMT, CLTUR_CT_CLM_AMT,
+               DPST_AMT, FTNESS_TRNG_CT_DPST_AMT, CLTUR_CT_DPST_AMT, CYFD_AMT, FTNESS_TRNG_CT_CYFD_AMT, CLTUR_CT_CYFD_AMT)
+        VALUES(	#{empId}, #{clturPhstrnActMngYm}, 0, 0, 0, 0, 0, 0, 0, 0 ,0)
+    </insert>
 
     <!-- 문체비 합계테이블: 체력단련비 청구 조회 -->
     <select id="retrieveFtnessTrngCtClmAmt" parameterType="map" resultType="com.trsystem.LowerHashMap">

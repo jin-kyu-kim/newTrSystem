@@ -27,6 +27,12 @@ public class IndvdlClmController {
         return IndvdlClmDomain.insertPrjctMM(params);
     }
 
+    // 문화체련비 합계컬럼 없으면 추가
+    @PostMapping(value = "/boot/indvdlClm/insertClPh")
+    public int insertClPh (@RequestBody Map<String, Object> param){
+        return IndvdlClmDomain.insertClPh(param);
+    }
+
     // 문화체련비 등록 시 청구금액 가산
     @PostMapping(value = "/boot/indvdlClm/plusClturPhstrnActCt")
     public int plusClturPhstrnActCt (@RequestBody Map<String, Object> param){

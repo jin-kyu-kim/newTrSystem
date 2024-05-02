@@ -1,8 +1,9 @@
 package com.trsystem.indvdlClm.domain;
 
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -66,6 +67,17 @@ public class IndvdlClmDomain {
         return result;
     }
 
+    // 문화체련비 합계컬럼 없으면 추가
+    public static int insertClPh (Map<String, Object> param){
+        param.put("queryId", "indvdlClmMapper.insertClPh");
+        commonService.queryIdSearch(param);
+        YearMonth yearMonth = YearMonth.parse((String)param.get("clturPhstrnActMngYm"), DateTimeFormatter.ofPattern("yyyyMM"));
+        LocalDate nextMonth = yearMonth.atDay(1).plusMonths(1);
+        param.put("clturPhstrnActMngYm", nextMonth.format(DateTimeFormatter.ofPattern("yyyyMM")));
+        commonService.queryIdSearch(param);
+        return 1;
+    }
+
     // 문화체련비 등록 시 청구금액 가산
     public static int plusClturPhstrnActCt (Map<String, Object> param){
         Map<String, Object> tbNm = new HashMap<>();
@@ -73,7 +85,7 @@ public class IndvdlClmDomain {
 
         Map<String, Object> data = new HashMap<>();
         data.put("empId", param.get("empId"));
-        data.put("clmYm", param.get("clmYmd").toString().substring(0,6));
+        data.put("clturPhstrnActMngYm", param.get("clmYmd").toString().substring(0,6));
 
         List<Map<String, Object>> searchParam = new ArrayList<>();
         searchParam.add(tbNm);
@@ -106,7 +118,7 @@ public class IndvdlClmDomain {
         } else {
             Map<String, Object> insertData = new HashMap<>();
             insertData.put("empId", param.get("empId"));
-            insertData.put("clmYm", param.get("clmYmd").toString().substring(0,6));
+            insertData.put("clturPhstrnActMngYm", param.get("clmYmd").toString().substring(0,6));
             if(param.get("clturPhstrnSeCd").equals("VTW00901")){
                 insertData.put("clturCtClmAmt", param.get("clmAmt"));
             } else if (param.get("clturPhstrnSeCd").equals("VTW00902")) {
@@ -129,7 +141,7 @@ public class IndvdlClmDomain {
 
         Map<String, Object> data = new HashMap<>();
         data.put("empId", param.get("empId"));
-        data.put("clmYm", param.get("clmYmd").toString().substring(0,6));
+        data.put("clturPhstrnActMngYm", param.get("clmYmd").toString().substring(0,6));
 
         List<Map<String, Object>> searchParam = new ArrayList<>();
         searchParam.add(tbNm);
@@ -161,7 +173,7 @@ public class IndvdlClmDomain {
 
         Map<String, Object> data = new HashMap<>();
         data.put("empId", param.get("empId"));
-        data.put("clmYm", param.get("clmYmd").toString().substring(0,6));
+        data.put("clturPhstrnActMngYm", param.get("clmYmd").toString().substring(0,6));
 
         List<Map<String, Object>> searchParam = new ArrayList<>();
         searchParam.add(tbNm);
