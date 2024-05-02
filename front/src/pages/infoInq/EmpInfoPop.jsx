@@ -6,7 +6,7 @@ import { Button } from "devextreme-react";
 import ReactToPrint from "react-to-print";
 import {Item,Form,GroupItem,} from "devextreme-react/form";
 import CustomEditTable from "components/unit/CustomEditTable";
-import styles from './EmpInfoStyles.module.css';
+
 const EmpInfoPop = ({ naviEmpId }) => {
   const [baseInfoData, setBaseInfoData] = useState([]);
   const [isHovered, setIsHovered] = useState(false);
