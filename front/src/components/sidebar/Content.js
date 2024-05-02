@@ -65,7 +65,18 @@ export default function Content() {
                         <PrivateRoute isPrivate={isPrivate}>
                           <div className={`app ${screenSizeClass}`} style={{opacity: isPending ? 0.2 : 1}}>
                             <SideNavBarLayout>
-                              {React.createElement(element)}
+                            <div className={'content-block'}>
+                                <div className={'dx-card responsive-paddings'}> 
+                                {React.createElement(element)}
+                                </div>
+                                <div style={{paddingBottom:"20px" }}>
+                                <Footer>
+                                    Copyright © 2024 VTW Inc TRSystem.
+                                        <br />
+                                        All trademarks or registered trademarks are property of their respective owners.
+                                 </Footer>
+                                </div>
+                              </div>
                             </SideNavBarLayout>
                           </div>
                         </PrivateRoute>
@@ -79,11 +90,6 @@ export default function Content() {
           ))}
           <Route path="*" element={<Navigate to="/home"/>} />
       </Routes>
-    {/*<Footer>*/}
-    {/*    Copyright © 2024 VTW Inc TRSystem.*/}
-    {/*    <br />*/}
-    {/*    All trademarks or registered trademarks are property of their respective owners.*/}
-    {/*</Footer>*/}
 </>
   );
 }
