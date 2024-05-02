@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.trsystem.common.service.ApplicationYamlRead;
 import com.trsystem.common.service.CommonService;
+import com.trsystem.email.service.EmailSendService;
 import com.trsystem.elecAtrz.domain.ElecAtrzDomain;
 
 import lombok.Data;
@@ -34,9 +36,12 @@ import lombok.NoArgsConstructor;
 public class IndvdlClmDomain {
     private static CommonService commonService;
 
+    private static EmailSendService emailSendService;
+
     @Autowired
-    public IndvdlClmDomain(CommonService commonService, ApplicationYamlRead applicationYamlRead){
+    public IndvdlClmDomain(CommonService commonService, ApplicationYamlRead applicationYamlRead, EmailSendService emailSendService){
         IndvdlClmDomain.commonService = commonService;
+        this.emailSendService = emailSendService;
     }
 
     public static int insertPrjctMM(List<Map<String, Object>> params){
@@ -276,6 +281,11 @@ public class IndvdlClmDomain {
             List<Map<String, Object>> updatePrjctMmAtrzResult = commonService.queryIdSearch(updatePrjctMmAtrzMap);
         }
 
+        Map<String, Object> updatePrjctIndvdlCtMmMap = new HashMap<>();
+        updatePrjctIndvdlCtMmMap.putAll(params.get(0));
+        updatePrjctIndvdlCtMmMap.put("queryId", "indvdlClmMapper.updatePrjctIndvdlCtMm");
+        List<Map<String, Object>> updatePrjctIndvdlCtMmResult = commonService.queryIdSearch(updatePrjctIndvdlCtMmMap);
+
         return null;
     }
 
@@ -465,6 +475,16 @@ public class IndvdlClmDomain {
                 insertRefrnManList.add(i + 1, insertRefrnMap.get(i));
             }
             queryResult = commonService.insertData(insertRefrnManList);
+
+            emailSendService.elecAtrzEmailSend(
+                    String.valueOf(insertAtrzLnMap.get(0).get("empId"))
+                    ,String.valueOf(insertElctrnMap.get("atrzDmndEmpId"))
+                    ,"1"
+                    ,"[" + insertVcatnMap.get("vcatnBgngYmd") + "~" + insertVcatnMap.get("vcatnEndYmd") + "] 휴가결재 결재 요청 완료."
+                    ,"[" + insertVcatnMap.get("vcatnBgngYmd") + "~" + insertVcatnMap.get("vcatnEndYmd") + "] 휴가결재에 대한 결재가 요청되었습니다."
+                    ,false
+                    ,""
+            );
 
             return "성공";
         } else {
@@ -721,12 +741,14 @@ public class IndvdlClmDomain {
         // VCATN_ATRZ(휴가결재저장)
         insertVactnAtrzMapValue.put("elctrnAtrzId", insertDataMapValue.get("elctrnAtrzId"));
         insertVactnAtrzMapValue.put("rtrcnPrvonsh", insertDataMapValue.get("rtrcnPrvonsh"));
+        insertVactnAtrzMapValue.put("vcatnTyCD", "VTW01207");
 
         // ATRZ_LN(결재선저장)
         for(int i = 0; i < insertAtrzLnListValue.size(); i++){
             Map<String, Object> insertMap = new HashMap<>();
             insertMap = insertAtrzLnListValue.get(i);
             insertMap.put("elctrnAtrzId", elctrnAtrzId);
+            insertMap.put("atrzSttsCd", "VTW00801");
             insertAtrzLnListValue.set(i, insertMap);
         }
 
@@ -766,6 +788,16 @@ public class IndvdlClmDomain {
         commonService.insertData(insertVactnAtrzList);
         commonService.insertData(insertAtrzLnList);
         commonService.insertData(insertRefrnManList);
+
+        emailSendService.elecAtrzEmailSend(
+                String.valueOf(insertAtrzLnListValue.get(0).get("empId"))
+                ,String.valueOf(insertDataMapValue.get("empId"))
+                ,elctrnAtrzId
+                ,"[" + insertVactnAtrzMapValue.get("vcatnBgngYmd") + "~" + insertVactnAtrzMapValue.get("vcatnEndYmd") + "] 휴가취소결재 결재 요청 완료."
+                ,"[" + insertVactnAtrzMapValue.get("vcatnBgngYmd") + "~" + insertVactnAtrzMapValue.get("vcatnEndYmd") + "] 휴가취소결재에 대한 결재가 요청되었습니다."
+                ,false
+                ,""
+        );
 
         return null;
     }
@@ -908,9 +940,9 @@ public class IndvdlClmDomain {
                             - Double.parseDouble(String.valueOf(selectElctrnAtrzListResult.get(0).get("newVcatnUseDaycnt")))
                         )
                 );
+                updateVcatnMngMap.put("pblenVcatnUseDaycnt", "");
                 updateNewVcatnMngMap.put("newUseDaycnt", Double.parseDouble(String.valueOf(refNewVcatnMngMap.get("newUseDaycnt"))) - Double.parseDouble(String.valueOf(selectElctrnAtrzListResult.get(0).get("newVcatnUseDaycnt"))));
                 updateNewVcatnMngMap.put("newRemndrDaycnt", Double.parseDouble(String.valueOf(refNewVcatnMngMap.get("newRemndrDaycnt"))) + Double.parseDouble(String.valueOf(selectElctrnAtrzListResult.get(0).get("newVcatnUseDaycnt"))));
-                updateVcatnMngMap.put("pblenVcatnUseDaycnt", "");
             }
         }
 

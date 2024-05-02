@@ -258,15 +258,19 @@
             ,DEPT 		DEPT
             ,DEPT_HNF	HNF
         WHERE HDOF_STTS_CD = 'VTW00301'
+        AND HNF.JBTTL_CD = 'VTW01001'
         AND EMP.EMP_ID = HNF.EMP_ID
         AND DEPT.DEPT_ID = HNF.DEPT_ID
         AND EMP.EMP_ID != #{empId}
         <if test="deptId !=null and !deptId.equals('')">
-            AND DEPT.DEPT_ID IN
-            <foreach collection="deptId" item="item" index="index" separator="," open="(" close=")">
-                #{item.deptId}
-            </foreach>
+            AND DEPT.DEPT_ID = #{deptId}
         </if>
+<!--        <if test="deptId !=null and !deptId.equals('')">-->
+<!--            AND DEPT.DEPT_ID IN-->
+<!--            <foreach collection="deptId" item="item" index="index" separator="," open="(" close=")">-->
+<!--                #{item.deptId}-->
+<!--            </foreach>-->
+<!--        </if>-->
         ORDER BY JBTTL_CD
     </select>
 
@@ -301,7 +305,8 @@
             SELECT
                 ATRZ.ELCTRN_ATRZ_ID
                 ,EMP.EMP_ID
-                ,ATRZ.VCATN_BGNG_YMD AS VCATN_YMD
+                ,DATE(ATRZ.VCATN_BGNG_YMD) AS VCATN_BGNG_YMD
+                ,DATE(ATRZ.VCATN_END_YMD) AS VCATN_END_YMD
                 ,ATRZ.VCATN_TY_CD
                 ,(SELECT CD_NM FROM CD WHERE CD_VALUE = ATRZ.VCATN_TY_CD) AS VCATN_TY_NM
                 ,CASE
@@ -309,26 +314,27 @@
                     ELSE '4hrs'
                     END VCATN_TIME
                 ,ATRZ.VCATN_DE_CNT AS FLAG_CNT
-                FROM VCATN_ATRZ 	ATRZ
-                    ,ELCTRN_ATRZ	ELCTRN
-                    ,EMP			EMP
-                WHERE ATRZ.ELCTRN_ATRZ_ID = ELCTRN.ELCTRN_ATRZ_ID
-                AND ELCTRN.ATRZ_DMND_EMP_ID = EMP.EMP_ID
-                AND ATRZ.VCATN_TY_CD != 'VTW01207'
-                AND ELCTRN.ATRZ_DMND_STTS_CD = 'VTW03703'
-                AND ELCTRN.ATRZ_DMND_EMP_ID = #{empId}
-                AND SUBSTR(ATRZ.VCATN_BGNG_YMD, 1, 6) = #{aplyYm}
+            FROM VCATN_ATRZ 	ATRZ
+                ,ELCTRN_ATRZ	ELCTRN
+                ,EMP			EMP
+            WHERE ATRZ.ELCTRN_ATRZ_ID = ELCTRN.ELCTRN_ATRZ_ID
+            AND ELCTRN.ATRZ_DMND_EMP_ID = EMP.EMP_ID
+            AND ATRZ.VCATN_TY_CD != 'VTW01207'
+            AND ELCTRN.ATRZ_DMND_STTS_CD = 'VTW03703'
+            AND ELCTRN.ATRZ_DMND_EMP_ID = #{empId}
+            AND (SUBSTR(ATRZ.VCATN_BGNG_YMD, 1, 6) = #{aplyYm} OR SUBSTR(ATRZ.VCATN_END_YMD, 1, 6) = #{aplyYm})
         UNION ALL
             SELECT
                 ELCTRN_ATRZ_ID
                 ,EMP_ID
-                ,VCATN_YMD + 1
+                ,DATE_ADD(VCATN_BGNG_YMD, INTERVAL 1 DAY) AS VCATN_BGNG_YMD
+                ,VCATN_END_YMD
                 ,VCATN_TY_CD
                 ,VCATN_TY_NM
                 ,VCATN_TIME
                 ,FLAG_CNT - 1
-                FROM VCATN_CNT
-                WHERE 1 <![CDATA[<]]> FLAG_CNT
+            FROM VCATN_CNT
+            WHERE VCATN_BGNG_YMD <![CDATA[<]]> VCATN_END_YMD
         )
         SELECT
             'workAply'  APLY_TYPE       /* 근무_휴가구분식별자 */
@@ -353,7 +359,9 @@
                 (SELECT PRJCT_NM FROM PRJCT PRJCT WHERE PRJCT.PRJCT_ID = ATRZ.PRJCT_ID), '',
                 IFNULL((SELECT EMP_FLNM FROM EMP EMP WHERE EMP.EMP_ID = APRVR_EMP_ID), ''), ' ',
                 IFNULL((SELECT CD_NM FROM CD WHERE CD_VALUE = ATRZ_DMND_STTS_CD), '')
-            ) TEXT						/* 결재상태내용 */
+            ) TEXT                      /* 결재상태내용 */
+            ,''	VCATN_BGNG_YMD          /* 휴가시작일자 */
+            ,''	VCATN_END_YMD           /* 휴가종료일자 */
         FROM PRJCT_MM_ATRZ 	ATRZ
             ,PRJCT_MM_APLY 	APLY
         WHERE 1 = 1
@@ -364,7 +372,6 @@
         AND ATRZ.APLY_YMD = APLY.APLY_YMD
         AND ATRZ.EMP_ID = #{empId}
         AND ATRZ.APLY_YM = #{aplyYm}
-<!--        AND ATRZ.APLY_ODR = #{aplyOdr}-->
         UNION ALL
         SELECT
             'vcatnAply' APLY_TYPE     /* 근무_휴가구분식별자 */
@@ -373,10 +380,10 @@
             ,EMP_ID
             ,''
             ,''
-            ,VCATN_YMD
+            ,DATE_FORMAT(VCATN_BGNG_YMD, '%Y%m%d')
             ,CASE WHEN VCATN_TY_CD IN ('VTW01201', 'VTW01204') THEN 1.0
-                ELSE 0.5
-                END
+            ELSE 0.5
+            END
             ,''
             ,''
             ,''
@@ -387,7 +394,13 @@
             ,''
             ,VCATN_TY_CD
             ,CONCAT(VCATN_TY_NM, ' ', VCATN_TIME)
-        FROM VCATN_CNT
+            ,VCATN_BGNG_YMD
+            ,VCATN_END_YMD
+        FROM VCATN_CNT	CNT
+            ,CRTR_DATE	CRTR
+        WHERE 1 = 1
+        AND DATE_FORMAT(VCATN_BGNG_YMD, '%Y%m%d') = CRTR.CRTR_YMD
+        AND CRTR.HLDY_CL_CD = 'VTW05001'
     </select>
 
 
@@ -498,6 +511,17 @@
         AND APLY_YM = #{aplyYm}
         AND APLY_ODR = #{aplyOdr}
         AND APLY_YMD = #{aplyYmd}
+        AND PRJCT_ID = #{prjctId}
+    </update>
+
+    <!-- 프로젝트개인비용MM수정 -->
+    <update id="updatePrjctIndvdlCtMm" parameterType="map">
+        /* indvdlClmMapper.updatePrjctIndvdlCtMm */
+        UPDATE PRJCT_INDVDL_CT_MM
+        SET MM_ATRZ_CMPTN_YN = NULL
+        WHERE EMP_ID = #{empId}
+        AND APLY_YM = #{aplyYm}
+        AND APLY_ODR = #{aplyOdr}
         AND PRJCT_ID = #{prjctId}
     </update>
 
@@ -655,7 +679,9 @@
             </if>
         WHERE EMP_ID = #{empId}
         AND VCATN_YR = #{vcatnYr}
-        AND NEW_VCATN_YN = #{newVcatnYn}
+        <if test="newVcatnYn != null and !newVcatnYn.equals('')">
+            AND NEW_VCATN_YN = #{newVcatnYn}
+        </if>
     </update>
 
     <!-- 휴가배정관리수정_(신규휴가) -->
