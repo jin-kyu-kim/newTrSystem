@@ -23,6 +23,9 @@ import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -72,7 +75,7 @@ public class EmailSendService {
 			Map<String, Object> reportEmpData = reportEmp.get(0);
 			String reportEmpEmail = extractEmail(reportEmpData);
 			
-			String moveUrl ="";
+			String moveUrl =getCompleteUrl("/project/ProjectAprvDetail","");
 			String subject = "[VTW 프로젝트결재]";
 			
 			switch(submitType) {
@@ -126,7 +129,7 @@ public class EmailSendService {
 	 * @param content			//내용
 	 * @param pageMove
 	 * @param moveUrl
-	 */
+	 **/
 	public void elecAtrzEmailSend(String toEmpId, String reportEmpId, String documentNumber, String title, String content, boolean pageMove, String moveUrl) {
 		
 		if(!toEmpId.isEmpty() && !toEmpId.equals(null)) {
@@ -139,7 +142,9 @@ public class EmailSendService {
 			List<Map<String, Object>> reportEmp = DataFind(reportEmpId,"EMP"); // 프로젝트 결재 기안자 email
 			Map<String, Object> reportEmpData = reportEmp.get(0);
 			String reportEmpEmail = extractEmail(reportEmpData);
-			
+			//============================URL 세팅=========================================
+			String detailMoveUrl = getCompleteUrl(moveUrl,documentNumber);
+			 
 			
 			String subject = "[VTW 전자결재] '"+title; 
 			String emailContent = "<div style='margin: 0px; padding: 0px; border: 0px; font-variant-numeric: inherit; font-variant-east-asian: inherit; font-stretch: inherit; font-size: 15px; line-height: inherit; font-family: &quot;Segoe UI&quot;, &quot;Segoe UI Web (West European)&quot;, &quot;Segoe UI&quot;, -apple-system, BlinkMacSystemFont, Roboto, &quot;Helvetica Neue&quot;, sans-serif; vertical-align: baseline; color: rgb(32, 31, 30); background-color: rgb(67, 108, 153);'>"
@@ -155,10 +160,9 @@ public class EmailSendService {
 				emailContent = emailContent 
 						+ "<span style='margin: 0px; padding: 0px; border: 0px; font: inherit; vertical-align: baseline; color: inherit;'>&nbsp;</span></span></div><div style='margin: 0px; padding: 0px 0px 0px 15px; border: 0px; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 12px; line-height: 1.2em; font-family: verdana; vertical-align: baseline; color: rgb(208, 233, 255); height: 23px;'><span style='margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: bold; font-stretch: inherit; font-size: inherit; line-height: inherit; font-family: inherit; vertical-align: baseline; color: inherit;'><span style='margin: 0px; padding: 0px; border: 0px; font: inherit; vertical-align: baseline; color: inherit;'><br></span></span></div><div style='margin: 0px; padding: 0px 0px 0px 15px; border: 0px; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 12px; line-height: 1.2em; font-family: verdana; vertical-align: baseline; color: rgb(208, 233, 255); height: 23px;'><span style='margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: bold; font-stretch: inherit; font-size: inherit; line-height: inherit; font-family: inherit; vertical-align: baseline; color: inherit;'><span style='margin: 0px; padding: 0px; border: 0px; font: inherit; vertical-align: baseline; color: inherit;'>[바로가기] 를 클릭하면 해당문서로 이동합니다.</span></span></div><div style='margin: 0px; padding: 0px 0px 0px 15px; border: 0px; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 12px; line-height: 1.2em; font-family: verdana; vertical-align: baseline; color: rgb(208, 233, 255); height: 23px;'><span style='margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: bold; font-stretch: inherit; font-size: inherit; line-height: inherit; font-family: inherit; vertical-align: baseline; color: inherit;'><span style='margin: 0px; padding: 0px; border: 0px; font: inherit; vertical-align: baseline; color: inherit;'>(TR 시스템에 로그인되어 있어야 합니다.)</span></span></div></div><div style='margin: 6px 0px 0px 15px; padding: 0px; border: 0px; font-variant-numeric: normal; font-variant-east-asian: normal; font-weight: bold; font-stretch: normal; font-size: 12px; line-height: 1em; font-family: dotum; vertical-align: baseline; color: rgb(85, 85, 85);'><br></div>\r\n"
 						+ "<span style=\"color: rgb(85, 85, 85); font-family: dotum; font-size: 12px; font-weight: 700;\">&nbsp;"
-						+ "</span><a href=\""+"http://121.65.128.115:3000/"+moveUrl+"\" target=\"_blank\" rel=\"noopener noreferrer\" data-auth=\"NotApplicable\" style=\"margin: 0px 0px 5px; padding: 4.14623px 10.3726px; border: 1px solid rgb(0, 137, 200); font-variant-numeric: normal; font-variant-east-asian: normal; font-weight: bold; font-stretch: normal; font-size: 13px; line-height: 1em; font-family: dotum; vertical-align: baseline; display: inline-block; color: rgb(255, 255, 255); text-align: center; background-color: rgb(67, 108, 153); border-radius: 3px; white-space: nowrap;\">바로가기</a>";	
+						+ "</span><a href=\""+detailMoveUrl+"\" target=\"_blank\" rel=\"noopener noreferrer\" data-auth=\"NotApplicable\" style=\"margin: 0px 0px 5px; padding: 4.14623px 10.3726px; border: 1px solid rgb(0, 137, 200); font-variant-numeric: normal; font-variant-east-asian: normal; font-weight: bold; font-stretch: normal; font-size: 13px; line-height: 1em; font-family: dotum; vertical-align: baseline; display: inline-block; color: rgb(255, 255, 255); text-align: center; background-color: rgb(67, 108, 153); border-radius: 3px; white-space: nowrap;\">바로가기</a>";	
 				
 			}
-			
 			//이메일전송
 			if((toEmpEmail == "" ? null : toEmpEmail) != null) {
 				try {
@@ -223,9 +227,8 @@ public class EmailSendService {
 	 * @param endTime      - 시작일자 + 사용종료시분 (USE_YMD + USE_END_HM)
 	 * @param content      - 회의 제목 (MTG_TTL)
 	 * @param roomNm       - 회의실 코드 (MTG_ROOM_CD)
-	 */
+	 **/
 	public void roomReserveEmailSend(String reserveEmpId, List<String> attendEmpId, String state, String startTime,String endTime, String content, String roomNm) {
-		System.out.println("여기오고있나요????1");
 		
 		 //============================예약자 및 참석자 email 세팅===================================
 		List<Map<String, Object>> reserveEmp = DataFind(reserveEmpId,"EMP"); // 회의 예약자 정보
@@ -250,7 +253,8 @@ public class EmailSendService {
 	    
 	  //============================분기에 따른 제목 설정===========================================
 		String subject = "[VTW 회의실 예약]";
-		String moveUrl = "/infoInq/MeetingRoomReserv";
+		String moveUrl =  getCompleteUrl("/infoInq/MeetingRoomReserv","");
+		
 		String title = "";
 		switch (state) { // 회의실 예약 상태에 따른 분기 처리
 		case "insert":// 등록
@@ -280,13 +284,12 @@ public class EmailSendService {
 			emailContent = emailContent
 					+ "<span style='margin: 0px; padding: 0px; border: 0px; font: inherit; vertical-align: baseline; color: inherit;'>&nbsp;</span></span></div><div style='margin: 0px; padding: 0px 0px 0px 15px; border: 0px; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 12px; line-height: 1.2em; font-family: verdana; vertical-align: baseline; color: rgb(208, 233, 255); height: 23px;'><span style='margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: bold; font-stretch: inherit; font-size: inherit; line-height: inherit; font-family: inherit; vertical-align: baseline; color: inherit;'><span style='margin: 0px; padding: 0px; border: 0px; font: inherit; vertical-align: baseline; color: inherit;'><br></span></span></div><div style='margin: 0px; padding: 0px 0px 0px 15px; border: 0px; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 12px; line-height: 1.2em; font-family: verdana; vertical-align: baseline; color: rgb(208, 233, 255); height: 23px;'><span style='margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: bold; font-stretch: inherit; font-size: inherit; line-height: inherit; font-family: inherit; vertical-align: baseline; color: inherit;'><span style='margin: 0px; padding: 0px; border: 0px; font: inherit; vertical-align: baseline; color: inherit;'>[바로가기] 를 클릭하면 해당문서로 이동합니다.</span></span></div><div style='margin: 0px; padding: 0px 0px 0px 15px; border: 0px; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 12px; line-height: 1.2em; font-family: verdana; vertical-align: baseline; color: rgb(208, 233, 255); height: 23px;'><span style='margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: bold; font-stretch: inherit; font-size: inherit; line-height: inherit; font-family: inherit; vertical-align: baseline; color: inherit;'><span style='margin: 0px; padding: 0px; border: 0px; font: inherit; vertical-align: baseline; color: inherit;'>(TR 시스템에 로그인되어 있어야 합니다.)</span></span></div></div><div style='margin: 6px 0px 0px 15px; padding: 0px; border: 0px; font-variant-numeric: normal; font-variant-east-asian: normal; font-weight: bold; font-stretch: normal; font-size: 12px; line-height: 1em; font-family: dotum; vertical-align: baseline; color: rgb(85, 85, 85);'><br></div>\r\n"
 					+ "<span style=\"color: rgb(85, 85, 85); font-family: dotum; font-size: 12px; font-weight: 700;\">&nbsp;"
-					+ "</span><a href=http://localhost:3000/\""+moveUrl+"\" target=\"_blank\" rel=\"noopener noreferrer\" data-auth=\"NotApplicable\" style=\"margin: 0px 0px 5px; padding: 4.14623px 10.3726px; border: 1px solid rgb(0, 137, 200); font-variant-numeric: normal; font-variant-east-asian: normal; font-weight: bold; font-stretch: normal; font-size: 13px; line-height: 1em; font-family: dotum; vertical-align: baseline; display: inline-block; color: rgb(255, 255, 255); text-align: center; background-color: rgb(67, 108, 153); border-radius: 3px; white-space: nowrap;\">바로가기</a>";	
+					+ "</span><a href=\""+moveUrl+"\" target=\"_blank\" rel=\"noopener noreferrer\" data-auth=\"NotApplicable\" style=\"margin: 0px 0px 5px; padding: 4.14623px 10.3726px; border: 1px solid rgb(0, 137, 200); font-variant-numeric: normal; font-variant-east-asian: normal; font-weight: bold; font-stretch: normal; font-size: 13px; line-height: 1em; font-family: dotum; vertical-align: baseline; display: inline-block; color: rgb(255, 255, 255); text-align: center; background-color: rgb(67, 108, 153); border-radius: 3px; white-space: nowrap;\">바로가기</a>";	
 
 		}
 		//============================Email 전송부분====================================
 		// 참석자 이메일 전송
 		if (attendEmpId != null) {
-			System.out.println("여기오고있나요????2");
 			for (String empId : attendEmpId) {
 				List<Map<String, Object>> attendPerson = DataFind(empId,"EMP");
 				if (!attendPerson.isEmpty()) {
@@ -310,56 +313,6 @@ public class EmailSendService {
 		}
 	}
 
-	
-	/*	*//**
-			 * 회의실 예약 이메일 전송폼
-			 * 
-			 * @param expenseUserId
-			 * @param originalFilename
-			 * @param title
-			 * @param content
-			 * @param sessionUserId
-			 *//*
-				 * public void emailSendReservationForm(String reserveUserId, List<String>
-				 * attendUserId, String startTime, String endTime, String title, String content,
-				 * String roomNm, String sessionUserId, boolean pageMove, String moveUrl) {
-				 * if(!reserveUserId.isEmpty() || reserveUserId == null) { // 회의실 예약 이메일 전송폼
-				 * Person reservePerson =
-				 * personService.selectUserInfo(reserveUserId==null?"":reserveUserId);
-				 * 
-				 * String subject = "[VTW 회의실 예약] " + title; String emailContent
-				 * ="<div style='margin: 0px; padding: 0px; border: 0px; font-variant-numeric: inherit; font-variant-east-asian: inherit; font-stretch: inherit; font-size: 15px; line-height: inherit; font-family: &quot;Segoe UI&quot;, &quot;Segoe UI Web (West European)&quot;, &quot;Segoe UI&quot;, -apple-system, BlinkMacSystemFont, Roboto, &quot;Helvetica Neue&quot;, sans-serif; vertical-align: baseline; color: rgb(32, 31, 30); background-color: rgb(67, 108, 153);'>"
-				 * +
-				 * "<h1 style='padding: 15px 0px 0px 15px; font-variant-numeric: normal; font-variant-east-asian: normal; font-weight: bold; font-stretch: normal; font-size: 16px; line-height: 1em; font-family: dotum; color: rgb(255, 255, 255);'>"
-				 * + title + "</h2>" +
-				 * "<div style='margin: 0px; padding: 0px 0px 0px 15px; border: 0px; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 14px; line-height: 1.3em; font-family: verdana; vertical-align: baseline; color: rgb(208, 233, 255);'><span style='margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: bold; font-stretch: inherit; font-size: inherit; line-height: inherit; font-family: inherit; vertical-align: baseline; color: inherit;'>"
-				 * + "회의실 : " + roomNm + "<br>" + "회의시간 : " + startTime + "&nbsp~&nbsp" +
-				 * endTime + "<br>" + "회의내용 : " + content + "<br>" +
-				 * "<span style='margin: 0px; padding: 0px; border: 0px; font: inherit; vertical-align: baseline; color: inherit;'></span></span><span style='margin: 0px; padding: 0px; border: 0px; font: inherit; vertical-align: baseline; color: inherit;'></span><span style='margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: bold; font-stretch: inherit; font-size: inherit; line-height: inherit; font-family: inherit; vertical-align: baseline; color: inherit;'>"
-				 * + "예약자 : ("+reserveUserId+") "+reservePerson.getName();
-				 * 
-				 * if(pageMove) { emailContent = emailContent +
-				 * "<span style='margin: 0px; padding: 0px; border: 0px; font: inherit; vertical-align: baseline; color: inherit;'>&nbsp;</span></span></div><div style='margin: 0px; padding: 0px 0px 0px 15px; border: 0px; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 12px; line-height: 1.2em; font-family: verdana; vertical-align: baseline; color: rgb(208, 233, 255); height: 23px;'><span style='margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: bold; font-stretch: inherit; font-size: inherit; line-height: inherit; font-family: inherit; vertical-align: baseline; color: inherit;'><span style='margin: 0px; padding: 0px; border: 0px; font: inherit; vertical-align: baseline; color: inherit;'><br></span></span></div><div style='margin: 0px; padding: 0px 0px 0px 15px; border: 0px; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 12px; line-height: 1.2em; font-family: verdana; vertical-align: baseline; color: rgb(208, 233, 255); height: 23px;'><span style='margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: bold; font-stretch: inherit; font-size: inherit; line-height: inherit; font-family: inherit; vertical-align: baseline; color: inherit;'><span style='margin: 0px; padding: 0px; border: 0px; font: inherit; vertical-align: baseline; color: inherit;'>[바로가기] 를 클릭하면 해당문서로 이동합니다.</span></span></div><div style='margin: 0px; padding: 0px 0px 0px 15px; border: 0px; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 12px; line-height: 1.2em; font-family: verdana; vertical-align: baseline; color: rgb(208, 233, 255); height: 23px;'><span style='margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: bold; font-stretch: inherit; font-size: inherit; line-height: inherit; font-family: inherit; vertical-align: baseline; color: inherit;'><span style='margin: 0px; padding: 0px; border: 0px; font: inherit; vertical-align: baseline; color: inherit;'>(TR 시스템에 로그인되어 있어야 합니다.)</span></span></div></div><div style='margin: 6px 0px 0px 15px; padding: 0px; border: 0px; font-variant-numeric: normal; font-variant-east-asian: normal; font-weight: bold; font-stretch: normal; font-size: 12px; line-height: 1em; font-family: dotum; vertical-align: baseline; color: rgb(85, 85, 85);'></div>\r\n"
-				 * +
-				 * "<span style=\"color: rgb(85, 85, 85); font-family: dotum; font-size: 12px; font-weight: 700;\">&nbsp;"
-				 * + "</span><a href=\""
-				 * +moveUrl+"\" target=\"_blank\" rel=\"noopener noreferrer\" data-auth=\"NotApplicable\" style=\"margin: 0px 0px 5px; padding: 4.14623px 10.3726px; border: 1px solid rgb(0, 137, 200); font-variant-numeric: normal; font-variant-east-asian: normal; font-weight: bold; font-stretch: normal; font-size: 13px; line-height: 1em; font-family: dotum; vertical-align: baseline; display: inline-block; color: rgb(255, 255, 255); text-align: center; background-color: rgb(67, 108, 153); border-radius: 3px; white-space: nowrap;\">바로가기</a>"
-				 * ;
-				 * 
-				 * }
-				 * 
-				 * System.out.println("attendUserId"+reservePerson.getEmail()+"reserveUserId"+
-				 * reserveUserId+"reservePerson"+reservePerson); if(attendUserId != null) {
-				 * for(int i = 0 ; i<attendUserId.size();i++) { Person attendPerson =
-				 * personService.selectUserInfo(attendUserId.get(i)); // 참석자 이메일전송
-				 * if((attendPerson.getEmail() == "" ? null : attendPerson.getEmail()) != null)
-				 * { emailSend(attendPerson.getEmail(), subject, emailContent); } } }
-				 * 
-				 * //예약자 이메일전송 if((reservePerson.getEmail() == "" ? null :
-				 * reservePerson.getEmail()) != null) { emailSendCC(reservePerson.getEmail(),
-				 * subject, emailContent); } } }
-				 */
-	
 
 	/**
 	 * EMAIL 구해오기 및 데이터 
@@ -388,8 +341,8 @@ public class EmailSendService {
 	}
 	
 	/**
-	 * EMAIL 값 꺼내기
-	 */
+	* EMAIL 값 꺼내기
+	*/
 	private String extractEmail(Map<String, Object> personData) { 
 		Object emailObj = personData.get("eml");
 		if (emailObj instanceof String) {
@@ -399,6 +352,36 @@ public class EmailSendService {
 		return null;
 	}
 
+	/**
+	* URL값 설정
+	*/
+	private String getCompleteUrl(String moveUrl, String detailId) {
+	        try {
+	        	 // 기본 URI 설정
+	            URI baseUri = new URI("http://localhost:3000");
+
+	            // 받은 moveUrl을 URI로 변환하고 기본 URI와 결합
+	            URI moveUri = new URI(moveUrl);
+	            URI resolvedUri = baseUri.resolve(moveUri);
+
+	            // 기존 쿼리 가져오기
+	            String query = resolvedUri.getQuery();
+
+	            // detailId가 비어 있지 않다면 쿼리 파라미터 추가
+	            if (detailId != null && !detailId.isEmpty()) {
+	                String newQuery = (query == null ? "" : query + "&") + "detailId=" + detailId;
+	                query = newQuery;
+	            }
+
+	            // 새로운 URI 생성 (쿼리가 변경되었을 경우만 새 쿼리 추가)
+	            URI finalUri = new URI(resolvedUri.getScheme(), resolvedUri.getAuthority(), resolvedUri.getPath(), query, resolvedUri.getFragment());
+
+	            return finalUri.toString();
+	        } catch (URISyntaxException e) {
+	            e.printStackTrace();
+	            return "Invalid URL";
+	        }
+	    }
 	
 	/**
 	 * 회의실 예약 이메일 전송 (인사팀 참조)
@@ -406,7 +389,6 @@ public class EmailSendService {
 	 * @param emailSend
 	 */
 	public void emailSendCC(String to, String subject, String content) {
-		System.out.println("여기오고있나요????4");
 		// 운영 서버에서 요청시 또는 개발자에게만 이메일전송
 		InetAddress local;
 		String ip = "XX";
@@ -469,7 +451,6 @@ public class EmailSendService {
 	 * @param emailSend
 	 */
 	public void emailSend(String to, String subject, String content) throws MessagingException {
-		System.out.println("여기오고있나요????5");
 		// 운영 서버에서 요청시 또는 개발자에게만 이메일전송
 		InetAddress local;
 		String ip = "XX";

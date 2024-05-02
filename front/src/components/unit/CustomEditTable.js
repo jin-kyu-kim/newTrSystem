@@ -193,6 +193,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                     allowedPageSizes={[20, 50, 80, 100]}
                 />
                 {excel && <Export enabled={true} />}
+                width : "auto"
             </DataGrid>
         </div>
     );
