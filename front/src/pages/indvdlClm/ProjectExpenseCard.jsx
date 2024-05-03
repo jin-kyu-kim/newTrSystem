@@ -7,7 +7,7 @@ import ProjectExpenseJson from "./ProjectExpenseJson.json";
 import ApiRequest from "../../utils/ApiRequest";
 
 const ProjectExpenseCard = (props) => {
-    const { keyColumn, queryId, cdListQueryId, sendTbInfo, tableColumns, searchInfo, placeholderAndRequired, buttonGroup } = ProjectExpenseJson.ProjectExpenseTab;
+    const { keyColumn, queryId, cdListQueryId, tableColumns, searchInfo, placeholderAndRequired, buttonGroup } = ProjectExpenseJson.ProjectExpenseTab;
     const [ cdList, setCdList ] = useState([]);
     const [ expensCd, setExpensCd ] = useState({});
     const [ comboList, setComboList ] = useState({});
@@ -30,7 +30,7 @@ const ProjectExpenseCard = (props) => {
         const currentExpensCd = expensCd[cardUseSn];
         const matchedItem = placeholderAndRequired.find(item => item.expensCd === currentExpensCd);
         return matchedItem ? (col.key === 'atdrn' ? matchedItem.atdrnPlaceholder : matchedItem.ctPrposPlaceholder)
-        : col.placeholder;
+            : col.placeholder;
     };
 
     useEffect(() => {
@@ -87,6 +87,7 @@ const ProjectExpenseCard = (props) => {
 
     const handleDelete = () => {
         const param = [{tbNm: "CARD_USE_DTLS"}];
+        
         if(window.confirm('선택한 결제내역을 삭제하시겠습니까? 삭제 후 재등록 시 수동으로 입력하셔야 합니다.')){
             
             Promise.all(selectedItem.map(async (item) => {
@@ -121,9 +122,9 @@ const ProjectExpenseCard = (props) => {
             <div className="wrap_search" style={{margin: "20px"}}>
                 <SearchInfoSet callBack={searchHandle} props={searchInfo}/>
             </div>
-            <ProjectExpenseSubmit selectedItem={selectedItem} sendTbInfo={sendTbInfo} 
+            <ProjectExpenseSubmit selectedItem={selectedItem} getData={props.getData}
                 validateFields={() => validateFields(selectedItem, placeholderAndRequired, setValidationErrors, buttonGroup)} 
-                handleDelete={handleDelete} buttonGroup={buttonGroup} getData={props.getData} />
+                handleDelete={handleDelete} buttonGroup={buttonGroup} />
             
             <div style={{fontSize: 14, marginBottom: "20px"}}>
                 <p style={{marginBottom: '10px'}}> ※ 일괄적용 버튼 클릭 시 체크박스로 선택한 항목 중 가장 위에서 선택한 항목으로 일괄적용 됩니다.</p>

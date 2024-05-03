@@ -53,8 +53,6 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                     }
                     e.data = {
                         ...e.data,
-                        regEmpId: empId,
-                        regDt: date.format('YYYY-MM-DD'),
                         ...upCdValue && { upCdValue },
                         ...(handleYnVal !== undefined && e.data.useYn === undefined && { useYn: 'N' })
                     };
@@ -66,7 +64,6 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                         isDuplicate = checkDuplicate(e.newData[keyColumn]);
                         if (isDuplicate) return;
                     }
-                    e.newData = { ...e.newData, mdfcnDt: date.format('YYYY-MM-DD'), mdfcnEmpId: empId }
                     editParam[1] = e.newData;
                     editParam[2] = keyInfo;
                     editInfo = { url: 'commonUpdate', complete: '수정' }
@@ -193,6 +190,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                     allowedPageSizes={[20, 50, 80, 100]}
                 />
                 {excel && <Export enabled={true} />}
+                width : "auto"
             </DataGrid>
         </div>
     );

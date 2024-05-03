@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react"
 import { useCookies } from "react-cookie";
+import { useLocation } from "react-router-dom";
 
 import axios from "axios";
 
@@ -33,6 +34,7 @@ import '../project/approval/ProjectHtCtAprvPop.css';
  * 4. 공휴일, 주말, 근무일자 데이터조회하여 변경
  */
 
+const token = localStorage.getItem("token");
 
 // 차수별 시작, 종료일자
 let flagOrder = new Date().getDate() > 15 ? 1 : 2;
@@ -51,20 +53,24 @@ const EmpWorkTime = () => {
     const SearchMonthValueRef = useRef();
     SearchMonthValueRef.current = new Date().getDate() < 15 ? new Date().getMonth() : new Date().getMonth() + 1;
 
+    const location = useLocation();
+
     // 세션설정
     const [cookies, setCookie] = useCookies(["userInfo", "deptInfo"]);
-    const sessionEmpId = cookies.userInfo.empId 
-    const sessionJbpsCd = cookies.userInfo.jbpsCd
+    const sessionEmpId = location.state ? location.state.empId : cookies.userInfo.empId 
+    const sessionJbpsCd = location.state ? location.state.jbpsCd : cookies.userInfo.jbpsCd 
     const sessionDeptIdList = [];
-    const sessionDeptNmList = [];
+    const sessionDeptNmList = location.state ? [location.state.deptNmAll] : []; 
 
-    for (let i = 0; i < cookies.deptInfo.length; i++) {
-        sessionDeptIdList.push(
-            cookies.deptInfo[i].deptId
-        )
-        sessionDeptNmList.push(
-            cookies.deptInfo[i].deptNm
-        )
+    if(sessionDeptNmList.length == 0){
+        for (let i = 0; i < cookies.deptInfo.length; i++) {
+            sessionDeptIdList.push(
+                cookies.deptInfo[i].deptId
+            )
+            sessionDeptNmList.push(
+                cookies.deptInfo[i].deptNm
+            )
+        }
     }
 
 
@@ -230,7 +236,8 @@ const EmpWorkTime = () => {
             if (insertWorkHourList.length > 0) {
                 try {
                     const response = await axios.post("/boot/indvdlClm/insertPrjctMmAply", formData, {
-                        headers: { 'Content-Type': 'multipart/form-data' },
+                        headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
+                        
                     });
                     selectData(searchPrjctIndvdlCtMmParam);
                     alert("승인요청되었습니다.");
@@ -394,7 +401,7 @@ const EmpWorkTime = () => {
     function onDeleteListClick(e){
         const isconfirm = window.confirm("승인된 목록을 제외한 근무시간들이 삭제됩니다.\n삭제하시겠습니까?");
         if (isconfirm) {
-            setInsertWorkHourList(insertWorkHourList.filter(item => item.atrzDmndSttsCd == "VTW03703" || item.aplyType != "workAply"));
+            setInsertWorkHourList(insertWorkHourList.filter(item => item.aplyOdr != flagOrder || item.atrzDmndSttsCd == "VTW03703" || item.aplyType != "workAply"));
         } else {
             return;
         }
@@ -569,7 +576,7 @@ const EmpWorkTime = () => {
                 <div style={{ marginTop: "10px", border: "2px solid #CCCCCC" }}>
                     <div style={{ borderBottom: "2px solid #CCCCCC" }}>
                         <div style={{ display: "flex", alignItems: "center", height: "50px", marginLeft: "20px" }}>
-                            {orderWorkBgngMm} - {flagOrder}차수 근무시간 : {vcatnCnt != 0 ? workHour - vcatnCnt * 8 : workHour} / {workHour} hrs.
+                            {orderWorkBgngMm} - {flagOrder}차수 근무시간 : {vcatnCnt != 0 ? workHour - vcatnCnt * 8 : workHour} / {workHour + holiHour} hrs.
                         </div>
                     </div>
                     {

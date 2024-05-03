@@ -39,13 +39,24 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
         setEmpInfo(response[0]);
     }
 
-    /** 공휴일, 휴가 포함 총 근무시간 */
     const getTotalWorkTime = async () => {
         const res = await fetchApiData("indvdlClmMapper.retrieveTotalWorkTime");
+        console.log('res', res)
         if (res[0] !== null) {
             setTotalInfo(prevInfo => ({
                 ...prevInfo,
-                totTime: res[0].totTime
+                totTime: res[0].totTime + ' hrs.'
+            }));
+        } else setTotalInfo({totTime: null})
+    };
+
+    const getExpenseTotalInfo = async () => {
+        const res = await fetchApiData("indvdlClmMapper.retrieveExpenseTotal");
+        if (res[0] !== null) {
+            setTotalInfo(prevInfo => ({
+                ...prevInfo,
+                totalUtztnAmt: res[0].totalUtztnAmt,
+                totalCount: res[0].totalCount
             }));
         }
     };
@@ -55,18 +66,6 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
         const results = await Promise.all(requests);
         setData(results.flat());
     }
-
-    /** 총 시간, 영수증 개수, 금액 */
-    const getExpenseTotalInfo = async () => {
-        const res = await fetchApiData("indvdlClmMapper.retrieveExpenseTotal");
-        if (res[0] !== null) {
-            setTotalInfo(prevInfo => ({
-                ...prevInfo,
-                totalUtztnAmt: res[0].totalUtztnAmt,
-                totalCount: res[0].totalCount + ' 개'
-            }));
-        }
-    };
 
     const renderTable = (pop) => {
         switch (pop.key) {
@@ -125,7 +124,7 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
     const contentArea = () => {
         return (
             <div>
-                {(aprvInfo.totCnt === aprvInfo.aprv || noDataCase.cnt === 0 && noDataCase.yn === 'Y') ? 
+                {(aprvInfo.totCnt === aprvInfo.aprv || (aprvInfo.totCnt === aprvInfo.aprv + aprvInfo.rjct) || noDataCase.cnt === 0 && noDataCase.yn === 'Y') ? 
                     <div ref={contentRef} >
                         <div style={{ textAlign: 'right' }}>
                             <ReactToPrint 

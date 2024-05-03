@@ -67,9 +67,6 @@ public class SysMngService {
             // 입력된 비밀번호와 저장된 비밀번호 비교
             if (passwordEncoder.matches(password, setInfo.getPassword())) {
                 String token = jwtTokenUtil.generateToken(setInfo);
-                Authentication authentication = new UsernamePasswordAuthenticationToken(setInfo.getUsername(), setInfo.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                SecurityContextHolder.getContext();
                 resetLoginAttempts(empno);
                 return TokenDto.fromEntity(setInfo, token, jwtTokenUtil.getExpirationDateFromToken(token));
             } else {
@@ -106,6 +103,7 @@ public class SysMngService {
         tbNm.put("tbNm", "LGN_USER");
         request.put("pswd",passwordEncoder.encode(empno));
         request.put("intlPwsdYn","Y");
+        request.put("usePsbltyAcntYn","Y");
         condition.put("empId", empId);
         param.add(tbNm);
         param.add(condition);
@@ -120,6 +118,7 @@ public class SysMngService {
         	    request.put("empno",empno);
         	    request.put("pswd",passwordEncoder.encode(empno));
                 request.put("intlPwsdYn","Y");
+                request.put("usePsbltyAcntYn","Y");
         	    param.clear();
         	    param.add(tbNm);
             	param.add(request);

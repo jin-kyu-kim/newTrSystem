@@ -19,16 +19,19 @@ const ProjectExpense = () => {
     const [ ctAtrz, setCtAtrz ] = useState([]); // 전자결재 청구내역 (table2)
     const [ changeColumn, setChangeColumn ] = useState([]); // 결재상태 컬럼 -> 버튼렌더를 위해 필요
     const [ ctAtrzCmptnYn, setCtAtrzCmptnYn ] = useState(); // 비용결재완료여부
+    const [ mmAtrzCmptnYn, setMmAtrzCmptnYn ] = useState(); // 근무시간여부
+    
     const [ cookies ] = useCookies([]);
     const [ popVisible, setPopVisible ] = useState(false);
-    
-    const empId = location.state ? location.state.empId : cookies.userInfo.empId;
+    const [ histYmOdr, setHistYmOdr ] = useState({});
+    const admin = location.state ? location.state.admin : undefined;
+    const empId = admin != undefined ? admin.empId : cookies.userInfo.empId;
     const date = new Date();
     const year = date.getFullYear();
     const month = date.getDate() > 15 ? date.getMonth() + 1 : date.getMonth();
     const monthVal = month < 10 ? "0" + month : month;
-    const [ aplyYm, setAplyYm ] = useState(year + monthVal);
-    const [ aplyOdr, setAplyOdr ] = useState(date.getDate() > 15 ? "1" : "2");
+    const aplyYm = admin != undefined ? admin.aplyYm : year + monthVal;
+    const aplyOdr = admin != undefined ? admin.aplyOdr : date.getDate() > 15 ? "1" : "2";
 
     const itemTitleRender = (a) => <span>{a.TabName}</span>;
     const onSelectionChanged = useCallback(
@@ -44,10 +47,12 @@ const ProjectExpense = () => {
         setChangeColumn(ctAplyTableColumns.concat(ProjectExpenseJson.ProjectExpenseMain[columns]))
     }, [atrzDmndSttsCnt]);
 
-
     const searchHandle = async (initParam) => {
-        setAplyYm(initParam.year + initParam.month);
-        setAplyOdr(initParam.aplyOdr);
+        setHistYmOdr({
+            aplyYm: initParam?.year + initParam?.month,
+            aplyOdr: initParam?.aplyOdr,
+            empId: empId
+        })
 
         if(Object.keys(initParam).length !== 0){
             setPopVisible(true);
@@ -70,6 +75,7 @@ const ProjectExpense = () => {
     };
     const setCtAtrzCmptnData = (data) => {
         setCtAtrzCmptnYn(data[0]?.ctAtrzCmptnYn);
+        setMmAtrzCmptnYn(data[0]?.mmAtrzCmptnYn);
     };
 
     const setCtAtrzDmndSttsData = (data) => {
@@ -86,8 +92,9 @@ const ProjectExpense = () => {
         if(ctAply.length !== 0){
             const response = await ApiRequest("/boot/common/queryIdDataControl", param);
         }
-        const updateStts = data.name === 'onAprvDmndClick' ? "N" : (data.name === 'onInptDdlnRtrcnClick' || data.name === 'onInptDdlnClick' ? null
-            : ctAply.length === 0 && data.name === 'onAprvDmndRtrcnClick' ? null : undefined);
+        const updateStts = ctAply.length === 0
+            ? (data.name === 'onInptDdlnClick' ? 'Y' : (data.name === 'onAprvDmndRtrcnClick' ? null : undefined))
+            : (data.name === 'onAprvDmndClick' ? 'N' : (data.name === 'onAprvDmndRtrcnClick' ? null : undefined));
         if (updateStts !== undefined) updateCtAtrzCmptnYn(updateStts);
         getData();
         alert(data.completeMsg);
@@ -105,11 +112,14 @@ const ProjectExpense = () => {
 
     const onClickAction = async (onClick) => {
         if (onClick.name === 'onPrintClick') {
-            setAplyYm(year + monthVal);
-            setAplyOdr(date.getDate() > 15 ? "1" : "2");
+            setHistYmOdr(null)
             setPopVisible(true);
         } else {
             if (window.confirm(onClick.msg)) {
+                if(mmAtrzCmptnYn === undefined){
+                    alert('경비청구 건수가 없을 경우 근무시간을 먼저 승인 요청 해주시기 바랍니다.')
+                    return;
+                }
                 prjctCtAtrzUpdate(onClick);
             }
         }
@@ -117,9 +127,9 @@ const ProjectExpense = () => {
     const onPopHiding = async () => { setPopVisible(false); }
 
     const getButtonsShow = () => {
-        if(ctAply.length === 0){ // 비용청구가 없을 경우
-            if (ctAtrzCmptnYn === 'N') return buttonsConfig.hasApprovals;
-            if (ctAtrzCmptnYn === 'Y') return buttonsConfig.completed;
+        if(ctAply.length === 0){ // 비용청구가 없으면서 근무시간은 존재하는 경우
+            if (ctAtrzCmptnYn === 'Y' && mmAtrzCmptnYn === 'N') return buttonsConfig.hasApprovals;
+            if (mmAtrzCmptnYn === 'Y') return buttonsConfig.completed;
         } else{
             if (atrzDmndSttsCnt.aprvDmnd > 0 || atrzDmndSttsCnt.rjct > 0) return buttonsConfig.hasApprovals;
             if (atrzDmndSttsCnt.inptDdln > 0) return buttonsConfig.noApprovals;
@@ -181,15 +191,18 @@ const ProjectExpense = () => {
                 </div>
 
                 <div style={{marginBottom: '50px', width: 600 }}>
+                    {admin != undefined ? <></> :
                     <SearchInfoSet
                         callBack={searchHandle}
                         props={searchInfo}
-                    />
+                    /> }
                 </div>
-                <RenderTopTable title={`* ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} />
+                {admin != undefined ?
+                <RenderTopTable title={`*${admin.empno} ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} /> :
+                <RenderTopTable title={`* ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} /> }
                 <RenderTopTable title='* 전자결재 청구 내역' keyColumn={elcKeyColumn} columns={columnCharge} values={ctAtrz} />
-                
-                {atrzDmndSttsCnt.ctReg > 0 || ctAtrzCmptnYn === null
+
+                {atrzDmndSttsCnt.ctReg > 0 || ctAtrzCmptnYn === null || ctAtrzCmptnYn === undefined
                     ? <TabPanel
                         dataSource={ExpenseInfo}
                         selectedIndex={index}
@@ -217,8 +230,8 @@ const ProjectExpense = () => {
                 visible={popVisible}
                 onPopHiding={onPopHiding}
                 aprvInfo={atrzDmndSttsCnt}
-                noDataCase={{cnt: ctAply.length, yn: ctAtrzCmptnYn}}
-                basicInfo={{ aplyYm, aplyOdr, empId }}
+                noDataCase={{cnt: ctAply.length, yn: mmAtrzCmptnYn}}
+                basicInfo={histYmOdr !== null ? histYmOdr : { aplyYm, aplyOdr, empId }}
             />
         </div>
     );

@@ -50,7 +50,9 @@ const DeptManage = ({callBack}) => {
     }, []);
 
     useEffect(() => {
+      if (!Object.values(param).every((value) => value === "")) {
         pageHandle();
+      }
     }, [param]);
 
   useEffect(() => { //setParam 이후에 함수가 실행되도록 하는 useEffect
@@ -74,7 +76,6 @@ const DeptManage = ({callBack}) => {
 
 
   const deptListTree = (e) => { //부서목록 트리 아이템 클릭이벤트
-    console.log("부서클릭!",e)
     if (e.itemData.deptId !== null) {
         setDeptId(e.itemData.deptId);
         setDeptNm(e.itemData.deptNm);
@@ -184,7 +185,7 @@ const DeptManage = ({callBack}) => {
   };    
   };
   useEffect(()=>{
-    if(deptHnfSet.deptId !== null || deptHnfSet.deptId !== undefined){
+    if(deptHnfSet.deptId !== null && deptHnfSet.deptId !== undefined){
       deptMngrSearch();
     }
   },[deptHnfSet])
@@ -253,7 +254,7 @@ const DeptManage = ({callBack}) => {
       alert("부서 종료일자를 입력해주세요");
       return;
     } 
-
+ 
     const isconfirm = window.confirm("부서정보를 변경하시겠습니까?");
     if (isconfirm) {
 

@@ -68,23 +68,27 @@ public class SysMngController {
     	 String type = (String) details.get("type");
     	 	
     	 switch (type) {
-         case "roomRes"://회의실예약
-        	 
-//        	 emailSendService.roomReserveEmailSend(resEmp, toEmailList,state, startDate, "approval", content, code);
+         case "roomRes":	//회의실예약
+        	// emailSendService.roomReserveEmailSend(resEmp, toEmailList,state, startDate, "approval", content, code);
         	 break;
         	 
-         case "project": // 프로젝트
+         case "project": 	// 프로젝트
         	// emailSendService.projectEmailSend(toEmpId,reportEmpId,projectCode,title,content,submitType,state);
         	 break;
              
-//         case "vacation":// 휴가
+         case "vacation":	// 휴가
+        	// emailSendService.vacationEmail(details);
+        	 break;
         	 
-//        	// emailSendService.vacationEmail(details);
-//        	 
-         case "elecAtrz"://전자결재
+         case "elecAtrz":	//전자결재
         	 //emailSendService.elecAtrzEmailSend(toEmpId,reportEmpId,documentNumber,title,content,pageMove,moveUrl);
         	 break;
      }
+    }
+    
+    @PostMapping(value = "/boot/sysMng/mainSearch")
+    public Map<String, Object> mainSearch(@RequestBody List<Map<String, Object>> params) {
+    	return SysMngDomain.mainSearch(params);
     }
     
  

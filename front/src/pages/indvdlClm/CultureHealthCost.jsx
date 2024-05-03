@@ -64,7 +64,7 @@ const CultureHealthCost = () => {
 
     const searchGrid = async () => {
         try{
-            const param = { empId: cookies.userInfo.empId, clmYm: year }
+            const param = { empId: cookies.userInfo.empId, year: year }
             const response = await ApiRequest('/boot/indvdlClm/retrieveClturPhstrnActCt', param);
             setPivotGridConfig({
                 ...pivotGridConfig,

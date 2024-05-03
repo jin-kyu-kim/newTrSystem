@@ -2,25 +2,19 @@ import { useEffect, useState } from "react";
 import { Button } from 'devextreme-react/button'
 import ApiRequest from "utils/ApiRequest";
 
-const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handleDelete, buttonGroup, getData }) => {
-  const [ completedCount, setCompletedCount ] = useState(0);
-  const [ prjctCtAplySn, setPrjctCtAplySn ] = useState([]);
+const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, buttonGroup, getData }) => {
+  const [ isComplete, setIsComplete ] = useState(false);
 
   useEffect(() => {
-    if (selectedItem.length !== 0 && prjctCtAplySn.length === selectedItem.length) {
-      insertAtrzValue();
-    }
-  }, [prjctCtAplySn]);
-
-  useEffect(() => {
-    if (selectedItem.length > 0 && completedCount === selectedItem.length) {
+    if (selectedItem.length > 0 && isComplete) {
       alert("등록되었습니다.");
       getData();
     }
-  }, [completedCount]);
+  }, [isComplete]);
 
   const handleSubmit = async () => {
     const validationResults = await validateFields();
+
     if (!validationResults.isValid) {
       validationResults.messages.length !== 0 && alert(validationResults.messages.join('\n'));
       return;
@@ -29,18 +23,20 @@ const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handle
     if (!window.confirm("등록하시겠습니까?")) return;
 
     try {
+      let result;
       const ynUpdated = await updateYn();
 
       if (ynUpdated) {
-        const mmInserted = await insertMM();
-        if (mmInserted) await insertValue();
+        result = await insertCtMm();
       }
+      if(result) setIsComplete(true);
+
     } catch (error) {
       console.error("error", error);
     }
   };
 
-  /** CARD_USE_DTLS - PRJCT_CT_INPT_PSBLTY_YN 값 => "N" */
+  // CARD_USE_DTLS - PRJCT_CT_INPT_PSBLTY_YN: "N"
   const updateYn = async () => {
     try {
       if(selectedItem[0].cardUseSn){
@@ -59,81 +55,26 @@ const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handle
     }
   };
 
-  /** PRJCT_INDVDL_CT_MM (프로젝트개인비용MM) - insert */
-  const insertMM = async () => {
+  // [PRJCT_INDVDL_CT_MM, PRJCT_CT_APLY, PRJCT_CT_ATRZ] - insert
+  const insertCtMm = async () => {
     const param = selectedItem.map((item) => ({
       ...setParam(item)
     }));
-    
+
+    const updatedData = selectedItem.map(({ utztnDtFormat, ...rest }) => {
+      const ctAtrzSeCd = rest.ctAtrzSeCd || "VTW01903";
+      return { ...rest, ctAtrzSeCd };
+    });
+    const allParam = [ {param}, {updatedData} ];
+
     try{
-      const res = await ApiRequest("/boot/indvdlClm/insertPrjctMM", param);
-      return true;
+      const response = await ApiRequest("/boot/indvdlClm/insertPrjctMM", allParam);
+      if(response > 0){
+        return true; 
+      }
     } catch(error) {
-      console.log('insertMM  error', error);
+      console.log('error', error);
       return false;
-    }
-  };
-
-  /** PRJCT_CT_APLY (프로젝트비용신청) - insert */
-  const insertValue = async () => {
-    const tbInfo = { tbNm: sendTbInfo.tbNm, snColumn: sendTbInfo.snColumn };
-    const snArray = []; // SN 값을 저장할 임시 배열
-  
-    const updatedRowsData = selectedItem.map(({ utztnDtFormat, ...rest }) => rest);
-  
-    for (const item of updatedRowsData) {
-      const atdrnString = selectedItem[0].atdrn ? item.atdrn.map(person => person.value).join(',') : null;
-      const requestBody = [
-        { ...tbInfo, snSearch: {empId: item.empId, prjctId: item.prjctId, aplyYm: item.aplyYm, aplyOdr: item.aplyOdr} }, 
-        { ...item, atdrn: atdrnString, ctAtrzSeCd: "VTW01903" }];
-  
-      try {
-        await ApiRequest("/boot/common/commonInsert", requestBody);
-
-        const maxSn = await ApiRequest('/boot/common/commonGetMax', [
-          { tbNm: sendTbInfo.tbNm, snColumn: sendTbInfo.snColumn },
-          { empId: item.empId, prjctId: item.prjctId, aplyYm: item.aplyYm, aplyOdr: item.aplyOdr }
-        ])
-        snArray.push(maxSn);
-
-        // 참석자 별도 insert
-        if(item.atdrn){
-          for (const person of item.atdrn) {
-            const atdrnRes = await ApiRequest("/boot/common/commonInsert", [
-                { tbNm: "PRJCT_CT_ATDRN", snColumn: "PRJCT_CT_ATDRN_SN" },
-                { 
-                  prjctCtAplySn: maxSn, atndEmpId: person.key, atndEmpFlnm: person.value,
-                  ...setParam(item)
-                }
-            ]);
-          }
-        }
-      } catch (error) {
-        console.error("insertValueAndFetchSn error", error);
-        break;
-      }
-    }
-    setPrjctCtAplySn(snArray);
-  };
-
-  /** PRJCT_CT_ATRZ (프로젝트비용결재) - insert */
-  const insertAtrzValue = async () => {
-    let i = 0;
-
-    for (const sn of prjctCtAplySn) {
-      const getParam = setParam(selectedItem[i++]);
-
-      const param = [
-        { tbNm: sendTbInfo.atrzTbNm },
-        { prjctCtAplySn: sn, ...getParam }
-      ];
-      try {
-        await ApiRequest("/boot/common/commonInsert", param);
-        setCompletedCount(prev => prev + 1);
-      } catch (error) {
-        console.error("insertAtrzValue error", error);
-        break;
-      }
     }
   };
 

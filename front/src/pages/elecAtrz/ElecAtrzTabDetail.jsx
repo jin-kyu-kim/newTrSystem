@@ -4,11 +4,19 @@ import ApiRequest from 'utils/ApiRequest';
 import './ElecAtrz.css';
 import CustomTable from 'components/unit/CustomTable';
 import ElecAtrzCtrtInfoDetail from './ctrtInfo/ElecAtrzCtrtInfoDetail';
+import ElectGiveAtrzClm from './ElectGiveAtrzClm';
+import ElecAtrzCtrtOutordHnfDetail from './ctrtInfo/ElecAtrzCtrtOutordHnfDetail';
 
 
-const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd }) => {
+const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prjctData }) => {
     const { vacDtl, clmColumns,  groupingColumn, groupingData, ctrtInfo } = electAtrzJson.electAtrzDetail;
     const [ data, setData ] = useState([]);
+
+
+    console.log("detailData 탭디테일!!", detailData);
+    console.log("ctrtTyCd 탭디테일!!", ctrtTyCd);
+    console.log("prjctData 탭디테일!!", prjctData);
+    console.log("sttsCd 탭디테일!!", sttsCd);
 
     /* ===================================  필요 데이터 조회  ====================================*/
     useEffect(() => {
@@ -124,7 +132,7 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd }) =
      */
     const CtrtInfo = ({ctrtInfo, data, ctrtTyCd})=>{
 
-        if(detailData.elctrnAtrzTySeCd === 'VTW04910' || ctrtTyCd === 'VTW04910' || !data.ctrtBgngYmd )
+        if(data && (detailData.elctrnAtrzTySeCd === 'VTW04910' || ctrtTyCd === 'VTW04910' ))
             { 
                 ctrtInfo = ctrtInfo.filter(item => item.value !== '계약기간');
             }
@@ -173,16 +181,18 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd }) =
                 return <VacInfoTab vacDtl={vacDtl} dtlInfo={dtlInfo} />;
             case 'VTW04907':
                 return <ClmTab columns={clmColumns} groupingColumn={groupingColumn}/>;
+            case 'VTW04908':
             case 'VTW04909':
             case 'VTW04910':
             case 'VTW04914':
                 return  <>
                         <h3>계약정보</h3>
+
                         <CtrtInfo ctrtInfo={ctrtInfo} data={data} ctrtTyCd={ctrtTyCd}/>
-                        {(detailData.ctrtElctrnAtrzId && detailData.elctrnAtrzTySeCd === "VTW04914") || ["VTW04909","VTW04910"].includes(detailData.elctrnAtrzTySeCd) 
+                        {((detailData.ctrtElctrnAtrzId && detailData.elctrnAtrzTySeCd === "VTW04914" && ctrtTyCd !== "VTW04908") || ["VTW04909","VTW04910"].includes(detailData.elctrnAtrzTySeCd))
                         ? 
                         <ElecAtrzCtrtInfoDetail data={detailData} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd } /> 
-                        : ""}
+                        : <ElecAtrzCtrtOutordHnfDetail data={detailData} sttsCd={sttsCd} prjctData={prjctData} prjctId={prjctId} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd } />}
                         </>
             default:
                 return null;
@@ -191,6 +201,12 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd }) =
 
     return (
         <div>
+            {(["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)) 
+                && (detailData.elctrnAtrzTySeCd ==="VTW04914" ) 
+                // && (detailData.atrzDmndSttsCd)
+                && (
+                <ElectGiveAtrzClm detailData={detailData} sttsCd={sttsCd} prjctId={prjctId}/>
+                )}
             {renderSpecialComponent()}
         </div>
     );
