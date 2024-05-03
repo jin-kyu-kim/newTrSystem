@@ -192,8 +192,9 @@ function ProjectOutordEmp () {
                 formData.append("data", JSON.stringify(insertData));
                 Object.values(attachments).forEach((attachment) => formData.append("attachments", attachment));
                 try {
+                    const token = localStorage.getItem("token")
                     const response = await axios.post("/boot/common/insertlongText", formData, {
-                        headers: { 'Content-Type': 'multipart/form-data' },
+                      headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
                     });
                       if (response.data >= 1) {
                         alert("저장되었습니다.");
@@ -229,8 +230,9 @@ function ProjectOutordEmp () {
                 Object.values(attachments).forEach((attachment) => formData.append("attachments", attachment));
                 
                 try {
+                    const token = localStorage.getItem("token")
                     const response = await axios.post("/boot/common/insertlongText", formData, {
-                        headers: { 'Content-Type': 'multipart/form-data' },
+                      headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
                     });
                       if (response.data >= 1) {
                         alert("저장되었습니다.");
