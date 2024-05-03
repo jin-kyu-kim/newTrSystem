@@ -5,7 +5,7 @@ import PymntPlanOutordHnfPopupJson from "./PymntPlanOutordHnfPopupJson.json";
 import NumberBox from 'devextreme-react/number-box';
 import { parse, format, addMonths } from 'date-fns';
 
-const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVisible, handlePopupData, selectedData, tableData }) => {
+const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVisible, handlePopupData, selectedData, tableData, data, sttsCd, ctrtTyCd }) => {
 
     const labelValue = PymntPlanOutordHnfPopupJson.hnfCtrt.labelValue;
     labelValue.expectInptHnfId.param.queryId.prjctId = prjctId;
@@ -13,7 +13,7 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
     const [outordEmpData, setOutordEmpData] = useState({});
     const [structuredData, setStructuredData] = useState({});   //기간 구조 데이터
     const [inputValue, setInputValue] = useState([]); //월별 값 입력을 위한 상태
-
+    let controlReadOnly = false;
 
 /* =========================  사업기간에 따른 우측 input box 생성  =========================*/
     const makePeriod = (ctrtYmd, stbleEndYmd) => {
@@ -171,6 +171,11 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
 
     }, [selectedData]);
 
+    // 수정테이블 수정가능 여부
+    const isEditable = !["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd) 
+                        && data.elctrnAtrzTySeCd !== "VTW04914";
+
+    controlReadOnly = !isEditable
     
     return (
         <form onSubmit={savePlan}>
@@ -178,14 +183,14 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
                 <div className="project-regist-content">
                     <div className="project-change-content-inner-left">
                         <div className="dx-fieldset">
-                            <CustomLabelValue props={labelValue.expectInptHnfId} onSelect={handleChgState} value={outordEmpData.expectInptHnfId}/>
+                            <CustomLabelValue props={labelValue.expectInptHnfId} onSelect={handleChgState} value={outordEmpData.expectInptHnfId} readOnly={controlReadOnly}/>
                             <CustomLabelValue props={labelValue.usefulAmt} onSelect={handleChgState} readOnly={true} value={outordEmpData.usefulAmt}/>
-                            <CustomLabelValue props={labelValue.inptHnfId} onSelect={handleChgState} value={outordEmpData.inptHnfId}/>
-                            <CustomLabelValue props={labelValue.outordHnfCtrtSeCd} onSelect={handleChgState} value={outordEmpData.outordHnfCtrtSeCd}/>
-                            <CustomLabelValue props={labelValue.hnfRoleCd} onSelect={handleChgState} value={outordEmpData.hnfRoleCd}/>
-                            <CustomLabelValue props={labelValue.hnfGradCd} onSelect={handleChgState} value={outordEmpData.hnfGradCd}/>
-                            <CustomLabelValue props={labelValue.tkcgJob} onSelect={handleChgState} value={outordEmpData.tkcgJob}/>
-                            <CustomLabelValue props={labelValue.untpc} onSelect={handleChgState} value={outordEmpData.untpc}/>
+                            <CustomLabelValue props={labelValue.inptHnfId} onSelect={handleChgState} value={outordEmpData.inptHnfId} readOnly={controlReadOnly}/>
+                            <CustomLabelValue props={labelValue.outordHnfCtrtSeCd} onSelect={handleChgState} value={outordEmpData.outordHnfCtrtSeCd} readOnly={controlReadOnly}/>
+                            <CustomLabelValue props={labelValue.hnfRoleCd} onSelect={handleChgState} value={outordEmpData.hnfRoleCd} readOnly={controlReadOnly}/>
+                            <CustomLabelValue props={labelValue.hnfGradCd} onSelect={handleChgState} value={outordEmpData.hnfGradCd} readOnly={controlReadOnly}/>
+                            <CustomLabelValue props={labelValue.tkcgJob} onSelect={handleChgState} value={outordEmpData.tkcgJob} readOnly={controlReadOnly}/>
+                            <CustomLabelValue props={labelValue.untpc} onSelect={handleChgState} value={outordEmpData.untpc} readOnly={controlReadOnly}/>
                             <CustomLabelValue props={labelValue.inptPrnmntYmd} onSelect={handleChgState} readOnly={true} value={outordEmpData.inptPrnmntYmd}/>
                             <CustomLabelValue props={labelValue.withdrPrnmntYmd} onSelect={handleChgState} readOnly={true} value={outordEmpData.withdrPrnmntYmd}/>
                             <CustomLabelValue props={labelValue.totAmt} onSelect={handleChgState} readOnly={true} value={outordEmpData.totAmt}/>
@@ -228,13 +233,14 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
                                                     min={0}
                                                     format="#,##0.00"
                                                     onChange={handleInputChange}
+                                                    readOnly={controlReadOnly}
                                                 />): ''}</td>
                                             <td style={{width:"30%", padding:"5px"}}>
                                                 {months[rowIndex] ? 
                                                     <NumberBox 
                                                         id={`${Object.keys(structuredData)[colIndex]}${months[rowIndex]}_ctrtAmt`} 
                                                         value ={inputValue.find(item => item.id === `${Object.keys(structuredData)[colIndex]}${months[rowIndex]}`)?.ctrtAmt || 0}
-                                                        readOnly={false}
+                                                        readOnly={ controlReadOnly === true ? true : false}
                                                         format="#,##0 원"
                                                         defaultValue={0}
                                                         onChange={handleInputChange}                                                      
@@ -252,8 +258,12 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
                 </div>
                 </div>
                 <div>
-                    <Button text="저장" useSubmitBehavior={true}/>
-                    <Button text="취소" onClick={handlePopupVisible}/>
+                    {isEditable&& (
+                        <>
+                        <Button text="저장" useSubmitBehavior={true}/>
+                        <Button text="취소" onClick={handlePopupVisible}/>
+                        </>
+                    )}
                 </div>
             </div>
         </form>

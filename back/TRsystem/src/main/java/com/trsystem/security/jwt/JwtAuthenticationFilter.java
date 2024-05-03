@@ -47,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             authToken = header.replace(TOKEN_PREFIX, " ");
             try {
                 username = this.jwtTokenUtil.getUsernameFromToken(authToken);
-
+                request.setAttribute("userId", username);
             } catch (IllegalArgumentException ex) {
                 log.info("Failed to get user id", ex);
                 sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid token format.");

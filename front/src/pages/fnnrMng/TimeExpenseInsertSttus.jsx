@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-import DataGrid, { Column,Export,Lookup,Selection,button } from 'devextreme-react/data-grid';
 import TimeExpenseInsertSttusJson from "./TimeExpenseInsertSttusJson.json";
 import Button from "devextreme-react/button";
 import { useCookies } from "react-cookie";
@@ -8,20 +7,19 @@ import CustomTable from "components/unit/CustomTable";
 import SearchPrjctCostSet from "../../components/composite/SearchPrjctCostSet";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
-import { Popup } from "devextreme-react";
-import TimeExpenseInsertList from "./TimeExpenseInsertList";
 import "./FnnrMngStyle.css";
 
 import ProjectExpensePopup from "../indvdlClm/ProjectExpensePopup";
 
-
 const TimeExpenseInsertSttus = ({}) => {
 //====================선언구간====================================================
+const [cookies] = useCookies([]);
+
 const [totValues, setTotValues] = useState([]);   //상단values
 const [dtlValues, setDtlValues] = useState([]); //하단values
 
-const [paramtot, setParamtot] = useState({}); //상단 조회용 param
-const [param, setParam] = useState({}); //하단 조회용 param
+const [totParam, setTotParam] = useState({}); //상단 조회용 param
+const [dtlParam, setDtlParam] = useState({}); //하단 조회용 param
 
 const [ ctAply, setCtAply ] = useState([]); // 차수 청구내역
 const [ ctAtrzCmptnYn, setCtAtrzCmptnYn ] = useState(); // 비용결재완료여부
@@ -57,25 +55,25 @@ const [checkBoxValue, setCheckBoxValue] = useState({
 
 //====================초기검색=====================================================
 useEffect(() => {
-    if (!Object.values(param).every((value) => value === "")) {
+    if (!Object.values(dtlParam).every((value) => value === "")) {
       pageHandle();
     }
-  }, [param]);
+  }, [dtlParam]);
 //=================== 검색으로 조회할 때============================================
 const searchHandle = async (initParam) => {
   
   if(initParam.yearItem == null || initParam.monthItem == null) {
 
-    setParamtot({
-        ...paramtot,
+    setTotParam({
+        ...totParam,
         queryId: totQueryId,
         aplyYm: nowDate,
         aplyOdr: currentPhase,
         empId: initParam.empId,
         hdofSttsCd: "VTW00301"
     })
-    setParam({
-        ...param,
+    setDtlParam({
+        ...dtlParam,
         queryId: queryId,
         aplyYm: nowDate,
         aplyOdr: currentPhase,
@@ -84,8 +82,8 @@ const searchHandle = async (initParam) => {
     })  
     return;
   }
-    setParamtot({
-        ...paramtot,
+    setTotParam({
+        ...totParam,
         queryId: totQueryId,
         aplyYm: initParam.yearItem + initParam.monthItem,
         aplyOdr: initParam.aplyOdr,
@@ -94,8 +92,8 @@ const searchHandle = async (initParam) => {
 
     })
 
-    setParam({
-        ...param,
+    setDtlParam({
+        ...dtlParam,
         queryId: queryId,
         aplyYm: initParam.yearItem + initParam.monthItem,
         aplyOdr: initParam.aplyOdr,
@@ -108,8 +106,8 @@ const searchHandle = async (initParam) => {
 const pageHandle = async () => {
 
   try {
-    const responsetot = await ApiRequest("/boot/common/queryIdSearch", paramtot); //상단 total 검색
-    const response = await ApiRequest("/boot/common/queryIdSearch", param); //하단 목록 검색
+    const responsetot = await ApiRequest("/boot/common/queryIdSearch", totParam); //상단 total 검색
+    const response = await ApiRequest("/boot/common/queryIdSearch", dtlParam); //하단 목록 검색
 
     setTotValues(responsetot);
     setDtlValues(response);
@@ -179,8 +177,8 @@ const getCtAtrzCmptnYn = async(data) => {
 const toEmpWorkTime = async (admin) => {
   const param = {
     queryId: "financialAffairMngMapper.getWorkDay",
-    aplyYm: paramtot.aplyYm,
-    aplyOdr: paramtot.aplyOdr
+    aplyYm: totParam.aplyYm,
+    aplyOdr: totParam.aplyOdr
   }
 
   try {
@@ -212,8 +210,8 @@ const onBtnClick = async (button, data) => {
       empId: data.empId,
       jbpsCd: data.jbpsCd,
       deptNmAll: data.deptNmAll,
-      aplyYm: paramtot.aplyYm,
-      aplyOdr: paramtot.aplyOdr,
+      aplyYm: totParam.aplyYm,
+      aplyOdr: totParam.aplyOdr,
       empno: data.empno
     }
 
@@ -221,22 +219,32 @@ const onBtnClick = async (button, data) => {
       
        await toEmpWorkTime(admin);
     }
-    if(button.name === "hrRtrcn"){                                   //취소상태로 변경 -> 반려?
-        alert("시간취소!"); 
+
+    if(button.name === "hrRtrcn"){                                   
+        alert("시간취소!");
+        await mmCancel(data);
     }
+
     if(button.name === "prjctScrnMv"){                                      
         alert("프로젝트비용이동");
         navigate("/indvdlClm/ProjectExpense",
         {state: { admin: admin }})
     }
-    if(button.name === "ctRtrcn"){                                    //취소상태로 변경 -> 반려?
+
+    if(button.name === "ctRtrcn"){  
         alert("비용취소");
+        await ctCancel(data);
+
+
+
     }
+
      if(button.name === "companyPrice"){                                 //경로 수정 예정
         alert("회사비용이동");
         navigate("/fnnrMng/prjctCtClm/ProjectCostClaimDetail",
         {state: { empId: data.empId }})
     }
+
     if(button.name === "print"){      
         console.log(data);
         await onSetBasicInfo(data);
@@ -245,7 +253,120 @@ const onBtnClick = async (button, data) => {
         await getCtAtrzCmptnYn(data);
         await onPopAppear(true);
     }
+};
+
+/**
+ * 시간 취소 로직 실행
+ */
+const mmCancel = async (data) => {
+  /**
+   * 1. PRJCT_MM_ATRZ 수정
+   * 승인된 건에 대하여 승인 / 반려를 결재중으로 수정한다.
+   * 
+   * 2. PRJCT_INDVDL_CT_MM 수정
+   * 완료 상태를 N으로 수정한다.
+   */
+
+  const atrzParam = [
+    { tbNm: "PRJCT_MM_ATRZ" },
+    { 
+      atrzDmndSttsCd: "VTW03702",
+      aprvrEmpId: null,
+      aprvYmd: null
+    },
+    {
+      empId: data.empId,
+      aplyYm: data.aplyYm,
+      aplyOdr: data.aplyOdr,
+      atrzDmndSttsCd: "VTW03703"
+    }
+  ]
+
+  try {
+    const confirm = window.confirm("시간 취소하시겠습니까?");
+    if(confirm) {
+      const response = await ApiRequest("/boot/common/commonUpdate", atrzParam);
+      
+      if(response > 0) {
+        const param = [
+          {
+            tbNm: "PRJCT_INDVDL_CT_MM"
+          },
+          {
+            mmAtrzCmptnYn: "N"
+          },
+          {
+            empId: data.empId,
+            aplyYm: data.aplyYm,
+            aplyOdr: data.aplyOdr
+          }
+        ]
+
+        const response = await ApiRequest("/boot/common/commonUpdate", param);
+
+        if(response > 0) {
+          window.alert("시간 취소가 되었습니다.")
+          pageHandle();
+        } else {
+          window.alert("시간 취소에 실패했습니다.");
+        }
+      } else {
+        window.alert("시간 취소에 실패했습니다.");
+      }
+    } else {
+      return;
+    }
+  } catch (error) {
+  console.error(error);
+  }
+}
+
+const ctCancel = async (data) => {
+  /**
+   * 1. PRJCT_MM_ATRZ 수정
+   * 승인된 건에 대하여 승인 / 반려를 결재중으로 수정한다.
+   * 
+   * 2. PRJCT_INDVDL_CT_MM 수정
+   * 완료 상태를 N으로 수정한다.
+   */
+
+  const atrzParam = {
+    queryId: 'projectMapper.updateCtAply',
+    empId: data.empId,
+    aplyYm: data.aplyYm,
+    aplyOdr: data.aplyOdr,
+    state: "UPDATE"
   };
+
+  try {
+    const confirm = window.confirm("비용을 취소하시겠습니까?");
+
+    if(confirm) {
+      const response = await ApiRequest("/boot/common/queryIdDataControl", atrzParam);
+      console.log(response)
+      if(response> 1) {
+        const param = [
+            { tbNm: "PRJCT_INDVDL_CT_MM" },
+            { ctAtrzCmptnYn: "N"},
+            { empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr}
+        ];
+        const response = await ApiRequest('/boot/common/commonUpdate', param);
+        if(response > 0) {
+          window.alert("비용취소가 되었습니다.");
+          pageHandle();
+        } else {
+          window.alert("비용취소에 실패했습니다.");
+        }
+      } else {
+        window.alert("비용취소에 실패했습니다.")
+      }
+    }
+
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 //==============================================================================================
 
 const handleCheckBoxChange = useCallback((e, key) => {
@@ -287,6 +408,8 @@ const handleCheckBoxChange = useCallback((e, key) => {
 //=============================마감 및 엑셀다운로드 이벤트======================================
     const ddlnExcelDwn = () => {
         alert("마감 및 엑셀 다운로드"); //기능 개발 예정
+
+        // 0. 
     };
 //========================화면그리는 구간 ====================================================
     return(

@@ -65,14 +65,13 @@ const SearchPrjctCostSet = ({ callBack, props }) => {
     useEffect(() => {
 
         const date = new Date();
-        const year = date.getFullYear();
-        const month = date.getMonth() + 1;
+        let year = date.getFullYear();
+        let month = date.getMonth() + 1;
         const day = date.getDate();
 
 
         const startYear = year - 10;
         const EndYear = year + 1;
-
 
         for(let i = startYear; i <= EndYear; i++) {
             yearList.push({"value": i});
@@ -84,6 +83,20 @@ const SearchPrjctCostSet = ({ callBack, props }) => {
             }
             monthList.push({"value": i});
         }
+
+        if (month === 1) {
+            if(day <= 15) {
+                month = 12; // 1월인 경우 이전 연도 12월로 설정
+                year--;
+            } else {
+
+            }
+        } else {
+            if(day <= 15) {
+                month--; // 2월 이상인 경우 이전 월로 설정
+            } 
+        }
+        console.log(month)
 
         let odrVal = day > 15 ? "1" : "2";
         let monthVal = month < 10 ? "0" + month : month;

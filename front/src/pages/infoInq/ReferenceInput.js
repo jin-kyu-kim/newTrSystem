@@ -129,9 +129,10 @@ const ReferenceInput = () => {
         Object.values(attachments)
             .forEach((attachment) => formData.append("attachments", attachment));
         try {
+            const token = localStorage.getItem("token");
             if(validateData()){
                 const response = await axios.post(insertUrl, formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' },
+                    headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
                 })
                 if (response.data >= 1) navigate("/infoInq/ReferenceList")
             }

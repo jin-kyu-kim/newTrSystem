@@ -127,13 +127,13 @@ public class ElecAtrzDomain {
 				} else if(atrzTySeCd.equals("VTW04914")) {
 					
 					/**
-					 *  계약청구
+					 *  계약청구(지급품의)
 					 *  target : CTRT_GIVE_ATRZ
 					 */
 					deleteData("CTRT_GIVE_ATRZ", elctrnAtrzId);
 					
 				} else {
-					// 지급품의, 일반 결재 처리...
+					// 일반 결재 처리
 				}
 				
 				
@@ -166,7 +166,7 @@ public class ElecAtrzDomain {
 					atrzTyResult = insertClmAtrz(map, elctrnAtrzId);
 				} else if(atrzTySeCd.equals("VTW04914")) {
 					
-					// 청구결재 INSERT 로직 추가
+					// 청구결재(지급품의) INSERT 로직 추가
 					Map<String, Object> map = new HashMap<>();
 					
 					map.putAll(((Map<String, Object>) params.get("param")));
@@ -175,9 +175,13 @@ public class ElecAtrzDomain {
 							
 				} else {
 					/**
-					 * ToDo: 일반 결재, 지급품의(계약청구) 개발 예정.(화면 미구현으로 인한 지연)
+					 * ToDo: 일반 결재
 					 */
-					System.out.println("개발중");
+					Map<String, Object> map = new HashMap<>();
+					
+					map.putAll(((Map<String, Object>) params.get("param")));
+					
+					atrzTyResult = insertGnrlAtrz(map, elctrnAtrzId); 
 				}
 				
 				if(electrnAtrzResult < 0 || atrzTyResult < 0 || atrzLnResult < 0) return null;
@@ -529,7 +533,6 @@ public class ElecAtrzDomain {
 		ArrayList<Map<String, Object>> insertParams = new ArrayList<>();
 		
 		Map<String, Object> tbParam = new HashMap<>();
-		Map<String, Object> infoParam = new HashMap<>();
 		
 		for(Map<String, Object> originalMap: paramList) {
 			
@@ -547,6 +550,8 @@ public class ElecAtrzDomain {
 		insertParams.add(0, tbParam);
 		
 		for(int i = 1; i < copiedParams.size(); i++) {
+			
+			Map<String, Object> infoParam = new HashMap<>();
 			
 			copiedParams.get(i).remove("pay");
 			infoParam.put("elctrnAtrzId", elctrnAtrzId);
@@ -625,7 +630,7 @@ public class ElecAtrzDomain {
 		ArrayList<Map<String, Object>> insertParams = new ArrayList<>();
 		
 		Map<String, Object> tbParam = new HashMap<>();
-		Map<String, Object> infoParam = new HashMap<>();
+
 		
 		for(Map<String, Object> originalMap: paramList) {
 			
@@ -643,6 +648,7 @@ public class ElecAtrzDomain {
 		insertParams.add(0, tbParam);
 		
 		for(int i = 1; i < copiedParams.size(); i++) {
+			Map<String, Object> infoParam = new HashMap<>();
 			
 			copiedParams.get(i).remove("hnfCtrtDtlMm");
 			infoParam.put("elctrnAtrzId", elctrnAtrzId);
@@ -664,7 +670,7 @@ public class ElecAtrzDomain {
 				
 				for(int i = 1; i < paramList.size(); i++) {
 					
-					int ctrtResult = insertHnfCtrtDetailMm((List<Map<String, Object>>)paramList.get(i).get("hnfCtrtDtlMm"), paramList.get(i).get("empId").toString(), elctrnAtrzId);
+					int ctrtResult = insertHnfCtrtDetailMm((List<Map<String, Object>>)paramList.get(i).get("hnfCtrtDtlMm"), paramList.get(i).get("inptHnfId").toString(), elctrnAtrzId);
 				}
 				
 			}
@@ -683,7 +689,7 @@ public class ElecAtrzDomain {
 	 * @param elctrnAtrzId: 전자결재 ID
 	 * @return
 	 */
-	public static int insertHnfCtrtDetailMm(List<Map<String, Object>> paramList, String empId, String elctrnAtrzId) {
+	public static int insertHnfCtrtDetailMm(List<Map<String, Object>> paramList, String inptHnfId, String elctrnAtrzId) {
 		int result = -1;
 		
 		System.out.println("Last Table");
@@ -695,7 +701,7 @@ public class ElecAtrzDomain {
 			
 			Map<String, Object> infoParam = new HashMap<>();
 			infoParam.put("elctrnAtrzId", elctrnAtrzId);
-			infoParam.put("inptHnfId", empId);
+			infoParam.put("inptHnfId", inptHnfId);
 			infoParam.put("inptYm", paramList.get(i).get("id"));
 			infoParam.put("mm", paramList.get(i).get("mm"));
 			infoParam.put("ctrtAmt", paramList.get(i).get("ctrtAmt"));
@@ -880,7 +886,7 @@ public class ElecAtrzDomain {
 		}
 	}
 	
-	//TODO. 계약지급 메소드 생성 필요
+
 	/**
 	 * 결재 지급 처리 메소드
 	 * @param giveAtrzParam
@@ -921,6 +927,34 @@ public class ElecAtrzDomain {
 		}
 		
 		return result;
-		
 	}
-} 
+	
+	
+	public static int insertGnrlAtrz(Map<String, Object> gnrlAtrzParam, String elctrnAtrzId) {
+		System.out.println(gnrlAtrzParam);
+		int result = -1;
+		
+		ArrayList<Map<String, Object>> insertParams = new ArrayList<>();
+		
+		Map<String, Object> tbParam = new HashMap<>();
+		Map<String, Object> infoParam=  new HashMap<>();
+		
+		tbParam.put("tbNm", "GNRL_ATRZ");
+		
+		infoParam.put("elctrnAtrzId", elctrnAtrzId);
+		infoParam.put("gnrlAtrzTtl", gnrlAtrzParam.get("title"));
+		infoParam.put("gnrlAtrzCn", gnrlAtrzParam.get("atrzCn"));
+		
+		insertParams.add(0, tbParam);
+		insertParams.add(1, infoParam);
+			
+		try {
+			result = commonService.insertData(insertParams);
+			
+		} catch (Exception e) {
+			return result;
+		}
+		
+		return result;
+	}
+}  

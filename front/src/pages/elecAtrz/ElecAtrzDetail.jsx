@@ -33,6 +33,8 @@ const ElecAtrzDetail = () => {
     const [opnnCn, setOpnnCn] = useState("");
     const [data, setData] = useState(location.state.data);
 
+    // console.log("location 디테일!!!", location);
+
     const onBtnClick = (e) => {
 
         switch (e.element.id) {
@@ -83,7 +85,7 @@ const ElecAtrzDetail = () => {
     const getPrjct = async () => {
         try {
             const response = await ApiRequest("/boot/common/commonSelect", [
-                { tbNm: "PRJCT" }, { prjctId: detailData.prjctId }
+                { tbNm: "PRJCT" }, { prjctId: prjctId? prjctId : detailData.prjctId }
             ]);
             setPrjctData(response[0]);
         } catch (error) {
@@ -189,9 +191,42 @@ const ElecAtrzDetail = () => {
                     }
                 });
 
+            } else if (detailData.elctrnAtrzTySeCd === "VTW04915") {
+                /**
+                 * 휴가취소 결재 승인 처리
+                 */
+                const param = {
+                    empId: detailData.atrzDmndEmpId,
+                    elctrnAtrzId: detailData.elctrnAtrzId,
+                    atrzStepCd: detailData.atrzStepCd,
+                    aprvParam: [
+                        { tbNm: "ATRZ_LN" },
+                        { 
+                            atrzSttsCd: "VTW00802",
+                            aprvYmd: date,
+                            mdfcnDt: mdfcnDt,
+                            mdfcnEmpId: cookies.userInfo.empId,
+                        },
+                        { 
+                            elctrnAtrzId: detailData.elctrnAtrzId,
+                            aprvrEmpId: cookies.userInfo.empId,
+                            atrzLnSn: nowAtrzLnSn
+                        }
+                    ]
+                }
+
+                const response = vacCancelAprvProcess(param).then((value) => {
+
+                    if(value[0].atrzLnSn > 0) {
+                        upNowAtrzLnSn(value[0].atrzLnSn);
+                    } else {
+                        alert("승인 처리에 실패하였습니다.");
+                        return;
+                    }
+                });
             } else {
                  /** 
-                  * 휴가결재 외 승인처리 
+                  * 휴가결재 / 휴가취소 외 승인처리 
                   */
                 const param = [
                     { tbNm: "ATRZ_LN" },
@@ -236,6 +271,11 @@ const ElecAtrzDetail = () => {
 
     const vacAprvProcess = async (param) => {
         const response = await ApiRequest("/boot/indvdlClm/updateVcatnMng", param);
+        return response;
+    }
+
+    const vacCancelAprvProcess = async (param) => {
+        const response = await ApiRequest("/boot/indvdlClm/approvalReInsertVcatnAtrz", param);
         return response;
     }
 
@@ -498,6 +538,7 @@ const ElecAtrzDetail = () => {
                     detailData={detailData}
                     sttsCd={sttsCd}
                     prjctId={prjctId}
+                    prjctData={prjctData}
                 />
             )}
             {(['VTW04914'].includes(detailData.elctrnAtrzTySeCd)) && (data.ctrtElctrnAtrzId) &&(
