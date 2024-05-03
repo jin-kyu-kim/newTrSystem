@@ -140,88 +140,89 @@ public class IndvdlClmDomain {
         return result;
     }
 
-    // 문화체련비 합계컬럼 없으면 추가
-    public static int insertClPh (Map<String, Object> param){
-        param.put("queryId", "indvdlClmMapper.insertClPh");
-        commonService.queryIdSearch(param);
-        YearMonth yearMonth = YearMonth.parse((String)param.get("clturPhstrnActMngYm"), DateTimeFormatter.ofPattern("yyyyMM"));
-        LocalDate nextMonth = yearMonth.atDay(1).plusMonths(1);
-        param.put("clturPhstrnActMngYm", nextMonth.format(DateTimeFormatter.ofPattern("yyyyMM")));
-        commonService.queryIdSearch(param);
-        return 1;
-    }
-
     // 문화체련비 등록 시 청구금액 가산
+    @Transactional
     public static int plusClturPhstrnActCt (Map<String, Object> param){
+
+        // 합계컬럼 없으면 추가
+        Map<String, Object> paramClPh = new HashMap<>();
+        paramClPh.put("queryId", "indvdlClmMapper.insertClPh");
+        paramClPh.put("empId", param.get("empId"));
+        paramClPh.put("clturPhstrnActMngYm", param.get("clmYmd").toString().substring(0, 6));
+        commonService.queryIdSearch(paramClPh);
+        YearMonth yearMonth = YearMonth.parse((String)paramClPh.get("clturPhstrnActMngYm"), DateTimeFormatter.ofPattern("yyyyMM"));
+        LocalDate nextMonth = yearMonth.atDay(1).plusMonths(1);
+        paramClPh.put("clturPhstrnActMngYm", nextMonth.format(DateTimeFormatter.ofPattern("yyyyMM")));
+        commonService.queryIdSearch(paramClPh);
+
+        // 합계컬럼 서치
         Map<String, Object> tbNm = new HashMap<>();
         tbNm.put("tbNm", "CLTUR_PHSTRN_ACT_CT");
-
         Map<String, Object> data = new HashMap<>();
         data.put("empId", param.get("empId"));
         data.put("clturPhstrnActMngYm", param.get("clmYmd").toString().substring(0,6));
-
         List<Map<String, Object>> searchParam = new ArrayList<>();
         searchParam.add(tbNm);
         searchParam.add(data);
         List<Map<String, Object>> search = commonService.commonSelect(searchParam);
+        Map<String, Object> shResult= search.get(0);
 
-        int result = 0;
-        if (!search.isEmpty()) {
-            Map<String, Object> shResult= search.get(0);
-            Map<String, Object> updateData = new HashMap<>();
-            int amt = 0;
-            if(param.get("clturPhstrnSeCd").equals("VTW00901")){
-                if(shResult.get("clturCtClmAmt") != null){
-                    amt = (int)shResult.get("clturCtClmAmt");
-                }
-                updateData.put("clturCtClmAmt", amt + (int)param.get("clmAmt"));
-            } else if (param.get("clturPhstrnSeCd").equals("VTW00902")) {
-                if(shResult.get("ftnessTrngCtClmAmt") != null){
-                    amt = (int)shResult.get("ftnessTrngCtClmAmt");
-                }
-                updateData.put("ftnessTrngCtClmAmt", amt + (int)param.get("clmAmt"));
-            }
-            updateData.put("clmAmt", (int)shResult.get("clmAmt")+(int)param.get("clmAmt"));
-
-            List<Map<String, Object>> updateParam = new ArrayList<>();
-            updateParam.add(tbNm);
-            updateParam.add(updateData);
-            updateParam.add(data);
-            result = commonService.updateData(updateParam);
-        } else {
-            Map<String, Object> insertData = new HashMap<>();
-            insertData.put("empId", param.get("empId"));
-            insertData.put("clturPhstrnActMngYm", param.get("clmYmd").toString().substring(0,6));
-            if(param.get("clturPhstrnSeCd").equals("VTW00901")){
-                insertData.put("clturCtClmAmt", param.get("clmAmt"));
-            } else if (param.get("clturPhstrnSeCd").equals("VTW00902")) {
-                insertData.put("ftnessTrngCtClmAmt", param.get("clmAmt"));
-            }
-            insertData.put("clmAmt", param.get("clmAmt"));
-
-            List<Map<String, Object>> insertParam = new ArrayList<>();
-            insertParam.add(tbNm);
-            insertParam.add(insertData);
-            result = commonService.insertData(insertParam);
+        // 합계컬럼 업데이트: 청구금액
+        List<Map<String, Object>> updateParam = new ArrayList<>();
+        Map<String, Object> updateData = new HashMap<>();
+        if(param.get("clturPhstrnSeCd").equals("VTW00901")){
+            updateData.put("clturCtClmAmt", (int)shResult.get("clturCtClmAmt") + (int)param.get("clmAmt"));
+        } else if (param.get("clturPhstrnSeCd").equals("VTW00902")) {
+            updateData.put("ftnessTrngCtClmAmt", (int)shResult.get("ftnessTrngCtClmAmt") + (int)param.get("clmAmt"));
         }
+        updateData.put("clmAmt", (int)shResult.get("clmAmt")+(int)param.get("clmAmt"));
+
+        updateParam.add(tbNm);
+        updateParam.add(updateData);
+        updateParam.add(data);
+        commonService.updateData(updateParam);
+
+        // 다음달 합계컬럼 서치
+        data.put("clturPhstrnActMngYm", paramClPh.get("clturPhstrnActMngYm"));
+        searchParam.add(data);
+        List<Map<String, Object>> searchNext = commonService.commonSelect(searchParam);
+        Map<String, Object> shNxtResult= searchNext.get(0);
+
+        // 합계컬럼 업데이트: 이월금액
+        List<Map<String, Object>> nextParam = new ArrayList<>();
+        Map<String, Object> nextData = new HashMap<>();
+        if(param.get("clturPhstrnSeCd").equals("VTW00901")){
+            nextData.put("clturCtCyfdAmt", (int)shNxtResult.get("clturCtCyfdAmt") + (int)param.get("clmAmt"));
+        } else if (param.get("clturPhstrnSeCd").equals("VTW00902")) {
+            nextData.put("ftnessTrngCtCyfdAmt", (int)shNxtResult.get("ftnessTrngCtCyfdAmt") + (int)param.get("clmAmt"));
+        }
+        nextData.put("cyfdAmt", (int)shNxtResult.get("cyfdAmt")+(int)param.get("clmAmt"));
+
+        nextParam.add(tbNm);
+        nextParam.add(nextData);
+        nextParam.add(data);
+        int result = commonService.updateData(nextParam);
+
         return result;
     }
 
     // 문화체련비 삭제 시 청구금액 감산
+    @Transactional
     public static int minusClturPhstrnActCt (Map<String, Object> param){
+
+        // 합계컬럼 서치
         Map<String, Object> tbNm = new HashMap<>();
         tbNm.put("tbNm", "CLTUR_PHSTRN_ACT_CT");
-
         Map<String, Object> data = new HashMap<>();
         data.put("empId", param.get("empId"));
         data.put("clturPhstrnActMngYm", param.get("clmYmd").toString().substring(0,6));
-
         List<Map<String, Object>> searchParam = new ArrayList<>();
         searchParam.add(tbNm);
         searchParam.add(data);
         List<Map<String, Object>> search = commonService.commonSelect(searchParam);
-
         Map<String, Object> shResult= search.get(0);
+
+        // 합계컬럼 업데이트: 청구금액
         Map<String, Object> updateData = new HashMap<>();
         if(param.get("clturPhstrnSeCd").equals("VTW00901")){
             updateData.put("clturCtClmAmt", (int)shResult.get("clturCtClmAmt") - (int)param.get("clmAmt"));
@@ -234,26 +235,51 @@ public class IndvdlClmDomain {
         updateParam.add(tbNm);
         updateParam.add(updateData);
         updateParam.add(data);
-        int result = commonService.updateData(updateParam);
+        commonService.updateData(updateParam);
+
+        // 다음달 합계컬럼 서치
+        YearMonth yearMonth = YearMonth.parse((String)data.get("clturPhstrnActMngYm"), DateTimeFormatter.ofPattern("yyyyMM"));
+        LocalDate nextMonth = yearMonth.atDay(1).plusMonths(1);
+        data.put("clturPhstrnActMngYm", nextMonth.format(DateTimeFormatter.ofPattern("yyyyMM")));
+        searchParam.add(data);
+        List<Map<String, Object>> searchNext = commonService.commonSelect(searchParam);
+        Map<String, Object> shNxtResult= searchNext.get(0);
+
+        // 합계컬럼 업데이트: 이월금액
+        List<Map<String, Object>> nextParam = new ArrayList<>();
+        Map<String, Object> nextData = new HashMap<>();
+        if(param.get("clturPhstrnSeCd").equals("VTW00901")){
+            nextData.put("clturCtCyfdAmt", (int)shNxtResult.get("clturCtCyfdAmt") - (int)param.get("clmAmt"));
+        } else if (param.get("clturPhstrnSeCd").equals("VTW00902")) {
+            nextData.put("ftnessTrngCtCyfdAmt", (int)shNxtResult.get("ftnessTrngCtCyfdAmt") - (int)param.get("clmAmt"));
+        }
+        nextData.put("cyfdAmt", (int)shNxtResult.get("cyfdAmt") - (int)param.get("clmAmt"));
+
+        nextParam.add(tbNm);
+        nextParam.add(nextData);
+        nextParam.add(data);
+        int result = commonService.updateData(nextParam);
 
         return result;
     }
 
     // 문화체련비 변경 시 청구금액 재계산
+    @Transactional
     public static int editClturPhstrnActCt (Map<String, Object> param){
+
+        // 합계컬럼 서치
         Map<String, Object> tbNm = new HashMap<>();
         tbNm.put("tbNm", "CLTUR_PHSTRN_ACT_CT");
-
         Map<String, Object> data = new HashMap<>();
         data.put("empId", param.get("empId"));
         data.put("clturPhstrnActMngYm", param.get("clmYmd").toString().substring(0,6));
-
         List<Map<String, Object>> searchParam = new ArrayList<>();
         searchParam.add(tbNm);
         searchParam.add(data);
         List<Map<String, Object>> search = commonService.commonSelect(searchParam);
-
         Map<String, Object> shResult= search.get(0);
+
+        // 합계컬럼 업데이트: 청구금액
         Map<String, Object> updateData = new HashMap<>();
         if(param.get("clturPhstrnSeCd").equals("VTW00901")){
             updateData.put("clturCtClmAmt", (int)shResult.get("clturCtClmAmt") - (int)param.get("selectedClmAmt") + (int)param.get("clmAmt"));
@@ -266,7 +292,30 @@ public class IndvdlClmDomain {
         updateParam.add(tbNm);
         updateParam.add(updateData);
         updateParam.add(data);
-        int result = commonService.updateData(updateParam);
+        commonService.updateData(updateParam);
+
+        // 다음달 합계컬럼 서치
+        YearMonth yearMonth = YearMonth.parse((String)data.get("clturPhstrnActMngYm"), DateTimeFormatter.ofPattern("yyyyMM"));
+        LocalDate nextMonth = yearMonth.atDay(1).plusMonths(1);
+        data.put("clturPhstrnActMngYm", nextMonth.format(DateTimeFormatter.ofPattern("yyyyMM")));
+        searchParam.add(data);
+        List<Map<String, Object>> searchNext = commonService.commonSelect(searchParam);
+        Map<String, Object> shNxtResult= searchNext.get(0);
+
+        // 합계컬럼 업데이트: 이월금액
+        List<Map<String, Object>> nextParam = new ArrayList<>();
+        Map<String, Object> nextData = new HashMap<>();
+        if(param.get("clturPhstrnSeCd").equals("VTW00901")){
+            nextData.put("clturCtCyfdAmt", (int)shNxtResult.get("clturCtCyfdAmt") - (int)param.get("selectedClmAmt") + (int)param.get("clmAmt"));
+        } else if (param.get("clturPhstrnSeCd").equals("VTW00902")) {
+            nextData.put("ftnessTrngCtCyfdAmt", (int)shNxtResult.get("ftnessTrngCtCyfdAmt") - (int)param.get("selectedClmAmt") + (int)param.get("clmAmt"));
+        }
+        nextData.put("cyfdAmt", (int)shNxtResult.get("cyfdAmt") - (int)param.get("selectedClmAmt") + (int)param.get("clmAmt"));
+
+        nextParam.add(tbNm);
+        nextParam.add(nextData);
+        nextParam.add(data);
+        int result = commonService.updateData(nextParam);
 
         return result;
     }
@@ -1114,6 +1163,7 @@ public class IndvdlClmDomain {
     }
     /* =================================박지환_작업================================= */
 
+    @Transactional
     public static List<Map<String, Object>> retrieveClturPhstrnActCt (Map<String, Object> param){
 
         List<Map<String, Object>> data = new ArrayList<>();

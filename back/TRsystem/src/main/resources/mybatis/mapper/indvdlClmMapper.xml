@@ -1257,7 +1257,7 @@
                      WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '11') THEN '11'
                      WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '12') THEN '12'
                      ELSE 0 END) AS MONTH
-             , IFNULL(FTNESS_TRNG_CT_CYFD_AMT, 0) AS DATA
+             , IFNULL(FTNESS_TRNG_CT_CYFD_AMT, 0) + IFNULL(FTNESS_TRNG_CT_CLM_AMT, 0) - IFNULL(FTNESS_TRNG_CT_DPST_AMT, 0) AS DATA
         FROM CLTUR_PHSTRN_ACT_CT
         WHERE EMP_ID = #{empId}
           AND CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '%')
@@ -1433,7 +1433,7 @@
                      WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '11') THEN '11'
                      WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '12') THEN '12'
                      ELSE 0 END) AS MONTH
-             , IFNULL(CLTUR_CT_CYFD_AMT, 0) AS DATA
+             , IFNULL(CLTUR_CT_CYFD_AMT, 0) + IFNULL(CLTUR_CT_CLM_AMT, 0) - IFNULL(CLTUR_CT_DPST_AMT, 0) AS DATA
         FROM CLTUR_PHSTRN_ACT_CT
         WHERE EMP_ID = #{empId}
           AND CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '%')
@@ -1521,7 +1521,7 @@
                      WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '11') THEN '11'
                      WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '12') THEN '12'
                      ELSE 0 END) AS MONTH
-             , IFNULL(CLTUR_CT_DPST_AMT, 0) AS DATA
+             , IFNULL(DPST_AMT, 0) AS DATA
         FROM CLTUR_PHSTRN_ACT_CT
         WHERE EMP_ID = #{empId}
           AND CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '%')
@@ -1565,7 +1565,7 @@
                      WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '11') THEN '11'
                      WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '12') THEN '12'
                      ELSE 0 END) AS MONTH
-             , IFNULL(CLTUR_CT_CYFD_AMT, 0) AS DATA
+             , IFNULL(CYFD_AMT, 0) + IFNULL(CLM_AMT, 0) - IFNULL(DPST_AMT, 0) AS DATA
         FROM CLTUR_PHSTRN_ACT_CT
         WHERE EMP_ID = #{empId}
           AND CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '%')
