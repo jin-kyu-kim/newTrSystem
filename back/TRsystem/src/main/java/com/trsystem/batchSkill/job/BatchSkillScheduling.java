@@ -37,4 +37,15 @@ public class BatchSkillScheduling {
 			logger.error("배치 에러 :{} ", e.getMessage());
 		}
 	}
+
+	@Scheduled(cron = "0 0 0 1 * *") // 매달 1일 배치 실행
+	public void executeInsertCrtrDate() {
+		logger.info("배치 시작 at {} ",LocalDateTime.now());
+		try {
+			batchSkillService.executeInsertCrtrDate();
+			logger.info("배치 성공 at {} ", LocalDateTime.now());
+		} catch(Exception e) {
+			logger.error("배치 에러 :{} ", e.getMessage());
+		}
+	}
 }
