@@ -7,11 +7,12 @@ import {useLocation} from "react-router-dom";
 
 const ProjectOutordCompanyCostSearch = () => {
   const location = useLocation();
-  const prjctId = location.state.prjctId;
+  const prjctId = location.state.id;
   const bgtMngOdr = location.state.bgtMngOdr;
 
   const { keyColumn, queryId, tableColumns, summaryColumn } = ProjectOutordCompanyCostSearchJson;
   const [values, setValues] = useState([]);
+
 
   useEffect(() => {
     const param = {
