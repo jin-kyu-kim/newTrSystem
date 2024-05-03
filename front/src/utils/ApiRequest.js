@@ -17,8 +17,6 @@ const ApiRequest = async (url, data) => {
       console.log(error.response);
       if (error.response.status === 401) {
         // 로그인 상태를 해제하고 로그인 페이지로 이동
-        localStorage.removeItem("token");
-        localStorage.removeItem("isLoggedIn");
       } else {
         // 다른 종류의 오류 처리
         console.error("Another error happened:", error.message);

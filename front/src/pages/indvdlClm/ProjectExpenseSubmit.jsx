@@ -78,7 +78,6 @@ const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, butt
     }
   };
 
-
   const setParam = (oneRow, additionalProps) => {
     const baseProps = {
       prjctId: oneRow.prjctId,
