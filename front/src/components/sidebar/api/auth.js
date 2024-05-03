@@ -5,10 +5,9 @@ import ApiRequest from "../../../utils/ApiRequest";
 export async function signIn(empno, password) {
   try {
     const param = {empno:empno, password:password};
+    const token = localStorage.getItem("token");
     const response = await axios.post("/boot/sysMng/lgnSkll", param, {
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
       });
       if(response){
       localStorage.setItem("isLoggedIn", true);
