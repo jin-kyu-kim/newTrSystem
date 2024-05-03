@@ -401,7 +401,7 @@ const EmpWorkTime = () => {
     function onDeleteListClick(e){
         const isconfirm = window.confirm("승인된 목록을 제외한 근무시간들이 삭제됩니다.\n삭제하시겠습니까?");
         if (isconfirm) {
-            setInsertWorkHourList(insertWorkHourList.filter(item => item.atrzDmndSttsCd == "VTW03703" || item.aplyType != "workAply"));
+            setInsertWorkHourList(insertWorkHourList.filter(item => item.aplyOdr != flagOrder || item.atrzDmndSttsCd == "VTW03703" || item.aplyType != "workAply"));
         } else {
             return;
         }
@@ -576,7 +576,7 @@ const EmpWorkTime = () => {
                 <div style={{ marginTop: "10px", border: "2px solid #CCCCCC" }}>
                     <div style={{ borderBottom: "2px solid #CCCCCC" }}>
                         <div style={{ display: "flex", alignItems: "center", height: "50px", marginLeft: "20px" }}>
-                            {orderWorkBgngMm} - {flagOrder}차수 근무시간 : {vcatnCnt != 0 ? workHour - vcatnCnt * 8 : workHour} / {workHour} hrs.
+                            {orderWorkBgngMm} - {flagOrder}차수 근무시간 : {vcatnCnt != 0 ? workHour - vcatnCnt * 8 : workHour} / {workHour + holiHour} hrs.
                         </div>
                     </div>
                     {

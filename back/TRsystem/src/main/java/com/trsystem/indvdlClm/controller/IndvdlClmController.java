@@ -27,6 +27,12 @@ public class IndvdlClmController {
         return IndvdlClmDomain.insertPrjctMM(params);
     }
 
+    // 문화체련비 합계컬럼 없으면 추가
+    @PostMapping(value = "/boot/indvdlClm/insertClPh")
+    public int insertClPh (@RequestBody Map<String, Object> param){
+        return IndvdlClmDomain.insertClPh(param);
+    }
+
     // 문화체련비 등록 시 청구금액 가산
     @PostMapping(value = "/boot/indvdlClm/plusClturPhstrnActCt")
     public int plusClturPhstrnActCt (@RequestBody Map<String, Object> param){
@@ -45,8 +51,11 @@ public class IndvdlClmController {
         return IndvdlClmDomain.editClturPhstrnActCt(param);
     }
 
-
-
+    // 문화체련비 합계테이블 조회
+    @PostMapping(value = "/boot/indvdlClm/retrieveClturPhstrnActCt")
+    public List<Map<String, Object>> retrieveClturPhstrnActCt (@RequestBody Map<String, Object> param){
+        return IndvdlClmDomain.retrieveClturPhstrnActCt(param);
+    }
 
     /* =================================박지환_작업================================= */
     // 프로젝트근무시간저장
@@ -152,9 +161,4 @@ public class IndvdlClmController {
     }
     /* =================================박지환_작업================================= */
 
-    // 문화체련비 합계테이블 조회
-    @PostMapping(value = "/boot/indvdlClm/retrieveClturPhstrnActCt")
-    public List<Map<String, Object>> retrieveClturPhstrnActCt (@RequestBody Map<String, Object> param){
-        return IndvdlClmDomain.retrieveClturPhstrnActCt(param);
-    }
 }

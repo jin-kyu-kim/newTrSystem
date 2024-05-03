@@ -9,7 +9,7 @@ import ApiRequest from "utils/ApiRequest";
 
 const ProjectExpenseCash = (props) => {
     const { labelValue } = ProjectExpenseJson;
-    const { sendTbInfo, placeholderAndRequired, btnInfo } = ProjectExpenseJson.ProjectExpenseTab;
+    const { placeholderAndRequired, btnInfo } = ProjectExpenseJson.ProjectExpenseTab;
     const [ validationErrors, setValidationErrors ] = useState([]);
     const [ customParam, setCustomParam ] = useState({ queryId: "indvdlClmMapper.retrieveExpensCdPrjctAccto" });
     const atrzParam = {
@@ -133,7 +133,7 @@ const ProjectExpenseCash = (props) => {
 
             <div style={{marginTop: '20px', marginLeft: '430px'}}>
                 <ProjectExpenseSubmit validateFields={() => validateFields(value, placeholderAndRequired, setValidationErrors, btnInfo)} 
-                    getData={props.getData} selectedItem={value} sendTbInfo={sendTbInfo} buttonGroup={btnInfo} width={'1000px'} />
+                    getData={props.getData} selectedItem={value} buttonGroup={btnInfo} width={'1000px'} />
             </div>
         </div>
     );

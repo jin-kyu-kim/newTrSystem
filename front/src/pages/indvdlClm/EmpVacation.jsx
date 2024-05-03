@@ -65,6 +65,8 @@ let elctrnAtrzId = uuid();
 // 전자결재 팝업 데이터
 let artzListValue = [];
 
+const token = localStorage.getItem("token");
+
 /**
  * @param {number} startYear 현재년도 기준 화면에 보여줄 (현재년도 - startYear)
  * @param {number} endYear 현재년도 기준 화면에 보여줄 (현재년도 + endYear)
@@ -133,7 +135,7 @@ const EmpVacation = () => {
     let jbttlCd = location.state ? location.state.deptList[0].jbttlCd : cookies.deptInfo[0].jbttlCd
 
 
-    
+
 
 
     // 월별 근무일_공휴일 조회
@@ -328,11 +330,17 @@ const EmpVacation = () => {
                 }
             }
             else if (initParam.searchType == "atrzLnAprvList") {
+                let pushData = [];
                 const atrzLnAprvListResult = await ApiRequest("/boot/common/queryIdSearch", initParam);
-                if (atrzLnAprvListResult.length > 0) {
-                    const AtrzLnAprvResult = await ApiRequest("/boot/common/queryIdSearch", { queryId: "indvdlClmMapper.retrieveAtrzLnAprvInq", deptId: atrzLnAprvListResult, empId: sessionEmpId });
-                    if (AtrzLnAprvResult.length > 0 && AtrzLnAprvResult) {
-                        const returnReslut = atrzLnAprv(jbttlCd, AtrzLnAprvResult);
+
+                for (let i = 0; i < atrzLnAprvListResult.length > 0; i++) {
+                    const AtrzLnAprvResult = await ApiRequest("/boot/common/queryIdSearch", { queryId: "indvdlClmMapper.retrieveAtrzLnAprvInq", deptId: atrzLnAprvListResult[i].deptId, empId: sessionEmpId });
+
+                    if (AtrzLnAprvResult.length > 0) pushData.push(AtrzLnAprvResult[0])
+
+                    if (i == atrzLnAprvListResult.length - 1) {
+                        const returnReslut = atrzLnAprv(jbttlCd, pushData);
+
                         setPopupAtrzValue(prevState => [
                             ...prevState,
                             {
@@ -501,19 +509,21 @@ const EmpVacation = () => {
 
         try {
             const response = await axios.post("/boot/indvdlClm/insertVcatnAtrz", formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
+                headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}`  },
             });
 
             console.log("response : ", response);
-            if(!response && response.data == "성공"){
+            console.log("response.data : ", response.data);
+            console.log("response.data == 성공 : ", response.data == "성공");
+            if (response && response.data == "성공") {
                 alert("저장되었습니다.");
-    
+
                 // 전자결재ID 채번
                 elctrnAtrzId = uuid();
-    
+
                 // 첨부파일초기화
                 clearFiles();
-    
+
                 setSearchVcatnListParam({
                     ...searchVcatnListParam,
                     isSearch: true
@@ -532,6 +542,7 @@ const EmpVacation = () => {
                     ...insertElctrnValue,
                     prjctId: null
                 })
+                selectData(searchVcatnListParam);
             } else {
                 alert(response.data);
             }
@@ -596,12 +607,12 @@ const EmpVacation = () => {
 
             var d1 = new Date(Moment(String(startDate)).format("YYYY-MM-DD"));
             var d2 = new Date(Moment(String(endDate)).format("YYYY-MM-DD"));
-                
+
             var diff = d2.getTime() - d1.getTime();
             var daydiff = diff / (1000 * 60 * 60 * 24) + 1;
 
             if (insertVcatnValue.vcatnTyCd && (insertVcatnValue.vcatnTyCd == "VTW01201" || insertVcatnValue.vcatnTyCd == "VTW01204")) {
-                for (let i = 0; i < daydiff; i ++) {
+                for (let i = 0; i < daydiff; i++) {
                     let valiCheckDate = Moment((addDays(new Date(Moment(String(startDate)).format("YYYY-MM-DD")), i))).format("YYYY-MM-DD");
 
                     if (isSaturday(valiCheckDate) || isSunday(valiCheckDate)) {
@@ -647,7 +658,7 @@ const EmpVacation = () => {
         } else if (e.text == "취소요청") {
             setPopupVcatnAtrzCancleValue({
                 data: data,
-                empId : sessionEmpId,
+                empId: sessionEmpId,
                 visible: true,
             })
         }
@@ -676,11 +687,11 @@ const EmpVacation = () => {
 
     const test = async () => {
         const test = {
-                elctrnAtrzId: "13e967cc-2f3e-eb22-6a28-c77f2d19d864"
-            }
-        
+            elctrnAtrzId: "13e967cc-2f3e-eb22-6a28-c77f2d19d864"
+        }
 
-        try{
+
+        try {
             const response = await ApiRequest("/boot/indvdlClm/approvalReInsertVcatnAtrz", test);
         } catch (error) {
             console.log("deleteVcatnAtrz_error : ", error);
@@ -969,28 +980,28 @@ const EmpVacation = () => {
                             onHiding={onAtrzHiding}
                         />
 
-                        {popupVcatnAtrzCancleValue.visible == true 
-                            ? 
-                                <EmpVacationCanclePopup
-                                    width={"900px"}
-                                    height={"520px"}
-                                    title={"* 휴가결재 취소 요청"}
-                                    visible={popupVcatnAtrzCancleValue.visible}
-                                    dataMap={popupVcatnAtrzCancleValue.data}
-                                    empId= {popupVcatnAtrzCancleValue.empId}
-                                    onHiding={(e) => {
-                                        setPopupVcatnAtrzCancleValue({
-                                            visible: e
-                                        })
-                                    }}
-                                />
-                            : 
-                                <></>
+                        {popupVcatnAtrzCancleValue.visible == true
+                            ?
+                            <EmpVacationCanclePopup
+                                width={"900px"}
+                                height={"520px"}
+                                title={"* 휴가결재 취소 요청"}
+                                visible={popupVcatnAtrzCancleValue.visible}
+                                dataMap={popupVcatnAtrzCancleValue.data}
+                                empId={popupVcatnAtrzCancleValue.empId}
+                                onHiding={(e) => {
+                                    setPopupVcatnAtrzCancleValue({ visible: e })
+                                    setSearchVcatnListParam({ ...searchVcatnListParam, isSearch: true})
+                                    selectData(searchVcatnListParam);
+                                }}
+                            />
+                            :
+                            <></>
                         }
                     </div>
                 </div>
             </div>
-            <br/><br/><br/><br/><br/>
+            <br /><br /><br /><br /><br />
         </div>
     )
 }
