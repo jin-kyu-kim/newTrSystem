@@ -36,7 +36,8 @@ public class InformationDomain {
 	 @Transactional
 	    public static Map<String, Object> empInfoPopSearch(List<Map<String, Object>> params) {
 	        Map<String, Object> resultMap = new HashMap<>();
-
+	        
+	        Map<String, Object> baseParam = new HashMap<>();
 	        Map<String, Object> degreeParam = new HashMap<>();
 	        Map<String, Object> languageParam = new HashMap<>();
 	        Map<String, Object> licenseParam = new HashMap<>();
@@ -48,6 +49,9 @@ public class InformationDomain {
 	            for (Map<String, Object> param : params) {
 	                String queryId = (String) param.get("queryId");
 	                switch (queryId) {
+	                	case "infoInqMapper.retrieveEmpBassInfo":
+	                		baseParam = param;
+	                	break;
 	                    case "infoInqMapper.retrieveEmpAcbg":
 	                    	degreeParam = param;
 	                        break;
@@ -70,7 +74,8 @@ public class InformationDomain {
 	                        break;
 	                }
 	            }
-
+	            
+	            resultMap.put("BaseData", commonService.queryIdSearch(baseParam).get(0));
 	            resultMap.put("EmpDegree", commonService.queryIdSearch(degreeParam));
 	            resultMap.put("EmpLanguage", commonService.queryIdSearch(languageParam));
 	            resultMap.put("EmpLicense", commonService.queryIdSearch(licenseParam));
