@@ -17,7 +17,7 @@ const ProjectExpenseCash = (props) => {
         empId: props.empId
     };
     const [ empList, setEmpList ] = useState([]);
-    const [ dateVal, setDateVal ] = useState({utztnDt: ''});
+    const [ dateVal, setDateVal ] = useState({utztnDt: undefined});
     const [ value, setValue ] = useState([{
         empId: props.empId,
         aplyYm: props.aplyYm,
