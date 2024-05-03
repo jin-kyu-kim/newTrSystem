@@ -877,7 +877,14 @@ public class IndvdlClmDomain {
         int caseFlag = 0;
         String empId = (String) params.get("empId");
         String elctrnAtrzId = (String) params.get("elctrnAtrzId");
+        String atrzStepCd = (String) params.get("atrzStepCd");
+        
+        // 결재 승인 paramList
+        List<Map<String, Object>> aprvParamList = new ArrayList<>();
+        aprvParamList = (List<Map<String, Object>>)params.get("aprvParam");
 
+        List<Map<String, Object>> succMsgList = new ArrayList<>();
+        
         // 휴가사용일수전자결재조회
         List<Map<String, Object>> selectElctrnAtrzList = new ArrayList<>();
         selectElctrnAtrzList.add(0, new HashMap<>(){{ put("tbNm", "VCATN_ATRZ"); }});
@@ -1021,17 +1028,57 @@ public class IndvdlClmDomain {
         System.out.println("updateNewVcatnMngMap : " + updateNewVcatnMngMap);
         System.out.println("===========================");
 
-        switch (caseFlag){
-            case 1: commonService.queryIdDataControl(updateVcatnMngMap);
-            case 2: commonService.queryIdDataControl(updateNewVcatnMngMap);
-            case 3: commonService.queryIdDataControl(updateVcatnMngMap);
-            case 4: {
-                commonService.queryIdDataControl(updateVcatnMngMap);
-                commonService.queryIdDataControl(updateNewVcatnMngMap);
-            }
+        int atrzLnSn = 0;
+        try {
+            switch (caseFlag){
+	            case 1: {
+	                // 승인처리
+	                atrzLnSn = ElecAtrzDomain.aprvElecAtrz(aprvParamList);
+	
+	                if(atrzStepCd.equals("VTW00705")) {
+	                	commonService.queryIdDataControl(updateVcatnMngMap);
+	                }
+	            }
+	            case 2: {
+	            	// 승인처리
+	                atrzLnSn = ElecAtrzDomain.aprvElecAtrz(aprvParamList);
+	            	
+	                if(atrzStepCd.equals("VTW00705")) {
+	                	commonService.queryIdDataControl(updateNewVcatnMngMap);
+	                }
+	            }
+	            case 3: {
+	            	// 승인처리
+	                atrzLnSn = ElecAtrzDomain.aprvElecAtrz(aprvParamList);
+	            	
+	                if(atrzStepCd.equals("VTW00705")) {
+	                	commonService.queryIdDataControl(updateVcatnMngMap);
+	                }
+	            }
+	            case 4: {
+	                atrzLnSn = ElecAtrzDomain.aprvElecAtrz(aprvParamList);
+	            	
+	                if(atrzStepCd.equals("VTW00705")) {
+	                	commonService.queryIdDataControl(updateVcatnMngMap);
+	                	commonService.queryIdDataControl(updateNewVcatnMngMap);
+	                }
+	            }
+	        }
+	        
+	        Map<String, Object> aprvResult =  new HashMap<>();
+	        aprvResult.put("succMsg", "SUCCESS");
+	        aprvResult.put("atrzLnSn", atrzLnSn);
+	        succMsgList.add(0, aprvResult);
+	
+	        return succMsgList;
+        } catch (Exception e) {
+	        Map<String, Object> aprvResult =  new HashMap<>();
+	        aprvResult.put("succMsg", "FAIL");
+	        aprvResult.put("atrzLnSn", atrzLnSn);
+	        succMsgList.add(0, aprvResult);
+	
+	        return succMsgList;
         }
-
-        return null;
     }
 
     // 휴가신청취소

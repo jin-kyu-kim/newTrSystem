@@ -86,7 +86,8 @@ const ElecGiveAtrz = () => {
                 prjctId: prjctId,
                 formData: formData,
                 sttsCd: formData.docSeCd,
-                ctrtTyCd: data.elctrnAtrzTySeCd
+                ctrtTyCd: data.elctrnAtrzTySeCd,
+                prjctData : prjctData
             }})
         }
     }
