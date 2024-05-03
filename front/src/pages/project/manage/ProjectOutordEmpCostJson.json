@@ -74,8 +74,8 @@
             "required": true,
             "placeholder": "담당업무"
         },
-        "userDfnValue": {
-            "name": "userDfnValue",
+        "untpc": {
+            "name": "untpc",
             "type": "NumberBox",
             "label": "단가",
             "required": true,
