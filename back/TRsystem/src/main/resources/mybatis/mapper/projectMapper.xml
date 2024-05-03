@@ -102,7 +102,14 @@
 				  , DATE_FORMAT(STBLE_END_YMD, '%Y-%m-%d') AS STBLE_END_YMD
 			      , COUNT(*) OVER () AS TOTAL_ITEMS
 			  FROM PRJCT_ATRZ_LN pal
-			  JOIN PRJCT_ATRZ_LN_DTL pald ON(pal.PRJCT_ID = pald.PRJCT_ID AND pal.ATRZ_LN_SN = pald.ATRZ_LN_SN AND pal.NOW_ATRZ_STEP_CD = pald.ATRZ_STEP_CD)
+			  JOIN PRJCT_ATRZ_LN_DTL pald 
+			  	ON(pal.PRJCT_ID = pald.PRJCT_ID 
+			  	   AND pal.ATRZ_LN_SN = pald.ATRZ_LN_SN 
+			  	   AND CASE 
+				  	   WHEN pal.NOW_ATRZ_STEP_CD = 'VTW00708' THEN 'VTW00705' = pald.ATRZ_STEP_CD
+					   WHEN pal.NOW_ATRZ_STEP_CD != 'VTW00708' THEN pal.NOW_ATRZ_STEP_CD = pald.ATRZ_STEP_CD	   	
+			  	   END
+			  	   )
 			  JOIN PRJCT p ON (p.PRJCT_ID = pal.PRJCT_ID AND p.PRJCT_ID = pald.PRJCT_ID)
 			  JOIN EMP e  ON (e.EMP_ID = pal.REG_EMP_ID)
 			 WHERE 1=1
@@ -514,7 +521,9 @@
 	 	 , pald.RJCT_PRVONSH
  	 	 , pald.APRV_YMD AS STEP_APRV_YMD
  	 	 , pald.RJCT_YMD AS STEP_RJCT_YMD
- 	 	 , DATE_FORMAT(pald.MDFCN_DT, '%Y.%m.%d %H:%i:%s') AS MDFCN_DT
+ 	 	 , CASE WHEN pald.APRV_YMD IS NOT NULL THEN DATE_FORMAT(pald.MDFCN_DT, '%Y.%m.%d %H:%i:%s')
+ 	 		 	WHEN pald.APRV_YMD IS NULL THEN NULL 
+ 	 	 	END AS MDFCN_DT
 	  FROM PRJCT_ATRZ_LN_DTL pald 
 	  JOIN CD c1 ON (c1.CD_VALUE = pald.ATRZ_STEP_CD)
 	  JOIN CD c2 ON (c2.CD_VALUE = pald.ATRZ_STTS_CD)
