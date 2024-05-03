@@ -53,4 +53,39 @@
 			GROUP BY IND.PRJCT_ID, CP.EXPENS_CD, IND.APLY_YM
 		ON DUPLICATE KEY UPDATE EXPENS_CT = VALUES(EXPENS_CT)	
 	</insert>
+
+
+	<!-- 박지환_작업 -->
+	<insert id = "insertCtrtDate" >
+		/* batchMapper.insertCtrtDate */
+		INSERT INTO CRTR_DATE
+		VALUES(
+			#{crtrYmd}
+			,#{crtrOdr}
+			<if test="hldyClCd != null and !hldyClCd.equals('')">
+				,#{hldyClCd}
+			</if>
+			<if test="hldyClCd == null or hldyClCd.equals('')">
+				,'VTW05001'
+			</if>
+			,#{hldyNm}
+			,#{rm}
+			,#{ddlnYn}
+			,#{vcatnCntrlYmdYn}
+			,SYSDATE()
+			,SYSDATE()
+			,'BATCH'
+			,'BATCH'
+		) ON DUPLICATE KEY UPDATE
+			CRTR_YMD 		= #{crtrYmd}
+			,CRTR_ODR 		= #{crtrOdr}
+			<if test="hldyClCd != null and !hldyClCd.equals('')">
+				,HLDY_CL_CD = #{hldyClCd}
+			</if>
+			<if test="hldyClCd == null or hldyClCd.equals('')">
+				,HLDY_CL_CD = 'VTW05001'
+			</if>
+			,HLDY_NM		= #{hldyNm}
+			,MDFCN_DT		= SYSDATE()
+	</insert>
 </mapper>
