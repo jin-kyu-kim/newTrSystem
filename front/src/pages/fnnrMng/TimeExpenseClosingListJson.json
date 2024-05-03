@@ -1,3 +1,25 @@
 {
-    
+    "menuName": "TimeExpenseClosingList",
+    "keyColumn": "empId",
+    "columns": [
+        {"key": "bankCdNm", "value": "은행"},
+        {"key": "actno", "value": "계좌번호"},
+        {"key": "sumUtztnAmt", "value": "지급금액", "currency": true},
+        {"key": "empFlnm", "value": "이름"},
+        {"key": "tr", "value": "구분"}
+    ],
+    "summaryColumn": [
+        {
+            "key": "actno",
+            "value": "계좌번호",
+            "type"  : "sum",
+            "format": "합계"
+        },
+        {
+            "key": "sumUtztnAmt",
+            "value": "지급금액",
+            "type" : "sum",
+            "format": "{0} 원"
+        }
+    ]
 }

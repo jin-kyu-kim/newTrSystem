@@ -1270,7 +1270,7 @@
 		   AND CRTR_ODR = #{aplyOdr}
 	</select>
 	
-    <select id="retrieveDdlYn" parameterType="map" resultType="com.trsystem.LowerHashMap">
+    <select id="retrieveDdlnYn" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		  SELECT DISTINCT (DDLN_YN) AS DDLN_YN
 		  FROM CRTR_DATE cd
 		 WHERE 1=1
@@ -1279,7 +1279,8 @@
 	</select>
 	
     <select id="retrieveClosingList" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT cd.CD_NM AS BANK_CD_NM
+		SELECT e.EMP_ID
+			 , cd.CD_NM AS BANK_CD_NM
 			 , e.ACTNO
 			 , SUM(pca.UTZTN_AMT) AS SUM_UTZTN_AMT
 			 , e.EMP_FLNM
@@ -1300,7 +1301,15 @@
 		 WHERE pca.APLY_YM = #{aplyYm}
 		   AND pca.APLY_ODR = #{aplyOdr}
 		   AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703'
-		GROUP BY BANK_CD_NM, e.ACTNO, e.EMP_FLNM
+		GROUP BY e.EMP_ID, BANK_CD_NM, e.ACTNO, e.EMP_FLNM
+	</select>
+	
+	<select id="updateDdlnYn" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		UPDATE CRTR_DATE
+		   SET DDLN_YN = #{ddlnYn}
+		 WHERE 1=1
+		   AND CRTR_ODR = #{aplyOdr}
+		   AND SUBSTR(CRTR_YMD, 1, 6) = #{aplyYm}
 	</select>
 	
 </mapper>
