@@ -74,12 +74,13 @@
             "required": true,
             "placeholder": "담당업무"
         },
-        "userDfnValue": {
-            "name": "userDfnValue",
+        "untpc": {
+            "name": "untpc",
             "type": "NumberBox",
             "label": "단가",
             "required": true,
-            "placeholder": "단가"
+            "placeholder": "단가",
+            "format" : "#,##0"
         },
         "gramt": {
             "name": "gramt",
@@ -87,11 +88,13 @@
             "label": "총 금액",
             "required": true,
             "placeholder": "총 금액",
-            "readOnly": true
+            "readOnly": true,
+            "format" : "#,##0"
         },
         "total": {
             "name": "total",
             "type": "NumberBox",
+
             "label": "총 MM",
             "required": true,
             "placeholder": "총 MM",

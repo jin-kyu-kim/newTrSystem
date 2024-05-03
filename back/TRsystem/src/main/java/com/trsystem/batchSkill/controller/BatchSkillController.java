@@ -1,5 +1,6 @@
 package com.trsystem.batchSkill.controller;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 public class BatchSkillController {
 	
 	private final BatchSkillService batchSkillService;
-	
+
 	//아무 화면에서 테스트용 버튼으로 axios 통신
 /*	// front code
 	  const promoTest = (e) => {
@@ -38,10 +39,15 @@ public class BatchSkillController {
 	public int executeEmpPrmot(@RequestBody Map<String, Object> params){
 		return batchSkillService.prmotUpdateJBPS(params);
 	}
-	
+
 	@PostMapping(value = "/boot/batchSkll/executeCostUpdate")
 	public int executeCostUpdate() {
 		return batchSkillService.executeCostUpdate();
+	}
+
+	@PostMapping(value = "/boot/batchSkll/executeInsertCrtrDate")
+	public void executeInsertCrtrDate() throws IOException {
+		batchSkillService.executeInsertCrtrDate();
 	}
 
 }
