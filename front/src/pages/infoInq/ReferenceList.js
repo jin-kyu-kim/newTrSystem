@@ -9,7 +9,6 @@ const ReferenceList = () => {
     const [values, setValues] = useState([]);
     const [param, setParam] = useState({});
     const [totalItems, setTotalItems] = useState(0);
-    const [pageSize] = useState(10);
     const navigate = useNavigate();
 
     const { keyColumn, queryId, tableColumns, searchInfo, referInsertPage } = NoticeJson;
@@ -69,12 +68,11 @@ const ReferenceList = () => {
             <div>검색된 건 수 : {totalItems} 건</div>
             <CustomEditTable
                 noEdit={true}
-                keyColumn={keyColumn}
-                pageSize={pageSize}
-                columns={tableColumns}
                 values={values}
+                columns={tableColumns}
+                keyColumn={keyColumn}
                 onRowClick={onRowClick}
-                paging={true}
+                noDataText={'등록된 게시글이 없습니다.'}
             />
         </div>
     );
