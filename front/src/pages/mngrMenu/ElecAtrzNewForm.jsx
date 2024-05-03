@@ -175,7 +175,7 @@ const ElecAtrzNewForm = ({}) => {
                         />
                     </Item>
 
-                    <Item dataField="reprtUseYn" 
+                    {/* <Item dataField="reprtUseYn" 
                             editorType="dxSelectBox" 
                             label={{ text: "보고서 작성여부" }}
                             readOnly={mdfStts === 'U' ? true : false}
@@ -190,8 +190,7 @@ const ElecAtrzNewForm = ({}) => {
                                     })
                                         }}  
                     >
-                    {/* <RequiredRule message="보고서 작성 여부는 필수 입력입니다." /> */}
-                    </Item>
+                    </Item> */}
                 </GroupItem>
             
                 <Item dataField="gnrlAtrzTtl" 

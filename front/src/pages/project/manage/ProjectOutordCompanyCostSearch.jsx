@@ -5,10 +5,10 @@ import CustomTable from "../../../components/unit/CustomTable";
 import ProjectOutordCompanyCostSearchJson from "./ProjectOutordCompanyCostSearchJson.json";
 import {useLocation} from "react-router-dom";
 
-const ProjectOutordCompanyCostSearch = () => {
+const ProjectOutordCompanyCostSearch = (props) => {
   const location = useLocation();
-  const prjctId = location.state.prjctId;
-  const bgtMngOdr = location.state.bgtMngOdr;
+  const prjctId = props.prjctId
+  const bgtMngOdr = props.bgtMngOdr;
 
   const { keyColumn, queryId, tableColumns, summaryColumn } = ProjectOutordCompanyCostSearchJson;
   const [values, setValues] = useState([]);
