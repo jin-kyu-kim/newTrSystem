@@ -47,11 +47,12 @@ const [checkBoxValue, setCheckBoxValue] = useState({
   "ct037034": true,
   "ct037034Min": true,
 });
+
+const [ddlYn, setDdlYn] = useState('');
+
 //======================초기차수 설정 ===============================================
 
-  const now = new Date();
-  const dayOfMonth = now.getDate();
-  const currentPhase = dayOfMonth <= 15 ? '2' : '1';
+
 
 //====================초기검색=====================================================
 useEffect(() => {
@@ -64,10 +65,32 @@ const searchHandle = async (initParam) => {
   
   if(initParam.yearItem == null || initParam.monthItem == null) {
 
+    const date = new Date();
+    let year = date.getFullYear();
+    let month = date.getMonth() + 1;
+    const day = date.getDate();
+
+    const currentPhase = day <= 15 ? '2' : '1';
+
+    if (month === 1) {
+        if(day <= 15) {
+            month = 12; // 1월인 경우 이전 연도 12월로 설정
+            year--;
+        }
+    } else {
+        if(day <= 15) {
+            month--; // 2월 이상인 경우 이전 월로 설정
+        } 
+    }
+
+    // 월을 두 자리 숫자로 표현
+    const monthString = (month < 10 ? '0' : '') + month;
+    let aplyYm = `${year}${monthString}`
+
     setTotParam({
         ...totParam,
         queryId: totQueryId,
-        aplyYm: nowDate,
+        aplyYm: aplyYm,
         aplyOdr: currentPhase,
         empId: initParam.empId,
         hdofSttsCd: "VTW00301"
@@ -75,7 +98,7 @@ const searchHandle = async (initParam) => {
     setDtlParam({
         ...dtlParam,
         queryId: queryId,
-        aplyYm: nowDate,
+        aplyYm: aplyYm,
         aplyOdr: currentPhase,
         empId: initParam.empId,
         hdofSttsCd: "VTW00301"
@@ -105,16 +128,31 @@ const searchHandle = async (initParam) => {
 
 const pageHandle = async () => {
 
-  try {
-    const responsetot = await ApiRequest("/boot/common/queryIdSearch", totParam); //상단 total 검색
-    const response = await ApiRequest("/boot/common/queryIdSearch", dtlParam); //하단 목록 검색
+  const param = {
+    queryId: "financialAffairMngMapper.retrieveDdlYn",
+    aplyYm: dtlParam.aplyYm,
+    aplyOdr: dtlParam.aplyOdr
+  }
 
-    setTotValues(responsetot);
-    setDtlValues(response);
+  try {
+    const responseTot = await ApiRequest("/boot/common/queryIdSearch", totParam); //상단 total 검색
+    const responseDtl = await ApiRequest("/boot/common/queryIdSearch", dtlParam); //하단 목록 검색
+    const responseDdl = await ApiRequest("/boot/common/queryIdSearch", param); // 현재 조회한 달-차수의 마감 여부 확인 검색
+
+    setTotValues(responseTot);
+    setDtlValues(responseDtl);
+    if(responseDdl.length != 1) {
+      console.log("테이블에 데이터가 없습니다.")
+    } else {
+      setDdlYn(responseDdl[0].ddlYn);
+    }
   } catch (error) {
     console.log(error);
   }
 };
+//==========================현재 조회한 달-차수의 마감 여부 확인======================
+
+
 //==========================팝업 관련 이벤트==========================================
 
 const onPopHiding = async () => { setPopVisible(false); }
@@ -234,8 +272,6 @@ const onBtnClick = async (button, data) => {
     if(button.name === "ctRtrcn"){  
         alert("비용취소");
         await ctCancel(data);
-
-
 
     }
 
@@ -406,52 +442,105 @@ const handleCheckBoxChange = useCallback((e, key) => {
 }, []);
 
 //=============================마감 및 엑셀다운로드 이벤트======================================
-    const ddlnExcelDwn = () => {
-        alert("마감 및 엑셀 다운로드"); //기능 개발 예정
+  const ddlnExcelDwn = () => {
+    const confirm = window.confirm("마감되지 않은 달 입니다. 마감 후 엑셀 파일을 로드하시겠습니까?"); 
 
-        // 0. 
-    };
+    if(confirm) {
+
+      // 마감하는 메소드
+
+
+      // 후에
+      const props = {
+        aplyYm: dtlParam.aplyYm,
+        aplyOdr: dtlParam.aplyOdr
+      }
+      
+      // 화면 이동
+      navigate("/fnnrMng/TimeExpenseClosingList",
+      {state: { props: props }})
+
+
+    }
+
+  };
+
+  const excelDwn = () => {
+    alert("엑셀 다운로드"); //기능 개발 예정
+    const props = {
+      aplyYm: dtlParam.aplyYm,
+      aplyOdr: dtlParam.aplyOdr
+    }
+    
+    // 화면 이동
+    navigate("/fnnrMng/TimeExpenseClosingList",
+    {state: { props: props }})
+
+  };
+
+  /**
+   * 현재 달-차수가 마감인지 확인한다.
+   * @returns 
+   */
+  const chkDdl = (param) => {
+
+    try {
+      const response = ApiRequest("/boot/common/queryIdSearch", param);
+      
+      console.log(response[0].ddlYn)
+      if(response.length != 1) {
+        window.alert("마감여부를 확인해주세요");
+      } else {
+        setDdlYn(response[0].ddlYn);
+      }
+    } catch(error) {
+
+    }
+  }
 //========================화면그리는 구간 ====================================================
-    return(
-        <div className="container">
-            <div className="col-md-10 mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
-                  <h1 style={{ fontSize: "30px" }}>근무시간비용 입력 현황</h1>
-            </div>
-            <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
-              <span>* 근무시간비용 입력 현황을 조회합니다.</span>
-            </div>
-            <div style={{ marginBottom: "20px" }}>
-                <SearchPrjctCostSet callBack={searchHandle} props={searchParams} />
-                <Button text="마감 및 엑셀다운"  onClick={ddlnExcelDwn}/>
-            </div>
-            <div className="TimeExpenseInsertSttus" style={{ marginBottom: "20px" }}>
-                <CustomTable
+  return(
+      <div className="container">
+          <div className="col-md-10 mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
+                <h1 style={{ fontSize: "30px" }}>근무시간비용 입력 현황</h1>
+          </div>
+          <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
+            <span>* 근무시간비용 입력 현황을 조회합니다.</span>
+          </div>
+          <div style={{ marginBottom: "20px" }}>
+              <SearchPrjctCostSet callBack={searchHandle} props={searchParams} />
+              {
+                ddlYn != 'Y' ? <Button text="마감 및 엑셀다운"  onClick={ddlnExcelDwn}/> :
+                <Button text="엑셀다운"  onClick={excelDwn}/>
+              }
+          </div>
+          <div className="TimeExpenseInsertSttus" style={{ marginBottom: "20px" }}>
+              <CustomTable
+                keyColumn={keyColumn}
+                columns={totTableColumns}
+                values={totValues}
+                paging={false}
+                handleCheckBoxChange={handleCheckBoxChange}
+                checkBoxValue={checkBoxValue}
+              />
+          </div>
+          <div className="TimeExpenseInsertSttus" style={{ marginBottom: "20px" }}>
+              <CustomTable
                   keyColumn={keyColumn}
-                  columns={totTableColumns}
-                  values={totValues}
+                  columns={tableColumns}
+                  values={dtlValues}
                   paging={false}
-                  handleCheckBoxChange={handleCheckBoxChange}
-                  checkBoxValue={checkBoxValue}
-                />
-            </div>
-            <div className="TimeExpenseInsertSttus" style={{ marginBottom: "20px" }}>
-                <CustomTable
-                    keyColumn={keyColumn}
-                    columns={tableColumns}
-                    values={dtlValues}
-                    paging={true}
-                    onClick={onBtnClick}
-                    wordWrap={true}
-                />
-                <ProjectExpensePopup
-                    visible={popVisible}
-                    onPopHiding={onPopHiding}
-                    aprvInfo={atrzDmndSttsCnt}
-                    noDataCase={{cnt: ctAply.length, yn: ctAtrzCmptnYn}}
-                    basicInfo={selectedData}
-                />
-            </div>
-        </div>
+                  onClick={onBtnClick}
+                  wordWrap={true}
+              />
+              <ProjectExpensePopup
+                  visible={popVisible}
+                  onPopHiding={onPopHiding}
+                  aprvInfo={atrzDmndSttsCnt}
+                  noDataCase={{cnt: ctAply.length, yn: ctAtrzCmptnYn}}
+                  basicInfo={selectedData}
+              />
+          </div>
+      </div>
  );
 };
 
