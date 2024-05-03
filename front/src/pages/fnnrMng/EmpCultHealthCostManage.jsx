@@ -19,7 +19,6 @@ const EmpCultHealthCostManage = () => {
   const [isGroupPopupVisible, setIsGroupPopupVisible] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [selectedRowData, setSelectedRowData] = useState(null);
-  const [ selectedList, setSelectedList ] = useState([]);
   let now = new Date();
   const [param, setParam] = useState({
         "empFlnm": null,
@@ -71,14 +70,6 @@ const EmpCultHealthCostManage = () => {
     }
   };
 
-  const handleSaved = () => {
-    const btnChk = window.confirm("문화체련비를 저장하시겠습니까?")
-    if (btnChk) {
-      alert("저장되었습니다.");
-      window.scroll(0, 0);
-    }
-  };
-
   const padNumber = (num) => {
     return num.toString().padStart(2, '0');
 };
@@ -118,8 +109,6 @@ const EmpCultHealthCostManage = () => {
     setSelectedGroup(null); // 선택한 그룹 정보 초기화
     setIsGroupPopupVisible(false);
   };
-
-  const onSelection = (e) => { setSelectedList(e.selectedRowsData) }
 
   return (
   <div>
@@ -161,11 +150,9 @@ const EmpCultHealthCostManage = () => {
           wordWrap={wordWrap}
           onRowClick={onRowClick}
           noEdit={true}
-          onSelection={onSelection}
 
         />
 
-        <Button onClick={handleSaved} style = {{backgroundColor: "#0366fc", color: "#fff",marginBottom: "20px"}}>  저장 하기</Button>
       </div>
     </div>
 

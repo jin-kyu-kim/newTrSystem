@@ -13,7 +13,7 @@
     {  "key": "dpstAmt", "value": "지급금액", "width": 120, "alignment": "center" },
     {  "key": "dpstYmd", "value": "지급일자", "width": 120, "alignment": "center" },
     {  "key": "balance", "value": "잔액", "width": 120, "alignment": "center" },
-    {  "width": 140, "alignment": "center", "button": { "text": "상세청구내역", "name": "rm" }}
+    {  "value": "상세청구내역", "width": 140, "alignment": "center", "cellType": "button", "button": { "text": "내역", "name": "rm" }}
   ],
 
   "searchInfo": {
