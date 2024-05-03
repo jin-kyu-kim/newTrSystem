@@ -3,33 +3,103 @@ import electAtrzJson from './ElecAtrzJson.json';
 import ApiRequest from 'utils/ApiRequest';
 import './ElecAtrz.css';
 import CustomTable from 'components/unit/CustomTable';
+import ElecAtrzCtrtInfoDetail from './ctrtInfo/ElecAtrzCtrtInfoDetail';
+import ElectGiveAtrzClm from './ElectGiveAtrzClm';
+import ElecAtrzCtrtOutordHnfDetail from './ctrtInfo/ElecAtrzCtrtOutordHnfDetail';
 
 
-const ElecAtrzTabDetail = ({ dtlInfo, detailData }) => {
-    const { vacDtl, clmColumns,  groupingColumn, keyColumnClm, groupingData  } = electAtrzJson.electAtrzDetail;
-    const [ expensClmInfo, setExpensClmInfo ] = useState([]);
+const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prjctData }) => {
+    const { vacDtl, clmColumns,  groupingColumn, groupingData, ctrtInfo } = electAtrzJson.electAtrzDetail;
+    const [ data, setData ] = useState([]);
+
+
+    console.log("detailData 탭디테일!!", detailData);
+    console.log("ctrtTyCd 탭디테일!!", ctrtTyCd);
+    console.log("prjctData 탭디테일!!", prjctData);
+    console.log("sttsCd 탭디테일!!", sttsCd);
+
+    /* ===================================  필요 데이터 조회  ====================================*/
+    useEffect(() => {
+
+        /* 경비 청구 */
+        if(["VTW04907"].includes(detailData.elctrnAtrzTySeCd)){
+            const getExpensClm = async () => {
+                try {
+                    const response = await ApiRequest('/boot/common/queryIdSearch', 
+                        {queryId: "elecAtrzMapper.retrieveElctrnAtrzExpensClm"
+                         ,elctrnAtrzId: detailData.elctrnAtrzId}
+                    );
+                    setData(response);
+                    console.log("response",response);
+    
+                } catch (error) {
+                    console.log('error', error);
+                }
+            };
+            getExpensClm();
+
+        /* 재료비 계약, 외주업체 계약, 외주인력 계약 */
+        } else if(["VTW04908","VTW04909","VTW04910","VTW04914"].includes(detailData.elctrnAtrzTySeCd)){
+
+            const getCtrtInfo = async () => {
+                
+                try {
+                    const elctrnAtrzId = detailData.ctrtElctrnAtrzId ? detailData.ctrtElctrnAtrzId : detailData.elctrnAtrzId;
+
+                    const response = await ApiRequest('/boot/common/commonSelect', 
+                                     [{ tbNm: "CTRT_ATRZ" }, { elctrnAtrzId: elctrnAtrzId }]
+                    );
+                    setData(response);
+                    console.log("response",response);
+    
+                } catch (error) {
+                    console.log('error', error);
+                }
+            };
+            getCtrtInfo();
+        }
+        
+    }, [detailData.ctrtElctrnAtrzId]);
+ 
 
     /**
-     *  경비청구 데이터 조회
+     *  경비청구 테이블의 그룹핑 컬럼 커스터마이징
      */
-    useEffect(() => {
-        const getExpensClm = async () => {
-            try {
-                const response = await ApiRequest('/boot/common/queryIdSearch', 
-                    {queryId: "elecAtrzMapper.retrieveElctrnAtrzExpensClm"
-                     ,elctrnAtrzId: detailData.elctrnAtrzId}
-                );
-                setExpensClmInfo(response);
-                console.log("response",response);
+    const groupingCustomizeText = (e) => {
+        if (e.value === "VTW01901") {
+            return "기업법인카드";
+          }else if (e.value === "VTW01902") {
+            return "개인현금지급";
+          } else if (e.value === "VTW01903") {
+            return "개인법인카드";
+          } else {
+            return "세금계산서/기타";
+          } 
+      }
 
-            } catch (error) {
-                console.log('error', error);
-            }
-        };
-        getExpensClm();
-    }, []);
+    /**
+     *  경비청구 화면그리기
+     */
+    const ClmTab = ({columns, groupingColumn}) => {
+        return(
+            <div>
+            <CustomTable
+                columns={columns}
+                values={data}
+                grouping={groupingColumn}
+                keyColumn={"rowId"}
+                groupingData={groupingData}
+                groupingCustomizeText={groupingCustomizeText}
+                wordWrap={true}
+            />
+            </div>
+        );
+    };
 
-    
+    /* ===================================  휴가  ====================================*/
+    /**
+     *  휴가정보 화면 그리기
+     */
     const VacInfoTab = ({ vacDtl, dtlInfo }) => {
         return (
             <div className="dtl-table">
@@ -37,6 +107,7 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData }) => {
                     <div style={{ display: 'flex' }} key={index}>
                         <div className="dtl-first-col">{vac.value}</div>
                         <div className="dtl-val-col">
+
                             {dtlInfo[vac.key]}
 
                             <div style={{display: 'flex'}}>
@@ -55,48 +126,88 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData }) => {
         );
     };
 
+    /* ===================================  재료비, 외주업체 계약  ====================================*/
     /**
-     *  청구 테이블의 그룹핑 컬럼 커스터마이징
+     *  재료비, 외주업체 화면 그리기
      */
-    const groupingCustomizeText = (e) => {
-        if (e.value === "VTW01901") {
-            return "기업법인카드";
-          }else if (e.value === "VTW01902") {
-            return "개인현금지급";
-          } else if (e.value === "VTW01903") {
-            return "개인법인카드";
-          } else {
-            return "세금계산서/기타";
-          } 
-      }
+    const CtrtInfo = ({ctrtInfo, data, ctrtTyCd})=>{
 
-    /**
-     *  청구 
-     */
-    const ClmTab = ({columns, groupingColumn}) => {
+        if(data && (detailData.elctrnAtrzTySeCd === 'VTW04910' || ctrtTyCd === 'VTW04910' ))
+            { 
+                ctrtInfo = ctrtInfo.filter(item => item.value !== '계약기간');
+            }
+        
         return(
-            <div>
-            <CustomTable
-                columns={columns}
-                values={expensClmInfo}
-                grouping={groupingColumn}
-                keyColumn={"rowId"}
-                groupingData={groupingData}
-                groupingCustomizeText={groupingCustomizeText}
-                wordWrap={true}
-            />
+            <div className="elecAtrzNewReq-ctrtInfo">
+                
+                {ctrtInfo.map((ctrt, index) => (
+                    <div style={{ display: 'flex' }} key={index}>
+                        <div className="dtl-first-col">{ctrt.value}</div>
+                        <div className="dtl-val-col">
+
+                        {data && data[0] && data[0][ctrt.key] ? (
+                            <>{data[0][ctrt.key]}</>
+                        ) : (
+                            <div> </div>  
+                        )}
+
+                        {data && data[0] ? (                      
+                        <div style={{display: 'flex'}}>
+                            {ctrt.key === 'CustomValue' && (
+                                    ctrt.info.map((item, index) => (
+                                        <div style={{display: 'flex'}} key={index}>
+                                            <div>{data[0][item.key]}</div>
+                                            <span className='lt-rt-margin'>{item.text}</span>
+                                        </div>
+                            )))}
+                        </div>     
+                         ) : (
+                             <div> </div>  
+                        )}
+          
+                        </div>
+                    </div>
+                ))}
             </div>
         );
-    };
+    }
 
+    /* ================  전자결재유형코드에 따른 특수 컴포넌트 렌더링  =================*/
+
+    const renderSpecialComponent = () => {
+
+        switch (detailData.elctrnAtrzTySeCd) {
+            case 'VTW04901':
+                return <VacInfoTab vacDtl={vacDtl} dtlInfo={dtlInfo} />;
+            case 'VTW04907':
+                return <ClmTab columns={clmColumns} groupingColumn={groupingColumn}/>;
+            case 'VTW04908':
+            case 'VTW04909':
+            case 'VTW04910':
+            case 'VTW04914':
+                return  <>
+                        <h3>계약정보</h3>
+
+                        <CtrtInfo ctrtInfo={ctrtInfo} data={data} ctrtTyCd={ctrtTyCd}/>
+                        {((detailData.ctrtElctrnAtrzId && detailData.elctrnAtrzTySeCd === "VTW04914" && ctrtTyCd !== "VTW04908") || ["VTW04909","VTW04910"].includes(detailData.elctrnAtrzTySeCd))
+                        ? 
+                        <ElecAtrzCtrtInfoDetail data={detailData} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd } /> 
+                        : <ElecAtrzCtrtOutordHnfDetail data={detailData} sttsCd={sttsCd} prjctData={prjctData} prjctId={prjctId} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd } />}
+                        </>
+            default:
+                return null;
+        }   
+    }
 
     return (
         <div>
-            {dtlInfo && detailData.elctrnAtrzTySeCd === 'VTW04901' 
-            ? <VacInfoTab vacDtl={vacDtl} dtlInfo={dtlInfo} />
-            : detailData.elctrnAtrzTySeCd === 'VTW04907' && 
-            <ClmTab columns={clmColumns} groupingColumn={groupingColumn}/>
-            }
+            {(["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)) 
+                && (detailData.elctrnAtrzTySeCd ==="VTW04914" ) 
+                // && (detailData.atrzDmndSttsCd)
+                && (
+                <ElectGiveAtrzClm detailData={detailData} sttsCd={sttsCd} prjctId={prjctId}/>
+                )}
+            {renderSpecialComponent()}
         </div>
     );
 }

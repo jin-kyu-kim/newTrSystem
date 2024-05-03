@@ -14,10 +14,10 @@
         FROM CD
         WHERE 1=1
             AND UP_CD_VALUE IS NULL
-        <if test="upCdValue != null and upCdValue !=''">
-            AND UP_CD_VALUE = #{upCdValue}
+        <if test="cdVal != null and cdVal !=''">
+            AND CD_VALUE LIKE CONCAT('%', #{cdVal}, '%')
         </if>
-        <if test="cdValue != null and cdValue !=''">
+		<if test="cdValue != null and cdValue !=''">
             AND CD_VALUE LIKE CONCAT('%', #{cdValue}, '%')
         </if>
         <if test="cdNm != null and cdNm !=''">
@@ -62,10 +62,31 @@
            LU.EMPNO,
            (SELECT E.EMP_FLNM FROM EMP E WHERE LU.EMP_ID =  E.EMP_ID) EMP_NM,
            (SELECT CD_NM FROM CD WHERE CD_VALUE = (SELECT E.JBPS_CD FROM EMP E WHERE LU.EMP_ID =  E.EMP_ID)) JBPS_NM,
-           (SELECT JBPS_CD FROM EMP E WHERE E.EMPNO = #{empno}) JBPS_CD,
-           PSWD
+			<if test="empno != null">
+				<if test="!empno.equals('')">
+					(SELECT JBPS_CD FROM EMP E WHERE E.EMPNO = #{empno}) JBPS_CD,
+				</if>
+			</if>
+			<if test="empId != null">
+				<if test="!empId.equals('')">
+					(SELECT JBPS_CD FROM EMP E WHERE E.EMP_ID = #{empId}) JBPS_CD,
+				</if>
+			</if>
+           PSWD,
+		   INTL_PWSD_YN
     FROM LGN_USER LU
-    WHERE EMPNO = #{empno}
+    WHERE 1=1
+	<if test="empno != null">
+	 <if test="!empno.equals('')">
+      AND   EMPNO = #{empno}
+	 </if>
+	</if>
+	<if test="empId != null">
+	 <if test="!empId.equals('')">
+      AND   EMP_ID = #{empId}
+	 </if>
+	</if>
+    AND USE_PSBLTY_ACNT_YN = 'Y'
     </select>
 
     <select id="userAuth" parameterType="String" resultType="com.trsystem.LowerHashMap">
@@ -168,7 +189,7 @@
 		AND E.EMP_ID =#{empId}
 	</select>
 	
-	<!-- main 결제 신청현황 -->
+	<!-- main 결재 신청현황 -->
 	<select id="retrieveAtrzAplySttus" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		select * from
 			   	(SELECT
@@ -247,7 +268,7 @@
 				LIMIT 4
 	</select>
 	
-	<!-- main 결제리스트-->
+	<!-- main 결재리스트-->
 	<select id="retiveAtrzList" parameterType="map" resultType="com.trsystem.LowerHashMap">
 	select * from
 			  (
@@ -330,7 +351,7 @@
 				  , '프로젝트 승인' AS TY_SE																	-- 결재 구분	
 				  , p.PRJCT_NM AS TITLE																	-- 프로젝트명
 				  , e.EMP_FLNM	AS ATRZ_EMP_NM															-- 직원이름(기안자)
-				  , DATE_FORMAT(p.REG_DT, '%Y-%m-%d') AS REG_DT 										-- 계약일자
+				  , DATE_FORMAT(pal.REG_DT, '%Y-%m-%d') AS REG_DT 										-- 계약일자
 				  , (SELECT CD_NM FROM CD WHERE CD_VALUE = pald.ATRZ_STTS_CD) AS ATRZ_STTS_CD_NM		-- 결재상태코드명
 				  , pald.ATRZ_STTS_CD																	-- 결재상태코드
 			  FROM PRJCT_ATRZ_LN pal																	-- 프로젝트 결재선

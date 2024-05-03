@@ -36,16 +36,12 @@ public class ElecAtrzDomain {
 	@Transactional
 	public static String insertElecAtrz(Map<String, Object> params) {
 		
-		System.out.println(params);
-		
 		// 공통
 		String regDt = String.valueOf(params.get("regDt"));
 		String regEmpId = String.valueOf(params.get("regEmpId"));
 		String atrzTySeCd = String.valueOf(params.get("elctrnAtrzTySeCd"));
 		String elctrnAtrzId =  String.valueOf(params.get("elctrnAtrzId"));
-		String sttsCd = String.valueOf(params.get("sttsCd")); // 임시저장인 경우 
-		
-		System.out.println(sttsCd);
+		String sttsCd = String.valueOf(params.get("sttsCd")); 
 		
 		Map<String, String> basicInfo = new HashMap<>();
 		basicInfo.put("regDt", regDt);
@@ -77,10 +73,6 @@ public class ElecAtrzDomain {
 			
 			// 기존에 저장된 전자결재 아이디에 해당하는 값을 제거한다.
 			
-			// 전자결재 테이블 데이터 삽입
-//			if(sttsCd.equals("VTW03701")) {
-				// 임시저장의 경우 임시저장된 데이터들 지우기
-				
 				/**
 				 *  1. 결재선 지우기
 				 *  target: ATRZ_LN
@@ -92,7 +84,6 @@ public class ElecAtrzDomain {
 				 *  target: REFRN_MAN
 				 */
 				deleteData("REFRN_MAN", elctrnAtrzId);
-				
 				
 				// 계약결재
 				if(atrzTySeCd.equals("VTW04908") || atrzTySeCd.equals("VTW04909") || atrzTySeCd.equals("VTW04910")) {
@@ -112,7 +103,7 @@ public class ElecAtrzDomain {
 						 * 외주인력 관련(외주인력)
 						 * target: HNF_CTRT_DTL, HNF_CTRT_DTL_CND
 						 */
-						deleteData("HNF_CTRT_DTL_CND", elctrnAtrzId);
+						deleteData("HNF_CTRT_DTL_MM", elctrnAtrzId);
 						deleteData("HNF_CTRT_DTL", elctrnAtrzId);
 					}
 					
@@ -131,12 +122,21 @@ public class ElecAtrzDomain {
 					deleteData("CLM_ATRZ_DTL", elctrnAtrzId);
 					deleteData("CLM_ATRZ", elctrnAtrzId);
 					
+					
+					
+				} else if(atrzTySeCd.equals("VTW04914")) {
+					
+					/**
+					 *  계약청구(지급품의)
+					 *  target : CTRT_GIVE_ATRZ
+					 */
+					deleteData("CTRT_GIVE_ATRZ", elctrnAtrzId);
+					
 				} else {
-					// 지급품의, 일반 결재 처리...
+					// 일반 결재 처리
 				}
 				
 				
-//			} else {
 				/**
 				 * 전자결재 테이블 데이터 삭제(최상위)
 				 */
@@ -164,10 +164,24 @@ public class ElecAtrzDomain {
 					
 					map.putAll(((Map<String, Object>) params.get("param")));
 					atrzTyResult = insertClmAtrz(map, elctrnAtrzId);
+				} else if(atrzTySeCd.equals("VTW04914")) {
 					
+					// 청구결재(지급품의) INSERT 로직 추가
+					Map<String, Object> map = new HashMap<>();
 					
+					map.putAll(((Map<String, Object>) params.get("param")));
+					
+					atrzTyResult = insertGiveAtrz(map, elctrnAtrzId); 
+							
 				} else {
-					System.out.println("개발중");
+					/**
+					 * ToDo: 일반 결재
+					 */
+					Map<String, Object> map = new HashMap<>();
+					
+					map.putAll(((Map<String, Object>) params.get("param")));
+					
+					atrzTyResult = insertGnrlAtrz(map, elctrnAtrzId); 
 				}
 				
 				if(electrnAtrzResult < 0 || atrzTyResult < 0 || atrzLnResult < 0) return null;
@@ -239,8 +253,6 @@ public class ElecAtrzDomain {
 			}
 		}); 
 		
-		System.out.println(paramList);
-		
 		tbParam.put("tbNm", "ATRZ_LN");
 		
 		insertParams.add(0, tbParam);
@@ -281,7 +293,7 @@ public class ElecAtrzDomain {
 			}
 			
 		} catch (Exception e) {
-			
+			return -1;
 		}
 		
 		return atrzLnResult; 
@@ -378,7 +390,6 @@ public class ElecAtrzDomain {
 			return result;
 		}
 		
-		
 		return result;
 	}
 	
@@ -394,16 +405,12 @@ public class ElecAtrzDomain {
 		
 		int result = -1;
 		
-		System.out.println(ctrtAtrzParam);
-		
 		// 깊은 복사
 		Map<String, Object> infoParam = new HashMap<>();
 
 		infoParam.putAll(ctrtAtrzParam);
 		
 		infoParam.remove("arrayData");
-		
-		System.out.println(infoParam);
 		
 		Map<String, Object> tbParam = new HashMap<>();
 		
@@ -423,12 +430,11 @@ public class ElecAtrzDomain {
 		try {
 			result = commonService.insertData(insertParams);
 			
-			System.out.println(atrzTySeCd);
-			
 			if(atrzTySeCd.equals("VTW04908")) {
 				
-				// 외주인력 처리
-				
+				// 외주인력 처리 HNF_CTRT_DTL
+				insertHnfCtrtDetail((List<Map<String, Object>>)ctrtAtrzParam.get("arrayData"), elctrnAtrzId);
+			
 			} else if(atrzTySeCd.equals("VTW04909")) {
 				
 				// 외주업체 처리
@@ -457,8 +463,6 @@ public class ElecAtrzDomain {
 	 */
 	public static int insertMatrlCtrtDetail(List<Map<String, Object>> paramList, String elctrnAtrzId) {
 	
-		System.out.println("재료비 계약 상세");
-		System.out.println(paramList);
 		int ctrtDtlresult = -1;
 		ArrayList<Map<String, Object>> copiedParams = new ArrayList<>();		
 		ArrayList<Map<String, Object>> insertParams = new ArrayList<>();
@@ -478,8 +482,6 @@ public class ElecAtrzDomain {
 				copiedParams.add(copiedMap);
 		}
 		
-		System.out.println(copiedParams);
-			
 		tbParam.put("tbNm", paramList.get(0).get("tbNm"));
 		insertParams.add(0, tbParam);
 		
@@ -495,10 +497,9 @@ public class ElecAtrzDomain {
 			infoParam.put("qy", copiedParams.get(i).get("qy"));
 			infoParam.put("dlvgdsPrnmntYmd", copiedParams.get(i).get("dlvgdsPrnmntYmd"));
 			infoParam.put("totAmt", copiedParams.get(i).get("totAmt"));
+			infoParam.put("expectCtrtEntrpsNm", copiedParams.get(i).get("expectCtrtEntrpsNm"));
 			insertParams.add(i, infoParam);
 		}
-		
-		System.out.println(insertParams);
 		
 		try {
 			ctrtDtlresult = commonService.insertData(insertParams);
@@ -532,7 +533,6 @@ public class ElecAtrzDomain {
 		ArrayList<Map<String, Object>> insertParams = new ArrayList<>();
 		
 		Map<String, Object> tbParam = new HashMap<>();
-		Map<String, Object> infoParam = new HashMap<>();
 		
 		for(Map<String, Object> originalMap: paramList) {
 			
@@ -547,17 +547,23 @@ public class ElecAtrzDomain {
 		}
 			
 		tbParam.put("tbNm", paramList.get(0).get("tbNm"));
+		insertParams.add(0, tbParam);
 		
 		for(int i = 1; i < copiedParams.size(); i++) {
 			
+			Map<String, Object> infoParam = new HashMap<>();
+			
 			copiedParams.get(i).remove("pay");
 			infoParam.put("elctrnAtrzId", elctrnAtrzId);
+			infoParam.put("prductNm", copiedParams.get(i).get("prductNm"));
 			infoParam.put("entrpsCtrtDtlSn", copiedParams.get(i).get("entrpsCtrtDtlSn"));
 			infoParam.put("tkcgJob", copiedParams.get(i).get("tkcgJob"));
 			infoParam.put("inptPrnmntHnfCnt", copiedParams.get(i).get("inptPrnmntHnfCnt"));
-			infoParam.put("inptBgngYmd", copiedParams.get(i).get("inptBgngYmd"));
-			infoParam.put("inptEndYmd", copiedParams.get(i).get("inptEndYmd"));
+			infoParam.put("inptBgngYmd", copiedParams.get(i).get("ctrtBgngYmd"));
+			infoParam.put("inptEndYmd", copiedParams.get(i).get("ctrtEndYmd"));
 			infoParam.put("totAmt", copiedParams.get(i).get("totAmt"));
+			infoParam.put("expectCtrtEntrpsNm", copiedParams.get(i).get("expectCtrtEntrpsNm"));
+			
 			
 			insertParams.add(i, infoParam);
 		}
@@ -567,9 +573,8 @@ public class ElecAtrzDomain {
 				
 				for(int i = 1; i < paramList.size(); i++) {
 					
-					int aaa = insertEntrpsCtrtDetailCondtion((List<Map<String, Object>>)paramList.get(i).get("pay"), paramList.get(i).get("entrpsCtrtDtlSn").toString(), elctrnAtrzId);
+					int ctrtResult = insertEntrpsCtrtDetailCondtion((List<Map<String, Object>>)paramList.get(i).get("pay"), paramList.get(i).get("entrpsCtrtDtlSn").toString(), elctrnAtrzId);
 				}
-				
 				
 			}
 			
@@ -611,6 +616,115 @@ public class ElecAtrzDomain {
 		return result;
 	}
 	
+	/**
+	 * 계약결재 중 외주인력 계약 상세 처리 메소드
+	 * @param paramList
+	 * @param elctrnAtrzId
+	 * @return
+	 */
+	public static int insertHnfCtrtDetail(List<Map<String, Object>> paramList, String elctrnAtrzId) {
+		
+		int ctrtDtlResult = -1;
+		
+		ArrayList<Map<String, Object>> copiedParams = new ArrayList<>();		
+		ArrayList<Map<String, Object>> insertParams = new ArrayList<>();
+		
+		Map<String, Object> tbParam = new HashMap<>();
+
+		
+		for(Map<String, Object> originalMap: paramList) {
+			
+			Map<String, Object> copiedMap = new HashMap<>();
+			
+			for(Map.Entry<String, Object> entry : originalMap.entrySet()) {
+				
+				copiedMap.put(entry.getKey(), entry.getValue());
+			}
+				
+				copiedParams.add(copiedMap);
+		}
+			
+		tbParam.put("tbNm", paramList.get(0).get("tbNm"));
+		insertParams.add(0, tbParam);
+		
+		for(int i = 1; i < copiedParams.size(); i++) {
+			Map<String, Object> infoParam = new HashMap<>();
+			
+			copiedParams.get(i).remove("hnfCtrtDtlMm");
+			infoParam.put("elctrnAtrzId", elctrnAtrzId);
+			infoParam.put("outordHnfCtrtSeCd", copiedParams.get(i).get("outordHnfCtrtSeCd"));	// 외주인력계약구분코드
+			infoParam.put("inptHnfId", copiedParams.get(i).get("inptHnfId"));						// 투입인력
+			infoParam.put("hnfRoleCd", copiedParams.get(i).get("hnfRoleCd"));					// 인력 역할 코드
+			infoParam.put("hnfGradCd", copiedParams.get(i).get("hnfGradCd"));					// 인력 등급 코드
+			infoParam.put("tkcgJob", copiedParams.get(i).get("tkcgJob"));						// 담당 업무
+			infoParam.put("untpc", copiedParams.get(i).get("untpc"));							// 단가
+			infoParam.put("inptPrnmntYmd", copiedParams.get(i).get("inptPrnmntYmd"));			// 투입예정일자
+			infoParam.put("withdrPrnmntYmd", copiedParams.get(i).get("withdrPrnmntYmd"));		// 철수예정일자
+			infoParam.put("expectInptHnfId", copiedParams.get(i).get("expectInptHnfId"));			// 계획투입인력
+			
+			insertParams.add(i, infoParam);
+		}
+		try {
+			ctrtDtlResult = commonService.insertData(insertParams);
+			if(ctrtDtlResult > 0) {
+				
+				for(int i = 1; i < paramList.size(); i++) {
+					
+					int ctrtResult = insertHnfCtrtDetailMm((List<Map<String, Object>>)paramList.get(i).get("hnfCtrtDtlMm"), paramList.get(i).get("inptHnfId").toString(), elctrnAtrzId);
+				}
+				
+			}
+			
+		} catch (Exception e) {
+			return ctrtDtlResult;
+		}
+		
+		return 1;
+	}
+	
+	/**
+	 * 계약결재 중 외주 인력 데이터 MM 상세 처리 메소드
+	 * @param paramList: 기타 데이터
+	 * @param empId: 투입 외주 인력 ID
+	 * @param elctrnAtrzId: 전자결재 ID
+	 * @return
+	 */
+	public static int insertHnfCtrtDetailMm(List<Map<String, Object>> paramList, String inptHnfId, String elctrnAtrzId) {
+		int result = -1;
+		
+		System.out.println("Last Table");
+		System.out.println(paramList);
+		
+		ArrayList<Map<String, Object>> insertParams = new ArrayList<>();
+		insertParams.add(0, paramList.get(0));
+		for(int i = 1; i < paramList.size(); i++) {
+			
+			Map<String, Object> infoParam = new HashMap<>();
+			infoParam.put("elctrnAtrzId", elctrnAtrzId);
+			infoParam.put("inptHnfId", inptHnfId);
+			infoParam.put("inptYm", paramList.get(i).get("id"));
+			infoParam.put("mm", paramList.get(i).get("mm"));
+			infoParam.put("ctrtAmt", paramList.get(i).get("ctrtAmt"));
+			
+			insertParams.add(i, infoParam);
+		}
+		
+		System.err.println(paramList);
+		
+		try {
+			result = commonService.insertData(insertParams);
+		} catch(Exception e) {
+			return result;
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 전자결재 승인 메소드
+	 * @param paramList
+	 * @return
+	 */
 	public static int aprvElecAtrz(List<Map<String, Object>> paramList) {
 		
 		String aprvrEmpId = String.valueOf(paramList.get(2).get("aprvrEmpId"));	// 현재 승인자
@@ -667,18 +781,23 @@ public class ElecAtrzDomain {
 					updateParams.add(1, updateParam); // 업데이트할 정보
 					updateParams.add(2, conditionParam); // 업데이트할 테이블의 조건
 
-
 					uptResult = commonService.updateData(updateParams);
 				}
 				
 			}
 		} catch(Exception e) {
-			
+			return uptResult;
 		}
 		
 		return atrzLnSn;
 	}
 	
+	/**
+	 * 청구결재 최종 승인시 프로젝트 비용청구 테이블에 insert 해준다.
+	 * Target Table: PRJCT_CT_APLY, PRJCT_CT_ATRZ
+	 * @param param
+	 * @return
+	 */
 	public static int insertPrjctCt(Map<String, Object> param) {
 		int result = -1;
 		
@@ -767,4 +886,75 @@ public class ElecAtrzDomain {
 		}
 	}
 	
-} 
+
+	/**
+	 * 결재 지급 처리 메소드
+	 * @param giveAtrzParam
+	 * @param elctrnAtrzId	전자결재ID
+	 * @return
+	 */
+	public static int insertGiveAtrz(Map<String, Object> giveAtrzParam, String elctrnAtrzId) {
+		System.out.println(giveAtrzParam);
+		int result = -1;
+		
+		ArrayList<Map<String, Object>> insertParams = new ArrayList<>();
+		
+		Map<String, Object> tbParam = new HashMap<>();
+		Map<String, Object> infoParam=  new HashMap<>();
+		
+		tbParam.put("tbNm", "CTRT_GIVE_ATRZ");
+		
+		infoParam.put("atrzTtl", giveAtrzParam.get("title"));
+		infoParam.put("stlmCn", giveAtrzParam.get("atrzCn"));
+		infoParam.put("elctrnAtrzId", elctrnAtrzId);
+//		infoParam.put("atchmnflId", giveAtrzParam.get("title"));
+		infoParam.put("giveAmt", giveAtrzParam.get("giveAmt"));
+		infoParam.put("giveYmd", giveAtrzParam.get("giveYmd"));
+		infoParam.put("ctrtElctrnAtrzId", giveAtrzParam.get("ctrtElctrnAtrzId"));
+		infoParam.put("vatExclAmt", giveAtrzParam.get("vatExclAmt"));
+		infoParam.put("taxBillPblcnYmd", giveAtrzParam.get("taxBillPblcnYmd"));
+		infoParam.put("giveOdrCd", giveAtrzParam.get("giveOdrCd"));
+		infoParam.put("entrpsCtrtDtlSn", giveAtrzParam.get("entrpsCtrtDtlSn"));
+		
+		insertParams.add(0, tbParam);
+		insertParams.add(1, infoParam);
+		
+		try {
+			result = commonService.insertData(insertParams);
+			
+		} catch (Exception e) {
+			return result;
+		}
+		
+		return result;
+	}
+	
+	
+	public static int insertGnrlAtrz(Map<String, Object> gnrlAtrzParam, String elctrnAtrzId) {
+		System.out.println(gnrlAtrzParam);
+		int result = -1;
+		
+		ArrayList<Map<String, Object>> insertParams = new ArrayList<>();
+		
+		Map<String, Object> tbParam = new HashMap<>();
+		Map<String, Object> infoParam=  new HashMap<>();
+		
+		tbParam.put("tbNm", "GNRL_ATRZ");
+		
+		infoParam.put("elctrnAtrzId", elctrnAtrzId);
+		infoParam.put("gnrlAtrzTtl", gnrlAtrzParam.get("title"));
+		infoParam.put("gnrlAtrzCn", gnrlAtrzParam.get("atrzCn"));
+		
+		insertParams.add(0, tbParam);
+		insertParams.add(1, infoParam);
+			
+		try {
+			result = commonService.insertData(insertParams);
+			
+		} catch (Exception e) {
+			return result;
+		}
+		
+		return result;
+	}
+}  

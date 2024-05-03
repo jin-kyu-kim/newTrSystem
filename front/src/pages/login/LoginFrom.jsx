@@ -4,41 +4,13 @@ import "devextreme/dist/css/dx.material.blue.light.css"; // Material 테마
 import { Button, TextBox } from "devextreme-react";
 import Vtw from "../../assets/img/logo.png";
 import Slogan from "../../assets/img/slogan.png";
-import {signIn} from "../../utils/AuthMng"
-import {useCookies} from "react-cookie";
+import {useAuth} from "../../components/sidebar/contexts/auth";
 
 const LoginForm = ({ handleLogin }) => {
-  const [cookies, setCookie] = useCookies(["userInfo", "userAuth", "deptInfo"]);
-
   const [empno, setEmpno] = useState("");
   const [pswd, setPassword] = useState("");
   const [validationErrors, setValidationErrors] = useState({});
-  const pwdRef =  React.createRef();
-
-  // const userInfo = {
-  //   empId: "20221064-bf25-11ee-b259-000c2956283f",
-  //   empNm: "김진규",
-  //   auth: "test",
-  //   deptId: "9ec66846-3e7e-48be-aa84-3dc2307dc32b",
-  // };
-  //
-  // // 기안자: "20221064-bf25-11ee-b259-000c2956283f",
-  //
-  // /*
-  // 20221064-bf25-11ee-b259-000c2956283f 확인
-  // 20218103-bf25-11ee-b259-000c2956283f 심사
-  // 2021c1ed-bf25-11ee-b259-000c2956283f 승인
-  // */
-  // const userAuth = {
-  //   userAuth: ["auth1", "auth2", "auth3"],
-  //   empNm: "김진규11",
-  //   auth: "test11",
-  // };
-  //
-  // const handleSetCookie = () => {
-  //   setCookie("userInfo", userInfo);
-  //   setCookie("userAuth", userAuth);
-  // };
+  const { signIn } = useAuth();
 
   const validateForm = () => {
     const errors = {};
@@ -57,31 +29,16 @@ const LoginForm = ({ handleLogin }) => {
     const valid = validateForm()
     if(valid){
       const data = await signIn(empno, pswd);
-      setCookie("userAuth", data.data.userAuth);
-      setCookie("userInfo", data.data.userInfo);
-      setCookie("deptInfo", data.data.deptInfo);
-      if(data.isOk){
-        handleLogin(data.isOk);
-      }else {
-        window.alert("비밀번호를 확인해주십시오");
+      if(!data.isOk){
+        window.alert(data.data);
         setPassword("");
       }
     }
-    // try {
-    //   // const param = { empId, pswd };
-    //   // const response = await ApiRequest("/boot/trs/sysMng/lgnSkll", param);
-    //
-    //   handleSetCookie();
-    //   handleLogin();
-    // } catch (error) {
-    //   console.log(error);
-    // }
-
   };
 
   return (
       <div>
-        <div className="login">
+        <div className="login" >
         <h1 className="login-header">
           <img src={Vtw} alt="VTW" />
         </h1>
@@ -94,6 +51,7 @@ const LoginForm = ({ handleLogin }) => {
               value={empno}
               onValueChanged={(e) => setEmpno(e.value)}
               placeholder="사번"
+              onEnterKey={handleClick}
             />
             {validationErrors.empno && (
                 <div style={{ color: 'red' }}>{validationErrors.empno}</div>
@@ -105,6 +63,7 @@ const LoginForm = ({ handleLogin }) => {
               value={pswd}
               onValueChanged={(e) => setPassword(e.value)}
               placeholder="비밀번호"
+              onEnterKey={handleClick}
             />
             {validationErrors.pswd && (
                 <div style={{ color: 'red' }}>{validationErrors.pswd}</div>

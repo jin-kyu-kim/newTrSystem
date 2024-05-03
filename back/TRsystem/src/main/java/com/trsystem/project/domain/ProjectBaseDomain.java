@@ -1,20 +1,14 @@
 package com.trsystem.project.domain;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.trsystem.batchSkill.service.BatchSkillService;
+import com.trsystem.common.service.CommonService;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.trsystem.batchSkill.service.BatchSkillService;
-import com.trsystem.common.service.CommonService;
-
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.time.LocalDate;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
@@ -600,7 +594,88 @@ public class ProjectBaseDomain {
 		}
 		return 1;
 	}
-	
+
+	public static int apprvOldCt(Map<String, Object> param){
+		// 날짜 확인
+		LocalDate currentDate = LocalDate.now();
+		int year = currentDate.getYear();
+		int month = currentDate.getMonthValue();
+		String ym = String.format("%04d%02d", year, month);
+
+		LocalDate lastMonthDate = currentDate.minusMonths(1).withDayOfMonth(1).minusDays(1);
+		int lastYear = lastMonthDate.getYear();
+		int lastMonth = lastMonthDate.getMonthValue();
+		String lastYm = String.format("%04d%02d", lastYear, lastMonth);
+
+		int dayOfMonth = currentDate.getDayOfMonth();
+		String nowYm = dayOfMonth > 15 ? ym : lastYm;
+		int nowOdr = dayOfMonth > 15 ? 1 : 2;
+
+		// PRJCT_INDVDL_CT_MM 테이블에 데이터 존재하는지 확인하고 없으면 생성
+		Map<String, Object> paramCtMm = new HashMap<>();
+		paramCtMm.put("queryId", "projectMapper.insertCtMm");
+		paramCtMm.put("prjctId", param.get("prjctId"));
+		paramCtMm.put("empId", param.get("empId"));
+		paramCtMm.put("aplyYm", nowYm);
+		paramCtMm.put("aplyOdr", nowOdr);
+		commonService.queryIdSearch(paramCtMm);
+
+		// (PRJCT_CT_APLY)
+		// ID로 서치
+		Map<String, Object> paramAply = new HashMap<>();
+		paramAply.put("queryId", "projectMapper.retrievePrjctCtAply");
+		paramAply.put("prjctId", param.get("prjctId"));
+		paramAply.put("empId", param.get("empId"));
+		paramAply.put("aplyYm", param.get("aplyYm"));
+		paramAply.put("aplyOdr", param.get("aplyOdr"));
+		paramAply.put("prjctCtAplySn", param.get("prjctCtAplySn"));
+		List<Map<String, Object>> listAply = commonService.queryIdSearch(paramAply);
+
+		// 가져온 값의 aplyYm, aplyOdr 바꿔서 인서트
+		List<Map<String, Object>> insertAply = new ArrayList<>();
+		Map<String, Object> tbAply = new HashMap<>();
+		tbAply.put("tbNm", "PRJCT_CT_APLY");
+		tbAply.put("snColumn", "prjctCtAplySn");
+		Map<String, Object> snSearch = new HashMap<>();
+		snSearch.put("prjctId", param.get("prjctId"));
+		snSearch.put("empId", param.get("empId"));
+		snSearch.put("aplyYm", nowYm);
+		snSearch.put("aplyOdr", nowOdr);
+		tbAply.put("snSearch", snSearch);
+		Map<String, Object> dataAply = listAply.get(0);
+		dataAply.put("APLY_YM", nowYm);
+		dataAply.put("APLY_ODR", nowOdr);
+		insertAply.add(tbAply);
+		insertAply.add(dataAply);
+		commonService.insertData(insertAply);
+
+		// (PRJCT_CT_ATRZ)
+		// ID로 서치
+		paramAply.put("queryId", "projectMapper.retrievePrjctCtAtrz");
+		List<Map<String, Object>> listAtrz = commonService.queryIdSearch(paramAply);
+
+		// 기존 값 업데이트 -> 코드 VTW03708(이월)
+		paramAply.put("queryId", "projectMapper.updatePrjctCtAtrz");
+		commonService.queryIdSearch(paramAply);
+
+		// 가져온 값의 aplyYm, aplyOdr 바꿔서 인서트
+		List<Map<String, Object>> insertAtrz = new ArrayList<>();
+		Map<String, Object> tbAtrz = new HashMap<>();
+		tbAtrz.put("tbNm", "PRJCT_CT_ATRZ");
+		tbAtrz.put("snColumn", "prjctCtAplySn");
+		Map<String, Object> dataAtrz = listAtrz.get(0);
+		dataAtrz.put("APLY_YM", dataAply.get("aplyYm"));
+		dataAtrz.put("APLY_ODR", dataAply.get("aplyOdr"));
+		dataAtrz.put("APRVR_EMP_ID", param.get("aprvrEmpId"));
+		dataAtrz.put("APRV_YMD", ym + String.format("%02d", dayOfMonth));
+		dataAtrz.put("ATRZ_DMND_STTS_CD", "VTW03703");
+		insertAtrz.add(tbAtrz);
+		insertAtrz.add(dataAtrz);
+		commonService.insertData(insertAtrz);
+
+		return 1;
+	}
+
 	/**
 	 * 프로젝트 읽기/쓰기 권한을 부여하는 메소드
 	 * @param param
@@ -608,38 +683,38 @@ public class ProjectBaseDomain {
 	 */
 	public static int insertPrjctMngAuth(Map<String, Object> param) {
 		int result = 0;
-		
+
 		String prjctMngrEmpId =  String.valueOf(param.get("prjctMngrEmpId"));	// PM의 EMP ID
-		
+
 		// 1. 권한을 부여할 emp 목록 조회해오기.
 		List<Map<String, Object>> empList = retrieveAprvrEmpId(param);
 		Set<String> empSet = new HashSet<>();
-		
+
 		// 2. 중복을 제거한 set 만든다.(부서에 따라 empId가 중복 될 경우가 존재)
 		for(int i = 0; i < empList.size(); i++) {
 			empSet.add(String.valueOf(empList.get(i).get("empId")));
 		}
-		
+
 		ArrayList<String> list = new ArrayList<String>(empSet);
-		
+
 		Map<String, Object> tbParam = new HashMap<>();		// 테이블 파라미터
 		Map<String, Object> pmDataParam = new HashMap<>();	// pm 파라미터
 		ArrayList<Map<String, Object>> insertParams = new ArrayList<>();
-		
+
 		tbParam.put("tbNm", "PRJCT_MNG_AUTHRT");
-		
+
 		pmDataParam.put("prjctId", param.get("prjctId"));
 		pmDataParam.put("empId", param.get("prjctMngrEmpId"));
 		pmDataParam.put("prjctMngAuthrtCd", param.get("prjctMngAuthrtCd"));
 		pmDataParam.put("regEmpId", param.get("regEmpId"));
 		pmDataParam.put("regDt", param.get("regDt"));
-		
+
 		insertParams.add(0, tbParam);
 		insertParams.add(pmDataParam);
-		
+
 		for(int i = 0; i < list.size(); i++) {
 			Map<String, Object> infoParam = new HashMap<>();
-			
+
 			// 권한 생성할 인력 중 PM의 아이디와 다른 사람만(이미 들어있기 때문에)
 			if(!prjctMngrEmpId.equals(list.get(i))) {
 				infoParam.put("prjctId", param.get("prjctId"));
@@ -649,9 +724,8 @@ public class ProjectBaseDomain {
 				infoParam.put("regDt", param.get("regDt"));
 				insertParams.add(infoParam);
 			}
-			
 		}
-		
+
 		try {
 			result = commonService.insertData(insertParams);
 		} catch (Exception e) {

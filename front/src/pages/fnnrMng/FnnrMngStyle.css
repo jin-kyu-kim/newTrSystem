@@ -1,4 +1,4 @@
-.dx-datagrid-text-content {
+.TimeExpenseInsertSttus > .dx-datagrid-text-content {
     font-size: 12px;
 }
 
@@ -17,5 +17,6 @@
 }
 
 .dx-datagrid .dx-row > td > .dx-button-has-text {
+    height: 20px;
     min-width: 50px;
 }

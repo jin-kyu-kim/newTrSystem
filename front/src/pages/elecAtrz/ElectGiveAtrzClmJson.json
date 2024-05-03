@@ -1,0 +1,42 @@
+{
+    "labelValue" : {
+        "giveYmd": {
+            "type": "ComboBox",
+            "label": "청구 월",
+            "required": true,
+            "placeholder": "청구 월",
+            "param":{ 
+                    "queryId" : {
+                        "queryId" : "elecAtrzMapper.retrieveGiveAtrzClmYmd"
+                        },
+                    "valueExpr" : "giveYmd",
+                    "displayExpr": "giveYmdFormat",
+                    "values" : ["giveYmdFormat", "giveYmd", "vatExclAmt", "entrpsCtrtDtlSn", "giveOdrCd"],
+                    "name" : "giveYmd"
+                    }
+        },
+        "vatExclAmt": {
+            "name": "vatExclAmt",
+            "type": "NumberBox",
+            "label": "청구 금액(부가세 제외)",
+            "placeholder": "청구 금액(부가세 제외)",
+            "format": "#,###",
+            "required": true
+        },
+        "giveAmt": {
+            "name": "giveAmt",
+            "type": "NumberBox",
+            "label": "청구 금액(부가세 포함)",
+            "placeholder": "청구 금액(부가세 포함)",
+            "format": "#,###",
+            "required": true
+        },
+        "taxBillPblcnYmd": {
+            "name": "taxBillPblcnYmd",
+            "type": "DateBox",
+            "label": "세금계산서 발행일",
+            "placeholder": "세금계산서 발행일",
+            "required": true
+        }
+    }
+}

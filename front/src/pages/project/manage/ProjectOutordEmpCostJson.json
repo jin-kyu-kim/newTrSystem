@@ -43,10 +43,14 @@
             "label": "성명",
             "required": true,
             "placeholder": "성명",
-            "param": { "tbNm" : "OUTORD_EMP",
+            "param": { 
+                        "queryId" : {
+                            "queryId" : "projectMapper.retrieveoutordEmpPrmpc"
+                            },
                         "valueExpr" : "outordEmpId",
                         "displayExpr": "outordEmpNm",
-                        "name": "outordEmpId"
+                        "values" : ["outordEmpId","outordEmpNm"],
+                        "name" : "outordEmpId"
                      }
         },
         "hnfRoleCdNm": {
@@ -75,7 +79,8 @@
             "type": "NumberBox",
             "label": "단가",
             "required": true,
-            "placeholder": "단가"
+            "placeholder": "단가",
+            "format" : "#,##0"
         },
         "gramt": {
             "name": "gramt",
@@ -83,11 +88,13 @@
             "label": "총 금액",
             "required": true,
             "placeholder": "총 금액",
-            "readOnly": true
+            "readOnly": true,
+            "format" : "#,##0"
         },
         "total": {
             "name": "total",
             "type": "NumberBox",
+
             "label": "총 MM",
             "required": true,
             "placeholder": "총 MM",

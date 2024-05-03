@@ -9,12 +9,15 @@ import ApiRequest from "utils/ApiRequest";
 
 const ProjectExpenseCash = (props) => {
     const { labelValue } = ProjectExpenseJson;
-    const { sendTbInfo, placeholderAndRequired, btnInfo } = ProjectExpenseJson.ProjectExpenseTab;
+    const { placeholderAndRequired, btnInfo } = ProjectExpenseJson.ProjectExpenseTab;
     const [ validationErrors, setValidationErrors ] = useState([]);
-    const [ customParam, setCustomParam ] = useState({
-        queryId: "indvdlClmMapper.retrieveExpensCdPrjctAccto"
-    });
+    const [ customParam, setCustomParam ] = useState({ queryId: "indvdlClmMapper.retrieveExpensCdPrjctAccto" });
+    const atrzParam = {
+        queryId: "projectExpenseMapper.retrieveElctrnAtrzClm",
+        empId: props.empId
+    };
     const [ empList, setEmpList ] = useState([]);
+    const [ dateVal, setDateVal ] = useState({utztnDt: undefined});
     const [ value, setValue ] = useState([{
         empId: props.empId,
         aplyYm: props.aplyYm,
@@ -46,10 +49,17 @@ const ProjectExpenseCash = (props) => {
     }, [value[0].prjctId]);
     
     const handleChgValue = (data) => {
+        let newValue = data.value;
+
+        if(data.name === 'utztnDt'){
+            newValue = newValue + "000000";
+            setDateVal({[data.name]: data.value});
+        }
         setValue(prevValue => [{
             ...prevValue[0],
-            [data.name]: data.value
+            [data.name]: newValue
         }]);
+        
     }
 
     const SpecialTypeRender = ({item}) => {
@@ -59,7 +69,7 @@ const ProjectExpenseCash = (props) => {
                     <CustomComboBox
                         label={item.label}
                         props={item.param}
-                        customParam={customParam}
+                        customParam={item.name === 'expensCd' ? customParam : atrzParam }
                         onSelect={handleChgValue}
                         placeholder={item.placeholder}
                         value={value[0][item.name]}
@@ -67,7 +77,7 @@ const ProjectExpenseCash = (props) => {
                         readOnly={item.name === 'expensCd' && !value[0].prjctId}
                     />
                 )
-            case 'textBox':
+            default: // textBox
                 return item.name === 'atdrn' && value[0].expensCd === 'VTW04531' ? (
                     <TagBox
                         dataSource={empList}
@@ -107,11 +117,11 @@ const ProjectExpenseCash = (props) => {
             </span>
 
             <div className="dx-fieldset" style={{width: '80%'}}>
-                {labelValue.map(item => 
+                {labelValue.map((item, index) => 
                     (!item.special ? 
-                        <CustomLabelValue props={item} onSelect={handleChgValue} value={value[0][item.name]} />
+                        <CustomLabelValue props={item} onSelect={handleChgValue} value={item.name === 'utztnDt' ? dateVal[item.name] : value[0][item.name]} key={index} />
                     : 
-                        <div className="dx-field">
+                        <div className="dx-field" key={index} >
                             <div className="dx-field-label asterisk">{item.label}</div>
                             <div className="dx-field-value">
                                 <SpecialTypeRender item={item} />
@@ -122,8 +132,8 @@ const ProjectExpenseCash = (props) => {
             </div>
 
             <div style={{marginTop: '20px', marginLeft: '430px'}}>
-                <ProjectExpenseSubmit selectedItem={value} sendTbInfo={sendTbInfo} buttonGroup={btnInfo} width={'1000px'}
-                    validateFields={() => validateFields(value, placeholderAndRequired, setValidationErrors, btnInfo)} />
+                <ProjectExpenseSubmit validateFields={() => validateFields(value, placeholderAndRequired, setValidationErrors, btnInfo)} 
+                    getData={props.getData} selectedItem={value} buttonGroup={btnInfo} width={'1000px'} />
             </div>
         </div>
     );

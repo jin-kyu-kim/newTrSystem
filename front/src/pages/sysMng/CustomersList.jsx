@@ -67,12 +67,13 @@ const CustomersList = () => {
             <div style={{ marginBottom: '100px' }}>
                 <CustomEditTable
                     tbNm={tbNm}
-                    ynVal={ynVal}
                     values={values}
-                    keyColumn={keyColumn}
                     columns={tableColumns}
-                    handleYnVal={handleYnVal}
+                    keyColumn={keyColumn}
                     callback={pageHandle}
+                    ynVal={ynVal}
+                    handleYnVal={handleYnVal}
+                    noDataText={'등록된 데이터가 없습니다.'}
                   />
             </div>
         </div>

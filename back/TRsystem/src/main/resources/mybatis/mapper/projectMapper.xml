@@ -102,7 +102,14 @@
 				  , DATE_FORMAT(STBLE_END_YMD, '%Y-%m-%d') AS STBLE_END_YMD
 			      , COUNT(*) OVER () AS TOTAL_ITEMS
 			  FROM PRJCT_ATRZ_LN pal
-			  JOIN PRJCT_ATRZ_LN_DTL pald ON(pal.PRJCT_ID = pald.PRJCT_ID AND pal.ATRZ_LN_SN = pald.ATRZ_LN_SN AND pal.NOW_ATRZ_STEP_CD = pald.ATRZ_STEP_CD)
+			  JOIN PRJCT_ATRZ_LN_DTL pald 
+			  	ON(pal.PRJCT_ID = pald.PRJCT_ID 
+			  	   AND pal.ATRZ_LN_SN = pald.ATRZ_LN_SN 
+			  	   AND CASE 
+				  	   WHEN pal.NOW_ATRZ_STEP_CD = 'VTW00708' THEN 'VTW00705' = pald.ATRZ_STEP_CD
+					   WHEN pal.NOW_ATRZ_STEP_CD != 'VTW00708' THEN pal.NOW_ATRZ_STEP_CD = pald.ATRZ_STEP_CD	   	
+			  	   END
+			  	   )
 			  JOIN PRJCT p ON (p.PRJCT_ID = pal.PRJCT_ID AND p.PRJCT_ID = pald.PRJCT_ID)
 			  JOIN EMP e  ON (e.EMP_ID = pal.REG_EMP_ID)
 			 WHERE 1=1
@@ -514,7 +521,9 @@
 	 	 , pald.RJCT_PRVONSH
  	 	 , pald.APRV_YMD AS STEP_APRV_YMD
  	 	 , pald.RJCT_YMD AS STEP_RJCT_YMD
- 	 	 , DATE_FORMAT(pald.MDFCN_DT, '%Y.%m.%d %H:%i:%s') AS MDFCN_DT
+ 	 	 , CASE WHEN pald.APRV_YMD IS NOT NULL THEN DATE_FORMAT(pald.MDFCN_DT, '%Y.%m.%d %H:%i:%s')
+ 	 		 	WHEN pald.APRV_YMD IS NULL THEN NULL 
+ 	 	 	END AS MDFCN_DT
 	  FROM PRJCT_ATRZ_LN_DTL pald 
 	  JOIN CD c1 ON (c1.CD_VALUE = pald.ATRZ_STEP_CD)
 	  JOIN CD c2 ON (c2.CD_VALUE = pald.ATRZ_STTS_CD)
@@ -651,6 +660,7 @@
 	  SELECT e.EMP_ID, 
 	  		 e.EMP_FLNM, 
 	  		 e.JBPS_CD,
+	  		 e.EMPNO,
 	  		 c.CD_NM,
 	  		 c.USER_DFN_VALUE, 
 			 CONCAT(e.EMP_FLNM, ' - ' , c.CD_NM) as EMP_NAME_JBPS
@@ -668,7 +678,8 @@
 		  FROM PRJCT
 		 WHERE PRJCT_CD_IDNTFR LIKE CONCAT(#{ctmmnyId},'%')
 	</select>
-	
+
+    <!-- 프로젝트비용승인: 인력 데이터그리드 조회 -->
 	<select id="retrieveMmAply" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT dept.DEPT_NM
 		     , e.EMP_FLNM
@@ -721,11 +732,11 @@
 	<select id="retrieveOutordHnfPrmpc" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT 
 		   O.*,
-		   E.OUTORD_EMP_NM, 
+		   E.EMP_FLNM AS OUTORD_EMP_NM, 
 		   C.CD_NM AS HNF_ROLE_CD_NM, 
 		   D.CD_NM AS HNF_GRAD_CD_NM
 		FROM OUTORD_LBRCO_PRMPC O
-		LEFT JOIN OUTORD_EMP E ON E.OUTORD_EMP_ID = O.OUTORD_EMP_ID 
+		LEFT JOIN EMP E ON E.EMP_ID = O.OUTORD_EMP_ID 
 		JOIN CD C ON O.HNF_ROLE_CD = C.CD_VALUE
 		JOIN CD D ON O.HNF_GRAD_CD = D.CD_VALUE
 		WHERE 1=1
@@ -764,7 +775,7 @@
 		
 	</select>
 
-	
+    <!-- 프로젝트비용승인: 경비 데이터그리드 조회 -->
 	<select id="retrieveCtAply" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT dept.DEPT_NM
 			 , e.EMP_FlNM
@@ -795,7 +806,7 @@
 		   AND pca.APLY_YM = #{aplyYm}
 		   AND pca.APLY_ODR = #{aplyOdr}
            AND pcat.ATRZ_DMND_STTS_CD IS NOT NULL
-           AND pcat.ATRZ_DMND_STTS_CD != 'VTW03701'
+           AND pcat.ATRZ_DMND_STTS_CD NOT IN ('VTW03701', 'VTW03708')
        <if test="empId != null">
             <if test="!empId.equals('')">
                 AND pca.EMP_ID = #{empId}
@@ -803,7 +814,27 @@
         </if>
 		 GROUP BY e.EMP_ID
 	</select>
-	
+
+    <!-- 프로젝트비용승인: 경비 전체 승인 취소 (전자결재 제외) -->
+    <update id="updateCtAply" parameterType="map">
+        UPDATE PRJCT_CT_ATRZ pcat
+        JOIN PRJCT_CT_APLY pca ON (pcat.EMP_ID = pca.EMP_ID AND pcat.APLY_YM = pca.APLY_YM
+            AND pcat.APLY_ODR = pca.APLY_ODR AND pcat.PRJCT_ID = pca.PRJCT_ID AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN)
+        SET
+            pcat.ATRZ_DMND_STTS_CD = 'VTW03702'
+          , pcat.APRVR_EMP_ID = null
+          , pcat.APRV_YMD = null
+        WHERE pcat.EMP_ID = #{empId}
+          AND pcat.APLY_YM = #{aplyYm}
+          AND pcat.APLY_ODR = #{aplyOdr}
+          <if test="prjctId != null and prjctId.equals('')">
+          AND pcat.PRJCT_ID = #{prjctId}
+		  </if>
+          AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703'
+          AND pca.ELCTRN_ATRZ_ID IS NULL
+    </update>
+
+    <!-- 프로젝트비용승인: 경비 상세 팝업 조회 -->
 	<select id="retrieveProjectCtAplyDetail" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT CASE
                    WHEN pcat.ATRZ_DMND_STTS_CD = 'VTW03702' THEN 1
@@ -833,7 +864,8 @@
 		   AND pca.APLY_ODR = #{aplyOdr}
 		   AND pca.EMP_ID = #{empId}
 	</select>
-	
+
+    <!-- 프로젝트비용승인: 인력 상세 팝업 조회 -->
 	<select id="retrieveProjectMmAplyDetail" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT CASE
                    WHEN pah.ATRZ_DMND_STTS_CD = 'VTW03702' THEN 1
@@ -878,6 +910,7 @@
 	     AND pma.APLY_ODR = #{aplyOdr}
 	</select>
 
+    <!-- 프로젝트비용승인: 인력 세부리스트 조회 -->
     <select id="retrieveProjectMmChild" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT pma.PRJCT_ID
              , pma.APLY_YM
@@ -897,6 +930,7 @@
           AND pmat.ATRZ_DMND_STTS_CD IN ('VTW03702', 'VTW03703', 'VTW03704')
     </select>
 
+    <!-- 프로젝트비용승인: 경비 세부리스트 조회 -->
     <select id="retrieveProjectCtChild" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT pca.PRJCT_ID
              , pca.APLY_YM
@@ -908,6 +942,7 @@
              , cd.CD_NM AS EXPENS_CD
              , pca.USE_OFFIC
              , pca.CT_PRPOS
+             , pca.ELCTRN_ATRZ_ID
              , pcat.ATRZ_DMND_STTS_CD
         FROM PRJCT_CT_APLY pca
         JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_ID = pca.PRJCT_ID AND pcat.EMP_ID = pca.EMP_ID
@@ -972,7 +1007,7 @@
             <if test="tbCostNm == 'OUTORD_LBRCO_PRMPC'">
 			    ( SELECT SUM(T.TOTAL) AS CN
 					FROM (
-					SELECT (M.UNTPC * S.EXPECT_MM)AS TOTAL  FROM OUTORD_LBRCO_PRMPC M
+					SELECT (S.UNTPC * S.EXPECT_MM)AS TOTAL  FROM OUTORD_LBRCO_PRMPC M
 					JOIN OUTORD_LBRCO_PRMPC_DTL S
 					ON M.PRJCT_ID = S.PRJCT_ID AND M.BGT_MNG_ODR = S.BGT_MNG_ODR AND M.OUTORD_LBRCO_PRMPC_SN = S.OUTORD_LBRCO_PRMPC_SN 
 					WHERE 1=1
@@ -1123,13 +1158,8 @@
                      WHERE MIM.PRJCT_ID = #{prjctId}
                        AND PBP.ATRZ_DMND_STTS_CD  = #{atrzDmndSttsCd}
                        AND MIM.BGT_MNG_ODR = MLP.BGT_MNG_ODR
-                       AND MIM.BGT_MNG_ODR = (
-                         SELECT
-                             MAX(BGT_MNG_ODR)
-                         FROM
-                             MMNY_INPT_MM
-                         WHERE PRJCT_ID = #{prjctId}
-                     )) A
+                       AND MIM.BGT_MNG_ODR = #{bgtMngOdr}
+                    ) A
              UNION ALL
              SELECT
                  '인건비' AS PRMPC_ACCTO_TOT,
@@ -1156,13 +1186,8 @@
                           AND OLPD.BGT_MNG_ODR = OLP.BGT_MNG_ODR
                   WHERE OLPD.PRJCT_ID = #{prjctId}
                     AND PBP.ATRZ_DMND_STTS_CD  = #{atrzDmndSttsCd}
-                    AND OLPD.BGT_MNG_ODR = (
-                      SELECT
-                          MAX(BGT_MNG_ODR)
-                      FROM
-                          OUTORD_LBRCO_PRMPC_DTL
-                      WHERE PRJCT_ID = #{prjctId}
-                  ))A
+                    AND OLPD.BGT_MNG_ODR = #{bgtMngOdr}
+                    )A
              UNION ALL
              SELECT
                  '경비' AS PRMPC_ACCTO_TOT,
@@ -1189,12 +1214,8 @@
                       EMPD.PRJCT_ID = #{prjctId}
                     AND EMPD.EXPENS_CD  BETWEEN 'VTW04501' AND 'VTW04528'
                     AND  PBP.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
-                    AND EMPD.BGT_MNG_ODR = (
-                      SELECT
-                          MAX(BGT_MNG_ODR)
-                      FROM
-                          EXPENS_MNBY_PRMPC_DTLS
-                      WHERE PRJCT_ID = #{prjctId} )) A
+                    AND EMPD.BGT_MNG_ODR = #{bgtMngOdr}
+                    ) A
              UNION ALL
              SELECT
                  '경비' AS PRMPC_ACCTO_TOT,
@@ -1221,12 +1242,8 @@
                       EMPD.PRJCT_ID = #{prjctId}
                     AND EMPD.EXPENS_CD  BETWEEN 'VTW04529' AND 'VTW04535'
                     AND  PBP.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
-                    AND EMPD.BGT_MNG_ODR = (
-                      SELECT
-                          MAX(BGT_MNG_ODR)
-                      FROM
-                          EXPENS_MNBY_PRMPC_DTLS
-                      WHERE PRJCT_ID = #{prjctId})) A
+                    AND EMPD.BGT_MNG_ODR = #{bgtMngOdr}
+                    ) A
              UNION ALL
              SELECT
                  '외주업체비' AS PRMPC_ACCTO_TOT,
@@ -1248,13 +1265,8 @@
                       AND PBP.BGT_MNG_ODR = OECP.BGT_MNG_ODR
                   WHERE OECP.PRJCT_ID = #{prjctId}
                     AND PBP.ATRZ_DMND_STTS_CD  = #{atrzDmndSttsCd}
-                    AND OECP.BGT_MNG_ODR = (
-                      SELECT
-                          MAX(BGT_MNG_ODR)
-                      FROM
-                          OUTORD_ENTRPS_CT_PRMPC
-                      WHERE PRJCT_ID = #{prjctId}
-                  ))A
+                    AND OECP.BGT_MNG_ODR = #{bgtMngOdr}
+                    )A
              UNION ALL
              SELECT
                  '재료비' AS PRMPC_ACCTO_TOT,
@@ -1266,7 +1278,7 @@
              FROM(
                      SELECT
                          '재료비',
-                         IFNULL(SUM(MCP.QY),0) '예산',
+                         IFNULL(SUM(MCP.CNTRCTAMOUNT),0) '예산',
                          IFNULL((
                                     SELECT
                                         SUM(USE_AMT)
@@ -1280,12 +1292,8 @@
                      WHERE
                          MCP.PRJCT_ID = #{prjctId}
                        AND  PBP.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
-                       AND MCP.BGT_MNG_ODR = (
-                         SELECT
-                             MAX(BGT_MNG_ODR)
-                         FROM
-                             MATRL_CT_PRMPC
-                         WHERE PRJCT_ID = #{prjctId} )) A
+                       AND MCP.BGT_MNG_ODR = #{bgtMngOdr}
+                       ) A
             ) B
     </select>
     
@@ -1303,79 +1311,66 @@
 
 
     <select id="retrievePrjctAtrzAuthrt" parameterType="map" resultType="com.trsystem.LowerHashMap" >
-
-        SELECT
-        EMP_ID,
-        EMPNO,
-        EMP_FLNM,
-        JBPS_NM,
-        DEPT_ID,
-        HDOF_STTS_NM,
-        READ_YN,
-        WRITE_YN
-        FROM(
-        SELECT
-        E.EMP_ID AS EMP_ID,
-        E.EMPNO AS EMPNO,
-        E.EMP_FLNM AS EMP_FLNM,
-        C.CD_NM AS JBPS_NM,
-        GROUP_CONCAT(D.DEPT_NM) AS DEPT_ID,
-        C2.CD_NM AS HDOF_STTS_NM,
-        CASE WHEN PMA.EMP_ID IS NOT NULL AND PMA.PRJCT_MNG_AUTHRT_CD = 'VTW05201' OR PMA.PRJCT_MNG_AUTHRT_CD = 'VTW05202'  THEN 'Y'
-        WHEN PMA.EMP_ID IS NULL THEN 'N'
-        ELSE 'N'
-        END AS READ_YN,
-        CASE WHEN PMA.EMP_ID IS NOT NULL AND PMA.PRJCT_MNG_AUTHRT_CD = 'VTW05202'  THEN 'Y'
-        WHEN PMA.EMP_ID IS NULL THEN 'N'
-        ELSE 'N'
-        END AS WRITE_YN
-        FROM
-        EMP E
-        LEFT OUTER JOIN
-        CD C ON C.CD_VALUE = E.JBPS_CD
-        LEFT OUTER JOIN
-        DEPT_HNF DF ON E.EMP_ID = DF.EMP_ID
-        LEFT OUTER JOIN
-        DEPT D ON D.DEPT_ID = DF.DEPT_ID
-        LEFT OUTER JOIN
-        CD C2 ON C2.CD_VALUE = E.HDOF_STTS_CD
-        LEFT OUTER JOIN
-        CD C3 ON C3.CD_VALUE = E.BANK_CD
-        LEFT OUTER JOIN
-        EMP_HIST EH ON EH.EMP_ID = E.EMP_ID
-        LEFT OUTER JOIN PRJCT_MNG_AUTHRT PMA
-        ON E.EMP_ID = PMA.EMP_ID   AND PMA.PRJCT_ID = #{prjctId}
-        LEFT OUTER JOIN PRJCT P ON P.PRJCT_ID = PMA.PRJCT_ID
-        WHERE 1=1
-
-        <if test="empno != null and empno !=''">
-            AND E.EMPNO LIKE CONCAT('%', #{empno}, '%')
-        </if>
-
-        <if test="empFlnm != null and empFlnm !=''">
-            AND E.EMP_FLNM LIKE CONCAT('%', #{empFlnm}, '%')
-        </if>
-
-        <if test="jbpsNm != null and jbpsNm !=''">
-            AND E.JBPS_CD = #{jbpsNm}
-        </if>
-
-        <if test="telNo != null and telNo !=''">
-            AND E.TELNO LIKE CONCAT('%', #{telNo}, '%')
-        </if>
-        <if test="deptId != null and deptId !=''">
-            AND D.DEPT_ID = #{deptId}
-        </if>
-
-        <if test="hdofSttsNm != null and hdofSttsNm !=''">
-            AND C2.CD_VALUE = #{hdofSttsNm}
-        </if>
-        GROUP BY
-        E.EMP_ID, E.EMPNO, E.EMP_FLNM, E.EMP_TY_CD, C.CD_NM,
-        E.TELNO, E.EML, C2.CD_NM, C3.CD_NM, E.ACTNO, C.CD_VALUE, C3.CD_VALUE, C2.CD_VALUE,READ_YN, WRITE_YN
-        ORDER BY
-        E.JBPS_CD ASC
-        ) A
+		SELECT EMP_ID
+		      , EMPNO
+		      , EMP_FLNM
+			  , JBPS_NM
+			  , DEPT_ID
+		      , HDOF_STTS_NM
+			  , READ_YN
+			  , WRITE_YN
+		  FROM  (
+		        SELECT E.EMP_ID AS EMP_ID
+					 , E.EMPNO AS EMPNO
+					 , E.EMP_FLNM AS EMP_FLNM
+					 , C.CD_NM AS JBPS_NM
+					 , GROUP_CONCAT(DISTINCT D.DEPT_NM) AS DEPT_ID
+					 , C2.CD_NM AS HDOF_STTS_NM
+					 , CASE WHEN PMA.EMP_ID IS NOT NULL AND PMA.PRJCT_MNG_AUTHRT_CD = 'VTW05201' OR PMA.PRJCT_MNG_AUTHRT_CD = 'VTW05202'  THEN 'Y'
+							WHEN PMA.EMP_ID IS NULL THEN 'N'
+							ELSE 'N'
+							END AS READ_YN
+					 , CASE WHEN PMA.EMP_ID IS NOT NULL AND PMA.PRJCT_MNG_AUTHRT_CD = 'VTW05202'  THEN 'Y'
+						    WHEN PMA.EMP_ID IS NULL THEN 'N'
+						    ELSE 'N'
+						    END AS WRITE_YN
+		          FROM EMP E
+		          LEFT OUTER JOIN CD C ON C.CD_VALUE = E.JBPS_CD
+		          LEFT OUTER JOIN DEPT_HNF DF ON E.EMP_ID = DF.EMP_ID
+		          LEFT OUTER JOIN DEPT D ON D.DEPT_ID = DF.DEPT_ID
+		          LEFT OUTER JOIN CD C2 ON C2.CD_VALUE = E.HDOF_STTS_CD
+		          LEFT OUTER JOIN CD C3 ON C3.CD_VALUE = E.BANK_CD
+		          LEFT OUTER JOIN EMP_HIST EH ON EH.EMP_ID = E.EMP_ID
+		          LEFT OUTER JOIN PRJCT_MNG_AUTHRT PMA ON E.EMP_ID = PMA.EMP_ID AND PMA.PRJCT_ID = #{prjctId}
+		          LEFT OUTER JOIN PRJCT P ON P.PRJCT_ID = PMA.PRJCT_ID
+		         WHERE 1=1
+		        <if test="empno != null and empno !=''">
+		            AND E.EMPNO LIKE CONCAT('%', #{empno}, '%')
+		        </if>
+		
+		        <if test="empFlnm != null and empFlnm !=''">
+		            AND E.EMP_FLNM LIKE CONCAT('%', #{empFlnm}, '%')
+		        </if>
+		
+		        <if test="jbpsNm != null and jbpsNm !=''">
+		            AND E.JBPS_CD = #{jbpsNm}
+		        </if>
+		
+		        <if test="telNo != null and telNo !=''">
+		            AND E.TELNO LIKE CONCAT('%', #{telNo}, '%')
+		        </if>
+		        <if test="deptId != null and deptId !=''">
+		            AND D.DEPT_ID = #{deptId}
+		        </if>
+		
+		        <if test="hdofSttsNm != null and hdofSttsNm !=''">
+		            AND C2.CD_VALUE = #{hdofSttsNm}
+		        </if>
+		        GROUP BY
+		        E.EMP_ID, E.EMPNO, E.EMP_FLNM, E.EMP_TY_CD, C.CD_NM,
+		        E.TELNO, E.EML, C2.CD_NM, C3.CD_NM, E.ACTNO, C.CD_VALUE, C3.CD_VALUE, C2.CD_VALUE,READ_YN, WRITE_YN
+		        ORDER BY E.JBPS_CD ASC
+		        ) A
     </select>
 
     <select id="retrieveYnPrjctAtrzAuthrt" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -1388,6 +1383,7 @@
         GROUP BY PRJCT_MNG_AUTHRT_CD
     </select>
 
+    <!-- 프로젝트비용승인: 인력 결재완료여부 변경 -->
     <select id="retrieveMmAtrzDmndSttsCd" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
             COUNT(*) AS TOTAL_COUNT
@@ -1399,14 +1395,127 @@
           AND EMP_ID = #{empId}
     </select>
 
+    <!-- 프로젝트비용승인: 경비 결재완료여부 변경 -->
     <select id="retrieveCtAtrzDmndSttsCd" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
             COUNT(*) AS TOTAL_COUNT
         FROM PRJCT_CT_ATRZ
-        WHERE ATRZ_DMND_STTS_CD NOT IN ('VTW03703', 'VTW03704')
+        WHERE ATRZ_DMND_STTS_CD NOT IN ('VTW03703', 'VTW03704', 'VTW03708')
           AND PRJCT_ID = #{prjctId}
           AND APLY_YM = #{aplyYm}
           AND APLY_ODR = #{aplyOdr}
           AND EMP_ID = #{empId}
     </select>
+    
+    <select id="retrieveoutordEmpPrmpc" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT EMP_ID AS OUTORD_EMP_ID
+		  	,EMP_FLNM AS OUTORD_EMP_NM
+		from EMP
+		WHERE 1=1
+		AND EMP_TY_CD = 'VTW00203'
+		AND HDOF_STTS_CD = 'VTW00301'
+    </select>
+    
+    <!--파트너 업체관리 -->
+     <select id="retrieveOutordEntrpsList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT                                                                                          
+			  OUTORD_ENTRPS_ID					                                                        -- 외주업체ID
+			, OUTORD_ENTRPS_NM					                                                        -- 외주업체명
+			, BRNO 								                                                        -- 사업자등록번호
+			, TELNO 							                                                        -- 전화번호
+			, PIC_FLNM							                                                        -- 담당자명
+			, oe.ATCHMNFL_ID					                                                        -- 첨부파일ID
+			,GROUP_CONCAT(SUBSTR(a.REAL_FILE_NM, 1, INSTR(a.REAL_FILE_NM, '.') - 1)) AS FILE_NM			-- 첨부파일명
+			, COUNT(*) OVER () AS TOTAL_ITEMS
+		from 
+			OUTORD_ENTRPS oe																			-- 외주업체
+			LEFT JOIN  ATCHMNFL a ON oe.ATCHMNFL_ID = a.ATCHMNFL_ID
+		WHERE 1=1
+		<if test="outordEntrpsNm != null and outordEntrpsNm !=''">
+	            AND oe.OUTORD_ENTRPS_NM LIKE CONCAT('%', #{outordEntrpsNm}, '%')
+	        </if>
+	        <if test="telno != null and telno !=''">
+	            AND oe.TELNO LIKE CONCAT('%', #{telno}, '%')
+	        </if>
+	        <if test="picFlnm != null and picFlnm !=''">
+	            AND oe.PIC_FLNM LIKE CONCAT('%', #{picFlnm}, '%')
+	        </if>
+		GROUP BY OUTORD_ENTRPS_ID,OUTORD_ENTRPS_NM,BRNO,TELNO,PIC_FLNM,ATCHMNFL_ID
+    </select>
+    
+    <!--파트너 직원관리 -->
+     <select id="retrieveOutordEmpList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT 
+			EMP_ID
+			, EMPNO
+			, OUTORD_HNF_OGDP_NM																		-- 외주인력 소속
+			, C.CD_NM AS GRAD_NM
+			, OUTORD_HNF_GRAD_CD																		-- 외주인력 등급코드
+			, e.ATCHMNFL_ID		
+			, EMP_FLNM
+			, BRDT
+			, TELNO 
+			, EML
+			,GROUP_CONCAT(SUBSTR(a.REAL_FILE_NM, 1, INSTR(a.REAL_FILE_NM, '.') - 1)) AS FILE_NM			-- 첨부파일명
+			, COUNT(*) OVER () AS TOTAL_ITEMS
+		FROM 
+			EMP e 
+			LEFT JOIN  ATCHMNFL a ON e.ATCHMNFL_ID = a.ATCHMNFL_ID
+			LEFT OUTER JOIN CD C ON C.CD_VALUE = e.OUTORD_HNF_GRAD_CD
+		WHERE 
+			1=1
+			AND EMP_TY_CD  = 'VTW00203'
+		<if test="outordHnfGradCd != null and outordHnfGradCd !=''">
+	            AND e.OUTORD_HNF_GRAD_CD LIKE CONCAT('%', #{outordHnfGradCd}, '%')
+	        </if>
+	        <if test="telno != null and telno !=''">
+	            AND e.TELNO LIKE CONCAT('%', #{telno}, '%')
+	        </if>
+	        <if test="empFlnm != null and empFlnm !=''">
+	            AND e.emp_FLNM LIKE CONCAT('%', #{empFlnm}, '%')
+	        </if>
+		GROUP BY EMP_ID,EMPNO,EMP_FLNM,BRDT,TELNO,EML
+    </select>
+
+    <!-- 프로젝트비용승인 : 지난 차수 데이터 승인: 개인비용MM 없으면 인서트 -->
+    <insert id="insertCtMm" parameterType="map">
+        INSERT IGNORE INTO PRJCT_INDVDL_CT_MM (PRJCT_ID, EMP_ID, APLY_YM, APLY_ODR, MM_ATRZ_CMPTN_YN, CT_ATRZ_CMPTN_YN)
+        VALUES(	#{prjctId}, #{empId}, #{aplyYm}, #{aplyOdr}, 'N', 'Y')
+    </insert>
+
+    <!-- 프로젝트비용승인 : 지난 차수 데이터 승인: 경비 신청 조회-->
+    <select id="retrievePrjctCtAply" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT *
+        FROM PRJCT_CT_APLY
+        WHERE 1=1
+          AND PRJCT_ID = #{prjctId}
+          AND EMP_ID = #{empId}
+          AND APLY_YM = #{aplyYm}
+          AND APLY_ODR = #{aplyOdr}
+          AND PRJCT_CT_APLY_SN = #{prjctCtAplySn}
+    </select>
+
+    <!-- 프로젝트비용승인 : 지난 차수 데이터 승인: 경비 결재 조회-->
+    <select id="retrievePrjctCtAtrz" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT *
+        FROM PRJCT_CT_ATRZ
+        WHERE 1=1
+          AND PRJCT_ID = #{prjctId}
+          AND EMP_ID = #{empId}
+          AND APLY_YM = #{aplyYm}
+          AND APLY_ODR = #{aplyOdr}
+          AND PRJCT_CT_APLY_SN = #{prjctCtAplySn}
+    </select>
+
+    <!-- 프로젝트비용승인 : 지난 차수 데이터 승인: 경비 결재 기존데이터 업데이트 -->
+    <update id="updatePrjctCtAtrz" parameterType="map">
+        UPDATE PRJCT_CT_ATRZ pcat
+        SET
+            pcat.ATRZ_DMND_STTS_CD = 'VTW03708'
+        WHERE pcat.EMP_ID = #{empId}
+          AND pcat.APLY_YM = #{aplyYm}
+          AND pcat.APLY_ODR = #{aplyOdr}
+          AND pcat.PRJCT_ID = #{prjctId}
+          AND pcat.PRJCT_CT_APLY_SN = #{prjctCtAplySn}
+    </update>
 </mapper>

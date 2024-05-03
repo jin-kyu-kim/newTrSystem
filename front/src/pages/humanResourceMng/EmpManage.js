@@ -105,7 +105,6 @@ const EmpManage = ({}) => {
 
   useEffect(() => {   //사번 max값 조회후 세팅 시 인서트로 이동
     if (!Object.values(empMax).every((value) => value === "")) {
-      console.log("empmaxax",empMax)
       const isconfirm = window.confirm(`정직원으로 발령시 사번이 ${empMax}으로 변경됩니다. \n발령하시겠습니까?`); 
       if (isconfirm) {
         insertEmpFte();
@@ -138,7 +137,6 @@ const EmpManage = ({}) => {
   };
  
   const onRowClick = (e) => {   //직원목록 로우 클릭 이벤트
-    console.log("로우선택시e",e)
     setEmpYear(null);
     setEmpMonth(null);
     setEmpOdr(null);
@@ -371,7 +369,6 @@ const cancelJbpsEmpHist = async (updParam,ehdParam) => {       //삭제axios
 
 //===========================더블클릭시 회원정보창으로 이동
     const onRowDblClick = (e) => {
-      console.log("eee",e);
       navigate("/infoInq/EmpDetailInfo", 
               { state: { 
                 empId: e.data.empId,
@@ -399,7 +396,6 @@ const cancelJbpsEmpHist = async (updParam,ehdParam) => {       //삭제axios
       const isconfirm = window.confirm("비밀번호를 초기화 하시겠습니까?"); 
       if (isconfirm) {
         const response =  await resetPassword(data.empId,data.empno)
-        console.log("datata",response)
         if(response.isOk){
           window.alert("비밀번호가 초기화되었습니다");
         }else {

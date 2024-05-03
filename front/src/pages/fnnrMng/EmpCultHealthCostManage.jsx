@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import  EmpCultHealthCostManageJson from "./EmpCultHealthCostManageJson.json";
 import ApiRequest from "../../utils/ApiRequest";
-import CustomTable from "components/unit/CustomTable";
 import { Workbook } from "exceljs";
 import { exportDataGrid } from "devextreme/excel_exporter";
 import { saveAs } from 'file-saver';
@@ -13,48 +12,51 @@ import { Popup } from "devextreme-react";
 import EmpCultHealthCostManagePop from "./EmpCultHealthCostManagePop";
 import CustomEditTable from "components/unit/CustomEditTable";
 
-
-
 const EmpCultHealthCostManage = () => {
   const [values, setValues] = useState([]);
-  const [param, setParam] = useState({});
-  const { keyColumn, queryId, tableColumns, prjctColumns , summaryColumn , wordWrap, searchInfo } = EmpCultHealthCostManageJson;
+  const { keyColumn, queryId, tableColumns, wordWrap, searchInfo } = EmpCultHealthCostManageJson;
   const navigate = useNavigate();
   const [isGroupPopupVisible, setIsGroupPopupVisible] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [ selectedList, setSelectedList ] = useState([]);
+  let now = new Date();
+  const [param, setParam] = useState({
+        "empFlnm": null,
+        "empno": null,
+        "clturPhstrnActMngYm": now.getFullYear()+('0' + (now.getMonth() + 1)).slice(-2),
+        "queryId": queryId
+  });
 
   useEffect(() => {
-  }, []);
-
-  const pageHandle = async (initParam) => {
-    console.log(initParam)
-    
-
-    const updateParam = {
-      ...initParam,
-      queryId: queryId,
+    if (!Object.values(param).every((value) => value === "")) {
+      pageHandle();
     }
-   
-    
-    try {
-     
-      const response = await ApiRequest("/boot/common/queryIdSearch", updateParam);
-      console.log(response);
-        setValues(response);
-     
-    } catch (error) {
-      console.log(error);
+  }, [param]);
+
+  const searchHandle = async (initParam) => {
+    if(initParam.year){
+      setParam({
+        ...param,
+        empFlnm: initParam.empFlnm !== undefined? initParam.empFlnm : null,
+        empno: initParam.empno!== undefined? initParam.empno : null,
+        clturPhstrnActMngYm: initParam.year + initParam.month,
+      });
     }
   };
 
+  const pageHandle = async () => {
+    try {
+      const response = await ApiRequest("/boot/common/queryIdSearch", param);
+      setValues(response);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
- const handleMove=() => {
-   
+  const handleMove = () => {
     navigate("/fnnrMng/EmpCultHealthCostManageDeadLine");
-}
-
+  }
 
   const handleDeadLine = () => {
     const btnChk = window.confirm("문화체련비를 마감하시겠습니까?")
@@ -65,9 +67,10 @@ const EmpCultHealthCostManage = () => {
       const month = currentDate.getMonth() ; // 월을 가져오는데, 0부터 시작하므로 +1을 해줌
       const formattedDate = `${year}${month < 10 ? '0' : ''}${month}`; // 월이 한 자리 수인 경우 앞에 0을 붙여줌
 
-console.log(formattedDate); // YYYYMM 형식의 현재 날짜 출력
+    console.log(formattedDate); // YYYYMM 형식의 현재 날짜 출력
     }
   };
+
   const handleSaved = () => {
     const btnChk = window.confirm("문화체련비를 저장하시겠습니까?")
     if (btnChk) {
@@ -76,14 +79,13 @@ console.log(formattedDate); // YYYYMM 형식의 현재 날짜 출력
     }
   };
 
-
   const padNumber = (num) => {
     return num.toString().padStart(2, '0');
 };
-  const currentDateTime = new Date();
-        const formattedDateTime = `${currentDateTime.getFullYear()}_`+
-            `${padNumber(currentDateTime.getMonth() + 1)}_`+
-            `${padNumber(currentDateTime.getDate())}`
+
+  const formattedDateTime = `${now.getFullYear()}_`+
+      `${padNumber(now.getMonth() + 1)}_`+
+      `${padNumber(now.getDate())}`
 
   const onExporting = (e) => {
     const workbook = new Workbook();
@@ -118,9 +120,9 @@ console.log(formattedDate); // YYYYMM 형식의 현재 날짜 출력
   };
 
   const onSelection = (e) => { setSelectedList(e.selectedRowsData) }
+
   return (
-    
-    <>
+  <div>
     <style>
       {`
         .dx-datagrid-group-opened {
@@ -130,62 +132,55 @@ console.log(formattedDate); // YYYYMM 형식의 현재 날짜 출력
     </style>
 
     <div className="container">
-    <div 
-      className="title p-1"
-      style={{ marginTop: "20px", marginBottom: "10px",  display: "flex"}}
-    >
-      <h6 style={{ fontSize: "40px" }}>문화체련비 관리 목록</h6>
-      <div style={{marginTop: "7px", marginLeft: "20px"}}>
-      <Button onClick={handleMove}>마감 목록</Button>
-      <Button onClick={handleDeadLine} style = {{marginLeft: "10px",backgroundColor: "#B40404", color: "#fff"}}>  전체 마감</Button> 
-     
-      
-      </div>
-    </div>
-    <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
-      <span>* 직원의 문화체련비를 조회 합니다.</span>
-      
-    </div>
-
-    <div>
-    <div style={{ marginBottom: "20px" }}>
-    <SearchInfoSet 
-                    props={searchInfo}
-                  callBack={pageHandle}
-                /> 
-      </div>
-     
-      <Popup
-  visible={isGroupPopupVisible}
-  onHiding={closeGroupPopup}
-  width={700}
-  height={600}
-> 
-
-<Button text="닫기" onClick={closeGroupPopup} />
-
-{isGroupPopupVisible && (
-          <EmpCultHealthCostManagePop popEmpId={selectedRowData} closePopup={closeGroupPopup} />
-        )}
-  {/* 선택한 그룹의 정보 출력 */}
-</Popup>
-<Button onClick={handleSaved} style = {{backgroundColor: "#0366fc", color: "#fff",marginBottom: "20px"}}>  저장 하기</Button> 
-      <CustomEditTable
-        keyColumn={keyColumn}
-        columns={tableColumns}
-        values={values}
-        paging={true}
-        excel={true}
-        onExcel={onExporting}
-        wordWrap={wordWrap}
-        onRowClick={onRowClick}
-        noEdit={true}
-        onSelection={onSelection}
-       
-      />  
+      <div
+        className="title p-1"
+        style={{ marginTop: "20px", marginBottom: "10px",  display: "flex"}}
+      >
+        <h6 style={{ fontSize: "40px" }}>문화체련비 관리 목록</h6>
+        <div style={{marginTop: "7px", marginLeft: "20px"}}>
+          <Button onClick={handleMove}>마감 목록</Button>
+          <Button onClick={handleDeadLine} style = {{marginLeft: "10px",backgroundColor: "#B40404", color: "#fff"}}>전체 마감</Button>
         </div>
-</div>
-</>
+      </div>
+      <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
+        <span>* 직원의 문화체련비를 조회 합니다.</span>
+      </div>
+
+      <div>
+        <div style={{ marginBottom: "20px" }}>
+          <SearchInfoSet props={searchInfo} callBack={searchHandle}/>
+        </div>
+
+        <CustomEditTable
+          keyColumn={keyColumn}
+          columns={tableColumns}
+          values={values}
+          paging={true}
+          excel={true}
+          onExcel={onExporting}
+          wordWrap={wordWrap}
+          onRowClick={onRowClick}
+          noEdit={true}
+          onSelection={onSelection}
+
+        />
+
+        <Button onClick={handleSaved} style = {{backgroundColor: "#0366fc", color: "#fff",marginBottom: "20px"}}>  저장 하기</Button>
+      </div>
+    </div>
+
+    <Popup
+      visible={isGroupPopupVisible}
+      onHiding={closeGroupPopup}
+      width={700}
+      height={600}
+    >
+      <Button text="닫기" onClick={closeGroupPopup} />
+      {isGroupPopupVisible && (
+        <EmpCultHealthCostManagePop popEmpId={selectedRowData} closePopup={closeGroupPopup} />
+      )}
+    </Popup>
+  </div>
   );
 };
 

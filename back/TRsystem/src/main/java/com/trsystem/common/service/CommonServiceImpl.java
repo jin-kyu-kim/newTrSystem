@@ -1,10 +1,12 @@
 package com.trsystem.common.service;
 
-import com.trsystem.common.mapper.CommonMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.text.CaseUtils;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -19,16 +21,12 @@ import java.util.*;
 @Service
 public class CommonServiceImpl implements CommonService {
     private final ApplicationYamlRead applicationYamlRead;
-
-    private final CommonMapper commonMapper;
     private final SqlSession sqlSession;
 
-    public CommonServiceImpl(ApplicationYamlRead applicationYamlRead, CommonMapper commonMapper, SqlSession sqlSession) {
+    public CommonServiceImpl(ApplicationYamlRead applicationYamlRead, SqlSession sqlSession) {
         this.applicationYamlRead = applicationYamlRead;
-        this.commonMapper = commonMapper;
         this.sqlSession = sqlSession;
     }
-
     @Override
     @Transactional
     public int insertData(List<Map<String, Object>> params) {
@@ -53,6 +51,7 @@ public class CommonServiceImpl implements CommonService {
                 params.get(i).put(params.get(0).get("snColumn").toString(), ++snMax);
             }
         }
+
         try {
             Connection connection = DriverManager.getConnection(applicationYamlRead.getUrl(), applicationYamlRead.getUsername(), applicationYamlRead.getPassword());
             // 트랜잭션 시작
@@ -61,6 +60,19 @@ public class CommonServiceImpl implements CommonService {
                 ResultSet resultParamSet = statement.executeQuery("SELECT * FROM "  + tbNm + " WHERE 1=0"); // 빈 결과를 가져옴
                 ResultSetMetaData metaData = resultParamSet.getMetaData();
                 int columnCount = metaData.getColumnCount();
+
+                Set<String> columnNames = new HashSet<>();
+                for (int j = 1; j <= columnCount; j++) {
+                    columnNames.add(metaData.getColumnLabel(j).toUpperCase());
+                }
+
+                // 삽입시간과 작업자ID 컬럼 확인 및 추가
+                boolean hasInsertTime = columnNames.contains("REG_DT");
+                String empId = null;
+                if(hasInsertTime){
+                    HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+                    empId = (String) request.getAttribute("userId");
+                }
 
                 Map<String, Object> insertParam;
                 Map<String, Object> validInsertParam;
@@ -77,6 +89,12 @@ public class CommonServiceImpl implements CommonService {
                                 break;
                             }
                         }
+                    }
+                    if (hasInsertTime) {
+                        validInsertParam.put("regDt", new Timestamp(System.currentTimeMillis()));
+                        validInsertParam.put("regEmpId", empId);
+                        validInsertParam.put("mdfcnDt", new Timestamp(System.currentTimeMillis()));
+                        validInsertParam.put("mdfcnEmpId", empId);
                     }
 
                     List<String> keys = new ArrayList<>(validInsertParam.keySet());
@@ -130,13 +148,36 @@ public class CommonServiceImpl implements CommonService {
             Connection connection = DriverManager.getConnection(applicationYamlRead.getUrl(), applicationYamlRead.getUsername(), applicationYamlRead.getPassword());
             // 트랜잭션 시작
             connection.setAutoCommit(false);
-            try {
+            try (Statement statement = connection.createStatement()){
+                ResultSet resultParamSet = statement.executeQuery("SELECT * FROM "  + tbNm + " WHERE 1=0"); // 빈 결과를 가져옴
+                ResultSetMetaData metaData = resultParamSet.getMetaData();
+                int columnCount = metaData.getColumnCount();
+
+                Set<String> columnNames = new HashSet<>();
+                for (int j = 1; j <= columnCount; j++) {
+                    columnNames.add(metaData.getColumnLabel(j).toUpperCase());
+                }
+
+                // 삽입시간과 작업자ID 컬럼 확인 및 추가
+                boolean hasInsertTime = columnNames.contains("REG_DT");
+                String empId = null;
+
+
                 Map<String, Object> updateSet = params.get(1);
                 List<String> setKeys = new ArrayList<>(updateSet.keySet());
                 List<Object> setParams = new ArrayList<>(updateSet.values());
                 Map<String, Object> updateParam = params.get(2);
                 List<String> whereKeys = new ArrayList<>(updateParam.keySet());
                 List<Object> whereParams = new ArrayList<>(updateParam.values());
+
+                if(hasInsertTime){
+                    HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+                    empId = (String) request.getAttribute("userId");
+                    setKeys.add("mdfcnDt");
+                    setKeys.add("mdfcnEmpId");
+                    setParams.add(new Timestamp(System.currentTimeMillis()));
+                    setParams.add(empId);
+                }
 
                 // UPDATE문 생성
                 StringBuilder queryBuilder = new StringBuilder("UPDATE ").append(tbNm).append(" SET ");
@@ -579,5 +620,29 @@ public class CommonServiceImpl implements CommonService {
         }
         result += deleteData(fileParams);
         return result;
+    }
+
+    private String getSysEmp(Connection conn, String tbNm){
+        String empId = null;
+        try (Statement statement = conn.createStatement()) {
+            ResultSet resultParamSet = statement.executeQuery("SELECT * FROM " + tbNm + " WHERE 1=0"); // 빈 결과를 가져옴
+            ResultSetMetaData metaData = resultParamSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
+            Set<String> columnNames = new HashSet<>();
+            for (int j = 1; j <= columnCount; j++) {
+                columnNames.add(metaData.getColumnLabel(j).toUpperCase());
+            }
+
+            // 삽입시간과 작업자ID 컬럼 확인 및 추가
+            boolean hasInsertTime = columnNames.contains("REG_DT");
+            if (hasInsertTime) {
+                HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+                empId = (String) request.getAttribute("userId");
+            }
+            return empId;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

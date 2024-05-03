@@ -233,6 +233,12 @@ const reload = () => {
           format={column.subType ==="NumberBox" ? column.format : 
                   column.subType ==="Date" ? column.format :
                    ""}
+          editorOptions={{
+              format: {
+                  type: 'fixedPoint',
+                  precision: 0
+              }
+          }}         
           min={column.subType ==="NumberBox" ? column.min : undefined}
           max={column.subType ==="NumberBox" ? column.max : undefined}
           validationRules={[

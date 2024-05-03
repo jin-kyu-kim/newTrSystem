@@ -15,6 +15,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
     const [contents, setContents] = useState([]);   
     const [structuredData, setStructuredData] = useState({});   //기간 구조 데이터
 
+
     //기간 데이터를 받아와서 년도별로 월을 나누어서 배열로 만들어주는 함수
     useEffect(() => {
         const periodData = period.reduce((acc, period) => {
@@ -98,7 +99,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
                 return acc + (updatedItem.value * transformedItem.value);
             //대응하는 항목 없을경우 : 신규추가시 userDfnValue로 계산
             }else{
-                return acc + (updatedItem.value * data.userDfnValue);   
+                return acc + (updatedItem.value * (data.userDfnValue ? data.userDfnValue : data.untpc));   
             }
           }, 0);
 
@@ -107,7 +108,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
         const fixedTotalSum = Number(totalSum.toFixed(2));       
 
         let multifulSum;   
-        if(data.userDfnValue){
+        if(data.userDfnValue ? data.userDfnValue : data.untpc){
             multifulSum = fixedTotalSum;
         }
 
@@ -115,8 +116,8 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
         setData(currentData=>({
             ...currentData,
             "total" : fixedSum,
-            ...(data.userDfnValue ? { "gramt" : multifulSum } : {}),
-            ...(data.outordEmpId ? { "gramt" : Number((fixedSum * data.untpc).toFixed(0))} : {}),
+            ...((data.userDfnValue ? data.userDfnValue : data.untpc)? { "gramt" : multifulSum } : {}),
+            // ...(data.outordEmpId ? { "gramt" : Number((fixedSum * data.untpc).toFixed(0))} : {}),
         })); 
     };
 
@@ -288,7 +289,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
             ...pkColumns,
             [popupInfo.nomalColumnsDtlYm] : item.id,
             [popupInfo.nomalColumnsDtlValue] : item.value,
-            ...(data.userDfnValue ? { "untpc" : data.userDfnValue } : {}),
+            ...((data.userDfnValue ? data.userDfnValue : data.untpc) ? { "untpc" : data.userDfnValue ? data.userDfnValue : data.untpc } : {}),
         }));
 
         //api param 설정
@@ -342,9 +343,10 @@ const onRowUpdateingMonthData = async() => {
     // inputValue를 순회하여 새로운 배열을 생성
     const makeParam = inputValue.map(item => {
         let untpcValue ;
+        const untpc = data.userDfnValue ? data.userDfnValue : data.untpc;
         if(popupInfo.table ==="MMNY_LBRCO_PRMPC"){
             const idUnptc = `${item.id}_untpc`; // untpc용 ID 생성
-            untpcValue = transformedDataMap.hasOwnProperty(idUnptc) ? transformedDataMap[idUnptc] : data.userDfnValue; // transformedDataMap에 untpc ID가 있으면 그 값을, 없으면 data.userDfnValue를 사용
+            untpcValue = transformedDataMap.hasOwnProperty(idUnptc) ? transformedDataMap[idUnptc] : data[untpc]; // transformedDataMap에 untpc ID가 있으면 그 값을, 없으면 data.userDfnValue를 사용
         }
         return {
             [popupInfo.nomalColumnsDtlYm]: item.id,
@@ -502,7 +504,7 @@ const onRowUpdateingMonthData = async() => {
                                         <>
                                         <th key={year} style={{ width: "50px", textAlign: "center" }}> {year}년 </th>
                                         <th key={index} style={{textAlign:"center"}}> {popupInfo.popupFormat} </th>
-                                        { popupInfo.menuName === "ProjectEmpCostJson" &&
+                                        { (popupInfo.menuName === "ProjectEmpCostJson" || popupInfo.menuName === "ProjectOutordEmpCostJson") &&
                                             <th style={{textAlign:"center", width: "10px"}}> 단가 </th>
                                         }
                                         </>
@@ -531,12 +533,12 @@ const onRowUpdateingMonthData = async() => {
                                             max={popupInfo.popupMax}
                                             min={popupInfo.popupMin}
                                             />): ''}</td>
-                                            { popupInfo.menuName === "ProjectEmpCostJson" &&
+                                            { (popupInfo.menuName === "ProjectEmpCostJson" || popupInfo.menuName === "ProjectOutordEmpCostJson") &&
                                             <td style={{width:"20%", padding:"5px"}}>
                                                 <NumberBox 
-                                                    value= {data.mmnyLbrcoPrmpcSn ? 
+                                                    value= {(data.mmnyLbrcoPrmpcSn || data.outordLbrcoPrmpcSn)? 
                                                             transformedData.find(item => item.id === `${Object.keys(structuredData)[colIndex]}${months[rowIndex]}_untpc`)?.value || 0 
-                                                            : data.userDfnValue}
+                                                            : data.userDfnValue ? data.userDfnValue : data.untpc}
                                                     readOnly={true}
                                                     format={"#,### 원"}
                                                     />

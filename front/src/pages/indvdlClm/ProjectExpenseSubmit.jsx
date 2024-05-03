@@ -2,27 +2,19 @@ import { useEffect, useState } from "react";
 import { Button } from 'devextreme-react/button'
 import ApiRequest from "utils/ApiRequest";
 
-const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handleDelete, buttonGroup }) => {
-  const [ completedCount, setCompletedCount ] = useState(0);
-  const [ prjctCtAplySn, setPrjctCtAplySn ] = useState([]);
+const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, buttonGroup, getData }) => {
+  const [ isComplete, setIsComplete ] = useState(false);
 
   useEffect(() => {
-    if (selectedItem.length !== 0 && prjctCtAplySn.length === selectedItem.length) {
-      insertAtrzValue();
-    }
-  }, [prjctCtAplySn]);
-
-  useEffect(() => {
-    if (selectedItem.length > 0 && completedCount === selectedItem.length) {
+    if (selectedItem.length > 0 && isComplete) {
       alert("등록되었습니다.");
-      window.location.reload();
+      getData();
     }
-  }, [completedCount]);
-
+  }, [isComplete]);
 
   const handleSubmit = async () => {
-
     const validationResults = await validateFields();
+
     if (!validationResults.isValid) {
       validationResults.messages.length !== 0 && alert(validationResults.messages.join('\n'));
       return;
@@ -31,119 +23,67 @@ const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handle
     if (!window.confirm("등록하시겠습니까?")) return;
 
     try {
+      let result;
       const ynUpdated = await updateYn();
 
       if (ynUpdated) {
-        const mmInserted = await insertMM();
-
-        if (mmInserted) await insertValue();
+        result = await insertCtMm();
       }
+      if(result) setIsComplete(true);
+
     } catch (error) {
       console.error("error", error);
     }
   };
 
-  /** CARD_USE_DTLS - PRJCT_CT_INPT_PSBLTY_YN 값 => "N" */
+  // CARD_USE_DTLS - PRJCT_CT_INPT_PSBLTY_YN: "N"
   const updateYn = async () => {
     try {
-      const updates = selectedItem.map(item => ApiRequest("/boot/common/commonUpdate", [
-        { tbNm: "CARD_USE_DTLS" },
-        { prjctCtInptPsbltyYn: "N" },
-        { cardUseSn: item.cardUseSn }
-      ]));
-      await Promise.all(updates);
+      if(selectedItem[0].cardUseSn){
+        const updates = selectedItem.map(item => ApiRequest("/boot/common/commonUpdate", [
+          { tbNm: "CARD_USE_DTLS" },
+          { prjctCtInptPsbltyYn: "N" },
+          { cardUseSn: item.cardUseSn }
+        ]));
+        await Promise.all(updates);
+      }
       return true;
+
     } catch (error) {
       console.error('updateYn error', error);
       return false;
     }
   };
 
-  /** PRJCT_INDVDL_CT_MM (프로젝트개인비용MM) - insert */
-  const insertMM = async () => {
+  // [PRJCT_INDVDL_CT_MM, PRJCT_CT_APLY, PRJCT_CT_ATRZ] - insert
+  const insertCtMm = async () => {
     const param = selectedItem.map((item) => ({
-      prjctId: item.prjctId,
-      empId: item.empId,
-      aplyYm: item.aplyYm,
-      aplyOdr: item.aplyOdr,
-      ctAtrzCmptnYn: "N",
-      mmAtrzCmptnYn: "N",
+      ...setParam(item)
     }));
+
+    const updatedData = selectedItem.map(({ utztnDtFormat, ...rest }) => {
+      const ctAtrzSeCd = rest.ctAtrzSeCd || "VTW01903";
+      return { ...rest, ctAtrzSeCd };
+    });
+    const allParam = [ {param}, {updatedData} ];
+
     try{
-      const res = await ApiRequest("/boot/indvdlClm/insertPrjctMM", param);
-      return true;
+      const response = await ApiRequest("/boot/indvdlClm/insertPrjctMM", allParam);
+      if(response > 0){
+        return true; 
+      }
     } catch(error) {
-      console.log('insertMM  error', error);
+      console.log('error', error);
       return false;
     }
   };
 
-  /** PRJCT_CT_APLY (프로젝트비용신청) - insert */
-  const insertValue = async () => {
-    const tbInfo = { tbNm: sendTbInfo.tbNm, snColumn: sendTbInfo.snColumn };
-    const snArray = []; // SN 값을 저장할 임시 배열
-  
-    const updatedRowsData = selectedItem.map(item => {
-      const { utztnDtFormat, atdrn, ...rest } = item;
-      const atdrnString = atdrn.map(person => person.value).join(',');
-  
-      return {
-          ...rest,
-          atdrn: atdrnString
-      };
-    });
-  
-    for (const item of updatedRowsData) {
-      const requestBody = [{ ...tbInfo }, { ...item, ctAtrzSeCd: "VTW01903" }];
-  
-      try {
-        await ApiRequest("/boot/common/commonInsert", requestBody);
-        const maxSn = await getPrjctCtAplySn();
-        snArray.push(maxSn);
-      } catch (error) {
-        console.error("insertValueAndFetchSn error", error);
-        break;
-      }
-    }
-    setPrjctCtAplySn(snArray);
-  };
-
-  const getPrjctCtAplySn = async () => {
-    const param = setParam(selectedItem, {queryId: "indvdlClmMapper.retrievePrjctCtAplySn"})
-    try {
-      const response = await ApiRequest("/boot/common/queryIdSearch", param);
-      return response[0].prjctCtAplySn;
-    } catch (error) {
-      console.error("getPrjctCtAplySn error", error);
-      return null;
-    }
-  };
-
-  /** PRJCT_CT_ATRZ (프로젝트비용결재) - insert */
-  const insertAtrzValue = async () => {
-    const getParam = setParam(selectedItem);
-
-    for (const sn of prjctCtAplySn) {
-      const param = [
-        { tbNm: sendTbInfo.atrzTbNm },
-        { prjctCtAplySn: sn, ...getParam }
-      ];
-      try {
-        await ApiRequest("/boot/common/commonInsert", param);
-        setCompletedCount(prev => prev + 1);
-      } catch (error) {
-        console.error("insertAtrzValue error", error);
-        break;
-      }
-    }
-  };
-
-  const setParam = (selectedItem, additionalProps) => {
+  const setParam = (oneRow, additionalProps) => {
     const baseProps = {
-      prjctId: selectedItem[0].prjctId,
-      empId: selectedItem[0].empId,
-      aplyYm: selectedItem[0].aplyYm,
-      aplyOdr: selectedItem[0].aplyOdr,
+      prjctId: oneRow.prjctId,
+      empId: oneRow.empId,
+      aplyYm: oneRow.aplyYm,
+      aplyOdr: oneRow.aplyOdr,
     };
     return { ...baseProps, ...additionalProps };
   }; 
@@ -151,8 +91,9 @@ const ProjectExpenseSubmit = ({ selectedItem, sendTbInfo, validateFields, handle
   return (
     <div style={{marginBottom: '20px'}}>
       {buttonGroup.map((btn, index) => (
-        <Button type={btn.type} text={btn.text} style={{marginRight: '10px'}} key={index}
-          onClick={btn.onClick === 'handleDelete' ? handleDelete : handleSubmit} useSubmitBehavior={true} />
+        <Button onClick={btn.onClick === 'handleDelete' ? handleDelete : handleSubmit} 
+          useSubmitBehavior={true} type={btn.type} text={btn.text} 
+          style={{marginRight: '10px'}} key={index} />
       ))}
     </div>
   );

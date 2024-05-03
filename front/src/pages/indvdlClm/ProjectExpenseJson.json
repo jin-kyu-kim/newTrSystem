@@ -1,5 +1,7 @@
 {
   "ProjectExpenseMain": {
+    "aplyAndAtrzCtQueryId": "projectExpenseMapper.retrievePrjctCtAplyList",
+    "dmndSttsQueryId": "indvdlClmMapper.retrieveCtAtrzDmndStts",
     "ExpenseInfo":[
       {
         "TabName": "롯데법인카드 엑셀 업로드",
@@ -17,45 +19,68 @@
         "url": "./ProjectExpenseCash"
       }
     ],
+    "searchInfo": {
+      "searchParams": { 
+        "btnName": "과거비용승인이력(팝업)",
+        "yearList": [
+          { "name": "year", "visible": true, "placeholder": "[연도]", "displayExpr": "value", "valueExpr": "value" },
+          { "name": "month", "visible": true, "placeholder": "[월]", "displayExpr": "value", "valueExpr": "value" },
+          { "name": "aplyOdr", "visible": true, "placeholder": "[차수]", "displayExpr": "text", "valueExpr": "value" }
+        ]
+      }
+    },
     "keyColumn": "prjctCtAplySn",
     "ctAplyTableColumns": [
       { "key": "ctAtrzSeCdNm", "value": "구분", "width": 120 },
       { "key": "utztnDt", "value": "사용일시" },
       { "key": "useOffic", "value": "사용처" },
-      { "key": "utztnAmt", "value": "금액" },
-      { "key": "prjctNm", "value": "프로젝트", "width": 260 },
+      { "key": "utztnAmt", "value": "금액", "currency": true },
+      { "key": "prjctNm", "value": "프로젝트", "width": 250 },
       { "key": "expensCdNm", "value": "비용코드" },
-      { "key": "ctPrpos", "value": "상세내역(목적)" },
-      { "key": "atdrn", "value": "용도(참석자명단)", "width": 200 },
+      { "key": "ctPrpos", "value": "상세내역(목적)", "width": 140 },
+      { "key": "atdrn", "value": "용도(참석자명단)", "width": 200 }
+    ],
+    "ctAplyBtnColumns": [
       { "key": "atrzDmndSttsCdNm", "value": "결재상태", "cellType": "button", 
         "button": { "text": "삭제", "name": "atrzDmndSttsCd", "type": "danger", "width": 80 }}
     ],
+    "ctAplyStrColumns": [
+      { "key": "atrzDmndSttsCdNm", "value": "결재상태", "width": 100 }
+    ],
+    "rjctCnColumns": [
+      { "key": "atrzDmndSttsCdNm", "value": "결재상태", "width": 100 },
+      { "key": "rjctPrvonsh", "value": "반려사유", "width": 100 }
+    ],
     "elcKeyColumn": "elctrnAtrzId",
     "columnCharge": [
-      { "key": "ctStlmSeCd", "value": "구분" },
-      { "key": "rciptPblcnYmd", "value": "사용일시" }, 
-      { "key": "cnptNm", "value": "사용처" },
-      { "key": "clmAmt", "value": "금액" },
+      { "key": "ctAtrzSeCdNm", "value": "구분" },
+      { "key": "utztnDt", "value": "사용일시" }, 
+      { "key": "useOffic", "value": "사용처" },
+      { "key": "utztnAmt", "value": "금액", "currency": true },
       { "key": "prjctNm", "value": "프로젝트" },
       { "key": "expensCdNm", "value": "비용코드" },
-      { "key": "dtlUseDtls", "value": "상세내역(목적)" },
-      { "key": "clmPrpos", "value": "용도(참석자명단)" },
+      { "key": "ctPrpos", "value": "상세내역(목적)" },
+      { "key": "atdrn", "value": "용도(참석자명단)" },
       { "key": "elctrnAtrzId", "value": "문서 보기", "cellType": "button", "button": { "text": "선택", "name": "elctrnAtrzId" }}
     ],
+    "groupingColumn": [
+      { "key": "utztnAmt", "value": "금액", "summaryType": "sum", "valueFormat": "#,##0", "displayFormat" : "{0} 원" }
+    ],
+    "groupingData": {"caption":"구분", "dataField": "ctAtrzSeCd", "totalTextColumn": "utztnDt"},
     "buttonsConfig": {
       "default": [
-        { "text": "입력마감", "type": "success", "onClick": { "name": "onInptDdlnClick", "case": "request", "actionType": "INPUT",
+        { "text": "입력마감", "type": "success", "onClick": { "name": "onInptDdlnClick", "actionType": "INPUT",
           "msg": "입력마감하시겠습니까?", "completeMsg": "입력마감 되었습니다."} }
       ],
       "noApprovals": [
-        { "text": "승인요청", "type": "default", "onClick": { "name": "onAprvDmndClick", "case": "request", "actionType": "APPROVE",
+        { "text": "승인요청", "type": "default", "onClick": { "name": "onAprvDmndClick", "actionType": "APPROVE",
           "msg": "승인요청하시겠습니까?", "completeMsg": "승인요청 되었습니다."} },
-        { "text": "입력마감취소", "type": "danger", "onClick": { "name": "onInptDdlnRtrcnClick", "case": "cancel", "actionType": "INPUT_CANCEL", 
+        { "text": "입력마감취소", "type": "danger", "onClick": { "name": "onInptDdlnRtrcnClick", "actionType": "INPUT_CANCEL", 
           "msg": "입력마감을 취소하시겠습니까?", "completeMsg": "입력마감이 취소되었습니다."} },
-        { "onClick": "onPrintClick", "text": "출력(팝업)", "type": "success" }
+        { "onClick": {"name": "onPrintClick"}, "text": "출력(팝업)", "type": "success" }
       ],
       "hasApprovals": [
-        { "text": "승인요청취소", "type": "danger", "onClick": { "name": "onAprvDmndRtrcnClick", "case": "cancel", "actionType": "APPROVE_CANCEL",
+        { "text": "승인요청취소", "type": "danger", "onClick": { "name": "onAprvDmndRtrcnClick", "actionType": "APPROVE_CANCEL",
           "msg": "승인요청을 취소하시겠습니까?", "completeMsg": "승인요청이 취소되었습니다."}  },
         { "onClick": {"name": "onPrintClick"}, "text": "출력(팝업)", "type": "default" }
       ],
@@ -69,11 +94,6 @@
     "keyColumn": "cardUseSn",
     "queryId": "indvdlClmMapper.retrieveExpenseCardUseDtls",
     "cdListQueryId": "indvdlClmMapper.retrieveExpensCdPrjctAccto",
-    "sendTbInfo": {
-      "tbNm": "PRJCT_CT_APLY",
-      "snColumn": "PRJCT_CT_APLY_SN",
-      "atrzTbNm": "PRJCT_CT_ATRZ"
-    },
     "searchInfo": {
       "searchParams": {
         "insertButton": false,
@@ -103,11 +123,11 @@
     "tableColumns": [
       { "key": "utztnDtFormat", "value": "사용일시", "width": "100", "required": true },
       { "key": "useOffic", "value": "사용처", "width": "120", "required": true },
-      { "key": "utztnAmt", "value": "이용금액", "width": "100", "required": true },
+      { "key": "utztnAmt", "value": "이용금액", "width": "120", "required": true, "cellType": "textBox" },
       { "key": "prjctId", "value": "프로젝트", "cellType": "selectBox", "displayExpr": "prjctNm", "valueExpr": "prjctId", 
-            "placeholder": "입력 시 사용가능한 프로젝트 전체 조회", "width": "280", "required": true },
+            "placeholder": "입력 시 사용가능한 프로젝트 전체 조회", "width": "260", "required": true, "headerBtn": {"text": "일괄적용"} },
       { "key": "expensCd", "value": "비용코드", "cellType": "selectBox", "displayExpr": "cdNm", "valueExpr": "expensCd", 
-            "placeholder": "[비용코드 선택]", "width": "200" },
+            "placeholder": "[비용코드 선택]", "width": "200", "headerBtn": {"text": "일괄적용"} },
       { "key": "ctPrpos", "value": "상세내역(목적)", "cellType": "textBox", "placeholder": "상세내역(목적)", "width": "200" },
       { "key": "atdrn", "value": "용도(참석자명단)", "cellType": "textBox", "placeholder": "용도(참석자명단)","width": "220" }
     ],
@@ -188,8 +208,34 @@
         "queryId": "projectExpenseMapper.retrieveElctrnAtrzClm",
         "valueExpr" : "elctrnAtrzId",
         "displayExpr": "clmAtrzTtl",
-        "name": "elctrnAtrzId"
+        "name": "elctrnAtrzId",
+        "values": ["elctrnAtrzId"]
       }
     }
+  ],
+  "projectExpensePopup": [
+    { "title": "* 기본정보", "key": "basic", "info": [
+      { "key": "aplyOdr", "value": "TR차수" },
+      { "key": "empno", "value": "사번" },
+      { "key": "empFlnm", "value": "성명" },
+      { "key": "deptNm", "value": "소속" },
+      { "key": "jbpsNm", "value": "직위" }
+    ]},
+    { "title": "* 총계", "key": "total", "info": [
+      { "key": "totTime", "value": "총 근무시간" },
+      { "key": "totalUtztnAmt", "value": "총 지급금액" },
+      { "key": "totalCount", "value": "영수증 갯수" }
+    ]},
+    { "title": "* 근무시간", "key": "time", "info": [
+      { "dataField": "prjctNm", "caption": "프로젝트명", "area": "row", "expanded": true, "showTotals": false },
+      { "dataField": "aplyDay", "area": "column" },
+      { "dataField": "md", "area": "data", "summaryType": "sum" }
+    ]},
+    { "title": "* 현금 및 개인법인카드 사용비용", "key": "expense" }
+  ],
+  "projectExpensePopQueryIdList": [
+    "indvdlClmMapper.retrieveVcatnDay",
+    "indvdlClmMapper.retrieveCtrtDay",
+    "indvdlClmMapper.retrievePrjctWorkDay"
   ]
 }

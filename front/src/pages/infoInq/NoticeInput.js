@@ -49,7 +49,10 @@ const NoticeInput = () => {
                     strgFileNm: data.strgFileNm,
                     atchmnflSn: data.atchmnflSn
                 }));
-                setTypeChk({...typeChk, imprtnc: data.imprtncNtcBgngYmd !== null ? true : false})
+                setTypeChk(prev => ({
+                    ...prev,
+                    imprtnc: resData.sgnalOrdr === 1 ? true : false
+                }));
                 setAttachments(tmpFileList);
             }
         } catch (error) {
@@ -62,7 +65,7 @@ const NoticeInput = () => {
     }, []);
 
     const [typeChk, setTypeChk] = useState({
-        imprtnc: data.imprtncNtcBgngYmd !== undefined ? true : false,
+        imprtnc: data.sgnalOrdr === 1 ? true : false,
         useYn: data.useYn === "Y" ? true : false,
         move: false,
     });
@@ -126,9 +129,10 @@ const NoticeInput = () => {
         Object.values(attachments)
             .forEach((attachment) => formData.append("attachments", attachment));
         try {
+            const token = localStorage.getItem("token");
             if(validateData()){
                 const response = await axios.post(insertUrl, formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' },
+                    headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
                 })
                 if (response.data >= 1) navigate("/infoInq/NoticeList")
             }

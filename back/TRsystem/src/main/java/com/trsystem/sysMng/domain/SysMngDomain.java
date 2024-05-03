@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -65,5 +66,48 @@ public class SysMngDomain {
             return result;
         }
     }
+    
+    @Transactional
+    public static Map<String, Object> mainSearch(List<Map<String, Object>> params) {
+        Map<String, Object> resultMap = new HashMap<>();
 
+        Map<String, Object> noticeParam = new HashMap<>();
+        Map<String, Object> trAplyParam = new HashMap<>();
+        Map<String, Object> atrzSttsParam = new HashMap<>();
+        Map<String, Object> atrzListParam = new HashMap<>();
+
+        try {
+            for (Map<String, Object> param : params) {
+                String queryId = (String) param.get("queryId");
+                switch (queryId) {
+                    case "sysMngMapper.retrieveNotice":
+                        noticeParam = param;
+                        break;
+                    case "sysMngMapper.retrieveInptSttus":
+                        trAplyParam = param;
+                        break;
+                    case "sysMngMapper.retrieveAtrzAplySttus":
+                        atrzSttsParam = param;
+                        break;
+                    case "sysMngMapper.retiveAtrzList":
+                        atrzListParam = param;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            resultMap.put("retrieveNotice", commonService.queryIdSearch(noticeParam));
+            resultMap.put("retrieveInptSttus", commonService.queryIdSearch(trAplyParam));
+            resultMap.put("retrieveAtrzAplySttus", commonService.queryIdSearch(atrzSttsParam));
+            resultMap.put("retiveAtrzList", commonService.queryIdSearch(atrzListParam));
+            
+        } catch (Exception e) {
+            e.printStackTrace(); 
+        }
+
+        return resultMap;
+    }
+    
+    
 }

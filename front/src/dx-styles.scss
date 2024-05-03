@@ -18,7 +18,7 @@ body {
 }
 
 .app {
-  background-color: $base-bg;
+  background-color: darken($base-bg, 5.00);
   display: flex;
   height: 100%;
   width: 100%;
