@@ -259,7 +259,14 @@ const routes = [
     name: "TimeExpenseInsertSttus",
     element: React.lazy(() => import("../../pages/fnnrMng/TimeExpenseInsertSttus")),
     isPrivate:"VTW04804"
-   },
+  },
+  // 재무 관리 > 근무시간비용 입력현황 > 마감 화면
+  {
+    path: "/fnnrMng/TimeExpenseClosingList",
+    name: "TimeExpenseClosingList",
+    element: React.lazy(() => import("../../pages/fnnrMng/TimeExpenseClosingList")),
+    isPrivate:"VTW04804"
+  },
   // 개인 청구 > 문화체력비용
   {
     path: "/indvdlClm/CultureHealthCost",
