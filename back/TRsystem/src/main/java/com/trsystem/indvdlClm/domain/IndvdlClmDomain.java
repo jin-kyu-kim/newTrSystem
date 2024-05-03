@@ -109,11 +109,12 @@ public class IndvdlClmDomain {
             int maxSn = commonService.commonGetMax(maxParam);
 
             if(atdrn != null && atdrn.size() != 0){
-                List<Map<String, Object>> atdrnParam = new ArrayList<>();
-                Map<String, Object> atdrnTabMap = new HashMap<>();
-                Map<String, Object> atdrnMap = new HashMap<>();
-
                 for (Map<String, Object> onePerson : atdrn) {
+
+                    List<Map<String, Object>> atdrnParam = new ArrayList<>();
+                    Map<String, Object> atdrnTabMap = new HashMap<>();
+                    Map<String, Object> atdrnMap = new HashMap<>();
+
                     atdrnTabMap.put("tbNm", "PRJCT_CT_ATDRN");
                     atdrnTabMap.put("snColumn", "PRJCT_CT_ATDRN_SN");
 
