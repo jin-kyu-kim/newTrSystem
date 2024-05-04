@@ -17,8 +17,7 @@ const EmpCultHealthCostManage = () => {
   const { keyColumn, queryId, tableColumns, wordWrap, searchInfo } = EmpCultHealthCostManageJson;
   const navigate = useNavigate();
   const [isGroupPopupVisible, setIsGroupPopupVisible] = useState(false);
-  const [selectedGroup, setSelectedGroup] = useState(null);
-  const [selectedRowData, setSelectedRowData] = useState(null);
+  const [selectedRowData, setSelectedRowData] = useState();
   let now = new Date();
   const [param, setParam] = useState({
         "empFlnm": null,
@@ -61,12 +60,6 @@ const EmpCultHealthCostManage = () => {
     const btnChk = window.confirm("문화체련비를 마감하시겠습니까?")
     if (btnChk) {
       alert("마감되었습니다.")
-      const currentDate = new Date(); // 현재 날짜와 시간을 나타내는 Date 객체 생성
-      const year = currentDate.getFullYear(); // 연도를 가져옴
-      const month = currentDate.getMonth() ; // 월을 가져오는데, 0부터 시작하므로 +1을 해줌
-      const formattedDate = `${year}${month < 10 ? '0' : ''}${month}`; // 월이 한 자리 수인 경우 앞에 0을 붙여줌
-
-    console.log(formattedDate); // YYYYMM 형식의 현재 날짜 출력
     }
   };
 
@@ -92,21 +85,21 @@ const EmpCultHealthCostManage = () => {
     });
   };
 
-  const onRowClick = (e) => {   //직원목록 로우 클릭 이벤트
+  const onRowClick = (e) => {
     if (e.rowType === 'group') {
       if (e.data && e.data.key) {
-        const subStringResult = e.data.key.substring(1, 7);
-        setSelectedRowData(subStringResult);
-        setIsGroupPopupVisible(true); // 팝업 열기
+        setSelectedRowData({
+          empId: e.data.items[0].empId,
+          empFlnm: e.data.key.substring(9).trim()
+        });
+        setIsGroupPopupVisible(true);
       } else {
-        console.log('e.data 또는 e.data.key가 null입니다.');
+        console.error('데이터가 존재하지 않습니다.');
       }
     }
-   
   };
 
   const closeGroupPopup = () => {
-    setSelectedGroup(null); // 선택한 그룹 정보 초기화
     setIsGroupPopupVisible(false);
   };
 
@@ -150,22 +143,19 @@ const EmpCultHealthCostManage = () => {
           wordWrap={wordWrap}
           onRowClick={onRowClick}
           noEdit={true}
-
         />
 
       </div>
     </div>
 
     <Popup
-      visible={isGroupPopupVisible}
-      onHiding={closeGroupPopup}
-      width={700}
-      height={600}
+        width={700}
+        height={600}
+        visible={isGroupPopupVisible}
+        onHiding={closeGroupPopup}
+        showCloseButton={true}
     >
-      <Button text="닫기" onClick={closeGroupPopup} />
-      {isGroupPopupVisible && (
-        <EmpCultHealthCostManagePop popEmpId={selectedRowData} closePopup={closeGroupPopup} />
-      )}
+      <EmpCultHealthCostManagePop value={selectedRowData} year={param.clturPhstrnActMngYm.substring(0,4)}/>
     </Popup>
   </div>
   );

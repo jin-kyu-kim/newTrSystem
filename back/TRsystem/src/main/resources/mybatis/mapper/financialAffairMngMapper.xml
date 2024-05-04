@@ -1121,19 +1121,19 @@
 
     </select>
 
+    <!-- 문체비 개인 현황 팝업 -->
     <select id="retrieveClturPhstrnIndvdlList" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
-             E.EMP_ID AS EMP_ID
-             ,E.EMP_FLNM AS EMP_FLNM
-             ,CPAC.CLTUR_PHSTRN_ACT_MNG_YM AS CLM_YM
-             ,CPAC.CLM_AMT AS CLM_AMT
-             ,CPAC.DPST_AMT AS DPST_AMT
+             E.EMP_ID
+             ,CPAC.CLTUR_PHSTRN_ACT_MNG_YM
+             ,CPAC.CLM_AMT
+             ,CPAC.DPST_AMT
              ,CPAC.CYFD_AMT + CPAC.CLM_AMT - CPAC.DPST_AMT AS BALANCE
         FROM CLTUR_PHSTRN_ACT_CT CPAC
-                 JOIN EMP E ON E.EMP_ID = CPAC.EMP_ID
-        <if test="empId != null and empId !=''">
-            WHERE   E.EMPNO = #{empId}
-        </if>
+        JOIN EMP E ON E.EMP_ID = CPAC.EMP_ID
+        WHERE 1=1
+            AND CPAC.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '%')
+            AND E.EMP_ID = #{empId}
     </select>
 
     <!-- 문체비 관리 목록 -->
