@@ -1,4 +1,4 @@
-import { Column, DataGrid, Editing, Lookup, MasterDetail, Selection, RequiredRule, StringLengthRule, Pager, Paging, Export } from 'devextreme-react/data-grid';
+import { Column, DataGrid, Editing, Lookup, MasterDetail, Selection, RequiredRule, StringLengthRule, Pager, Paging, Export, Summary, TotalItem } from 'devextreme-react/data-grid';
 import { useCallback, useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import ApiRequest from 'utils/ApiRequest';
@@ -7,7 +7,8 @@ import moment from 'moment';
 import '../../pages/sysMng/sysMng.css'
 
 const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal, masterDetail, doublePk, noDataText, noEdit,
-    onSelection, onRowClick, callback, handleData, handleExpanding, cellRenderConfig, onBtnClick, excel, onExcel, upCdValue }) => {
+    onSelection, onRowClick, callback, handleData, handleExpanding, cellRenderConfig, onBtnClick, excel, onExcel, upCdValue,
+    summary, summaryColumn}) => {
 
     const [cookies] = useCookies(["userInfo", "userAuth"]);
     const [cdValList, setCdValList] = useState({});
@@ -159,6 +160,19 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                         }}
                     />}
                 {onSelection && <Selection mode="multiple" selectAllMode="page" />}
+                {summary&&
+                    <Summary>
+                        {summaryColumn.map(item => (
+                            <TotalItem
+                                key={item.key}
+                                column={item.value}
+                                summaryType={item.type}
+                                displayFormat={item.format}
+                                valueFormat={{ type: 'fixedPoint', precision: item.precision }}
+                            />
+                        ))}
+                    </Summary>
+                }
                 {columns.map((col) => (
                     <Column
                         visible={col.visible}

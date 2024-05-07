@@ -1107,18 +1107,22 @@
 
     <!-- 문체비 마감 내역 -->
     <select id="retrieveClturPhstrnDdlnList" parameterType="map" resultType="com.trsystem.LowerHashMap">
-
         SELECT
-            E.EMP_ID AS EMP_ID
-            ,C.CD_NM   AS BANK_NAME
-             ,E.ACTNO  AS ACTNO
-             ,E.EMP_FLNM AS EMP_FLNM
-             ,CPAC.DPST_AMT  AS DPST_AMT
-             ,CONCAT(SUBSTR(CLTUR_PHSTRN_ACT_MNG_YM,5), '월 문화체련비' ) AS REMARK
-        FROM CLTUR_PHSTRN_ACT_CT CPAC
-                 JOIN EMP E ON E.EMP_ID = CPAC.EMP_ID
-                 JOIN CD  C ON C.CD_VALUE  = E.BANK_CD
-
+            e.EMP_ID
+            ,c.CD_NM AS BANK_NAME
+            ,e.ACTNO
+            ,e.EMP_FLNM
+            ,cpac.DPST_AMT
+            ,CONCAT(SUBSTR(CLTUR_PHSTRN_ACT_MNG_YM,5), '월 문화체련비' ) AS REMARK
+        FROM CLTUR_PHSTRN_ACT_CT cpac
+        JOIN EMP e ON e.EMP_ID = cpac.EMP_ID
+        JOIN CD  c ON c.CD_VALUE  = e.BANK_CD
+        WHERE 1=1
+          AND cpac.CLTUR_PHSTRN_ACT_MNG_YM = #{clturPhstrnActMngYm}
+          AND (#{empFlnm} IS NULL OR e.EMP_FLNM LIKE CONCAT('%', #{empFlnm}, '%'))
+          AND (#{empno} IS NULL OR e.EMPNO LIKE CONCAT('%', #{empno}, '%'))
+          AND cpac.DPST_AMT IS NOT NULL
+          AND cpac.DPST_AMT > 0
     </select>
 
     <!-- 문체비 개인 현황 팝업 -->

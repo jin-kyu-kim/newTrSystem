@@ -67,7 +67,7 @@ const EmpCultHealthCostManage = () => {
 
   const padNumber = (num) => {
     return num.toString().padStart(2, '0');
-};
+  };
 
   const formattedDateTime = `${now.getFullYear()}_`+
       `${padNumber(now.getMonth() + 1)}_`+
@@ -135,7 +135,7 @@ const EmpCultHealthCostManage = () => {
         <h6 style={{ fontSize: "40px" }}>문화체련비 관리 목록</h6>
         <div style={{marginTop: "7px", marginLeft: "20px"}}>
           <Button onClick={handleMove}>마감 목록</Button>
-          <Button onClick={handleDeadLine} style = {{marginLeft: "10px",backgroundColor: "#B40404", color: "#fff"}}>전체 마감</Button>
+          <Button onClick={handleDeadLine} style = {{marginLeft: "10px", backgroundColor: "#B40404", color: "#fff"}}>전체 마감</Button>
         </div>
       </div>
       <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
