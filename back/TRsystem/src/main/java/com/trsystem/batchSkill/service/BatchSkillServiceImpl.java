@@ -251,17 +251,13 @@ public class BatchSkillServiceImpl implements BatchSkillService {
 
             for(long i = 0; i < 2; i++){
                 LocalDate solDate = LocalDate.now().plusYears(i);
-//                LocalDate solDate = LocalDate.now().plusMonths(i);
-//                LocalDate solDate = LocalDate.now().minusMonths(i);
 
                 String refSolYear = solDate.format(DateTimeFormatter.ofPattern("yyyy"));
-                String refMonth = solDate.format(DateTimeFormatter.ofPattern("MM"));
 
                 String url = "https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getHoliDeInfo?";
                 String serviceKey = "serviceKey=4bjQqSQtmjf8jce2ingNztnBgXaR6OQiQcl55Rf%2FYWIltMwUZX%2BZu%2Fr5tVC2tNvlDkFLCGgRZPwu%2Faf%2FLsMlBg%3D%3D";
                 String numOfRows = "&numOfRows=100";
                 String solYear = "&solYear=" + refSolYear;
-//                String solMonth = "&solMonth=" + refMonth;   // 01, 02 형태
 
                 StringBuilder urlBuilder = new StringBuilder(url + serviceKey + numOfRows +  solYear);
 
@@ -293,11 +289,16 @@ public class BatchSkillServiceImpl implements BatchSkillService {
                 JSONObject jsonData = XML.toJSONObject(xmlSb.toString());
                 JSONObject body = jsonData.getJSONObject("response").getJSONObject("body");
 
-                LocalDate currentDate = LocalDate.now();
-                LocalDate newCurrentData = currentDate.plusMonths(12);
+                YearMonth currentMonth = YearMonth.from(LocalDate.now());
+                YearMonth newCorrentMonth = YearMonth.from(LocalDate.now().plusMonths(12));
 
-                YearMonth currentMonth = YearMonth.from(currentDate);
-                YearMonth newCorrentMonth = YearMonth.from(newCurrentData);
+                if(i == 0){
+                    currentMonth = YearMonth.from(LocalDate.now());
+                    newCorrentMonth = YearMonth.from(LocalDate.parse(refSolYear + "-12-31"));
+                } else if(i == 1){
+                    currentMonth = YearMonth.from(LocalDate.parse(refSolYear + "-01-01"));
+                    newCorrentMonth = YearMonth.from(LocalDate.now().plusMonths(12));
+                }
 
                 LocalDate startDay = currentMonth.atDay(1);
                 LocalDate endDay = newCorrentMonth.atEndOfMonth();
@@ -353,9 +354,6 @@ public class BatchSkillServiceImpl implements BatchSkillService {
                 }
 
             }
-
-
-
 
         } catch (Exception e) {
             throw e;
