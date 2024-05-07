@@ -1,20 +1,16 @@
 import { Column, DataGrid, Editing, Lookup, MasterDetail, Selection, RequiredRule, StringLengthRule, Pager, Paging, Export } from 'devextreme-react/data-grid';
 import { useCallback, useEffect, useState } from 'react';
-import { useCookies } from 'react-cookie';
 import ApiRequest from 'utils/ApiRequest';
 import CellRender from './CellRender';
-import moment from 'moment';
+import { useModal } from "../../components/unit/ModalContext";
 import '../../pages/sysMng/sysMng.css'
 
 const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal, masterDetail, doublePk, noDataText, noEdit,
-    onSelection, onRowClick, callback, handleData, handleExpanding, cellRenderConfig, onBtnClick, excel, onExcel, upCdValue }) => {
-
-    const [cookies] = useCookies(["userInfo", "userAuth"]);
+    onSelection, onRowClick, callback, handleData, handleExpanding, cellRenderConfig, onBtnClick, excel, onExcel, upCdValue, onlyUpdate }) => {
+    
+    const { handleOpen } = useModal();
     const [cdValList, setCdValList] = useState({});
-    const empId = cookies.userInfo.empId;
-    const date = moment();
 
-    useEffect(() => { getCdVal(); }, []);
     const getCdVal = useCallback(async () => {
         try {
             let updatedCdValList = {};
@@ -33,7 +29,8 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
         } catch (error) {
             console.log(error)
         }
-    }, [])
+    }, []);
+    useEffect(() => { getCdVal(); }, []);
 
     const onEditRow = async (editMode, e) => {
         if (tbNm !== undefined) {
@@ -75,10 +72,10 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
             }
             const response = await ApiRequest('/boot/common/' + editInfo.url, editParam);
             if (response === 1) {
-                alert(`${editInfo.complete}되었습니다.`);
-                callback();
+                await callback();
+                handleOpen(`${editInfo.complete}되었습니다.`);
             } else {
-                alert(`${editInfo.complete}에 실패했습니다.`);
+                handleOpen(`${editInfo.complete}에 실패했습니다.`);
             }
         } else { handleData(values); }
     };
@@ -86,7 +83,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
     const checkDuplicate = (newKeyValue) => {
         let isDuplicate = false;
         if (newKeyValue !== undefined) isDuplicate = values.some(item => item[keyColumn] === newKeyValue);
-        if (isDuplicate) alert("중복된 키 값입니다. 다른 키 값을 사용해주세요.");
+        if (isDuplicate) handleOpen("중복된 키 값입니다. 다른 값을 사용해주세요.");
         return isDuplicate;
     };
 
@@ -143,8 +140,8 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                 {!noEdit &&
                     <Editing
                         mode="form"
-                        allowAdding={true}
-                        allowDeleting={true}
+                        allowAdding={onlyUpdate ? false : true}
+                        allowDeleting={onlyUpdate ? false : true}
                         allowUpdating={true}
                         refreshMode='reshape'
                         texts={{
@@ -190,7 +187,6 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                     allowedPageSizes={[20, 50, 80, 100]}
                 />
                 {excel && <Export enabled={true} />}
-                width : "auto"
             </DataGrid>
         </div>
     );
