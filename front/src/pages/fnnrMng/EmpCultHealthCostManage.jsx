@@ -10,13 +10,15 @@ import { Button } from "devextreme-react";
 import { useNavigate } from "react-router-dom";
 import { Popup } from "devextreme-react";
 import EmpCultHealthCostManagePop from "./EmpCultHealthCostManagePop";
+import EmpCultHealthCostDetailPop from "./EmpCultHealthCostDetailPop";
 import CustomEditTable from "components/unit/CustomEditTable";
 
 const EmpCultHealthCostManage = () => {
   const [values, setValues] = useState([]);
   const { keyColumn, queryId, tableColumns, wordWrap, searchInfo } = EmpCultHealthCostManageJson;
   const navigate = useNavigate();
-  const [isGroupPopupVisible, setIsGroupPopupVisible] = useState(false);
+  const [isManagePopupVisible, setIsManagePopupVisible] = useState(false);
+  const [isDetailPopupVisible, setIsDetailPopupVisible] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState();
   let now = new Date();
   const [param, setParam] = useState({
@@ -92,15 +94,27 @@ const EmpCultHealthCostManage = () => {
           empId: e.data.items[0].empId,
           empFlnm: e.data.key.substring(9).trim()
         });
-        setIsGroupPopupVisible(true);
+        setIsManagePopupVisible(true);
       } else {
         console.error('데이터가 존재하지 않습니다.');
       }
     }
   };
 
-  const closeGroupPopup = () => {
-    setIsGroupPopupVisible(false);
+  const onBtnClick = (button, rowData) => {
+    setSelectedRowData({
+      empId: rowData.data.empId,
+      empFlnm: rowData.data.empFlnm.substring(9).trim()
+    });
+    setIsDetailPopupVisible(true);
+  }
+
+  const closeManagePopup = () => {
+    setIsManagePopupVisible(false);
+  };
+
+  const closeDetailPopup = () => {
+    setIsDetailPopupVisible(false);
   };
 
   return (
@@ -143,6 +157,7 @@ const EmpCultHealthCostManage = () => {
           wordWrap={wordWrap}
           onRowClick={onRowClick}
           noEdit={true}
+          onBtnClick={onBtnClick}
         />
 
       </div>
@@ -151,11 +166,20 @@ const EmpCultHealthCostManage = () => {
     <Popup
         width={700}
         height={600}
-        visible={isGroupPopupVisible}
-        onHiding={closeGroupPopup}
+        visible={isManagePopupVisible}
+        onHiding={closeManagePopup}
         showCloseButton={true}
     >
       <EmpCultHealthCostManagePop value={selectedRowData} year={param.clturPhstrnActMngYm.substring(0,4)}/>
+    </Popup>
+    <Popup
+        width={1000}
+        height={700}
+        visible={isDetailPopupVisible}
+        onHiding={closeDetailPopup}
+        showCloseButton={true}
+    >
+      <EmpCultHealthCostDetailPop value={selectedRowData} ym={param.clturPhstrnActMngYm}/>
     </Popup>
   </div>
   );

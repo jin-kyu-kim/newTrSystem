@@ -1124,16 +1124,34 @@
     <!-- 문체비 개인 현황 팝업 -->
     <select id="retrieveClturPhstrnIndvdlList" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
-             E.EMP_ID
-             ,CPAC.CLTUR_PHSTRN_ACT_MNG_YM
-             ,CPAC.CLM_AMT
-             ,CPAC.DPST_AMT
-             ,CPAC.CYFD_AMT + CPAC.CLM_AMT - CPAC.DPST_AMT AS BALANCE
-        FROM CLTUR_PHSTRN_ACT_CT CPAC
-        JOIN EMP E ON E.EMP_ID = CPAC.EMP_ID
+             EMP_ID
+             ,CLTUR_PHSTRN_ACT_MNG_YM
+             ,CLM_AMT
+             ,DPST_AMT
+             ,CYFD_AMT + CLM_AMT - DPST_AMT AS BALANCE
+        FROM CLTUR_PHSTRN_ACT_CT
         WHERE 1=1
-            AND CPAC.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '%')
-            AND E.EMP_ID = #{empId}
+            AND CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '%')
+            AND EMP_ID = #{empId}
+    </select>
+
+    <!-- 문체비 상세청구내역 팝업 -->
+    <select id="retrieveClturPhstrnDetailList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            c.CLTUR_PHSTRN_ACT_CT_SN
+            , c.CLM_AMT
+            , c.CLTUR_PHSTRN_SE_CD
+            , c.ACT_IEM
+            , c.RM
+            , c.ATCHMNFL_ID
+            , a.ATCHMNFL_SN
+            , a.REAL_FILE_NM
+            , a.STRG_FILE_NM
+        FROM CLTUR_PHSTRN_ACT_CT_REG c
+                 LEFT JOIN  ATCHMNFL a ON c.ATCHMNFL_ID = a.ATCHMNFL_ID
+        WHERE 1=1
+          AND CLM_YMD LIKE CONCAT(#{ym}, '%')
+          AND EMP_ID = #{empId}
     </select>
 
     <!-- 문체비 관리 목록 -->

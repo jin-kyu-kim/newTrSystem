@@ -3,6 +3,7 @@ import Button from "devextreme-react/button";
 import TagBox from 'devextreme-react/tag-box';
 import SelectBox from "devextreme-react/select-box";
 import ToggleButton from 'pages/sysMng/ToggleButton';
+import React from "react";
 
 const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig }) => {
 
@@ -73,6 +74,17 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig }) =
                 }} >
             </TextBox>
         );
+    } else if (col.cellType === 'fileCell') {
+        let atchList = props?.data.atchmnfl;
+        if (atchList != null) {
+            return (<div>
+                {atchList.map((item, index) => (
+                    <div key={index} style={{whiteSpace: 'pre-wrap'}}>
+                        <a href={`/upload/${item.strgFileNm}`} download={item.realFileNm}>{item.realFileNm}</a>
+                    </div>
+                ))}
+            </div>);
+        }
     }
 }
 export default CellRender;
