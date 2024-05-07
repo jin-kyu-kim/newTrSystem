@@ -11,7 +11,7 @@ import ElecAtrzOutordCompanyPopupJson from "./ElecAtrzOutordCompanyPopupJson.jso
  *  "VTW04909" : 외주업체
  *  "VTW04910" : 재료비
  */
-const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedData, data, sttsCd, ctrtTyCd}) => {
+const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedData, data, sttsCd, ctrtTyCd, tableData}) => {
 
     let jsonData = {};
     if((ctrtTyCd ? ctrtTyCd : data.elctrnAtrzTySeCd) === "VTW04910"){
@@ -66,18 +66,21 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
             if(["VTW03201","VTW03202","VTW03203","VTW03204"].includes(pay[i].giveOdrCd)){
                 if(pay[i].giveOdrCd === "VTW03201"){
                     advPayYm = pay[i].ctrtYmd.getFullYear() + "" + month;
+                    // advPayYm = pay[i].ctrtYmd
                 }
                 advPayAmt += pay[i].ctrtAmt;
                
             //잔금
             } else if(pay[i].giveOdrCd === "VTW03212") {    
                 surplusYm = pay[i].ctrtYmd.getFullYear () + "" + month;
+                // surplusYm = pay[i].ctrtYmd;
                 surplusAmt = pay[i].ctrtAmt;
 
             //중도금
             } else  {
                 if(pay[i].giveOdrCd === "VTW03202") {  
                     prtPayYm = pay[i].ctrtYmd.getFullYear() + "" + month;
+                    // prtPayYm = pay[i].ctrtYmd;
                 }
                 prtPayAmt += pay[i].ctrtAmt;
             }
@@ -127,6 +130,15 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
             alert("지불 총액은 계약금액을 초과할 수 없습니다.");
             return;
         }
+
+        const isExpectCtrtEntrps = tableData.some(item => {
+            if((item.expectCtrtEntrpsNm === matrlCtrtData.expectCtrtEntrpsNm)&&!(Object.keys(selectedData).length)) {
+                alert(`이미 등록된 ${matrlPlanParam.label}입니다.`);
+                return true; // true를 반환하여 some 메서드 반복 중단
+            }
+            return false;
+        });
+        if (isExpectCtrtEntrps) return; // 등록된 사원이 있으면 함수 탈출
 
         handlePlanData(matrlCtrtData);
         handlePopupVisible();

@@ -158,6 +158,12 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                 {onSelection && <Selection mode="multiple" selectAllMode="page" />}
                 {columns.map((col) => (
                     <Column
+                        editorOptions={{
+                            format: {
+                                type: 'fixedPoint',
+                                precision: 0
+                            }
+                        }}         
                         visible={col.visible}
                         key={col.key}
                         dataField={col.key}
@@ -177,6 +183,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                             : null}
                         {col.isRequire && <RequiredRule message={`${col.value}는 필수항목입니다`} />}
                         {col.length && <StringLengthRule max={col.length} message={`최대입력 길이는 ${col.length}입니다`} />}
+                        
                     </Column>
                 ))}
                 <Paging defaultPageSize={20} />

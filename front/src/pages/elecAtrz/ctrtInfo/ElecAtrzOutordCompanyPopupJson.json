@@ -19,10 +19,11 @@
             },
             "expectCt": {
                 "name": "expectCt",
-                "type": "TextBox",
+                "type": "NumberBox",
                 "label": "가용금액",
                 "placeholder": "가용금액",
-                "required": true
+                "required": true,
+                "format": "#,###"
             },
             "prductNm": {
                 "type": "ComboBox",

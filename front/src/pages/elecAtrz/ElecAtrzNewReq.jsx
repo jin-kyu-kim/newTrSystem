@@ -51,7 +51,7 @@ const ElecAtrzNewReq = () => {
         if(!ctrtTyCd){
             if(formData.atrzDmndSttsCd === "VTW03701"){   //임시저장
                 
-            const getCtrtInfo = async () => {
+                const getCtrtInfo = async () => {
                     try {
                         const response = await ApiRequest('/boot/common/queryIdSearch', 
                                 {queryId: "elecAtrzMapper.retrieveElctrnAtrzId"
