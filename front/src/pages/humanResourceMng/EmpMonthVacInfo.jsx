@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
-import 'devextreme/dist/css/dx.light.css';
-import Calendar from "../../components/unit/Calendar"
-import AutoCompleteName from "../../components/unit/AutoCompleteName"
-import ApiRequest from "../../utils/ApiRequest";
-import EmpMonthVacInfoJson from "./EmpMonthVacInfo.json"
-import Box, { Item } from "devextreme-react/box"
-import { Button } from "devextreme-react/button";
-import { SelectBox } from 'devextreme-react';
-import CustomEmpComboBox from "components/unit/CustomEmpComboBox"
 
+import { Button, SelectBox } from 'devextreme-react';
+
+import Calendar from "components/unit/Calendar"
+import ApiRequest from "utils/ApiRequest";
+
+
+import 'devextreme/dist/css/dx.light.css';
+import EmpMonthVacInfoJson from "./EmpMonthVacInfoJson.json"
+import CustomEmpComboBox from "components/unit/CustomEmpComboBox"
 
 /**
  * @param {number} startYear 현재년도 기준 화면에 보여줄 (현재년도 - startYear)
@@ -75,18 +75,6 @@ const EmpMonthVacInfo = () => {
     const pageHandle = async (initParam) => {
         try {
             const response = await ApiRequest("/boot/common/queryIdSearch", initParam);
-
-            // 휴가테이블 구조상 2일이상의 휴가인 경우 커스텀하여 휴가일수(vcatnDeCnt) 데이터 추가
-            for (let i = 0; i < response.length; i++) {
-                if (response[i].vcatnDeCnt > 1) {
-                    for (let j = 1; j < response[i].vcatnDeCnt; j++) {
-                        response.push({
-                            title: response[i].title,
-                            date: String(parseInt(response[i].date) + j)
-                        });
-                    }
-                }
-            }
             setValues(response);
         } catch (error) {
             console.log(error);
@@ -126,12 +114,9 @@ const EmpMonthVacInfo = () => {
         });
     }
 
-    // useEffect(() => {
-    //     console.log("searchParam : ", searchParam);
-    // }, [searchParam])
 
     return (
-        <div className="container">
+        <div className="">
             <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
                 <h1 style={{ fontSize: "30px" }}>월별휴가정보</h1>
             </div>
@@ -144,6 +129,7 @@ const EmpMonthVacInfo = () => {
                         placeholder="[년도]"
                         defaultValue={new Date().getFullYear()}
                         dataSource={getYearList(10, 1)}
+                        onEnterKey={searchHandle}
                         onValueChange={(e) => { onSearchChg("searchYear", e) }}
                     />
                 </div>
@@ -154,6 +140,7 @@ const EmpMonthVacInfo = () => {
                         valueExpr="key"
                         displayExpr="value"
                         placeholder=""
+                        onEnterKey={searchHandle}
                         onValueChange={(e) => { onSearchChg("searchMonth", e) }}
                     />
                 </div>
@@ -161,9 +148,9 @@ const EmpMonthVacInfo = () => {
                     <CustomEmpComboBox
                         value={searchParam.empId}
                         readOnly={false}
-                        onValueChange={onSelectEmpFlnmChg}
                         useEventBoolean={true}
                         showClearButton={true}
+                        onValueChange={onSelectEmpFlnmChg}
                     />
                 </div>
                 <div className="col-md-1">
@@ -179,9 +166,6 @@ const EmpMonthVacInfo = () => {
                         left: '',
                         center: 'title',
                         right: ''
-                        // left: 'prevYear,nextYear',
-                        // center: 'title',
-                        // right: 'prev,next'
                     }}
                     initialView="dayGridMonth"
                     initCssValue="monthStyle"

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useCookies } from "react-cookie";
 
 import { Scheduler } from 'devextreme-react';
@@ -10,8 +10,8 @@ import Moment from "moment"
 
 import ApiRequest from "utils/ApiRequest";
 
-import "pages/humanResourceMng/MeetingRoomManage.css"
 import MeetingRoomManagePopup from "pages/humanResourceMng/MeetingRoomManagePopup";
+import "pages/humanResourceMng/MeetingRoomManage.css"
 
 
 
@@ -19,17 +19,19 @@ const MeetingRoomManage = () => {
     // 세션설정
     const [cookies, setCookie] = useCookies(["userInfo", "deptInfo"]);
 
-    console.log(cookies);
+
 
 
 
     // 회의실종류코드조회
     const [selectMtgRoomCodeList, setSelectMtgRoomCodeList] = useState();
 
+    // 회의실종류코드조회
     useEffect(() => {
         getMtgRoomCode();
     }, [])
 
+    // 회의실종류코드조회
     const getMtgRoomCode = async () => {
         setSelectMtgRoomCodeList(await ApiRequest('/boot/common/commonSelect', [{ tbNm: "CD" }, { upCdValue: "VTW042" }]));
     }
@@ -87,10 +89,11 @@ const MeetingRoomManage = () => {
 
     // 날짜변경이벤트
     function onOptionChanged(e) {
+        // 날짜변경시 회의실예약정보 재조회
         setSearchMtgRoomParam({
             ...searchMtgRoomParam,
-            changeDate: e,
-            searchBoolean: true,
+            changeDate: e,              // 변경된날짜
+            searchBoolean: true,        // 재조회여부
         })
     }
 
@@ -99,7 +102,16 @@ const MeetingRoomManage = () => {
 
     // 신규회의실정보
     function onCellClick(e) {
-        popupMtgRoomRsvt.current = "";
+        // 선택한 셀의 시작일자, 종료일자, 회의실종류 설정
+        popupMtgRoomRsvt.current = ([{
+            mtgRoomCd: e.cellData.groups.mtgRoomCd,
+            useYmd: Moment(e.cellData.startDate).format("YYYYMMDD"),
+            useEndYmd: Moment(e.cellData.startDate).format("YYYYMMDD"),
+            useBgngHm: Moment(e.cellData.startDate).format("HHMM"),
+            useEndHm: Moment(e.cellData.endDate).format("HHMM"),
+            startDate: e.cellData.startDate,
+            endDate: e.cellData.endDate,
+        }]);
         popupMtgRoomRsvtAtdrn.current = "";
         setPopupMeetingRoomValue({ visible: true, state: "insert" })
         setAuthValue("new")
@@ -131,12 +143,12 @@ const MeetingRoomManage = () => {
         setPopupMeetingRoomValue({ visible: true, state: "update" })
     }
 
-
+    // 더블클릭이벤트 차단
     function onAppointmentDblClick(e) {
         e.cancel = true;
     }
 
-
+    // grouping 설정
     const groupData = [
         {
             text: '중회의실',
@@ -159,6 +171,18 @@ const MeetingRoomManage = () => {
             color: '#aaaaaa',
         },
     ];
+
+    // 상단 navigator formating
+    const customizeDateNavigatorText = useCallback((e) => {
+        const formatOptions = { 
+            year: 'numeric', 
+            month: 'numeric', 
+            day: 'numeric' 
+        };
+        const formattedStartDate = e.startDate.toLocaleString('kr', formatOptions);
+        const formattedEndDate = e.endDate.toLocaleString('kr', formatOptions);
+        return formattedStartDate + ' - ' + formattedEndDate;
+    }, []);
 
     return (
         <div className="" style={{ marginLeft: "2%", marginRight: "2%" }}>
@@ -206,6 +230,7 @@ const MeetingRoomManage = () => {
                     maxAppointmentsPerCell={3}
                     crossScrollingEnabled={true}
                     allDayPanelMode="hidden"
+                    customizeDateNavigatorText={customizeDateNavigatorText}
                     onAppointmentClick={onAppointmentFormOpening}
                     onCellClick={onCellClick}
                     onAppointmentDblClick={onAppointmentDblClick}
@@ -247,6 +272,7 @@ const MeetingRoomManage = () => {
                         visible={popupMeetingRoomValue.visible}
                         mtgRoomRsvtValue={popupMtgRoomRsvt.current && popupMtgRoomRsvt.current != "" ? popupMtgRoomRsvt.current : selectMtgRoomValue}
                         mtgRoomRsvtAtdrnValue={popupMtgRoomRsvtAtdrn.current}
+                        mtgRoomRsvtListValue={selectMtgRoomValue}
                         state={popupMeetingRoomValue.state}
                         authState={authValue}
                         onHiding={(e, state) => {

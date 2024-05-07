@@ -371,10 +371,10 @@ const routes = [
     isPrivate:"VTW04804"
   },
   {// 회의실 예약
-    path: "/infoInq/MeetingRoomReserv",
-    name: "MeetingRoomReserv",
-    element: React.lazy(() => import("../../pages/infoInq/MeetingRoomReserv")) ,
-    isPrivate:"USER"
+    path: "/humanResourceMng/MeetingRoomManage2",
+    name: "MeetingRoomManage2",
+    element: React.lazy(() => import("../../pages/humanResourceMng/MeetingRoomManage")),
+    isPrivate:"VTW04805"
   }
 ];
 
