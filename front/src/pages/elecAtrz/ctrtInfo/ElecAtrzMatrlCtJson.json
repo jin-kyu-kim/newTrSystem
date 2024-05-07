@@ -29,7 +29,7 @@
       {
         "key": "cntrctamount",
         "value": "가용금액",
-        "type": "max",
+        "type": "sum",
         "format": "Total: {0}원"
       },
       {
