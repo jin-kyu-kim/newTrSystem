@@ -22,7 +22,7 @@ public class HumanResourceMngDomain {
 
 
     /* =================================박지환_작업================================= */
-    // 휴가신청취소
+    // 회의실예약정보저장
     public static int insertMtgRoomRsvt (List<Map<String, Object>> params){
         List<Map<String, Object>> selectMtgRoomMaxSnResult = commonService.queryIdSearch(new HashMap<>(){{ put("queryId", "humanResourceMngMapper.retrieveMtgRoomSnInq"); }});
         int maxSn = Integer.parseInt(String.valueOf(selectMtgRoomMaxSnResult.get(0).get("maxSn")));
@@ -70,11 +70,6 @@ public class HumanResourceMngDomain {
                 put("mtgAtdrnSn", cnt + 1);
             }});
         }
-
-        System.out.println("=======================================");
-        System.out.println("insertRefMtgRoomRsvt : " + insertRefMtgRoomRsvt);
-        System.out.println("insertMtgRoomRsvtAtdrn : " + insertMtgRoomRsvtAtdrn);
-        System.out.println("=======================================");
 
         commonService.queryIdSearch(insertRefMtgRoomRsvt);
         for(int i = 0; i < insertMtgRoomRsvtAtdrn.size(); i++){
