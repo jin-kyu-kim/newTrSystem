@@ -1,6 +1,7 @@
 {
   "menuName": "ProjectTotCostInfo",
   "queryId": "projectMapper.retrievePrjctGnrlzTot",
+  "aprvQueryId": "projectMapper.retrieveAprvBgtOdr",
   "keyColumn": "prmpcAcctoTot",
   "wordWrap": true,
   
