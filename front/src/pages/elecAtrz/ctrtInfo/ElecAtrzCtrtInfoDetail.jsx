@@ -14,7 +14,6 @@ import ApiRequest from "utils/ApiRequest";
  *  "VTW04910" : 재료비
  */
 const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd, ctrtTyCd}) => {
-    
     const [popupVisible, setPopupVisible] = useState(false);
     const [tableData, setTableData] = useState([]);                 //그리드 전체 데이터
     const [selectedData, setSelectedData] = useState({});           //선택된 행의 데이터
@@ -71,76 +70,77 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd, ctrtTyCd}) =
      * 임시저장된 데이터
      */
     const getTempData = async () => {
-
-        const dtlParam = 
-            { queryId: "elecAtrzMapper.retrieveEntrpsCtrtDtl",
-              elctrnAtrzId: data.ctrtElctrnAtrzId ? data.ctrtElctrnAtrzId : data.elctrnAtrzId,
-              elctrnAtrzTySeCd: ctrtTyCd ? ctrtTyCd : data.elctrnAtrzTySeCd}    
+        const dtlParam = {
+            queryId: "elecAtrzMapper.retrieveEntrpsCtrtDtl",
+            elctrnAtrzId: data.ctrtElctrnAtrzId ? data.ctrtElctrnAtrzId : data.elctrnAtrzId,
+            elctrnAtrzTySeCd: ctrtTyCd ? ctrtTyCd : data.elctrnAtrzTySeCd
+        };
         const dtlResponse = await ApiRequest("/boot/common/queryIdSearch", dtlParam);
-
-        const ctrtDataDtl = dtlResponse[0];
-
+    
+        const ctrtDataDtl = dtlResponse;
+    
         const dtlCndParam = {
             queryId: "elecAtrzMapper.retrieveEntrpsCtrtDtlCnd",
-            elctrnAtrzId: data.ctrtElctrnAtrzId ? data.ctrtElctrnAtrzId : data.elctrnAtrzId }
-
+            elctrnAtrzId: data.ctrtElctrnAtrzId ? data.ctrtElctrnAtrzId : data.elctrnAtrzId
+        };
+    
         const dtlCndResponse = await ApiRequest("/boot/common/queryIdSearch", dtlCndParam);
-
+    
         dtlCndResponse.map((item) => {
             item.ctrtYmd = new Date(item.ctrtYmd);
         });
-
+    
         const pay = dtlCndResponse;
-
-        let advPayYm = "";
-        let advPayAmt = 0;
-        let surplusYm = "";
-        let surplusAmt = 0;
-        let prtPayYm = "";
-        let prtPayAmt = 0;
-
-        for(let i = 0; i < pay.length; i++) {
-
-            let month
-            if(pay[i].ctrtYmd.getMonth() + 1 < 10) {
-                month = "0" + (pay[i].ctrtYmd.getMonth() + 1)
-            }
-
-            //선금
-            if(["VTW03201","VTW03202","VTW03203","VTW03204"].includes(pay[i].giveOdrCd)){
-                if(pay[i].giveOdrCd === "VTW03201"){
-                    advPayYm = pay[i].ctrtYmd.getFullYear() + "" + month;
+    
+        const result = ctrtDataDtl.map((ctrtItem) => {
+            const matchedPayItems = pay.filter((payItem) => payItem.entrpsCtrtDtlSn === ctrtItem.entrpsCtrtDtlSn);
+    
+            let advPayYm = "";
+            let advPayAmt = 0;
+            let surplusYm = "";
+            let surplusAmt = 0;
+            let prtPayYm = "";
+            let prtPayAmt = 0;
+    
+            matchedPayItems.forEach((payItem) => {
+                let month = (payItem.ctrtYmd.getMonth() + 1).toString().padStart(2, '0');
+    
+                // 선금
+                if (["VTW03201", "VTW03202", "VTW03203", "VTW03204"].includes(payItem.giveOdrCd)) {
+                    if (payItem.giveOdrCd === "VTW03201") {
+                        advPayYm = payItem.ctrtYmd.getFullYear() + "" + month;
+                    }
+                    advPayAmt += payItem.ctrtAmt;
+    
+                // 잔금
+                } else if (payItem.giveOdrCd === "VTW03212") {
+                    surplusYm = payItem.ctrtYmd.getFullYear() + "" + month;
+                    surplusAmt = payItem.ctrtAmt;
+    
+                // 중도금
+                } else {
+                    if (payItem.giveOdrCd === "VTW03205") {
+                        prtPayYm = payItem.ctrtYmd.getFullYear() + "" + month;
+                    }
+                    prtPayAmt += payItem.ctrtAmt;
                 }
-                advPayAmt += pay[i].ctrtAmt;
-               
-            //잔금
-            } else if(pay[i].giveOdrCd === "VTW03212") {    
-                surplusYm = pay[i].ctrtYmd.getFullYear () + "" + month;
-                surplusAmt = pay[i].ctrtAmt;
-
-            //중도금
-            } else  {
-                if(pay[i].giveOdrCd === "VTW03205") {  
-                    prtPayYm = pay[i].ctrtYmd.getFullYear() + "" + month;
-                }
-                prtPayAmt += pay[i].ctrtAmt;
-            }
-        }
-        
-        const result = {
-            ...ctrtDataDtl,
-            pay,
-            "advPayYm": advPayYm,
-            "advPayYm": advPayYm,
-            "advPayAmt": advPayAmt,
-            "surplusYm": surplusYm,
-            "surplusAmt": surplusAmt,
-            "prtPayYm": prtPayYm,
-            "prtPayAmt": prtPayAmt,
-            "totAmt": advPayAmt + surplusAmt + prtPayAmt
-        }
+            });
+    
+            return {
+                ...ctrtItem,
+                pay: matchedPayItems,
+                "advPayYm": advPayYm,
+                "advPayAmt": advPayAmt,
+                "surplusYm": surplusYm,
+                "surplusAmt": surplusAmt,
+                "prtPayYm": prtPayYm,
+                "prtPayAmt": prtPayAmt,
+                "totAmt": advPayAmt + surplusAmt + prtPayAmt
+            };
+        });
+    
         handlePopupData(result);
-    }
+    };
 
     /**
      *  날짜데이터 포멧팅
@@ -172,12 +172,14 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd, ctrtTyCd}) =
             item.pay.forEach(element => {
                 if (!element.ctrtYmd) return;
                 element.ctrtYmd = formatDateToYYYYMM(element.ctrtYmd);
+                // element.ctrtYmd = element.ctrtYmd;
             });
         });
 
         if(!!onSendData){
             onSendData(newData);
         }
+
     }, [tableData]);
 
 
@@ -206,19 +208,24 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd, ctrtTyCd}) =
     },[]);
 
 
-    const handlePopupData = (data) => {
-        const existingIndex = tableData.findIndex(item => item.entrpsCtrtDtlSn === data.entrpsCtrtDtlSn);
-        if(existingIndex >=0){
-            const updatedData = [...tableData];
-            updatedData[existingIndex] = data;
-            setTableData(updatedData);
-        } else {
-            const maxSn = tableData.length > 0 ? Math.max(...tableData.map(item => item.entrpsCtrtDtlSn || 0)) : 0;
-            data.entrpsCtrtDtlSn = maxSn + 1;  
-            setTableData(prev => [...prev, data]);
-        }
+    const handlePopupData = (dataArray) => {
+        const newDataArray = Array.isArray(dataArray) ? dataArray : [dataArray];
+    
+        const updatedTableData = [...tableData];
 
-    }
+        newDataArray.forEach(data => {
+            const existingIndex = updatedTableData.findIndex(item => item.entrpsCtrtDtlSn === data.entrpsCtrtDtlSn);
+            if (existingIndex >= 0) {
+                updatedTableData[existingIndex] = data;
+            } else {
+                const maxSn = updatedTableData.length > 0 ? Math.max(...updatedTableData.map(item => item.entrpsCtrtDtlSn || 0)) : 0;
+                data.entrpsCtrtDtlSn = maxSn + 1;
+                updatedTableData.push(data);
+            }
+        });
+        setTableData(updatedTableData);
+    };
+
 
     
     /**
@@ -259,6 +266,7 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd, ctrtTyCd}) =
                     data={data}
                     sttsCd={sttsCd}
                     ctrtTyCd={ctrtTyCd}
+                    tableData={tableData}
                 />
             </Popup>
         </div>

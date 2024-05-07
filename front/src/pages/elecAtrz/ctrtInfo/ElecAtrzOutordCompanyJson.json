@@ -9,17 +9,17 @@
       { "key": "totAmt", "value": "총 사용액", "currency": true  },
       { "value": "선금",
         "subColumns": [
-          { "key": "advPayYm", "value": "날짜", "dateFormat": true},
+          { "key": "advPayYm", "value": "날짜"},
           { "key": "advPayAmt", "value": "금액", "currency": true  }
         ]},
       { "value": "중도금",
         "subColumns": [
-            { "key": "prtPayYm", "value": "날짜", "dateFormat": true },
+            { "key": "prtPayYm", "value": "날짜"},
             { "key": "prtPayAmt", "value": "금액", "currency": true  }
         ]},
       { "value": "잔금",
         "subColumns": [
-            { "key": "surplusYm", "value": "날짜", "dateFormat": true },
+            { "key": "surplusYm", "value": "날짜"},
             { "key": "surplusAmt", "value": "금액", "currency": true  }
         ]},
         {  "value": "수정", "width": 80, "button": {"text" : "수정", "name" : "update"} },
@@ -29,7 +29,7 @@
       {
         "key": "expectCt",
         "value": "가용금액",
-        "type": "max",
+        "type": "sum",
         "format": "Total: {0}원"
       },
       {
