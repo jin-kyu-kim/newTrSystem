@@ -59,7 +59,7 @@ const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick
             <tr>
               <td>문서번호</td>
               <td> : </td>
-              <td>{formData.atrzDmndSttsCd === "VTW03701" ? "" : formData.elctrnAtrzId}</td>
+              <td>{formData.atrzDmndSttsCd === "VTW03701" ? "" : formData.elctrnAtrzDocNo}</td>
             </tr>
             <tr>
               <td>프로젝트</td>

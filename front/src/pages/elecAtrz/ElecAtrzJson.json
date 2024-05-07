@@ -28,7 +28,7 @@
       "queryId": "elecAtrzMapper.elecAtrzMain",
       "countQueryId": "elecAtrzMapper.elecAtrzMainCount",
       "baseColumns": [
-          {"key": "elctrnAtrzId", "value": "문서번호"},
+          {"key": "elctrnAtrzDocNo", "value": "문서번호"},
           {"key": "gnrlAtrzTtl", "value": "결재유형"},
           {"key": "atrzDmndEmpNm", "value": "기안자"},
           {"key": "regDt", "value": "기안요청일"},
@@ -162,7 +162,7 @@
   "elecGiveAtrz": {
     "keyColumn": "elctrnAtrzId",
     "tableColumns": [
-      {"key": "elctrnAtrzId", "value": "문서번호"},
+      {"key": "elctrnAtrzDocNo", "value": "문서번호"},
       {"key": "ctrtKndCdNm", "value": "결재유형"},
       {"key": "atrzDmndEmpNm", "value": "기안자"},
       {"key": "regDt", "value": "기안요청일"},
