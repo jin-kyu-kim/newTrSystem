@@ -5,10 +5,10 @@ import CustomTable from "components/unit/CustomTable";
 import MainJson from "./MainJson"
 import { useNavigate } from "react-router-dom"; 
 import { useCookies } from "react-cookie";
-import {TableContainer, Table,TableRow,TableCell } from "@mui/material";
+import {TableContainer, Table,TableHead,TableBody,TableRow,TableCell } from "@mui/material";
 import CustomEditTable from "components/unit/CustomEditTable";
 import Moment from "moment"
-import { startOfMonth, endOfMonth } from 'date-fns'
+import { startOfMonth } from 'date-fns'
 import {useAuth} from "../../components/sidebar/contexts/auth";
 
 const Main = ({}) => {
@@ -26,6 +26,7 @@ const Main = ({}) => {
         } = MainJson; 
 
     const [cookies] = useCookies(["userInfo", "userAuth","deptInfo"]);
+
     if(!cookies.userInfo){
         // eslint-disable-next-line react-hooks/rules-of-hooks
         const { signOut } = useAuth();
@@ -66,8 +67,6 @@ const Main = ({}) => {
 
 // 차수별 시작, 종료일자 
 let flagOrder = new Date().getDate() > 15 ? 1 : 2;
-let orderWorkBgngYmd = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMMDD")) : String(Moment(new Date()).format("YYYYMM") - 1 + "16")
-let orderWorkEndYmd = flagOrder == 1 ? String(Moment(new Date()).format("YYYYMM") + "15") : Moment(endOfMonth(new Date(Moment(Moment(new Date()).format("YYYYMM") - 1 + "15").format("YYYY-MM-DD")))).format("YYYYMMDD")
 let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMM")) : String(Moment(new Date()).format("YYYYMM") - 1)
 
 //{*-------------------------- 이벤트 영역 -----------------------------------*}
@@ -109,7 +108,7 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
       window.open("http://kms.vtw.co.kr/#/login");
     }
     const goConference = (e) => {  //회의실예약이동(화면 미구현 추후 설정예정)
-        navigate("/infoInq/EmpDetailInfo", 
+        navigate("/infoInq/MeetingRoomReserv", 
                 { state: { 
                         empId: empId,
                         } 
@@ -195,26 +194,30 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
         <div className="empInfoContainer" style={empInfoStyle}>
           <div><p><strong> 사용자 정보 </strong></p></div>
           </div>
-          <TableContainer >
-          <Table size="small" aria-label="a dense table" style={ {borderStyle : "solid",borderWidth:"thin", borderColor: "rgb(200, 200, 200)"}}>
-            <TableRow style={ {borderStyle : "solid"}}>
-                <TableCell align="center" component="th" style={ { backgroundColor:"rgb(221, 221, 221)" ,width: "90px",fontWeight:"bold"}}>사번</TableCell>
-                <TableCell align="center" component="th" style={ {borderWidth: "1px" , textAlign:"left"}}>{empno}</TableCell>
-            </TableRow>
-            <TableRow style={ {borderStyle : "solid"}}>
-                <TableCell align="center" component="th" style={ { backgroundColor:"rgb(221, 221, 221)",fontWeight:"bold"}}>성명</TableCell>
-                <TableCell align="center" component="th" style={ {borderWidth: "1px" , textAlign:"left"}}>{empNm}</TableCell>
-            </TableRow>
-            <TableRow style={ {borderStyle : "solid"}}>
-                <TableCell align="center" component="th" style={ { backgroundColor:"rgb(221, 221, 221)",fontWeight:"bold"}}>직위</TableCell>
-                <TableCell align="center" component="th" style={ {borderWidth: "1px" , textAlign:"left"}}>{jbpsNm}</TableCell>
-            </TableRow>
-            <TableRow style={ {borderStyle : "solid"}}>
-                <TableCell align="center" component="th" style={ {backgroundColor:"rgb(221, 221, 221)",fontWeight:"bold"}}>소속</TableCell>
-                <TableCell align="center" component="th" style={ {borderWidth: "1px" , textAlign:"left"}}>{deptNm}</TableCell>
-            </TableRow>
+          <TableContainer>
+          <Table size="small" aria-label="a dense table" style={{ borderStyle: "solid", borderWidth: "thin", borderColor: "rgb(200, 200, 200)" }}>
+            <TableHead>
+              <TableRow style={{ borderStyle: "solid" }}>
+                <TableCell align="center" component="th" style={{ backgroundColor: "rgb(221, 221, 221)", width: "90px", fontWeight: "bold" }}>사번</TableCell>
+                <TableCell align="center" style={{ borderWidth: "1px", textAlign: "left" }}>{empno}</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              <TableRow style={{ borderStyle: "solid" }}>
+                <TableCell align="center" component="th" style={{ backgroundColor: "rgb(221, 221, 221)", fontWeight: "bold" }}>성명</TableCell>
+                <TableCell align="center" style={{ borderWidth: "1px", textAlign: "left" }}>{empNm}</TableCell>
+              </TableRow>
+              <TableRow style={{ borderStyle: "solid" }}>
+                <TableCell align="center" component="th" style={{ backgroundColor: "rgb(221, 221, 221)", fontWeight: "bold" }}>직위</TableCell>
+                <TableCell align="center" style={{ borderWidth: "1px", textAlign: "left" }}>{jbpsNm}</TableCell>
+              </TableRow>
+              <TableRow style={{ borderStyle: "solid" }}>
+                <TableCell align="center" component="th" style={{ backgroundColor: "rgb(221, 221, 221)", fontWeight: "bold" }}>소속</TableCell>
+                <TableCell align="center" style={{ borderWidth: "1px", textAlign: "left" }}>{deptNm}</TableCell>
+              </TableRow>
+            </TableBody>
           </Table>
-          </TableContainer>
+        </TableContainer>
 
 {/* ----------------------------------공지사항 --------------------------------------------------*/}        
         <div className="noticeContainer" style={{ marginTop: "20px", marginBottom: "10px" }}>

@@ -7932,8 +7932,8 @@
   padding: 0;
 }
 .dx-toolbar .dx-toolbar-items-container {
-  height: 56px;
-  overflow: visible;
+  height: 56px !important;
+  overflow: visible !important;
 }
 .dx-toolbar .dx-toolbar-menu-container {
   padding: 0;

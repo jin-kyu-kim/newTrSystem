@@ -5,14 +5,30 @@ import com.trsystem.common.service.CommonService;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.session.SqlSession;
+import org.json.JSONException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.json.JSONObject;
+import org.json.JSONArray;
+import org.json.XML;
 
 @Service
 public class BatchSkillServiceImpl implements BatchSkillService { 
@@ -221,6 +237,126 @@ public class BatchSkillServiceImpl implements BatchSkillService {
 			throw e;		
 		}
 	}
-	
-	
+
+
+    /**
+     * 박지환_작업_20240503
+     * 근무일, 주말, 공휴일 저장
+     * 해당월을 포함하여 3월이후까지의 데이터 저장
+     * 주기 : 매월 1일
+     */
+    @Transactional
+    public void executeInsertCrtrDate() throws JSONException, IOException {
+        try {
+
+            for(long i = 0; i < 2; i++){
+                LocalDate solDate = LocalDate.now().plusYears(i);
+
+                String refSolYear = solDate.format(DateTimeFormatter.ofPattern("yyyy"));
+
+                String url = "https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getHoliDeInfo?";
+                String serviceKey = "serviceKey=4bjQqSQtmjf8jce2ingNztnBgXaR6OQiQcl55Rf%2FYWIltMwUZX%2BZu%2Fr5tVC2tNvlDkFLCGgRZPwu%2Faf%2FLsMlBg%3D%3D";
+                String numOfRows = "&numOfRows=100";
+                String solYear = "&solYear=" + refSolYear;
+
+                StringBuilder urlBuilder = new StringBuilder(url + serviceKey + numOfRows +  solYear);
+
+                URL requestUrl =  new URL(urlBuilder.toString());
+                HttpURLConnection requestConnection = (HttpURLConnection) requestUrl.openConnection();
+
+                requestConnection.setRequestMethod("GET");
+                requestConnection.setRequestProperty("Content-type", "application/json");
+
+
+                BufferedReader rd;
+
+                if (requestConnection.getResponseCode() >= 200 && requestConnection.getResponseCode() <= 300) {
+                    rd = new BufferedReader(new InputStreamReader(requestConnection.getInputStream(), StandardCharsets.UTF_8));
+                } else {
+                    rd = new BufferedReader(new InputStreamReader(requestConnection.getErrorStream(), StandardCharsets.UTF_8));
+                }
+
+                StringBuilder xmlSb = new StringBuilder();
+                String line;
+
+                while ((line = rd.readLine()) != null) {
+                    xmlSb.append(line);
+                }
+
+                rd.close();
+                requestConnection.disconnect();
+
+                JSONObject jsonData = XML.toJSONObject(xmlSb.toString());
+                JSONObject body = jsonData.getJSONObject("response").getJSONObject("body");
+
+                YearMonth currentMonth = YearMonth.from(LocalDate.now());
+                YearMonth newCorrentMonth = YearMonth.from(LocalDate.now().plusMonths(12));
+
+                if(i == 0){
+                    currentMonth = YearMonth.from(LocalDate.now());
+                    newCorrentMonth = YearMonth.from(LocalDate.parse(refSolYear + "-12-31"));
+                } else if(i == 1){
+                    currentMonth = YearMonth.from(LocalDate.parse(refSolYear + "-01-01"));
+                    newCorrentMonth = YearMonth.from(LocalDate.now().plusMonths(12));
+                }
+
+                LocalDate startDay = currentMonth.atDay(1);
+                LocalDate endDay = newCorrentMonth.atEndOfMonth();
+
+                long dayDifference = ChronoUnit.DAYS.between(startDay, endDay);
+
+                List<Map<String, Object>> crtrDateList = new ArrayList<>();
+
+                for (int k = 0 ; k < dayDifference; k++){
+                    int flagOdr = Integer.parseInt(String.valueOf(startDay.plusDays(k)).substring(8, 10));
+                    LocalDate crtrYmd = startDay.plusDays(k);
+                    DayOfWeek dayOfWeek = crtrYmd.getDayOfWeek();
+                    String refDate = crtrYmd.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+                    Map<String, Object> putDataMap = new HashMap<>();
+
+                    putDataMap.put("crtrYmd", refDate);
+                    if (flagOdr < 16) putDataMap.put("crtrOdr", 1);
+                    else putDataMap.put("crtrOdr", 2);
+
+                    if(dayOfWeek.getValue() == 6 || dayOfWeek.getValue() == 7) putDataMap.put("hldyClCd", "VTW05002");
+                    else {
+                        if (body.getInt("totalCount") != 0) {
+                            if (body.getInt("totalCount") == 1) {
+                                JSONObject item = body.getJSONObject("items").getJSONObject("item");
+
+                                if (String.valueOf(item.getString("isHoliday")).equals("Y")) { // 공휴일이 맞을 경우
+                                    putDataMap.put("hldyClCd", "VTW05003");
+                                    putDataMap.put("hldyNm", item.getString("dateName"));
+                                }
+                            } else {
+                                JSONArray items = body.getJSONObject("items").getJSONArray("item");
+
+                                for (int j = 0; j < items.length(); j++) {
+                                    JSONObject item = items.getJSONObject(j);
+
+                                    if (String.valueOf(item.get("isHoliday")).equals("Y") && String.valueOf(item.get("locdate")).equals(String.valueOf(refDate))) {
+                                        putDataMap.put("hldyClCd", "VTW05003");
+                                        putDataMap.put("hldyNm", item.getString("dateName"));
+                                    }
+                                }
+                            }
+                        } else {
+                            putDataMap.put("hldyClCd", "VTW05001");
+                        }
+                    }
+
+                    crtrDateList.add(k, putDataMap);
+                }
+
+                for (int j = 0; j < crtrDateList.size(); j++){
+                    sqlSession.insert("com.trsystem.mybatis.mapper.batchMapper.insertCtrtDate", crtrDateList.get(j));
+                }
+
+            }
+
+        } catch (Exception e) {
+            throw e;
+        }
+    }
 }

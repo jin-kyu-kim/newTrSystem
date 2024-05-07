@@ -242,32 +242,25 @@ const CultureHealthCostReg = (props) => {
         if (confirmResult) {
             if (validateData() && validateFile()) {
                 if(!initParam.clturPhstrnActCtSn){
-                    const param = {
-                        empId: initParam.empId,
-                        clturPhstrnActMngYm: initParam.clmYmd.substring(0, 6)
-                    };
                     try{
-                        const response = await ApiRequest('/boot/indvdlClm/insertClPh', param);
-                        if (response > 0) {
-                            const formData = new FormData();
-                            const tbData = {tbNm: "CLTUR_PHSTRN_ACT_CT_REG", snColumn: "clturPhstrnActCtSn", snSearch:{empId: initParam.empId}}
-                            formData.append("tbNm", JSON.stringify(tbData));
-                            formData.append("data", JSON.stringify(initParam));
-                            Object.values(attachments)
-                                .forEach((attachment) => formData.append("attachments", attachment));
+                        const formData = new FormData();
+                        const tbData = {tbNm: "CLTUR_PHSTRN_ACT_CT_REG", snColumn: "clturPhstrnActCtSn", snSearch:{empId: initParam.empId}}
+                        formData.append("tbNm", JSON.stringify(tbData));
+                        formData.append("data", JSON.stringify(initParam));
+                        Object.values(attachments)
+                            .forEach((attachment) => formData.append("attachments", attachment));
 
-                            const response = await axios.post("/boot/common/insertlongText", formData, {
-                                headers: {
-                                    'Content-Type': 'multipart/form-data',
-                                    "Authorization": `Bearer ${token}`
-                                },
-                            })
-                            if (response.status === 200) {
-                                await ApiRequest('/boot/indvdlClm/plusClturPhstrnActCt', initParam);
-                                onResetClick();
-                                searchTable();
-                                window.alert("등록되었습니다.")
-                            }
+                        const response = await axios.post("/boot/common/insertlongText", formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data',
+                                "Authorization": `Bearer ${token}`
+                            },
+                        })
+                        if (response.status === 200) {
+                            await ApiRequest('/boot/indvdlClm/plusClturPhstrnActCt', initParam);
+                            onResetClick();
+                            searchTable();
+                            window.alert("등록되었습니다.")
                         }
                     }catch (error){
                         console.error("API 요청 에러:", error);

@@ -6,13 +6,6 @@ import  EmpTimeAprvListJson from "./EmpTimeAprvListJson.json";
 import ApiRequest from "../../utils/ApiRequest";
 import SearchPrjctCostSet from "../../components/composite/SearchPrjctCostSet";
 import CustomPivotGrid from "components/unit/CustomPivotGrid";
-const styles = `
-  .dx-button-content {
-    width: 200px;
-  
-  }
-  
-`;
 
 
 const EmpTimeAprvList = () => {
@@ -104,9 +97,7 @@ const EmpTimeAprvList = () => {
 
 return(
   <React.Fragment>
-  <style>
-  {styles}
-</style>
+
   <div className="container">
       <div
         className="title p-1"

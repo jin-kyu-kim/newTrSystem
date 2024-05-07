@@ -103,6 +103,7 @@ public class SysMngService {
         tbNm.put("tbNm", "LGN_USER");
         request.put("pswd",passwordEncoder.encode(empno));
         request.put("intlPwsdYn","Y");
+        request.put("usePsbltyAcntYn","Y");
         condition.put("empId", empId);
         param.add(tbNm);
         param.add(condition);
@@ -117,6 +118,7 @@ public class SysMngService {
         	    request.put("empno",empno);
         	    request.put("pswd",passwordEncoder.encode(empno));
                 request.put("intlPwsdYn","Y");
+                request.put("usePsbltyAcntYn","Y");
         	    param.clear();
         	    param.add(tbNm);
             	param.add(request);

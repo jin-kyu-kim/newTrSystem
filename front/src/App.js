@@ -14,6 +14,7 @@ import { Suspense } from "react";
 import { CookiesProvider } from "react-cookie";
 import {locale} from 'devextreme/localization';
 import ErrorBoundary from "./utils/ErrorBoundary";
+import { ModalProvider } from 'components/unit/ModalContext';
 
 function App() {
       const { user, loading } = useAuth();
@@ -35,7 +36,9 @@ function App() {
                 <CookiesProvider>
                   <NavigationProvider>
                   <AuthProvider>
+                  <ModalProvider>
                   <Content/>
+                  </ModalProvider>
                   </AuthProvider>
                   </NavigationProvider>
                 </CookiesProvider>

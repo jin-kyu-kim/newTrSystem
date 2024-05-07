@@ -29,14 +29,14 @@ export const navigation = [
         auth: 'USER'
       },{
         text: '회의실예약',
-        path: '/infoInq/MeetingRoomReserv',
-        auth: 'USER'
-      },{
-        text: '법제도',
-        path: '/infoInq/LawRules',
-        auth: 'USER'
-      },
-      
+        path: '/humanResourceMng/MeetingRoomManage2',
+        auth: 'VTW04805'
+      }
+      // ,{
+      //   text: '법제도',
+      //   path: '/infoInq/LawRules',
+      //   auth: 'USER'
+      // },
     ]
   }, {
     text: '개인청구',

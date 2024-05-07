@@ -4,7 +4,8 @@ import { useLocation } from "react-router-dom";
 import { Container } from 'react-bootstrap';
 import { Button } from "devextreme-react";
 import ApiRequest from "utils/ApiRequest";
-import NoticeJson from "../infoInq/NoticeJson.json"
+import NoticeJson from "../infoInq/NoticeJson.json";
+import { useModal } from "../../components/unit/ModalContext";
 
 const NoticeDetail = () => {
     const navigate = useNavigate();
@@ -14,6 +15,8 @@ const NoticeDetail = () => {
 
     const [oneData, setOneData] = useState({});
     const [fileList, setFileList] = useState([]);
+
+    const { handleOpen } = useModal();
 
     const getOneData = async () => {
         const params = {
@@ -42,32 +45,27 @@ const NoticeDetail = () => {
     }, []);
 
     const deleteNotice = async () => {
-        const result = window.confirm("삭제하시겠습니까?") 
-        if(result){
-            const params = [{ tbNm: "NOTICE" }, { noticeId: noticeId }]
-            const fileParams = [{ tbNm: "ATCHMNFL" }, { atchmnflId: oneData.atchmnflId }]
-            try {
-                const response = await ApiRequest("/boot/common/deleteWithFile", {
-                    params: params, fileParams: fileParams
-                });
-                if (response >= 1) {
-                    navigate("/infoInq/NoticeList")
-                } else { alert('삭제 실패') }
-            } catch (error) {
-                console.log(error);
-            }
+        const params = [{ tbNm: "NOTICE" }, { noticeId: noticeId }]
+        const fileParams = [{ tbNm: "ATCHMNFL" }, { atchmnflId: oneData.atchmnflId }]
+        try {
+            const response = await ApiRequest("/boot/common/deleteWithFile", {
+                params: params, fileParams: fileParams
+            });
+            if (response >= 1) {
+                navigate("/infoInq/NoticeList")
+            } else { handleOpen('삭제 실패') }
+        } catch (error) {
+            console.log(error);
         }
     }
 
     return (
         <div className="container">
-            <div
-                className="title p-1"
-                style={{ marginTop: "20px", marginBottom: "10px" }}
-            ></div>
+            <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }}></div>
             <div style={{ marginRight: "20px", marginLeft: "20px", marginBottom: "50px" }}>
                 <h1 style={{ fontSize: "30px" }}>공지사항</h1>
             </div>
+
             <Container style={{ width: '90%', margin: '0 auto' }}>
                 {oneData.length !== 0 ?
                     <>
@@ -92,6 +90,7 @@ const NoticeDetail = () => {
                     </> : ''
                 }
             </Container>
+
             <div style={{ textAlign: 'center', marginBottom: '100px' }}>
                 {noticeButtonGroup.map((button, index) => (
                     <Button
@@ -99,7 +98,7 @@ const NoticeDetail = () => {
                         style={{ marginRight: '3px' }}
                         text={button.text}
                         type={button.type}
-                        onClick={button.onClick === "deleteNotice" ? deleteNotice : () =>
+                        onClick={button.onClick === "deleteNotice" ? () => handleOpen('삭제하시겠습니까?', deleteNotice) : () =>
                             navigate(button.onClick, { state: button.state ? { ...button.state, id: noticeId } : undefined })}
                     />
                 ))}
