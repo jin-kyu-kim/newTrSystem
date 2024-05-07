@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useCookies } from "react-cookie";
 
-
 import ApiRequest from "utils/ApiRequest";
 
 // 날짜관련
@@ -9,21 +8,15 @@ import ApiRequest from "utils/ApiRequest";
 import Moment from "moment"
 
 // DevExtrme import
-import { TextBox, DateBox, SelectBox, Popup, TagBox, TextArea, Button } from "devextreme-react";
+import { DateBox, SelectBox, Popup, TagBox, TextArea, Button } from "devextreme-react";
 
-
-import axios from "axios";
-
-const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgRoomRsvtAtdrnValue, onHiding, title, state, authState }) => {
+const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgRoomRsvtAtdrnValue, mtgRoomRsvtListValue, onHiding, title, state, authState }) => {
     // 세션설정
     const [cookies, setCookie] = useCookies(["userInfo", "deptInfo"]);
     const sessionEmpId = cookies.userInfo.empId
 
 
-    // console.log("state: ", state);
-    // console.log("authState: ", authState);
-    // console.log("mtgRoomRsvtValue: ", mtgRoomRsvtValue);
-    // console.log("mtgRoomRsvtAtdrnValue: ", mtgRoomRsvtAtdrnValue);
+
 
 
     // 기본정보조회
@@ -56,6 +49,17 @@ const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgR
                 useEndHm: mtgRoomRsvtValue[0].useEndHm,
                 startDate: new Date(Moment(mtgRoomRsvtValue[0].useYmd + " " + mtgRoomRsvtValue[0].useBgngHm).format("yyyy-MM-DD HH:mm")),
                 endDate: new Date(Moment(mtgRoomRsvtValue[0].useYmd + " " + mtgRoomRsvtValue[0].useEndHm).format("yyyy-MM-DD HH:mm")),
+            })
+        } else if(mtgRoomRsvtValue && state == "insert"){
+            setInsertMtgRoomRsvtValue({
+                ...insertMtgRoomRsvtValue,
+                mtgRoomCd: mtgRoomRsvtValue[0].mtgRoomCd,
+                useYmd: mtgRoomRsvtValue[0].useYmd,
+                useEndYmd: mtgRoomRsvtValue[0].useYmd,
+                useBgngHm: mtgRoomRsvtValue[0].useBgngHm,
+                useEndHm: mtgRoomRsvtValue[0].useEndHm,
+                startDate: mtgRoomRsvtValue[0].startDate,
+                endDate: mtgRoomRsvtValue[0].endDate,
             })
         }
         setChangeEmpList(
@@ -105,7 +109,7 @@ const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgR
             return;
         }
 
-        let mtgRoomRsvtValueFilter = mtgRoomRsvtValue.filter(item => 
+        let mtgRoomRsvtValueFilter = mtgRoomRsvtListValue.filter(item => 
             (item.useYmd == insertMtgRoomRsvtValue.useYmd && item.mtgRoomCd == insertMtgRoomRsvtValue.mtgRoomCd && insertMtgRoomRsvtValue.mtgRoomRsvtSn != item.mtgRoomRsvtSn) && 
             ((item.useBgngHm == insertMtgRoomRsvtValue.useBgngHm) 
             || (item.useBgngHm <= insertMtgRoomRsvtValue.useBgngHm && item.useEndHm >= insertMtgRoomRsvtValue.useBgngHm) 
