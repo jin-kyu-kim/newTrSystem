@@ -21,8 +21,6 @@ export default function UserPanel({ menuMode }) {
   }, [navigate]);
 
   const pannelClick = useCallback((e) => {
-    console.log(e);
-    console.log(e.itemData.text);
     handleOpen(e.itemData.text + ' 하시겠습니까?', e.itemData.function);
   }, [handleOpen]);
 
