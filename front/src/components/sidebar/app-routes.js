@@ -212,12 +212,12 @@ const routes = [
     isPrivate:"VTW04805"
   },
   // 법제도
-  {
-    path: "/infoInq/LawRules",
-    name: "LawRules",
-    element: React.lazy(() => import("../../pages/infoInq/LawRules")),
-    isPrivate:"USER"
-  },
+  // {
+  //   path: "/infoInq/LawRules",
+  //   name: "LawRules",
+  //   element: React.lazy(() => import("../../pages/infoInq/LawRules")),
+  //   isPrivate:"USER"
+  // },
   //개인정보
   {
     path: "/infoInq/EmpDetailInfo",
