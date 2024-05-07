@@ -10,16 +10,16 @@ import { Button } from "devextreme-react";
 import { useNavigate } from "react-router-dom";
 import { Popup } from "devextreme-react";
 import EmpCultHealthCostManagePop from "./EmpCultHealthCostManagePop";
+import EmpCultHealthCostDetailPop from "./EmpCultHealthCostDetailPop";
 import CustomEditTable from "components/unit/CustomEditTable";
 
 const EmpCultHealthCostManage = () => {
   const [values, setValues] = useState([]);
   const { keyColumn, queryId, tableColumns, wordWrap, searchInfo } = EmpCultHealthCostManageJson;
   const navigate = useNavigate();
-  const [isGroupPopupVisible, setIsGroupPopupVisible] = useState(false);
-  const [selectedGroup, setSelectedGroup] = useState(null);
-  const [selectedRowData, setSelectedRowData] = useState(null);
-  const [ selectedList, setSelectedList ] = useState([]);
+  const [isManagePopupVisible, setIsManagePopupVisible] = useState(false);
+  const [isDetailPopupVisible, setIsDetailPopupVisible] = useState(false);
+  const [selectedRowData, setSelectedRowData] = useState();
   let now = new Date();
   const [param, setParam] = useState({
         "empFlnm": null,
@@ -62,26 +62,12 @@ const EmpCultHealthCostManage = () => {
     const btnChk = window.confirm("문화체련비를 마감하시겠습니까?")
     if (btnChk) {
       alert("마감되었습니다.")
-      const currentDate = new Date(); // 현재 날짜와 시간을 나타내는 Date 객체 생성
-      const year = currentDate.getFullYear(); // 연도를 가져옴
-      const month = currentDate.getMonth() ; // 월을 가져오는데, 0부터 시작하므로 +1을 해줌
-      const formattedDate = `${year}${month < 10 ? '0' : ''}${month}`; // 월이 한 자리 수인 경우 앞에 0을 붙여줌
-
-    console.log(formattedDate); // YYYYMM 형식의 현재 날짜 출력
-    }
-  };
-
-  const handleSaved = () => {
-    const btnChk = window.confirm("문화체련비를 저장하시겠습니까?")
-    if (btnChk) {
-      alert("저장되었습니다.");
-      window.scroll(0, 0);
     }
   };
 
   const padNumber = (num) => {
     return num.toString().padStart(2, '0');
-};
+  };
 
   const formattedDateTime = `${now.getFullYear()}_`+
       `${padNumber(now.getMonth() + 1)}_`+
@@ -101,25 +87,35 @@ const EmpCultHealthCostManage = () => {
     });
   };
 
-  const onRowClick = (e) => {   //직원목록 로우 클릭 이벤트
+  const onRowClick = (e) => {
     if (e.rowType === 'group') {
       if (e.data && e.data.key) {
-        const subStringResult = e.data.key.substring(1, 7);
-        setSelectedRowData(subStringResult);
-        setIsGroupPopupVisible(true); // 팝업 열기
+        setSelectedRowData({
+          empId: e.data.items[0].empId,
+          empFlnm: e.data.key.substring(9).trim()
+        });
+        setIsManagePopupVisible(true);
       } else {
-        console.log('e.data 또는 e.data.key가 null입니다.');
+        console.error('데이터가 존재하지 않습니다.');
       }
     }
-   
   };
 
-  const closeGroupPopup = () => {
-    setSelectedGroup(null); // 선택한 그룹 정보 초기화
-    setIsGroupPopupVisible(false);
+  const onBtnClick = (button, rowData) => {
+    setSelectedRowData({
+      empId: rowData.data.empId,
+      empFlnm: rowData.data.empFlnm.substring(9).trim()
+    });
+    setIsDetailPopupVisible(true);
+  }
+
+  const closeManagePopup = () => {
+    setIsManagePopupVisible(false);
   };
 
-  const onSelection = (e) => { setSelectedList(e.selectedRowsData) }
+  const closeDetailPopup = () => {
+    setIsDetailPopupVisible(false);
+  };
 
   return (
   <div>
@@ -139,7 +135,7 @@ const EmpCultHealthCostManage = () => {
         <h6 style={{ fontSize: "40px" }}>문화체련비 관리 목록</h6>
         <div style={{marginTop: "7px", marginLeft: "20px"}}>
           <Button onClick={handleMove}>마감 목록</Button>
-          <Button onClick={handleDeadLine} style = {{marginLeft: "10px",backgroundColor: "#B40404", color: "#fff"}}>전체 마감</Button>
+          <Button onClick={handleDeadLine} style = {{marginLeft: "10px", backgroundColor: "#B40404", color: "#fff"}}>전체 마감</Button>
         </div>
       </div>
       <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
@@ -161,24 +157,29 @@ const EmpCultHealthCostManage = () => {
           wordWrap={wordWrap}
           onRowClick={onRowClick}
           noEdit={true}
-          onSelection={onSelection}
-
+          onBtnClick={onBtnClick}
         />
 
-        <Button onClick={handleSaved} style = {{backgroundColor: "#0366fc", color: "#fff",marginBottom: "20px"}}>  저장 하기</Button>
       </div>
     </div>
 
     <Popup
-      visible={isGroupPopupVisible}
-      onHiding={closeGroupPopup}
-      width={700}
-      height={600}
+        width={700}
+        height={600}
+        visible={isManagePopupVisible}
+        onHiding={closeManagePopup}
+        showCloseButton={true}
     >
-      <Button text="닫기" onClick={closeGroupPopup} />
-      {isGroupPopupVisible && (
-        <EmpCultHealthCostManagePop popEmpId={selectedRowData} closePopup={closeGroupPopup} />
-      )}
+      <EmpCultHealthCostManagePop value={selectedRowData} year={param.clturPhstrnActMngYm.substring(0,4)}/>
+    </Popup>
+    <Popup
+        width={1000}
+        height={700}
+        visible={isDetailPopupVisible}
+        onHiding={closeDetailPopup}
+        showCloseButton={true}
+    >
+      <EmpCultHealthCostDetailPop value={selectedRowData} ym={param.clturPhstrnActMngYm}/>
     </Popup>
   </div>
   );

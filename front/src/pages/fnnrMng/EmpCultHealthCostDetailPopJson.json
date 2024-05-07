@@ -1,0 +1,13 @@
+{
+  "menuName": "EmpCultHealthCostDetailPop",
+  "queryId": "financialAffairMngMapper.retrieveClturPhstrnDetailList",
+  "keyColumn": "clturPhstrnActCtSn",
+   
+  "tableColumns": [
+    {  "key": "clturPhstrnSeCd", "value": "구분", "alignment": "center", "editType": "selectBox", "comCd": "VTW009" },
+    {  "key": "clmAmt", "value": "금액", "alignment": "center" },
+    {  "key": "actIem", "value": "항목", "alignment": "center" },
+    {  "key": "atchmnfl", "value": "첨부", "alignment": "center", "cellType": "fileCell" },
+    {  "key": "rm", "value": "비고", "alignment": "center" }
+  ]
+}
