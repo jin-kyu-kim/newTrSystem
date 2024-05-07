@@ -85,6 +85,7 @@ function EmpCultHealthCostDetailPop({value, ym}) {
               columns={tableColumns}
               values={values}
               paging={true}
+              onlyUpdate={true}
           />
       </div>
   );
