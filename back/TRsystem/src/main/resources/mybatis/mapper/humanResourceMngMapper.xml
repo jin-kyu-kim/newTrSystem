@@ -32,7 +32,7 @@
 			        DEPT aa
 			    WHERE 
 			        aa.UP_DEPT_ID IS NULL
-			
+					 AND aa.END_YN != 'Y'
 			    UNION ALL
 			
 			    SELECT 
@@ -55,6 +55,8 @@
 			        ,dp.DEPTH + 1
 			    FROM DEPT d
 			    INNER JOIN DEPT_PATH dp ON d.UP_DEPT_ID = dp.DEPT_ID
+			    WHERE 
+        		d.END_YN != 'Y'
 			)
 			SELECT 
 			    DEPT_ID,
