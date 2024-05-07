@@ -45,7 +45,9 @@
 		DATE_FORMAT(va.VCATN_BGNG_YMD, '%Y-%m-%d'), ' ~ ', DATE_FORMAT(va.VCATN_END_YMD, '%Y-%m-%d'), ' (', va.VCATN_DE_CNT, '일)]')) AS TITLE,
 		COALESCE(ga.GNRL_ATRZ_CN, ca.CLM_ATRZ_CN, cta.CTRT_ATRZ_CN, cga.STLM_CN) AS CN,
 		COALESCE(ga.ATCHMNFL_ID, ca.ATCHMNFL_ID, cta.ATCHMNFL_ID, cga.ATCHMNFL_ID) AS ATCHMNFL_ID,
-		al.RJCT_PRVONSH
+		al.RJCT_PRVONSH,
+		ea.ATRZ_FORM_DOC_ID,
+		ea.ELCTRN_ATRZ_DOC_NO
 		FROM ELCTRN_ATRZ ea
 		LEFT JOIN ATRZ_LN al ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID -- 현재 결재단계만
 		LEFT JOIN REFRN_MAN rm ON ea.ELCTRN_ATRZ_ID = rm.ELCTRN_ATRZ_ID -- 참조자의 경우
@@ -438,6 +440,11 @@
 		JOIN ELCTRN_ATRZ b ON a.CTRT_ELCTRN_ATRZ_ID = b.ELCTRN_ATRZ_ID 
 		WHERE 1=1
 		AND a.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
+	</select>
+	
+	<select id="retrieveCntElctrnAtrz" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT COUNT(ELCTRN_ATRZ_DOC_NO) AS CNT 
+		  FROM ELCTRN_ATRZ
 	</select>
 	
 	
