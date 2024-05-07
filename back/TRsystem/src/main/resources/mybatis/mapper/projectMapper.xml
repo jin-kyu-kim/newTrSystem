@@ -1518,4 +1518,201 @@
           AND pcat.PRJCT_ID = #{prjctId}
           AND pcat.PRJCT_CT_APLY_SN = #{prjctCtAplySn}
     </update>
+    
+    <!-- 프로젝트 승인버튼 클릭 시 원가 변경 전 후 데이터를 조회하는 쿼리 -->
+    <select id="retrievePrjctPrmpcBgtCmpr" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT
+			   PRMPC_ACCTO_TOT,
+			   CT_NM,
+			   BFE_BGT,
+			   AFTR_BGT,
+			   AJMT_BGT
+		 FROM (
+			   SELECT
+					  '인건비' AS PRMPC_ACCTO_TOT,
+					  자사인력인건비 AS CT_NM,
+					  T1.BFE_BGT,
+					  T1.AFTR_BGT,
+					  T1.AFTR_BGT - T1.BFE_BGT AS AJMT_BGT
+				 FROM (
+					   SELECT
+							  '자사인력인건비',
+							  IFNULL(SUM(IFNULL(MIM.EXPECT_MM,0 ) * IFNULL(MIM.UNTPC, 0)),0) AS BFE_BGT,
+							  IFNULL((
+							 			SELECT SUM(IFNULL(MIM.EXPECT_MM, 0) * IFNULL(MIM.UNTPC, 0))
+							 			  FROM MMNY_INPT_MM MIM
+							 			  JOIN PRJCT_BGT_PRMPC PBP 
+										    ON PBP.PRJCT_ID = MIM.PRJCT_ID AND PBP.BGT_MNG_ODR = MIM.BGT_MNG_ODR
+							 			  JOIN MMNY_LBRCO_PRMPC MLP 
+										    ON MLP.PRJCT_ID = MIM.PRJCT_ID AND MIM.BGT_MNG_ODR = MLP.BGT_MNG_ODR
+							 			WHERE MIM.PRJCT_ID = #{prjctId}
+							 			  AND PBP.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
+							 			  AND MIM.BGT_MNG_ODR = #{bgtMngOdrTobe}
+							  ), 0) AS AFTR_BGT
+						 FROM MMNY_INPT_MM MIM
+					     JOIN PRJCT_BGT_PRMPC PBP 
+						   ON PBP.PRJCT_ID = MIM.PRJCT_ID AND PBP.BGT_MNG_ODR = MIM.BGT_MNG_ODR
+						 JOIN MMNY_LBRCO_PRMPC MLP 
+						   ON MLP.PRJCT_ID = MIM.PRJCT_ID
+						WHERE MIM.PRJCT_ID = #{prjctId}
+						  AND PBP.ATRZ_DMND_STTS_CD  = 'VTW03703'
+						  AND MIM.BGT_MNG_ODR = MLP.BGT_MNG_ODR
+						  AND MIM.BGT_MNG_ODR = #{bgtMngOdr}
+				     ) T1
+			 UNION ALL
+			 SELECT
+				    '인건비' AS PRMPC_ACCTO_TOT,
+				    외주인력인건비 AS CT_NM,
+				    T2.BFE_BGT,
+				    T2.AFTR_BGT,
+				    T2.AFTR_BGT - T2.BFE_BGT AS AJMT_BGT
+			   FROM (
+			     	 SELECT
+			     			'외주인력인건비',
+			     			IFNULL(SUM(IFNULL(OLP.UNTPC,0) * IFNULL(OLPD.EXPECT_MM,0)),0) AS BFE_BGT,
+			     			IFNULL((
+			     					  SELECT SUM(IFNULL(OLP.UNTPC,0) * IFNULL(OLPD.EXPECT_MM,0))
+			     						FROM OUTORD_LBRCO_PRMPC_DTL OLPD
+			     						JOIN PRJCT_BGT_PRMPC PBP 
+										  ON PBP.PRJCT_ID  = OLPD.PRJCT_ID AND PBP.BGT_MNG_ODR = OLPD.BGT_MNG_ODR
+			     						JOIN OUTORD_LBRCO_PRMPC OLP 
+										  ON OLP.PRJCT_ID = OLPD.PRJCT_ID AND OLPD.BGT_MNG_ODR = OLP.BGT_MNG_ODR
+			     					   WHERE OLPD.PRJCT_ID = #{prjctId}
+			     						 AND PBP.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
+			     						 AND OLPD.BGT_MNG_ODR = #{bgtMngOdrTobe}
+			     					),0) AS AFTR_BGT
+			     	   FROM OUTORD_LBRCO_PRMPC_DTL OLPD
+			     	   JOIN PRJCT_BGT_PRMPC PBP 
+					     ON PBP.PRJCT_ID = OLPD.PRJCT_ID AND PBP.BGT_MNG_ODR = OLPD.BGT_MNG_ODR
+			     	   JOIN OUTORD_LBRCO_PRMPC OLP 
+					     ON OLP.PRJCT_ID = OLPD.PRJCT_ID AND OLPD.BGT_MNG_ODR = OLP.BGT_MNG_ODR
+			     	  WHERE OLPD.PRJCT_ID = #{prjctId}
+			     		AND PBP.ATRZ_DMND_STTS_CD = 'VTW03703'
+			     		AND OLPD.BGT_MNG_ODR = #{bgtMngOdr}
+			     	)T2
+			 UNION ALL
+			 SELECT
+				    '경비' AS PRMPC_ACCTO_TOT,
+				    일반경비 AS CT_NM,
+				    T3.BFE_BGT,
+				    T3.AFTR_BGT,
+				    T3.AFTR_BGT - T3.BFE_BGT AS AJMT_BGT
+			  FROM (
+				    SELECT
+					       '일반경비',
+					       IFNULL(SUM(IFNULL(EMPD.EXPECT_CT, 0)),0) BFE_BGT,
+					       IFNULL((
+								   SELECT
+								  	 SUM(EMPD.EXPECT_CT)
+								   FROM EXPENS_MNBY_PRMPC_DTLS EMPD
+								   JOIN PRJCT_BGT_PRMPC PBP ON PBP .PRJCT_ID = EMPD.PRJCT_ID AND PBP.BGT_MNG_ODR = EMPD.BGT_MNG_ODR
+								   WHERE EMPD.PRJCT_ID = #{prjctId}
+								     AND EMPD.EXPENS_CD  BETWEEN 'VTW04501' AND 'VTW04528'
+								     AND  PBP.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
+								     AND EMPD.BGT_MNG_ODR = #{bgtMngOdrTobe}
+							     ),0) AS AFTR_BGT
+					 FROM EXPENS_MNBY_PRMPC_DTLS EMPD
+					 JOIN PRJCT_BGT_PRMPC PBP 
+					   ON PBP .PRJCT_ID = EMPD.PRJCT_ID AND PBP.BGT_MNG_ODR = EMPD.BGT_MNG_ODR
+					WHERE EMPD.PRJCT_ID = #{prjctId}
+					  AND EMPD.EXPENS_CD  BETWEEN 'VTW04501' AND 'VTW04528'
+					  AND PBP.ATRZ_DMND_STTS_CD = 'VTW03703'
+					  AND EMPD.BGT_MNG_ODR = #{bgtMngOdr}
+					) T3
+			 UNION ALL
+			 SELECT
+				    '경비' AS PRMPC_ACCTO_TOT,
+				    통제성경비 AS CT_NM,
+				    T4.BFE_BGT,
+				    T4.AFTR_BGT,
+				    T4.AFTR_BGT - T4.BFE_BGT AS AJMT_BGT
+			   FROM (
+				     SELECT
+						    '통제성경비',
+						    IFNULL(SUM(EMPD.EXPECT_CT),0) AS BFE_BGT,
+						    IFNULL((
+								    SELECT
+								  	  SUM(EMPD.EXPECT_CT)
+								    FROM EXPENS_MNBY_PRMPC_DTLS EMPD
+								    JOIN PRJCT_BGT_PRMPC PBP 
+									  ON PBP .PRJCT_ID = EMPD.PRJCT_ID AND PBP.BGT_MNG_ODR = EMPD.BGT_MNG_ODR
+								    WHERE EMPD.PRJCT_ID = #{prjctId}
+								      AND EMPD.EXPENS_CD  BETWEEN 'VTW04529' AND 'VTW04535'
+								      AND  PBP.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
+								      AND EMPD.BGT_MNG_ODR = #{bgtMngOdrTobe}
+								   ),0) AS AFTR_BGT
+					   FROM EXPENS_MNBY_PRMPC_DTLS EMPD
+					   JOIN PRJCT_BGT_PRMPC PBP 
+					     ON PBP .PRJCT_ID = EMPD.PRJCT_ID AND PBP.BGT_MNG_ODR = EMPD.BGT_MNG_ODR
+				      WHERE 1=1
+					    AND EMPD.PRJCT_ID = #{prjctId}
+					    AND EMPD.EXPENS_CD BETWEEN 'VTW04529' AND 'VTW04535'
+					    AND PBP.ATRZ_DMND_STTS_CD = 'VTW03703'
+					    AND EMPD.BGT_MNG_ODR = #{bgtMngOdr}
+					) T4
+			 UNION ALL
+			 SELECT
+				    '외주업체비' AS PRMPC_ACCTO_TOT,
+				    외주업체비용 AS CT_NM,
+				    T5.BFE_BGT,
+				    T5.AFTR_BGT,
+				    T5.AFTR_BGT - T5.BFE_BGT AS AJMT_BGT
+			   FROM (
+				     SELECT
+						    '외주업체비용',
+						    IFNULL(SUM(EXPECT_CT),0) AS BFE_BGT,
+						    IFNULL((
+								    SELECT SUM(EXPECT_CT)
+								      FROM OUTORD_ENTRPS_CT_PRMPC OECP
+								      JOIN PRJCT_BGT_PRMPC PBP 
+									    ON PBP.PRJCT_ID = OECP.PRJCT_ID AND PBP.BGT_MNG_ODR = OECP.BGT_MNG_ODR
+								     WHERE OECP.PRJCT_ID = #{prjctId}
+								       AND PBP.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
+								       AND OECP.BGT_MNG_ODR = #{bgtMngOdrTobe}
+						           ), 0) AS AFTR_BGT
+					  FROM OUTORD_ENTRPS_CT_PRMPC OECP
+					  JOIN PRJCT_BGT_PRMPC PBP 
+					    ON PBP.PRJCT_ID = OECP.PRJCT_ID AND PBP.BGT_MNG_ODR = OECP.BGT_MNG_ODR
+				     WHERE OECP.PRJCT_ID = #{prjctId}
+					   AND PBP.ATRZ_DMND_STTS_CD  = 'VTW03703'
+					   AND OECP.BGT_MNG_ODR = #{bgtMngOdr}
+				  )T5
+			 UNION ALL
+			 SELECT
+					'재료비' AS PRMPC_ACCTO_TOT,
+					재료비 AS CT_NM,
+					T6.BFE_BGT,
+					T6.AFTR_BGT,
+					T6.AFTR_BGT - T6.BFE_BGT AS AJMT_BGT
+			   FROM (
+				     SELECT
+						    '재료비',
+						    IFNULL(SUM(MCP.CNTRCTAMOUNT),0) BFE_BGT,
+						    IFNULL((
+									SELECT
+										   SUM(MCP.CNTRCTAMOUNT)
+									  FROM MATRL_CT_PRMPC MCP
+									  JOIN PRJCT_BGT_PRMPC PBP ON PBP .PRJCT_ID = MCP.PRJCT_ID AND PBP.BGT_MNG_ODR = MCP.BGT_MNG_ODR
+									  WHERE MCP.PRJCT_ID = #{prjctId}
+										AND PBP.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
+										AND MCP.BGT_MNG_ODR = #{bgtMngOdrTobe}
+								   ),0) AS AFTR_BGT
+					   FROM MATRL_CT_PRMPC MCP
+					   JOIN PRJCT_BGT_PRMPC PBP 
+					     ON PBP .PRJCT_ID = MCP.PRJCT_ID AND PBP.BGT_MNG_ODR = MCP.BGT_MNG_ODR
+					  WHERE MCP.PRJCT_ID = #{prjctId}
+					    AND PBP.ATRZ_DMND_STTS_CD = 'VTW03703'
+					    AND MCP.BGT_MNG_ODR = #{bgtMngOdr}
+				  ) T6
+			) B
+	</select>
+	
+	<!-- 프로젝트 승인 화면에서 선택한 프로젝트의 변경원가 차수를 조회(가장 최근에 승인된 차수): 승인화면에서 비교하기 위함 -->
+	<select id="retrieveAprvBgtOdr" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT IFNULL(MAX(BGT_MNG_ODR), 0) AS APRV_ODR
+		  FROM PRJCT_BGT_PRMPC pbp
+		 WHERE 1=1
+		   AND PRJCT_ID = #{prjctId}
+		   AND ATRZ_DMND_STTS_CD = 'VTW03703'
+	</select>
 </mapper>

@@ -13,7 +13,7 @@ import { useCookies } from "react-cookie";
 import { set } from "date-fns";
 import { TextBox } from "devextreme-react/text-box";
 
-const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdrTobe, targetOdr, atrzLnSn }) => {
+const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targetOdr, atrzLnSn }) => {
     const labelValue = ProjectRegistJson.labelValue;
     const updateColumns = ProjectRegistJson.updateColumns;
     const navigate = useNavigate();
@@ -218,6 +218,7 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdrTobe, targetOdr, atrzL
                              stbleEndYmd: stbleEndYmd.substr(0, 4) + '-' + stbleEndYmd.substr(4, 2) + '-' + stbleEndYmd.substr(6, 2),
                              targetOdr: targetOdr,
                              atrzLnSn, 
+                             bgtMngOdr: bgtMngOdr
                             },
                 })
                 

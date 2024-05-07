@@ -1,0 +1,23 @@
+{
+    "menuName": "ProjectPrmpcBgtCmpr",
+    "queryId": "projectMapper.retrievePrjctPrmpcBgtCmpr",
+    "keyColumn": "ctNm",
+    "wordWrap": true,
+    
+    "tableColumns": [
+      { "key": "prmpcAcctoTot", "value":"원가별집계", "width": 120, "alignment": "center" },
+      { "key": "ctNm", "value": "원가항목", "width": 300, "alignment": "center"  },
+      { "key": "bfeBgt", "value": "변경 전 예산(원)", "width": 200, "alignment": "center", "currency": true},
+      { "key": "aftrBgt", "value": "변경 후 예산(원)", "width": 200, "alignment": "center", "currency": true },
+      { "key": "ajmtBgt", "value":"조정액(원)", "width": 200, "alignment": "center","currency": true }
+  ],
+  
+    "groupingColumn" : [
+        { "key": "bfeBgt", "value": "변경 전 예산(원)", "summaryType"  : "sum","valueFormat": "#,##0", "displayFormat" : "{0} 원" },
+        { "key": "aftrBgt", "value": "변경 후 예산(원)", "summaryType"  : "sum", "valueFormat": "#,##0", "displayFormat" : "{0} 원" },
+        { "key": "ajmtBgt", "value":"조정액(원)", "summaryType"  : "sum", "valueFormat": "#,##0", "displayFormat" : "{0} 원" }
+      ],
+     "groupingData" : 
+    {"caption":"원가별집계", "dataField": "prmpcAcctoTot" , "format": "#,##0"}
+     
+  }

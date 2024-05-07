@@ -6,16 +6,28 @@ import "devextreme/dist/css/dx.common.css";
 import "devextreme/dist/css/dx.light.css";
 import "devextreme/dist/css/dx.material.blue.light.css";
 import CustomTable from "components/unit/CustomTable";
+import ProjectPrmpcBgtCmpr from "./ProjectPrmpcBgtCmpr";
 
 import ProjectTotCostInfoJson from "./ProjectTotCostInfoJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
 
-const ProjectTotCostInfo = ({prjctId, atrzDmndSttsCd, bgtMngOdr}) => {
+const ProjectTotCostInfo = ({prjctId, atrzDmndSttsCd, bgtMngOdr,}) => {
   const [data, setData] = useState([]);
-  const { keyColumn, queryId, tableColumns, wordWrap, groupingColumn ,groupingData} = ProjectTotCostInfoJson;
+  const { keyColumn, queryId, aprvQueryId, tableColumns, wordWrap, groupingColumn ,groupingData} = ProjectTotCostInfoJson;
+
+  // 승인 목록에서 진입한 경우 사용
+  const [aprvOdr, setAprvOdr] = useState("");
+  const [endYn, setEndYn] = useState(false);
+
   useEffect(() => {
-    pageHandle();
-    console.log(1);
+
+    // 프로젝트 목록에서 조회한 경우
+    if(atrzDmndSttsCd === "VTW03703") {
+      pageHandle();
+    } else {
+      // 프로젝트 승인에서 조회한 경우
+      retrieveAprvBgtOdr();
+    }
   }, []);
 
 
@@ -32,10 +44,28 @@ const ProjectTotCostInfo = ({prjctId, atrzDmndSttsCd, bgtMngOdr}) => {
     }
   };
 
+  const retrieveAprvBgtOdr = async () => {
+    const param = {
+      queryId: aprvQueryId,
+      prjctId: prjctId
+    }
+
+    const response = await ApiRequest("/boot/common/queryIdSearch", param);
+
+    if(response[0].aprvOdr == bgtMngOdr) {
+      setAprvOdr(response[0].aprvOdr-1);
+      setEndYn(true)
+    } else {
+      setAprvOdr(response[0].aprvOdr);
+    }
+  }
+
 
   return (
     <div style={{ padding: "5%", height: "100%" }}>
-      <CustomTable
+      {
+        atrzDmndSttsCd === "VTW03703" ?
+        <CustomTable
         keyColumn={keyColumn}
         columns={tableColumns}
         values={data}
@@ -43,8 +73,15 @@ const ProjectTotCostInfo = ({prjctId, atrzDmndSttsCd, bgtMngOdr}) => {
         wordWrap={wordWrap}
         grouping={groupingColumn}
         groupingData={groupingData}
-      
-      />  
+        />
+        :
+        <ProjectPrmpcBgtCmpr
+          prjctId={prjctId}
+          bgtMngOdr={aprvOdr}
+          bgtMngOdrTobe={bgtMngOdr}
+          atrzDmndSttsCd={endYn == true ? "VTW03703" : "VTW03702"}
+        />
+      }
     </div>
   );
 };
