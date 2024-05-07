@@ -7,7 +7,7 @@ import Box, { Item } from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
 import { format,parse } from 'date-fns';
 
-const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdrTobe, deptId, targetOdr, bizSttsCd, atrzLnSn }) => {
+const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdr, bgtMngOdrTobe, deptId, targetOdr, bizSttsCd, atrzLnSn }) => {
   const [values, setValues] = useState([]); 
   let groupingDtl = [];
 
@@ -104,6 +104,7 @@ const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdrTobe
               ctrtYmd={ctrtYmd}
               stbleEndYmd={stbleEndYmd}
               bgtMngOdrTobe={bgtMngOdrTobe}
+              bgtMngOdr={bgtMngOdr}
               json={ProjectControlBudgetCostJson}
               deptId={deptId}
               targetOdr={targetOdr}

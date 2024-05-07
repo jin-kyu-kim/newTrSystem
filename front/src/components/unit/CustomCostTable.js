@@ -23,6 +23,7 @@ const CustomCostTable = ({
   ctrtYmd,
   stbleEndYmd,
   prjctId,
+  bgtMngOdr,
   bgtMngOdrTobe,
   deptId,
   targetOdr, 
@@ -156,7 +157,8 @@ const CustomCostTable = ({
     navigate("../project/ProjectChange",
         {
     state: { prjctId: prjctId, 
-            bgtMngOdrTobe: bgtMngOdrTobe, 
+            bgtMngOdrTobe: bgtMngOdrTobe,
+            bgtMngOdr: bgtMngOdr,
             ctrtYmd: ctrtYmd, 
             stbleEndYmd: stbleEndYmd, 
             deptId : deptId,  
@@ -280,6 +282,7 @@ const CustomCostTable = ({
           popupInfo={json} 
           prjctId={prjctId} 
           bgtMngOdrTobe={bgtMngOdrTobe}
+          bgtMngOdr={bgtMngOdr}
           ctrtYmd={ctrtYmd}
           stbleEndYmd={stbleEndYmd}
           transformedData={transformedData}

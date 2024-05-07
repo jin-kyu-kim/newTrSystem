@@ -63,7 +63,6 @@ const ProjectChange = () => {
     });
   }, []);
 
-
   // 탭 변경시 인덱스 설정
   const onSelectionChanged = useCallback(
     (args) => {
@@ -313,6 +312,7 @@ const ProjectChange = () => {
                 prjctId={prjctId}
                 ctrtYmd={ctrtYmd}
                 stbleEndYmd={stbleEndYmd}
+                bgtMngOdr={bgtMngOdr}
                 bgtMngOdrTobe={bgtMngOdrTobe}
                 revise={true}
                 tabId={data.tabId}

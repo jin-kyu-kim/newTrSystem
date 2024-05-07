@@ -7,7 +7,7 @@ import Box, { Item } from "devextreme-react/box";
 import ApiRequest from "../../../utils/ApiRequest";
 import { format, parse } from 'date-fns';
 
-const ProjectEmpCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdrTobe, deptId, targetOdr, bizSttsCd, atrzLnSn}) => {
+const ProjectEmpCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdr, bgtMngOdrTobe, deptId, targetOdr, bizSttsCd, atrzLnSn}) => {
   const [values, setValues] = useState([]);
   let groupingDtl = [];
 
@@ -112,6 +112,7 @@ const ProjectEmpCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdrTobe, deptId, 
               ctrtYmd={ctrtYmd}
               stbleEndYmd={stbleEndYmd}
               bgtMngOdrTobe={bgtMngOdrTobe}
+              bgtMngOdr={bgtMngOdr}
               json={ProjectEmpCostJson}
               deptId={deptId}
               targetOdr={targetOdr}
