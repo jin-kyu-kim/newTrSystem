@@ -80,13 +80,6 @@ public class CommonServiceImpl implements CommonService {
                     insertParam = params.get(i);
                     validInsertParam = new HashMap<>();
 
-                    if (hasInsertTime) {
-                        validInsertParam.put("regDt", new Timestamp(System.currentTimeMillis()));
-                        validInsertParam.put("regEmpId", empId);
-                        validInsertParam.put("mdfcnDt", new Timestamp(System.currentTimeMillis()));
-                        validInsertParam.put("mdfcnEmpId", empId);
-                    }
-
                     for (String key : insertParam.keySet()) {
                         String upVal = key.replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase();
                         for (int j = 1; j <= columnCount; j++) {
@@ -96,6 +89,12 @@ public class CommonServiceImpl implements CommonService {
                                 break;
                             }
                         }
+                    }
+                    if (hasInsertTime) {
+                        validInsertParam.put("regDt", new Timestamp(System.currentTimeMillis()));
+                        validInsertParam.put("regEmpId", empId);
+                        validInsertParam.put("mdfcnDt", new Timestamp(System.currentTimeMillis()));
+                        validInsertParam.put("mdfcnEmpId", empId);
                     }
 
                     List<String> keys = new ArrayList<>(validInsertParam.keySet());

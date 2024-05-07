@@ -99,7 +99,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
                 return acc + (updatedItem.value * transformedItem.value);
             //대응하는 항목 없을경우 : 신규추가시 userDfnValue로 계산
             }else{
-                return acc + (updatedItem.value * data.userDfnValue);   
+                return acc + (updatedItem.value * (data.userDfnValue ? data.userDfnValue : data.untpc));   
             }
           }, 0);
 
@@ -108,7 +108,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
         const fixedTotalSum = Number(totalSum.toFixed(2));       
 
         let multifulSum;   
-        if(data.userDfnValue){
+        if(data.userDfnValue ? data.userDfnValue : data.untpc){
             multifulSum = fixedTotalSum;
         }
 
@@ -116,7 +116,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
         setData(currentData=>({
             ...currentData,
             "total" : fixedSum,
-            ...(data.userDfnValue ? { "gramt" : multifulSum } : {}),
+            ...((data.userDfnValue ? data.userDfnValue : data.untpc)? { "gramt" : multifulSum } : {}),
             // ...(data.outordEmpId ? { "gramt" : Number((fixedSum * data.untpc).toFixed(0))} : {}),
         })); 
     };
@@ -289,7 +289,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
             ...pkColumns,
             [popupInfo.nomalColumnsDtlYm] : item.id,
             [popupInfo.nomalColumnsDtlValue] : item.value,
-            ...(data.userDfnValue ? { "untpc" : data.userDfnValue } : {}),
+            ...((data.userDfnValue ? data.userDfnValue : data.untpc) ? { "untpc" : data.userDfnValue ? data.userDfnValue : data.untpc } : {}),
         }));
 
         //api param 설정
@@ -343,9 +343,10 @@ const onRowUpdateingMonthData = async() => {
     // inputValue를 순회하여 새로운 배열을 생성
     const makeParam = inputValue.map(item => {
         let untpcValue ;
+        const untpc = data.userDfnValue ? data.userDfnValue : data.untpc;
         if(popupInfo.table ==="MMNY_LBRCO_PRMPC"){
             const idUnptc = `${item.id}_untpc`; // untpc용 ID 생성
-            untpcValue = transformedDataMap.hasOwnProperty(idUnptc) ? transformedDataMap[idUnptc] : data.userDfnValue; // transformedDataMap에 untpc ID가 있으면 그 값을, 없으면 data.userDfnValue를 사용
+            untpcValue = transformedDataMap.hasOwnProperty(idUnptc) ? transformedDataMap[idUnptc] : data[untpc]; // transformedDataMap에 untpc ID가 있으면 그 값을, 없으면 data.userDfnValue를 사용
         }
         return {
             [popupInfo.nomalColumnsDtlYm]: item.id,
@@ -440,7 +441,7 @@ const onRowUpdateingMonthData = async() => {
                         </div>
                     </div>
                     <CustomLabelValue props={popupInfo.labelValue.tkcgJob} value={data.tkcgJob} onSelect={handleChgState}/>
-                    <CustomLabelValue props={popupInfo.labelValue.userDfnValue} value={data.userDfnValue} onSelect={handleChgState}/>
+                    <CustomLabelValue props={popupInfo.labelValue.untpc} value={data.untpc} onSelect={handleChgState}/>
                     <CustomLabelValue props={popupInfo.labelValue.gramt} value={data.gramt} onSelect={handleChgState} readOnly={popupInfo.labelValue.total.readOnly}/>
                     <CustomLabelValue props={popupInfo.labelValue.total} value={data.total} onSelect={handleChgState} readOnly={popupInfo.labelValue.total.readOnly}/>
                     <CustomLabelValue props={popupInfo.labelValue.inptPrnmntYmd} value={data.inptPrnmntYmd} onSelect={handleChgState}/>
@@ -537,7 +538,7 @@ const onRowUpdateingMonthData = async() => {
                                                 <NumberBox 
                                                     value= {(data.mmnyLbrcoPrmpcSn || data.outordLbrcoPrmpcSn)? 
                                                             transformedData.find(item => item.id === `${Object.keys(structuredData)[colIndex]}${months[rowIndex]}_untpc`)?.value || 0 
-                                                            : data.userDfnValue}
+                                                            : data.userDfnValue ? data.userDfnValue : data.untpc}
                                                     readOnly={true}
                                                     format={"#,### 원"}
                                                     />

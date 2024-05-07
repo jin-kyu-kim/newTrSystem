@@ -42,6 +42,8 @@ public class SecurityConfig {
                         -> authorize
                         .requestMatchers(new MvcRequestMatcher(introspector,"/boot/sysMng/lgnSkll")).permitAll()
                         .requestMatchers(new MvcRequestMatcher(introspector,"/boot/sysMng/tokenExtension")).hasAuthority("USER")
+                        .requestMatchers(new MvcRequestMatcher(introspector,"boot/sysMng/mainSearch")).hasAuthority("USER")
+                        .requestMatchers(new MvcRequestMatcher(introspector,"boot/sysMng/sendEmail")).hasAuthority("USER")
                         .requestMatchers(new MvcRequestMatcher(introspector,"/boot/common/**")).hasAuthority("USER")
                         .requestMatchers(new MvcRequestMatcher(introspector,"/boot/infoInq/**")).hasAuthority("USER")
                         .requestMatchers(new MvcRequestMatcher(introspector,"/boot/elecAtrz/**")).hasAuthority("USER")

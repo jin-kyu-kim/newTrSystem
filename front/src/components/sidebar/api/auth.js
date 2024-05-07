@@ -6,9 +6,7 @@ export async function signIn(empno, password) {
   try {
     const param = {empno:empno, password:password};
     const response = await axios.post("/boot/sysMng/lgnSkll", param, {
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json", },
       });
       if(response){
       localStorage.setItem("isLoggedIn", true);

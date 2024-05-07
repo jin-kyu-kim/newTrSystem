@@ -11,7 +11,7 @@ function CheckAuth(isPrivate){
     const token = localStorage.getItem('token');
     const [cookies] = useCookies(["userInfo", "userAuth","deptInfo"]);
 
-    if(token && isPrivate && cookies.userAuth !== "undefined"){
+    if(token && isPrivate && cookies.userAuth !== undefined){
         if(cookies.userAuth.find(item => item === "VTW04801")){
             return "TRUE";
         }
