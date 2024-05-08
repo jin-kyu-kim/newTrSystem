@@ -297,7 +297,7 @@
 	
 	<select id="retrieveRealOutordEmpPlan" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT EMP_ID AS INPT_HNF_ID, 
-			   EMP_FLNM
+			   EMP_FLNM AS INPT_HNF_ID_NM
 		  FROM EMP 
 		  WHERE 1=1
 		   AND EMP_TY_CD = 'VTW00203'

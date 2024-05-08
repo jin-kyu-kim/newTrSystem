@@ -35,8 +35,8 @@
                             "queryId" : "elecAtrzMapper.retrieveRealOutordEmpPlan"
                             },
                         "valueExpr" : "inptHnfId",
-                        "displayExpr": "empFlnm",
-                        "values" : ["inptHnfId","empFlnm"],
+                        "displayExpr": "inptHnfIdNm",
+                        "values" : ["inptHnfId","inptHnfIdNm"],
                         "name" : "inptHnfId"
                         }
             },
