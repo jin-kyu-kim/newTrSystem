@@ -5,7 +5,7 @@ import CustomLabelValue from "components/unit/CustomLabelValue";
 import ApiRequest from "utils/ApiRequest";
 import { Button } from "devextreme-react";
 
-const ElectGiveAtrzClm = ({ detailData, sttsCd, onSendData}) => {
+const ElectGiveAtrzClm = ({ detailData, sttsCd, onSendData, ctrtTyCd}) => {
     const location = useLocation();
     const formData = location.state.formData;
     const [clmData, setClmData] = 
@@ -15,10 +15,11 @@ const ElectGiveAtrzClm = ({ detailData, sttsCd, onSendData}) => {
 
     if (!formData || formData.atrzDmndSttsCd === "VTW03701") { // 임시저장
         labelValue.giveYmd.param.queryId.ctrtElctrnAtrzId = detailData.ctrtElctrnAtrzId;
+        labelValue.giveYmd.param.queryId.ctrtTyCd = ctrtTyCd
     } else {
         labelValue.giveYmd.param.queryId.ctrtElctrnAtrzId = formData.ctrtElctrnAtrzId;
+        labelValue.giveYmd.param.queryId.ctrtTyCd = ctrtTyCd
     }
-
     
     /* readOnly 조절 */
     let controlReadOnly = false;

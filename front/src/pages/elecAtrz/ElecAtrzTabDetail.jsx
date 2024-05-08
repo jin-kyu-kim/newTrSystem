@@ -189,10 +189,10 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
                         <h3>계약정보</h3>
 
                         <CtrtInfo ctrtInfo={ctrtInfo} data={data} ctrtTyCd={ctrtTyCd}/>
-                        {((detailData.ctrtElctrnAtrzId && detailData.elctrnAtrzTySeCd === "VTW04914" && ctrtTyCd !== "VTW04908") || ["VTW04909","VTW04910"].includes(detailData.elctrnAtrzTySeCd))
+                        {((detailData.ctrtElctrnAtrzId && detailData.elctrnAtrzTySeCd === "VTW04914" && ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd !== "VTW04908") || ["VTW04909","VTW04910"].includes(detailData.elctrnAtrzTySeCd))
                         ? 
                         <ElecAtrzCtrtInfoDetail data={detailData} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd } /> 
-                        : <ElecAtrzCtrtOutordHnfDetail data={detailData} sttsCd={sttsCd} prjctData={prjctData} prjctId={prjctId} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd } />}
+                        : <ElecAtrzCtrtOutordHnfDetail data={detailData} sttsCd={sttsCd} prjctData={prjctData} prjctId={prjctId} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd } />}                   
                         </>
             default:
                 return null;
@@ -205,7 +205,7 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
                 && (detailData.elctrnAtrzTySeCd ==="VTW04914" ) 
                 // && (detailData.atrzDmndSttsCd)
                 && (
-                <ElectGiveAtrzClm detailData={detailData} sttsCd={sttsCd} prjctId={prjctId} onSendData={onSendData}/>
+                <ElectGiveAtrzClm detailData={detailData} sttsCd={sttsCd} prjctId={prjctId} onSendData={onSendData} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd }/>
                 )}
             {renderSpecialComponent()}
         </div>
