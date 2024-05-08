@@ -4,7 +4,7 @@ import AllowedPageSize from "./AllowedPageSize";
 
 const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, onClick,
                        wordWrap, onRowClick, excel, onExcel,onCellClick, grouping, groupingData, groupingCustomizeText,
-                       masterDetail, handleExpanding, focusedRowIndex, handleCheckBoxChange, checkBoxValue }) => {
+                       masterDetail, handleExpanding, focusedRowIndex, handleCheckBoxChange, checkBoxValue, prjctCmpr }) => {
   return (
     <div className="wrap_table">
       <DataGrid
@@ -24,12 +24,21 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
         onExporting={onExcel}
         onCellClick={onCellClick}
         onCellPrepared={(e) => {
+
           if (e.rowType === 'header') {
             e.cellElement.style.textAlign = 'center';
             e.cellElement.style.fontWeight = 'bold';
           }
+
+          // 프로젝트 변경원가 비교 시 사용
+          if(prjctCmpr!= undefined && prjctCmpr == true) {
+            if(e.rowType === 'data' && e.column.dataField === 'ajmtBgt' && e.data.ajmtBgt != 0) {
+              e.cellElement.style.color = 'red'
+            }
+          }
         }}
         wordWrapEnabled={wordWrap}
+        columnMinWidth={40}
       >
         {GridRows({columns, onClick, handleCheckBoxChange, checkBoxValue })}
         <Paging defaultPageSize={pageSize} enabled={paging} />

@@ -102,6 +102,7 @@ const ProjectList = () => {
         values={values}
         onRowClick={onRowClick}
         paging={true}
+        wordWrap={true}
       />
     </div>
   );
