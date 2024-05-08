@@ -38,7 +38,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
           }
         }}
         wordWrapEnabled={wordWrap}
-        columnMinWidth={100}
+        columnMinWidth={40}
       >
         {GridRows({columns, onClick, handleCheckBoxChange, checkBoxValue })}
         <Paging defaultPageSize={pageSize} enabled={paging} />
