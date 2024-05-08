@@ -530,7 +530,7 @@ const ElecAtrzNewReq = () => {
                 </div>
 
                 <div style={{textAlign: 'center', marginBottom: '100px'}}>
-                {ElecAtrzNewReqJson.header.map((item, index) => (
+                {ElecAtrzNewReqJson.header.filter(item => item.id !== 'onAtrzLnPopup').map((item, index) => (
                     <Button id={item.id} text={item.text} key={index} type={item.type} 
                         onClick={onBtnClick} style={{marginRight: '3px'}}/>
                 ))}
@@ -539,5 +539,4 @@ const ElecAtrzNewReq = () => {
         </>
     );
 }
-
 export default ElecAtrzNewReq;

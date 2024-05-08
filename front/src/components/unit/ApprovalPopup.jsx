@@ -17,7 +17,10 @@ const ApprovalPopup = ({ visible, atrzLnEmpList, onHiding }) => {
                 const response = await ApiRequest('/boot/common/commonSelect', [
                     { tbNm: "CD" }, { upCdValue: "VTW007" }
                 ]);
-                setStepCdList(response);
+                if(response.length !== 0){
+                    const tmpRes = response.filter(item => item.cdValue !== "VTW00708");
+                    setStepCdList(tmpRes);
+                }
             } catch (error) {
                 console.log('error', error);
             }
@@ -71,6 +74,7 @@ const ApprovalPopup = ({ visible, atrzLnEmpList, onHiding }) => {
                     showClearButton={true}
                     onValueChange={onEmpChg}
                 />
+                
                 <div className="atrz-popup-header">
                     {tableTitle.map((item, index) => (
                         <div className="atrz-popup-cell" key={index}>{item}</div>
