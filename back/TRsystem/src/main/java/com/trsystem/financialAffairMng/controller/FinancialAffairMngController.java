@@ -20,4 +20,9 @@ public class FinancialAffairMngController {
 		
 		return FinancialAffairMngDomain.retrieveCtData(params);
 	}
+
+	@PostMapping(value = "/boot/financialAffairMng/updateDpstAmt")
+	public int updateDpstAmt(@RequestBody Map<String, Object> param) {
+		return FinancialAffairMngDomain.updateDpstAmt(param);
+	}
 }
