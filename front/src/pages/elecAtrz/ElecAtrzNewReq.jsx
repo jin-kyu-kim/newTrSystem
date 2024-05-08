@@ -496,9 +496,9 @@ const ElecAtrzNewReq = () => {
                         <ExpensInfo onSendData={handleChildData} prjctId={prjctId} data={data}/>
                     </>
                     }
-                    {["VTW04914"].includes(formData.elctrnAtrzTySeCd) && ["VTW04909","VTW04910","VTW04908"].includes(ctrtTyCd)&& prjctData && //VTW04914: 외주업체/재료비 지급
+                    {["VTW04914"].includes(formData.elctrnAtrzTySeCd) && ["VTW04909","VTW04910","VTW04908"].includes(ctrtTyCd?ctrtTyCd:data.ctrtTyCd)&& prjctData && //VTW04914: 외주업체/재료비 지급
                     <>
-                        <ElecAtrzTabDetail detailData={data} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd} prjctData={prjctData}/>
+                        <ElecAtrzTabDetail detailData={data} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd?ctrtTyCd:data.ctrtTyCd} prjctData={prjctData} onSendData={handleChildData}/>
                     </>
                     }
 

@@ -8,7 +8,7 @@ import ElectGiveAtrzClm from './ElectGiveAtrzClm';
 import ElecAtrzCtrtOutordHnfDetail from './ctrtInfo/ElecAtrzCtrtOutordHnfDetail';
 
 
-const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prjctData }) => {
+const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prjctData, onSendData }) => {
     const { vacDtl, clmColumns,  groupingColumn, groupingData, ctrtInfo } = electAtrzJson.electAtrzDetail;
     const [ data, setData ] = useState([]);
 
@@ -201,11 +201,11 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
 
     return (
         <div>
-            {(["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)) 
+            {(["VTW03701","VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)) 
                 && (detailData.elctrnAtrzTySeCd ==="VTW04914" ) 
                 // && (detailData.atrzDmndSttsCd)
                 && (
-                <ElectGiveAtrzClm detailData={detailData} sttsCd={sttsCd} prjctId={prjctId}/>
+                <ElectGiveAtrzClm detailData={detailData} sttsCd={sttsCd} prjctId={prjctId} onSendData={onSendData}/>
                 )}
             {renderSpecialComponent()}
         </div>
