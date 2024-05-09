@@ -1396,6 +1396,7 @@
 		 WHERE pca.APLY_YM = #{aplyYm}
 		   AND pca.APLY_ODR = #{aplyOdr}
 		   AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703'
+		   AND (pca.CT_ATRZ_SE_CD = 'VTW01902' OR pca.CT_ATRZ_SE_CD = 'VTW01903')
 		GROUP BY e.EMP_ID, BANK_CD_NM, e.ACTNO, e.EMP_FLNM
 	</select>
 	

@@ -33,7 +33,7 @@ const [ printPopVisible, setPrintPopVisible ] = useState(false);  // 출력화�
 const [ cancelPopVisible, setCancelPopVisible ] = useState(false);  // 취소화면 팝업 컨트롤
 const [selectedData, setSelectedData] = useState({});
 const [ atrzDmndSttsCnt, setAtrzDmndSttsCnt ] = useState({}); // 상태코드별 데이터 개수
-const [ type, setType ] = useState();
+const [ type, setType ] = useState(); // 시간 / 비용 구분자
 
 const [checkBoxValue, setCheckBoxValue] = useState({
   "allVtw": true,
@@ -138,9 +138,9 @@ const pageHandle = async () => {
   }
 
   try {
+    const responseDdln = await ApiRequest("/boot/common/queryIdSearch", param); // 현재 조회한 달-차수의 마감 여부 확인 검색
     const responseTot = await ApiRequest("/boot/common/queryIdSearch", totParam); //상단 total 검색
     const responseDtl = await ApiRequest("/boot/common/queryIdSearch", dtlParam); //하단 목록 검색
-    const responseDdln = await ApiRequest("/boot/common/queryIdSearch", param); // 현재 조회한 달-차수의 마감 여부 확인 검색
 
     setTotValues(responseTot);
     setDtlValues(responseDtl);
@@ -264,8 +264,8 @@ const onBtnClick = async (button, data) => {
        await toEmpWorkTime(admin);
     }
 
-    if(button.name === "hrRtrcn"){                                   
-        alert("시간취소!");
+    if(button.name === "hrRtrcn"){
+        
         await onSetBasicInfo(data);
         await mmCancel(data);
         await onCancelPopAppear();
@@ -277,11 +277,15 @@ const onBtnClick = async (button, data) => {
         {state: { admin: admin }})
     }
 
-    if(button.name === "ctRtrcn"){  
-        alert("비용취소");
+    if(button.name === "ctRtrcn"){
+      
+      if(ddlnYn != "Y") {
         await onSetBasicInfo(data);
         await ctCancel(data);
         await onCancelPopAppear();
+      } else {
+        alert("마감된 차수는 취소가 불가능합니다. 마감을 취소한 뒤 다시 시도해주세요.")
+      }
 
     }
 
