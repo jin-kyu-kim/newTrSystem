@@ -398,12 +398,12 @@ public class IndvdlClmDomain {
             updatePrjctMmAtrzMap = params.get(i);
             updatePrjctMmAtrzMap.put("queryId", "indvdlClmMapper.retrievePrjctMmSttsInq");
             List<Map<String, Object>> updatePrjctMmAtrzResult = commonService.queryIdSearch(updatePrjctMmAtrzMap);
+            
+        	Map<String, Object> updatePrjctIndvdlCtMmMap = new HashMap<>();
+        	updatePrjctIndvdlCtMmMap = params.get(i);
+        	updatePrjctIndvdlCtMmMap.put("queryId", "indvdlClmMapper.updatePrjctIndvdlCtMm");
+        	List<Map<String, Object>> updatePrjctIndvdlCtMmResult = commonService.queryIdSearch(updatePrjctIndvdlCtMmMap);
         }
-
-        Map<String, Object> updatePrjctIndvdlCtMmMap = new HashMap<>();
-        updatePrjctIndvdlCtMmMap.putAll(params.get(0));
-        updatePrjctIndvdlCtMmMap.put("queryId", "indvdlClmMapper.updatePrjctIndvdlCtMm");
-        List<Map<String, Object>> updatePrjctIndvdlCtMmResult = commonService.queryIdSearch(updatePrjctIndvdlCtMmMap);
 
         return null;
     }

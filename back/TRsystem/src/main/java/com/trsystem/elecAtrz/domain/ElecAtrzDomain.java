@@ -41,7 +41,9 @@ public class ElecAtrzDomain {
 		String regEmpId = String.valueOf(params.get("regEmpId"));
 		String atrzTySeCd = String.valueOf(params.get("elctrnAtrzTySeCd"));
 		String elctrnAtrzId =  String.valueOf(params.get("elctrnAtrzId"));
-		String sttsCd = String.valueOf(params.get("sttsCd")); 
+		String atrzDmndSttsCd = String.valueOf(params.get("atrzDmndSttsCd"));
+		
+
 		
 		Map<String, String> basicInfo = new HashMap<>();
 		basicInfo.put("regDt", regDt);
@@ -55,6 +57,18 @@ public class ElecAtrzDomain {
 		elecAtrzParam.putAll(params);
 		elecAtrzParam.put("nowAtrzLnSn", 1);
 		elecAtrzParam.put("atrzDmndEmpId", regEmpId);
+		
+		// 문서번호 만들기
+		List<Map<String, Object>> list = new ArrayList<>();
+		Map<String, Object> countMap = new HashMap<>();
+		countMap.put("queryId", "elecAtrzMapper.retrieveCntElctrnAtrz");
+		list = commonService.queryIdSearch(countMap);
+		
+		int cnt = Integer.parseInt(String.valueOf(list.get(0).get("cnt")));
+		
+		String elctrnAtrzDocNo = regDt.substring(0,4) + "-" + atrzTySeCd.substring(atrzTySeCd.length()-2, atrzTySeCd.length()) + "-" + (cnt + 1);
+		elecAtrzParam.put("elctrnAtrzDocNo", elctrnAtrzDocNo);
+		
 		elecAtrzParam.remove("param");
 		
 		System.out.println(elecAtrzParam);
@@ -661,6 +675,7 @@ public class ElecAtrzDomain {
 			infoParam.put("inptPrnmntYmd", copiedParams.get(i).get("inptPrnmntYmd"));			// 투입예정일자
 			infoParam.put("withdrPrnmntYmd", copiedParams.get(i).get("withdrPrnmntYmd"));		// 철수예정일자
 			infoParam.put("expectInptHnfId", copiedParams.get(i).get("expectInptHnfId"));			// 계획투입인력
+			infoParam.put("outordLbrcoPrmpcSn", copiedParams.get(i).get("outordLbrcoPrmpcSn"));			// 계획투입인력 순번
 			
 			insertParams.add(i, infoParam);
 		}

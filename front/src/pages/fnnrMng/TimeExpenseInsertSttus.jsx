@@ -48,7 +48,7 @@ const [checkBoxValue, setCheckBoxValue] = useState({
   "ct037034Min": true,
 });
 
-const [ddlYn, setDdlYn] = useState('');
+const [ddlnYn, setDdlnYn] = useState('');
 
 //======================초기차수 설정 ===============================================
 
@@ -129,7 +129,7 @@ const searchHandle = async (initParam) => {
 const pageHandle = async () => {
 
   const param = {
-    queryId: "financialAffairMngMapper.retrieveDdlYn",
+    queryId: "financialAffairMngMapper.retrieveDdlnYn",
     aplyYm: dtlParam.aplyYm,
     aplyOdr: dtlParam.aplyOdr
   }
@@ -137,14 +137,14 @@ const pageHandle = async () => {
   try {
     const responseTot = await ApiRequest("/boot/common/queryIdSearch", totParam); //상단 total 검색
     const responseDtl = await ApiRequest("/boot/common/queryIdSearch", dtlParam); //하단 목록 검색
-    const responseDdl = await ApiRequest("/boot/common/queryIdSearch", param); // 현재 조회한 달-차수의 마감 여부 확인 검색
+    const responseDdln = await ApiRequest("/boot/common/queryIdSearch", param); // 현재 조회한 달-차수의 마감 여부 확인 검색
 
     setTotValues(responseTot);
     setDtlValues(responseDtl);
-    if(responseDdl.length != 1) {
+    if(responseDdln.length != 1) {
       console.log("테이블에 데이터가 없습니다.")
     } else {
-      setDdlYn(responseDdl[0].ddlYn);
+      setDdlnYn(responseDdln[0].ddlnYn);
     }
   } catch (error) {
     console.log(error);
@@ -442,13 +442,19 @@ const handleCheckBoxChange = useCallback((e, key) => {
 }, []);
 
 //=============================마감 및 엑셀다운로드 이벤트======================================
-  const ddlnExcelDwn = () => {
+  const ddlnExcelDwn = async () => {
     const confirm = window.confirm("마감되지 않은 달 입니다. 마감 후 엑셀 파일을 로드하시겠습니까?"); 
 
     if(confirm) {
 
       // 마감하는 메소드
-
+      const result = await closeAply();
+      console.log(result)
+      if(result > 0) {
+        alert("마감됐습니다.");
+      } else {
+        return;
+      }
 
       // 후에
       const props = {
@@ -478,25 +484,24 @@ const handleCheckBoxChange = useCallback((e, key) => {
 
   };
 
-  /**
-   * 현재 달-차수가 마감인지 확인한다.
-   * @returns 
-   */
-  const chkDdl = (param) => {
+  const closeAply = async () => {
+    const param = {
+      queryId: "financialAffairMngMapper.updateDdlnYn",
+      ddlnYn: "Y",
+      aplyYm: dtlParam.aplyYm,
+      aplyOdr: dtlParam.aplyOdr,
+      state: "UPDATE"
+    }
 
     try {
-      const response = ApiRequest("/boot/common/queryIdSearch", param);
-      
-      console.log(response[0].ddlYn)
-      if(response.length != 1) {
-        window.alert("마감여부를 확인해주세요");
-      } else {
-        setDdlYn(response[0].ddlYn);
-      }
-    } catch(error) {
+      const response = await ApiRequest("/boot/common/queryIdDataControl", param);
 
+      return response
+    } catch(error) {
+      console.error(error);
     }
   }
+
 //========================화면그리는 구간 ====================================================
   return(
       <div className="container">
@@ -509,7 +514,7 @@ const handleCheckBoxChange = useCallback((e, key) => {
           <div style={{ marginBottom: "20px" }}>
               <SearchPrjctCostSet callBack={searchHandle} props={searchParams} />
               {
-                ddlYn != 'Y' ? <Button text="마감 및 엑셀다운"  onClick={ddlnExcelDwn}/> :
+                ddlnYn != 'Y' ? <Button text="마감 및 엑셀다운"  onClick={ddlnExcelDwn}/> :
                 <Button text="엑셀다운"  onClick={excelDwn}/>
               }
           </div>

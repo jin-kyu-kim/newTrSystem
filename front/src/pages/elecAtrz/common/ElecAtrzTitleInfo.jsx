@@ -20,6 +20,7 @@ const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick
 
   const setButtons = () => {
     let buttonsToRender;
+
     if (onHandleAtrzTitle) {
       buttonsToRender = contents; // 기안 작성페이지의 경우 모든 contents 렌더
     } else {
@@ -38,18 +39,11 @@ const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick
     ));
   };
 
-    // useEffect(() => {
-    //   if(onHandleAtrzTitle){
-    //     const deptList = cookies.deptInfo;
-    //     const dept = deptList.find(item => item.deptId === deptId);
-    //   }
-    // }, []);
-
   return (
     <>
       <div style={{ display: "flex", justifyContent: "flex-start" }}>
         <div style={{ float: "left", marginRight: "auto" }}>로고</div>
-        <div style={{ display: "inline-block" }}>{setButtons()}</div>
+        <div style={{ display: "inline-block", marginBottom: '50px' }}>{setButtons()}</div>
       </div>
 
       <h3 style={{ textAlign: "center" }}>{formData.gnrlAtrzTtl}</h3>
@@ -59,7 +53,7 @@ const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick
             <tr>
               <td>문서번호</td>
               <td> : </td>
-              <td>{formData.atrzDmndSttsCd === "VTW03701" ? "" : formData.elctrnAtrzId}</td>
+              <td>{formData.atrzDmndSttsCd === "VTW03701" ? "" : formData.elctrnAtrzDocNo}</td>
             </tr>
             <tr>
               <td>프로젝트</td>

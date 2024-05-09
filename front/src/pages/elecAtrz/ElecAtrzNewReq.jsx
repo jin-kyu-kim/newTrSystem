@@ -51,7 +51,7 @@ const ElecAtrzNewReq = () => {
         if(!ctrtTyCd){
             if(formData.atrzDmndSttsCd === "VTW03701"){   //임시저장
                 
-            const getCtrtInfo = async () => {
+                const getCtrtInfo = async () => {
                     try {
                         const response = await ApiRequest('/boot/common/queryIdSearch', 
                                 {queryId: "elecAtrzMapper.retrieveElctrnAtrzId"
@@ -496,9 +496,9 @@ const ElecAtrzNewReq = () => {
                         <ExpensInfo onSendData={handleChildData} prjctId={prjctId} data={data}/>
                     </>
                     }
-                    {["VTW04914"].includes(formData.elctrnAtrzTySeCd) && ["VTW04909","VTW04910","VTW04908"].includes(ctrtTyCd)&& prjctData && //VTW04914: 외주업체/재료비 지급
+                    {["VTW04914"].includes(formData.elctrnAtrzTySeCd) && ["VTW04909","VTW04910","VTW04908"].includes(ctrtTyCd?ctrtTyCd:data.ctrtTyCd)&& prjctData && //VTW04914: 외주업체/재료비 지급
                     <>
-                        <ElecAtrzTabDetail detailData={data} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd} prjctData={prjctData}/>
+                        <ElecAtrzTabDetail detailData={data} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd?ctrtTyCd:data.ctrtTyCd} prjctData={prjctData} onSendData={handleChildData}/>
                     </>
                     }
 
@@ -530,7 +530,7 @@ const ElecAtrzNewReq = () => {
                 </div>
 
                 <div style={{textAlign: 'center', marginBottom: '100px'}}>
-                {ElecAtrzNewReqJson.header.map((item, index) => (
+                {ElecAtrzNewReqJson.header.filter(item => item.id !== 'onAtrzLnPopup').map((item, index) => (
                     <Button id={item.id} text={item.text} key={index} type={item.type} 
                         onClick={onBtnClick} style={{marginRight: '3px'}}/>
                 ))}
@@ -539,5 +539,4 @@ const ElecAtrzNewReq = () => {
         </>
     );
 }
-
 export default ElecAtrzNewReq;

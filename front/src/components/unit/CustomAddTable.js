@@ -62,7 +62,7 @@ const CustomAddTable = ({ columns, values, pagerVisible, prjctId, json, bgtMngOd
 
   useEffect(() => {
     if(Object.keys(param).length > 0){
-      onRowInserting();
+      onRowInsert();
     }
   }, [param]);
 
@@ -73,7 +73,7 @@ const CustomAddTable = ({ columns, values, pagerVisible, prjctId, json, bgtMngOd
   };
 
 
-  const onRowInserting = async() => {
+  const onRowInsert = async() => {
     
     if(typeof(param.ctrtBgngYmd)==="object"){
       const formatCtrtBgngYmd = formatDate(param.ctrtBgngYmd);
@@ -181,6 +181,27 @@ const reload = () => {
     })
 };
 
+const onRowInserting = (e, trigger) => {
+  if (json.keyColumn === "matrlCtSn") {
+
+    let existing = false;
+
+    if (trigger === "insert") {
+      existing = value.some(item => item.prductNm === e.data.prductNm);
+    } else if (trigger === "update") {
+        existing = value.some(
+            item => item.prductNm === (e.newData.prductNm || e.oldData.prductNm) && item.matrlCtSn !== e.oldData.matrlCtSn
+        );
+    }
+
+    if (existing) {
+        alert("중복된 제품명입니다. 저장할 수 없습니다.");
+        e.cancel = true; // 중복된 경우 행 추가 취소
+        return;
+    }
+}
+}
+
   return (
     <div className="wrap_table">
     <DataGrid
@@ -200,8 +221,10 @@ const reload = () => {
           e.cellElement.style.fontWeight = 'bold';
         }
       }} 
+      onRowInserting={(e) => onRowInserting(e,"insert")}
       onRowInserted={onRowInserted}  
       onRowUpdated={onRowUpdated}  
+      onRowUpdating={(e) => onRowInserting(e, "update")}
       onRowRemoved={onRowRemoved}
     >
       <Editing 

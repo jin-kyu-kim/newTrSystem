@@ -6,17 +6,23 @@ import './UserPanel.scss';
 import { useCookies } from "react-cookie";
 import { useAuth } from "../../contexts/auth";
 import TokenTimer from "../../../../utils/TokenTimer";
+import { useModal } from "../../../unit/ModalContext";
 
 export default function UserPanel({ menuMode }) {
   const navigate = useNavigate();
   const { signOut, tokenExtension } = useAuth();
-  const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
+  const [cookies] = useCookies(["userInfo", "userAuth"]);
   const empno = cookies.userInfo.empno;
   const empNm = cookies.userInfo.empNm;
+  const { handleOpen } = useModal();
   
   const navigateToProfile = useCallback(() => {
     navigate("/infoInq/empDetailInfo");
   }, [navigate]);
+
+  const pannelClick = useCallback((e) => {
+    handleOpen(e.itemData.text + ' 하시겠습니까?', e.itemData.function);
+  }, [handleOpen]);
 
   const menuItems = useMemo(() => ([
     {
@@ -25,16 +31,18 @@ export default function UserPanel({ menuMode }) {
       onClick: navigateToProfile
     },
     {
-      text: '로그인연장',
+      text: '로그인 연장',
       icon: 'clock',
-      onClick: tokenExtension
+      onClick: pannelClick,
+      function:tokenExtension
     },
     {
       text: '로그아웃',
       icon: 'runner',
-      onClick: signOut
+      onClick: pannelClick,
+      function:signOut
     }
-  ]), [navigateToProfile, signOut]);
+  ]), [navigateToProfile, signOut, tokenExtension, pannelClick]);
 
   return (
     <div className={'user-panel'}>

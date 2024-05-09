@@ -5,12 +5,15 @@ import { Button, TextBox } from "devextreme-react";
 import Vtw from "../../assets/img/logo.png";
 import Slogan from "../../assets/img/slogan.png";
 import {useAuth} from "../../components/sidebar/contexts/auth";
+import "../../App.css"
+import { useModal } from "../../components/unit/ModalContext";
 
-const LoginForm = ({ handleLogin }) => {
+const LoginForm = () => {
   const [empno, setEmpno] = useState("");
   const [pswd, setPassword] = useState("");
   const [validationErrors, setValidationErrors] = useState({});
   const { signIn } = useAuth();
+  const { handleOpen } = useModal();
 
   const validateForm = () => {
     const errors = {};
@@ -30,17 +33,22 @@ const LoginForm = ({ handleLogin }) => {
     if(valid){
       const data = await signIn(empno, pswd);
       if(!data.isOk){
-        window.alert(data.data);
+        handleOpen(data.data)
         setPassword("");
       }
     }
   };
 
+  const preventCopy = (e) => {
+    e.event.preventDefault(); // DevExtreme의 이벤트 객체에서 원래의 이벤트를 참조
+    handleOpen('붙여넣기가 허용되지 않습니다.');
+  }
+
   return (
       <div>
         <div className="login" >
         <h1 className="login-header">
-          <img src={Vtw} alt="VTW" />
+          <img src={Vtw} alt="VTW" style={{margin:"10px"}}/>
         </h1>
         <div className="slogan">
           <img src={Slogan} alt="VTW" style={{ width: "50%" }} />
@@ -64,6 +72,8 @@ const LoginForm = ({ handleLogin }) => {
               onValueChanged={(e) => setPassword(e.value)}
               placeholder="비밀번호"
               onEnterKey={handleClick}
+              onCopy={preventCopy}
+              onPaste={preventCopy}
             />
             {validationErrors.pswd && (
                 <div style={{ color: 'red' }}>{validationErrors.pswd}</div>
@@ -73,18 +83,14 @@ const LoginForm = ({ handleLogin }) => {
             <Button text="Login" type="success" onClick={handleClick} />
           </div>
         </div>
-        <div className="login-addInfo">
-          <ul>
-            <li>
-              <a href="https://www.office.com">Office 365</a>
-            </li>
-            <li>
-              <a href="https://outlook.office.com">Mail</a>
-            </li>
-            <li>
-              <a href="http://kms.vtw.co.kr/wcommon/login.jsp">VSAM</a>
+          <div className="link">
+          <ul className="link clearfix">
+            <li className="n3"><a href="https://www.office.com" target="_black" title="새창">Office 365</a></li>
+            <li className="n4"><a href="https://outlook.office.com" target="_black" title="새창">Mail</a></li>
+            <li className="n2"><a href="http://kms.vtw.co.kr/wcommon/login.jsp" target="_black" title="새창">VSAM</a>
             </li>
           </ul>
+          </div>
           <h5>
             전략/기술 컨설팅을 기반으로 정보시스템 구축 및 운영에 이르는 Total
             IT Service의 미래 비전을 제시하는 기업, vtw
@@ -92,7 +98,6 @@ const LoginForm = ({ handleLogin }) => {
           <h5>copyright@2019 vtw.co.ltd all rights reserved</h5>
         </div>
       </div>
-    </div>
   );
 };
 

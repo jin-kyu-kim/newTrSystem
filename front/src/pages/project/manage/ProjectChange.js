@@ -7,6 +7,7 @@ import TextArea from 'devextreme-react/text-area';
 import Popup from "devextreme-react/popup";
 
 import ProjectChangeJson from "./ProjectChangeJson.json";
+import ProjectPrmpcBgtCmpr from "./ProjectPrmpcBgtCmpr";
 
 import { useCookies } from "react-cookie";
 import ApiRequest from "utils/ApiRequest";
@@ -62,7 +63,6 @@ const ProjectChange = () => {
       }
     });
   }, []);
-
 
   // 탭 변경시 인덱스 설정
   const onSelectionChanged = useCallback(
@@ -313,6 +313,7 @@ const ProjectChange = () => {
                 prjctId={prjctId}
                 ctrtYmd={ctrtYmd}
                 stbleEndYmd={stbleEndYmd}
+                bgtMngOdr={bgtMngOdr}
                 bgtMngOdrTobe={bgtMngOdrTobe}
                 revise={true}
                 tabId={data.tabId}
@@ -336,8 +337,15 @@ const ProjectChange = () => {
         showCloseButton={true}
         title={popup.title}
       >
+        <ProjectPrmpcBgtCmpr
+          prjctId={prjctId}
+          bgtMngOdr={bgtMngOdr}
+          bgtMngOdrTobe={bgtMngOdrTobe}
+          visible={popupVisible}
+          atrzDmndSttsCd="VTW03701"
+        />
         <TextArea 
-          height="50%"
+          height="30%"
           valueChangeEvent="change"
           onValueChanged={onTextAreaValueChanged}
           placeholder="승인 요청 사유를 입력해주세요."

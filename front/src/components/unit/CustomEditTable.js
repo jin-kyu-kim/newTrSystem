@@ -1,4 +1,4 @@
-import { Column, DataGrid, Editing, Lookup, MasterDetail, Selection, RequiredRule, StringLengthRule, Pager, Paging, Export } from 'devextreme-react/data-grid';
+import { Column, DataGrid, Editing, Lookup, MasterDetail, Selection, RequiredRule, StringLengthRule, Pager, Paging, Export, Summary, TotalItem } from 'devextreme-react/data-grid';
 import { useCallback, useEffect, useState } from 'react';
 import ApiRequest from 'utils/ApiRequest';
 import CellRender from './CellRender';
@@ -6,8 +6,9 @@ import { useModal } from "../../components/unit/ModalContext";
 import '../../pages/sysMng/sysMng.css'
 
 const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal, masterDetail, doublePk, noDataText, noEdit,
-    onSelection, onRowClick, callback, handleData, handleExpanding, cellRenderConfig, onBtnClick, excel, onExcel, upCdValue, onlyUpdate }) => {
-    
+    onSelection, onRowClick, callback, handleData, handleExpanding, cellRenderConfig, onBtnClick, excel, onExcel, upCdValue,
+    summary, summaryColumn, onlyUpdate}) => {
+
     const { handleOpen } = useModal();
     const [cdValList, setCdValList] = useState({});
 
@@ -156,8 +157,27 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                         }}
                     />}
                 {onSelection && <Selection mode="multiple" selectAllMode="page" />}
+                {summary&&
+                    <Summary>
+                        {summaryColumn.map(item => (
+                            <TotalItem
+                                key={item.key}
+                                column={item.value}
+                                summaryType={item.type}
+                                displayFormat={item.format}
+                                valueFormat={{ type: 'fixedPoint', precision: item.precision }}
+                            />
+                        ))}
+                    </Summary>
+                }
                 {columns.map((col) => (
                     <Column
+                        editorOptions={{
+                            format: {
+                                type: 'fixedPoint',
+                                precision: 0
+                            }
+                        }}         
                         visible={col.visible}
                         key={col.key}
                         dataField={col.key}
@@ -177,6 +197,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                             : null}
                         {col.isRequire && <RequiredRule message={`${col.value}는 필수항목입니다`} />}
                         {col.length && <StringLengthRule max={col.length} message={`최대입력 길이는 ${col.length}입니다`} />}
+                        
                     </Column>
                 ))}
                 <Paging defaultPageSize={20} />
