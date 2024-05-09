@@ -30,6 +30,7 @@
                 ELSE (SELECT CD_NM FROM CD WHERE CD_VALUE = ELCTRN.ATRZ_DMND_STTS_CD)
                 END ATRZ_DMND_STTS_NM       /* 결재요청상태코드명 */
             ,ELCTRN.ELCTRN_ATRZ_ID		    /* 전자결재ID */
+            ,ELCTRN.PRJCT_ID 				/* 프로젝트ID */
             ,VCATN.ATCHMNFL_ID				/* 첨부파일ID */
             ,ELCTRN.RTRCN_ELCTRN_ATRZ_ID	/* 취소전자결재ID */
             ,CASE
