@@ -83,17 +83,17 @@ function EmpCultHealthCostDetailPop({value, ym}) {
     }
   };
 
-  const onChangeValue = (changeValue) => {
-    setValues([...changeValue])
-  }
-  
-  useEffect(() => {
-    updateClturPhstrnActct();
-  }, [values])
-
-  const updateClturPhstrnActct = async() =>{
-    await ApiRequest('/boot/financialAffairMng/updateClturPhstrnActct', values);
-  }
+  // const onChangeValue = (changeValue) => {
+  //   setValues([...changeValue])
+  // }
+  //
+  // useEffect(() => {
+  //   updateClturPhstrnActct();
+  // }, [values])
+  //
+  // const updateClturPhstrnActct = async() =>{
+  //   await ApiRequest('/boot/financialAffairMng/updateClturPhstrnActct', values);
+  // }
 
   return (
       <div className="container">
@@ -105,7 +105,7 @@ function EmpCultHealthCostDetailPop({value, ym}) {
               paging={true}
               onlyUpdate={true}
               // masterDetail={masterColumns}
-              handleData={onChangeValue}
+              // handleData={onChangeValue}
           />
       </div>
   );

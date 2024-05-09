@@ -1263,7 +1263,7 @@
                   AND (#{empFlnm} IS NULL OR e.EMP_FLNM LIKE CONCAT('%', #{empFlnm}, '%'))
                   AND (#{empno} IS NULL OR e.EMPNO LIKE CONCAT('%', #{empno}, '%'))
                   AND e.EMP_TY_CD = 'VTW00201'
-                  AND e.EMPNO NOT IN ('VK0101', 'VK0102', 'VK0103', 'VK0104', 'VK0105', 'VK0106', 'VK0107', 'VK0108', 'VK0109', 'VK0110')
+                  AND e.EMPNO NOT IN ('VK0101', 'VK0102', 'VK0103', 'VK0104', 'VK0105', 'VK0106', 'VK0107', 'VK0108', 'VK0109', 'VK0110', 'VM1000')
             ) e
             LEFT JOIN CLTUR_PHSTRN_ACT_CT cpac ON cpac.EMP_ID = e.EMP_ID AND cpac.CLTUR_PHSTRN_ACT_MNG_YM = e.YM
             GROUP BY EMP_ID, EMPNO, EMP_FLNM, YM
@@ -1291,7 +1291,7 @@
                    AND (#{empFlnm} IS NULL OR e.EMP_FLNM LIKE CONCAT('%', #{empFlnm}, '%'))
                    AND (#{empno} IS NULL OR e.EMPNO LIKE CONCAT('%', #{empno}, '%'))
                    AND e.EMP_TY_CD = 'VTW00201'
-                   AND e.EMPNO NOT IN ('VK0101', 'VK0102', 'VK0103', 'VK0104', 'VK0105', 'VK0106', 'VK0107', 'VK0108', 'VK0109', 'VK0110')
+                   AND e.EMPNO NOT IN ('VK0101', 'VK0102', 'VK0103', 'VK0104', 'VK0105', 'VK0106', 'VK0107', 'VK0108', 'VK0109', 'VK0110', 'VM1000')
             ) e
             LEFT JOIN CLTUR_PHSTRN_ACT_CT cpac ON cpac.EMP_ID = e.EMP_ID AND cpac.CLTUR_PHSTRN_ACT_MNG_YM = e.YM
             GROUP BY EMP_ID, EMPNO, EMP_FLNM, YM

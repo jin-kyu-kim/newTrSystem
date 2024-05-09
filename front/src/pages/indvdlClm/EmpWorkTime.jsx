@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react"
 import { useCookies } from "react-cookie";
 import { useLocation } from "react-router-dom";
+import { useModal } from "../../components/unit/ModalContext";
 
 import axios from "axios";
 
@@ -45,6 +46,7 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
 const EmpWorkTime = () => {
     // 근무시간데이터
     const insertValueRef = useRef(null);
+    const { handleOpen } = useModal();
 
     // 검색조건
     const SearchYearValueRef = useRef();
@@ -249,30 +251,31 @@ const EmpWorkTime = () => {
                 return;
             }
         } else {
+            handleOpen("근무시간을 입력해주세요.");
             return;
         }
     }
 
     // 승인요청취소버튼
     const onApprovalCancleclick = async () => {
-        const isconfirm = window.confirm("승인요청을 취소하시겠습니까?");
-        if (isconfirm) {
+        // const isconfirm = window.confirm("승인요청을 취소하시겠습니까?");
+        // if (isconfirm) {
             let deleteParams = insertWorkHourList.filter(item => item.aplyType == "workAply" && item.aplyOdr == flagOrder && item.atrzDmndSttsCd != "VTW03703");
             if (deleteParams.length > 0) {
                 try {
                     const response = await ApiRequest("/boot/indvdlClm/updatePrjctMmAply", deleteParams);
                     selectData(searchPrjctIndvdlCtMmParam);
-                    alert("승인취소되었습니다.");
+                    handleOpen("승인취소되었습니다.");
                 } catch (error) {
                     console.log("updatePrjctMmAply_error: ", error);
                 }
             } else {
-                alert("요청된 근무시간이 없습니다.");
+                handleOpen("요청된 근무시간이 없습니다.");
                 return;
             }
-        } else {
-            return;
-        }
+        // } else {
+        //     return;
+        // }
     }
 
     // 저장
@@ -398,13 +401,13 @@ const EmpWorkTime = () => {
     }
 
     // 전체삭제버튼
-    function onDeleteListClick(e){
-        const isconfirm = window.confirm("승인된 목록을 제외한 근무시간들이 삭제됩니다.\n삭제하시겠습니까?");
-        if (isconfirm) {
+    function onDeleteListClick(e) {
+        // const isconfirm = window.confirm("승인된 목록을 제외한 근무시간들이 삭제됩니다.\n삭제하시겠습니까?");
+        // if (isconfirm) {
             setInsertWorkHourList(insertWorkHourList.filter(item => item.aplyOdr != flagOrder || item.atrzDmndSttsCd == "VTW03703" || item.aplyType != "workAply"));
-        } else {
-            return;
-        }
+        // } else {
+        //     return;
+        // }
     }
 
     // 실 근무일수 구하기
@@ -469,7 +472,7 @@ const EmpWorkTime = () => {
                             : selectPrjctIndvdlCtMmValue != undefined && (selectPrjctIndvdlCtMmValue.mmAtrzCmptnYn == "audit" || selectPrjctIndvdlCtMmValue.mmAtrzCmptnYn == "composite")
                                 ?
                                 <Button
-                                    onClick={onApprovalCancleclick} text='승인요청취소' style={{ marginLeft: "5px", height: "48px", width: "140px" }}
+                                    onClick={() => {handleOpen("승인요청을 취소하시겠습니까?", onApprovalCancleclick)}} text='승인요청취소' style={{ marginLeft: "5px", height: "48px", width: "140px" }}
                                 />
                                 : <></>
                     }
@@ -484,8 +487,8 @@ const EmpWorkTime = () => {
                     </div>
                 </div>
                 <div className="col-md-9">
-                    <div style={{ display: "inline-block", float: "right"}}>
-                        <Button text="전체삭제" onClick={onDeleteListClick}/>
+                    <div style={{ display: "inline-block", float: "right" }}>
+                        <Button text="전체삭제" onClick={() => handleOpen("승인된 목록을 제외한 근무시간들이 삭제됩니다.\n삭제하시겠습니까?", onDeleteListClick)} />
                     </div>
                 </div>
             </div>
