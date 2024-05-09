@@ -27,12 +27,10 @@ const EmpCultHealthCostManage = () => {
         "clturPhstrnActMngYm": now.getFullYear()+('0' + (now.getMonth() + 1)).slice(-2),
         "queryId": queryId
   });
-  const [disabled, setDisabled] = useState();
 
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
       pageHandle();
-      searchDdlnYn();
     }
   }, [param]);
 
@@ -56,30 +54,14 @@ const EmpCultHealthCostManage = () => {
     }
   };
 
-  const searchDdlnYn = async () => {
-    const response = await ApiRequest('/boot/common/commonSelect', [
-      { tbNm: "CLTUR_PHSTRN_ACT_MNG" }, { clturPhstrnActMngYm: param.clturPhstrnActMngYm }
-    ]);
-    setDisabled(response[0].ddlnYn === 'Y');
-  }
-
   const handleMove = () => {
     navigate("/fnnrMng/EmpCultHealthCostManageDeadLine");
   }
 
-  const handleDeadLine = async () => {
-    const btnChk = window.confirm(param.clturPhstrnActMngYm + " 문화체련비를 마감하시겠습니까?")
+  const handleDeadLine = () => {
+    const btnChk = window.confirm("문화체련비를 마감하시겠습니까?")
     if (btnChk) {
-      const updateParam =[
-        { tbNm: "CLTUR_PHSTRN_ACT_MNG" },
-        { ddlnYn: "Y" },
-        { clturPhstrnActMngYm: param.clturPhstrnActMngYm}
-      ]
-      const response = await ApiRequest("/boot/common/commonUpdate", updateParam);
-      if (response > 0 ) {
-        searchDdlnYn();
-        alert("마감되었습니다.")
-      }
+      alert("마감되었습니다.")
     }
   };
 
@@ -135,19 +117,6 @@ const EmpCultHealthCostManage = () => {
     setIsDetailPopupVisible(false);
   };
 
-  const handleCalculate = async () => {
-    try {
-      const response = await ApiRequest("/boot/financialAffairMng/updateDpstAmt", {
-        "clturPhstrnActMngYm": param.clturPhstrnActMngYm
-      });
-      if (response){
-        pageHandle();
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   return (
   <div>
     <style>
@@ -165,9 +134,8 @@ const EmpCultHealthCostManage = () => {
       >
         <h6 style={{ fontSize: "40px" }}>문화체련비 관리 목록</h6>
         <div style={{marginTop: "7px", marginLeft: "20px"}}>
-          <Button onClick={handleCalculate} type='default'>지급 계산</Button>
-          <Button onClick={handleMove} style = {{marginLeft: "10px"}}>마감 목록</Button>
-          <Button onClick={handleDeadLine} disabled={disabled} style = {{marginLeft: "10px"}} type='danger'>전체 마감</Button>
+          <Button onClick={handleMove}>마감 목록</Button>
+          <Button onClick={handleDeadLine} style = {{marginLeft: "10px", backgroundColor: "#B40404", color: "#fff"}}>전체 마감</Button>
         </div>
       </div>
       <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
@@ -211,7 +179,7 @@ const EmpCultHealthCostManage = () => {
         onHiding={closeDetailPopup}
         showCloseButton={true}
     >
-      <EmpCultHealthCostDetailPop value={selectedRowData} ym={param.clturPhstrnActMngYm} disabled={disabled}/>
+      <EmpCultHealthCostDetailPop value={selectedRowData} ym={param.clturPhstrnActMngYm}/>
     </Popup>
   </div>
   );

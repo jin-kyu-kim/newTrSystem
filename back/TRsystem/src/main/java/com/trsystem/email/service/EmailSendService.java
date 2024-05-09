@@ -181,7 +181,7 @@ public class EmailSendService {
 	
 	/**
 	 * 관리자 비용 업로드 이메일 전송폼
-	 * @param expenseEmpId	//	
+	 * @param expenseEmpId		
 	 * @param sessionEmpId	//로그인 사원ID
 	 * @param originalFilename
 	 * @param title			//이메일 제목
@@ -192,17 +192,17 @@ public class EmailSendService {
 		if(!expenseEmpId.isEmpty() && !expenseEmpId.equals(null)) {
 			// 관리자 비용 업로드 이메일 전송폼
 			//============================결재자 email 세팅===================================
-			List<Map<String, Object>> toEmp = DataFind(expenseEmpId,"EMP"); //  결재자 email
+			List<Map<String, Object>> toEmp = DataFind(expenseEmpId,"EMP"); // 프로젝트 결재자 email
 			Map<String, Object> toEmpData = toEmp.get(0);
 			String toEmpEmail = extractEmail(toEmpData);
 			//============================기안자 email 세팅===================================
-			List<Map<String, Object>> reportEmp = DataFind(sessionEmpId,"EMP"); //  결재 기안자 email
+			List<Map<String, Object>> reportEmp = DataFind(sessionEmpId,"EMP"); // 프로젝트 결재 기안자 email
 			Map<String, Object> reportEmpData = reportEmp.get(0);
 			String reportEmpEmail = extractEmail(reportEmpData);
 			
 			
 			String subject = "[VTW 비용 엑셀 업로드] " + title;
-			String emailContent = content+ "<br><br>| 업로드자 : ("+(String)reportEmpData.get("empno")+") "+reportEmpData.get("empFlnm");
+			String emailContent = content+ "| 업로드자 : ("+sessionEmpId+") "+reportEmpData.get("empFlnm");
 			
 			//이메일전송
 			if((toEmpEmail == "" ? null :toEmpEmail) != null) {

@@ -7,7 +7,7 @@
         { "key": "totAmt", "value": "총 지불액", "currency": true},
         { "key": "outordHnfCtrtSeCdNm", "value": "계약구분" },
         { "key": "usefulAmt", "value": "가용금액", "currency": true },
-        { "key": "inptHnfIdNm", "value": "실제 투입인력" },     
+        { "key": "inptHnfId", "value": "실제 투입인력" },     
         { "key": "hnfRoleCdNm", "value": "역할" },
         { "key": "hnfGradCdNm", "value": "등급" },
         { "key": "tkcgJob", "value": "담당업무" },

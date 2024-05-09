@@ -8,7 +8,7 @@ import { useCookies } from "react-cookie";
 import {TableContainer, Table,TableHead,TableBody,TableRow,TableCell } from "@mui/material";
 import CustomEditTable from "components/unit/CustomEditTable";
 import Moment from "moment"
-import { startOfMonth } from 'date-fns';
+import { startOfMonth } from 'date-fns'
 import {useAuth} from "../../components/sidebar/contexts/auth";
 
 const Main = ({}) => {
@@ -108,7 +108,7 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
       window.open("http://kms.vtw.co.kr/#/login");
     }
     const goConference = (e) => {  //회의실예약이동(화면 미구현 추후 설정예정)
-        navigate("/humanResourceMng/MeetingRoomManage2", 
+        navigate("/infoInq/MeetingRoomReserv", 
                 { state: { 
                         empId: empId,
                         } 
@@ -139,9 +139,9 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
           }else if(e.data.tySe === "근무시간"){ //근무시간 현황
             navigate("/indvdlClm/EmpWorkTime", 
             {state: {id : e.data.id }})   
-          }else if(e.data.elctrnAtrzTySeCd.startsWith("VTW049")){    //기타 전자결재 내역
+          }else if(e.data.aprpvrId.startsWith("VTW049")){    //기타 전자결재 내역
             navigate("/elecAtrz/ElecAtrzDetail", 
-            {state: {data : {elctrnAtrzId: e.data.id, elctrnAtrzTySeCd: e.data.elctrnAtrzTySeCd, title: e.data.title} }})  
+            {state: {id : e.data.id }})   
           }
     };
 

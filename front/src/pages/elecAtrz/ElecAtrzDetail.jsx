@@ -547,7 +547,6 @@ const ElecAtrzDetail = () => {
                     detailData={data}
                     sttsCd={sttsCd}
                     prjctId={prjctId}
-                    prjctData={prjctData}
                 />
             )}
 

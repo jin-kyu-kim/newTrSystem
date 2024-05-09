@@ -14,15 +14,15 @@ export const ModalProvider = ({ children }) => {
   const handleClose = () => setOpen(false);
   
   const handleOpen = (msg, onClickAction) => {
-    setOpen(true);
     setMessage(msg);
     setOnClick(() => onClickAction);
+    setOpen(true);
   };
 
   return (
     <ModalContext.Provider value={{ handleOpen, handleClose }}>
       {children}
-      {open && <CustomModal open={open} close={handleClose} message={message} onClick={onClick} />}
+      <CustomModal open={open} close={handleClose} message={message} onClick={onClick} />
     </ModalContext.Provider>
   );
 };

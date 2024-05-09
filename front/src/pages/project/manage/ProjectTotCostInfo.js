@@ -11,7 +11,7 @@ import ProjectPrmpcBgtCmpr from "./ProjectPrmpcBgtCmpr";
 import ProjectTotCostInfoJson from "./ProjectTotCostInfoJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
 
-const ProjectTotCostInfo = ({prjctId, atrzDmndSttsCd, bgtMngOdr, nowAtrzStepCd}) => {
+const ProjectTotCostInfo = ({prjctId, atrzDmndSttsCd, bgtMngOdr,}) => {
   const [data, setData] = useState([]);
   const { keyColumn, queryId, aprvQueryId, tableColumns, wordWrap, groupingColumn ,groupingData} = ProjectTotCostInfoJson;
 
@@ -52,9 +52,8 @@ const ProjectTotCostInfo = ({prjctId, atrzDmndSttsCd, bgtMngOdr, nowAtrzStepCd})
 
     const response = await ApiRequest("/boot/common/queryIdSearch", param);
 
-    // 종결이면 현재 보고 있는 화면은 승인이 완료된 것임. 따라서 bgtMngOdr보다 하나 작은 것을 가져와야 한다.
-    if(nowAtrzStepCd === "VTW00708") {
-      setAprvOdr(bgtMngOdr - 1);
+    if(response[0].aprvOdr == bgtMngOdr) {
+      setAprvOdr(response[0].aprvOdr-1);
       setEndYn(true)
     } else {
       setAprvOdr(response[0].aprvOdr);

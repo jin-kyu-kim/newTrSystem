@@ -675,7 +675,6 @@ public class ElecAtrzDomain {
 			infoParam.put("inptPrnmntYmd", copiedParams.get(i).get("inptPrnmntYmd"));			// 투입예정일자
 			infoParam.put("withdrPrnmntYmd", copiedParams.get(i).get("withdrPrnmntYmd"));		// 철수예정일자
 			infoParam.put("expectInptHnfId", copiedParams.get(i).get("expectInptHnfId"));			// 계획투입인력
-			infoParam.put("outordLbrcoPrmpcSn", copiedParams.get(i).get("outordLbrcoPrmpcSn"));			// 계획투입인력 순번
 			
 			insertParams.add(i, infoParam);
 		}

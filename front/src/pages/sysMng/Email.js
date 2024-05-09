@@ -30,17 +30,6 @@ import {Cookies} from "react-cookie";
 * };
 */
 
-//관리자비용
-/* const expense = {
-  //  type : "expenseExl",                                               // 타입        
-      toEmpId: "515ad1c7-d21c-0e39-2c01-d266a05a55e2",                //결재자
-      reportEmpId: "515ad1c7-d21c-0e39-2c01-d266a05a55e2",            //기안자
-      title: title,                                                    //제목
-      content : content,                                      //콘텐츠
-      fileName: fileName                                  //파일네임
-  * };
-
-
 //프잭
 /*
 * const prjct = {
@@ -55,11 +44,11 @@ import {Cookies} from "react-cookie";
 * };
 */
 
-
-
-export async function sendEmail(param) {
+export async function sendEmailRoomRes(param) {
+    console.log("여기 오나요 ", param)
     try {
       const response = await ApiRequest('/boot/sysMng/sendEmail', param);
+      console.log("결과뭐에요? ", response.data)
       return response.data;
     } catch (error) {
       console.error("Error sending email: ", error);
