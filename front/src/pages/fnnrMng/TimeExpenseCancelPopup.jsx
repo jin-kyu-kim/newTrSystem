@@ -192,6 +192,8 @@ const TimeExpenseCancelPopup = ({visible, onPopHiding, type, data}) => {
 
         return(
             <div className="cancel-popup-content container">
+                <div>전자결재 - 경비청구로 승인받은 데이터는 표출되지 않습니다.</div>
+                <br/>
                 <div className="cancel-popup-table">
                     <div style={{ display: "flex" }}>
                         <CustomEditTable
