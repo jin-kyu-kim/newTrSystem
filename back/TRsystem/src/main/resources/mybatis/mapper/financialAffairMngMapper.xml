@@ -581,8 +581,7 @@
 	          , IFNULL(BB.PRJ_COMPLETE, 0) AS CT_COMPLETE
 	          , IFNULL(CC.MD_SUM,0) * 8 AS MD_SUM
 	          , IFNULL(CC.VAC_SUM, 0) AS VAC_SUM
-	          , IFNULL(CC.MM_COMPLETE, 0) AS MM_COMPLETE
-	          , IFNULL(CC.MM_REJECT, 0) AS MM_REJECT
+              , IFNULL(CC.MM_COMPLETE, 0) + IFNULL(CC.VAC_SUM, 0) + IFNULL(CC.MM_REJECT, 0) AS MM_COMPLETE
 	          , CONCAT(CC.APLY_YM, '-', CC.APLY_ODR) AS TR_ODR
 	          , CC.APLY_YM
 	          , CC.APLY_ODR
@@ -605,7 +604,7 @@
 					   , picm.CT_ATRZ_CMPTN_YN
 				    FROM PRJCT_CT_APLY pca
 				    JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
-				    JOIN PRJCT_INDVDL_CT_MM picm ON (pca.PRJCT_ID = picm.PRJCT_ID AND pca.EMP_ID = picm.EMP_ID AND pca.APLY_YM = picm.APLY_YM AND pca.APLY_ODR = picm.APLY_ODR)
+				    LEFT JOIN PRJCT_INDVDL_CT_MM picm ON (pca.PRJCT_ID = picm.PRJCT_ID AND pca.EMP_ID = picm.EMP_ID AND pca.APLY_YM = picm.APLY_YM AND pca.APLY_ODR = picm.APLY_ODR)
 				   WHERE 1=1
 				     AND pca.APLY_YM = #{aplyYm}
 				     AND pca.APLY_ODR = #{aplyOdr}
@@ -619,7 +618,7 @@
 		 			   , picm.CT_ATRZ_CMPTN_YN
 				    FROM PRJCT_CT_APLY pca
 				    JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
-		  		    JOIN PRJCT_INDVDL_CT_MM picm ON (pca.PRJCT_ID = picm.PRJCT_ID AND pca.EMP_ID = picm.EMP_ID AND pca.APLY_YM = picm.APLY_YM AND pca.APLY_ODR = picm.APLY_ODR)
+		  		    LEFT JOIN PRJCT_INDVDL_CT_MM picm ON (pca.PRJCT_ID = picm.PRJCT_ID AND pca.EMP_ID = picm.EMP_ID AND pca.APLY_YM = picm.APLY_YM AND pca.APLY_ODR = picm.APLY_ODR)
 				   WHERE 1=1
 				     AND pca.APLY_YM = #{aplyYm}
 				     AND pca.APLY_ODR = #{aplyOdr}
@@ -661,7 +660,7 @@
 				     , picm.MM_ATRZ_CMPTN_YN
 			      FROM PRJCT_MM_APLY pca
 			      JOIN PRJCT_MM_ATRZ pcat ON (pcat.APLY_YMD = pca.APLY_YMD AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
-			      JOIN PRJCT_INDVDL_CT_MM picm ON (pca.PRJCT_ID = picm.PRJCT_ID AND pca.EMP_ID = picm.EMP_ID AND pca.APLY_YM = picm.APLY_YM AND pca.APLY_ODR = picm.APLY_ODR)
+			      LEFT JOIN PRJCT_INDVDL_CT_MM picm ON (pca.PRJCT_ID = picm.PRJCT_ID AND pca.EMP_ID = picm.EMP_ID AND pca.APLY_YM = picm.APLY_YM AND pca.APLY_ODR = picm.APLY_ODR)
 			     WHERE 1=1
 			       AND pca.APLY_YM = #{aplyYm}
 			       AND pca.APLY_ODR = #{aplyOdr}
@@ -717,7 +716,7 @@
 					   FROM DAILY_VACATION
 				) dv
 			 JOIN CRTR_DATE crd ON crd.CRTR_YMD = dv.APLY_YMD AND crd.HLDY_CL_CD = 'VTW05001'
-			 JOIN PRJCT_INDVDL_CT_MM picm 
+			 LEFT JOIN PRJCT_INDVDL_CT_MM picm 
 			   ON (
 				   picm.PRJCT_ID = dv.PRJCT_ID 
 				   AND picm.APLY_YM = dv.APLY_YM
@@ -796,7 +795,7 @@
 					   FROM DAILY_VACATION
 				) dv
 			 JOIN CRTR_DATE crd ON crd.CRTR_YMD = dv.APLY_YMD AND crd.HLDY_CL_CD = 'VTW05001'
-			 JOIN PRJCT_INDVDL_CT_MM picm 
+			 LEFT JOIN PRJCT_INDVDL_CT_MM picm 
 			   ON (
 				   picm.PRJCT_ID = dv.PRJCT_ID 
 				   AND picm.APLY_YM = dv.APLY_YM
@@ -818,7 +817,7 @@
 		 			   , picm.MM_ATRZ_CMPTN_YN
 				    FROM PRJCT_MM_APLY pca
 				    JOIN PRJCT_MM_ATRZ pcat ON (pcat.APLY_YMD = pca.APLY_YMD AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
-		  		    JOIN PRJCT_INDVDL_CT_MM picm ON (pca.PRJCT_ID = picm.PRJCT_ID AND pca.EMP_ID = picm.EMP_ID AND pca.APLY_YM = picm.APLY_YM AND pca.APLY_ODR = picm.APLY_ODR)
+		  		    LEFT JOIN PRJCT_INDVDL_CT_MM picm ON (pca.PRJCT_ID = picm.PRJCT_ID AND pca.EMP_ID = picm.EMP_ID AND pca.APLY_YM = picm.APLY_YM AND pca.APLY_ODR = picm.APLY_ODR)
 				   WHERE 1=1
 				     AND pca.APLY_YM = #{aplyYm}
 				     AND pca.APLY_ODR = #{aplyOdr}
@@ -1158,6 +1157,54 @@
           AND EMP_ID = #{empId}
     </select>
 
+    <!-- 문체비 지급 계산: 당월 입금금액 -->
+    <update id="updateDpstAmtThisMonth" parameterType="map">
+        UPDATE CLTUR_PHSTRN_ACT_CT AS c
+        JOIN EMP AS e ON c.EMP_ID = e.EMP_ID
+        SET
+            c.FTNESS_TRNG_CT_DPST_AMT =
+            CASE
+                WHEN c.FTNESS_TRNG_CT_CYFD_AMT + c.FTNESS_TRNG_CT_CLM_AMT >= 200000 THEN 200000
+                ELSE c.FTNESS_TRNG_CT_CYFD_AMT + c.FTNESS_TRNG_CT_CLM_AMT
+            END,
+            c.CLTUR_CT_DPST_AMT =
+            CASE
+                WHEN 200000 > c.FTNESS_TRNG_CT_CLM_AMT + c.FTNESS_TRNG_CT_CYFD_AMT
+                THEN LEAST(200000 - (c.FTNESS_TRNG_CT_CLM_AMT + c.FTNESS_TRNG_CT_CYFD_AMT), c.CLTUR_CT_CYFD_AMT + c.CLTUR_CT_CLM_AMT)
+                ELSE 0
+            END,
+            DPST_AMT =
+                (CASE WHEN c.FTNESS_TRNG_CT_CYFD_AMT + c.FTNESS_TRNG_CT_CLM_AMT >= 200000 THEN 200000 ELSE c.FTNESS_TRNG_CT_CYFD_AMT + c.FTNESS_TRNG_CT_CLM_AMT END) +
+                (CASE WHEN 200000 > c.FTNESS_TRNG_CT_CLM_AMT + c.FTNESS_TRNG_CT_CYFD_AMT THEN LEAST(200000 - (c.FTNESS_TRNG_CT_CLM_AMT + c.FTNESS_TRNG_CT_CYFD_AMT), c.CLTUR_CT_CYFD_AMT + c.CLTUR_CT_CLM_AMT) ELSE 0 END),
+            c.FTNESS_TRNG_CT_DPST_YMD = CONCAT(#{nextMonth}, '15'),
+            c.CLTUR_CT_DPST_YMD = CONCAT(#{nextMonth}, '15')
+        WHERE c.CLTUR_PHSTRN_ACT_MNG_YM = #{clturPhstrnActMngYm}
+        AND e.HDOF_STTS_CD = 'VTW00301'
+        AND e.EMP_TY_CD = 'VTW00201'
+    </update>
+
+    <!-- 문체비 지급 계산: 익월 이월금액 -->
+    <update id="updateDpstAmtNextMonth" parameterType="map">
+        UPDATE CLTUR_PHSTRN_ACT_CT AS c1
+        JOIN (
+            SELECT
+            EMP_ID,
+            FTNESS_TRNG_CT_CYFD_AMT + FTNESS_TRNG_CT_CLM_AMT - FTNESS_TRNG_CT_DPST_AMT AS FTNESS,
+            CLTUR_CT_CYFD_AMT + CLTUR_CT_CLM_AMT - CLTUR_CT_DPST_AMT AS CLTUR,
+            CYFD_AMT + CLM_AMT - DPST_AMT AS AMT
+            FROM CLTUR_PHSTRN_ACT_CT AS c2
+            WHERE CLTUR_PHSTRN_ACT_MNG_YM = #{clturPhstrnActMngYm}
+        ) AS c2 ON c1.EMP_ID = c2.EMP_ID
+        JOIN EMP AS e ON c1.EMP_ID = e.EMP_ID
+        SET
+            c1.FTNESS_TRNG_CT_CYFD_AMT = c2.FTNESS,
+            c1.CLTUR_CT_CYFD_AMT = c2.CLTUR,
+            c1.CYFD_AMT = c2.AMT
+        WHERE c1.CLTUR_PHSTRN_ACT_MNG_YM = #{nextMonth}
+        AND e.HDOF_STTS_CD = 'VTW00301'
+        AND e.EMP_TY_CD = 'VTW00201'
+    </update>
+
     <!-- 문체비 관리 목록 -->
     <select id="retrieveClturPhstrnCtClmList" parameterType="map" resultType="com.trsystem.LowerHashMap">
        SELECT
@@ -1193,6 +1240,8 @@
                 WHERE 1=1
                   AND (#{empFlnm} IS NULL OR e.EMP_FLNM LIKE CONCAT('%', #{empFlnm}, '%'))
                   AND (#{empno} IS NULL OR e.EMPNO LIKE CONCAT('%', #{empno}, '%'))
+                  AND e.EMP_TY_CD = 'VTW00201'
+                  AND e.EMPNO NOT IN ('VK0101', 'VK0102', 'VK0103', 'VK0104', 'VK0105', 'VK0106', 'VK0107', 'VK0108', 'VK0109', 'VK0110')
             ) e
             LEFT JOIN CLTUR_PHSTRN_ACT_CT cpac ON cpac.EMP_ID = e.EMP_ID AND cpac.CLTUR_PHSTRN_ACT_MNG_YM = e.YM
             GROUP BY EMP_ID, EMPNO, EMP_FLNM, YM
@@ -1219,15 +1268,17 @@
                  WHERE 1=1
                    AND (#{empFlnm} IS NULL OR e.EMP_FLNM LIKE CONCAT('%', #{empFlnm}, '%'))
                    AND (#{empno} IS NULL OR e.EMPNO LIKE CONCAT('%', #{empno}, '%'))
+                   AND e.EMP_TY_CD = 'VTW00201'
+                   AND e.EMPNO NOT IN ('VK0101', 'VK0102', 'VK0103', 'VK0104', 'VK0105', 'VK0106', 'VK0107', 'VK0108', 'VK0109', 'VK0110')
             ) e
             LEFT JOIN CLTUR_PHSTRN_ACT_CT cpac ON cpac.EMP_ID = e.EMP_ID AND cpac.CLTUR_PHSTRN_ACT_MNG_YM = e.YM
             GROUP BY EMP_ID, EMPNO, EMP_FLNM, YM
        ) C
        ORDER BY JBPS_CD, EXPENSE_TYPE
     </select>
-    
+
     <select id="retrieveCtData" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT pca.PRJCT_CT_APLY_SN 
+		SELECT pca.PRJCT_CT_APLY_SN, pca.PRJCT_ID
 		  FROM PRJCT_CT_APLY pca
 		  JOIN PRJCT_CT_ATRZ pcat ON (pca.PRJCT_CT_APLY_SN = pcat.PRJCT_CT_APLY_SN)
 		 WHERE 1=1
@@ -1349,4 +1400,66 @@
         AND CLTUR_PHSTRN_ACT_CT_SN = #{clturPhstrnActCtSn}
     </update>
 
+	
+	<select id="retrieveMmList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT pma.PRJCT_ID
+			 , p.PRJCT_NM
+			 , pma.EMP_ID
+			 , pma.APLY_YM
+			 , pma.APLY_ODR
+			 , pma.APLY_YMD
+		 	 , CONCAT(pma.MD * 8, ' hrs') AS MD
+		  FROM PRJCT_MM_APLY pma
+		  JOIN PRJCT_MM_ATRZ pmat
+		    ON (
+		    	pma.PRJCT_ID = pmat.PRJCT_ID 
+		   		AND pma.EMP_ID = pmat.EMP_ID 
+		   		AND pma.APLY_YM = pmat.APLY_YM 
+		   		AND pma.APLY_ODR = pmat.APLY_ODR
+		   		AND pma.APLY_YMD = pmat.APLY_YMD
+		   	   )
+          JOIN PRJCT p 
+    	    ON p.PRJCT_ID = pma.PRJCT_ID
+		 WHERE 1=1
+		   AND pma.EMP_ID = #{empId}
+		   AND pma.APLY_YM = #{aplyYm}
+		   AND pma.APLY_ODR = #{aplyOdr}
+	       AND pmat.ATRZ_DMND_STTS_CD = 'VTW03703'
+	</select>
+	
+	<select id="retrieveCtList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT pca.PRJCT_ID
+			 , p.PRJCT_NM
+			 , cd1.CD_NM AS EXPENS_CD_NM
+			 , cd2.CD_NM AS CT_ATRZ_SE_CD_NM
+			 , pca.CT_PRPOS
+			 , pca.USE_OFFIC 
+			 , DATE_FORMAT(pca.UTZTN_DT, '%Y-%m-%d') AS UTZTN_DT
+			 , pca.UTZTN_AMT
+			 , pca.PRJCT_CT_APLY_SN
+			 , pca.APLY_YM
+			 , pca.APLY_ODR
+		  FROM PRJCT_CT_APLY pca
+		  JOIN PRJCT_CT_ATRZ pcat
+		    ON (
+		  	   pca.PRJCT_ID = pcat.PRJCT_ID
+		  	   AND pca.APLY_YM = pcat.APLY_YM 
+		  	   AND pca.APLY_ODR = pcat.APLY_ODR
+		  	   AND pca.PRJCT_CT_APLY_SN = pcat.PRJCT_CT_APLY_SN
+		  	   AND pca.EMP_ID = pcat.EMP_ID
+		  	   )
+		  JOIN PRJCT p
+		    ON p.PRJCT_ID = pca.PRJCT_ID
+		  JOIN CD cd1
+		    ON cd1.CD_VALUE = pca.EXPENS_CD
+		  JOIN CD cd2
+		    ON cd2.CD_VALUE = pca.CT_ATRZ_SE_CD
+		 WHERE 1=1
+		   AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703'
+		   AND pca.ELCTRN_ATRZ_ID IS NULL
+		   AND pca.APLY_YM = #{aplyYm}
+		   AND pca.APLY_ODR = #{aplyOdr}
+		   AND pca.EMP_ID = #{empId}
+	</select>
+	
 </mapper>

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -94,5 +97,17 @@ private static CommonService commonService;
 
 
 		return null;
+	}
+	
+	@Transactional
+	public static int updateDpstAmt(Map<String, Object> param) {
+		param.put("queryId", "financialAffairMngMapper.updateDpstAmtThisMonth");
+		YearMonth yearMonth = YearMonth.parse((String)param.get("clturPhstrnActMngYm"), DateTimeFormatter.ofPattern("yyyyMM"));
+		LocalDate nextMonth = yearMonth.atDay(1).plusMonths(1);
+		param.put("nextMonth", nextMonth.format(DateTimeFormatter.ofPattern("yyyyMM")));
+		commonService.queryIdSearch(param);
+		param.put("queryId", "financialAffairMngMapper.updateDpstAmtNextMonth");
+		commonService.queryIdSearch(param);
+		return 1;
 	}
 }

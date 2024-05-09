@@ -26,4 +26,9 @@ public class FinancialAffairMngController {
 
 		return FinancialAffairMngDomain.updateClturPhstrnActct(params);
 	}
+	
+	@PostMapping(value = "/boot/financialAffairMng/updateDpstAmt")
+	public int updateDpstAmt(@RequestBody Map<String, Object> param) {
+		return FinancialAffairMngDomain.updateDpstAmt(param);
+	}
 }
