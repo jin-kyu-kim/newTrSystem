@@ -17,7 +17,7 @@ import ErrorBoundary from "./utils/ErrorBoundary";
 import { ModalProvider } from 'components/unit/ModalContext';
 
 function App() {
-      const { user, loading } = useAuth();
+      const { loading } = useAuth();
 
       locale(getLocale());
       function getLocale() {
@@ -35,11 +35,11 @@ function App() {
               <ErrorBoundary>
                 <CookiesProvider>
                   <NavigationProvider>
-                  <AuthProvider>
-                  <ModalProvider>
-                  <Content/>
-                  </ModalProvider>
-                  </AuthProvider>
+                    <AuthProvider>
+                      <ModalProvider>
+                        <Content/>
+                      </ModalProvider>
+                    </AuthProvider>
                   </NavigationProvider>
                 </CookiesProvider>
               </ErrorBoundary>

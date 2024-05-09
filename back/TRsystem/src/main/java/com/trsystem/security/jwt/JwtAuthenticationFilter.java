@@ -1,5 +1,6 @@
 package com.trsystem.security.jwt;
 
+import com.trsystem.sysMng.domain.SysMngUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    private final CustomUserDetailsService userDetailsService;
     private final JwtTokenUtil jwtTokenUtil;
     @Value("${jwt.header}") private String HEADER_STRING;
     @Value("${jwt.prefix}") private String TOKEN_PREFIX;
@@ -73,6 +75,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (this.jwtTokenUtil.validateToken(authToken, username)) {
                 Claims claims = jwtTokenUtil.getAllClaimsFromToken(authToken);
+                long expirationTime = claims.getExpiration().getTime();
+                long currentTime = System.currentTimeMillis();
+                long timeLeft = expirationTime - currentTime; // 남은 시간 계산
+
+                // 만료 10분 전에 새 토큰 발행
+                if (timeLeft < 1800000) { // 600000ms = 10 minutes
+                    SysMngUser setInfo = userDetailsService.loadUserByUsername(username);
+                    String newToken = jwtTokenUtil.generateToken(setInfo); // 새 토큰 생성
+                    response.setHeader("Authorization",  newToken); // 응답 헤더에 새 토큰 추가
+                }
+
                 List<String> roles = claims.get("roles", List.class);
                 List<SimpleGrantedAuthority> authorities = roles.stream()
                         .map(SimpleGrantedAuthority::new)
