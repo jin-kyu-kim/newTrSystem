@@ -117,6 +117,19 @@ const EmpCultHealthCostManage = () => {
     setIsDetailPopupVisible(false);
   };
 
+  const handleCalculate = async () => {
+    try {
+      const response = await ApiRequest("/boot/financialAffairMng/updateDpstAmt", {
+        "clturPhstrnActMngYm": param.clturPhstrnActMngYm
+      });
+      if (response){
+        pageHandle();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
   <div>
     <style>
@@ -134,7 +147,8 @@ const EmpCultHealthCostManage = () => {
       >
         <h6 style={{ fontSize: "40px" }}>문화체련비 관리 목록</h6>
         <div style={{marginTop: "7px", marginLeft: "20px"}}>
-          <Button onClick={handleMove}>마감 목록</Button>
+          <Button onClick={handleCalculate} style = {{backgroundColor: "#323C73", color: "#fff"}}>지급 계산</Button>
+          <Button onClick={handleMove} style = {{marginLeft: "10px"}}>마감 목록</Button>
           <Button onClick={handleDeadLine} style = {{marginLeft: "10px", backgroundColor: "#B40404", color: "#fff"}}>전체 마감</Button>
         </div>
       </div>
