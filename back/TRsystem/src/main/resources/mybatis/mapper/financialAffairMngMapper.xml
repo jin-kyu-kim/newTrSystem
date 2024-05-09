@@ -1227,7 +1227,7 @@
     </select>
     
     <select id="retrieveCtData" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT pca.PRJCT_CT_APLY_SN 
+		SELECT pca.PRJCT_CT_APLY_SN, pca.PRJCT_ID
 		  FROM PRJCT_CT_APLY pca
 		  JOIN PRJCT_CT_ATRZ pcat ON (pca.PRJCT_CT_APLY_SN = pcat.PRJCT_CT_APLY_SN)
 		 WHERE 1=1
