@@ -1159,25 +1159,28 @@
 
     <!-- 문체비 지급 계산: 당월 입금금액 -->
     <update id="updateDpstAmtThisMonth" parameterType="map">
-        UPDATE CLTUR_PHSTRN_ACT_CT
+        UPDATE CLTUR_PHSTRN_ACT_CT AS c
+        JOIN EMP AS e ON c.EMP_ID = e.EMP_ID
         SET
-            FTNESS_TRNG_CT_DPST_AMT =
+            c.FTNESS_TRNG_CT_DPST_AMT =
             CASE
-                WHEN FTNESS_TRNG_CT_CYFD_AMT + FTNESS_TRNG_CT_CLM_AMT >= 200000 THEN 200000
-                ELSE FTNESS_TRNG_CT_CYFD_AMT + FTNESS_TRNG_CT_CLM_AMT
+                WHEN c.FTNESS_TRNG_CT_CYFD_AMT + c.FTNESS_TRNG_CT_CLM_AMT >= 200000 THEN 200000
+                ELSE c.FTNESS_TRNG_CT_CYFD_AMT + c.FTNESS_TRNG_CT_CLM_AMT
             END,
-            CLTUR_CT_DPST_AMT =
+            c.CLTUR_CT_DPST_AMT =
             CASE
-                WHEN 200000 > FTNESS_TRNG_CT_CLM_AMT + FTNESS_TRNG_CT_CYFD_AMT
-                THEN LEAST(200000 - (FTNESS_TRNG_CT_CLM_AMT + FTNESS_TRNG_CT_CYFD_AMT), CLTUR_CT_CYFD_AMT + CLTUR_CT_CLM_AMT)
+                WHEN 200000 > c.FTNESS_TRNG_CT_CLM_AMT + c.FTNESS_TRNG_CT_CYFD_AMT
+                THEN LEAST(200000 - (c.FTNESS_TRNG_CT_CLM_AMT + c.FTNESS_TRNG_CT_CYFD_AMT), c.CLTUR_CT_CYFD_AMT + c.CLTUR_CT_CLM_AMT)
                 ELSE 0
             END,
             DPST_AMT =
-                (CASE WHEN FTNESS_TRNG_CT_CYFD_AMT + FTNESS_TRNG_CT_CLM_AMT >= 200000 THEN 200000 ELSE FTNESS_TRNG_CT_CYFD_AMT + FTNESS_TRNG_CT_CLM_AMT END) +
-                (CASE WHEN 200000 > FTNESS_TRNG_CT_CLM_AMT + FTNESS_TRNG_CT_CYFD_AMT THEN LEAST(200000 - (FTNESS_TRNG_CT_CLM_AMT + FTNESS_TRNG_CT_CYFD_AMT), CLTUR_CT_CYFD_AMT + CLTUR_CT_CLM_AMT) ELSE 0 END),
-            FTNESS_TRNG_CT_DPST_YMD = CONCAT(#{nextMonth}, '15'),
-            CLTUR_CT_DPST_YMD = CONCAT(#{nextMonth}, '15')
-        WHERE CLTUR_PHSTRN_ACT_MNG_YM = #{clturPhstrnActMngYm}
+                (CASE WHEN c.FTNESS_TRNG_CT_CYFD_AMT + c.FTNESS_TRNG_CT_CLM_AMT >= 200000 THEN 200000 ELSE c.FTNESS_TRNG_CT_CYFD_AMT + c.FTNESS_TRNG_CT_CLM_AMT END) +
+                (CASE WHEN 200000 > c.FTNESS_TRNG_CT_CLM_AMT + c.FTNESS_TRNG_CT_CYFD_AMT THEN LEAST(200000 - (c.FTNESS_TRNG_CT_CLM_AMT + c.FTNESS_TRNG_CT_CYFD_AMT), c.CLTUR_CT_CYFD_AMT + c.CLTUR_CT_CLM_AMT) ELSE 0 END),
+            c.FTNESS_TRNG_CT_DPST_YMD = CONCAT(#{nextMonth}, '15'),
+            c.CLTUR_CT_DPST_YMD = CONCAT(#{nextMonth}, '15')
+        WHERE c.CLTUR_PHSTRN_ACT_MNG_YM = #{clturPhstrnActMngYm}
+        AND e.HDOF_STTS_CD = 'VTW00301'
+        AND e.EMP_TY_CD = 'VTW00201'
     </update>
 
     <!-- 문체비 지급 계산: 익월 이월금액 -->
@@ -1192,11 +1195,14 @@
             FROM CLTUR_PHSTRN_ACT_CT AS c2
             WHERE CLTUR_PHSTRN_ACT_MNG_YM = #{clturPhstrnActMngYm}
         ) AS c2 ON c1.EMP_ID = c2.EMP_ID
+        JOIN EMP AS e ON c1.EMP_ID = e.EMP_ID
         SET
             c1.FTNESS_TRNG_CT_CYFD_AMT = c2.FTNESS,
             c1.CLTUR_CT_CYFD_AMT = c2.CLTUR,
             c1.CYFD_AMT = c2.AMT
         WHERE c1.CLTUR_PHSTRN_ACT_MNG_YM = #{nextMonth}
+        AND e.HDOF_STTS_CD = 'VTW00301'
+        AND e.EMP_TY_CD = 'VTW00201'
     </update>
 
     <!-- 문체비 관리 목록 -->
