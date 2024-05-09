@@ -8,7 +8,7 @@ import { useCookies } from "react-cookie";
 import {TableContainer, Table,TableHead,TableBody,TableRow,TableCell } from "@mui/material";
 import CustomEditTable from "components/unit/CustomEditTable";
 import Moment from "moment"
-import { startOfMonth } from 'date-fns'
+import { startOfMonth } from 'date-fns';
 import {useAuth} from "../../components/sidebar/contexts/auth";
 
 const Main = ({}) => {
@@ -108,7 +108,7 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
       window.open("http://kms.vtw.co.kr/#/login");
     }
     const goConference = (e) => {  //회의실예약이동(화면 미구현 추후 설정예정)
-        navigate("/infoInq/MeetingRoomReserv", 
+        navigate("/humanResourceMng/MeetingRoomManage2", 
                 { state: { 
                         empId: empId,
                         } 
