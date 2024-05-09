@@ -58,35 +58,29 @@
     </select>
 
     <select id="userInfo" parameterType="String" resultType="com.trsystem.LowerHashMap">
-    SELECT LU.EMP_ID,
-           LU.EMPNO,
-           (SELECT E.EMP_FLNM FROM EMP E WHERE LU.EMP_ID =  E.EMP_ID) EMP_NM,
-           (SELECT CD_NM FROM CD WHERE CD_VALUE = (SELECT E.JBPS_CD FROM EMP E WHERE LU.EMP_ID =  E.EMP_ID)) JBPS_NM,
-			<if test="empno != null">
-				<if test="!empno.equals('')">
-					(SELECT JBPS_CD FROM EMP E WHERE E.EMPNO = #{empno}) JBPS_CD,
-				</if>
-			</if>
-			<if test="empId != null">
-				<if test="!empId.equals('')">
-					(SELECT JBPS_CD FROM EMP E WHERE E.EMP_ID = #{empId}) JBPS_CD,
-				</if>
-			</if>
-           PSWD,
+	SELECT LU.EMP_ID,
+		   LU.EMPNO,
+	       E.EMP_FLNM AS EMP_NM,
+		   (SELECT CD_NM FROM CD WHERE CD_VALUE = E.JBPS_CD) JBPS_NM,
+		   E.JBPS_CD,
+		   E.EMP_TY_CD,
+		   PSWD,
 		   INTL_PWSD_YN
-    FROM LGN_USER LU
-    WHERE 1=1
+	 FROM LGN_USER LU
+	 JOIN EMP E
+	   ON LU.EMP_ID = E.EMP_ID
+	WHERE 1=1
 	<if test="empno != null">
-	 <if test="!empno.equals('')">
-      AND   EMPNO = #{empno}
-	 </if>
+		<if test="!empno.equals('')">
+			AND   E.EMPNO = #{empno}
+		</if>
 	</if>
 	<if test="empId != null">
-	 <if test="!empId.equals('')">
-      AND   EMP_ID = #{empId}
-	 </if>
+		<if test="!empId.equals('')">
+			AND   E.EMP_ID = #{empId}
+		</if>
 	</if>
-    AND USE_PSBLTY_ACNT_YN = 'Y'
+	AND USE_PSBLTY_ACNT_YN = 'Y'
     </select>
 
     <select id="userAuth" parameterType="String" resultType="com.trsystem.LowerHashMap">

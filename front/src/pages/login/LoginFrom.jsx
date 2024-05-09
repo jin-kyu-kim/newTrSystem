@@ -41,7 +41,7 @@ const LoginForm = () => {
 
   const preventCopy = (e) => {
     e.event.preventDefault(); // DevExtreme의 이벤트 객체에서 원래의 이벤트를 참조
-    handleOpen('붙여넣기가 허용되지 않습니다.');
+    handleOpen('복사는 허용되지 않습니다.');
   }
 
   return (
@@ -73,7 +73,6 @@ const LoginForm = () => {
               placeholder="비밀번호"
               onEnterKey={handleClick}
               onCopy={preventCopy}
-              onPaste={preventCopy}
             />
             {validationErrors.pswd && (
                 <div style={{ color: 'red' }}>{validationErrors.pswd}</div>
