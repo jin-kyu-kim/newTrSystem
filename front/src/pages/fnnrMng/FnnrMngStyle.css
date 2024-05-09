@@ -20,3 +20,25 @@
     height: 20px;
     min-width: 50px;
 }
+
+.cancel-popup-content {
+    width: 100%;
+    margin: 0 auto;
+    margin-top: 10px;
+}
+
+.cancel-popup-table {
+    width: 100%;
+    margin: auto;
+}
+
+.cancel-popup-button {
+    float: right;
+    margin-top: 20px;
+}
+
+.cancel-popup-button-close {
+    margin-left: 10px;
+    color: white;
+    background-color: red;
+}

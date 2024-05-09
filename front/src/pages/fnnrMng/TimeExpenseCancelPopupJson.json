@@ -1,0 +1,21 @@
+{
+    "menuName": "TimeExpenseCancelPopup",
+    "mmQueryId": "financialAffairMngMapper.retrieveMmList",
+    "ctQueryId": "financialAffairMngMapper.retrieveCtList",
+    "mmKeyColumn": "aplyYmd",
+    "mmColumns": [
+        { "key": "prjctNm", "value": "프로젝트 명", "width": 300, "alignment": "center" },
+        { "key": "md", "value": "시간", "width": 120, "alignment": "center"},
+        { "key": "aplyYmd", "value": "신청일자", "width": 120, "alignment": "center" }
+    ],
+    "ctKeyColumn": ["prjctId", "prjctCtAplySn"],
+    "ctColumns": [
+        { "key": "prjctNm", "value": "프로젝트 명", "width": 300, "alignment": "center" },
+        { "key": "expensCdNm", "value": "경비코드", "width": 120, "alignment": "center"},
+        { "key": "ctAtrzSeCdNm", "value": "결재구분", "width": 120, "alignment": "center" },
+        { "key": "ctPrpos", "value": "용도", "width": 120, "alignment": "center" },
+        { "key": "useOffic", "value": "사용처", "width": 120, "alignment": "center" },
+        { "key": "utztnDt", "value": "이용일자", "width": 120, "alignment": "center" },
+        { "key": "utztnAmt", "value": "이용금액", "width": 100, "alignment": "center" }
+    ]
+}
