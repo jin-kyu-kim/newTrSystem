@@ -153,13 +153,14 @@
       "type": "ComboBox",
       "label": "구분",
       "placeholder": "구분",
-      "param": { "tbNm" : "CD",
-        "condition": {
-          "upCdValue": "VTW019"
+      "param": {
+        "queryId" : {
+          "queryId": "indvdlClmMapper.retrieveProjectExpensCd"
         },
-        "valueExpr" : "cdValue",
+        "valueExpr" : "ctAtrzSeCd",
         "displayExpr": "cdNm",
-        "name": "ctAtrzSeCd"
+        "name": "ctAtrzSeCd",
+        "values": ["ctAtrzSeCd"]
       },
       "required": true
     },
