@@ -5,36 +5,21 @@ import CustomLabelValue from "components/unit/CustomLabelValue";
 import ApiRequest from "utils/ApiRequest";
 import { Button } from "devextreme-react";
 
-const ElectGiveAtrzClm = ({ detailData, sttsCd, onSendData}) => {
+const ElectGiveAtrzClm = ({ detailData, sttsCd, onSendData, ctrtTyCd}) => {
     const location = useLocation();
     const formData = location.state.formData;
     const [clmData, setClmData] = 
       useState({"ctrtElctrnAtrzId": formData ? formData.ctrtElctrnAtrzId : detailData.ctrtElctrnAtrzId
                 ,"tbNm": "CTRT_GIVE_ATRZ"});
-    // const [labelValue, setLabelValue] = useState(ElectGiveAtrzClmJson.labelValue);
     const labelValue = ElectGiveAtrzClmJson.labelValue;
 
-    // console.log("detailData clm 이라고!", detailData)
-    // console.log("sttsCd", sttsCd)
-    // console.log("formData clm 이라고", formData)
-
-    // useEffect(() => {
-    //     // 객체를 새로 생성하여 불변성을 유지
-    //     const newLabelValue = {...labelValue};
-        
-        if (!formData || formData.atrzDmndSttsCd === "VTW03701") { // 임시저장
-            labelValue.giveYmd.param.queryId.ctrtElctrnAtrzId = detailData.ctrtElctrnAtrzId;
-        } else {
-            labelValue.giveYmd.param.queryId.ctrtElctrnAtrzId = formData.ctrtElctrnAtrzId;
-        }
-
-    //     setLabelValue(newLabelValue); // 상태 업데이트
-    // }, [detailData, formData]);
-
-    // useEffect(()=>{
-    //     console.log("labelValue", labelValue)
-    // },[labelValue])
-
+    if (!formData || formData.atrzDmndSttsCd === "VTW03701") { // 임시저장
+        labelValue.giveYmd.param.queryId.ctrtElctrnAtrzId = detailData.ctrtElctrnAtrzId;
+        labelValue.giveYmd.param.queryId.ctrtTyCd = ctrtTyCd
+    } else {
+        labelValue.giveYmd.param.queryId.ctrtElctrnAtrzId = formData.ctrtElctrnAtrzId;
+        labelValue.giveYmd.param.queryId.ctrtTyCd = ctrtTyCd
+    }
     
     /* readOnly 조절 */
     let controlReadOnly = false;
@@ -43,7 +28,7 @@ const ElectGiveAtrzClm = ({ detailData, sttsCd, onSendData}) => {
         controlReadOnly = true;
     }
 
-
+    /* 계약청구 데이터 조회 */
     useEffect(()=>{
         if(!formData || formData.atrzDmndSttsCd === "VTW03701"){
             const getCtrtInfo = async () => {
@@ -62,9 +47,19 @@ const ElectGiveAtrzClm = ({ detailData, sttsCd, onSendData}) => {
         }
     },[])
 
-
+    /* 부모창으로 데이터 전달 */
     useEffect(()=>{
-        console.log("clmData", clmData)
+        // clmData.useYn 인경우 clmData.useYn, clmData.vatExclAmt, clmData.giveYmd, clmData.ctrtElctrnAtrzId 지우기
+        if (clmData.useYn === 'N' && (clmData.vatExclAmt || clmData.giveYmd || clmData.ctrtElctrnAtrzId)) {
+            setClmData((prev) => ({
+                useYn: prev.useYn,
+                vatExclAmt: '',
+                giveYmd: '',
+                ctrtElctrnAtrzId: ''
+            }));
+        } 
+
+        // console.log("clmData", clmData)
         if(onSendData){
             onSendData(clmData);
         }
