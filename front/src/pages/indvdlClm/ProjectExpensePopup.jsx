@@ -41,7 +41,6 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
 
     const getTotalWorkTime = async () => {
         const res = await fetchApiData("indvdlClmMapper.retrieveTotalWorkTime");
-        console.log('res', res)
         if (res[0] !== null) {
             setTotalInfo(prevInfo => ({
                 ...prevInfo,

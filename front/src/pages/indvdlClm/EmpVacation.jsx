@@ -645,7 +645,7 @@ const EmpVacation = () => {
 
     // 휴가목록선택
     function onRowClick(e) {
-        navigate("/elecAtrz/ElecAtrzDetail", { state: { data: { elctrnAtrzId: e.data.elctrnAtrzId, elctrnAtrzTySeCd: "VTW04901" } } })
+        navigate("/elecAtrz/ElecAtrzDetail", { state: { data: { elctrnAtrzId: e.data.elctrnAtrzId, elctrnAtrzTySeCd: "VTW04901", prjctId: e.data.prjctId } } })
     }
 
     // 버튼클릭

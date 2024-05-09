@@ -125,7 +125,6 @@ const CultureHealthCostReg = (props) => {
                         tmpElement.clmAmt = element.clmAmt;
                         tmpElement.actIem = element.actIem;
                         tmpElement.clturPhstrnSeCd = element.clturPhstrnSeCd;
-                        tmpElement.actPurps = element.actPurps;
                         tmpElement.frcsNm = element.frcsNm;
                         tmpElement.rm = element.rm;
                         if(element.atchmnflId !== null){
@@ -199,7 +198,7 @@ const CultureHealthCostReg = (props) => {
         }
 
         if (!initParam.clmYmd || !initParam.clmAmt || !initParam.clturPhstrnSeCd
-            || !initParam.actIem || !initParam.actPurps || !initParam.frcsNm || !initParam.frcsNm) {
+            || !initParam.actIem || !initParam.frcsNm || !initParam.frcsNm) {
             alert('입력되지 않은 항목이 있습니다.')
             errors.push('Data required');
         }
@@ -275,7 +274,6 @@ const CultureHealthCostReg = (props) => {
                             "clmYmd": initParam.clmYmd,
                             "clturPhstrnSeCd": initParam.clturPhstrnSeCd,
                             "actIem": initParam.actIem,
-                            "actPurps": initParam.actPurps,
                             "frcsNm": initParam.frcsNm,
                             "atchmnflId": initParam.atchmnflId
                         }));
@@ -286,7 +284,6 @@ const CultureHealthCostReg = (props) => {
                             "clmYmd": initParam.clmYmd,
                             "clturPhstrnSeCd": initParam.clturPhstrnSeCd,
                             "actIem": initParam.actIem,
-                            "actPurps": initParam.actPurps,
                             "frcsNm": initParam.frcsNm,
                         }));
                         formData.append("deleteFiles", JSON.stringify([{tbNm: "ATCHMNFL"}]));
@@ -365,7 +362,6 @@ const CultureHealthCostReg = (props) => {
             "clmYmd": now.getFullYear()+('0' + (now.getMonth() + 1)).slice(-2)+('0' + now.getDate()).slice(-2),
             "clturPhstrnSeCd": null,
             "actIem": null,
-            "actPurps": null,
             "frcsNm": null,
             "empId": cookies.userInfo.empId,
             "regEmpId": cookies.userInfo.empId,
@@ -408,14 +404,13 @@ const CultureHealthCostReg = (props) => {
                         onFocusedRowChanged={onFocusedRowChanged}
                         focusedRowEnabled={true}
                     >
-                        <Column dataField='month' caption='대상월' minWidth={30} alignment="center" wordWrap={true}/>
-                        <Column dataField='clmYmd' caption='청구일자' minWidth={30} alignment="center" wordWrap={true}/>
-                        <Column dataField='clmAmt' caption='금액' minWidth={30} alignment="center" wordWrap={true}/>
-                        <Column dataField='actIem' caption='항목' minWidth={30} alignment="center" wordWrap={true}/>
-                        <Column dataField='actPurps' caption='목적' minWidth={30} alignment="center" wordWrap={true}/>
-                        <Column dataField='rm' caption='비고' minWidth={100} alignment="center" wordWrap={true}/>
-                        <Column dataField='frcsNm' caption='가맹점' minWidth={100} alignment="center" wordWrap={true}/>
-                        <Column caption='첨부' minWidth={100} cellRender={fileCell} alignment="center"/>
+                        <Column dataField='month' caption='대상월' alignment="center" wordWrap={true}/>
+                        <Column dataField='clmYmd' caption='청구일자' alignment="center" wordWrap={true}/>
+                        <Column dataField='clmAmt' caption='금액' alignment="center" wordWrap={true}/>
+                        <Column dataField='actIem' caption='항목' alignment="center" wordWrap={true}/>
+                        <Column dataField='rm' caption='비고' alignment="center" wordWrap={true}/>
+                        <Column dataField='frcsNm' caption='가맹점' alignment="center" wordWrap={true}/>
+                        <Column caption='첨부' minWidth={150} cellRender={fileCell} alignment="center"/>
                     </DataGrid>
                 </div>
                 <div style={{display: "flex", justifyContent: "flex-end"}}>
@@ -445,8 +440,6 @@ const CultureHealthCostReg = (props) => {
                                       value={initParam?.clturPhstrnSeCd}/>
                     <CustomLabelValue props={labelValue.actIem} onSelect={handleChgValue}
                                       value={initParam?.actIem}/>
-                    <CustomLabelValue props={labelValue.actPurps} onSelect={handleChgValue}
-                                      value={initParam?.actPurps}/>
                     <CustomLabelValue props={labelValue.frcsNm} onSelect={handleChgValue}
                                       value={initParam?.frcsNm}/>
                     <FileUploader

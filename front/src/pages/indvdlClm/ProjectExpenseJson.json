@@ -188,7 +188,7 @@
       "label": "비용코드",
       "placeholder": "[비용코드 입력]",
       "param": {
-        "queryId": "indvdlClmMapper.retrieveExpensCdPrjctAccto",
+        "queryId": "elecAtrzMapper.retrieveExpensCdByPrmpc",
         "valueExpr" : "expensCd",
         "displayExpr": "cdNm",
         "name": "expensCd",
