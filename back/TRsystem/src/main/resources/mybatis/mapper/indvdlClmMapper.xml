@@ -579,16 +579,15 @@
     <select id="retrieveVcatnYearInfoInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
         /* indvdlClmMapper.retrieveVcatnYearInfoInq */
         SELECT
-            CRTR_YMD		        /* 일자 */
-            ,CRTR_ODR		        /* 차수 */
-            ,HLDY_CL_CD 	        /* 일자종류코드 */
+            CRTR_YMD		/* 일자 */
+            ,CRTR_ODR		/* 차수 */
+            ,HLDY_CL_CD 	/* 일자종류코드 */
             ,(SELECT CD_NM FROM CD WHERE CD_VALUE = CRTR_DATE.HLDY_CL_CD)	HLDY_CL_NM	/* 일자종류명 */
-            ,HLDY_NM 		        /* 공휴일명 */
-            ,RM				        /* 내용 */
-            ,VCATN_CNTRL_YMD_YN	    /* 휴가통제일자여부 */
+            ,HLDY_NM 		/* 공휴일명 */
+            ,RM				/* 내용 */
         FROM CRTR_DATE
         WHERE SUBSTR(CRTR_YMD, 1, 4) BETWEEN DATE_FORMAT(SYSDATE(), '%Y') - 1 AND DATE_FORMAT(SYSDATE(), '%Y') + 1
-        AND (HLDY_CL_CD = 'VTW05003' OR VCATN_CNTRL_YMD_YN = 'Y')
+        AND HLDY_CL_CD = 'VTW05003'
     </select>
 
 

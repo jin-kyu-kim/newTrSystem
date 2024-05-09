@@ -83,16 +83,6 @@ public class SysMngController {
          case "elecAtrz":	//전자결재
         	 //emailSendService.elecAtrzEmailSend(toEmpId,reportEmpId,documentNumber,title,content,pageMove,moveUrl);
         	 break;
-        	 
-         case "expenseExl":	//비용업로드
-        	String toEmpId = (String) details.get("toEmpId");
-        	String reportEmpId = (String) details.get("reportEmpId");
-        	String originalFilename = (String) details.get("fileName");
-        	String title = (String) details.get("title");
-        	String content =(String) details.get("content");
-        	
-        	emailSendService.emailSendExpenseExcelForm(toEmpId,reportEmpId,originalFilename,title,content);
-        	break;	 
      }
     }
     

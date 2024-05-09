@@ -6,9 +6,7 @@ import HtmlEditBox from "components/unit/HtmlEditBox";
 import CheckBox from "devextreme-react/check-box";
 import "../../assets/css/Style.css";
 
-const BoardInputForm = ({ edit, editMode, editType, attachFileDelete, inputConfig }) => {
-    const { data, setData, typeChk, setTypeChk, attachments, setAttachments, newAttachments, setNewAttachments } = inputConfig ?? {};
-
+const BoardInputForm = ({ edit, data, setData, attachments, setAttachments, attachFileDelete, typeChk, setTypeChk, editMode, editType, newAttachments, setNewAttachments }) => {
     const [isDataLoaded, setIsDataLoaded] = useState(false);
     const handleAttachmentChange = (e) => {
         setAttachments(e.value);
@@ -114,7 +112,6 @@ const BoardInputForm = ({ edit, editMode, editType, attachFileDelete, inputConfi
                                     data={data}
                                     setData={setData}
                                     value={data.noticeCn}
-                                    validate={true}
                                     placeholder={column.placeholder}
                                 />
                             </td>)

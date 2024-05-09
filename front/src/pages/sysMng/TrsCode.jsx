@@ -7,12 +7,11 @@ import "../../pages/sysMng/sysMng.css";
 
 const TrsCode = () => {
   const { keyColumn, queryId, tableColumns, childTableColumns, searchInfo, tbNm, ynVal } = SysMng.trsCodeJson;
-  const [ expandedRowKey, setExpandedRowKey ] = useState(null);
-  const [ values, setValues ] = useState([]);
-  const [ param, setParam ] = useState({});
-  const [ childList, setChildList ] = useState([]);
-  const [ totalItems, setTotalItems ] = useState(0);
-  const [ isLoading, setIsLoading ] = useState(false);
+  const [expandedRowKey, setExpandedRowKey] = useState(null);
+  const [values, setValues] = useState([]);
+  const [param, setParam] = useState({});
+  const [childList, setChildList] = useState([]);
+  const [totalItems, setTotalItems] = useState(0);
   const child = useRef("");
 
   useEffect(() => {
@@ -52,7 +51,6 @@ const TrsCode = () => {
   }, [child.current]);
 
   const getChildList = async (key) => {
-    setIsLoading(true);
     try {
       const response = await ApiRequest("/boot/common/commonSelect", [
         { tbNm: "CD" },
@@ -61,8 +59,6 @@ const TrsCode = () => {
       setChildList(response);
     } catch (error) {
       console.log("error", error);
-    } finally {
-      setIsLoading(false); // 로딩 완료
     }
   };
 
@@ -79,9 +75,6 @@ const TrsCode = () => {
 
   const masterDetail = (e) => {
     const upCdValue = e.data.data.cdValue;
-
-    if(isLoading) return <></> // 비어있는 grid 처리
-
     return (
       <CustomEditTable
         tbNm={tbNm}
@@ -90,7 +83,7 @@ const TrsCode = () => {
         keyColumn={keyColumn}
         ynVal={ynVal}
         upCdValue={upCdValue}
-        callback={getChildList}
+        callback={pageHandle}
         handleYnVal={handleYnVal}
         noDataText={'하위코드가 존재하지 않습니다.'}
       />
