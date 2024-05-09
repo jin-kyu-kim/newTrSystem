@@ -2,7 +2,7 @@ import { Button } from 'devextreme-react/button';
 import { Box, Typography } from '@mui/material';
 import Modal from '@mui/material/Modal';
 
-const CustomModal = ({ open, close, message, onClick }) => {
+const CustomModal = ({ open, close, message, onClick, isStepOne }) => {
 
     const style = {
         position: 'absolute',
@@ -26,6 +26,13 @@ const CustomModal = ({ open, close, message, onClick }) => {
         px: 2
     };
 
+    const handleOnClick = () => {
+        onClick();
+        if(isStepOne){
+            close();
+        }
+    }
+
     return (
         <Modal
             open={open}
@@ -44,7 +51,7 @@ const CustomModal = ({ open, close, message, onClick }) => {
                             text='확인'
                             stylingMode="contained"
                             type="default"
-                            onClick={onClick}
+                            onClick={() => handleOnClick()}
                             style={{ width: '45%', backgroundColor: 'rgb(128, 184, 245)', color: 'white' }}
                         /> }
                     

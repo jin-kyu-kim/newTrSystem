@@ -97,7 +97,7 @@ const NoticeDetail = () => {
                         style={{ marginRight: '3px' }}
                         text={button.text}
                         type={button.type}
-                        onClick={button.onClick === "deleteNotice" ? () => handleOpen('삭제하시겠습니까?', deleteNotice) : () =>
+                        onClick={button.onClick === "deleteNotice" ? () => handleOpen('삭제하시겠습니까?', deleteNotice, true) : () =>
                             navigate(button.onClick, { state: button.state ? { ...button.state, id: noticeId } : undefined })}
                     />
                 ))}
