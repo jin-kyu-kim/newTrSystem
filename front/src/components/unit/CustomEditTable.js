@@ -72,7 +72,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
             }
             const response = await ApiRequest('/boot/common/' + editInfo.url, editParam);
             if (response === 1) {
-                await callback();
+                callback();
                 handleOpen(`${editInfo.complete}되었습니다.`);
             } else {
                 handleOpen(`${editInfo.complete}에 실패했습니다.`);
