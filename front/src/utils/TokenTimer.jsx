@@ -12,7 +12,6 @@ function TokenTimer() {
         // 토큰의 만료 시간을 가져와서 설정합니다.
         const tokenExpiration = new Date(localStorage.getItem("expirationTime"));
         setExpirationTime(tokenExpiration);
-
         // 만료 시간이 정상적으로 설정되었을 때 타이머 시작
         if (tokenExpiration) {
             // 1초마다 남은 시간을 업데이트하는 타이머

@@ -24,7 +24,6 @@ function App() {
         const locale = sessionStorage.getItem('locale');
         return locale != null ? locale : 'ko';
       }
-
       if (loading) {
         return <LoadPanel visible={true} />;
       }

@@ -58,7 +58,8 @@
     </select>
 
     <select id="userInfo" parameterType="String" resultType="com.trsystem.LowerHashMap">
-	SELECT LU.EMP_ID,
+	SELECT
+	       LU.EMP_ID,
 		   LU.EMPNO,
 	       E.EMP_FLNM AS EMP_NM,
 		   (SELECT CD_NM FROM CD WHERE CD_VALUE = E.JBPS_CD) JBPS_NM,
