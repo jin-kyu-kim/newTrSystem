@@ -224,7 +224,13 @@ const ProjectExpense = () => {
                                 </React.Suspense>
                             );
                         }} />
-                    : <span style={{ fontSize: "20px", marginLeft: "30px" }}>입력 마감되었습니다.</span>}
+                    : <div style={{
+                        height: "250px",
+                        borderRadius: "5px",
+                        background: "#F2F2F2",
+                        display: "flex",
+                        alignItems: "center"
+                    }}><span style={{marginLeft: '200px', fontSize: '16pt'}}>입력 마감되었습니다.</span></div>}
             </div>
             <ProjectExpensePopup
                 visible={popVisible}

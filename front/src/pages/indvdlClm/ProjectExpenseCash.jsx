@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { TagBox, TextBox } from "devextreme-react";
 import { validateFields, hasError } from './ProjectExpenseValidate';
+import { useCookies } from 'react-cookie';
 import ProjectExpenseSubmit from "./ProjectExpenseSubmit";
 import ProjectExpenseJson from "./ProjectExpenseJson.json";
 import CustomLabelValue from "components/unit/CustomLabelValue";
@@ -8,10 +9,13 @@ import CustomComboBox from 'components/unit/CustomComboBox';
 import ApiRequest from "utils/ApiRequest";
 
 const ProjectExpenseCash = (props) => {
+    const [ cookies ] = useCookies(["userInfo", "userAuth"]);
+    const empInfo = { jbttlCd: cookies.deptInfo[0].jbttlCd, empno: cookies.userInfo.empno };
+
     const { labelValue } = ProjectExpenseJson;
     const { placeholderAndRequired, btnInfo } = ProjectExpenseJson.ProjectExpenseTab;
     const [ validationErrors, setValidationErrors ] = useState([]);
-    const [ customParam, setCustomParam ] = useState({ queryId: "indvdlClmMapper.retrieveExpensCdPrjctAccto" });
+    const [ customParam, setCustomParam ] = useState({ queryId: "elecAtrzMapper.retrieveExpensCdByPrmpc" });
     const atrzParam = {
         queryId: "projectExpenseMapper.retrieveElctrnAtrzClm",
         empId: props.empId
@@ -132,8 +136,9 @@ const ProjectExpenseCash = (props) => {
             </div>
 
             <div style={{marginTop: '20px', marginLeft: '430px'}}>
-                <ProjectExpenseSubmit validateFields={() => validateFields(value, placeholderAndRequired, setValidationErrors, btnInfo)} 
-                    getData={props.getData} selectedItem={value} buttonGroup={btnInfo} width={'1000px'} />
+                <ProjectExpenseSubmit getData={props.getData} selectedItem={value} buttonGroup={btnInfo} width={'1000px'}
+                    validateFields={() => validateFields(value, placeholderAndRequired, setValidationErrors, 
+                        btnInfo, empInfo)} />
             </div>
         </div>
     );
