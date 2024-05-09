@@ -105,6 +105,7 @@ const MeetingRoomManage = () => {
         // 선택한 셀의 시작일자, 종료일자, 회의실종류 설정
         popupMtgRoomRsvt.current = ([{
             mtgRoomCd: e.cellData.groups.mtgRoomCd,
+            rsvtEmpId: cookies.userInfo.empId,
             useYmd: Moment(e.cellData.startDate).format("YYYYMMDD"),
             useEndYmd: Moment(e.cellData.startDate).format("YYYYMMDD"),
             useBgngHm: Moment(e.cellData.startDate).format("HHMM"),
