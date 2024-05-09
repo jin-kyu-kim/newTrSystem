@@ -18,7 +18,6 @@ import { ModalProvider } from 'components/unit/ModalContext';
 
 function App() {
       const { loading } = useAuth();
-
       locale(getLocale());
       function getLocale() {
         const locale = sessionStorage.getItem('locale');

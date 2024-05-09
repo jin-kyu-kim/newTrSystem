@@ -85,7 +85,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     String newToken = jwtTokenUtil.generateToken(setInfo); // 새 토큰 생성
                     response.setHeader("Authorization",  newToken); // 응답 헤더에 새 토큰 추가
                 }
-
                 List<String> roles = claims.get("roles", List.class);
                 List<SimpleGrantedAuthority> authorities = roles.stream()
                         .map(SimpleGrantedAuthority::new)

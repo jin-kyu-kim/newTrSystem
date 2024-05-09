@@ -36,6 +36,7 @@ function extension (token) {
   const decodedJson = atob(payloadBase64);
   const payload = JSON.parse(decodedJson);
   const expirationDate = new Date(payload.exp * 1000);
+
   localStorage.setItem("token", token);
   localStorage.setItem("expirationTime", expirationDate);
 }
