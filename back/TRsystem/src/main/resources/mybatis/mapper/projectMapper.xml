@@ -51,7 +51,55 @@
         </if>
     ORDER BY p.REG_DT DESC
     </select>
-    
+
+    <select id="retrieveMyPrjctList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT ROW_NUMBER()OVER ()ROWNUM
+        , (SELECT CD_NM FROM CD WHERE CD_VALUE = PRJCT_STLE_CD) AS PRJCT_STLE_CD
+        , p.PRJCT_ID
+        , PRJCT_NM
+        , (SELECT CD_NM FROM CD WHERE CD_VALUE = BIZ_STTS_CD) AS BIZ_STTS_CD_NM
+        , BIZ_STTS_CD
+        , (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = PRJCT_MNGR_EMP_ID ) AS PRJCT_MNGR_EMP_ID
+        , (SELECT CTMMNY_NM FROM CTMMNY_INFO ci WHERE ci.CTMMNY_ID = p.CTMMNY_ID) AS CTMMNY_NM
+        , DATE_FORMAT(CTRT_YMD, '%Y-%m-%d') AS CTRT_YMD
+        , DATE_FORMAT(BIZ_END_YMD, '%Y-%m-%d') AS BIZ_END_YMD
+        , DATE_FORMAT(STBLE_END_YMD, '%Y-%m-%d') AS STBLE_END_YMD
+        , TOT_BGT
+        , (SELECT MAX(BGT_MNG_ODR) FROM PRJCT_BGT_PRMPC pbp WHERE pbp.PRJCT_ID = p.PRJCT_ID AND pbp.ATRZ_DMND_STTS_CD = 'VTW03703') AS BGT_MNG_ODR
+        , (SELECT IFNULL(MAX(BGT_MNG_ODR), 1) FROM PRJCT_BGT_PRMPC pbp WHERE pbp.PRJCT_ID = p.PRJCT_ID) AS BGT_MNG_ODR_TOBE
+        , PRJCT_CD_IDNTFR
+        , DEPT_ID
+        , COUNT(*) OVER () AS TOTAL_ITEMS
+        FROM PRJCT p
+        JOIN PRJCT_MNG_AUTHRT PMA ON (PMA.PRJCT_ID = p.PRJCT_ID AND PMA.EMP_ID = #{empId})
+        WHERE 1 = 1
+            AND p.PRJCT_MNGR_EMP_ID = #{empId}
+        <if test="prjctStleCd != null and !prjctStleCd.equals('')">
+            AND p.PRJCT_STLE_CD = #{prjctStleCd}
+        </if>
+        <if test="prjctId != null and !prjctId.equals('')">
+            AND p.PRJCT_ID = #{prjctId}
+        </if>
+        <if test="bizFlfmtTyCd != null and !bizFlfmtTyCd.equals('')">
+            AND p.BIZ_STTS_CD = #{bizFlfmtTyCd}
+        </if>
+        <if test="ctrtYmd != null and bizEndYmd == '' and ctrtYmd !=''">
+            AND p.CTRT_YMD >= #{ctrtYmd}
+        </if>
+        <if test="ctrtYmd == '' and bizEndYmd != null and bizEndYmd !='' " >
+            AND p.BIZ_END_YMD &lt;= #{bizEndYmd}
+        </if>
+        <if test="ctrtYmd != null and bizEndYmd != null and ctrtYmd != '' and bizEndYmd != '' ">
+            <if test="!ctrtYmd.equals('') and !bizEndYmd.equals('')">
+                AND p.CTRT_YMD BETWEEN #{ctrtYmd} AND #{bizEndYmd}
+            </if>
+        </if>
+        <if test="ctmmnyNm != null and !ctmmnyNm.equals('')">
+            AND CTMMNY_ID IN (SELECT CTMMNY_ID FROM CTMMNY_INFO WHERE CTMMNY_NM LIKE CONCAT('%',#{ctmmnyNm},'%'))
+        </if>
+        ORDER BY p.REG_DT DESC
+    </select>
+
     <select id="retrievePrjctBsisInfo" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT PRJCT_NM
 			 , PRJCT_CD_IDNTFR

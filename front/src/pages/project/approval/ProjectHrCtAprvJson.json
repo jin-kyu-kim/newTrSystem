@@ -1,6 +1,6 @@
 {
 	"menuName": "ProjectHrCtAprv",
-	"queryId": "projectMapper.retrievePrjctList",
+	"queryId": "projectMapper.retrieveMyPrjctList",
     "keyColumn": "prjctId",
     "tableColumns": 
 	[
