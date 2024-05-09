@@ -17,14 +17,12 @@ import ErrorBoundary from "./utils/ErrorBoundary";
 import { ModalProvider } from 'components/unit/ModalContext';
 
 function App() {
-      const { user, loading } = useAuth();
-
+      const { loading } = useAuth();
       locale(getLocale());
       function getLocale() {
         const locale = sessionStorage.getItem('locale');
         return locale != null ? locale : 'ko';
       }
-
       if (loading) {
         return <LoadPanel visible={true} />;
       }
@@ -35,11 +33,11 @@ function App() {
               <ErrorBoundary>
                 <CookiesProvider>
                   <NavigationProvider>
-                  <AuthProvider>
-                  <ModalProvider>
-                  <Content/>
-                  </ModalProvider>
-                  </AuthProvider>
+                    <AuthProvider>
+                      <ModalProvider>
+                        <Content/>
+                      </ModalProvider>
+                    </AuthProvider>
                   </NavigationProvider>
                 </CookiesProvider>
               </ErrorBoundary>
