@@ -14,6 +14,9 @@
             "label": "프로젝트 소속",
             "placeholder": "프로젝트 소속",
             "param": { "tbNm" : "DEPT",
+                        "condition": {
+                            "endYn": "N"
+                        },
                         "valueExpr" : "deptId",
                         "displayExpr": "deptNm",
                         "name": "deptId",
