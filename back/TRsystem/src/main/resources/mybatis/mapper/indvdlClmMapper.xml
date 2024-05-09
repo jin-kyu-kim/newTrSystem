@@ -1088,7 +1088,6 @@
              , CLM_AMT
              , ACT_IEM
              , CLTUR_PHSTRN_SE_CD
-             , ACT_PURPS
              , FRCS_NM
              , RM
              , c.ATCHMNFL_ID
