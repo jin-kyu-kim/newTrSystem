@@ -17,6 +17,7 @@ import ElecAtrzCtrtInfoDetail from "./ctrtInfo/ElecAtrzCtrtInfoDetail";
 import ElecAtrzCtrtOutordHnfDetail from "./ctrtInfo/ElecAtrzCtrtOutordHnfDetail";
 import ElecAtrzTabDetail from "./ElecAtrzTabDetail";
 import { Button } from 'devextreme-react';
+import { useModal } from "../../components/unit/ModalContext";
 
 const ElecAtrzNewReq = () => {
 
@@ -27,7 +28,7 @@ const ElecAtrzNewReq = () => {
     const sttsCd = location.state.sttsCd;
     const ctrtTyCd = location.state.ctrtTyCd;
     const [cookies] = useCookies(["userInfo", "userAuth"]);
-
+    const { handleOpen } = useModal();
     /** 첨부파일 관련 */
     const [attachments, setAttachments] = useState([]);
     const [deleteFiles, setDeleteFiles] = useState([{tbNm: "ATCHMNFL"}]);
@@ -131,15 +132,13 @@ const ElecAtrzNewReq = () => {
     }, []);
 
     useEffect(() => {
-        console.log(atrzParam)
+
     }, [atrzParam]);
 
     /**
      * 자식컴포넌트에서 받아온 데이터 set 
      */
     useEffect(() => {
-        console.log("childData", childData);
-        console.log("atrzParam", atrzParam)
 
 
         // 일반 전자결재시 테이블 삽입. "GNRL_ATRZ"
@@ -162,7 +161,6 @@ const ElecAtrzNewReq = () => {
      *  내용 html 데이터 set
      */
     useEffect(() => {
-        console.log(data);
 
         setAtrzParam(atrzParam => ({
             ...atrzParam,
@@ -201,8 +199,6 @@ const ElecAtrzNewReq = () => {
     }
 
     useEffect(() => {
-        console.log("attachments", attachments)
-        console.log("newAttachments", newAttachments)
 
     }, [attachments, newAttachments]);
 
@@ -211,7 +207,6 @@ const ElecAtrzNewReq = () => {
      * @param {} deleteItem 
      */
     const attachFileDelete = (deleteItem) => {
-        console.log("DELETE", deleteItem)
 
         setDeleteFiles([...deleteFiles, { atchmnflId: data.atchmnflId ,atchmnflSn: deleteItem.atchmnflSn, strgFileNm: deleteItem.strgFileNm }]);
         setNewAttachments(newAttachments.filter(item => item !== deleteItem));
@@ -302,7 +297,6 @@ const ElecAtrzNewReq = () => {
      */
     const createAtrz = async (param, stts) => {
         const date = new Date();
-        console.log(param)
 
         //임시저장 눌렀을 시 벨리데이션 체크    
         const isValid = checkValidation(stts, param, atrzLnEmpList); 
@@ -312,7 +306,6 @@ const ElecAtrzNewReq = () => {
         /**
          * 전자결재 & 첨부파일 저장
          */
-        console.log(atrzLnEmpList)
 
         const insertParam = {
             param,
@@ -327,11 +320,8 @@ const ElecAtrzNewReq = () => {
             sttsCd: sttsCd
         }
 
-        console.log("insertParam", insertParam);
-
         try {
             const response = await ApiRequest("/boot/elecAtrz/insertElecAtrz", insertParam);
-            console.log(response);
             const token = localStorage.getItem("token");
 
             if(response){
@@ -359,25 +349,24 @@ const ElecAtrzNewReq = () => {
                     .forEach((attachment) => formDataAttach.append("attachments", attachment));
 
                     for (let [key, value] of formDataAttach.entries()) {
-                        console.log(key, value);
+
                     }
 
                 const responseAttach = await axios.post("/boot/common/insertlongText", formDataAttach, {
                     headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
                 });
-                console.log(responseAttach);
 
                 if(responseAttach.status === 200){
                     if(stts === "VTW03701") {
-                        alert("임시저장이 완료되었습니다.");
+                        handleOpen("임시저장이 완료되었습니다.");
                     } else {
-                        alert("전자결재 요청이 완료되었습니다.")
+                        handleOpen("전자결재 요청이 완료되었습니다.")
                     }
                     navigate("/elecAtrz/ElecAtrz");
                 }
 
         }else{
-            alert("전자결재 요청에 실패하였습니다. 관리자에게 문의하세요. ")
+            handleOpen("전자결재 요청에 실패하였습니다. 관리자에게 문의하세요. ")
         }
 
         } catch (error) {
@@ -407,7 +396,6 @@ const ElecAtrzNewReq = () => {
      * 결재 제목 생성하는 함수
      */
     const handleElecAtrzTitle = (e) => {
-        console.log(e.value);
         setAtrzParam((atrzParam) => ({
             ...atrzParam,
             title: e.value
@@ -440,17 +428,16 @@ const ElecAtrzNewReq = () => {
      * 결재요청 및 임시저장 벨리데이션 체크
      */
     const checkValidation = (stts, param, atrzLnEmpList) => {
-        console.log(param)
         if(["VTW03701","VTW03702"].includes(stts)){
             if(param.title === undefined || param.title === ""){
-                alert("결재 제목을 입력해주세요.");
+                handleOpen("결재 제목을 입력해주세요.");
                 return false;
             }else if(param.atrzCn === undefined || param.atrzCn === ""){
-                alert("결재 내용을 입력해주세요.");
+                handleOpen("결재 내용을 입력해주세요.");
                 return false;
             }
         }
-        console.log(atrzLnEmpList)
+
 
         var atrzLn = atrzLnEmpList.find( ({ approvalCode }) => approvalCode == 'VTW00705');
 
@@ -458,7 +445,7 @@ const ElecAtrzNewReq = () => {
         // console.log(atrzLn)
 
         if(atrzLn === undefined){
-            alert("결재선의 승인자를 입력해주세요.");
+            handleOpen("결재선의 승인자를 입력해주세요.");
             return false;
         }
 

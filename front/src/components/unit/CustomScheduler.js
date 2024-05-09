@@ -53,7 +53,7 @@ const InitScheduler = ({ mtgRoomList, mtgRoomRsvtAtdrnList, mtgCodeList, empList
     // 팝업에서 데이터 변경 후처리
     // 해당이벤트에 update 구문 처리해야함
     function onAppointmentUpdated(e) {
-        console.log(e.appointmentData);
+        //console.log(e.appointmentData);
     }
 
     // 예약취소버튼

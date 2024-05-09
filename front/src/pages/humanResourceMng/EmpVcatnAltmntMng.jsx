@@ -12,7 +12,7 @@ import CustomTable from "components/unit/CustomTable";
 import CustomEmpComboBox from "components/unit/CustomEmpComboBox"
 import EmpVcatnAltmntMngJson from "pages/humanResourceMng/EmpVcatnAltmntMngJson.json"
 import ApiRequest from "utils/ApiRequest";
-
+import { useModal } from "../../components/unit/ModalContext";
 
 // 현재년도
 const nowYear = new Date().getFullYear();
@@ -46,6 +46,8 @@ const EmpVcatnAltmntMng = () => {
 
     const cntrBgngYmdRef = useRef();
     const cntrEndYmdRef = useRef();
+
+    const { handleOpen } = useModal();
 
     useEffect(() => {
         getEmpVacList();
@@ -190,13 +192,13 @@ const EmpVcatnAltmntMng = () => {
         }
 
         if (errorMsg) {
-            alert(errorMsg);
+            handleOpen(errorMsg);
             return;
         } else {
             const isconfirm = window.confirm("휴가정보를 저장 하시겠습니까?");
             if (isconfirm) {
                 await ApiRequest("/boot/common/queryIdSearch", selectValue);
-                alert("저장되었습니다.");
+                handleOpen("저장되었습니다.");
                 onSearch();
             } else {
                 return;
@@ -250,14 +252,12 @@ const EmpVcatnAltmntMng = () => {
 
     // 휴가등록불가기간 설정
     const btnSaveCntrlYmd = async () => {
-        console.log("cntrBgngYmdRef.current : ", cntrBgngYmdRef.current);
-        console.log("cntrEndYmdRef.current : ", cntrEndYmdRef.current);
 
         const response = await ApiRequest("/boot/common/queryIdSearch", 
             {queryId: "humanResourceMngMapper.updateVcatnCntrlYmdYn", cntrBgngYmd: cntrBgngYmdRef.current, cntrEndYmd: cntrEndYmdRef.current}
         );
 
-        alert("저장되었습니다.");
+        handleOpen("저장되었습니다.");
     }
 
 

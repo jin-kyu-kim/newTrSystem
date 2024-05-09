@@ -102,7 +102,7 @@ const ElecAtrzManage = () => {
 
     //팝업 호출 이벤트
     const onBtnClick = (button, data) => {
-        console.log("data", data);
+
         if(button.name === "atchmnFl"){
 
             let popupParam = {

@@ -12,6 +12,7 @@ import { Popup } from "devextreme-react";
 import EmpCultHealthCostManagePop from "./EmpCultHealthCostManagePop";
 import EmpCultHealthCostDetailPop from "./EmpCultHealthCostDetailPop";
 import CustomEditTable from "components/unit/CustomEditTable";
+import { useModal } from "../../components/unit/ModalContext";
 
 const EmpCultHealthCostManage = () => {
   const [values, setValues] = useState([]);
@@ -20,6 +21,8 @@ const EmpCultHealthCostManage = () => {
   const [isManagePopupVisible, setIsManagePopupVisible] = useState(false);
   const [isDetailPopupVisible, setIsDetailPopupVisible] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState();
+  const { handleOpen } = useModal();
+
   let now = new Date();
   const [param, setParam] = useState({
         "empFlnm": null,
@@ -78,7 +81,7 @@ const EmpCultHealthCostManage = () => {
       const response = await ApiRequest("/boot/common/commonUpdate", updateParam);
       if (response > 0 ) {
         searchDdlnYn();
-        alert("마감되었습니다.")
+        handleOpen("마감되었습니다.")
       }
     }
   };

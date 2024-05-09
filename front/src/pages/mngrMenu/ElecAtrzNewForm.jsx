@@ -8,6 +8,7 @@ import HtmlEditBox from "components/unit/HtmlEditBox";
 import CustomCdComboBox from "components/unit/CustomCdComboBox";
 import moment from 'moment';
 import uuid from "react-uuid";
+import { useModal } from "../../components/unit/ModalContext";
 
 const positions = ['Y', 'N'];   //사용여부 selectBox에서 사용하는 값
 const columns = {"docFormDc": {"dataField":"docFormDc"},"gnrlAtrzCn": {"dataField":"gnrlAtrzCn"}};  //htmlEditBox에서 사용하는 컬럼
@@ -27,9 +28,11 @@ const ElecAtrzNewForm = ({}) => {
     });
     const mdfStts = location.state? 'U' : 'I'; //수정인지 신규인지 확인
 
+    const { handleOpen } = useModal();
+
     //TODO. 개발편의 위한 console.log > 삭제예정.
     useEffect(() => {
-        console.log("formData", formData);
+        //console.log("formData", formData);
     }, [formData]);
 
     //수정시 넘어온 값이 있으면 셋팅
@@ -76,7 +79,7 @@ const ElecAtrzNewForm = ({}) => {
                 try {
                     const response = await ApiRequest(request, param);
                     if(response > 0) {
-                        alert("저장되었습니다.");
+                        handleOpen("저장되었습니다.");
                         navigate("/mngrMenu/ElecAtrzFormManage");
                     }
                 } catch (error) {

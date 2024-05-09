@@ -2,7 +2,7 @@ import { Column, DataGrid, Editing, Lookup, MasterDetail, Selection, RequiredRul
 import { useCallback, useEffect, useState } from 'react';
 import ApiRequest from 'utils/ApiRequest';
 import CellRender from './CellRender';
-import { useModal } from "../../components/unit/ModalContext";
+import { useModal } from "./ModalContext";
 import '../../pages/sysMng/sysMng.css'
 
 const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal, masterDetail, doublePk, noDataText, noEdit,

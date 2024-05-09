@@ -15,10 +15,11 @@ import { isSaturday, isSunday, startOfMonth, endOfMonth } from 'date-fns'
 // npm install moment
 import Moment from "moment"
 
-import { useModal } from "components/unit/ModalContext";
+import { useModal } from "../../components/unit/ModalContext";
 import ApiRequest from "utils/ApiRequest";
 import AutoCompleteProject from "components/unit/AutoCompleteProject";
 import '../project/approval/ProjectHtCtAprvPop.css';
+
 
 /**
  * 2023.03.27(박지환)
@@ -253,7 +254,7 @@ const EmpWorkTime = () => {
                 console.log("insertPrjctMmAply_error: ", error);
             }
         } else {
-            alert("근무시간을 입력해주세요.")
+            handleOpen("근무시간을 입력해주세요.")
             // handleOpen("근무시간을 입력해주세요.");
             return;
         }
@@ -268,12 +269,12 @@ const EmpWorkTime = () => {
                 try {
                     const response = await ApiRequest("/boot/indvdlClm/updatePrjctMmAply", deleteParams);
                     selectData(searchPrjctIndvdlCtMmParam);
-                    alert("승인취소되었습니다.");
+                    handleOpen("승인취소되었습니다.");
                 } catch (error) {
                     console.log("updatePrjctMmAply_error: ", error);
                 }
             } else {
-                alert("요청된 근무시간이 없습니다.");
+                handleOpen("요청된 근무시간이 없습니다.");
                 return;
             }
         } else {

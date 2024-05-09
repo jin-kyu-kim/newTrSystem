@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import {useAuth} from "../components/sidebar/contexts/auth";
+import { useModal } from "../components/unit/ModalContext"
 
 function TokenTimer() {
     // 토큰 만료 시간 상태(state)
     const [expirationTime, setExpirationTime] = useState(null);
     const { signOut, tokenExtension } = useAuth();
+    const { handleOpen } = useModal();
     let tokenTime = localStorage.getItem("expirationTime");
 ;
     // 토큰 만료 시간 설정 및 타이머 시작
@@ -22,7 +24,7 @@ function TokenTimer() {
                 if (remainingTime <= 0) {
                     // 토큰이 만료되었을 때의 처리
                     clearInterval(timer);
-                    window.alert("로그인이 만료되었습니다.")
+                    handleOpen("로그인이 만료되었습니다.")
                     signOut();
                 } else if(remainingTime <= 600000 && remainingTime > 599000) {
                     if(window.confirm("로그인을 연장하시겠습니까?")){

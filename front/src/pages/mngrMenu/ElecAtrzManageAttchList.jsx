@@ -7,7 +7,6 @@ const ElecAtrzManageAttchList = ({width, height, visible, attachId, onHiding, ti
     const [attachListParam, setAttachListParam] = useState({});
 
     useEffect(() => {
-        console.log("attachListParam", attachId);
         selectData(attachId);
     }, [])
 
@@ -17,10 +16,8 @@ const ElecAtrzManageAttchList = ({width, height, visible, attachId, onHiding, ti
                             atchmnflId : attachId
                       }
         try{
-            console.log("attachListParam", param);
             const response = await ApiRequest("/boot/common/queryIdSearch", param);
             setAttachListValue(response);
-            console.log(response)
         } catch (error) {
             console.log(error);
         }

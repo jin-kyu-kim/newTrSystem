@@ -13,6 +13,7 @@ import { Table, TableCell, TableHead, TableRow } from '@mui/material';
 
 // 랜덤채번 import
 import uuid from "react-uuid";
+import { useModal } from "../../components/unit/ModalContext";
 
 const token = localStorage.getItem("token");
 
@@ -38,8 +39,7 @@ const EmpVacationCanclePopup = ({ width, height, visible, dataMap, empId, onHidi
 
     const rtrcnPrvonsh = useRef(null);
 
-
-
+    const { handleOpen } = useModal();
 
 
     const getElctrnAtrz = async () => {
@@ -123,7 +123,7 @@ const EmpVacationCanclePopup = ({ width, height, visible, dataMap, empId, onHidi
     const deleteVcatnAtrz = async () => {
         try{
             const response = await ApiRequest("/boot/indvdlClm/deleteVcatnAtrz", dataMap);
-            alert("취소되었습니다.")
+            handleOpen("취소되었습니다.")
             onHiding(false);
         } catch (error) {
             console.log("deleteVcatnAtrz_error : ", error);
@@ -147,7 +147,7 @@ const EmpVacationCanclePopup = ({ width, height, visible, dataMap, empId, onHidi
             const response = await axios.post("/boot/indvdlClm/reInsertVcatnAtrz", formData, {
                 headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
             });
-            alert("취소요청되었습니다.")
+            handleOpen("취소요청되었습니다.")
             onHiding(false);
         } catch (error) {
             console.log("insertVcatnAtrz_error : ", error);

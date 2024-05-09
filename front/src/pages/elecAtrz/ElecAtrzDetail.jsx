@@ -12,6 +12,7 @@ import electAtrzJson from './ElecAtrzJson.json';
 import ApiRequest from 'utils/ApiRequest';
 import { useCookies } from 'react-cookie';
 import './ElecAtrz.css'
+import { useModal } from "../../components/unit/ModalContext";
 
 const ElecAtrzDetail = () => {
     const navigate = useNavigate();
@@ -32,7 +33,7 @@ const ElecAtrzDetail = () => {
     const [rjctPopupVisible, setRjctPopupVisible] = useState(false);
     const [opnnCn, setOpnnCn] = useState("");
     const [data, setData] = useState(location.state.data);
-
+    const { handleOpen } = useModal();
     // console.log("location 디테일!!!", location);
 
     const onBtnClick = (e) => {
@@ -42,9 +43,9 @@ const ElecAtrzDetail = () => {
                 break;
             case "rjct": ; onRjctPopup();
                 break;
-            case "print": console.log("출력 클릭"); 
+            case "print": //console.log("출력 클릭"); 
                 break;
-            case "docHist": console.log("문서이력 클릭");
+            case "docHist": //console.log("문서이력 클릭");
                 break;
             default:
                 break;
@@ -186,7 +187,7 @@ const ElecAtrzDetail = () => {
                     if(value[0].atrzLnSn > 0) {
                         upNowAtrzLnSn(value[0].atrzLnSn);
                     } else {
-                        alert("승인 처리에 실패하였습니다.");
+                        handleOpen("승인 처리에 실패하였습니다.");
                         return;
                     }
                 });
@@ -220,7 +221,7 @@ const ElecAtrzDetail = () => {
                     if(value[0].atrzLnSn > 0) {
                         upNowAtrzLnSn(value[0].atrzLnSn);
                     } else {
-                        alert("승인 처리에 실패하였습니다.");
+                        handleOpen("승인 처리에 실패하였습니다.");
                         return;
                     }
                 });
@@ -244,13 +245,11 @@ const ElecAtrzDetail = () => {
                 ]
 
                 const response = aprvProcess(param).then((value) => {
-
-                    console.log("result", value)
                     if(value > 0) {
                         // 단계 올리기
                         upNowAtrzLnSn(value);
                     } else {
-                        alert("승인 처리에 실패하였습니다.");
+                        handleOpen("승인 처리에 실패하였습니다.");
                         return;
                     }
                 });
@@ -318,13 +317,13 @@ const ElecAtrzDetail = () => {
                 if(detailData.elctrnAtrzTySeCd === "VTW04907" && nowAtrzLnSn > maxAtrzLnSn) {
                     const clmResult = handlePrcjtCost();
                     if(clmResult < 0) {
-                        alert("승인 처리에 실패하였습니다.");
+                        handleOpen("승인 처리에 실패하였습니다.");
                     }
                 }
-                alert("승인 처리되었습니다.");
+                handleOpen("승인 처리되었습니다.");
                 navigate('/elecAtrz/ElecAtrz');
             } else {
-                alert("승인 처리에 실패하였습니다.");
+                handleOpen("승인 처리에 실패하였습니다.");
                 return;
             }
         } catch (error) {
@@ -376,17 +375,17 @@ const ElecAtrzDetail = () => {
                 handleDmndStts(nowAtrzLnSn).then((value) => {
                     console.log(value);
                     if(value > 0) {
-                        alert("반려 처리되었습니다.");
+                        handleOpen("반려 처리되었습니다.");
                         
                         navigate('/elecAtrz/ElecAtrz');
                     } else {
-                        alert("반려 처리에 실패하였습니다.");
+                        handleOpen("반려 처리에 실패하였습니다.");
                         return;
                     }
                 });
 
             } else {
-                alert("반려 처리에 실패하였습니다.");
+                handleOpen("반려 처리에 실패하였습니다.");
             }
         }
     }
@@ -507,7 +506,7 @@ const ElecAtrzDetail = () => {
     },[])
 
     useEffect(()=>{
-        console.log("data", data);
+        
     },[data])
 
     return (

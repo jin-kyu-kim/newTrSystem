@@ -10,6 +10,7 @@ import DeptManagePop from './DeptManagePop';
 import CustomLabelValue from "components/unit/CustomLabelValue";
 import uuid from "react-uuid";
 import { useCookies } from "react-cookie";
+import { useModal } from "../../components/unit/ModalContext";
 
 const DeptManage = ({callBack}) => {
 
@@ -34,6 +35,7 @@ const DeptManage = ({callBack}) => {
   const [deptBgngYmd, setDeptBgngYmd] = useState();     //부서시작일자
   const [deptEndYmd, setDeptEndYmd] = useState();       //부서종료일자
   const [deptHnfSet,setDeptHnfSet] = useState({}); //부서장 등록시 설정용
+  const { handleOpen } = useModal();
   //-------------------------- 초기 설정 ----------------
     useEffect(() => {
         setParam({
@@ -139,24 +141,23 @@ const DeptManage = ({callBack}) => {
 //==================================부서정보 등록버튼 이벤트===================================
   const insertDept = async() => {     //부서등록
     if(deptNm === null) {
-      alert("부서명을 입력해주세요");
+      handleOpen("부서명을 입력해주세요");
         return;
     } else if(upDeptId === null) {
-      alert("상위부서를 선택해주세요");
+      handleOpen("상위부서를 선택해주세요");
       return;
     } else if(!deptMngrEmpFlnm.empId) {
-      alert("부서장을 선택해주세요");
+      handleOpen("부서장을 선택해주세요");
       return;
     }else if(deptBgngYmd === null) {
-      alert("부서 시작일자를 입력해주세요");
+      handleOpen("부서 시작일자를 입력해주세요");
       return;
     } else if(deptEndYmd === null) {
-      alert("부서 종료일자를 입력해주세요");
+      handleOpen("부서 종료일자를 입력해주세요");
       return;
     } 
     else{
     const isconfirm = window.confirm("부서정보를 등록하시겠습니까?");
-    console.log("부서등록 프로세스1")
     if (isconfirm) {
       const param = [
       { tbNm: "DEPT" }, 
@@ -230,7 +231,7 @@ const DeptManage = ({callBack}) => {
         const response = await ApiRequest("/boot/common/commonInsert", InsertParam); //부서장발령인서트
          const histResponse = await ApiRequest("/boot/common/commonInsert", InsertHistParam); //발령 히스토리 인서트
           if (response > 0 && histResponse > 0) {
-            alert("등록되었습니다.");
+            handleOpen("등록되었습니다.");
             reset();
             setDeptHnfParam({});
             pageHandle();
@@ -242,16 +243,16 @@ const DeptManage = ({callBack}) => {
 //==================================부서정보 수정버튼 이벤트===================================
   const editDept = async() => {
     if(deptNm === null || deptNm ==="") {
-      alert("부서명을 입력해주세요");
+      handleOpen("부서명을 입력해주세요");
         return;
     } else if(upDeptId === null) {
-      alert("상위부서를 선택해주세요");
+      handleOpen("상위부서를 선택해주세요");
       return;
     } else if(deptBgngYmd === null) {
-      alert("부서 시작일자를 입력해주세요");
+      handleOpen("부서 시작일자를 입력해주세요");
       return;
     } else if(deptEndYmd === null) {
-      alert("부서 종료일자를 입력해주세요");
+      handleOpen("부서 종료일자를 입력해주세요");
       return;
     } 
  
@@ -261,7 +262,7 @@ const DeptManage = ({callBack}) => {
       for(const value of hnfValues){
         if(value.jbttlCd === "VTW01001"){
           if(value.empId !== deptMngrEmpFlnm.empId){
-            alert("부서장 변경은 인력관리 팝업에서 진행해주시기 바랍니다.")
+            handleOpen("부서장 변경은 인력관리 팝업에서 진행해주시기 바랍니다.")
             setDeptMngrEmpFlnm({empId : value.empId});
             return;
           }
@@ -283,7 +284,7 @@ const DeptManage = ({callBack}) => {
         try {
           const response = await ApiRequest("/boot/common/commonUpdate", updateParam);
           if (response > 0 ) {
-            alert("변경되었습니다.");
+            handleOpen("변경되었습니다.");
             reset();
             pageHandle(); 
           }
@@ -321,12 +322,12 @@ const DeptManage = ({callBack}) => {
         const responseDelHnf = await ApiRequest("/boot/common/commonDelete", paramDelHnf);
         const responseDel = await ApiRequest("/boot/common/commonDelete", paramDel);
           if (responseDel > 0  ) {
-            alert("삭제되었습니다.");
+            handleOpen("삭제되었습니다.");
             reset();
             setDeptHnfParam({});
             pageHandle();
           }else{
-            alert("특정 프로젝트에 부서가 속해있거나 하위부서가 존재합니다.\n수정이나 삭제 후 시도하십시요.");
+            handleOpen("특정 프로젝트에 부서가 속해있거나 하위부서가 존재합니다.\n수정이나 삭제 후 시도하십시요.");
           }
       } catch (error) {
         console.error("Error fetching data", error);

@@ -8,6 +8,7 @@ import Popup from "devextreme-react/popup";
 import ApiRequest from "utils/ApiRequest";
 import ProjectAprvDetailJson from "./ProjectAprvDetailJson.json";
 import TextArea from "devextreme-react/text-area";
+import { useModal } from "../../../components/unit/ModalContext";
 
 const ProjectAprvDetail = () => {
 
@@ -25,17 +26,16 @@ const ProjectAprvDetail = () => {
     const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
     const ProjectAprvDetail = ProjectAprvDetailJson;
     const atrzDmndSttsCd = ProjectAprvDetail.atrzDmndSttsCd;
-  
+
     const [aprvPopupVisible, setAprvPopupVisible] = useState(false);
     const [rjctPopupVisible, setRjctPopupVisible] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [opnnCn, setOpnnCn] = useState("");
     const [data, setData] = useState([]);
     const [btnVisible, setBtnVisible] = useState(false);
+    const { handleOpen } = useModal();
 
     useEffect(() => {
-        console.log(aprvrEmpId)
-        console.log(cookies.userInfo.empId)
 
         if(atrzSttsCd === 'VTW00801') {
             if(aprvrEmpId === cookies.userInfo.empId) handleBtnVisible();
@@ -51,7 +51,6 @@ const ProjectAprvDetail = () => {
         
             setData(response);
         });
-        console.log(data)
 
     },[]);
 
@@ -135,10 +134,10 @@ const ProjectAprvDetail = () => {
                         handlePrjctBizStts("VTW00402");
                     }
     
-                    alert("승인이 완료되었습니다.");
+                    handleOpen("승인이 완료되었습니다.");
                     navigate("../project/ProjectAprv");
                 } else {
-                    alert("승인이 실패하였습니다.");
+                    handleOpen("승인이 실패하였습니다.");
                     return;
                 }
             
@@ -182,10 +181,10 @@ const ProjectAprvDetail = () => {
                 // 컬럼 ATRZ_DMND_STTS_CD -> VTW03704
                 handleBgtPrmpc("VTW03704");
 
-                alert("반려 되었습니다.");
+                handleOpen("반려 되었습니다.");
                 navigate("../project/ProjectAprv");
             } else {
-                alert("반려가 실패하였습니다.");
+                handleOpen("반려가 실패하였습니다.");
                 return;
             }
         }
@@ -194,7 +193,6 @@ const ProjectAprvDetail = () => {
     const requestProcess = async (param) => {
         // const response = await ApiRequest("/boot/common/commonUpdate", param);
         const response = await ApiRequest("/boot/prjct/aprvPrjctAtrz", param)
-        console.log(response)
         return response;
     
     }
@@ -282,18 +280,17 @@ const ProjectAprvDetail = () => {
     
     // 승인 팝업 Open
     const onAprvPopup = () => {
-        console.log(data);
         /*
         *  심사중인지 확인한다.
         *  VTW00801 : 심사중, VTW00802 : 승인, VTW00803 : 반려, VTW00804 : 보류, VTW00805 : 취소
         */
         if(atrzSttsCd !== 'VTW00801') {
-            alert("심사중 상태가 아닙니다.");
+            handleOpen("심사중 상태가 아닙니다.");
             return;
         }
 
         if(atrzStepCd !== nowAtrzStepCd) {
-            alert("현재 선행 결재가 완료되지 않았습니다.");
+            handleOpen("현재 선행 결재가 완료되지 않았습니다.");
             return;
         }
 
@@ -308,12 +305,12 @@ const ProjectAprvDetail = () => {
         *  VTW00801 : 심사중, VTW00802 : 승인, VTW00803 : 반려, VTW00804 : 보류, VTW00805 : 취소
         */
         if(atrzSttsCd !== 'VTW00801') {
-            alert("심사중 상태가 아닙니다.");
+            handleOpen("심사중 상태가 아닙니다.");
             return;
         }
 
         if(atrzStepCd !== nowAtrzStepCd) {
-            alert("현재 선행 결재가 완료되지 않았습니다.");
+            handleOpen("현재 선행 결재가 완료되지 않았습니다.");
             return;
         }
 
@@ -326,8 +323,6 @@ const ProjectAprvDetail = () => {
     }, []);
 
     const DataRow = (rowInfo) => {
-        // console.log(rowInfo)
-        console.log(rowInfo)
         
         const result = [];
 

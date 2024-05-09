@@ -9,12 +9,14 @@ import Moment from "moment"
 
 // DevExtrme import
 import { DateBox, SelectBox, Popup, TagBox, TextArea, Button } from "devextreme-react";
+import { useModal } from "../../components/unit/ModalContext";
 
 const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgRoomRsvtAtdrnValue, mtgRoomRsvtListValue, onHiding, title, state, authState }) => {
     // 세션설정
     const [cookies, setCookie] = useCookies(["userInfo", "deptInfo"]);
     const sessionEmpId = cookies.userInfo.empId
 
+    const { handleOpen } = useModal();
 
 
 
@@ -105,7 +107,7 @@ const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgR
         else if (Moment(insertMtgRoomRsvtValue.startDate).format("YYYYMMDDHHmm") < Moment(new Date()).format("YYYYMMDDHHmm")) errorMsg = "현재시간 이전의 시간에는 예약하실 수 없습니다."
         
         if (errorMsg) {
-            alert(errorMsg);
+            handleOpen(errorMsg);
             return;
         }
 
@@ -118,7 +120,7 @@ const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgR
         )
 
         if(mtgRoomRsvtValueFilter && mtgRoomRsvtValueFilter.length > 0){
-            alert("선택하신 시간에 예약된 회의가 있습니다.\n예약현황을 확인하신 후 예약하시기 바랍니다.");
+            handleOpen("선택하신 시간에 예약된 회의가 있습니다.\n예약현황을 확인하신 후 예약하시기 바랍니다.");
             return;
         } else {
             const isconfirm = window.confirm("저장하시겠습니까?");
@@ -129,7 +131,7 @@ const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgR
                 ]
                 try {
                     const response = await ApiRequest("/boot/humanResourceMng/insertMtgRoomRsvt", insertData);
-                    alert("예약되었습니다.");
+                    handleOpen("예약되었습니다.");
                     onHiding(false, true);
                 } catch (error) {
                     console.log("insertMtgRoomRsvt_error : ", error);
@@ -144,12 +146,12 @@ const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgR
         const isconfirm = window.confirm("예약을 취소하시겠습니까?");
         if(isconfirm){
             if(Moment(mtgRoomRsvtValue[0].startDate).format("YYYYMMDDHHmm") < Moment(new Date()).format("YYYYMMDDHHmm")){
-                alert("회의실 예약 시작시간이 지난경우에는 취소하실 수 없습니다.");
+                handleOpen("회의실 예약 시작시간이 지난경우에는 취소하실 수 없습니다.");
                 return;
             } else {
                 try {
                     const response = await ApiRequest("/boot/humanResourceMng/deleteMtgRoomRsvt", mtgRoomRsvtValue[0].mtgRoomRsvtSn);
-                    alert("취소되었습니다.");
+                    handleOpen("취소되었습니다.");
                     onHiding(false, true);
                 } catch (error) {
                     console.log("deleteMtgRoomRsvtt_error : ", error);

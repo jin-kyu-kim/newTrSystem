@@ -131,8 +131,6 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
     
         const dtlCndResponse = await ApiRequest("/boot/common/commonSelect", dtlCndParam);
     
-        console.log("dtlCndResponse", dtlCndResponse);
-    
         const result = dtlResponse.map((ctrtItem) => {
             const hnfCtrtDtlMmItems = dtlCndResponse
                 .filter((hnfItem) => hnfItem.inptHnfId === ctrtItem.inptHnfId)

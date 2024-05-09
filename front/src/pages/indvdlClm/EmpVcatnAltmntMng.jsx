@@ -12,7 +12,7 @@ import CustomTable from "components/unit/CustomTable";
 import CustomEmpComboBox from "components/unit/CustomEmpComboBox"
 import EmpVcatnAltmntMngJson from "pages/humanResourceMng/EmpVcatnAltmntMngJson.json"
 import ApiRequest from "utils/ApiRequest";
-
+import { useModal } from "../../components/unit/ModalContext";
 
 const { listQueryId, listKeyColumn, listTableColumns, insertQueryId } = EmpVcatnAltmntMngJson;
 
@@ -72,6 +72,7 @@ const EmpVcatnAltmntMng = () => {
     // 재직목록조회
     const [selectHdofSttsCdListValue, setSelectHdofSttsCdListValue] = useState([]);
 
+    const { handleOpen } = useModal();
 
     // 직원별휴가목록조회
     const getEmpVacList = async () => {
@@ -193,13 +194,13 @@ const EmpVcatnAltmntMng = () => {
         }
 
         if (errorMsg) {
-            alert(errorMsg);
+            handleOpen(errorMsg);
             return;
         } else {
             const isconfirm = window.confirm("휴가정보를 저장 하시겠습니까?");
             if (isconfirm) {
                 await ApiRequest("/boot/common/queryIdSearch", selectValue);
-                alert("저장되었습니다.");
+                handleOpen("저장되었습니다.");
                 onSearch();
             } else {
                 return;

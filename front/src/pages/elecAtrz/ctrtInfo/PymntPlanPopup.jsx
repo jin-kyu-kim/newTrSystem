@@ -6,6 +6,7 @@ import CustomLabelValue from "components/unit/CustomLabelValue";
 import CustomEditTable from "components/unit/CustomEditTable";
 import ElecAtrzMatrlCtPopupJson from "./ElecAtrzMatrlCtPopupJson.json";
 import ElecAtrzOutordCompanyPopupJson from "./ElecAtrzOutordCompanyPopupJson.json";
+import { useModal } from "../../../components/unit/ModalContext";
 
 /**
  *  "VTW04909" : 외주업체
@@ -29,7 +30,7 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
     const [matrlCtrtData, setMatrlCtrtData] = useState({});
     const [pay, setPay] = useState([]);
     let controlReadOnly = false;
-
+    const { handleOpen } = useModal();
     /**
      *  부모창에서 전달 된 데이터로 셋팅
      */
@@ -116,24 +117,24 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
     const savePlan = (e) => {
         e.preventDefault();
         if(!(matrlCtrtData.totAmt > 0)) {
-            alert("지불 총액은 0 이상 입력해야 합니다.");
+            handleOpen("지불 총액은 0 이상 입력해야 합니다.");
             return;
         }
 
         //지급 총액이 가용금액을 초과할 경우
         if(matrlCtrtData.cntrctamount < matrlCtrtData.totAmt) {
-            alert("지불 총액은 계약금액을 초과할 수 없습니다.");
+            handleOpen("지불 총액은 계약금액을 초과할 수 없습니다.");
             return;
         }
 
         if(matrlCtrtData.expectCt < matrlCtrtData.totAmt){
-            alert("지불 총액은 계약금액을 초과할 수 없습니다.");
+            handleOpen("지불 총액은 계약금액을 초과할 수 없습니다.");
             return;
         }
 
         const isExpectCtrtEntrps = tableData.some(item => {
             if((item.expectCtrtEntrpsNm === matrlCtrtData.expectCtrtEntrpsNm)&&!(Object.keys(selectedData).length)) {
-                alert(`이미 등록된 ${matrlPlanParam.label}입니다.`);
+                handleOpen(`이미 등록된 ${matrlPlanParam.label}입니다.`);
                 return true; // true를 반환하여 some 메서드 반복 중단
             }
             return false;
