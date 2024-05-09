@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react"
 import { useCookies } from "react-cookie";
 import { useLocation } from "react-router-dom";
+import { useModal } from "../../components/unit/ModalContext";
 
 import axios from "axios";
 
@@ -45,6 +46,7 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
 const EmpWorkTime = () => {
     // 근무시간데이터
     const insertValueRef = useRef(null);
+    const { handleOpen } = useModal();
 
     // 검색조건
     const SearchYearValueRef = useRef();
