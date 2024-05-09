@@ -10,19 +10,21 @@ export const ModalProvider = ({ children }) => {
   const [ open, setOpen ] = useState(false);
   const [ message, setMessage ] = useState('');
   const [ onClick, setOnClick ] = useState(undefined);
+  const [ isStepOne, setIsStepOne ] = useState(false);
 
   const handleClose = () => setOpen(false);
   
-  const handleOpen = (msg, onClickAction) => {
+  const handleOpen = (msg, onClickAction, closeMode) => {
+    setOpen(true);
     setMessage(msg);
     setOnClick(() => onClickAction);
-    setOpen(true);
+    setIsStepOne(closeMode);
   };
 
   return (
     <ModalContext.Provider value={{ handleOpen, handleClose }}>
       {children}
-      <CustomModal open={open} close={handleClose} message={message} onClick={onClick} />
+      {open && <CustomModal open={open} close={handleClose} message={message} onClick={onClick} isStepOne={isStepOne} />}
     </ModalContext.Provider>
   );
 };
