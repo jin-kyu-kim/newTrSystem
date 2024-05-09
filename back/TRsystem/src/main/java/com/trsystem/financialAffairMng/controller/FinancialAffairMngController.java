@@ -20,4 +20,10 @@ public class FinancialAffairMngController {
 		
 		return FinancialAffairMngDomain.retrieveCtData(params);
 	}
+
+	@PostMapping(value = "/boot/financialAffairMng/updateClturPhstrnActct")
+	public List<Map<String, Object>> updateClturPhstrnActct(@RequestBody List<Map<String, Object>> params) {
+
+		return FinancialAffairMngDomain.updateClturPhstrnActct(params);
+	}
 }
