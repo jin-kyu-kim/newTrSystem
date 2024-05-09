@@ -86,4 +86,23 @@ private static CommonService commonService;
 		commonService.queryIdSearch(param);
 		return 1;
 	}
+	
+	@Transactional
+	public static int cancelMmCtAtrz(List<List<Map<String, Object>>> paramList) {
+		
+		int result = 0;
+
+		try {
+			for(int i = 0; i < paramList.size(); i++) {
+				result = commonService.updateData(paramList.get(i));
+			}
+			
+		} catch (Exception e) {
+			result = 0;
+		}
+		
+		return result;
+		
+	}
+	
 }

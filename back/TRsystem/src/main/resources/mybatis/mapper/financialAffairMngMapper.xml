@@ -486,7 +486,7 @@
               AND e.EMPNO NOT IN ('VK0101', 'VK0102', 'VK0103', 'VK0104', 'VK0105', 'VK0106', 'VK0107', 'VK0108', 'VK0109', 'VK0110', 'VM1000')
         ) a, (
             SELECT
-                COUNT(DISTINCT CASE WHEN pah.ATRZ_DMND_STTS_CD IN ('VTW03701','VTW03702','VTW03703','VTW03704') THEN pma.EMP_ID END) AS MM_03701,
+                COUNT(DISTINCT CASE WHEN pah.ATRZ_DMND_STTS_CD IN ('','VTW03701','VTW03702','VTW03703','VTW03704') THEN pma.EMP_ID END) AS MM_03701,
                 COUNT(DISTINCT CASE WHEN pah.ATRZ_DMND_STTS_CD IN ('VTW03702','VTW03703','VTW03704') THEN pma.EMP_ID END) AS MM_03702,
                 COUNT(DISTINCT CASE WHEN pah.ATRZ_DMND_STTS_CD IN ('VTW03703','VTW03704') THEN pma.EMP_ID END) AS MM_037034
             FROM PRJCT_MM_APLY pma
@@ -518,7 +518,7 @@
             </if>
         ) b, (
             SELECT
-                COUNT(DISTINCT CASE WHEN pah.ATRZ_DMND_STTS_CD IN ('VTW03701','VTW03702','VTW03703','VTW03704') THEN pca.EMP_ID END) AS CT_03701,
+                COUNT(DISTINCT CASE WHEN pah.ATRZ_DMND_STTS_CD IN ('','VTW03701','VTW03702','VTW03703','VTW03704') THEN pca.EMP_ID END) AS CT_03701,
                 COUNT(DISTINCT CASE WHEN pah.ATRZ_DMND_STTS_CD IN ('VTW03702','VTW03703','VTW03704') THEN pca.EMP_ID END) AS CT_03702,
                 COUNT(DISTINCT CASE WHEN pah.ATRZ_DMND_STTS_CD IN ('VTW03703','VTW03704') THEN pca.EMP_ID END) AS CT_037034
             FROM PRJCT_CT_APLY pca
@@ -577,16 +577,17 @@
 	          , AA.TELNO
 	          , (SELECT CD_NM FROM CD WHERE CD_VALUE = AA.HDOF_STTS_CD) AS HDOF_STTS_NM
 	          , IFNULL(BB.CT_CNT, 0) AS CT_CNT
+	          , IFNULL(BB.PRJ_REQUEST, 0) AS PRJ_REQUEST
 	          , IFNULL(BB.PRJ_REJECT, 0) AS CT_REJECT
 	          , IFNULL(BB.PRJ_COMPLETE, 0) AS CT_COMPLETE
 	          , IFNULL(CC.MD_SUM,0) * 8 AS MD_SUM
 	          , IFNULL(CC.VAC_SUM, 0) AS VAC_SUM
-              , IFNULL(CC.MM_COMPLETE, 0) + IFNULL(CC.VAC_SUM, 0) + IFNULL(CC.MM_REJECT, 0) AS MM_COMPLETE
+              , IFNULL(CC.MM_REQUEST, 0) AS MM_REQUEST
+              , IFNULL(CC.MM_APRV, 0) AS MM_APRV
+              , IFNULL(CC.MM_APRV, 0) + IFNULL(CC.VAC_SUM, 0) + IFNULL(CC.MM_REJECT, 0) AS MM_COMPLETE
 	          , CONCAT(CC.APLY_YM, '-', CC.APLY_ODR) AS TR_ODR
 	          , CC.APLY_YM
 	          , CC.APLY_ODR
-	          , CC.MM_ATRZ_CMPTN_YN
-	          , BB.CT_ATRZ_CMPTN_YN
 	      FROM EMP AA
 	      LEFT JOIN (
 				  SELECT T1.EMP_ID
@@ -595,61 +596,73 @@
 				 	   , IFNULL(T1.CT_CNT, 0) AS CT_CNT
 				   	   , IFNULL(T2.PRJ_COMPLETE, 0) AS PRJ_COMPLETE
 				 	   , IFNULL(T3.PRJ_REJECT, 0) AS PRJ_REJECT
-				 	   , T1.CT_ATRZ_CMPTN_YN
+				 	   , IFNULL(T4.PRJ_REQUEST, 0) AS PRJ_REQUEST
 			  		FROM (
 				  SELECT pca.EMP_ID
 					   , pca.APLY_YM 
 					   , pca.APLY_ODR 
 					   , COUNT(1) CT_CNT
-					   , picm.CT_ATRZ_CMPTN_YN
 				    FROM PRJCT_CT_APLY pca
 				    JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
-				    LEFT JOIN PRJCT_INDVDL_CT_MM picm ON (pca.PRJCT_ID = picm.PRJCT_ID AND pca.EMP_ID = picm.EMP_ID AND pca.APLY_YM = picm.APLY_YM AND pca.APLY_ODR = picm.APLY_ODR)
 				   WHERE 1=1
 				     AND pca.APLY_YM = #{aplyYm}
 				     AND pca.APLY_ODR = #{aplyOdr}
-				  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR, picm.CT_ATRZ_CMPTN_YN
+ 				     AND pcat.ATRZ_DMND_STTS_CD IS NOT NULL
+ 				     AND (pca.CT_ATRZ_SE_CD = 'VTW01902' OR pca.CT_ATRZ_SE_CD = 'VTW01903')
+				  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR
 			  ) T1
 		  LEFT JOIN (
 				  SELECT pca.EMP_ID
 					   , pca.APLY_YM 
 					   , pca.APLY_ODR 
 					   , COUNT(1) AS PRJ_COMPLETE
-		 			   , picm.CT_ATRZ_CMPTN_YN
 				    FROM PRJCT_CT_APLY pca
 				    JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
-		  		    LEFT JOIN PRJCT_INDVDL_CT_MM picm ON (pca.PRJCT_ID = picm.PRJCT_ID AND pca.EMP_ID = picm.EMP_ID AND pca.APLY_YM = picm.APLY_YM AND pca.APLY_ODR = picm.APLY_ODR)
 				   WHERE 1=1
 				     AND pca.APLY_YM = #{aplyYm}
 				     AND pca.APLY_ODR = #{aplyOdr}
 				     AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703'
-				  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR, picm.CT_ATRZ_CMPTN_YN
+				     AND (pca.CT_ATRZ_SE_CD = 'VTW01902' OR pca.CT_ATRZ_SE_CD = 'VTW01903')
+				  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR
 			  ) T2 ON (T1.EMP_ID = T2.EMP_ID)
 		  LEFT JOIN (
 				  SELECT pca.EMP_ID
 					   , pca.APLY_YM 
 					   , pca.APLY_ODR 
 					   , COUNT(1) AS PRJ_REJECT
-		  			   , picm.CT_ATRZ_CMPTN_YN
 				    FROM PRJCT_CT_APLY pca
 				    JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
-				    JOIN PRJCT_INDVDL_CT_MM picm ON (pca.PRJCT_ID = picm.PRJCT_ID AND pca.EMP_ID = picm.EMP_ID AND pca.APLY_YM = picm.APLY_YM AND pca.APLY_ODR = picm.APLY_ODR)
 				   WHERE 1=1
 				     AND pca.APLY_YM = #{aplyYm}
 				     AND pca.APLY_ODR = #{aplyOdr}
 				     AND pcat.ATRZ_DMND_STTS_CD = 'VTW03704'
-				  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR, picm.CT_ATRZ_CMPTN_YN
-			  ) T3 ON (T2.EMP_ID = T3.EMP_ID)
+				     AND (pca.CT_ATRZ_SE_CD = 'VTW01902' OR pca.CT_ATRZ_SE_CD = 'VTW01903')
+				  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR
+			  ) T3 ON (T1.EMP_ID = T3.EMP_ID)
+		  LEFT JOIN (
+				  SELECT pca.EMP_ID
+					   , pca.APLY_YM 
+					   , pca.APLY_ODR 
+					   , COUNT(1) AS PRJ_REQUEST
+				    FROM PRJCT_CT_APLY pca
+				    JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
+				   WHERE 1=1
+				     AND pca.APLY_YM = #{aplyYm}
+				     AND pca.APLY_ODR = #{aplyOdr}
+				     AND pcat.ATRZ_DMND_STTS_CD = 'VTW03702'
+				     AND (pca.CT_ATRZ_SE_CD = 'VTW01902' OR pca.CT_ATRZ_SE_CD = 'VTW01903')
+				  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR
+			  ) T4 ON (T1.EMP_ID = T4.EMP_ID)
 	    ) BB ON BB.EMP_ID = AA.EMP_ID
 	    LEFT OUTER JOIN (
 	        SELECT T1.EMP_ID
 	         	 , T1.APLY_YM
 	         	 , T1.APLY_ODR
 	         	 , IFNULL(SUM(T1.MM_CNT), 0) AS MD_SUM
-	         	 , IFNULL(SUM(T2.MM_COMPLETE), 0) * 8 AS MM_COMPLETE
+	         	 , IFNULL(SUM(T2.MM_APRV), 0) * 8 AS MM_APRV
 	         	 , IFNULL(SUM(T3.MM_REJECT), 0) * 8 AS MM_REJECT
+	         	 , IFNULL(SUM(T4.MM_REQUEST), 0) * 8 AS MM_REQUEST
 	         	 , IFNULL(SUM(T2.VAC), 0) * 8 AS VAC_SUM
-	         	 , T1.MM_ATRZ_CMPTN_YN
 	        FROM (
 				SELECT pca.EMP_ID
 				     , pca.APLY_YM 
@@ -657,14 +670,12 @@
 				     , COUNT(1) MM_CNT
 				     , pca.APLY_YMD
 				     , 0 AS VAC
-				     , picm.MM_ATRZ_CMPTN_YN
 			      FROM PRJCT_MM_APLY pca
 			      JOIN PRJCT_MM_ATRZ pcat ON (pcat.APLY_YMD = pca.APLY_YMD AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
-			      LEFT JOIN PRJCT_INDVDL_CT_MM picm ON (pca.PRJCT_ID = picm.PRJCT_ID AND pca.EMP_ID = picm.EMP_ID AND pca.APLY_YM = picm.APLY_YM AND pca.APLY_ODR = picm.APLY_ODR)
 			     WHERE 1=1
 			       AND pca.APLY_YM = #{aplyYm}
 			       AND pca.APLY_ODR = #{aplyOdr}
-			    GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR, picm.MM_ATRZ_CMPTN_YN, pca.APLY_YMD
+			    GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR, pca.APLY_YMD
 			    UNION
 			  SELECT dv.ATRZ_DMND_EMP_ID
 			       , dv.APLY_YM
@@ -672,7 +683,6 @@
 			       , 0 AS MM_CNT
 			       , dv.APLY_YMD
 			       , 1 AS VAC
-			  	   , picm.MM_ATRZ_CMPTN_YN
 			    FROM (
 					  WITH RECURSIVE DAILY_VACATION AS (SELECT
 					          ELC.ELCTRN_ATRZ_ID ,
@@ -716,13 +726,6 @@
 					   FROM DAILY_VACATION
 				) dv
 			 JOIN CRTR_DATE crd ON crd.CRTR_YMD = dv.APLY_YMD AND crd.HLDY_CL_CD = 'VTW05001'
-			 LEFT JOIN PRJCT_INDVDL_CT_MM picm 
-			   ON (
-				   picm.PRJCT_ID = dv.PRJCT_ID 
-				   AND picm.APLY_YM = dv.APLY_YM
-				   AND picm.APLY_ODR = dv.APLY_ODR
-				   AND picm.EMP_ID = dv.ATRZ_DMND_EMP_ID
-				)
 			WHERE 1=1
 			  AND dv.APLY_YM = #{aplyYm}
 			  AND dv.APLY_ODR = #{aplyOdr}
@@ -732,26 +735,23 @@
 			  SELECT pca.EMP_ID
 				   , pca.APLY_YM 
 				   , pca.APLY_ODR 
-				   , COUNT(1) AS MM_COMPLETE
+				   , COUNT(1) AS MM_APRV
 				   , pca.APLY_YMD
 				   , 0 AS VAC
-				   , picm.MM_ATRZ_CMPTN_YN
 			    FROM PRJCT_MM_APLY pca
 			    JOIN PRJCT_MM_ATRZ pcat ON (pcat.APLY_YMD = pca.APLY_YMD AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
-			    JOIN PRJCT_INDVDL_CT_MM picm ON (pca.PRJCT_ID = picm.PRJCT_ID AND pca.EMP_ID = picm.EMP_ID AND pca.APLY_YM = picm.APLY_YM AND pca.APLY_ODR = picm.APLY_ODR)
 			   WHERE 1=1
 			     AND pca.APLY_YM = #{aplyYm}
 			     AND pca.APLY_ODR = #{aplyOdr}
 			     AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703'
-			  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR, picm.MM_ATRZ_CMPTN_YN, pca.APLY_YMD
+			  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR, pca.APLY_YMD
 			  UNION
 			  SELECT dv.ATRZ_DMND_EMP_ID
 			       , dv.APLY_YM
 			       , dv.APLY_ODR
-			       , 0 AS MM_COMPLETE
+			       , 0 AS MM_APRV
 			       , dv.APLY_YMD
 			       , 1 AS VAC
-			  	   , picm.MM_ATRZ_CMPTN_YN
 			    FROM (
 					  WITH RECURSIVE DAILY_VACATION AS (SELECT
 					          ELC.ELCTRN_ATRZ_ID ,
@@ -795,13 +795,6 @@
 					   FROM DAILY_VACATION
 				) dv
 			 JOIN CRTR_DATE crd ON crd.CRTR_YMD = dv.APLY_YMD AND crd.HLDY_CL_CD = 'VTW05001'
-			 LEFT JOIN PRJCT_INDVDL_CT_MM picm 
-			   ON (
-				   picm.PRJCT_ID = dv.PRJCT_ID 
-				   AND picm.APLY_YM = dv.APLY_YM
-				   AND picm.APLY_ODR = dv.APLY_ODR
-				   AND picm.EMP_ID = dv.ATRZ_DMND_EMP_ID
-				)
 			WHERE 1=1
 			  AND dv.APLY_YM = #{aplyYm}
 			  AND dv.APLY_ODR = #{aplyOdr}
@@ -814,17 +807,30 @@
 					   , COUNT(1) AS MM_REJECT
 					   , pca.APLY_YMD
 	   			       , 0 AS VAC
-		 			   , picm.MM_ATRZ_CMPTN_YN
 				    FROM PRJCT_MM_APLY pca
 				    JOIN PRJCT_MM_ATRZ pcat ON (pcat.APLY_YMD = pca.APLY_YMD AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
-		  		    LEFT JOIN PRJCT_INDVDL_CT_MM picm ON (pca.PRJCT_ID = picm.PRJCT_ID AND pca.EMP_ID = picm.EMP_ID AND pca.APLY_YM = picm.APLY_YM AND pca.APLY_ODR = picm.APLY_ODR)
 				   WHERE 1=1
 				     AND pca.APLY_YM = #{aplyYm}
 				     AND pca.APLY_ODR = #{aplyOdr}
 				     AND pcat.ATRZ_DMND_STTS_CD = 'VTW03704'
-				  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR, picm.MM_ATRZ_CMPTN_YN, pca.APLY_YMD      
+				  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR, pca.APLY_YMD      
 	        ) T3 ON (T1.EMP_ID = T3.EMP_ID AND T1.APLY_YMD = T3.APLY_YMD)
-	        GROUP BY T1.EMP_ID, T1.APLY_YM, T1.APLY_ODR, T1.MM_ATRZ_CMPTN_YN
+	        LEFT JOIN (
+	 			  SELECT pca.EMP_ID
+					   , pca.APLY_YM 
+					   , pca.APLY_ODR 
+					   , COUNT(1) AS MM_REQUEST
+					   , pca.APLY_YMD
+	   			       , 0 AS VAC
+				    FROM PRJCT_MM_APLY pca
+				    JOIN PRJCT_MM_ATRZ pcat ON (pcat.APLY_YMD = pca.APLY_YMD AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
+				   WHERE 1=1
+				     AND pca.APLY_YM = #{aplyYm}
+				     AND pca.APLY_ODR = #{aplyOdr}
+				     AND pcat.ATRZ_DMND_STTS_CD = 'VTW03702'
+				  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR, pca.APLY_YMD      
+	        ) T4 ON (T1.EMP_ID = T4.EMP_ID AND T1.APLY_YMD = T4.APLY_YMD)
+	        GROUP BY T1.EMP_ID, T1.APLY_YM, T1.APLY_ODR
 	    ) CC
 	        ON CC.EMP_ID = AA.EMP_ID
 	    WHERE 1 = 1
@@ -839,87 +845,103 @@
 		<if test="allVtw != true">
 	        <choose>
 				<when test="mm03701 == true and mm03701Min == true">
+				<![CDATA[ 
 				  AND (MD_SUM > 0 OR IFNULL(MD_SUM, 0) = 0)
+				]]>
 				</when>
 				<when test="mm03701 == true">
+				<![CDATA[ 
 				  AND MD_SUM > 0
+				]]>
 				</when>
 				<when test="mm03701Min == true">
+				<![CDATA[ 
 				  AND IFNULL(MD_SUM, 0) = 0
+				]]>
 				</when>
 			</choose>
 	        <choose>
 				<when test="ct03701 == true and ct03701Min == true">
+				<![CDATA[ 
 				  AND (CT_CNT > 0 OR IFNULL(CT_CNT, 0) = 0)
+				]]>
 				</when>
 				<when test="ct03701 == true">
+				<![CDATA[ 
 				  AND CT_CNT > 0
+				]]>
 				</when>
 				<when test="ct03701Min == true">
+				<![CDATA[ 
 				  AND IFNULL(CT_CNT, 0) = 0
+				]]>
 				</when>
 			</choose>
 	        <choose>
 				<when test="mm03702 == true and mm03702Min == true">
 				<![CDATA[
-				  AND ((CC.MM_ATRZ_CMPTN_YN IS NULL AND BB.CT_CNT > 0) OR CC.MM_ATRZ_CMPTN_YN IS NOT NULL)
+				  AND ((CC.MM_REQUEST > 0 OR CC.MM_REJECT > 0 OR CC.MM_APRV > 0) OR (CC.MD_SUM > 0 AND (CC.MM_REQUEST <= 0 AND CC.MM_REJECT <= 0 AND CC.MM_APRV <= 0)))
 	  			]]>
 				</when>
 				<when test="mm03702 == true">
-				  AND CC.MM_ATRZ_CMPTN_YN IS NOT NULL
+				<![CDATA[
+				  AND (CC.MM_REQUEST > 0 OR CC.MM_REJECT > 0 OR CC.MM_APRV > 0)
+				]]>
 				</when>
 				<when test="mm03702Min == true">
 				<![CDATA[
-				  AND (CC.MM_ATRZ_CMPTN_YN IS NULL AND BB.CT_CNT > 0)
+				  AND (CC.MD_SUM > 0 AND (CC.MM_REQUEST <= 0 AND CC.MM_REJECT <= 0 AND CC.MM_APRV <= 0))
 	  			]]>
 				</when>
 			</choose>
 	        <choose>
 				<when test="ct03702 == true and ct03702Min == true">
 				<![CDATA[
-				  AND ((BB.CT_ATRZ_CMPTN_YN IS NULL AND BB.CT_CNT > 0) OR BB.CT_ATRZ_CMPTN_YN IS NOT NULL)
+  				  AND ((BB.PRJ_REQUEST > 0 OR BB.PRJ_REJECT > 0 OR BB.PRJ_COMPLETE > 0) OR (BB.CT_CNT > 0 AND (BB.PRJ_REQUEST <= 0 AND BB.PRJ_REJECT <= 0 AND BB.PRJ_COMPLETE <= 0)))
 	  			]]>
 				</when>
 				<when test="ct03702 == true">
-				  AND BB.CT_ATRZ_CMPTN_YN IS NOT NULL 
+				<![CDATA[ 
+				  AND (BB.PRJ_REQUEST > 0 OR BB.PRJ_REJECT > 0 OR BB.PRJ_COMPLETE > 0)
+				]]>
 				</when>
 				<when test="ct03702Min == true">
 				<![CDATA[
-				  AND (BB.CT_ATRZ_CMPTN_YN IS NULL AND BB.CT_CNT > 0)
+				  AND (BB.CT_CNT > 0 AND (BB.PRJ_REQUEST <= 0 AND BB.PRJ_REJECT <= 0 AND BB.PRJ_COMPLETE <= 0))
 				]]>
 				</when>
 			</choose>
 	        <choose>
 				<when test="mm037034 == true and mm037034Min == true">
 				<![CDATA[ 
-				  AND (CC.MM_REJECT > 0 OR CC.MM_COMPLETE > 0 OR CC.MM_REJECT <= 0 OR CC.MM_COMPLETE <= 0)
+				  AND (CC.MM_REJECT > 0 OR CC.MM_APRV > 0 OR CC.MM_REJECT <= 0 OR CC.MM_APRV <= 0)
 				]]>
 				</when>
 				<when test="mm037034 == true">
 				<![CDATA[ 
-				  AND (CC.MM_REJECT > 0 OR CC.MM_COMPLETE > 0)
+				  AND (CC.MM_REJECT > 0 OR CC.MM_APRV > 0)
 	  			]]>
 				</when>
 				<when test="mm037034Min == true">
 				<![CDATA[ 
-				  AND (CC.MM_REJECT <= 0 AND CC.MM_COMPLETE <=0)
+				  AND (CC.MM_REJECT <= 0 AND CC.MM_APRV <=0)
 	  			]]>
 				</when>
 			</choose>
 	        <choose>
 				<when test="ct037034 == true and ct037034Min == true">
 				<![CDATA[ 
-				  AND (BB.CT_REJECT > 0 OR BB.CT_COMPLETE > 0 OR BB.CT_REJECT <= 0 OR BB.CT_COMPLETE <= 0)
+				  AND (BB.PRJ_REJECT > 0 OR BB.PRJ_COMPLETE > 0 OR BB.PRJ_REJECT <= 0 OR BB.PRJ_COMPLETE <= 0)
 				]]>
 				</when>
 				<when test="ct037034 == true">
 				<![CDATA[ 
-				  AND (BB.CT_REJECT > 0 OR BB.CT_COMPLETE > 0)
+				  AND (BB.PRJ_REJECT > 0 OR BB.PRJ_COMPLETE > 0)
 	  			]]>
 				</when>
 				<when test="ct037034Min == true">
 				<![CDATA[ 
-				  AND (BB.CT_REJECT <= 0 AND BB.CT_COMPLETE <=0)
+				  AND (BB.PRJ_REJECT <= 0 AND BB.PRJ_COMPLETE <=0)
 	  			]]>
 				</when>
 			</choose>			
@@ -1413,6 +1435,7 @@
 			 , pca.PRJCT_CT_APLY_SN
 			 , pca.APLY_YM
 			 , pca.APLY_ODR
+			 , pca.EMP_ID
 		  FROM PRJCT_CT_APLY pca
 		  JOIN PRJCT_CT_ATRZ pcat
 		    ON (
