@@ -1,6 +1,7 @@
 package com.trsystem.financialAffairMng.domain;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.time.LocalDate;
@@ -75,6 +76,29 @@ private static CommonService commonService;
 		return pivotCtDataList;
 	}
 
+	public static List<Map<String, Object>> updateClturPhstrnActct(List<Map<String, Object>> params) {
+		Map<String, Object> updateClturPhstrnActctRegMap = new HashMap<>();
+
+		for(int i = 0; i < params.size(); i++){
+			updateClturPhstrnActctRegMap.clear();
+
+			updateClturPhstrnActctRegMap.put("queryId", "financialAffairMngMapper.updateClturPhstrnActctReg");
+			updateClturPhstrnActctRegMap.put("state", "UPDATE");
+			updateClturPhstrnActctRegMap.put("clturPhstrnSeCd", params.get(i).get("clturPhstrnSeCd"));
+			updateClturPhstrnActctRegMap.put("clmAmt", params.get(i).get("clmAmt"));
+			updateClturPhstrnActctRegMap.put("rm", params.get(i).get("rm"));
+			updateClturPhstrnActctRegMap.put("clturPhstrnActCtSn", params.get(i).get("clturPhstrnActCtSn"));
+			updateClturPhstrnActctRegMap.put("empId", params.get(i).get("empId"));
+
+			commonService.queryIdDataControl(updateClturPhstrnActctRegMap);
+		}
+
+
+
+
+		return null;
+	}
+	
 	@Transactional
 	public static int updateDpstAmt(Map<String, Object> param) {
 		param.put("queryId", "financialAffairMngMapper.updateDpstAmtThisMonth");

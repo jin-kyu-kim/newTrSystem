@@ -1407,6 +1407,22 @@
 		   AND CRTR_ODR = #{aplyOdr}
 		   AND SUBSTR(CRTR_YMD, 1, 6) = #{aplyYm}
 	</select>
+
+
+    <!-- 문화체육활동비용등록수정 -->
+    <update id="updateClturPhstrnActctReg" parameterType="map">
+        /* financialAffairMngMapper.updateClturPhstrnActctReg */
+        UPDATE CLTUR_PHSTRN_ACT_CT_REG
+        SET
+            CLTUR_PHSTRN_SE_CD = #{clturPhstrnSeCd}
+            ,CLM_AMT = #{clmAmt}
+            ,RM = #{rm}
+            ,REG_DT = SYSDATE()
+            ,REG_EMP_ID = #{sessionEmpId}
+        WHERE EMP_ID = #{empId}
+        AND CLTUR_PHSTRN_ACT_CT_SN = #{clturPhstrnActCtSn}
+    </update>
+
 	
 	<select id="retrieveMmList" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT pma.PRJCT_ID

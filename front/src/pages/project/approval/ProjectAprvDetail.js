@@ -488,15 +488,7 @@ const ProjectAprvDetail = () => {
                             if(data.index === selectedIndex) {
                                 return (
                                     <React.Suspense fallback={<div>Loading...</div>}>
-                                        <Component 
-                                            prjctId={prjctId} 
-                                            ctrtYmd={ctrtYmd} 
-                                            stbleEndYmd={stbleEndYmd} 
-                                            bgtMngOdr={bgtMngOdr} 
-                                            atrzDmndSttsCd={atrzDmndSttsCd}
-                                            nowAtrzStepCd={nowAtrzStepCd}
-                                            atrzLnSn={atrzLnSn}
-                                        />
+                                        <Component prjctId={prjctId} ctrtYmd={ctrtYmd} stbleEndYmd={stbleEndYmd} bgtMngOdr={bgtMngOdr} atrzDmndSttsCd={atrzDmndSttsCd}/>
                                     </React.Suspense>
                                 );
                             }

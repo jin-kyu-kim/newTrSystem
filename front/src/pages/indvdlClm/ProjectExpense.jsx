@@ -14,7 +14,6 @@ const ProjectExpense = () => {
     const { ExpenseInfo, keyColumn, ctAplyTableColumns, elcKeyColumn, columnCharge, buttonsConfig,
         aplyAndAtrzCtQueryId, dmndSttsQueryId, groupingColumn, groupingData, searchInfo } = ProjectExpenseJson.ProjectExpenseMain;
     const [ index, setIndex ] = useState(0);
-    const [ scrollPosition, setScrollPosition ] = useState(0);
     const [ atrzDmndSttsCnt, setAtrzDmndSttsCnt ] = useState({}); // 상태코드별 데이터 개수
     const [ ctAply, setCtAply ] = useState([]); // 차수 청구내역 (table1)
     const [ ctAtrz, setCtAtrz ] = useState([]); // 전자결재 청구내역 (table2)
@@ -37,10 +36,7 @@ const ProjectExpense = () => {
     const itemTitleRender = (a) => <span>{a.TabName}</span>;
     const onSelectionChanged = useCallback(
         (args) => {
-            if (args.name === "selectedIndex") {
-                setScrollPosition(window.scrollY || document.documentElement.scrollTop);
-                setIndex(args.value);
-            }
+            if (args.name === "selectedIndex") setIndex(args.value);
         }, [setIndex]
     );
 
@@ -213,6 +209,7 @@ const ProjectExpense = () => {
                         onOptionChanged={onSelectionChanged}
                         itemTitleRender={itemTitleRender}
                         animationEnabled={true}
+                        height={1500}
                         itemComponent={({ data }) => {
                             const Component = React.lazy(() => import(`${data.url}`));
                             return (

@@ -1,33 +1,43 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useLocation } from "react-router-dom";
+import { useCookies } from "react-cookie";
 import { Button } from "devextreme-react";
-import { useModal } from "../../components/unit/ModalContext";
 import uuid from "react-uuid";
 import axios from "axios";
 import ApiRequest from "utils/ApiRequest";
 import NoticeJson from "../infoInq/NoticeJson.json";
 import BoardInputForm from 'components/composite/BoardInputForm';
+import moment from 'moment';
 
 const ReferenceInput = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const [cookies] = useCookies(["userInfo", "userAuth"]);
+    const [attachments, setAttachments] = useState([]);
+    const [deleteFiles, setDeleteFiles] = useState([{tbNm: "ATCHMNFL"}]);
+    const [newAttachments, setNewAttachments] = useState(attachments);
     const { edit, insertUrl, detail } = NoticeJson;
-    const [ attachments, setAttachments ] = useState([]);
-    const [ deleteFiles, setDeleteFiles ] = useState([{tbNm: "ATCHMNFL"}]);
-    const [ newAttachments, setNewAttachments ] = useState(attachments);
-    const [ prevData, setPrevData ] = useState({});
-    const [ data, setData ] = useState({
-        noticeId: uuid(),
-        useYn: "Y"
-    });
-    const { handleOpen } = useModal();
 
+    const empId = cookies.userInfo.empId;
     const editMode = location.state.editMode;
     const id = location.state.id;
+    const date = moment();
+    const [prevData, setPrevData] = useState({});
+    const [ data, setData ] = useState({
+        noticeId: uuid(),
+        regEmpId: empId,
+        useYn: "Y",
+        regDt: date.format('YYYY-MM-DD HH:mm:ss')
+    });
+    
+    const onClick = () => {
+        const result = window.confirm(editMode !== 'update' ? "등록하시겠습니까?" : "수정하시겠습니까?");
+        if(result) storeNotice(editMode);
+    };
 
     const getOneData = async () => {
-        const param = { queryId: detail.detailQueryId, noticeId: id }
+    const param = { queryId: detail.detailQueryId, noticeId: id }
         try {
             const response = await ApiRequest("/boot/common/queryIdSearch", param);
             if (response.length !== 0) {
@@ -92,7 +102,7 @@ const ReferenceInput = () => {
         return errors.length === 0;
     };
 
-    const storeReference = async (editMode) => {
+    const storeNotice = async (editMode) => {
         if(editMode === 'update'){
             let changedValues = {};
 
@@ -103,6 +113,9 @@ const ReferenceInput = () => {
             });
             setData({
                 atchmnflId: data.atchmnflId,
+                regEmpId: empId,
+                mdfcnEmpId: empId,
+                mdfcnDt: date.format('YYYY-MM-DD HH:mm:ss'),
                 changedValues
             })
         }
@@ -121,18 +134,12 @@ const ReferenceInput = () => {
                 const response = await axios.post(insertUrl, formData, {
                     headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
                 })
-                if (response.data >= 1) {
-                    handleOpen('등록되었습니다.');
-                    navigate("/infoInq/ReferenceList");
-                }
-            } else{
-                handleOpen('필수항목을 입력해주세요.')
+                if (response.data >= 1) navigate("/infoInq/ReferenceList")
             }
         } catch (error) {
             console.error("API 요청 에러:", error);
         }
     };
-    const inputConfig = { data, setData, typeChk, setTypeChk, attachments, setAttachments, newAttachments, setNewAttachments };
 
     return (
         <div className="container">
@@ -141,18 +148,23 @@ const ReferenceInput = () => {
                 <h1 style={{ fontSize: "40px" }}>자료실</h1>
                 <span>* 자료실을 {editMode === 'update' ? '수정합니다' : '입력합니다.'}</span>
             </div>
-
             <BoardInputForm
                 edit={edit}
+                data={data}
+                typeChk={typeChk}
                 editMode={editMode}
                 editType='referemce'
+                attachments={attachments}
+                newAttachments={newAttachments}
+                setData={setData}
+                setTypeChk={setTypeChk}
+                setAttachments={setAttachments}
                 attachFileDelete={attachFileDelete}
-                inputConfig={inputConfig}
+                setNewAttachments={setNewAttachments}
             />
-            
             <div className="wrap_btns inputFormBtn">
                 <Button text="목록" onClick={() => navigate("/infoInq/ReferenceList")} />
-                <Button text="저장" useSubmitBehavior={true} onClick={() => handleOpen(editMode !== 'update' ? "등록하시겠습니까?" : "수정하시겠습니까?", storeReference)} />
+                <Button text="저장" useSubmitBehavior={true} onClick={onClick} />
             </div>
         </div>
     );

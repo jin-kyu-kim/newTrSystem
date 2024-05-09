@@ -267,13 +267,6 @@ const routes = [
     element: React.lazy(() => import("../../pages/fnnrMng/TimeExpenseClosingList")),
     isPrivate:"VTW04804"
   },
-  // 재무 관리 > 비용엑셀업로드
-  {
-    path: "/fnnrMng/CorpCardCtUld",
-    name: "CorpCardCtUld",
-    element: React.lazy(() => import("../../pages/fnnrMng/CorpCardCtUld")),
-    isPrivate:"VTW04804"
-  },
   // 개인 청구 > 문화체력비용
   {
     path: "/indvdlClm/CultureHealthCost",

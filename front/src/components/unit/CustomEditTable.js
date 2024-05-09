@@ -1,4 +1,4 @@
-import { Column, DataGrid, Editing, Lookup, MasterDetail, Selection, RequiredRule, StringLengthRule, Pager, Paging, Export, Summary, TotalItem, Scrolling } from 'devextreme-react/data-grid';
+import { Column, DataGrid, Editing, Lookup, MasterDetail, Selection, RequiredRule, StringLengthRule, Pager, Paging, Export, Summary, TotalItem } from 'devextreme-react/data-grid';
 import { useCallback, useEffect, useState } from 'react';
 import ApiRequest from 'utils/ApiRequest';
 import CellRender from './CellRender';
@@ -73,7 +73,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
             }
             const response = await ApiRequest('/boot/common/' + editInfo.url, editParam);
             if (response === 1) {
-                callback();
+                await callback();
                 handleOpen(`${editInfo.complete}되었습니다.`);
             } else {
                 handleOpen(`${editInfo.complete}에 실패했습니다.`);
@@ -200,7 +200,6 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                         
                     </Column>
                 ))}
-                <Scrolling columnRenderingMode='standard'/>
                 <Paging defaultPageSize={20} />
                 <Pager
                     displayMode="full"

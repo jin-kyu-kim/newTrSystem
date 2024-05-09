@@ -310,7 +310,3 @@
   border: 1px solid rgb(217, 215, 215);
   padding: 8px;
 }
-
-.dx-htmleditor-toolbar {
-  margin-bottom: 100px; /* HtmlEditor 툴바 높이 조절 */
-}

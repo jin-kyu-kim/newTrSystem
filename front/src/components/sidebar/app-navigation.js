@@ -153,8 +153,7 @@ export const navigation = [
         auth: 'VTW04804',
       },{
         text: '비용엑셀업로드',
-        path: '/fnnrMng/CorpCardCtUld',
-        auth: 'VTW04804' 
+        path: '/46'
       },
     ]
   },{
