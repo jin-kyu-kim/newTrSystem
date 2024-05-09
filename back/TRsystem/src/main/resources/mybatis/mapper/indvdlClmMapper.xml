@@ -1089,7 +1089,6 @@
              , CLM_AMT
              , ACT_IEM
              , CLTUR_PHSTRN_SE_CD
-             , ACT_PURPS
              , FRCS_NM
              , RM
              , c.ATCHMNFL_ID
@@ -1158,23 +1157,25 @@
         SELECT
             '체력단련비' AS CATEGORY
              , '02' AS NAME
-             , (CASE WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '01') THEN '01'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '02') THEN '02'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '03') THEN '03'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '04') THEN '04'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '05') THEN '05'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '06') THEN '06'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '07') THEN '07'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '08') THEN '08'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '09') THEN '09'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '10') THEN '10'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '11') THEN '11'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '12') THEN '12'
+             , (CASE WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '01') THEN '01'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '02') THEN '02'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '03') THEN '03'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '04') THEN '04'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '05') THEN '05'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '06') THEN '06'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '07') THEN '07'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '08') THEN '08'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '09') THEN '09'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '10') THEN '10'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '11') THEN '11'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '12') THEN '12'
                      ELSE 0 END) AS MONTH
              , IFNULL(FTNESS_TRNG_CT_DPST_AMT, 0) AS DATA
-        FROM CLTUR_PHSTRN_ACT_CT
+        FROM CLTUR_PHSTRN_ACT_CT ct
+        JOIN CLTUR_PHSTRN_ACT_MNG mng ON ct.CLTUR_PHSTRN_ACT_MNG_YM = mng.CLTUR_PHSTRN_ACT_MNG_YM
         WHERE EMP_ID = #{empId}
-          AND CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '%')
+          AND ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '%')
+          AND mng.DDLN_YN = 'Y'
         UNION ALL
         SELECT
             '체력단련비' AS CATEGORY
@@ -1202,23 +1203,25 @@
         SELECT
             '체력단련비' AS CATEGORY
              , '03' AS NAME
-             , (CASE WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '01') THEN '01'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '02') THEN '02'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '03') THEN '03'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '04') THEN '04'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '05') THEN '05'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '06') THEN '06'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '07') THEN '07'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '08') THEN '08'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '09') THEN '09'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '10') THEN '10'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '11') THEN '11'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '12') THEN '12'
+             , (CASE WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '01') THEN '01'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '02') THEN '02'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '03') THEN '03'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '04') THEN '04'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '05') THEN '05'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '06') THEN '06'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '07') THEN '07'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '08') THEN '08'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '09') THEN '09'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '10') THEN '10'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '11') THEN '11'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '12') THEN '12'
                      ELSE 0 END) AS MONTH
              , CONCAT('dt', IFNULL(FTNESS_TRNG_CT_DPST_YMD, '')) AS DATA
-        FROM CLTUR_PHSTRN_ACT_CT
+        FROM CLTUR_PHSTRN_ACT_CT ct
+        JOIN CLTUR_PHSTRN_ACT_MNG mng ON ct.CLTUR_PHSTRN_ACT_MNG_YM = mng.CLTUR_PHSTRN_ACT_MNG_YM
         WHERE EMP_ID = #{empId}
-          AND CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '%')
+          AND ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '%')
+          AND mng.DDLN_YN = 'Y'
         UNION ALL
         SELECT
             '체력단련비' AS CATEGORY
@@ -1246,23 +1249,24 @@
         SELECT
             '체력단련비' AS CATEGORY
              , '04' AS NAME
-             , (CASE WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '01') THEN '01'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '02') THEN '02'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '03') THEN '03'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '04') THEN '04'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '05') THEN '05'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '06') THEN '06'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '07') THEN '07'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '08') THEN '08'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '09') THEN '09'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '10') THEN '10'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '11') THEN '11'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '12') THEN '12'
+             , (CASE WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '01') THEN '01'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '02') THEN '02'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '03') THEN '03'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '04') THEN '04'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '05') THEN '05'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '06') THEN '06'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '07') THEN '07'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '08') THEN '08'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '09') THEN '09'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '10') THEN '10'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '11') THEN '11'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '12') THEN '12'
                      ELSE 0 END) AS MONTH
-             , IFNULL(FTNESS_TRNG_CT_CYFD_AMT, 0) + IFNULL(FTNESS_TRNG_CT_CLM_AMT, 0) - IFNULL(FTNESS_TRNG_CT_DPST_AMT, 0) AS DATA
-        FROM CLTUR_PHSTRN_ACT_CT
+             , IFNULL(ct.FTNESS_TRNG_CT_CYFD_AMT, 0) + IFNULL(ct.FTNESS_TRNG_CT_CLM_AMT, 0) - IF(mng.DDLN_YN = 'Y', IFNULL(ct.FTNESS_TRNG_CT_DPST_AMT, 0), 0) AS DATA
+        FROM CLTUR_PHSTRN_ACT_CT ct
+        JOIN CLTUR_PHSTRN_ACT_MNG mng ON ct.CLTUR_PHSTRN_ACT_MNG_YM = mng.CLTUR_PHSTRN_ACT_MNG_YM
         WHERE EMP_ID = #{empId}
-          AND CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '%')
+          AND ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '%')
         UNION ALL
         SELECT
             '체력단련비' AS CATEGORY
@@ -1334,23 +1338,25 @@
         SELECT
             '문화비' AS CATEGORY
              , '02' AS NAME
-             , (CASE WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '01') THEN '01'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '02') THEN '02'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '03') THEN '03'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '04') THEN '04'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '05') THEN '05'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '06') THEN '06'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '07') THEN '07'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '08') THEN '08'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '09') THEN '09'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '10') THEN '10'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '11') THEN '11'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '12') THEN '12'
+             , (CASE WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '01') THEN '01'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '02') THEN '02'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '03') THEN '03'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '04') THEN '04'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '05') THEN '05'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '06') THEN '06'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '07') THEN '07'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '08') THEN '08'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '09') THEN '09'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '10') THEN '10'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '11') THEN '11'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '12') THEN '12'
                      ELSE 0 END) AS MONTH
              , IFNULL(CLTUR_CT_DPST_AMT, 0) AS DATA
-        FROM CLTUR_PHSTRN_ACT_CT
+        FROM CLTUR_PHSTRN_ACT_CT ct
+        JOIN CLTUR_PHSTRN_ACT_MNG mng ON ct.CLTUR_PHSTRN_ACT_MNG_YM = mng.CLTUR_PHSTRN_ACT_MNG_YM
         WHERE EMP_ID = #{empId}
-          AND CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '%')
+          AND ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '%')
+          AND mng.DDLN_YN = 'Y'
         UNION ALL
         SELECT
             '문화비' AS CATEGORY
@@ -1378,23 +1384,25 @@
         SELECT
             '문화비' AS CATEGORY
              , '03' AS NAME
-             , (CASE WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '01') THEN '01'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '02') THEN '02'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '03') THEN '03'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '04') THEN '04'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '05') THEN '05'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '06') THEN '06'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '07') THEN '07'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '08') THEN '08'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '09') THEN '09'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '10') THEN '10'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '11') THEN '11'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '12') THEN '12'
+             , (CASE WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '01') THEN '01'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '02') THEN '02'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '03') THEN '03'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '04') THEN '04'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '05') THEN '05'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '06') THEN '06'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '07') THEN '07'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '08') THEN '08'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '09') THEN '09'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '10') THEN '10'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '11') THEN '11'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '12') THEN '12'
                      ELSE 0 END) AS MONTH
              , CONCAT('dt', IFNULL(CLTUR_CT_DPST_YMD, '')) AS DATA
-        FROM CLTUR_PHSTRN_ACT_CT
+        FROM CLTUR_PHSTRN_ACT_CT ct
+        JOIN CLTUR_PHSTRN_ACT_MNG mng ON ct.CLTUR_PHSTRN_ACT_MNG_YM = mng.CLTUR_PHSTRN_ACT_MNG_YM
         WHERE EMP_ID = #{empId}
-          AND CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '%')
+          AND ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '%')
+          AND mng.DDLN_YN = 'Y'
         UNION ALL
         SELECT
             '문화비' AS CATEGORY
@@ -1422,23 +1430,24 @@
         SELECT
             '문화비' AS CATEGORY
              , '04' AS NAME
-             , (CASE WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '01') THEN '01'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '02') THEN '02'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '03') THEN '03'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '04') THEN '04'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '05') THEN '05'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '06') THEN '06'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '07') THEN '07'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '08') THEN '08'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '09') THEN '09'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '10') THEN '10'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '11') THEN '11'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '12') THEN '12'
+             , (CASE WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '01') THEN '01'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '02') THEN '02'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '03') THEN '03'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '04') THEN '04'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '05') THEN '05'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '06') THEN '06'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '07') THEN '07'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '08') THEN '08'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '09') THEN '09'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '10') THEN '10'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '11') THEN '11'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '12') THEN '12'
                      ELSE 0 END) AS MONTH
-             , IFNULL(CLTUR_CT_CYFD_AMT, 0) + IFNULL(CLTUR_CT_CLM_AMT, 0) - IFNULL(CLTUR_CT_DPST_AMT, 0) AS DATA
-        FROM CLTUR_PHSTRN_ACT_CT
+             , IFNULL(ct.CLTUR_CT_CYFD_AMT, 0) + IFNULL(ct.CLTUR_CT_CLM_AMT, 0) - IF(mng.DDLN_YN = 'Y', IFNULL(ct.CLTUR_CT_DPST_AMT, 0), 0) AS DATA
+        FROM CLTUR_PHSTRN_ACT_CT ct
+        JOIN CLTUR_PHSTRN_ACT_MNG mng ON ct.CLTUR_PHSTRN_ACT_MNG_YM = mng.CLTUR_PHSTRN_ACT_MNG_YM
         WHERE EMP_ID = #{empId}
-          AND CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '%')
+          AND ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '%')
         UNION ALL
         SELECT
             '문화비' AS CATEGORY
@@ -1510,23 +1519,25 @@
         SELECT
             '합계' AS CATEGORY
              , '02' AS NAME
-             , (CASE WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '01') THEN '01'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '02') THEN '02'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '03') THEN '03'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '04') THEN '04'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '05') THEN '05'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '06') THEN '06'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '07') THEN '07'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '08') THEN '08'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '09') THEN '09'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '10') THEN '10'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '11') THEN '11'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '12') THEN '12'
+             , (CASE WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '01') THEN '01'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '02') THEN '02'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '03') THEN '03'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '04') THEN '04'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '05') THEN '05'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '06') THEN '06'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '07') THEN '07'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '08') THEN '08'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '09') THEN '09'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '10') THEN '10'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '11') THEN '11'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '12') THEN '12'
                      ELSE 0 END) AS MONTH
              , IFNULL(DPST_AMT, 0) AS DATA
-        FROM CLTUR_PHSTRN_ACT_CT
+        FROM CLTUR_PHSTRN_ACT_CT ct
+        JOIN CLTUR_PHSTRN_ACT_MNG mng ON ct.CLTUR_PHSTRN_ACT_MNG_YM = mng.CLTUR_PHSTRN_ACT_MNG_YM
         WHERE EMP_ID = #{empId}
-          AND CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '%')
+          AND ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '%')
+          AND mng.DDLN_YN = 'Y'
         UNION ALL
         SELECT
             '합계' AS CATEGORY
@@ -1554,23 +1565,24 @@
         SELECT
             '합계' AS CATEGORY
              , '04' AS NAME
-             , (CASE WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '01') THEN '01'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '02') THEN '02'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '03') THEN '03'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '04') THEN '04'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '05') THEN '05'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '06') THEN '06'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '07') THEN '07'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '08') THEN '08'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '09') THEN '09'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '10') THEN '10'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '11') THEN '11'
-                     WHEN CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '12') THEN '12'
+             , (CASE WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '01') THEN '01'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '02') THEN '02'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '03') THEN '03'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '04') THEN '04'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '05') THEN '05'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '06') THEN '06'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '07') THEN '07'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '08') THEN '08'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '09') THEN '09'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '10') THEN '10'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '11') THEN '11'
+                     WHEN ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '12') THEN '12'
                      ELSE 0 END) AS MONTH
-             , IFNULL(CYFD_AMT, 0) + IFNULL(CLM_AMT, 0) - IFNULL(DPST_AMT, 0) AS DATA
-        FROM CLTUR_PHSTRN_ACT_CT
+             , IFNULL(ct.CYFD_AMT, 0) + IFNULL(ct.CLM_AMT, 0) - IF(mng.DDLN_YN = 'Y', IFNULL(ct.DPST_AMT, 0), 0) AS DATA
+        FROM CLTUR_PHSTRN_ACT_CT ct
+        JOIN CLTUR_PHSTRN_ACT_MNG mng ON ct.CLTUR_PHSTRN_ACT_MNG_YM = mng.CLTUR_PHSTRN_ACT_MNG_YM
         WHERE EMP_ID = #{empId}
-          AND CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '%')
+          AND ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '%')
         UNION ALL
         SELECT
             '합계' AS CATEGORY
