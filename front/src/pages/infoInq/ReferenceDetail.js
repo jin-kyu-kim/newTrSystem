@@ -97,7 +97,7 @@ const ReferenceDetail = () => {
                         style={{ marginRight: '3px' }}
                         text={button.text}
                         type={button.type}
-                        onClick={button.onClick === "deleteReference" ? () => handleOpen('삭제하시겠습니까?', deleteReference) : () =>
+                        onClick={button.onClick === "deleteReference" ? () => handleOpen('삭제하시겠습니까?', deleteReference, true) : () =>
                             navigate(button.onClick, { state: button.state ? { ...button.state, id: noticeId } : undefined })}
                     />
                 ))}

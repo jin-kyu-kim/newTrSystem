@@ -93,7 +93,8 @@
     "menuName": "ProjectExpenseCard",
     "keyColumn": "cardUseSn",
     "queryId": "indvdlClmMapper.retrieveExpenseCardUseDtls",
-    "cdListQueryId": "indvdlClmMapper.retrieveExpensCdPrjctAccto",
+    "prjctStleQueryId": "elecAtrzMapper.retrieveExpensCdByPrmpc",
+    "prjctStlePdQueryId": "elecAtrzMapper.retrieveExpensCdAll",
     "searchInfo": {
       "searchParams": {
         "insertButton": false,
