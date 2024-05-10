@@ -536,7 +536,7 @@ const EmpVcatnAltmntMng = () => {
                     <div style={divStyle}>휴가등록 불가기간을 설정합니다.</div>
                     <div style={{ marginTop: "10px", flexDirection: "row" }}>
                         <div className="row" style={{ marginBottom: "20px" }}>
-                            <div className="col-md-2" style={textAlign}>휴가종류</div>
+                            <div className="col-md-2" style={textAlign}>불가기간</div>
                             <div className="col-md-4">
                                 <DateBox
                                     displayFormat="yyyy-MM-dd"
