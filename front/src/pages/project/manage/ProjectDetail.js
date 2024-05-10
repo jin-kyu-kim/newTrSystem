@@ -8,6 +8,7 @@ import { useCookies } from "react-cookie";
 import ProjectDetailJson from "./ProjectDetailJson.json";
 
 import Button from "devextreme-react/button";
+import { useModal } from "../../../components/unit/ModalContext";
 //TODO. 프로젝트 리스트에서 프로젝트 상태?형태?코드 정보 받아와서 그 정보에따라 변경원가 클릭시 작동 다르게 하기.
 
 const ProjectDetail = () => {
@@ -27,7 +28,7 @@ const ProjectDetail = () => {
   const atrzDmndSttsCd = "VTW03703";
 
   const ProjectDetail = ProjectDetailJson;
-
+  const { handleOpen } = useModal();
   const empId = cookies.userInfo.empId;
 
   console.log("bgtMngOdrTobe", bgtMngOdrTobe)
@@ -121,7 +122,7 @@ const ProjectDetail = () => {
       const result = await handleBgtPrmpc().then((value) => {
 
         if(value === -1) {
-          alert("문제가 발생하였습니다. 괸리자에게 문의하세요.");
+          handleOpen("문제가 발생하였습니다. 괸리자에게 문의하세요.");
           return;
         }
           targetOdr = value;

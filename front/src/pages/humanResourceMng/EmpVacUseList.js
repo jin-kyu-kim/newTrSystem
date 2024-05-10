@@ -39,7 +39,6 @@ const EmpVacUseList = (callBack,props) => {
     
     useEffect(() => {
         if(!Object.values(param).every((value) => value === "")) {
-          console.log("param뭐가졍홈??",param)
             pageHandle();
         };
         

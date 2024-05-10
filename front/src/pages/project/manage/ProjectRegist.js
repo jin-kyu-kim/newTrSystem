@@ -12,6 +12,7 @@ import Button from "devextreme-react/button";
 import { useCookies } from "react-cookie";
 import { set } from "date-fns";
 import { TextBox } from "devextreme-react/text-box";
+import { useModal } from "../../../components/unit/ModalContext";
 
 const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targetOdr, atrzLnSn }) => {
     const labelValue = ProjectRegistJson.labelValue;
@@ -34,6 +35,7 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
     const [bizEndYmd, setBizEndYmd] = useState();
     const [stbleEndYmd, setStbleEndYmd] = useState();
     const [igiYmd, setIgiYmd] = useState();
+    const { handleOpen } = useModal();
 
     const empId = cookies.userInfo.empId;
     const deptId = cookies.userInfo.deptId;
@@ -208,7 +210,7 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
             const response = await ApiRequest("/boot/common/commonUpdate", param);
 
             if(response > 0) {
-                alert('성공적으로 수정되었습니다.');
+                handleOpen('성공적으로 수정되었습니다.');
 
                 navigate("../project/ProjectChange",
                 {
@@ -241,7 +243,7 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
             if(isconfirm){
                 insertProject();
             } else {
-                console.log("취소");
+                //console.log("취소");
                 return;
             }
         }
@@ -273,10 +275,10 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
 
                 await handlePrjctMngAuth().then((value) => {
                     if(value > 0) {
-                        alert('프로젝트가 등록되었습니다.');
+                        handleOpen('프로젝트가 등록되었습니다.');
                         // onHide();
                     } else {
-                        alert('프로젝트 등록에 실패하였습니다.');
+                        handleOpen('프로젝트 등록에 실패하였습니다.');
                     }
                 })
 

@@ -9,6 +9,7 @@ import { saveAs } from 'file-saver';
 import SearchInfoSet from "components/composite/SearchInfoSet";
 import { CheckBox, CheckBoxTypes } from 'devextreme-react/check-box';
 import Button from "devextreme-react/button";
+import { useModal } from "../../components/unit/ModalContext";
 
 const EmpTRCostTotal = () => {
   const [values, setValues] = useState([]);
@@ -16,6 +17,7 @@ const EmpTRCostTotal = () => {
   const { keyColumn, queryId, nameColumns, prjctColumns , summaryColumn , smallSummaryColumn, searchInfo } = EmpTRCostTotalJson;
   const [checkBox1Checked, setCheckBox1Checked] = useState(false);
   const [checkBox2Checked, setCheckBox2Checked] = useState(false);
+  const { handleOpen } = useModal();
 
   const handleCheckBox1Change = (e) => {
     setCheckBox1Checked(e.value);
@@ -43,8 +45,6 @@ const EmpTRCostTotal = () => {
 
 
   const pageHandle = async (initParam) => {
-    console.log(initParam)
-    
 
     const updateParam = {
       ...initParam,
@@ -90,9 +90,8 @@ const EmpTRCostTotal = () => {
   const executeCostUpdate = async () => {
     try {
       const response = await ApiRequest("/boot/batchSkll/executeCostUpdate");
-      console.log(response);
       if (response >=1 ) {
-        alert("실행원가 정산이 완료되었습니다.");
+        handleOpen("실행원가 정산이 완료되었습니다.");
       }
     } catch (error) {
       console.log(error);

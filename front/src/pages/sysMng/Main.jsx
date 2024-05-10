@@ -165,7 +165,6 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
     const projectSearch = async (data) => {     //프로젝트 승인 상세 화면 이동을 위한 데이터 조회
       try {
         const response = await ApiRequest("/boot/common/queryIdSearch",{queryId : "projectMapper.retrievePrjctAprvList" ,prjctId: data ,empId: empId});
-        console.log("responseee",response)
         navigate("/project/ProjectAprvDetail",
         {state: { id: response[0].prjctId
           , prjctNm: response[0].prjctNm

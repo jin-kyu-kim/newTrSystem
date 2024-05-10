@@ -7,6 +7,7 @@ import ProjectExpensePopup from './ProjectExpensePopup';
 import CustomTable from 'components/unit/CustomTable';
 import ApiRequest from "../../utils/ApiRequest";
 import SearchInfoSet from 'components/composite/SearchInfoSet';
+import { useModal } from "../../components/unit/ModalContext";
 
 const ProjectExpense = () => {
     const navigate = useNavigate();
@@ -32,7 +33,7 @@ const ProjectExpense = () => {
     const monthVal = month < 10 ? "0" + month : month;
     const aplyYm = admin != undefined ? admin.aplyYm : year + monthVal;
     const aplyOdr = admin != undefined ? admin.aplyOdr : date.getDate() > 15 ? "1" : "2";
-
+    const { handleOpen } = useModal();
     const itemTitleRender = (a) => <span>{a.TabName}</span>;
     const onSelectionChanged = useCallback(
         (args) => {
@@ -75,8 +76,10 @@ const ProjectExpense = () => {
     };
 
     const setCtAtrzCmptnData = (data) => {
-        setCtAtrzCmptnYn(data?.every(item => item.ctAtrzCmptnYn === 'Y') ? 'Y' : 'N');
-        setMmAtrzCmptnYn(data?.every(item => item.mmAtrzCmptnYn === null) ? null : data.some(item => item.mmAtrzCmptnYn === 'N') ? 'N' : 'Y');
+        if(data.length !== 0){
+            setCtAtrzCmptnYn(data?.every(item => item.ctAtrzCmptnYn === 'Y') ? 'Y' : 'N');
+            setMmAtrzCmptnYn(data?.every(item => item.mmAtrzCmptnYn === null) ? null : data.some(item => item.mmAtrzCmptnYn === 'N') ? 'N' : 'Y');
+        }
     };
 
     const setCtAtrzDmndSttsData = (data) => {
@@ -98,7 +101,7 @@ const ProjectExpense = () => {
             : (data.name === 'onAprvDmndClick' ? 'N' : (data.name === 'onAprvDmndRtrcnClick' ? null : undefined));
         if (updateStts !== undefined) updateCtAtrzCmptnYn(updateStts);
         getData();
-        alert(data.completeMsg);
+        handleOpen(data.completeMsg);
     };
 
     const updateCtAtrzCmptnYn = async (status) => {
@@ -117,8 +120,8 @@ const ProjectExpense = () => {
             setPopVisible(true);
         } else {
             if (window.confirm(onClick.msg)) {
-                if(mmAtrzCmptnYn === null){
-                    alert('경비청구 건수가 없을 경우 근무시간을 먼저 승인 요청 해주시기 바랍니다.')
+                if(mmAtrzCmptnYn === undefined || mmAtrzCmptnYn === null){
+                    handleOpen('경비청구 건수가 없을 경우 근무시간을 먼저 승인 요청 해주시기 바랍니다.')
                     return;
                 }
                 prjctCtAtrzUpdate(onClick);
@@ -148,7 +151,7 @@ const ProjectExpense = () => {
                 const deleteRow = tables.map(tbNm => ApiRequest("/boot/common/commonDelete", [{ tbNm }, param]));
 
                 Promise.all(deleteRow).then(responses => {
-                    window.alert("삭제되었습니다.");
+                    handleOpen("삭제되었습니다.");
                     getData();
                 }).catch(error => {
                     console.error("error:", error);
@@ -210,7 +213,6 @@ const ProjectExpense = () => {
                         onOptionChanged={onSelectionChanged}
                         itemTitleRender={itemTitleRender}
                         animationEnabled={true}
-                        height={1500}
                         itemComponent={({ data }) => {
                             const Component = React.lazy(() => import(`${data.url}`));
                             return (

@@ -7,6 +7,7 @@ import ProjectExpenseJson from "../indvdlClm/ProjectExpenseJson.json";
 import CustomPivotGrid from "../../components/unit/CustomPivotGrid";
 import ApiRequest from "../../utils/ApiRequest";
 import ReactToPrint from 'react-to-print';
+import { useModal } from "../../components/unit/ModalContext";
 
 const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noDataCase }) => {
     const { projectExpensePopup, projectExpensePopQueryIdList } = ProjectExpenseJson;
@@ -14,7 +15,7 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
     const [ totalInfo, setTotalInfo ] = useState({});
     const [ data, setData ] = useState([]);
     const contentRef = useRef(null);
-
+    const { handleOpen } = useModal();
     const commonParams = {
         aplyYm: basicInfo.aplyYm,
         aplyOdr: basicInfo.aplyOdr,

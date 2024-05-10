@@ -7,6 +7,7 @@ import axios from "axios";
 import CustomTable from "components/unit/CustomTable";
 import { useCookies } from "react-cookie";
 import uuid from "react-uuid";
+import { useModal } from "../../../components/unit/ModalContext";
 
 function ProjectOutordCompany () {
     const [values, setValues] = useState([]);
@@ -22,6 +23,7 @@ function ProjectOutordCompany () {
     const empId = cookies.userInfo.empId;
     const date = new Date();
     const now =  date.toISOString().split("T")[0] +" " +date.toTimeString().split(" ")[0];
+    const { handleOpen } = useModal();
 //============== 초기 조회할 때==========================================    
     useEffect(() => {
         if (!Object.values(param).every((value) => value === "")) {
@@ -119,15 +121,15 @@ function ProjectOutordCompany () {
 //================저장버튼 이벤트==================================================     
         const saveOutordC = () => {
            if(outordCompanyValue.outordEntrpsNm === null){
-                alert("업체명을 입력해주세요");
+                handleOpen("업체명을 입력해주세요");
            }else if(outordCompanyValue.brno === ""){
-                alert("사업자등록번호를 입력해주세요");
+                handleOpen("사업자등록번호를 입력해주세요");
            }else if(outordCompanyValue.picFlnm === null){
-                alert("담당자명을 입력해주세요");
+                handleOpen("담당자명을 입력해주세요");
            }else if(outordCompanyValue.telno === ""){
-                alert("전화번호를 입력해주세요");
+                handleOpen("전화번호를 입력해주세요");
            }else if(outordCompanyValue.addr === null){
-                alert("주소를 입력해주세요");
+                handleOpen("주소를 입력해주세요");
            }else{
             const isconfirm = window.confirm("저장하시겠습니까?");
         if (isconfirm) {
@@ -166,7 +168,7 @@ function ProjectOutordCompany () {
                         headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
                     });
                       if (response.data >= 1) {
-                        alert("저장되었습니다.");
+                        handleOpen("저장되었습니다.");
                         resetForm();
                         pageHandle();
                       }
@@ -202,7 +204,7 @@ function ProjectOutordCompany () {
                         headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
                     });
                       if (response.data >= 1) {
-                        alert("저장되었습니다.");
+                        handleOpen("저장되었습니다.");
                         resetForm();
                         pageHandle();
                       }
@@ -227,7 +229,7 @@ function ProjectOutordCompany () {
                 try {
                     const response = await ApiRequest("/boot/common/deleteWithFile", {params : deleteParam, fileParams: fileParams});
                     if (response >= 1) {
-                        alert("삭제되었습니다.");
+                        handleOpen("삭제되었습니다.");
                         resetForm();
                         pageHandle();
                     }

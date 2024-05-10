@@ -6,6 +6,7 @@ import SearchEmpSet from "components/composite/SearchInfoSet";
 import CustomTable from "components/unit/CustomTable";
 import CustomEditTable from "components/unit/CustomEditTable";
 import { useCookies } from "react-cookie";
+import { useModal } from "../../../components/unit/ModalContext";
 
 function ProjectStngInfo( prjctId ) {
   const [values, setValues] = useState([]);
@@ -16,7 +17,7 @@ function ProjectStngInfo( prjctId ) {
      "prjctId": prjctId.prjctId
     ,"queryId": queryId});
   const [cookies] = useCookies(["userInfo", "userAuth"]);
-
+  const { handleOpen } = useModal();
 
   const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
   const userEmpId = cookies.userInfo.empId;
@@ -98,7 +99,7 @@ function ProjectStngInfo( prjctId ) {
         const response = await ApiRequest("/boot/common/queryIdSearch", ynParam);
         const prjctMngAuthrtCd = response[0].prjctMngAuthrtCd
         if(prjctMngAuthrtCd === "VTW05202"){
-          alert("쓰기권한이 있는 상태에서  조회권한을 해제할수 없습니다");
+          handleOpen("쓰기권한이 있는 상태에서  조회권한을 해제할수 없습니다");
           setYnParam(prevYnParam => !prevYnParam);
           return;
         }else if(prjctMngAuthrtCd === "VTW05201"){
