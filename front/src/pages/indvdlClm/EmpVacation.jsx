@@ -138,9 +138,6 @@ const EmpVacation = () => {
     let sessionDeptNm = location.state ? location.state.deptList[0].deptNm : cookies.deptInfo[0].deptNm
     let jbttlCd = location.state ? location.state.deptList[0].jbttlCd : cookies.deptInfo[0].jbttlCd
 
-    //팝업 모달
-    const { handleOpen } = useModal();
-
     // 월별 근무일_공휴일 조회
     const [selectCrtrDateList, setSelectCrtrDateList] = useState();
 
