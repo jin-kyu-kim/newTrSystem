@@ -27,8 +27,8 @@ const HtmlEditBox = ({ column, data, setData, placeholder, value, validate }) =>
         {validate && 
           <Validator>
             <RequiredRule message='내용은 필수입니다' />
-          </Validator>}
-
+          </Validator>
+        }
         <MediaResizing enabled={true} />
         <ImageUpload fileUploadMode="base64" />
         <Toolbar>
