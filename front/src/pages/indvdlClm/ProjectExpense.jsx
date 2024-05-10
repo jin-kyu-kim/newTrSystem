@@ -77,7 +77,7 @@ const ProjectExpense = () => {
 
     const setCtAtrzCmptnData = (data) => {
         if(data.length !== 0){
-            setCtAtrzCmptnYn(data?.every(item => item.ctAtrzCmptnYn === 'Y') ? 'Y' : 'N');
+            setCtAtrzCmptnYn(data?.every(item => item.ctAtrzCmptnYn === null) ? null : data.some(item => item.ctAtrzCmptnYn === 'N') ? 'N' : 'Y');
             setMmAtrzCmptnYn(data?.every(item => item.mmAtrzCmptnYn === null) ? null : data.some(item => item.mmAtrzCmptnYn === 'N') ? 'N' : 'Y');
         }
     };
@@ -184,7 +184,9 @@ const ProjectExpense = () => {
             </div>
         );
     };
-
+console.log('yn', ctAtrzCmptnYn)
+console.log('mmyn', mmAtrzCmptnYn)
+console.log('cnt', atrzDmndSttsCnt)
     return (
         <div className="container">
             <div style={{ marginBottom: '100px' }}>
