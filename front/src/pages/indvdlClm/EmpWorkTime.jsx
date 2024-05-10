@@ -38,10 +38,10 @@ import '../project/approval/ProjectHtCtAprvPop.css';
 const token = localStorage.getItem("token");
 
 // 차수별 시작, 종료일자
-let flagOrder = new Date().getDate() > 15 ? 1 : 2;
-let orderWorkBgngYmd = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMMDD")) : String(Moment(new Date()).format("YYYYMM") - 1 + "16")
-let orderWorkEndYmd = flagOrder == 1 ? String(Moment(new Date()).format("YYYYMM") + "15") : Moment(endOfMonth(new Date(Moment(Moment(new Date()).format("YYYYMM") - 1 + "15").format("YYYY-MM-DD")))).format("YYYYMMDD")
-let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMM")) : String(Moment(new Date()).format("YYYYMM") - 1)
+// let flagOrder = new Date().getDate() > 15 ? 1 : 2;
+// let orderWorkBgngYmd = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMMDD")) : String(Moment(new Date()).format("YYYYMM") - 1 + "16")
+// let orderWorkEndYmd = flagOrder == 1 ? String(Moment(new Date()).format("YYYYMM") + "15") : Moment(endOfMonth(new Date(Moment(Moment(new Date()).format("YYYYMM") - 1 + "15").format("YYYY-MM-DD")))).format("YYYYMMDD")
+// let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMM")) : String(Moment(new Date()).format("YYYYMM") - 1)
 
 const EmpWorkTime = () => {
     // 근무시간데이터
@@ -56,13 +56,20 @@ const EmpWorkTime = () => {
     SearchMonthValueRef.current = new Date().getDate() < 15 ? new Date().getMonth() : new Date().getMonth() + 1;
 
     const location = useLocation();
+    const admin = location.state ? location.state.admin : undefined;
+
+    // 차수별 시작, 종료일자
+    let flagOrder = admin != undefined ? admin.aplyOdr : new Date().getDate() > 15 ? 1 : 2;	
+    let orderWorkBgngYmd =  admin != undefined ? admin.orderWorkBgngYmd : flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMMDD")) : String(Moment(new Date()).format("YYYYMM") - 1 + "16")	
+    let orderWorkEndYmd = admin != undefined ? admin.orderWorkEndYmd : flagOrder == 1 ? String(Moment(new Date()).format("YYYYMM") + "15") : Moment(endOfMonth(new Date(Moment(Moment(new Date()).format("YYYYMM") - 1 + "15").format("YYYY-MM-DD")))).format("YYYYMMDD")
+    let orderWorkBgngMm = admin != undefined ? admin.aplyYm : flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMM")) : String(Moment(new Date()).format("YYYYMM") - 1)	
 
     // 세션설정
     const [cookies, setCookie] = useCookies(["userInfo", "deptInfo"]);
-    const sessionEmpId = location.state ? location.state.empId : cookies.userInfo.empId 
-    const sessionJbpsCd = location.state ? location.state.jbpsCd : cookies.userInfo.jbpsCd 
+    const sessionEmpId = admin != undefined ? admin.empId : cookies.userInfo.empId
+    const sessionJbpsCd = admin != undefined ? admin.jbpsCd : cookies.userInfo.jbpsCd
     const sessionDeptIdList = [];
-    const sessionDeptNmList = location.state ? [location.state.deptNmAll] : []; 
+    const sessionDeptNmList = admin != undefined ? [admin.deptNmAll] : [];
 
     if(sessionDeptNmList.length == 0){
         for (let i = 0; i < cookies.deptInfo.length; i++) {
@@ -112,7 +119,7 @@ const EmpWorkTime = () => {
         aplyOdr: flagOrder,
         searchYear: new Date().getFullYear(),
         searchMonth: new Date().getDate() < 16 ? new Date().getMonth() : new Date().getMonth() + 1,
-        aplyYm:
+        aplyYm: admin != undefined ? admin.aplyYm :
             SearchYearValueRef.current +
             (String(new Date().getMonth()).length == 1
                 ? new Date().getDate() < 16
@@ -427,7 +434,7 @@ const EmpWorkTime = () => {
     return (
         <div className="" style={{ marginLeft: "10%", marginRight: "10%" }}>
             <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
-                <h1 style={{ fontSize: "30px" }}>{orderWorkBgngMm} - {flagOrder}차수 근무시간</h1>
+                <h1 style={{ fontSize: "30px" }}>{admin != undefined ? "(관리자)" : ""} {orderWorkBgngMm} - {flagOrder}차수 근무시간</h1>
             </div>
             <div className="mx-auto" style={{ marginBottom: "10px" }}>
                 <span>* 근무시간을 기간별로 조회 합니다.</span>
@@ -439,30 +446,39 @@ const EmpWorkTime = () => {
                 <span>* 프로젝트 명에 마우스를 올리면 해당 프로젝트의 전체 명을 확인할 수 있습니다.</span>
             </div>
             <div className="row">
-                <div className="col-md-2" style={{ marginRight: "-20px" }}>
-                    <SelectBox
-                        placeholder="[년도]"
-                        defaultValue={new Date().getFullYear()}
-                        dataSource={getYearList(10, 1)}
-                        ref={SearchYearValueRef}
-                        onValueChanged={(e) => { SearchYearValueRef.current = e.value }}
-                    />
-                </div>
-                <div className="col-md-2" style={{ marginRight: "-20px", width: "150px" }}>
-                    <SelectBox
-                        dataSource={getMonthList()}
-                        defaultValue={new Date().getDate() < 15 ? new Date().getMonth() : new Date().getMonth() + 1}
-                        valueExpr="key"
-                        displayExpr="value"
-                        placeholder=""
-                        ref={SearchMonthValueRef}
-                        onValueChanged={(e) => { SearchMonthValueRef.current = e.value }}
-                    />
-                </div>
+                {
+                    admin != undefined ? <></> 
+                    :
+                    <>
+                        <div className="col-md-2" style={{ marginRight: "-20px" }}>
+                            <SelectBox
+                                placeholder="[년도]"
+                                defaultValue={new Date().getFullYear()}
+                                dataSource={getYearList(10, 1)}
+                                ref={SearchYearValueRef}
+                                onValueChanged={(e) => { SearchYearValueRef.current = e.value }}
+                            />
+                        </div>
+                        <div className="col-md-2" style={{ marginRight: "-20px", width: "150px" }}>
+                            <SelectBox
+                                dataSource={getMonthList()}
+                                defaultValue={new Date().getDate() < 15 ? new Date().getMonth() : new Date().getMonth() + 1}
+                                valueExpr="key"
+                                displayExpr="value"
+                                placeholder=""
+                                ref={SearchMonthValueRef}
+                                onValueChanged={(e) => { SearchMonthValueRef.current = e.value }}
+                            />
+                        </div>
+                    </>
+                }
                 <div className="col-md-4">
-                    <Button
-                        onClick={searchHandle} text="검색" style={{ height: "48px", width: "50px" }}
-                    />
+                        {
+                                admin != undefined ? <></> :
+                            <Button
+                                onClick={searchHandle} text="검색" style={{ height: "48px", width: "50px" }}
+                            />
+                        }
                     {
                         selectPrjctIndvdlCtMmValue != undefined && selectPrjctIndvdlCtMmValue.mmAtrzCmptnYn == "use"
                             ?
@@ -548,7 +564,7 @@ const EmpWorkTime = () => {
                     startDateExpr="aplyYmd"
                     endDateExpr="aplyYmd"
                     dataCellComponent={customDateCell}
-                    currentDate={new Date(searchPrjctIndvdlCtMmParam.searchYear + "-" + searchPrjctIndvdlCtMmParam.searchMonth)}
+                    currentDate={admin != undefined ? admin.orderWorkBgngYmd : new Date(searchPrjctIndvdlCtMmParam.searchYear + "-" + searchPrjctIndvdlCtMmParam.searchMonth)}
                     onAppointmentClick={onAppointmentClick}
                     onAppointmentDblClick={onAppointmentDblClick}
                     onAppointmentFormOpening={onAppointmentFormOpening}
