@@ -14,6 +14,7 @@ import EmpVcatnAltmntMngJson from "pages/humanResourceMng/EmpVcatnAltmntMngJson.
 import ApiRequest from "utils/ApiRequest";
 import { useModal } from "../../components/unit/ModalContext";
 
+
 const { listQueryId, listKeyColumn, listTableColumns, insertQueryId } = EmpVcatnAltmntMngJson;
 
 
@@ -45,6 +46,8 @@ function getYearList(startYear, endYear) {
  * @description 휴가배정관리 화면을 구현한다
  */
 const EmpVcatnAltmntMng = () => {
+    const { handleOpen } = useModal();
+    
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -71,8 +74,6 @@ const EmpVcatnAltmntMng = () => {
 
     // 재직목록조회
     const [selectHdofSttsCdListValue, setSelectHdofSttsCdListValue] = useState([]);
-
-    const { handleOpen } = useModal();
 
     // 직원별휴가목록조회
     const getEmpVacList = async () => {

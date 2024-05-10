@@ -26,6 +26,13 @@ const CustomModal = ({ open, close, message, onClick }) => {
         px: 2
     };
 
+    const handleConfirm = () => {
+        if (onClick) {
+            onClick();
+        }
+        close();
+    };
+
     return (
         <Modal
             open={open}
@@ -44,7 +51,7 @@ const CustomModal = ({ open, close, message, onClick }) => {
                             text='확인'
                             stylingMode="contained"
                             type="default"
-                            onClick={onClick}
+                            onClick={handleConfirm}
                             style={{ width: '45%', backgroundColor: 'rgb(128, 184, 245)', color: 'white' }}
                         /> }
                     

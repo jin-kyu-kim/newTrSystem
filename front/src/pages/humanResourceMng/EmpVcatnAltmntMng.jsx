@@ -252,7 +252,6 @@ const EmpVcatnAltmntMng = () => {
 
     // 휴가등록불가기간 설정
     const btnSaveCntrlYmd = async () => {
-
         const response = await ApiRequest("/boot/common/queryIdSearch", 
             {queryId: "humanResourceMngMapper.updateVcatnCntrlYmdYn", cntrBgngYmd: cntrBgngYmdRef.current, cntrEndYmd: cntrEndYmdRef.current}
         );

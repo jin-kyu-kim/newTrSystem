@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useLocation } from "react-router-dom";
 import { Container } from 'react-bootstrap';
-
 import { Button } from "devextreme-react";
 import ApiRequest from "utils/ApiRequest";
 import NoticeJson from "../infoInq/NoticeJson.json";
@@ -12,6 +11,7 @@ const NoticeDetail = () => {
     const location = useLocation();
     const noticeId = location.state.id;
     const { detailQueryId, noticeButtonGroup } = NoticeJson.detail;
+
     const [oneData, setOneData] = useState({});
     const [fileList, setFileList] = useState([]);
 
@@ -44,8 +44,8 @@ const NoticeDetail = () => {
     }, []);
 
     const deleteNotice = async () => {
-        const params = [{ tbNm: "NOTICE" }, { noticeId: noticeId }];
-        const fileParams = [{ tbNm: "ATCHMNFL" }, { atchmnflId: oneData.atchmnflId }];
+        const params = [{ tbNm: "NOTICE" }, { noticeId: noticeId }]
+        const fileParams = [{ tbNm: "ATCHMNFL" }, { atchmnflId: oneData.atchmnflId }]
         try {
             const response = await ApiRequest("/boot/common/deleteWithFile", {
                 params: params, fileParams: fileParams

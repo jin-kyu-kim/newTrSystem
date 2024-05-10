@@ -115,6 +115,7 @@ const ElecAtrzForm = () => {
                         value: prjctId,
                         displayExpr: "prjctNm",
                         valueExpr: "prjctId",
+                        searchEnabled: true, // 검색 가능 옵션 추가
                         onValueChanged: handleChgPrjctState
                     }}
                     text="프로젝트 선택"

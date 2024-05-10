@@ -427,23 +427,24 @@ const DeptManage = ({callBack}) => {
   const tableContainerStyle = {
     display: "flex",
   };
+ // 좌측 부서 목록 컨테이너 스타일
+ const deptListContainerStyle = {
+  width: '40%', // 좌측 영역 너비 조정
+  overflowY: 'auto', // Y축 스크롤 자동 생성
+  maxHeight: '200vh', // 최대 높이를 뷰포트 높이로 제한
+  overflowX: 'hidden', // X축 스크롤 숨김
+  whiteSpace: 'nowrap' // 줄바꿈을 하지 않아 트리뷰에 긴 이름이 있을 때도 깨지지 않도록 설정
+};
 
-  //전체 부서 목록 배치
-  const deptListContainerStyle = {
-    width: "50%", // 왼쪽 영역의 너비를 반으로 설정
-    marginTop: "20px",
-  };
+// 우측 상세 정보 컨테이너 스타일
+const deptDetailContainerStyle = {
+  width: '60%', // 우측 영역 너비 조정
+  display: 'flex',
+  flexDirection: 'column',
+};
 
   const deptListStyle = {
     minWidth: "480px",
-  };
-
-  //우측 전체 배치
-  const deptDetailContainerStyle = {
-    width: "50%", // 오른쪽 영역의 너비를 반으로 설정
-    display: "flex",
-    flexDirection: "column",
-    marginBottom: "20px",
   };
 
   //각 테이블 배치
@@ -477,4 +478,5 @@ const DeptManage = ({callBack}) => {
     marginBottom:"10px",
   }
 
+ 
 export default DeptManage;

@@ -11,7 +11,11 @@ import Moment from "moment"
 import { DateBox, SelectBox, Popup, TagBox, TextArea, Button } from "devextreme-react";
 import { useModal } from "../../components/unit/ModalContext";
 
+import { useModal } from "components/unit/ModalContext";
+
 const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgRoomRsvtAtdrnValue, mtgRoomRsvtListValue, onHiding, title, state, authState }) => {
+    const { handleOpen } = useModal();
+
     // 세션설정
     const [cookies, setCookie] = useCookies(["userInfo", "deptInfo"]);
     const sessionEmpId = cookies.userInfo.empId
@@ -56,6 +60,7 @@ const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgR
             setInsertMtgRoomRsvtValue({
                 ...insertMtgRoomRsvtValue,
                 mtgRoomCd: mtgRoomRsvtValue[0].mtgRoomCd,
+                rsvtEmpId: mtgRoomRsvtValue[0].rsvtEmpId,
                 useYmd: mtgRoomRsvtValue[0].useYmd,
                 useEndYmd: mtgRoomRsvtValue[0].useYmd,
                 useBgngHm: mtgRoomRsvtValue[0].useBgngHm,
@@ -101,7 +106,7 @@ const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgR
         else if (!insertMtgRoomRsvtValue.startDate) errorMsg = "시작시간을 선택하세요."
         else if (!insertMtgRoomRsvtValue.endDate) errorMsg = "종료시간을 선택하세요."
         else if (!insertMtgRoomRsvtValue.mtgTtl) errorMsg = "회의내용을 입력하세요."
-        else if (!changeEmpList || changeEmpList.length < 1) errorMsg = "회의참석자를 선택하세요."
+        // else if (!changeEmpList || changeEmpList.length < 1) errorMsg = "회의참석자를 선택하세요."
         else if (insertMtgRoomRsvtValue.startDate > insertMtgRoomRsvtValue.endDate) errorMsg = "시작시간과 종료시간을 확인하세요."
         else if (insertMtgRoomRsvtValue.useYmd != insertMtgRoomRsvtValue.useEndYmd) errorMsg = "시작일자와 종료일자를 확인하세요."
         else if (Moment(insertMtgRoomRsvtValue.startDate).format("YYYYMMDDHHmm") < Moment(new Date()).format("YYYYMMDDHHmm")) errorMsg = "현재시간 이전의 시간에는 예약하실 수 없습니다."
@@ -123,8 +128,8 @@ const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgR
             handleOpen("선택하신 시간에 예약된 회의가 있습니다.\n예약현황을 확인하신 후 예약하시기 바랍니다.");
             return;
         } else {
-            const isconfirm = window.confirm("저장하시겠습니까?");
-            if(isconfirm){
+            // const isconfirm = window.confirm("저장하시겠습니까?", "");
+            // if(isconfirm){
                 const insertData = [
                     { insertMtgRoomRsvtValue }, 
                     { atndEmpIdList: changeEmpList }
@@ -136,9 +141,9 @@ const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgR
                 } catch (error) {
                     console.log("insertMtgRoomRsvt_error : ", error);
                 }
-            } else {
-                return;
-            }
+            // } else {
+            //     return;
+            // }
         }
     }
 
@@ -262,7 +267,7 @@ const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgR
                     }
                     {
                         authState != "none"
-                        ? <Button style={{ height: "48px", width: "60px" }} onClick={insertMtgRoomRsvt}>저장</Button>
+                        ? <Button style={{ height: "48px", width: "60px" }} onClick={() => handleOpen("저장히시겠습니까?", insertMtgRoomRsvt)}>저장</Button>
                         : <></>
                     }
                     

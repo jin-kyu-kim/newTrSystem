@@ -11,6 +11,8 @@ import "./FnnrMngStyle.css";
 
 import ProjectExpensePopup from "../indvdlClm/ProjectExpensePopup";
 import { useModal } from "../../components/unit/ModalContext";
+import TimeExpenseCancelPopup from "./TimeExpenseCancelPopup"
+
 const TimeExpenseInsertSttus = ({}) => {
 //====================선언구간====================================================
 const [cookies] = useCookies([]);
@@ -28,10 +30,13 @@ const { keyColumn, queryId, totTableColumns, tableColumns, searchParams, totQuer
 // const [currentPhase, setCurrentPhase] = useState(''); //차수설정용
 const navigate = useNavigate();
 const nowDate = moment().format('YYYYMM') //현재 년월
-const [ popVisible, setPopVisible ] = useState(false);
+const [ printPopVisible, setPrintPopVisible ] = useState(false);  // 출력화면 팝업 컨트롤
+const [ cancelPopVisible, setCancelPopVisible ] = useState(false);  // 취소화면 팝업 컨트롤
 const [selectedData, setSelectedData] = useState({});
 const [ atrzDmndSttsCnt, setAtrzDmndSttsCnt ] = useState({}); // 상태코드별 데이터 개수
 const { handleOpen } = useModal();
+const [ type, setType ] = useState(); // 시간 / 비용 구분자
+
 
 const [checkBoxValue, setCheckBoxValue] = useState({
   "allVtw": true,
@@ -136,9 +141,9 @@ const pageHandle = async () => {
   }
 
   try {
+    const responseDdln = await ApiRequest("/boot/common/queryIdSearch", param); // 현재 조회한 달-차수의 마감 여부 확인 검색
     const responseTot = await ApiRequest("/boot/common/queryIdSearch", totParam); //상단 total 검색
     const responseDtl = await ApiRequest("/boot/common/queryIdSearch", dtlParam); //하단 목록 검색
-    const responseDdln = await ApiRequest("/boot/common/queryIdSearch", param); // 현재 조회한 달-차수의 마감 여부 확인 검색
 
     setTotValues(responseTot);
     setDtlValues(responseDtl);
@@ -156,8 +161,11 @@ const pageHandle = async () => {
 
 //==========================팝업 관련 이벤트==========================================
 
-const onPopHiding = async () => { setPopVisible(false); }
-const onPopAppear = async () => { setPopVisible(true); }
+const onPrintPopHiding = async () => { setPrintPopVisible(false); }
+const onPrintPopAppear = async () => { setPrintPopVisible(true); }
+const onCancelPopHiding = async () => { setCancelPopVisible(false); pageHandle();}
+const onCancelPopAppear = async () => { setCancelPopVisible(true); }
+
 const onSetBasicInfo = async (data) => {
   setSelectedData(data);
 }
@@ -258,9 +266,11 @@ const onBtnClick = async (button, data) => {
        await toEmpWorkTime(admin);
     }
 
-    if(button.name === "hrRtrcn"){                                   
-      //handleOpen("시간취소!");
+    if(button.name === "hrRtrcn"){
+        
+        await onSetBasicInfo(data);
         await mmCancel(data);
+        await onCancelPopAppear();
     }
 
     if(button.name === "prjctScrnMv"){                                      
@@ -269,9 +279,15 @@ const onBtnClick = async (button, data) => {
         {state: { admin: admin }})
     }
 
-    if(button.name === "ctRtrcn"){  
-      //handleOpen("비용취소");
+
+    if(button.name === "ctRtrcn"){
+      if(ddlnYn != "Y") {
+        await onSetBasicInfo(data);
         await ctCancel(data);
+        await onCancelPopAppear();
+      } else {
+        alert("마감된 차수는 취소가 불가능합니다. 마감을 취소한 뒤 다시 시도해주세요.")
+      }
 
     }
 
@@ -286,7 +302,7 @@ const onBtnClick = async (button, data) => {
         await getAtrzDmndSttsCnt(data);
         await getCtAply(data);
         await getCtAtrzCmptnYn(data);
-        await onPopAppear(true);
+        await onPrintPopAppear(true);
     }
 };
 
@@ -294,111 +310,11 @@ const onBtnClick = async (button, data) => {
  * 시간 취소 로직 실행
  */
 const mmCancel = async (data) => {
-  /**
-   * 1. PRJCT_MM_ATRZ 수정
-   * 승인된 건에 대하여 승인 / 반려를 결재중으로 수정한다.
-   * 
-   * 2. PRJCT_INDVDL_CT_MM 수정
-   * 완료 상태를 N으로 수정한다.
-   */
-
-  const atrzParam = [
-    { tbNm: "PRJCT_MM_ATRZ" },
-    { 
-      atrzDmndSttsCd: "VTW03702",
-      aprvrEmpId: null,
-      aprvYmd: null
-    },
-    {
-      empId: data.empId,
-      aplyYm: data.aplyYm,
-      aplyOdr: data.aplyOdr,
-      atrzDmndSttsCd: "VTW03703"
-    }
-  ]
-
-  try {
-    const confirm = window.confirm("시간 취소하시겠습니까?");
-    if(confirm) {
-      const response = await ApiRequest("/boot/common/commonUpdate", atrzParam);
-      
-      if(response > 0) {
-        const param = [
-          {
-            tbNm: "PRJCT_INDVDL_CT_MM"
-          },
-          {
-            mmAtrzCmptnYn: "N"
-          },
-          {
-            empId: data.empId,
-            aplyYm: data.aplyYm,
-            aplyOdr: data.aplyOdr
-          }
-        ]
-
-        const response = await ApiRequest("/boot/common/commonUpdate", param);
-
-        if(response > 0) {
-          handleOpen("시간 취소가 되었습니다.")
-          pageHandle();
-        } else {
-          handleOpen("시간 취소에 실패했습니다.");
-        }
-      } else {
-        handleOpen("시간 취소에 실패했습니다.");
-      }
-    } else {
-      return;
-    }
-  } catch (error) {
-  console.error(error);
-  }
+  setType("mm")
 }
 
 const ctCancel = async (data) => {
-  /**
-   * 1. PRJCT_MM_ATRZ 수정
-   * 승인된 건에 대하여 승인 / 반려를 결재중으로 수정한다.
-   * 
-   * 2. PRJCT_INDVDL_CT_MM 수정
-   * 완료 상태를 N으로 수정한다.
-   */
-
-  const atrzParam = {
-    queryId: 'projectMapper.updateCtAply',
-    empId: data.empId,
-    aplyYm: data.aplyYm,
-    aplyOdr: data.aplyOdr,
-    state: "UPDATE"
-  };
-
-  try {
-    const confirm = window.confirm("비용을 취소하시겠습니까?");
-
-    if(confirm) {
-      const response = await ApiRequest("/boot/common/queryIdDataControl", atrzParam);
-      if(response> 1) {
-        const param = [
-            { tbNm: "PRJCT_INDVDL_CT_MM" },
-            { ctAtrzCmptnYn: "N"},
-            { empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr}
-        ];
-        const response = await ApiRequest('/boot/common/commonUpdate', param);
-        if(response > 0) {
-          handleOpen("비용취소가 되었습니다.");
-          pageHandle();
-        } else {
-          handleOpen("비용취소에 실패했습니다.");
-        }
-      } else {
-        handleOpen("비용취소에 실패했습니다.")
-      }
-    }
-
-  } catch (error) {
-    console.error(error);
-  }
+  setType("ct")
 }
 
 //==============================================================================================
@@ -462,8 +378,6 @@ const handleCheckBoxChange = useCallback((e, key) => {
       // 화면 이동
       navigate("/fnnrMng/TimeExpenseClosingList",
       {state: { props: props }})
-
-
     }
 
   };
@@ -535,11 +449,17 @@ const handleCheckBoxChange = useCallback((e, key) => {
                   wordWrap={true}
               />
               <ProjectExpensePopup
-                  visible={popVisible}
-                  onPopHiding={onPopHiding}
+                  visible={printPopVisible}
+                  onPopHiding={onPrintPopHiding}
                   aprvInfo={atrzDmndSttsCnt}
                   noDataCase={{cnt: ctAply.length, yn: ctAtrzCmptnYn}}
                   basicInfo={selectedData}
+              />
+              <TimeExpenseCancelPopup
+                  visible={cancelPopVisible}
+                  onPopHiding={onCancelPopHiding}
+                  data={selectedData}
+                  type={type}
               />
           </div>
       </div>

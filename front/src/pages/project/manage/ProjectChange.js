@@ -312,7 +312,7 @@ const ProjectChange = () => {
                 ctrtYmd={ctrtYmd}
                 stbleEndYmd={stbleEndYmd}
                 bgtMngOdr={bgtMngOdr}
-                bgtMngOdrTobe={bgtMngOdrTobe}
+                bgtMngOdrTobe={targetOdr}
                 revise={true}
                 tabId={data.tabId}
                 change={true}
@@ -338,7 +338,8 @@ const ProjectChange = () => {
         <ProjectPrmpcBgtCmpr
           prjctId={prjctId}
           bgtMngOdr={bgtMngOdr}
-          bgtMngOdrTobe={bgtMngOdrTobe}
+          bgtMngOdrTobe={targetOdr}
+          targetOdr={targetOdr}
           visible={popupVisible}
           atrzDmndSttsCd="VTW03701"
         />

@@ -168,7 +168,7 @@ const EmpCultHealthCostManage = () => {
       >
         <h6 style={{ fontSize: "40px" }}>문화체련비 관리 목록</h6>
         <div style={{marginTop: "7px", marginLeft: "20px"}}>
-          <Button onClick={handleCalculate} type='default'>지급 계산</Button>
+          <Button onClick={handleCalculate} disabled={disabled} type='default'>지급 계산</Button>
           <Button onClick={handleMove} style = {{marginLeft: "10px"}}>마감 목록</Button>
           <Button onClick={handleDeadLine} disabled={disabled} style = {{marginLeft: "10px"}} type='danger'>전체 마감</Button>
         </div>

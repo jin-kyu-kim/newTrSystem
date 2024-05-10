@@ -55,7 +55,7 @@ import ApiRequest from "utils/ApiRequest";
  * 7. 저장 시 validation 처리 필요함.
  */
 
-const { listKeyColumn, listTableColumns } = EmpVacationJson;
+const { listQueryId, listKeyColumn, listTableColumns } = EmpVacationJson;
 
 // 회계년도
 const flagYear = Moment().format('YYYYMMDD') >= new Date().getFullYear() + "0401" ? new Date().getFullYear() : new Date().getFullYear() - 1
@@ -122,11 +122,8 @@ function atrzLnAprv(jbttlCd, searchResult) {
 
 
 const EmpVacation = () => {
-    
-    
     const navigate = useNavigate();
     const location = useLocation();
-
 
     // 첨부파일데이터
     const fileUploaderRef = useRef(null);
@@ -426,10 +423,6 @@ const EmpVacation = () => {
         // case_4
         // 동일회계년도 근무시간 마감 휴가신청
 
-        if(selectCrtrDateList.find(item => item.vcatnCntrlYmdYn == "Y" && item.crtrYmd == Moment(new Date()).format('YYYYMMDD'))){
-            errorMsg = "휴가등록불가기간입니다. 인사관리부서에 문의해주세요."
-        }
-
         if (insertVcatnValue.vcatnBgngYmd > insertVcatnValue.vcatnEndYmd) {
             errorMsg = "휴가시작일자와 휴가종료일자를 확인해주세요."
         }
@@ -558,10 +551,6 @@ const EmpVacation = () => {
 
     // 휴가정보 저장정보 설정
     function onInsertVcatnValue(param, e) {
-        if(param == "vcatnTyCd" && (e == "VTW01204" || e == "VTW01205")){
-            handleOpen("파일 미첨부 공가 결재는 연차에서 차감됩니다.");
-        }
-
         // 날짜 parsing
         if (param == "vcatnBgngYmd" || param == "vcatnEndYmd") e = Moment(e).format('YYYYMMDD');
 
@@ -625,7 +614,7 @@ const EmpVacation = () => {
 
                     if (isSaturday(valiCheckDate) || isSunday(valiCheckDate)) {
                         weekendDayCnt++;
-                    } else if (selectCrtrDateList.find((item => item.hldyClCd == "VTW05003" && item.crtrYmd == Moment(String(valiCheckDate)).format("YYYYMMDD")))) {
+                    } else if (selectCrtrDateList.find((item => item.crtrYmd == Moment(String(valiCheckDate)).format("YYYYMMDD")))) {
                         weekendDayCnt++;
                     }
                 }
@@ -653,14 +642,13 @@ const EmpVacation = () => {
 
     // 휴가목록선택
     function onRowClick(e) {
-        navigate("/elecAtrz/ElecAtrzDetail", { state: { data: { elctrnAtrzId: e.data.elctrnAtrzId, elctrnAtrzTySeCd: "VTW04901" } } })
+        navigate("/elecAtrz/ElecAtrzDetail", { state: { data: { elctrnAtrzId: e.data.elctrnAtrzId, elctrnAtrzTySeCd: "VTW04901", prjctId: e.data.prjctId } } })
     }
 
     // 버튼클릭
     function onButtonClick(e, data) {
         if (e.text == "파일") {
             setPopupAttachValue({
-                elctrnAtrzId: data.elctrnAtrzId,
                 attachId: data.atchmnflId,
                 visible: true,
             })
@@ -694,9 +682,21 @@ const EmpVacation = () => {
         fileUploader.reset();
     };
 
+    const test = async () => {
+        const test = {
+            elctrnAtrzId: "13e967cc-2f3e-eb22-6a28-c77f2d19d864"
+        }
+
+
+        try {
+            const response = await ApiRequest("/boot/indvdlClm/approvalReInsertVcatnAtrz", test);
+        } catch (error) {
+            console.log("deleteVcatnAtrz_error : ", error);
+        }
+    }
 
     return (
-        <div className="" style={{ marginLeft: "1%", marginRight: "1%" }}>
+        <div className="" style={{ marginLeft: "5%", marginRight: "5%" }}>
             <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
                 <h1 style={{ fontSize: "30px" }}>휴가</h1>
             </div>
@@ -764,13 +764,14 @@ const EmpVacation = () => {
                             <span>3.결재 취소는 결재 완료 후 가능합니다.</span>
                         </div>
                         {
-                            selectVcatnListValue && selectVcatnListValue.find(item => (item.vcatnTyCd == "VTW01204" || item.vcatnTyCd == "VTW01205") && !item.atchmnflId)
+                            !true
                                 ?
-                                <div style={{ marginTop: "20px", backgroundColor: "#FFCCCA", height: "50px", borderRadius: "10px", display: "flex", alignItems: "center"}}>
-                                    <div style={{ fontWeight: "bold", color: "#996666", marginLeft: "20px", fontSize: "16px" }}>공가 파일 미첨부! </div>
-                                    <div style={{marginLeft: "5px"}}>아래 '첨부파일' 버튼을 통해 공가 증빙서류를 첨부해 주세요.</div>
+                                <div style={{ marginTop: "20px", backgroundColor: "#FFCCCA", borderRadius: "10px" }}>
+                                    <span style={{ fontWeight: "bold", color: "#996666", marginLeft: "20px" }}>공가 파일 미첨부! </span>
+                                    <span>아래 '파일첨부' 버튼을 통해 공가 증빙서류를 첨부해 주세요.</span>
                                 </div>
-                                : <></>
+                                :
+                                <></>
                         }
                         <div style={{ marginTop: "30px" }}>
                             <CustomTable
@@ -935,50 +936,38 @@ const EmpVacation = () => {
                                 />
                             </div>
                         </div>
-                        {
-                            insertVcatnValue && (insertVcatnValue.vcatnTyCd == "VTW01204" || insertVcatnValue.vcatnTyCd == "VTW01205")
-                            ?
-                            <div className="row" style={{ marginTop: "5px" }}>
-                                <div className="col-md-2" style={textAlign}>첨부</div>
-                                <div className="col-md-10">
-                                    <FileUploader
-                                        selectButtonText="첨부파일"
-                                        multiple={true}
-                                        labelText=""
-                                        uploadMode="useButton"
-                                        onValueChanged={changeAttchValue}
-                                        ref={fileUploaderRef}
-                                    />
-                                </div>
+                        <div className="row" style={{ marginTop: "5px" }}>
+                            <div className="col-md-2" style={textAlign}>첨부</div>
+                            <div className="col-md-10">
+                                <FileUploader
+                                    selectButtonText="첨부파일"
+                                    multiple={true}
+                                    labelText=""
+                                    uploadMode="useButton"
+                                    onValueChanged={changeAttchValue}
+                                    ref={fileUploaderRef}
+                                />
                             </div>
-                            : <></>
-                        }
+                        </div>
                         <div style={{ display: "inline-block", float: "right", marginTop: "25px" }}>
                             <Button style={{ height: "48px", width: "100px", marginRight: "15px" }} onClick={(e) => { setPopupVisibleAtrzValue(true) }}>결재선지정</Button>
                             <Button style={{ height: "48px", width: "60px" }} onClick={onSaveClick}>저장</Button>
                             {/* <Button style={{ height: "48px", width: "60px" }} onClick={test}>test</Button> */}
                         </div>
 
-                        {
-                            popupAttachValue.visible == true
-                            ?
-                            <EmpVacationAttchList
-                                width={"500px"}
-                                height={"500px"}
-                                title={"전자결재 파일 첨부"}
-                                visible={popupAttachValue.visible}
-                                attachId={popupAttachValue.attachId}
-                                elctrnAtrzId={popupAttachValue.elctrnAtrzId}
-                                onHiding={(e) => {
-                                    setPopupAttachValue({
-                                        attachId: "",
-                                        visible: e
-                                    })
-                                }}
-                            />
-                            : <></>
-                        }
-                        
+                        <EmpVacationAttchList
+                            width={"500px"}
+                            height={"500px"}
+                            visible={popupAttachValue.visible}
+                            attachId={popupAttachValue.attachId}
+                            title={"전자결재 파일 첨부"}
+                            onHiding={(e) => {
+                                setPopupAttachValue({
+                                    attachId: "",
+                                    visible: e
+                                })
+                            }}
+                        />
 
                         <ApprovalPopup
                             width={"500px"}

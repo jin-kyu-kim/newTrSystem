@@ -503,11 +503,11 @@
 			FROM MTG_ROOM_RSVT		RSVT
 				,EMP			EMP
 		WHERE RSVT.RSVT_EMP_ID = EMP.EMP_ID
-		AND EXISTS (
-			SELECT 1
-			FROM MTG_ROOM_RSVT_ATDRN    ATDRN
-			WHERE RSVT.MTG_ROOM_RSVT_SN = ATDRN.MTG_ROOM_RSVT_SN
-		)
+<!--		AND EXISTS (-->
+<!--			SELECT 1-->
+<!--			FROM MTG_ROOM_RSVT_ATDRN    ATDRN-->
+<!--			WHERE RSVT.MTG_ROOM_RSVT_SN = ATDRN.MTG_ROOM_RSVT_SN-->
+<!--		)-->
 		<if test="changeDate !=null and !changeDate.equals('')">
 			AND (RSVT.USE_YMD BETWEEN #{changeDate} - 7 AND #{changeDate} + 7)
 		</if>

@@ -13,7 +13,7 @@
                             },
                         "valueExpr" : "expectInptHnfId",
                         "displayExpr": "outordEmpNm",
-                        "values" : ["prjctId","bgtMngOdr","outordLbrcoPrmpcSn","expectInptHnfId","outordEmpNm","hnfRoleCd","hnfRoleCdNm","hnfGradCd","hnfGradCdNm","tkcgJob","untpc","inptPrnmntYmd","withdrPrnmntYmd", "expectMm", "usefulAmt", "outordLbrcoPrmpcSn"],
+                        "values" : ["prjctId","bgtMngOdr","outordLbrcoPrmpcSn","expectInptHnfId","outordEmpNm","hnfRoleCd","hnfRoleCdNm","hnfGradCd","hnfGradCdNm","tkcgJob","untpc","inptPrnmntYmd","withdrPrnmntYmd", "expectMm", "usefulAmt"],
                         "name" : "expectInptHnfId"
                         }
             },
@@ -35,8 +35,8 @@
                             "queryId" : "elecAtrzMapper.retrieveRealOutordEmpPlan"
                             },
                         "valueExpr" : "inptHnfId",
-                        "displayExpr": "inptHnfIdNm",
-                        "values" : ["inptHnfId","inptHnfIdNm"],
+                        "displayExpr": "empFlnm",
+                        "values" : ["inptHnfId","empFlnm"],
                         "name" : "inptHnfId"
                         }
             },

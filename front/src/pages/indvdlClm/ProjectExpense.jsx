@@ -74,9 +74,10 @@ const ProjectExpense = () => {
             apiInfo[index].setter(result);
         });
     };
+
     const setCtAtrzCmptnData = (data) => {
-        setCtAtrzCmptnYn(data[0]?.ctAtrzCmptnYn);
-        setMmAtrzCmptnYn(data[0]?.mmAtrzCmptnYn);
+        setCtAtrzCmptnYn(data?.every(item => item.ctAtrzCmptnYn === 'Y') ? 'Y' : 'N');
+        setMmAtrzCmptnYn(data?.every(item => item.mmAtrzCmptnYn === null) ? null : data.some(item => item.mmAtrzCmptnYn === 'N') ? 'N' : 'Y');
     };
 
     const setCtAtrzDmndSttsData = (data) => {
@@ -117,7 +118,7 @@ const ProjectExpense = () => {
             setPopVisible(true);
         } else {
             if (window.confirm(onClick.msg)) {
-                if(mmAtrzCmptnYn === undefined){
+                if(mmAtrzCmptnYn === null){
                     handleOpen('경비청구 건수가 없을 경우 근무시간을 먼저 승인 요청 해주시기 바랍니다.')
                     return;
                 }
@@ -225,7 +226,13 @@ const ProjectExpense = () => {
                                 </React.Suspense>
                             );
                         }} />
-                    : <span style={{ fontSize: "20px", marginLeft: "30px" }}>입력 마감되었습니다.</span>}
+                    : <div style={{
+                        height: "250px",
+                        borderRadius: "5px",
+                        background: "#F2F2F2",
+                        display: "flex",
+                        alignItems: "center"
+                    }}><span style={{marginLeft: '200px', fontSize: '16pt'}}>입력 마감되었습니다.</span></div>}
             </div>
             <ProjectExpensePopup
                 visible={popVisible}

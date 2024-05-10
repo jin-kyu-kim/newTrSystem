@@ -39,13 +39,6 @@
       "placeholder": "항목",
       "required": true
     },
-    "actPurps": {
-      "name": "actPurps",
-      "type": "TextBox",
-      "label": "목적",
-      "placeholder": "목적",
-      "required": true
-    },
     "frcsNm": {
       "name": "frcsNm",
       "type": "TextBox",

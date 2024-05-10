@@ -149,12 +149,13 @@ public class IndvdlClmDomain {
         Map<String, Object> paramClPh = new HashMap<>();
         paramClPh.put("queryId", "indvdlClmMapper.insertClPh");
         paramClPh.put("empId", param.get("empId"));
+        paramClPh.put("state", "INSERT");
         paramClPh.put("clturPhstrnActMngYm", param.get("clmYmd").toString().substring(0, 6));
-        commonService.queryIdSearch(paramClPh);
+        commonService.queryIdDataControl(paramClPh);
         YearMonth yearMonth = YearMonth.parse((String)paramClPh.get("clturPhstrnActMngYm"), DateTimeFormatter.ofPattern("yyyyMM"));
         LocalDate nextMonth = yearMonth.atDay(1).plusMonths(1);
         paramClPh.put("clturPhstrnActMngYm", nextMonth.format(DateTimeFormatter.ofPattern("yyyyMM")));
-        commonService.queryIdSearch(paramClPh);
+        commonService.queryIdDataControl(paramClPh);
 
         // 합계컬럼 서치
         Map<String, Object> tbNm = new HashMap<>();
@@ -398,12 +399,12 @@ public class IndvdlClmDomain {
             updatePrjctMmAtrzMap = params.get(i);
             updatePrjctMmAtrzMap.put("queryId", "indvdlClmMapper.retrievePrjctMmSttsInq");
             List<Map<String, Object>> updatePrjctMmAtrzResult = commonService.queryIdSearch(updatePrjctMmAtrzMap);
-            
-        	Map<String, Object> updatePrjctIndvdlCtMmMap = new HashMap<>();
-        	updatePrjctIndvdlCtMmMap = params.get(i);
-        	updatePrjctIndvdlCtMmMap.put("queryId", "indvdlClmMapper.updatePrjctIndvdlCtMm");
-        	List<Map<String, Object>> updatePrjctIndvdlCtMmResult = commonService.queryIdSearch(updatePrjctIndvdlCtMmMap);
         }
+
+        Map<String, Object> updatePrjctIndvdlCtMmMap = new HashMap<>();
+        updatePrjctIndvdlCtMmMap.putAll(params.get(0));
+        updatePrjctIndvdlCtMmMap.put("queryId", "indvdlClmMapper.updatePrjctIndvdlCtMm");
+        List<Map<String, Object>> updatePrjctIndvdlCtMmResult = commonService.queryIdSearch(updatePrjctIndvdlCtMmMap);
 
         return null;
     }
@@ -1170,81 +1171,51 @@ public class IndvdlClmDomain {
         List<Map<String, Object>> data = new ArrayList<>();
 
         // 체력단련비 청구
-        Map<String, Object> paramFtClm = new HashMap<>();
-        paramFtClm.put("queryId", "indvdlClmMapper.retrieveFtnessTrngCtClmAmt");
-        paramFtClm.put("empId", param.get("empId"));
-        paramFtClm.put("year", param.get("year"));
-        List<Map<String, Object>> resultFtClm = commonService.queryIdSearch(paramFtClm);
+        Map<String, Object> searchParam = new HashMap<>();
+        searchParam.put("empId", param.get("empId"));
+        searchParam.put("year", param.get("year"));
+        searchParam.put("queryId", "indvdlClmMapper.retrieveFtnessTrngCtClmAmt");
+        List<Map<String, Object>> resultFtClm = commonService.queryIdSearch(searchParam);
         data.addAll(resultFtClm);
         // 체력단련비 지급
-        Map<String, Object> paramFtDpst = new HashMap<>();
-        paramFtDpst.put("queryId", "indvdlClmMapper.retrieveFtnessTrngCtDpstAmt");
-        paramFtDpst.put("empId", param.get("empId"));
-        paramFtDpst.put("year", param.get("year"));
-        List<Map<String, Object>> resultFtDpst = commonService.queryIdSearch(paramFtDpst);
+        searchParam.put("queryId", "indvdlClmMapper.retrieveFtnessTrngCtDpstAmt");
+        List<Map<String, Object>> resultFtDpst = commonService.queryIdSearch(searchParam);
         data.addAll(resultFtDpst);
         // 체력단련비 지급날짜
-        Map<String, Object> paramFtDpstYmd = new HashMap<>();
-        paramFtDpstYmd.put("queryId", "indvdlClmMapper.retrieveFtnessTrngCtDpstYmd");
-        paramFtDpstYmd.put("empId", param.get("empId"));
-        paramFtDpstYmd.put("year", param.get("year"));
-        List<Map<String, Object>> resultFtDpstYmd = commonService.queryIdSearch(paramFtDpstYmd);
+        searchParam.put("queryId", "indvdlClmMapper.retrieveFtnessTrngCtDpstYmd");
+        List<Map<String, Object>> resultFtDpstYmd = commonService.queryIdSearch(searchParam);
         data.addAll(resultFtDpstYmd);
         // 체력단련비 잔액
-        Map<String, Object> paramFtCyfd = new HashMap<>();
-        paramFtCyfd.put("queryId", "indvdlClmMapper.retrieveFtnessTrngCtCyfdAmt");
-        paramFtCyfd.put("empId", param.get("empId"));
-        paramFtCyfd.put("year", param.get("year"));
-        List<Map<String, Object>> resultFtCyfd = commonService.queryIdSearch(paramFtCyfd);
+        searchParam.put("queryId", "indvdlClmMapper.retrieveFtnessTrngCtCyfdAmt");
+        List<Map<String, Object>> resultFtCyfd = commonService.queryIdSearch(searchParam);
         data.addAll(resultFtCyfd);
         // 문화비 청구
-        Map<String, Object> paramClturClm = new HashMap<>();
-        paramClturClm.put("queryId", "indvdlClmMapper.retrieveClturCtClmAmt");
-        paramClturClm.put("empId", param.get("empId"));
-        paramClturClm.put("year", param.get("year"));
-        List<Map<String, Object>> resultClturClm = commonService.queryIdSearch(paramClturClm);
+        searchParam.put("queryId", "indvdlClmMapper.retrieveClturCtClmAmt");
+        List<Map<String, Object>> resultClturClm = commonService.queryIdSearch(searchParam);
         data.addAll(resultClturClm);
         // 문화비 지급
-        Map<String, Object> paramClturDpst = new HashMap<>();
-        paramClturDpst.put("queryId", "indvdlClmMapper.retrieveClturCtDpstAmt");
-        paramClturDpst.put("empId", param.get("empId"));
-        paramClturDpst.put("year", param.get("year"));
-        List<Map<String, Object>> resultClturDpst = commonService.queryIdSearch(paramClturDpst);
+        searchParam.put("queryId", "indvdlClmMapper.retrieveClturCtDpstAmt");
+        List<Map<String, Object>> resultClturDpst = commonService.queryIdSearch(searchParam);
         data.addAll(resultClturDpst);
         // 문화비 지급날짜
-        Map<String, Object> paramClturDpstYmd = new HashMap<>();
-        paramClturDpstYmd.put("queryId", "indvdlClmMapper.retrieveClturCtDpstYmd");
-        paramClturDpstYmd.put("empId", param.get("empId"));
-        paramClturDpstYmd.put("year", param.get("year"));
-        List<Map<String, Object>> resultClturDpstYmd = commonService.queryIdSearch(paramClturDpstYmd);
+        searchParam.put("queryId", "indvdlClmMapper.retrieveClturCtDpstYmd");
+        List<Map<String, Object>> resultClturDpstYmd = commonService.queryIdSearch(searchParam);
         data.addAll(resultClturDpstYmd);
         // 문화비 잔액
-        Map<String, Object> paramClturCyfd = new HashMap<>();
-        paramClturCyfd.put("queryId", "indvdlClmMapper.retrieveClturCtCyfdAmt");
-        paramClturCyfd.put("empId", param.get("empId"));
-        paramClturCyfd.put("year", param.get("year"));
-        List<Map<String, Object>> resultClturCyfd = commonService.queryIdSearch(paramClturCyfd);
+        searchParam.put("queryId", "indvdlClmMapper.retrieveClturCtCyfdAmt");
+        List<Map<String, Object>> resultClturCyfd = commonService.queryIdSearch(searchParam);
         data.addAll(resultClturCyfd);
         // 전체 청구 합계
-        Map<String, Object> paramClm = new HashMap<>();
-        paramClm.put("queryId", "indvdlClmMapper.retrieveClmAmt");
-        paramClm.put("empId", param.get("empId"));
-        paramClm.put("year", param.get("year"));
-        List<Map<String, Object>> resultClm = commonService.queryIdSearch(paramClm);
+        searchParam.put("queryId", "indvdlClmMapper.retrieveClmAmt");
+        List<Map<String, Object>> resultClm = commonService.queryIdSearch(searchParam);
         data.addAll(resultClm);
         // 전체 지급 합계
-        Map<String, Object> paramDpst = new HashMap<>();
-        paramDpst.put("queryId", "indvdlClmMapper.retrieveDpstAmt");
-        paramDpst.put("empId", param.get("empId"));
-        paramDpst.put("year", param.get("year"));
-        List<Map<String, Object>> resultDpst = commonService.queryIdSearch(paramDpst);
+        searchParam.put("queryId", "indvdlClmMapper.retrieveDpstAmt");
+        List<Map<String, Object>> resultDpst = commonService.queryIdSearch(searchParam);
         data.addAll(resultDpst);
         // 전체 잔액 합계
-        Map<String, Object> paramCyfd = new HashMap<>();
-        paramCyfd.put("queryId", "indvdlClmMapper.retrieveCyfdAmt");
-        paramCyfd.put("empId", param.get("empId"));
-        paramCyfd.put("year", param.get("year"));
-        List<Map<String, Object>> resultCyfd = commonService.queryIdSearch(paramCyfd);
+        searchParam.put("queryId", "indvdlClmMapper.retrieveCyfdAmt");
+        List<Map<String, Object>> resultCyfd = commonService.queryIdSearch(searchParam);
         data.addAll(resultCyfd);
 
         return data;

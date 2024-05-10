@@ -15,9 +15,13 @@ import { Table, TableCell, TableHead, TableRow } from '@mui/material';
 import uuid from "react-uuid";
 import { useModal } from "../../components/unit/ModalContext";
 
+import { useModal } from "components/unit/ModalContext";
+
 const token = localStorage.getItem("token");
 
 const EmpVacationCanclePopup = ({ width, height, visible, dataMap, empId, onHiding, title }) => {
+    const { handleOpen } = useModal();
+
     useEffect(() => {
         getElctrnAtrz();
         getAtrzLn();
