@@ -1,6 +1,5 @@
 package com.trsystem.security.jwt;
 
-import com.trsystem.sysMng.domain.SysMngUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -79,12 +78,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 long currentTime = System.currentTimeMillis();
                 long timeLeft = expirationTime - currentTime; // 남은 시간 계산
 
-                // 만료 10분 전에 새 토큰 발행
-                if (timeLeft < 1800000) { // 600000ms = 10 minutes
-                    SysMngUser setInfo = userDetailsService.loadUserByUsername(username);
-                    String newToken = jwtTokenUtil.generateToken(setInfo); // 새 토큰 생성
-                    response.setHeader("Authorization",  newToken); // 응답 헤더에 새 토큰 추가
-                }
+//                // 만료 10분 전에 새 토큰 발행
+//                if (timeLeft < 1800000) { // 600000ms = 10 minutes
+//                    SysMngUser setInfo = userDetailsService.loadUserByUsername(username);
+//                    String newToken = jwtTokenUtil.generateToken(setInfo); // 새 토큰 생성
+//                    response.setHeader("Authorization",  newToken); // 응답 헤더에 새 토큰 추가
+//                }
                 List<String> roles = claims.get("roles", List.class);
                 List<SimpleGrantedAuthority> authorities = roles.stream()
                         .map(SimpleGrantedAuthority::new)
