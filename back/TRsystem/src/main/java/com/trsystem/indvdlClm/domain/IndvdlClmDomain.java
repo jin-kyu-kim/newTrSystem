@@ -149,12 +149,13 @@ public class IndvdlClmDomain {
         Map<String, Object> paramClPh = new HashMap<>();
         paramClPh.put("queryId", "indvdlClmMapper.insertClPh");
         paramClPh.put("empId", param.get("empId"));
+        paramClPh.put("state", "INSERT");
         paramClPh.put("clturPhstrnActMngYm", param.get("clmYmd").toString().substring(0, 6));
-        commonService.queryIdSearch(paramClPh);
+        commonService.queryIdDataControl(paramClPh);
         YearMonth yearMonth = YearMonth.parse((String)paramClPh.get("clturPhstrnActMngYm"), DateTimeFormatter.ofPattern("yyyyMM"));
         LocalDate nextMonth = yearMonth.atDay(1).plusMonths(1);
         paramClPh.put("clturPhstrnActMngYm", nextMonth.format(DateTimeFormatter.ofPattern("yyyyMM")));
-        commonService.queryIdSearch(paramClPh);
+        commonService.queryIdDataControl(paramClPh);
 
         // 합계컬럼 서치
         Map<String, Object> tbNm = new HashMap<>();

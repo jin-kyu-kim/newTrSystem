@@ -11,7 +11,7 @@ import ProjectPrmpcBgtCmpr from "./ProjectPrmpcBgtCmpr";
 
 import { useCookies } from "react-cookie";
 import ApiRequest from "utils/ApiRequest";
-
+import { useModal } from "../../../components/unit/ModalContext";
 const ProjectChange = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -40,7 +40,7 @@ const ProjectChange = () => {
   // console.log("buttonState?",buttonState);
   const [requestBtnVisible, setAprvBtnVisible] = useState(true);
   const [cancelBtnVisible, setCancelBtnVisible] = useState(false);
-
+  const { handleOpen } = useModal();
   useEffect(() => {
 
     // 해당 프로젝트에 승인요청중인 내역이 있는지 확인한다.
@@ -89,7 +89,7 @@ const ProjectChange = () => {
     const boolean = false;
 
     if(boolean) {
-      alert("승인요청중인 내역이 있습니다. 승인요청을 취소하고 다시 요청해주세요.");
+      handleOpen("승인요청중인 내역이 있습니다. 승인요청을 취소하고 다시 요청해주세요.");
       return;
     } else {
       const isconfirm = window.confirm("승인요청을 진행합니다. 승인을 요청하시겠습니까?");
@@ -143,11 +143,11 @@ const ProjectChange = () => {
         // ATRZ_DMND_STTS_CD 컬럼 -> VTW03702(결재요청)
         handleBgtPrmpc("VTW03702");
 
-        alert("승인요청이 완료되었습니다.");
+        handleOpen("승인요청이 완료되었습니다.");
         setPopupVisible(false);
         navigate("../project/ProjectAprv");
       } else {
-        alert("승인요청이 실패되었습니다.");
+        handleOpen("승인요청이 실패되었습니다.");
       }
     } catch (error) {
       console.error('Error fetching data', error);
@@ -208,7 +208,6 @@ const ProjectChange = () => {
 
   // console.log("prjctId!! 변경! ", prjctId);
   const toDetail = () => {
-    console.log("prjctId!! 변경! ", prjctId);
     navigate("../project/ProjectDetail",
         {
         state: { prjctId: prjctId, ctrtYmd: ctrtYmd, stbleEndYmd: stbleEndYmd, bgtMngOdr:bgtMngOdr, bgtMngOdrTobe:bgtMngOdrTobe, deptId: deptId, targetOdr: targetOdr, bizSttsCd :bizSttsCd , atrzLnSn: atrzLnSn },
@@ -241,9 +240,8 @@ const ProjectChange = () => {
       
       try {
         const response = await ApiRequest("/boot/common/commonUpdate", param);
-        console.log(response);
         if(response > 0) {
-          alert("승인요청이 취소되었습니다.");
+          handleOpen("승인요청이 취소되었습니다.");
           
           // 수행으로 수정
           if(bizSttsCd !== "VTW00401") {
@@ -254,7 +252,7 @@ const ProjectChange = () => {
           handleBgtPrmpc("VTW03701");
           
         } else {
-          alert("승인요청 취소가 실패되었습니다.");
+          handleOpen("승인요청 취소가 실패되었습니다.");
         }
         toDetail();
         
@@ -270,8 +268,8 @@ const ProjectChange = () => {
    * 결재상태코드 ATRZ_STTS_CD: 결재 취소(VTW00805)로 수정한다.
    */
   const handleAtrzLnDtl = async () => {
-    console.log("승인취소");
-    console.log(atrzLnSn)
+    //console.log("승인취소");
+    //console.log(atrzLnSn)
   }
 
   return (
@@ -314,7 +312,7 @@ const ProjectChange = () => {
                 ctrtYmd={ctrtYmd}
                 stbleEndYmd={stbleEndYmd}
                 bgtMngOdr={bgtMngOdr}
-                bgtMngOdrTobe={bgtMngOdrTobe}
+                bgtMngOdrTobe={targetOdr}
                 revise={true}
                 tabId={data.tabId}
                 change={true}
@@ -340,7 +338,8 @@ const ProjectChange = () => {
         <ProjectPrmpcBgtCmpr
           prjctId={prjctId}
           bgtMngOdr={bgtMngOdr}
-          bgtMngOdrTobe={bgtMngOdrTobe}
+          bgtMngOdrTobe={targetOdr}
+          targetOdr={targetOdr}
           visible={popupVisible}
           atrzDmndSttsCd="VTW03701"
         />

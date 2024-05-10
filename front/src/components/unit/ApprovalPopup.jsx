@@ -4,12 +4,14 @@ import { Popup } from 'devextreme-react/popup';
 import CustomEmpComboBox from './CustomEmpComboBox';
 import ApiRequest from 'utils/ApiRequest';
 import '../../assets/css/Style.css'
+import { useModal } from './ModalContext';
 
 const ApprovalPopup = ({ visible, atrzLnEmpList, onHiding }) => {
     const [aprvrEmpList, setAprvrEmpList] = useState([]);
     const [selectedEmp, setSelectedEmp] = useState({});
     const [stepCdList, setStepCdList] = useState([]);
     const tableTitle = ['입력', '결재단계', '결재권자'];
+    const { handleOpen } = useModal();
 
     useEffect(() => {
         const getAtrzStepCd = async () => {
@@ -42,15 +44,15 @@ const ApprovalPopup = ({ visible, atrzLnEmpList, onHiding }) => {
             
             if (!isEmpIdExist) {
                 if (isOneCase && hasEmpAlready) {
-                    alert('검토, 확인, 심사, 승인 단계 결재권자는 한명만 설정할 수 있습니다. 다시 선택해주세요.');
+                    handleOpen('검토, 확인, 심사, 승인 단계 결재권자는 한명만 설정할 수 있습니다. 다시 선택해주세요.');
                 } else {
                     setAprvrEmpList([...aprvrEmpList, { ...selectedEmp, approvalCode: cdValue }]);
                 }
             } else {
-                alert('이미 해당 결재단계에 등록되어 있습니다.');
+                handleOpen('이미 해당 결재단계에 등록되어 있습니다.');
             }
         } else{ 
-            alert('결재자를 선택 후 추가해주세요.');
+            handleOpen('결재자를 선택 후 추가해주세요.');
             return null;
         }
     };

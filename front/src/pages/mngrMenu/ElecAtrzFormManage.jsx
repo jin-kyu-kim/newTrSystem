@@ -47,11 +47,11 @@ const  ElecAtrzFormManage = ({}) => {
   }
 
   useEffect(() => {
-    console.log("formList",formList);
+
   }, [formList]);
 
   useEffect(() => {
-    console.log("lists",lists);
+
   }, [lists]);
 
 

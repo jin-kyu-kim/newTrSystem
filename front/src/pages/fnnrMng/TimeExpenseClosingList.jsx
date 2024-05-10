@@ -8,6 +8,7 @@ import { exportDataGrid } from "devextreme/excel_exporter";
 import { saveAs } from 'file-saver';
 
 import TimeExpenseClosingListJson from "./TimeExpenseClosingListJson.json";
+import { useModal } from "../../components/unit/ModalContext";
 
 const TimeExpenseClosingList = () => {
 
@@ -16,6 +17,7 @@ const TimeExpenseClosingList = () => {
     const props = location.state.props;
     const [values, setValues] = useState([]);
     const {keyColumn, columns, summaryColumn} = TimeExpenseClosingListJson;
+    const { handleOpen } = useModal();
 
     useEffect(() => {
         retrieveClosingList();
@@ -55,7 +57,7 @@ const TimeExpenseClosingList = () => {
             // 마감 롤백 Y -> N
            const result =  await cancelCloseAply();
            if(result > 0) {
-            alert("마감 취소에 성공하셨습니다")
+            handleOpen("마감 취소에 성공하셨습니다")
             navigate("/fnnrMng/TimeExpenseInsertSttus");
            }
         } else {

@@ -25,6 +25,7 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from 'react-router';
 
 import axios from "axios";
+import { useModal } from "../../components/unit/ModalContext";
 import CustomTable from "components/unit/CustomTable";
 import ApprovalPopup from "components/unit/ApprovalPopup"
 import AutoCompleteProject from "components/unit/AutoCompleteProject";
@@ -134,9 +135,8 @@ const EmpVacation = () => {
     let sessionDeptNm = location.state ? location.state.deptList[0].deptNm : cookies.deptInfo[0].deptNm
     let jbttlCd = location.state ? location.state.deptList[0].jbttlCd : cookies.deptInfo[0].jbttlCd
 
-
-
-
+    //팝업 모달
+    const { handleOpen } = useModal();
 
     // 월별 근무일_공휴일 조회
     const [selectCrtrDateList, setSelectCrtrDateList] = useState();
@@ -389,7 +389,7 @@ const EmpVacation = () => {
         else if (!insertVcatnValue.vcatnEndYmd && (insertVcatnValue.vcatnTyCd == "VTW01201" || insertVcatnValue.vcatnTyCd == "VTW01204")) errorMsg = "휴가종료기간을 선택하세요."
 
         if (errorMsg) {
-            alert(errorMsg);
+            handleOpen(errorMsg);
             return;
         } else {
             const isconfirm = window.confirm("저장하시겠습니까?");
@@ -397,7 +397,7 @@ const EmpVacation = () => {
                 // 휴가신청 정합성체크
                 let response = getVcatnVali();
                 if (response) {
-                    alert(response);
+                    handleOpen(response);
                     return;
                 } else {
                     insertVcatnAtrz(insertElctrnValue);
@@ -511,12 +511,8 @@ const EmpVacation = () => {
             const response = await axios.post("/boot/indvdlClm/insertVcatnAtrz", formData, {
                 headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}`  },
             });
-
-            console.log("response : ", response);
-            console.log("response.data : ", response.data);
-            console.log("response.data == 성공 : ", response.data == "성공");
             if (response && response.data == "성공") {
-                alert("저장되었습니다.");
+                handleOpen("저장되었습니다.");
 
                 // 전자결재ID 채번
                 elctrnAtrzId = uuid();
@@ -544,7 +540,8 @@ const EmpVacation = () => {
                 })
                 selectData(searchVcatnListParam);
             } else {
-                alert(response.data);
+                handleOpen("실패하였습니다.");
+                //alert(response.data)
             }
 
         } catch (error) {

@@ -10,6 +10,7 @@ import {
 import { useCookies } from "react-cookie";
 import CustomCdComboBox from "components/unit/CustomCdComboBox";
 import { DateBox, NumberBox, TextBox } from "devextreme-react";
+import { useModal } from "../../components/unit/ModalContext";
 
 const EmpBasicInfo = ({naviEmpId}) => {
   const [baseInfoData, setBaseInfoData] = useState([]);
@@ -27,6 +28,8 @@ const EmpBasicInfo = ({naviEmpId}) => {
   const [empCnt, setEmpCnt] = useState(0);
 
   const [empDtlData, setEmpDtlData] = useState([]);
+
+  const { handleOpen } = useModal();  
 
   const formatDate = (value) => {
     if (value instanceof Date) {
@@ -129,56 +132,54 @@ const EmpBasicInfo = ({naviEmpId}) => {
 
   const updateEmpInfo = async () => {
     if (empDtlData.srvicEndYmd !=null && empDtlData. srvicEndYmd!='' &&empDtlData.srvicBgngYmd != null && empDtlData.srvicBgngYmd !== '' && empDtlData.srvicBgngYmd >= empDtlData.srvicEndYmd) {
-      window.alert(
-        "복무종료일자가 복무시작날짜와 같거나 복무종료일자가 더 큽니다."
-      );
+      handleOpen("복무종료일자가 복무시작날짜와 같거나 복무종료일자가 더 큽니다.");
       return;
     }
     if(empDtlData.engFlnm !='' &&empDtlData.engFlnm != null && empDtlData.engFlnm.length > 30){
-     alert ("영문 이름은 30자를 넘을수 없습니다"); 
+      handleOpen ("영문 이름은 30자를 넘을수 없습니다"); 
      return ;
     }
  
     if (empDtlData.chcrtFlnm !='' &&empDtlData.chcrtFlnm != null && !/^[a-zA-Z\s]+$/.test(empDtlData.engFlnm)) {
-      alert("영문 이름은 영문자와 공백만 입력 가능합니다.");
+      handleOpen("영문 이름은 영문자와 공백만 입력 가능합니다.");
       return;
   }
  
 if(empDtlData.bassAddr !='' &&empDtlData.bassAddr != null && empDtlData.bassAddr.length > 60){
-  alert ("기본주소는 60자를 넘을수 없습니다"); 
+  handleOpen ("기본주소는 60자를 넘을수 없습니다"); 
   return ;
  }
  if(empDtlData.bdyPartclrCn !='' &&empDtlData.bdyPartclrCn != null && empDtlData.bdyPartclrCn.length > 60){
-  alert ("신체 특이사항은 60자를 넘을수 없습니다"); 
+  handleOpen ("신체 특이사항은 60자를 넘을수 없습니다"); 
   return ;
  }
   if (empDtlData.chcrtFlnm !='' &&empDtlData.chcrtFlnm != null && !/^[\u4E00-\u9FFF\s]+$/.test(empDtlData.chcrtFlnm)) {
-    alert("한자이름은 한자와 공백만 입력 가능합니다.");
+    handleOpen("한자이름은 한자와 공백만 입력 가능합니다.");
     return;
 }
 if(empDtlData.chcrtFlnm !='' &&empDtlData.chcrtFlnm != null && empDtlData.chcrtFlnm.length > 30){
-  alert ("한자이름은 30자를 넘을수 없습니다"); 
+  handleOpen ("한자이름은 30자를 넘을수 없습니다"); 
   return ;
  }
 
  if(empDtlData.daddr !='' &&empDtlData.daddr != null && empDtlData.daddr.length > 60){
-  alert ("상세주소는 60자를 넘을수 없습니다"); 
+  handleOpen ("상세주소는 60자를 넘을수 없습니다"); 
   return ;
  }
  if(empDtlData.armyExmptnCn !='' &&empDtlData.armyExmptnCn != null && empDtlData.armyExmptnCn.length > 30){
-  alert ("면제사유는 30자를 넘을수 없습니다"); 
+  handleOpen ("면제사유는 30자를 넘을수 없습니다"); 
   return ;
  }
  if(empDtlData.mryfrSpcablCn !='' &&empDtlData.mryfrSpcablCn != null && empDtlData.mryfrSpcablCn.length > 30){
-  alert ("병과명은 30자를 넘을수 없습니다"); 
+  handleOpen ("병과명은 30자를 넘을수 없습니다"); 
   return ;
  }
  if (empDtlData.height !='' &&empDtlData.height != null &&  !/^\d{1,4}(?:\.\d)?$/.test(empDtlData.height)) {
-  alert("키는 정수 3자리와 소수점 첫째 자리까지만 입력 가능합니다.");
+  handleOpen("키는 정수 3자리와 소수점 첫째 자리까지만 입력 가능합니다.");
   return;
 }
 if (empDtlData.bdwgh !='' &&empDtlData.bdwgh != null &&  !/^\d{1,4}(?:\.\d)?$/.test(empDtlData.bdwgh)) {
-  alert("정수 4자리와 소수점 첫째 자리까지만 입력 가능합니다.");
+  handleOpen("정수 4자리와 소수점 첫째 자리까지만 입력 가능합니다.");
   return;
 }
  
@@ -196,7 +197,7 @@ if (empDtlData.bdwgh !='' &&empDtlData.bdwgh != null &&  !/^\d{1,4}(?:\.\d)?$/.t
           const response = await ApiRequest("/boot/common/commonInsert",  params);
           if (response === 1) {
             
-            window.alert("직원정보가 저장 되었습니다.");
+            handleOpen("직원정보가 저장 되었습니다.");
             window.location.reload();
           } else {
             // 저장 실패 시 처리
@@ -210,7 +211,7 @@ if (empDtlData.bdwgh !='' &&empDtlData.bdwgh != null &&  !/^\d{1,4}(?:\.\d)?$/.t
           const response = await ApiRequest("/boot/common/commonUpdate", params);
 
           if (response === 1) {
-            window.alert("직원정보가 저장 되었습니다.");
+            handleOpen("직원정보가 저장 되었습니다.");
             window.location.reload();
           } else {
             // 저장 실패 시 처리

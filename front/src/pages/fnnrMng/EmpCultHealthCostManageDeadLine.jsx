@@ -9,11 +9,13 @@ import SearchInfoSet from "components/composite/SearchInfoSet";
 import { Button } from "devextreme-react";
 import CustomEditTable from "../../components/unit/CustomEditTable";
 import { useNavigate } from "react-router-dom";
+import { useModal } from "../../components/unit/ModalContext";
 
 const EmpCultHealthCostManage = () => {
   const [values, setValues] = useState([]);
   const { keyColumn, queryId, tableColumns, summaryColumn , wordWrap, searchInfo } = EmpCultHealthCostManageJson;
   const navigate = useNavigate();
+  const { handleOpen } = useModal();
   let now = new Date();
   const [param, setParam] = useState({
     "empFlnm": null,
@@ -72,7 +74,7 @@ const EmpCultHealthCostManage = () => {
       const response = await ApiRequest("/boot/common/commonUpdate", updateParam);
       if (response > 0 ) {
         searchDdlnYn();
-        alert("마감이 취소되었습니다.")
+        handleOpen("마감이 취소되었습니다.")
       }
     }
   };

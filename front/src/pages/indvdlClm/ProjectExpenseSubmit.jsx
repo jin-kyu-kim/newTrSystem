@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { Button } from 'devextreme-react/button'
 import ApiRequest from "utils/ApiRequest";
+import { useModal } from "../../components/unit/ModalContext";
 
 const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, buttonGroup, getData }) => {
   const [ isComplete, setIsComplete ] = useState(false);
-
+  const { handleOpen } = useModal();
   useEffect(() => {
     if (selectedItem.length > 0 && isComplete) {
-      alert("등록되었습니다.");
+      handleOpen("등록되었습니다.");
       getData();
     }
   }, [isComplete]);
@@ -16,7 +17,7 @@ const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, butt
     const validationResults = await validateFields();
 
     if (!validationResults.isValid) {
-      validationResults.messages.length !== 0 && alert(validationResults.messages.join('\n'));
+      validationResults.messages.length !== 0 && handleOpen(validationResults.messages.join('\n'));
       return;
     }
 

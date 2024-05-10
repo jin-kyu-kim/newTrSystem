@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import SearchEmpSet from "components/composite/SearchInfoSet";
 import { resetPassword } from "utils/AuthMng";
 import ExcelUpload from "components/unit/ExcelUpload";
+import { useModal } from "../../components/unit/ModalContext";
 
 const EmpManage = ({}) => {
 
@@ -51,6 +52,7 @@ const EmpManage = ({}) => {
         { "id": "2","value": "2","text": "2회차" }
         ];  
   const [excel, setExcel] = useState();  //엑셀용
+  const { handleOpen } = useModal();
 
 //----------------------------------초기 셋팅 영역 --------------------------------
   useEffect(() => {
@@ -184,16 +186,16 @@ const EmpManage = ({}) => {
 //=========================발령저장 버튼 클릭 이벤트 ========================
   const onClickHst = () => {    
     if(empYear === null) {
-      alert("발령년도를 선택해주세요");
+      handleOpen("발령년도를 선택해주세요");
         return;
     } else if(empMonth === null) {
-      alert("발령 월을 선택해주세요");
+      handleOpen("발령 월을 선택해주세요");
       return;
     } else if(empOdr === null) {
-      alert("발령 차수를 선택해주세요");
+      handleOpen("발령 차수를 선택해주세요");
       return;
     }else if(empJbps === null) {
-      alert("직위를 선택해주세요");
+      handleOpen("직위를 선택해주세요");
       return;
     }else{
       if(empDetailParam.jbpsCd === "VTW00119"){   //인턴 -> 사원 or 컨설턴트 진급시 
@@ -240,7 +242,7 @@ const EmpManage = ({}) => {
       const responseUpt = await ApiRequest("/boot/common/commonUpdate", paramUpd);
       const responseHist = await ApiRequest("/boot/common/commonInsert", paramHist);
         if (responseUpt > 0 && responseHist > 0) {
-          alert("저장되었습니다.");
+          handleOpen("저장되었습니다.");
           setReForm(true);
           empJbpsHistHandle();
           pageHandle();
@@ -296,7 +298,7 @@ const insertEmpFte = async () => {
     const responseUptUser = await ApiRequest("/boot/sysMng/resetPswd", paramUpdUser);
     const responseHist = await ApiRequest("/boot/common/commonInsert", paramHist);
       if (responseUpt > 0 && responseHist > 0 && responseUptUser === "성공")  {
-        alert("저장되었습니다.");
+        handleOpen("저장되었습니다.");
         setEmpMax({});
         setEmpFteParam({});
         setReForm(true);
@@ -314,7 +316,7 @@ const insertEmpFte = async () => {
     let maxSn=0;
     let maxJbpsCd;
     if(histValues.length === 0){
-      alert("취소할 진급이력이 존재하지 않습니다.")
+      handleOpen("취소할 진급이력이 존재하지 않습니다.")
     }else{
 
       for(const value of histValues){
@@ -358,7 +360,7 @@ const cancelJbpsEmpHist = async (updParam,ehdParam) => {       //삭제axios
     const responseUpd = await ApiRequest("/boot/common/commonUpdate", updParam);
     const responseDel = await ApiRequest("/boot/common/commonDelete", ehdParam);
       if (responseUpd > 0 && responseDel > 0 ) {
-        alert("취소되었습니다.");
+        handleOpen("취소되었습니다.");
         pageHandle();
         empJbpsHistHandle();
       }
@@ -397,9 +399,9 @@ const cancelJbpsEmpHist = async (updParam,ehdParam) => {       //삭제axios
       if (isconfirm) {
         const response =  await resetPassword(data.empId,data.empno)
         if(response.isOk){
-          window.alert("비밀번호가 초기화되었습니다");
+          handleOpen("비밀번호가 초기화되었습니다");
         }else {
-          window.alert("초기화에 실패하였습니다.");
+          handleOpen("초기화에 실패하였습니다.");
         }
       } else{
         return;
@@ -409,10 +411,10 @@ const cancelJbpsEmpHist = async (updParam,ehdParam) => {       //삭제axios
 //===============================발령정보 업로드 (개발예정)
     const empUpload =()=>{
       if (excel === undefined || excel === null){
-        window.alert("파일을 등록해주세요.");
+        handleOpen("파일을 등록해주세요.");
         return;
     }else{
-      alert("발령등록!!")
+      handleOpen("발령이 등록 되었습니다.")
     }
     }
     

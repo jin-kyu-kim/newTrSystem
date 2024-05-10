@@ -4,7 +4,7 @@ import ProjectPrmpcBgtCmprJson from "./ProjectPrmpcBgtCmprJson.json";
 import CustomTable from "components/unit/CustomTable";
 import ApiRequest from "utils/ApiRequest";
 
-const ProjectPrmpcBgtCmpr = ({prjctId, bgtMngOdr, bgtMngOdrTobe, visible, atrzDmndSttsCd}) => {
+const ProjectPrmpcBgtCmpr = ({prjctId, bgtMngOdr, bgtMngOdrTobe, visible, atrzDmndSttsCd, targetOdr}) => {
 
     const [values, setValues] = useState([]);
     const { keyColumn, queryId, tableColumns, wordWrap, groupingColumn ,groupingData} = ProjectPrmpcBgtCmprJson;

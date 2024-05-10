@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import ExcelUpload from "../../components/unit/ExcelUpload";
 import Button from "devextreme-react/button";
 import ApiRequest from "../../utils/ApiRequest";
+import { useModal } from "../../components/unit/ModalContext";
 
 const button = {
     borderRadius: '5px',
@@ -24,7 +25,7 @@ const ProjectExpenseExcel = (props) => {
     const hours = String(currentDate.getHours()).padStart(2, "0");
     const minutes = String(currentDate.getMinutes()).padStart(2, "0");
     const seconds = String(currentDate.getSeconds()).padStart(2, "0");
-
+    const { handleOpen } = useModal();
     const formattedDate = `${year}${month}${day}${hours}${minutes}${seconds}`;
 
     useEffect(() => {
@@ -45,7 +46,7 @@ const ProjectExpenseExcel = (props) => {
 
     const onClick = async () => {
         if (excel === undefined){
-            window.alert("파일을 등록해주세요.");
+            handleOpen("파일을 등록해주세요.");
             return;
         }
         let param = [];
@@ -86,21 +87,21 @@ const ProjectExpenseExcel = (props) => {
             }
             try {
                 if(param.length === 1) {
-                    alert('이미 등록된 사용내역입니다.');
+                    handleOpen('이미 등록된 사용내역입니다.');
                     return;
                 }
                 const response = await ApiRequest("/boot/common/commonInsert", param);
 
                 if (response === 1) {
                     props.setIndex(1);
-                    window.alert("등록되었습니다.")
+                    handleOpen("등록되었습니다.")
                 }
             } catch (error) {
-                window.alert("오류가 발생했습니다.");
+                handleOpen("오류가 발생했습니다.");
                 console.error(error);
             }
         } else {
-            window.alert("롯데법인카드 홈페이지에서 다운로드한 엑셀파일 양식과 동일해야 합니다.");
+            handleOpen("롯데법인카드 홈페이지에서 다운로드한 엑셀파일 양식과 동일해야 합니다.");
         }
     }
 

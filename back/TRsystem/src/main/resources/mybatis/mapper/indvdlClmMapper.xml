@@ -1079,6 +1079,15 @@
         JOIN CRTR_DATE crd ON crd.CRTR_YMD = dv.APLY_YMD AND crd.HLDY_CL_CD = 'VTW05001';
     </select>
 
+    <select id="retrieveProjectExpensCd" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            CD_VALUE AS CT_ATRZ_SE_CD,
+            CD_NM
+        FROM CD
+        WHERE UP_CD_VALUE = 'VTW019'
+          AND CD_VALUE IN ('VTW01902', 'VTW01903')
+    </select>
+
     <!-- 문체비: 목록 조회 -->
     <select id="retrieveClturPhstrnActCtList" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
