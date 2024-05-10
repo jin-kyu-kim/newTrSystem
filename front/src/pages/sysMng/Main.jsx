@@ -107,8 +107,8 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
     const goKms = (e) => {       //지식관리시스템이동
       window.open("http://kms.vtw.co.kr/#/login");
     }
-    const goConference = (e) => {  //회의실예약이동(화면 미구현 추후 설정예정)
-        navigate("/infoInq/MeetingRoomReserv", 
+    const goConference = (e) => {  //회의실예약이동
+        navigate("/humanResourceMng/MeetingRoomManage2", 
                 { state: { 
                         empId: empId,
                         } 
@@ -132,7 +132,7 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
         
     };
 
-    const onAplyRowClick = (e) => {   //결재 신청 현황 테이블 클릭 (전자결재 상세화면 개발 후 설정 예정)
+    const onAplyRowClick = (e) => {   //결재 신청 현황 테이블 클릭 
           if(e.data.tySe === "프로젝트 비용"){ //프로젝트비용
                   navigate("/indvdlClm/ProjectExpense", 
                  {state: {id : e.data.id }})
@@ -252,7 +252,7 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
 {/* ----------------------------------결제 신청 현황 ------------------------------------------------*/}
         <div className="aplyTableList" style={{marginLeft:"20px",flex:"1",}}>
             <p> <strong>결재 신청 현황 </strong> </p>
-            <CustomTable  keyColumn="id"  columns={atrzSttsTableColumns}  values={aplyValues} onRowClick={onAplyRowClick} noDataText='진행중인 결재가 없습니다.'/>
+            <CustomTable  keyColumn="id"  columns={atrzSttsTableColumns}  values={aplyValues} onRowClick={onAplyRowClick} noDataText="신청한 결재가 없습니다."/>
         </div>
 
 {/* -----------------------------------결제리스트-----------------------------------------------------*/}
