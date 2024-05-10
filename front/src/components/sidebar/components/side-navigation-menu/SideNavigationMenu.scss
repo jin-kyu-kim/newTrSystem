@@ -13,7 +13,7 @@
     min-height: 100%;
     display: flex;
     flex: 1;
-
+    
     .dx-treeview {
       // ## Long text positioning
       white-space: nowrap;
@@ -23,7 +23,7 @@
       // ## Icon width customization
       .dx-treeview-item {
         padding-left: 0;
-        flex-direction: row-reverse;
+        //flex-direction: row-reverse;
 
         .dx-icon {
           width: $side-panel-min-width !important;
