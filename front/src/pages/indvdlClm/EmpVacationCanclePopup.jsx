@@ -15,8 +15,6 @@ import { Table, TableCell, TableHead, TableRow } from '@mui/material';
 import uuid from "react-uuid";
 import { useModal } from "../../components/unit/ModalContext";
 
-import { useModal } from "components/unit/ModalContext";
-
 const token = localStorage.getItem("token");
 
 const EmpVacationCanclePopup = ({ width, height, visible, dataMap, empId, onHiding, title }) => {
@@ -30,8 +28,6 @@ const EmpVacationCanclePopup = ({ width, height, visible, dataMap, empId, onHidi
 
 
 
-
-
     // 휴가전자결재정보조회
     const [selectElctrnAtrzValue, setSelectElctrnAtrzValue] = useState();
     const [selectAtrzLnList, setSelectAtrzLnList] = useState();
@@ -42,9 +38,6 @@ const EmpVacationCanclePopup = ({ width, height, visible, dataMap, empId, onHidi
 
 
     const rtrcnPrvonsh = useRef(null);
-
-    const { handleOpen } = useModal();
-
 
     const getElctrnAtrz = async () => {
         setSelectElctrnAtrzValue(await ApiRequest('/boot/common/commonSelect', [{ tbNm: "ELCTRN_ATRZ" }, { elctrnAtrzId: dataMap.elctrnAtrzId }]));
