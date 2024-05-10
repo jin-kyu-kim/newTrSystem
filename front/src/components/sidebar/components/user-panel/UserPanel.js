@@ -21,7 +21,7 @@ export default function UserPanel({ menuMode }) {
   }, [navigate]);
 
   const pannelClick = useCallback((e) => {
-    handleOpen(e.itemData.text + ' 하시겠습니까?', e.itemData.function);
+    handleOpen(e.itemData.text + ' 하시겠습니까?', e.itemData.function, true);
   }, [handleOpen]);
 
   const menuItems = useMemo(() => ([

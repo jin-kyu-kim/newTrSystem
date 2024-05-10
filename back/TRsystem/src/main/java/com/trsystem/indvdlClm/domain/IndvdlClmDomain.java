@@ -560,9 +560,18 @@ public class IndvdlClmDomain {
 
             // ELCTRN_ATRZ(전자결재) 테이블 저장
             List<Map<String, Object>> insertElctrnList = new ArrayList<>();
+
+            Map<String, Object> selectElctrnAtrz = new HashMap<>();
+            selectElctrnAtrz.put("queryId", "indvdlClmMapper.retrieveElctrnAtrzCnt");
+
+            List<Map<String, Object>> selectElctrnAtrzResult = commonService.queryIdSearch(selectElctrnAtrz);
+
+            String refSolYear = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy"));
+
             insertElctrnMap.put("elctrnAtrzId", elctrnAtrzValue);
             insertElctrnMap.put("atrzFormDocId", "9632d577-f0bd-11ee-9b25-000c2956283f");
             insertElctrnMap.put("nowAtrzLnSn", "1");
+            insertElctrnMap.put("elctrnAtrzDocNo", refSolYear + "-01-" + selectElctrnAtrzResult.size() + 1);
             insertElctrnList.add(0, elctrnTbMap);
             insertElctrnList.add(1, insertElctrnMap);
             queryResult = commonService.insertData(insertElctrnList);
@@ -847,6 +856,13 @@ public class IndvdlClmDomain {
     ){
         String elctrnAtrzId = (String) insertDataMapValue.get("elctrnAtrzId");
 
+        Map<String, Object> selectElctrnAtrz = new HashMap<>();
+        selectElctrnAtrz.put("queryId", "indvdlClmMapper.retrieveElctrnAtrzCnt");
+
+        List<Map<String, Object>> selectElctrnAtrzResult = commonService.queryIdSearch(selectElctrnAtrz);
+
+        String refSolYear = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy"));
+
         // ELCTRN_ATRZ(전자결재저장)
         insertElctrnAtrzMapValue.put("elctrnAtrzId", insertDataMapValue.get("elctrnAtrzId"));
         insertElctrnAtrzMapValue.put("atrzDmndEmpId", insertDataMapValue.get("empId"));
@@ -856,6 +872,7 @@ public class IndvdlClmDomain {
         insertElctrnAtrzMapValue.put("mdfcnEmpId", insertDataMapValue.get("empId"));
         insertElctrnAtrzMapValue.put("elctrnAtrzTySeCd", "VTW04915");
         insertElctrnAtrzMapValue.put("atrzFormDocId", "9632d577-f0bd-11ee-9b25-000c2956283f");
+        insertElctrnAtrzMapValue.put("elctrnAtrzDocNo", refSolYear + "-15-" + selectElctrnAtrzResult.size() + 1);
         insertElctrnAtrzMapValue.put("rtrcnElctrnAtrzId", insertDataMapValue.get("rtrcnElctrnAtrzId"));
 
         // VCATN_ATRZ(휴가결재저장)
