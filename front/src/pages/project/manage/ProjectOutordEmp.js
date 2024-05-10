@@ -8,6 +8,7 @@ import axios from "axios";
 import CustomTable from "components/unit/CustomTable";
 import { useCookies } from "react-cookie";
 import uuid from "react-uuid";
+import { useModal } from "../../../components/unit/ModalContext";
 
 function ProjectOutordEmp () {
     const [values, setValues] = useState([]);
@@ -24,6 +25,7 @@ function ProjectOutordEmp () {
     const empId = cookies.userInfo.empId;
     const date = new Date();
     const now =  date.toISOString().split("T")[0] +" " +date.toTimeString().split(" ")[0];
+    const { handleOpen } = useModal();
 //============== 초기 조회할 때==========================================    
     useEffect(() => {
         if (!Object.values(param).every((value) => value === "")) {
@@ -134,11 +136,11 @@ function ProjectOutordEmp () {
 //================저장버튼 이벤트==================================================     
         const saveOutordEmp = () => {
            if(outordEmpValue.outordHnfOgdpNm === null){
-                alert("소속을 입력해주세요");
+                handleOpen("소속을 입력해주세요");
            }else if(outordEmpValue.empFlnm === null){
-                alert("성명를 입력해주세요");
+                handleOpen("성명를 입력해주세요");
            }else if(outordEmpValue.outordHnfGradCd === null){
-                alert("등급을 선택해주세요");
+                handleOpen("등급을 선택해주세요");
            }else{
             const isconfirm = window.confirm("저장하시겠습니까?");
         if (isconfirm) {
@@ -197,7 +199,7 @@ function ProjectOutordEmp () {
                       headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
                     });
                       if (response.data >= 1) {
-                        alert("저장되었습니다.");
+                        handleOpen("저장되었습니다.");
                         setEmpMax({});
                         resetForm();
                         pageHandle();
@@ -235,7 +237,7 @@ function ProjectOutordEmp () {
                       headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
                     });
                       if (response.data >= 1) {
-                        alert("저장되었습니다.");
+                        handleOpen("저장되었습니다.");
                         resetForm();
                         pageHandle();
                       }
@@ -260,7 +262,7 @@ function ProjectOutordEmp () {
                 try {
                     const response = await ApiRequest("/boot/common/deleteWithFile", {params : deleteParam, fileParams: fileParams});
                     if (response >= 1) {
-                        alert("삭제되었습니다.");
+                        handleOpen("삭제되었습니다.");
                         resetForm();
                         pageHandle();
                     }

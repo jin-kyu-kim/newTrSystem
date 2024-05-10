@@ -117,43 +117,41 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
     }, [data.ctrtElctrnAtrzId])
 
     const getTempData = async () => {
-        const dtlParam = 
-            { queryId: "elecAtrzMapper.retrieveOutorHnfDtl",
-              elctrnAtrzId: data.ctrtElctrnAtrzId ? data.ctrtElctrnAtrzId : data.elctrnAtrzId,
-              elctrnAtrzTySeCd: ctrtTyCd ? ctrtTyCd : data.elctrnAtrzTySeCd}    
+        const dtlParam = {
+            queryId: "elecAtrzMapper.retrieveOutorHnfDtl",
+            elctrnAtrzId: data.ctrtElctrnAtrzId ? data.ctrtElctrnAtrzId : data.elctrnAtrzId,
+            elctrnAtrzTySeCd: ctrtTyCd ? ctrtTyCd : data.elctrnAtrzTySeCd
+        };
         const dtlResponse = await ApiRequest("/boot/common/queryIdSearch", dtlParam);
-
-        const ctrtDataDtl = dtlResponse[0];
-
-        console.log("ctrtDataDtl",ctrtDataDtl);
-
+   
         const dtlCndParam = [
-            { tbNm: "HNF_CTRT_DTL_MM" }, 
+            { tbNm: "HNF_CTRT_DTL_MM" },
             { elctrnAtrzId: data.ctrtElctrnAtrzId ? data.ctrtElctrnAtrzId : data.elctrnAtrzId }
-        ]
-
+        ];
+   
         const dtlCndResponse = await ApiRequest("/boot/common/commonSelect", dtlCndParam);
-
-        console.log("dtlCndResponse",dtlCndResponse);
-
-        dtlCndResponse.forEach(item => {
-            delete item.elctrnAtrzId;
-            delete item.inptHnfId;
-            item.id = item.inptYm; 
-            delete item.inptYm;
+   
+        console.log("dtlCndResponse", dtlCndResponse);
+   
+        const result = dtlResponse.map((ctrtItem) => {
+            const hnfCtrtDtlMmItems = dtlCndResponse
+                .filter((hnfItem) => hnfItem.inptHnfId === ctrtItem.inptHnfId)
+                .map((item) => {
+                    const { elctrnAtrzId, inptHnfId, inptYm, ...rest } = item;
+                    return {
+                        ...rest,
+                        id: inptYm
+                    };
+                });
+   
+            return {
+                ...ctrtItem,
+                hnfCtrtDtlMm: hnfCtrtDtlMmItems
+            };
         });
-        
-        const hnfCtrtDtlMm = dtlCndResponse;
-
-
-        const result = {
-            ...ctrtDataDtl,
-            hnfCtrtDtlMm
-        }
-
-        console.log("result",result);
+   
         handlePopupData(result);
-    }
+    };
 
 
 

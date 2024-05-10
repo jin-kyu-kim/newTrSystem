@@ -9,6 +9,7 @@ import { TextBox, Validator } from "devextreme-react";
 import { changePassword } from "utils/AuthMng";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { useModal } from "../../components/unit/ModalContext";
 
 const ModifyPwd = ({naviEmpId}) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -18,6 +19,9 @@ const ModifyPwd = ({naviEmpId}) => {
   const [baseInfoData, setBaseInfoData] = useState([]);
   /*유저세션*/
   const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
+
+  const { handleOpen } = useModal();
+  
   const navigate = useNavigate();
    let empId;
 
@@ -54,51 +58,51 @@ const ModifyPwd = ({naviEmpId}) => {
 const onClickChangePwd  = async (e) => {
 
   if (empDtlData.oldPwd === null || empDtlData.oldPwd === ""){
-    window.alert ("현재 비밀번호를 입력하세요");
+    handleOpen ("현재 비밀번호를 입력하세요");
     return;
   }
   if (empDtlData.newPwd.length < 8) {
-    window.alert("새 비밀번호 는 8자 이상부터 입력가능합니다.");
+    handleOpen("새 비밀번호 는 8자 이상부터 입력가능합니다.");
     return;
   }
   if (empDtlData.newPwdCheck.length < 8) {
-    window.alert("새 비밀번호 확인은 8자 이상부터 입력가능합니다.");
+    handleOpen("새 비밀번호 확인은 8자 이상부터 입력가능합니다.");
     return;
   }
   if (empDtlData.newPwd.length > 20) {
-    window.alert("새 비밀번호 는 20자 를 넘을수 없습니다.");
+    handleOpen("새 비밀번호 는 20자 를 넘을수 없습니다.");
     return;
   }
   
 
   if (empDtlData.newPwdCheck.length > 20) {
-    window.alert("새 비밀번호 확인은 20자 를 넘을수 없습니다.");
+    handleOpen("새 비밀번호 확인은 20자 를 넘을수 없습니다.");
     return;
   }
   
 
 
   if (!/^(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/.test(empDtlData.newPwd)) {
-      window.alert("새 비밀번호는 숫자, 영문자, 특수문자가 모두 포함되어야 합니다.");
+    handleOpen("새 비밀번호는 숫자, 영문자, 특수문자가 모두 포함되어야 합니다.");
       return;
   }
   if (!/^(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/.test(empDtlData.newPwdCheck)) {
-    window.alert("새 비밀번호 확인 은 숫자, 영문자, 특수문자가 모두 포함되어야 합니다.");
+    handleOpen("새 비밀번호 확인 은 숫자, 영문자, 특수문자가 모두 포함되어야 합니다.");
     return;
 }
 
 
 
 if (empDtlData.newPwd === null || empDtlData.newPwd === ""){
-  window.alert ("새 비밀번호를 입력하세요");
+  handleOpen ("새 비밀번호를 입력하세요");
   return;
 }
 if (empDtlData.newPwdCheck === null || empDtlData.newPwdCheck === ""){
-  window.alert (" 비밀번호 확인을 입력하세요");
+  handleOpen (" 비밀번호 확인을 입력하세요");
   return;
 }
 if (empDtlData.newPwd != empDtlData.newPwdCheck ){
-  window.alert (" 비밀번호 확인이 일치하지 않습니다 ");
+  handleOpen (" 비밀번호 확인이 일치하지 않습니다 ");
   return;
 }
     const isconfirm = window.confirm("비밀번호를 변경 하시겠습니까?"); 
@@ -106,7 +110,6 @@ if (empDtlData.newPwd != empDtlData.newPwdCheck ){
     if (isconfirm) {
       const params = [{ tbNm: "LGN_USER" }, {empId : empId}];
       try {
-        console.log("params:", params);
         const response = await ApiRequest( "/boot/common/commonSelect", params);
         empno = response[0].empno  
       }
@@ -115,10 +118,10 @@ if (empDtlData.newPwd != empDtlData.newPwdCheck ){
       }
       const response =  await changePassword(empno, empDtlData.oldPwd, empDtlData.newPwd);
       if(response.isOk){
-        window.alert("비밀번호가 변경 되었습니다");
+        handleOpen("비밀번호가 변경 되었습니다");
         navigate("/home");
       }else {
-        window.alert("기존 비밀번호를 확인하세요.");
+        handleOpen("기존 비밀번호를 확인하세요.");
       }
     } else{
       return;

@@ -6,6 +6,7 @@ import CustomLabelValue from '../../../components/unit/CustomLabelValue';
 import CustomCdComboBox from '../../../components/unit/CustomCdComboBox';
 import NumberBox from 'devextreme-react/number-box';
 import Button from "devextreme-react/button";
+import { useModal } from "../../../components/unit/ModalContext";
 
 const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr, bgtMngOdrTobe, ctrtYmd, stbleEndYmd, transformedData, deptId, targetOdr, bizSttsCd, atrzLnSn}) => {
     const navigate = useNavigate();
@@ -14,7 +15,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
     const [param, setParam] = useState([]);
     const [contents, setContents] = useState([]);   
     const [structuredData, setStructuredData] = useState({});   //기간 구조 데이터
-
+    const { handleOpen } = useModal();
 
     //기간 데이터를 받아와서 년도별로 월을 나누어서 배열로 만들어주는 함수
     useEffect(() => {
@@ -224,23 +225,23 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
         const ctrtStbleEndYmd = new Date(stbleEndYmd);
 
         if(inptPrnmntYmd < ctrtYmdDate){
-            alert("투입예정일은 사업시작일보다 이전일 수 없습니다");
+            handleOpen("투입예정일은 사업시작일보다 이전일 수 없습니다");
             return;
         }
         if(withdrPrnmntYmd < ctrtYmdDate){
-            alert("철수예정일은 사업시작일보다 이전일 수 없습니다");
+            handleOpen("철수예정일은 사업시작일보다 이전일 수 없습니다");
             return;
         }
         if(inptPrnmntYmd > ctrtStbleEndYmd){
-            alert("투입예정일은 경비종료일 이후일 수 없습니다");
+            handleOpen("투입예정일은 경비종료일 이후일 수 없습니다");
             return;
         }
         if(withdrPrnmntYmd > ctrtStbleEndYmd){
-            alert("철수예정일은 경비종료일 이후일 수 없습니다");
+            handleOpen("철수예정일은 경비종료일 이후일 수 없습니다");
             return;
         }
         if(inptPrnmntYmd > withdrPrnmntYmd){
-            alert("투입예정일은 철수예정일 이후일 수 없습니다");
+            handleOpen("투입예정일은 철수예정일 이후일 수 없습니다");
             return;
         }
 
@@ -274,7 +275,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
         try {
             const response = await ApiRequest("/boot/common/commonInsert", paramInfo);
                 if(response > 0) {
-                alert('데이터가 성공적으로 저장되었습니다.');
+                handleOpen('데이터가 성공적으로 저장되었습니다.');
                 handleCancel();
                 }    
         } catch (error) {
@@ -302,7 +303,6 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
         try {
             const response = await ApiRequest("/boot/common/commonInsert", paramInfo);
                 if(response > 0) {
-                console.log(response);
                 }    
         } catch (error) {
             console.error('Error ProjectChangePopup insert', error);
@@ -324,7 +324,7 @@ const onRowUpdateing = async() => {
     try {
         const response = await ApiRequest("/boot/common/commonUpdate", paramInfo);
             if(response > 0) {
-            alert('데이터가 성공적으로 수정되었습니다.');
+            handleOpen('데이터가 성공적으로 수정되었습니다.');
             handleCancel();
             }    
     } catch (error) {

@@ -12,8 +12,7 @@ import CustomTable from "components/unit/CustomTable";
 import CustomEmpComboBox from "components/unit/CustomEmpComboBox"
 import EmpVcatnAltmntMngJson from "pages/humanResourceMng/EmpVcatnAltmntMngJson.json"
 import ApiRequest from "utils/ApiRequest";
-
-import { useModal } from "components/unit/ModalContext";
+import { useModal } from "../../components/unit/ModalContext";
 
 // 현재년도
 const nowYear = new Date().getFullYear();
@@ -43,12 +42,12 @@ function getYearList(startYear, endYear) {
  * @description 휴가배정관리 화면을 구현한다
  */
 const EmpVcatnAltmntMng = () => {
-    const { handleOpen } = useModal();
-
     const navigate = useNavigate();
 
     const cntrBgngYmdRef = useRef();
     const cntrEndYmdRef = useRef();
+
+    const { handleOpen } = useModal();
 
     useEffect(() => {
         getEmpVacList();

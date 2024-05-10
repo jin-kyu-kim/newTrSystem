@@ -6,7 +6,6 @@ import { Button } from "devextreme-react";
 import ApiRequest from "utils/ApiRequest";
 import NoticeJson from "../infoInq/NoticeJson.json";
 import { useModal } from "../../components/unit/ModalContext";
-
 const NoticeDetail = () => {
     const navigate = useNavigate();
     const location = useLocation();

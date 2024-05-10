@@ -10,6 +10,7 @@ import moment from "moment";
 import "./FnnrMngStyle.css";
 
 import ProjectExpensePopup from "../indvdlClm/ProjectExpensePopup";
+import { useModal } from "../../components/unit/ModalContext";
 import TimeExpenseCancelPopup from "./TimeExpenseCancelPopup"
 
 const TimeExpenseInsertSttus = ({}) => {
@@ -33,7 +34,9 @@ const [ printPopVisible, setPrintPopVisible ] = useState(false);  // 출력화�
 const [ cancelPopVisible, setCancelPopVisible ] = useState(false);  // 취소화면 팝업 컨트롤
 const [selectedData, setSelectedData] = useState({});
 const [ atrzDmndSttsCnt, setAtrzDmndSttsCnt ] = useState({}); // 상태코드별 데이터 개수
+const { handleOpen } = useModal();
 const [ type, setType ] = useState(); // 시간 / 비용 구분자
+
 
 const [checkBoxValue, setCheckBoxValue] = useState({
   "allVtw": true,
@@ -145,7 +148,7 @@ const pageHandle = async () => {
     setTotValues(responseTot);
     setDtlValues(responseDtl);
     if(responseDdln.length != 1) {
-      console.log("테이블에 데이터가 없습니다.")
+
     } else {
       setDdlnYn(responseDdln[0].ddlnYn);
     }
@@ -237,7 +240,6 @@ const toEmpWorkTime = async (admin) => {
       orderWorkEndYmd: response[lastIndex].crtrYmd
     }
 
-    alert("근무시간페이지이동");
     navigate("/indvdlClm/EmpWorkTime",
     {state: { admin: workTimeAdmin }})
 
@@ -272,13 +274,13 @@ const onBtnClick = async (button, data) => {
     }
 
     if(button.name === "prjctScrnMv"){                                      
-        alert("프로젝트비용이동");
+      //handleOpen("프로젝트비용이동");
         navigate("/indvdlClm/ProjectExpense",
         {state: { admin: admin }})
     }
 
+
     if(button.name === "ctRtrcn"){
-      
       if(ddlnYn != "Y") {
         await onSetBasicInfo(data);
         await ctCancel(data);
@@ -290,13 +292,12 @@ const onBtnClick = async (button, data) => {
     }
 
      if(button.name === "companyPrice"){                                 //경로 수정 예정
-        alert("회사비용이동");
+      //handleOpen("회사비용이동");
         navigate("/fnnrMng/prjctCtClm/ProjectCostClaimDetail",
         {state: { empId: data.empId }})
     }
 
     if(button.name === "print"){      
-        console.log(data);
         await onSetBasicInfo(data);
         await getAtrzDmndSttsCnt(data);
         await getCtAply(data);
@@ -362,9 +363,8 @@ const handleCheckBoxChange = useCallback((e, key) => {
 
       // 마감하는 메소드
       const result = await closeAply();
-      console.log(result)
       if(result > 0) {
-        alert("마감됐습니다.");
+        handleOpen("마감됐습니다.");
       } else {
         return;
       }
@@ -383,7 +383,7 @@ const handleCheckBoxChange = useCallback((e, key) => {
   };
 
   const excelDwn = () => {
-    alert("엑셀 다운로드"); //기능 개발 예정
+    //handleOpen("엑셀 다운로드"); //기능 개발 예정
     const props = {
       aplyYm: dtlParam.aplyYm,
       aplyOdr: dtlParam.aplyOdr

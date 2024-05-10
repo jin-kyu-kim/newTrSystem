@@ -54,9 +54,6 @@ const ProjectOutordAprv = () => {
     };
     
     const onBtnClick = (data) => {
-        console.log(data);
-        console.log("onBtnClick");
-
         navigate("/project/ProjectOutordAprvDetail", { state: {
             prjctId: data.prjctId,
         }})
