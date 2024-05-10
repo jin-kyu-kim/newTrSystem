@@ -7,7 +7,7 @@ import ProjectExpenseJson from "./ProjectExpenseJson.json";
 import ApiRequest from "../../utils/ApiRequest";
 
 const ProjectExpenseCard = (props) => {
-    const { keyColumn, queryId, cdListQueryId, tableColumns, searchInfo, placeholderAndRequired, buttonGroup } = ProjectExpenseJson.ProjectExpenseTab;
+    const { keyColumn, queryId, prjctStleQueryId, prjctStlePdQueryId, tableColumns, searchInfo, placeholderAndRequired, buttonGroup } = ProjectExpenseJson.ProjectExpenseTab;
     const [ cdList, setCdList ] = useState([]);
     const [ expensCd, setExpensCd ] = useState({});
     const [ comboList, setComboList ] = useState({});
@@ -67,10 +67,11 @@ const ProjectExpenseCard = (props) => {
         }
     };
 
-    const getCdList = async (prjctId, cardUseSn) => {
+    const getCdList = async (prjctId, prjctStleCd, cardUseSn) => {
+        let queryId = prjctStleCd === 'VTW01802' ? prjctStleQueryId : prjctStlePdQueryId
         try{
             const response = await ApiRequest('/boot/common/queryIdSearch', {
-                queryId: cdListQueryId, prjctId: prjctId
+                queryId: queryId, prjctId: prjctId
             })
             setCdList(prevCdLists => ({
                 ...prevCdLists,
