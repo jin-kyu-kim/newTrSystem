@@ -4,6 +4,7 @@ import CustomLabelValue from "components/unit/CustomLabelValue";
 import PymntPlanOutordHnfPopupJson from "./PymntPlanOutordHnfPopupJson.json";
 import NumberBox from 'devextreme-react/number-box';
 import { parse, format, addMonths } from 'date-fns';
+import { useModal } from "../../../components/unit/ModalContext";
 
 const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVisible, handlePopupData, selectedData, tableData, data, sttsCd, ctrtTyCd }) => {
 
@@ -13,6 +14,7 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
     const [outordEmpData, setOutordEmpData] = useState({});
     const [structuredData, setStructuredData] = useState({});   //기간 구조 데이터
     const [inputValue, setInputValue] = useState([]); //월별 값 입력을 위한 상태
+    const { handleOpen } = useModal();
     let controlReadOnly = false;
 
 /* =========================  사업기간에 따른 우측 input box 생성  =========================*/
@@ -53,7 +55,7 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
     const handleInputChange = useCallback((e) => {
 
         if(!outordEmpData.expectInptHnfId){
-            alert("계획투입인원을 먼저 선택해주세요.");
+            handleOpen("계획투입인원을 먼저 선택해주세요.");
             return;
         }
 
@@ -121,18 +123,18 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
         e.preventDefault();
         
         if(!(outordEmpData.totAmt > 0)) {
-            alert("총액은 0 이상 입력해야 합니다.");
+            handleOpen("총액은 0 이상 입력해야 합니다.");
             return;
         }
 
         if(outordEmpData.usefulAmt < outordEmpData.totAmt) {
-            alert("총액은 가용금액을 초과할 수 없습니다.");
+            handleOpen("총액은 가용금액을 초과할 수 없습니다.");
             return;
         }
 
         const isEmployeeRegistered = tableData.some(item => {
             if((item.expectInptHnfId === outordEmpData.expectInptHnfId)&&!(Object.keys(selectedData).length)) {
-                alert("이미 등록된 사원입니다.");
+                handleOpen("이미 등록된 사원입니다.");
                 return true; // true를 반환하여 some 메서드 반복 중단
             }
             return false;

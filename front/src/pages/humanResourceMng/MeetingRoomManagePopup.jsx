@@ -9,6 +9,7 @@ import Moment from "moment"
 
 // DevExtrme import
 import { DateBox, SelectBox, Popup, TagBox, TextArea, Button } from "devextreme-react";
+import { useModal } from "../../components/unit/ModalContext";
 
 import { useModal } from "components/unit/ModalContext";
 
@@ -19,6 +20,7 @@ const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgR
     const [cookies, setCookie] = useCookies(["userInfo", "deptInfo"]);
     const sessionEmpId = cookies.userInfo.empId
 
+    const { handleOpen } = useModal();
 
 
 

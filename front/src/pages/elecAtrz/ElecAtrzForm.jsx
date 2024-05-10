@@ -5,6 +5,7 @@ import { Button } from "devextreme-react/button";
 import ElectAtrzRenderForm from "./ElectAtrzRenderForm";
 import ApiRequest from "utils/ApiRequest";
 import { useCookies } from 'react-cookie';
+import { useModal } from "../../components/unit/ModalContext";
 
 const ElecAtrzForm = () => {
     const navigate = useNavigate();
@@ -14,15 +15,13 @@ const ElecAtrzForm = () => {
     const [formList, setFormList] = useState([])
     const [prjctList, setPrjctList] = useState([])
     const [deptList, setDeptList] = useState([])
-
+    const { handleOpen } = useModal();
     const [cookies] = useCookies(["userInfo", "userAuth", "deptInfo"]);
     useEffect(() => {
         setPrjctId(location.state ? location.state.prjctId : "");
 
         retrieveForm();
         retrievePrjctList();
-
-        console.log(cookies.deptInfo);
         setDeptList(cookies.deptInfo);
 
     }, []);
@@ -74,7 +73,7 @@ const ElecAtrzForm = () => {
 
     const onFormClick = async (data) => {
         if(prjctId === "") {
-            alert("프로젝트를 먼저 선택해주세요.");
+            handleOpen("프로젝트를 먼저 선택해주세요.");
             return;
         }
         const url = data.docSeCd === 'VTW03405' ? '../elecAtrz/ElecGiveAtrz' : '../elecAtrz/ElecAtrzNewReq';

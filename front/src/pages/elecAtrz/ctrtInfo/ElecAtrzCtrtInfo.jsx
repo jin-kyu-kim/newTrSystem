@@ -75,7 +75,7 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData, sttsCd }) => {
     }
 
     useEffect(() => {
-        console.log("infoData", infoData); 
+
     }, [infoData]);
 
     /**

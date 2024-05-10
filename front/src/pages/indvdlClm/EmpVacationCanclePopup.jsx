@@ -13,6 +13,7 @@ import { Table, TableCell, TableHead, TableRow } from '@mui/material';
 
 // 랜덤채번 import
 import uuid from "react-uuid";
+import { useModal } from "../../components/unit/ModalContext";
 
 import { useModal } from "components/unit/ModalContext";
 
@@ -42,8 +43,7 @@ const EmpVacationCanclePopup = ({ width, height, visible, dataMap, empId, onHidi
 
     const rtrcnPrvonsh = useRef(null);
 
-
-
+    const { handleOpen } = useModal();
 
 
     const getElctrnAtrz = async () => {

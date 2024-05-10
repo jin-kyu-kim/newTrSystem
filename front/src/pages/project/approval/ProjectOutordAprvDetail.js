@@ -8,7 +8,6 @@ const ProjectOutordAprvDetail = () => {
     const [outordLbrcoValues, setOutordLbrcoValues] = useState([]);
     useEffect(() => {
 
-        console.log("useEffect");
     }, []);
 
 

@@ -16,6 +16,8 @@ import DataGrid, {
   ColumnFixing
 } from "devextreme-react/data-grid";
 
+import { useModal } from "./ModalContext";
+
 const CustomCostTable = ({
   columns,
   values,
@@ -39,7 +41,7 @@ const CustomCostTable = ({
   const [summaryColumns, setSummaryColumns] = useState(json.summaryColumn); 
   const [transformedData, setTransformedData] = useState([]);
   const editColumn = ["수정", "삭제"];
-
+  const { handleOpen } = useModal();
   useEffect(() => {
     const deleteArray = [...json.pkColumns, ...json.nomalColumns, ...json.CdComboboxColumnNm];
     deleteArray.push("total");
@@ -134,7 +136,7 @@ const CustomCostTable = ({
                 try {
                   const response = await ApiRequest("/boot/common/commonDelete", param); 
                     if(response > 0) {
-                      alert('데이터가 성공적으로 삭제되었습니다.');
+                      handleOpen('데이터가 성공적으로 삭제되었습니다.');
                       handleCancel();
                       console.log(response)
                     }

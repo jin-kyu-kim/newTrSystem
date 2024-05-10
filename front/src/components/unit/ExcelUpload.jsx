@@ -1,10 +1,12 @@
 import {FileUploader} from "devextreme-react";
 import React from "react";
 import * as XLSX from "xlsx";
+import { useModal } from "./ModalContext";
 
 const ExcelUpload = (props) => {
 
     const fileExtensions = ['.xlsx', '.xls', '.csv'];
+    const { handleOpen } = useModal();
 
     const handleAttachmentChange = (e) => {
         if (e.value.length > 0) {
@@ -38,7 +40,7 @@ const ExcelUpload = (props) => {
                         if (file && fileExtensions.includes(`.${file.name.split('.').pop()}`)) {
                             handleAttachmentChange(e);
                         } else if (file && !fileExtensions.includes(`.${file.name.split('.').pop()}`)) {
-                            alert('파일은 .xlsx, .xls, .csv 형식만 업로드 가능합니다.');
+                            handleOpen('파일은 .xlsx, .xls, .csv 형식만 업로드 가능합니다.');
                             return ;
                         }
                     }

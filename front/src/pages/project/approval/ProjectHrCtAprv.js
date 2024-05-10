@@ -80,7 +80,7 @@ const ProjectHrCtAprv = () => {
         /**
          * 예시)
          */
-        console.log(data);
+        //console.log(data);
         let render = true;
         if(data.prjctStleCd === "실행") {
             render = false

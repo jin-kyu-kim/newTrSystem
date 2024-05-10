@@ -8,6 +8,7 @@ import ApiRequest from "utils/ApiRequest";
 import { left, right } from "@popperjs/core";
 import moment from "moment";
 import notify from 'devextreme/ui/notify';
+import { useModal } from "../../components/unit/ModalContext";
 
 const EmpRegist = ({callBack, empInfo, read,callBackR,callBackF,reForm}) => {
 
@@ -19,6 +20,7 @@ const EmpRegist = ({callBack, empInfo, read,callBackR,callBackF,reForm}) => {
     const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);  
     const empId = cookies.userInfo.empId;
     const query =(empDetailqueryId);
+    const { handleOpen } = useModal();
 //==----------------------기초정보 폼 설정용 선언==============================
     const [empIdd,setEmpIdd] = useState();
     const [empno,setEmpno] = useState();
@@ -163,15 +165,15 @@ const EmpRegist = ({callBack, empInfo, read,callBackR,callBackF,reForm}) => {
     const onClick = (e) => {
 
       if(empFlnm === null){
-        alert("성명을 입력해주세요");
+        handleOpen("성명을 입력해주세요");
       }else if(jbpsCd === null){
-        alert("직위를 선택해주세요");
+        handleOpen("직위를 선택해주세요");
       }else if(hdofSttsCd === null){
-        alert("재직상태를 선택해주세요");
+        handleOpen("재직상태를 선택해주세요");
       }else if(bankCd === null){
-        alert("은행코드를 선택해주세요");
+        handleOpen("은행코드를 선택해주세요");
       }else if(actno === null){
-        alert("계좌번호를 입력해주세요");
+        handleOpen("계좌번호를 입력해주세요");
       }else{
         const isconfirm = window.confirm("기초정보를 저장 하시겠습니까?"); 
         if (isconfirm) {
@@ -247,7 +249,7 @@ const EmpRegist = ({callBack, empInfo, read,callBackR,callBackF,reForm}) => {
         const responseHist = await ApiRequest("/boot/common/commonInsert", paramHist);
         const responseUser = await ApiRequest("/boot/sysMng/resetPswd", paramuUser);
           if (response > 0 && responseHist > 0 && responseUser === "성공") {
-            alert("저장되었습니다.");
+            handleOpen("저장되었습니다.");
             onReset();
             callBack(query);
           }
@@ -284,7 +286,7 @@ const EmpRegist = ({callBack, empInfo, read,callBackR,callBackF,reForm}) => {
         const responseHist = await ApiRequest("/boot/common/commonInsert",updateParam);
         }
           if (response > 0) {
-            alert("저장되었습니다."); 
+            handleOpen("저장되었습니다."); 
             onReset();
             callBack(query);
           }
