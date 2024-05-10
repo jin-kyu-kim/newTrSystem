@@ -8,7 +8,7 @@
       { "key": "schlNm", "value": "학교명" ,"isRequire" : true, "length": 30},
       { "key": "majorIntltshNm", "value": "전공(계열)" ,"isRequire" : true, "length": 30},
       { "key": "grdtnSttsCd", "value": "졸업구분" ,"editType" : "selectBox" ,"comCd" : "VTW026" ,"isRequire" : true},
-      { "key": "pntPscoreSeCd", "value": "성적만점" ,"editType" : "selectBox" ,"comCd" :"VTW027" ,"isRequire" : true },
+      { "key": "pntPscoreSeCd", "value": "성적만점" ,"editType" : "selectBox" ,"comCd" :"VTW027" },
       { "key": "scre", "value" : "성적" ,"type": "number" ,"isRequire" : true , "length" : 4},
       { "key": "mtcltnYr", "value": "입학년도", "type": "number" ,"length" : 4 ,"isRequire" : true},
       { "key": "grdtnYr", "value": "졸업년도" ,"type": "number" , "length" : 4 ,"isRequire" : true}
