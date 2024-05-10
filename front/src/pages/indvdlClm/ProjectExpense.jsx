@@ -76,8 +76,10 @@ const ProjectExpense = () => {
     };
 
     const setCtAtrzCmptnData = (data) => {
-        setCtAtrzCmptnYn(data?.every(item => item.ctAtrzCmptnYn === 'Y') ? 'Y' : 'N');
-        setMmAtrzCmptnYn(data?.every(item => item.mmAtrzCmptnYn === null) ? null : data.some(item => item.mmAtrzCmptnYn === 'N') ? 'N' : 'Y');
+        if(data.length !== 0){
+            setCtAtrzCmptnYn(data?.every(item => item.ctAtrzCmptnYn === 'Y') ? 'Y' : 'N');
+            setMmAtrzCmptnYn(data?.every(item => item.mmAtrzCmptnYn === null) ? null : data.some(item => item.mmAtrzCmptnYn === 'N') ? 'N' : 'Y');
+        }
     };
 
     const setCtAtrzDmndSttsData = (data) => {
@@ -118,7 +120,7 @@ const ProjectExpense = () => {
             setPopVisible(true);
         } else {
             if (window.confirm(onClick.msg)) {
-                if(mmAtrzCmptnYn === null){
+                if(mmAtrzCmptnYn === undefined || mmAtrzCmptnYn === null){
                     handleOpen('경비청구 건수가 없을 경우 근무시간을 먼저 승인 요청 해주시기 바랍니다.')
                     return;
                 }
@@ -211,7 +213,6 @@ const ProjectExpense = () => {
                         onOptionChanged={onSelectionChanged}
                         itemTitleRender={itemTitleRender}
                         animationEnabled={true}
-                        height={1500}
                         itemComponent={({ data }) => {
                             const Component = React.lazy(() => import(`${data.url}`));
                             return (

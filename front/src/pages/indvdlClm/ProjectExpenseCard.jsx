@@ -142,6 +142,7 @@ const ProjectExpenseCard = (props) => {
                     bulkApply={bulkApply}
                     onSelection={onSelection}
                     cellRenderConfig={cellRenderConfig}
+                    defaultPageSize={10}
                 />
             </div>
         </div>
