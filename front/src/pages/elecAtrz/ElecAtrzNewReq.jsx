@@ -480,7 +480,7 @@ const ElecAtrzNewReq = () => {
                     }
                     {["VTW04907"].includes(formData.elctrnAtrzTySeCd) &&    //VTW04907: 비용사용(청구,출장비청구)
                     <>
-                        <ExpensInfo onSendData={handleChildData} prjctId={prjctId} data={data}/>
+                        <ExpensInfo onSendData={handleChildData} prjctId={prjctId} data={data} prjctData={prjctData}/>
                     </>
                     }
                     {["VTW04914"].includes(formData.elctrnAtrzTySeCd) && ["VTW04909","VTW04910","VTW04908"].includes(ctrtTyCd)&& prjctData && //VTW04914: 외주업체/재료비 지급
