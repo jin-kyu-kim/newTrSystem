@@ -24,7 +24,7 @@ function ProjectStngInfo( prjctId ) {
  
   useEffect(() => {
       pageHandle();
-  }, []);
+  }, [param]);
 
   useEffect(() => {
     setParam({
@@ -57,7 +57,6 @@ function ProjectStngInfo( prjctId ) {
   };
 
   const handleYnVal = async (e) => {
-
 
     if(e.name === "readYn" && e.data.useYn =="Y"){
       const ynParam = 
