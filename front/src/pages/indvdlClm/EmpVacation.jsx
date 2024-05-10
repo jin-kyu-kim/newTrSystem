@@ -517,18 +517,14 @@ const EmpVacation = () => {
                 headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}`  },
             });
 
-            console.log("response : ", response);
-            console.log("response.data : ", response.data);
-            console.log("response.data == 성공 : ", response.data == "성공");
             if (response && response.data == "성공") {
-                handleOpen("저장되었습니다.");
                 handleOpen("저장되었습니다.");
 
                 // 전자결재ID 채번
                 elctrnAtrzId = uuid();
 
                 // 첨부파일초기화
-                clearFiles();
+                // clearFiles();
 
                 setSearchVcatnListParam({
                     ...searchVcatnListParam,
