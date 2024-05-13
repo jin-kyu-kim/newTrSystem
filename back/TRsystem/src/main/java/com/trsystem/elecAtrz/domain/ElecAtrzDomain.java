@@ -53,31 +53,7 @@ public class ElecAtrzDomain {
 		Map<String, Object> elecAtrzParam = new HashMap<>();
 		Map<String, Object> tbParam = new HashMap<>();
 		
-		// 전자결재 테이블에 insert 한다.
-		elecAtrzParam.putAll(params);
-		elecAtrzParam.put("nowAtrzLnSn", 1);
-		elecAtrzParam.put("atrzDmndEmpId", regEmpId);
-		
-		// 문서번호 만들기
-		List<Map<String, Object>> list = new ArrayList<>();
-		Map<String, Object> countMap = new HashMap<>();
-		countMap.put("queryId", "elecAtrzMapper.retrieveCntElctrnAtrz");
-		list = commonService.queryIdSearch(countMap);
-		
-		int cnt = Integer.parseInt(String.valueOf(list.get(0).get("cnt")));
-		
-		String elctrnAtrzDocNo = regDt.substring(0,4) + "-" + atrzTySeCd.substring(atrzTySeCd.length()-2, atrzTySeCd.length()) + "-" + (cnt + 1);
-		elecAtrzParam.put("elctrnAtrzDocNo", elctrnAtrzDocNo);
-		
-		elecAtrzParam.remove("param");
-		
-		System.out.println(elecAtrzParam);
-    	List<Map<String, Object>> insertParams = new ArrayList<>();
-    	
-    	tbParam.put("tbNm", "ELCTRN_ATRZ");
-    	
-    	insertParams.add(0, tbParam);
-    	insertParams.add(elecAtrzParam);
+
 
 		int electrnAtrzResult = -1;
 		int atrzLnResult = -1;
@@ -155,6 +131,33 @@ public class ElecAtrzDomain {
 				 * 전자결재 테이블 데이터 삭제(최상위)
 				 */
 				deleteData("ELCTRN_ATRZ", elctrnAtrzId);
+				
+				
+				// 전자결재 테이블에 insert 한다.
+				elecAtrzParam.putAll(params);
+				elecAtrzParam.put("nowAtrzLnSn", 1);
+				elecAtrzParam.put("atrzDmndEmpId", regEmpId);
+				
+				// 문서번호 만들기
+				List<Map<String, Object>> list = new ArrayList<>();
+				Map<String, Object> countMap = new HashMap<>();
+				countMap.put("queryId", "elecAtrzMapper.retrieveCntElctrnAtrz");
+				list = commonService.queryIdSearch(countMap);
+				
+				int cnt = Integer.parseInt(String.valueOf(list.get(0).get("cnt")));
+				
+				String elctrnAtrzDocNo = regDt.substring(0,4) + "-" + atrzTySeCd.substring(atrzTySeCd.length()-2, atrzTySeCd.length()) + "-" + (cnt + 1);
+				elecAtrzParam.put("elctrnAtrzDocNo", elctrnAtrzDocNo);
+				
+				elecAtrzParam.remove("param");
+				
+				System.out.println(elecAtrzParam);
+		    	List<Map<String, Object>> insertParams = new ArrayList<>();
+		    	
+		    	tbParam.put("tbNm", "ELCTRN_ATRZ");
+		    	
+		    	insertParams.add(0, tbParam);
+		    	insertParams.add(elecAtrzParam);
 				
 				electrnAtrzResult = commonService.insertData(insertParams);
 //			}
@@ -739,9 +742,11 @@ public class ElecAtrzDomain {
 	 * @param paramList
 	 * @return
 	 */
-	public static int aprvElecAtrz(List<Map<String, Object>> paramList) {
+	public static Map<String, Object> aprvElecAtrz(List<Map<String, Object>> paramList) {
 		
 		String aprvrEmpId = String.valueOf(paramList.get(2).get("aprvrEmpId"));	// 현재 승인자
+		String elctrnAtrzId = String.valueOf(paramList.get(2).get("elctrnAtrzId")); // 전자결재 아이디
+		
 		
 		int atrzLnSn = Integer.parseInt(String.valueOf(paramList.get(2).get("atrzLnSn"))); // 현재 승인자의 결재단계(순번)
 		
@@ -751,11 +756,13 @@ public class ElecAtrzDomain {
 		
 		selectParam.put("queryId", "elecAtrzMapper.retrieveElecAtrzLn");
 		selectParam.put("atrzLnSn", atrzLnSn);
-		selectParam.put("elctrnAtrzId", paramList.get(2).get("elctrnAtrzId"));
+		selectParam.put("elctrnAtrzId", elctrnAtrzId);
 		
 		//  결재라인 가져오기
 		List<Map<String, Object>> atrzLine = commonService.queryIdSearch(selectParam);
 		
+		List<Map<String, Object>> resultList = new ArrayList<>();
+		HashMap<String, Object> resultMap = new HashMap<>();
 		
 		try {
 			for(int i = 0; i < atrzLine.size(); i++) {
@@ -771,7 +778,7 @@ public class ElecAtrzDomain {
 					updateParams.add(0, paramList.get(0));	// 업데이트할 타겟 테이블
 					updateParams.add(1, paramList.get(1));	// 업데이트할 테이블의 내용z
 					
-					updateParam.put("elctrnAtrzId", paramList.get(2).get("elctrnAtrzId"));
+					updateParam.put("elctrnAtrzId", elctrnAtrzId);
 					updateParam.put("aprvrEmpId", aprvrEmpId);
 					updateParam.put("atrzLnSn", atrzLnSn);
 					
@@ -780,7 +787,8 @@ public class ElecAtrzDomain {
 					uptResult = commonService.updateData(updateParams);
 					
 					if(uptResult < 0) {
-						return 0;
+						resultMap.put("atrzLnSn", 0);
+						return resultMap;
 					}
 					
 					atrzLnSn++;
@@ -788,7 +796,7 @@ public class ElecAtrzDomain {
 				} else {
 					updateParams.add(0, paramList.get(0));	// 업데이트할 타겟 테이블
 					conditionParam.put("atrzLnSn", atrzLnSn);
-					conditionParam.put("elctrnAtrzId", paramList.get(2).get("elctrnAtrzId"));
+					conditionParam.put("elctrnAtrzId", elctrnAtrzId);
 					
 					updateParam.put("atrzSttsCd", "VTW00801");
 
@@ -799,11 +807,52 @@ public class ElecAtrzDomain {
 				}
 				
 			}
+						
+			/**
+			 * 휴가결재 에서 사용하기 위해서
+			 * 가장 높은 결재 순번을 찾아와서 마지막 결재인지 확인해주기.
+			 */
+			HashMap<String, Object> maxQueryMap = new HashMap<>();
+			maxQueryMap.put("queryId", "elecAtrzMapper.retrieveMaxAtrzLnSn");
+			maxQueryMap.put("elctrnAtrzId", elctrnAtrzId);
+			
+			List<Map<String, Object>> maxResult = commonService.queryIdSearch(maxQueryMap);
+			
+			// 최종 승인 순번
+			int maxAtrzLnSn = Integer.parseInt(String.valueOf(maxResult.get(0).get("maxAtrzLnSn")));
+			
+			List<Map<String, Object>> selectAtrzList = new ArrayList<>();
+			HashMap<String, Object> tbParam = new HashMap<>();
+			HashMap<String, Object> infoParam = new HashMap<>();
+			
+			tbParam.put("tbNm", "ATRZ_LN");
+			
+			if(atrzLnSn > maxAtrzLnSn) {
+				/**
+				 * 이 경우 최종 결재까지 진행되었음.
+				 * max 값으로 조회한다.
+				 */
+				infoParam.put("atrzLnSn", maxAtrzLnSn);
+			} else {
+				infoParam.put("atrzLnSn", atrzLnSn);
+			}
+
+			infoParam.put("elctrnAtrzId", elctrnAtrzId);
+			
+			selectAtrzList.add(0, tbParam);
+			selectAtrzList.add(1, infoParam);
+			
+			resultList = commonService.commonSelect(selectAtrzList);
+			
+			resultMap.put("atrzLnSn", atrzLnSn);
+			resultMap.put("atrzStepCd", resultList.get(0).get("atrzStepCd"));
+			
 		} catch(Exception e) {
-			return uptResult;
+			resultMap.put("atrzLnSn", 0);
+			return resultMap;
 		}
 		
-		return atrzLnSn;
+		return resultMap;
 	}
 	
 	/**

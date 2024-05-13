@@ -247,7 +247,7 @@ const ElecAtrzDetail = () => {
                 const response = aprvProcess(param).then((value) => {
                     if(value.atrzLnSn > 0) {
                         // 단계 올리기
-                        upNowAtrzLnSn(value);
+                        upNowAtrzLnSn(value.atrzLnSn);
                     } else {
                         handleOpen("승인 처리에 실패하였습니다.");
                         return;

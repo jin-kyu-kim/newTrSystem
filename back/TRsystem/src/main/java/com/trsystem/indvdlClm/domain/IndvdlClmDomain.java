@@ -800,28 +800,37 @@ public class IndvdlClmDomain {
                 switch (caseFlag){
                     case 1 : {
                         // 승인처리
-                        atrzLnSn = ElecAtrzDomain.aprvElecAtrz(aprvParamList);
-
-                        if(atrzStepCd.equals("VTW00705")) {
-                            commonService.queryIdDataControl(updateNewVcatnMng);
+                        Map<String, Object> aprvResult = new HashMap<>(); 
+                        aprvResult = ElecAtrzDomain.aprvElecAtrz(aprvParamList);
+                        
+                        if(String.valueOf(aprvResult.get("atrzStepCd")).equals("VTW00705")) {
+                        	commonService.queryIdDataControl(updateNewVcatnMng);
                         }
+                        
+                        atrzLnSn = Integer.parseInt(String.valueOf(aprvResult.get("atrzLnSn")));
+                        
                     }
                     case 2 : {
                         // 승인처리
-                        atrzLnSn = ElecAtrzDomain.aprvElecAtrz(aprvParamList);
-
-                        if(atrzStepCd.equals("VTW00705")) {
+                        Map<String, Object> aprvResult = new HashMap<>(); 
+                        aprvResult = ElecAtrzDomain.aprvElecAtrz(aprvParamList);
+                        
+                        if(String.valueOf(aprvResult.get("atrzStepCd")).equals("VTW00705")) {
                             commonService.queryIdDataControl(updateVcatnMng);
                         }
+                        atrzLnSn = Integer.parseInt(String.valueOf(aprvResult.get("atrzLnSn")));
+
                     }
                     case 3 : {
                         // 승인처리
-                        atrzLnSn = ElecAtrzDomain.aprvElecAtrz(aprvParamList);
-
-                        if(atrzStepCd.equals("VTW00705")) {
+                        Map<String, Object> aprvResult = new HashMap<>(); 
+                        aprvResult = ElecAtrzDomain.aprvElecAtrz(aprvParamList);
+                        
+                        if(String.valueOf(aprvResult.get("atrzStepCd")).equals("VTW00705")) {
                             commonService.queryIdDataControl(updateNewVcatnMng);
                             commonService.queryIdDataControl(updateVcatnMng);
                         }
+                        atrzLnSn = Integer.parseInt(String.valueOf( aprvResult.get("atrzLnSn")));
                     }
                 }
 
@@ -1101,35 +1110,48 @@ public class IndvdlClmDomain {
             switch (caseFlag){
 	            case 1: {
 	                // 승인처리
-	                atrzLnSn = ElecAtrzDomain.aprvElecAtrz(aprvParamList);
-	
-	                if(atrzStepCd.equals("VTW00705")) {
-	                	commonService.queryIdDataControl(updateVcatnMngMap);
-	                }
+                    Map<String, Object> aprvResult = new HashMap<>(); 
+                    aprvResult = ElecAtrzDomain.aprvElecAtrz(aprvParamList);
+                    
+                    if(String.valueOf(aprvResult.get("atrzStepCd")).equals("VTW00705")) {
+                    	
+                    	commonService.queryIdDataControl(updateVcatnMngMap);
+                    }
+                    atrzLnSn = Integer.parseInt(String.valueOf( aprvResult.get("atrzLnSn")));
 	            }
 	            case 2: {
 	            	// 승인처리
-	                atrzLnSn = ElecAtrzDomain.aprvElecAtrz(aprvParamList);
+                    Map<String, Object> aprvResult = new HashMap<>(); 
+                    aprvResult = ElecAtrzDomain.aprvElecAtrz(aprvParamList);
+                    
+                    if(String.valueOf(aprvResult.get("atrzStepCd")).equals("VTW00705")) {
+                    	
+                    	commonService.queryIdDataControl(updateNewVcatnMngMap);
+                    }
+                    atrzLnSn = Integer.parseInt(String.valueOf( aprvResult.get("atrzLnSn")));
 	            	
-	                if(atrzStepCd.equals("VTW00705")) {
-	                	commonService.queryIdDataControl(updateNewVcatnMngMap);
-	                }
 	            }
 	            case 3: {
 	            	// 승인처리
-	                atrzLnSn = ElecAtrzDomain.aprvElecAtrz(aprvParamList);
+                    Map<String, Object> aprvResult = new HashMap<>(); 
+                    aprvResult = ElecAtrzDomain.aprvElecAtrz(aprvParamList);
+                    
+                    if(String.valueOf(aprvResult.get("atrzStepCd")).equals("VTW00705")) {
+                    	
+                    	commonService.queryIdDataControl(updateVcatnMngMap);
+                    }
+                    atrzLnSn = Integer.parseInt(String.valueOf( aprvResult.get("atrzLnSn")));
 	            	
-	                if(atrzStepCd.equals("VTW00705")) {
-	                	commonService.queryIdDataControl(updateVcatnMngMap);
-	                }
 	            }
 	            case 4: {
-	                atrzLnSn = ElecAtrzDomain.aprvElecAtrz(aprvParamList);
-	            	
-	                if(atrzStepCd.equals("VTW00705")) {
+                    Map<String, Object> aprvResult = new HashMap<>(); 
+                    aprvResult = ElecAtrzDomain.aprvElecAtrz(aprvParamList);
+                    
+                    if(String.valueOf(aprvResult.get("atrzStepCd")).equals("VTW00705")) {
 	                	commonService.queryIdDataControl(updateVcatnMngMap);
-	                	commonService.queryIdDataControl(updateNewVcatnMngMap);
-	                }
+	                	commonService.queryIdDataControl(updateNewVcatnMngMap);	
+                    }
+                    atrzLnSn = Integer.parseInt(String.valueOf( aprvResult.get("atrzLnSn")));
 	            }
 	        }
 	        
