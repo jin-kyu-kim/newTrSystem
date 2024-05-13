@@ -93,7 +93,8 @@
     "menuName": "ProjectExpenseCard",
     "keyColumn": "cardUseSn",
     "queryId": "indvdlClmMapper.retrieveExpenseCardUseDtls",
-    "cdListQueryId": "indvdlClmMapper.retrieveExpensCdPrjctAccto",
+    "prjctStleQueryId": "elecAtrzMapper.retrieveExpensCdByPrmpc",
+    "prjctStlePdQueryId": "elecAtrzMapper.retrieveExpensCdAll",
     "searchInfo": {
       "searchParams": {
         "insertButton": false,
@@ -121,15 +122,15 @@
       ]
     },
     "tableColumns": [
-      { "key": "utztnDtFormat", "value": "사용일시", "width": "100", "required": true },
-      { "key": "useOffic", "value": "사용처", "width": "120", "required": true },
-      { "key": "utztnAmt", "value": "이용금액", "width": "120", "required": true, "cellType": "textBox" },
+      { "key": "utztnDtFormat", "value": "사용일시", "width": "10%", "required": true },
+      { "key": "useOffic", "value": "사용처", "width": "10%", "required": true },
+      { "key": "utztnAmt", "value": "이용금액", "width": "13%", "required": true, "cellType": "numberBox" },
       { "key": "prjctId", "value": "프로젝트", "cellType": "selectBox", "displayExpr": "prjctNm", "valueExpr": "prjctId", 
-            "placeholder": "입력 시 사용가능한 프로젝트 전체 조회", "width": "260", "required": true, "headerBtn": {"text": "일괄적용"} },
+            "placeholder": "프로젝트 조회 및 선택", "width": "24%", "required": true, "headerBtn": {"text": "일괄적용"} },
       { "key": "expensCd", "value": "비용코드", "cellType": "selectBox", "displayExpr": "cdNm", "valueExpr": "expensCd", 
-            "placeholder": "[비용코드 선택]", "width": "200", "headerBtn": {"text": "일괄적용"} },
-      { "key": "ctPrpos", "value": "상세내역(목적)", "cellType": "textBox", "placeholder": "상세내역(목적)", "width": "200" },
-      { "key": "atdrn", "value": "용도(참석자명단)", "cellType": "textBox", "placeholder": "용도(참석자명단)","width": "220" }
+            "placeholder": "[비용코드 선택]", "width": "20%", "headerBtn": {"text": "일괄적용"} },
+      { "key": "ctPrpos", "value": "상세내역(목적)", "cellType": "textBox", "placeholder": "상세내역(목적)", "width": "20%" },
+      { "key": "atdrn", "value": "용도(참석자명단)", "cellType": "textBox", "placeholder": "용도(참석자명단)","width": "20%" }
     ],
     "placeholderAndRequired": [
       {"expensCd": "VTW04528", "required": { "ctPrpos": true, "atdrn": true }, "ctPrposPlaceholder": "상세내역(참여인력)", "atdrnPlaceholder": "용도"},
@@ -153,13 +154,14 @@
       "type": "ComboBox",
       "label": "구분",
       "placeholder": "구분",
-      "param": { "tbNm" : "CD",
-        "condition": {
-          "upCdValue": "VTW019"
+      "param": {
+        "queryId" : {
+          "queryId": "indvdlClmMapper.retrieveProjectExpensCd"
         },
-        "valueExpr" : "cdValue",
+        "valueExpr" : "ctAtrzSeCd",
         "displayExpr": "cdNm",
-        "name": "ctAtrzSeCd"
+        "name": "ctAtrzSeCd",
+        "values": ["ctAtrzSeCd"]
       },
       "required": true
     },

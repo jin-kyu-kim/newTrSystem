@@ -9,6 +9,7 @@ import ApiRequest from 'utils/ApiRequest';
 import uuid from "react-uuid";
 import moment from 'moment';
 import "./sysMng.css";
+import { useModal } from "../../components/unit/ModalContext";
 
 const EmpAuth = () => {
     const itemTitle = (tab) => <span>{tab.tabName}</span>;
@@ -24,7 +25,7 @@ const EmpAuth = () => {
     const [groupId, setGroupId] = useState('');
     const [data, setData] = useState(initData);
     const formRef = useRef(null);
-
+    const { handleOpen } = useModal();
     const onSelectionChanged = useCallback(
         (args) => {
             if (args.name === "selectedIndex") setSelectedIndex(args.value);
@@ -34,7 +35,7 @@ const EmpAuth = () => {
     useEffect(() => {
         getAuthCd();
         getCreateList();
-        console.log(cookies);
+        //console.log(cookies);
     }, []);
 
     const getAuthCd = async () => {
@@ -59,7 +60,7 @@ const EmpAuth = () => {
         const newItem = e.itemData;
         if (!selectedItems.some((item) => item.authrtCd === newItem.cdValue)) {
             setSelectedItems([...selectedItems, {authrtCd: newItem.cdValue, authrtCdNm: newItem.cdNm }]);
-        } else alert('이미 선택된 권한입니다')
+        } else handleOpen('이미 선택된 권한입니다')
     };
 
     const newAuthClick = async (e) => {
@@ -102,7 +103,7 @@ const EmpAuth = () => {
                 console.log('error', error);
             }
         } else{
-            alert('필수 항목을 입력해주세요')
+            handleOpen('필수 항목을 입력해주세요')
         }
     };
 
@@ -114,7 +115,7 @@ const EmpAuth = () => {
                     groupTb: [{tbNm: "AUTHRT_GROUP"}, {authrtGroupId: e.itemData.authrtGroupId}],
                     mapngTb: [{tbNm: "AUTHRT_MAPNG"}, {authrtGroupId: e.itemData.authrtGroupId}]
                 });
-                if(response >= 1) alert('권한이 삭제되었습니다')
+                if(response >= 1) handleOpen('권한이 삭제되었습니다')
             } catch(error) {
                 console.log(error)
             }

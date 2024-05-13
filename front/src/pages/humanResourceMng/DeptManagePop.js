@@ -7,6 +7,8 @@ import DeptManagePopJson from "./DeptManagePopJson.json"
 import CustomLabelValue from "components/unit/CustomLabelValue";
 import moment from "moment";
 import { useCookies } from "react-cookie";
+import { useModal } from "../../components/unit/ModalContext";
+
 const DeptManagePop = ({callBack,data,deptId,deptNm}) => {
 
   const [deptEmpParam, setDeptEmpParam] = useState({});   //좌측 부서인력정보 검색용
@@ -21,8 +23,8 @@ const DeptManagePop = ({callBack,data,deptId,deptNm}) => {
   const now =  date.toISOString().split("T")[0] +" " +date.toTimeString().split(" ")[0]; //등록일시 (Timstamp)
   const {emplistQueryId,emplistTableColumns,emplistKeyColumn, //우측 목록
          hnfQueryId,hnfKeyColumn,hafTableColumns,
-         searchInfo,labelValue}= DeptManagePopJson       
-
+         searchInfo,labelValue}= DeptManagePopJson;       
+  const { handleOpen } = useModal();
 //========================초기 부서인력정보 조회=====================================
   useEffect(() => {
     setDeptEmpParam({

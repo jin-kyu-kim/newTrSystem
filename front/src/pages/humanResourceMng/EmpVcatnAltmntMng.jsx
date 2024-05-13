@@ -12,8 +12,7 @@ import CustomTable from "components/unit/CustomTable";
 import CustomEmpComboBox from "components/unit/CustomEmpComboBox"
 import EmpVcatnAltmntMngJson from "pages/humanResourceMng/EmpVcatnAltmntMngJson.json"
 import ApiRequest from "utils/ApiRequest";
-
-import { useModal } from "components/unit/ModalContext";
+import { useModal } from "../../components/unit/ModalContext";
 
 // 현재년도
 const nowYear = new Date().getFullYear();
@@ -43,12 +42,12 @@ function getYearList(startYear, endYear) {
  * @description 휴가배정관리 화면을 구현한다
  */
 const EmpVcatnAltmntMng = () => {
-    const { handleOpen } = useModal();
-
     const navigate = useNavigate();
 
     const cntrBgngYmdRef = useRef();
     const cntrEndYmdRef = useRef();
+
+    const { handleOpen } = useModal();
 
     useEffect(() => {
         getEmpVacList();
@@ -536,7 +535,7 @@ const EmpVcatnAltmntMng = () => {
                     <div style={divStyle}>휴가등록 불가기간을 설정합니다.</div>
                     <div style={{ marginTop: "10px", flexDirection: "row" }}>
                         <div className="row" style={{ marginBottom: "20px" }}>
-                            <div className="col-md-2" style={textAlign}>휴가종류</div>
+                            <div className="col-md-2" style={textAlign}>불가기간</div>
                             <div className="col-md-4">
                                 <DateBox
                                     displayFormat="yyyy-MM-dd"

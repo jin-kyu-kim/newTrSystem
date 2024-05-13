@@ -4,12 +4,14 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import ApiRequest from "utils/ApiRequest";
+import { useModal } from "./ModalContext";
 
 const CustomAddTable = ({ columns, values, pagerVisible, prjctId, json, bgtMngOdrTobe, cdValues, ctrtYmd, stbleEndYmd, deptId, targetOdr, bizSttsCd, atrzLnSn }) => {
   const navigate = useNavigate();
   const [param, setParam] = useState([]);
   const [value, setValue] = useState([]);
   const dataGridRef = useRef(null); // DataGrid 인스턴스에 접근하기 위한 ref
+  const { handleOpen } = useModal();
 
   //부모창에서 받아온 데이터를 상태에 담아주는 useEffect
   useEffect(() => {
@@ -92,7 +94,7 @@ const CustomAddTable = ({ columns, values, pagerVisible, prjctId, json, bgtMngOd
       try {
         const response = await ApiRequest("/boot/common/commonInsert", paramInfo);
             if(response > 0) {
-              alert('데이터가 성공적으로 저장되었습니다.');
+              handleOpen('데이터가 성공적으로 저장되었습니다.');
               reload();
             }    
       } catch (error) {
@@ -126,7 +128,7 @@ const CustomAddTable = ({ columns, values, pagerVisible, prjctId, json, bgtMngOd
     try {
       const response = await ApiRequest("/boot/common/commonUpdate", param);
         if(response > 0) {
-          alert('데이터가 성공적으로 수정되었습니다.');
+          handleOpen('데이터가 성공적으로 수정되었습니다.');
           reload();
         }
     }catch (error) {
@@ -148,7 +150,7 @@ const CustomAddTable = ({ columns, values, pagerVisible, prjctId, json, bgtMngOd
         try {
           const response = await ApiRequest("/boot/common/commonDelete", param);
             if(response > 0) {
-              alert('데이터가 성공적으로 삭제되었습니다.');
+              handleOpen('데이터가 성공적으로 삭제되었습니다.');
               reload();
             }
         }catch (error) {
@@ -195,7 +197,7 @@ const onRowInserting = (e, trigger) => {
     }
 
     if (existing) {
-        alert("중복된 제품명입니다. 저장할 수 없습니다.");
+        handleOpen("중복된 제품명입니다. 저장할 수 없습니다.");
         e.cancel = true; // 중복된 경우 행 추가 취소
         return;
     }

@@ -294,7 +294,7 @@
         WHERE HDOF_STTS_CD = 'VTW00301'
         AND EMP.EMP_ID = HNF.EMP_ID
         AND DEPT.DEPT_ID = HNF.DEPT_ID
-        AND DEPT.DEPT_ID = #{repDeptId}
+<!--        AND DEPT.DEPT_ID = #{repDeptId}-->
         AND EMP.EMP_FLNM IN ('이진원', '안주리')
         ORDER BY EMPNO
     </select>
@@ -585,9 +585,10 @@
             ,(SELECT CD_NM FROM CD WHERE CD_VALUE = CRTR_DATE.HLDY_CL_CD)	HLDY_CL_NM	/* 일자종류명 */
             ,HLDY_NM 		/* 공휴일명 */
             ,RM				/* 내용 */
+            ,VCATN_CNTRL_YMD_YN /* 휴가통제일자여부 */
         FROM CRTR_DATE
         WHERE SUBSTR(CRTR_YMD, 1, 4) BETWEEN DATE_FORMAT(SYSDATE(), '%Y') - 1 AND DATE_FORMAT(SYSDATE(), '%Y') + 1
-        AND HLDY_CL_CD = 'VTW05003'
+        AND (HLDY_CL_CD = 'VTW05003' OR VCATN_CNTRL_YMD_YN = 'Y')
     </select>
 
 
@@ -699,6 +700,12 @@
         AND VCATN_YR = #{vcatnYr}
     </update>
 
+
+    <select id="retrieveElctrnAtrzCnt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        /* indvdlClmMapper.retrieveElctrnAtrzCnt */
+        SELECT *
+        FROM ELCTRN_ATRZ
+    </select>
 
 
     <!-- =================================박지환_작업================================= -->
@@ -1077,6 +1084,15 @@
             END
         ) dv
         JOIN CRTR_DATE crd ON crd.CRTR_YMD = dv.APLY_YMD AND crd.HLDY_CL_CD = 'VTW05001';
+    </select>
+
+    <select id="retrieveProjectExpensCd" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            CD_VALUE AS CT_ATRZ_SE_CD,
+            CD_NM
+        FROM CD
+        WHERE UP_CD_VALUE = 'VTW019'
+          AND CD_VALUE IN ('VTW01902', 'VTW01903')
     </select>
 
     <!-- 문체비: 목록 조회 -->

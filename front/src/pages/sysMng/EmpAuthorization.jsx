@@ -10,6 +10,7 @@ import sysMngJson from "./SysMngJson.json";
 import ApiRequest from "utils/ApiRequest";
 import moment from 'moment';
 import './sysMng.css'
+import { useModal } from "../../components/unit/ModalContext";
 
 const EmpAuthorization = () => {
     const [ param, setParam ] = useState({});
@@ -23,6 +24,7 @@ const EmpAuthorization = () => {
     const [cookies] = useCookies(["userInfo", "userAuth"]);
     const sessionId = cookies.userInfo.empId;
     const date = moment();
+    const { handleOpen } = useModal();
     const searchHandle = async (initParam) => {
         setParam({
             ...initParam,
@@ -88,7 +90,7 @@ const EmpAuthorization = () => {
             for(let i=0; i<params.length; i++){
                 response = await ApiRequest('/boot/common/commonInsert', params[i]);
             }
-            if(response >= 1) alert('저장되었습니다.')
+            if(response >= 1) handleOpen('저장되었습니다.')
         } catch (error) {
             console.log('API 요청 에러', error);
         }
@@ -106,8 +108,7 @@ const EmpAuthorization = () => {
             const res = await ApiRequest('/boot/common/commonDelete', [
                 {tbNm: "LGN_USER_AUTHRT"}, {authrtGroupId: selectedAuthId, empId: e.itemData.empId}
             ]);
-            console.log('res', res)
-            if(res === 1) alert('삭제되었습니다.')
+            if(res === 1) handleOpen('삭제되었습니다.')
         } else e.cancel = true;
     }
 

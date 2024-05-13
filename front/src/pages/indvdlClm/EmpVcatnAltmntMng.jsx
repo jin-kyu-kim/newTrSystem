@@ -12,7 +12,7 @@ import CustomTable from "components/unit/CustomTable";
 import CustomEmpComboBox from "components/unit/CustomEmpComboBox"
 import EmpVcatnAltmntMngJson from "pages/humanResourceMng/EmpVcatnAltmntMngJson.json"
 import ApiRequest from "utils/ApiRequest";
-import { useModal } from "components/unit/ModalContext";
+import { useModal } from "../../components/unit/ModalContext";
 
 
 const { listQueryId, listKeyColumn, listTableColumns, insertQueryId } = EmpVcatnAltmntMngJson;
@@ -74,7 +74,6 @@ const EmpVcatnAltmntMng = () => {
 
     // 재직목록조회
     const [selectHdofSttsCdListValue, setSelectHdofSttsCdListValue] = useState([]);
-
 
     // 직원별휴가목록조회
     const getEmpVacList = async () => {

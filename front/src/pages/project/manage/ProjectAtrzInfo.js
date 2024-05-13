@@ -57,7 +57,6 @@ const AtrzInfoData = async (atrzLnSn) => {
   try {
     const response = await ApiRequest("/boot/common/queryIdSearch", param);
     setAtrzInfoData(response);
-    console.log(response);
   } catch (error) {
     console.error('Error fetching data', error);
   }

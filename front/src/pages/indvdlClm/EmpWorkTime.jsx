@@ -15,10 +15,10 @@ import { isSaturday, isSunday, startOfMonth, endOfMonth } from 'date-fns'
 // 날짜관련
 // npm install moment
 import Moment from "moment"
-
 import ApiRequest from "utils/ApiRequest";
 import AutoCompleteProject from "components/unit/AutoCompleteProject";
 import '../project/approval/ProjectHtCtAprvPop.css';
+
 
 /**
  * 2023.03.27(박지환)
@@ -38,10 +38,10 @@ import '../project/approval/ProjectHtCtAprvPop.css';
 const token = localStorage.getItem("token");
 
 // 차수별 시작, 종료일자
-let flagOrder = new Date().getDate() > 15 ? 1 : 2;
-let orderWorkBgngYmd = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMMDD")) : String(Moment(new Date()).format("YYYYMM") - 1 + "16")
-let orderWorkEndYmd = flagOrder == 1 ? String(Moment(new Date()).format("YYYYMM") + "15") : Moment(endOfMonth(new Date(Moment(Moment(new Date()).format("YYYYMM") - 1 + "15").format("YYYY-MM-DD")))).format("YYYYMMDD")
-let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMM")) : String(Moment(new Date()).format("YYYYMM") - 1)
+// let flagOrder = new Date().getDate() > 15 ? 1 : 2;
+// let orderWorkBgngYmd = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMMDD")) : String(Moment(new Date()).format("YYYYMM") - 1 + "16")
+// let orderWorkEndYmd = flagOrder == 1 ? String(Moment(new Date()).format("YYYYMM") + "15") : Moment(endOfMonth(new Date(Moment(Moment(new Date()).format("YYYYMM") - 1 + "15").format("YYYY-MM-DD")))).format("YYYYMMDD")
+// let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMM")) : String(Moment(new Date()).format("YYYYMM") - 1)
 
 const EmpWorkTime = () => {
     // 근무시간데이터
@@ -56,15 +56,22 @@ const EmpWorkTime = () => {
     SearchMonthValueRef.current = new Date().getDate() < 15 ? new Date().getMonth() : new Date().getMonth() + 1;
 
     const location = useLocation();
+    const admin = location.state ? location.state.admin : undefined;
+
+    // 차수별 시작, 종료일자
+    let flagOrder = admin != undefined ? admin.aplyOdr : new Date().getDate() > 15 ? 1 : 2;
+    let orderWorkBgngYmd = admin != undefined ? admin.orderWorkBgngYmd : flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMMDD")) : String(Moment(new Date()).format("YYYYMM") - 1 + "16")
+    let orderWorkEndYmd = admin != undefined ? admin.orderWorkEndYmd : flagOrder == 1 ? String(Moment(new Date()).format("YYYYMM") + "15") : Moment(endOfMonth(new Date(Moment(Moment(new Date()).format("YYYYMM") - 1 + "15").format("YYYY-MM-DD")))).format("YYYYMMDD")
+    let orderWorkBgngMm = admin != undefined ? admin.aplyYm : flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMM")) : String(Moment(new Date()).format("YYYYMM") - 1)
 
     // 세션설정
     const [cookies, setCookie] = useCookies(["userInfo", "deptInfo"]);
-    const sessionEmpId = location.state ? location.state.empId : cookies.userInfo.empId 
-    const sessionJbpsCd = location.state ? location.state.jbpsCd : cookies.userInfo.jbpsCd 
+    const sessionEmpId = admin != undefined ? admin.empId : cookies.userInfo.empId
+    const sessionJbpsCd = admin != undefined ? admin.jbpsCd : cookies.userInfo.jbpsCd
     const sessionDeptIdList = [];
-    const sessionDeptNmList = location.state ? [location.state.deptNmAll] : []; 
+    const sessionDeptNmList = admin != undefined ? [admin.deptNmAll] : [];
 
-    if(sessionDeptNmList.length == 0){
+    if (sessionDeptNmList.length == 0) {
         for (let i = 0; i < cookies.deptInfo.length; i++) {
             sessionDeptIdList.push(
                 cookies.deptInfo[i].deptId
@@ -90,7 +97,7 @@ const EmpWorkTime = () => {
     useEffect(() => {
         getDayList(selectCrtrDateParam);
     }, [selectCrtrDateParam])
-    
+
     const getDayList = async (selectCrtrDateParam) => {
         try {
             setSelectCrtrDateList(await ApiRequest("/boot/common/queryIdSearch", selectCrtrDateParam));
@@ -112,14 +119,14 @@ const EmpWorkTime = () => {
         aplyOdr: flagOrder,
         searchYear: new Date().getFullYear(),
         searchMonth: new Date().getDate() < 16 ? new Date().getMonth() : new Date().getMonth() + 1,
-        aplyYm:
+        aplyYm: admin != undefined ? admin.aplyYm :
             SearchYearValueRef.current +
             (String(new Date().getMonth()).length == 1
                 ? new Date().getDate() < 16
                     ? "0" + new Date().getMonth()
                     : "0" + (new Date().getMonth() + 1)
                 : new Date().getMonth() < 16
-                    ? new Date().getMonth() 
+                    ? new Date().getMonth()
                     : (new Date().getMonth() + 1)
             ),
         searchBoolean: false
@@ -141,7 +148,9 @@ const EmpWorkTime = () => {
                 setInsertWorkHourList(await ApiRequest("/boot/common/queryIdSearch", initParam))
 
                 if (prjctIndvdlCtMmParamFilter.length > 0) {
-                    if (prjctIndvdlCtMmParamFilter.length == prjctIndvdlCtMmParamFilter.filter(item => item.atrzDmndSttsCd == "VTW03702").length) {
+                    if (orderWorkBgngMm != searchPrjctIndvdlCtMmParam.aplyYm) {
+                        atrzDmndSttsCdFlag = "another"
+                    } else if (prjctIndvdlCtMmParamFilter.length == prjctIndvdlCtMmParamFilter.filter(item => item.atrzDmndSttsCd == "VTW03702").length) {
                         atrzDmndSttsCdFlag = "audit"
                     } else if (prjctIndvdlCtMmParamFilter.length == prjctIndvdlCtMmParamFilter.filter(item => item.atrzDmndSttsCd == "VTW03703").length) {
                         atrzDmndSttsCdFlag = "approval"
@@ -151,7 +160,11 @@ const EmpWorkTime = () => {
                         atrzDmndSttsCdFlag = "use"
                     }
                 } else {
-                    atrzDmndSttsCdFlag = "use"
+                    if (orderWorkBgngMm != searchPrjctIndvdlCtMmParam.aplyYm) {
+                        atrzDmndSttsCdFlag = "another"
+                    } else {
+                        atrzDmndSttsCdFlag = "use"
+                    }
                 }
 
                 setSelectPrjctIndvdlCtMmValue({
@@ -195,7 +208,7 @@ const EmpWorkTime = () => {
             });
             setSelectCrtrDateParam({
                 ...selectCrtrDateParam,
-                aplyYm:Moment(e.value).format("YYYYMM"),
+                aplyYm: Moment(e.value).format("YYYYMM"),
             });
         }
     }
@@ -217,7 +230,7 @@ const EmpWorkTime = () => {
 
 
 
-    
+
     // 근무시간삭제정보
     const [deleteWorkHourList, setDeleteWorkHourList] = useState([]);
 
@@ -227,28 +240,22 @@ const EmpWorkTime = () => {
 
     // 승인요청버튼
     const onApprovalclick = async () => {
-        const isconfirm = window.confirm("승인요청 하시겠습니까?");
-        if (isconfirm) {
-            let insertWorkHourListFilter = insertWorkHourList.filter(item => item.aplyType == "workAply" && item.aplyOdr == flagOrder)
-            const formData = new FormData();
+        let insertWorkHourListFilter = insertWorkHourList.filter(item => item.aplyType == "workAply" && item.aplyOdr == flagOrder)
+        const formData = new FormData();
 
-            formData.append("insertWorkHourList", JSON.stringify(insertWorkHourListFilter));
-            formData.append("deleteWorkHourList", JSON.stringify(deleteWorkHourList));
+        formData.append("insertWorkHourList", JSON.stringify(insertWorkHourListFilter));
+        formData.append("deleteWorkHourList", JSON.stringify(deleteWorkHourList));
 
-            if (insertWorkHourList.length > 0) {
-                try {
-                    const response = await axios.post("/boot/indvdlClm/insertPrjctMmAply", formData, {
-                        headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
-                        
-                    });
-                    selectData(searchPrjctIndvdlCtMmParam);
-                    alert("승인요청되었습니다.");
-                } catch (error) {
-                    console.log("insertPrjctMmAply_error: ", error);
-                }
-            } else {
-                alert("근무시간을 입력해주세요.");
-                return;
+        if (insertWorkHourList.length > 0) {
+            try {
+                const response = await axios.post("/boot/indvdlClm/insertPrjctMmAply", formData, {
+                    headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
+
+                });
+                selectData(searchPrjctIndvdlCtMmParam);
+                handleOpen("승인요청되었습니다.");
+            } catch (error) {
+                console.log("insertPrjctMmAply_error: ", error);
             }
         } else {
             handleOpen("근무시간을 입력해주세요.");
@@ -260,19 +267,19 @@ const EmpWorkTime = () => {
     const onApprovalCancleclick = async () => {
         // const isconfirm = window.confirm("승인요청을 취소하시겠습니까?");
         // if (isconfirm) {
-            let deleteParams = insertWorkHourList.filter(item => item.aplyType == "workAply" && item.aplyOdr == flagOrder && item.atrzDmndSttsCd != "VTW03703");
-            if (deleteParams.length > 0) {
-                try {
-                    const response = await ApiRequest("/boot/indvdlClm/updatePrjctMmAply", deleteParams);
-                    selectData(searchPrjctIndvdlCtMmParam);
-                    handleOpen("승인취소되었습니다.");
-                } catch (error) {
-                    console.log("updatePrjctMmAply_error: ", error);
-                }
-            } else {
-                handleOpen("요청된 근무시간이 없습니다.");
-                return;
+        let deleteParams = insertWorkHourList.filter(item => item.aplyType == "workAply" && item.aplyOdr == flagOrder && item.atrzDmndSttsCd != "VTW03703");
+        if (deleteParams.length > 0) {
+            try {
+                const response = await ApiRequest("/boot/indvdlClm/updatePrjctMmAply", deleteParams);
+                selectData(searchPrjctIndvdlCtMmParam);
+                handleOpen("승인취소되었습니다.");
+            } catch (error) {
+                console.log("updatePrjctMmAply_error: ", error);
             }
+        } else {
+            handleOpen("요청된 근무시간이 없습니다.");
+            return;
+        }
         // } else {
         //     return;
         // }
@@ -300,12 +307,12 @@ const EmpWorkTime = () => {
                 let vcatnData = insertWorkHourList.filter(item => item.aplyYmd == Moment(String(startDate)).format("YYYYMMDD"));
 
                 if (selectCrtrDateList.find((item) => item.crtrYmd == startDate && item.hldyClCd == "VTW05003")) {
-                
+
                 } else if (isSaturday(Moment(String(startDate)).format("YYYY-MM-DD")) || isSunday(Moment(String(startDate)).format("YYYY-MM-DD"))) {
-                    
+
                 } else if (vcatnData.length > 0 && vcatnData[0].aplyType == 'vcatnAply') {
                     if (vcatnData[0].vcatnTyCd == "VTW01201" || vcatnData[0].vcatnTyCd == "VTW01204") {
-                        
+
                     } else {
                         parseData.push({
                             text: inputFormData.prjctNm + " " + (inputFormData.workHour > 4 ? 4 : inputFormData.workHour) + "시간",
@@ -345,7 +352,7 @@ const EmpWorkTime = () => {
                 for (let i = 0; i < insertWorkHourList.length; i++) {
                     if (parseData.find(item => item.aplyYmd == insertWorkHourList[i].aplyYmd)) {
                         if (parseData.find(item => item.aplyYmd == insertWorkHourList[i].aplyYmd).md + insertWorkHourList[i].md > 1) {
-                            alert("근무시간은 8시간을 초과할 수 없습니다.");
+                            handleOpen("근무시간은 8시간을 초과할 수 없습니다.");
                             return;
                         }
                     }
@@ -366,7 +373,7 @@ const EmpWorkTime = () => {
                     })
 
                     if (workHourValue > 1) {
-                        alert("근무시간은 8시간을 초과할 수 없습니다.")
+                        handleOpen("근무시간은 8시간을 초과할 수 없습니다.")
                         return;
                     }
                 }
@@ -404,7 +411,7 @@ const EmpWorkTime = () => {
     function onDeleteListClick(e) {
         // const isconfirm = window.confirm("승인된 목록을 제외한 근무시간들이 삭제됩니다.\n삭제하시겠습니까?");
         // if (isconfirm) {
-            setInsertWorkHourList(insertWorkHourList.filter(item => item.aplyOdr != flagOrder || item.atrzDmndSttsCd == "VTW03703" || item.aplyType != "workAply"));
+        setInsertWorkHourList(insertWorkHourList.filter(item => item.aplyOdr != flagOrder || item.atrzDmndSttsCd == "VTW03703" || item.aplyType != "workAply"));
         // } else {
         //     return;
         // }
@@ -427,7 +434,7 @@ const EmpWorkTime = () => {
     return (
         <div className="" style={{ marginLeft: "10%", marginRight: "10%" }}>
             <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
-                <h1 style={{ fontSize: "30px" }}>{orderWorkBgngMm} - {flagOrder}차수 근무시간</h1>
+                <h1 style={{ fontSize: "30px" }}>{admin != undefined ? "(관리자)" : ""} {orderWorkBgngMm} - {flagOrder}차수 근무시간</h1>
             </div>
             <div className="mx-auto" style={{ marginBottom: "10px" }}>
                 <span>* 근무시간을 기간별로 조회 합니다.</span>
@@ -439,40 +446,53 @@ const EmpWorkTime = () => {
                 <span>* 프로젝트 명에 마우스를 올리면 해당 프로젝트의 전체 명을 확인할 수 있습니다.</span>
             </div>
             <div className="row">
-                <div className="col-md-2" style={{ marginRight: "-20px" }}>
-                    <SelectBox
-                        placeholder="[년도]"
-                        defaultValue={new Date().getFullYear()}
-                        dataSource={getYearList(10, 1)}
-                        ref={SearchYearValueRef}
-                        onValueChanged={(e) => { SearchYearValueRef.current = e.value }}
-                    />
-                </div>
-                <div className="col-md-2" style={{ marginRight: "-20px", width: "150px" }}>
-                    <SelectBox
-                        dataSource={getMonthList()}
-                        defaultValue={new Date().getDate() < 15 ? new Date().getMonth() : new Date().getMonth() + 1}
-                        valueExpr="key"
-                        displayExpr="value"
-                        placeholder=""
-                        ref={SearchMonthValueRef}
-                        onValueChanged={(e) => { SearchMonthValueRef.current = e.value }}
-                    />
-                </div>
+                {
+                    admin != undefined ? <></>
+                        :
+                        <>
+                            <div className="col-md-2" style={{ marginRight: "-20px" }}>
+                                <SelectBox
+                                    placeholder="[년도]"
+                                    defaultValue={new Date().getFullYear()}
+                                    dataSource={getYearList(10, 1)}
+                                    ref={SearchYearValueRef}
+                                    onEnterKey={searchHandle}
+                                    onValueChanged={(e) => { SearchYearValueRef.current = e.value }}
+                                />
+                            </div>
+                            <div className="col-md-2" style={{ marginRight: "-20px", width: "150px" }}>
+                                <SelectBox
+                                    dataSource={getMonthList()}
+                                    defaultValue={new Date().getDate() < 15 ? new Date().getMonth() : new Date().getMonth() + 1}
+                                    valueExpr="key"
+                                    displayExpr="value"
+                                    placeholder=""
+                                    ref={SearchMonthValueRef}
+                                    onEnterKey={searchHandle}
+                                    onValueChanged={(e) => { SearchMonthValueRef.current = e.value }}
+                                />
+                            </div>
+                        </>
+                }
                 <div className="col-md-4">
-                    <Button
-                        onClick={searchHandle} text="검색" style={{ height: "48px", width: "50px" }}
-                    />
+                    {
+                        admin != undefined
+                            ? <></>
+                            :
+                            <Button
+                                onClick={searchHandle} text="검색" style={{ height: "48px", width: "50px" }}
+                            />
+                    }
                     {
                         selectPrjctIndvdlCtMmValue != undefined && selectPrjctIndvdlCtMmValue.mmAtrzCmptnYn == "use"
                             ?
                             <Button
-                                onClick={onApprovalclick} text="승인요청" style={{ marginLeft: "5px", height: "48px", width: "100px" }}
+                                onClick={(e) => { handleOpen("승인요청하시겠습니까?", onApprovalclick) }} text="승인요청" style={{ marginLeft: "5px", height: "48px", width: "100px" }}
                             />
                             : selectPrjctIndvdlCtMmValue != undefined && (selectPrjctIndvdlCtMmValue.mmAtrzCmptnYn == "audit" || selectPrjctIndvdlCtMmValue.mmAtrzCmptnYn == "composite")
                                 ?
                                 <Button
-                                    onClick={() => {handleOpen("승인요청을 취소하시겠습니까?", onApprovalCancleclick)}} text='승인요청취소' style={{ marginLeft: "5px", height: "48px", width: "140px" }}
+                                    onClick={() => { handleOpen("승인요청을 취소하시겠습니까?", onApprovalCancleclick) }} text='승인요청취소' style={{ marginLeft: "5px", height: "48px", width: "140px" }}
                                 />
                                 : <></>
                     }
@@ -524,7 +544,7 @@ const EmpWorkTime = () => {
             dayClass.push(isSaturday(Moment(String(startDate)).format("YYYY-MM-DD")) == true ? "saturday" : "");
             dayClass.push(isSunday(Moment(String(startDate)).format("YYYY-MM-DD")) == true ? "sunday" : "");
 
-            if(selectCrtrDateList){
+            if (selectCrtrDateList) {
                 let holidayList = selectCrtrDateList.filter(item => item.hldyClCd == "VTW05003");
                 dayClass.push(holidayList.find(item => item.crtrYmd == Moment(String(startDate)).format("YYYYMMDD")) ? "sunday" : "");
             }
@@ -537,32 +557,32 @@ const EmpWorkTime = () => {
         };
 
         return (
-            insertWorkHourList ? 
-            <div className="mx-auto" style={{ marginBottom: "20px", marginTop: "30px" }}>
-                <Scheduler
-                    locale="ko"
-                    defaultCurrentView="month"
-                    views={["month"]}
-                    dataSource={insertWorkHourList}
-                    textExpr="text"
-                    startDateExpr="aplyYmd"
-                    endDateExpr="aplyYmd"
-                    dataCellComponent={customDateCell}
-                    currentDate={new Date(searchPrjctIndvdlCtMmParam.searchYear + "-" + searchPrjctIndvdlCtMmParam.searchMonth)}
-                    onAppointmentClick={onAppointmentClick}
-                    onAppointmentDblClick={onAppointmentDblClick}
-                    onAppointmentFormOpening={onAppointmentFormOpening}
-                    onAppointmentDeleted={onAppointmentDeleted}
-                    onCellClick={onCellClick}
-                    onOptionChanged={onOptionChanged}
-                >
-                    <Resource
-                        dataSource={resourcesData}
-                        fieldExpr="atrzDmndSttsCd"
-                    />
-                </Scheduler>
-            </div>
-            : <></>
+            insertWorkHourList ?
+                <div className="mx-auto" style={{ marginBottom: "20px", marginTop: "30px" }}>
+                    <Scheduler
+                        locale="ko"
+                        defaultCurrentView="month"
+                        views={["month"]}
+                        dataSource={insertWorkHourList}
+                        textExpr="text"
+                        startDateExpr="aplyYmd"
+                        endDateExpr="aplyYmd"
+                        dataCellComponent={customDateCell}
+                        currentDate={admin != undefined ? admin.orderWorkBgngYmd : new Date(searchPrjctIndvdlCtMmParam.searchYear + "-" + searchPrjctIndvdlCtMmParam.searchMonth)}
+                        onAppointmentClick={onAppointmentClick}
+                        onAppointmentDblClick={onAppointmentDblClick}
+                        onAppointmentFormOpening={onAppointmentFormOpening}
+                        onAppointmentDeleted={onAppointmentDeleted}
+                        onCellClick={onCellClick}
+                        onOptionChanged={onOptionChanged}
+                    >
+                        <Resource
+                            dataSource={resourcesData}
+                            fieldExpr="atrzDmndSttsCd"
+                        />
+                    </Scheduler>
+                </div>
+                : <></>
         )
     }
 
@@ -635,7 +655,7 @@ const EmpWorkTime = () => {
             refInsertWorkHourValue.prjctId = e[0].prjctId;
             refInsertWorkHourValue.prjctNm = e[0].prjctNm;
         }
-        
+
         return (
             <Form ref={insertValueRef} data={refInsertWorkHourValue} style={{ marginTop: "20px" }}>
                 {
@@ -722,7 +742,12 @@ const EmpWorkTime = () => {
                                         <h4>요청한 근무시간이 최종승인 되었습니다.</h4>
                                     </div>
                                 </div>
-                                : <></>
+                                : selectPrjctIndvdlCtMmValue != undefined && selectPrjctIndvdlCtMmValue.mmAtrzCmptnYn == "another"
+                                    ?
+                                    <div style={{ marginTop: "10px", border: "2px solid #CCCCCC", height: "200px", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                                        <h4>해당차수가 아닙니다.</h4>
+                                    </div>
+                                    : <></>
                 }
             </Form>
         )

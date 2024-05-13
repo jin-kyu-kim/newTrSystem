@@ -98,8 +98,6 @@ const ElecAtrz = () => {
   };
 
   const sendDetail = (e, param) => {
-    console.log(e.data)
-    console.log(param)
 
     if(e.data.atrzDmndSttsCd === 'VTW03701') {  //임시저장
       navigate('/elecAtrz/ElecAtrzNewReq', {state: {formData: e.data, sttsCd: param.sttsCd, prjctId: e.data.prjctId}});
