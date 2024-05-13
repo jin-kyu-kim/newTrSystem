@@ -4,7 +4,7 @@ import AllowedPageSize from "./AllowedPageSize";
 
 const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, onClick,
                        wordWrap, onRowClick, excel, onExcel,onCellClick, grouping, groupingData, groupingCustomizeText,
-                       masterDetail, handleExpanding, focusedRowIndex, handleCheckBoxChange, checkBoxValue, prjctCmpr }) => {
+                       masterDetail, handleExpanding, focusedRowIndex, handleCheckBoxChange, checkBoxValue, prjctCmpr,noDataText }) => {
   return (
     <div className="wrap_table">
       <DataGrid
@@ -16,7 +16,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
         showColumnLines={false}
         focusedRowEnabled={true}
         columnAutoWidth={false}
-        noDataText=""
+        noDataText={noDataText}
         onRowExpanding={handleExpanding}
         onRowDblClick={onRowDblClick}
         focusedRowIndex={focusedRowIndex}

@@ -1,9 +1,10 @@
+import React from "react";
 import { TextBox } from 'devextreme-react';
 import Button from "devextreme-react/button";
 import TagBox from 'devextreme-react/tag-box';
+import NumberBox from 'devextreme-react/number-box';
 import SelectBox from "devextreme-react/select-box";
 import ToggleButton from 'pages/sysMng/ToggleButton';
-import React from "react";
 
 const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig }) => {
 
@@ -24,11 +25,12 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig }) =
                 displayExpr={col.displayExpr}
                 keyExpr={col.valueExpr}
                 placeholder={col.placeholder}
+                searchEnabled={true}
                 onValueChanged={(newValue) => {
                     props.data[col.key] = newValue.value[col.valueExpr]
 
                     if (col.key === 'prjctId') {
-                        getCdList(newValue.value[col.valueExpr], props.data.cardUseSn);
+                        getCdList(newValue.value[col.valueExpr], newValue.value['prjctStleCd'], props.data.cardUseSn);
                         setIsPrjctIdSelected(prevStts => ({
                             ...prevStts,
                             [props.data.cardUseSn]: !!newValue.value
@@ -85,6 +87,16 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig }) =
                 ))}
             </div>);
         }
+    } else if (col.cellType === 'numberBox') {
+        return (
+            <NumberBox
+                format="#,##0"
+                onValueChanged={(newValue) => {
+                    props.data[col.key] = newValue.value
+                }}
+                value={props.data[col.key]}
+            />
+        )
     }
 }
 export default CellRender;

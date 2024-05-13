@@ -102,12 +102,13 @@ private static CommonService commonService;
 	@Transactional
 	public static int updateDpstAmt(Map<String, Object> param) {
 		param.put("queryId", "financialAffairMngMapper.updateDpstAmtThisMonth");
+		param.put("state", "UPDATE");
 		YearMonth yearMonth = YearMonth.parse((String)param.get("clturPhstrnActMngYm"), DateTimeFormatter.ofPattern("yyyyMM"));
 		LocalDate nextMonth = yearMonth.atDay(1).plusMonths(1);
 		param.put("nextMonth", nextMonth.format(DateTimeFormatter.ofPattern("yyyyMM")));
-		commonService.queryIdSearch(param);
+		commonService.queryIdDataControl(param);
 		param.put("queryId", "financialAffairMngMapper.updateDpstAmtNextMonth");
-		commonService.queryIdSearch(param);
+		commonService.queryIdDataControl(param);
 		return 1;
 	}
 	
