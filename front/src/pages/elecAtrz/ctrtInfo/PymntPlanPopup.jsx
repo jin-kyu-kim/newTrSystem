@@ -122,7 +122,7 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
         }
 
         //지급 총액이 가용금액을 초과할 경우
-        if(matrlCtrtData.cntrctamount < matrlCtrtData.totAmt) {
+        if(matrlCtrtData.ctrtAmt < matrlCtrtData.totAmt) {
             handleOpen("지불 총액은 계약금액을 초과할 수 없습니다.");
             return;
         }
@@ -161,7 +161,7 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
                     {data.elctrnAtrzTySeCd === "VTW04910" || ctrtTyCd === "VTW04910" ? 
                         <div className="dx-fieldset">
                             <CustomLabelValue props={matrlPlanParam}  value={matrlCtrtData.expectCtrtEntrpsNm} onSelect={handleChgState} readOnly={controlReadOnly}/>
-                            <CustomLabelValue props={labelValue.cntrctamount} onSelect={handleChgState} readOnly={true} value={matrlCtrtData.cntrctamount}/>
+                            <CustomLabelValue props={labelValue.ctrtAmt} onSelect={handleChgState} readOnly={true} value={matrlCtrtData.ctrtAmt}/>
                             <CustomLabelValue props={labelValue.prductNm} onSelect={handleChgState} value={matrlCtrtData.prductNm} readOnly={controlReadOnly}/>
                             <CustomLabelValue props={labelValue.dtlCn} onSelect={handleChgState} value={matrlCtrtData.dtlCn} readOnly={controlReadOnly}/>
                             <CustomLabelValue props={labelValue.untpc} onSelect={handleChgState} value={matrlCtrtData.untpc} readOnly={controlReadOnly}/>

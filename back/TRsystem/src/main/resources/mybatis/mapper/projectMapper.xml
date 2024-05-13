@@ -219,9 +219,9 @@
              , (SELECT CD_NM FROM CD WHERE CD_VALUE = A.MATRL_CT_IEM_CD) AS MATRL_CT_IEM_NM
              , A.PRDUCT_NM
              , A.QY
-             , A.CNTRCTAMOUNT
+             , A.CTRT_AMT
              , IFNULL(B.QY,0)  AS USE_AMT
-             , IFNULL(A.CNTRCTAMOUNT - B.QY, 0) AS AVAIL
+             , IFNULL(A.CTRT_AMT - B.QY, 0) AS AVAIL
         FROM MATRL_CT_PRMPC A
                  LEFT JOIN MATRL_CT_EXCN B ON A.PRJCT_ID = B.PRJCT_ID
         WHERE 1=1
@@ -234,9 +234,9 @@
              , (SELECT CD_NM FROM CD WHERE CD_VALUE = A.MATRL_CT_IEM_CD) AS MATRL_CT_IEM_NM
              , A.PRDUCT_NM
              , A.QY
-             , A.CNTRCTAMOUNT
+             , A.CTRT_AMT
              , B.QY  AS USE_AMT
-             , (A.CNTRCTAMOUNT - B.QY) AS AVAIL
+             , (A.CTRT_AMT - B.QY) AS AVAIL
         FROM MATRL_CT_PRMPC A
                  RIGHT JOIN MATRL_CT_EXCN B ON A.PRJCT_ID = B.PRJCT_ID
         WHERE 1=1
@@ -1078,7 +1078,7 @@
             <if test="tbCostNm == 'MATRL_CT_PRMPC'">
 			    ( SELECT SUM(T.TOTAL) AS CN
 					FROM (
-					SELECT CNTRCTAMOUNT AS TOTAL  FROM MATRL_CT_PRMPC M
+					SELECT CTRT_AMT AS TOTAL  FROM MATRL_CT_PRMPC M
 					WHERE 1=1
 					AND M.PRJCT_ID = #{prjctId}
 					AND M.BGT_MNG_ODR = #{bgtMngOdr}
@@ -1326,7 +1326,7 @@
              FROM(
                      SELECT
                          '재료비',
-                         IFNULL(SUM(MCP.CNTRCTAMOUNT),0) '예산',
+                         IFNULL(SUM(MCP.CTRT_AMT),0) '예산',
                          IFNULL((
                                     SELECT
                                         SUM(USE_AMT)
@@ -1735,10 +1735,10 @@
 			   FROM (
 				     SELECT
 						    '재료비',
-						    IFNULL(SUM(MCP.CNTRCTAMOUNT),0) BFE_BGT,
+						    IFNULL(SUM(MCP.CTRT_AMT),0) BFE_BGT,
 						    IFNULL((
 									SELECT
-										   SUM(MCP.CNTRCTAMOUNT)
+										   SUM(MCP.CTRT_AMT)
 									  FROM MATRL_CT_PRMPC MCP
 									  JOIN PRJCT_BGT_PRMPC PBP ON PBP .PRJCT_ID = MCP.PRJCT_ID AND PBP.BGT_MNG_ODR = MCP.BGT_MNG_ODR
 									  WHERE MCP.PRJCT_ID = #{prjctId}
