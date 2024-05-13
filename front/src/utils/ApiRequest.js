@@ -9,7 +9,7 @@ const ApiRequest = async (url, data) => {
         "Authorization": `Bearer ${token}`
       },
     });
-    console.log(response)
+    // console.log(response)
     // if(response.headers.authorization){
     //   extension(response.headers.authorization);
     // }
