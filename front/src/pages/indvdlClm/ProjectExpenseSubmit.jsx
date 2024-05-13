@@ -6,6 +6,7 @@ import { useModal } from "../../components/unit/ModalContext";
 const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, buttonGroup, getData }) => {
   const [ isComplete, setIsComplete ] = useState(false);
   const { handleOpen } = useModal();
+
   useEffect(() => {
     if (selectedItem.length > 0 && isComplete) {
       handleOpen("등록되었습니다.");
@@ -14,6 +15,7 @@ const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, butt
   }, [isComplete]);
 
   const handleSubmit = async () => {
+
     const validationResults = await validateFields();
 
     if (!validationResults.isValid) {
@@ -86,6 +88,7 @@ const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, butt
       aplyYm: oneRow.aplyYm,
       aplyOdr: oneRow.aplyOdr,
     };
+    
     return { ...baseProps, ...additionalProps };
   }; 
 

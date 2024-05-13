@@ -147,7 +147,7 @@ const ProjectExpense = () => {
             if (window.confirm("삭제하시겠습니까?")) {
 
                 const param = { prjctId: props.prjctId, prjctCtAplySn: props.prjctCtAplySn, empId, aplyYm, aplyOdr };
-                const tables = ["PRJCT_CT_ATRZ", "PRJCT_CT_APLY", "PRJCT_CT_ATDRN"];
+                const tables = [ "PRJCT_CT_ATRZ", "PRJCT_CT_ATDRN", "PRJCT_CT_APLY" ];
                 const deleteRow = tables.map(tbNm => ApiRequest("/boot/common/commonDelete", [{ tbNm }, param]));
 
                 Promise.all(deleteRow).then(responses => {
@@ -184,9 +184,7 @@ const ProjectExpense = () => {
             </div>
         );
     };
-console.log('yn', ctAtrzCmptnYn)
-console.log('mmyn', mmAtrzCmptnYn)
-console.log('cnt', atrzDmndSttsCnt)
+
     return (
         <div className="container">
             <div style={{ marginBottom: '100px' }}>

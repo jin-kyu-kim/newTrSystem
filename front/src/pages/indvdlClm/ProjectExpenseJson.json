@@ -179,6 +179,7 @@
         },
         "valueExpr" : "prjctId",
         "displayExpr": "prjctNm",
+        "values" : ["prjctId", "prjctMngrEmpId"],
         "name": "prjctId"
       },
       "required": true
