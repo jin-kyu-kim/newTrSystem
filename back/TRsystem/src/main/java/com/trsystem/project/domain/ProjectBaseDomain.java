@@ -618,7 +618,8 @@ public class ProjectBaseDomain {
 		paramCtMm.put("empId", param.get("empId"));
 		paramCtMm.put("aplyYm", nowYm);
 		paramCtMm.put("aplyOdr", nowOdr);
-		commonService.queryIdSearch(paramCtMm);
+		paramCtMm.put("state", "INSERT");
+		commonService.queryIdDataControl(paramCtMm);
 
 		// (PRJCT_CT_APLY)
 		// ID로 서치
@@ -656,7 +657,8 @@ public class ProjectBaseDomain {
 
 		// 기존 값 업데이트 -> 코드 VTW03708(이월)
 		paramAply.put("queryId", "projectMapper.updatePrjctCtAtrz");
-		commonService.queryIdSearch(paramAply);
+		paramAply.put("state", "UPDATE");
+		commonService.queryIdDataControl(paramAply);
 
 		// 가져온 값의 aplyYm, aplyOdr 바꿔서 인서트
 		List<Map<String, Object>> insertAtrz = new ArrayList<>();
