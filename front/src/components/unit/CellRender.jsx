@@ -30,7 +30,7 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig }) =
                     props.data[col.key] = newValue.value[col.valueExpr]
 
                     if (col.key === 'prjctId') {
-                        getCdList(newValue.value[col.valueExpr], newValue.value['prjctStleCd'], props.data.cardUseSn);
+                        getCdList(newValue.value, props.data.cardUseSn);
                         setIsPrjctIdSelected(prevStts => ({
                             ...prevStts,
                             [props.data.cardUseSn]: !!newValue.value

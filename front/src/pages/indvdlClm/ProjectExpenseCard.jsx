@@ -67,16 +67,27 @@ const ProjectExpenseCard = (props) => {
         }
     };
 
-    const getCdList = async (prjctId, prjctStleCd, cardUseSn) => {
-        let queryId = prjctStleCd === 'VTW01802' ? prjctStleQueryId : prjctStlePdQueryId
+    const getCdList = async (prjct, cardUseSn) => {
+        let queryId = prjct.prjctStleCd === 'VTW01802' ? prjctStleQueryId : prjctStlePdQueryId
         try{
             const response = await ApiRequest('/boot/common/queryIdSearch', {
-                queryId: queryId, prjctId: prjctId
+                queryId: queryId, prjctId: prjct.prjctId
             })
             setCdList(prevCdLists => ({
                 ...prevCdLists,
                 [cardUseSn]: response
             }));
+
+            setCardUseDtls(prevItem => { // 결재자 추가 (PM)
+                const updatedItems = prevItem.map(item => {
+                    if (item.cardUseSn === cardUseSn) {
+                        return { ...item, prjctMngrEmpId: prjct.prjctMngrEmpId };
+                    }
+                    return item;
+                });
+                return updatedItems;
+            });
+
         } catch(error) {
             console.log('error', error);
         }
