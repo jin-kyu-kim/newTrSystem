@@ -593,27 +593,20 @@
     
 	<select id="retrieveAprvrEmpId" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		<![CDATA[
-	    WITH RECURSIVE CTE(DEPT_ID, DEPT_NM, UP_DEPT_ID, EMP_ID, DEPTH) AS (
-	        SELECT d1.DEPT_ID, DEPT_NM, UP_DEPT_ID, dh1.EMP_ID, 1
-	        FROM DEPT d1
-	        JOIN DEPT_HNF dh1 ON (d1.DEPT_ID = dh1.DEPT_ID)
-	        WHERE UP_DEPT_ID IS NULL
-	        UNION ALL
-	        SELECT cd.DEPT_ID, cd.DEPT_NM, cd.UP_DEPT_ID, dh2.EMP_ID, DEPTH + 1
-	        FROM DEPT cd
-	        JOIN DEPT_HNF dh2 ON (cd.DEPT_ID = dh2.DEPT_ID)
-	        INNER JOIN CTE B ON (B.DEPT_ID = cd.UP_DEPT_ID)
-	    )
-	    SELECT @r AS DEPT_ID
-	         , (SELECT @r := UP_DEPT_ID FROM CTE WHERE DEPT_ID = @r LIMIT 1) AS UP_DEPT_ID
-	         , dh.EMP_ID
-	         , cte.DEPTH
-	    FROM (SELECT @r := #{deptId}) AS vars, (SELECT * FROM CTE WHERE DEPT_ID != #{deptId}) AS h
-	    JOIN DEPT_HNF dh ON (dh.DEPT_ID = @r)
-	    JOIN CTE cte ON (cte.DEPT_ID = @r)
-	    WHERE @r <> '-'
-	    AND dh.JBTTL_CD = 'VTW01001'
-	    ORDER BY cte.DEPTH ASC
+		WITH RECURSIVE CTE(DEPT_ID, DEPT_NM, UP_DEPT_ID, DEPTH) AS (
+			SELECT d1.DEPT_ID, d1.DEPT_NM, d1.UP_DEPT_ID, 1
+		  	  FROM DEPT d1
+		 	 WHERE d1.DEPT_ID = #{deptId}
+			 UNION
+			SELECT d2.DEPT_ID, d2.DEPT_NM, d2.UP_DEPT_ID, DEPTH + 1
+			  FROM CTE cte
+			JOIN DEPT d2 ON cte.UP_DEPT_ID = d2.DEPT_ID
+		)
+		SELECT cte.DEPT_ID, cte.UP_DEPT_ID, dh.EMP_ID, cte.DEPTH
+		  FROM CTE cte
+		JOIN DEPT_HNF dh ON cte.DEPT_ID = dh.DEPT_ID
+		WHERE dh.JBTTL_CD = 'VTW01001'
+		ORDER BY cte.DEPTH DESC
 		]]>
     </select>
     
@@ -1571,6 +1564,7 @@
     <select id="retrievePrjctPrmpcBgtCmpr" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT
 			   PRMPC_ACCTO_TOT,
+			   KIND,
 			   CT_NM,
 			   BFE_BGT,
 			   AFTR_BGT,
@@ -1578,6 +1572,7 @@
 		 FROM (
 			   SELECT
 					  '인건비' AS PRMPC_ACCTO_TOT,
+					  '1' AS KIND,
 					  자사인력인건비 AS CT_NM,
 					  T1.BFE_BGT,
 					  T1.AFTR_BGT,
@@ -1610,6 +1605,7 @@
 			 UNION ALL
 			 SELECT
 				    '인건비' AS PRMPC_ACCTO_TOT,
+				    '1' AS KIND,
 				    외주인력인건비 AS CT_NM,
 				    T2.BFE_BGT,
 				    T2.AFTR_BGT,
@@ -1641,6 +1637,7 @@
 			 UNION ALL
 			 SELECT
 				    '경비' AS PRMPC_ACCTO_TOT,
+				    '3' AS KIND,
 				    일반경비 AS CT_NM,
 				    T3.BFE_BGT,
 				    T3.AFTR_BGT,
@@ -1670,6 +1667,7 @@
 			 UNION ALL
 			 SELECT
 				    '경비' AS PRMPC_ACCTO_TOT,
+				    '3' AS KIND,
 				    통제성경비 AS CT_NM,
 				    T4.BFE_BGT,
 				    T4.AFTR_BGT,
@@ -1701,6 +1699,7 @@
 			 UNION ALL
 			 SELECT
 				    '외주업체비' AS PRMPC_ACCTO_TOT,
+				    '2' AS KIND,
 				    외주업체비용 AS CT_NM,
 				    T5.BFE_BGT,
 				    T5.AFTR_BGT,
@@ -1728,6 +1727,7 @@
 			 UNION ALL
 			 SELECT
 					'재료비' AS PRMPC_ACCTO_TOT,
+					'4' AS KIND,
 					재료비 AS CT_NM,
 					T6.BFE_BGT,
 					T6.AFTR_BGT,
