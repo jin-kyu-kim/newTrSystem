@@ -30,7 +30,7 @@ const ElecAtrzNewReq = () => {
     const ctrtTyCd = location.state.ctrtTyCd;
     const [cookies] = useCookies(["userInfo", "userAuth"]);
     const { handleOpen } = useModal();
-    // const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     /** 첨부파일 관련 */
     const [attachments, setAttachments] = useState([]);
@@ -324,7 +324,7 @@ const ElecAtrzNewReq = () => {
         }
 
         try {
-            // setLoading(true);
+            setLoading(true);
             const response = await ApiRequest("/boot/elecAtrz/insertElecAtrz", insertParam);
             const token = localStorage.getItem("token");
 
@@ -381,7 +381,7 @@ const ElecAtrzNewReq = () => {
                 localStorage.removeItem("isLoggedIn");
             } 
         } finally {
-            // setLoading(false);
+            setLoading(false);
         }
     }
 
@@ -461,11 +461,11 @@ const ElecAtrzNewReq = () => {
     return (
         <>
             <div className="container" style={{marginTop:"10px"}}>
-                {/* {loading && (
+                {loading && (
                     <div className="loading-overlay">
                         요청 중입니다...
                     </div>
-                )} */}
+                )}
                 <ElecAtrzTitleInfo
                     atrzLnEmpList={atrzLnEmpList}
                     getAtrzLn={getAtrzLn}
