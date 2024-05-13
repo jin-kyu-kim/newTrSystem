@@ -6,13 +6,13 @@
     { "key": "matrlCtIemNm", "value": "종류" },
     { "key": "prductNm", "value": "제품명" },
     { "key": "qy", "value": "수량" },
-    { "key": "cntrctamount", "value": "배정예산" },
+    { "key": "ctrtAmt", "value": "배정예산" },
     { "key": "useAmt", "value": "누적사용" },
     { "key": "avail", "value": "가용" }
   ],
   "summaryColumn": [
     {
-      "key": "cntrctamount",
+      "key": "ctrtAmt",
       "value": "배정예산",
       "type": "sum",
       "format": "{0}원"
