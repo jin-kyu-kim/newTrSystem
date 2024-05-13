@@ -198,7 +198,8 @@ if (empDtlData.bdwgh !='' &&empDtlData.bdwgh != null &&  !/^\d{1,4}(?:\.\d)?$/.t
           if (response === 1) {
             
             handleOpen("직원정보가 저장 되었습니다.");
-            window.location.reload();
+            empInfoCnt();
+            baseData();
           } else {
             // 저장 실패 시 처리
           }
@@ -212,7 +213,8 @@ if (empDtlData.bdwgh !='' &&empDtlData.bdwgh != null &&  !/^\d{1,4}(?:\.\d)?$/.t
 
           if (response === 1) {
             handleOpen("직원정보가 저장 되었습니다.");
-            window.location.reload();
+            empInfoCnt();
+            baseData();
           } else {
             // 저장 실패 시 처리
           }

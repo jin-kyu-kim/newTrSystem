@@ -16,6 +16,7 @@ import ElecAtrzCtrtInfo from "./ctrtInfo/ElecAtrzCtrtInfo";
 import ElecAtrzCtrtInfoDetail from "./ctrtInfo/ElecAtrzCtrtInfoDetail";
 import ElecAtrzCtrtOutordHnfDetail from "./ctrtInfo/ElecAtrzCtrtOutordHnfDetail";
 import ElecAtrzTabDetail from "./ElecAtrzTabDetail";
+
 import { Button } from 'devextreme-react';
 import { useModal } from "../../components/unit/ModalContext";
 
@@ -29,6 +30,8 @@ const ElecAtrzNewReq = () => {
     const ctrtTyCd = location.state.ctrtTyCd;
     const [cookies] = useCookies(["userInfo", "userAuth"]);
     const { handleOpen } = useModal();
+    const [loading, setLoading] = useState(false);
+
     /** 첨부파일 관련 */
     const [attachments, setAttachments] = useState([]);
     const [deleteFiles, setDeleteFiles] = useState([{tbNm: "ATCHMNFL"}]);
@@ -321,6 +324,7 @@ const ElecAtrzNewReq = () => {
         }
 
         try {
+            setLoading(true);
             const response = await ApiRequest("/boot/elecAtrz/insertElecAtrz", insertParam);
             const token = localStorage.getItem("token");
 
@@ -376,6 +380,8 @@ const ElecAtrzNewReq = () => {
                 localStorage.removeItem("token");
                 localStorage.removeItem("isLoggedIn");
             } 
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -455,6 +461,11 @@ const ElecAtrzNewReq = () => {
     return (
         <>
             <div className="container" style={{marginTop:"10px"}}>
+                {loading && (
+                    <div className="loading-overlay">
+                        요청 중입니다...
+                    </div>
+                )}
                 <ElecAtrzTitleInfo
                     atrzLnEmpList={atrzLnEmpList}
                     getAtrzLn={getAtrzLn}
@@ -480,7 +491,7 @@ const ElecAtrzNewReq = () => {
                     }
                     {["VTW04907"].includes(formData.elctrnAtrzTySeCd) &&    //VTW04907: 비용사용(청구,출장비청구)
                     <>
-                        <ExpensInfo onSendData={handleChildData} prjctId={prjctId} data={data}/>
+                        <ExpensInfo onSendData={handleChildData} prjctId={prjctId} data={data} prjctData={prjctData}/>
                     </>
                     }
                     {["VTW04914"].includes(formData.elctrnAtrzTySeCd) && ["VTW04909","VTW04910","VTW04908"].includes(ctrtTyCd)&& prjctData && //VTW04914: 외주업체/재료비 지급

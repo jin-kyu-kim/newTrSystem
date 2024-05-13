@@ -250,11 +250,12 @@ const ProjectHrCtAprvDetail = () => {
                 empId: data.empId,
                 aplyYm: data.aplyYm,
                 aplyOdr: data.aplyOdr,
+                state: "UPDATE"
             };
             try {
                 const confirmResult = window.confirm("승인 취소하시겠습니까?");
                 if(confirmResult){
-                    const response = await ApiRequest('/boot/common/queryIdSearch', param);
+                    const response = await ApiRequest('/boot/common/queryIdDataControl', param);
                     if(response) {
                         const param = [
                             { tbNm: "PRJCT_INDVDL_CT_MM" },

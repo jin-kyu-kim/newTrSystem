@@ -7,10 +7,10 @@ import '../../pages/sysMng/sysMng.css'
 
 const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal, masterDetail, doublePk, noDataText, noEdit,
     onSelection, onRowClick, callback, handleData, handleExpanding, cellRenderConfig, onBtnClick, excel, onExcel, upCdValue,
-    summary, summaryColumn, onlyUpdate}) => {
+    summary, summaryColumn, onlyUpdate, defaultPageSize, queryIdUrl }) => {
 
     const { handleOpen } = useModal();
-    const [cdValList, setCdValList] = useState({});
+    const [ cdValList, setCdValList ] = useState({});
 
     const getCdVal = useCallback(async () => {
         try {
@@ -55,7 +55,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                         ...(handleYnVal !== undefined && e.data.useYn === undefined && { useYn: 'N' })
                     };
                     editParam[1] = e.data;
-                    editInfo = { url: 'commonInsert', complete: '저장' }
+                    editInfo = { url: '/boot/common/commonInsert', complete: '저장' }
                     break;
                 case 'update':
                     if (!doublePk) {
@@ -64,16 +64,16 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                     }
                     editParam[1] = e.newData;
                     editParam[2] = keyInfo;
-                    editInfo = { url: 'commonUpdate', complete: '수정' }
+                    editInfo = { url: queryIdUrl ? queryIdUrl : '/boot/common/commonUpdate', complete: '수정' }
                     break;
                 default:
                     editParam[1] = keyInfo;
-                    editInfo = { url: 'commonDelete', complete: '삭제' }
+                    editInfo = { url: '/boot/common/commonDelete', complete: '삭제' }
                     break;
             }
-            const response = await ApiRequest('/boot/common/' + editInfo.url, editParam);
+            const response = await ApiRequest(editInfo.url, editParam);
             if (response === 1) {
-                await callback();
+                callback();
                 handleOpen(`${editInfo.complete}되었습니다.`);
             } else {
                 handleOpen(`${editInfo.complete}에 실패했습니다.`);
@@ -172,11 +172,8 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                 }
                 {columns.map((col) => (
                     <Column
-                        editorOptions={{
-                            format: {
-                                type: 'fixedPoint',
-                                precision: 0
-                            }
+                        editorOptions={col.fixedPoint && {
+                            format: { type: 'fixedPoint', precision: 0 }
                         }}         
                         visible={col.visible}
                         key={col.key}
@@ -185,7 +182,8 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                         dataType={col.type}
                         format={col.format}
                         width={col.width}
-                        alignment={'center'}
+                        allowEditing={col.allowEdit}
+                        alignment={col.alignment ? col.alignment : 'center'}
                         groupIndex={col.grouping && 0}
                         cellRender={col.cellType && ((props) => cellRender(col, props))} >
                         {col.editType === 'selectBox' ?
@@ -200,7 +198,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                         
                     </Column>
                 ))}
-                <Paging defaultPageSize={20} />
+                <Paging defaultPageSize={defaultPageSize ? defaultPageSize : 20} />
                 <Pager
                     displayMode="full"
                     showNavigationButtons={true}

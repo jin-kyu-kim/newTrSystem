@@ -2,49 +2,41 @@ import React, { useCallback, useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { TabPanel } from "devextreme-react";
 import { useLocation } from "react-router-dom";
-import ApiRequest from "../../../utils/ApiRequest";
 import { useCookies } from "react-cookie";
-
-import ProjectDetailJson from "./ProjectDetailJson.json";
-
 import Button from "devextreme-react/button";
+
+import ApiRequest from "../../../utils/ApiRequest";
+import ProjectDetailJson from "./ProjectDetailJson.json";
 import { useModal } from "../../../components/unit/ModalContext";
-//TODO. 프로젝트 리스트에서 프로젝트 상태?형태?코드 정보 받아와서 그 정보에따라 변경원가 클릭시 작동 다르게 하기.
 
 const ProjectDetail = () => {
   const navigate = useNavigate ();
   const location = useLocation();
-  const prjctId = location.state.prjctId;
-  const totBgt = location.state.totBgt;
-  const bgtMngOdr = location.state.bgtMngOdr;
-  const ctrtYmd = location.state.ctrtYmd;
-  const stbleEndYmd = location.state.stbleEndYmd;
-  const bgtMngOdrTobe = location.state.bgtMngOdrTobe;
-  const bizSttsCd = location.state.bizSttsCd;
-  const deptId = location.state.deptId;
+  const {
+        prjctId,
+        totBgt,
+        bgtMngOdr,
+        ctrtYmd,
+        stbleEndYmd,
+        bgtMngOdrTobe,
+        bizSttsCd,
+        deptId,
+        prjctNm
+  } = location.state || {};
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [atrzLnSn, setAtrzLnSn] = useState();
   const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
   const atrzDmndSttsCd = "VTW03703";
 
-  const ProjectDetail = ProjectDetailJson;
   const { handleOpen } = useModal();
   const empId = cookies.userInfo.empId;
 
-  console.log("bgtMngOdrTobe", bgtMngOdrTobe)
-  console.log("bgtMngOdr", bgtMngOdr)
-  console.log("atrzLnSn",   atrzLnSn)
-  console.log("ctrtYmd",   ctrtYmd)
-  console.log("stbleEndYmd",   stbleEndYmd)
-
-  
+  /* 화면 최초 셋팅 */
   useEffect(() => {
-  
     const param = { 
       queryId: "projectMapper.retrievePrjctAtrzLnSn",
       prjctId: prjctId,
     };
-
     const response = ApiRequest("/boot/common/queryIdSearch", param);
 
     response.then((value) => {
@@ -56,8 +48,7 @@ const ProjectDetail = () => {
   }, []);
 
 
-
-  // 탭 변경시 인덱스 설정
+  /* 탭 변경시 인덱스 설정 */
   const onSelectionChanged = useCallback(
     (args) => {
       if (args.name === "selectedIndex") {
@@ -66,12 +57,10 @@ const ProjectDetail = () => {
     },
     [setSelectedIndex]
   );
-  
   const itemTitleRender = (a) => <span>{a.TabName}</span>;
 
-  /**
-   * 변경원가 버튼 클릭
-   */
+
+  /* 변경원가 버튼 클릭 */
   const onClikcChngBgt = async () => {
     if(atrzLnSn === undefined) {
       // null이면 check 할 필요가 없다.
@@ -137,7 +126,8 @@ const ProjectDetail = () => {
                , targetOdr: targetOdr
                , bizSttsCd: bizSttsCd
                , atrzLnSn: atrzLnSn
-               , deptId: deptId},
+               , deptId: deptId
+               , prjctNm: prjctNm},
       })
   }
 
@@ -164,15 +154,9 @@ const ProjectDetail = () => {
       if(response > 0) {
         navigate("../project/ProjectChange",
         {
-        state: { prjctId: prjctId
-               , ctrtYmd: ctrtYmd
-               , stbleEndYmd: stbleEndYmd
-               , bgtMngOdr: bgtMngOdr
-               , bgtMngOdrTobe: response
-               , targetOdr: response
-               , bizSttsCd: bizSttsCd
-               , atrzLnSn: atrzLnSn
-               , deptId: deptId},
+          state: {
+            ...location.state,
+          },
         })
       }
 
@@ -234,7 +218,7 @@ const ProjectDetail = () => {
       >
         <div style={{ marginRight: "20px", marginLeft: "20px" }}>
           <h1 style={{ fontSize: "30px" }}>프로젝트 관리</h1>
-          <div>{location.state.prjctNm}</div>
+          <div>{prjctNm}</div>
         </div>
       </div>
       <div className="buttons" align="right" style={{ margin: "20px" }}>
@@ -279,7 +263,7 @@ const ProjectDetail = () => {
         <TabPanel
           height="auto"
           width="auto"
-          dataSource={ProjectDetail}
+          dataSource={ProjectDetailJson}
           selectedIndex={selectedIndex}
           onOptionChanged={onSelectionChanged}
           itemTitleRender={itemTitleRender}
