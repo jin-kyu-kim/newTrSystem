@@ -12,19 +12,25 @@ import ProjectPrmpcBgtCmpr from "./ProjectPrmpcBgtCmpr";
 import { useCookies } from "react-cookie";
 import ApiRequest from "utils/ApiRequest";
 import { useModal } from "../../../components/unit/ModalContext";
+
 const ProjectChange = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const prjctId = location.state ? location.state.prjctId : null;
-  const ctrtYmd = location.state ? location.state.ctrtYmd : null;
-  const stbleEndYmd = location.state ? location.state.stbleEndYmd : null;
-  const bgtMngOdr = location.state ? location.state.bgtMngOdr : null;
-  const bgtMngOdrTobe = location.state ? location.state.bgtMngOdrTobe : null;
-  const targetOdr = location.state ? location.state.targetOdr : null;
-  const bizSttsCd = location.state ? location.state.bizSttsCd : null;
-  const atrzLnSn = location.state ? location.state.atrzLnSn : null;
-  const deptId = location.state ? location.state.deptId : null;
+  const {
+    prjctId = null,
+    ctrtYmd = null,
+    stbleEndYmd = null,
+    bgtMngOdr = null,
+    bgtMngOdrTobe = null,
+    targetOdr = null,
+    bizSttsCd = null,
+    atrzLnSn = null,
+    deptId = null,
+    prjctNm = null,
+  } = location.state ?? {};
+
+
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const [atrzAplyPrvonshCn, setAtrzAplyPrvonshCn] = useState(null);
@@ -206,11 +212,10 @@ const ProjectChange = () => {
     }
   }
 
-  // console.log("prjctId!! 변경! ", prjctId);
   const toDetail = () => {
     navigate("../project/ProjectDetail",
         {
-        state: { prjctId: prjctId, ctrtYmd: ctrtYmd, stbleEndYmd: stbleEndYmd, bgtMngOdr:bgtMngOdr, bgtMngOdrTobe:bgtMngOdrTobe, deptId: deptId, targetOdr: targetOdr, bizSttsCd :bizSttsCd , atrzLnSn: atrzLnSn },
+        state: { prjctId: prjctId, ctrtYmd: ctrtYmd, stbleEndYmd: stbleEndYmd, bgtMngOdr:bgtMngOdr, bgtMngOdrTobe:bgtMngOdrTobe, deptId: deptId, targetOdr: targetOdr, bizSttsCd :bizSttsCd , atrzLnSn: atrzLnSn, prjctNm: prjctNm},
         })
   };
 

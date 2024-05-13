@@ -15,9 +15,6 @@ import ApiRequest from "utils/ApiRequest";
  * onSendData : 부모창으로 데이터 전송 위한 함수
  */
 const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, sttsCd, ctrtTyCd }) => {
-    // console.log("prjctData 이거뭐냐", prjctData);
-    // console.log("sttsCd 이거뭐냐", sttsCd);
-    // console.log("data 이거뭐냐", data);
 
     const ctrtYmd = prjctData.ctrtYmd;
     const stbleEndYmd = prjctData.stbleEndYmd; 
@@ -111,10 +108,13 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
         }else if(["VTW03702","VTW03703","VTW03704","VTW03705"].includes(sttsCd)) {
             getTempData();
         }
-        else if(["VTW03405"].includes(sttsCd)){   //지급
+        /* 지급 조회 */
+        else if(["VTW03405"].includes(sttsCd)){   
             getTempData();
         }
     }, [data.ctrtElctrnAtrzId])
+
+    
 
     const getTempData = async () => {
         const dtlParam = {
@@ -123,16 +123,16 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
             elctrnAtrzTySeCd: ctrtTyCd ? ctrtTyCd : data.elctrnAtrzTySeCd
         };
         const dtlResponse = await ApiRequest("/boot/common/queryIdSearch", dtlParam);
-   
+    
         const dtlCndParam = [
             { tbNm: "HNF_CTRT_DTL_MM" },
             { elctrnAtrzId: data.ctrtElctrnAtrzId ? data.ctrtElctrnAtrzId : data.elctrnAtrzId }
         ];
-   
+    
         const dtlCndResponse = await ApiRequest("/boot/common/commonSelect", dtlCndParam);
-   
+    
         console.log("dtlCndResponse", dtlCndResponse);
-   
+    
         const result = dtlResponse.map((ctrtItem) => {
             const hnfCtrtDtlMmItems = dtlCndResponse
                 .filter((hnfItem) => hnfItem.inptHnfId === ctrtItem.inptHnfId)
@@ -143,16 +143,15 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
                         id: inptYm
                     };
                 });
-   
+    
             return {
                 ...ctrtItem,
                 hnfCtrtDtlMm: hnfCtrtDtlMmItems
             };
         });
-   
+    
         handlePopupData(result);
     };
-
 
 
 
@@ -182,22 +181,30 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
         setSelectedData({});
     },[]);
 
+    
     /**
      * Popup data 처리
      */
-    const handlePopupData = (data) => {
-        const existingIndex = tableData.findIndex(item => item.inptHnfId === data.inptHnfId);
-        
-        if(existingIndex >=0){
-            const updatedData = [...tableData];
-            updatedData[existingIndex] = data;
-            setTableData(updatedData);
-        } else {
-            const maxSn = tableData.length > 0 ? Math.max(...tableData.map(item => item.inptHnfId || 0)) : 0;
-            // data.inptHnfId = maxSn + 1;  
-            setTableData(prev => [...prev, data]);
-        }
-    }
+    const handlePopupData = (dataArray) => {
+        const newDataArray = Array.isArray(dataArray) ? dataArray : [dataArray];
+        const updatedTableData = [...tableData];
+    
+        newDataArray.forEach((data) => {
+            const existingIndex = updatedTableData.findIndex(
+                (item) => item.entrpsCtrtDtlSn === data.entrpsCtrtDtlSn
+            );
+    
+            if (existingIndex >= 0) {
+                updatedTableData[existingIndex] = data;
+            } else {
+                const maxSn = updatedTableData.length > 0 ? Math.max(...updatedTableData.map(item => item.entrpsCtrtDtlSn || 0)) : 0;
+                data.entrpsCtrtDtlSn = maxSn + 1;
+                updatedTableData.push(data);
+            }
+        });
+        setTableData(updatedTableData);
+    };
+
 
     /* =========================  SummaryTable 데이터 처리  =========================*/
     useEffect(() => {

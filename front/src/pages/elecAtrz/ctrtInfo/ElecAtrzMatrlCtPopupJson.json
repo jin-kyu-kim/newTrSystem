@@ -82,7 +82,7 @@
         "tableColumns": [
             {"key": "giveOdrCd", "value": "지급 차수", "isRequire": true, "editType" : "selectBox" ,"comCd" : "VTW032" },
             {"key": "ctrtYmd", "value": "지급 일자", "type": "date", "format": "yyyy-MM", "isRequire": true},
-            {"key": "ctrtAmt", "value": "지급 금액", "type": "number", "format":"#,###", "isRequire": true}
+            {"key": "ctrtAmt", "value": "지급 금액", "type": "number", "format":"#,###", "isRequire": true, "fixedPoint": true}
         ]
     }
 }
