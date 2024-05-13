@@ -21,6 +21,7 @@ function ProjectStngInfo( prjctId ) {
 
   const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
   const userEmpId = cookies.userInfo.empId;
+
  
   useEffect(() => {
       pageHandle();
@@ -39,6 +40,7 @@ function ProjectStngInfo( prjctId ) {
   const searchHandle = async (initParam) => {
     setParam({
       ...initParam,
+      prjctId: prjctId.prjctId,
       queryId: queryId,
     });
   };
@@ -71,8 +73,9 @@ function ProjectStngInfo( prjctId ) {
            mdfcnDt: mdfcnDt,
            mdfcnEmpId : userEmpId
           },
-          {empId : e.key},
+          {empId : e.key, prjctId: prjctId.prjctId},
       ]
+
         const response2 = await ApiRequest("/boot/common/commonUpdate",param2)
       } else {
         const param2 = [

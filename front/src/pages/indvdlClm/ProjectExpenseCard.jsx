@@ -130,7 +130,7 @@ const ProjectExpenseCard = (props) => {
             <div style={{fontSize: 14, marginBottom: "20px"}}>
                 <p style={{marginBottom: '10px'}}> ※ 일괄적용 버튼 클릭 시 체크박스로 선택한 항목 중 가장 위에서 선택한 항목으로 일괄적용 됩니다.</p>
                 <span style={{color: "red"}}>※ 사용금액이 20만원 이상일 경우<br/>
-                    1. '전자결재 > 경비 사전 보고'를 작성후 승인 받으시기 바랍니다.<br/>
+                    1. '전자결재 > 경비 사전 보고'를 작성하고 승인 받은 다음에 "현금 및 개인법인카드 청구"탭에서 신청해주세요.<br/>
                     2. TR 제출시 승인받은 '결재 사전 보고' 결재문서를 출력하여 함께 제출하시기 바랍니다.
                 </span>
             </div>

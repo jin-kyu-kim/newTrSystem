@@ -125,7 +125,8 @@ const EmpCultHealthCostManage = () => {
   const onBtnClick = (button, rowData) => {
     setSelectedRowData({
       empId: rowData.data.empId,
-      empFlnm: rowData.data.empFlnm.substring(9).trim()
+      empFlnm: rowData.data.empFlnm.substring(9).trim(),
+      clturPhstrnSeCd: rowData.data.clturPhstrnSeCd
     });
     setIsDetailPopupVisible(true);
   }

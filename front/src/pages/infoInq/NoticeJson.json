@@ -32,12 +32,12 @@
     "detailQueryId": "infoInqMapper.retrieveNtcMatterDtl",
     "noticeButtonGroup": [
       { "id": 1, "text": "목록", "onClick": "/infoInq/NoticeList", "type": "normal" },
-      { "id": 2, "text": "수정", "onClick": "/infoInq/NoticeInput", "state": { "id": "noticeId", "editMode": "update" }, "type":"default" },
+      { "id": 2, "text": "수정", "onClick": "/infoInq/NoticeInput", "state": { "editMode": "update" }, "type":"default" },
       { "id": 3, "text": "삭제", "onClick": "deleteNotice", "type":"danger" }
     ],
     "referButtonGroup": [
       { "id": 1, "text": "목록", "onClick": "/infoInq/ReferenceList", "type": "normal" },
-      { "id": 2, "text": "수정", "onClick": "/infoInq/ReferenceInput", "state": { "id": "noticeId", "editMode": "update" }, "type":"default" },
+      { "id": 2, "text": "수정", "onClick": "/infoInq/ReferenceInput", "state": { "editMode": "update" }, "type":"default" },
       { "id": 3, "text": "삭제", "onClick": "deleteReference", "type":"danger" }
     ]
   },

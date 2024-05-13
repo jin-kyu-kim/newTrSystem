@@ -1,24 +1,22 @@
 import { useState, useEffect } from "react";
-import { useCookies } from "react-cookie";
 import "bootstrap/dist/css/bootstrap.min.css";
 import EmpCultHealthCostDetailPopJson from "./EmpCultHealthCostDetailPopJson.json";
 import ApiRequest from "../../utils/ApiRequest";
 import CustomEditTable from "../../components/unit/CustomEditTable";
 
-function EmpCultHealthCostDetailPop({value, ym}) {
-  const [cookies, setCookie] = useCookies(["userInfo", "deptInfo"]);
-  const sessionEmpId = cookies.userInfo.empId 
+function EmpCultHealthCostDetailPop({value, ym, disabled}) {
   
   const [values, setValues] = useState([]);
   const [param, setParam] = useState({});
 
-  const { keyColumn, queryId, tableColumns, masterColumns } = EmpCultHealthCostDetailPopJson;
+  const { keyColumn, queryId, tableColumns } = EmpCultHealthCostDetailPopJson;
 
   useEffect(() =>{
     setParam({
         ...param,
        queryId: queryId,
        empId: value?.empId,
+       clturPhstrnSeCd: value?.clturPhstrnSeCd,
        ym: ym
     })
 
@@ -48,8 +46,6 @@ function EmpCultHealthCostDetailPop({value, ym}) {
                     tmpElement.clturPhstrnSeCd = element.clturPhstrnSeCd;
                     tmpElement.actIem = element.actIem;
                     tmpElement.rm = element.rm;
-                    tmpElement.empId = value?.empId;
-                    tmpElement.sessionEmpId = sessionEmpId;
                     if(element.atchmnflId !== null){
                         tmpElement.atchmnflId = element.atchmnflId;
                         tmpElement.atchmnfl = [];
@@ -83,18 +79,6 @@ function EmpCultHealthCostDetailPop({value, ym}) {
     }
   };
 
-  // const onChangeValue = (changeValue) => {
-  //   setValues([...changeValue])
-  // }
-  //
-  // useEffect(() => {
-  //   updateClturPhstrnActct();
-  // }, [values])
-  //
-  // const updateClturPhstrnActct = async() =>{
-  //   await ApiRequest('/boot/financialAffairMng/updateClturPhstrnActct', values);
-  // }
-
   return (
       <div className="container">
           <h3 style={{fontSize: "20px"}}>문화체련비 상세청구내역 ({value?.empFlnm})</h3>
@@ -104,8 +88,7 @@ function EmpCultHealthCostDetailPop({value, ym}) {
               values={values}
               paging={true}
               onlyUpdate={true}
-              // masterDetail={masterColumns}
-              // handleData={onChangeValue}
+              noEdit={disabled}
           />
       </div>
   );

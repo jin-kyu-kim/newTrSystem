@@ -1177,6 +1177,7 @@
         WHERE 1=1
           AND CLM_YMD LIKE CONCAT(#{ym}, '%')
           AND EMP_ID = #{empId}
+          AND CLTUR_PHSTRN_SE_CD = #{clturPhstrnSeCd}
     </select>
 
     <!-- 문체비 지급 계산: 당월 입금금액 -->
@@ -1234,6 +1235,7 @@
             C.EMP_FLNM,
             C.YM,
             C.EXPENSE_TYPE,
+            C.CLTUR_PHSTRN_SE_CD,
             C.CYFD_AMT,
             C.CLM_AMT,
             C.DPST_AMT,
@@ -1246,6 +1248,7 @@
                 CONCAT('(', e.EMPNO, ')', ' ', e.EMP_FLNM) AS EMP_FLNM,
                 e.YM AS YM,
                 '문화비' AS EXPENSE_TYPE,
+                'VTW00901' AS CLTUR_PHSTRN_SE_CD,
                 IFNULL(cpac.CLTUR_CT_CYFD_AMT, 0) AS CYFD_AMT,
                 IFNULL(cpac.CLTUR_CT_CLM_AMT, 0) AS CLM_AMT,
                 IFNULL(cpac.CLTUR_CT_DPST_AMT, 0) AS DPST_AMT,
@@ -1274,6 +1277,7 @@
                 CONCAT('(', e.EMPNO, ')', ' ', e.EMP_FLNM) AS EMP_FLNM,
                 e.YM AS YM,
                 '체력단련비' AS EXPENSE_TYPE,
+                'VTW00902' AS CLTUR_PHSTRN_SE_CD,
                 IFNULL(cpac.FTNESS_TRNG_CT_CYFD_AMT, 0) AS CYFD_AMT,
                 IFNULL(cpac.FTNESS_TRNG_CT_CLM_AMT, 0) AS CLM_AMT,
                 IFNULL(cpac.FTNESS_TRNG_CT_DPST_AMT, 0) AS DPST_AMT,

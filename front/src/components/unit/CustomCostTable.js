@@ -1,37 +1,18 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "devextreme-react";
-import { parse, format, addMonths, subMonths } from 'date-fns';
+import { parse, format, addMonths } from 'date-fns';
 
 import ApiRequest from "../../utils/ApiRequest";
 import ProjectChangePopup from "../../pages/project/manage/ProjectChangePopup";
-import { Popup } from "devextreme-react";
-
-import DataGrid, {
-  Column,
-  SearchPanel,
-  Scrolling,
-  Summary,
-  TotalItem,
-  ColumnFixing
-} from "devextreme-react/data-grid";
-
 import { useModal } from "./ModalContext";
 
-const CustomCostTable = ({
-  columns,
-  values,
-  json,
-  ctrtYmd,
-  stbleEndYmd,
-  prjctId,
-  bgtMngOdr,
-  bgtMngOdrTobe,
-  deptId,
-  targetOdr, 
-  bizSttsCd, 
-  atrzLnSn
-}) => {
+import { Popup } from "devextreme-react";
+import DataGrid, {Column, SearchPanel, Scrolling, Summary, TotalItem, ColumnFixing} from "devextreme-react/data-grid";
+
+
+const CustomCostTable = (props) => {
+  const { columns, values, json, ctrtYmd, stbleEndYmd, prjctId, bgtMngOdr, bgtMngOdrTobe, deptId, targetOdr, bizSttsCd, atrzLnSn } = props;
 
   const navigate = useNavigate();
   const [period, setPeriod] = useState([]); //사업시작일, 사업종료일을 받아와서 월별로 나눈 배열을 담을 상태
@@ -42,6 +23,7 @@ const CustomCostTable = ({
   const [transformedData, setTransformedData] = useState([]);
   const editColumn = ["수정", "삭제"];
   const { handleOpen } = useModal();
+
   useEffect(() => {
     const deleteArray = [...json.pkColumns, ...json.nomalColumns, ...json.CdComboboxColumnNm];
     deleteArray.push("total");
@@ -53,7 +35,6 @@ const CustomCostTable = ({
     }
 
     const transformedData = Object.keys(temp).map((key) => {
-        // 키에서 연도와 월을 분리하고 형식을 변경합니다.
         const formattedKey = key.replace('년 ', '').replace('월', '');             
         return {
           id: formattedKey,
@@ -78,7 +59,6 @@ const CustomCostTable = ({
     const newSummaryColumns = periods.map(period => ({
       key: period, value: period, type: "sum", format: json.format
     }));
-    // 상태 업데이트 함수를 사용하여 summaryColumn 상태 업데이트
     setSummaryColumns(prevSummaryColumns => [...prevSummaryColumns, ...newSummaryColumns]);
   };
   
@@ -171,9 +151,10 @@ const CustomCostTable = ({
     })
   };
 
-  //TODO. fixed가 왜 동작하지 않는지...? 후...
+  /* 데이터 그리드 컬럼 랜더 */
   const gridRows = () => {
     const result = [];
+
     columns.map((column) => {
       result.push(
         <Column
@@ -191,6 +172,7 @@ const CustomCostTable = ({
         ></Column>     
       );
     });
+
     period.map((periodItem, index) => {
       result.push(
         <Column
@@ -199,12 +181,13 @@ const CustomCostTable = ({
           caption={periodItem}
           alignment={"center"}
           // visibility={"hidden"}
-          fixed={true}
+          fixed={false}
           format={json.popupNumberBoxFormat}
 
         ></Column>
       );
     });
+
     editColumn.map((column) => {
       result.push(
         <Column
@@ -222,6 +205,7 @@ const CustomCostTable = ({
         ></Column>  
       );
     });
+    
     return result;
   };
 
@@ -231,7 +215,7 @@ const CustomCostTable = ({
         ref={dataGridRef}
         keyExpr={json.keyColumn}
         id={"dataGrid"}
-        className={"table"}
+        // className={"table"}
         dataSource={values}
         showBorders={true}
         showColumnLines={true}
