@@ -40,7 +40,6 @@ const CustomModal = ({ open, close, message, onClick, isStepOne }) => {
             contentRender={() => (
                 <div>
                     <div style={{
-                        fontWeight: 'bold',
                         fontSize: '18px',
                         marginBottom: '10px'
                     }}>
