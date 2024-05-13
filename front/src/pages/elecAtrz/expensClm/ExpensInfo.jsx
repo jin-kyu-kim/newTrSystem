@@ -4,7 +4,7 @@ import { DateBox } from "devextreme-react/date-box";
 import ApiRequest from "utils/ApiRequest";
 import { useCookies } from "react-cookie";
 
-const ExpensInfo = ({onSendData, prjctId, data}) => {
+const ExpensInfo = ({onSendData, prjctId, prjctData, data}) => {
 
     const [ ctStlmSeCdList, setCtStlmSeCdList ] = useState([]);
     const [ bankCdList, setBankCdList ] = useState([]);
@@ -20,7 +20,7 @@ const ExpensInfo = ({onSendData, prjctId, data}) => {
         retrieveBankCd();
         retrieveExpensCdList();
         setExpensDate();
-    }, []);
+    }, [prjctData]);
 
     const retrieveCtStlmSeCd = async () => {
         
@@ -54,9 +54,15 @@ const ExpensInfo = ({onSendData, prjctId, data}) => {
     }
     
     const retrieveExpensCdList = async () => {
+
+        if(prjctData == undefined) {
+            return;
+        }
+
         const param = {
-            "queryId": "elecAtrzMapper.retrieveExpensCdByPrmpc",
-            prjctId: prjctId
+            "queryId": prjctData.prjctStleCd == "VTW01803" ? "elecAtrzMapper.retrieveExpensCdAll" : "elecAtrzMapper.retrieveExpensCdByPrmpc",
+            prjctId: prjctId,
+            prjctStleCd: prjctData.prjctStleCd
         }
 
         try {

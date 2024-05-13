@@ -160,6 +160,15 @@ const CultureHealthCostReg = (props) => {
         }
     }
 
+    const validateUser = () => {
+        const errors = [];
+        if (cookies.userInfo.empTyCd !== 'VTW00201') {
+            alert('등록이 불가능한 사용자입니다.')
+            errors.push('Invalid user');
+        }
+        return errors.length === 0;
+    };
+
     const validateFile = () => {
         let maxSize = 0;
         attachments.map((file) => {
@@ -239,7 +248,7 @@ const CultureHealthCostReg = (props) => {
     const handleSubmit = async() => {
         const confirmResult = window.confirm("등록하시겠습니까?");
         if (confirmResult) {
-            if (validateData() && validateFile()) {
+            if (validateData() && validateFile() && validateUser()) {
                 if(!initParam.clturPhstrnActCtSn){
                     try{
                         const formData = new FormData();

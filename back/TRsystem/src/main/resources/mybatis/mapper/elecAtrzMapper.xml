@@ -258,6 +258,14 @@
 		   AND PRJCT_ID = #{prjctId}
 	</select>
 	
+	<select id="retrieveExpensCdAll" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT cd.CD_NM
+		     , cd.CD_VALUE AS EXPENS_CD
+		  FROM CD cd
+  		 WHERE 1=1
+		   AND cd.UP_CD_VALUE = 'VTW045'
+	</select>
+	
 	<select id="retrieveOutordEmpPlan" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT 
 		    olp.PRJCT_ID,
