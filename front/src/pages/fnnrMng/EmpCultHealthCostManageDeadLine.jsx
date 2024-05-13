@@ -17,10 +17,12 @@ const EmpCultHealthCostManage = () => {
   const navigate = useNavigate();
   const { handleOpen } = useModal();
   let now = new Date();
+  let firstDayOfMonth = new Date( now.getFullYear(), now.getMonth() , 1 );
+  let lastMonth = new Date(firstDayOfMonth.setDate( firstDayOfMonth.getDate() - 1 )); // 전월 말일
   const [param, setParam] = useState({
     "empFlnm": null,
     "empno": null,
-    "clturPhstrnActMngYm": now.getFullYear()+('0' + (now.getMonth() + 1)).slice(-2),
+    "clturPhstrnActMngYm": lastMonth.getFullYear()+('0' + (lastMonth.getMonth() + 1)).slice(-2),
     "queryId": queryId
   });
   const [disabled, setDisabled] = useState();
@@ -56,7 +58,7 @@ const EmpCultHealthCostManage = () => {
     const response = await ApiRequest('/boot/common/commonSelect', [
       { tbNm: "CLTUR_PHSTRN_ACT_MNG" }, { clturPhstrnActMngYm: param.clturPhstrnActMngYm }
     ]);
-    setDisabled(response[0].ddlnYn === 'N');
+    setDisabled(response[0]?.ddlnYn === 'N');
   }
 
   const handleMove = () => {

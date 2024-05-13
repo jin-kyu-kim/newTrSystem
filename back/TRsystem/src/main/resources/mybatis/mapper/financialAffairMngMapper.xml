@@ -1163,7 +1163,8 @@
     <!-- 문체비 상세청구내역 팝업 -->
     <select id="retrieveClturPhstrnDetailList" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
-            c.CLTUR_PHSTRN_ACT_CT_SN
+            c.EMP_ID
+            , c.CLTUR_PHSTRN_ACT_CT_SN
             , c.CLM_AMT
             , c.CLTUR_PHSTRN_SE_CD
             , c.ACT_IEM
