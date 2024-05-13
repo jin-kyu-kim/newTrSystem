@@ -1,22 +1,22 @@
-import React from "react";
 import { TextBox } from 'devextreme-react';
 import Button from "devextreme-react/button";
 import TagBox from 'devextreme-react/tag-box';
-import NumberBox from 'devextreme-react/number-box';
 import SelectBox from "devextreme-react/select-box";
 import ToggleButton from 'pages/sysMng/ToggleButton';
+import NumberBox from 'devextreme-react/number-box';
+import React from "react";
 
 const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig }) => {
 
-    const {getCdList, isPrjctIdSelected, setIsPrjctIdSelected, hasError, chgPlaceholder, comboList, cdList,
-        expensCd, setExpensCd, setValidationErrors} = cellRenderConfig ?? {};
-    
-    if(col.cellType === 'button') {
-        return(<Button text={col.button.text} name={col.button.name} type={col.button.type}
+    const { getCdList, isPrjctIdSelected, setIsPrjctIdSelected, hasError, chgPlaceholder, comboList, cdList,
+        expensCd, setExpensCd, setValidationErrors } = cellRenderConfig ?? {};
+
+    if (col.cellType === 'button') {
+        return (<Button text={col.button.text} name={col.button.name} type={col.button.type}
             onClick={() => onBtnClick(col.button, props)} />)
 
     } else if (col.cellType === 'toggle') {
-        return ( <ToggleButton callback={handleYnVal} data={props} colData={col} /> );
+        return (<ToggleButton callback={handleYnVal} data={props} colData={col} />);
 
     } else if (col.cellType === 'selectBox') {
         return (
@@ -81,7 +81,7 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig }) =
         if (atchList != null) {
             return (<div>
                 {atchList.map((item, index) => (
-                    <div key={index} style={{whiteSpace: 'pre-wrap'}}>
+                    <div key={index} style={{ whiteSpace: 'pre-wrap' }}>
                         <a href={`/upload/${item.strgFileNm}`} download={item.realFileNm}>{item.realFileNm}</a>
                     </div>
                 ))}
@@ -90,11 +90,15 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig }) =
     } else if (col.cellType === 'numberBox') {
         return (
             <NumberBox
+                name={col.key}
                 format="#,##0"
+                value={props.data[col.key]}
+                placeholder={chgPlaceholder ? chgPlaceholder(col, props.data.cardUseSn) : col.placeholder}
+                style={{ backgroundColor: hasError(props.data.cardUseSn, col.key) ? '#FFCCCC' : '' }}
                 onValueChanged={(newValue) => {
                     props.data[col.key] = newValue.value
+                    setValidationErrors(prevErrors => prevErrors.filter(error => !(error.cardUseSn === props.data.cardUseSn && error.field === col.key)));
                 }}
-                value={props.data[col.key]}
             />
         )
     }
