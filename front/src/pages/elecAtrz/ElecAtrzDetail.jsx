@@ -245,7 +245,7 @@ const ElecAtrzDetail = () => {
                 ]
 
                 const response = aprvProcess(param).then((value) => {
-                    if(value > 0) {
+                    if(value.atrzLnSn > 0) {
                         // 단계 올리기
                         upNowAtrzLnSn(value);
                     } else {
