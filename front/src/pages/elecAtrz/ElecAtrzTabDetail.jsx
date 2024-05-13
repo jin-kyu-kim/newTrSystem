@@ -11,12 +11,8 @@ import ElecAtrzCtrtOutordHnfDetail from './ctrtInfo/ElecAtrzCtrtOutordHnfDetail'
 const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prjctData, onSendData }) => {
     const { vacDtl, clmColumns,  groupingColumn, groupingData, ctrtInfo } = electAtrzJson.electAtrzDetail;
     const [ data, setData ] = useState([]);
-
-
-    console.log("detailData 탭디테일!!", detailData);
-    console.log("ctrtTyCd 탭디테일!!", ctrtTyCd);
-    console.log("prjctData 탭디테일!!", prjctData);
-    console.log("sttsCd 탭디테일!!", sttsCd);
+    const [ ctrtData, setCtrtData ] = useState({})
+    const [ clmData, setClmData ] = useState({})
 
     /* ===================================  필요 데이터 조회  ====================================*/
     useEffect(() => {
@@ -172,6 +168,68 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
         );
     }
 
+
+
+    const handleCtrtData = (data) => {
+        if(Array.isArray(data)){
+            setCtrtData(prevData => ({
+                ...prevData,
+                arrayData: data
+            }));
+        }else if(typeof data === "object"){
+            setCtrtData(prevData => ({
+                ...prevData,
+                ...data
+            }));
+        }
+    }
+
+    const handleData = (data) => {
+        if(Array.isArray(data)){
+            setClmData(prevData => ({
+                ...prevData,
+                arrayData: data
+            }));
+        }else if(typeof data === "object"){
+            setClmData(prevData => ({
+                ...prevData,
+                ...data
+            }));
+        }
+    }
+
+
+    useEffect(()=>{
+        if(clmData.rate){
+
+            let ctrtItems = [];
+
+            ctrtData.arrayData.forEach((child)=>{
+                if(child.pay){
+                    child.pay.forEach((item)=>{
+                        if (item.ctrtYmd === clmData.giveYmd) {
+                            item.giveAmt = item.ctrtAmt + item.ctrtAmt * (parseFloat(clmData.rate)/100);  
+                            ctrtItems.push(item);
+                        }                      
+                    })
+                }             
+            })
+          
+            setClmData((pre)=>({
+                ...pre, 
+                ctrt : ctrtItems}));
+        }
+        
+    },[clmData.rate])
+
+
+    useEffect(()=>{
+        onSendData(clmData);
+    },[clmData.ctrt])
+
+
+
+    
     /* ================  전자결재유형코드에 따른 특수 컴포넌트 렌더링  =================*/
 
     const renderSpecialComponent = () => {
@@ -190,7 +248,7 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
                         <CtrtInfo ctrtInfo={ctrtInfo} data={data} ctrtTyCd={ctrtTyCd}/>
                         {((detailData.ctrtElctrnAtrzId && detailData.elctrnAtrzTySeCd === "VTW04914" && (ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd !== "VTW04908")) || ["VTW04909","VTW04910"].includes(detailData.elctrnAtrzTySeCd))
                         ? 
-                        <ElecAtrzCtrtInfoDetail data={detailData} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd } /> 
+                        <ElecAtrzCtrtInfoDetail data={detailData} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd } onSendData={handleCtrtData} /> 
                         : <ElecAtrzCtrtOutordHnfDetail data={detailData} sttsCd={sttsCd} prjctData={prjctData} prjctId={prjctId} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd } />}                   
                         </>
             default:
@@ -204,7 +262,7 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
                 && (detailData.elctrnAtrzTySeCd ==="VTW04914" ) 
                 // && (detailData.atrzDmndSttsCd)
                 && (
-                    <ElectGiveAtrzClm detailData={detailData} sttsCd={sttsCd} prjctId={prjctId} onSendData={onSendData} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd }/>
+                    <ElectGiveAtrzClm detailData={detailData} sttsCd={sttsCd} prjctId={prjctId} onSendData={handleData} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd }/>
                 )}
             {renderSpecialComponent()}
         </div>

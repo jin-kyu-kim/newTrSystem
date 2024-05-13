@@ -770,7 +770,7 @@ public class ElecAtrzDomain {
 					
 					
 					updateParams.add(0, paramList.get(0));	// 업데이트할 타겟 테이블
-					updateParams.add(1, paramList.get(1));	// 업데이트할 테이블의 내용z
+					updateParams.add(1, paramList.get(1));	// 업데이트할 테이블의 내용
 					
 					updateParam.put("elctrnAtrzId", paramList.get(2).get("elctrnAtrzId"));
 					updateParam.put("aprvrEmpId", aprvrEmpId);
@@ -908,10 +908,14 @@ public class ElecAtrzDomain {
 	 * @param elctrnAtrzId	전자결재ID
 	 * @return
 	 */
+	@Transactional
 	public static int insertGiveAtrz(Map<String, Object> giveAtrzParam, String elctrnAtrzId) {
 		System.out.println(giveAtrzParam);
 		int result = -1;
+		int uptResult = -1;
 		
+		Object ctrtObject = giveAtrzParam.get("ctrt");
+			
 		ArrayList<Map<String, Object>> insertParams = new ArrayList<>();
 		
 		Map<String, Object> tbParam = new HashMap<>();
@@ -922,7 +926,7 @@ public class ElecAtrzDomain {
 		infoParam.put("atrzTtl", giveAtrzParam.get("title"));
 		infoParam.put("stlmCn", giveAtrzParam.get("atrzCn"));
 		infoParam.put("elctrnAtrzId", elctrnAtrzId);
-//		infoParam.put("atchmnflId", giveAtrzParam.get("title"));
+//		infoParam.put("atchmnflId", giveAtrzParam.get("atchmnflId"));
 		infoParam.put("giveAmt", giveAtrzParam.get("giveAmt"));
 		infoParam.put("giveYmd", giveAtrzParam.get("giveYmd"));
 		infoParam.put("ctrtElctrnAtrzId", giveAtrzParam.get("ctrtElctrnAtrzId"));
@@ -937,7 +941,45 @@ public class ElecAtrzDomain {
 		try {
 			result = commonService.insertData(insertParams);
 			
+			if(result>0) {
+				
+				System.out.println("#### ctrtObject ####"+ctrtObject);
+				if(ctrtObject instanceof ArrayList) {
+					ArrayList<Map<String, Object>> ctrtInsertParams = (ArrayList<Map<String, Object>>) ctrtObject;
+					
+					System.out.println("#### ctrtInsertParams  ####"+ctrtInsertParams );
+					
+					for(int i = 0; i < ctrtInsertParams.size(); i++) {
+						Map<String, Object> ctrtItem = ctrtInsertParams.get(i); // i번째 아이템을 가져옵니다.
+						
+						System.out.println("#### ctrtItem  ####"+ ctrtItem);
+						
+						Map<String, Object> ctrtTbParam = new HashMap<>();
+						Map<String, Object> updateParam = new HashMap<>();
+						List<Map<String, Object>> updateParams = new ArrayList<>();
+						Map<String, Object> conditionParam = new HashMap<>();
+						
+						
+						ctrtTbParam.put("tbNm", "ENTRPS_CTRT_DTL_CND");
+						
+						updateParam.put("giveAmt", ctrtItem.get("giveAmt"));
+						
+						conditionParam.put("elctrnAtrzId", ctrtItem.get("elctrnAtrzId"));
+						conditionParam.put("entrpsCtrtDtlSn", ctrtItem.get("entrpsCtrtDtlSn"));
+						conditionParam.put("giveOdrCd", ctrtItem.get("giveOdrCd"));
+						conditionParam.put("ctrtYmd", ctrtItem.get("ctrtYmd"));
+						
+						updateParams.add(0,ctrtTbParam);
+						updateParams.add(1,updateParam);
+						updateParams.add(2,conditionParam);
+						
+						uptResult = commonService.updateData(updateParams);					
+					}
+				}
+			}
+											
 		} catch (Exception e) {
+			System.err.println("Error occurred: " + e.getMessage());
 			return result;
 		}
 		
