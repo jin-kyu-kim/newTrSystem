@@ -1,13 +1,13 @@
 spring:
+  servlet:
+    multipart:
+      max-file-size: 5GB
+      max-request-size: 5GB
   datasource:
     url: jdbc:log4jdbc:mysql://121.65.128.115:33306/nwTr # jdbc:mysql://192.168.0.99:3306/nwTr #
     username: trs
     password: Vtw2023!
     driver-class-name:  net.sf.log4jdbc.sql.jdbcapi.DriverSpy #com.mysql.cj.jdbc.Driver
-  servlet:
-    multipart:
-      max-file-size: 2GB  # 최대 파일 크기
-      max-request-size: 2GB
   mail:
     host: smtp.office365.com
     port: 587
@@ -29,7 +29,7 @@ mybatis:
     jdbc-type-for-null: varchar
     default-fetch-size: 500
 server:
-  port: 8090
+  port: 8080
   address: 0.0.0.0
 logging:
   level:
@@ -52,3 +52,6 @@ jwt:
   prefix: "Bearer "
   secret: eyJhbGciOiJIUzUxMiJ9eyJzdWIiOiJ1c2VyIn0I2qOfhAZMGSH1pCecUH5sV2Lg2pSWNQMPzXsMcne6NJ1SlkBoirhGAmKfTYNcRyhu6nQtRzgAd6VXyttoX9A
   tokenExpirationTime: 3600
+
+
+

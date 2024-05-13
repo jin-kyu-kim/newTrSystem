@@ -207,6 +207,7 @@
                         AND EXPENS_CD BETWEEN 'VTW04501' AND 'VTW04528'
                     </if>
                 </if>
+                AND (SELECT IFNULL(MAX(PBP.BGT_MNG_ODR),1) FROM PRJCT_BGT_PRMPC PBP WHERE PBP.PRJCT_ID = A.PRJCT_ID AND PBP.ATRZ_DMND_STTS_CD = 'VTW03303')
                  ) AS USE_AMT
              FROM DUAL
             ) T

@@ -1,8 +1,5 @@
 package com.trsystem.common.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trsystem.common.service.CommonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -47,39 +44,5 @@ public class CommonController {
     @PostMapping(value = "/boot/common/queryIdSearch")
     public List<Map<String, Object>> queryIdSearch(@RequestBody Map<String, Object> param){
         return commonService.queryIdSearch(param);
-    }
-
-    @PostMapping(value = "/boot/common/queryIdDataControl")
-    public int queryIdDataControl(@RequestBody Map<String, Object> param){
-        return commonService.queryIdDataControl(param);
-    }
-
-    @PostMapping(value = "/boot/common/insertlongText", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public int longTextInsert(@RequestPart(required = false) List<MultipartFile> attachments,
-                              @RequestPart(required = false) String tbNm, @RequestPart String data,
-                              @RequestPart(required = false) String deleteFiles,
-                              @RequestPart(required = false) String idColumn) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> mapData = null;
-        if( data != null) {
-        	mapData = mapper.readValue(data,Map.class);
-        }
-        Map<String, Object> tbNmData = mapper.readValue(tbNm,Map.class);
-
-        Map<String, Object> idData = null;
-        List<Map<String, Object>> deleteFile = null;
-
-        if(idColumn != null){
-            idData = mapper.readValue(idColumn,Map.class);
-            if(deleteFiles !=null) {
-            	deleteFile = mapper.readValue(deleteFiles, new TypeReference<List<Map<String, Object>>>() {});
-            }
-        }
-        return commonService.insertFile(tbNmData, mapData, attachments, idData, deleteFile);
-    }
-
-    @PostMapping(value = "/boot/common/deleteWithFile")
-    public int deleteWithFile(@RequestBody Map<String, Object> params){
-        return commonService.deleteFile(params);
     }
 }
