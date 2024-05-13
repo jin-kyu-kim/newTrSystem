@@ -1,9 +1,6 @@
 package com.trsystem.financialAffairMng.domain;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
@@ -77,24 +74,16 @@ private static CommonService commonService;
 	}
 
 	public static List<Map<String, Object>> updateClturPhstrnActct(List<Map<String, Object>> params) {
-		Map<String, Object> updateClturPhstrnActctRegMap = new HashMap<>();
 
-		for(int i = 0; i < params.size(); i++){
-			updateClturPhstrnActctRegMap.clear();
+		Map<String, Object> changedValue = params.get(1);
+		Map<String, Object> keyValue = (Map<String, Object>) params.get(2).get("clturPhstrnActCtSn,empId");
 
-			updateClturPhstrnActctRegMap.put("queryId", "financialAffairMngMapper.updateClturPhstrnActctReg");
-			updateClturPhstrnActctRegMap.put("state", "UPDATE");
-			updateClturPhstrnActctRegMap.put("clturPhstrnSeCd", params.get(i).get("clturPhstrnSeCd"));
-			updateClturPhstrnActctRegMap.put("clmAmt", params.get(i).get("clmAmt"));
-			updateClturPhstrnActctRegMap.put("rm", params.get(i).get("rm"));
-			updateClturPhstrnActctRegMap.put("clturPhstrnActCtSn", params.get(i).get("clturPhstrnActCtSn"));
-			updateClturPhstrnActctRegMap.put("empId", params.get(i).get("empId"));
-
-			commonService.queryIdDataControl(updateClturPhstrnActctRegMap);
-		}
-
-
-
+		// 등록 테이블 업데이트
+		List<Map<String, Object>> updateParam = new ArrayList<>();
+		updateParam.add(params.get(0));
+		updateParam.add(changedValue);
+		updateParam.add(keyValue);
+		commonService.updateData(updateParam);
 
 		return null;
 	}
