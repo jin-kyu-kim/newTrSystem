@@ -145,10 +145,12 @@ const EmpCultHealthCostManage = () => {
   }
 
   const closeManagePopup = () => {
+    pageHandle();
     setIsManagePopupVisible(false);
   };
 
   const closeDetailPopup = () => {
+    pageHandle();
     setIsDetailPopupVisible(false);
   };
 
