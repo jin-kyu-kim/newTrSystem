@@ -29,6 +29,9 @@ function AuthProvider(props) {
       setCookie("userAuth", result.data.data.authorities);
       setCookie("userInfo", result.data.data.userInfo);
       setCookie("deptInfo", result.data.data.deptInfo);
+      localStorage.setItem("userAuth", result.data.data.authorities);
+      localStorage.setItem("userInfo", result.data.data.userInfo);
+      localStorage.setItem("deptInfo", result.data.data.deptInfo);
       if(result.data.data.userInfo.intlPwsdYn && result.data.data.userInfo.intlPwsdYn === 'Y'){
         await setIntlPwsdYn(result.data.data.userInfo.empId, 'N');
         navigate("/infoInq/empDetailInfo");
@@ -53,6 +56,9 @@ function AuthProvider(props) {
     setCookie("userAuth", result.authorities);
     setCookie("userInfo", result.userInfo);
     setCookie("deptInfo", result.deptInfo);
+    localStorage.setItem("userAuth", result.data.data.authorities);
+    localStorage.setItem("userInfo", result.data.data.userInfo);
+    localStorage.setItem("deptInfo", result.data.data.deptInfo);
   })
 
   return (
