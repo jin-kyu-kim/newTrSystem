@@ -52,19 +52,40 @@ public class IndvdlClmController {
     }
 
     /* =================================박지환_작업================================= */
-    // 프로젝트근무시간저장
-    @PostMapping(value = "/boot/indvdlClm/insertPrjctMmAply" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public List<Map<String, Object>> insertPrjctMmAply (@RequestPart(required = false) String insertWorkHourList,
-                                                        @RequestPart(required = false) String deleteWorkHourList) throws JsonProcessingException {
+    // 프로젝트근무시간임시저장
+    @PostMapping(value = "/boot/indvdlClm/insertPrjctMmAplyTemp" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public List<Map<String, Object>> insertPrjctMmAplyTemp (@RequestPart(required = false) String insertPrjctMmTempList) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
 
-        List<Map<String, Object>> insertWorkHourMap = new ArrayList<>();
-        List<Map<String, Object>> deleteWorkHourMap = new ArrayList<>();
+        List<Map<String, Object>> insertPrjctMmTempListValue = new ArrayList<>();
+//
+        insertPrjctMmTempListValue = mapper.readValue(insertPrjctMmTempList,ArrayList.class);
 
-        insertWorkHourMap = mapper.readValue(insertWorkHourList,ArrayList.class);
-        deleteWorkHourMap = mapper.readValue(deleteWorkHourList,ArrayList.class);
+        return IndvdlClmDomain.insertPrjctMmAplyTemp(insertPrjctMmTempListValue);
+    }
 
-        return IndvdlClmDomain.insertPrjctMmAply(insertWorkHourMap, deleteWorkHourMap);
+    // 프로젝트근무시간삭제
+    @PostMapping(value = "/boot/indvdlClm/deletePrjctMmAply" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public List<Map<String, Object>> deletePrjctMmAply (@RequestPart(required = false) String deletePrjctMmList) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+
+        List<Map<String, Object>> deletePrjctMmListValue = new ArrayList<>();
+//
+        deletePrjctMmListValue = mapper.readValue(deletePrjctMmList,ArrayList.class);
+
+        return IndvdlClmDomain.deletePrjctMmAply(deletePrjctMmListValue);
+    }
+
+    // 프로젝트근무시간승인요청
+    @PostMapping(value = "/boot/indvdlClm/insertPrjctMmAply" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public List<Map<String, Object>> insertPrjctMmAply (@RequestPart(required = false) String insertWorkHourList) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+
+        List<Map<String, Object>> insertWorkHourListValue = new ArrayList<>();
+
+        insertWorkHourListValue = mapper.readValue(insertWorkHourList,ArrayList.class);
+
+        return IndvdlClmDomain.insertPrjctMmAply(insertWorkHourListValue);
     }
 
     // 프로젝트근무시간요청취소

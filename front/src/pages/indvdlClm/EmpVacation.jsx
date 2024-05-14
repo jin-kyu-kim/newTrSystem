@@ -566,7 +566,7 @@ const EmpVacation = () => {
                 })
                 selectData(searchVcatnListParam);
             } else {
-                alert(response.data);
+                handleOpen(response.data);
             }
 
         } catch (error) {
