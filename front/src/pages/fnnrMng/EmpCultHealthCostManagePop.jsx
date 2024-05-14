@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import EmpCultHealthCostManagePopJson from "./EmpCultHealthCostManagePopJson.json";
 import ApiRequest from "../../utils/ApiRequest";
-import CustomTable from "components/unit/CustomTable";
+import CustomEditTable from "../../components/unit/CustomEditTable";
 
 function EmpCultHealthCostManagePop({value, year}) {
   const [values, setValues] = useState([]);
@@ -40,11 +40,12 @@ function EmpCultHealthCostManagePop({value, year}) {
   return (
       <div className="container">
           <h3 style={{fontSize: "20px", marginBottom:"20px"}}>문화체련비 현황 ({value?.empFlnm})</h3>
-          <CustomTable
+          <CustomEditTable
               keyColumn={keyColumn}
               columns={tableColumns}
               values={values}
               paging={true}
+              noEdit={true}
           />
       </div>
   );
