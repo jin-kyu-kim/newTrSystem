@@ -118,8 +118,10 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                 {...rowEventHandlers}
                 className='editGridStyle'
                 keyExpr={keyColumn}
-                dataSource={values}
                 showBorders={true}
+                showColumnLines={true}
+                keyboardNavigation={{enabled: false}}
+                dataSource={values}
                 noDataText={noDataText}
                 focusedRowEnabled={true}
                 columnAutoWidth={true}

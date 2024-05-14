@@ -30,7 +30,9 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig }) =
                     props.data[col.key] = newValue.value[col.valueExpr]
 
                     if (col.key === 'prjctId') {
+                        props.data['prjctMngrEmpId'] = newValue.value['prjctMngrEmpId'] // 결재자 추가
                         getCdList(newValue.value, props.data.cardUseSn);
+
                         setIsPrjctIdSelected(prevStts => ({
                             ...prevStts,
                             [props.data.cardUseSn]: !!newValue.value
@@ -99,6 +101,7 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig }) =
                     props.data[col.key] = newValue.value
                     setValidationErrors(prevErrors => prevErrors.filter(error => !(error.cardUseSn === props.data.cardUseSn && error.field === col.key)));
                 }}
+                
             />
         )
     }
