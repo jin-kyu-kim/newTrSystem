@@ -17,7 +17,6 @@ import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material'
 // npm install date-fns
 import { isSaturday, isSunday, startOfMonth, endOfMonth, addMonths, addDays } from 'date-fns'
 
-
 // 랜덤채번 import
 import uuid from "react-uuid";
 
@@ -28,7 +27,6 @@ import axios from "axios";
 import { useModal } from "../../components/unit/ModalContext";
 import CustomTable from "components/unit/CustomTable";
 import ApprovalPopup from "components/unit/ApprovalPopup"
-import AutoCompleteProject from "components/unit/AutoCompleteProject";
 import EmpVacationCanclePopup from "pages/indvdlClm/EmpVacationCanclePopup";
 import EmpVacationJson from "pages/indvdlClm/EmpVacationJson.json"
 import EmpVacationAttchList from "pages/indvdlClm/EmpVacationAttchList"

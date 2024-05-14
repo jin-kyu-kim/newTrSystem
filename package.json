@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@fortawesome/free-solid-svg-icons": "^6.5.2",
+    "@fortawesome/react-fontawesome": "^0.2.0",
+    "print-js": "^1.6.0",
+    "read-excel-file": "^5.8.1",
+    "xlsx": "^0.18.5"
+  }
+}
