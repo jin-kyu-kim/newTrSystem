@@ -56,6 +56,9 @@ function AuthProvider(props) {
     setCookie("userAuth", result.authorities);
     setCookie("userInfo", result.userInfo);
     setCookie("deptInfo", result.deptInfo);
+    localStorage.setItem("userAuth", result.data.data.authorities);
+    localStorage.setItem("userInfo", result.data.data.userInfo);
+    localStorage.setItem("deptInfo", result.data.data.deptInfo);
   })
 
   return (
