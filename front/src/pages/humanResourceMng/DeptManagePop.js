@@ -16,8 +16,9 @@ const DeptManagePop = ({callBack,data,deptId,deptNm}) => {
   const [deptAptParam, setDeptAptParam] = useState({});   //발령용 정보
   const [deptHnfParam, setDeptHnfParam] = useState({});   //직책변경 및 삭제용
   const [values, setValues] = useState([]);      //우측 발령할 사원정보 데이터
-  const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
-  const empId = cookies.userInfo.empId;     //현재 로그인중인 사원id
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const userAuth = JSON.parse(localStorage.getItem("userAuth"));
+  const empId = userInfo.empId;     //현재 로그인중인 사원id
   const gnfdDate = moment().format('YYYYMM') //현재 년월
   const date = new Date();
   const now =  date.toISOString().split("T")[0] +" " +date.toTimeString().split(" ")[0]; //등록일시 (Timstamp)
