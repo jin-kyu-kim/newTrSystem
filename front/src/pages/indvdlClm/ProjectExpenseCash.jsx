@@ -52,7 +52,9 @@ const ProjectExpenseCash = (props) => {
             queryId: value[0].prjctStleCd === 'VTW01802' ? "elecAtrzMapper.retrieveExpensCdByPrmpc"
                 : "elecAtrzMapper.retrieveExpensCdAll"
         })
-
+        setValue(prevVal => ({
+            ...prevVal, prjctMngrEmpId: value[0].prjctMngrEmpId
+        }));
     }, [value[0].prjctId]);
 
     const handleChgValue = (data) => {
