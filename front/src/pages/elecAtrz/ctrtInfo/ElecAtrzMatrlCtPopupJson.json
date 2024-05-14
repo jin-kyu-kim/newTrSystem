@@ -13,12 +13,12 @@
                             },
                         "valueExpr" : "expectCtrtEntrpsNm",
                         "displayExpr": "expectCtrtEntrpsNm",
-                        "values" : ["cntrctamount","matrlCtSn","dlvgdsEntrpsNm","dtlCn","expectCtrtEntrpsNm","prductNm","prjctId","qy","tot","untpc"],
+                        "values" : ["ctrtAmt","matrlCtSn","dlvgdsEntrpsNm","dtlCn","expectCtrtEntrpsNm","prductNm","prjctId","qy","tot","untpc"],
                         "name" : "expectCtrtEntrpsNm"
                         }
             },
-            "cntrctamount": {
-                "name": "cntrctamount",
+            "ctrtAmt": {
+                "name": "ctrtAmt",
                 "type": "NumberBox",
                 "label": "가용금액",
                 "placeholder": "가용금액",

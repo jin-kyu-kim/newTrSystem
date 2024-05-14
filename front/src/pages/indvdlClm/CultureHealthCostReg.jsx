@@ -38,6 +38,7 @@ const CultureHealthCostReg = (props) => {
     const deleteFiles = useRef([{tbNm: "ATCHMNFL"}]);
     const [selectedItem, setSelectedItem] = useState(null);
     let selectedClmAmt = useRef(0);
+    let selectedClturPhstrnSeCd = useRef(null);
     let now = new Date();
     const Json = CultureHealthCostJson;
     const {labelValue} = Json;
@@ -307,9 +308,10 @@ const CultureHealthCostReg = (props) => {
                         },
                     })
                     if (response.status === 200) {
-                        if(selectedClmAmt.current !== initParam.clmAmt){
+                        if(selectedClmAmt.current !== initParam.clmAmt || selectedClturPhstrnSeCd !== initParam.clturPhstrnActCtSn){
                             let param = initParam;
                             param.selectedClmAmt = selectedClmAmt.current;
+                            param.selectedClturPhstrnSeCd = selectedClturPhstrnSeCd.current;
                             await ApiRequest('/boot/indvdlClm/editClturPhstrnActCt', param);
                         }
                         deleteFiles.current = [{tbNm: "ATCHMNFL"}];
@@ -357,6 +359,7 @@ const CultureHealthCostReg = (props) => {
     const onUpdateClick = async() => {
         deleteFiles.current = [{tbNm: "ATCHMNFL"}];
         selectedClmAmt.current = selectedItem.clmAmt;
+        selectedClturPhstrnSeCd.current = selectedItem.clturPhstrnSeCd;
         setInitParam(selectedItem);
         for(let i = 0; i < selectedItem.atchmnfl.length; i++){
             deleteFiles.current.push({ atchmnflId: selectedItem.atchmnfl[i].atchmnflId,

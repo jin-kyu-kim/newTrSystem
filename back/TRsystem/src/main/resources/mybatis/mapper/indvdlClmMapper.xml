@@ -664,48 +664,124 @@
     </select>
 
 
-    <!-- 휴가배정관리수정_(회계휴가_공가) -->
+    <!-- 휴가배정관리수정_(회계휴가_공가 승인) -->
     <update id="retrieveVcatnAltmntMngMdfcn" parameterType="map">
         /* indvdlClmMapper.retrieveVcatnAltmntMngMdfcn */
         UPDATE
-            VCATN_MNG
+            VCATN_MNG 	MNG1
+            ,(
+                SELECT
+                    USE_DAYCNT + #{newDaycnt} AS NEW_DAYCNT
+                    ,VCATN_REMNDR_DAYCNT - #{newDaycnt} AS NEW_VCATN_REMNDR_DAYCNT
+                    ,PBLEN_VCATN_USE_DAYCNT + #{newPblenVcatnUseDaycnt} AS NEW_PBLEN_VCATN_USE_DAYCNT
+                FROM VCATN_MNG
+                WHERE VCATN_YR = #{vcatnYr}
+                AND EMP_ID = #{empId}
+            )	        MNG2
         SET
-            MDFCN_DT 					= SYSDATE()						/* 수정일시 */
-            ,MDFCN_EMP_ID 				= #{mdfcnEmpId}					/* 수정직원ID */
-            <if test="pblenVcatnUseDaycnt == null or pblenVcatnUseDaycnt.equals('')">
-                ,USE_DAYCNT					= #{useDaycnt}              /* 사용일수 */
-                ,VCATN_REMNDR_DAYCNT	    = #{vcatnRemndrDaycnt}      /* 휴가잔여일수 */
+            MDFCN_DT = SYSDATE()			/* 수정일시 */
+            ,MDFCN_EMP_ID = #{mdfcnEmpId}	/* 수정직원ID */
+            <if test="newPblenVcatnUseDaycnt == null or newPblenVcatnUseDaycnt.equals('')">
+                ,MNG1.USE_DAYCNT = MNG2.NEW_DAYCNT							/* 사용일수 */
+                ,MNG1.VCATN_REMNDR_DAYCNT = MNG2.NEW_VCATN_REMNDR_DAYCNT	/* 휴가잔여일수 */
             </if>
-            <if test="pblenVcatnUseDaycnt != null and !pblenVcatnUseDaycnt.equals('')">
-                ,PBLEN_VCATN_USE_DAYCNT	= #{pblenVcatnUseDaycnt}		/* 공적휴가사용일수 */
+            <if test="newPblenVcatnUseDaycnt != null and !newPblenVcatnUseDaycnt.equals('')">
+                ,PBLEN_VCATN_USE_DAYCNT	= MNG2.NEW_PBLEN_VCATN_USE_DAYCNT	/* 공적휴가사용일수 */
             </if>
-        WHERE EMP_ID = #{empId}
-        AND VCATN_YR = #{vcatnYr}
-        <if test="newVcatnYn != null and !newVcatnYn.equals('')">
-            AND NEW_VCATN_YN = #{newVcatnYn}
-        </if>
+        WHERE MNG1.VCATN_YR = #{vcatnYr}
+        AND MNG1.EMP_ID = #{empId}
     </update>
 
-    <!-- 휴가배정관리수정_(신규휴가) -->
+    <!-- 휴가배정관리수정_(신규휴가 승인) -->
     <update id="retrieveNewVcatnAltmntMngMdfcn" parameterType="map">
         /* indvdlClmMapper.retrieveNewVcatnAltmntMngMdfcn */
         UPDATE
-            VCATN_MNG
+            VCATN_MNG 	MNG1
+            ,(
+                SELECT
+                    NEW_USE_DAYCNT + #{newDaycnt} AS NEW_DAYCNT
+                    ,NEW_REMNDR_DAYCNT - #{newDaycnt} AS NEW_VCATN_REMNDR_DAYCNT
+                FROM VCATN_MNG
+                WHERE VCATN_YR = #{vcatnYr}
+                AND EMP_ID = #{empId}
+                AND NEW_VCATN_YN = #{newVcatnYn}
+            )	        MNG2
         SET
-            NEW_USE_DAYCNT	            = #{newUseDaycnt}				/* 신규사용일수 */
-            ,NEW_REMNDR_DAYCNT	        = #{newRemndrDaycnt}			/* 신규잔여일수 */
-            ,MDFCN_DT 					= SYSDATE()						/* 수정일시 */
-            ,MDFCN_EMP_ID 				= #{mdfcnEmpId}					/* 수정직원ID */
-        WHERE EMP_ID = #{empId}
-        AND VCATN_YR = #{vcatnYr}
+            MDFCN_DT = SYSDATE()									/* 수정일시 */
+            ,MDFCN_EMP_ID = #{mdfcnEmpId}							/* 수정직원ID */
+            ,MNG1.NEW_USE_DAYCNT = MNG2.NEW_DAYCNT					/* 신규사용일수 */
+            ,MNG1.NEW_REMNDR_DAYCNT = MNG2.NEW_VCATN_REMNDR_DAYCNT	/* 신규잔여일수 */
+        WHERE MNG1.EMP_ID = #{empId}
+        AND MNG1.NEW_VCATN_YN = #{newVcatnYn}
     </update>
 
 
+    <!-- 휴가배정관리수정_(회계휴가_공가 취소승인) -->
+    <update id="updateVcatnAltmntMngCnclMdfcn" parameterType="map">
+        /* indvdlClmMapper.updateVcatnAltmntMngCnclMdfcn */
+        UPDATE
+            VCATN_MNG 	MNG1
+            ,(
+                SELECT
+                    USE_DAYCNT - #{newDaycnt} AS NEW_DAYCNT
+                    ,VCATN_REMNDR_DAYCNT + #{newDaycnt} AS NEW_VCATN_REMNDR_DAYCNT
+                    ,PBLEN_VCATN_USE_DAYCNT - #{newPblenVcatnUseDaycnt} AS NEW_PBLEN_VCATN_USE_DAYCNT
+                FROM VCATN_MNG
+                WHERE VCATN_YR = #{vcatnYr}
+                AND EMP_ID = #{empId}
+            )	        MNG2
+        SET
+            MDFCN_DT = SYSDATE()			/* 수정일시 */
+            ,MDFCN_EMP_ID = #{mdfcnEmpId}	/* 수정직원ID */
+            <if test="newPblenVcatnUseDaycnt == null or newPblenVcatnUseDaycnt.equals('')">
+                ,MNG1.USE_DAYCNT = MNG2.NEW_DAYCNT							/* 사용일수 */
+                ,MNG1.VCATN_REMNDR_DAYCNT = MNG2.NEW_VCATN_REMNDR_DAYCNT	/* 휴가잔여일수 */
+            </if>
+            <if test="newPblenVcatnUseDaycnt != null and !newPblenVcatnUseDaycnt.equals('')">
+                ,PBLEN_VCATN_USE_DAYCNT	= MNG2.NEW_PBLEN_VCATN_USE_DAYCNT	/* 공적휴가사용일수 */
+            </if>
+        WHERE MNG1.VCATN_YR = #{vcatnYr}
+        AND MNG1.EMP_ID = #{empId}
+    </update>
+
+
+    <!-- 휴가배정관리수정_(신규휴가 취소승인) -->
+    <update id="updateNewVcatnAltmntMngCnclMdfcn" parameterType="map">
+        /* indvdlClmMapper.updateNewVcatnAltmntMngCnclMdfcn */
+        UPDATE
+            VCATN_MNG 	MNG1
+            ,(
+                SELECT
+                    NEW_USE_DAYCNT - #{newDaycnt} AS NEW_DAYCNT
+                    ,NEW_REMNDR_DAYCNT + #{newDaycnt} AS NEW_VCATN_REMNDR_DAYCNT
+                FROM VCATN_MNG
+                WHERE EMP_ID = #{empId}
+                AND NEW_VCATN_YN = #{newVcatnYn}
+            )	        MNG2
+        SET
+            MDFCN_DT = SYSDATE()									/* 수정일시 */
+            ,MDFCN_EMP_ID = #{mdfcnEmpId}							/* 수정직원ID */
+            ,MNG1.NEW_USE_DAYCNT = MNG2.NEW_DAYCNT					/* 신규사용일수 */
+            ,MNG1.NEW_REMNDR_DAYCNT = MNG2.NEW_VCATN_REMNDR_DAYCNT	/* 신규잔여일수 */
+        WHERE MNG1.EMP_ID = #{empId}
+        AND MNG1.NEW_VCATN_YN = #{newVcatnYn}
+    </update>
+
+
+    <!-- 전자결재 MAX ROW 조회-->
     <select id="retrieveElctrnAtrzCnt" parameterType="map" resultType="com.trsystem.LowerHashMap">
         /* indvdlClmMapper.retrieveElctrnAtrzCnt */
         SELECT *
         FROM ELCTRN_ATRZ
     </select>
+
+    <!-- 휴가취소결재수정 -->
+    <update id="updateElctrnAtrzCncl" parameterType="map">
+        /* indvdlClmMapper.updateElctrnAtrzCncl */
+        UPDATE ELCTRN_ATRZ
+        SET ATRZ_DMND_STTS_CD = 'VTW03705'
+        WHERE ELCTRN_ATRZ_ID = #{elctrnAtrzId}
+    </update>
 
 
     <!-- =================================박지환_작업================================= -->

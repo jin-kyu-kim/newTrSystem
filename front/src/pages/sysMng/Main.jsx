@@ -122,17 +122,18 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
     };
 
     const onCellClick = (e) => {  //TR 입력 현황 테이블 클릭
-        if(0 <= e.columnIndex && e.columnIndex < 4 ){  //근무시간페이지로 이동
-            navigate("/indvdlClm/EmpWorkTime", 
+        if(0 <= e.columnIndex && e.columnIndex < 4 ){  
+            navigate("/indvdlClm/EmpWorkTime", //근무시간페이지로 이동
                     {state: { id: e.key }})
-        }else{                      //프로젝트비용페이지로 이동
-            navigate("/indvdlClm/ProjectExpense", 
+        }else{                      
+            navigate("/indvdlClm/ProjectExpense", //프로젝트비용페이지로 이동
                     {state: { id: e.key }})
         }
         
     };
 
     const onAplyRowClick = (e) => {   //결재 신청 현황 테이블 클릭 
+          console.log("eee데이터", e);
           if(e.data.tySe === "프로젝트 비용"){ //프로젝트비용
                   navigate("/indvdlClm/ProjectExpense", 
                  {state: {id : e.data.id }})
@@ -146,16 +147,16 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
     };
 
     const onAtrzRowClick = (e) => {   //결재 리스트 테이블 클릭
-      console.log("결재리스트 데이터",e);
-      if(e.data.tySe === "프로젝트 비용"){ //프로젝트비용
-        navigate("/indvdlClm/ProjectExpense", 
-       {state: {id : e.data.id }})
-      }else if(e.data.tySe === "근무시간"){ //근무시간 현황
-        navigate("/indvdlClm/EmpWorkTime", 
-        {state: {id : e.data.id }})   
+      console.log("eee데이터", e);
+      if(e.data.tySe === "프로젝트 비용"){ //프로젝트비용 (프로젝트시간비용승인)
+        navigate("/project/ProjectHrCtAprvDetail", 
+       {state: {prjctId : e.data.id }})
+      }else if(e.data.tySe === "근무시간"){ //근무시간 현황 (프로젝트시간비용승인)
+        navigate("/project/ProjectHrCtAprvDetail", 
+        {state: {prjctId : e.data.id }})   
       }else if(e.data.tySe === "프로젝트 승인"){    //프로젝트 승인페이지(이동전 데이터 조회)
         projectSearch(e.data.id)
-      }else if(e.data.elctrnAtrzTySeCd.startsWith("VTW049")){    //기타 전자결재 내역
+      }else if(e.data.aprpvrId.startsWith("VTW049")){    //기타 전자결재 내역
         navigate("/elecAtrz/ElecAtrzDetail", 
         {state: {data : {elctrnAtrzId: e.data.id, elctrnAtrzTySeCd: e.data.elctrnAtrzTySeCd, title: e.data.title} }})   
       }

@@ -9,14 +9,17 @@ import {useCookies} from "react-cookie";
 function CheckAuth(isPrivate){
     // 토큰이 저장된 상태를 검사하는 로직
     const token = localStorage.getItem('token');
-    const [cookies] = useCookies(["userInfo", "userAuth","deptInfo"]);
+    // const [cookies] = useCookies(["userInfo", "userAuth","deptInfo"]);
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    const userAuth = JSON.parse(localStorage.getItem("userAuth"));
+    const deptInfo = JSON.parse(localStorage.getItem("deptInfo"));
 
-    if(token && isPrivate && cookies.userAuth !== undefined){
-        if(cookies.userAuth.find(item => item === "VTW04801")){
+    if(token && isPrivate && userInfo){
+        if(userAuth.find(item => item === "VTW04801")){
             return "TRUE";
         }
 
-        const isPrivateFound = cookies.userAuth.some(item => item === isPrivate);
+        const isPrivateFound = true;//userAuth.some(item => item === isPrivate);
         if(isPrivateFound){
             return "TRUE";
         }else{

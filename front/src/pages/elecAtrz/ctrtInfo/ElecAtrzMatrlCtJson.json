@@ -5,7 +5,7 @@
     "insertButton" : "재료비 추가",
     "tableColumns": [
       { "key": "prductNm", "value": "제품명" },
-      { "key": "cntrctamount", "value": "가용금액", "currency": true },
+      { "key": "ctrtAmt", "value": "가용금액", "currency": true },
       { "key": "totAmt", "value": "총 사용액", "currency": true },
       { "value": "선금",
         "subColumns": [
@@ -27,7 +27,7 @@
     ],
     "summaryColumn": [
       {
-        "key": "cntrctamount",
+        "key": "ctrtAmt",
         "value": "가용금액",
         "type": "sum",
         "format": "Total: {0}원"
