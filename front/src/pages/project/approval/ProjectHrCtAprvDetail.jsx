@@ -9,11 +9,10 @@ import ProjectHrCtAprvCtPop from "./ProjectHtCtAprvCtPop";
 import ProjectHrCtAprvMmPop from "./ProjectHtCtAprvMmPop";
 import TextArea from "devextreme-react/text-area";
 import Button from "devextreme-react/button";
-import {useCookies} from "react-cookie";
 
 const ProjectHrCtAprvDetail = () => {
 
-    const [cookies] = useCookies([]);
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const location = useLocation();
     const prjctId = location.state.prjctId;
     const prjctNm = location.state.prjctNm;
@@ -134,7 +133,7 @@ const ProjectHrCtAprvDetail = () => {
             const param = [
                 { tbNm: "PRJCT_MM_ATRZ" },
                 { atrzDmndSttsCd: "VTW03703",
-                  aprvrEmpId: cookies.userInfo.empId,
+                  aprvrEmpId: userInfo.empId,
                   aprvYmd: year + monthVal + dayVal},
                 { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, atrzDmndSttsCd: "VTW03702"}
             ];
@@ -222,7 +221,7 @@ const ProjectHrCtAprvDetail = () => {
             const param = [
                 { tbNm: "PRJCT_CT_ATRZ" },
                 { atrzDmndSttsCd: "VTW03703",
-                  aprvrEmpId: cookies.userInfo.empId,
+                  aprvrEmpId: userInfo.empId,
                   aprvYmd: year + monthVal + dayVal},
                 { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, atrzDmndSttsCd: "VTW03702"}
             ];
@@ -315,7 +314,7 @@ const ProjectHrCtAprvDetail = () => {
                 param = [
                     { tbNm: "PRJCT_MM_ATRZ" },
                     { atrzDmndSttsCd: "VTW03704",
-                      aprvrEmpId: cookies.userInfo.empId,
+                      aprvrEmpId: userInfo.empId,
                       rjctPrvonsh: opnnCn.current,
                       rjctYmd: year + monthVal + dayVal
                     },
@@ -326,7 +325,7 @@ const ProjectHrCtAprvDetail = () => {
                 param = [
                     { tbNm: "PRJCT_MM_ATRZ" },
                     { atrzDmndSttsCd: "VTW03704",
-                      aprvrEmpId: cookies.userInfo.empId,
+                      aprvrEmpId: userInfo.empId,
                       rjctPrvonsh: opnnCn.current,
                       rjctYmd: year + monthVal + dayVal
                     },
@@ -365,7 +364,7 @@ const ProjectHrCtAprvDetail = () => {
                 param = [
                     { tbNm: "PRJCT_CT_ATRZ" },
                     { atrzDmndSttsCd: "VTW03704",
-                        aprvrEmpId: cookies.userInfo.empId,
+                        aprvrEmpId: userInfo.empId,
                         rjctPrvonsh: opnnCn.current,
                         rjctYmd: year + monthVal + dayVal
                     },
@@ -376,7 +375,7 @@ const ProjectHrCtAprvDetail = () => {
                 param = [
                     { tbNm: "PRJCT_CT_ATRZ" },
                     { atrzDmndSttsCd: "VTW03704",
-                        aprvrEmpId: cookies.userInfo.empId,
+                        aprvrEmpId: userInfo.empId,
                         rjctPrvonsh: opnnCn.current,
                         rjctYmd: year + monthVal + dayVal
                     },
@@ -482,7 +481,7 @@ const ProjectHrCtAprvDetail = () => {
             const param = [
                 { tbNm: "PRJCT_MM_ATRZ" },
                 { atrzDmndSttsCd: "VTW03703",
-                    aprvrEmpId: cookies.userInfo.empId,
+                    aprvrEmpId: userInfo.empId,
                     aprvYmd: year + monthVal + dayVal},
                 { prjctId: data.prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, aplyYmd: data.aplyYmd }
             ];
@@ -621,13 +620,13 @@ const ProjectHrCtAprvDetail = () => {
                         const param = [
                             { tbNm: "PRJCT_CT_ATRZ" },
                             { atrzDmndSttsCd: "VTW03703",
-                                aprvrEmpId: cookies.userInfo.empId,
+                                aprvrEmpId: userInfo.empId,
                                 aprvYmd: year + monthVal + dayVal},
                             { prjctId: data.prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, prjctCtAplySn: data.prjctCtAplySn }
                         ];
                         response = await ApiRequest('/boot/common/commonUpdate', param);
                     } else {
-                        const param = { prjctId: data.prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, prjctCtAplySn: data.prjctCtAplySn, aprvrEmpId: cookies.userInfo.empId };
+                        const param = { prjctId: data.prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, prjctCtAplySn: data.prjctCtAplySn, aprvrEmpId: userInfo.empId };
                         response = await ApiRequest('/boot/prjct/apprvOldCt', param);
                     }
                     if(response > 0) {
