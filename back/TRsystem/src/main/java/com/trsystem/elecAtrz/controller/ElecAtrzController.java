@@ -35,7 +35,7 @@ public class ElecAtrzController {
 	 * @return
 	 */
 	@PostMapping(value = "/boot/elecAtrz/aprvElecAtrz")
-	public int aprvElecAtrz(@RequestBody List<Map<String, Object>> paramList) {
+	public Map<String, Object> aprvElecAtrz(@RequestBody List<Map<String, Object>> paramList) {
 		
 		return ElecAtrzDomain.aprvElecAtrz(paramList);
 	}

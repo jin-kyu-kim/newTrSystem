@@ -86,7 +86,8 @@ const ElectGiveAtrzClm = ({ detailData, sttsCd, onSendData, ctrtTyCd}) => {
 
         setClmData(clmData => ({
             ...clmData,
-            giveAmt : giveAmt
+            giveAmt : giveAmt,
+            rate : rate
         }));
     }
 

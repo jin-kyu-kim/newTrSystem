@@ -8,7 +8,7 @@
 	<select id="retrieveMatrlPlan" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT CONCAT(PRDUCT_NM,  " - ", DLVGDS_ENTRPS_NM) AS EXPECT_CTRT_ENTRPS_NM
 			 , MATRL_CT_SN 
-			 , CNTRCTAMOUNT
+			 , CTRT_AMT
 			 , PRDUCT_NM
 			 , DLVGDS_ENTRPS_NM
 			 , DTL_CN
