@@ -6,7 +6,6 @@ import EmpManageJson from  "./EmpManageJson.json";
 import CustomLabelValue from "components/unit/CustomLabelValue";
 import EmpRegist from "./EmpRegist";
 import { SelectBox } from "devextreme-react/select-box";
-import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom"; 
 import SearchEmpSet from "components/composite/SearchInfoSet";
 import { resetPassword } from "utils/AuthMng";
@@ -33,8 +32,9 @@ const EmpManage = ({}) => {
   const [jbpsHistParam, setJbpsHistParam] = useState({}); //발령정보 받아올거
   const [empInfo, setEmpInfo] = useState([]);       //클릭시 직원 기초정보 가지고올것
   const [totalItems, setTotalItems] = useState(0);
-  const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
-  const empId = cookies.userInfo.empId;
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const userAuth = JSON.parse(localStorage.getItem("userAuth"));
+  const empId = userInfo.empId;
   const navigate = useNavigate ();
   const [empYear,setEmpYear] = useState();
   const [empMonth,setEmpMonth] = useState();
@@ -426,15 +426,11 @@ const cancelJbpsEmpHist = async (updParam,ehdParam) => {       //삭제axios
     };
 //=================================화면 그리는 부분 
   return (
-    <div className="container">
-      <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }} >
-        <h1 style={{ fontSize: "40px" }}>직원 관리</h1>
-      </div>
-      <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
-        <span>* 직원 정보를 조회합니다.</span>
+    <div style={{ marginLeft: "1%", marginRight: "1%" }}>
+      <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
+            <h1 style={{ fontSize: "30px" }}>직원관리</h1>
       </div>
       <div style={{ marginBottom: "20px" }}>
-       
         <SearchEmpSet callBack={searchHandle} props={searchInfo} />
       </div>
         <div>검색된 건 수 : {totalItems} 건</div>
@@ -539,7 +535,7 @@ const cancelJbpsEmpHist = async (updParam,ehdParam) => {       //삭제axios
         </div>     
         </div>
       </div>
-    </div>
+      </div>
   );
 };
 
