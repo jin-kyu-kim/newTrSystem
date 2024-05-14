@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useLayoutEffect, useRef, useState,} from "react";
-import  { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import SearchPrjctCostSet from "../../../components/composite/SearchPrjctCostSet";
 import ProjectHrCtAprvDetailJson from "./ProjectHrCtAprvDetailJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
@@ -14,6 +14,7 @@ const ProjectHrCtAprvDetail = () => {
 
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const location = useLocation();
+    const navigate = useNavigate();
     const prjctId = location.state.prjctId;
     const prjctNm = location.state.prjctNm;
     const bgtMngOdr = location.state.bgtMngOdr;
@@ -735,6 +736,7 @@ const ProjectHrCtAprvDetail = () => {
                 <span>* 경비</span>
             </div>
             <CustomTable keyColumn={ct.keyColumn} columns={ct.tableColumns} values={ctValues} paging={true} onClick={onCtBtnClick} summary={true} summaryColumn={ct.summaryColumn} masterDetail={masterDetailCt} handleExpanding={expandingCt}/>
+            <Button text="목록" style={{width: "80px"}} onClick={(e)=>{navigate('/project/ProjectHrCtAprv', {state : {empId: userInfo.empId}})}}/>
             <Popup
                 width={ProjectHrCtAprvDetailJson.popup.width}
                 height={ProjectHrCtAprvDetailJson.popup.height}
