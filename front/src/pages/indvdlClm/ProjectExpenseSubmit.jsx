@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Button } from 'devextreme-react/button'
-import ApiRequest from "utils/ApiRequest";
 import { useModal } from "../../components/unit/ModalContext";
+import ApiRequest from "utils/ApiRequest";
 
-const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, buttonGroup, getData }) => {
+const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, buttonGroup, getData, sendAtrz }) => {
   
   const [ isComplete, setIsComplete ] = useState(false);
   const { handleOpen } = useModal();
@@ -23,8 +23,6 @@ const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, butt
       validationResults.messages.length !== 0 && handleOpen(validationResults.messages.join('\n'));
       return;
     }
-
-    if (!window.confirm("등록하시겠습니까?")) return;
 
     try {
       let result;
@@ -49,6 +47,7 @@ const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, butt
           { prjctCtInptPsbltyYn: "N" },
           { cardUseSn: item.cardUseSn }
         ]));
+
         await Promise.all(updates);
       }
       return true;
@@ -96,7 +95,9 @@ const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, butt
   return (
     <div style={{marginBottom: '20px'}}>
       {buttonGroup.map((btn, index) => (
-        <Button onClick={btn.onClick === 'handleDelete' ? handleDelete : handleSubmit} 
+        <Button onClick={btn.onClick === 'handleDelete' ? () => handleOpen(btn.msg, handleDelete)
+         : btn.onClick === 'handleSubmit' ? () => handleOpen(btn.msg, () => handleSubmit) 
+         : sendAtrz } 
           useSubmitBehavior={true} type={btn.type} text={btn.text} 
           style={{marginRight: '10px'}} key={index} />
       ))}
