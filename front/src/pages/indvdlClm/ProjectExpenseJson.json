@@ -140,9 +140,9 @@
       {"expensCd": "VTW04509", "message": "해당 차수에 이미 스마트폰 지원 신청이 있습니다."}
     ],
     "buttonGroup":[
-      { "type": "danger", "text": "선택한 사용내역 삭제하기", "onClick": "handleDelete" },
-      { "type": "default", "text": "선택한 사용내역 전자결재 작성" },
-      { "type": "normal", "text": "선택한 사용내역 등록하기", "onClick": "handleSubmit" }
+      { "type": "danger", "text": "선택한 사용내역 삭제하기", "onClick": "handleDelete", "msg": "선택한 결제내역을 삭제하시겠습니까? 삭제 후 재등록 시 수동으로 입력하셔야 합니다." },
+      { "type": "default", "text": "선택한 사용내역 전자결재 작성", "onClick": "sendAtrz" },
+      { "type": "normal", "text": "선택한 사용내역 등록하기", "onClick": "handleSubmit", "msg": "등록하시겠습니까?" }
     ],
     "btnInfo":[
       { "type": "default", "text": "입력", "onClick": "handleSubmit" }

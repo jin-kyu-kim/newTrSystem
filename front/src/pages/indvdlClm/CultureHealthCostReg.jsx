@@ -5,7 +5,6 @@ import {FileUploader} from "devextreme-react";
 import DataGrid, {Column} from 'devextreme-react/data-grid';
 import uuid from "react-uuid";
 import ApiRequest from "../../utils/ApiRequest";
-import {useCookies} from "react-cookie";
 import axios from "axios";
 import CustomLabelValue from "../../components/unit/CustomLabelValue";
 
@@ -30,7 +29,7 @@ const button = {
 }
 
 const CultureHealthCostReg = (props) => {
-    const [cookies] = useCookies([]);
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const token = localStorage.getItem("token");
     const [values, setValues] = useState([]);
     const [attachments, setAttachments] = useState([]);
@@ -45,8 +44,8 @@ const CultureHealthCostReg = (props) => {
     const [initParam, setInitParam] = useState({
         "clmAmt": 0,
         "clmYmd": now.getFullYear()+('0' + (now.getMonth() + 1)).slice(-2)+('0' + now.getDate()).slice(-2),
-        "empId": cookies.userInfo.empId,
-        "regEmpId": cookies.userInfo.empId
+        "empId": userInfo.empId,
+        "regEmpId": userInfo.empId
     });
 
     useEffect(() => {
@@ -105,7 +104,7 @@ const CultureHealthCostReg = (props) => {
     const searchTable = async () => {
         const params = {
             queryId: Json.queryId,
-            empId: cookies.userInfo.empId,
+            empId: userInfo.empId,
             clmYmd: props.year
         }
         try{
@@ -163,7 +162,7 @@ const CultureHealthCostReg = (props) => {
 
     const validateUser = () => {
         const errors = [];
-        if (cookies.userInfo.empTyCd !== 'VTW00201') {
+        if (userInfo.empTyCd !== 'VTW00201') {
             alert('등록이 불가능한 사용자입니다.')
             errors.push('Invalid user');
         }
@@ -276,7 +275,7 @@ const CultureHealthCostReg = (props) => {
                     }
                 } else {
                     const formData = new FormData();
-                    const tbData = {tbNm: "CLTUR_PHSTRN_ACT_CT_REG", snColumn: "clturPhstrnActCtSn", snSearch:{empId: cookies.userInfo.empId}}
+                    const tbData = {tbNm: "CLTUR_PHSTRN_ACT_CT_REG", snColumn: "clturPhstrnActCtSn", snSearch:{empId: userInfo.empId}}
                     formData.append("tbNm", JSON.stringify(tbData));
                     if(attachments.length > 0){
                         formData.append("data", JSON.stringify({
@@ -375,8 +374,8 @@ const CultureHealthCostReg = (props) => {
             "clturPhstrnSeCd": null,
             "actIem": null,
             "frcsNm": null,
-            "empId": cookies.userInfo.empId,
-            "regEmpId": cookies.userInfo.empId,
+            "empId": userInfo.empId,
+            "regEmpId": userInfo.empId,
             "atchmnflId": null
         })
     }
