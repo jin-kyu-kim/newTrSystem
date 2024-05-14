@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef  } from 'react';
 import electAtrzJson from './ElecAtrzJson.json';
 import ApiRequest from 'utils/ApiRequest';
 import './ElecAtrz.css';
@@ -7,12 +7,16 @@ import ElecAtrzCtrtInfoDetail from './ctrtInfo/ElecAtrzCtrtInfoDetail';
 import ElectGiveAtrzClm from './ElectGiveAtrzClm';
 import ElecAtrzCtrtOutordHnfDetail from './ctrtInfo/ElecAtrzCtrtOutordHnfDetail';
 
+let oldCd = "";
 
 const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prjctData, onSendData }) => {
     const { vacDtl, clmColumns,  groupingColumn, groupingData, ctrtInfo } = electAtrzJson.electAtrzDetail;
     const [ data, setData ] = useState([]);
     const [ ctrtData, setCtrtData ] = useState({})
     const [ clmData, setClmData ] = useState({})
+    const initialized = useRef(false);
+    
+    
 
     /* ===================================  필요 데이터 조회  ====================================*/
     useEffect(() => {
@@ -46,7 +50,7 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
                                      [{ tbNm: "CTRT_ATRZ" }, { elctrnAtrzId: elctrnAtrzId }]
                     );
                     setData(response);
-                    console.log("response",response);
+                    // console.log("response",response);
     
                 } catch (error) {
                     console.log('error', error);
@@ -199,31 +203,43 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
     }
 
 
-    useEffect(()=>{
-        if(clmData.rate){
-
+    useEffect(() => {
+        if (clmData.rate) {
             let ctrtItems = [];
 
-            ctrtData.arrayData.forEach((child)=>{
-                if(child.pay){
-                    child.pay.forEach((item)=>{
-                        if (item.ctrtYmd === clmData.giveYmd) {
-                            item.giveAmt = item.ctrtAmt + item.ctrtAmt * (parseFloat(clmData.rate)/100);  
-                            ctrtItems.push(item);
-                        }                      
-                    })
-                }             
-            })
-          
-            setClmData((pre)=>({
-                ...pre, 
-                ctrt : ctrtItems}));
-        } 
-        
-    },[ctrtData, clmData.rate, clmData.giveYmd])
+            if(ctrtData.arrayData.length>1){
+      
+                ctrtData.arrayData.forEach((child) => {
+                    if (child.pay) {
+                        child.pay.forEach((item) => {
+                            if (item.ctrtYmd === clmData.giveYmd) {
+                                item.giveAmt = item.ctrtAmt + item.ctrtAmt * (parseFloat(clmData.rate) / 100);
+                                if (!initialized.current) {
+                                    oldCd = item.giveOdrCd;
+                                }
+                                    item.oldCd = oldCd;
+                                ctrtItems.push(item);
+                            }
+                        });
+                    }
+                });
+
+                setClmData((prev) => ({
+                    ...prev,
+                    ctrt: ctrtItems,
+                    
+                }));
+
+                if (!initialized.current) {
+                    initialized.current = true; 
+                }
+            }
+        }
+    }, [ctrtData, clmData.rate, clmData.giveYmd, setClmData]);
 
 
     useEffect(()=>{
+        console.log("clmData", clmData)
         if(onSendData){
             onSendData(clmData);
         }

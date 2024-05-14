@@ -70,6 +70,13 @@ const ElectGiveAtrzClm = ({ detailData, sttsCd, onSendData, ctrtTyCd}) => {
                     rate: rate
                 }));
             }
+           
+            if(!clmData.oldData){
+                setClmData((pre)=>({
+                    ...pre,
+                    oldData : clmData.giveYmd
+                }))
+            }
         }
             
         if(onSendData){
