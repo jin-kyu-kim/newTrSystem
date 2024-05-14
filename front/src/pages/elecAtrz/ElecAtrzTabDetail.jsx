@@ -218,16 +218,16 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
             setClmData((pre)=>({
                 ...pre, 
                 ctrt : ctrtItems}));
-        }
+        } 
         
-    },[clmData.rate])
+    },[ctrtData, clmData.rate, clmData.giveYmd])
 
 
     useEffect(()=>{
         if(onSendData){
             onSendData(clmData);
         }
-    },[clmData.ctrt])
+    },[clmData])
 
 
 
