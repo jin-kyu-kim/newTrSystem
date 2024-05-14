@@ -224,7 +224,9 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
 
 
     useEffect(()=>{
-        onSendData(clmData);
+        if(onSendData){
+            onSendData(clmData);
+        }
     },[clmData.ctrt])
 
 
