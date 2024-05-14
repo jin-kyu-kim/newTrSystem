@@ -3,7 +3,7 @@ import { Button } from 'devextreme-react/button'
 import { useModal } from "../../components/unit/ModalContext";
 import ApiRequest from "utils/ApiRequest";
 
-const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, buttonGroup, getData }) => {
+const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, buttonGroup, getData, sendAtrz }) => {
   
   const [ isComplete, setIsComplete ] = useState(false);
   const { handleOpen } = useModal();
@@ -23,8 +23,6 @@ const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, butt
       validationResults.messages.length !== 0 && handleOpen(validationResults.messages.join('\n'));
       return;
     }
-
-    if (!window.confirm("등록하시겠습니까?")) return;
 
     try {
       let result;
@@ -97,7 +95,9 @@ const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, butt
   return (
     <div style={{marginBottom: '20px'}}>
       {buttonGroup.map((btn, index) => (
-        <Button onClick={btn.onClick === 'handleDelete' ? () => handleOpen('선택한 결제내역을 삭제하시겠습니까? 삭제 후 재등록 시 수동으로 입력하셔야 합니다.', handleDelete) : handleSubmit} 
+        <Button onClick={btn.onClick === 'handleDelete' ? () => handleOpen(btn.msg, handleDelete)
+         : btn.onClick === 'handleSubmit' ? () => handleOpen(btn.msg, () => handleSubmit) 
+         : sendAtrz } 
           useSubmitBehavior={true} type={btn.type} text={btn.text} 
           style={{marginRight: '10px'}} key={index} />
       ))}

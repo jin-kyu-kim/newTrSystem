@@ -120,7 +120,6 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                 keyExpr={keyColumn}
                 showBorders={true}
                 showColumnLines={true}
-                keyboardNavigation={{enabled: false}}
                 dataSource={values}
                 noDataText={noDataText}
                 focusedRowEnabled={true}

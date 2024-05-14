@@ -109,8 +109,8 @@ const ProjectExpenseCard = (props) => {
         setSelectedItem(e.selectedRowsData);
     };
 
-    const bulkApply = (values, col) => {
-        console.log('values', values)
+    const sendAtrz = () => {
+
     };
 
     const cellRenderConfig = {
@@ -125,7 +125,7 @@ const ProjectExpenseCard = (props) => {
             </div>
             <ProjectExpenseSubmit selectedItem={selectedItem} getData={props.getData}
                 validateFields={() => validateFields(selectedItem, placeholderAndRequired, setValidationErrors, buttonGroup)}
-                handleDelete={handleDelete} buttonGroup={buttonGroup} />
+                handleDelete={handleDelete} buttonGroup={buttonGroup} sendAtrz={sendAtrz} />
 
             <div style={{ fontSize: 14, marginBottom: "20px" }}>
                 <p style={{ marginBottom: '10px' }}> ※ 일괄적용 버튼 클릭 시 체크박스로 선택한 항목 중 가장 위에서 선택한 항목으로 일괄적용 됩니다.</p>
@@ -140,7 +140,6 @@ const ProjectExpenseCard = (props) => {
                     values={cardUseDtls}
                     columns={tableColumns}
                     keyColumn={keyColumn}
-                    bulkApply={bulkApply}
                     onSelection={onSelection}
                     cellRenderConfig={cellRenderConfig}
                     defaultPageSize={10}
