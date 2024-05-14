@@ -18,6 +18,6 @@
         { "key": "ajmtBgt", "value":"조정액(원)", "summaryType"  : "sum", "valueFormat": "#,##0", "displayFormat" : "{0} 원" }
       ],
      "groupingData" : 
-    {"caption":"원가별집계", "dataField": "prmpcAcctoTot" , "format": "#,##0"}
+    {"caption":"원가별집계", "dataField": "kind" , "format": "#,##0"}
      
   }

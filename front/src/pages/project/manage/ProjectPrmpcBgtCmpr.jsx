@@ -27,8 +27,22 @@ const ProjectPrmpcBgtCmpr = ({prjctId, bgtMngOdr, bgtMngOdrTobe, visible, atrzDm
         setValues(response);
     }
 
+    const groupingCustomizeText = (e) => {
+        console.log(e)
+        if (e.value === '1') {
+            return "인건비";
+          }else if (e.value === '2') {
+            return "외주비";
+          } else if (e.value === '3') {
+            return "경비";
+          } else {
+            return "재료비";
+          } 
+    }
+
     return (
         <>
+
             <CustomTable
                 keyColumn={keyColumn}
                 columns={tableColumns}
@@ -37,6 +51,7 @@ const ProjectPrmpcBgtCmpr = ({prjctId, bgtMngOdr, bgtMngOdrTobe, visible, atrzDm
                 wordWrap={wordWrap}
                 grouping={groupingColumn}
                 groupingData={groupingData}
+                groupingCustomizeText={groupingCustomizeText}
                 prjctCmpr={true}
             />
         </>
