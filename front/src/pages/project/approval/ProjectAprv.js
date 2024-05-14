@@ -76,7 +76,7 @@ const ProjectAprv = () => {
   }
 
   return (
-    <div className="container">
+    <div>
       <div
         className="title p-1"
         style={{ marginTop: "20px", marginBottom: "10px" }}
