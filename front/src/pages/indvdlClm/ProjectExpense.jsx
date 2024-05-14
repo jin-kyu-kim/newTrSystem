@@ -14,19 +14,20 @@ const ProjectExpense = () => {
     const location = useLocation();
     const { ExpenseInfo, keyColumn, ctAplyTableColumns, elcKeyColumn, columnCharge, buttonsConfig,
         aplyAndAtrzCtQueryId, dmndSttsQueryId, groupingColumn, groupingData, searchInfo } = ProjectExpenseJson.ProjectExpenseMain;
-    const [index, setIndex] = useState(0);
-    const [atrzDmndSttsCnt, setAtrzDmndSttsCnt] = useState({}); // 상태코드별 데이터 개수
-    const [ctAply, setCtAply] = useState([]); // 차수 청구내역 (table1)
-    const [ctAtrz, setCtAtrz] = useState([]); // 전자결재 청구내역 (table2)
-    const [changeColumn, setChangeColumn] = useState([]); // 결재상태 컬럼 -> 버튼렌더를 위해 필요
-    const [ctAtrzCmptnYn, setCtAtrzCmptnYn] = useState(); // 비용결재완료여부
-    const [mmAtrzCmptnYn, setMmAtrzCmptnYn] = useState(); // 근무시간여부
+    const [ index, setIndex ] = useState(0);
+    const [ atrzDmndSttsCnt, setAtrzDmndSttsCnt ] = useState({}); // 상태코드별 데이터 개수
+    const [ ctAply, setCtAply ] = useState([]); // 차수 청구내역 (table1)
+    const [ ctAtrz, setCtAtrz ] = useState([]); // 전자결재 청구내역 (table2)
+    const [ changeColumn, setChangeColumn ] = useState([]); // 결재상태 컬럼 -> 버튼렌더를 위해 필요
+    const [ ctAtrzCmptnYn, setCtAtrzCmptnYn ] = useState(); // 비용결재완료여부
+    const [ mmAtrzCmptnYn, setMmAtrzCmptnYn ] = useState(); // 근무시간여부
 
-    const [cookies] = useCookies([]);
-    const [popVisible, setPopVisible] = useState(false);
-    const [histYmOdr, setHistYmOdr] = useState({});
+    const [ cookie ] = useCookies();
+    // const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    const [ popVisible, setPopVisible ] = useState(false);
+    const [ histYmOdr, setHistYmOdr ] = useState({});
     const admin = location.state ? location.state.admin : undefined;
-    const empId = admin != undefined ? admin.empId : cookies.userInfo.empId;
+    const empId = admin != undefined ? admin.empId : cookie.userInfo.empId;
     const date = new Date();
     const year = date.getFullYear();
     const month = date.getDate() > 15 ? date.getMonth() + 1 : date.getMonth();
@@ -160,6 +161,10 @@ const ProjectExpense = () => {
         }
     }
 
+    const calculateCustomSummary = (options) => {
+        console.log('options', options)
+    }
+
     const groupingCustomizeText = (e) => {
         const mapping = { "VTW01902": "개인현금지급", "VTW01903": "개인법인카드" };
         return mapping[e.value] || "기업법인카드";
@@ -170,6 +175,7 @@ const ProjectExpense = () => {
             <div style={{ marginBottom: '20px' }}>
                 <span>{title}</span>
                 <CustomTable
+                    calculateCustomSummary={calculateCustomSummary}
                     keyColumn={keyColumn}
                     columns={columns}
                     values={values}
@@ -190,7 +196,7 @@ const ProjectExpense = () => {
                     <h1 style={{ fontSize: "30px", marginRight: "20px" }}>프로젝트비용</h1>
                     {getButtonsShow().map(({ onClick, text, type }, index) => (
                         <Button key={index} text={text} type={type} style={{ marginRight: '5px' }}
-                            onClick={() => handleOpen(onClick.name !== 'onPrintClick' && onClick.msg, () => onClickAction(onClick), true)} />))}
+                            onClick={onClick.name !== 'onPrintClick' ? () => handleOpen(onClick.msg, () => onClickAction(onClick)) : onClickAction(onClick)} />))}
                 </div>
 
                 <div style={{ marginBottom: '50px', width: 600 }}>

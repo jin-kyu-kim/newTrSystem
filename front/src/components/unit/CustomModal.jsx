@@ -3,21 +3,8 @@ import { Popup } from "devextreme-react";
 
 const CustomModal = ({ open, close, message, onClick, isStepOne }) => {
 
-    const popupStyle = {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: '400px',
-        height: 'auto',
-        borderRadius: '10px',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-        background: '#fff',
-        padding: '20px'
-    };
-
     const buttonContainerStyle = {
-        marginTop: '20px',
+        marginTop: '50px',
         display: 'flex',
         justifyContent: 'space-between',
         padding: '0 10px'
@@ -34,14 +21,16 @@ const CustomModal = ({ open, close, message, onClick, isStepOne }) => {
         <Popup
             visible={open}
             onHiding={close}
-            width={400}
-            height="auto"
+            width={350}
+            height='auto'
             showTitle={false}
             contentRender={() => (
                 <div>
                     <div style={{
                         fontSize: '18px',
-                        marginBottom: '10px'
+                        marginTop: '20px',
+                        marginBottom: '10px',
+                        textAlign: 'center'
                     }}>
                         {message}
                     </div>
@@ -73,7 +62,6 @@ const CustomModal = ({ open, close, message, onClick, isStepOne }) => {
                     </div>
                 </div>
             )}
-            style={popupStyle}
         />
     );
 }
