@@ -145,7 +145,7 @@
       { "type": "normal", "text": "선택한 사용내역 등록하기", "onClick": "handleSubmit", "msg": "등록하시겠습니까?" }
     ],
     "btnInfo":[
-      { "type": "default", "text": "입력", "onClick": "handleSubmit" }
+      { "type": "default", "text": "입력", "onClick": "handleSubmit", "msg": "등록하시겠습니까?" }
     ]
   },
   "labelValue" : [

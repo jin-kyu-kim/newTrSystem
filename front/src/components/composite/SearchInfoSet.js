@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import SelectBox from "devextreme-react/select-box";
 import TextBox from "devextreme-react/text-box";
@@ -12,6 +12,7 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
   const [ initParam, setInitParam ] = useState({});
   const [ ymOdrData, setYmOdrData ] = useState({});
   const { searchParams, textBoxItem, selectBoxItem } = props;
+  const searchButtonRef = useRef(null);
   let btnName = searchParams.btnName ? searchParams.btnName : '검색';
 
   const date = new Date();
@@ -23,6 +24,19 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
     yearList: Array.from({ length: endYear - startYear + 1 }, (_, i) => ({ value: startYear + i })),
     monthList: Array.from({ length: 12 }, (_, i) => ({ value: (i < 9 ? "0" : "") + (i + 1) })),
   });
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "Enter") {
+        searchButtonRef.current.instance.option("onClick")();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   useEffect(() => {
     const { yearList, monthList } = getYmList(year - 10, year + 1);
@@ -146,7 +160,7 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
         }
 
         <Item ratio={1} >
-          <Button type='default' onClick={handleSubmit} text={btnName} />
+          <Button type='default' onClick={handleSubmit} text={btnName} ref={searchButtonRef} />
         </Item>
 
         {searchParams.insertButton &&

@@ -172,10 +172,6 @@ export const navigation = [
         path: '/sysMng/EmpAuth',
         auth: 'VTW04801'
       },{
-        text: '권한부여관리',
-        path: '/sysMng/EmpAuthorization',
-        auth: 'VTW04801'
-      },{
         text: '코드관리',
         path: '/sysMng/TrsCode',
         auth: 'VTW04801'

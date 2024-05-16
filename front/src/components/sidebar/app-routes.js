@@ -99,13 +99,6 @@ const routes = [
     element: React.lazy(() => import("../../pages/sysMng/EmpAuth")),
     isPrivate:"VTW04801"
   },
-  // 권한부여관리
-  {
-    path: "/sysMng/EmpAuthorization",
-    name: "EmpAuth",
-    element: React.lazy(() => import("../../pages/sysMng/EmpAuthorization")),
-    isPrivate:"VTW04801"
-  },
   // 고객사관리
   {
     path: "/sysMng/CustomersList",

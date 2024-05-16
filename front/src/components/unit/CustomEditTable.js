@@ -196,7 +196,15 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                             : null}
                         {col.isRequire && <RequiredRule message={`${col.value}는 필수항목입니다`} />}
                         {col.length && <StringLengthRule max={col.length} message={`최대입력 길이는 ${col.length}입니다`} />}
-                        
+                        {col.subColumn && col.subColumn.map(sub => (
+                            <Column
+                                key={sub.key}
+                                dataField={sub.key}
+                                caption={sub.value}
+                                alignment={'center'}
+                                cellRender={sub.cellType && ((props) => cellRender(sub, props))}
+                            ></Column>
+                        ))}
                     </Column>
                 ))}
                 <Paging defaultPageSize={defaultPageSize ? defaultPageSize : 20} />
