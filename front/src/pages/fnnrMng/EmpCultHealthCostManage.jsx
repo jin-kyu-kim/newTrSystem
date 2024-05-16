@@ -163,6 +163,7 @@ const EmpCultHealthCostManage = () => {
           "clturPhstrnActMngYm": param.clturPhstrnActMngYm
         });
         if (response){
+          handleOpen('저장되었습니다.');
           pageHandle();
         }
       } catch (error) {
@@ -188,6 +189,15 @@ const EmpCultHealthCostManage = () => {
   
   const onSelection = (e) => {
     setSelectedItem(e.selectedRowsData);
+  };
+
+  const validateNumberBox = (data, value) => {
+    const errors = [];
+    if (value > data.cyfdAmt + data.clmAmt || value > 200000) {
+      alert('지급 가능한 금액보다 큽니다.')
+      errors.push('Too large amount');
+    }
+    return errors.length === 0;
   };
 
   return (
@@ -233,6 +243,7 @@ const EmpCultHealthCostManage = () => {
           noEdit={true}
           onBtnClick={onBtnClick}
           onSelection={onSelection}
+          validateNumberBox={validateNumberBox}
         />
 
       </div>
