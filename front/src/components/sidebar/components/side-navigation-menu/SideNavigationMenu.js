@@ -13,7 +13,8 @@ import {useCookies} from "react-cookie";
 export default function SideNavigationMenu(props) {
 
   const [cookies, setCookie] = useCookies(["userAuth"]);
-  const userAuths = cookies.userAuth;
+  // const userAuths = cookies.userAuth;
+  const userAuths = JSON.parse(localStorage.getItem("userAuth"));
 
   const isAdmin = userAuths.includes('VTW04801');
   function setVisiblePropertyBasedOnAuthArray(navigation, userAuths, isAdmin) {

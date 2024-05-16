@@ -80,10 +80,10 @@ export const navigation = [
         path: '/project/ProjectHrCtAprv',
         auth: 'VTW04807'
       },{
-        text: '외주비용승인',
-        path: '/project/ProjectOutordAprv',
-        auth: 'VTW04807'
-      },{
+      //   text: '외주비용승인',
+      //   path: '/project/ProjectOutordAprv',
+      //   auth: 'VTW04807'
+      // },{
         text: '파트너업체관리',
         path: '/project/ProjectOutordCompany'
       },{
@@ -195,22 +195,23 @@ export const navigation = [
         path: '/72',
         auth: 'VTW04801'
       },{
-        text: '전자결재서식관리',
-        path: '/mngrMenu/ElecAtrzFormManage',
-        auth: 'VTW04801'
-      },{
         text: '전자결재',
         path: '/mngrMenu/ElecAtrzManage',
         auth: 'VTW04801'
       },{
-        text: '개발및연구',
-        path: '/75',
+        text: '전자결재서식관리',
+        path: '/mngrMenu/ElecAtrzFormManage',
         auth: 'VTW04801'
-      },{
-        text: 'MM확인하기',
-        path: '/76',
-        auth: 'VTW04801'
-      },
+      }
+      // ,{
+      //   text: '개발및연구',
+      //   path: '/75',
+      //   auth: 'VTW04801'
+      // },{
+      //   text: 'MM확인하기',
+      //   path: '/76',
+      //   auth: 'VTW04801'
+      // },
     ]
   }
   ];

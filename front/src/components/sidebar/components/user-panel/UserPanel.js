@@ -11,9 +11,10 @@ import { useModal } from "../../../unit/ModalContext";
 export default function UserPanel({ menuMode }) {
   const navigate = useNavigate();
   const { signOut, tokenExtension } = useAuth();
-  const [cookies] = useCookies(["userInfo", "userAuth"]);
-  const empno = cookies.userInfo.empno;
-  const empNm = cookies.userInfo.empNm;
+  // const [cookies] = useCookies(["userInfo", "userAuth"]);
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const empno = userInfo.empno;
+  const empNm = userInfo.empNm;
   const { handleOpen } = useModal();
   
   const navigateToProfile = useCallback(() => {
