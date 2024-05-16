@@ -17,7 +17,7 @@ const ProjectExpenseCash = (props) => {
     const [validationErrors, setValidationErrors] = useState([]);
     const [customParam, setCustomParam] = useState({});
     const atrzParam = {
-        queryId: "projectExpenseMapper.retrieveElctrnAtrzClm",
+        queryId: "projectExpenseMapper.retrieveElctrnAtrzClm",  
         empId: props.empId
     };
     const [empList, setEmpList] = useState([]);
@@ -52,8 +52,15 @@ const ProjectExpenseCash = (props) => {
             queryId: value[0].prjctStleCd === 'VTW01802' ? "elecAtrzMapper.retrieveExpensCdByPrmpc"
                 : "elecAtrzMapper.retrieveExpensCdAll"
         })
-        setValue(prevVal => ({
-            ...prevVal, prjctMngrEmpId: value[0].prjctMngrEmpId
+
+        setValue(prevVal => prevVal.map((item, index) => {
+            if (index === 0) {
+                return {
+                    ...item,
+                    prjctMngrEmpId: value[0].prjctMngrEmpId
+                };
+            }
+            return item;
         }));
     }, [value[0].prjctId]);
 
