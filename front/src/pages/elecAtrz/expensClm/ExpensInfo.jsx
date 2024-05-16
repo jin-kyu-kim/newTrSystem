@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { FormControl, InputLabel, Select, MenuItem, TextField, Button, Grid, TableCell } from "@mui/material";
 import { DateBox } from "devextreme-react/date-box";
 import ApiRequest from "utils/ApiRequest";
-import { useCookies } from "react-cookie";
 
 const ExpensInfo = ({onSendData, prjctId, prjctData, data}) => {
 
@@ -12,7 +11,7 @@ const ExpensInfo = ({onSendData, prjctId, prjctData, data}) => {
     const [ clmOdr, setClmOdr ] = useState();
     const [ nextClmOdr, setNextClmOdr ] = useState();
     const [ deadLineDate, setDeadLineDate ] = useState();
-    const [ cookies ] = useCookies(["userInfo"]);
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const [ ctAtrzCmptnYn, setCtAtrzCmptnYn ] = useState();
 
     useEffect(() => {
@@ -306,7 +305,7 @@ const ExpensInfo = ({onSendData, prjctId, prjctData, data}) => {
             { tbNm: "PRJCT_INDVDL_CT_MM"},
             { 
                 prjctId: prjctId,
-                empId: cookies.userInfo.empId,
+                empId: userInfo.empId,
                 aplyYm: aplyYm,
                 aplyOdr: odr
             }

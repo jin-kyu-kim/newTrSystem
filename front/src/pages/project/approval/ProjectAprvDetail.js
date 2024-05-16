@@ -2,7 +2,6 @@ import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { TabPanel } from "devextreme-react";
 import Button from "devextreme-react/button";
-import { useCookies } from "react-cookie";
 import Popup from "devextreme-react/popup";
 
 import ApiRequest from "utils/ApiRequest";
@@ -23,7 +22,7 @@ const ProjectAprvDetail = () => {
     const stbleEndYmd = location.state.stbleEndYmd;
     const bgtMngOdr = location.state.bgtMngOdr;
     const aprvrEmpId = location.state.aprvrEmpId;
-    const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const ProjectAprvDetail = ProjectAprvDetailJson;
     const atrzDmndSttsCd = ProjectAprvDetail.atrzDmndSttsCd;
 
@@ -38,7 +37,7 @@ const ProjectAprvDetail = () => {
     useEffect(() => {
 
         if(atrzSttsCd === 'VTW00801') {
-            if(aprvrEmpId === cookies.userInfo.empId) handleBtnVisible();
+            if(aprvrEmpId === userInfo.empId) handleBtnVisible();
         }
 
         const param = {
@@ -86,12 +85,12 @@ const ProjectAprvDetail = () => {
                     AtrzOpnnCn: opnnCn,
                     aprvYmd: date,
                     mdfcnDt: mdfcnDt,
-                    mdfcnEmpId: cookies.userInfo.empId,
+                    mdfcnEmpId: userInfo.empId,
                 },
                 {
                     prjctId: prjctId,
                     atrzLnSn: atrzLnSn,
-                    aprvrEmpId: cookies.userInfo.empId,
+                    aprvrEmpId: userInfo.empId,
                     atrzStepCd: atrzStepCd
                 }
             ]
@@ -143,7 +142,7 @@ const ProjectAprvDetail = () => {
                     rjctPrvonsh: opnnCn,
                     rjctYmd: date,
                     mdfcnDt: mdfcnDt,
-                    mdfcnEmpId: cookies.userInfo.empId,
+                    mdfcnEmpId: userInfo.empId,
                 },
                 {
                     prjctId: prjctId,
@@ -183,7 +182,7 @@ const ProjectAprvDetail = () => {
             { tbNm: "PRJCT_ATRZ_LN" },
             { 
                 nowAtrzStepCd: nowStep,
-                mdfcnEmpId: cookies.userInfo.empId,
+                mdfcnEmpId: userInfo.empId,
                 mdfcnDt: mdfcnDt,
             },
             {
@@ -209,7 +208,7 @@ const ProjectAprvDetail = () => {
           {
             atrzDmndSttsCd: cdValue,
             atrzCmptnYmd: date,
-            mdfcnEmpId: cookies.userInfo.empId,
+            mdfcnEmpId: userInfo.empId,
             mdfcnDt: mdfcnDt,
           },
           {
@@ -228,7 +227,7 @@ const ProjectAprvDetail = () => {
           { tbNm : "PRJCT" },
           {
             bizSttsCd: cdValue,
-            mdfcnEmpId: cookies.userInfo.empId,
+            mdfcnEmpId: userInfo.empId,
             mdfcnDt: mdfcnDt,
           },
           {

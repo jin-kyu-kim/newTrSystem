@@ -1,28 +1,21 @@
 import { useEffect, useState, useRef } from 'react';
-import { useCookies } from "react-cookie";
 
 // 날짜계산
 // npm install moment
 import Moment from "moment"
-
 // DevExtrme import
 import { FileUploader, SelectBox, Button, TextBox, DateBox } from "devextreme-react";
-
 // 테이블 import
 // npm install @mui/material
 // npm install @emotion/styled
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
-
 // 날짜관련
 // npm install date-fns
 import { isSaturday, isSunday, startOfMonth, endOfMonth, addMonths, addDays } from 'date-fns'
-
 // 랜덤채번 import
 import uuid from "react-uuid";
-
 import { useNavigate } from "react-router-dom";
 import { useLocation } from 'react-router';
-
 import axios from "axios";
 import { useModal } from "../../components/unit/ModalContext";
 import CustomTable from "components/unit/CustomTable";
@@ -130,11 +123,12 @@ const EmpVacation = () => {
     const fileUploaderRef = useRef(null);
 
     // 세션설정
-    const [cookies, setCookie] = useCookies(["userInfo", "deptInfo"]);
-    let sessionEmpId = location.state ? location.state.empId : cookies.userInfo.empId
-    let sessionEmpNm = location.state ? location.state.empFlnm : cookies.userInfo.empNm
-    let sessionDeptNm = location.state ? location.state.deptList[0].deptNm : cookies.deptInfo[0].deptNm
-    let jbttlCd = location.state ? location.state.deptList[0].jbttlCd : cookies.deptInfo[0].jbttlCd
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    const deptInfo = JSON.parse(localStorage.getItem("deptInfo"));
+    let sessionEmpId = location.state ? location.state.empId : userInfo.empId
+    let sessionEmpNm = location.state ? location.state.empFlnm : userInfo.empNm
+    let sessionDeptNm = location.state ? location.state.deptList[0].deptNm : deptInfo[0].deptNm
+    let jbttlCd = location.state ? location.state.deptList[0].jbttlCd : deptInfo[0].jbttlCd
 
     // 1. 월별 근무일_공휴일 조회
     // 2. 프로젝트목록 조회
@@ -282,7 +276,7 @@ const EmpVacation = () => {
     const [atrzLnAprvListParam, setAtrzLnAprvListParam] = useState({
         queryId: "indvdlClmMapper.retrieveAtrzLnAprvListInq",
         searchType: "atrzLnAprvList",
-        deptId: cookies.deptInfo[0].deptId
+        deptId: deptInfo[0].deptId
     });
 
     // 전자결재 승인권자목록정보
@@ -796,14 +790,14 @@ const EmpVacation = () => {
                         </div>
                         <div className="row" style={{ marginTop: "30px" }}>
                             {
-                                (location.state && location.state.deptList.length > 1) || cookies.deptInfo.length > 1
+                                (location.state && location.state.deptList.length > 1) || deptInfo.length > 1
                                     ?
                                     <>
                                         <div className="col-md-2" style={textAlign}>소속</div>
                                         <div className="col-md-10">
                                             <SelectBox
-                                                defaultValue={location.state ? location.state.deptList[0].deptId : cookies.deptInfo[0].deptId}
-                                                dataSource={location.state ? location.state.deptList : cookies.deptInfo}
+                                                defaultValue={location.state ? location.state.deptList[0].deptId : deptInfo[0].deptId}
+                                                dataSource={location.state ? location.state.deptList : deptInfo}
                                                 displayExpr="deptNm"
                                                 valueExpr="deptId"
                                                 onValueChange={(e) => {

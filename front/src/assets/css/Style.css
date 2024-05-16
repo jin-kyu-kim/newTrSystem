@@ -316,10 +316,55 @@
 }
 
 .dx-datagrid .dx-header-row {
-  background-color: #f0f0f0; 
+  background-color: #f0f0f0;
 }
 
 .dx-row:hover {
   background-color: #dde7f7;
   cursor: pointer; 
 }
+@media (max-width: 600px) {
+  .dx-row .dx-column-lines{
+    font-size: 8px;
+    text-align: left;
+  }
+}
+@media (min-width: 601px) and (max-width: 1650px) {
+  .dx-row {
+    font-size: 10px;
+    text-align: left;
+  }
+}
+@media (min-width: 1651px) {
+  .dx-datagrid .dx-row{
+    font-size: 13px;
+    text-align: left;
+  }
+}
+@media (max-width: 600px) {
+  .dx-datagrid .dx-header-row .dx-datagrid-text-content {
+    font-size: 8px;
+    font-weight: bold;
+    color: black;
+    text-align: left;
+  }
+}
+
+@media (min-width: 601px) and (max-width: 1850px) {
+  .dx-datagrid .dx-header-row .dx-datagrid-text-content {
+    font-size: 12px;
+    font-weight: bold;
+    color: black;
+    text-align: left;
+  }
+}
+
+@media (min-width: 1851px) {
+  .dx-datagrid .dx-header-row .dx-datagrid-text-content {
+    font-size: 15px;
+    font-weight: bold;
+    color: black;
+    text-align: left;
+  }
+}
+
