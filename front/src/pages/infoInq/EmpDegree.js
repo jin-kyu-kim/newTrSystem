@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import EmpInfoJson from "./EmpInfoJson.json";
 import ApiRequest from "utils/ApiRequest";
-import { useCookies } from "react-cookie";
 import CustomEditTable from "components/unit/CustomEditTable";
 
 const EmpDegree = ({ naviEmpId }) => {
   const { queryId, keyColumn, tableColumns, tbNm } = EmpInfoJson.EmpDegree;
-  const [cookies] = useCookies(["userInfo", "userAuth"]);
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const [values, setValues] = useState([]);
 
   let userEmpId;
@@ -14,7 +13,7 @@ const EmpDegree = ({ naviEmpId }) => {
   if(naviEmpId.length !== 0){
     userEmpId = naviEmpId;
   } else {
-    userEmpId = cookies.userInfo.empId;
+    userEmpId = userInfo.empId;
   }
 
   const doublePk = { nm: "empId", val: userEmpId };

@@ -24,7 +24,7 @@
     "index": 3
   },
   {
-    "TabName": "설정",
+    "TabName": "권한설정",
     "tabId": "ProjectStngInfo",
     "url": "./ProjectStngInfo",
     "index": 4

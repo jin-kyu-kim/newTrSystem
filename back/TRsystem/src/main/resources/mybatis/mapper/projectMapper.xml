@@ -570,7 +570,9 @@
  	 	 , pald.APRV_YMD AS STEP_APRV_YMD
  	 	 , pald.RJCT_YMD AS STEP_RJCT_YMD
  	 	 , CASE WHEN pald.APRV_YMD IS NOT NULL THEN DATE_FORMAT(pald.MDFCN_DT, '%Y.%m.%d %H:%i:%s')
- 	 		 	WHEN pald.APRV_YMD IS NULL THEN NULL 
+ 	 	 		WHEN pald.RJCT_YMD IS NOT NULL THEN DATE_FORMAT(pald.MDFCN_DT, '%Y.%m.%d %H:%i:%s')
+ 	 		 	WHEN pald.APRV_YMD IS NULL THEN NULL
+ 	 		 	WHEN pald.RJCT_YMD IS NULL THEN NULL
  	 	 	END AS MDFCN_DT
 	  FROM PRJCT_ATRZ_LN_DTL pald 
 	  JOIN CD c1 ON (c1.CD_VALUE = pald.ATRZ_STEP_CD)
@@ -1195,7 +1197,10 @@
                      FROM MMNY_INPT_MM MIM
                               INNER JOIN PRJCT_BGT_PRMPC PBP ON PBP.PRJCT_ID = MIM.PRJCT_ID
                          AND PBP.BGT_MNG_ODR = MIM.BGT_MNG_ODR
-                              INNER JOIN MMNY_LBRCO_PRMPC MLP ON MLP.PRJCT_ID = MIM.PRJCT_ID
+                              INNER JOIN MMNY_LBRCO_PRMPC MLP     
+                              ON MLP.PRJCT_ID = MIM.PRJCT_ID 
+                              AND MLP.BGT_MNG_ODR = MIM.BGT_MNG_ODR 
+                              AND MLP.MMNY_LBRCO_PRMPC_SN = MIM.MMNY_LBRCO_PRMPC_SN
                      WHERE MIM.PRJCT_ID = #{prjctId}
                        AND PBP.ATRZ_DMND_STTS_CD  = #{atrzDmndSttsCd}
                        AND MIM.BGT_MNG_ODR = MLP.BGT_MNG_ODR
@@ -1223,8 +1228,10 @@
                       OUTORD_LBRCO_PRMPC_DTL OLPD
                           INNER JOIN PRJCT_BGT_PRMPC PBP ON PBP.PRJCT_ID  = OLPD.PRJCT_ID
                           AND PBP.BGT_MNG_ODR = OLPD.BGT_MNG_ODR
-                          INNER JOIN OUTORD_LBRCO_PRMPC OLP ON OLP.PRJCT_ID = OLPD.PRJCT_ID
+                          INNER JOIN OUTORD_LBRCO_PRMPC OLP 
+                          ON OLP.PRJCT_ID = OLPD.PRJCT_ID
                           AND OLPD.BGT_MNG_ODR = OLP.BGT_MNG_ODR
+                          AND OLPD.OUTORD_LBRCO_PRMPC_SN = OLPD.OUTORD_LBRCO_PRMPC_SN
                   WHERE OLPD.PRJCT_ID = #{prjctId}
                     AND PBP.ATRZ_DMND_STTS_CD  = #{atrzDmndSttsCd}
                     AND OLPD.BGT_MNG_ODR = #{bgtMngOdr}
@@ -1407,10 +1414,13 @@
 		        <if test="hdofSttsNm != null and hdofSttsNm !=''">
 		            AND C2.CD_VALUE = #{hdofSttsNm}
 		        </if>
+		           AND E.EMP_TY_CD != 'VTW00203'
+		           AND E.EMPNO NOT IN ('VK0101', 'VK0102', 'VK0103', 'VK0104', 'VK0105', 'VK0106', 'VK0107', 'VK0108', 'VK0109', 'VK0110', 'VM1000')
+		           AND D.END_YN = 'N'
 		        GROUP BY
 		        E.EMP_ID, E.EMPNO, E.EMP_FLNM, E.EMP_TY_CD, C.CD_NM,
 		        E.TELNO, E.EML, C2.CD_NM, C3.CD_NM, E.ACTNO, C.CD_VALUE, C3.CD_VALUE, C2.CD_VALUE,READ_YN, WRITE_YN
-		        ORDER BY E.JBPS_CD ASC
+		        ORDER BY E.EMPNO ASC
 		        ) A
     </select>
 
@@ -1587,7 +1597,7 @@
 							 			  JOIN PRJCT_BGT_PRMPC PBP 
 										    ON PBP.PRJCT_ID = MIM.PRJCT_ID AND PBP.BGT_MNG_ODR = MIM.BGT_MNG_ODR
 							 			  JOIN MMNY_LBRCO_PRMPC MLP 
-										    ON MLP.PRJCT_ID = MIM.PRJCT_ID AND MIM.BGT_MNG_ODR = MLP.BGT_MNG_ODR
+										    ON MLP.PRJCT_ID = MIM.PRJCT_ID AND MIM.BGT_MNG_ODR = MLP.BGT_MNG_ODR AND MLP.MMNY_LBRCO_PRMPC_SN = MIM.MMNY_LBRCO_PRMPC_SN
 							 			WHERE MIM.PRJCT_ID = #{prjctId}
 							 			  AND PBP.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
 							 			  AND MIM.BGT_MNG_ODR = #{bgtMngOdrTobe}
@@ -1595,8 +1605,8 @@
 						 FROM MMNY_INPT_MM MIM
 					     JOIN PRJCT_BGT_PRMPC PBP 
 						   ON PBP.PRJCT_ID = MIM.PRJCT_ID AND PBP.BGT_MNG_ODR = MIM.BGT_MNG_ODR
-						 JOIN MMNY_LBRCO_PRMPC MLP 
-						   ON MLP.PRJCT_ID = MIM.PRJCT_ID
+						 JOIN MMNY_LBRCO_PRMPC MLP  
+						   ON MLP.PRJCT_ID = MIM.PRJCT_ID AND MIM.BGT_MNG_ODR = MLP.BGT_MNG_ODR AND MLP.MMNY_LBRCO_PRMPC_SN = MIM.MMNY_LBRCO_PRMPC_SN
 						WHERE MIM.PRJCT_ID = #{prjctId}
 						  AND PBP.ATRZ_DMND_STTS_CD  = 'VTW03703'
 						  AND MIM.BGT_MNG_ODR = MLP.BGT_MNG_ODR
@@ -1620,7 +1630,7 @@
 			     						JOIN PRJCT_BGT_PRMPC PBP 
 										  ON PBP.PRJCT_ID  = OLPD.PRJCT_ID AND PBP.BGT_MNG_ODR = OLPD.BGT_MNG_ODR
 			     						JOIN OUTORD_LBRCO_PRMPC OLP 
-										  ON OLP.PRJCT_ID = OLPD.PRJCT_ID AND OLPD.BGT_MNG_ODR = OLP.BGT_MNG_ODR
+										  ON OLP.PRJCT_ID = OLPD.PRJCT_ID AND OLPD.BGT_MNG_ODR = OLP.BGT_MNG_ODR AND OLPD.OUTORD_LBRCO_PRMPC_SN = OLPD.OUTORD_LBRCO_PRMPC_SN
 			     					   WHERE OLPD.PRJCT_ID = #{prjctId}
 			     						 AND PBP.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
 			     						 AND OLPD.BGT_MNG_ODR = #{bgtMngOdrTobe}
@@ -1629,7 +1639,7 @@
 			     	   JOIN PRJCT_BGT_PRMPC PBP 
 					     ON PBP.PRJCT_ID = OLPD.PRJCT_ID AND PBP.BGT_MNG_ODR = OLPD.BGT_MNG_ODR
 			     	   JOIN OUTORD_LBRCO_PRMPC OLP 
-					     ON OLP.PRJCT_ID = OLPD.PRJCT_ID AND OLPD.BGT_MNG_ODR = OLP.BGT_MNG_ODR
+					     ON OLP.PRJCT_ID = OLPD.PRJCT_ID AND OLPD.BGT_MNG_ODR = OLP.BGT_MNG_ODR AND OLPD.OUTORD_LBRCO_PRMPC_SN = OLPD.OUTORD_LBRCO_PRMPC_SN
 			     	  WHERE OLPD.PRJCT_ID = #{prjctId}
 			     		AND PBP.ATRZ_DMND_STTS_CD = 'VTW03703'
 			     		AND OLPD.BGT_MNG_ODR = #{bgtMngOdr}
@@ -1762,5 +1772,100 @@
 		 WHERE 1=1
 		   AND PRJCT_ID = #{prjctId}
 		   AND ATRZ_DMND_STTS_CD = 'VTW03703'
+	</select>
+	
+	<select id="retrievePrjctPrmpcTotBgtCmpr" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT
+				T1.BFE_TOT_BGT,
+				T1.AFTR_TOT_BGT, 
+				T1.AFTR_MM_BGT + T1.AFTR_OUT_MM_BGT + T1.AFTR_GNR_BGT + T1.AFTR_MATRL_BGT + T1.AFTR_OUT_ENTRPS_BGT + T1.AFTR_CNTRL_BGT AS BGT,
+				T1.AFTR_TOT_BGT - (T1.AFTR_MM_BGT + T1.AFTR_OUT_MM_BGT + T1.AFTR_GNR_BGT + T1.AFTR_MATRL_BGT + T1.AFTR_OUT_ENTRPS_BGT + T1.AFTR_CNTRL_BGT) AS CHG_BGT, 
+				CONCAT(100 - ROUND((T1.AFTR_MM_BGT + T1.AFTR_OUT_MM_BGT + T1.AFTR_GNR_BGT + T1.AFTR_MATRL_BGT + T1.AFTR_OUT_ENTRPS_BGT + T1.AFTR_CNTRL_BGT) / T1.AFTR_TOT_BGT * 100, 2), "%") AS RATE
+		 FROM (
+		   		 SELECT
+		   		 	    IFNULL((
+				   		 		 SELECT (COALESCE(T.TOT_BGT, 0) + SUM(COALESCE(T.CMMN_EXPENS_AMT, 0))) 
+								   FROM (
+									  	 SELECT M.TOT_BGT, M.PRJCT_ID,S.CNSRTM_CO_NM,S.CMMN_EXPENS_AMT 
+									 	   FROM PRJCT M
+										   LEFT JOIN PRJCT_CNSRTM S
+											 ON M.PRJCT_ID = S.PRJCT_ID AND S.SLS_AM_RFLT_YN  = 'Y'
+										  WHERE 1=1
+										    AND M.PRJCT_ID = #{prjctId}
+				   						) T
+				   		 		), 0) AS BFE_TOT_BGT
+		   		 	  , IFNULL((
+				   		 		 SELECT (COALESCE(T.TOT_BGT, 0) + SUM(COALESCE(T.CMMN_EXPENS_AMT, 0))) 
+								   FROM (
+									  	 SELECT M.TOT_BGT, M.PRJCT_ID,S.CNSRTM_CO_NM,S.CMMN_EXPENS_AMT 
+									 	   FROM PRJCT M
+										   LEFT JOIN PRJCT_CNSRTM S
+											 ON M.PRJCT_ID = S.PRJCT_ID AND S.SLS_AM_RFLT_YN  = 'Y'
+										  WHERE 1=1
+										    AND M.PRJCT_ID = #{prjctId}
+				   						) T
+				   			    ), 0) AS AFTR_TOT_BGT
+					  , IFNULL((
+					 			SELECT SUM(IFNULL(MIM.EXPECT_MM, 0) * IFNULL(MIM.UNTPC, 0))
+					 			  FROM MMNY_INPT_MM MIM
+					 			  JOIN PRJCT_BGT_PRMPC PBP 
+								    ON PBP.PRJCT_ID = MIM.PRJCT_ID AND PBP.BGT_MNG_ODR = MIM.BGT_MNG_ODR
+					 			  JOIN MMNY_LBRCO_PRMPC MLP 
+								    ON MLP.PRJCT_ID = MIM.PRJCT_ID AND MIM.BGT_MNG_ODR = MLP.BGT_MNG_ODR AND MLP.MMNY_LBRCO_PRMPC_SN = MIM.MMNY_LBRCO_PRMPC_SN
+					 			WHERE MIM.PRJCT_ID = #{prjctId}
+					 			  AND PBP.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
+					 			  AND MIM.BGT_MNG_ODR = #{bgtMngOdrTobe}
+					  			), 0) AS AFTR_MM_BGT
+					  , IFNULL((
+		     					SELECT SUM(IFNULL(OLP.UNTPC,0) * IFNULL(OLPD.EXPECT_MM,0))
+		     					  FROM OUTORD_LBRCO_PRMPC_DTL OLPD
+		     					  JOIN PRJCT_BGT_PRMPC PBP 
+									ON PBP.PRJCT_ID  = OLPD.PRJCT_ID AND PBP.BGT_MNG_ODR = OLPD.BGT_MNG_ODR
+		     					  JOIN OUTORD_LBRCO_PRMPC OLP 
+									ON OLP.PRJCT_ID = OLPD.PRJCT_ID AND OLPD.BGT_MNG_ODR = OLP.BGT_MNG_ODR AND OLPD.OUTORD_LBRCO_PRMPC_SN = OLPD.OUTORD_LBRCO_PRMPC_SN
+		     					 WHERE OLPD.PRJCT_ID = #{prjctId}
+		     					   AND PBP.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
+		     					   AND OLPD.BGT_MNG_ODR = #{bgtMngOdrTobe}
+		     				   ),0) AS AFTR_OUT_MM_BGT
+					  , IFNULL((
+							    SELECT SUM(EXPECT_CT)
+							      FROM OUTORD_ENTRPS_CT_PRMPC OECP
+							      JOIN PRJCT_BGT_PRMPC PBP 
+								    ON PBP.PRJCT_ID = OECP.PRJCT_ID AND PBP.BGT_MNG_ODR = OECP.BGT_MNG_ODR
+							     WHERE OECP.PRJCT_ID = #{prjctId}
+							       AND PBP.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
+							       AND OECP.BGT_MNG_ODR = #{bgtMngOdrTobe}
+					           ), 0) AS AFTR_OUT_ENTRPS_BGT
+				      , IFNULL((
+							    SELECT
+								  	   SUM(EMPD.EXPECT_CT)
+							   	  FROM EXPENS_MNBY_PRMPC_DTLS EMPD
+							   	  JOIN PRJCT_BGT_PRMPC PBP ON PBP .PRJCT_ID = EMPD.PRJCT_ID AND PBP.BGT_MNG_ODR = EMPD.BGT_MNG_ODR
+							   	 WHERE EMPD.PRJCT_ID = #{prjctId}
+							       AND EMPD.EXPENS_CD  BETWEEN 'VTW04501' AND 'VTW04528'
+							       AND PBP.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
+							       AND EMPD.BGT_MNG_ODR = #{bgtMngOdrTobe}
+						     ),0) AS AFTR_GNR_BGT
+					   , IFNULL((
+							    SELECT
+							  	 	   SUM(EMPD.EXPECT_CT)
+							      FROM EXPENS_MNBY_PRMPC_DTLS EMPD
+							      JOIN PRJCT_BGT_PRMPC PBP 
+								    ON PBP.PRJCT_ID = EMPD.PRJCT_ID AND PBP.BGT_MNG_ODR = EMPD.BGT_MNG_ODR
+							     WHERE EMPD.PRJCT_ID = #{prjctId}
+							       AND EMPD.EXPENS_CD  BETWEEN 'VTW04529' AND 'VTW04535'
+							       AND PBP.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
+							       AND EMPD.BGT_MNG_ODR = #{bgtMngOdrTobe}
+							   ),0) AS AFTR_CNTRL_BGT
+					  , IFNULL((
+								SELECT
+									   SUM(MCP.CTRT_AMT)
+								  FROM MATRL_CT_PRMPC MCP
+								  JOIN PRJCT_BGT_PRMPC PBP ON PBP .PRJCT_ID = MCP.PRJCT_ID AND PBP.BGT_MNG_ODR = MCP.BGT_MNG_ODR
+								  WHERE MCP.PRJCT_ID = #{prjctId}
+									AND PBP.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
+									AND MCP.BGT_MNG_ODR = #{bgtMngOdrTobe}
+							   ),0) AS AFTR_MATRL_BGT
+			  ) T1
 	</select>
 </mapper>

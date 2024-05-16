@@ -3,9 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import  ProjectStngInfoJson from "./ProjectStngInfoJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
 import SearchEmpSet from "components/composite/SearchInfoSet";
-import CustomTable from "components/unit/CustomTable";
 import CustomEditTable from "components/unit/CustomEditTable";
-import { useCookies } from "react-cookie";
 import { useModal } from "../../../components/unit/ModalContext";
 
 function ProjectStngInfo( prjctId ) {
@@ -16,11 +14,11 @@ function ProjectStngInfo( prjctId ) {
   const [param, setParam] = useState({
      "prjctId": prjctId.prjctId
     ,"queryId": queryId});
-  const [cookies] = useCookies(["userInfo", "userAuth"]);
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const { handleOpen } = useModal();
 
   const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
-  const userEmpId = cookies.userInfo.empId;
+  const userEmpId = userInfo.empId;
 
  
   useEffect(() => {

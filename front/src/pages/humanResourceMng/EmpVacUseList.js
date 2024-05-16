@@ -168,21 +168,13 @@ const EmpVacUseList = (callBack,props) => {
       }
     //===========화면 그리는 부분================================================
     return (
-        <div className="container">
-            <div
-                className="title p-1"
-                style={{ marginTop: "20px", marginBottom: "10px" }} 
-            >
-                <h1 style={{ fontSize: "30px" }}>휴가사용내역</h1>
-
+            <div style={{ marginLeft: "1%", marginRight: "1%" }}>
+            <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
+                  <h1 style={{ fontSize: "30px" }}>휴가사용내역</h1>
             </div>
-            <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
-            <span>* 직원의 휴가정보를 조회합니다.</span>  
+            <div className="mx-auto" style={{ marginBottom: "10px" }}>
+                  <span>* 휴가사용내역을 조회합니다.</span>
             </div>
-            {/* <div className="wrap_search" style={{ marginBottom: "20px" }}>
-             <SearchEmpVacSet callBack={searchHandle} props={searchParams} />
-            </div> */}
-            
             {/*----------------서치셋 구간---------------------------------------------------------------- */}
             <div className="box_search" style={{ marginBottom: "20px" }} width="60%" >
             <Box

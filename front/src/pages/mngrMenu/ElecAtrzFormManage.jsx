@@ -23,13 +23,13 @@ function reorderItem(array, fromIdx, toIdx) {
   return insertItem(result, item, toIdx);
 }
 
-
 // 화면에 리스트를 보여주는 컴포넌트
 const  ElecAtrzFormManage = ({}) => {
 
   const [statuses, setStatuses] = useState([]);
   const [formList, setFormList] = useState([]); //전자결재문서서식 리스트
   const [lists, setLists] = useState([]); // 리스트 상태
+  const [updateItem, setUpdateItem] = useState(null);
   const navigate = useNavigate();
  
   const getLists = (taskArray) => {
@@ -42,24 +42,20 @@ const  ElecAtrzFormManage = ({}) => {
       return result;
     }, {});
 
-    setStatuses(Object.keys(tasksMap));
-    return Object.keys(tasksMap).map((key) => tasksMap[key]);
+    const sortedKeys = Object.keys(tasksMap).sort();
+    const sortedTasks = sortedKeys.map((key) => {
+      return tasksMap[key].sort((a, b) => a.indctOrdr - b.indctOrdr);
+    });
+    setStatuses(sortedKeys);
+  return sortedTasks;
   }
-
-  useEffect(() => {
-
-  }, [formList]);
-
-  useEffect(() => {
-
-  }, [lists]);
 
 
   //전자결재문서서식 리스트 가져오기
   useEffect(() => {
     const param = [ { tbNm: "ELCTRN_ATRZ_DOC_FORM" },{} ]
 
-    const getElecaAtrzFormList = async () => {
+    const getElecaAtrzFormList = async() => {
       try {
         const response = await ApiRequest("/boot/common/commonSelect", param);
         setFormList(response);
@@ -97,60 +93,100 @@ const  ElecAtrzFormManage = ({}) => {
     [lists],
   );
 
-  //Card 컴포넌트
-const Card = ({ task, switchUseYn, switchEprssYn }) => ( //TODO.우선순위에 따라 카드색깔 변경  >> 이걸 서식 종류에 따라 색깔 바꾸게 하면 될듯
-<div className="card dx-card dx-theme-text-color dx-theme-background-color">
-  <div className={`card-priority priority-${task.Task_Priority}`}></div>  
-  <div className="card-subject">{task.gnrlAtrzTtl}</div>
-  <Button text='수정' 
-  onClick={(e)=>{
-    navigate("/mngrMenu/ElecAtrzNewForm", {state : task});
-    }}
-    >
-  </Button> 
-  <div style={{display:'flex', alignSelf:'center', marginTop:'10px'}}>
-    <div className='switch-name'>서식사용</div> 
-    <Switch 
-      value={switchUseYn} 
-      onValueChanged={()=>{}}/>
-    <div className='switch-name'style={{ marginLeft:'20px'}}>화면표시</div> 
-    <Switch 
-      value={switchEprssYn} 
-      onValueChanged={()=>{}}/>
-  </div>
-</div>
-); 
+  const handleSwitchYnChange = (index, cardIndex, newValue, column) => {
+    setLists(prevState =>
+      prevState.map((list, lisIdx) =>  
+        list.map((item, itemIdx) => {
+          if (lisIdx === index && itemIdx === cardIndex) {
+            const updatedItem = { ...item, [column]: (newValue.value?"N":"Y") };
+            setUpdateItem(updatedItem);
+            return updatedItem
+          }
+          return item;
+        })
+      )
+    );
+  };
 
-//List 컴포넌트
-const List = ({
-title, index, tasks, onTaskDrop,
-}) => (
-<div className="list">
-  <div className="list-title dx-theme-text-color">{title}</div>
-  <ScrollView
-    className="scrollable-list"
-    direction="vertical"
-    showScrollbar="always"
-  >
-    <Sortable
-      className="sortable-cards"
-      group="cardsGroup"
-      data={index}
-      onReorder={onTaskDrop}
-      onAdd={onTaskDrop}
+  //switch update 핸들링
+  useEffect(()=>{
+    if(updateItem){
+      updatedItemApi(); 
+    }
+  },[updateItem]);
+
+  const updatedItemApi = async() => {
+    const param = [
+      { tbNm: "ELCTRN_ATRZ_DOC_FORM" },
+      { eprssYn: updateItem.eprssYn
+        , useYn: updateItem.useYn },
+      { atrzFormDocId: updateItem.atrzFormDocId }
+    ];
+    try {
+      const response = await ApiRequest("/boot/common/commonUpdate", param);
+      setFormList(response);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  
+
+  //Card 컴포넌트
+  const Card = ({ task, switchUseYn, switchEprssYn, onSwitchUseYnChange, onSwitchEprssYnChange }) => 
+  ( 
+    <div className="card dx-card dx-theme-text-color dx-theme-background-color">
+      <div className={`card-priority priority-${task.Task_Priority}`}></div>  
+      <div className="card-subject">{task.gnrlAtrzTtl}</div>
+      <Button text='수정' 
+        onClick={(e)=>{
+          navigate("/mngrMenu/ElecAtrzNewForm", {state : task});
+          }}
+      />
+      <div style={{display:'flex', alignSelf:'center', marginTop:'10px'}}>
+        <div className='switch-name'>서식사용</div> 
+        <Switch 
+          value={switchUseYn} 
+          onValueChanged={onSwitchUseYnChange}
+          />
+        <div className='switch-name'style={{ marginLeft:'20px'}}>화면표시</div> 
+        <Switch 
+          value={switchEprssYn} 
+          onValueChanged={onSwitchEprssYnChange}
+          />
+      </div>
+    </div>
+  ); 
+
+  //List 컴포넌트
+  const List = ({title, index, tasks, onTaskDrop}) => (
+  <div className="list">
+    <div key={index} className="list-title dx-theme-text-color">{title}</div>
+    <ScrollView
+      className="scrollable-list"
+      direction="vertical"
+      showScrollbar="always"
     >
-      {tasks.map((task) => (
-        <Card
-          key={task.atrzFormDocSn}
-          task={task}
-          switchUseYn={task.useYn === 'Y' ? true : false}
-          switchEprssYn={task.eprssYn === 'Y' ? true : false}
-        ></Card>
-      ))}
-    </Sortable>
-  </ScrollView>
-</div>
-);
+      <Sortable
+        className="sortable-cards"
+        group="cardsGroup"
+        data={index}
+        onReorder={onTaskDrop}
+        onAdd={onTaskDrop}
+      >
+        {tasks.map((task, cardIndex) => (
+          <Card
+            key={task.atrzFormDocSn}
+            task={task}
+            switchUseYn={task.useYn === 'Y' ? true : false}
+            switchEprssYn={task.eprssYn === 'Y' ? true : false}
+            onSwitchUseYnChange={(newValue) => handleSwitchYnChange(index, cardIndex, newValue, "useYn")}
+            onSwitchEprssYnChange={(newValue) => handleSwitchYnChange(index, cardIndex, newValue, "eprssYn")}
+          />
+        ))}
+      </Sortable>
+    </ScrollView>
+  </div>
+  );
 
   return (
     <div className="container" style={{ marginTop: "30px" }}>
@@ -180,7 +216,6 @@ title, index, tasks, onTaskDrop,
             onReorder={onListReorder}
           >
             <div className="cards-container">
-              {/* {console.log("lists",lists)} */}
               {lists.map((tasks, listIndex) => {
                 const status = statuses[listIndex];
                 return (

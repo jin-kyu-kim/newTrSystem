@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import { Button } from "devextreme-react/button";
 import { Tooltip } from 'devextreme-react/tooltip';
@@ -11,8 +10,8 @@ import "./ElecAtrz.css";
 
 const ElecAtrz = () => {
   const navigate = useNavigate();
-  const [ cookies ] = useCookies(["userInfo", "userAuth"]);
-  const empId = cookies.userInfo.empId;
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const empId = userInfo.empId;
   const { keyColumn, queryId, countQueryId, barList, searchInfo, baseColumns } = elecAtrzJson.elecMain;
   const [ param, setParam ] = useState({});
   const [ clickBox, setClickBox ] = useState(null);

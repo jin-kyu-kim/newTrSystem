@@ -1,12 +1,8 @@
 import { useState, useEffect } from "react";
-import { useCookies } from "react-cookie";
-
 import ApiRequest from "utils/ApiRequest";
-
 // 날짜관련
 // npm install moment
 import Moment from "moment"
-
 // DevExtrme import
 import { DateBox, SelectBox, Popup, TagBox, TextArea, Button } from "devextreme-react";
 import { useModal } from "../../components/unit/ModalContext";
@@ -14,8 +10,8 @@ import { useModal } from "../../components/unit/ModalContext";
 const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgRoomRsvtAtdrnValue, mtgRoomRsvtListValue, onHiding, title, state, authState }) => {
 
     // 세션설정
-    const [cookies, setCookie] = useCookies(["userInfo", "deptInfo"]);
-    const sessionEmpId = cookies.userInfo.empId
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    const sessionEmpId = userInfo.empId
 
     const { handleOpen } = useModal();
 

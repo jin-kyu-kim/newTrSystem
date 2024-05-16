@@ -1,7 +1,6 @@
 import { Button } from 'devextreme-react';
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate, useLocation} from 'react-router-dom';
-import { useCookies } from "react-cookie";
 import { Item, Form, GroupItem, RequiredRule } from 'devextreme-react/form';
 import ApiRequest from "utils/ApiRequest";
 import HtmlEditBox from "components/unit/HtmlEditBox";
@@ -18,8 +17,8 @@ const ElecAtrzNewForm = ({}) => {
     const navigate = useNavigate();
     const location = useLocation();
     const formRef = useRef(null);
-    const [cookies] = useCookies(["userInfo", "userAuth"]);
-    const empId = cookies.userInfo.empId;
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    const empId = userInfo.empId;
     const date = moment();
     const [formData, setFormData] = useState({
         atrzFormDocId: uuid(),

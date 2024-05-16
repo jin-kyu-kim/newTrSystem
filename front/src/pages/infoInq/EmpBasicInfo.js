@@ -7,7 +7,6 @@ import {
   Form,
   GroupItem,
 } from "devextreme-react/form";
-import { useCookies } from "react-cookie";
 import CustomCdComboBox from "components/unit/CustomCdComboBox";
 import { DateBox, NumberBox, TextBox } from "devextreme-react";
 import { useModal } from "../../components/unit/ModalContext";
@@ -15,14 +14,13 @@ import { useModal } from "../../components/unit/ModalContext";
 const EmpBasicInfo = ({naviEmpId}) => {
   const [baseInfoData, setBaseInfoData] = useState([]);
   /*유저세션*/
-  const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
-
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
    let empId;
 
     if(naviEmpId.length !== 0){
         empId = naviEmpId;
     } else {
-        empId = cookies.userInfo.empId;
+        empId = userInfo.empId;
     }
 
   const [empCnt, setEmpCnt] = useState(0);

@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import TimeExpenseInsertSttusJson from "./TimeExpenseInsertSttusJson.json";
 import Button from "devextreme-react/button";
-import { useCookies } from "react-cookie";
 import ApiRequest from "utils/ApiRequest";
 import CustomTable from "components/unit/CustomTable";
 import SearchPrjctCostSet from "../../components/composite/SearchPrjctCostSet";
@@ -15,7 +14,6 @@ import TimeExpenseCancelPopup from "./TimeExpenseCancelPopup"
 
 const TimeExpenseInsertSttus = ({}) => {
 //====================선언구간====================================================
-const [cookies] = useCookies([]);
 
 const [totValues, setTotValues] = useState([]);   //상단values
 const [dtlValues, setDtlValues] = useState([]); //하단values
@@ -415,7 +413,7 @@ const handleCheckBoxChange = useCallback((e, key) => {
 
 //========================화면그리는 구간 ====================================================
   return(
-      <div className="container">
+      <div className="">
           <div className="col-md-10 mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
                 <h1 style={{ fontSize: "30px" }}>근무시간비용 입력 현황</h1>
           </div>
