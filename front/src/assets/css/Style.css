@@ -318,3 +318,8 @@
 .dx-datagrid .dx-header-row {
   background-color: #f0f0f0; 
 }
+
+.dx-row:hover {
+  background-color: #dde7f7;
+  cursor: pointer; 
+}
