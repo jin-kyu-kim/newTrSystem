@@ -32,8 +32,9 @@ export const validateFields = async (selectedItem, placeholderAndRequired, setVa
             newErrors.push('error');
             errorMessages.add('비용코드를 선택해주세요');
         }
+        
         // 단일 등록시 사용가능 최대 금액 검사
-        if (buttonGroup.length < 2) {
+        if (item.elctrnAtrzId === undefined) {
             if (checkMaxAmt(item.utztnAmt, empInfo)) {
                 newErrors.push('error');
                 errorMessages.add('최대 사용금액을 초과했습니다. 전자결재를 통해 신청해주시길 바랍니다.'); 

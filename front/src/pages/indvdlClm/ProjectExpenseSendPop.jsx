@@ -7,6 +7,7 @@ const ProjectExpenseSendPop = ({ visible, onPopHiding, selectedItem, btnName }) 
     
     const onClickBtn = (btnNm) => {
         const formData = {
+            ...selectedItem,
             elctrnAtrzTySeCd: 'VTW04907',
             gnrlAtrzTtl: btnNm
         }
@@ -17,7 +18,7 @@ const ProjectExpenseSendPop = ({ visible, onPopHiding, selectedItem, btnName }) 
         marginTop: '30px',
         display: 'flex',
         justifyContent: 'center',
-        gap: '20px',  // 버튼 간의 간격을 조절
+        gap: '20px'
     };
 
     const buttonStyle = {
@@ -27,7 +28,7 @@ const ProjectExpenseSendPop = ({ visible, onPopHiding, selectedItem, btnName }) 
         alignItems: 'center',
         justifyContent: 'center',
         fontSize: '16px',
-        fontWeight: 'bold',
+        fontWeight: 'bold'
     };
 
     const content = () => {

@@ -11,7 +11,6 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
       <DataGrid
         keyExpr={keyColumn}
         id={"dataGrid"}
-        className={"table"}
         dataSource={values}
         showBorders={true}
         showColumnLines={false}
