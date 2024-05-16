@@ -29,7 +29,7 @@ export const navigation = [
         auth: 'USER'
       },{
         text: '회의실예약',
-        path: '/humanResourceMng/MeetingRoomManage2',
+        path: '/humanResourceMng/MeetingRoomManage',
         auth: 'VTW04805'
       }
       // ,{
@@ -118,7 +118,7 @@ export const navigation = [
         auth: 'VTW04805'
       },{
         text: '회의실예약관리',
-        path: '/humanResourceMng/MeetingRoomManage',
+        path: '/humanResourceMng/MeetingRoomManageAdmin',
         auth: 'VTW04805'
       },
     ]

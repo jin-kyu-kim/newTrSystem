@@ -203,14 +203,9 @@ const EmpVcatnAltmntMng = () => {
             handleOpen(errorMsg);
             return;
         } else {
-            const isconfirm = window.confirm("휴가정보를 저장 하시겠습니까?");
-            if (isconfirm) {
-                await ApiRequest("/boot/common/queryIdSearch", selectValue);
-                handleOpen("저장되었습니다.");
-                onSearch();
-            } else {
-                return;
-            }
+            await ApiRequest("/boot/common/queryIdSearch", selectValue);
+            handleOpen("저장되었습니다.");
+            onSearch();
         }
     }
 
@@ -268,25 +263,6 @@ const EmpVcatnAltmntMng = () => {
     }
 
 
-
-    const handleFileUpload = (event) => {
-        const file = event.target.files[0];
-        const reader = new FileReader();
-    
-        reader.onload = (e) => {
-          const data = new Uint8Array(e.target.result);
-          const workbook = XLSX.read(data, { type: 'array' });
-    
-          // 첫 번째 시트를 가져옴
-          const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    
-          // 셀 데이터를 파싱하여 출력
-          const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-          console.log(jsonData);
-        };
-    
-        reader.readAsArrayBuffer(file);
-    }
 
     return (
         <div style={{ marginLeft: "1%", marginRight: "1%" }}>
@@ -489,7 +465,7 @@ const EmpVcatnAltmntMng = () => {
                                                 onValueChange={(e) => {
                                                     setSelectValue({
                                                         ...selectValue,
-                                                        vcatnAltmntDaycnt: e
+                                                        vcatnAltmntDaycnt: e,
                                                     })
                                                 }}
                                             />
@@ -525,7 +501,7 @@ const EmpVcatnAltmntMng = () => {
                         </div>
                         <div div className="row" style={{ display: "inline-block", float: "right", marginTop: "25px" }}>
                             <Button style={{ height: "48px", width: "120px", marginRight: "15px" }} onClick={() => {setPopupExcelUploadValue({ visible: true })}}>엑셀업로드</Button>
-                            <Button style={{ height: "48px", width: "60px", marginRight: "15px" }} onClick={btnSaveClick}>저장</Button>
+                            <Button style={{ height: "48px", width: "60px", marginRight: "15px" }} onClick={() => handleOpen("휴가정보를 저장 하시겠습니까?", btnSaveClick)}>저장</Button>
                             <Button style={{ height: "48px", width: "60px" }} onClick={(e) => {
                                 setParamFlag({
                                     insertVcantFlag: 1,

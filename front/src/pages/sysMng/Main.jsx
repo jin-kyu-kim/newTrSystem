@@ -108,7 +108,7 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
       window.open("http://kms.vtw.co.kr/#/login");
     }
     const goConference = (e) => {  //회의실예약이동
-        navigate("/humanResourceMng/MeetingRoomManage2", 
+        navigate("/humanResourceMng/MeetingRoomManage", 
                 { state: { 
                         empId: empId,
                         } 

@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useCookies } from "react-cookie";
 
 import { Scheduler } from 'devextreme-react';
 import { Resource, View } from 'devextreme-react/scheduler';
@@ -17,7 +16,8 @@ import "pages/humanResourceMng/MeetingRoomManage.css"
 
 const MeetingRoomManage = () => {
     // 세션설정
-    const [cookies, setCookie] = useCookies(["userInfo", "deptInfo"]);
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    const userAuth = JSON.parse(localStorage.getItem("userAuth"));
 
 
 
@@ -105,7 +105,7 @@ const MeetingRoomManage = () => {
         // 선택한 셀의 시작일자, 종료일자, 회의실종류 설정
         popupMtgRoomRsvt.current = ([{
             mtgRoomCd: e.cellData.groups.mtgRoomCd,
-            rsvtEmpId: cookies.userInfo.empId,
+            rsvtEmpId: userInfo.empId,
             useYmd: Moment(e.cellData.startDate).format("YYYYMMDD"),
             useEndYmd: Moment(e.cellData.startDate).format("YYYYMMDD"),
             useBgngHm: Moment(e.cellData.startDate).format("HHMM"),
@@ -127,9 +127,9 @@ const MeetingRoomManage = () => {
         popupMtgRoomRsvt.current = selectMtgRoomValue.filter(item => item.mtgRoomRsvtSn == e.appointmentData.mtgRoomRsvtSn);
         selectMtgRoomRsvtAtdrn(e.appointmentData.mtgRoomRsvtSn);
 
-        if(cookies.userAuth.find((item) => item == "VTW04805")){
+        if(userAuth.find((item) => item == "VTW04805")){
             setAuthValue("all")
-        } else if(!cookies.userAuth.find((item) => item == "VTW04805") && e.appointmentData.rsvtEmpId == cookies.userInfo.empId){
+        } else if(!userAuth.find((item) => item == "VTW04805") && e.appointmentData.rsvtEmpId == userInfo.empId){
             setAuthValue("self")
         } else {
             setAuthValue("none")
@@ -186,9 +186,9 @@ const MeetingRoomManage = () => {
     }, []);
 
     return (
-        <div className="" style={{ marginLeft: "2%", marginRight: "2%" }}>
+        <div className="" style={{ marginLeft: "1%", marginRight: "1%" }}>
             <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
-                <h1 style={{ fontSize: "30px" }}>회의실예약 {cookies.userAuth.find((item) => item == "VTW04805") ? <>(관리자)</> : ""}</h1>
+                <h1 style={{ fontSize: "30px" }}>회의실예약 {userAuth.find((item) => item == "VTW04805") ? <>(관리자)</> : ""}</h1>
             </div>
             <div className="mx-auto" style={{ marginBottom: "10px" }}>
                 <span>* 회의실 예약 내역 조회, 예약 및 예약수정이 가능합니다.</span>
