@@ -1,15 +1,15 @@
 {
     "menuName": "ProjectPrmpcBgtCmpr",
     "queryId": "projectMapper.retrievePrjctPrmpcBgtCmpr",
+    "totQueryId": "projectMapper.retrievePrjctPrmpcTotBgtCmpr",
     "keyColumn": "ctNm",
     "wordWrap": true,
-    
     "tableColumns": [
-      { "key": "prmpcAcctoTot", "value":"원가별집계", "width": 120, "alignment": "center" },
-      { "key": "ctNm", "value": "원가항목", "width": 300, "alignment": "center"  },
-      { "key": "bfeBgt", "value": "변경 전 예산(원)", "width": 200, "alignment": "center", "currency": true},
-      { "key": "aftrBgt", "value": "변경 후 예산(원)", "width": 200, "alignment": "center", "currency": true },
-      { "key": "ajmtBgt", "value":"조정액(원)", "width": 200, "alignment": "center","currency": true }
+      { "key": "prmpcAcctoTot", "value":"원가별집계", "width": "20%", "alignment": "center" },
+      { "key": "ctNm", "value": "원가항목", "width": "20%", "alignment": "center"  },
+      { "key": "bfeBgt", "value": "변경 전 예산(원)", "width": "20%", "alignment": "center", "currency": true},
+      { "key": "aftrBgt", "value": "변경 후 예산(원)", "width": "20%", "alignment": "center", "currency": true },
+      { "key": "ajmtBgt", "value":"조정액(원)", "width": "20%", "alignment": "center","currency": true }
   ],
   
     "groupingColumn" : [
@@ -18,6 +18,15 @@
         { "key": "ajmtBgt", "value":"조정액(원)", "summaryType"  : "sum", "valueFormat": "#,##0", "displayFormat" : "{0} 원" }
       ],
      "groupingData" : 
-    {"caption":"원가별집계", "dataField": "kind" , "format": "#,##0"}
+    {"caption":"원가별집계", "dataField": "kind" , "format": "#,##0"},
+
+    "totKeyColumn": "rate",
+    "totTableColumns": [
+      { "key": "bfeTotBgt", "value": "변경 전 매출액(원)", "width": "20%", "alignment": "center", "currency": true},
+      { "key": "aftrTotBgt", "value": "변경 후 매출액(원)", "width":"20%", "alignment": "center", "currency": true },
+      { "key": "bgt", "value":"원가별집계(원)", "width": "20%", "alignment": "center","currency": true },
+      { "key": "chgBgt", "value":"매출액 - 원가별집계(원)", "width": "20%", "alignment": "center","currency": true },
+      { "key": "rate", "value":"비율(%)", "width": "20%", "alignment": "center"}
+  ]
      
   }
