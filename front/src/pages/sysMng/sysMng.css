@@ -74,9 +74,6 @@
   font-weight: bold;
 }
 
-.editGridStyle .dx-datagrid .dx-header-row {
-  background-color: #f0f0f0; 
-}
 .dx-header-row>td>.dx-datagrid-text-content {
   font-weight: bolder;
   font-size: medium;

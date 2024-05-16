@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from 'react';
 import ApiRequest from 'utils/ApiRequest';
 import CellRender from './CellRender';
 import { useModal } from "./ModalContext";
-import '../../pages/sysMng/sysMng.css'
 
 const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal, masterDetail, doublePk, noDataText, noEdit,
     onSelection, onRowClick, callback, handleData, handleExpanding, cellRenderConfig, onBtnClick, excel, onExcel, upCdValue,
@@ -116,7 +115,6 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                 {...highlightRows}
                 {...otherDateFormat}
                 {...rowEventHandlers}
-                className='editGridStyle'
                 keyExpr={keyColumn}
                 showBorders={true}
                 showColumnLines={true}

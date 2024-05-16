@@ -75,7 +75,7 @@ const ProjectExpenseExcel = (props) => {
                             "utztnDt": date+time,
                             "useOffic": excel[i].__EMPTY_6,
                             "utztnAmt": utztnAmt,
-                            "aprvNo": excel[i].__EMPTY_20,
+                            "lotteCardAprvNo": excel[i].__EMPTY_20,
                             "prjctCtInptPsbltyYn": "Y",
                             "regEmpId": props.empId,
                             "regDt": formattedDate,
