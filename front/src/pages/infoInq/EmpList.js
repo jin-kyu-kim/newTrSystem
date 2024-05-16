@@ -1,18 +1,13 @@
 import { useState, useEffect } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import  EmpListJson from "../infoInq/EmpListJson.json";
+import EmpListJson from "../infoInq/EmpListJson.json";
 import ApiRequest from "../../utils/ApiRequest";
 import SearchEmpSet from "components/composite/SearchInfoSet";
 import CustomTable from "components/unit/CustomTable";
 
 function EmpList() {
-  const [values, setValues] = useState([]);
-  const [param, setParam] = useState({});
-
-  const [totalItems, setTotalItems] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [ values, setValues ] = useState([]);
+  const [ param, setParam ] = useState({});
+  const [ totalItems, setTotalItems ] = useState(0);
 
   const { keyColumn, queryId, tableColumns, popup, searchInfo } = EmpListJson;
 
@@ -22,20 +17,21 @@ function EmpList() {
     }
   }, [param]);
 
-  // 검색으로 조회할 때
   const searchHandle = async (initParam) => {
     setParam({
       ...initParam,
-      queryId: queryId,
+      queryId: queryId
     });
   };
 
   const pageHandle = async () => {
     try {
       const response = await ApiRequest("/boot/common/queryIdSearch", param);
-      setValues(response);
       if (response.length !== 0) {
+        setValues(response);
+        setTotalItems(response[0].totalItems);
       } else {
+        setTotalItems(0);
       }
     } catch (error) {
       console.log(error);
@@ -64,14 +60,13 @@ function EmpList() {
       <div>검색된 건 수 : {totalItems} 건</div>
       <CustomTable
         keyColumn={keyColumn}
-        pageSize={pageSize}
         columns={tableColumns}
         values={values}
-        paging={true}
         wordWrap={true}
+        paging={true}
+        pageSize={20}
       />
     </div>
   );
 };
-
 export default EmpList;

@@ -39,10 +39,12 @@ const EmpAuth = () => {
         setIsLoading(true);
         try {
             const response = await ApiRequest("/boot/common/queryIdSearch", param);
+            
             if (response.length !== 0) {
                 setValues(response);
                 setTotalItems(response[0].totalItems);
             } else {
+                setValues([]);
                 setTotalItems(0);
             }
         } catch (error) {

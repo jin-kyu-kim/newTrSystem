@@ -106,8 +106,12 @@ const ElecAtrz = () => {
     }
   };
 
+  const onClickBtn = () => {
+
+  }
+
   return (
-    <div className="container">
+    <div>
       <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }} ></div>
       <div className="col-md-10 mx-auto" style={{ marginBottom: "20px", display: 'flex' }}>
         <h3 style={{marginRight: '50px'}}>전자결재</h3>
@@ -137,7 +141,9 @@ const ElecAtrz = () => {
             values={selectedList}
             columns={titleRow}
             wordWrap={true}
-            onRowClick={(e) => sendDetail(e, param)}
+            noDataText={'결재 기안 문서가 없슴니다.'}
+            onClick={onClickBtn}
+            onRowDblClick={(e) => sendDetail(e, param)}
           />
         </div> )}
     </div>

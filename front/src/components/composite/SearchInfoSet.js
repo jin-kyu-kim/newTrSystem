@@ -28,7 +28,7 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "Enter") {
-        searchButtonRef.current.instance.option("onClick")();
+        handleSubmit();
       }
     };
     window.addEventListener("keydown", handleKeyDown);

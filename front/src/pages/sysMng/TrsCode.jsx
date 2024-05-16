@@ -31,12 +31,14 @@ const TrsCode = () => {
   const pageHandle = async () => {
     try {
       const response = await ApiRequest("/boot/common/queryIdSearch", param);
-
+      
       if (response.length !== 0) {
         setValues(response);
         setTotalItems(response[0].totalItems);
-
-      } else setTotalItems(0);
+      } else {
+        setValues([]);
+        setTotalItems(0);
+      }
     } catch (error) {
       console.log(error);
     }
