@@ -9,8 +9,6 @@ import ProjectRegistJson from "./ProjectRegistJson.json"
 import CustomLabelValue from "../../../components/unit/CustomLabelValue"
 import Button from "devextreme-react/button";
 
-import { useCookies } from "react-cookie";
-import { set } from "date-fns";
 import { TextBox } from "devextreme-react/text-box";
 import { useModal } from "../../../components/unit/ModalContext";
 
@@ -22,7 +20,8 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
 
     const [data, setData] = useState([]);
     const [stleCd, setStleCd] = useState();
-    const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    const deptInfo = JSON.parse(localStorage.getItem("deptInfo"));
     const [updateParam, setUpdateParam] = useState([]);
     const [prjctCdIdntfr, setPrjctCdIdntfr] = useState();
     const [ctmmnyId, setCtmmnyId] = useState();
@@ -37,8 +36,8 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
     const [igiYmd, setIgiYmd] = useState();
     const { handleOpen } = useModal();
 
-    const empId = cookies.userInfo.empId;
-    const deptId = cookies.userInfo.deptId;
+    const empId = userInfo.empId;
+    const deptId = deptInfo[0].deptId;
 
     useEffect(() => {
         const date = new Date();
