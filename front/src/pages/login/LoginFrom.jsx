@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import "devextreme/dist/css/dx.light.css";
-import "devextreme/dist/css/dx.material.blue.light.css"; // Material 테마
 import { Button, TextBox } from "devextreme-react";
 import Vtw from "../../assets/img/logo.png";
 import Slogan from "../../assets/img/slogan.png";

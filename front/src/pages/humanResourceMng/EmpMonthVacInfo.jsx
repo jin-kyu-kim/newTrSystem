@@ -6,7 +6,6 @@ import Calendar from "components/unit/Calendar"
 import ApiRequest from "utils/ApiRequest";
 
 
-import 'devextreme/dist/css/dx.light.css';
 import EmpMonthVacInfoJson from "./EmpMonthVacInfoJson.json"
 import CustomEmpComboBox from "components/unit/CustomEmpComboBox"
 
