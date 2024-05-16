@@ -30,7 +30,12 @@ public class FinancialAffairMngController {
 	public int updateDpstAmt(@RequestBody Map<String, Object> param) {
 		return FinancialAffairMngDomain.updateDpstAmt(param);
 	}
-	
+
+	@PostMapping(value = "/boot/financialAffairMng/saveDpstAmt")
+	public int saveDpstAmt(@RequestBody List<Map<String, Object>> param) {
+		return FinancialAffairMngDomain.saveDpstAmt(param);
+	}
+
 	@PostMapping(value = "/boot/financialAffairMng/cancelMmCtAtrz")
 	public int cancelCtAply(@RequestBody List<List<Map<String, Object>>> paramList) {
 		return FinancialAffairMngDomain.cancelMmCtAtrz(paramList);

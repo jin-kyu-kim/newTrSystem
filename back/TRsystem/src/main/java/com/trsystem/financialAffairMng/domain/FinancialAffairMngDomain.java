@@ -198,7 +198,22 @@ private static CommonService commonService;
 		commonService.queryIdDataControl(param);
 		return 1;
 	}
-	
+
+	@Transactional
+	public static int saveDpstAmt(List<Map<String, Object>> param) {
+		for (int i = 0; i < param.size(); i++){
+			param.get(i).put("queryId", "financialAffairMngMapper.saveDpstAmt");
+			param.get(i).put("state", "UPDATE");
+			YearMonth yearMonth = YearMonth.parse((String)param.get(i).get("ym"), DateTimeFormatter.ofPattern("yyyyMM"));
+			LocalDate nextMonth = yearMonth.atDay(1).plusMonths(1);
+			param.get(i).put("nextMonth", nextMonth.format(DateTimeFormatter.ofPattern("yyyyMM")));
+			commonService.queryIdDataControl(param.get(i));
+			param.get(i).put("queryId", "financialAffairMngMapper.saveDpstAmtNextMonth");
+			commonService.queryIdDataControl(param.get(i));
+		}
+		return 1;
+	}
+
 	@Transactional
 	public static int cancelMmCtAtrz(List<List<Map<String, Object>>> paramList) {
 		

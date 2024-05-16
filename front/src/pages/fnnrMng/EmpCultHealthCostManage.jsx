@@ -21,6 +21,7 @@ const EmpCultHealthCostManage = () => {
   const [isManagePopupVisible, setIsManagePopupVisible] = useState(false);
   const [isDetailPopupVisible, setIsDetailPopupVisible] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState();
+  const [selectedItem, setSelectedItem] = useState([]);
   const { handleOpen } = useModal();
 
   let now = new Date();
@@ -170,6 +171,25 @@ const EmpCultHealthCostManage = () => {
     }
   };
 
+  const handleSave = async () => {
+    const btnChk = window.confirm("작성한 지급금액을 저장하시겠습니까?")
+    if (btnChk && validateMonth()) {
+      try {
+        const response = await ApiRequest("/boot/financialAffairMng/saveDpstAmt", selectedItem);
+        if (response){
+          handleOpen('저장되었습니다.');
+          pageHandle();
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }
+  
+  const onSelection = (e) => {
+    setSelectedItem(e.selectedRowsData);
+  };
+
   return (
   <div>
     <style>
@@ -212,9 +232,11 @@ const EmpCultHealthCostManage = () => {
           onRowClick={onRowClick}
           noEdit={true}
           onBtnClick={onBtnClick}
+          onSelection={onSelection}
         />
 
       </div>
+      <Button onClick={handleSave} disabled={disabled} type='default' style={{width: "100px"}}>저장</Button>
     </div>
 
     <Popup
