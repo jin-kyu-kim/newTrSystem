@@ -67,10 +67,12 @@ export default function Content() {
                           <div className={`app ${screenSizeClass}`} style={{opacity: isPending ? 0.2 : 1}}>
                             <SideNavBarLayout>
                                 <div className={'dx-card responsive-paddings'}>
+                                    <div className="mainContainerStyle">
                                     <div className="container">
                                 {React.createElement(element)}
                                         </div>
                                     </div>
+                                </div>
                             </SideNavBarLayout>
                           </div>
                         </PrivateRoute>
@@ -87,4 +89,11 @@ export default function Content() {
 </>
   );
 }
+
+const mainContainerStyle = {
+    display: "flex",
+    alignItems: "flex-start",
+    flexWrap: "wrap",
+    justifyContent: "center",
+};
 
