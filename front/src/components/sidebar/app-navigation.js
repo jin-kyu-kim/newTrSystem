@@ -1,11 +1,5 @@
 export const navigation = [
   {
-    text: 'Home',
-    path: '/home',
-    icon: 'home',
-    auth: 'USER'
-  },
-  {
     text: '정보조회',
     icon: 'info',
     auth: 'USER',
