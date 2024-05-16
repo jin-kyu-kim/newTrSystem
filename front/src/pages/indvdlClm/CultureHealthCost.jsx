@@ -2,13 +2,12 @@ import React, {useEffect, useState} from "react";
 import CultureHealthCostReg from "./CultureHealthCostReg";
 import PivotGrid, {FieldChooser, Scrolling} from "devextreme-react/pivot-grid";
 import ApiRequest from "../../utils/ApiRequest";
-import {useCookies} from "react-cookie";
 import {SelectBox} from "devextreme-react";
 import PivotGridDataSource from "devextreme/ui/pivot_grid/data_source";
 
 const CultureHealthCost = () => {
 
-    const [cookies] = useCookies([]);
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const [pivotGridConfig, setPivotGridConfig] = useState({
         fields: [
             {
@@ -64,7 +63,7 @@ const CultureHealthCost = () => {
 
     const searchGrid = async () => {
         try{
-            const param = { empId: cookies.userInfo.empId, year: year }
+            const param = { empId: userInfo.empId, year: year }
             const response = await ApiRequest('/boot/indvdlClm/retrieveClturPhstrnActCt', param);
             setPivotGridConfig({
                 ...pivotGridConfig,

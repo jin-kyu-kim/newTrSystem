@@ -16,7 +16,6 @@ import { isSaturday, isSunday, startOfMonth, endOfMonth } from 'date-fns'
 // npm install moment
 import Moment from "moment"
 import ApiRequest from "utils/ApiRequest";
-import AutoCompleteProject from "components/unit/AutoCompleteProject";
 import '../project/approval/ProjectHtCtAprvPop.css';
 
 
@@ -37,16 +36,14 @@ import '../project/approval/ProjectHtCtAprvPop.css';
 
 const token = localStorage.getItem("token");
 
-// 차수별 시작, 종료일자
-// let flagOrder = new Date().getDate() > 15 ? 1 : 2;
-// let orderWorkBgngYmd = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMMDD")) : String(Moment(new Date()).format("YYYYMM") - 1 + "16")
-// let orderWorkEndYmd = flagOrder == 1 ? String(Moment(new Date()).format("YYYYMM") + "15") : Moment(endOfMonth(new Date(Moment(Moment(new Date()).format("YYYYMM") - 1 + "15").format("YYYY-MM-DD")))).format("YYYYMMDD")
-// let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMM")) : String(Moment(new Date()).format("YYYYMM") - 1)
-
 const EmpWorkTime = () => {
+    const { handleOpen } = useModal();
+
+    const location = useLocation();
+    const admin = location.state ? location.state.admin : undefined;
+
     // 근무시간데이터
     const insertValueRef = useRef(null);
-    const { handleOpen } = useModal();
 
     // 검색조건
     const SearchYearValueRef = useRef();
@@ -54,9 +51,6 @@ const EmpWorkTime = () => {
 
     const SearchMonthValueRef = useRef();
     SearchMonthValueRef.current = new Date().getDate() < 15 ? new Date().getMonth() : new Date().getMonth() + 1;
-
-    const location = useLocation();
-    const admin = location.state ? location.state.admin : undefined;
 
     // 차수별 시작, 종료일자
     let flagOrder = admin != undefined ? admin.aplyOdr : new Date().getDate() > 15 ? 1 : 2;
@@ -81,6 +75,28 @@ const EmpWorkTime = () => {
             )
         }
     }
+
+    // 프로젝트목록 조회
+    useEffect(() => {
+        getPrjctInfo();
+    }, [])
+
+
+
+
+
+    // 프로젝트 목록 조회
+    const [selectPrjctList, setSelectPrjctList] = useState();
+
+    // 프로젝트 목록 조회
+    const getPrjctInfo = async () => {
+        try {
+            setSelectPrjctList(await ApiRequest("/boot/common/commonSelect", [{ tbNm: "PRJCT" }, { bizSttsCd: "VTW00402" }]));
+        } catch (error) {
+            console.error("getPrjctInfo_error : " + error);
+        }
+    }
+
 
 
 
@@ -240,13 +256,12 @@ const EmpWorkTime = () => {
 
     // 승인요청버튼
     const onApprovalclick = async () => {
-        let insertWorkHourListFilter = insertWorkHourList.filter(item => item.aplyType == "workAply" && item.aplyOdr == flagOrder)
+        let insertWorkHourListFilter = insertWorkHourList.filter(item => item.aplyType == "workAply" && item.aplyOdr == flagOrder && item.atrzDmndSttsCd == "VTW03701")
         const formData = new FormData();
 
         formData.append("insertWorkHourList", JSON.stringify(insertWorkHourListFilter));
-        formData.append("deleteWorkHourList", JSON.stringify(deleteWorkHourList));
 
-        if (insertWorkHourList.length > 0) {
+        if (insertWorkHourListFilter.length > 0) {
             try {
                 const response = await axios.post("/boot/indvdlClm/insertPrjctMmAply", formData, {
                     headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
@@ -258,16 +273,19 @@ const EmpWorkTime = () => {
                 console.log("insertPrjctMmAply_error: ", error);
             }
         } else {
-            handleOpen("근무시간을 입력해주세요.");
+            handleOpen("승인요청 가능한 근무시간이 없습니다.");
             return;
         }
     }
 
+
+
+
+
     // 승인요청취소버튼
     const onApprovalCancleclick = async () => {
-        // const isconfirm = window.confirm("승인요청을 취소하시겠습니까?");
-        // if (isconfirm) {
         let deleteParams = insertWorkHourList.filter(item => item.aplyType == "workAply" && item.aplyOdr == flagOrder && item.atrzDmndSttsCd != "VTW03703");
+
         if (deleteParams.length > 0) {
             try {
                 const response = await ApiRequest("/boot/indvdlClm/updatePrjctMmAply", deleteParams);
@@ -277,15 +295,16 @@ const EmpWorkTime = () => {
                 console.log("updatePrjctMmAply_error: ", error);
             }
         } else {
-            handleOpen("요청된 근무시간이 없습니다.");
+            handleOpen("승인취소 가능한 근무시간이 없습니다.");
             return;
         }
-        // } else {
-        //     return;
-        // }
     }
 
-    // 저장
+
+
+
+
+    // 근무시간 임시저장
     function onSaveClick() {
         let errorMsg;
         let inputFormData = insertValueRef.current.props.data;
@@ -296,7 +315,7 @@ const EmpWorkTime = () => {
         else if (!inputFormData.workHour) errorMsg = "근무시간을 선택하세요."
 
         if (errorMsg) {
-            alert(errorMsg);
+            handleOpen(errorMsg);
             return;
         } else {
             let parseData = [];
@@ -318,15 +337,17 @@ const EmpWorkTime = () => {
                             text: inputFormData.prjctNm + " " + (inputFormData.workHour > 4 ? 4 : inputFormData.workHour) + "시간",
                             prjctId: inputFormData.prjctId,
                             empId: sessionEmpId,
+                            jbpsCd: sessionJbpsCd,
                             aplyYm: orderWorkBgngMm,
                             aplyOdr: flagOrder,
                             md: inputFormData.workHour > 4 ? 0.5 : inputFormData.workHour / 8,
                             aplyYmd: Moment(String(startDate)).format("YYYYMMDD"),
                             yrycRate: 1 - (inputFormData.workHour > 4 ? 0.5 : inputFormData.workHour / 8),
                             aplyType: "workAply",
-                            atrzDmndSttsCd: "VTW03702",
+                            atrzDmndSttsCd: "VTW03701",
+                            aprvrEmpId: inputFormData.aprvrEmpId,
                             isInsertBoolean: true,
-                            jbpsCd: sessionJbpsCd
+                            stateType: "temp"
                         })
                     }
                 } else {
@@ -334,15 +355,17 @@ const EmpWorkTime = () => {
                         text: inputFormData.prjctNm + " " + inputFormData.workHour + "시간",
                         prjctId: inputFormData.prjctId,
                         empId: sessionEmpId,
+                        jbpsCd: sessionJbpsCd,
                         aplyYm: orderWorkBgngMm,
                         aplyOdr: flagOrder,
                         md: inputFormData.workHour / 8,
                         aplyYmd: Moment(String(startDate)).format("YYYYMMDD"),
-                        yrycRate: 1 - (inputFormData.workHour / 8),
+                        yrycRate: 0,
                         aplyType: "workAply",
-                        atrzDmndSttsCd: "VTW03702",
+                        atrzDmndSttsCd: "VTW03701",
+                        aprvrEmpId: inputFormData.aprvrEmpId,
                         isInsertBoolean: true,
-                        jbpsCd: sessionJbpsCd
+                        stateType: "temp"
                     })
                 }
             }
@@ -382,40 +405,92 @@ const EmpWorkTime = () => {
         }
     }
 
-    function onAppointmentClick(e) {
-        if (e.appointmentData.isInsertBoolean == false) e.cancel = true;
-        else if (e.appointmentData.aplyType == "vcatnAply") e.cancel = true;
-        else if (e.appointmentData.isInsertBoolean != true && e.appointmentData.atrzDmndSttsCd == "VTW03702" || e.appointmentData.atrzDmndSttsCd == "VTW03703") e.cancel = true;
-        else e.cancel = false;
+    // 근무시간 임시저장
+    useEffect(() => {
+        if (insertWorkHourList) {
+            let insertPrjctMmStateTempFilter = insertWorkHourList.filter(item => item.stateType == "temp");
+
+            if (insertPrjctMmStateTempFilter.length > 0) insertPrjctMmTemp(insertPrjctMmStateTempFilter);
+        }
+    }, [insertWorkHourList])
+
+    // 근무시간 임시저장
+    const insertPrjctMmTemp = async (param) => {
+        const formData = new FormData();
+
+        formData.append("insertPrjctMmTempList", JSON.stringify(param));
+
+        if (param.length > 0) {
+            try {
+                const response = await axios.post("/boot/indvdlClm/insertPrjctMmAplyTemp", formData, {
+                    headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
+                });
+            } catch (error) {
+                console.log("insertPrjctMmTemp_error: ", error);
+            }
+        } else {
+            handleOpen("근무시간을 입력해주세요.");
+            return;
+        }
     }
 
-    function onAppointmentDblClick(e) {
-        e.cancel = true;
-    }
 
-    function onAppointmentFormOpening(e) {
-        // 해당이벤트 컨트롤 시 스크롤 사라지는 이슈 발생 해결불가능함
-        e.cancel = true;
-    }
 
+
+
+    // 단건삭제
     function onAppointmentDeleted(e) {
-        setDeleteWorkHourList([...deleteWorkHourList, e.appointmentData])
-        setInsertWorkHourList(insertWorkHourList.filter(item => (item.aplyYmd != e.appointmentData.aplyYmd || item.prjctId != e.appointmentData.prjctId)))
-    }
+        e.appointmentData["stateType"] = "delete"
 
-    function onCellClick(e) {
-        e.cancel = true;
+        setDeleteWorkHourList([e.appointmentData])
+        setInsertWorkHourList(insertWorkHourList.filter(item => (item.aplyYmd != e.appointmentData.aplyYmd || item.prjctId != e.appointmentData.prjctId)))
     }
 
     // 전체삭제버튼
     function onDeleteListClick(e) {
-        // const isconfirm = window.confirm("승인된 목록을 제외한 근무시간들이 삭제됩니다.\n삭제하시겠습니까?");
-        // if (isconfirm) {
-        setInsertWorkHourList(insertWorkHourList.filter(item => item.aplyOdr != flagOrder || item.atrzDmndSttsCd == "VTW03703" || item.aplyType != "workAply"));
-        // } else {
-        //     return;
-        // }
+        let deletePushData = insertWorkHourList.filter(item => ((item.atrzDmndSttsCd != "VTW03703" && item.atrzDmndSttsCd != "VTW03702") && item.aplyOdr == flagOrder && item.aplyType == "workAply"));
+
+        if (deletePushData.length > 0) {
+            deletePushData.map((item, index) => { deletePushData[index]["stateType"] = "delete" })
+
+            setDeleteWorkHourList(deletePushData);
+            setInsertWorkHourList(insertWorkHourList.filter(item => item.aplyOdr != flagOrder || item.atrzDmndSttsCd == "VTW03703" || item.atrzDmndSttsCd == "VTW03702" || item.aplyType != "workAply"));
+        } else if (deletePushData.length == 0) {
+            handleOpen("삭제가능한 근무시간이 없습니다.")
+        }
     }
+
+    // 근무시간 단건/다건 삭제
+    useEffect(() => {
+        if (deleteWorkHourList && deleteWorkHourList.length > 0) {
+            deletePrjctMmTemp();
+        }
+    }, [deleteWorkHourList])
+
+    // 근무시간 단건/다건 삭제
+    const deletePrjctMmTemp = async () => {
+        const formData = new FormData();
+
+        formData.append("deletePrjctMmList", JSON.stringify(deleteWorkHourList));
+
+        if (deleteWorkHourList.length > 0) {
+            try {
+                const response = await axios.post("/boot/indvdlClm/deletePrjctMmAply", formData, {
+                    headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
+                });
+                return;
+            } catch (error) {
+                console.log("deletePrjctMmTemp_error: ", error);
+            }
+        } else {
+            handleOpen("삭제가능한 근무시간이 없습니다.");
+            return;
+        }
+    }
+
+
+
+
 
     // 실 근무일수 구하기
     function getWorkDay(selectCrtrDateList) {
@@ -431,8 +506,35 @@ const EmpWorkTime = () => {
         }
     }
 
+
+
+
+
+    /* devextreme 이벤트 컨트롤 */
+    function onAppointmentClick(e) {
+        if (e.appointmentData.isInsertBoolean == false) e.cancel = true;
+        else if (e.appointmentData.aplyType == "vcatnAply") e.cancel = true;
+        else if (e.appointmentData.isInsertBoolean != true && e.appointmentData.atrzDmndSttsCd == "VTW03702" || e.appointmentData.atrzDmndSttsCd == "VTW03703") e.cancel = true;
+        else e.cancel = false;
+    }
+
+    /* devextreme 이벤트 컨트롤 */
+    function onAppointmentDblClick(e) {
+        e.cancel = true;
+    }
+
+    /* devextreme 이벤트 컨트롤 */
+    function onAppointmentFormOpening(e) {
+        e.cancel = true;
+    }
+
+    /* devextreme 이벤트 컨트롤 */
+    function onCellClick(e) {
+        e.cancel = true;
+    }
+
     return (
-        <div className="" style={{ marginLeft: "10%", marginRight: "10%" }}>
+        <div className="">
             <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
                 <h1 style={{ fontSize: "30px" }}>{admin != undefined ? "(관리자)" : ""} {orderWorkBgngMm} - {flagOrder}차수 근무시간</h1>
             </div>
@@ -444,6 +546,9 @@ const EmpWorkTime = () => {
             </div>
             <div className="mx-auto" style={{ marginBottom: "10px" }}>
                 <span>* 프로젝트 명에 마우스를 올리면 해당 프로젝트의 전체 명을 확인할 수 있습니다.</span>
+            </div>
+            <div className="mx-auto" style={{ marginBottom: "10px" }}>
+                <span>* 임시저장, 반려의 근무시간만 삭제가능합니다.</span>
             </div>
             <div className="row">
                 {
@@ -501,7 +606,8 @@ const EmpWorkTime = () => {
             <div className="row">
                 <div className="col-md-3">
                     <div style={{ display: "flex", alignItems: "center", marginTop: "20px" }}>
-                        <span style={{ width: "50px", background: "#6495ed", textAlign: "center", color: "white", fontWeight: "bold" }}>결재중</span>
+                        <span style={{ width: "70px", background: "#999999", textAlign: "center", color: "white", fontWeight: "bold" }}>임시저장</span>
+                        <span style={{ width: "50px", background: "#6495ed", marginLeft: "20px", textAlign: "center", color: "white", fontWeight: "bold" }}>결재중</span>
                         <span style={{ width: "50px", background: "#008000", marginLeft: "20px", textAlign: "center", color: "white", fontWeight: "bold" }}>승인</span>
                         <span style={{ width: "50px", background: "#ff4500", marginLeft: "20px", textAlign: "center", color: "white", fontWeight: "bold" }}>반려</span>
                     </div>
@@ -533,8 +639,8 @@ const EmpWorkTime = () => {
                 color: '#ff4500',
             },
             {
-                id: "",
-                color: '#6495ed',
+                id: "VTW03701",
+                color: '#999999',
             },
         ];
 
@@ -672,10 +778,26 @@ const EmpWorkTime = () => {
                                 <div className="row" style={{ marginTop: "30px" }}>
                                     <div className="col-md-3" style={textAlign}>프로젝트<br />(프로젝트명 또는 코드 입력)</div>
                                     <div className="col-md-4">
-                                        <AutoCompleteProject
+                                        {/* <AutoCompleteProject
                                             placeholderText="프로젝트를 선택해주세요"
                                             onValueChange={onRefValuePrjctChange}
                                             sttsBoolean={true}
+                                        /> */}
+                                        <SelectBox
+                                            dataSource={selectPrjctList}
+                                            placeholder="프로젝트를 선택해주세요"
+                                            valueExpr="prjctId"
+                                            displayExpr="prjctNm"
+                                            stylingMode="underlined"
+                                            onValueChange={(e) => {
+                                                const selectedItem = selectPrjctList.find(item => item.prjctId === e);
+
+                                                if (selectedItem) {
+                                                    refInsertWorkHourValue.prjctId = e
+                                                    refInsertWorkHourValue.prjctNm = selectedItem.prjctNm
+                                                    refInsertWorkHourValue.aprvrEmpId = selectedItem.prjctMngrEmpId
+                                                }
+                                            }}
                                         />
                                     </div>
                                 </div>

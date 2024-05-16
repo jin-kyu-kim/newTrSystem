@@ -1,12 +1,13 @@
-import { TextBox } from 'devextreme-react';
+import React, { useState } from "react";
 import Button from "devextreme-react/button";
 import TagBox from 'devextreme-react/tag-box';
 import SelectBox from "devextreme-react/select-box";
-import ToggleButton from 'pages/sysMng/ToggleButton';
 import NumberBox from 'devextreme-react/number-box';
-import React from "react";
+import ToggleButton from 'pages/sysMng/ToggleButton';
+import { TextBox } from 'devextreme-react';
 
 const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig }) => {
+    const [ isChangeData, setIsChangeData ] = useState(false);
 
     const { getCdList, isPrjctIdSelected, setIsPrjctIdSelected, hasError, chgPlaceholder, comboList, cdList,
         expensCd, setExpensCd, setValidationErrors } = cellRenderConfig ?? {};
@@ -31,6 +32,8 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig }) =
 
                     if (col.key === 'prjctId') {
                         getCdList(newValue.value, props.data.cardUseSn);
+                        props.data['prjctMngrEmpId'] = newValue.value['prjctMngrEmpId'] // 결재자 추가
+
                         setIsPrjctIdSelected(prevStts => ({
                             ...prevStts,
                             [props.data.cardUseSn]: !!newValue.value
@@ -56,10 +59,10 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig }) =
                 showSelectionControls={true}
                 displayExpr='displayValue'
                 applyValueMode="useButtons"
-                style={{ backgroundColor: hasError(props.data.cardUseSn, col.key) ? '#FFCCCC' : '' }}
+                style={{ backgroundColor: hasError && hasError(props.data.cardUseSn, col.key) ? '#FFCCCC' : '' }}
                 onValueChanged={(newValue) => {
                     props.data[col.key] = newValue.value
-                    setValidationErrors(prevErrors => prevErrors.filter(error => !(error.cardUseSn === props.data.cardUseSn && error.field === col.key)));
+                    hasError && setValidationErrors(prevErrors => prevErrors.filter(error => !(error.cardUseSn === props.data.cardUseSn && error.field === col.key)));
                 }}
             />
         );
@@ -69,10 +72,10 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig }) =
                 name={col.key}
                 value={props.data[col.key]}
                 placeholder={chgPlaceholder ? chgPlaceholder(col, props.data.cardUseSn) : col.placeholder}
-                style={{ backgroundColor: hasError(props.data.cardUseSn, col.key) ? '#FFCCCC' : '' }}
+                style={{ backgroundColor: hasError && hasError(props.data.cardUseSn, col.key) ? '#FFCCCC' : '' }}
                 onValueChanged={(newValue) => {
                     props.data[col.key] = newValue.value
-                    setValidationErrors(prevErrors => prevErrors.filter(error => !(error.cardUseSn === props.data.cardUseSn && error.field === col.key)));
+                    hasError && setValidationErrors(prevErrors => prevErrors.filter(error => !(error.cardUseSn === props.data.cardUseSn && error.field === col.key)));
                 }} >
             </TextBox>
         );
@@ -94,11 +97,13 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig }) =
                 format="#,##0"
                 value={props.data[col.key]}
                 placeholder={chgPlaceholder ? chgPlaceholder(col, props.data.cardUseSn) : col.placeholder}
-                style={{ backgroundColor: hasError(props.data.cardUseSn, col.key) ? '#FFCCCC' : '' }}
+                style={{ backgroundColor: hasError && hasError(props.data.cardUseSn, col.key) ? '#FFCCCC' : '' }}
                 onValueChanged={(newValue) => {
+                    hasError && setValidationErrors(prevErrors => prevErrors.filter(error => !(error.cardUseSn === props.data.cardUseSn && error.field === col.key)));
                     props.data[col.key] = newValue.value
-                    setValidationErrors(prevErrors => prevErrors.filter(error => !(error.cardUseSn === props.data.cardUseSn && error.field === col.key)));
+                    setIsChangeData(!isChangeData)
                 }}
+                
             />
         )
     }
