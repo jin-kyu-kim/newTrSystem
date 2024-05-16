@@ -196,7 +196,7 @@ const ProjectExpense = () => {
     };
 
     return (
-        <div className="container">
+        <div>
             <div style={{ marginBottom: '100px' }}>
                 <div className="mx-auto" style={{ display: 'flex', marginTop: "20px", marginBottom: "30px" }}>
                     <h1 style={{ fontSize: "30px", marginRight: "20px" }}>프로젝트비용</h1>

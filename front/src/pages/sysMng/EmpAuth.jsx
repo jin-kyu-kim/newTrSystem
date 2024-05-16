@@ -10,35 +10,41 @@ const EmpAuth = () => {
     const { searchInfo } = EmpJson;
     const [ values, setValues ] = useState([]);
     const [ param, setParam ] = useState({});
+    const [ totalItems, setTotalItems ] = useState(0);
     const [ isLoading, setIsLoading ] = useState(false);
 
     useEffect(() => {
         if (!Object.values(param).every((value) => value === "")) {
             pageHandle();
         }
-    }, []);
+    }, [param]);
 
     const searchHandle = async (initParam) => {
         setParam({
             ...initParam,
-            tbNm: tbNm
+            queryId: "sysMngMapper.authCdList"
         });
     };
 
     const handleYnVal = async (e) => {
-        const ynParam = [{ tbNm: "CD" }, e.data, { cdValue: e.key }];
-        const response = await ApiRequest("/boot/common/commonUpdate", ynParam);
+        let param = [
+            { tbNm: "USER_AUTHRT" },
+            { empId: e.key.empId, authrtCd: e.name }
+        ]
+        const response = ApiRequest(e.data.useYn === 'Y' ? '/boot/common/commonInsert' : '/boot/common/commonDelete', param);
+        console.log('response', response)
     };
 
     const pageHandle = async () => {
         setIsLoading(true);
         try {
-            const response = await ApiRequest("/boot/common/commonSelect", param);
-            console.log('res', response)
-
+            const response = await ApiRequest("/boot/common/queryIdSearch", param);
             if (response.length !== 0) {
                 setValues(response);
-            } 
+                setTotalItems(response[0].totalItems);
+            } else {
+                setTotalItems(0);
+            }
         } catch (error) {
             console.log(error);
         } finally {
@@ -54,20 +60,22 @@ const EmpAuth = () => {
             <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
                 <span>* 직원정보를 조회 합니다.</span>
             </div>
-            <div style={{ marginBottom: "20px" }}>
+            <div style={{ marginBottom: "50px" }}>
                 <SearchInfoSet callBack={searchHandle} props={searchInfo} />
+                <div style={{marginTop: '20px', marginLeft: '20px'}}>검색된 건 수 : {totalItems} 건</div>
             </div>
 
             {isLoading ? <></> : 
                 <CustomEditTable
-                tbNm={tbNm}
-                values={values}
-                columns={tableColumns}
-                noEdit={true}
-                ynVal={ynVal}
-                handleYnVal={handleYnVal}
-                noDataText={'데이터가 없습니다'}
-            /> }
+                    tbNm={tbNm}
+                    keyColumn={keyColumn}
+                    values={values}
+                    columns={tableColumns}
+                    noEdit={true}
+                    ynVal={ynVal}
+                    handleYnVal={handleYnVal}
+                    noDataText={'데이터가 없습니다'}
+                /> }
             
         </div>
     )

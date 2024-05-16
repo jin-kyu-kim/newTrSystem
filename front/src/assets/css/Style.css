@@ -323,3 +323,7 @@
   background-color: #dde7f7;
   cursor: pointer; 
 }
+
+.dx-datagrid .dx-header-row .dx-datagrid-text-content {
+  font-size: 12px;
+}
