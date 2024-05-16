@@ -357,9 +357,10 @@
             ,''	VCATN_TY_CD				/* 휴가유형코드 */
             ,CONCAT(
                 ROUND(md * 8), '시간 | ',
-                (SELECT PRJCT_NM FROM PRJCT PRJCT WHERE PRJCT.PRJCT_ID = ATRZ.PRJCT_ID), '',
+                (SELECT PRJCT_NM FROM PRJCT PRJCT WHERE PRJCT.PRJCT_ID = ATRZ.PRJCT_ID), ' ',
                 IFNULL((SELECT EMP_FLNM FROM EMP EMP WHERE EMP.EMP_ID = APRVR_EMP_ID), ''), ' ',
-                IFNULL((SELECT CD_NM FROM CD WHERE CD_VALUE = ATRZ_DMND_STTS_CD), '')
+                IFNULL((SELECT CD_NM FROM CD WHERE CD_VALUE = ATRZ_DMND_STTS_CD), ''), ' ',
+                IFNULL(RJCT_PRVONSH, '')
             ) TEXT                      /* 결재상태내용 */
             ,''	VCATN_BGNG_YMD          /* 휴가시작일자 */
             ,''	VCATN_END_YMD           /* 휴가종료일자 */
@@ -406,8 +407,8 @@
 
 
     <!-- 프로젝트개인비용저장 -->
-    <insert id="retrievePrjctIndvdlCtMmStrg" parameterType="map">
-        /* indvdlClmMapper.retrievePrjctIndvdlCtMmStrg */
+    <insert id="mergePrjctIndvdlCtMmStrg" parameterType="map">
+        /* indvdlClmMapper.mergePrjctIndvdlCtMmStrg */
         INSERT INTO PRJCT_INDVDL_CT_MM
         VALUES (
             #{prjctId}			/* 프로젝트ID */
@@ -428,8 +429,8 @@
 
 
     <!-- 프로젝트MM신청삭제 -->
-    <delete id="retrievePrjctMmAplyDel" parameterType="map">
-        /* indvdlClmMapper.retrievePrjctMmAplyDel */
+    <delete id="deletePrjctMmAply" parameterType="map">
+        /* indvdlClmMapper.deletePrjctMmAply */
         DELETE FROM PRJCT_MM_APLY
         WHERE EMP_ID = #{empId}
         AND APLY_YM = #{aplyYm}
@@ -440,8 +441,8 @@
 
 
     <!-- 프로젝트MM결재삭제 -->
-    <delete id="retrievePrjctMmAtrzDel" parameterType="map">
-        /* indvdlClmMapper.retrievePrjctMmAtrzDel */
+    <delete id="deletePrjctMmAtrz" parameterType="map">
+        /* indvdlClmMapper.deletePrjctMmAtrz */
         DELETE FROM PRJCT_MM_ATRZ
         WHERE EMP_ID = #{empId}
         AND APLY_YM = #{aplyYm}
@@ -452,8 +453,8 @@
 
 
     <!-- 프로젝트MM신청저장 -->
-    <insert id="retrievePrjctMmAplyStrg" parameterType="map">
-        /* indvdlClmMapper.retrievePrjctMmAplyStrg */
+    <insert id="insertPrjctMmAplyStrg" parameterType="map">
+        /* indvdlClmMapper.insertPrjctMmAplyStrg */
         INSERT INTO PRJCT_MM_APLY
         VALUES
         (
@@ -474,15 +475,15 @@
 
 
     <!-- 프로젝트MM결재저장 -->
-    <insert id="retrievePrjctMmAtrzStrg" parameterType="map">
-        /* indvdlClmMapper.retrievePrjctMmAtrzStrg */
+    <insert id="insertPrjctMmAtrzStrg" parameterType="map">
+        /* indvdlClmMapper.insertPrjctMmAtrzStrg */
         INSERT INTO PRJCT_MM_ATRZ
         VALUES
         (
             #{rjctPrvonsh}
             ,#{prjctAprvrCd}
-<!--            ,#{atrzDmndSttsCd}-->
-            ,"VTW03702"
+            ,#{atrzDmndSttsCd}
+<!--            ,"VTW03702"-->
             ,#{aprvrEmpId}
             ,#{prjctId}
             ,#{empId}
@@ -496,7 +497,6 @@
             ,#{empId}
             ,#{aplyYmd}
         )
-
     </insert>
 
 
@@ -505,7 +505,7 @@
         /* indvdlClmMapper.retrievePrjctMmSttsInq */
         UPDATE PRJCT_MM_ATRZ
         SET
-            ATRZ_DMND_STTS_CD = ''
+            ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
             ,MDFCN_DT = SYSDATE()
             ,MDFCN_EMP_ID = #{empId}
         WHERE EMP_ID = #{empId}
@@ -514,6 +514,22 @@
         AND APLY_YMD = #{aplyYmd}
         AND PRJCT_ID = #{prjctId}
     </update>
+
+
+<!--    &lt;!&ndash; 프로젝트MM결재수정 &ndash;&gt;-->
+<!--    <update id="retrievePrjctMmSttsInq" parameterType="map">-->
+<!--        /* indvdlClmMapper.retrievePrjctMmSttsInq */-->
+<!--        UPDATE PRJCT_MM_ATRZ-->
+<!--        SET-->
+<!--            ATRZ_DMND_STTS_CD = ''-->
+<!--            ,MDFCN_DT = SYSDATE()-->
+<!--            ,MDFCN_EMP_ID = #{empId}-->
+<!--        WHERE EMP_ID = #{empId}-->
+<!--        AND APLY_YM = #{aplyYm}-->
+<!--        AND APLY_ODR = #{aplyOdr}-->
+<!--        AND APLY_YMD = #{aplyYmd}-->
+<!--        AND PRJCT_ID = #{prjctId}-->
+<!--    </update>-->
 
     <!-- 프로젝트개인비용MM수정 -->
     <update id="updatePrjctIndvdlCtMm" parameterType="map">
