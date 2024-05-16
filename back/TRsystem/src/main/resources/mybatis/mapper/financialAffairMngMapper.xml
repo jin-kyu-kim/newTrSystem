@@ -1341,7 +1341,7 @@
             LEFT JOIN CLTUR_PHSTRN_ACT_CT cpac ON cpac.EMP_ID = e.EMP_ID AND cpac.CLTUR_PHSTRN_ACT_MNG_YM = e.YM
             GROUP BY EMP_ID, EMPNO, EMP_FLNM, YM
        ) C
-       ORDER BY C.JBPS_CD
+       ORDER BY C.JBPS_CD, C.EXPENSE_TYPE
     </select>
 
     <select id="retrieveCtData" parameterType="map" resultType="com.trsystem.LowerHashMap">
