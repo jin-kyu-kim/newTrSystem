@@ -4,7 +4,6 @@ import { SideNavInnerToolbar as SideNavBarLayout } from './layouts';
 import { Footer } from './components';
 import React, {useTransition} from 'react';
 import { useScreenSizeClass } from './utils/media-query';
-import {useCookies} from "react-cookie";
 
 function CheckAuth(isPrivate){
     // 토큰이 저장된 상태를 검사하는 로직
@@ -12,7 +11,6 @@ function CheckAuth(isPrivate){
     // const [cookies] = useCookies(["userInfo", "userAuth","deptInfo"]);
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const userAuth = JSON.parse(localStorage.getItem("userAuth"));
-    const deptInfo = JSON.parse(localStorage.getItem("deptInfo"));
 
     if(token && isPrivate && userInfo){
         if(userAuth.find(item => item === "VTW04801")){
@@ -68,18 +66,11 @@ export default function Content() {
                         <PrivateRoute isPrivate={isPrivate}>
                           <div className={`app ${screenSizeClass}`} style={{opacity: isPending ? 0.2 : 1}}>
                             <SideNavBarLayout>
-                            <div className={'content-block'}>
-                                <div className={'dx-card responsive-paddings'}> 
+                                <div className={'dx-card responsive-paddings'}>
+                                    <div className="container">
                                 {React.createElement(element)}
-                                </div>
-                                <div style={{paddingBottom:"20px" }}>
-                                <Footer>
-                                    Copyright © 2024 VTW Inc TRSystem.
-                                        <br />
-                                        All trademarks or registered trademarks are property of their respective owners.
-                                 </Footer>
-                                </div>
-                              </div>
+                                        </div>
+                                    </div>
                             </SideNavBarLayout>
                           </div>
                         </PrivateRoute>
