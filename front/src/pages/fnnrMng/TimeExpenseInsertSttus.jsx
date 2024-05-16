@@ -415,7 +415,7 @@ const handleCheckBoxChange = useCallback((e, key) => {
 
 //========================화면그리는 구간 ====================================================
   return(
-      <div className="container">
+      <div className="">
           <div className="col-md-10 mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
                 <h1 style={{ fontSize: "30px" }}>근무시간비용 입력 현황</h1>
           </div>
