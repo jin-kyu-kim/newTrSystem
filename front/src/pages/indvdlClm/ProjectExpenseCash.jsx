@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { TagBox, TextBox } from "devextreme-react";
 import { validateFields, hasError } from './ProjectExpenseValidate';
-import { useCookies } from 'react-cookie';
 import ProjectExpenseSubmit from "./ProjectExpenseSubmit";
 import ProjectExpenseJson from "./ProjectExpenseJson.json";
 import CustomLabelValue from "components/unit/CustomLabelValue";
@@ -9,8 +8,9 @@ import CustomComboBox from 'components/unit/CustomComboBox';
 import ApiRequest from "utils/ApiRequest";
 
 const ProjectExpenseCash = (props) => {
-    const [cookies] = useCookies(["userInfo", "userAuth"]);
-    const empInfo = { jbttlCd: cookies.deptInfo[0].jbttlCd, empno: cookies.userInfo.empno };
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"))
+    const deptInfo = JSON.parse(localStorage.getItem("deptInfo"))
+    const empInfo = { jbttlCd: deptInfo[0].jbttlCd, empno: userInfo.empno };
 
     const { labelValue } = ProjectExpenseJson;
     const { placeholderAndRequired, btnInfo } = ProjectExpenseJson.ProjectExpenseTab;

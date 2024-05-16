@@ -26,16 +26,18 @@
     </select>
 
     <select id="authCdList" parameterType="map" resultType="com.trsystem.LowerHashMap">
-        SELECT
-            ag.AUTHRT_GROUP_ID,
-            ag.AUTHRT_GROUP_NM,
-            ag.AUTHRT_GROUP_CN,
-            GROUP_CONCAT(am.AUTHRT_CD) AS AUTHRT_CDs,
-            GROUP_CONCAT(cd.CD_NM) AS AUTHRT_CD_NMs
-        FROM AUTHRT_GROUP ag
-                 JOIN AUTHRT_MAPNG am ON ag.AUTHRT_GROUP_ID = am.AUTHRT_GROUP_ID
-                 JOIN CD cd ON am.AUTHRT_CD = cd.CD_VALUE
-        GROUP BY ag.AUTHRT_GROUP_ID, ag.AUTHRT_GROUP_NM, ag.AUTHRT_GROUP_CN;
+		SELECT
+			E.EMP_ID,
+			IFNULL(MAX(CASE WHEN U.AUTHRT_CD = 'VTW04801' THEN 'Y' END), 'N') AS VTW04801,
+			IFNULL(MAX(CASE WHEN U.AUTHRT_CD = 'VTW04802' THEN 'Y' END), 'N') AS VTW04802,
+			IFNULL(MAX(CASE WHEN U.AUTHRT_CD = 'VTW04803' THEN 'Y' END), 'N') AS VTW04803,
+			IFNULL(MAX(CASE WHEN U.AUTHRT_CD = 'VTW04804' THEN 'Y' END), 'N') AS VTW04804,
+			IFNULL(MAX(CASE WHEN U.AUTHRT_CD = 'VTW04805' THEN 'Y' END), 'N') AS VTW04805,
+			IFNULL(MAX(CASE WHEN U.AUTHRT_CD = 'VTW04806' THEN 'Y' END), 'N') AS VTW04806,
+			IFNULL(MAX(CASE WHEN U.AUTHRT_CD = 'VTW04807' THEN 'Y' END), 'N') AS VTW04807
+		FROM EMP E
+				 LEFT JOIN USER_AUTHRT U ON E.EMP_ID = U.EMP_ID
+		GROUP BY E.EMP_ID
     </select>
 
     <select id="customersList" parameterType="map" resultType="com.trsystem.LowerHashMap">
