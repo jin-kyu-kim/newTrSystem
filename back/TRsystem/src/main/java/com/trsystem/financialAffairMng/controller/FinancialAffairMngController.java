@@ -22,8 +22,7 @@ public class FinancialAffairMngController {
 	}
 
 	@PostMapping(value = "/boot/financialAffairMng/updateClturPhstrnActct")
-	public List<Map<String, Object>> updateClturPhstrnActct(@RequestBody List<Map<String, Object>> params) {
-
+	public int updateClturPhstrnActct(@RequestBody List<Map<String, Object>> params) {
 		return FinancialAffairMngDomain.updateClturPhstrnActct(params);
 	}
 	

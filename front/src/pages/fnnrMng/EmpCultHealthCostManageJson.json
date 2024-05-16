@@ -6,14 +6,14 @@
 
   "tableColumns": [
     { "key": "empFlnm", "value": "성명", "alignment": "center", "grouping" : true  },
-    {  "key": "ym", "value": "월별", "alignment": "center" },
-    {  "key": "expenseType", "value": "구분", "alignment": "center" },
-    {  "key": "cyfdAmt", "value": "이월금액", "alignment": "center" },
-    {  "key": "clmAmt", "value": "청구금액", "alignment": "center" },
-    {  "key": "dpstAmt", "value": "지급금액", "alignment": "center" },
-    {  "key": "dpstYmd", "value": "지급일자", "alignment": "center" },
-    {  "key": "balance", "value": "잔액", "alignment": "center" },
-    {  "value": "상세청구내역", "width": 140, "alignment": "center", "cellType": "button", "button": { "text": "내역", "name": "detail" }}
+    {  "key": "ym", "width": "13%", "value": "월별", "alignment": "center" },
+    {  "key": "expenseType", "width": "12%", "value": "구분", "alignment": "center" },
+    {  "key": "cyfdAmt", "width": "13%", "value": "이월금액", "format":"#,###", "alignment": "center" },
+    {  "key": "clmAmt", "width": "13%", "value": "청구금액", "format":"#,###", "alignment": "center" },
+    {  "key": "dpstAmt", "width": "13%", "value": "지급금액", "cellType": "numberBox", "alignment": "center" },
+    {  "key": "dpstYmd", "width": "13%", "value": "지급일자", "alignment": "center" },
+    {  "key": "balance", "width": "13%", "value": "잔액", "format":"#,###", "alignment": "center" },
+    {  "value": "상세청구내역", "width": "10%", "alignment": "center", "cellType": "button", "button": { "text": "내역", "name": "detail" }}
   ],
 
   "searchInfo": {
