@@ -325,6 +325,10 @@
   cursor: pointer; 
 }
 
+.dx-row:hover .dx-switch-container {
+  background-color: #dde7f7;
+}
+
 @media (max-width: 600px) {
   .dx-datagrid .dx-header-row .dx-datagrid-text-content {
     font-size: 8px;

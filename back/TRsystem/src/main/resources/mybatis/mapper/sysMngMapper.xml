@@ -31,6 +31,7 @@
 			E.EMPNO,
 			(SELECT CD_NM FROM CD WHERE CD_VALUE = E.JBPS_CD) AS JBPS_NM,
 			E.EMP_FLNM,
+			E.JBPS_CD,
 			GROUP_CONCAT(DISTINCT D.DEPT_NM) AS DEPT_ID,
 			IFNULL(MAX(CASE WHEN U.AUTHRT_CD = 'VTW04801' THEN 'Y' END), 'N') AS VTW04801,
 			IFNULL(MAX(CASE WHEN U.AUTHRT_CD = 'VTW04802' THEN 'Y' END), 'N') AS VTW04802,
@@ -42,18 +43,20 @@
 			COUNT(*) OVER () AS TOTAL_ITEMS
 		FROM EMP E
 			LEFT JOIN USER_AUTHRT U ON E.EMP_ID = U.EMP_ID
-			LEFT JOIN DEPT_HNF DF ON E.EMP_ID = DF.EMP_ID
-			LEFT JOIN DEPT D ON D.DEPT_ID = DF.DEPT_ID
+			LEFT OUTER JOIN DEPT_HNF DF ON E.EMP_ID = DF.EMP_ID
+			LEFT OUTER JOIN DEPT D ON D.DEPT_ID = DF.DEPT_ID
 		WHERE 1=1
 		AND EMP_TY_CD NOT LIKE 'VTW00203%'
+		AND E.HDOF_STTS_CD != 'VTW00302'
+		AND E.JBPS_CD != 'VTW00119'
 		<if test="hdofSttsNm != null and !hdofSttsNm.equals('')">
-			AND E.HDOF_STTS_CD = #{hdofSttsNm}
+			AND E.HDOF_STTS_CD LIKE CONCAT('%', #{hdofSttsNm}, '%')
 		</if>
 		<if test="jbpsNm != null and !jbpsNm.equals('')">
-			AND E.JBPS_CD = #{jbpsNm}
+			AND E.JBPS_CD LIKE CONCAT('%', #{jbpsNm}, '%')
 		</if>
 		<if test="deptId != null and deptId !=''">
-			AND D.DEPT_ID = #{deptId}
+			AND D.DEPT_ID LIKE CONCAT('%', #{deptId}, '%')
 		</if>
 		<if test="empno != null and empno !=''">
 			AND E.EMPNO LIKE CONCAT('%', #{empno}, '%')
@@ -64,8 +67,8 @@
 		<if test="telNo != null and telNo !=''">
 			AND E.TELNO LIKE CONCAT('%', #{telNo}, '%')
 		</if>
-		GROUP BY E.EMP_ID
-		ORDER BY E.JBPS_CD ASC
+		GROUP BY E.EMP_ID, E.EMPNO, E.JBPS_CD, E.EMP_FLNM, E.EMPNO
+		ORDER BY E.EMPNO
     </select>
 
     <select id="customersList" parameterType="map" resultType="com.trsystem.LowerHashMap">
