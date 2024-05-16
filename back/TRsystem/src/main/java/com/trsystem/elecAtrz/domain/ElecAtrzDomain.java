@@ -1001,18 +1001,47 @@ public class ElecAtrzDomain {
 					for(int i = 0; i < ctrtInsertParams.size(); i++) {
 						Map<String, Object> ctrtItem = ctrtInsertParams.get(i); // i번째 아이템을 가져옵니다.
 						
-						System.out.println("#### ctrtItem  ####"+ ctrtItem);
-						
 						Map<String, Object> ctrtTbParam = new HashMap<>();
 						Map<String, Object> updateParam = new HashMap<>();
+						Map<String, Object> deleteParam = new HashMap<>();
 						List<Map<String, Object>> updateParams = new ArrayList<>();
+						List<Map<String, Object>> deleteParams = new ArrayList<>();
 						Map<String, Object> conditionParam = new HashMap<>();
-						
+						Map<String, Object> deleteConditionParam = new HashMap<>();
 						
 						ctrtTbParam.put("tbNm", "ENTRPS_CTRT_DTL_CND");
 						
 						updateParam.put("giveAmt", ctrtItem.get("giveAmt"));
 						
+						conditionParam.put("elctrnAtrzId", ctrtItem.get("elctrnAtrzId"));
+						conditionParam.put("entrpsCtrtDtlSn", ctrtItem.get("entrpsCtrtDtlSn"));
+						conditionParam.put("giveOdrCd", ctrtItem.get("giveOdrCd"));
+						conditionParam.put("ctrtYmd", ctrtItem.get("ctrtYmd"));
+						
+						
+						//ctrtItem.ctrtYmd 가 giveAtrzParam.get("oldData")와 동일하지 않은경우에 대한 처리 
+						//임시저장된 데이터의 청구월을 변경할 경우에 대한 처리 
+						//giveAtrzParam.get("oldData")에 해당하는 데이터 업데이트
+						if(!ctrtItem.get("ctrtYmd").equals(giveAtrzParam.get("oldData"))) {
+							
+							deleteParam.put("giveAmt", null);
+							
+							deleteConditionParam.put("elctrnAtrzId", ctrtItem.get("elctrnAtrzId"));
+							deleteConditionParam.put("entrpsCtrtDtlSn", ctrtItem.get("entrpsCtrtDtlSn"));
+							deleteConditionParam.put("giveOdrCd", ctrtItem.get("oldCd"));
+							deleteConditionParam.put("ctrtYmd", giveAtrzParam.get("oldData"));	
+							
+							deleteParams.add(0, ctrtTbParam);
+							deleteParams.add(1, deleteParam);
+							deleteParams.add(2, deleteConditionParam);
+							
+							System.out.println("#### deleteParams  ####"+ deleteParams);
+							
+							commonService.updateData(deleteParams);						
+						}
+//						
+						System.out.println("#### ctrtItem  ####"+ ctrtItem);
+											
 						conditionParam.put("elctrnAtrzId", ctrtItem.get("elctrnAtrzId"));
 						conditionParam.put("entrpsCtrtDtlSn", ctrtItem.get("entrpsCtrtDtlSn"));
 						conditionParam.put("giveOdrCd", ctrtItem.get("giveOdrCd"));
