@@ -11,6 +11,7 @@ const ReferenceList = () => {
     const [ totalItems, setTotalItems ] = useState(0);
     const [ isLoading, setIsLoading ] = useState(false);
     const navigate = useNavigate();
+    let noDataText = ""
 
     const { keyColumn, queryId, tableColumns, searchInfo, referInsertPage } = NoticeJson;
     
@@ -37,6 +38,7 @@ const ReferenceList = () => {
                 setValues(response);
                 setTotalItems(response[0].totalItems);               
             } else {
+                setValues([]);
                 setTotalItems(0);
             }
         } catch (error) {
