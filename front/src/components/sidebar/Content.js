@@ -1,14 +1,12 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import routes from './app-routes';
 import { SideNavInnerToolbar as SideNavBarLayout } from './layouts';
-import { Footer } from './components';
 import React, {useTransition} from 'react';
 import { useScreenSizeClass } from './utils/media-query';
 
 function CheckAuth(isPrivate){
     // 토큰이 저장된 상태를 검사하는 로직
     const token = localStorage.getItem('token');
-    // const [cookies] = useCookies(["userInfo", "userAuth","deptInfo"]);
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const userAuth = JSON.parse(localStorage.getItem("userAuth"));
 

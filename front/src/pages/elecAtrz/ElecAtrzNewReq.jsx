@@ -303,7 +303,6 @@ const ElecAtrzNewReq = () => {
             prjctId: prjctId,
             elctrnAtrzTySeCd: data.elctrnAtrzTySeCd,
             regDt: date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0],
-            // regEmpId: cookies.userInfo.empId,
             regEmpId: userInfo.empId,
             atrzFormDocId: formData.atrzFormDocId,
             atrzLnEmpList,
