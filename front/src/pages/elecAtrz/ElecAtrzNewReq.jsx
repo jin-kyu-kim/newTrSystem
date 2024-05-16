@@ -28,9 +28,10 @@ const ElecAtrzNewReq = () => {
     const formData = location.state.formData;
     const sttsCd = location.state.sttsCd;
     const ctrtTyCd = location.state.ctrtTyCd;
-    const [cookies] = useCookies(["userInfo", "userAuth"]);
+    // const [cookies] = useCookies(["userInfo", "userAuth"]);
     const { handleOpen } = useModal();
     const [loading, setLoading] = useState(false);
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
     /** 첨부파일 관련 */
     const [attachments, setAttachments] = useState([]);
@@ -45,8 +46,11 @@ const ElecAtrzNewReq = () => {
     const [atrzLnEmpList, setAtrzLnEmpList] = useState([]);
     const column = { "dataField": "gnrlAtrzCn", "placeholder": "내용을 입력해주세요."};
 
-    // console.log("location NEW REQ !!!", location.state)
+    console.log("location NEW REQ !!!", location.state)
     // console.log("ctrtTyCd  NEW REQ !!!", ctrtTyCd)
+    // useEffect(()=>{
+    //     console.log("childData", childData)
+    // },[childData])
     
     /**
      * 계약 지급인 경우 계약코드 select
@@ -319,11 +323,14 @@ const ElecAtrzNewReq = () => {
             prjctId: prjctId,
             elctrnAtrzTySeCd: data.elctrnAtrzTySeCd,
             regDt: date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0],
-            regEmpId: cookies.userInfo.empId,
+            // regEmpId: cookies.userInfo.empId,
+            regEmpId: userInfo.empId,
             atrzFormDocId: formData.atrzFormDocId,
             atrzLnEmpList,
             sttsCd: sttsCd
         }
+
+        // console.log("insertParam", insertParam);
 
         try {
             setLoading(true);
@@ -462,7 +469,7 @@ const ElecAtrzNewReq = () => {
     
     return (
         <>
-            <div className="container" style={{marginTop:"10px"}}>
+            <div className="" style={{marginTop:"10px"}}>
                 {loading && (
                     <div className="loading-overlay">
                         요청 중입니다...

@@ -8,8 +8,6 @@ import ApiRequest from "../../../utils/ApiRequest";
 import CustomTable from "../../../components/unit/CustomTable";
 import SearchPrjctSet from "../../../components/composite/SearchPrjctSet";
 
-import { useCookies } from "react-cookie";
-
 import "react-datepicker/dist/react-datepicker.css";
 
 const ProjectHrCtAprv = () => {
@@ -21,9 +19,9 @@ const ProjectHrCtAprv = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [pageSize, setPageSize] = useState(20);
-    const [cookies] = useCookies(["userInfo", "userAuth"]);
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     
-  const userEmpId = cookies.userInfo.empId;
+    const userEmpId = userInfo.empId;
     
     const {keyColumn, queryId, tableColumns, searchParams} = ProjectHrCtAprvJson;
     const navigate = useNavigate ();

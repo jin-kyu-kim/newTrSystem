@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useLayoutEffect, useRef, useState,} from "react";
-import  { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import SearchPrjctCostSet from "../../../components/composite/SearchPrjctCostSet";
 import ProjectHrCtAprvDetailJson from "./ProjectHrCtAprvDetailJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
@@ -9,12 +9,12 @@ import ProjectHrCtAprvCtPop from "./ProjectHtCtAprvCtPop";
 import ProjectHrCtAprvMmPop from "./ProjectHtCtAprvMmPop";
 import TextArea from "devextreme-react/text-area";
 import Button from "devextreme-react/button";
-import {useCookies} from "react-cookie";
 
 const ProjectHrCtAprvDetail = () => {
 
-    const [cookies] = useCookies([]);
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const location = useLocation();
+    const navigate = useNavigate();
     const prjctId = location.state.prjctId;
     const prjctNm = location.state.prjctNm;
     const bgtMngOdr = location.state.bgtMngOdr;
@@ -134,7 +134,7 @@ const ProjectHrCtAprvDetail = () => {
             const param = [
                 { tbNm: "PRJCT_MM_ATRZ" },
                 { atrzDmndSttsCd: "VTW03703",
-                  aprvrEmpId: cookies.userInfo.empId,
+                  aprvrEmpId: userInfo.empId,
                   aprvYmd: year + monthVal + dayVal},
                 { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, atrzDmndSttsCd: "VTW03702"}
             ];
@@ -222,7 +222,7 @@ const ProjectHrCtAprvDetail = () => {
             const param = [
                 { tbNm: "PRJCT_CT_ATRZ" },
                 { atrzDmndSttsCd: "VTW03703",
-                  aprvrEmpId: cookies.userInfo.empId,
+                  aprvrEmpId: userInfo.empId,
                   aprvYmd: year + monthVal + dayVal},
                 { prjctId: prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, atrzDmndSttsCd: "VTW03702"}
             ];
@@ -315,7 +315,7 @@ const ProjectHrCtAprvDetail = () => {
                 param = [
                     { tbNm: "PRJCT_MM_ATRZ" },
                     { atrzDmndSttsCd: "VTW03704",
-                      aprvrEmpId: cookies.userInfo.empId,
+                      aprvrEmpId: userInfo.empId,
                       rjctPrvonsh: opnnCn.current,
                       rjctYmd: year + monthVal + dayVal
                     },
@@ -326,7 +326,7 @@ const ProjectHrCtAprvDetail = () => {
                 param = [
                     { tbNm: "PRJCT_MM_ATRZ" },
                     { atrzDmndSttsCd: "VTW03704",
-                      aprvrEmpId: cookies.userInfo.empId,
+                      aprvrEmpId: userInfo.empId,
                       rjctPrvonsh: opnnCn.current,
                       rjctYmd: year + monthVal + dayVal
                     },
@@ -365,7 +365,7 @@ const ProjectHrCtAprvDetail = () => {
                 param = [
                     { tbNm: "PRJCT_CT_ATRZ" },
                     { atrzDmndSttsCd: "VTW03704",
-                        aprvrEmpId: cookies.userInfo.empId,
+                        aprvrEmpId: userInfo.empId,
                         rjctPrvonsh: opnnCn.current,
                         rjctYmd: year + monthVal + dayVal
                     },
@@ -376,7 +376,7 @@ const ProjectHrCtAprvDetail = () => {
                 param = [
                     { tbNm: "PRJCT_CT_ATRZ" },
                     { atrzDmndSttsCd: "VTW03704",
-                        aprvrEmpId: cookies.userInfo.empId,
+                        aprvrEmpId: userInfo.empId,
                         rjctPrvonsh: opnnCn.current,
                         rjctYmd: year + monthVal + dayVal
                     },
@@ -482,7 +482,7 @@ const ProjectHrCtAprvDetail = () => {
             const param = [
                 { tbNm: "PRJCT_MM_ATRZ" },
                 { atrzDmndSttsCd: "VTW03703",
-                    aprvrEmpId: cookies.userInfo.empId,
+                    aprvrEmpId: userInfo.empId,
                     aprvYmd: year + monthVal + dayVal},
                 { prjctId: data.prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, aplyYmd: data.aplyYmd }
             ];
@@ -621,13 +621,13 @@ const ProjectHrCtAprvDetail = () => {
                         const param = [
                             { tbNm: "PRJCT_CT_ATRZ" },
                             { atrzDmndSttsCd: "VTW03703",
-                                aprvrEmpId: cookies.userInfo.empId,
+                                aprvrEmpId: userInfo.empId,
                                 aprvYmd: year + monthVal + dayVal},
                             { prjctId: data.prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, prjctCtAplySn: data.prjctCtAplySn }
                         ];
                         response = await ApiRequest('/boot/common/commonUpdate', param);
                     } else {
-                        const param = { prjctId: data.prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, prjctCtAplySn: data.prjctCtAplySn, aprvrEmpId: cookies.userInfo.empId };
+                        const param = { prjctId: data.prjctId, empId: data.empId, aplyYm: data.aplyYm, aplyOdr: data.aplyOdr, prjctCtAplySn: data.prjctCtAplySn, aprvrEmpId: userInfo.empId };
                         response = await ApiRequest('/boot/prjct/apprvOldCt', param);
                     }
                     if(response > 0) {
@@ -736,6 +736,7 @@ const ProjectHrCtAprvDetail = () => {
                 <span>* 경비</span>
             </div>
             <CustomTable keyColumn={ct.keyColumn} columns={ct.tableColumns} values={ctValues} paging={true} onClick={onCtBtnClick} summary={true} summaryColumn={ct.summaryColumn} masterDetail={masterDetailCt} handleExpanding={expandingCt}/>
+            <Button text="목록" style={{width: "80px"}} onClick={(e)=>{navigate('/project/ProjectHrCtAprv', {state : {empId: userInfo.empId}})}}/>
             <Popup
                 width={ProjectHrCtAprvDetailJson.popup.width}
                 height={ProjectHrCtAprvDetailJson.popup.height}

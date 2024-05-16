@@ -155,6 +155,12 @@ const ProjectExpense = () => {
                 }).catch(error => {
                     console.error("error:", error);
                 });
+     
+                const cardResult = ApiRequest('/boot/common/commonUpdate', [
+                    { tbNm: "CARD_USE_DTLS" },
+                    { prjctCtInptPsbltyYn: "Y" },
+                    { lotteCardAprvNo: props.lotteCardAprvNo }
+                ])
             }
         } else { // 문서이동
             // navigate("/elecAtrz/ElecAtrzDetail", {state: {elctrnAtrzId: props.data.elctrnAtrzId}})

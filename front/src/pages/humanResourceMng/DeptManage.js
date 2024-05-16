@@ -9,7 +9,6 @@ import { Popup } from "devextreme-react";
 import DeptManagePop from './DeptManagePop';
 import CustomLabelValue from "components/unit/CustomLabelValue";
 import uuid from "react-uuid";
-import { useCookies } from "react-cookie";
 import { useModal } from "../../components/unit/ModalContext";
 
 const DeptManage = ({callBack}) => {
@@ -22,9 +21,10 @@ const DeptManage = ({callBack}) => {
   const [deptInfo, setDeptInfo] = useState({});                     //팝업 및 상세정보에 넘길 정보 셋팅용
   const [empPopup,setEmpPop] = useState(false);                     //부서내 직원관리 팝업 세팅
   const [totalItems, setTotalItems] = useState(0);
-  const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const userAuth = JSON.parse(localStorage.getItem("userAuth"));
   const [value, setValue] = useState('contains');
-  const empId = cookies.userInfo.empId;
+  const empId = userInfo.empId;
   const date = new Date();
   const now =  date.toISOString().split("T")[0] +" " +date.toTimeString().split(" ")[0];
   const gnfdDate = moment().format('YYYYMMDD'); //현재 년월일
@@ -348,12 +348,12 @@ const DeptManage = ({callBack}) => {
 
 //============================화면그리는부분===================================
   return (
-    <div className="container">
-      <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }}>
-        <h1 style={{ fontSize: "40px" }}>부서 관리</h1>
+    <div style={{ marginLeft: "1%", marginRight: "1%" }}>
+      <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
+            <h1 style={{ fontSize: "30px" }}>부서관리</h1>
       </div>
-      <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
-        <span>* 부서를 조회합니다.</span>
+      <div className="mx-auto" style={{ marginBottom: "10px" }}>
+            <span>* 부서목록을 조회합니다.</span>
       </div>
       <div style={{ marginBottom: "20px" }}>
       </div>
@@ -419,7 +419,7 @@ const DeptManage = ({callBack}) => {
           </div>
         </div>
       </div>
-    </div>
+      </div>
   );
 };
 

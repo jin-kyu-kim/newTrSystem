@@ -66,8 +66,8 @@
       "searchInfo": {
           "searchParams": { 
               "dateRange": true,
-              "startDtNm": "",
-              "endDtNm": ""
+              "startDtNm": "startDate",
+              "endDtNm": "endDate"
           },
           "selectBoxItem": [
             {

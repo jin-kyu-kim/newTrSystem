@@ -50,16 +50,35 @@ const ElectGiveAtrzClm = ({ detailData, sttsCd, onSendData, ctrtTyCd}) => {
     /* 부모창으로 데이터 전달 */
     useEffect(()=>{
         // clmData.useYn 인경우 clmData.useYn, clmData.vatExclAmt, clmData.giveYmd, clmData.ctrtElctrnAtrzId 지우기
-        if (clmData.useYn === 'N' && (clmData.vatExclAmt || clmData.giveYmd || clmData.ctrtElctrnAtrzId)) {
-            setClmData((prev) => ({
-                useYn: prev.useYn,
-                vatExclAmt: '',
-                giveYmd: '',
-                ctrtElctrnAtrzId: ''
-            }));
-        } 
+        // if (clmData.useYn === 'N' && (clmData.vatExclAmt || clmData.giveYmd || clmData.ctrtElctrnAtrzId)) {
+        //     setClmData((prev) => ({
+        //         useYn: prev.useYn,
+        //         vatExclAmt: '',
+        //         giveYmd: '',
+        //         ctrtElctrnAtrzId: ''
+        //     }));
+        // } 
 
-        // console.log("clmData", clmData)
+        if (!clmData.rate && clmData.giveAmt && clmData.vatExclAmt) {
+            const giveAmt = clmData.giveAmt;
+            const vatExclAmt = clmData.vatExclAmt;          
+            const rate = ((giveAmt - vatExclAmt) / vatExclAmt) * 100;
+    
+            if (clmData.rate !== rate) {
+                setClmData((pre) => ({
+                    ...pre,
+                    rate: rate
+                }));
+            }
+           
+            if(!clmData.oldData){
+                setClmData((pre)=>({
+                    ...pre,
+                    oldData : clmData.giveYmd
+                }))
+            }
+        }
+            
         if(onSendData){
             onSendData(clmData);
         }

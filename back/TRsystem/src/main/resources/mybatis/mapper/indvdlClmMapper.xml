@@ -817,7 +817,7 @@
             UTZTN_DT,
             USE_OFFIC,
             UTZTN_AMT,
-            APRV_NO
+            LOTTE_CARD_APRV_NO
         FROM CARD_USE_DTLS cud
         WHERE 1 = 1
             AND cud.PRJCT_CT_INPT_PSBLTY_YN = 'Y'
