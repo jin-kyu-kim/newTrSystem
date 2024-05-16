@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import TimeExpenseInsertSttusJson from "./TimeExpenseInsertSttusJson.json";
 import Button from "devextreme-react/button";
-import { useCookies } from "react-cookie";
 import ApiRequest from "utils/ApiRequest";
 import CustomTable from "components/unit/CustomTable";
 import SearchPrjctCostSet from "../../components/composite/SearchPrjctCostSet";
@@ -15,7 +14,6 @@ import TimeExpenseCancelPopup from "./TimeExpenseCancelPopup"
 
 const TimeExpenseInsertSttus = ({}) => {
 //====================선언구간====================================================
-const [cookies] = useCookies([]);
 
 const [totValues, setTotValues] = useState([]);   //상단values
 const [dtlValues, setDtlValues] = useState([]); //하단values
