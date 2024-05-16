@@ -19,7 +19,7 @@ function CheckAuth(isPrivate){
             return "TRUE";
         }
 
-        const isPrivateFound = true;//userAuth.some(item => item === isPrivate);
+        const isPrivateFound = userAuth.some(item => item === isPrivate);
         if(isPrivateFound){
             return "TRUE";
         }else{
