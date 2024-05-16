@@ -24,10 +24,12 @@ const EmpCultHealthCostManage = () => {
   const { handleOpen } = useModal();
 
   let now = new Date();
+  let firstDayOfMonth = new Date( now.getFullYear(), now.getMonth() , 1 );
+  let lastMonth = new Date(firstDayOfMonth.setDate( firstDayOfMonth.getDate() - 1 )); // 전월 말일
   const [param, setParam] = useState({
         "empFlnm": null,
         "empno": null,
-        "clturPhstrnActMngYm": now.getFullYear()+('0' + (now.getMonth() + 1)).slice(-2),
+        "clturPhstrnActMngYm": lastMonth.getFullYear()+('0' + (lastMonth.getMonth() + 1)).slice(-2),
         "queryId": queryId
   });
   const [disabled, setDisabled] = useState();
@@ -63,7 +65,7 @@ const EmpCultHealthCostManage = () => {
     const response = await ApiRequest('/boot/common/commonSelect', [
       { tbNm: "CLTUR_PHSTRN_ACT_MNG" }, { clturPhstrnActMngYm: param.clturPhstrnActMngYm }
     ]);
-    setDisabled(response[0].ddlnYn === 'Y');
+    setDisabled(response[0]?.ddlnYn === 'Y');
   }
 
   const handleMove = () => {
@@ -72,7 +74,7 @@ const EmpCultHealthCostManage = () => {
 
   const handleDeadLine = async () => {
     const btnChk = window.confirm(param.clturPhstrnActMngYm + " 문화체련비를 마감하시겠습니까?")
-    if (btnChk) {
+    if (btnChk && validateMonth()) {
       const updateParam =[
         { tbNm: "CLTUR_PHSTRN_ACT_MNG" },
         { ddlnYn: "Y" },
@@ -84,6 +86,17 @@ const EmpCultHealthCostManage = () => {
         handleOpen("마감되었습니다.")
       }
     }
+  };
+
+  const validateMonth = () => {
+    const errors = [];
+    let paramMonth = new Date(parseInt(param.clturPhstrnActMngYm.substring(0, 4), 10),
+        parseInt(param.clturPhstrnActMngYm.substring(4, 6), 10) - 1, 1);
+    if (paramMonth > now) {
+      alert('계산과 마감이 불가능한 월입니다.')
+      errors.push('Invalid month');
+    }
+    return errors.length === 0;
   };
 
   const padNumber = (num) => {
@@ -140,15 +153,18 @@ const EmpCultHealthCostManage = () => {
   };
 
   const handleCalculate = async () => {
-    try {
-      const response = await ApiRequest("/boot/financialAffairMng/updateDpstAmt", {
-        "clturPhstrnActMngYm": param.clturPhstrnActMngYm
-      });
-      if (response){
-        pageHandle();
+    const btnChk = window.confirm(param.clturPhstrnActMngYm + " 문화체련비 지급액을 계산하시겠습니까?")
+    if (btnChk && validateMonth()) {
+      try {
+        const response = await ApiRequest("/boot/financialAffairMng/updateDpstAmt", {
+          "clturPhstrnActMngYm": param.clturPhstrnActMngYm
+        });
+        if (response){
+          pageHandle();
+        }
+      } catch (error) {
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
     }
   };
 

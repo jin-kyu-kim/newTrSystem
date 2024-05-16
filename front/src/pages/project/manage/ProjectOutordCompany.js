@@ -5,7 +5,6 @@ import  ProjectOutordCompanyJson from "./ProjectOutordCompanyJson.json";
 import SearchOutordSet from "components/composite/SearchInfoSet";
 import axios from "axios";
 import CustomTable from "components/unit/CustomTable";
-import { useCookies } from "react-cookie";
 import uuid from "react-uuid";
 import { useModal } from "../../../components/unit/ModalContext";
 
@@ -19,8 +18,9 @@ function ProjectOutordCompany () {
     const fileUploaderRef = useRef(null); //파일 업로드용 ref
     const insertRef = useRef(null); //textbox focus용 ref
     const [deleteFiles, setDeleteFiles] = useState([{tbNm: "ATCHMNFL"}]);
-    const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
-    const empId = cookies.userInfo.empId;
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    const userAuth = JSON.parse(localStorage.getItem("userAuth"));
+    const empId = userInfo.empId;
     const date = new Date();
     const now =  date.toISOString().split("T")[0] +" " +date.toTimeString().split(" ")[0];
     const { handleOpen } = useModal();
@@ -239,16 +239,13 @@ function ProjectOutordCompany () {
         }
 //================ 화면 그리는 구간=========================================
     return (
-    <div className="container">
-
-            <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }}>
-                <h1 style={{ fontSize: "40px" }}>파트너업체관리</h1>
-            </div>
-
-            <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
-                <span>* 파트너업체를 조회합니다.</span>
-            </div>
-
+        <div style={{ marginLeft: "1%", marginRight: "1%" }}>
+        <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
+            <h1 style={{ fontSize: "30px" }}>파트너 업체 관리</h1>
+        </div>
+        <div className="mx-auto" style={{ marginBottom: "10px" }}>
+            <span>* 파트너업체를 조회합니다.</span>
+        </div>
             <div style={{ marginBottom: "20px" }}>
             <SearchOutordSet callBack={searchHandle} props={searchInfo} />
             </div>

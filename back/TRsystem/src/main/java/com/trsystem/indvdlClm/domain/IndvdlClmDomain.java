@@ -283,10 +283,19 @@ public class IndvdlClmDomain {
 
         // 합계컬럼 업데이트: 청구금액
         Map<String, Object> updateData = new HashMap<>();
-        if(param.get("clturPhstrnSeCd").equals("VTW00901")){
+        if(param.get("clturPhstrnSeCd").equals("VTW00901") && param.get("clturPhstrnSeCd").equals(param.get("selectedClturPhstrnSeCd"))){
             updateData.put("clturCtClmAmt", (int)shResult.get("clturCtClmAmt") - (int)param.get("selectedClmAmt") + (int)param.get("clmAmt"));
-        } else if (param.get("clturPhstrnSeCd").equals("VTW00902")) {
+        }
+        else if (param.get("clturPhstrnSeCd").equals("VTW00902") && param.get("clturPhstrnSeCd").equals(param.get("selectedClturPhstrnSeCd"))) {
             updateData.put("ftnessTrngCtClmAmt", (int)shResult.get("ftnessTrngCtClmAmt") - (int)param.get("selectedClmAmt") + (int)param.get("clmAmt"));
+        }
+        else if (param.get("selectedClturPhstrnSeCd").equals("VTW00901") && param.get("clturPhstrnSeCd").equals("VTW00902")){
+            updateData.put("clturCtClmAmt", (int)shResult.get("clturCtClmAmt") - (int)param.get("selectedClmAmt"));
+            updateData.put("ftnessTrngCtClmAmt", (int)shResult.get("ftnessTrngCtClmAmt") + (int)param.get("clmAmt"));
+        }
+        else if (param.get("selectedClturPhstrnSeCd").equals("VTW00902") && param.get("clturPhstrnSeCd").equals("VTW00901")){
+            updateData.put("ftnessTrngCtClmAmt", (int)shResult.get("ftnessTrngCtClmAmt") - (int)param.get("selectedClmAmt"));
+            updateData.put("clturCtClmAmt", (int)shResult.get("clturCtClmAmt") + (int)param.get("clmAmt"));
         }
         updateData.put("clmAmt", (int)shResult.get("clmAmt") - (int)param.get("selectedClmAmt") + (int)param.get("clmAmt"));
 
@@ -307,10 +316,19 @@ public class IndvdlClmDomain {
         // 합계컬럼 업데이트: 이월금액
         List<Map<String, Object>> nextParam = new ArrayList<>();
         Map<String, Object> nextData = new HashMap<>();
-        if(param.get("clturPhstrnSeCd").equals("VTW00901")){
+        if(param.get("clturPhstrnSeCd").equals("VTW00901") && param.get("clturPhstrnSeCd").equals(param.get("selectedClturPhstrnSeCd"))){
             nextData.put("clturCtCyfdAmt", (int)shNxtResult.get("clturCtCyfdAmt") - (int)param.get("selectedClmAmt") + (int)param.get("clmAmt"));
-        } else if (param.get("clturPhstrnSeCd").equals("VTW00902")) {
+        }
+        else if (param.get("clturPhstrnSeCd").equals("VTW00902") && param.get("clturPhstrnSeCd").equals(param.get("selectedClturPhstrnSeCd"))){
             nextData.put("ftnessTrngCtCyfdAmt", (int)shNxtResult.get("ftnessTrngCtCyfdAmt") - (int)param.get("selectedClmAmt") + (int)param.get("clmAmt"));
+        }
+        else if (param.get("selectedClturPhstrnSeCd").equals("VTW00901") && param.get("clturPhstrnSeCd").equals("VTW00902")) {
+            nextData.put("clturCtCyfdAmt", (int)shNxtResult.get("clturCtCyfdAmt") - (int)param.get("selectedClmAmt"));
+            nextData.put("ftnessTrngCtCyfdAmt", (int)shNxtResult.get("ftnessTrngCtCyfdAmt") + (int)param.get("clmAmt"));
+        }
+        else if (param.get("selectedClturPhstrnSeCd").equals("VTW00902") && param.get("clturPhstrnSeCd").equals("VTW00901")) {
+            nextData.put("ftnessTrngCtCyfdAmt", (int)shNxtResult.get("ftnessTrngCtCyfdAmt") - (int)param.get("selectedClmAmt"));
+            nextData.put("clturCtCyfdAmt", (int)shNxtResult.get("clturCtCyfdAmt") + (int)param.get("clmAmt"));
         }
         nextData.put("cyfdAmt", (int)shNxtResult.get("cyfdAmt") - (int)param.get("selectedClmAmt") + (int)param.get("clmAmt"));
 

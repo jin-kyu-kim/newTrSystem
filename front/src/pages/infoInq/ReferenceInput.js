@@ -152,7 +152,7 @@ const ReferenceInput = () => {
             
             <div className="wrap_btns inputFormBtn">
                 <Button text="목록" onClick={() => navigate("/infoInq/ReferenceList")} />
-                <Button text="저장" useSubmitBehavior={true} onClick={() => handleOpen(editMode !== 'update' ? "등록하시겠습니까?" : "수정하시겠습니까?", storeReference(editMode))} />
+                <Button text="저장" useSubmitBehavior={true} onClick={() => handleOpen(editMode !== 'update' ? "등록하시겠습니까?" : "수정하시겠습니까?", () => storeReference(editMode))} />
             </div>
         </div>
     );

@@ -9,7 +9,7 @@ function EmpCultHealthCostDetailPop({value, ym, disabled}) {
   const [values, setValues] = useState([]);
   const [param, setParam] = useState({});
 
-  const { keyColumn, queryId, tableColumns } = EmpCultHealthCostDetailPopJson;
+  const { keyColumn, queryId, tableColumns, tbNm, queryIdUrl } = EmpCultHealthCostDetailPopJson;
 
   useEffect(() =>{
     setParam({
@@ -83,12 +83,14 @@ function EmpCultHealthCostDetailPop({value, ym, disabled}) {
       <div className="container">
           <h3 style={{fontSize: "20px"}}>문화체련비 상세청구내역 ({value?.empFlnm})</h3>
           <CustomEditTable
+              tbNm={tbNm}
               keyColumn={keyColumn}
               columns={tableColumns}
               values={values}
               paging={true}
               onlyUpdate={true}
               noEdit={disabled}
+              queryIdUrl={queryIdUrl}
           />
       </div>
   );

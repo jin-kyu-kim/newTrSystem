@@ -14,17 +14,17 @@ const ProjectExpense = () => {
     const location = useLocation();
     const { ExpenseInfo, keyColumn, ctAplyTableColumns, elcKeyColumn, columnCharge, buttonsConfig,
         aplyAndAtrzCtQueryId, dmndSttsQueryId, groupingColumn, groupingData, searchInfo } = ProjectExpenseJson.ProjectExpenseMain;
-    const [ index, setIndex ] = useState(0);
-    const [ atrzDmndSttsCnt, setAtrzDmndSttsCnt ] = useState({}); // 상태코드별 데이터 개수
-    const [ ctAply, setCtAply ] = useState([]); // 차수 청구내역 (table1)
-    const [ ctAtrz, setCtAtrz ] = useState([]); // 전자결재 청구내역 (table2)
-    const [ changeColumn, setChangeColumn ] = useState([]); // 결재상태 컬럼 -> 버튼렌더를 위해 필요
-    const [ ctAtrzCmptnYn, setCtAtrzCmptnYn ] = useState(); // 비용결재완료여부
-    const [ mmAtrzCmptnYn, setMmAtrzCmptnYn ] = useState(); // 근무시간여부
-    
-    const [ cookies ] = useCookies([]);
-    const [ popVisible, setPopVisible ] = useState(false);
-    const [ histYmOdr, setHistYmOdr ] = useState({});
+    const [index, setIndex] = useState(0);
+    const [atrzDmndSttsCnt, setAtrzDmndSttsCnt] = useState({}); // 상태코드별 데이터 개수
+    const [ctAply, setCtAply] = useState([]); // 차수 청구내역 (table1)
+    const [ctAtrz, setCtAtrz] = useState([]); // 전자결재 청구내역 (table2)
+    const [changeColumn, setChangeColumn] = useState([]); // 결재상태 컬럼 -> 버튼렌더를 위해 필요
+    const [ctAtrzCmptnYn, setCtAtrzCmptnYn] = useState(); // 비용결재완료여부
+    const [mmAtrzCmptnYn, setMmAtrzCmptnYn] = useState(); // 근무시간여부
+
+    const [cookies] = useCookies([]);
+    const [popVisible, setPopVisible] = useState(false);
+    const [histYmOdr, setHistYmOdr] = useState({});
     const admin = location.state ? location.state.admin : undefined;
     const empId = admin != undefined ? admin.empId : cookies.userInfo.empId;
     const date = new Date();
@@ -55,7 +55,7 @@ const ProjectExpense = () => {
             empId: empId
         })
 
-        if(Object.keys(initParam).length !== 0){
+        if (Object.keys(initParam).length !== 0) {
             setPopVisible(true);
         }
     };
@@ -76,7 +76,7 @@ const ProjectExpense = () => {
     };
 
     const setCtAtrzCmptnData = (data) => {
-        if(data.length !== 0){
+        if (data.length !== 0) {
             setCtAtrzCmptnYn(data?.every(item => item.ctAtrzCmptnYn === null) ? null : data.some(item => item.ctAtrzCmptnYn === 'N') ? 'N' : 'Y');
             setMmAtrzCmptnYn(data?.every(item => item.mmAtrzCmptnYn === null) ? null : data.some(item => item.mmAtrzCmptnYn === 'N') ? 'N' : 'Y');
         }
@@ -93,7 +93,7 @@ const ProjectExpense = () => {
             actionType: data.actionType, // PRJCT_CT_ATRZ : 결재요청상태 update (입력마감 / 승인요청)
             empId, aplyYm, aplyOdr
         };
-        if(ctAply.length !== 0){
+        if (ctAply.length !== 0) {
             const response = await ApiRequest("/boot/common/queryIdDataControl", param);
         }
         const updateStts = ctAply.length === 0
@@ -111,7 +111,7 @@ const ProjectExpense = () => {
             { empId, aplyYm, aplyOdr }
         ];
         const response = await ApiRequest("/boot/common/commonUpdate", param);
-        if(response === 1) getData();
+        if (response === 1) getData();
     };
 
     const onClickAction = async (onClick) => {
@@ -119,22 +119,20 @@ const ProjectExpense = () => {
             setHistYmOdr(null)
             setPopVisible(true);
         } else {
-            if (window.confirm(onClick.msg)) {
-                if(mmAtrzCmptnYn === undefined || mmAtrzCmptnYn === null){
-                    handleOpen('경비청구 건수가 없을 경우 근무시간을 먼저 승인 요청 해주시기 바랍니다.')
-                    return;
-                }
-                prjctCtAtrzUpdate(onClick);
+            if (mmAtrzCmptnYn === undefined || mmAtrzCmptnYn === null) {
+                handleOpen('경비청구 건수가 없을 경우 근무시간을 먼저 승인 요청 해주시기 바랍니다.')
+                return;
             }
+            prjctCtAtrzUpdate(onClick);
         }
     };
     const onPopHiding = async () => { setPopVisible(false); }
 
     const getButtonsShow = () => {
-        if(ctAply.length === 0){ // 비용청구가 없으면서 근무시간은 존재하는 경우
+        if (ctAply.length === 0) { // 비용청구가 없으면서 근무시간은 존재하는 경우
             if (ctAtrzCmptnYn === 'Y' && mmAtrzCmptnYn === 'N') return buttonsConfig.hasApprovals;
             if (mmAtrzCmptnYn === 'Y') return buttonsConfig.completed;
-        } else{
+        } else {
             if (atrzDmndSttsCnt.aprvDmnd > 0 || atrzDmndSttsCnt.rjct > 0) return buttonsConfig.hasApprovals;
             if (atrzDmndSttsCnt.inptDdln > 0) return buttonsConfig.noApprovals;
             if (atrzDmndSttsCnt.rjct === 0 && atrzDmndSttsCnt.aprv > 0) return buttonsConfig.completed;
@@ -147,7 +145,7 @@ const ProjectExpense = () => {
             if (window.confirm("삭제하시겠습니까?")) {
 
                 const param = { prjctId: props.prjctId, prjctCtAplySn: props.prjctCtAplySn, empId, aplyYm, aplyOdr };
-                const tables = ["PRJCT_CT_ATRZ", "PRJCT_CT_APLY", "PRJCT_CT_ATDRN"];
+                const tables = ["PRJCT_CT_ATRZ", "PRJCT_CT_ATDRN", "PRJCT_CT_APLY"];
                 const deleteRow = tables.map(tbNm => ApiRequest("/boot/common/commonDelete", [{ tbNm }, param]));
 
                 Promise.all(deleteRow).then(responses => {
@@ -184,29 +182,28 @@ const ProjectExpense = () => {
             </div>
         );
     };
-console.log('yn', ctAtrzCmptnYn)
-console.log('mmyn', mmAtrzCmptnYn)
-console.log('cnt', atrzDmndSttsCnt)
+
     return (
         <div className="container">
             <div style={{ marginBottom: '100px' }}>
                 <div className="mx-auto" style={{ display: 'flex', marginTop: "20px", marginBottom: "30px" }}>
                     <h1 style={{ fontSize: "30px", marginRight: "20px" }}>프로젝트비용</h1>
                     {getButtonsShow().map(({ onClick, text, type }, index) => (
-                        <Button key={index} text={text} type={type} onClick={() => onClickAction(onClick)} style={{ marginRight: '5px' }} />))}
+                        <Button key={index} text={text} type={type} style={{ marginRight: '5px' }}
+                            onClick={() => handleOpen(onClick.name !== 'onPrintClick' && onClick.msg, () => onClickAction(onClick), true)} />))}
                 </div>
 
-                <div style={{marginBottom: '50px', width: 600 }}>
+                <div style={{ marginBottom: '50px', width: 600 }}>
                     {admin != undefined ? <></> :
-                    <SearchInfoSet
-                        callBack={searchHandle}
-                        props={searchInfo}
-                    /> }
+                        <SearchInfoSet
+                            callBack={searchHandle}
+                            props={searchInfo}
+                        />}
                 </div>
                 {admin != undefined ?
-                <RenderTopTable title={`*${admin.empno} ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} /> :
-                <RenderTopTable title={`* ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} /> }
-                <RenderTopTable title='* 전자결재 청구 내역' keyColumn={elcKeyColumn} columns={columnCharge} values={ctAtrz} />
+                    <RenderTopTable title={`*${admin.empno} ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} /> :
+                    <RenderTopTable title={`* ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} />}
+                <RenderTopTable title='* 전자결재 청구 내역' keyColumn={elcKeyColumn} columns={columnCharge} values={ctAtrz} />  
 
                 {atrzDmndSttsCnt.ctReg > 0 || ctAtrzCmptnYn === null || ctAtrzCmptnYn === undefined
                     ? <TabPanel
@@ -235,13 +232,13 @@ console.log('cnt', atrzDmndSttsCnt)
                         background: "#F2F2F2",
                         display: "flex",
                         alignItems: "center"
-                    }}><span style={{marginLeft: '200px', fontSize: '16pt'}}>입력 마감되었습니다.</span></div>}
+                    }}><span style={{ marginLeft: '200px', fontSize: '16pt' }}>입력 마감되었습니다.</span></div>}
             </div>
             <ProjectExpensePopup
                 visible={popVisible}
                 onPopHiding={onPopHiding}
                 aprvInfo={atrzDmndSttsCnt}
-                noDataCase={{cnt: ctAply.length, yn: mmAtrzCmptnYn}}
+                noDataCase={{ cnt: ctAply.length, yn: mmAtrzCmptnYn }}
                 basicInfo={histYmOdr !== null ? histYmOdr : { aplyYm, aplyOdr, empId }}
             />
         </div>
