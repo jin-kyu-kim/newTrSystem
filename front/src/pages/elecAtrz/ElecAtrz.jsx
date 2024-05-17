@@ -107,7 +107,8 @@ const ElecAtrz = () => {
     }
   };
 
-  const onClickBtn = async (button, data) => {
+  const onClickBtn = async (e, button, data) => {
+    e.event.preventDefault();
     if(button.name === 'delete'){
       const res = await ApiRequest('/boot/elecAtrz/deleteTempAtrz', {
         elctrnAtrzId: data.elctrnAtrzId, atrzTySeCd: data.elctrnAtrzTySeCd
@@ -148,7 +149,7 @@ const ElecAtrz = () => {
           wordWrap={true}
           noDataText={'결재 기안 문서가 없습니다.'}
           onClick={onClickBtn}
-          onRowDblClick={(e) => sendDetail(e, param)}
+          onRowClick={(e) => sendDetail(e, param)}
         />
       </div>
     </div>
