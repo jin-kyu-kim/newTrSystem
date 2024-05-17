@@ -1,5 +1,5 @@
 .dx-dropdowneditor-overlay .dx-list {
-    height: 30rem;
+    max-height: 30rem;
 }
 
 .selectbox-item {
