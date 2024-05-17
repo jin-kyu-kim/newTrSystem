@@ -148,6 +148,10 @@ const ProjectChange = () => {
         // ATRZ_DMND_STTS_CD 컬럼 -> VTW03702(결재요청)
         handleBgtPrmpc("VTW03702");
 
+        // 승인요청이 되면 PRJCT_HIST 수정해주기
+        // ATRZ_DMND_STTS_CD 컬럼 -> VTW03702(결재요청)
+        handleTempPrjct("VTW03702");
+
         handleOpen("승인요청이 완료되었습니다.");
         setPopupVisible(false);
         navigate("../project/ProjectAprv");
@@ -184,6 +188,30 @@ const ProjectChange = () => {
       console.error('Error fetching data', error);
     }
   }
+
+  /**
+   * PRJCT_HIST(프로젝트이력) 테이블의 ATRZ_DMND_STTS_CD(승인요청상태코드)를 변경한다.
+   * @param {"VTW03701", "VTW03702", "VTW03703"} cdValue : ATRZ_DMND_STTS_CD(승인요청상태코드)
+   */
+    const handleTempPrjct = async (cdValue) => {
+      const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
+
+      
+      const param = {
+        queryId: "projectMapper.updateTempPrjctAtrzDmndSttsCd",
+        prjctId: prjctId,
+        atrzDmndSttsCd: cdValue,
+        mdfcnEmpId: empId,
+        mdfcnDt: mdfcnDt,
+        state: "UPDATE"
+      } 
+
+      try {
+        await ApiRequest("/boot/common/queryIdDataControl", param);
+      } catch (error) {
+        console.error('Error fetching data', error);
+      }
+    }
 
   /**
    * PRJCT(프로젝트) 테이블의 BIZ_STTS_CD(사업상태코드)를 변경한다.
@@ -254,6 +282,10 @@ const ProjectChange = () => {
           
           // 임시저장으로 수정
           handleBgtPrmpc("VTW03701");
+
+          // 임시저장으로 수정
+          handleTempPrjct("VTW03701");
+
           
         } else {
           handleOpen("승인요청 취소가 실패되었습니다.");
@@ -324,6 +356,7 @@ const ProjectChange = () => {
                 targetOdr={targetOdr}
                 bizSttsCd={bizSttsCd}
                 atrzLnSn={atrzLnSn}
+                requestBtnVisible={requestBtnVisible}
               />
             </Suspense>
           );
@@ -346,6 +379,7 @@ const ProjectChange = () => {
           targetOdr={targetOdr}
           visible={popupVisible}
           atrzDmndSttsCd="VTW03701"
+          type="req"
         />
         <TextArea 
           height="30%"
