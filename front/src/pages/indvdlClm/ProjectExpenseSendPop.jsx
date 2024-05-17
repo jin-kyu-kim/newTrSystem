@@ -7,7 +7,7 @@ const ProjectExpenseSendPop = ({ visible, onPopHiding, selectedItem, btnName }) 
     
     const onClickBtn = (btnNm) => {
         const formData = {
-            ...selectedItem,
+            selectedData: selectedItem,
             elctrnAtrzTySeCd: 'VTW04907',
             gnrlAtrzTtl: btnNm
         }

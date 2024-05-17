@@ -3,7 +3,7 @@ import { CheckBox } from "devextreme-react";
 import React from 'react';
 import {Button} from "devextreme-react/button";
 
-const GridRows = ( {columns, editRow, handleYnVal, onClick, handleCheckBoxChange, checkBoxValue}) => {
+const GridRows = ({ columns, onClick, handleCheckBoxChange, checkBoxValue }) => {
 
     const result = [];
 
@@ -33,7 +33,7 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick, handleCheckBoxChange
             }
         }
         return(
-            <Button name = {button.name} text={button.text} onClick={(e) => {onClick(button, data)}} disabled={disabled}/>
+            <Button name = {button.name} text={button.text} onClick={(e) => {onClick(e, button, data)}} disabled={disabled}/>
         )
     }
 
@@ -70,7 +70,7 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick, handleCheckBoxChange
         });
         if(button != null){
             return(
-                <Button name = {button.name} text={button.text} onClick={(e) => {onClick(button, data)}} disabled={disabled}/>
+                <Button name = {button.name} text={button.text} onClick={(e) => {onClick(e, button, data)}} disabled={disabled}/>
             )
         }
     }
@@ -83,7 +83,6 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick, handleCheckBoxChange
     const DateCell = (data) => {
         return <span>{formatDate(data.value)}</span>;
     };
-
 
     for (let i = 0; i < columns.length; i++) {
       const { key, value, width, alignment, button, buttons, visible, toggle, subColumns, chkBox , grouping, currency, unit, dateFormat } = columns[i];
@@ -145,9 +144,6 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick, handleCheckBoxChange
               />
           );
         }
-
-        // const handleCheckBoxChange = (e) => {
-        // }
 
         result.push(
           <Column
@@ -212,16 +208,11 @@ const GridRows = ( {columns, editRow, handleYnVal, onClick, handleCheckBoxChange
               caption={value}
               width={width}
               alignment={alignment || 'center'}
-             
-              
             >
             </Column>
           );
       }
-
     }
-
     return result;
 }
-
 export default GridRows;

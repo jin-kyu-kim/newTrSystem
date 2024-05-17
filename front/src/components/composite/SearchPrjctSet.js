@@ -5,6 +5,7 @@ import Box, {Item} from "devextreme-react/box"
 import { Button } from "devextreme-react/button";
 import { Popup } from "devextreme-react/popup";
 
+import "./SearchPrjctSet.css";
 import CustomDateRangeBox from "../unit/CustomDateRangeBox";
 import CustomCdComboBox from "../unit/CustomCdComboBox";
 import AutoCompleteProject from "../unit/AutoCompleteProject";
@@ -82,9 +83,8 @@ const SearchPrjctSet = ({ callBack, props, popup }) => {
   return (
     <div className="box_search" width="100%">
       <Box
-        direction="row"
-        width="100%"
-        height={40}
+        className="searchPrjctSet"
+        style={{width: "100%", display: "flex", flexDirection: "row"}}
       >
         <Item className="prmpcInptSeCdItem" ratio={1} visible={props.prmpcInptSeCdItem}>
           <CustomCdComboBox

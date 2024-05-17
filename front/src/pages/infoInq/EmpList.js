@@ -31,6 +31,7 @@ function EmpList() {
         setValues(response);
         setTotalItems(response[0].totalItems);
       } else {
+        setValues([]);
         setTotalItems(0);
       }
     } catch (error) {

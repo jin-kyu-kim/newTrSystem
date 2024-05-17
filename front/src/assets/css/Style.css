@@ -331,6 +331,17 @@
   background-color: #dde7f7;
 }
 
+/* MasterDetail에 hover 적용 X */
+.dx-master-detail-row:hover {
+  background-color: transparent !important;
+  cursor: default !important; 
+}
+
+/* MasterDetail 내부 Switch에 hover 적용 X */
+.dx-master-detail-row:hover .dx-switch-container {
+  background-color: transparent !important;
+}
+
 @media (max-width: 600px) {
   .dx-datagrid .dx-header-row .dx-datagrid-text-content {
     font-size: 8px;

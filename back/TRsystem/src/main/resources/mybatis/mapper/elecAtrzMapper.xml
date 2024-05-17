@@ -107,7 +107,7 @@
 				]]>
 			</if>
 		</if>
-
+		ORDER BY ea.REG_DT
 
 	</select>
 
