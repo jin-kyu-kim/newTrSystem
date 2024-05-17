@@ -39,7 +39,6 @@ const ProjectExpense = () => {
             if (args.name === "selectedIndex") setIndex(args.value);
         }, [setIndex]
     );
-
     useEffect(() => { getData(); }, []);
 
     useEffect(() => { // 결재상태에 따른 컬럼 list변경
@@ -201,7 +200,8 @@ const ProjectExpense = () => {
                     <h1 style={{ fontSize: "30px", marginRight: "20px" }}>프로젝트비용</h1>
                     {getButtonsShow().map(({ onClick, text, type }, index) => (
                         <Button key={index} text={text} type={type} style={{ marginRight: '5px' }}
-                            onClick={onClick.name !== 'onPrintClick' ? () => handleOpen(onClick.msg, () => onClickAction(onClick)) : onClickAction(onClick)} />))}
+                            onClick={onClick.name !== 'onPrintClick' ? () => handleOpen(onClick.msg, () => onClickAction(onClick)) 
+                            : () => onClickAction(onClick)} />))}
                 </div>
 
                 <div style={{ marginBottom: '50px', width: 600 }}>
