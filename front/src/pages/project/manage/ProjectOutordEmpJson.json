@@ -3,15 +3,15 @@
     "queryId": "projectMapper.retrieveOutordEmpList",
     "keyColumn": "empId",
     "tableColumns": [
-      { "key": "empno", "value": "파트너번호", "width": 120, "alignment": "center" },
-      { "key": "outordHnfOgdpNm", "value": "소속", "width": 100, "alignment": "center" },
-      { "key": "empFlnm", "value": "성명", "width": 100, "alignment": "center" },
-      { "key": "brdt", "value": "생년월일", "width": 150, "alignment": "center" },
-      { "key": "gradNm", "value": "등급", "width": 80, "alignment": "center" },
-      { "key": "telno", "value": "전화번호", "width": 150, "alignment": "center" },
-      { "key": "eml", "value": "이메일", "width": 150, "alignment": "center" },
-      { "key": "fileNm", "value": "첨부파일", "width": 150, "alignment": "center" },
-      { "value": "삭제",  "button": {"text" : "삭제"},"width": 50}
+      { "key": "empno", "value": "파트너번호", "alignment": "center", "width": "10%" },
+      { "key": "outordHnfOgdpNm", "value": "소속", "alignment": "center" },
+      { "key": "empFlnm", "value": "성명", "alignment": "center", "width": "8%"},
+      { "key": "brdt", "value": "생년월일", "alignment": "center" },
+      { "key": "gradNm", "value": "등급", "alignment": "center" },
+      { "key": "telno", "value": "전화번호", "alignment": "center" },
+      { "key": "eml", "value": "이메일", "alignment": "center", "width": "15%" },
+      { "key": "fileNm", "value": "첨부파일", "alignment": "center" },
+      { "value": "삭제",  "button": {"text" : "삭제"}, "width": "8%"}
     ],
     "searchInfo": {
         "searchParams": {
