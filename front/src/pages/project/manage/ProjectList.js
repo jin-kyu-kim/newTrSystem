@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 
 import ProjectJson from "../manage/ProjectListJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
@@ -6,8 +6,7 @@ import SearchPrjctSet from "../../../components/composite/SearchPrjctSet";
 import CustomTable from "../../../components/unit/CustomTable";
 
 import "react-datepicker/dist/react-datepicker.css";
-import { useNavigate } from "react-router-dom";
-import { Button } from "devextreme-react";
+import {useLocation, useNavigate} from "react-router-dom";
 
 const ProjectList = () => {
   const [values, setValues] = useState([]);
@@ -17,6 +16,7 @@ const ProjectList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
+  const location = useLocation();
 
 
 
@@ -49,6 +49,7 @@ const ProjectList = () => {
       startVal: 0,
       pageSize: pageSize,
       empId: empId,
+      path: location.pathname
     });
   };
 

@@ -19,7 +19,6 @@ function ProjectOutordCompany () {
     const insertRef = useRef(null); //textbox focus용 ref
     const [deleteFiles, setDeleteFiles] = useState([{tbNm: "ATCHMNFL"}]);
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-    const userAuth = JSON.parse(localStorage.getItem("userAuth"));
     const empId = userInfo.empId;
     const date = new Date();
     const now =  date.toISOString().split("T")[0] +" " +date.toTimeString().split(" ")[0];
@@ -240,12 +239,12 @@ function ProjectOutordCompany () {
 //================ 화면 그리는 구간=========================================
     return (
         <div style={{ marginLeft: "1%", marginRight: "1%" }}>
-        <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
-            <h1 style={{ fontSize: "30px" }}>파트너 업체 관리</h1>
-        </div>
-        <div className="mx-auto" style={{ marginBottom: "10px" }}>
-            <span>* 파트너업체를 조회합니다.</span>
-        </div>
+            <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
+                <h1 style={{ fontSize: "30px" }}>파트너 업체 관리</h1>
+            </div>
+            <div className="mx-auto" style={{ marginBottom: "10px" }}>
+                <span>* 파트너업체를 조회합니다.</span>
+            </div>
             <div style={{ marginBottom: "20px" }}>
             <SearchOutordSet callBack={searchHandle} props={searchInfo} />
             </div>
@@ -276,7 +275,7 @@ function ProjectOutordCompany () {
                
              <div style={{ marginTop: "10px", border: "2px solid #CCCCCC",display : 'flex', height: "300px",flexDirection: 'column', justifyContent: "center"  }}>
                    <h5 style={{alignItems : 'left'}}>외주업체정보를 입력/수정 합니다.</h5>
-             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center',justifyContent: 'center', gap: '20px', marginLeft : '5px', alignItems: "center"}}>
+             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center',justifyContent: 'center', gap: '20px', marginLeft : '5px'}}>
                     <TextBox
                         ref={insertRef}
                         onValueChange={(e) => { handleChgValue("outordEntrpsNm", e) }}
@@ -327,10 +326,9 @@ function ProjectOutordCompany () {
                     <div className="buttonContainer" style={{ marginTop: '5px',marginLeft : '5px' ,alignItems: 'left'}}>
                         <Button type = "default" style={{ height: "48px", width: "60px", marginRight: "15px" }} onClick={saveOutordC}>저장</Button>
                         <Button type = "danger" style={{ height: "48px", width: "60px", marginRight: "15px" }} onClick={resetForm}>초기화</Button>
-                        
                     </div>
-                </div>
-      </div>
+             </div>
+        </div>
     );
 };
 
