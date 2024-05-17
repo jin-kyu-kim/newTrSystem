@@ -394,32 +394,32 @@ const ProjectAprvDetail = () => {
         )
 
         rowInfo.map((item, index) => {
-
+            console.log(item)
             header.push(
-                <th className="table-atrzLn-th">
+                <th className="table-atrzLn-th" key={item.atrzStepNm}>
                     {item.atrzStepNm}
                 </th>
             );
 
             stts.push(
-                <td className="table-atrzLn-td">
+                <td className="table-atrzLn-td" key={item.atrzSttsNm}>
                     {item.atrzSttsNm}
                 </td>
             );
             emp.push(
-                <td className="table-atrzLn-td">
+                <td className="table-atrzLn-td" key={item.aprvrEmpFlnm}>
                     {item.aprvrEmpFlnm}
                 </td>
             )
             if(item.atrzSttsNm === '반려') {
                 ymd.push(
-                    <td className="table-atrzLn-td">
+                    <td className="table-atrzLn-td" key={item.mdfcnDt}>
                         {item.mdfcnDt}
                     </td>
                 )
             } else {
                 ymd.push(
-                    <td className="table-atrzLn-td">
+                    <td className="table-atrzLn-td" key={item.mdfcnDt}>
                         {item.mdfcnDt}
                     </td>
                 )
@@ -428,7 +428,7 @@ const ProjectAprvDetail = () => {
 
 
         const test = (
-            <table className="table-atrzLn">
+            <table className="table-atrzLn" key="table-atrzLn">
                 {/* <colgroup>
                     <col width="8%"/>
                     <col width="23%"/>
@@ -438,7 +438,7 @@ const ProjectAprvDetail = () => {
                 </colgroup> */}
                 <tbody>
                     <tr>
-                        <th className="table-atrzLn-th" rowspan={4}>결재</th>
+                        <th className="table-atrzLn-th" rowSpan={4}>결재</th>
                         {header}
                         {/* {defalultHeader} */}
                     </tr>

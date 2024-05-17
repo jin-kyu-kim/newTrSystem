@@ -2,11 +2,11 @@
   "menuName": "ProjectTotCostInfo",
   "queryId": "projectMapper.retrievePrjctGnrlzTot",
   "aprvQueryId": "projectMapper.retrieveAprvBgtOdr",
-  "keyColumn": "prmpcAcctoTot",
+  "keyColumn": "ctNm",
   "wordWrap": true,
   
   "tableColumns": [
-    { "key": "prmpcAcctoTot", "value":"원가별집계", "width": "17%", "alignment": "center" },
+    {  "key": "", "value":"원가별집계", "width": "17%", "alignment": "center" },
     {  "key": "ctNm", "value": "원가항목", "width": "17%", "alignment": "center"  },
     {  "key": "bgt", "value": "배정예산(원)", "width": "17%", "alignment": "center", "currency": true},
     {  "key": "useBgt", "value": "누적사용(원)", "width": "17%", "alignment": "center", "currency": true },
@@ -21,7 +21,6 @@
       { "key": "useBgt", "value": "누적사용(원)", "summaryType"  : "sum", "valueFormat": "#,##0", "displayFormat" : "{0} 원" },
       { "key": "useFulBgt", "value":"가용(원)", "summaryType"  : "sum", "valueFormat": "#,##0", "displayFormat" : "{0} 원" }
     ],
-   "groupingData" : 
-  {"caption":"원가별집계", "dataField": "prmpcAcctoTot" , "format": "#,##0"}
+   "groupingData" : {"caption":"원가별집계", "dataField": "prmpcAcctoTot" , "format": "#,##0"}
    
 }

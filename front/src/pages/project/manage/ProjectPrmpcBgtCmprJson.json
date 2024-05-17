@@ -2,7 +2,7 @@
     "menuName": "ProjectPrmpcBgtCmpr",
     "queryId": "projectMapper.retrievePrjctPrmpcBgtCmpr",
     "totQueryId": "projectMapper.retrievePrjctPrmpcTotBgtCmpr",
-    "keyColumn": "ctNm",
+    "keyColumn": ["kind", "ctNm"],
     "wordWrap": true,
     "tableColumns": [
       { "key": "prmpcAcctoTot", "value":"원가별집계", "width": "20%", "alignment": "center" },
