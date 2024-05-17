@@ -4,20 +4,22 @@
   flex-direction: column;
   justify-content: flex-start;
   height: 100vh;
-  margin: 0;
   background-image: url("../img/login_bg.jpg"); /* 배경 이미지 경로 설정 */
-  background-size: cover;
+  background-size: cover; /* 전체 배경을 채우도록 설정 */
+  background-attachment: fixed; /* 배경 이미지를 고정 */
+  overflow: auto; /* 내용이 넘칠 경우 스크롤 생성 */
 }
 .login-form {
   /*display: flexbox;*/
   width: 500px;
-  margin: auto;
-  margin-top: 20px;
-  margin-bottom: 100px;
+  margin: 10px auto;
+  align-self: auto;
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 5px;
   background-color: white;
+  transform: translateY(-20%);
+  z-index: 1;
 }
 .slogan {
   width: 100%;
@@ -63,6 +65,7 @@
 }
 
 .popup-content {
+  margin-top: 20px;
   height: 100%;
   width: 100%;
 }
@@ -399,4 +402,88 @@
     color: black;
     text-align: left;
   }
+}
+
+.link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.link .image-group {
+  display: flex;
+  justify-content: center;
+  gap: 10px; /* 이미지 간의 간격 */
+}
+
+.link .image-group .image-container {
+  position: relative;
+  width: 100px;
+  height: 80px;
+  overflow: hidden;
+}
+
+.link .image-group .image-container .image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.link .image-group .image-container .top-image1 {
+  background-image: url('/src/assets/img/link3.png');
+  background-position: -100px 0;
+  background-size: 564px 168px;
+  opacity: 1;
+}
+.link .image-group .image-container .bottom-image1 {
+  background-image: url('/src/assets/img/link3.png');
+  background-position: -100px -85px;
+  background-size:  564px 168px;
+  opacity: 0;
+}
+.link .image-group .image-container:hover .top-image1 {
+  opacity: 0;
+}
+.link .image-group .image-container:hover .bottom-image1 {
+  opacity: 1;
+}
+.link .image-group .image-container .top-image2 {
+  background-image: url('/src/assets/img/link3.png');
+  background-position: -220px 0;
+  background-size: 564px 168px;
+  opacity: 1;
+}
+.link .image-group .image-container .bottom-image2 {
+  background-image: url('/src/assets/img/link3.png');
+  background-position: -220px -85px;
+  background-size:  564px 168px;
+  opacity: 0;
+}
+.link .image-group .image-container:hover .top-image2 {
+  opacity: 0;
+}
+.link .image-group .image-container:hover .bottom-image2 {
+  opacity: 1;
+}
+.link .image-group .image-container .top-image3 {
+  background-image: url('/src/assets/img/link3.png');
+  background-position: -350px 0;
+  background-size: 564px 168px;
+  opacity: 1;
+}
+.link .image-group .image-container .bottom-image3 {
+  background-image: url('/src/assets/img/link3.png');
+  background-position: -350px -85px;
+  background-size:  564px 168px;
+  opacity: 0;
+}
+.link .image-group .image-container:hover .top-image3 {
+  opacity: 0;
+}
+.link .image-group .image-container:hover .bottom-image3 {
+  opacity: 1;
 }

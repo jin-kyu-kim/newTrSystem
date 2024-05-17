@@ -248,13 +248,13 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
 {/* ----------------------------------결제 신청 현황 ------------------------------------------------*/}
         <div className="container" style={{marginTop : "25px"}}>
             <p> <strong>결재 신청 현황 </strong> </p>
-            <CustomTable  keyColumn="id"  columns={atrzSttsTableColumns}  values={aplyValues} onRowClick={onAplyRowClick} noDataText="신청한 결재가 없습니다."/>
+            <CustomTable  keyColumn="id"  columns={atrzSttsTableColumns}  values={aplyValues} onRowClick={onAplyRowClick} noDataText="신청한 결재가 없습니다." wordWrap={true}/>
         </div>
 
 {/* -----------------------------------결제리스트-----------------------------------------------------*/}
           <div className="container" style={{marginTop : "20px"}}>
             <p> <strong>결재 리스트 </strong> </p>
-            <CustomTable  keyColumn="id"  columns={atrzListTableColumns}  values={atrzValues} onRowClick={onAtrzRowClick} noDataText="진행중인 결재가 없습니다."/>
+            <CustomTable  keyColumn="id"  columns={atrzListTableColumns}  values={atrzValues} onRowClick={onAtrzRowClick} noDataText="진행중인 결재가 없습니다." wordWrap={true}/>
             </div>
         </div>
       </div>

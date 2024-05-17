@@ -4,7 +4,7 @@ import ProjectPrmpcBgtCmprJson from "./ProjectPrmpcBgtCmprJson.json";
 import CustomTable from "components/unit/CustomTable";
 import ApiRequest from "utils/ApiRequest";
 
-const ProjectPrmpcBgtCmpr = ({prjctId, bgtMngOdr, bgtMngOdrTobe, visible, atrzDmndSttsCd, targetOdr}) => {
+const ProjectPrmpcBgtCmpr = ({prjctId, bgtMngOdr, bgtMngOdrTobe, visible, atrzDmndSttsCd, targetOdr, type}) => {
 
     const [values, setValues] = useState([]);
     const [totValues, setTotValues] = useState([]);
@@ -34,7 +34,8 @@ const ProjectPrmpcBgtCmpr = ({prjctId, bgtMngOdr, bgtMngOdrTobe, visible, atrzDm
             queryId: totQueryId,
             prjctId: prjctId,
             bgtMngOdrTobe: bgtMngOdrTobe,
-            atrzDmndSttsCd: atrzDmndSttsCd
+            atrzDmndSttsCd: atrzDmndSttsCd,
+            type: type
         }
 
         const response = await ApiRequest("/boot/common/queryIdSearch", param);
@@ -54,64 +55,6 @@ const ProjectPrmpcBgtCmpr = ({prjctId, bgtMngOdr, bgtMngOdrTobe, visible, atrzDm
           } 
     }
 
-    const calculateCustomSummary = (options) => {
-
-        // const storeInfo = options.component.getDataSource().store()._array
-        // let inComeAmt = 0, outComeAmt = 0, inComeRate = 0, outComeRate = 0;
-      
-        // storeInfo.forEach((item) => {
-        //   if (item.bind === 1) {
-        //     inComeAmt += item.costAmt;
-        //     inComeRate += item.rate;
-        //   }else {
-        //     outComeAmt += item.costAmt;
-        //     outComeRate += item.rate;
-        //   }
-        // });
-    console.log(options.component.getDataSource().store()._array);
-    console.log(options);
-
-    const storeInfo = options.component.getDataSource().store()._array
-
-    let bfe = 0;
-    let aftr = 0;
-
-    let totBgt = 0;
-    let useBgt = 0;
-
-    storeInfo.forEach((item) => {
-        if(item.kind === 0) {
-            totBgt = item.aftrBgt;
-        } else {
-            useBgt += item.aftrBgt;   
-        }
-    });
-
-    if (options.summaryProcess === "start") {
-        if(options.name === "test"){
-            options.totalValue = useBgt;
-        }
-        if(options.name === "rateTotal"){
-        } 
-    }
-
-
-    /**
-     * 
-    const totalAmt = inComeAmt-outComeAmt;
-    const totalRate = inComeRate-outComeRate;
-    
-    if (options.summaryProcess === "start") {
-        if(options.name === "costAmtTotal"){
-            options.totalValue = totalAmt;
-        }
-        if(options.name === "rateTotal"){
-            options.totalValue = totalRate;
-        } 
-    }
-    */
-};
-
     return (
         <>
 
@@ -126,7 +69,6 @@ const ProjectPrmpcBgtCmpr = ({prjctId, bgtMngOdr, bgtMngOdrTobe, visible, atrzDm
                 groupingCustomizeText={groupingCustomizeText}
                 prjctCmpr={true}
                 width="100%"
-                calculateCustomSummary={calculateCustomSummary}
             />
 
             <div style={{marginTop: "20px"}}></div>

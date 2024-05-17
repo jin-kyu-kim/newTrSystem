@@ -210,25 +210,6 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
             }
         }
 
-        // const param = [
-        //     { tbNm: "PRJCT" },
-        //     { 
-        //         ...colums,
-        //         beffatPbancDdlnYmd: beffatPbancDdlnYmd,
-        //         expectOrderYmd: expectOrderYmd,
-        //         propseDdlnYmd: propseDdlnYmd,
-        //         propsePrsntnYmd: propsePrsntnYmd,
-        //         ctrtYmd: ctrtYmd,
-        //         bizEndYmd: bizEndYmd,
-        //         stbleEndYmd: stbleEndYmd,
-        //         igiYmd: igiYmd,
-        //         prjctCdIdntfr: prjctCdIdntfr
-        //     },
-        //     {
-        //         prjctId: prjctId,
-        //     }
-        // ];
-
         const param ={   
             queryId: "projectMapper.insertTempPrjctInfo",
             ...colums,
@@ -308,13 +289,42 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
                 bizEndYmd: bizEndYmd,
                 stbleEndYmd: stbleEndYmd,
                 igiYmd: igiYmd,
-                prjctCdIdntfr: prjctCdIdntfr
+                prjctCdIdntfr: prjctCdIdntfr,
+                prjctHistSn: 1
             }
         ];
         try {
             const response = await ApiRequest("/boot/common/commonInsert", param);
 
             if(response > 0) {
+
+                /**
+                 * 프로젝트 이력 테이블에도 등록
+                 */
+                const histParam = [
+                    { tbNm: "PRJCT_HIST" },
+                    {
+                        ...data,
+                        beffatPbancDdlnYmd: beffatPbancDdlnYmd,
+                        expectOrderYmd: expectOrderYmd,
+                        propseDdlnYmd: propseDdlnYmd,
+                        propsePrsntnYmd: propsePrsntnYmd,
+                        ctrtYmd: ctrtYmd,
+                        bizEndYmd: bizEndYmd,
+                        stbleEndYmd: stbleEndYmd,
+                        igiYmd: igiYmd,
+                        prjctCdIdntfr: prjctCdIdntfr,
+                        prjctHistSn: 1,
+                        bgtMngOdr: 1,
+                        atrzDmndSttsCd: "VTW03701"
+                    }
+                ];
+
+                const histResponse = await ApiRequest("/boot/common/commonInsert", histParam);
+
+                if(histResponse < 1) {
+                    handleOpen('프로젝트 등록에 실패하였습니다.');
+                }
 
                 await handlePrjctMngAuth().then((value) => {
                     if(value > 0) {

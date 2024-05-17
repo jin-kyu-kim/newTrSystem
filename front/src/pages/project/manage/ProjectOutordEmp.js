@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import ApiRequest from "../../../utils/ApiRequest";
-import { Button, TextBox, FileUploader,NumberBox,DateBox } from "devextreme-react";
+import { Button, TextBox, FileUploader,DateBox } from "devextreme-react";
 import  ProjectOutordEmpJson from "./ProjectOutordEmpJson.json";
 import SearchOutordSet from "components/composite/SearchInfoSet";
 import CustomCdComboBox from "../../../components/unit/CustomCdComboBox";
@@ -21,7 +21,6 @@ function ProjectOutordEmp () {
     const insertRef = useRef(null); //textbox focus용 ref
     const [deleteFiles, setDeleteFiles] = useState([{tbNm: "ATCHMNFL"}]);
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-    const userAuth = JSON.parse(localStorage.getItem("userAuth"));
     const empId = userInfo.empId;
     const date = new Date();
     const now =  date.toISOString().split("T")[0] +" " +date.toTimeString().split(" ")[0];
@@ -273,106 +272,105 @@ function ProjectOutordEmp () {
 //================ 화면 그리는 구간=========================================
     return (
       <div style={{ marginLeft: "1%", marginRight: "1%" }}>
-      <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
-          <h1 style={{ fontSize: "30px" }}>파트너 직원관리</h1>
-      </div>
-      <div className="mx-auto" style={{ marginBottom: "10px" }}>
-          <span>* 파트너 직원을 조회합니다.</span>
-      </div>
+        <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
+            <h1 style={{ fontSize: "30px" }}>파트너 직원관리</h1>
+        </div>
+        <div className="mx-auto" style={{ marginBottom: "10px" }}>
+            <span>* 파트너 직원을 조회합니다.</span>
+        </div>
 
-            <div style={{ marginBottom: "20px" }}>
-            <SearchOutordSet callBack={searchHandle} props={searchInfo} />
-            </div>
-            <div className="buttons" align="right" style={{ margin: "20px" }}>
-            <Button
-                width={130}
-                text="Contained"
-                type="default"
-                stylingMode="contained"
-                style={{ margin: "2px" }}
-                onClick={focusTextBox}
-            >
-                입력화면이동
-            </Button>
-            </div>
-            <div>검색된 건 수 : {totalItems} 건</div>
-            <div>
-                    <CustomTable
-                    keyColumn={keyColumn}
-                    columns={tableColumns}
-                    values={values}
-                    paging={true}
-                    onRowClick={getDetail}
-                    onClick={deleteOutEmp}
-                    wordWrap={true}
-                    />
-            </div>
-               
-             <div style={{ marginTop: "10px", border: "2px solid #CCCCCC",display : 'flex', height: "300px",flexDirection: 'column', justifyContent: "center"  }}>
-                   <h5 style={{alignItems : 'left'}}>외주직원정보를 입력/수정 합니다.</h5>
-             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center',justifyContent: 'center', gap: '20px', marginLeft : '5px', alignItems: "center"}}>
-                    <TextBox
-                        ref={insertRef}
-                        onValueChange={(e) => { handleChgValue("outordHnfOgdpNm", e) }}
-                        value={outordEmpValue.outordHnfOgdpNm}
-                        placeholder="소속"
-                        showClearButton={true}
-                        style={{ flex: 1, minWidth: '160px' }}
-                    />
-                    <TextBox
-                        onValueChange={(e) => { handleChgValue("empFlnm", e) }}
-                        value={outordEmpValue.empFlnm}
-                        placeholder="성명"
-                        showClearButton={true}
-                        style={{ flex: 1, minWidth: '160px' }}
-                    />
-                    <DateBox
-                        onValueChange={(e) => { handleChgValue("brdt", e) }}
-                        value={outordEmpValue.brdt}
-                        placeholder="생년월일"
-                        showClearButton={true}
-                        style={{ flex: 1, minWidth: '160px' }}
-                    />
-                    <CustomCdComboBox
-                        param="VTW005"
-                        placeholderText="등급"
-                        name="outordHnfGradCd"
-                        onSelect={handleChgCd}
-                        value={outordEmpValue.outordHnfGradCd}
-                        required={false}
-                        style={{ flex: 1, minWidth: '160px' }}
-                     />
-                    <TextBox
-                        onValueChange={(e) => { handleChgValue("telno", e) }}
-                        value={outordEmpValue.telno}
-                        placeholder="전화번호"
-                        showClearButton={true}
-                        style={{ flex: 1, minWidth: '160px' }}
-                    />
-                     <TextBox
-                        onValueChange={(e) => { handleChgValue("eml", e) }}
-                        value={outordEmpValue.eml}
-                        placeholder="이메일"
-                        showClearButton={true}
-                        style={{ flex: 1, minWidth: '160px' }}
-                    />
-                    </div>
-                    <div>
-                        <FileUploader
-                            selectButtonText="첨부파일"
-                            multiple={true}
-                            labelText=""
-                            uploadMode="useButton"
-                            onValueChanged={changeAttchValue}
-                            ref={fileUploaderRef}
-                        />
-                    </div>
-                    <div className="buttonContainer" style={{ marginTop: '5px',marginLeft : '5px' ,alignItems: 'left'}}>
-                        <Button type = "default" style={{ height: "48px", width: "60px", marginRight: "15px" }} onClick={saveOutordEmp}>저장</Button>
-                        <Button type = "danger" style={{ height: "48px", width: "60px", marginRight: "15px" }} onClick={resetForm}>초기화</Button>
-                        
-                    </div>
-                </div>
+        <div style={{ marginBottom: "20px" }}>
+        <SearchOutordSet callBack={searchHandle} props={searchInfo} />
+        </div>
+        <div className="buttons" align="right" style={{ margin: "20px" }}>
+        <Button
+            width={130}
+            text="Contained"
+            type="default"
+            stylingMode="contained"
+            style={{ margin: "2px" }}
+            onClick={focusTextBox}
+        >
+            입력화면이동
+        </Button>
+        </div>
+        <div>검색된 건 수 : {totalItems} 건</div>
+        <div>
+          <CustomTable
+          keyColumn={keyColumn}
+          columns={tableColumns}
+          values={values}
+          paging={true}
+          onRowClick={getDetail}
+          onClick={deleteOutEmp}
+          wordWrap={true}
+          />
+        </div>
+
+        <div style={{ marginTop: "10px", border: "2px solid #CCCCCC",display : 'flex', height: "300px",flexDirection: 'column', justifyContent: "center" }}>
+              <h5 style={{alignItems : 'left'}}>외주직원정보를 입력/수정 합니다.</h5>
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center',justifyContent: 'center', gap: '20px', marginLeft : '5px'}}>
+          <TextBox
+              ref={insertRef}
+              onValueChange={(e) => { handleChgValue("outordHnfOgdpNm", e) }}
+              value={outordEmpValue.outordHnfOgdpNm}
+              placeholder="소속"
+              showClearButton={true}
+              style={{ flex: 1, minWidth: '160px' }}
+          />
+          <TextBox
+              onValueChange={(e) => { handleChgValue("empFlnm", e) }}
+              value={outordEmpValue.empFlnm}
+              placeholder="성명"
+              showClearButton={true}
+              style={{ flex: 1, minWidth: '160px' }}
+          />
+          <DateBox
+              onValueChange={(e) => { handleChgValue("brdt", e) }}
+              value={outordEmpValue.brdt}
+              placeholder="생년월일"
+              showClearButton={true}
+              style={{ flex: 1, minWidth: '160px' }}
+          />
+          <CustomCdComboBox
+              param="VTW005"
+              placeholderText="등급"
+              name="outordHnfGradCd"
+              onSelect={handleChgCd}
+              value={outordEmpValue.outordHnfGradCd}
+              required={false}
+              style={{ flex: 1, minWidth: '160px' }}
+           />
+          <TextBox
+              onValueChange={(e) => { handleChgValue("telno", e) }}
+              value={outordEmpValue.telno}
+              placeholder="전화번호"
+              showClearButton={true}
+              style={{ flex: 1, minWidth: '160px' }}
+          />
+           <TextBox
+              onValueChange={(e) => { handleChgValue("eml", e) }}
+              value={outordEmpValue.eml}
+              placeholder="이메일"
+              showClearButton={true}
+              style={{ flex: 1, minWidth: '160px' }}
+          />
+          </div>
+          <div>
+              <FileUploader
+                  selectButtonText="첨부파일"
+                  multiple={true}
+                  labelText=""
+                  uploadMode="useButton"
+                  onValueChanged={changeAttchValue}
+                  ref={fileUploaderRef}
+              />
+          </div>
+          <div className="buttonContainer" style={{ marginTop: '5px',marginLeft : '5px' ,alignItems: 'left'}}>
+              <Button type = "default" style={{ height: "48px", width: "60px", marginRight: "15px" }} onClick={saveOutordEmp}>저장</Button>
+              <Button type = "danger" style={{ height: "48px", width: "60px", marginRight: "15px" }} onClick={resetForm}>초기화</Button>
+          </div>
+        </div>
       </div>
     );
 };
