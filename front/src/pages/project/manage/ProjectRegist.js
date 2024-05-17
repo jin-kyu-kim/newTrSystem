@@ -409,7 +409,7 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
             if(data.prjctStleCd) {
                 if(data.prjctStleCd === "VTW01801") {
                     result.push(
-                        <div className="project-regist-content">
+                        <div className="project-regist-content" key="1">
                             <div className="dx-fieldset">
                                 <CustomLabelValue props={labelValue.beffatPbancDdlnYmd} onSelect={handleChgDate} value={beffatPbancDdlnYmd} readOnly={readOnly}/>
                                 <CustomLabelValue props={labelValue.expectOrderYmd} onSelect={handleChgDate} value={expectOrderYmd} readOnly={readOnly}/>
@@ -423,7 +423,7 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
                     )
                 } else if(data.prjctStleCd === "VTW01802") {
                     result.push(
-                        <div className="project-regist-content">
+                        <div className="project-regist-content" key="1">
                             <div className="dx-fieldset">
                                 <CustomLabelValue props={labelValue.beffatPbancDdlnYmd} onSelect={handleChgDate} value={beffatPbancDdlnYmd} readOnly={readOnly}/>
                                 <CustomLabelValue props={labelValue.expectOrderYmd} onSelect={handleChgDate} value={expectOrderYmd} readOnly={readOnly}/>
@@ -440,7 +440,7 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
                     )
                 } else if(data.prjctStleCd === "VTW01803") {
                     result.push(
-                        <div className="project-regist-content">
+                        <div className="project-regist-content" key="1">
                             <div className="dx-fieldset">
                                 <CustomLabelValue props={labelValue.ctrtYmd} onSelect={handleChgDate} value={ctrtYmd} readOnly={readOnly}/>
                                 <CustomLabelValue props={labelValue.stbleEndYmd} onSelect={handleChgDate} value={stbleEndYmd} readOnly={readOnly}/>
@@ -451,7 +451,7 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
                 }
             } else {
                 result.push(
-                    <div>
+                    <div key="1">
                         <p>프로젝트 형태를 선택하지 않아 일정을 작성할 수 없습니다.</p>
                         <p>프로젝트를 선택해주세요.</p>
                     </div>

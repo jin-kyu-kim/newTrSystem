@@ -41,12 +41,12 @@ const ElectAtrzRenderForm = ({formList, onFormClick}) => {
         // 문서 구분 코드에 따라서 구분한다.
         for(let i = 0; i < docSeCd.length; i++) {
             result.push(
-                <>
+                <div key={docSeCd[i].cdValue}>
                     <div>* {docSeCd[i].cdNm}</div>
                     <div className="elecAtrz-from-container">
                         {renderForm(docSeCd[i].cdValue)}
                     </div>
-                </>
+                </div>
             )
         }
         return result;
@@ -56,30 +56,10 @@ const ElectAtrzRenderForm = ({formList, onFormClick}) => {
     const renderForm = (cd) => {
         const result = [];
 
-        formList.map((data) => {
+        formList.map((data, index) => {
             if(data.docSeCd === cd) {
-                // result.push(
-                //     <div className='elecAtrz-from-container-box' style={{minHeight: "100px"}}>
-                //         <div 
-                //             style={{textAlign: "center"
-                //                     , padding: "20px"
-                //                     , minHeight:"150px"
-                //                     , minWidth: "100px"
-                //                     , width: "100%"
-                //                     , border: "solid black 1px"
-                //                     , cursor: "pointer"}}   
-                //         >
-                //             <div onClick={onFormClick} style={{marginBottom: "20px"}}>
-                //                 {data.gnrlAtrzTtl}
-                //             </div>
-                //             <div>
-                //                 <Button text={"기안하기"} onClick={() => onFormClick(data)}/>
-                //             </div>
-                //         </div>
-                //     </div>
-                // )
                 result.push(
-                    <div className='elecAtrz-from-container-box' style={{minHeight: "100px"}}>
+                    <div key={data.atrzFormDocId} className='elecAtrz-from-container-box' style={{minHeight: "100px"}} >
                         <div 
                             style={{textAlign: "center"
                                     , padding: "20px"
@@ -92,7 +72,8 @@ const ElectAtrzRenderForm = ({formList, onFormClick}) => {
                         >
                     
                             <div>
-                                <Button style={{
+                                <Button
+                                style={{
                                     position: "relative",
                                     width: "100%",
                                     height: "110px",
