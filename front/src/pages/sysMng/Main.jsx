@@ -135,7 +135,7 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
     };
 
     const onAplyRowClick = (e) => {   //결재 신청 현황 테이블 클릭 
-          console.log("eee데이터", e);
+      console.log("eeee",e)
           if(e.data.tySe === "프로젝트 비용"){ //프로젝트비용
                   navigate("/indvdlClm/ProjectExpense", 
                  {state: {id : e.data.id }})
@@ -144,12 +144,11 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
             {state: {id : e.data.id }})   
           }else if(e.data.aprpvrId.startsWith("VTW049")){    //기타 전자결재 내역
             navigate("/elecAtrz/ElecAtrzDetail", 
-            {state: {id : e.data.id }})   
+            {state: {data : {elctrnAtrzId: e.data.id} }})   
           }
     };
 
     const onAtrzRowClick = (e) => {   //결재 리스트 테이블 클릭
-      console.log("eee데이터", e);
       if(e.data.tySe === "프로젝트 비용"){ //프로젝트비용 (프로젝트시간비용승인)
         navigate("/project/ProjectHrCtAprvDetail", 
        {state: {prjctId : e.data.id }})
@@ -253,7 +252,7 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
         </div>
           
 {/* ----------------------------------결제 신청 현황 ------------------------------------------------*/}
-        <div className="container" style={{marginTop : "2px"}}>
+        <div className="container" style={{marginTop : "25px"}}>
             <p> <strong>결재 신청 현황 </strong> </p>
             <CustomTable  keyColumn="id"  columns={atrzSttsTableColumns}  values={aplyValues} onRowClick={onAplyRowClick} noDataText="신청한 결재가 없습니다."/>
         </div>
