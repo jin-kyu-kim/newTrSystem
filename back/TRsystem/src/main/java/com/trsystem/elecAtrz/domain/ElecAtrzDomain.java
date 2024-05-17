@@ -722,7 +722,8 @@ public class ElecAtrzDomain {
 			infoParam.put("inptHnfId", inptHnfId);
 			infoParam.put("inptYm", paramList.get(i).get("id"));
 			infoParam.put("mm", paramList.get(i).get("mm"));
-			infoParam.put("ctrtAmt", paramList.get(i).get("ctrtAmt"));
+			infoParam.put("indvdlGiveCtrtAmt", paramList.get(i).get("indvdlGiveCtrtAmt")); 	
+			infoParam.put("entrpsGiveCtrtAmt", paramList.get(i).get("entrpsGiveCtrtAmt"));
 			
 			insertParams.add(i, infoParam);
 		}
