@@ -1018,12 +1018,9 @@
 			    (SELECT 
 			        TOT_BGT AS CN
 			     FROM 
-			        PRJCT_HIST M
-			     WHERE 1=1
-			       AND M.PRJCT_ID = #{prjctId}
-			       AND M.PRJCT_HIST_SN = (SELECT MAX(PRJCT_HIST_SN)
-				    						 FROM PRJCT_HIST ph2
-				    						WHERE ph2.PRJCT_ID = #{prjctId})
+			        PRJCT M
+			     WHERE 
+			        M.PRJCT_ID = #{prjctId}
 			    ) A,
 
             </if>
