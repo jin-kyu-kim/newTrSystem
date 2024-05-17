@@ -218,184 +218,178 @@
 	
 	<!-- main 결재 신청현황 -->
 	<select id="retrieveAtrzAplySttus" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		select DISTINCT * from
-			   	(SELECT  
-			   	  pca.EMP_ID AS ID														-- 사번
-			   	 , '프로젝트 비용' AS TY_SE													-- 결재유형
-			   	 ,CONCAT(pca.APLY_YM ,'-',pca.APLY_ODR ,'차수 프로젝트 비용') AS TITLE				-- 결재명
-			   	 , e.EMP_FLNM 			  AS ATRZ_EMP_NM								-- 기안자명
-			   	 , DATE_FORMAT(pca.REG_DT, '%Y-%m-%d') AS REG_DT						-- 결재 올린날
-			   	 , sttsCd.CD_NM	AS ATRZ_STTS_CD_NM										-- 결자생태명
-			   	 , pcaz.APRVR_EMP_ID AS APRPVR_ID										-- 결재자 ID
-				 FROM PRJCT_CT_APLY pca
-				 JOIN PRJCT_CT_ATRZ pcaz
-					 ON pca.PRJCT_CT_APLY_SN = pcaz.PRJCT_CT_APLY_SN
-						  AND pca.EMP_ID = pcaz.EMP_ID
-						  AND pca.APLY_YM = pcaz.APLY_YM
-						  AND pca.APLY_ODR = pcaz.APLY_ODR
-				 LEFT JOIN CD sttsCd ON pcaz.ATRZ_DMND_STTS_CD = sttsCd.CD_VALUE -- 결재상태명
-				 LEFT JOIN EMP e on e.EMP_ID =pca.EMP_ID
-				 WHERE 
-				 1=1
-				 AND pca.EMP_ID = #{empId}
-		 		group by 
-		 			pca.EMP_ID, pca.REG_DT,pca.APLY_YM,pca.APLY_ODR,pcaz.APRVR_EMP_ID,sttsCd.CD_NM	
-			union all
-				select 
-		 			 pma.EMP_ID AS ID												-- 사번
-		 			, '근무시간'	AS TY_SE											-- 결재유형
-		 			,CONCAT(pma.APLY_YM ,'-',pma.APLY_ODR ,'근무시간') AS TITLE  		-- 결재명
-		 			, e.EMP_FLNM AS ATRZ_EMP_NM										-- 기안자명
-		 			, DATE_FORMAT(pma.REG_DT, '%Y-%m-%d') AS REG_DT					-- 기안일자
-		 			, sttsCd.CD_NM AS ATRZ_STTS_CD_NM								-- 결자생태명
-		 			, pmaz.APRVR_EMP_ID	AS APRPVR_ID								-- 결재자 ID
-		 		from 
-		 			PRJCT_MM_APLY pma 
-		 		JOIN 
-		 			PRJCT_MM_ATRZ pmaz
-			 		ON pma.PRJCT_ID =pmaz.PRJCT_ID 
-				 		AND pma.EMP_ID =pmaz.EMP_ID 
-				 		AND pma.APLY_YM =pmaz.APLY_YM 
-				 		AND pma.APLY_ODR =pmaz.APLY_ODR 
-				 		AND pma.APLY_YMD =pmaz.APLY_YMD
-				LEFT JOIN CD sttsCd ON pmaz.ATRZ_DMND_STTS_CD = sttsCd.CD_VALUE -- 결재상태명
-				 LEFT JOIN EMP e on e.EMP_ID =pma.EMP_ID
-		 		WHERE
-		 		1=1
-		 		AND pma.EMP_ID = #{empId}
-		 		group by 
-		 		pma.EMP_ID,pma.REG_DT,pma.APLY_YM,pma.APLY_ODR,pmaz.APRVR_EMP_ID,sttsCd.CD_NM 
-		 		union ALL 
-		 		SELECT DISTINCT
-		 			ea.ELCTRN_ATRZ_ID AS ID							-- 전자결재 id
-					, tyCd.CD_NM AS TY_SE							-- 전자결재 결재구분명
-					, COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cta.CTRT_ATRZ_TTL, cga.ATRZ_TTL,
+		SELECT DISTINCT * FROM
+			(SELECT
+			   	pca.EMP_ID AS ID							                        -- 사번
+			   	, '프로젝트 비용' AS TY_SE					                        -- 결재유형
+			   	, CONCAT(pca.APLY_YM ,'-',pca.APLY_ODR ,'차수 프로젝트 비용') AS TITLE -- 결재명
+			   	, e.EMP_FLNM AS ATRZ_EMP_NM								            -- 기안자명
+			   	, DATE_FORMAT(pca.REG_DT, '%Y-%m-%d') AS REG_DT					    -- 기안일
+			   	, sttsCd.CD_NM	AS ATRZ_STTS_CD_NM								    -- 결자생태명
+				, NULL AS ELCTRN_ATRZ_TY_SE_CD
+				, NULL AS PRJCT_ID
+				, NULL AS ELCTRN_ATRZ_ID
+				, NULL AS ELCTRN_ATRZ_DOC_NO
+			FROM PRJCT_CT_APLY pca
+			JOIN PRJCT_CT_ATRZ pcaz
+				ON pca.PRJCT_CT_APLY_SN = pcaz.PRJCT_CT_APLY_SN
+					AND pca.EMP_ID = pcaz.EMP_ID
+					AND pca.APLY_YM = pcaz.APLY_YM
+					AND pca.APLY_ODR = pcaz.APLY_ODR
+			LEFT JOIN CD sttsCd ON pcaz.ATRZ_DMND_STTS_CD = sttsCd.CD_VALUE
+			LEFT JOIN EMP e on e.EMP_ID =pca.EMP_ID
+			WHERE 1=1
+				AND pca.EMP_ID = #{empId}
+		 	GROUP BY
+		 		pca.EMP_ID, pca.REG_DT,pca.APLY_YM,pca.APLY_ODR,pcaz.APRVR_EMP_ID,sttsCd.CD_NM
+			UNION ALL
+			SELECT
+		 		pma.EMP_ID AS ID
+		 		, '근무시간'	AS TY_SE
+		 		, CONCAT(pma.APLY_YM ,'-',pma.APLY_ODR ,'근무시간') AS TITLE
+		 		, e.EMP_FLNM AS ATRZ_EMP_NM
+		 		, DATE_FORMAT(pma.REG_DT, '%Y-%m-%d') AS REG_DT
+		 		, sttsCd.CD_NM AS ATRZ_STTS_CD_NM
+		 		, NULL AS ELCTRN_ATRZ_TY_SE_CD
+		 		, NULL AS PRJCT_ID
+				, NULL AS ELCTRN_ATRZ_ID
+				, NULL AS ELCTRN_ATRZ_DOC_NO
+		 	FROM
+		 		PRJCT_MM_APLY pma
+		 	JOIN PRJCT_MM_ATRZ pmaz ON pma.PRJCT_ID =pmaz.PRJCT_ID
+				AND pma.EMP_ID =pmaz.EMP_ID
+				AND pma.APLY_YM =pmaz.APLY_YM
+				AND pma.APLY_ODR =pmaz.APLY_ODR
+				AND pma.APLY_YMD =pmaz.APLY_YMD
+			LEFT JOIN CD sttsCd ON pmaz.ATRZ_DMND_STTS_CD = sttsCd.CD_VALUE
+			LEFT JOIN EMP e on e.EMP_ID =pma.EMP_ID
+		 	WHERE 1=1
+		 	AND pma.EMP_ID = #{empId}
+		 	GROUP BY
+		 		pma.EMP_ID,pma.REG_DT,pma.APLY_YM,pma.APLY_ODR,pmaz.APRVR_EMP_ID,sttsCd.CD_NM
+			UNION ALL
+		 	SELECT DISTINCT
+		 		ea.ATRZ_DMND_EMP_ID AS ID
+				, tyCd.CD_NM AS TY_SE
+				, COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cta.CTRT_ATRZ_TTL, cga.ATRZ_TTL,
 					CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD), ' [', va.VCATN_BGNG_YMD, ' ~ ', va.VCATN_END_YMD, ' (', va.VCATN_DE_CNT, '일)]')) AS TITLE
-					, e1.EMP_FLNM AS ATRZ_EMP_NM				 	-- 기안자
-					, DATE_FORMAT(ea.REG_DT, '%Y-%m-%d') AS REG_DT 	-- 기안일자
-					, sttsCd.CD_NM AS ATRZ_STTS_CD 					-- 결재상태 (VTW008)
-					, ea.ELCTRN_ATRZ_TY_SE_CD 						-- 전자결재 유형 코드
-				FROM ELCTRN_ATRZ ea
-				LEFT JOIN ATRZ_LN al
-				ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID
+				, e1.EMP_FLNM AS ATRZ_EMP_NM
+				, DATE_FORMAT(ea.REG_DT, '%Y-%m-%d') AS REG_DT
+				, sttsCd.CD_NM AS ATRZ_STTS_CD
+				, ea.ELCTRN_ATRZ_TY_SE_CD
+		 		, ea.PRJCT_ID
+				, ea.ELCTRN_ATRZ_ID
+				, ea.ELCTRN_ATRZ_DOC_NO
+			FROM ELCTRN_ATRZ ea
+			LEFT JOIN ATRZ_LN al ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID
 				AND ea.NOW_ATRZ_LN_SN = al.ATRZ_LN_SN
-				LEFT JOIN CD tyCd ON ea.ELCTRN_ATRZ_TY_SE_CD = tyCd.CD_VALUE -- 전자결재 유형코드 명
-				LEFT JOIN CD sttsCd ON al.ATRZ_STTS_CD = sttsCd.CD_VALUE -- 결재상태 (VTW008) 명
-				LEFT JOIN GNRL_ATRZ ga ON ea.ELCTRN_ATRZ_ID = ga.ELCTRN_ATRZ_ID -- 일반결재
-				LEFT JOIN CLM_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID -- 청구결재 - 거래처명
-				LEFT JOIN VCATN_ATRZ va ON ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID -- 휴가결재 제목
-				LEFT JOIN CTRT_ATRZ cta ON ea.ELCTRN_ATRZ_ID = cta.ELCTRN_ATRZ_ID -- 계약 지급
-				LEFT JOIN CTRT_GIVE_ATRZ cga ON ea.ELCTRN_ATRZ_ID = cga.ELCTRN_ATRZ_ID -- 계약 지급
-				JOIN EMP e1 ON ea.ATRZ_DMND_EMP_ID = e1.EMP_ID
-				WHERE 1=1
-					AND ea.ATRZ_DMND_EMP_ID = #{empId}
-					)
-				AS RESULT 
-				ORDER BY REG_DT ASC
-				LIMIT 4
+			LEFT JOIN CD tyCd ON ea.ELCTRN_ATRZ_TY_SE_CD = tyCd.CD_VALUE -- 전자결재 유형코드 명
+			LEFT JOIN CD sttsCd ON al.ATRZ_STTS_CD = sttsCd.CD_VALUE -- 결재상태 (VTW008) 명
+			LEFT JOIN GNRL_ATRZ ga ON ea.ELCTRN_ATRZ_ID = ga.ELCTRN_ATRZ_ID -- 일반결재
+			LEFT JOIN CLM_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID -- 청구결재 - 거래처명
+			LEFT JOIN VCATN_ATRZ va ON ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID -- 휴가결재 제목
+			LEFT JOIN CTRT_ATRZ cta ON ea.ELCTRN_ATRZ_ID = cta.ELCTRN_ATRZ_ID -- 계약 지급
+			LEFT JOIN CTRT_GIVE_ATRZ cga ON ea.ELCTRN_ATRZ_ID = cga.ELCTRN_ATRZ_ID -- 계약 지급
+			JOIN EMP e1 ON ea.ATRZ_DMND_EMP_ID = e1.EMP_ID
+			WHERE 1=1
+				AND ea.ATRZ_DMND_EMP_ID = #{empId}
+			)
+		AS RESULT
+		ORDER BY REG_DT ASC
+		LIMIT 4
 	</select>
 	
 	<!-- main 결재리스트-->
 	<select id="retiveAtrzList" parameterType="map" resultType="com.trsystem.LowerHashMap">
-	select DISTINCT * from
-			  (
-			   	SELECT 
-				   	 pca.PRJCT_ID AS ID														-- 프로젝트ID
-				   	, '프로젝트 비용' AS TY_SE													-- 결재유형
-				   	,CONCAT(pca.APLY_YM ,'-',pca.APLY_ODR ,'차수 프로젝트 비용') AS TITLE			-- 결재명
-				   	, e.EMP_FLNM 			  AS ATRZ_EMP_NM								-- 기안자명
-				   	, DATE_FORMAT(pca.REG_DT, '%Y-%m-%d') AS REG_DT							-- 결재 올린날
-				   	, sttsCd.CD_NM	AS ATRZ_STTS_CD_NM										-- 결자생태명
-				   	, pcaz.APRVR_EMP_ID AS APRPVR_ID										-- 결재자 ID
-				 FROM 
-				 	PRJCT_CT_APLY pca
-				 	JOIN PRJCT_CT_ATRZ pcaz
-					ON pca.PRJCT_CT_APLY_SN = pcaz.PRJCT_CT_APLY_SN
-						  AND pca.EMP_ID = pcaz.EMP_ID
-						  AND pca.APLY_YM = pcaz.APLY_YM
-						  AND pca.APLY_ODR = pcaz.APLY_ODR
-				 LEFT JOIN CD sttsCd ON pcaz.ATRZ_DMND_STTS_CD = sttsCd.CD_VALUE -- 결재상태명
-				 LEFT JOIN EMP e on e.EMP_ID =pca.EMP_ID
-				 WHERE 
-				 1=1
-				 AND pcaz.ATRZ_DMND_STTS_CD = "VTW03702"
-				 AND pcaz.APRVR_EMP_ID = #{empId}
-		 		group by 
-		 			pca.PRJCT_ID, pca.REG_DT,pca.APLY_YM,pca.APLY_ODR,pcaz.APRVR_EMP_ID,sttsCd.CD_NM,e.EMP_FLNM	
+		SELECT DISTINCT * FROM
+			(SELECT
+				pca.PRJCT_ID AS ID														-- 프로젝트ID
+				, '프로젝트 비용' AS TY_SE												-- 결재유형
+				, CONCAT(pca.APLY_YM ,'-',pca.APLY_ODR ,'차수 프로젝트 비용') AS TITLE		-- 결재명
+				, e.EMP_FLNM AS ATRZ_EMP_NM												-- 기안자명
+				, DATE_FORMAT(pca.REG_DT, '%Y-%m-%d') AS REG_DT							-- 결재 올린날
+				, sttsCd.CD_NM	AS ATRZ_STTS_CD_NM										-- 결자생태명
+				, pcaz.APRVR_EMP_ID AS APRPVR_ID										-- 결재자 ID
+			FROM PRJCT_CT_APLY pca OIN PRJCT_CT_ATRZ pcaz ON pca.PRJCT_CT_APLY_SN = pcaz.PRJCT_CT_APLY_SN
+				AND pca.EMP_ID = pcaz.EMP_ID
+				AND pca.APLY_YM = pcaz.APLY_YM
+				AND pca.APLY_ODR = pcaz.APLY_ODR
+			LEFT JOIN CD sttsCd ON pcaz.ATRZ_DMND_STTS_CD = sttsCd.CD_VALUE -- 결재상태명
+			LEFT JOIN EMP e on e.EMP_ID =pca.EMP_ID
+			WHERE 1=1
+				AND pcaz.ATRZ_DMND_STTS_CD = "VTW03702"
+				AND pcaz.APRVR_EMP_ID = #{empId}
+		 	GROUP BY
+		 		pca.PRJCT_ID, pca.REG_DT,pca.APLY_YM,pca.APLY_ODR,pcaz.APRVR_EMP_ID,sttsCd.CD_NM,e.EMP_FLNM
 			UNION ALL
-				select 
-		 			 pma.PRJCT_ID AS ID												-- 프로젝트ID
-		 			, '근무시간'	AS TY_SE											-- 결재유형
-		 			,CONCAT(pma.APLY_YM ,'-',pma.APLY_ODR ,'차수 근무시간') AS TITLE  	-- 결재명
-		 			, e.EMP_FLNM AS ATRZ_EMP_NM										-- 기안자명
-		 			, DATE_FORMAT(pma.REG_DT, '%Y-%m-%d') AS REG_DT					-- 기안일자
-		 			, sttsCd.CD_NM AS ATRZ_STTS_CD_NM								-- 결자생태명
-		 			, pmaz.APRVR_EMP_ID	AS APRPVR_ID								-- 결재자 ID
-		 		from 
-		 			PRJCT_MM_APLY pma 
-		 		JOIN 
-		 			PRJCT_MM_ATRZ pmaz
-			 		ON pma.PRJCT_ID =pmaz.PRJCT_ID 
-				 		AND pma.EMP_ID =pmaz.EMP_ID 
-				 		AND pma.APLY_YM =pmaz.APLY_YM 
-				 		AND pma.APLY_ODR =pmaz.APLY_ODR 
-				 		AND pma.APLY_YMD =pmaz.APLY_YMD
-				LEFT JOIN CD sttsCd ON pmaz.ATRZ_DMND_STTS_CD = sttsCd.CD_VALUE -- 결재상태명
-				 LEFT JOIN EMP e on e.EMP_ID =pma.EMP_ID
-		 		WHERE
-		 		1=1
+			SELECT
+		 		pma.PRJCT_ID AS ID												-- 프로젝트ID
+		 		, '근무시간'	AS TY_SE											-- 결재유형
+		 		, CONCAT(pma.APLY_YM ,'-',pma.APLY_ODR ,'차수 근무시간') AS TITLE  -- 결재명
+		 		, e.EMP_FLNM AS ATRZ_EMP_NM										-- 기안자명
+		 		, DATE_FORMAT(pma.REG_DT, '%Y-%m-%d') AS REG_DT					-- 기안일자
+		 		, sttsCd.CD_NM AS ATRZ_STTS_CD_NM								-- 결자생태명
+		 		, pmaz.APRVR_EMP_ID	AS APRPVR_ID								-- 결재자 ID
+		 	FROM PRJCT_MM_APLY pma
+		 	JOIN PRJCT_MM_ATRZ pmaz ON pma.PRJCT_ID =pmaz.PRJCT_ID
+				AND pma.EMP_ID =pmaz.EMP_ID
+				AND pma.APLY_YM =pmaz.APLY_YM
+				AND pma.APLY_ODR =pmaz.APLY_ODR
+				AND pma.APLY_YMD =pmaz.APLY_YMD
+			LEFT JOIN CD sttsCd ON pmaz.ATRZ_DMND_STTS_CD = sttsCd.CD_VALUE -- 결재상태명
+			LEFT JOIN EMP e on e.EMP_ID =pma.EMP_ID
+		 	WHERE 1=1
 		 		AND pmaz.ATRZ_DMND_STTS_CD = "VTW03702"
 		 		AND pmaz.APRVR_EMP_ID = #{empId}
-		 		group by 
+		 	GROUP BY
 		 		pma.PRJCT_ID,pma.REG_DT,pma.APLY_YM,pma.APLY_ODR,pmaz.APRVR_EMP_ID,sttsCd.CD_NM,e.EMP_FLNM	 
 		 	UNION ALL 
-		 		SELECT DISTINCT
-		 			ea.ELCTRN_ATRZ_ID AS ID							-- 전자결재 id
-					, tyCd.CD_NM AS TY_SE							-- 전자결재 결재구분명
-					, COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cta.CTRT_ATRZ_TTL, cga.ATRZ_TTL,
+		 	SELECT DISTINCT
+		 		ea.ELCTRN_ATRZ_ID AS ID							-- 전자결재 id
+				, tyCd.CD_NM AS TY_SE							-- 전자결재 결재구분명
+				, COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cta.CTRT_ATRZ_TTL, cga.ATRZ_TTL,
 					CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD), ' [', va.VCATN_BGNG_YMD, ' ~ ', va.VCATN_END_YMD, ' (', va.VCATN_DE_CNT, '일)]')) AS TITLE
-					, e1.EMP_FLNM AS ATRZ_EMP_NM				 	-- 기안자
-					, DATE_FORMAT(ea.REG_DT, '%Y-%m-%d') AS REG_DT 	-- 기안일자
-					, sttsCd.CD_NM AS ATRZ_STTS_CD 					-- 결재상태 (VTW008)
-					, ea.ELCTRN_ATRZ_TY_SE_CD 						-- 전자결재 유형 코드
-				FROM ELCTRN_ATRZ ea
-				LEFT JOIN ATRZ_LN al
-				ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID
+				, e1.EMP_FLNM AS ATRZ_EMP_NM				 	-- 기안자
+				, DATE_FORMAT(ea.REG_DT, '%Y-%m-%d') AS REG_DT 	-- 기안일자
+				, sttsCd.CD_NM AS ATRZ_STTS_CD 					-- 결재상태 (VTW008)
+				, ea.ELCTRN_ATRZ_TY_SE_CD 						-- 전자결재 유형 코드
+			FROM ELCTRN_ATRZ ea
+			LEFT JOIN ATRZ_LN al ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID
 				AND ea.NOW_ATRZ_LN_SN = al.ATRZ_LN_SN
-				LEFT JOIN CD tyCd ON ea.ELCTRN_ATRZ_TY_SE_CD = tyCd.CD_VALUE -- 전자결재 유형코드 명
-				LEFT JOIN CD sttsCd ON al.ATRZ_STTS_CD = sttsCd.CD_VALUE -- 결재상태 (VTW008) 명
-				LEFT JOIN GNRL_ATRZ ga ON ea.ELCTRN_ATRZ_ID = ga.ELCTRN_ATRZ_ID -- 일반결재
-				LEFT JOIN CLM_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID -- 청구결재 - 거래처명
-				LEFT JOIN VCATN_ATRZ va ON ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID -- 휴가결재 제목
-				LEFT JOIN CTRT_ATRZ cta ON ea.ELCTRN_ATRZ_ID = cta.ELCTRN_ATRZ_ID -- 계약 지급
-				LEFT JOIN CTRT_GIVE_ATRZ cga ON ea.ELCTRN_ATRZ_ID = cga.ELCTRN_ATRZ_ID -- 계약 지급
-				JOIN EMP e1 ON ea.ATRZ_DMND_EMP_ID = e1.EMP_ID
-				WHERE 1=1
-					AND ea.ATRZ_DMND_STTS_CD ="VTW03702"
-					AND al.APRVR_EMP_ID = #{empId}
+			LEFT JOIN CD tyCd ON ea.ELCTRN_ATRZ_TY_SE_CD = tyCd.CD_VALUE -- 전자결재 유형코드 명
+			LEFT JOIN CD sttsCd ON al.ATRZ_STTS_CD = sttsCd.CD_VALUE -- 결재상태 (VTW008) 명
+			LEFT JOIN GNRL_ATRZ ga ON ea.ELCTRN_ATRZ_ID = ga.ELCTRN_ATRZ_ID -- 일반결재
+			LEFT JOIN CLM_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID -- 청구결재 - 거래처명
+			LEFT JOIN VCATN_ATRZ va ON ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID -- 휴가결재 제목
+			LEFT JOIN CTRT_ATRZ cta ON ea.ELCTRN_ATRZ_ID = cta.ELCTRN_ATRZ_ID -- 계약 지급
+			LEFT JOIN CTRT_GIVE_ATRZ cga ON ea.ELCTRN_ATRZ_ID = cga.ELCTRN_ATRZ_ID -- 계약 지급
+			JOIN EMP e1 ON ea.ATRZ_DMND_EMP_ID = e1.EMP_ID
+			WHERE 1=1
+				AND ea.ATRZ_DMND_STTS_CD ="VTW03702"
+				AND al.APRVR_EMP_ID = #{empId}
 			UNION ALL
-				SELECT 
-					pal.PRJCT_ID AS ID																	-- 프로젝트ID
-				  , '프로젝트 승인' AS TY_SE																	-- 결재 구분	
-				  , p.PRJCT_NM AS TITLE																	-- 프로젝트명
-				  , e.EMP_FLNM	AS ATRZ_EMP_NM															-- 직원이름(기안자)
-				  , DATE_FORMAT(pal.REG_DT, '%Y-%m-%d') AS REG_DT 										-- 계약일자
-				  , (SELECT CD_NM FROM CD WHERE CD_VALUE = pald.ATRZ_STTS_CD) AS ATRZ_STTS_CD_NM		-- 결재상태코드명
-				  , pald.ATRZ_STTS_CD																	-- 결재상태코드
-			  FROM PRJCT_ATRZ_LN pal																	-- 프로젝트 결재선
-			  JOIN PRJCT_ATRZ_LN_DTL pald ON(pal.PRJCT_ID = pald.PRJCT_ID AND pal.ATRZ_LN_SN = pald.ATRZ_LN_SN AND pal.NOW_ATRZ_STEP_CD = pald.ATRZ_STEP_CD) -- 프로젝트 결재선 상세
-			  JOIN PRJCT p ON (p.PRJCT_ID = pal.PRJCT_ID AND p.PRJCT_ID = pald.PRJCT_ID)				-- 프로젝트테이블의 ID와 결재상세 테이블 ID JOIN
-			  JOIN EMP e  ON (e.EMP_ID = pal.REG_EMP_ID)												-- 사원 ID와 결재테이블 등록 ID JOIN
-			 WHERE 1=1
+			SELECT
+				pal.PRJCT_ID AS ID																	-- 프로젝트ID
+				, '프로젝트 승인' AS TY_SE															-- 결재 구분
+				, p.PRJCT_NM AS TITLE																-- 프로젝트명
+				, e.EMP_FLNM	AS ATRZ_EMP_NM														-- 직원이름(기안자)
+				, DATE_FORMAT(pal.REG_DT, '%Y-%m-%d') AS REG_DT 									-- 계약일자
+				, (SELECT CD_NM FROM CD WHERE CD_VALUE = pald.ATRZ_STTS_CD) AS ATRZ_STTS_CD_NM		-- 결재상태코드명
+				, pald.ATRZ_STTS_CD																	-- 결재상태코드
+			FROM PRJCT_ATRZ_LN pal																	-- 프로젝트 결재선
+			JOIN PRJCT_ATRZ_LN_DTL pald ON(pal.PRJCT_ID = pald.PRJCT_ID AND pal.ATRZ_LN_SN = pald.ATRZ_LN_SN AND pal.NOW_ATRZ_STEP_CD = pald.ATRZ_STEP_CD) -- 프로젝트 결재선 상세
+			JOIN PRJCT p ON (p.PRJCT_ID = pal.PRJCT_ID AND p.PRJCT_ID = pald.PRJCT_ID)				-- 프로젝트테이블의 ID와 결재상세 테이블 ID JOIN
+			JOIN EMP e  ON (e.EMP_ID = pal.REG_EMP_ID)												-- 사원 ID와 결재테이블 등록 ID JOIN
+			WHERE 1=1
 			   AND pald.APRVR_EMP_ID = #{empId} 
 			   AND pald.ATRZ_STTS_CD != 'VTW00803'														-- 결재상태코드 반려 아닐시
     		   AND pald.ATRZ_STTS_CD != 'VTW00805'														-- 결재상태코드 취소 아닐시
-				)
-				AS RESULT 
-				ORDER BY REG_DT ASC
-				LIMIT 4
-				
+			)
+		AS RESULT
+		ORDER BY REG_DT ASC
+		LIMIT 4
 	</select>
+
 	<!-- 전자결재(관리자메뉴) 쿼리  -->
 	<select id="retrieveElecAtrzMng" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT M.ELCTRN_ATRZ_ID						-- 전자결재 ID

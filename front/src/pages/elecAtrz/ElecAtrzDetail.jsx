@@ -76,6 +76,7 @@ const ElecAtrzDetail = () => {
             const response = await ApiRequest('/boot/common/commonSelect', [
                 { tbNm: "VCATN_ATRZ" }, { elctrnAtrzId: detailData.elctrnAtrzId }
             ]);
+            console.log('response', response)
             setDtlInfo(response[0]);
         } catch (error) {
             console.log('error', error);
