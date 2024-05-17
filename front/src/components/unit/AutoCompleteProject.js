@@ -2,7 +2,7 @@ import ApiRequest from "../../utils/ApiRequest";
 
 import React, { useEffect, useState } from "react";
 import SelectBox from 'devextreme-react/select-box';
-
+import './AutoCompleteProject.css';
 
 // 2024.03.21(박지환)
 // return값 추가 (prjctMngrEmpId)
@@ -60,8 +60,17 @@ const AutoCompleteProject = ({ placeholderText, onValueChange, sttsBoolean }) =>
     setValid(true); // Ensure that the SelectBox is valid after blur
   };
 
+  const ItemTemplate = (item) => {
+    return (
+        <div className="selectbox-item">
+          {item.value}
+        </div>
+    );
+  };
+
   return (
     <SelectBox
+      id="autoCompleteProject"
       dataSource={suggestionsData}
       valueExpr="key"
       displayExpr="value"
@@ -88,6 +97,15 @@ const AutoCompleteProject = ({ placeholderText, onValueChange, sttsBoolean }) =>
       searchEnabled={true}
       stylingMode="underlined"
       onBlur={handleBlur}
+      itemRender={ItemTemplate}
+      dropDownOptions={{
+        position: {
+          collision: 'none',
+          my: 'top',
+          at: 'bottom',
+          of: '#autoCompleteProject'
+        },
+      }}
     />
   );
 };
