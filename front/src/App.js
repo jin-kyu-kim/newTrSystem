@@ -11,7 +11,6 @@ import { NavigationProvider } from './components/sidebar/contexts/navigation';
 import { AuthProvider, useAuth } from './components/sidebar/contexts/auth';
 import Content from './components/sidebar/Content';
 import { Suspense } from "react";
-import { CookiesProvider } from "react-cookie";
 import {locale} from 'devextreme/localization';
 import ErrorBoundary from "./utils/ErrorBoundary";
 import { ModalProvider } from 'components/unit/ModalContext';
@@ -31,7 +30,6 @@ function App() {
           return (
             <Router>
               <ErrorBoundary>
-                <CookiesProvider>
                   <NavigationProvider>
                     <AuthProvider>
                       <ModalProvider>
@@ -39,7 +37,6 @@ function App() {
                       </ModalProvider>
                     </AuthProvider>
                   </NavigationProvider>
-                </CookiesProvider>
               </ErrorBoundary>
             </Router>
           );

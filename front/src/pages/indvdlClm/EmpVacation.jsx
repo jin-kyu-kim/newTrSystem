@@ -3,25 +3,19 @@ import { useEffect, useState, useRef } from 'react';
 // 날짜계산
 // npm install moment
 import Moment from "moment"
-
 // DevExtrme import
 import { FileUploader, SelectBox, Button, TextBox, DateBox } from "devextreme-react";
-
 // 테이블 import
 // npm install @mui/material
 // npm install @emotion/styled
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
-
 // 날짜관련
 // npm install date-fns
 import { isSaturday, isSunday, startOfMonth, endOfMonth, addMonths, addDays } from 'date-fns'
-
 // 랜덤채번 import
 import uuid from "react-uuid";
-
 import { useNavigate } from "react-router-dom";
 import { useLocation } from 'react-router';
-
 import axios from "axios";
 import { useModal } from "../../components/unit/ModalContext";
 import CustomTable from "components/unit/CustomTable";
@@ -131,7 +125,6 @@ const EmpVacation = () => {
     // 세션설정
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const deptInfo = JSON.parse(localStorage.getItem("deptInfo"));
-
     let sessionEmpId = location.state ? location.state.empId : userInfo.empId
     let sessionEmpNm = location.state ? location.state.empFlnm : userInfo.empNm
     let sessionDeptNm = location.state ? location.state.deptList[0].deptNm : deptInfo[0].deptNm

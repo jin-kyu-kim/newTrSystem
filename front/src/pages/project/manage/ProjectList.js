@@ -8,7 +8,6 @@ import CustomTable from "../../../components/unit/CustomTable";
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
 import { Button } from "devextreme-react";
-import { useCookies } from "react-cookie";
 
 const ProjectList = () => {
   const [values, setValues] = useState([]);
@@ -18,10 +17,17 @@ const ProjectList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
-  const [cookies] = useCookies(["userInfo", "userAuth"]);
 
 
-  const userEmpId = cookies.userInfo.empId;
+
+  /** 유저 정보 */
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const userAuth = JSON.parse(localStorage.getItem("userAuth"));
+  const deptInfo = JSON.parse(localStorage.getItem("deptInfo"));
+
+  const empId = userInfo.empId;
+  const deptId = deptInfo.length != 0 ? deptInfo[0].deptId : null;
+
   const navigate = useNavigate();
 
   const { keyColumn, queryId, tableColumns, searchParams, popup } = ProjectJson;
@@ -42,7 +48,7 @@ const ProjectList = () => {
       currentPage: currentPage,
       startVal: 0,
       pageSize: pageSize,
-      empId: userEmpId,
+      empId: empId,
     });
   };
 

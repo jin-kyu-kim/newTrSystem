@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import ApiRequest from "utils/ApiRequest";
 import { Button } from "devextreme-react";
 import CustomTable from "components/unit/CustomTable";
@@ -6,7 +6,6 @@ import SearchInfoSet from "../../components/composite/SearchInfoSet"
 import DeptManagePopJson from "./DeptManagePopJson.json"
 import CustomLabelValue from "components/unit/CustomLabelValue";
 import moment from "moment";
-import { useCookies } from "react-cookie";
 import { useModal } from "../../components/unit/ModalContext";
 
 const DeptManagePop = ({callBack,data,deptId,deptNm}) => {
@@ -17,15 +16,13 @@ const DeptManagePop = ({callBack,data,deptId,deptNm}) => {
   const [deptHnfParam, setDeptHnfParam] = useState({});   //직책변경 및 삭제용
   const [values, setValues] = useState([]);      //우측 발령할 사원정보 데이터
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-  const userAuth = JSON.parse(localStorage.getItem("userAuth"));
   const empId = userInfo.empId;     //현재 로그인중인 사원id
   const gnfdDate = moment().format('YYYYMM') //현재 년월
   const date = new Date();
   const now =  date.toISOString().split("T")[0] +" " +date.toTimeString().split(" ")[0]; //등록일시 (Timstamp)
   const {emplistQueryId,emplistTableColumns,emplistKeyColumn, //우측 목록
          hnfQueryId,hnfKeyColumn,hafTableColumns,
-         searchInfo,labelValue}= DeptManagePopJson;       
-  const { handleOpen } = useModal();
+         searchInfo,labelValue}= DeptManagePopJson;
 //========================초기 부서인력정보 조회=====================================
   useEffect(() => {
     setDeptEmpParam({

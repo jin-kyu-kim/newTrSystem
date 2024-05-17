@@ -31,5 +31,11 @@ public class HumanResourceMngController {
     public int deleteMtgRoomRsvt (@RequestBody String params){
         return HumanResourceMngDomain.deleteMtgRoomRsvt(params);
     }
+
+    // 휴가배정엑셀업로드
+    @PostMapping(value = "/boot/humanResourceMng/insertVcatnMngExcel")
+    public int insertVcatnMngExcel (@RequestBody List<Map<String, Object>> params){
+        return HumanResourceMngDomain.insertVcatnMngExcel(params);
+    }
     /* =================================박지환_작업================================= */
 }

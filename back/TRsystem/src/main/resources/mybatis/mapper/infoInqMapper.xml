@@ -240,10 +240,10 @@
 	
 	<select id="retriveDeptSearchList" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT
-		   A.DEPT_NM AS DEPT_NM,
-		   B.DEPT_ID AS DEPT_ID
-		FROM DEPT A
-		INNER JOIN DEPT_HNF B ON A.DEPT_ID = B.DEPT_ID
+			DEPT_NM,
+			DEPT_ID
+		FROM DEPT
+		WHERE END_YN = 'N'
 	</select>
 
 	<select id="retrieveEmpBassInfo" parameterType="map" resultType="com.trsystem.LowerHashMap">

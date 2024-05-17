@@ -1,22 +1,22 @@
-.TimeExpenseInsertSttus > .dx-datagrid-text-content {
-    font-size: 12px;
+.TimeExpenseInsertSttus .dx-datagrid-text-content {
+    font-size: 13px;
 }
 
-.dx-checkbox-text {
-    font-size: 12px;
+.TimeExpenseInsertSttus .wrap_table .dx-checkbox-text {
+    font-size: 13px;
 }
 
-.dx-datagrid .dx-row > td {
-    font-size: 10px;
+.TimeExpenseInsertSttus .dx-datagrid .dx-row > td {
+    font-size: 13px;
     padding: 10px 0px 10px 0px;
 }
 
-.dx-datagrid .dx-row > td > .dx-button-has-text .dx-button-content {
-    font-size: 10px;
+.TimeExpenseInsertSttus .dx-datagrid .dx-row > td > .dx-button-has-text .dx-button-content {
+    font-size: 11px;
     padding: 0px;
 }
 
-.dx-datagrid .dx-row > td > .dx-button-has-text {
+.TimeExpenseInsertSttus .dx-datagrid .dx-row > td > .dx-button-has-text {
     height: 20px;
     min-width: 50px;
 }

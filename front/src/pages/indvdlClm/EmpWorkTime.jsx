@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef } from "react"
-import { useCookies } from "react-cookie";
 import { useLocation } from "react-router-dom";
 import { useModal } from "../../components/unit/ModalContext";
 
@@ -59,19 +58,20 @@ const EmpWorkTime = () => {
     let orderWorkBgngMm = admin != undefined ? admin.aplyYm : flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMM")) : String(Moment(new Date()).format("YYYYMM") - 1)
 
     // 세션설정
-    const [cookies, setCookie] = useCookies(["userInfo", "deptInfo"]);
-    const sessionEmpId = admin != undefined ? admin.empId : cookies.userInfo.empId
-    const sessionJbpsCd = admin != undefined ? admin.jbpsCd : cookies.userInfo.jbpsCd
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    const deptInfo = JSON.parse(localStorage.getItem("deptInfo"));
+    const sessionEmpId = admin != undefined ? admin.empId : userInfo.empId
+    const sessionJbpsCd = admin != undefined ? admin.jbpsCd : userInfo.jbpsCd
     const sessionDeptIdList = [];
     const sessionDeptNmList = admin != undefined ? [admin.deptNmAll] : [];
 
     if (sessionDeptNmList.length == 0) {
-        for (let i = 0; i < cookies.deptInfo.length; i++) {
+        for (let i = 0; i < deptInfo.length; i++) {
             sessionDeptIdList.push(
-                cookies.deptInfo[i].deptId
+                deptInfo[i].deptId
             )
             sessionDeptNmList.push(
-                cookies.deptInfo[i].deptNm
+                deptInfo[i].deptNm
             )
         }
     }

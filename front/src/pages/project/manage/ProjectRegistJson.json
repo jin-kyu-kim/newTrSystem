@@ -29,6 +29,9 @@
             "label": "PM",
             "placeholder": "PM",
             "param": { "tbNm" : "EMP",
+                        "condition": {
+                            "empTyCd": "VTW00201"
+                        },
                         "valueExpr" : "empId",
                         "displayExpr": "empFlnm",
                         "name": "prjctMngrEmpId",
@@ -159,6 +162,7 @@
         "totBgt": "",
         "bddprPc": "",
         "mmnySlsAm": "",
+        "bizFlfmtTyCd": "",
         "ctmmnyId": "",
         "picFlnm": "",
         "picTelno": "",

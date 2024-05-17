@@ -28,15 +28,14 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "Enter") {
-        searchButtonRef.current.instance.option("onClick")();
+        handleSubmit();
       }
     };
-
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [searchButtonRef]);
 
   useEffect(() => {
     const { yearList, monthList } = getYmList(year - 10, year + 1);
@@ -144,6 +143,7 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
                 size="medium"
                 name={item.name}
                 showClearButton={true}
+                onEnterKey={handleSubmit}
                 onValueChanged={(e) => handleChgState({ name: e.component.option('name'), value: e.value })}
               />
             </Item>

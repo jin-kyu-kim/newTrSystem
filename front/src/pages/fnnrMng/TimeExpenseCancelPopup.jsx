@@ -4,14 +4,21 @@ import { Popup } from "devextreme-react";
 import { Button } from "devextreme-react";
 import ApiRequest from "utils/ApiRequest";
 import TimeExpenseCancelPopupJson from "./TimeExpenseCancelPopupJson.json";
-import { useCookies } from "react-cookie";
 const TimeExpenseCancelPopup = ({visible, onPopHiding, type, data}) => {
 
     const { mmQueryId, ctQueryId, mmKeyColumn, mmColumns, ctKeyColumn, ctColumns } = TimeExpenseCancelPopupJson;
     const [values, setValues] = useState([]);
     const [ selectedDataList, setSelectedDataList ] = useState([]);
-    const [cookies] = useCookies(["userInfo", "userAuth"]);
     const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
+
+    /** 유저 정보 */
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    const userAuth = JSON.parse(localStorage.getItem("userAuth"));
+    const deptInfo = JSON.parse(localStorage.getItem("deptInfo"));
+
+    const empId = userInfo.empId;
+    const deptId = deptInfo.length != 0 ? deptInfo[0].deptId : null;
+
 
     useEffect(() => {
         retrieveCancelList();
@@ -56,7 +63,7 @@ const TimeExpenseCancelPopup = ({visible, onPopHiding, type, data}) => {
                     aprvrEmpId: null,
                     aprvYmd: null,
                     mdfcnDt: mdfcnDt,
-                    mdfcnEmpId: cookies.userInfo.empId
+                    mdfcnEmpId: empId
                 },
                 {
                     prjctId: selectedData.prjctId,
@@ -122,7 +129,7 @@ const TimeExpenseCancelPopup = ({visible, onPopHiding, type, data}) => {
                     aprvrEmpId: null,
                     aprvYmd: null,
                     mdfcnDt: mdfcnDt,
-                    mdfcnEmpId: cookies.userInfo.empId
+                    mdfcnEmpId: empId
                 },
                 {
                     prjctId: selectedData.prjctId,

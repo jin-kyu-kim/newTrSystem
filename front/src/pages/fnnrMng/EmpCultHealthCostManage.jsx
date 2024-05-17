@@ -21,6 +21,7 @@ const EmpCultHealthCostManage = () => {
   const [isManagePopupVisible, setIsManagePopupVisible] = useState(false);
   const [isDetailPopupVisible, setIsDetailPopupVisible] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState();
+  const [selectedItem, setSelectedItem] = useState([]);
   const { handleOpen } = useModal();
 
   let now = new Date();
@@ -162,12 +163,41 @@ const EmpCultHealthCostManage = () => {
           "clturPhstrnActMngYm": param.clturPhstrnActMngYm
         });
         if (response){
+          handleOpen('저장되었습니다.');
           pageHandle();
         }
       } catch (error) {
         console.error(error);
       }
     }
+  };
+
+  const handleSave = async () => {
+    const btnChk = window.confirm("작성한 지급금액을 저장하시겠습니까?")
+    if (btnChk && validateMonth()) {
+      try {
+        const response = await ApiRequest("/boot/financialAffairMng/saveDpstAmt", selectedItem);
+        if (response){
+          handleOpen('저장되었습니다.');
+          pageHandle();
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }
+  
+  const onSelection = (e) => {
+    setSelectedItem(e.selectedRowsData);
+  };
+
+  const validateNumberBox = (data, value) => {
+    const errors = [];
+    if (value > data.cyfdAmt + data.clmAmt || value > 200000) {
+      alert('지급 가능한 금액보다 큽니다.')
+      errors.push('Too large amount');
+    }
+    return errors.length === 0;
   };
 
   return (
@@ -212,9 +242,12 @@ const EmpCultHealthCostManage = () => {
           onRowClick={onRowClick}
           noEdit={true}
           onBtnClick={onBtnClick}
+          onSelection={onSelection}
+          validateNumberBox={validateNumberBox}
         />
 
       </div>
+      <Button onClick={handleSave} disabled={disabled} type='default' style={{width: "100px"}}>저장</Button>
     </div>
 
     <Popup

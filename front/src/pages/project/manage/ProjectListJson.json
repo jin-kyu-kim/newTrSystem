@@ -4,12 +4,12 @@
     "keyColumn": "prjctId",
     "tableColumns": 
 	[
-        { "key": "rownum", "value": "번호", "width": "5%", "alignment" : "center" },
+        { "key": "rownum", "value": "번호", "width": "7%", "alignment" : "center" },
         { "key": "prjctStleCd", "value": "형태", "width": "10%"  },
         { "key": "prjctNm", "value": "프로젝트 명", "width": "33%" , "alignment" : "left" },
         { "key": "bizSttsCdNm", "value": "상태", "width": "10%", "alignment" : "left" },
         { "key": "prjctMngrEmpId", "value": "PM", "width": "10%", "alignment" : "left"  },
-        { "key": "ctmmnyNm", "value": "고객사", "width": "12%", "alignment" : "left"  },
+        { "key": "ctmmnyNm", "value": "고객사", "width": "10%", "alignment" : "left"  },
         { "key": "ctrtYmd", "value": "시작일", "width": "10%" },
         { "key": "bizEndYmd", "value": "종료일", "width": "10%" }
 	],

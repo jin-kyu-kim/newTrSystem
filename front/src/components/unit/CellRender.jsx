@@ -6,7 +6,7 @@ import NumberBox from 'devextreme-react/number-box';
 import ToggleButton from 'pages/sysMng/ToggleButton';
 import { TextBox } from 'devextreme-react';
 
-const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig }) => {
+const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, validateNumberBox }) => {
     const [ isChangeData, setIsChangeData ] = useState(false);
 
     const { getCdList, isPrjctIdSelected, setIsPrjctIdSelected, hasError, chgPlaceholder, comboList, cdList,
@@ -100,8 +100,15 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig }) =
                 style={{ backgroundColor: hasError && hasError(props.data.cardUseSn, col.key) ? '#FFCCCC' : '' }}
                 onValueChanged={(newValue) => {
                     hasError && setValidationErrors(prevErrors => prevErrors.filter(error => !(error.cardUseSn === props.data.cardUseSn && error.field === col.key)));
-                    props.data[col.key] = newValue.value
-                    setIsChangeData(!isChangeData)
+                    if(validateNumberBox){
+                        if(validateNumberBox(props.data, newValue.value)){
+                            props.data[col.key] = newValue.value
+                            setIsChangeData(!isChangeData)
+                        }
+                    } else {
+                        props.data[col.key] = newValue.value
+                        setIsChangeData(!isChangeData)
+                    }
                 }}
                 
             />

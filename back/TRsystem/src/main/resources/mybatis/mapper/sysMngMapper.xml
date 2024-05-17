@@ -28,16 +28,47 @@
     <select id="authCdList" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT
 			E.EMP_ID,
+			E.EMPNO,
+			(SELECT CD_NM FROM CD WHERE CD_VALUE = E.JBPS_CD) AS JBPS_NM,
+			E.EMP_FLNM,
+			E.JBPS_CD,
+			GROUP_CONCAT(DISTINCT D.DEPT_NM) AS DEPT_ID,
 			IFNULL(MAX(CASE WHEN U.AUTHRT_CD = 'VTW04801' THEN 'Y' END), 'N') AS VTW04801,
 			IFNULL(MAX(CASE WHEN U.AUTHRT_CD = 'VTW04802' THEN 'Y' END), 'N') AS VTW04802,
 			IFNULL(MAX(CASE WHEN U.AUTHRT_CD = 'VTW04803' THEN 'Y' END), 'N') AS VTW04803,
 			IFNULL(MAX(CASE WHEN U.AUTHRT_CD = 'VTW04804' THEN 'Y' END), 'N') AS VTW04804,
 			IFNULL(MAX(CASE WHEN U.AUTHRT_CD = 'VTW04805' THEN 'Y' END), 'N') AS VTW04805,
 			IFNULL(MAX(CASE WHEN U.AUTHRT_CD = 'VTW04806' THEN 'Y' END), 'N') AS VTW04806,
-			IFNULL(MAX(CASE WHEN U.AUTHRT_CD = 'VTW04807' THEN 'Y' END), 'N') AS VTW04807
+			IFNULL(MAX(CASE WHEN U.AUTHRT_CD = 'VTW04807' THEN 'Y' END), 'N') AS VTW04807,
+			COUNT(*) OVER () AS TOTAL_ITEMS
 		FROM EMP E
-				 LEFT JOIN USER_AUTHRT U ON E.EMP_ID = U.EMP_ID
-		GROUP BY E.EMP_ID
+			LEFT JOIN USER_AUTHRT U ON E.EMP_ID = U.EMP_ID
+			LEFT OUTER JOIN DEPT_HNF DF ON E.EMP_ID = DF.EMP_ID
+			LEFT OUTER JOIN DEPT D ON D.DEPT_ID = DF.DEPT_ID
+		WHERE 1=1
+		AND EMP_TY_CD NOT LIKE 'VTW00203%'
+		AND E.HDOF_STTS_CD != 'VTW00302'
+		AND E.JBPS_CD != 'VTW00119'
+		<if test="hdofSttsNm != null and !hdofSttsNm.equals('')">
+			AND E.HDOF_STTS_CD LIKE CONCAT('%', #{hdofSttsNm}, '%')
+		</if>
+		<if test="jbpsNm != null and !jbpsNm.equals('')">
+			AND E.JBPS_CD LIKE CONCAT('%', #{jbpsNm}, '%')
+		</if>
+		<if test="deptId != null and deptId !=''">
+			AND D.DEPT_ID LIKE CONCAT('%', #{deptId}, '%')
+		</if>
+		<if test="empno != null and empno !=''">
+			AND E.EMPNO LIKE CONCAT('%', #{empno}, '%')
+		</if>
+		<if test="empFlnm != null and empFlnm !=''">
+			AND E.EMP_FLNM LIKE CONCAT('%', #{empFlnm}, '%')
+		</if>
+		<if test="telNo != null and telNo !=''">
+			AND E.TELNO LIKE CONCAT('%', #{telNo}, '%')
+		</if>
+		GROUP BY E.EMP_ID, E.EMPNO, E.JBPS_CD, E.EMP_FLNM, E.EMPNO
+		ORDER BY E.EMPNO
     </select>
 
     <select id="customersList" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -114,7 +145,7 @@
 			, NOTICE_TTL
 			, SGNAL_ORDR
 			, e.EMP_FLNM AS REG_EMP_ID
-			, DATE_FORMAT(n.REG_DT, '%Y-%m-%d %H:%i') AS REG_DT
+			, DATE_FORMAT(n.REG_DT, '%Y-%m-%d') AS REG_DT
 			, COUNT(*) OVER () AS TOTAL_ITEMS
 		FROM NOTICE n
 		LEFT JOIN EMP e ON n.REG_EMP_ID = e.EMP_ID
