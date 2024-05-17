@@ -14,11 +14,11 @@
 	"hnfQueryId": "humanResourceMngMapper.retrieveDeptHnfList",
     "hnfKeyColumn": "empId",
     "hafTableColumns": [
-        { "key": "empno", "value": "사번"},
-        { "key": "empFlnm", "value": "성명" },
-        { "key": "jbpsNm", "value": "직위"},
-        { "key": "jbttlNm", "value": "직책" },
-        { "key": "deptGnfdYmd", "value": "부서발령일자"}
+        { "key": "empno", "value": "사번", "width": "20%"},
+        { "key": "empFlnm", "value": "성명" , "width": "20%"},
+        { "key": "jbpsNm", "value": "직위", "width": "20%"},
+        { "key": "jbttlNm", "value": "직책" , "width": "20%"},
+        { "key": "deptGnfdYmd", "value": "부서발령일자", "width": "20%"}
     ],
     "labelValue" : {
         "deptNm": {
