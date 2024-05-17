@@ -8,11 +8,7 @@ import { Item } from "devextreme-react/box"
 // npm install moment
 import Moment from "moment"
 
-// 엑셀업로드
-// npm install xlsx
-import * as XLSX from 'xlsx'
-
-import { useModal } from "../../components/unit/ModalContext";
+import { useModal } from "components/unit/ModalContext";
 import CustomTable from "components/unit/CustomTable";
 import CustomEmpComboBox from "components/unit/CustomEmpComboBox";
 import EmpVcatnAltmntMngJson from "pages/humanResourceMng/EmpVcatnAltmntMngJson.json";
@@ -54,31 +50,23 @@ const EmpVcatnAltmntMng = () => {
 
     const { handleOpen } = useModal();
 
+    // 1. 직원별휴가목록조회
+    // 2. 부서목록조회
+    // 3. 코드조회
+    // 4. 휴가등록불가기간조회
     useEffect(() => {
         getEmpVacList();
         getDeptList();
         getCodeList();
+        getCrtrDateList();
     }, [])
 
 
 
 
 
-    // 엑셀업로드팝업정보
-    const [popupExcelUploadValue, setPopupExcelUploadValue] = useState({ visible: false });
-
     // 직원별휴가목록조회
     const [selectEmpVacListValue, setSelectEmpVacListValue] = useState([]);
-
-    // 부서목록조회
-    const [selectDeptListValue, setSelectDeptListValue] = useState([]);
-
-    // 직책목록조회
-    const [selectJobCdListValue, setSelectJobCdListValue] = useState([]);
-
-    // 재직목록조회
-    const [selectHdofSttsCdListValue, setSelectHdofSttsCdListValue] = useState([]);
-
 
     // 직원별휴가목록조회
     const getEmpVacList = async () => {
@@ -90,6 +78,12 @@ const EmpVcatnAltmntMng = () => {
     };
 
 
+
+
+
+    // 부서목록조회
+    const [selectDeptListValue, setSelectDeptListValue] = useState([]);
+
     // 부서목록조회
     const getDeptList = async () => {
         try {
@@ -98,6 +92,17 @@ const EmpVcatnAltmntMng = () => {
             console.log('getDeptList_error', error);
         }
     };
+
+
+
+
+
+
+    // 직책목록조회
+    const [selectJobCdListValue, setSelectJobCdListValue] = useState([]);
+
+    // 재직목록조회
+    const [selectHdofSttsCdListValue, setSelectHdofSttsCdListValue] = useState([]);
 
     // 코드조회
     const getCodeList = async () => {
@@ -110,6 +115,9 @@ const EmpVcatnAltmntMng = () => {
     };
 
 
+
+
+
     // 조회조건
     const [searchParam, setSearchParam] = useState({ queryId: "humanResourceMngMapper.retrieveEmpVcatnInfo" });
 
@@ -118,13 +126,6 @@ const EmpVcatnAltmntMng = () => {
 
     // 화면데이터처리
     const [paramFlag, setParamFlag] = useState({ readOnlyCtr: true, insertReadOnlyCtr: true, insertVcantFlag: 0 });
-
-    // 휴가배정정보이력조회
-    const [selectHistValue, setSelectHistValue] = useState({ queryId: "humanResourceMngMapper.retrieveEmpVcatnInfo" });
-
-
-
-
 
     // 조회
     const onSearch = async () => {
@@ -138,7 +139,13 @@ const EmpVcatnAltmntMng = () => {
     };
 
 
-    // 기존휴가배정정보조회
+
+
+
+    // 휴가배정정보이력조회
+    const [selectHistValue, setSelectHistValue] = useState({ queryId: "humanResourceMngMapper.retrieveEmpVcatnInfo" });
+
+    // 휴가배정정보이력조회
     const getSelectValue = async () => {
         try {
             const response = await ApiRequest("/boot/common/queryIdSearch", selectHistValue);
@@ -164,6 +171,29 @@ const EmpVcatnAltmntMng = () => {
             console.log("getSelectValue_error : ", error);
         }
     };
+
+
+
+
+
+    // 휴가등록불가기간조회
+    const [selectCrtrDateList, setSelectCrtrDateList] = useState();
+
+    // 휴가등록불가기간조회
+    const getCrtrDateList = async () => {
+        try {
+            setSelectCrtrDateList(await ApiRequest("/boot/common/commonSelect", [{ tbNm: "CRTR_DATE" }, { vcatnCntrlYmdYn: "Y" }]));
+        } catch (error) {
+            console.error("getCrtrDateList_error : " + error);
+        }
+    }
+
+    
+
+
+
+    // 엑셀업로드팝업정보
+    const [popupExcelUploadValue, setPopupExcelUploadValue] = useState({ visible: false });
 
 
 
@@ -251,18 +281,29 @@ const EmpVcatnAltmntMng = () => {
 
 
 
-
-
     // 휴가등록불가기간 설정
     const btnSaveCntrlYmd = async () => {
-        const response = await ApiRequest("/boot/common/queryIdSearch", 
-            {queryId: "humanResourceMngMapper.updateVcatnCntrlYmdYn", cntrBgngYmd: cntrBgngYmdRef.current, cntrEndYmd: cntrEndYmdRef.current}
+        await ApiRequest("/boot/common/queryIdSearch",
+            { queryId: "humanResourceMngMapper.updateVcatnCntrlYmdYn", cntrBgngYmd: cntrBgngYmdRef.current, cntrEndYmd: cntrEndYmdRef.current }
         );
 
         handleOpen("저장되었습니다.");
+        getCrtrDateList();
     }
 
 
+
+
+
+    const onDeleteClick = async (e, data) => {
+        const updateParam = [
+            { tbNm: "CRTR_DATE" },
+            { "vcatnCntrlYmdYn": null },
+            { "CRTR_YMD": data.crtrYmd },
+        ]
+        const response = await ApiRequest('/boot/common/commonUpdate', updateParam);
+        getCrtrDateList();
+    }
 
     return (
         <div style={{ marginLeft: "1%", marginRight: "1%" }}>
@@ -346,6 +387,7 @@ const EmpVcatnAltmntMng = () => {
                             keyColumn={EmpVcatnAltmntMngJson.listKeyColumn}
                             columns={EmpVcatnAltmntMngJson.listTableColumns}
                             values={selectEmpVacListValue}
+                            wordWrap={true}
                             onRowDblClick={onRowDblClick}
                             onClick={onButtonClick}
                         />
@@ -500,7 +542,7 @@ const EmpVcatnAltmntMng = () => {
                             }
                         </div>
                         <div div className="row" style={{ display: "inline-block", float: "right", marginTop: "25px" }}>
-                            <Button style={{ height: "48px", width: "120px", marginRight: "15px" }} onClick={() => {setPopupExcelUploadValue({ visible: true })}}>엑셀업로드</Button>
+                            <Button style={{ height: "48px", width: "120px", marginRight: "15px" }} onClick={() => { setPopupExcelUploadValue({ visible: true }) }}>엑셀업로드</Button>
                             <Button style={{ height: "48px", width: "60px", marginRight: "15px" }} onClick={() => handleOpen("휴가정보를 저장 하시겠습니까?", btnSaveClick)}>저장</Button>
                             <Button style={{ height: "48px", width: "60px" }} onClick={(e) => {
                                 setParamFlag({
@@ -532,7 +574,7 @@ const EmpVcatnAltmntMng = () => {
                             }}>신규</Button>
                         </div>
                     </div>
-                    <div style={{ marginTop: "100px" }}><h4>* 휴가등록 불가기간</h4></div>
+                    <div style={{ marginTop: "160px" }}><h4>* 휴가등록 불가기간</h4></div>
                     <div style={divStyle}>휴가등록 불가기간을 설정합니다.</div>
                     <div style={{ marginTop: "10px", flexDirection: "row" }}>
                         <div className="row" style={{ marginBottom: "20px" }}>
@@ -554,25 +596,41 @@ const EmpVcatnAltmntMng = () => {
                             </div>
                         </div>
                     </div>
-                    <div div className="row" style={{ display: "inline-block", float: "right", marginTop: "25px" }}>
-                    <div style={{ display: "inline-block", float: "right", marginTop: "25px" }}>
-                        <Button style={{ height: "48px", width: "60px"}} onClick={btnSaveCntrlYmd}>저장</Button>
+                    <div div className="row" style={{ display: "inline-block", float: "right" }}>
+                        <div style={{ display: "inline-block", float: "right" }}>
+                            <Button style={{ height: "48px", width: "60px" }} onClick={btnSaveCntrlYmd}>저장</Button>
+                        </div>
                     </div>
-                    </div>
+                    {
+                        selectCrtrDateList && selectCrtrDateList.length > 0
+                            ?
+                            <div style={{ marginTop: "100px" }}>
+                                <CustomTable
+                                    keyColumn={"crtrYmd"}
+                                    columns={[
+                                        { "key": "crtrYmd", "value": "불가기간" },
+                                        { "key": "vcatnCntrlYmdYn", "value": "삭제", "button": { "text": "삭제" } }
+                                    ]}
+                                    values={selectCrtrDateList}
+                                    onClick={onDeleteClick}
+                                />
+                            </div>
+                            : <></>
+                    }
                 </div>
             </div>
             {
                 popupExcelUploadValue.visible == true
-                ?
-                <EmpVcatnAltmntMngExcelUpload
-                    visible={popupExcelUploadValue.visible}
-                    onHiding={(e) => {
-                        setPopupExcelUploadValue({
-                            visible: e
-                        })
-                    }}
-                />
-                : <></>
+                    ?
+                    <EmpVcatnAltmntMngExcelUpload
+                        visible={popupExcelUploadValue.visible}
+                        onHiding={(e) => {
+                            setPopupExcelUploadValue({
+                                visible: e
+                            })
+                        }}
+                    />
+                    : <></>
             }
             <br /><br /><br /><br /><br />
         </div>
