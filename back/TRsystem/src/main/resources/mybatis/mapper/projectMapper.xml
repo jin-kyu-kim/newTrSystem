@@ -23,7 +23,9 @@
             , DEPT_ID
             , COUNT(*) OVER () AS TOTAL_ITEMS
             FROM PRJCT p
+            <if test="!path.equals('/mngrMenu/ProjectList')">
             JOIN PRJCT_MNG_AUTHRT PMA ON (PMA.PRJCT_ID = p.PRJCT_ID AND PMA.EMP_ID = #{empId})
+            </if>
             WHERE 1 = 1
         <if test="prjctStleCd != null and !prjctStleCd.equals('')">
       AND p.PRJCT_STLE_CD = #{prjctStleCd}
@@ -161,7 +163,9 @@
 			  JOIN PRJCT p ON (p.PRJCT_ID = pal.PRJCT_ID AND p.PRJCT_ID = pald.PRJCT_ID)
 			  JOIN EMP e  ON (e.EMP_ID = pal.REG_EMP_ID)
 			 WHERE 1=1
+                <if test="!path.equals('/mngrMenu/ProjectAprv')">
 			   AND (pald.APRVR_EMP_ID = #{empId} OR pal.REG_EMP_ID = #{empId})
+                </if>
 		        <if test="prmpcInptSeCd != null and !prmpcInptSeCd.equals('')">
 		       AND pal.PRMPC_INPT_SE_CD = #{prmpcInptSeCd}
 		        </if>

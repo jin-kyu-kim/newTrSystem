@@ -6,7 +6,7 @@ import SearchPrjctSet from "../../../components/composite/SearchPrjctSet";
 import CustomTable from "../../../components/unit/CustomTable";
 
 import "react-datepicker/dist/react-datepicker.css";
-import { useNavigate } from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 
 const ProjectAprv = () => {
   const [values, setValues] = useState([]);
@@ -16,6 +16,7 @@ const ProjectAprv = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
+  const location = useLocation();
 
 
   /** 유저 정보 */  
@@ -47,6 +48,7 @@ const ProjectAprv = () => {
       currentPage: currentPage,
       startVal: 0,
       pageSize: pageSize,
+      path: location.pathname
     });
   };
 
