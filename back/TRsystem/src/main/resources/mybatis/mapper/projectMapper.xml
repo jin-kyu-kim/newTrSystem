@@ -1795,15 +1795,26 @@
 				   						) T
 				   		 		), 0) AS BFE_TOT_BGT
 		   		 	  , IFNULL((
-				   		 		 SELECT (COALESCE(T.TOT_BGT, 0) + SUM(COALESCE(T.CMMN_EXPENS_AMT, 0))) 
+								SELECT COALESCE(T.TOT_BGT, 0) + COALESCE(T.CMMN_EXPENS_AMT, 0)
 								   FROM (
-									  	 SELECT M.TOT_BGT, M.PRJCT_ID,S.CNSRTM_CO_NM,S.CMMN_EXPENS_AMT 
-									 	   FROM PRJCT M
+									  	 SELECT ph.TOT_BGT, SUM(S.CMMN_EXPENS_AMT) AS CMMN_EXPENS_AMT 
+									 	   FROM PRJCT_HIST ph
 										   LEFT JOIN PRJCT_CNSRTM S
-											 ON M.PRJCT_ID = S.PRJCT_ID AND S.SLS_AM_RFLT_YN  = 'Y'
+											 ON ph.PRJCT_ID = S.PRJCT_ID AND S.SLS_AM_RFLT_YN  = 'Y'
 										  WHERE 1=1
-										    AND M.PRJCT_ID = #{prjctId}
-				   						) T
+										    AND ph.PRJCT_ID = #{prjctId}
+										    AND ph.PRJCT_HIST_SN = (SELECT MAX(PRJCT_HIST_SN)
+										    						 FROM PRJCT_HIST ph2
+										    						WHERE ph2.PRJCT_ID = #{prjctId}
+										    						<if test="type.equals('aprv')">
+																		<![CDATA[ 
+								 		    						  AND ph2.BGT_MNG_ODR <= #{bgtMngOdrTobe}
+								 		    						  AND ph2.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
+																		]]>
+																	</if>
+										    					  )
+										    GROUP BY TOT_BGT
+										) T
 				   			    ), 0) AS AFTR_TOT_BGT
 					  , IFNULL((
 					 			SELECT SUM(IFNULL(MIM.EXPECT_MM, 0) * IFNULL(MIM.UNTPC, 0))
@@ -1861,11 +1872,185 @@
 								SELECT
 									   SUM(MCP.CTRT_AMT)
 								  FROM MATRL_CT_PRMPC MCP
-								  JOIN PRJCT_BGT_PRMPC PBP ON PBP .PRJCT_ID = MCP.PRJCT_ID AND PBP.BGT_MNG_ODR = MCP.BGT_MNG_ODR
+								  JOIN PRJCT_BGT_PRMPC PBP ON PBP.PRJCT_ID = MCP.PRJCT_ID AND PBP.BGT_MNG_ODR = MCP.BGT_MNG_ODR
 								  WHERE MCP.PRJCT_ID = #{prjctId}
 									AND PBP.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
 									AND MCP.BGT_MNG_ODR = #{bgtMngOdrTobe}
 							   ),0) AS AFTR_MATRL_BGT
 			  ) T1
 	</select>
+	
+	<select id="retrieveTempPrjctInfo" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT PRJCT_NM
+			 , PRJCT_STLE_CD
+			 , DEPT_ID
+			 , PRJCT_MNGR_EMP_ID
+			 , TOT_BGT
+			 , BDDPR_PC
+			 , MMNY_SLS_AM
+			 , BIZ_FLFMT_TY_CD
+			 , CTMMNY_ID
+			 , PIC_FLNM
+			 , PIC_TELNO
+			 , PIC_EML
+			 , BEFFAT_PBANC_DDLN_YMD
+			 , EXPECT_ORDER_YMD
+			 , PROPSE_DDLN_YMD
+			 , PROPSE_PRSNTN_YMD
+			 , CTRT_YMD
+			 , BIZ_END_YMD
+			 , STBLE_END_YMD
+			 , IGI_YMD
+			 , PRJCT_CD_IDNTFR
+			 , PRJCT_HIST_SN
+			 , BIZ_STTS_CD
+		  FROM PRJCT_HIST 
+		 WHERE 1=1
+		   AND PRJCT_ID = #{prjctId}
+		   AND PRJCT_HIST_SN = (
+			 	SELECT MAX(PRJCT_HIST_SN)
+			 	  FROM PRJCT_HIST ph 
+			 	 WHERE PRJCT_ID = #{prjctId}
+		)
+	</select>
+	
+	<insert id="insertTempPrjctInfo" parameterType="map">
+		INSERT INTO PRJCT_HIST (
+			PRJCT_ID
+			, PRJCT_NM
+			, PRJCT_STLE_CD
+			, DEPT_ID
+			, PRJCT_MNGR_EMP_ID
+			, TOT_BGT
+			, BDDPR_PC
+			, MMNY_SLS_AM
+			, BIZ_FLFMT_TY_CD
+			, CTMMNY_ID
+			, PIC_FLNM
+			, PIC_TELNO
+			, PIC_EML
+			, BEFFAT_PBANC_DDLN_YMD
+			, EXPECT_ORDER_YMD
+			, PROPSE_DDLN_YMD
+			, PROPSE_PRSNTN_YMD
+			, CTRT_YMD
+			, BIZ_END_YMD
+			, STBLE_END_YMD
+			, IGI_YMD
+		    , PRJCT_CD_IDNTFR
+		    , PRJCT_HIST_SN
+			, REG_EMP_ID
+			, REG_DT
+			, MDFCN_EMP_ID
+			, MDFCN_DT
+			, ATRZ_DMND_STTS_CD
+			, BIZ_STTS_CD
+			, BGT_MNG_ODR
+		)
+		VALUES (
+			#{prjctId}
+			, #{prjctNm}
+			, #{prjctStleCd}
+			, #{deptId}
+			, #{prjctMngrEmpId}
+			, #{totBgt}
+			, #{bddprPc}
+			, #{mmnySlsAm}
+			, #{bizFlfmtTyCd}
+			, #{ctmmnyId}
+			, #{picFlnm}
+			, #{picTelno}
+			, #{picEml}
+			, #{beffatPbancDdlnYmd}
+			, #{expectOrderYmd}
+			, #{propseDdlnYmd}
+			, #{propsePrsntnYmd}
+			, #{ctrtYmd}
+			, #{bizEndYmd}
+			, #{stbleEndYmd}
+			, #{igiYmd}
+			, #{prjctCdIdntfr}
+		    , (SELECT T.PRJCT_HIST_SN 
+		    	 FROM (SELECT MAX(PRJCT_HIST_SN) + 1 AS PRJCT_HIST_SN
+			  	 		 FROM PRJCT_HIST 
+			 			WHERE PRJCT_ID = #{prjctId}) AS T)
+			, #{regEmpId}
+			, #{regDt}
+			, #{mdfcnEmpId}
+			, #{mdfcnDt}
+			, #{atrzDmndSttsCd}
+			, #{bizSttsCd}
+			, #{bgtMngOdr}
+		)
+	</insert>
+	
+	<update id="updateTempPrjctAtrzDmndSttsCd" parameterType="map">
+		UPDATE PRJCT_HIST
+		   SET ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
+		   	 , MDFCN_EMP_ID = #{mdfcnEmpId}
+		   	 , MDFCN_DT = #{mdfcnDt}
+		 WHERE 1=1
+		   AND PRJCT_ID = #{prjctId}
+   		   AND PRJCT_HIST_SN = (SELECT T.PRJCT_HIST_SN 
+						    	  FROM (SELECT MAX(PRJCT_HIST_SN) AS PRJCT_HIST_SN
+							  	 		  FROM PRJCT_HIST 
+							 			 WHERE PRJCT_ID = #{prjctId}
+							 			) AS T)
+	</update>
+	
+	<update id="updatePrjctData" parameterType="map">
+		UPDATE PRJCT p, (SELECT PRJCT_NM
+							  , PRJCT_STLE_CD
+						 	  , DEPT_ID
+						 	  , PRJCT_MNGR_EMP_ID
+						 	  , TOT_BGT
+							  , BDDPR_PC
+							  , MMNY_SLS_AM
+							  , BIZ_FLFMT_TY_CD
+							  , CTMMNY_ID
+							  , PIC_FLNM
+							  , PIC_TELNO
+							  , PIC_EML
+							  , BEFFAT_PBANC_DDLN_YMD
+							  , EXPECT_ORDER_YMD
+							  , PROPSE_DDLN_YMD
+							  , PROPSE_PRSNTN_YMD
+							  , CTRT_YMD
+							  , BIZ_END_YMD
+							  , STBLE_END_YMD
+							  , IGI_YMD
+						      , PRJCT_CD_IDNTFR
+						      , PRJCT_HIST_SN
+						   FROM PRJCT_HIST
+						  WHERE 1=1
+						    AND PRJCT_ID = #{prjctId}
+						    AND PRJCT_HIST_SN = (SELECT T.PRJCT_HIST_SN 
+										           FROM (SELECT MAX(PRJCT_HIST_SN) AS PRJCT_HIST_SN
+											  	 	       FROM PRJCT_HIST 
+											 		     WHERE PRJCT_ID = #{prjctId}) AS T)
+											 		    ) ph
+		   SET p.PRJCT_NM = ph.PRJCT_NM
+			 , p.PRJCT_STLE_CD = ph.PRJCT_STLE_CD
+			 , p.DEPT_ID = ph.DEPT_ID
+			 , p.PRJCT_MNGR_EMP_ID = ph.PRJCT_MNGR_EMP_ID
+		 	 , p.TOT_BGT = ph.TOT_BGT
+			 , p.BDDPR_PC = ph.BDDPR_PC
+			 , p.MMNY_SLS_AM = ph.MMNY_SLS_AM
+			 , p.BIZ_FLFMT_TY_CD = ph.BIZ_FLFMT_TY_CD
+			 , p.CTMMNY_ID = ph.CTMMNY_ID
+			 , p.PIC_FLNM = ph.PIC_FLNM
+			 , p.PIC_TELNO = ph.PIC_TELNO
+			 , p.PIC_EML = ph.PIC_EML
+			 , p.BEFFAT_PBANC_DDLN_YMD = ph.BEFFAT_PBANC_DDLN_YMD
+			 , p.EXPECT_ORDER_YMD = ph.EXPECT_ORDER_YMD
+			 , p.PROPSE_DDLN_YMD = ph.PROPSE_DDLN_YMD
+			 , p.PROPSE_PRSNTN_YMD = ph.PROPSE_PRSNTN_YMD
+			 , p.CTRT_YMD = ph.CTRT_YMD
+			 , p.BIZ_END_YMD = ph.BIZ_END_YMD
+			 , p.STBLE_END_YMD = ph.STBLE_END_YMD
+			 , p.IGI_YMD = ph.IGI_YMD
+		     , p.PRJCT_CD_IDNTFR = ph.PRJCT_CD_IDNTFR
+		     , p.PRJCT_HIST_SN = ph.PRJCT_HIST_SN
+		   WHERE PRJCT_ID = #{prjctId}
+	</update>
 </mapper>

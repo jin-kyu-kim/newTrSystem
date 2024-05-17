@@ -78,6 +78,7 @@ const ProjectTotCostInfo = ({prjctId, atrzDmndSttsCd, bgtMngOdr, nowAtrzStepCd})
           bgtMngOdr={aprvOdr}
           bgtMngOdrTobe={bgtMngOdr}
           atrzDmndSttsCd={endYn == true ? "VTW03703" : "VTW03702"}
+          type="aprv"
         />
       }
     </div>
