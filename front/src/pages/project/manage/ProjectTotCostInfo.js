@@ -3,7 +3,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 
 import "devextreme/dist/css/dx.common.css";
-import "devextreme/dist/css/dx.light.css";
+// import "devextreme/dist/css/dx.light.css";
 import "devextreme/dist/css/dx.material.blue.light.css";
 import CustomTable from "components/unit/CustomTable";
 import ProjectPrmpcBgtCmpr from "./ProjectPrmpcBgtCmpr";
@@ -81,6 +81,7 @@ const ProjectTotCostInfo = ({prjctId, atrzDmndSttsCd, bgtMngOdr, nowAtrzStepCd})
           bgtMngOdr={aprvOdr}
           bgtMngOdrTobe={bgtMngOdr}
           atrzDmndSttsCd={endYn == true ? "VTW03703" : "VTW03702"}
+          type="aprv"
         />
       }
     </div>
