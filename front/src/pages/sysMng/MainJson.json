@@ -24,18 +24,18 @@
   ],
   "atrzSttsQueryId": "sysMngMapper.retrieveAtrzAplySttus",
   "atrzSttsTableColumns": [
-    { "key": "tySe", "value": "결재구분",  "alignment": "center" , "width" : "18%"},
-    { "key": "title", "value": "결재명",  "alignment": "center", "width" : "24%" },
+    { "key": "tySe", "value": "결재구분",  "alignment": "center" , "width" : "20%"},
+    { "key": "title", "value": "결재명",  "alignment": "center", "width" : "30%" },
     { "key": "atrzEmpNm", "value": "기안자",  "alignment": "center", "width" : "15%" },
     { "key": "regDt", "value": "기안일자",  "alignment": "center" , "width" : "20%"},
-    { "key": "atrzSttsCdNm", "value": "결재상태",  "alignment": "center" , "width" : "18%"}
+    { "key": "atrzSttsCdNm", "value": "결재상태",  "alignment": "center" , "width" : "15%"}
   ],
   "atrzListQueryId": "sysMngMapper.retiveAtrzList",
   "atrzListTableColumns": [
-    { "key": "tySe", "value": "결재구분",  "alignment": "center", "width" : "18%" },
-    { "key": "title", "value": "결재명",  "alignment": "center", "width" : "24%" },
+    { "key": "tySe", "value": "결재구분",  "alignment": "center", "width" : "20%" },
+    { "key": "title", "value": "결재명",  "alignment": "center", "width" : "30%" },
     { "key": "atrzEmpNm", "value": "기안자",  "alignment": "center" , "width" : "15%"},
     { "key": "regDt", "value": "기안일자",  "alignment": "center", "width" : "20%" },
-    { "key": "atrzSttsCdNm", "value": "결재상태",  "alignment": "center", "width" : "18%"}
+    { "key": "atrzSttsCdNm", "value": "결재상태",  "alignment": "center", "width" : "15%"}
   ]
 }
