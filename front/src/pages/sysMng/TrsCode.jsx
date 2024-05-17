@@ -54,6 +54,7 @@ const TrsCode = () => {
   }, [child.current]);
 
   const getChildList = async (key) => {
+    console.log('key', key)
     setIsLoading(true);
     try {
       const response = await ApiRequest("/boot/common/commonSelect", [

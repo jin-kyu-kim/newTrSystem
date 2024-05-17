@@ -57,7 +57,7 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === 'Enter') {
-        handleSubmit();
+        callBack(initParam);
       }
     };
     document.addEventListener('keydown', handleKeyDown);
@@ -138,6 +138,7 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
                 placeholder={item.placeholder}
                 stylingMode="underlined"
                 size="medium"
+                onEnterKey={handleSubmit}
                 name={item.name}
                 showClearButton={true}
                 onValueChanged={(e) => handleChgState({ name: e.component.option('name'), value: e.value })}

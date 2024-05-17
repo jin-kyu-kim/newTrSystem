@@ -568,12 +568,12 @@ const ElecAtrzDetail = () => {
                 columns={columns}
                 values={atrzOpnnVal}
             />
-            <div style={{textAlign: 'center', marginBottom: '100px'}}>
+            <div style={{textAlign: 'center', marginBottom: '100px', marginTop: '20px'}}>
                 {sttsCd === 'VTW00801' && header.filter(item => item.id === 'aprv' || item.id === 'rjct').map((item, index) => (
                     <Button id={item.id} text={item.text} key={index} type={item.type} 
                         onClick={onBtnClick} style={{marginRight: '3px'}}/>
                 ))}
-                 <Button text='목록' type='normal' 
+                 <Button text='목록' type='default' 
                     onClick={() => {location.state.docSeCd !=='VTW03405'
                                     ? navigate('/elecAtrz/ElecAtrz') 
                                     : navigate('/elecAtrz/ElecGiveAtrz',{state :{prjctId: prjctId, formData: location.state.formData}}) }} />

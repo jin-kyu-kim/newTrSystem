@@ -62,7 +62,8 @@
         {"key": "rjctPrvonsh", "value": "결재", "width": "15%"}
       ],
       "temp": [
-        {"key": "delete", "value": "삭제", "width": "15%"}
+        {"key": "delete", "value": "삭제", "width": "15%", "button": { 
+          "text": "삭제", "name": "delete" }}
       ],
       "searchInfo": {
           "searchParams": { 
