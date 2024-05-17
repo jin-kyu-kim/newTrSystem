@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef } from 'react';
-import { useCookies } from "react-cookie";
 
 // 날짜계산
 // npm install moment
@@ -122,19 +121,21 @@ function atrzLnAprv(jbttlCd, searchResult) {
 const EmpVacation = () => {
     const { handleOpen } = useModal();
     
+    // 외부화면호출데이터
     const navigate = useNavigate();
     const location = useLocation();
-
 
     // 첨부파일데이터
     const fileUploaderRef = useRef(null);
 
     // 세션설정
-    const [cookies, setCookie] = useCookies(["userInfo", "deptInfo"]);
-    let sessionEmpId = location.state ? location.state.empId : cookies.userInfo.empId
-    let sessionEmpNm = location.state ? location.state.empFlnm : cookies.userInfo.empNm
-    let sessionDeptNm = location.state ? location.state.deptList[0].deptNm : cookies.deptInfo[0].deptNm
-    let jbttlCd = location.state ? location.state.deptList[0].jbttlCd : cookies.deptInfo[0].jbttlCd
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    const deptInfo = JSON.parse(localStorage.getItem("deptInfo"));
+
+    let sessionEmpId = location.state ? location.state.empId : userInfo.empId
+    let sessionEmpNm = location.state ? location.state.empFlnm : userInfo.empNm
+    let sessionDeptNm = location.state ? location.state.deptList[0].deptNm : deptInfo[0].deptNm
+    let jbttlCd = location.state ? location.state.deptList[0].jbttlCd : deptInfo[0].jbttlCd
 
     // 1. 월별 근무일_공휴일 조회
     // 2. 프로젝트목록 조회
@@ -175,6 +176,25 @@ const EmpVacation = () => {
 
 
 
+    // 기존휴가정보조회
+    const [selectSearchVcatnListValue, setSelectSearchVcatnListValue] = useState();
+    const [selectSearchVcatnListParam, setSelectSearchVcatnListParam] = useState({
+        queryId: "indvdlClmMapper.retrieveVcatnInfoInq",
+        searchType: "searchVcatnList",
+        searchYear: flagYear,
+        empId: sessionEmpId,
+        isSearch: true
+    });
+
+    // 기존휴가정보조회
+    useEffect(() => {
+        selectData(selectSearchVcatnListParam)
+    }, [selectSearchVcatnListParam])
+
+
+
+
+
     // 휴가목록조회
     const [selectVcatnListValue, setSelectVcatnListValue] = useState([]);
     const [searchVcatnListParam, setSearchVcatnListParam] = useState({
@@ -199,7 +219,7 @@ const EmpVacation = () => {
     const [searchVcatnInfoParam, setSearchVcatnInfoParam] = useState({
         queryId: "indvdlClmMapper.retrieveVcatnInfoInq",
         searchType: "vcatnInfo",
-        searchYear: flagYear,
+        // searchYear: flagYear,
         empId: sessionEmpId,
         isSearch: true
     });
@@ -282,7 +302,7 @@ const EmpVacation = () => {
     const [atrzLnAprvListParam, setAtrzLnAprvListParam] = useState({
         queryId: "indvdlClmMapper.retrieveAtrzLnAprvListInq",
         searchType: "atrzLnAprvList",
-        deptId: cookies.deptInfo[0].deptId
+        deptId: location.state ? location.state.deptList[0].deptId : deptInfo[0].deptId
     });
 
     // 전자결재 승인권자목록정보
@@ -324,6 +344,7 @@ const EmpVacation = () => {
             if (initParam.searchType == "vcatnList" && initParam.isSearch == true) setSelectVcatnListValue(await ApiRequest("/boot/common/queryIdSearch", initParam));
             else if (initParam.searchType == "vcatnCode") setSelectCodeValue(await ApiRequest("/boot/common/queryIdSearch", initParam));
             else if (initParam.searchType == "vcatnInfo") setSelectVcatnInfoValue(await ApiRequest("/boot/common/queryIdSearch", initParam));
+            else if (initParam.searchType == "searchVcatnList" && initParam.isSearch == true) setSelectSearchVcatnListValue(await ApiRequest("/boot/common/queryIdSearch", initParam));
             else if (initParam.searchType == "atrzLnReftnList") {
                 const atrzLnReftnResult = await ApiRequest("/boot/common/queryIdSearch", initParam);
 
@@ -410,7 +431,6 @@ const EmpVacation = () => {
 
         if (errorMsg) {
             handleOpen(errorMsg);
-            handleOpen(errorMsg);
             return;
         } else {
             let response = getVcatnVali();
@@ -439,25 +459,25 @@ const EmpVacation = () => {
         // 동일회계년도 근무시간 마감 휴가신청
 
         if(selectCrtrDateList.find(item => item.vcatnCntrlYmdYn == "Y" && item.crtrYmd == Moment(new Date()).format('YYYYMMDD'))){
-            errorMsg = "휴가등록불가기간입니다. 인사관리부서에 문의해주세요."
+            errorMsg = "휴가등록불가기간입니다. 인사관리부서에 문의해주세요.";
         }
 
         if (insertVcatnValue.vcatnBgngYmd > insertVcatnValue.vcatnEndYmd) {
-            errorMsg = "휴가시작일자와 휴가종료일자를 확인해주세요."
+            errorMsg = "휴가시작일자와 휴가종료일자를 확인해주세요.";
         }
 
         // case_A 
         // 신규배정휴가가 존재하지 않고 회계년도휴가가 존재하는경우
-        if (!newVcatnList && accountVcatnList.length) {
+        if (!newVcatnList && accountVcatnList) {
             // case_1
             // 현재회계년도 이전일자 휴가신청
             if (insertVcatnValue.vcatnBgngYmd <= nowAccountDate) {
-                errorMsg = "이전회계년도 휴가는 등록하실 수 없습니다. 인사관리부서에 문의해주세요."
+                errorMsg = "이전회계년도 휴가는 등록하실 수 없습니다. 인사관리부서에 문의해주세요.";
             }
             // case_2
             // 현재회계년도 이후일자 휴가신청
             else if (insertVcatnValue.vcatnEndYmd > newAccountDate) {
-                errorMsg = "회계년도기준 휴가사용기한을 확인해주세요"
+                errorMsg = "회계년도기준 휴가사용기한을 확인해주세요";
             }
         }
         // case_B
@@ -466,7 +486,7 @@ const EmpVacation = () => {
             // case_1 
             // 신규휴가일수가 부족한 경우
             if (insertVcatnValue.vcatnDeCnt > newVcatnList.newRemndrDaycnt) {
-                errorMsg = "입사일기준 잔여휴가일수가 부족합니다."
+                errorMsg = "입사일기준 잔여휴가일수가 부족합니다.";
             }
             // case_2
             // 신규휴가사용기간 이외 일자 휴가신청
@@ -475,7 +495,7 @@ const EmpVacation = () => {
                 insertVcatnValue.vcatnBgngYmd > newVcatnList.altmntUseEndYmd ||
                 insertVcatnValue.vcatnEndYmd < newVcatnList.altmntBgngYmd ||
                 insertVcatnValue.vcatnEndYmd > newVcatnList.altmntUseEndYmd) {
-                errorMsg = "입사일기준 휴가사용기한을 확인해주세요"
+                errorMsg = "입사일기준 휴가사용기한을 확인해주세요";
             }
         }
         // case_C
@@ -484,12 +504,12 @@ const EmpVacation = () => {
             // case_C1
             // 현재회계년도 이후일자 휴가신청
             if (insertVcatnValue.vcatnEndYmd > newAccountDate) {
-                errorMsg = "회계년도/입사일기준 휴가사용기한을 확인해주세요"
+                errorMsg = "회계년도/입사일기준 휴가사용기한을 확인해주세요";
             }
             // case_C2
             // 신규휴가사용기간 이전휴가 신청
             else if (insertVcatnValue.vcatnBgngYmd < newVcatnList.altmntBgngYmd) {
-                errorMsg = "입사일기준 휴가사용기한을 확인해주세요"
+                errorMsg = "입사일기준 휴가사용기한을 확인해주세요";
             }
             // case_C3
             // 휴가일자가 신규휴가사용기간에만 속할 경우
@@ -497,7 +517,7 @@ const EmpVacation = () => {
                 // case_1
                 // 신규배정휴가에서 휴가신청이 불가능한 경우
                 if (newVcatnList.newRemndrDaycnt < insertVcatnValue.vcatnDeCnt) {
-                    errorMsg = "입사일기준 잔여휴가일수가 부족합니다."
+                    errorMsg = "입사일기준 잔여휴가일수가 부족합니다.";
                 }
             }
         }
@@ -666,7 +686,7 @@ const EmpVacation = () => {
                 attachId: data.atchmnflId,
                 visible: true,
             })
-        } else if (e.text == "취소요청") {
+        } else if (e.text == "취소") {
             setPopupVcatnAtrzCancleValue({
                 data: data,
                 empId: sessionEmpId,
@@ -698,7 +718,7 @@ const EmpVacation = () => {
 
 
     return (
-        <div className="" style={{ marginLeft: "1%", marginRight: "1%" }}>
+        <div className="">
             <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
                 <h1 style={{ fontSize: "30px" }}>휴가</h1>
             </div>
@@ -717,6 +737,11 @@ const EmpVacation = () => {
                                 searchYear: e,
                                 isSearch: false,
                             })
+                            setSelectSearchVcatnListParam({
+                                ...selectSearchVcatnListParam,
+                                searchYear: e,
+                                isSearch: false,
+                            })
                         }} />
                 </div>
                 <div className="col-md-1">
@@ -727,6 +752,10 @@ const EmpVacation = () => {
                                 ...searchVcatnListParam,
                                 isSearch: true
                             })
+                            setSelectSearchVcatnListParam({
+                                ...selectSearchVcatnListParam,
+                                isSearch: true,
+                            })
                         }}
                         style={{ height: "48px", width: "50px" }}
                     />
@@ -736,7 +765,7 @@ const EmpVacation = () => {
                 </div>
 
                 <div style={{ display: "flex", marginTop: "30px" }}>
-                    <div style={{ width: "65%", marginRight: "25px" }}>
+                    <div style={{ width: "63%", marginRight: "25px" }}>
                         <div style={{ marginTop: "30px" }}>
                             <h5>* 휴가 정보</h5>
                         </div>
@@ -748,11 +777,11 @@ const EmpVacation = () => {
                             <Table>
                                 <TableHead>
                                     <TableRow style={{ borderTop: "2px solid #CCCCCC", borderBottom: "2px solid #CCCCCC" }}>
-                                        {createHeader()}
+                                        {createHeader(selectSearchVcatnListParam)}
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {createBody(selectVcatnInfoValue)}
+                                    {selectSearchVcatnListValue ? createBody(selectSearchVcatnListValue) : <></>}
                                 </TableBody>
                             </Table>
                         </div>
@@ -778,12 +807,13 @@ const EmpVacation = () => {
                                 keyColumn={listKeyColumn}
                                 columns={listTableColumns}
                                 values={selectVcatnListValue}
+                                wordWrap={true}
                                 onRowDblClick={onRowClick}
                                 onClick={onButtonClick}
                             />
                         </div>
                     </div>
-                    <div style={{ width: "35%" }}>
+                    <div style={{ width: "37%" }}>
                         <div style={{ marginTop: "30px" }}>
                             <h5>* 휴가신청</h5>
                         </div>
@@ -796,14 +826,14 @@ const EmpVacation = () => {
                         </div>
                         <div className="row" style={{ marginTop: "30px" }}>
                             {
-                                (location.state && location.state.deptList.length > 1) || cookies.deptInfo.length > 1
+                                (location.state && location.state.deptList.length > 1) || deptInfo.length > 1
                                     ?
                                     <>
                                         <div className="col-md-2" style={textAlign}>소속</div>
                                         <div className="col-md-10">
                                             <SelectBox
-                                                defaultValue={location.state ? location.state.deptList[0].deptId : cookies.deptInfo[0].deptId}
-                                                dataSource={location.state ? location.state.deptList : cookies.deptInfo}
+                                                defaultValue={location.state ? location.state.deptList[0].deptId : deptInfo[0].deptId}
+                                                dataSource={location.state ? location.state.deptList : deptInfo}
                                                 displayExpr="deptNm"
                                                 valueExpr="deptId"
                                                 onValueChange={(e) => {
@@ -840,6 +870,7 @@ const EmpVacation = () => {
                                     displayExpr="prjctNm"
                                     value={insertElctrnValue.prjctId}
                                     stylingMode="underlined"
+                                    searchEnabled={true}
                                     onValueChange={(e) => { 
                                         const selectedItem = selectPrjctList.find(item => item.prjctId === e);
 
@@ -1041,10 +1072,10 @@ export default EmpVacation;
 /**
  * @returns 휴가정보에 표현될 테이블 헤더 영역
  */
-function createHeader() {
+function createHeader(selectSearchVcatnListParam) {
     const tableHeader = [];
     const headerData = [
-        { value: flagYear + "년" },
+        { value: (selectSearchVcatnListParam.isSearch == true ? selectSearchVcatnListParam.searchYear : flagYear) + "년" },
         { value: "상세" },
         { value: "부여" },
         { value: "사용" },
@@ -1068,10 +1099,9 @@ function createHeader() {
  * @returns 휴가정보에 표현될 테이블 바디 영역
  */
 function createBody(selectVcatnInfoValue) {
-    const accountTableData = selectVcatnInfoValue.filter(item => item.vcatnFlag == "ACCOUNT")[0];
-    const newTableData = selectVcatnInfoValue.filter(item => item.vcatnFlag == "NEW")[0];
-
-    if (selectVcatnInfoValue.length > 0) {
+    if (selectVcatnInfoValue && selectVcatnInfoValue.length > 0) {
+        const accountTableData = selectVcatnInfoValue.filter(item => item.vcatnFlag == "ACCOUNT")[0];
+        const newTableData = selectVcatnInfoValue.filter(item => item.vcatnFlag == "NEW")[0];
         return (
             <>
                 <TableRow>
@@ -1080,7 +1110,7 @@ function createBody(selectVcatnInfoValue) {
                     <TableCell>{accountTableData ? accountTableData.vcatnAltmntDaycnt : 0}일</TableCell>
                     <TableCell>{accountTableData ? accountTableData.useDaycnt : 0}일</TableCell>
                     <TableCell>{accountTableData ? accountTableData.vcatnRemndrDaycnt : 0}일</TableCell>
-                    <TableCell>{flagYear}-04-01<br />~{flagYear + 1}-03-31</TableCell>
+                    <TableCell>{accountTableData.vcatnYr}-04-01<br />~{parseInt(accountTableData.vcatnYr) + 1}-03-31</TableCell>
                 </TableRow>
                 <TableRow>
                     <TableCell>

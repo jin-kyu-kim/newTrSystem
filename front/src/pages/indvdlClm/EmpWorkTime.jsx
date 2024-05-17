@@ -604,7 +604,7 @@ const EmpWorkTime = () => {
                 </div>
             </div>
             <div className="row">
-                <div className="col-md-3">
+                <div className="col-md-4">
                     <div style={{ display: "flex", alignItems: "center", marginTop: "20px" }}>
                         <span style={{ width: "70px", background: "#999999", textAlign: "center", color: "white", fontWeight: "bold" }}>임시저장</span>
                         <span style={{ width: "50px", background: "#6495ed", marginLeft: "20px", textAlign: "center", color: "white", fontWeight: "bold" }}>결재중</span>
@@ -612,7 +612,7 @@ const EmpWorkTime = () => {
                         <span style={{ width: "50px", background: "#ff4500", marginLeft: "20px", textAlign: "center", color: "white", fontWeight: "bold" }}>반려</span>
                     </div>
                 </div>
-                <div className="col-md-9">
+                <div className="col-md-8">
                     <div style={{ display: "inline-block", float: "right" }}>
                         <Button text="전체삭제" onClick={() => handleOpen("승인된 목록을 제외한 근무시간들이 삭제됩니다.\n삭제하시겠습니까?", onDeleteListClick)} />
                     </div>
@@ -789,6 +789,7 @@ const EmpWorkTime = () => {
                                             valueExpr="prjctId"
                                             displayExpr="prjctNm"
                                             stylingMode="underlined"
+                                            searchEnabled={true}
                                             onValueChange={(e) => {
                                                 const selectedItem = selectPrjctList.find(item => item.prjctId === e);
 
