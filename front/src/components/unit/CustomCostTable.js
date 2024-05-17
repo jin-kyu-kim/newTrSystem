@@ -97,34 +97,39 @@ const CustomCostTable = (props) => {
     return result;
   };
 
-  //행 삭제
-  const onCellRenderDelete = (cellInfo) => {
-    const gridInstance = dataGridRef.current.instance;
 
+  // 행 삭제 
+  const rowDelete = async(cellInfo) =>{
+    console.log("cellInfo", cellInfo)
+    const gridInstance = dataGridRef.current.instance;
     const rowIndex = gridInstance.getRowIndexByKey(cellInfo.data[json.keyColumn]); 
+    if (rowIndex >= 0) {
+      const paramInfo = cellInfo.data;
+      const paramInfoNew = pick(paramInfo, json.pkColumns); 
+      const param = [
+        { tbNm: json.table },
+        paramInfoNew
+      ];
+      
+      try {
+        const response = await ApiRequest("/boot/common/commonDelete", param); 
+          if(response > 0) {
+            handleOpen('데이터가 성공적으로 삭제되었습니다.');
+            handleCancel();
+            console.log(response)
+          }
+      }catch (error) {
+        console.error(error);
+      }               
+    }
+
+  }
+
+  //행 삭제 렌더 
+  const onCellRenderDelete = (cellInfo) => {
     return (
       <Button 
-        onClick={ async () => { 
-              if (rowIndex >= 0) {
-                const paramInfo = cellInfo.data;
-                const paramInfoNew = pick(paramInfo, json.pkColumns); 
-                const param = [
-                  { tbNm: json.table },
-                  paramInfoNew
-                ];
-                
-                try {
-                  const response = await ApiRequest("/boot/common/commonDelete", param); 
-                    if(response > 0) {
-                      handleOpen('데이터가 성공적으로 삭제되었습니다.');
-                      handleCancel();
-                      console.log(response)
-                    }
-                }catch (error) {
-                  console.error(error);
-                }               
-              }
-          }}
+        onClick={()=>handleOpen("삭제하시겠습니까?", ()=>rowDelete(cellInfo))}
         text="삭제"
       />
     );

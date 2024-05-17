@@ -1,6 +1,5 @@
 import React, {useCallback, useEffect, useState} from "react";
 import { Popup, TabPanel } from "devextreme-react";
-import { useCookies } from "react-cookie";
 import EmpInfoJson from "./EmpInfoJson.json";
 import Button from "devextreme-react/button";
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -29,10 +28,10 @@ const EmpDetailInfo = () => {
     },[]);
 
     /*유저세션*/
-    const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
-    
-     const empId = cookies.userInfo.empId;
-     const deptId = cookies.userInfo.deptId;
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+
+     const empId = userInfo.empId;
+     const deptId = userInfo.deptId;
    
     //탭 변경시 인덱스 설정 
     const onSelectionChanged = useCallback(

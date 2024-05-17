@@ -91,6 +91,7 @@ function EmpCultHealthCostDetailPop({value, ym, disabled}) {
               onlyUpdate={true}
               noEdit={disabled}
               queryIdUrl={queryIdUrl}
+              callback={pageHandle}
           />
       </div>
   );

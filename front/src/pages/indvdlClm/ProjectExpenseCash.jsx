@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { TagBox, TextBox } from "devextreme-react";
 import { validateFields, hasError } from './ProjectExpenseValidate';
-import { useCookies } from 'react-cookie';
 import ProjectExpenseSubmit from "./ProjectExpenseSubmit";
 import ProjectExpenseJson from "./ProjectExpenseJson.json";
 import CustomLabelValue from "components/unit/CustomLabelValue";
@@ -9,15 +8,16 @@ import CustomComboBox from 'components/unit/CustomComboBox';
 import ApiRequest from "utils/ApiRequest";
 
 const ProjectExpenseCash = (props) => {
-    const [cookies] = useCookies(["userInfo", "userAuth"]);
-    const empInfo = { jbttlCd: cookies.deptInfo[0].jbttlCd, empno: cookies.userInfo.empno };
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"))
+    const deptInfo = JSON.parse(localStorage.getItem("deptInfo"))
+    const empInfo = { jbttlCd: deptInfo[0].jbttlCd, empno: userInfo.empno };
 
     const { labelValue } = ProjectExpenseJson;
     const { placeholderAndRequired, btnInfo } = ProjectExpenseJson.ProjectExpenseTab;
     const [validationErrors, setValidationErrors] = useState([]);
     const [customParam, setCustomParam] = useState({});
     const atrzParam = {
-        queryId: "projectExpenseMapper.retrieveElctrnAtrzClm",
+        queryId: "projectExpenseMapper.retrieveElctrnAtrzClm",  
         empId: props.empId
     };
     const [empList, setEmpList] = useState([]);
@@ -52,8 +52,15 @@ const ProjectExpenseCash = (props) => {
             queryId: value[0].prjctStleCd === 'VTW01802' ? "elecAtrzMapper.retrieveExpensCdByPrmpc"
                 : "elecAtrzMapper.retrieveExpensCdAll"
         })
-        setValue(prevVal => ({
-            ...prevVal, prjctMngrEmpId: value[0].prjctMngrEmpId
+
+        setValue(prevVal => prevVal.map((item, index) => {
+            if (index === 0) {
+                return {
+                    ...item,
+                    prjctMngrEmpId: value[0].prjctMngrEmpId
+                };
+            }
+            return item;
         }));
     }, [value[0].prjctId]);
 

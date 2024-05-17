@@ -3,11 +3,10 @@ import { useCallback, useEffect, useState } from 'react';
 import ApiRequest from 'utils/ApiRequest';
 import CellRender from './CellRender';
 import { useModal } from "./ModalContext";
-import '../../pages/sysMng/sysMng.css'
 
 const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal, masterDetail, doublePk, noDataText, noEdit,
     onSelection, onRowClick, callback, handleData, handleExpanding, cellRenderConfig, onBtnClick, excel, onExcel, upCdValue,
-    summary, summaryColumn, onlyUpdate, defaultPageSize, queryIdUrl }) => {
+    summary, summaryColumn, onlyUpdate, defaultPageSize, queryIdUrl, validateNumberBox }) => {
 
     const { handleOpen } = useModal();
     const [ cdValList, setCdValList ] = useState({});
@@ -96,6 +95,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                 handleYnVal={handleYnVal}
                 onBtnClick={onBtnClick}
                 cellRenderConfig={cellRenderConfig}
+                validateNumberBox={validateNumberBox}
             />
         )
     };
@@ -116,7 +116,6 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                 {...highlightRows}
                 {...otherDateFormat}
                 {...rowEventHandlers}
-                className='editGridStyle'
                 keyExpr={keyColumn}
                 showBorders={true}
                 showColumnLines={true}
@@ -196,7 +195,15 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                             : null}
                         {col.isRequire && <RequiredRule message={`${col.value}는 필수항목입니다`} />}
                         {col.length && <StringLengthRule max={col.length} message={`최대입력 길이는 ${col.length}입니다`} />}
-                        
+                        {col.subColumn && col.subColumn.map(sub => (
+                            <Column
+                                key={sub.key}
+                                dataField={sub.key}
+                                caption={sub.value}
+                                alignment={'center'}
+                                cellRender={sub.cellType && ((props) => cellRender(sub, props))}
+                            ></Column>
+                        ))}
                     </Column>
                 ))}
                 <Paging defaultPageSize={defaultPageSize ? defaultPageSize : 20} />

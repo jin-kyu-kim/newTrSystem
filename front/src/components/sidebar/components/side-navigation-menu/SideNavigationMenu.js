@@ -4,17 +4,12 @@ import { navigation } from '../../app-navigation';
 import { useNavigation } from '../../contexts/navigation';
 import { useScreenSize } from '../../utils/media-query';
 import './SideNavigationMenu.scss';
-
-
 import * as events from 'devextreme/events';
-import {useCookies} from "react-cookie";
 
 
 export default function SideNavigationMenu(props) {
 
-  const [cookies, setCookie] = useCookies(["userAuth"]);
-  const userAuths = cookies.userAuth;
-
+  const userAuths = JSON.parse(localStorage.getItem("userAuth"));
   const isAdmin = userAuths.includes('VTW04801');
   function setVisiblePropertyBasedOnAuthArray(navigation, userAuths, isAdmin) {
     return navigation.map(item => {

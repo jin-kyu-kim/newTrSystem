@@ -8,11 +8,16 @@ import { Item } from "devextreme-react/box"
 // npm install moment
 import Moment from "moment"
 
-import CustomTable from "components/unit/CustomTable";
-import CustomEmpComboBox from "components/unit/CustomEmpComboBox"
-import EmpVcatnAltmntMngJson from "pages/humanResourceMng/EmpVcatnAltmntMngJson.json"
-import ApiRequest from "utils/ApiRequest";
+// 엑셀업로드
+// npm install xlsx
+import * as XLSX from 'xlsx'
+
 import { useModal } from "../../components/unit/ModalContext";
+import CustomTable from "components/unit/CustomTable";
+import CustomEmpComboBox from "components/unit/CustomEmpComboBox";
+import EmpVcatnAltmntMngJson from "pages/humanResourceMng/EmpVcatnAltmntMngJson.json";
+import EmpVcatnAltmntMngExcelUpload from "pages/humanResourceMng/EmpVcatnAltmntMngExcelUpload";
+import ApiRequest from "utils/ApiRequest";
 
 // 현재년도
 const nowYear = new Date().getFullYear();
@@ -58,6 +63,9 @@ const EmpVcatnAltmntMng = () => {
 
 
 
+
+    // 엑셀업로드팝업정보
+    const [popupExcelUploadValue, setPopupExcelUploadValue] = useState({ visible: false });
 
     // 직원별휴가목록조회
     const [selectEmpVacListValue, setSelectEmpVacListValue] = useState([]);
@@ -195,14 +203,9 @@ const EmpVcatnAltmntMng = () => {
             handleOpen(errorMsg);
             return;
         } else {
-            const isconfirm = window.confirm("휴가정보를 저장 하시겠습니까?");
-            if (isconfirm) {
-                await ApiRequest("/boot/common/queryIdSearch", selectValue);
-                handleOpen("저장되었습니다.");
-                onSearch();
-            } else {
-                return;
-            }
+            await ApiRequest("/boot/common/queryIdSearch", selectValue);
+            handleOpen("저장되었습니다.");
+            onSearch();
         }
     }
 
@@ -258,8 +261,6 @@ const EmpVcatnAltmntMng = () => {
 
         handleOpen("저장되었습니다.");
     }
-
-
 
 
 
@@ -464,7 +465,7 @@ const EmpVcatnAltmntMng = () => {
                                                 onValueChange={(e) => {
                                                     setSelectValue({
                                                         ...selectValue,
-                                                        vcatnAltmntDaycnt: e
+                                                        vcatnAltmntDaycnt: e,
                                                     })
                                                 }}
                                             />
@@ -499,8 +500,8 @@ const EmpVcatnAltmntMng = () => {
                             }
                         </div>
                         <div div className="row" style={{ display: "inline-block", float: "right", marginTop: "25px" }}>
-                            <Button style={{ height: "48px", width: "120px", marginRight: "15px" }} >엑셀업로드</Button>
-                            <Button style={{ height: "48px", width: "60px", marginRight: "15px" }} onClick={btnSaveClick}>저장</Button>
+                            <Button style={{ height: "48px", width: "120px", marginRight: "15px" }} onClick={() => {setPopupExcelUploadValue({ visible: true })}}>엑셀업로드</Button>
+                            <Button style={{ height: "48px", width: "60px", marginRight: "15px" }} onClick={() => handleOpen("휴가정보를 저장 하시겠습니까?", btnSaveClick)}>저장</Button>
                             <Button style={{ height: "48px", width: "60px" }} onClick={(e) => {
                                 setParamFlag({
                                     insertVcantFlag: 1,
@@ -560,6 +561,19 @@ const EmpVcatnAltmntMng = () => {
                     </div>
                 </div>
             </div>
+            {
+                popupExcelUploadValue.visible == true
+                ?
+                <EmpVcatnAltmntMngExcelUpload
+                    visible={popupExcelUploadValue.visible}
+                    onHiding={(e) => {
+                        setPopupExcelUploadValue({
+                            visible: e
+                        })
+                    }}
+                />
+                : <></>
+            }
             <br /><br /><br /><br /><br />
         </div>
     );

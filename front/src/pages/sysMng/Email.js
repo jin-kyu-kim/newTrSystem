@@ -1,7 +1,4 @@
 import ApiRequest from "../../utils/ApiRequest";
-import {Cookies} from "react-cookie";
-
-
 //회의실용
 /*
 * const room = {

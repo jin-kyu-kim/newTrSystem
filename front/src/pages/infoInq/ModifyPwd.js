@@ -1,10 +1,9 @@
-import React, { useEffect, useState , useCallback, useRef} from "react";
+import React, { useState } from "react";
 import ApiRequest from "../../utils/ApiRequest";
 import "devextreme-react/text-area";
 import Button from "devextreme-react/button";
 import { useNavigate } from "react-router-dom";
 import { Item,Form,GroupItem, RequiredRule, PatternRule,} from "devextreme-react/form";
-import { useCookies } from "react-cookie";
 import { TextBox, Validator } from "devextreme-react";
 import { changePassword } from "utils/AuthMng";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -15,10 +14,9 @@ const ModifyPwd = ({naviEmpId}) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showPassword2, setShowPassword2] = useState(false);
   const [showPassword3, setShowPassword3] = useState(false);
-  const formRef = useRef(null);
-  const [baseInfoData, setBaseInfoData] = useState([]);
+
   /*유저세션*/
-  const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
   const { handleOpen } = useModal();
   
@@ -39,7 +37,7 @@ const ModifyPwd = ({naviEmpId}) => {
     if(naviEmpId.length !== 0){
         empId = naviEmpId;
     } else {
-        empId = cookies.userInfo.empId;
+        empId = userInfo.empId;
     }
 
   const [empDtlData, setEmpDtlData] = useState({

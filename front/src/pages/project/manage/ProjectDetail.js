@@ -2,7 +2,6 @@ import React, { useCallback, useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { TabPanel } from "devextreme-react";
 import { useLocation } from "react-router-dom";
-import { useCookies } from "react-cookie";
 import Button from "devextreme-react/button";
 
 import ApiRequest from "../../../utils/ApiRequest";
@@ -25,11 +24,11 @@ const ProjectDetail = () => {
   } = location.state || {};
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [atrzLnSn, setAtrzLnSn] = useState();
-  const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const atrzDmndSttsCd = "VTW03703";
 
   const { handleOpen } = useModal();
-  const empId = cookies.userInfo.empId;
+  const empId = userInfo.empId;
 
   /* 화면 최초 셋팅 */
   useEffect(() => {

@@ -27,19 +27,19 @@
 
 	<select id="elecAtrzMain" parameterType="String" resultType="com.trsystem.LowerHashMap">
 		SELECT DISTINCT
-		ea.ELCTRN_ATRZ_ID,
-		ea.ATRZ_DMND_EMP_ID,
-		ea.ATRZ_DMND_STTS_CD,
-		ea.PRJCT_ID,
-		ea.ELCTRN_ATRZ_TY_SE_CD,
-		ea.NOW_ATRZ_LN_SN,
-		eadf.GNRL_ATRZ_TTL, -- 전자결재 유형
-		-- 			cad.CNPT_NM, -- 거래처명
-		(SELECT EMP_FLNM FROM EMP WHERE EMP_ID = ea.ATRZ_DMND_EMP_ID) ATRZ_DMND_EMP_NM, -- 기안자
-		(SELECT EMP_FLNM FROM EMP WHERE EMP_ID = al.APRVR_EMP_ID) APRVR_EMP_ID, -- 결재자
-		(SELECT CD_NM FROM CD WHERE CD_VALUE = al.ATRZ_STEP_CD) ATRZ_STEP_CD_NM, -- 현재 결재단계
-		ATRZ_STEP_CD, -- 현재 결재단계
-		(SELECT CD_NM FROM CD WHERE CD_VALUE = al.ATRZ_STTS_CD) ATRZ_STTS_CD, -- 결재상태
+			ea.ELCTRN_ATRZ_ID,
+			ea.ATRZ_DMND_EMP_ID,
+			ea.ATRZ_DMND_STTS_CD,
+			ea.PRJCT_ID,
+			ea.ELCTRN_ATRZ_TY_SE_CD,
+			ea.NOW_ATRZ_LN_SN,
+			eadf.GNRL_ATRZ_TTL, -- 전자결재 유형
+			-- 			cad.CNPT_NM, -- 거래처명
+			(SELECT EMP_FLNM FROM EMP WHERE EMP_ID = ea.ATRZ_DMND_EMP_ID) ATRZ_DMND_EMP_NM, -- 기안자
+			(SELECT EMP_FLNM FROM EMP WHERE EMP_ID = al.APRVR_EMP_ID) APRVR_EMP_ID, -- 결재자
+			(SELECT CD_NM FROM CD WHERE CD_VALUE = al.ATRZ_STEP_CD) ATRZ_STEP_CD_NM, -- 현재 결재단계
+			ATRZ_STEP_CD, -- 현재 결재단계
+			(SELECT CD_NM FROM CD WHERE CD_VALUE = al.ATRZ_STTS_CD) ATRZ_STTS_CD, -- 결재상태
 		DATE_FORMAT(ea.REG_DT, '%Y-%m-%d %H:%i:%s') AS REG_DT,
 		COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cta.CTRT_ATRZ_TTL, cga.ATRZ_TTL, CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD), ' [',
 		DATE_FORMAT(va.VCATN_BGNG_YMD, '%Y-%m-%d'), ' ~ ', DATE_FORMAT(va.VCATN_END_YMD, '%Y-%m-%d'), ' (', va.VCATN_DE_CNT, '일)]')) AS TITLE,
@@ -90,6 +90,25 @@
 			LOWER(cga.ATRZ_TTL) LIKE CONCAT('%', LOWER(#{title}), '%') OR
 			LOWER(va.VCATN_TY_CD) IN (SELECT CD_VALUE FROM CD WHERE LOWER(CD_NM) LIKE CONCAT('%', LOWER(#{title}), '%')) )
 		</if>
+		<if test="startDate != null and endDate == null">
+			<![CDATA[
+        	AND DATE_FORMAT(ea.REG_DT, '%Y%m%d') >= #{startDate}
+    		]]>
+		</if>
+		<if test="startDate == null and endDate != null">
+			<![CDATA[
+			AND DATE_FORMAT(ea.REG_DT, '%Y%m%d') <= #{endDate}
+			]]>
+		</if>
+		<if test="startDate != null and endDate != null">
+			<if test="!startDate.equals('') and !endDate.equals('')">
+				<![CDATA[
+				AND DATE_FORMAT(ea.REG_DT, '%Y%m%d') BETWEEN #{startDate} AND #{endDate}
+				]]>
+			</if>
+		</if>
+
+
 	</select>
 
 	<select id="elecAtrzMainCount" parameterType="String" resultType="com.trsystem.LowerHashMap">

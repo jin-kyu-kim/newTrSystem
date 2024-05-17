@@ -4,17 +4,25 @@ import SearchInfoSet from "../../components/composite/SearchInfoSet";
 import CustomEditTable from 'components/unit/CustomEditTable';
 import ProjectExpenseSubmit from "./ProjectExpenseSubmit";
 import ProjectExpenseJson from "./ProjectExpenseJson.json";
+import ProjectExpenseSendPop from './ProjectExpenseSendPop';
 import ApiRequest from "../../utils/ApiRequest";
+import { useModal } from "../../components/unit/ModalContext"
 
 const ProjectExpenseCard = (props) => {
     const { keyColumn, queryId, prjctStleQueryId, prjctStlePdQueryId, tableColumns, searchInfo, placeholderAndRequired, buttonGroup } = ProjectExpenseJson.ProjectExpenseTab;
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"))
+    const deptInfo = JSON.parse(localStorage.getItem("deptInfo"))
+    const empInfo = { jbttlCd: deptInfo[0].jbttlCd, empno: userInfo.empno };
+
     const [cdList, setCdList] = useState([]);
     const [expensCd, setExpensCd] = useState({});
     const [comboList, setComboList] = useState({});
     const [cardUseDtls, setCardUseDtls] = useState([]);
     const [selectedItem, setSelectedItem] = useState([]);
+    const [popVisible, setPopVisible] = useState(false);
     const [isPrjctIdSelected, setIsPrjctIdSelected] = useState({}); // 비용코드 활성화 조건
     const [validationErrors, setValidationErrors] = useState([]);
+    const { handleOpen } = useModal();
     const [param, setParam] = useState({
         queryId: queryId,
         empId: props.empId,
@@ -98,20 +106,42 @@ const ProjectExpenseCard = (props) => {
                 console.error('error', error);
             }
         }))
-        .then(results => {
-            getCardUseDtls();
-            alert('삭제되었습니다.');
-        })
-        .catch(error => { console.error('error', error); });
+            .then(results => {
+                getCardUseDtls();
+                handleOpen('삭제되었습니다.');
+            })
+            .catch(error => { console.error('error', error); });
     };
 
     const onSelection = (e) => {
         setSelectedItem(e.selectedRowsData);
     };
 
-    const sendAtrz = () => {
+    const sendAtrz = (selectedItem) => {
+        if (selectedItem.length === 0) {
+            handleOpen("선택된 사용내역이 없습니다.")
+            return;
+        }
+        let firstPrjctId = selectedItem[0].prjctId;
 
+        for (const item of selectedItem) {
+            if (item.prjctId === null) {
+                handleOpen('프로젝트를 선택해주세요.');
+                return;
+            }
+            if (item.expensCd === null) {
+                handleOpen('비용코드를 선택해주세요.');
+                return;
+            }
+            if (item.prjctId !== firstPrjctId) {
+                handleOpen('동일한 프로젝트에 대해서만 청구가 가능합니다.');
+                return;
+            }
+        }
+        setPopVisible(true);
     };
+
+    const onPopHiding = () => { setPopVisible(false); };
 
     const cellRenderConfig = {
         getCdList, isPrjctIdSelected, setIsPrjctIdSelected, chgPlaceholder, comboList, cdList,
@@ -124,7 +154,7 @@ const ProjectExpenseCard = (props) => {
                 <SearchInfoSet callBack={searchHandle} props={searchInfo} />
             </div>
             <ProjectExpenseSubmit selectedItem={selectedItem} getData={props.getData}
-                validateFields={() => validateFields(selectedItem, placeholderAndRequired, setValidationErrors, buttonGroup)}
+                validateFields={() => validateFields(selectedItem, placeholderAndRequired, setValidationErrors, buttonGroup, empInfo)}
                 handleDelete={handleDelete} buttonGroup={buttonGroup} sendAtrz={sendAtrz} />
 
             <div style={{ fontSize: 14, marginBottom: "20px" }}>
@@ -145,6 +175,12 @@ const ProjectExpenseCard = (props) => {
                     defaultPageSize={10}
                 />
             </div>
+            <ProjectExpenseSendPop
+                visible={popVisible}
+                onPopHiding={onPopHiding}
+                selectedItem={selectedItem}
+                btnName={['경비 청구', '출장비 청구']}
+            />
         </div>
     );
 };

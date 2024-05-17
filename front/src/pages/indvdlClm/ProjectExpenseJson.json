@@ -31,37 +31,37 @@
     },
     "keyColumn": "prjctCtAplySn",
     "ctAplyTableColumns": [
-      { "key": "ctAtrzSeCdNm", "value": "구분", "width": 120 },
-      { "key": "utztnDt", "value": "사용일시" },
-      { "key": "useOffic", "value": "사용처" },
-      { "key": "utztnAmt", "value": "금액", "currency": true },
-      { "key": "prjctNm", "value": "프로젝트", "width": 250 },
-      { "key": "expensCdNm", "value": "비용코드" },
-      { "key": "ctPrpos", "value": "상세내역(목적)", "width": 140 },
-      { "key": "atdrn", "value": "용도(참석자명단)", "width": 200 }
+      { "key": "ctAtrzSeCdNm", "value": "구분", "width": "8%" },
+      { "key": "utztnDt", "value": "사용일시", "width": "10%" },
+      { "key": "useOffic", "value": "사용처", "width": "10%" },
+      { "key": "utztnAmt", "value": "금액", "currency": true, "width": "10%" },
+      { "key": "prjctNm", "value": "프로젝트", "width": "17%" },
+      { "key": "expensCdNm", "value": "비용코드", "width": "10%" },
+      { "key": "ctPrpos", "value": "상세내역(목적)", "width": "12%" },
+      { "key": "atdrn", "value": "용도(참석자명단)", "width": "10%" }
     ],
     "ctAplyBtnColumns": [
       { "key": "atrzDmndSttsCdNm", "value": "결재상태", "cellType": "button", 
-        "button": { "text": "삭제", "name": "atrzDmndSttsCd", "type": "danger", "width": 80 }}
+        "button": { "text": "삭제", "name": "atrzDmndSttsCd", "type": "danger", "width": "15%" }}
     ],
     "ctAplyStrColumns": [
-      { "key": "atrzDmndSttsCdNm", "value": "결재상태", "width": 100 }
+      { "key": "atrzDmndSttsCdNm", "value": "결재상태", "width": "15%" }
     ],
     "rjctCnColumns": [
-      { "key": "atrzDmndSttsCdNm", "value": "결재상태", "width": 100 },
-      { "key": "rjctPrvonsh", "value": "반려사유", "width": 100 }
+      { "key": "atrzDmndSttsCdNm", "value": "결재상태", "width": "10%" },
+      { "key": "rjctPrvonsh", "value": "반려사유", "width": "10%" }
     ],
     "elcKeyColumn": "elctrnAtrzId",
     "columnCharge": [
-      { "key": "ctAtrzSeCdNm", "value": "구분" },
-      { "key": "utztnDt", "value": "사용일시" }, 
-      { "key": "useOffic", "value": "사용처" },
-      { "key": "utztnAmt", "value": "금액", "currency": true },
-      { "key": "prjctNm", "value": "프로젝트" },
-      { "key": "expensCdNm", "value": "비용코드" },
-      { "key": "ctPrpos", "value": "상세내역(목적)" },
-      { "key": "atdrn", "value": "용도(참석자명단)" },
-      { "key": "elctrnAtrzId", "value": "문서 보기", "cellType": "button", "button": { "text": "선택", "name": "elctrnAtrzId" }}
+      { "key": "ctAtrzSeCdNm", "value": "구분", "width": "8%" },
+      { "key": "utztnDt", "value": "사용일시", "width": "10%" }, 
+      { "key": "useOffic", "value": "사용처", "width": "10%" },
+      { "key": "utztnAmt", "value": "금액", "currency": true, "width": "10%" },
+      { "key": "prjctNm", "value": "프로젝트", "width": "17%" },
+      { "key": "expensCdNm", "value": "비용코드", "width": "10%" },
+      { "key": "ctPrpos", "value": "상세내역(목적)", "width": "12%" },
+      { "key": "atdrn", "value": "용도(참석자명단)", "width": "10%" },
+      { "key": "elctrnAtrzId", "value": "문서 보기", "cellType": "button", "button": { "text": "선택", "name": "elctrnAtrzId", "width": "17%" }}
     ],
     "groupingColumn": [
       { "key": "utztnAmt", "value": "금액", "summaryType": "sum", "valueFormat": "#,##0", "displayFormat" : "{0} 원" }
@@ -145,7 +145,7 @@
       { "type": "normal", "text": "선택한 사용내역 등록하기", "onClick": "handleSubmit", "msg": "등록하시겠습니까?" }
     ],
     "btnInfo":[
-      { "type": "default", "text": "입력", "onClick": "handleSubmit" }
+      { "type": "default", "text": "입력", "onClick": "handleSubmit", "msg": "등록하시겠습니까?" }
     ]
   },
   "labelValue" : [

@@ -1,4 +1,4 @@
-import React, { useCallback, useState, Suspense, lazy, useMemo, useEffect } from "react";
+import React, { useCallback, useState, Suspense, lazy, useEffect } from "react";
 import { TabPanel } from "devextreme-react";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
@@ -9,7 +9,6 @@ import Popup from "devextreme-react/popup";
 import ProjectChangeJson from "./ProjectChangeJson.json";
 import ProjectPrmpcBgtCmpr from "./ProjectPrmpcBgtCmpr";
 
-import { useCookies } from "react-cookie";
 import ApiRequest from "utils/ApiRequest";
 import { useModal } from "../../../components/unit/ModalContext";
 
@@ -40,8 +39,8 @@ const ProjectChange = () => {
 
   const [popupVisible, setPopupVisible] = useState(false);
 
-  const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
-  const empId = cookies.userInfo.empId;
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const empId = userInfo.empId;
   const buttonState = { prjctId: prjctId, ctrtYmd: ctrtYmd, stbleEndYmd: stbleEndYmd, bgtMngOdr:bgtMngOdr, };
   // console.log("buttonState?",buttonState);
   const [requestBtnVisible, setAprvBtnVisible] = useState(true);

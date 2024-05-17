@@ -96,8 +96,8 @@ const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, butt
     <div style={{marginBottom: '20px'}}>
       {buttonGroup.map((btn, index) => (
         <Button onClick={btn.onClick === 'handleDelete' ? () => handleOpen(btn.msg, handleDelete)
-         : btn.onClick === 'handleSubmit' ? () => handleOpen(btn.msg, () => handleSubmit) 
-         : sendAtrz } 
+         : btn.onClick === 'handleSubmit' ? () => handleOpen(btn.msg, handleSubmit, true) 
+         : () => sendAtrz(selectedItem) } 
           useSubmitBehavior={true} type={btn.type} text={btn.text} 
           style={{marginRight: '10px'}} key={index} />
       ))}

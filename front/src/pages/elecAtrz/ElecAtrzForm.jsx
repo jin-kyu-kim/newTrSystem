@@ -4,7 +4,6 @@ import Form, { Item } from 'devextreme-react/form';
 import { Button } from "devextreme-react/button";
 import ElectAtrzRenderForm from "./ElectAtrzRenderForm";
 import ApiRequest from "utils/ApiRequest";
-import { useCookies } from 'react-cookie';
 import { useModal } from "../../components/unit/ModalContext";
 
 const ElecAtrzForm = () => {
@@ -16,13 +15,13 @@ const ElecAtrzForm = () => {
     const [prjctList, setPrjctList] = useState([])
     const [deptList, setDeptList] = useState([])
     const { handleOpen } = useModal();
-    const [cookies] = useCookies(["userInfo", "userAuth", "deptInfo"]);
+    const userInfo = JSON.parse(localStorage.getItem("deptInfo"));
     useEffect(() => {
         setPrjctId(location.state ? location.state.prjctId : "");
 
         retrieveForm();
         retrievePrjctList();
-        setDeptList(cookies.deptInfo);
+        setDeptList(userInfo);
 
     }, []);
 

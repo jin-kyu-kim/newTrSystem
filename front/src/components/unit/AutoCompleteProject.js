@@ -2,8 +2,7 @@ import ApiRequest from "../../utils/ApiRequest";
 
 import React, { useEffect, useState } from "react";
 import SelectBox from 'devextreme-react/select-box';
-import 'devextreme/dist/css/dx.common.css';
-import 'devextreme/dist/css/dx.light.css';
+
 
 // 2024.03.21(박지환)
 // return값 추가 (prjctMngrEmpId)

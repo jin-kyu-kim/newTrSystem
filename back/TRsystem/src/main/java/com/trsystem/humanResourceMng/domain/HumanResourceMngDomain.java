@@ -96,5 +96,16 @@ public class HumanResourceMngDomain {
 
         return 0;
     }
+
+    public static int insertVcatnMngExcel (List<Map<String, Object>> params){
+        for (Map<String, Object> insertVcatnMngMap : params){
+            insertVcatnMngMap.put("queryId", "humanResourceMngMapper.insertVcatnMngExcel");
+            insertVcatnMngMap.put("state", "INSERT");
+
+            commonService.queryIdDataControl(insertVcatnMngMap);
+        }
+
+        return 0;
+    }
     /* =================================박지환_작업================================= */
 }

@@ -99,13 +99,6 @@ const routes = [
     element: React.lazy(() => import("../../pages/sysMng/EmpAuth")),
     isPrivate:"VTW04801"
   },
-  // 권한부여관리
-  {
-    path: "/sysMng/EmpAuthorization",
-    name: "EmpAuth",
-    element: React.lazy(() => import("../../pages/sysMng/EmpAuthorization")),
-    isPrivate:"VTW04801"
-  },
   // 고객사관리
   {
     path: "/sysMng/CustomersList",
@@ -378,8 +371,8 @@ const routes = [
     isPrivate:"VTW04804"
   },
   {// 회의실 예약
-    path: "/humanResourceMng/MeetingRoomManage2",
-    name: "MeetingRoomManage2",
+    path: "/humanResourceMng/MeetingRoomManageAdmin",
+    name: "MeetingRoomManageAdmin",
     element: React.lazy(() => import("../../pages/humanResourceMng/MeetingRoomManage")),
     isPrivate:"VTW04805"
   }

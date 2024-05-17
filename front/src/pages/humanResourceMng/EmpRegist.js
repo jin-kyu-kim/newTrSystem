@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import uuid from "react-uuid";
 import EmpRegistJson from "./EmpRegistJson.json";
 import Button from "devextreme-react/button";
-import { useCookies } from "react-cookie";
 import CustomLabelValue from "components/unit/CustomLabelValue";
 import ApiRequest from "utils/ApiRequest";
 import { left, right } from "@popperjs/core";
@@ -17,8 +16,9 @@ const EmpRegist = ({callBack, empInfo, read,callBackR,callBackF,reForm}) => {
     const [empMax,setEmpMax] =useState({});   //사번 MAX값
     const [param, setParam] = useState([]);   //사번 max값 조회용 세팅 param
     const [updateParam,setUpdateParam] = useState([]);
-    const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);  
-    const empId = cookies.userInfo.empId;
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    const userAuth = JSON.parse(localStorage.getItem("userAuth"));
+    const empId = userInfo.empId;
     const query =(empDetailqueryId);
     const { handleOpen } = useModal();
 //==----------------------기초정보 폼 설정용 선언==============================
