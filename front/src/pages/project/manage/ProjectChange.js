@@ -27,6 +27,7 @@ const ProjectChange = () => {
     atrzLnSn = null,
     deptId = null,
     prjctNm = null,
+    bfeAtrzDmndSttsCd = null
   } = location.state ?? {};
 
 
@@ -45,6 +46,8 @@ const ProjectChange = () => {
   // console.log("buttonState?",buttonState);
   const [requestBtnVisible, setAprvBtnVisible] = useState(true);
   const [cancelBtnVisible, setCancelBtnVisible] = useState(false);
+  const [bizSttsBtnVisible, setBizSttsBtnVisible] = useState(false);
+  const [atrzDmndSttsCd, setAtrzDmndSttsCd] = useState("VTW03701");
   const { handleOpen } = useModal();
   useEffect(() => {
 
@@ -66,7 +69,17 @@ const ProjectChange = () => {
         setAprvBtnVisible(false);
         setCancelBtnVisible(true);
       }
+
+      if(value[0].atrzDmndSttsCd === "VTW03704") {
+        setAtrzDmndSttsCd("VTW03704");
+      }
     });
+
+    if(bfeAtrzDmndSttsCd === "VTW03704" && bizSttsCd === "VTW00403") {
+      // 이전 결재요청상태 코드값이 반려이면서 사업상태코드가 변경중인 경우
+      // 수행전환 버튼을 활성화한다.
+      setBizSttsBtnVisible(true)
+    }
   }, []);
 
   // 탭 변경시 인덱스 설정
@@ -300,12 +313,43 @@ const ProjectChange = () => {
   }
 
   /**
-   * 승인요청 취소 시
-   * 결재상태코드 ATRZ_STTS_CD: 결재 취소(VTW00805)로 수정한다.
+   * 반려되었을 때 프로젝트를 수행 상태로 전환한다.
    */
-  const handleAtrzLnDtl = async () => {
-    //console.log("승인취소");
-    //console.log(atrzLnSn)
+  const onBizSttsChg = async () => {
+    console.log(bizSttsCd);
+    console.log(bfeAtrzDmndSttsCd);
+
+    /**
+     * 프로젝트 수정
+     */
+
+    const param = [
+      { tbNm: "PRJCT" },
+      {
+        bizSttsCd: "VTW00402"
+      },
+      { 
+        prjctId: prjctId
+      }
+    ]
+
+    try {
+
+      const isconfirm = window.confirm("프로젝트를 수행상태로 전환하시겠습니까?");
+      if(isconfirm) {
+        const result = await ApiRequest("/boot/common/commonUpdate", param);
+
+        if(result > 0) {
+          handleOpen("수행상태로 전환되었습니다.")
+          toDetail();
+        }
+        
+      }
+      
+    } catch (error) {
+      console.error('Error fetching data', error);
+    }
+
   }
 
   return (
@@ -319,9 +363,49 @@ const ProjectChange = () => {
         </div>
       </div>
       <div className="buttons" align="right" style={{ margin: "20px" }}>
-        <Button text="승인요청" onClick={onPopup} visible={requestBtnVisible}></Button>
-        <Button text="승인요청취소" onClick={onAprvCancel} visible={cancelBtnVisible}/>
-        <Button text="이전" onClick={toDetail}/>
+        <Button 
+          width={110}
+          text="Contained"
+          type="default"
+          stylingMode="contained"
+          style={{ margin: "2px" }} 
+          onClick={onBizSttsChg} 
+          visible={bizSttsBtnVisible}
+          >
+            수행전환
+        </Button>
+        <Button 
+          width={110}
+          text="Contained"
+          type="default"
+          stylingMode="contained"
+          style={{ margin: "2px" }}
+          onClick={onPopup} 
+          visible={requestBtnVisible}
+        >
+          승인요청
+        </Button>
+        <Button 
+          width={110}
+          text="Contained"
+          type="default"
+          stylingMode="contained"
+          style={{ margin: "2px" }} 
+          onClick={onAprvCancel} 
+          visible={cancelBtnVisible}
+        >
+          승인요청취소
+        </Button>
+        <Button 
+          width={50}
+          text="Contained"
+          type="normal"
+          stylingMode="outline"
+          style={{ margin : '2px' }} 
+          onClick={toDetail}
+        >
+          이전
+        </Button>
       </div>
       <div
         style={{
@@ -378,9 +462,10 @@ const ProjectChange = () => {
           bgtMngOdrTobe={targetOdr}
           targetOdr={targetOdr}
           visible={popupVisible}
-          atrzDmndSttsCd="VTW03701"
+          atrzDmndSttsCd={atrzDmndSttsCd}
           type="req"
         />
+        <br/>
         <TextArea 
           height="30%"
           valueChangeEvent="change"
