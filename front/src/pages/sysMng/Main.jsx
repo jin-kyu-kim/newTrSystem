@@ -143,15 +143,13 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
         navigate("/elecAtrz/ElecAtrzDetail", {state: {data : e.data}});
       }
     };
-
-    const onAtrzRowClick = (e) => {   //결재 리스트 테이블 클릭
+    //결재 리스트 테이블 클릭
+    const onAtrzRowClick = (e) => {   
       if(e.data.tySe === "프로젝트 비용"){ //프로젝트비용 (프로젝트시간비용승인)
-        navigate("/project/ProjectHrCtAprvDetail", 
-       {state: {prjctId : e.data.id }})
+        navigate("/project/ProjectHrCtAprvDetail", {state: {prjctId : e.data.id }});
       }else if(e.data.tySe === "근무시간"){ //근무시간 현황 (프로젝트시간비용승인)
-        navigate("/project/ProjectHrCtAprvDetail", 
-        {state: {prjctId : e.data.id }})   
-      }else if(e.data.tySe === "프로젝트 승인"){    //프로젝트 승인페이지(이동전 데이터 조회)
+        navigate("/project/ProjectHrCtAprvDetail", {state: {prjctId : e.data.id }});
+      }else if(e.data.tySe === "프로젝트 승인"){ //프로젝트 승인페이지(이동전 데이터 조회)
         projectSearch(e.data.id)
       }else if(e.data.aprpvrId.startsWith("VTW049")){    //기타 전자결재 내역
         navigate("/elecAtrz/ElecAtrzDetail", 
