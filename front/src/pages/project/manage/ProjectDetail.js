@@ -84,7 +84,14 @@ const ProjectDetail = () => {
           // 반려인 경우
           const isconfirm = window.confirm("기존에 반려된 요청이 존재합니다. 반려된 요청을 수정하시겠습니까?");
           if(isconfirm) {
-              const isconfirm = window.confirm("기존에 반려된 요청의 변경 사항을 초기화하여 수정하시겠습니까?");
+
+              // 프로젝트가 생성중인 경우(최초 생성)
+              if(bizSttsCd === 'VTW00401') {
+                const isconfirm = window.confirm("기존에 반려된 요청의 변경 사항을 초기화하여 수정하시겠습니까?");
+              } else {
+                // 프로젝트가 변경중인 경우
+                const isconfirm = window.confirm("기존에 반려된 요청의 변경 사항을 초기화하여 수정하시겠습니까? 변경중인 프로젝트의 경우 수행중으로 변경됩니다.");
+              }
               if(isconfirm) {
                 await resetPrmpc();
               } else {
@@ -134,6 +141,7 @@ const ProjectDetail = () => {
   /**
    * 승인이 반려된 차수일 때 이를 초기화 요청 시
    * 다음차수로 올린 뒤 최종 승인 완료된 값을 넣어준다.
+   * + 프로젝트를 수행중으로 바꾼다.
    */
   const resetPrmpc = async () => {
     const date = new Date();
@@ -145,7 +153,8 @@ const ProjectDetail = () => {
       bgtMngOdrTobe: bgtMngOdrTobe,
       atrzDmndSttsCd: "VTW03701",
       regDt : date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0],
-      regEmpId: empId
+      regEmpId: empId,
+      bizSttsCd: bizSttsCd
     };
 
     try {
