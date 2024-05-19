@@ -99,6 +99,7 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
                     taxBillPblcnYmd: null,
                     dtlUseDtls: null,
                     clmAmt: 0,
+                    vat: 0,
                     vatInclsAmt: 0,
                     dpstDmndYmd: null,
                     expensCd: null,
@@ -113,17 +114,12 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
     }, []);
     console.log('forms', forms)
     const getTempData = async () => {
-        const param = [
-            { tbNm: "CLM_ATRZ_DTL" },
-            { elctrnAtrzId: data.elctrnAtrzId }
-        ];
-        const response = await ApiRequest("/boot/common/commonSelect", param);
+        const param = {
+            queryId: "elecAtrzMapper.retrieveTempClmAtrzDtl",
+            elctrnAtrzId: data.elctrnAtrzId
+        }
 
-        response.map((item) => {
-            delete item.bankCdNm;
-            delete item.ctStlmSeCdNm;
-            delete item.expensCdNm;
-        });
+        const response = await ApiRequest("/boot/common/queryIdSearch", param);
         setForms(response);
     }
 
@@ -137,6 +133,7 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
             taxBillPblcnYmd: null,
             dtlUseDtls: null,
             clmAmt: 0,
+            vat: 0,
             vatInclsAmt: 0,
             dpstDmndYmd: null,
             expensCd: null,
@@ -172,6 +169,7 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
             if (e.target.value !== "VTW01904") {
                 newForms[index]["dpstDmndYmd"] = null
                 newForms[index]["vatInclsAmt"] = 0;
+                newForms[index]["vat"] = 0;
                 newForms[index]["dpstActno"] = null;
                 newForms[index]["dpstrFlnm"] = null;
                 newForms[index]["bankCd"] = null;
@@ -277,14 +275,18 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
 
 
         let newValue = value.replace(/[^0-9]/g, ""); // 숫자 이외의 값 제거
-        if (fieldName === "clmAmt" || fieldName === "vatInclsAmt") {
-            if (newValue === "") {
+        if(fieldName === "clmAmt" || fieldName === "vatInclsAmt" || fieldName === "vat") {
+            if(newValue === "") {
                 newValue = 0;
             }
         }
         const newForms = [...forms];
         newForms[index][fieldName] = newValue;
         setForms(newForms);
+
+        if(fieldName === "vat") {
+            onCalVat(index)
+        }
     };
 
     /**
@@ -292,18 +294,14 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
      * @param {} index 
      */
     const onCalVat = (index) => {
-        console.log(forms[index].clmAmt);
         const newForms = [...forms];
-
-        if (forms[index].ctStlmSeCd === "VTW01904") {
-            newForms[index]["vatInclsAmt"] = forms[index].clmAmt * 1.1;
-        } else if (forms[index].ctStlmSeCd === "VTW01905") {
+        if(newForms[index].ctStlmSeCd === "VTW01904") {
+            newForms[index]["vatInclsAmt"] = parseInt(forms[index].clmAmt) + parseInt(forms[index].vat);
+        } else if(forms[index].ctStlmSeCd === "VTW01905") {
             newForms[index]["vatInclsAmt"] = forms[index].clmAmt * 0.967;
         } else if (forms[index].ctStlmSeCd === "VTW01906") {
             newForms[index]["vatInclsAmt"] = forms[index].clmAmt * 0.912;
         }
-
-
 
         setForms(newForms);
     }
@@ -349,12 +347,12 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
                                     상세내역 (목적)
                                 </div>
                             </Grid>
-                            <Grid item xs={1.5}>
+                            <Grid item xs={1.1}>
                                 <div className="expens-form-inputName">
                                     금액
                                 </div>
                             </Grid>
-                            <Grid item xs={2}>
+                            <Grid item xs={2.4}>
                                 <div className="expens-form-inputName">
                                     금액(부가세포함)
                                 </div>
@@ -437,7 +435,7 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
                                             onChange={(e) => handleInputChange(e, index, "dtlUseDtls")}
                                         />
                                     </Grid>
-                                    <Grid item xs={1.5}>
+                                    <Grid item xs={1.1}>
                                         <TextField
                                             fullWidth
                                             id="clmAmt"
@@ -450,18 +448,31 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
                                             onChange={(e) => handleNumberInputChange(e, index, "clmAmt")}
                                         />
                                     </Grid>
-                                    <Grid item xs={0.7}>
-                                        <div style={{ width: "100%" }}>
+                                    <Grid item xs={1.1}>
+                                        <div style={{width: "100%"}}>
+                                            {forms[index].ctStlmSeCd === "VTW01904" ? 
+                                            <TextField 
+                                                fullWidth
+                                                id="vat"
+                                                label="VAT"
+                                                type="text"
+                                                variant="outlined"
+                                                value={
+                                                    parseInt(forms[index].vat) === NaN ? 0 : parseInt(forms[index].vat).toLocaleString()
+                                                }
+                                                onChange={(e) => handleNumberInputChange(e, index, "vat")}
+                                            /> 
+                                            : 
                                             <Button
-                                                variant="contained"
-                                                style={{ marginTop: "10px" }}
-                                                disabled={!["VTW01904", "VTW01905", "VTW01906"].includes(forms[index].ctStlmSeCd)}
-                                                onClick={() => onCalVat(index)}
+                                            variant="contained"
+                                            style={{marginTop: "10px", width:"100%"}}
+                                            disabled={!["VTW01904", "VTW01905", "VTW01906"].includes(forms[index].ctStlmSeCd)}
+                                            onClick={() => onCalVat(index)}
                                             >
-                                                {forms[index].ctStlmSeCd === "VTW01904" ? "+10%" :
-                                                    forms[index].ctStlmSeCd === "VTW01905" ? "-3.3%" :
-                                                        forms[index].ctStlmSeCd === "VTW01906" ? "-8.8%" : "세액"}
+                                                {forms[index].ctStlmSeCd === "VTW01905" ? "-3.3%" : 
+                                                forms[index].ctStlmSeCd === "VTW01906" ? "-8.8%" : "세액"} 
                                             </Button>
+                                            }
                                         </div>
                                     </Grid>
                                     <Grid item xs={1.3}>

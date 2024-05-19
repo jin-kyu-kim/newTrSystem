@@ -537,6 +537,30 @@
 		  FROM ELCTRN_ATRZ
 	</select>
 	
+	<select id="retrieveTempClmAtrzDtl" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT ELCTRN_ATRZ_ID
+			 , CLM_ATRZ_DTL_SN
+			 , TAX_BILL_PBLCN_YMD
+			 , CLM_AMT
+			 , CT_STLM_SE_CD
+			 , RCIPT_PBLCN_YMD
+			 , DTL_USE_DTLS
+			 , VAT_INCLS_AMT
+			 , DPST_DMND_YMD
+			 , EXPENS_CD
+			 , CNPT_NM
+			 , CLM_PRPOS
+			 , BANK_CD
+			 , DPSTR_FLNM
+			 , DPST_ACTNO
+			 , TAX_AMT
+			 , CASE 
+			 	WHEN CT_STLM_SE_CD = 'VTW01904' THEN VAT_INCLS_AMT - CLM_AMT
+			 	ELSE 0
+			 END AS VAT
+		  FROM CLM_ATRZ_DTL cad 
+		 WHERE ELCTRN_ATRZ_ID = #{elctrnAtrzId}
+	</select>
 	
 	
 </mapper>
