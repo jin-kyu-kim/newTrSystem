@@ -66,13 +66,13 @@ export default function Content() {
                         <PrivateRoute isPrivate={isPrivate}>
                           <div className={`app ${screenSizeClass}`} style={{opacity: isPending ? 0.2 : 1}}>
                             <SideNavBarLayout>
-                              <div className={'content-block'}>
+                              {/*<div className={'content-block'}>*/}
                                 <div className={'dx-card responsive-paddings'}>
-                                  <div className={isLargeScreen ? 'container' : ''}>
+                                  <div className={'contenter'}>
                                     {React.createElement(element)}
                                   </div>
                                 </div>
-                              </div>
+                              {/*</div>*/}
                             </SideNavBarLayout>
                           </div>
                         </PrivateRoute>
