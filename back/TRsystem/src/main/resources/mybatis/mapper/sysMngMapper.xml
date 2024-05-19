@@ -117,13 +117,11 @@
     </select>
 
     <select id="userAuth" parameterType="String" resultType="com.trsystem.LowerHashMap">
-    SELECT ag.AUTHRT_GROUP_ID , am.AUTHRT_CD
-    FROM AUTHRT_GROUP ag
-             JOIN AUTHRT_MAPNG am
-             JOIN LGN_USER_AUTHRT lua
-                  ON ag.AUTHRT_GROUP_ID = am.AUTHRT_GROUP_ID
-                      AND lua.AUTHRT_GROUP_ID = ag.AUTHRT_GROUP_ID
-    WHERE lua.EMP_ID = #{empId}
+	SELECT A.AUTHRT_CD
+	FROM EMP E
+    JOIN USER_AUTHRT A
+	  ON E.EMP_ID = A.EMP_ID
+    WHERE A.EMP_ID = #{empId}
     </select>
 
     <select id="userDept" parameterType="String" resultType="com.trsystem.LowerHashMap">
