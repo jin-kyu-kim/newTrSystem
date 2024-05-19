@@ -12,7 +12,6 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
   const [ initParam, setInitParam ] = useState({});
   const [ ymOdrData, setYmOdrData ] = useState({});
   const { searchParams, textBoxItem, selectBoxItem } = props;
-  const searchButtonRef = useRef(null);
   let btnName = searchParams.btnName ? searchParams.btnName : '검색';
 
   const date = new Date();
@@ -24,18 +23,6 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
     yearList: Array.from({ length: endYear - startYear + 1 }, (_, i) => ({ value: startYear + i })),
     monthList: Array.from({ length: 12 }, (_, i) => ({ value: (i < 9 ? "0" : "") + (i + 1) })),
   });
-
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.key === "Enter") {
-        handleSubmit();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [searchButtonRef]);
 
   useEffect(() => {
     const { yearList, monthList } = getYmList(year - 10, year + 1);
@@ -59,15 +46,25 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
         aplyOdr: odrVal
       });
     }
-
     setYmOdrData({
       year: yearList,
       month: monthList,
       aplyOdr: [{ "id": "1", "value": "1", "text": "1회차" }, { "id": "2", "value": "2", "text": "2회차" }]
     });
-
     callBack(initParam);
   }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Enter') {
+        callBack(initParam);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [initParam]);
 
   const handleChgState = ({ name, value }) => {
     setInitParam({
@@ -141,9 +138,9 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
                 placeholder={item.placeholder}
                 stylingMode="underlined"
                 size="medium"
+                onEnterKey={handleSubmit}
                 name={item.name}
                 showClearButton={true}
-                onEnterKey={handleSubmit}
                 onValueChanged={(e) => handleChgState({ name: e.component.option('name'), value: e.value })}
               />
             </Item>
@@ -160,7 +157,7 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
         }
 
         <Item ratio={1} >
-          <Button type='default' onClick={handleSubmit} text={btnName} ref={searchButtonRef} />
+          <Button type='default' onClick={handleSubmit} text={btnName} />
         </Item>
 
         {searchParams.insertButton &&

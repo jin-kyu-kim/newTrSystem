@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useEffect, useRef, useCallback, useMemo, useState } from 'react';
 import TreeView from 'devextreme-react/tree-view';
 import { navigation } from '../../app-navigation';
 import { useNavigation } from '../../contexts/navigation';
@@ -6,20 +6,21 @@ import { useScreenSize } from '../../utils/media-query';
 import './SideNavigationMenu.scss';
 import * as events from 'devextreme/events';
 
-
 export default function SideNavigationMenu(props) {
+  const [userAuths, setUserAuths] = useState(() => {
+    return JSON.parse(localStorage.getItem("userAuth")) || [];
+  });
 
-  const userAuths = JSON.parse(localStorage.getItem("userAuth"));
-  const isAdmin = userAuths.includes('VTW04801');
+  const isAdmin = useMemo(() => userAuths.includes('VTW04801'), [userAuths]);
+
   function setVisiblePropertyBasedOnAuthArray(navigation, userAuths, isAdmin) {
     return navigation.map(item => {
-      // 하위 항목이 있는지 확인
       const hasItems = item.items && item.items.length > 0;
 
       return {
         ...item,
         visible: isAdmin || !item.auth || userAuths.includes(item.auth),
-        items: hasItems ? setVisiblePropertyBasedOnAuthArray(item.items, userAuths) : [],
+        items: hasItems ? setVisiblePropertyBasedOnAuthArray(item.items, userAuths, isAdmin) : [],
       };
     });
   }
@@ -34,21 +35,10 @@ export default function SideNavigationMenu(props) {
   } = props;
 
   const { isLarge } = useScreenSize();
-  // function normalizePath () {
-  //   return navigation.map((item) => (
-  //     { ...item, expanded: isLarge, path: item.path && !(/^\//.test(item.path)) ? `/${item.path}` : item.path }
-  //   ))
-  // }
-  //
-  // const items = useMemo(
-  //   normalizePath,
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  //   []
-  // );
-  const visibleNavigation = useMemo(
-      () => setVisiblePropertyBasedOnAuthArray(navigation, userAuths, isAdmin),
-      [userAuths]
-  );
+
+  const visibleNavigation = useMemo(() => {
+    return setVisiblePropertyBasedOnAuthArray(navigation, userAuths, isAdmin);
+  }, [userAuths, isAdmin]);
 
   const { navigationData: { currentPath } } = useNavigation();
 
@@ -61,10 +51,21 @@ export default function SideNavigationMenu(props) {
     }
 
     wrapperRef.current = element;
-    events.on(element, 'dxclick', (e) => {
-      openMenu(e);
-    });
+    if (element) {
+      events.on(element, 'dxclick', openMenu);
+    }
   }, [openMenu]);
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setUserAuths(JSON.parse(localStorage.getItem("userAuth")) || []);
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   useEffect(() => {
     const treeView = treeViewRef.current && treeViewRef.current.instance;
@@ -78,21 +79,19 @@ export default function SideNavigationMenu(props) {
     }
 
     if (compactMode) {
-      
       treeView.collapseAll();
     }
   }, [currentPath, compactMode]);
 
-    useEffect(()=>{ //초기 렌더링시 메뉴 닫아두기
-      const treeView = treeViewRef.current && treeViewRef.current.instance;
+  useEffect(() => {
+    const treeView = treeViewRef.current && treeViewRef.current.instance;
+    if (treeView) {
       treeView.collapseAll();
-    },[])
-  
+    }
+  }, []);
+
   return (
-    <div
-      className={'dx-swatch-additional side-navigation-menu'}
-      ref={getWrapperRef}
-    >
+    <div className={'dx-swatch-additional side-navigation-menu'} ref={getWrapperRef}>
       {children}
       <div className={'menu-container'}>
         <TreeView

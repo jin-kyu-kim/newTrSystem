@@ -13,19 +13,19 @@ const ProjectExpense = () => {
     const location = useLocation();
     const { ExpenseInfo, keyColumn, ctAplyTableColumns, elcKeyColumn, columnCharge, buttonsConfig,
         aplyAndAtrzCtQueryId, dmndSttsQueryId, groupingColumn, groupingData, searchInfo } = ProjectExpenseJson.ProjectExpenseMain;
-    const [ index, setIndex ] = useState(0);
-    const [ atrzDmndSttsCnt, setAtrzDmndSttsCnt ] = useState({}); // 상태코드별 데이터 개수
-    const [ ctAply, setCtAply ] = useState([]); // 차수 청구내역 (table1)
-    const [ ctAtrz, setCtAtrz ] = useState([]); // 전자결재 청구내역 (table2)
-    const [ changeColumn, setChangeColumn ] = useState([]); // 결재상태 컬럼 -> 버튼렌더를 위해 필요
-    const [ ctAtrzCmptnYn, setCtAtrzCmptnYn ] = useState(); // 비용결재완료여부
-    const [ mmAtrzCmptnYn, setMmAtrzCmptnYn ] = useState(); // 근무시간여부
+    const [index, setIndex] = useState(0);
+    const [atrzDmndSttsCnt, setAtrzDmndSttsCnt] = useState({}); // 상태코드별 데이터 개수
+    const [ctAply, setCtAply] = useState([]); // 차수 청구내역 (table1)
+    const [ctAtrz, setCtAtrz] = useState([]); // 전자결재 청구내역 (table2)
+    const [changeColumn, setChangeColumn] = useState([]); // 결재상태 컬럼 -> 버튼렌더를 위해 필요
+    const [ctAtrzCmptnYn, setCtAtrzCmptnYn] = useState(); // 비용결재완료여부
+    const [mmAtrzCmptnYn, setMmAtrzCmptnYn] = useState(); // 근무시간여부
 
     const admin = location.state ? location.state.admin : undefined;
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const empId = admin != undefined ? admin.empId : userInfo.empId;
-    const [ popVisible, setPopVisible ] = useState(false);
-    const [ histYmOdr, setHistYmOdr ] = useState({});
+    const [popVisible, setPopVisible] = useState(false);
+    const [histYmOdr, setHistYmOdr] = useState({});
     const date = new Date();
     const year = date.getFullYear();
     const month = date.getDate() > 15 ? date.getMonth() + 1 : date.getMonth();
@@ -39,7 +39,6 @@ const ProjectExpense = () => {
             if (args.name === "selectedIndex") setIndex(args.value);
         }, [setIndex]
     );
-
     useEffect(() => { getData(); }, []);
 
     useEffect(() => { // 결재상태에 따른 컬럼 list변경
@@ -153,7 +152,7 @@ const ProjectExpense = () => {
                 }).catch(error => {
                     console.error("error:", error);
                 });
-     
+
                 const cardResult = ApiRequest('/boot/common/commonUpdate', [
                     { tbNm: "CARD_USE_DTLS" },
                     { prjctCtInptPsbltyYn: "Y" },
@@ -166,7 +165,21 @@ const ProjectExpense = () => {
     }
 
     const calculateCustomSummary = (options) => {
-        console.log('options', options)
+        const storeInfo = options.component.getDataSource().store()._array
+        let utztnAmt = 0;
+
+        storeInfo.forEach((item) => {
+            if (item.atrzDmndSttsCd !== 'VTW03704') {
+                utztnAmt += item.utztnAmt;
+            }
+        });
+        const totalAmt = utztnAmt;
+
+        if (options.summaryProcess ==="finalize") {
+            if (options.name === "utztnAmt") {
+                options.totalValue = totalAmt;
+            }
+        }
     }
 
     const groupingCustomizeText = (e) => {
@@ -201,7 +214,8 @@ const ProjectExpense = () => {
                     <h1 style={{ fontSize: "30px", marginRight: "20px" }}>프로젝트비용</h1>
                     {getButtonsShow().map(({ onClick, text, type }, index) => (
                         <Button key={index} text={text} type={type} style={{ marginRight: '5px' }}
-                            onClick={onClick.name !== 'onPrintClick' ? () => handleOpen(onClick.msg, () => onClickAction(onClick)) : onClickAction(onClick)} />))}
+                            onClick={onClick.name !== 'onPrintClick' ? () => handleOpen(onClick.msg, () => onClickAction(onClick))
+                                : () => onClickAction(onClick)} />))}
                 </div>
 
                 <div style={{ marginBottom: '50px', width: 600 }}>
@@ -214,7 +228,7 @@ const ProjectExpense = () => {
                 {admin != undefined ?
                     <RenderTopTable title={`*${admin.empno} ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} /> :
                     <RenderTopTable title={`* ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} />}
-                <RenderTopTable title='* 전자결재 청구 내역' keyColumn={elcKeyColumn} columns={columnCharge} values={ctAtrz} />  
+                <RenderTopTable title='* 전자결재 청구 내역' keyColumn={elcKeyColumn} columns={columnCharge} values={ctAtrz} />
 
                 {atrzDmndSttsCnt.ctReg > 0 || ctAtrzCmptnYn === null || ctAtrzCmptnYn === undefined
                     ? <TabPanel

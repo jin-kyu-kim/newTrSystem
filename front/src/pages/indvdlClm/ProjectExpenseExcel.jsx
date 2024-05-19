@@ -35,7 +35,7 @@ const ProjectExpenseExcel = (props) => {
                 const response = await ApiRequest('/boot/common/commonSelect', [
                     {tbNm: "CARD_USE_DTLS"}, {empId}
                 ]); 
-                const tmpList = response.map(item => item.aprvNo);
+                const tmpList = response.map(item => item.lotteCardAprvNo);
                 setAprvNoList(tmpList);
             } catch(error){
                 console.log('error', error);
@@ -59,10 +59,10 @@ const ProjectExpenseExcel = (props) => {
 
         if(excel[0].__EMPTY_4 === "승인일자" && excel[0].__EMPTY_5 === "승인시간") {
             for (let i = 1; i < excel?.length; i++) {
-                const aprvNo = excel[i].__EMPTY_20; // aprvNo[승인번호] -> __EMPTY_20
+                const lotteCardAprvNo = excel[i].__EMPTY_20; // aprvNo[승인번호] -> __EMPTY_20
 
                 // 기존 aprvList에 승인번호가 포함되어 있지 않은 경우만 처리
-                if (!aprvNoList.includes(aprvNo)) {
+                if (!aprvNoList.includes(lotteCardAprvNo)) {
 
                     if(!excel[i].__EMPTY_7.includes('-')){
                         

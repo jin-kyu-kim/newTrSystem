@@ -23,6 +23,7 @@
 			, pca.APLY_YM
 			, pca.APLY_ODR
 			, (select CD_NM from CD where CD_VALUE = pcaz.ATRZ_DMND_STTS_CD) AS 'ATRZ_DMND_STTS_CD_NM'
+			, pcaz.ATRZ_DMND_STTS_CD
 			, (SELECT PRJCT_NM FROM PRJCT WHERE PRJCT_ID = pca.PRJCT_ID) AS PRJCT_NM
 			, ELCTRN_ATRZ_ID
 			, pcaz.RJCT_PRVONSH
@@ -71,6 +72,7 @@
 					  ON (ea.ELCTRN_ATRZ_ID = cad.ELCTRN_ATRZ_ID)
 		WHERE 1 = 1
 		  AND ea.ATRZ_DMND_STTS_CD = 'VTW03703'
+		  AND ea.ELCTRN_ATRZ_TY_SE_CD = 'VTW04907'
 		  AND ea.ATRZ_DMND_EMP_ID = #{empId}
 	</select>
 

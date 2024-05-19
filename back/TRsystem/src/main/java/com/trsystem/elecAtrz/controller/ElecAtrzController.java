@@ -23,10 +23,17 @@ public class ElecAtrzController {
 	 */
 	@PostMapping(value = "/boot/elecAtrz/insertElecAtrz")
 	public String insertElecAtrz(@RequestBody Map<String, Object> params) {
-		
+
 		String elctrnAtrzId = ElecAtrzDomain.insertElecAtrz(params);
 		
 		return elctrnAtrzId;
+	}
+
+	// 임시저장 데이터 삭제
+	@PostMapping(value = "/boot/elecAtrz/deleteTempAtrz")
+	public int deleteTempAtrz(@RequestBody Map<String, Object> params) {
+		return ElecAtrzDomain.deleteTempAtrz(String.valueOf(params.get("atrzTySeCd")),
+				String.valueOf(params.get("elctrnAtrzId")));
 	}
 	
 	/**
