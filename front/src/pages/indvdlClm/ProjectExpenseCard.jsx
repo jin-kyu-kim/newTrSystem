@@ -25,9 +25,7 @@ const ProjectExpenseCard = (props) => {
     const { handleOpen } = useModal();
     const [param, setParam] = useState({
         queryId: queryId,
-        empId: props.empId,
-        aplyYm: props.aplyYm,
-        aplyOdr: props.aplyOdr
+        empId: props.empId
     });
 
     const searchHandle = async (initParam) => {
