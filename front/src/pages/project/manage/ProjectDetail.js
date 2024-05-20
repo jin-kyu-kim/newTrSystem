@@ -123,8 +123,8 @@ const ProjectDetail = () => {
       navigate("../project/ProjectChange",
         {
         state: { prjctId: prjctId
-               , ctrtYmd: ctrtYmd
-               , stbleEndYmd: stbleEndYmd
+               , originCtrtYmd: ctrtYmd
+               , originStbleEndYmd: stbleEndYmd
                , bgtMngOdr:bgtMngOdr
                , bgtMngOdrTobe: bgtMngOdrTobe
                , targetOdr: targetOdr
@@ -163,8 +163,8 @@ const ProjectDetail = () => {
         {
           state: {
             prjctId: prjctId
-            , ctrtYmd: ctrtYmd
-            , stbleEndYmd: stbleEndYmd
+            , originCtrtYmd: ctrtYmd
+            , originStbleEndYmd: stbleEndYmd
             , bgtMngOdr: bgtMngOdr
             , bgtMngOdrTobe: response
             , targetOdr: response

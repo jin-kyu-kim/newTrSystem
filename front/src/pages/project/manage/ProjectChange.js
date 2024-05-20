@@ -18,8 +18,8 @@ const ProjectChange = () => {
 
   const {
     prjctId = null,
-    ctrtYmd = null,
-    stbleEndYmd = null,
+    originCtrtYmd = null,
+    originStbleEndYmd = null,
     bgtMngOdr = null,
     bgtMngOdrTobe = null,
     targetOdr = null,
@@ -42,12 +42,14 @@ const ProjectChange = () => {
 
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const empId = userInfo.empId;
-  const buttonState = { prjctId: prjctId, ctrtYmd: ctrtYmd, stbleEndYmd: stbleEndYmd, bgtMngOdr:bgtMngOdr, };
-  // console.log("buttonState?",buttonState);
   const [requestBtnVisible, setAprvBtnVisible] = useState(true);
   const [cancelBtnVisible, setCancelBtnVisible] = useState(false);
   const [bizSttsBtnVisible, setBizSttsBtnVisible] = useState(false);
   const [atrzDmndSttsCd, setAtrzDmndSttsCd] = useState("VTW03701");
+
+  const [ctrtYmd, setCtrtYmd] = useState();
+  const [stbleEndYmd, setStbleEndYmd] = useState();
+
   const { handleOpen } = useModal();
   useEffect(() => {
 
@@ -81,6 +83,30 @@ const ProjectChange = () => {
       setBizSttsBtnVisible(true)
     }
   }, []);
+
+  useEffect(() => {
+
+    retrivePrjctPeriod();
+    
+  }, [selectedIndex]);
+
+  const retrivePrjctPeriod = async () => {
+    const param = {
+      queryId: "projectMapper.retrivePrjctPeriod",
+      prjctId: prjctId
+    }
+
+    try {
+      const response = await ApiRequest("/boot/common/queryIdSearch", param);
+      setCtrtYmd(response[0].ctrtYmd);
+      setStbleEndYmd(response[0].stbleEndYmd);
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  
 
   // 탭 변경시 인덱스 설정
   const onSelectionChanged = useCallback(
@@ -255,7 +281,7 @@ const ProjectChange = () => {
   const toDetail = () => {
     navigate("../project/ProjectDetail",
         {
-        state: { prjctId: prjctId, ctrtYmd: ctrtYmd, stbleEndYmd: stbleEndYmd, bgtMngOdr:bgtMngOdr, bgtMngOdrTobe:bgtMngOdrTobe, deptId: deptId, targetOdr: targetOdr, bizSttsCd :bizSttsCd , atrzLnSn: atrzLnSn, prjctNm: prjctNm},
+        state: { prjctId: prjctId, ctrtYmd: originCtrtYmd, stbleEndYmd: originStbleEndYmd, bgtMngOdr:bgtMngOdr, bgtMngOdrTobe:bgtMngOdrTobe, deptId: deptId, targetOdr: targetOdr, bizSttsCd :bizSttsCd , atrzLnSn: atrzLnSn, prjctNm: prjctNm},
         })
   };
 
