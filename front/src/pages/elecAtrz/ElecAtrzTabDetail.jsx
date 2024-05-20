@@ -7,16 +7,12 @@ import ElecAtrzCtrtInfoDetail from './ctrtInfo/ElecAtrzCtrtInfoDetail';
 import ElectGiveAtrzClm from './ElectGiveAtrzClm';
 import ElecAtrzCtrtOutordHnfDetail from './ctrtInfo/ElecAtrzCtrtOutordHnfDetail';
 
-let oldCd = "";
 
 const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prjctData, onSendData }) => {
     const { vacDtl, clmColumns,  groupingColumn, groupingData, ctrtInfo } = electAtrzJson.electAtrzDetail;
     const [ data, setData ] = useState([]);
     const [ ctrtData, setCtrtData ] = useState({})
     const [ clmData, setClmData ] = useState({})
-    const initialized = useRef(false);
-    
-    
 
     /* ===================================  필요 데이터 조회  ====================================*/
     useEffect(() => {
@@ -50,7 +46,6 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
                                      [{ tbNm: "CTRT_ATRZ" }, { elctrnAtrzId: elctrnAtrzId }]
                     );
                     setData(response);
-                    // console.log("response",response);
     
                 } catch (error) {
                     console.log('error', error);
@@ -173,7 +168,6 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
     }
 
 
-
     const handleCtrtData = (data) => {
         if(Array.isArray(data)){
             setCtrtData(prevData => ({
@@ -202,7 +196,8 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
         }
     }
 
-
+    //외주업체, 재료비 ctrtYmd   ctrtAmt  pay
+    //외주인력 id  entrpsGiveCtrtAmt  hnfCtrtDtlMm
     useEffect(() => {
         if (clmData.rate) {
             let ctrtItems = [];
@@ -210,14 +205,22 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
             if(ctrtData.arrayData.length>1){
       
                 ctrtData.arrayData.forEach((child) => {
+                    //외주인력
+                    if (child.hnfCtrtDtlMm) {
+                        child.hnfCtrtDtlMm.forEach((item) => {
+                            if (item.id === clmData.giveYmd) {    
+                                item.giveAmt = item.entrpsGiveCtrtAmt + item.entrpsGiveCtrtAmt * (parseFloat(clmData.rate) / 100);
+                                item.outordLbrcoPrmpcSn = child.outordLbrcoPrmpcSn;              
+                                ctrtItems.push(item);
+                            }
+                        });
+                    }
+                    //재료비,외주업체
                     if (child.pay) {
                         child.pay.forEach((item) => {
-                            if (item.ctrtYmd === clmData.giveYmd) {
+                            if (item.ctrtYmd === clmData.giveYmd) {    
                                 item.giveAmt = item.ctrtAmt + item.ctrtAmt * (parseFloat(clmData.rate) / 100);
-                                if (!initialized.current) {
-                                    oldCd = item.giveOdrCd;
-                                }
-                                    item.oldCd = oldCd;
+                                                            
                                 ctrtItems.push(item);
                             }
                         });
@@ -229,25 +232,19 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
                     ctrt: ctrtItems,
                     
                 }));
-
-                if (!initialized.current) {
-                    initialized.current = true; 
-                }
             }
         }
     }, [ctrtData, clmData.rate, clmData.giveYmd, setClmData]);
 
 
     useEffect(()=>{
-        console.log("clmData", clmData)
-        if(onSendData){
+        if(!!onSendData){
             onSendData(clmData);
         }
     },[clmData])
 
 
 
-    
     /* ================  전자결재유형코드에 따른 특수 컴포넌트 렌더링  =================*/
 
     const renderSpecialComponent = () => {
@@ -267,10 +264,10 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
                 return  <>
                         <h3>계약정보</h3>
                         <CtrtInfo ctrtInfo={ctrtInfo} data={data} ctrtTyCd={ctrtTyCd}/>
-                        {((detailData.ctrtElctrnAtrzId && detailData.elctrnAtrzTySeCd === "VTW04914" && (ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd !== "VTW04908")) || ["VTW04909","VTW04910"].includes(detailData.elctrnAtrzTySeCd))
+                        {((detailData.ctrtElctrnAtrzId && ["VTW04912","VTW04913","VTW04914"].includes(detailData.elctrnAtrzTySeCd) && (ctrtTyCd? ctrtTyCd !== "VTW04908" : detailData.ctrtTyCd !== "VTW04908")) || ["VTW04909","VTW04910"].includes(detailData.elctrnAtrzTySeCd))
                         ? 
                         <ElecAtrzCtrtInfoDetail data={detailData} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd } onSendData={handleCtrtData} /> 
-                        : <ElecAtrzCtrtOutordHnfDetail data={detailData} sttsCd={sttsCd} prjctData={prjctData} prjctId={prjctId} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd } />}                   
+                        : <ElecAtrzCtrtOutordHnfDetail data={detailData} sttsCd={sttsCd} prjctData={prjctData} prjctId={prjctId} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd } onSendData={handleCtrtData}/>}                   
                         </>
             default:
                 return null;
