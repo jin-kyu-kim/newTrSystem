@@ -1,8 +1,8 @@
 { 
   "noticeQueryId": "sysMngMapper.retrieveNotice",
   "noticeTableColumns": [
-    { "key": "noticeTtl", "value": "제목",  "alignment": "left" },
-    { "key": "regDt", "value": "작성일","alignment": "center" }
+    { "key": "noticeTtl", "value": "제목",  "alignment": "center" , "width" : "70%"},
+    { "key": "regDt", "value": "작성일","alignment": "center" , "width" : "30%"}
   ],
   "trAplyTotQueryId": "sysMngMapper.retrieveInptSttus",
   "trAplyKeyColumn": "empId",
