@@ -35,7 +35,7 @@
           {"key": "title", "value": "결재 명", "width": "20%"}
       ],
       "progressApproval": [
-        {"key": "rjctPrvonsh", "value": "결재", "width": "15%"}
+        {"key": "atrzOpnnCn", "value": "결재", "width": "15%"}
       ],
       "progress": [
         {"key": "cnptNm", "value": "거래처", "width": "8%"},
@@ -59,7 +59,7 @@
         {"key": "atrzStepCdNm", "value": "현재 결재단계", "width": "15%"}
       ],
       "deny": [
-        {"key": "rjctPrvonsh", "value": "결재", "width": "15%"}
+        {"key": "atrzOpnnCn", "value": "결재", "width": "15%"}
       ],
       "temp": [
         {"key": "delete", "value": "삭제", "width": "15%", "button": { 
@@ -117,7 +117,7 @@
       { "key": "atrzStepCdNm", "value": "결재라인"},
       { "key": "empFlnm", "value": "결재자"},
       { "key": "atrzSttsCdNm", "value": "결재상태"},
-      { "key": "rjctPrvonsh", "value": "결재의견"},
+      { "key": "atrzOpnnCn", "value": "결재의견"},
       { "key": "mdfcnDt", "value": "결재일자"}
     ],
     "keyColumnClm" : "ctStlmSeCdNm",

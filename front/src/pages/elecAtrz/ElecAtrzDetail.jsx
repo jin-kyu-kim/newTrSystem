@@ -30,6 +30,7 @@ const ElecAtrzDetail = () => {
     const [ aplyYmd, setAplyYmd ] = useState();
     const [ odr, setOdr ] = useState();
     const [rjctPopupVisible, setRjctPopupVisible] = useState(false);
+    const [aprvPopupVisible, setAprvPopupVisible] = useState(false);
     const [opnnCn, setOpnnCn] = useState("");
     const [data, setData] = useState(location.state.data);
     const { handleOpen } = useModal();
@@ -38,7 +39,7 @@ const ElecAtrzDetail = () => {
     const onBtnClick = (e) => {
 
         switch (e.element.id) {
-            case "aprv": ; aprvAtrz();
+            case "aprv": ; onAprvPopup();
                 break;
             case "rjct": ; onRjctPopup();
                 break;
@@ -174,6 +175,7 @@ const ElecAtrzDetail = () => {
                                 aprvYmd: date,
                                 mdfcnDt: mdfcnDt,
                                 mdfcnEmpId: userInfo.empId,
+                                atrzOpnnCn: opnnCn,
                             },
                             { 
                                 elctrnAtrzId: detailData.elctrnAtrzId,
@@ -207,6 +209,7 @@ const ElecAtrzDetail = () => {
                             aprvYmd: date,
                             mdfcnDt: mdfcnDt,
                             mdfcnEmpId: userInfo.empId,
+                            atrzOpnnCn: opnnCn,
                         },
                         { 
                             elctrnAtrzId: detailData.elctrnAtrzId,
@@ -236,6 +239,7 @@ const ElecAtrzDetail = () => {
                         aprvYmd: date,
                         mdfcnDt: mdfcnDt,
                         mdfcnEmpId: userInfo.empId,
+                        atrzOpnnCn: opnnCn,
                     },
                     { 
                         elctrnAtrzId: detailData.elctrnAtrzId,
@@ -335,9 +339,15 @@ const ElecAtrzDetail = () => {
         setRjctPopupVisible(true);
     }
 
+    const onAprvPopup = () => {
+        setAprvPopupVisible(true);
+    }
+
     // 팝업 close
     const handleClose = () => {
         setRjctPopupVisible(false);
+        setAprvPopupVisible(false);
+        setOpnnCn("");
     };
 
     // 반려 의견 입력
@@ -357,7 +367,7 @@ const ElecAtrzDetail = () => {
                 { tbNm: "ATRZ_LN" },
                 { 
                     atrzSttsCd: "VTW00803",
-                    rjctPrvonsh: opnnCn,
+                    atrzOpnnCn: opnnCn,
                     rjctYmd: date,
                     mdfcnDt: mdfcnDt,
                     mdfcnEmpId: userInfo.empId,
@@ -578,6 +588,24 @@ const ElecAtrzDetail = () => {
                                     ? navigate('/elecAtrz/ElecAtrz') 
                                     : navigate('/elecAtrz/ElecGiveAtrz',{state :{prjctId: prjctId, formData: location.state.formData}}) }} />
             </div>
+            <Popup
+                width={"80%"}
+                height={"80%"}
+                visible={aprvPopupVisible}
+                onHiding={handleClose}
+                showCloseButton={true}
+                title={"승인 의견"}
+            >
+                <TextArea 
+                    height="50%"
+                    valueChangeEvent="change"
+                    onValueChanged={onTextAreaValueChanged}
+                    placeholder="승인 의견을 입력해주세요."
+                />
+                <br/>
+                <Button text="승인" onClick={aprvAtrz}/>
+                <Button text="취소" onClick={handleClose}/>
+            </Popup>
             <Popup
                 width={"80%"}
                 height={"80%"}
