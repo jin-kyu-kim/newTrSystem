@@ -70,8 +70,8 @@ const ProjectOutordEmpCostSearch = ({prjctId}) => {
           showTotals={false}
           showColumnFields={false}
           showDataFields={false}
-          showFilterFields={false}
-          allowFieldDragging={false}
+          showFilterFields={true}
+          allowFieldDragging={true}
         />
 
         <FieldChooser enabled={false} />
