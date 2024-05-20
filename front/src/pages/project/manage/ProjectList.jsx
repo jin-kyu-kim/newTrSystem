@@ -22,11 +22,7 @@ const ProjectList = () => {
 
   /** 유저 정보 */
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-  const userAuth = JSON.parse(localStorage.getItem("userAuth"));
-  const deptInfo = JSON.parse(localStorage.getItem("deptInfo"));
-
   const empId = userInfo.empId;
-  const deptId = deptInfo.length != 0 ? deptInfo[0].deptId : null;
 
   const navigate = useNavigate();
 

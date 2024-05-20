@@ -156,8 +156,7 @@ const SearchPrjctCostSet = ({ callBack, props }) => {
         <div className="box_search" width="100%">
             <Box
                 direction="row"
-                width={"100%"}
-                height={50}
+                style={{display: "flex", alignItems: "center", height: 40}}
             >
                 { props.yearItem &&
                     <Item ratio={0} baseSize={"120"}>

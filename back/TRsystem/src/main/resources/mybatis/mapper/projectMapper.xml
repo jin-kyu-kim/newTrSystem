@@ -5,7 +5,7 @@
 
 <mapper namespace="com.trsystem.mybatis.mapper.projectMapper">
     <select id="retrievePrjctList" parameterType="map" resultType="com.trsystem.LowerHashMap">
-        SELECT ROW_NUMBER()OVER ()ROWNUM
+        SELECT PRJCT_CD_IDNTFR
             , (SELECT CD_NM FROM CD WHERE CD_VALUE = PRJCT_STLE_CD) AS PRJCT_STLE_CD
             , p.PRJCT_ID
             , PRJCT_NM
@@ -51,7 +51,7 @@
         <if test="ctmmnyNm != null and !ctmmnyNm.equals('')">
             AND CTMMNY_ID IN (SELECT CTMMNY_ID FROM CTMMNY_INFO WHERE CTMMNY_NM LIKE CONCAT('%',#{ctmmnyNm},'%'))
         </if>
-    ORDER BY p.REG_DT DESC
+    ORDER BY p.CTRT_YMD DESC
     </select>
 
     <select id="retrieveMyPrjctList" parameterType="map" resultType="com.trsystem.LowerHashMap">
