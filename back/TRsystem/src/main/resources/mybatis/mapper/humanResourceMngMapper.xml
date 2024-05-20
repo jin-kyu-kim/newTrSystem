@@ -647,11 +647,10 @@
 	
 <select id="retrieveUpDept" parameterType="map" resultType="com.trsystem.LowerHashMap">
 	SELECT 
-    	DEPT_ID,
-    	COALESCE(
+    DEPT_ID,
+    COALESCE(
         CONCAT(
-            DEPT_NM, 
-            '- 부서장 : ', 
+            ' [부서장 : ', 
             (
                 SELECT a.EMP_FLNM
                 FROM (
@@ -667,15 +666,13 @@
                 ) a
                 WHERE 
                     a.RN = 1
-            	)
-       	 ),
-        	DEPT_NM
-    	) AS DEPT_NM_EMP_FLNM -- DEPT_NM과 EMP_FLNM을 합친 컬럼
-	FROM 
-		DEPT E
-	WHERE 
-		1=1
-		AND END_YN = 'N';
+            ),'] - ', DEPT_NM
+        ),
+        DEPT_NM
+    ) AS DEPT_NM_EMP_FLNM -- DEPT_NM과 EMP_FLNM을 합친 컬럼
+FROM DEPT E
+WHERE 1=1
+AND END_YN = 'N';
 </select>
 
 </mapper>	
