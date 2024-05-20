@@ -92,7 +92,9 @@ const ProjectDetail = () => {
               const isconfirm = window.confirm("기존에 반려된 내용을 제거하시겠습니까? 작성한 데이터가 사라집니다.");
               if(isconfirm) {
                 const isconfirm = window.confirm("정말로 기존에 반려된 내용을 제거하시겠습니까?");
-                await resetPrmpc();
+                if(confirm) {
+                  await resetPrmpc();
+                }
               }
             }
 
