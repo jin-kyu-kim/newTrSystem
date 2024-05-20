@@ -69,8 +69,7 @@
 			FROM 
 			    DEPT_PATH
 			ORDER BY 
-			    DEPT_BGNG_YMD ASC, 
-			    DEPT_END_YMD ASC;
+			    DEPT_BGNG_YMD ASC 
 		</select>
 		
 	   <!--부서 상세 조회-->
@@ -645,4 +644,38 @@
 			</if>
 	</insert>
 	
+	
+<select id="retrieveUpDept" parameterType="map" resultType="com.trsystem.LowerHashMap">
+	SELECT 
+    	DEPT_ID,
+    	COALESCE(
+        CONCAT(
+            DEPT_NM, 
+            '- 부서장 : ', 
+            (
+                SELECT a.EMP_FLNM
+                FROM (
+                    SELECT 
+                        CONCAT(e.EMP_FLNM, ' ', c.CD_NM) AS EMP_FLNM,
+                        ROW_NUMBER() OVER (ORDER BY h.JBTTL_CD) AS RN
+                    FROM 
+                        EMP e
+                    INNER JOIN DEPT_HNF h ON e.EMP_ID = h.EMP_ID
+                    JOIN CD c ON e.JBPS_CD = c.CD_VALUE 
+                    WHERE 
+                        h.DEPT_ID = E.DEPT_ID
+                ) a
+                WHERE 
+                    a.RN = 1
+            	)
+       	 ),
+        	DEPT_NM
+    	) AS DEPT_NM_EMP_FLNM -- DEPT_NM과 EMP_FLNM을 합친 컬럼
+	FROM 
+		DEPT E
+	WHERE 
+		1=1
+		AND END_YN = 'N';
+</select>
+
 </mapper>	

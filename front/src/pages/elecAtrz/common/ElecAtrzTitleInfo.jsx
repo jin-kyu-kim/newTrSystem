@@ -38,14 +38,14 @@ const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick
   };
 
   return (
-    <div className='container'>
+    <div>
       <div style={{ display: "flex", justifyContent: "flex-start" }}>
         <div style={{ float: "left", marginRight: "auto" }}>로고</div>
         <div style={{ display: "inline-block" }}>{setButtons()}</div>
       </div>
 
       <h3 style={{ textAlign: "center" }}>{formData.gnrlAtrzTtl}</h3>
-      <div style={{ display: "flex", marginTop: "20px", marginLeft: "90px", fontSize: '18px' }}>
+      <div style={{ display: "flex", marginTop: "50px", marginLeft: "50px", fontSize: '17px' }}>
         <div style={{ flex: 4 }}>
           <table>
             <tr>
@@ -73,7 +73,7 @@ const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick
           </table>
         </div>
 
-        <div style={{ flex: 4, marginRight: "50px" }}>
+        <div style={{ flex: 3.5, marginRight: "50px" }}>
           <AtrzLnTable
             atrzLnEmpList={atrzLnEmpList}
             bottomNm={'합의'}
@@ -87,7 +87,7 @@ const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick
             <TextBox
               className="dx-field-value"
               readOnly={true}
-              style={{ width: "95%" }}
+              style={{ width: "93%" }}
               value={atrzLnEmpList.filter((item) => item.approvalCode === 'VTW00706')
                 .map(item => item.listEmpFlnm).join('; ')}
             />
@@ -97,7 +97,7 @@ const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick
             <div className="dx-field-label" style={{ width: "5%" }}>제 목</div>
             <TextBox
               className="dx-field-value"
-              style={{ width: "95%" }}
+              style={{ width: "93%" }}
               value={atrzParam.title}
               onValueChanged={onHandleAtrzTitle}
             />

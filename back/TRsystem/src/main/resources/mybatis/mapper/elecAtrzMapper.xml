@@ -470,10 +470,10 @@
 		        CONCAT(
 		            SUBSTRING(CAST(INPT_YM AS CHAR), 1, 4), '.', 
 		            SUBSTRING(CAST(INPT_YM AS CHAR), 5, 2), 
-		            ' (', CAST(SUM(CTRT_AMT) AS CHAR), '원)'
+		             ' (', FORMAT(SUM(ENTRPS_GIVE_CTRT_AMT), 0), '원)'
 		        ) AS GIVE_YMD_FORMAT,
 		        INPT_YM AS GIVE_YMD,
-		        SUM(CTRT_AMT) AS VAT_EXCL_AMT
+		        SUM(ENTRPS_GIVE_CTRT_AMT) AS VAT_EXCL_AMT
 		    FROM HNF_CTRT_DTL_MM
 		    WHERE ELCTRN_ATRZ_ID = #{ctrtElctrnAtrzId}
 		    GROUP BY INPT_YM
@@ -485,7 +485,7 @@
 		        CONCAT(
 		            SUBSTRING(CAST(CTRT_YMD AS CHAR), 1, 4), '.', 
 		            SUBSTRING(CAST(CTRT_YMD AS CHAR), 5, 2), 
-		            ' (', CAST(SUM(CTRT_AMT) AS CHAR), '원)'
+		            ' (', FORMAT(SUM(CTRT_AMT), 0), '원)'
 		        ) AS GIVE_YMD_FORMAT,
 		        CTRT_YMD AS GIVE_YMD,
 		        SUM(CTRT_AMT) AS VAT_EXCL_AMT

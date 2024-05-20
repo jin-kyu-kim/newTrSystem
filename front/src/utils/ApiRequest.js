@@ -9,17 +9,11 @@ const ApiRequest = async (url, data) => {
         "Authorization": `Bearer ${token}`
       },
     });
-    // console.log(response)
-    // if(response.headers.authorization){
-    //   extension(response.headers.authorization);
-    // }
     return response.data;
   } catch (error) {
     if (error.response) {
-      // 401 Unauthorized 상태 코드가 반환된 경우 로그인 페이지로 리다이렉트
       console.log(error.response);
       if (error.response.status === 401) {
-        // 로그인 상태를 해제하고 로그인 페이지로 이동
       } else {
         // 다른 종류의 오류 처리
         console.error("Another error happened:", error.message);
