@@ -365,6 +365,7 @@
 		WHERE 1=1
 			AND ca.CTRT_KND_CD = #{ctrtKndCd}
 			AND ea.PRJCT_ID = #{prjctId}
+			AND ea.ATRZ_DMND_STTS_CD = 'VTW03703'
 	</select>
 
 	<select id="retrieveCtrtAtrzCnt" parameterType="map" resultType="com.trsystem.LowerHashMap">

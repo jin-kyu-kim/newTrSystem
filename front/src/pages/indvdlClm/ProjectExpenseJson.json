@@ -134,10 +134,10 @@
       { "key": "atdrn", "value": "용도(참석자명단)", "cellType": "textBox", "placeholder": "용도(참석자명단)","width": "24%" }
     ],
     "placeholderAndRequired": [
-      {"expensCd": "VTW04528", "required": { "ctPrpos": true, "atdrn": true }, "ctPrposPlaceholder": "상세내역(참여인력)", "atdrnPlaceholder": "용도"},
-      {"expensCd": "VTW04530", "required": { "ctPrpos": true }, "atdrnPlaceholder": "용도를 입력해주세요."},
+      {"expensCd": "VTW04528", "required": { "ctPrpos": true, "atdrn": true }, "ctPrposPlaceholder": "용도", "atdrnPlaceholder": "상세내역(참여인력)"},
+      {"expensCd": "VTW04530", "required": { "atdrn": true }, "ctPrposPlaceholder": "상세내역(목적)", "atdrnPlaceholder": "용도를 입력해주세요."},
       {"expensCd": "VTW04531", "required": { "ctPrpos": true, "atdrn": true }, "ctPrposPlaceholder": "상세내역(목적)", "atdrnPlaceholder": "참석자 명단"},
-      {"expensCd": "VTW04533", "required": { "ctPrpos": true }, "atdrnPlaceholder": "출발지-목적지"},
+      {"expensCd": "VTW04533", "required": { "atdrn": true }, "ctPrposPlaceholder": "상세내역(목적)", "atdrnPlaceholder": "출발지-목적지"},
       {"expensCd": "VTW04509", "message": "해당 차수에 이미 스마트폰 지원 신청이 있습니다."}
     ],
     "buttonGroup":[
