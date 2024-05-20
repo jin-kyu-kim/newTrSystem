@@ -30,6 +30,7 @@ const CustomLabelValue = ({props, onSelect, value, readOnly}) => {
         } else if (props.type === "ComboBox") {
             result.push(
                 <CustomComboBox 
+                    key={props.label}
                     label={props.label}
                     props={props.param} 
                     onSelect={onSelect} 

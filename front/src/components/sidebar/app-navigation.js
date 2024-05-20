@@ -182,11 +182,11 @@ export const navigation = [
     items: [
       {
         text: '프로젝트관리',
-        path: '/71',
+        path: '/mngrMenu/ProjectList',
         auth: 'VTW04801'
       },{
         text: '프로젝트승인',
-        path: '/72',
+        path: '/mngrMenu/ProjectAprv',
         auth: 'VTW04801'
       },{
         text: '전자결재',

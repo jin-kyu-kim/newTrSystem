@@ -81,6 +81,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
           <Summary calculateCustomSummary={calculateCustomSummary}> 
           {grouping.map(item => (
             <GroupItem
+              key={item.key}
               column={item.key}
               summaryType={item.summaryType}
               valueFormat={item.valueFormat}
@@ -90,6 +91,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
             ))}
         
           <TotalItem
+            key={groupingData.dataField}
             column={groupingData.totalTextColumn}
             customizeText={() => {
               return "총 계";
@@ -97,6 +99,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
           />
           {grouping.map(item => (
             <TotalItem
+                key={item.key}
                 name={item.key}
                 column={item.key}
                 summaryType={item.summaryType}

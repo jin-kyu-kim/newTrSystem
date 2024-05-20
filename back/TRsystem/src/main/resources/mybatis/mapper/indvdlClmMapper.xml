@@ -121,11 +121,11 @@
             ,EMP 		EMP
         WHERE VMNG.EMP_ID = EMP.EMP_ID
         AND NEW_VCATN_YN = 'Y'
-        <if test="vcatnBgngYmd == null or vcatnBgngYmd.equals('')">
+        <if test="searchYear == null or searchYear.equals('')">
             AND DATE_FORMAT(SYSDATE(), '%Y%m%d') BETWEEN ALTMNT_BGNG_YMD AND ALTMNT_USE_END_YMD
         </if>
-        <if test="vcatnBgngYmd != null and !vcatnBgngYmd.equals('')">
-            AND #{vcatnBgngYmd} BETWEEN ALTMNT_BGNG_YMD AND ALTMNT_USE_END_YMD
+        <if test="searchYear != null and !searchYear.equals('')">
+            AND #{searchYear} BETWEEN SUBSTR(ALTMNT_BGNG_YMD, 1, 4) AND SUBSTR(ALTMNT_USE_END_YMD, 1, 4)
         </if>
         <if test="empId !=null and !empId.equals('')">
             AND EMP.EMP_ID = #{empId}

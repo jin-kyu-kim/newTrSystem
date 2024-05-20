@@ -38,7 +38,7 @@ const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick
   };
 
   return (
-    <>
+    <div className='container'>
       <div style={{ display: "flex", justifyContent: "flex-start" }}>
         <div style={{ float: "left", marginRight: "auto" }}>로고</div>
         <div style={{ display: "inline-block" }}>{setButtons()}</div>
@@ -73,7 +73,7 @@ const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick
           </table>
         </div>
 
-        <div style={{ flex: 3, marginRight: "50px" }}>
+        <div style={{ flex: 4, marginRight: "50px" }}>
           <AtrzLnTable
             atrzLnEmpList={atrzLnEmpList}
             bottomNm={'합의'}
@@ -113,7 +113,7 @@ const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick
         </div>
       </div>
       <hr />
-    </>
+    </div>
   );
 };
 

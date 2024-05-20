@@ -3,6 +3,7 @@ import routes from './app-routes';
 import { SideNavInnerToolbar as SideNavBarLayout } from './layouts';
 import React, {useTransition} from 'react';
 import { useScreenSizeClass } from './utils/media-query';
+import { useMediaQuery } from '../../utils/useMediaQuery';
 
 function CheckAuth(isPrivate){
     // 토큰이 저장된 상태를 검사하는 로직
@@ -50,6 +51,7 @@ const PublicRoute = ({ children }) => {
 
 export default function Content() {
     const screenSizeClass = useScreenSizeClass();
+    const isLargeScreen = useMediaQuery('(min-width: 1650px)');
     const [isPending,startTransition] = useTransition();
 
   return (
@@ -64,13 +66,13 @@ export default function Content() {
                         <PrivateRoute isPrivate={isPrivate}>
                           <div className={`app ${screenSizeClass}`} style={{opacity: isPending ? 0.2 : 1}}>
                             <SideNavBarLayout>
+                              {/*<div className={'content-block'}>*/}
                                 <div className={'dx-card responsive-paddings'}>
-                                    <div className="mainContainerStyle">
-                                    <div className="container">
-                                {React.createElement(element)}
-                                        </div>
-                                    </div>
+                                  <div className={'contenter'}>
+                                    {React.createElement(element)}
+                                  </div>
                                 </div>
+                              {/*</div>*/}
                             </SideNavBarLayout>
                           </div>
                         </PrivateRoute>
@@ -88,10 +90,4 @@ export default function Content() {
   );
 }
 
-const mainContainerStyle = {
-    display: "flex",
-    alignItems: "flex-start",
-    flexWrap: "wrap",
-    justifyContent: "center",
-};
 

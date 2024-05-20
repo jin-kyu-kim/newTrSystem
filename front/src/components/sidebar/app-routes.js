@@ -375,6 +375,18 @@ const routes = [
     name: "MeetingRoomManageAdmin",
     element: React.lazy(() => import("../../pages/humanResourceMng/MeetingRoomManage")),
     isPrivate:"VTW04805"
+  },
+  {// 관리자메뉴 > 프로젝트관리(관리자)
+    path: "/mngrMenu/ProjectList",
+    name: "ProjectListAdmin",
+    element: React.lazy(() => import("../../pages/project/manage/ProjectList")),
+    isPrivate:"VTW04801"
+  },
+  {// 관리자메뉴 > 프로젝트승인(관리자)
+    path: "/mngrMenu/ProjectAprv",
+    name: "ProjectAprvAdmin",
+    element: React.lazy(() => import("../../pages/project/approval/ProjectAprv")),
+    isPrivate:"VTW04801"
   }
 ];
 

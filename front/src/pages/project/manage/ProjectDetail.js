@@ -61,6 +61,8 @@ const ProjectDetail = () => {
 
   /* 변경원가 버튼 클릭 */
   const onClikcChngBgt = async () => {
+
+
     if(atrzLnSn === undefined) {
       // null이면 check 할 필요가 없다.
       const isconfirm = window.confirm("프로젝트 변경을 진행하시겠습니까?");
@@ -73,37 +75,38 @@ const ProjectDetail = () => {
       });
 
       if(result != null) {
-        if(result === 'VTW03701') {
-          // 임시저장인 경우
-          const isconfirm = window.confirm("임시저장된 내역이 있습니다. 수정을 진행하시겠습니까?");
-          if(isconfirm) {
-            await projectChgHandle();
-          }
-        } else if (result === 'VTW03704' ) {
-          // 반려인 경우
-          const isconfirm = window.confirm("기존에 반려된 요청이 존재합니다. 반려된 요청을 수정하시겠습니까?");
-          if(isconfirm) {
-              const isconfirm = window.confirm("기존에 반려된 요청의 변경 사항을 초기화하여 수정하시겠습니까?");
+          if(result === 'VTW03701') {
+              // 임시저장인 경우
+              // handleOpen("임시저장된 내역이 있습니다. 수정을 진행하시겠습니까?", projectChgHandle, true);
+              const isconfirm = window.confirm("임시저장된 내역이 있습니다. 수정을 진행하시겠습니까?");
               if(isconfirm) {
-                await resetPrmpc();
-              } else {
-                const isconfirm = window.confirm("반려된 요청을 이어서 수정하시겠습니까?");
-                if(isconfirm){
-                  await projectChgHandle();
-                }
+                await projectChgHandle();
               }
-          } 
-        } else {
-          const isconfirm = window.confirm("프로젝트 변경을 진행하시겠습니까?");
-          if(isconfirm){
-            await projectChgHandle();
+          } else if (result === 'VTW03704') {
+            // 생성중인 프로젝트가 아니고, 반려인 경우 작동
+            // handleOpen("기존에 반려된 요청이 존재합니다. 반려된 요청을 수정하시겠습니까?", projectChgHandle(result), true);
+            const isconfirm = window.confirm("기존에 반려된 요청이 존재합니다. 반려된 요청을 수정하시겠습니까?");
+            if(isconfirm) {
+                await projectChgHandle(result);
+            } else {
+              const isconfirm = window.confirm("기존에 반려된 내용을 제거하시겠습니까? 작성한 데이터가 사라집니다.");
+              if(isconfirm) {
+                const isconfirm = window.confirm("정말로 기존에 반려된 내용을 제거하시겠습니까?");
+                await resetPrmpc();
+              }
+            }
+
+          } else {
+            const isconfirm = window.confirm("프로젝트 변경을 진행하시겠습니까?");
+            if(isconfirm){
+              await projectChgHandle();
+            }
           }
-        }
       }
     }
   };
 
-  const projectChgHandle = async () => {
+  const projectChgHandle = async (bfeAtrzDmndSttsCd) => {
 
       let targetOdr;
       
@@ -126,13 +129,16 @@ const ProjectDetail = () => {
                , bizSttsCd: bizSttsCd
                , atrzLnSn: atrzLnSn
                , deptId: deptId
-               , prjctNm: prjctNm},
+               , prjctNm: prjctNm
+               , bfeAtrzDmndSttsCd: bfeAtrzDmndSttsCd
+              },
       })
   }
 
   /**
    * 승인이 반려된 차수일 때 이를 초기화 요청 시
    * 다음차수로 올린 뒤 최종 승인 완료된 값을 넣어준다.
+   * + 프로젝트를 수행중으로 바꾼다.
    */
   const resetPrmpc = async () => {
     const date = new Date();
@@ -144,17 +150,25 @@ const ProjectDetail = () => {
       bgtMngOdrTobe: bgtMngOdrTobe,
       atrzDmndSttsCd: "VTW03701",
       regDt : date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0],
-      regEmpId: empId
+      regEmpId: empId,
+      bizSttsCd: bizSttsCd
     };
 
     try {
       const response = await ApiRequest("/boot/prjct/resetPrmpc", param);
-      console.log(response);
       if(response > 0) {
         navigate("../project/ProjectChange",
         {
           state: {
-            ...location.state,
+            prjctId: prjctId
+            , ctrtYmd: ctrtYmd
+            , stbleEndYmd: stbleEndYmd
+            , bgtMngOdr: bgtMngOdr
+            , bgtMngOdrTobe: response
+            , targetOdr: response
+            , bizSttsCd: bizSttsCd
+            , atrzLnSn: atrzLnSn
+            , deptId: deptId
           },
         })
       }
@@ -172,7 +186,6 @@ const ProjectDetail = () => {
    * @returns 
    */
   const chkBgtOdr = async () => {
-    console.log("반려/임시저장 여부 확인");
 
     const param = { 
       queryId: "projectMapper.retrieveTmprRjctBgtOdr",
@@ -279,6 +292,7 @@ const ProjectDetail = () => {
                   bgtMngOdr={bgtMngOdr} 
                   bgtMngOdrTobe={bgtMngOdrTobe} 
                   atrzDmndSttsCd={atrzDmndSttsCd}
+                  bizSttsCd={bizSttsCd}
                 />
               </React.Suspense>
             );
