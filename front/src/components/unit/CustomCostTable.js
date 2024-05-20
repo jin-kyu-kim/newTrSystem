@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "devextreme-react";
-import { parse, format, addMonths } from 'date-fns';
+import { parse, format, addMonths, subMonths } from 'date-fns';
 
 import ApiRequest from "../../utils/ApiRequest";
 import ProjectChangePopup from "../../pages/project/manage/ProjectChangePopup";
@@ -64,8 +64,10 @@ const CustomCostTable = (props) => {
   
   //기간 set
   useEffect(() => {
-    const start = parse(ctrtYmd || format(new Date(), 'yyyy-MM-dd'), 'yyyy-MM-dd', new Date());
-    const end = stbleEndYmd ? parse(stbleEndYmd, 'yyyy-MM-dd', new Date()) : addMonths(start, 15);
+    // const start = parse(ctrtYmd || format(new Date(), 'yyyy-MM-dd'), 'yyyy-MM-dd', new Date());
+    const start = subMonths(parse(ctrtYmd || format(new Date(), 'yyyy-MM-dd'), 'yyyy-MM-dd', new Date()), 1);
+    // const end = stbleEndYmd ? parse(stbleEndYmd, 'yyyy-MM-dd', new Date()) : addMonths(start, 15);
+    const end = stbleEndYmd ? addMonths(parse(stbleEndYmd, 'yyyy-MM-dd', new Date()), 1) : addMonths(start, 16);
     const periods = [];
   
     for (let currentDate = start; currentDate <= end; currentDate = addMonths(currentDate, 1)) {
@@ -185,10 +187,8 @@ const CustomCostTable = (props) => {
           dataField={periodItem}
           caption={periodItem}
           alignment={"center"}
-          // visibility={"hidden"}
           fixed={false}
           format={json.popupNumberBoxFormat}
-
         ></Column>
       );
     });
@@ -220,17 +220,15 @@ const CustomCostTable = (props) => {
         ref={dataGridRef}
         keyExpr={json.keyColumn}
         id={"dataGrid"}
-        // className={"table"}
         dataSource={values}
         showBorders={true}
         showColumnLines={true}
         focusedRowEnabled={false}
         columnAutoWidth={true}
         width="100%"
-        height="100%"
         sorting={{ mode: "none" }}
+        scrolling={{ mode: 'virtual' }} // 스크롤 모드 설정
         noDataText="No data"
-        columnWidth={"auto"}
         onCellPrepared={(e) => {
           if (e.rowType === "header") {
             e.cellElement.style.textAlign = "center";
@@ -245,7 +243,7 @@ const CustomCostTable = (props) => {
           placeholder="자유롭게 입력하세요"
           width="100%"
         />
-        <Scrolling columnRenderingMode="standard" />
+        {/* <Scrolling columnRenderingMode="standard" /> */}
         <Summary>
           {summaryColumns.map((item) => (
             <TotalItem

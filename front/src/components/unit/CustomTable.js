@@ -1,11 +1,13 @@
-import DataGrid, { Column, Export, Pager, Paging, Summary, TotalItem, GroupItem, Grouping, MasterDetail } from "devextreme-react/data-grid";
+import DataGrid, { Column, Export, Pager, Paging, Summary, TotalItem, GroupItem, Grouping, MasterDetail, Scrolling, ColumnFixing } from "devextreme-react/data-grid";
 import GridRows from "./GridRows";
 import AllowedPageSize from "./AllowedPageSize";
 
 const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, onClick,
                        wordWrap, onRowClick, excel, onExcel,onCellClick, grouping, groupingData, groupingCustomizeText,
                        masterDetail, handleExpanding, focusedRowIndex, handleCheckBoxChange, checkBoxValue, prjctCmpr,
-                       noDataText, calculateCustomSummary }) => {
+                       noDataText, calculateCustomSummary, scrolling }) => {
+
+  const columnWidth = scrolling && { columnWidth: "auto" };
   return (
     <div className="wrap_table">
       <DataGrid
@@ -23,6 +25,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
         onRowClick={onRowClick}
         onExporting={onExcel}
         onCellClick={onCellClick}
+        {...columnWidth}
         onCellPrepared={(e) => {
 
           if (e.rowType === 'header') {
@@ -120,6 +123,12 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
           enabled={true}
           component={masterDetail}
       />}
+      {scrolling &&
+      <>
+      <ColumnFixing enabled={true} />
+      <Scrolling mode="virtual" />
+      </>
+      }
       </DataGrid>
     </div>
   );
