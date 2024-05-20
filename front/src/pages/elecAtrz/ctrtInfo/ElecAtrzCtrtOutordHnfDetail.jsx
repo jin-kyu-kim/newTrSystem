@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Popup } from "devextreme-react/popup";
 import { Button } from 'devextreme-react/button';
+import { parse, addMonths, subMonths  } from 'date-fns';
 
 import CustomTable from 'components/unit/CustomTable';
 
@@ -64,13 +65,13 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
 
 
    /* =========================  월별 데이터 생성  =========================*/
-    const makeMonthlyData = (start, end) => {
-        const startData = new Date(start.substring(0, 4), start.substring(4, 6) - 1, start.substring(6, 8));
-        const endData = new Date(end.substring(0, 4), end.substring(4, 6) - 1, end.substring(6, 8));
+    const makeMonthlyData = (start, end) => {      
+        const startData = start ? subMonths(parse(start, 'yyyyMMdd', new Date()), 1) : subMonths(new Date(), 1);
+        const endData = end ? addMonths(parse(end, 'yyyyMMdd', new Date()), 1) : addMonths(start, 16);
 
-        const result = [{ "key": "atrzStepCdNm", "value": "구분"},
-                        { "key": "mm", "value": "총MM"},
-                        { "key": "total", "value": "총합계", "currency": true}
+        const result = [{ "key": "atrzStepCdNm", "value": "구분", "fixed": true},
+                        { "key": "mm", "value": "총MM", "fixed": true},
+                        { "key": "total", "value": "총합계",  "fixed": true, "currency": true,}
                     ];
 
         let currentDate = new Date(startData);
@@ -80,13 +81,15 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
             result.push({ value: formattedYearMonth,
                 subColumns: [
                         { key: `mm-${yearMonth}`, value: "MM"},
-                        { key: `cash-${yearMonth}`, value: "금액", "currency": true}
+                        { key: `cash-${yearMonth}`, value: "업체금액", "currency": true},
+                        { key: `indvcash-${yearMonth}`, value: "개인금액", "currency": true}
                 ]
             })
 
             summaryColumn.push(
-                { key: `mm-${yearMonth}`, value: `mm-${yearMonth}`, type: "sum", format: "총 {0} MM", precision: 2 },
-                { key: `cash-${yearMonth}`, value: `cash-${yearMonth}`, type: "sum", format: "총 {0} 원", precision: 0 }
+                { key: `mm-${yearMonth}`, value: `mm-${yearMonth}`, type: "sum", format: "총 {0} MM", precision: 2,  },
+                { key: `cash-${yearMonth}`, value: `cash-${yearMonth}`, type: "sum", format: "총 {0} 원", precision: 0 },
+                { key: `indvcash-${yearMonth}`, value: `indvcash-${yearMonth}`, type: "sum", format: "총 {0} 원", precision: 0 }
             )
 
             currentDate.setMonth(currentDate.getMonth() + 1);
@@ -130,8 +133,6 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
         ];
     
         const dtlCndResponse = await ApiRequest("/boot/common/commonSelect", dtlCndParam);
-    
-        console.log("dtlCndResponse", dtlCndResponse);
     
         const result = dtlResponse.map((ctrtItem) => {
             const hnfCtrtDtlMmItems = dtlCndResponse
@@ -221,19 +222,25 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
                         key: item.outordHnfCtrtSeCd,
                     };
                 }
-        
                 item.hnfCtrtDtlMm.forEach(mmItem => {
                     
                     acc[groupKey].mm += mmItem.mm;
-                    acc[groupKey].total += mmItem.ctrtAmt;
+                    acc[groupKey].total += (mmItem.entrpsGiveCtrtAmt?mmItem.entrpsGiveCtrtAmt:0)+(mmItem.indvdlGiveCtrtAmt);
                     if (!acc[groupKey][`mm-${mmItem.id}`]) {
                         acc[groupKey][`mm-${mmItem.id}`] = 0; 
                     }
                     if (!acc[groupKey][`cash-${mmItem.id}`]) {
                         acc[groupKey][`cash-${mmItem.id}`] = 0; 
                     }
+                    if (!acc[groupKey][`indvcash-${mmItem.id}`]) {
+                        acc[groupKey][`indvcash-${mmItem.id}`] = 0; 
+                    }
                     acc[groupKey][`mm-${mmItem.id}`] += mmItem.mm;
-                    acc[groupKey][`cash-${mmItem.id}`] += mmItem.ctrtAmt;
+                    acc[groupKey][`indvcash-${mmItem.id}`] += mmItem.indvdlGiveCtrtAmt;
+                    if(mmItem.entrpsGiveCtrtAmt){
+                        acc[groupKey][`cash-${mmItem.id}`] += mmItem.entrpsGiveCtrtAmt;
+                    }
+                    
                 });
         
                 return acc;
@@ -270,6 +277,7 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
     /* =========================  화면 표출  =========================*/
     return (
         <div>
+            {summaryTableData && monthlyData && summaryColumn &&
             <CustomTable
                 keyColumn={"key"}
                 columns={monthlyData}
@@ -277,10 +285,10 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
                 pagerVisible={false}
                 summary={true}
                 summaryColumn={summaryColumn}
-                // smallSummaryColumn={summaryColumn}
             />
+            }
 
-            <div style={{ textAlign: "right", marginBottom:"10px" }}>
+            <div style={{ textAlign: "right", margin:"10px" }}>
                 {(!["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)) && (
                         data.elctrnAtrzTySeCd !=="VTW04914" 
                     ) && (
