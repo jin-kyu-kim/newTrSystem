@@ -84,7 +84,7 @@ const SearchPrjctSet = ({ callBack, props, popup }) => {
     <div className="box_search" width="100%">
       <Box
         className="searchPrjctSet"
-        style={{width: "100%", display: "flex", flexDirection: "row"}}
+        style={{display: "flex", alignItems: "center", height: 40}}
       >
         <Item className="prmpcInptSeCdItem" ratio={1} visible={props.prmpcInptSeCdItem}>
           <CustomCdComboBox
@@ -154,13 +154,15 @@ const SearchPrjctSet = ({ callBack, props, popup }) => {
             onEndDateChange={handleEndDateChange}
           />
         </Item>
-        <Item className="searchBtnItem" ratio={1} visible={props.searchBtnItem}>
-          <Button
-            onClick={handleSubmit} text="검색"
-          />
-        </Item>
-        <Item ratio={1} visible={props.insertBtnItem}>
-          <Button text="등록" onClick={onClickInsertBtn} />
+        <Item ratio={1} >
+          <Box>
+            <Item className="searchBtnItem" ratio={1} visible={props.searchBtnItem}>
+              <Button onClick={handleSubmit} text="검색" style={{margin: "5px 0px 0px 5px"}} />
+            </Item>
+            <Item ratio={1} visible={props.insertBtnItem}>
+              <Button text="등록" type='default' onClick={onClickInsertBtn} style={{margin: "5px 0px 0px 5px"}} />
+            </Item>
+          </Box>
         </Item>
       </Box>
       {popup ?
