@@ -333,6 +333,7 @@ const CultureHealthCostReg = (props) => {
         const confirmResult = window.confirm("삭제하시겠습니까?");
         if (confirmResult) {
             if (validateDelete()) {
+                onResetClick();
                 try {
                     const paramCh = [{ tbNm: "CLTUR_PHSTRN_ACT_CT_REG" }, { empId: selectedItem.empId, clturPhstrnActCtSn: selectedItem.clturPhstrnActCtSn }]
                     const responseCh = await ApiRequest("/boot/common/commonDelete", paramCh);
@@ -360,9 +361,11 @@ const CultureHealthCostReg = (props) => {
         selectedClmAmt.current = selectedItem.clmAmt;
         selectedClturPhstrnSeCd.current = selectedItem.clturPhstrnSeCd;
         setInitParam(selectedItem);
-        for(let i = 0; i < selectedItem.atchmnfl.length; i++){
-            deleteFiles.current.push({ atchmnflId: selectedItem.atchmnfl[i].atchmnflId,
-                atchmnflSn: selectedItem.atchmnfl[i].atchmnflSn, strgFileNm: selectedItem.atchmnfl[i].strgFileNm });
+        if(selectedItem.atchmnfl){
+            for(let i = 0; i < selectedItem.atchmnfl.length; i++){
+                deleteFiles.current.push({ atchmnflId: selectedItem.atchmnfl[i].atchmnflId,
+                    atchmnflSn: selectedItem.atchmnfl[i].atchmnflSn, strgFileNm: selectedItem.atchmnfl[i].strgFileNm });
+            }
         }
     };
 
