@@ -51,7 +51,8 @@ const ProjectExpense = () => {
         setHistYmOdr({
             aplyYm: initParam?.year + initParam?.month,
             aplyOdr: initParam?.aplyOdr,
-            empId: empId
+            empId: empId,
+            isHist: true
         })
         if (Object.keys(initParam).length !== 0) setPopVisible(true);
     };
@@ -175,7 +176,6 @@ const ProjectExpense = () => {
                 ])
             }
         } else { // 문서이동
-            console.log('props', props)
             navigate("/elecAtrz/ElecAtrzDetail", {state: {data: props}})
         }
     }
@@ -280,6 +280,7 @@ const ProjectExpense = () => {
                 onPopHiding={onPopHiding}
                 aprvInfo={atrzDmndSttsCnt}
                 noDataCase={{ cnt: ctAply.length, yn: mmAtrzCmptnYn }}
+                mmAtrzCmptnYn={mmAtrzCmptnYn}
                 basicInfo={histYmOdr !== null ? histYmOdr : { aplyYm, aplyOdr, empId }}
             />
         </div>
