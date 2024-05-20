@@ -563,5 +563,24 @@
 		 WHERE ELCTRN_ATRZ_ID = #{elctrnAtrzId}
 	</select>
 	
+	<insert id="mergeCtrtGiveAtrzDtl" parameterType="map">
+		INSERT	INTO  
+				CTRT_GIVE_ATRZ_DTL(
+				CTRT_ELCTRN_ATRZ_ID,
+				ELCTRN_ATRZ_ID,
+				ENTRPS_CTRT_DTL_SN,
+				GIVE_AMT,
+				OUTORD_LBRCO_PRMPC_SN
+				) 
+		VALUES (
+				#{ctrtElctrnAtrzId},
+		        #{elctrnAtrzId},
+		        #{entrpsCtrtDtlSn},
+		        #{giveAmt},
+		        #{outordLbrcoPrmpcSn}
+				)
+		ON DUPLICATE KEY UPDATE GIVE_AMT = #{giveAmt}
+	</insert>
+	
 	
 </mapper>
