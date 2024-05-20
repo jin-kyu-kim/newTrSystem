@@ -163,9 +163,16 @@
 			  JOIN PRJCT p ON (p.PRJCT_ID = pal.PRJCT_ID AND p.PRJCT_ID = pald.PRJCT_ID)
 			  JOIN EMP e  ON (e.EMP_ID = pal.REG_EMP_ID)
 			 WHERE 1=1
-                <if test="!path.equals('/mngrMenu/ProjectAprv')">
-			   AND (pald.APRVR_EMP_ID = #{empId} OR pal.REG_EMP_ID = #{empId})
-                </if>
+                <choose>
+					<when test="path != null and !path.equals('')">
+		                <if test="!path.equals('/mngrMenu/ProjectAprv')">
+					   AND (pald.APRVR_EMP_ID = #{empId} OR pal.REG_EMP_ID = #{empId})
+		                </if>
+					</when>
+					<otherwise>
+					   AND (pald.APRVR_EMP_ID = #{empId} OR pal.REG_EMP_ID = #{empId})
+					</otherwise>
+				</choose>
 		        <if test="prmpcInptSeCd != null and !prmpcInptSeCd.equals('')">
 		       AND pal.PRMPC_INPT_SE_CD = #{prmpcInptSeCd}
 		        </if>
