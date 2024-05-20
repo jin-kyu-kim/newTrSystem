@@ -450,6 +450,16 @@ const ProjectHrCtAprvDetail = () => {
         getMmChildList(mmChild.current);
     }, [mmChild.current]);
 
+    // 로우 클릭으로 세부리스트 열기
+    const onRowClick = (e) => {
+        let selectedKey = e.component.getKeyByRowIndex(e.rowIndex);
+        if (!e.component.isRowExpanded(selectedKey)) {
+            e.component.expandRow(selectedKey);
+        } else {
+            e.component.collapseRow(selectedKey);
+        }
+    }
+
     // 인력 세부리스트 데이터 가져오기
     const getMmChildList = async (key) => {
         try {
@@ -728,14 +738,15 @@ const ProjectHrCtAprvDetail = () => {
             <div className="wrap_search" style={{ marginBottom: "20px" }}>
                 <SearchPrjctCostSet callBack={searchHandle} props={searchParams} />
             </div>
-            <div className="" style={{ marginBottom: "10px" }}>
+            <div className="" style={{marginBottom: "10px", display: "flex", justifyContent: "space-between"}}>
                 <span>* 수행인력</span>
+                <span style={{color: "red", fontWeight: "bold" }}>개별 승인은 해당 요청행을 클릭하세요</span>
             </div>
-            <CustomTable keyColumn={mm.keyColumn} columns={mm.tableColumns} values={mmValues} paging={true} onClick={onMmBtnClick} summary={true} summaryColumn={mm.summaryColumn} masterDetail={masterDetailMm} handleExpanding={expandingMm}/>
+            <CustomTable keyColumn={mm.keyColumn} columns={mm.tableColumns} values={mmValues} paging={true} onClick={onMmBtnClick} summary={true} summaryColumn={mm.summaryColumn} masterDetail={masterDetailMm} handleExpanding={expandingMm} onRowClick={onRowClick}/>
             <div className="" style={{ marginBottom: "10px" }}>
                 <span>* 경비</span>
             </div>
-            <CustomTable keyColumn={ct.keyColumn} columns={ct.tableColumns} values={ctValues} paging={true} onClick={onCtBtnClick} summary={true} summaryColumn={ct.summaryColumn} masterDetail={masterDetailCt} handleExpanding={expandingCt}/>
+            <CustomTable keyColumn={ct.keyColumn} columns={ct.tableColumns} values={ctValues} paging={true} onClick={onCtBtnClick} summary={true} summaryColumn={ct.summaryColumn} masterDetail={masterDetailCt} handleExpanding={expandingCt} onRowClick={onRowClick}/>
             <Button text="목록" style={{width: "80px"}} onClick={(e)=>{navigate('/project/ProjectHrCtAprv', {state : {empId: userInfo.empId}})}}/>
             <Popup
                 width={ProjectHrCtAprvDetailJson.popup.width}
