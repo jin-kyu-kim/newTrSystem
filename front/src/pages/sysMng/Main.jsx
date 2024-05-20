@@ -24,9 +24,11 @@ const Main = ({}) => {
         atrzListQueryId,atrzListTableColumns    //결재 리스트
         } = MainJson; 
 
+
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const deptInfo = JSON.parse(localStorage.getItem("deptInfo"));
     if(!userInfo){
+        // eslint-disable-next-line react-hooks/rules-of-hooks
         const { signOut } = useAuth();
         signOut();
     }
@@ -69,10 +71,11 @@ let flagOrder = new Date().getDate() > 15 ? 1 : 2;
 let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMM")) : String(Moment(new Date()).format("YYYYMM") - 1)
 
 //{*-------------------------- 이벤트 영역 -----------------------------------*}
+
   const pageHandle = async () => {
     const params = [
       {queryId : noticeQueryId ,type: 'notice'}
-      ,{queryId : trAplyTotQueryId, empId:empId, aplyYm: orderWorkBgngMm, aplyOdr: flagOrder}
+      ,{queryId : trAplyTotQueryId, empId:empId ,aplyYm:orderWorkBgngMm ,aplyOdr: flagOrder}
       ,{queryId : atrzSttsQueryId, empId:empId}
       ,{queryId : atrzListQueryId, empId:empId}
     ];
@@ -96,14 +99,23 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
                 });
     }
     const goNotice = (e) => {     //공지사항이동
-        navigate("/infoInq/NoticeList", { state: { empId: empId }});
+        navigate("/infoInq/NoticeList", 
+                { state: { 
+                        empId: empId,
+                        } 
+                });
     }
     const goKms = (e) => {       //지식관리시스템이동
       window.open("http://kms.vtw.co.kr/#/login");
     }
     const goConference = (e) => {  //회의실예약이동
-        navigate("/humanResourceMng/MeetingRoomManage", { state: { empId: empId }});
+        navigate("/humanResourceMng/MeetingRoomManage", 
+                { state: { 
+                        empId: empId,
+                        } 
+                });
     }
+
 //========================테이블 클릭 이벤트 ==============================================
     const onRowClick = (e) => { //공지사항 테이블 클릭
         navigate("/infoInq/NoticeDetail", 
@@ -118,6 +130,7 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
             navigate("/indvdlClm/ProjectExpense", //프로젝트비용페이지로 이동
                     {state: { id: e.key }})
         }
+        
     }; 
     //결재 신청 현황 테이블 클릭
     const onAplyRowClick = (e) => {
@@ -162,6 +175,9 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
         console.log(error);
       }
     };
+
+//==========================================================================
+
 //============================화면그리는부분===================================
   return (
     <div style={{ marginLeft: "1%", marginRight: "1%" }}>
@@ -197,6 +213,7 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
             </TableBody>
           </Table>
         </TableContainer>
+
 {/* ----------------------------------공지사항 --------------------------------------------------*/}        
         <div className="noticeContainer" style={{ marginTop: "20px", marginBottom: "10px" }}>
           <div><p><strong> 공지사항 </strong></p></div>
