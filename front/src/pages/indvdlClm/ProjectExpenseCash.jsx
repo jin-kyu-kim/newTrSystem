@@ -138,7 +138,7 @@ const ProjectExpenseCash = (props) => {
                     <CustomLabelValue props={item} onSelect={handleChgValue} value={item.name === 'utztnDt' ? dateVal[item.name] : value[0][item.name]} key={index} />
                     :
                     <div className="dx-field" key={index} >
-                        <div className="dx-field-label asterisk">{item.label}</div>
+                        <div className={`dx-field-label ${item.required ? 'asterisk' : ''}`}>{item.label}</div>
                         <div className="dx-field-value">
                             <SpecialTypeRender item={item} />
                         </div>

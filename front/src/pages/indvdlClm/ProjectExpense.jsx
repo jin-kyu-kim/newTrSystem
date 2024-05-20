@@ -126,7 +126,7 @@ const ProjectExpense = () => {
     const onPopHiding = async () => { setPopVisible(false); }
 
     const getButtonsShow = () => {
-        if (ctAply.length === 0) { // 비용청구가 없으면서 근무시간은 존재하는 경우
+        if (ctAply?.length === 0) { // 비용청구가 없으면서 근무시간은 존재하는 경우
             if (ctAtrzCmptnYn === 'Y' && mmAtrzCmptnYn === 'N') return buttonsConfig.hasApprovals;
             if (mmAtrzCmptnYn === 'Y') return buttonsConfig.completed;
         } else {
@@ -175,7 +175,8 @@ const ProjectExpense = () => {
                 ])
             }
         } else { // 문서이동
-            // navigate("/elecAtrz/ElecAtrzDetail", {state: {elctrnAtrzId: props.data.elctrnAtrzId}})
+            console.log('props', props)
+            navigate("/elecAtrz/ElecAtrzDetail", {state: {data: props}})
         }
     }
 
