@@ -18,7 +18,7 @@
     "caption": "직급명",
     "dataField": "jbpsNm",
     "width": 100,
-    "area": "row",
+    "area": "filter",
     "expanded": true,
     "showTotals": false
   },
@@ -26,7 +26,7 @@
     "caption": "담당업무",
     "dataField": "tkcgJob",
     "width": 100,
-    "area": "row",
+    "area": "filter",
     "expanded": true,
     "showTotals": false
   },
