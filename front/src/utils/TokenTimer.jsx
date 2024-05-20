@@ -21,15 +21,16 @@ function TokenTimer() {
             const timer = setInterval(() => {
                 const now = new Date();
                 const remainingTime = tokenExpiration.getTime() - now.getTime();
+                console.log(remainingTime)
                 if (remainingTime <= 0) {
                     // 토큰이 만료되었을 때의 처리
                     clearInterval(timer);
                     handleOpen("로그인이 만료되었습니다.")
                     signOut();
                 } else if(remainingTime <= 600000 && remainingTime > 599000) {
-                        handleOpen("로그인을 연장하시겠습니까?",tokenExtension());
+                        handleOpen("로그인을 연장하시겠습니까?",tokenExtension, true);
                 } else if(remainingTime <= 300000 && remainingTime > 299000) {
-                        handleOpen("로그인을 연장하시겠습니까? 시간이 종료되면 자동 로그아웃 됩니다.",tokenExtension());
+                        handleOpen("로그인을 연장하시겠습니까? 시간이 종료되면 자동 로그아웃 됩니다.",tokenExtension, true);
                 }else{
                     // 남은 시간을 업데이트합니다.
                     setExpirationTime(new Date(tokenExpiration.getTime() - 1000));
