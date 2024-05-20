@@ -18,7 +18,7 @@
         { "key": "empFlnm", "value": "성명" , "width": "20%"},
         { "key": "jbpsNm", "value": "직위", "width": "20%"},
         { "key": "jbttlNm", "value": "직책" , "width": "20%"},
-        { "key": "deptGnfdYmd", "value": "부서발령일자", "width": "20%"}
+        { "key": "deptGnfdYmd", "value": "부서발령일자", "width": "2%"}
     ],
     "labelValue" : {
         "deptNm": {
@@ -28,17 +28,21 @@
             "required": true,
             "placeholder": "부서명"
         },
-        "upDeptId": {
+            "deptId": {
+            "name": "deptId",
             "type": "ComboBox",
             "required": true,
             "label": "상위부서",
-            "name": "upDeptId",
             "placeholder": "상위부서",
-            "param": { "tbNm" : "DEPT",
-                        "valueExpr" : "deptId",
-                        "displayExpr": "deptNm",
-                        "name": "upDeptId"
-                     }
+            "param":{ 
+                "queryId" : {
+                    "queryId" : "humanResourceMngMapper.retrieveUpDept"
+                    },
+                "valueExpr" : "deptId",
+                "displayExpr": "deptNmEmpFlnm",
+                "values" : ["deptId"],
+                "name" : "deptId"
+                }
         },
         "empId": {
             "name": "empId",
@@ -62,13 +66,7 @@
             "label": "부서시작일자",
             "required": true,
             "placeholder": "부서시작일자"
-        },
-        "deptEndYmd": {
-            "name": "deptEndYmd",
-            "type": "DateBox",
-            "label": "부서종료일자",
-            "required": true,
-            "placeholder": "부서종료일"
         }
+        
     }
 }
