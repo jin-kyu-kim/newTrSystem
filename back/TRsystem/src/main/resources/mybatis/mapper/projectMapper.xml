@@ -1092,10 +1092,10 @@
 					ON M.PRJCT_ID = S.PRJCT_ID AND M.BGT_MNG_ODR = S.BGT_MNG_ODR AND M.EXPENS_PRMPC_SN = S.EXPENS_PRMPC_SN 
 					WHERE 1=1
 					<if test="control != null and control != ''">
-						AND M.EXPENS_CD BETWEEN 'VTW04528' AND 'VTW04535'
+						AND M.EXPENS_CD BETWEEN 'VTW04529' AND 'VTW04535'
 					</if>
 					<if test="general != null and general != ''">
-						AND M.EXPENS_CD BETWEEN 'VTW04501' AND 'VTW04527'
+						AND M.EXPENS_CD BETWEEN 'VTW04501' AND 'VTW04528'
 					</if>
 					AND M.PRJCT_ID =  #{prjctId}
 					AND M.BGT_MNG_ODR = #{bgtMngOdr}
