@@ -388,7 +388,7 @@ const onRowUpdateingMonthData = async() => {
         //통제성경비, 일반경비
         if(popupInfo.menuName==="ProjectGeneralBudgetCostJson" || popupInfo.menuName==="ProjectControlBudgetCostJson"){
             setContents(
-                <div className="dx-fieldset">
+                <div className="dx-fieldset" key="expensCd">
                     <div className="dx-field">
                         <div className="dx-field-label asterisk">비용코드</div>
                         <div className="dx-field-value">
@@ -411,7 +411,7 @@ const onRowUpdateingMonthData = async() => {
         //외주인력
         }else if(popupInfo.menuName==="ProjectOutordEmpCostJson"){
             setContents(
-                <div className="dx-fieldset">
+                <div className="dx-fieldset" key="hnfRoleCd">
                     <CustomLabelValue props={popupInfo.labelValue.outordEmpId} value={data.outordEmpId} onSelect={handleChgState}/>
                     <div className="dx-field">    
                         <div className="dx-field-label asterisk">역할</div>
@@ -452,7 +452,7 @@ const onRowUpdateingMonthData = async() => {
         //자사인력
         }else if(popupInfo.menuName==="ProjectEmpCostJson"){
             setContents(
-                <div className="dx-fieldset">
+                <div className="dx-fieldset" key="hnfRoleCd">
                     <CustomLabelValue 
                         props={popupInfo.labelValue.empId} 
                         value={data.empId} 
