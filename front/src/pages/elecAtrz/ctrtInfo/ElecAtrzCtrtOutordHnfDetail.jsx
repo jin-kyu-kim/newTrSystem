@@ -285,6 +285,7 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
                 pagerVisible={false}
                 summary={true}
                 summaryColumn={summaryColumn}
+                scrolling={true}
             />
             }
 
@@ -304,6 +305,8 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
                 onClick={handlePopupVisible}
                 summary={true}
                 summaryColumn={ElecAtrzCtrtOutordHnfJson.summaryColumn}
+                scrolling={true}
+                wordWrap={true}
             />
 
             <Popup

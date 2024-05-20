@@ -39,7 +39,7 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
             getExpensClm();
 
         /* 재료비 계약, 외주업체 계약, 외주인력 계약 */
-        } else if(["VTW04908","VTW04909","VTW04910","VTW04914"].includes(detailData.elctrnAtrzTySeCd)){
+        } else if(["VTW04908","VTW04909","VTW04910","VTW04911","VTW04912","VTW04913","VTW04914"].includes(detailData.elctrnAtrzTySeCd)){
 
             const getCtrtInfo = async () => {
                 
@@ -260,6 +260,9 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
             case 'VTW04908':
             case 'VTW04909':
             case 'VTW04910':
+            case 'VTW04911':
+            case 'VTW04912':
+            case 'VTW04913':
             case 'VTW04914':
                 return  <>
                         <h3>계약정보</h3>
@@ -277,9 +280,9 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
     return (
         <div>
             {(["VTW03701","VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)) 
-                && (detailData.elctrnAtrzTySeCd ==="VTW04914" ) 
-                // && (detailData.atrzDmndSttsCd)
-                && (
+                && (["VTW04911","VTW04912","VTW04913","VTW04914"].includes(detailData.elctrnAtrzTySeCd)) 
+                &&
+                 (
                     <ElectGiveAtrzClm detailData={detailData} sttsCd={sttsCd} prjctId={prjctId} onSendData={handleData} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd }/>
                 )}
             {renderSpecialComponent()}
