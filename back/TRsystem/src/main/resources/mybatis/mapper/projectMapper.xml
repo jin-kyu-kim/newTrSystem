@@ -2057,4 +2057,13 @@
 		     , p.PRJCT_HIST_SN = ph.PRJCT_HIST_SN
 		   WHERE PRJCT_ID = #{prjctId}
 	</update>
+	
+ 	<select id="retrivePrjctPeriod" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT DATE_FORMAT(CTRT_YMD, '%Y-%m-%d') AS CTRT_YMD
+		     , DATE_FORMAT(STBLE_END_YMD, '%Y-%m-%d') AS STBLE_END_YMD
+		  FROM PRJCT_HIST ph
+		 WHERE 1=1
+		   AND PRJCT_ID = #{prjctId}
+		   AND PRJCT_HIST_SN = (SELECT MAX(PRJCT_HIST_SN) FROM PRJCT_HIST WHERE PRJCT_ID = #{prjctId})
+	</select>
 </mapper>
