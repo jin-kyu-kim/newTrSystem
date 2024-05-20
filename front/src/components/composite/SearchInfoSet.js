@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SelectBox from "devextreme-react/select-box";
 import TextBox from "devextreme-react/text-box";
@@ -157,14 +157,18 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
         }
 
         <Item ratio={1} >
-          <Button type='default' onClick={handleSubmit} text={btnName} />
-        </Item>
+          <Box>
+            <Item ratio={1} >
+              <Button onClick={handleSubmit} text={btnName} style={{margin: "5px"}} />
+            </Item>
 
-        {searchParams.insertButton &&
-          <Item ratio={1}>
-            <Button text="입력" onClick={onClickInsertBtn} />
-          </Item>
-        }
+            {searchParams.insertButton &&
+                <Item ratio={1}>
+                  <Button type='default' text="입력" onClick={onClickInsertBtn} style={{margin: "5px"}} />
+                </Item>
+            }
+          </Box>
+        </Item>
       </Box>
     </div>
   );

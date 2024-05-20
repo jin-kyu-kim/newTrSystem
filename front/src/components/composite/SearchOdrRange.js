@@ -1,7 +1,6 @@
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {Button} from "devextreme-react/button";
 import { Box, Item } from "devextreme-react/box";
-import CustomDateRangeBox from "../unit/CustomDateRangeBox";
 import AutoCompleteProject from "../unit/AutoCompleteProject";
 import AutoCompleteName from "../unit/AutoCompleteName";
 import {SelectBox} from "devextreme-react/select-box";
@@ -137,7 +136,7 @@ const SearchOdrRange = ({ callBack, props, searchItems }) => {
 
     return (
         <div className="box_search" width="100%">
-            <Box direction="row" width={"100%"} height={50} >
+            <Box direction="row" style={{display: "flex", alignItems: "center", height: 40}} >
                 <Item ratio={0} baseSize={"120"}>
                     <SelectBox
                         dataSource={inqMthd}
@@ -223,8 +222,8 @@ const SearchOdrRange = ({ callBack, props, searchItems }) => {
                         value={initParam.expensCd}
                     />
                 </Item>
-                <Item className="searchBtnItem" ratio={1} visible={true}>
-                    <Button onClick={handleSubmit} text="검색" />
+                <Item className="searchBtnItem" ratio={0} visible={true} baseSize={"140"}>
+                    <Button onClick={handleSubmit} text="검색" style={{margin: "5px 5px 0px 5px"}}/>
                 </Item>
             </Box>
         </div>
