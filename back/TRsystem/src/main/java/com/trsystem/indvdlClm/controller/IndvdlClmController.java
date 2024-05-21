@@ -217,7 +217,7 @@ public class IndvdlClmController {
 
     // 직원휴직승인
     @PostMapping(value = "/boot/indvdlClm/updateEmpLeave")
-    public List<Map<String, Object>> updateEmpLeave (@RequestBody Map<String, Object> params) throws {
+    public List<Map<String, Object>> updateEmpLeave (@RequestBody Map<String, Object> params) {
         return IndvdlClmDomain.updateEmpLeave(params);
     }
 
