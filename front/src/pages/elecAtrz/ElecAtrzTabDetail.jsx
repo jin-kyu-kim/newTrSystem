@@ -210,7 +210,9 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
                         child.hnfCtrtDtlMm.forEach((item) => {
                             if (item.id === clmData.giveYmd) {    
                                 item.giveAmt = item.entrpsGiveCtrtAmt + item.entrpsGiveCtrtAmt * (parseFloat(clmData.rate) / 100);
-                                item.outordLbrcoPrmpcSn = child.outordLbrcoPrmpcSn;              
+                                item.outordLbrcoPrmpcSn = child.outordLbrcoPrmpcSn;          
+                                item.elctrnAtrzId = child.elctrnAtrzId;
+
                                 ctrtItems.push(item);
                             }
                         });

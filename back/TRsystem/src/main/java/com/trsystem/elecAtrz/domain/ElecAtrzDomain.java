@@ -964,29 +964,43 @@ public class ElecAtrzDomain {
             result = commonService.insertData(insertParams);
 
             if (result > 0) {
-
-                System.out.println("#### ctrtObject ####" + ctrtObject);
-                if (ctrtObject instanceof ArrayList) {
-                    ArrayList<Map<String, Object>> ctrtInsertParams = (ArrayList<Map<String, Object>>) ctrtObject;
-
-                    System.out.println("#### ctrtInsertParams  ####" + ctrtInsertParams);
-
-                    for (int i = 0; i < ctrtInsertParams.size(); i++) {
-                        Map<String, Object> ctrtItem = ctrtInsertParams.get(i); // i번째 아이템을 가져옵니다.                   
-                        
-                        Map<String, Object> ctrtGiveAtrzDtlMap = new HashMap<>();
-                        ctrtGiveAtrzDtlMap.put("queryId", "elecAtrzMapper.mergeCtrtGiveAtrzDtl");
-                        ctrtGiveAtrzDtlMap.put("elctrnAtrzId", elctrnAtrzId);
-                        ctrtGiveAtrzDtlMap.put("ctrtElctrnAtrzId", ctrtItem.get("elctrnAtrzId"));
-                        ctrtGiveAtrzDtlMap.put("entrpsCtrtDtlSn", ctrtItem.get("entrpsCtrtDtlSn"));
-                        ctrtGiveAtrzDtlMap.put("giveAmt", ctrtItem.get("giveAmt"));
-                        ctrtGiveAtrzDtlMap.put("outordLbrcoPrmpcSn", ctrtItem.get("outordLbrcoPrmpcSn"));
+            	
+            	System.out.println("#### ctrtObject ####"+ctrtObject);
+				if(ctrtObject instanceof ArrayList) {
+					ArrayList<Map<String, Object>> ctrtInsertParams = (ArrayList<Map<String, Object>>) ctrtObject;
 					
-                        System.out.println("#### ctrtItem  ####" + ctrtGiveAtrzDtlMap);
-
-                        commonService.queryIdSearch(ctrtGiveAtrzDtlMap);
-                    }
-                }
+					System.out.println("#### ctrtInsertParams  ####"+ctrtInsertParams );
+					
+					for(int i = 0; i < ctrtInsertParams.size(); i++) {
+						Map<String, Object> ctrtItem = ctrtInsertParams.get(i); // i번째 아이템을 가져옵니다.
+						
+						System.out.println("#### ctrtItem  ####"+ ctrtItem);
+						
+						Map<String, Object> giveTbParam = new HashMap<>();
+						Map<String, Object> giveTbParmaSearch = new HashMap<>();
+						Map<String, Object> insertParam = new HashMap<>();
+						List<Map<String, Object>> insertParamsDtl = new ArrayList<>();
+						
+						
+						giveTbParmaSearch.put("elctrnAtrzId", elctrnAtrzId);
+						
+						giveTbParam.put("tbNm", "CTRT_GIVE_ATRZ_DTL");
+						giveTbParam.put("snColumn", "CTRT_GIVE_ATRZ_DTL_SN");
+						giveTbParam.put("snSearch", giveTbParmaSearch);
+						
+						
+						insertParam.put("elctrnAtrzId", elctrnAtrzId);
+						insertParam.put("ctrtElctrnAtrzId", ctrtItem.get("elctrnAtrzId"));
+						insertParam.put("entrpsCtrtDtlSn", ctrtItem.get("entrpsCtrtDtlSn"));
+						insertParam.put("outordLbrcoPrmpcSn", ctrtItem.get("outordLbrcoPrmpcSn"));
+						insertParam.put("giveAmt", ctrtItem.get("giveAmt"));
+										
+						insertParamsDtl.add(0,giveTbParam);
+						insertParamsDtl.add(1,insertParam);
+						
+						commonService.insertData(insertParamsDtl);					
+					}
+				}          	
             }
 
         } catch (Exception e) {
