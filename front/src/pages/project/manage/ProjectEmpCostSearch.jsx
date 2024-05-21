@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "devextreme/dist/css/dx.common.css";
+import { addMonths, subMonths } from 'date-fns';
 
 import ProjectEmpCostSearchJson from "./ProjectEmpCostSearchJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
@@ -16,19 +17,20 @@ import {useLocation} from "react-router-dom";
 const ProjectEmpCostSearch = ({prjctId}) => {
   const location = useLocation();
   // const prjctId = location.state.prjctId;
-
-  const ctrtYmd = location.state.ctrtYmd;
   const bgtMngOdr = location.state.bgtMngOdr;
-  //TODO: const stbleEndYmd = location.state.stbleEndYmd;
-  const stbleEndYmd = '2024-12-31'
+  const ctrtYmdBefore= new Date(location.state.ctrtYmd);
+  const stbleEndYmdBefore = new Date(location.state.stbleEndYmd);
+  const ctrtYmd = subMonths(ctrtYmdBefore, 1);
+  const stbleEndYmd = addMonths(stbleEndYmdBefore, 1);
+
   const [pivotGridConfig, setPivotGridConfig] = useState({
     fields: ProjectEmpCostSearchJson,
     store: [],
   });
 
   useEffect(() => {
-    console.log(prjctId);
-    console.log("bgtMngOdr",bgtMngOdr);
+    // console.log(prjctId);
+    // console.log("bgtMngOdr",bgtMngOdr);
         Cnsrtm();
   }, []);
 
