@@ -365,7 +365,6 @@
             ,ATRZ.APLY_YMD              /* 신청일자 */
             ,ROUND(APLY.MD, 1)	MD		/* 근무시간비율 */
             ,ATRZ.RJCT_PRVONSH			/* 반려사유 */
-            ,ATRZ.PRJCT_APRVR_CD	    /* 프로젝트결재자코드 */
             ,ATRZ.ATRZ_DMND_STTS_CD	    /* 결재요청상태코드 */
             ,(SELECT CD_NM FROM CD WHERE CD_VALUE = ATRZ_DMND_STTS_CD)	ATRZ_DMND_STTS_CD_NM		/* 결재요청상태코드명 */
             ,ATRZ.APRVR_EMP_ID	        /* 결재자직원ID */
@@ -404,7 +403,6 @@
             ,CASE WHEN VCATN_TY_CD IN ('VTW01201', 'VTW01204') THEN 1.0
             ELSE 0.5
             END
-            ,''
             ,''
             ,''
             ,''
