@@ -174,14 +174,14 @@
       "type": "ComboBox",
       "label": "프로젝트",
       "placeholder": "\"[\"입력시 사용가능한 프로젝트 전체 조회",
-      "param": { "tbNm" : "PRJCT",
-        "condition": {
-          "bizSttsCd": "VTW00402"
+      "param": {
+        "queryId" : {
+          "queryId": "commonMapper.autoCompleteProject"
         },
         "valueExpr" : "prjctId",
         "displayExpr": "prjctNm",
-        "values" : [ "prjctId", "prjctMngrEmpId", "prjctStleCd" ],
-        "name": "prjctId"
+        "name": "prjctId",
+        "values": [ "prjctId", "prjctMngrEmpId", "prjctStleCd" ]
       },
       "required": true
     },
