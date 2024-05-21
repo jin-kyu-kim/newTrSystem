@@ -244,7 +244,7 @@ const ProjectDetail = () => {
           style={{ margin: "2px" }}
           onClick={onClikcChngBgt}
         >
-          변경원가
+          {bizSttsCd === "VTW00401" ? "원가등록" : "변경원가" }
         </Button>
         <Button
           width={110}
