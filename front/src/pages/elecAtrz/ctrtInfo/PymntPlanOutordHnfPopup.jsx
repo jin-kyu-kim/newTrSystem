@@ -76,22 +76,22 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
         setInputValue(currentValues => {
             const newValues = JSON.parse(JSON.stringify(currentValues));
             if (index >= 0) { // 기존 데이터 변경
+
                 const updatedValue = { ...newValues[index], [key || 'mm']: mm };
                 
-                // 첫 번째 NumberBox의 mm 값이 변경될 때, ctrtAmt도 자동으로 설정
+                // 첫 번째 NumberBox의 mm 값이 변경될 때
                 if (!key) { // mm 값이 업데이트된 경우
-                    updatedValue['indvdlGiveCtrtAmt'] = outordEmpData.untpc * mm; 
                     updatedValue['entrpsGiveCtrtAmt'] = outordEmpData.untpc * mm; 
-
                 }
     
                 newValues[index] = updatedValue;
             } else { // 신규 데이터
+
                 const newEntry = { id, [key || 'mm']: mm };
                 if (!key) {
-                    newEntry['indvdlGiveCtrtAmt'] = outordEmpData.untpc * mm;  
                     newEntry['entrpsGiveCtrtAmt'] = outordEmpData.untpc * mm;  
                 }
+
                 newValues.push(newEntry);
             }
     
@@ -118,9 +118,15 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
     };
     
     const calculateTotalAmt = (values) => {
+        let totAmt = 0;
         if(!!values){
-            const totAmt = values.map(item =>(item.indvdlGiveCtrtAmt || 0) + (item.entrpsGiveCtrtAmt || 0))
+            if(outordEmpData.outordHnfCtrtSeCd !== "VTW04003"){
+                totAmt = values.map(item =>(item.indvdlGiveCtrtAmt || 0) + (item.entrpsGiveCtrtAmt || 0))
                                 .reduce((acc, cur) => acc + cur, 0);
+            }else{
+                totAmt = values.map(item => (item.mm || 0 ) * (item.entrpsGiveCtrtAmt || 0))
+                                .reduce((acc, cur) => acc + cur, 0);
+            }
             return Number(totAmt.toFixed(2));
         }
     };
@@ -193,6 +199,7 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
     // 수정테이블 수정가능 여부
     const isEditable = !["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd) 
                         && !["VTW04911","VTW04912","VTW04913","VTW04914",].includes(data.elctrnAtrzTySeCd);
+
  
     controlReadOnly = !isEditable
     
@@ -239,7 +246,7 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
                                     {Array.from({ length: Math.max(...Object.values(structuredData).map(months => months.length)) }).map((_, rowIndex) => (
                                     <tr key={rowIndex} >
                                         {Object.values(structuredData).map((months, colIndex) => (
-                                        <>
+                                        <React.Fragment key={months} >
                                         <td key={colIndex} >{months[rowIndex] ? `${months[rowIndex]}월` : ''}</td>
                                         <td key={months} style={{width:"20%", padding:"5px"}}>
                                             {months[rowIndex] ? 
@@ -258,7 +265,7 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
                                                     onChange={handleInputChange}
                                                     readOnly={controlReadOnly}
                                                 />): ''}</td>
-                                            { outordEmpData.outordHnfCtrtSeCd !== "VTW04003" &&    
+            
                                             <td style={{width:"30%", padding:"5px"}}>
                                             {months[rowIndex] ? 
                                                 <NumberBox 
@@ -270,7 +277,8 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
                                                     onChange={handleInputChange}                                                      
                                                 /> : ''}
                                             </td>
-                                            }
+                                            
+                                            { outordEmpData.outordHnfCtrtSeCd !== "VTW04003" &&   
                                             <td style={{width:"30%", padding:"5px"}}>
                                                 {months[rowIndex] ? 
                                                     <NumberBox 
@@ -282,9 +290,9 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
                                                         onChange={handleInputChange}                                                      
                                                     /> : ''}
                                             </td>
+                                            }
                                             
-                                            
-                                        </>
+                                        </React.Fragment>
                                         ))}
                                     </tr>
                                     ))}
@@ -292,26 +300,6 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
                                 </table>
                             {/* </div> */}
                         </div>
-                        { outordEmpData.outordHnfCtrtSeCd !== "VTW04003" &&    
-                        <div>
-                            <div style={{width:"30%", padding:"5px"}}> 
-                                업체계약금액
-                                <NumberBox
-                                    value="1000"
-                                    onChange=""
-                                    format="#,##0 원"
-                                    />
-                            </div>
-                            <div style={{width:"30%", padding:"5px"}}>
-                                개인계약금액
-                                <NumberBox
-                                    value="1000"
-                                    onChange=""
-                                    format="#,##0 원"
-                                    />
-                            </div>
-                        </div>
-                        }
                     </div>
                 </div>
                 </div>
