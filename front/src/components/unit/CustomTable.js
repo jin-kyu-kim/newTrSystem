@@ -35,7 +35,11 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
 
           // 프로젝트 변경원가 비교 시 사용
           if(prjctCmpr!= undefined && prjctCmpr == true) {
-            if(e.rowType === 'data' && e.column.dataField === 'ajmtBgt' && e.data.ajmtBgt != 0) {
+            if(e.rowType === 'data' && e.column.dataField === 'ajmtBgt' && e.data.ajmtBgt < 0) {
+              e.cellElement.style.color = 'blue'
+            }
+
+            if(e.rowType === 'data' && e.column.dataField === 'ajmtBgt' && e.data.ajmtBgt > 0) {
               e.cellElement.style.color = 'red'
             }
           }
