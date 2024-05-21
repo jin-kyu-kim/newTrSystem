@@ -3,7 +3,7 @@ import { Button } from 'devextreme-react/button'
 import { useModal } from "../../components/unit/ModalContext";
 import ApiRequest from "utils/ApiRequest";
 
-const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, buttonGroup, getData, sendAtrz, setLoading }) => {
+const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, buttonGroup, getData, sendAtrz }) => {
   
   const [ isComplete, setIsComplete ] = useState(false);
   const { handleOpen } = useModal();
@@ -71,7 +71,6 @@ const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, butt
     const allParam = [ {param}, {updatedData} ];
 
     try{
-      setLoading(true)
       const response = await ApiRequest("/boot/indvdlClm/insertPrjctMM", allParam);
       if(response > 0){
         return true; 
