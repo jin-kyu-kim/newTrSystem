@@ -294,7 +294,7 @@ const EmpVcatnAltmntMng = () => {
 
 
 
-
+    // 휴가등록불가
     const onDeleteClick = async (e, data) => {
         const updateParam = [
             { tbNm: "CRTR_DATE" },
@@ -388,7 +388,8 @@ const EmpVcatnAltmntMng = () => {
                             columns={EmpVcatnAltmntMngJson.listTableColumns}
                             values={selectEmpVacListValue}
                             wordWrap={true}
-                            onRowDblClick={onRowDblClick}
+                            // onRowDblClick={onRowDblClick}
+                            onRowClick={onRowDblClick}
                             onClick={onButtonClick}
                         />
                     </div>
@@ -504,12 +505,7 @@ const EmpVcatnAltmntMng = () => {
                                                 showClearButton={true}
                                                 readOnly={paramFlag.insertReadOnlyCtr}
                                                 value={selectValue ? Number(selectValue.vcatnAltmntDaycnt) : null}
-                                                onValueChange={(e) => {
-                                                    setSelectValue({
-                                                        ...selectValue,
-                                                        vcatnAltmntDaycnt: e,
-                                                    })
-                                                }}
+                                                onValueChange={(e) => { setSelectValue({ ...selectValue, vcatnAltmntDaycnt: e }) }}
                                             />
                                         </div>
                                     </>
@@ -530,21 +526,16 @@ const EmpVcatnAltmntMng = () => {
                                                 showClearButton={true}
                                                 readOnly={paramFlag.insertReadOnlyCtr}
                                                 value={selectValue ? Number(selectValue.newVcatnAltmntDaycnt) : null}
-                                                onValueChange={(e) => {
-                                                    setSelectValue({
-                                                        ...selectValue,
-                                                        newVcatnAltmntDaycnt: e
-                                                    })
-                                                }}
+                                                onValueChange={(e) => { setSelectValue({ ...selectValue, newVcatnAltmntDaycnt: e }) }}
                                             />
                                         </div>
                                     </>
                             }
                         </div>
                         <div div className="row" style={{ display: "inline-block", float: "right", marginTop: "25px" }}>
-                            <Button style={{ height: "48px", width: "120px", marginRight: "15px" }} onClick={() => { setPopupExcelUploadValue({ visible: true }) }}>엑셀업로드</Button>
-                            <Button style={{ height: "48px", width: "60px", marginRight: "15px" }} onClick={() => handleOpen("휴가정보를 저장 하시겠습니까?", btnSaveClick)}>저장</Button>
-                            <Button style={{ height: "48px", width: "60px" }} onClick={(e) => {
+                            <Button style={{ height: "40px", width: "100px", marginRight: "15px" }} onClick={() => { setPopupExcelUploadValue({ visible: true }) }}>엑셀업로드</Button>
+                            <Button style={{ height: "40px", width: "60px", marginRight: "15px" }} onClick={() => handleOpen("휴가정보를 저장 하시겠습니까?", btnSaveClick)}>저장</Button>
+                            <Button style={{ height: "40px", width: "60px" }} onClick={(e) => {
                                 setParamFlag({
                                     insertVcantFlag: 1,
                                     readOnlyCtr: false,
@@ -598,7 +589,7 @@ const EmpVcatnAltmntMng = () => {
                     </div>
                     <div div className="row" style={{ display: "inline-block", float: "right" }}>
                         <div style={{ display: "inline-block", float: "right" }}>
-                            <Button style={{ height: "48px", width: "60px" }} onClick={btnSaveCntrlYmd}>저장</Button>
+                            <Button style={{ height: "40px", width: "60px" }} onClick={btnSaveCntrlYmd}>저장</Button>
                         </div>
                     </div>
                     {
@@ -624,11 +615,7 @@ const EmpVcatnAltmntMng = () => {
                     ?
                     <EmpVcatnAltmntMngExcelUpload
                         visible={popupExcelUploadValue.visible}
-                        onHiding={(e) => {
-                            setPopupExcelUploadValue({
-                                visible: e
-                            })
-                        }}
+                        onHiding={(e) => { setPopupExcelUploadValue({ visible: e }) }}
                     />
                     : <></>
             }
@@ -649,6 +636,6 @@ const textAlign = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    fontSize: "14px"
+    fontSize: "12px"
 }
 /* ========================= 화면레이아웃  =========================*/
