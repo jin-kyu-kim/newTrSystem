@@ -5,17 +5,14 @@
     "wordWrap": true,
     "tableColumns": 
 	[
-        { "key": "rownum", "value": "번호", "width": 70, "alignment" : "center" },
-        { "key": "prjctStleCd", "value": "형태", "width": 80  },
-        { "key": "prjctNm", "value": "프로젝트 명", "width": 250, "alignment" : "left" },
-        { "key": "bizSttsCdNm", "value": "상태", "width": 120, "alignment" : "left" },
-        { "key": "prjctMngrEmpId", "value": "PM", "width": 120, "alignment" : "left"  },
-        { "key": "ctmmnyNm", "value": "고객사", "width": 150, "alignment" : "left"  },
-        { "key": "ctrtYmd", "value": "시작일", "width": 130  },
-        { "key": "bizEndYmd", "value": "종료일", "width": 130},
-        { "key": "prjctId", "value": "구분", "width": 80, "button": { "text": "비용청구현황",
-                                                                     "name": "prjctId"
-                                                                    } }
+        { "key": "prjctStleCd", "value": "형태", "width": "10%", "alignment" : "left"  },
+        { "key": "prjctNm", "value": "프로젝트 명", "width": "18%", "alignment" : "left" },
+        { "key": "bizSttsCdNm", "value": "상태", "width": "10%", "alignment" : "left" },
+        { "key": "prjctMngrEmpId", "value": "PM", "width": "10%", "alignment" : "left"  },
+        { "key": "ctmmnyNm", "value": "고객사", "width": "10%", "alignment" : "left"  },
+        { "key": "ctrtYmd", "value": "시작일", "width": "10%"  },
+        { "key": "bizEndYmd", "value": "종료일", "width": "10%"},
+        { "key": "prjctId", "value": "구분", "width": "6%", "button": { "text": "비용청구현황", "name": "prjctId"} }
     ],
     "searchInfo": {
         "searchParams": {
