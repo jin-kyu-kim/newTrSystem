@@ -11,15 +11,15 @@
         {"value": "근무시간",
         "subColumns": [
             { "key": "total", "value": "필수시간"},
-            { "key": "sum", "value": "요청"},
+            { "key": "mdSum", "value": "요청"},
             { "key": "mmReject", "value": "반려" },
-            { "key": "mmComplete", "value": "승인"}
+            { "key": "mmAprv", "value": "승인"}
         ]},
         {"value": "프로젝트비용입력",
         "subColumns": [
-            { "key": "cnt", "value": "요청"},
-            { "key": "aplyReject", "value": "반려"},
-            { "key": "aplyComplete", "value": "승인" }
+            { "key": "ctCnt", "value": "요청"},
+            { "key": "ctReject", "value": "반려"},
+            { "key": "ctComplete", "value": "승인" }
         ]}
   ],
   "atrzSttsQueryId": "sysMngMapper.retrieveAtrzAplySttus",
