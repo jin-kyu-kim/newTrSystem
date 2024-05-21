@@ -45,7 +45,7 @@ const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, butt
         const updates = selectedItem.map(item => ApiRequest("/boot/common/commonUpdate", [
           { tbNm: "CARD_USE_DTLS" },
           { prjctCtInptPsbltyYn: "N" },
-          { cardUseSn: item.cardUseSn }
+          { lotteCardAprvNo: item.lotteCardAprvNo }
         ]));
 
         await Promise.all(updates);

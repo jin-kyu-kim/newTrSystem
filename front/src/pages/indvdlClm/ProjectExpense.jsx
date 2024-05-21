@@ -155,7 +155,19 @@ const ProjectExpense = () => {
                 const aplyTarget = ctAply.filter(matches);
 
                 const tables = ["PRJCT_CT_ATRZ", "PRJCT_CT_ATDRN", "PRJCT_CT_APLY"];
-                const deleteRow = tables.map(tbNm => ApiRequest("/boot/common/commonDelete", [{ tbNm }, param]));
+                const deleteRow = async () => {
+                    for (const tbNm of tables) {
+                        try {
+                            await ApiRequest("/boot/common/commonDelete", [{ tbNm }, param]);
+                        } catch (error) {
+                            throw error;
+                        }
+                    }
+                };
+                deleteRow().then(() => {
+                }).catch(error => {
+                    console.error("Error:", error);
+                });
 
                 const { prjctCtAplySn, ...rest } = param;
                 if(indivTarget?.mmAtrzCmptnYn === null && aplyTarget.length === 1) {
@@ -163,18 +175,17 @@ const ProjectExpense = () => {
                         {tbNm: "PRJCT_INDVDL_CT_MM"}, rest
                     ]);
                 }
-                Promise.all(deleteRow).then(responses => {
-                    handleOpen("삭제되었습니다.");
-                    getData();
-                }).catch(error => {
-                    console.error("error:", error);
-                });
-
                 const cardResult = ApiRequest('/boot/common/commonUpdate', [
                     { tbNm: "CARD_USE_DTLS" },
                     { prjctCtInptPsbltyYn: "Y" },
                     { lotteCardAprvNo: props.lotteCardAprvNo }
-                ])
+                ]);
+               
+                if(cardResult){
+                    handleOpen("삭제되었습니다.");
+                    getData();
+                }
+
             }
         } else { // 문서이동
             navigate("/elecAtrz/ElecAtrzDetail", {state: {data: props}})
