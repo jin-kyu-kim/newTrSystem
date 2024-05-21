@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers(new MvcRequestMatcher(introspector,"/boot/elecAtrz/**")).hasAuthority("USER")
                         .requestMatchers(new MvcRequestMatcher(introspector,"/boot/indvdlClm/**")).hasAuthority("USER")
                         .requestMatchers(new MvcRequestMatcher(introspector,"/boot/informaiton/**")).hasAuthority("USER")
+                        .requestMatchers(new MvcRequestMatcher(introspector,"/boot/batchSkll/**")).hasAnyAuthority("VTW04804","VTW04801")
                         .requestMatchers(new MvcRequestMatcher(introspector,"/boot/sysMng/**")).hasAuthority("VTW04801")
                         .requestMatchers(new MvcRequestMatcher(introspector,"/boot/prjct/**")).hasAnyAuthority("VTW04807", "VTW04801")
                         .requestMatchers(new MvcRequestMatcher(introspector,"/boot/humanResourceMng/**")).hasAnyAuthority("VTW04805","VTW04801")
