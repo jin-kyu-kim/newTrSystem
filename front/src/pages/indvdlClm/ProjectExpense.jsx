@@ -76,7 +76,7 @@ const ProjectExpense = () => {
         if (data.length !== 0) {
             setIndivdlList(data);
             setCtAtrzCmptnYn(data?.every(item => item.ctAtrzCmptnYn === null) ? null : data.some(item => item.ctAtrzCmptnYn === 'N') ? 'N' : 'Y');
-            setMmAtrzCmptnYn(data?.every(item => item.mmAtrzCmptnYn === null) ? null : data.some(item => item.mmAtrzCmptnYn === 'N') ? 'N' : 'Y');
+            setMmAtrzCmptnYn(data?.every(item => item.mmAtrzCmptnYn === null) ? null : data.some(item => item.mmAtrzCmptnYn === 'Y') ? 'Y' : 'N');
         }
     };
 

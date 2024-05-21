@@ -33,6 +33,7 @@ const CustomComboBox = ({props, onSelect, label, placeholder, value, readOnly, r
         try {
             if(props.queryId) {
                 response = await ApiRequest("/boot/common/queryIdSearch", param);
+                console.log('res', response)
             }else{
                 response = await ApiRequest("/boot/common/commonSelect", param);
             }

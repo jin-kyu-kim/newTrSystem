@@ -111,7 +111,7 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
                         values={dataSource}
                         blockCollapse={true}
                         grandTotals={true}
-                        width={1000}
+                        width={'100%'}
                     />
                 )
             default:
