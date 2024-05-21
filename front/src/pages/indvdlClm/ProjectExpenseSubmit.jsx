@@ -71,6 +71,7 @@ const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, butt
     const allParam = [ {param}, {updatedData} ];
 
     try{
+      setLoading(true)
       const response = await ApiRequest("/boot/indvdlClm/insertPrjctMM", allParam);
       if(response > 0){
         return true; 
