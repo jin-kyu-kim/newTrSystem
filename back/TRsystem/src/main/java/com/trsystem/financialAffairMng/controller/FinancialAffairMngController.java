@@ -34,4 +34,8 @@ public class FinancialAffairMngController {
 	public int cancelCtAply(@RequestBody List<List<Map<String, Object>>> paramList) {
 		return FinancialAffairMngDomain.cancelMmCtAtrz(paramList);
 	}
+	@PostMapping(value = "/boot/financialAffairMng/retrievePrjctCtClmYMDAccto")
+	public List<Map<String, Object>> retrievePrjctCtClmYMDAccto(@RequestBody Map<String, Object> param) {
+		return FinancialAffairMngDomain.retrievePrjctCtClmYMDAccto(param);
+	}
 }

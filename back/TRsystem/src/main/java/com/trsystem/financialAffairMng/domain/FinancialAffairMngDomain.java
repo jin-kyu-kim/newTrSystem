@@ -231,5 +231,24 @@ private static CommonService commonService;
 		return result;
 		
 	}
+
+
+	public static List<Map<String, Object>> retrievePrjctCtClmYMDAccto(Map<String, Object>param){
+		List<Map<String, Object>> result = new ArrayList<>();
+		Map<String, Object> searchParam = new HashMap<>(param);
+		searchParam.put("queryId", "financialAffairMngMapper.retrievePrjctCtClmgetEmp");
+
+		List<Map<String, Object>> getCost = commonService.queryIdSearch(searchParam);
+		List<Map<String, Object>> getData;
+		for(Map<String, Object> data : getCost){
+			param.put("empId", data.get("empId").toString());
+			getData = commonService.queryIdSearch(param);
+			for(Map<String, Object> cdVal: getData){
+				cdVal.putAll(data);
+				result.add(cdVal);
+			}
+		}
+		return result;
+	}
 	
 }
