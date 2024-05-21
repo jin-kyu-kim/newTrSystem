@@ -80,6 +80,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
         } else {    //신규 데이터      
                 updatedValues.push({ id, value });    // 새로운 값 객체 추가        
         }
+
         setInputValue(updatedValues); // 업데이트된 배열로 상태 설정
        
 
@@ -536,13 +537,16 @@ const onRowUpdateingMonthData = async() => {
                                             />): ''}</td>
                                             { (popupInfo.menuName === "ProjectEmpCostJson" || popupInfo.menuName === "ProjectOutordEmpCostJson") &&
                                             <td style={{width:"20%", padding:"5px"}}>
-                                                <NumberBox 
-                                                    value= {(data.mmnyLbrcoPrmpcSn || data.outordLbrcoPrmpcSn)? 
-                                                            transformedData.find(item => item.id === `${Object.keys(structuredData)[colIndex]}${months[rowIndex]}_untpc`)?.value || 0 
-                                                            : data.userDfnValue ? data.userDfnValue : data.untpc}
+                                                {months[rowIndex] ? ( 
+                                                <NumberBox                      
+                                                    value={(data.mmnyLbrcoPrmpcSn || data.outordLbrcoPrmpcSn) ? (
+                                                        transformedData.find(item => item.id === `${Object.keys(structuredData)[colIndex]}${months[rowIndex]}_untpc`)?.value ||
+                                                        data.userDfnValue || 
+                                                        data.untpc
+                                                    ) : 0}
                                                     readOnly={true}
-                                                    format={"#,### 원"}
-                                                    />
+                                                    format={"#,### 원"}                                                  
+                                                    />): ''}
                                             </td>
                                             }
                                         </>
