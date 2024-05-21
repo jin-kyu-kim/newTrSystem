@@ -139,13 +139,13 @@ const EmpVcatnAltmntMngExcelUpload = ({ onHiding, visible }) => {
         }
     }
 
+    // 엑셀양식다운로드
     function onExeclDownload(){
-        // 2024.05.16 (박지환)
-        // 파일이 TRsystem/upload 경로에 저장되어 절대경로로 접근이 불가능해보임
-        // 현재 upload 폴더에 파일 임의로 복사하여 사용중이며 추후 절대경로로 변경 필요함
         const downloadFile = document.createElement("a");
-        downloadFile.href = "/upload/" + `${selectExcelAttachFile[0].strgFileNm}`;      // 해당경로변경필요
-        downloadFile.download = `${selectExcelAttachFile[0].realFileNm}`;
+        // downloadFile.href = "/upload/" + `${selectExcelAttachFile[0].strgFileNm}`;      // 해당경로변경필요
+        // downloadFile.download = `${selectExcelAttachFile[0].realFileNm}`;
+        downloadFile.href = "/upload/UpdVacAssgnExcel.xlsx";
+        downloadFile.download = "휴가배정엑셀업로드.xlsx"
 
         document.body.appendChild(downloadFile);
         downloadFile.click();
