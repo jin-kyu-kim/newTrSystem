@@ -174,6 +174,53 @@ public class IndvdlClmController {
     public int deleteVcatnAtrz (@RequestBody Map<String, Object> dataMap) throws SQLException{
         return IndvdlClmDomain.deleteVcatnAtrz(dataMap);
     }
+
+    // 직원휴직저장
+    @PostMapping(value = "/boot/indvdlClm/insertEmpLeave", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public String insertEmpLeave (
+            @RequestPart(required = false) String elctrnAtrzId,
+            @RequestPart(required = false) List<MultipartFile> attachments,
+            @RequestPart(required = false) String elctrnTbNm,
+            @RequestPart(required = false) String insertElctrnValue,
+            @RequestPart(required = false) String vcatnTbNm,
+            @RequestPart(required = false) String insertVcatnValue,
+            @RequestPart(required = false) String atrzLnTbNm,
+            @RequestPart(required = false) String insertAtrzLnValue,
+            @RequestPart(required = false) String refrnTbNm,
+            @RequestPart(required = false) String insertRefrnValue
+    ) throws JsonProcessingException, SQLException {
+
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> elctrnAtrzIdValue = mapper.readValue(elctrnAtrzId,Map.class);
+        Map<String, Object> elctrnTbMap = mapper.readValue(elctrnTbNm,Map.class);
+        Map<String, Object> insertElctrnMap = mapper.readValue(insertElctrnValue,Map.class);
+        Map<String, Object> vcatnTbMap = mapper.readValue(vcatnTbNm,Map.class);
+        Map<String, Object> insertVcatnMap = mapper.readValue(insertVcatnValue,Map.class);
+        Map<String, Object> atrzLnTbMap = mapper.readValue(atrzLnTbNm,Map.class);
+        List<Map<String, Object>> insertAtrzLnMap = mapper.readValue(insertAtrzLnValue,ArrayList.class);
+        Map<String, Object> refrnTbMap = mapper.readValue(refrnTbNm,Map.class);
+        List<Map<String, Object>> insertRefrnMap = mapper.readValue(insertRefrnValue,ArrayList.class);
+
+        return IndvdlClmDomain.insertEmpLeave(
+                elctrnAtrzIdValue,
+                elctrnTbMap,
+                insertElctrnMap,
+                vcatnTbMap,
+                insertVcatnMap,
+                atrzLnTbMap,
+                insertAtrzLnMap,
+                refrnTbMap,
+                insertRefrnMap,
+                attachments
+        );
+    }
+
+    // 직원휴직승인
+    @PostMapping(value = "/boot/indvdlClm/updateEmpLeave")
+    public List<Map<String, Object>> updateEmpLeave (@RequestBody Map<String, Object> params) throws {
+        return IndvdlClmDomain.updateEmpLeave(params);
+    }
+
     /* =================================박지환_작업================================= */
 
 }

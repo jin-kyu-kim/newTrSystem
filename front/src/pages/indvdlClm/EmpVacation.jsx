@@ -3,48 +3,34 @@ import { useEffect, useState, useRef } from 'react';
 // 날짜계산
 // npm install moment
 import Moment from "moment"
+
 // DevExtrme import
 import { FileUploader, SelectBox, Button, TextBox, DateBox } from "devextreme-react";
+
 // 테이블 import
 // npm install @mui/material
-// npm install @emotion/styled
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+
 // 날짜관련
 // npm install date-fns
-import { isSaturday, isSunday, startOfMonth, endOfMonth, addMonths, addDays } from 'date-fns'
+import { isSaturday, isSunday, addDays } from 'date-fns'
+
 // 랜덤채번 import
 import uuid from "react-uuid";
-import { useNavigate } from "react-router-dom";
-import { useLocation } from 'react-router';
+
+
 import axios from "axios";
-import { useModal } from "../../components/unit/ModalContext";
+import ApiRequest from "utils/ApiRequest";
+import { useLocation } from 'react-router';
+import { useNavigate } from "react-router-dom";
+import { useModal } from "components/unit/ModalContext";
 import CustomTable from "components/unit/CustomTable";
 import ApprovalPopup from "components/unit/ApprovalPopup"
 import EmpVacationCanclePopup from "pages/indvdlClm/EmpVacationCanclePopup";
-import EmpVacationJson from "pages/indvdlClm/EmpVacationJson.json"
+import EmpVacationCondolencePopup from "pages/indvdlClm/EmpVacationCondolencePopup";
 import EmpVacationAttchList from "pages/indvdlClm/EmpVacationAttchList"
-import ApiRequest from "utils/ApiRequest";
+import EmpVacationJson from "pages/indvdlClm/EmpVacationJson.json"
 
-/**
- * 2023.03.18(박지환)
- * [확인완료]
- * 1. 휴가 심사중 상태에서 취소버튼 클릭하면 팝업 호출 후 선택값 따라 행삭제.
- * 2. 저장완료 시 휴가정보 전자결재문서로 이동
- * 
- * [확인필요]
- * 1. 휴가 승인받고 취소버튼 클릭하면??
- * 
- * [작업필요]
- * 1. 세션받아와서 EMP_ID, DEPT_NM 등등 설정필요.
- * 2. 받아온 세션 설정해서 목록조회 시 PARAM 설정 후 사용 필요함.
- * 3. 휴가정보 INSERT시 전자결재, 휴가결재 테이블에 작업 발생함.
- *    전자결재 저장 후 휴가결재 테이블 에러 발생 시 대처방안 없음.
- *    추후 공통 SERVICEIMPL 생성 후 해당파일에서 로직처리 필요함.
- * 4. TABLE ROW MERGE 화면 개발
- * 5. inline 적용되어 있는 css 관리 필요함.
- * 6. 저장 완료 시 해당 휴가정보 전자결재문서로 이동(추후 전자결재 서식 공통화 이후에 작업)
- * 7. 저장 시 validation 처리 필요함.
- */
 
 const { listKeyColumn, listTableColumns } = EmpVacationJson;
 
@@ -93,7 +79,6 @@ function atrzLnAprv(jbttlCd, searchResult) {
         if (jbttlCd == ("VTW0100" + startIndex)) {
             while (forStartIndex > 0 && flag) {
                 if (searchResult.find((item) => item.jbttlCd == ("VTW0100" + forStartIndex))) {
-                    let test = searchResult.find((item) => item.jbttlCd == ("VTW0100" + forStartIndex));
                     result.push({
                         empId: searchResult.find((item) => item.jbttlCd == ("VTW0100" + forStartIndex)).empId,
                         empFlnm: searchResult.find((item) => item.jbttlCd == ("VTW0100" + forStartIndex)).empFlnm,
@@ -114,7 +99,7 @@ function atrzLnAprv(jbttlCd, searchResult) {
 
 const EmpVacation = () => {
     const { handleOpen } = useModal();
-    
+
     // 외부화면호출데이터
     const navigate = useNavigate();
     const location = useLocation();
@@ -130,11 +115,19 @@ const EmpVacation = () => {
     let sessionDeptNm = location.state ? location.state.deptList[0].deptNm : deptInfo[0].deptNm
     let jbttlCd = location.state ? location.state.deptList[0].jbttlCd : deptInfo[0].jbttlCd
 
-    // 1. 월별 근무일_공휴일 조회
-    // 2. 프로젝트목록 조회
+
+
+
+
+    // 1. 월별 근무일_공휴일정보조회
+    // 2. 프로젝트목록조회
+    // 3. 휴가코드조회
+    // 4. 경조휴가 결재선정보조회
     useEffect(() => {
         getVcatnInfo();
         getPrjctInfo();
+        getVcatnCode();
+        getCondolenceceAtrzList();
     }, [])
 
     // 월별 근무일_공휴일 조회
@@ -159,7 +152,55 @@ const EmpVacation = () => {
     // 프로젝트 목록 조회
     const getPrjctInfo = async () => {
         try {
-            setSelectPrjctList(await ApiRequest("/boot/common/commonSelect", [{ tbNm: "PRJCT" },{ bizSttsCd: "VTW00402"} ]));
+            setSelectPrjctList(await ApiRequest("/boot/common/queryIdSearch", { queryId: "indvdlClmMapper.retrievePrjctList" }));
+        } catch (error) {
+            console.error("getPrjctInfo_error : " + error);
+        }
+    }
+
+
+
+
+
+    // 휴가코드조회
+    const [selectCodeValue, setSelectCodeValue] = useState();
+
+    // 휴직종류코드조회
+    const [selectVcatnLeaveCodeValue, setSelectVcatnLeaveCodeValue] = useState([]);
+
+    // 휴가코드조회
+    const getVcatnCode = async () => {
+        try {
+            setSelectCodeValue(await ApiRequest("/boot/common/commonSelect", [{ tbNm: "CD" }, { upCdValue: "VTW012", useYn: "Y" }]));
+            setSelectVcatnLeaveCodeValue(await ApiRequest("/boot/common/commonSelect", [{ tbNm: "CD" }, { upCdValue: "VTW053", useYn: "Y" }]));
+        } catch (error) {
+            console.error("getPrjctInfo_error : " + error);
+        }
+    }
+
+
+
+
+    // 경조휴가 검토자정보
+    const [selectCondolenceAtrzReviewValue, setSelectCondolenceAtrzReviewValue] = useState()
+
+    // 경조휴가 승인자정보
+    const [selectCondolenceAtrzApprovalValue, setSelectCondolenceAtrzApprovalValue] = useState()
+
+    // 경조휴가 검토자, 승인자정보
+    const getCondolenceceAtrzList = async () => {
+        try {
+            setSelectCondolenceAtrzReviewValue(await ApiRequest("/boot/common/queryIdSearch", {
+                queryId: "indvdlClmMapper.retrieveElctrnAtrzRefrnInq",
+                approvalCode: "VTW00702",
+                state: "review"
+            }));
+
+            setSelectCondolenceAtrzApprovalValue(await ApiRequest("/boot/common/queryIdSearch", {
+                queryId: "indvdlClmMapper.retrieveElctrnAtrzRefrnInq",
+                approvalCode: "VTW00705",
+                state: "approval"
+            }));
         } catch (error) {
             console.error("getPrjctInfo_error : " + error);
         }
@@ -212,7 +253,6 @@ const EmpVacation = () => {
     const [searchVcatnInfoParam, setSearchVcatnInfoParam] = useState({
         queryId: "indvdlClmMapper.retrieveVcatnInfoInq",
         searchType: "vcatnInfo",
-        // searchYear: flagYear,
         empId: sessionEmpId,
         isSearch: true
     });
@@ -226,29 +266,15 @@ const EmpVacation = () => {
 
 
 
-    // 휴가코드조회
-    const [selectCodeValue, setSelectCodeValue] = useState([]);
-    const [searchCodeParam, setSearchCodeParam] = useState({
-        queryId: "humanResourceMngMapper.retrieveCodeList",
-        searchType: "vcatnCode",
-        upCdValue: "VTW012"
-    });
-
-    // 휴가코드조회
-    useEffect(() => {
-        selectData(searchCodeParam);
-    }, [searchCodeParam])
-
-
-
-
-
     // 휴가신청전자결재첨부파일정보
     const [attachments, setAttachments] = useState([]);
 
+
+
+
+
     // 휴가신청전자결재저장정보
     const [insertElctrnValue, setInsertElctrnValue] = useState({
-        // elctrnAtrzId: elctrnAtrzId,
         atrzDmndEmpId: sessionEmpId,
         atrzDmndSttsCd: "VTW03702",     // 결재요청상태코드_ATRZ_DMND_STTS_CD(심사중)
         elctrnAtrzTySeCd: "VTW04901",   // 전자결재유형구분코드_ELCTRN_ATRZ_TY_SE_CD(휴가)
@@ -260,7 +286,6 @@ const EmpVacation = () => {
 
     // 휴가신청휴가결재저장정보
     const [insertVcatnValue, setInsertVcatnValue] = useState({
-        // elctrnAtrzId: elctrnAtrzId, 
         empId: sessionEmpId,
         flagYear: flagYear
     });
@@ -284,6 +309,13 @@ const EmpVacation = () => {
 
 
 
+    // 경조휴가,공가 안내팝업 정보
+    const [popupCondolenceVisibleValue, setPopupCondolenceVisibleValue] = useState({ type: "", visible: false });
+
+
+
+
+
     // 휴가취소요청 정보
     const [popupVcatnAtrzCancleValue, setPopupVcatnAtrzCancleValue] = useState({ visible: false });
 
@@ -292,6 +324,7 @@ const EmpVacation = () => {
 
 
     // 전자결재 승인권자목록정보
+    const [atrzLnAprvListValue, setAtrzLnAprvListValue] = useState()
     const [atrzLnAprvListParam, setAtrzLnAprvListParam] = useState({
         queryId: "indvdlClmMapper.retrieveAtrzLnAprvListInq",
         searchType: "atrzLnAprvList",
@@ -306,13 +339,19 @@ const EmpVacation = () => {
 
 
 
+    
+    // 전자결재 심사권자목록정보
+    const [atrzLnSnrgListValue, setAtrzLnSnrgListValue] = useState()
+
+
+
+
 
     // 전자결재 참조자목록정보
-    const [atrzLnReftnListValue, setAtrzLnReftnListValue] = useState();
     const [atrzLnReftnListParam, setAtrzLnReftnListParam] = useState({
         queryId: "indvdlClmMapper.retrieveElctrnAtrzRefrnInq",
         searchType: "atrzLnReftnList",
-        repDeptId: "9da3f461-9c7e-cd6c-00b6-c36541b09b0d"
+        state: "ref"
     });
 
     // 전자결재 참조자목록정보
@@ -324,24 +363,21 @@ const EmpVacation = () => {
 
 
 
-    // 전자결재 심사권자 결재선정보
-    const [atrzLnSrngValue, setAtrzLnSrngValue] = useState({});
-
-
-
-
-
     // 목록 및 코드조회
     const selectData = async (initParam) => {
         try {
+            // 휴가목록조회
             if (initParam.searchType == "vcatnList" && initParam.isSearch == true) setSelectVcatnListValue(await ApiRequest("/boot/common/queryIdSearch", initParam));
-            else if (initParam.searchType == "vcatnCode") setSelectCodeValue(await ApiRequest("/boot/common/queryIdSearch", initParam));
+
+            // 휴가정보조회
             else if (initParam.searchType == "vcatnInfo") setSelectVcatnInfoValue(await ApiRequest("/boot/common/queryIdSearch", initParam));
+
+            // 기존휴가정보조회
             else if (initParam.searchType == "searchVcatnList" && initParam.isSearch == true) setSelectSearchVcatnListValue(await ApiRequest("/boot/common/queryIdSearch", initParam));
+
+            // 전자결재 참조자목록정보조회
             else if (initParam.searchType == "atrzLnReftnList") {
                 const atrzLnReftnResult = await ApiRequest("/boot/common/queryIdSearch", initParam);
-
-                setAtrzLnReftnListValue(atrzLnReftnResult);
 
                 if (atrzLnReftnResult.length > 0) {
                     artzListValue = [];
@@ -356,9 +392,12 @@ const EmpVacation = () => {
                             listEmpFlnm: atrzLnReftnResult[index].listEmpFlnm,
                         })
                     })
+
                     setPopupAtrzValue(artzListValue);
                 }
             }
+
+            // 전자결재 승인자목록정보조회
             else if (initParam.searchType == "atrzLnAprvList") {
                 let pushData = [];
                 const atrzLnAprvListResult = await ApiRequest("/boot/common/queryIdSearch", initParam);
@@ -371,6 +410,16 @@ const EmpVacation = () => {
                     if (i == atrzLnAprvListResult.length - 1) {
                         const returnReslut = atrzLnAprv(jbttlCd, pushData);
 
+                        // 전자결재 승인권자목록정보
+                        setAtrzLnAprvListValue({
+                            approvalCode: "VTW00705",                   // 결재단계코드(승인)
+                            empId: returnReslut[0].empId,
+                            empFlnm: returnReslut[0].empFlnm,
+                            jbpsNm: returnReslut[0].jbpsNm,
+                            listEmpFlnm: returnReslut[0].atrzLnAprvNm,
+                        })
+
+                        // 전자결재 결재선승인권자목록정보
                         setPopupAtrzValue(prevState => [
                             ...prevState,
                             {
@@ -384,21 +433,32 @@ const EmpVacation = () => {
                     }
                 }
             }
+
+            // 전자결재 심사자목록정보조회
             else if (initParam.searchType == "atrzLnSrng") {
                 const atrzLnSrngResult = await ApiRequest("/boot/common/queryIdSearch", { queryId: "indvdlClmMapper.retrieveAtrzLnSrngInq", prjctMngrEmpId: initParam.prjctMngrEmpId, prjctId: initParam.prjctId });
-                
+
                 if (atrzLnSrngResult.length > 0) {
                     setPopupAtrzValue(popupAtrzValue.filter(item => item.approvalCode != "VTW00704"))
 
+                    setAtrzLnSnrgListValue({
+                        approvalCode: "VTW00704",                   // 결재단계코드(심사)
+                        empId: atrzLnSrngResult[0].empId,
+                        empFlnm: atrzLnSrngResult[0].empFlnm,
+                        jbpsNm: atrzLnSrngResult[0].jbpsNm,
+                        listEmpFlnm: atrzLnSrngResult[0].listEmpFlnm
+                    })
+
                     if (!popupAtrzValue.find(item => item.empId == atrzLnSrngResult[0].empId)) {
-                        setPopupAtrzValue(prevState => [...prevState,
-                        {
-                            approvalCode: "VTW00704",                   // 결재단계코드(심사)
-                            empId: atrzLnSrngResult[0].empId,
-                            empFlnm: atrzLnSrngResult[0].empFlnm,
-                            jbpsNm: atrzLnSrngResult[0].jbpsNm,
-                            listEmpFlnm: atrzLnSrngResult[0].listEmpFlnm
-                        }
+                        setPopupAtrzValue(prevState => [
+                            ...prevState,
+                            {
+                                approvalCode: "VTW00704",                   // 결재단계코드(심사)
+                                empId: atrzLnSrngResult[0].empId,
+                                empFlnm: atrzLnSrngResult[0].empFlnm,
+                                jbpsNm: atrzLnSrngResult[0].jbpsNm,
+                                listEmpFlnm: atrzLnSrngResult[0].listEmpFlnm
+                            }
                         ])
                     }
 
@@ -412,8 +472,8 @@ const EmpVacation = () => {
 
 
 
-    
-    // 저장버튼
+
+    // 휴가신청전자결재저장
     function onSaveClick() {
         let errorMsg;
 
@@ -421,23 +481,31 @@ const EmpVacation = () => {
         else if (!insertVcatnValue.vcatnTyCd) errorMsg = "휴가유형을 선택하세요."
         else if (!insertVcatnValue.vcatnBgngYmd) errorMsg = "휴가시작기간을 선택하세요."
         else if (!insertVcatnValue.vcatnEndYmd && (insertVcatnValue.vcatnTyCd == "VTW01201" || insertVcatnValue.vcatnTyCd == "VTW01204")) errorMsg = "휴가종료기간을 선택하세요."
+        else if (insertVcatnValue.vcatnTyCd == "VTW01209" && !insertVcatnValue.vcatnLeaveTyCd) errorMsg = "휴직유형을 선택하세요"
+        else if (insertVcatnValue.vcatnTyCd == "VTW01209" && attachments.length < 1) errorMsg = "휴직 신청 시 첨부파일을 등록해주세요.";
+        else if (!insertVcatnValue.vcatnPrvonsh && (insertVcatnValue.vcatnLeaveTyCd == "VTW05302" || insertVcatnValue.vcatnLeaveTyCd == "VTW05303")) errorMsg = "사유를 입력하세요"
 
         if (errorMsg) {
             handleOpen(errorMsg);
             return;
         } else {
-            let response = getVcatnVali();
-            if (response) {
-                handleOpen(response);
-                return;
-            } else {
-                insertVcatnAtrz(insertElctrnValue);
-                setAtrzLnSrngValue();
+            // 휴직
+            if(insertVcatnValue.vcatnTyCd == "VTW01209") insertVcatnAtrz(insertElctrnValue);
+            
+            // 휴가신청
+            else {
+                let response = getVcatnVali();
+                if (response) {
+                    handleOpen(response);
+                    return;
+                } else {
+                    insertVcatnAtrz(insertElctrnValue);
+                }
             }
         }
     }
 
-    // 휴가신청 정합성체크
+    // 휴가신청전자결재저장 정합성
     function getVcatnVali() {
         let errorMsg;
         const flagOrder = Moment(new Date()).format("YYYYMMDD") <= (Moment(new Date()).format("YYYY") + "0331") ? 1 : 2     // 회계년도기준차수
@@ -446,15 +514,17 @@ const EmpVacation = () => {
         let newVcatnList = selectVcatnInfoValue.filter(item => item.vcatnFlag == "NEW")[0];            // 신규휴가정보
         let accountVcatnList = selectVcatnInfoValue.filter(item => item.vcatnFlag == "ACCOUNT")[0];    // 회계휴가정보
 
-        // case_3
-        // 동일회계년도 근무시간 결재중 휴가신청
-        // case_4
-        // 동일회계년도 근무시간 마감 휴가신청
+        // 경조휴가 첨부파일 확인
+        if((insertVcatnValue.vcatnTyCd == "VTW01207" || insertVcatnValue.vcatnTyCd == "VTW01208" || insertVcatnValue.vcatnTyCd == "VTW01209") && attachments.length < 1){
+            errorMsg = "경조휴가 및 휴직 신청 시 첨부파일을 등록해주세요.";
+        }
 
-        if(selectCrtrDateList.find(item => item.vcatnCntrlYmdYn == "Y" && item.crtrYmd == Moment(new Date()).format('YYYYMMDD'))){
+        // 휴가등록불가기간 신청하는 경우
+        if (selectCrtrDateList.find(item => item.vcatnCntrlYmdYn == "Y" && item.crtrYmd == Moment(new Date()).format('YYYYMMDD'))) {
             errorMsg = "휴가등록불가기간입니다. 인사관리부서에 문의해주세요.";
         }
 
+        // 휴가신청일자 정합성 확인
         if (insertVcatnValue.vcatnBgngYmd > insertVcatnValue.vcatnEndYmd) {
             errorMsg = "휴가시작일자와 휴가종료일자를 확인해주세요.";
         }
@@ -518,8 +588,7 @@ const EmpVacation = () => {
         return errorMsg;
     }
 
-
-    // 휴가신청전자결재저장 별도 도메인
+    // 휴가신청전자결재저장
     const insertVcatnAtrz = async (params) => {
         const formData = new FormData();
 
@@ -540,8 +609,10 @@ const EmpVacation = () => {
         Object.values(attachments).forEach((attachment) => formData.append("attachments", attachment));
 
         try {
-            const response = await axios.post("/boot/indvdlClm/insertVcatnAtrz", formData, {
-                headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}`  },
+            let axiosUrl = insertVcatnValue.vcatnTyCd == "VTW01209" ? "/boot/indvdlClm/insertEmpLeave" : "/boot/indvdlClm/insertVcatnAtrz";
+            
+            const response = await axios.post(axiosUrl, formData, {
+                headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${localStorage.getItem("token")}` },
             });
 
             if (response && response.data == "성공") {
@@ -551,14 +622,13 @@ const EmpVacation = () => {
                 elctrnAtrzId = uuid();
 
                 // 첨부파일초기화
-                if(insertVcatnValue.vcatnTyCd == "VTW01204" || insertVcatnValue.vcatnTyCd == "VTW01205"){
-                    clearFiles();
-                }
+                if (insertVcatnValue.vcatnTyCd == "VTW01204" || insertVcatnValue.vcatnTyCd == "VTW01207" || insertVcatnValue.vcatnTyCd == "VTW01208" || insertVcatnValue.vcatnTyCd == "VTW01209") clearFiles();
 
-                setSearchVcatnListParam({
-                    ...searchVcatnListParam,
-                    isSearch: true
-                })
+                // 화면초기화
+                setSearchVcatnListParam({ ...searchVcatnListParam, isSearch: true })
+                setInsertElctrnValue({ ...insertElctrnValue, prjctId: null })
+                selectData(searchVcatnListParam);
+
                 setInsertVcatnValue({
                     empId: sessionEmpId,
                     flagYear: flagYear,
@@ -570,33 +640,33 @@ const EmpVacation = () => {
                     vcatnEndYmd: "",
                     vcatnPrvonsh: null,
                     vcatnTyCd: "",
+                    vcatnLeaveTyCd: ""
                 })
-                setInsertElctrnValue({
-                    ...insertElctrnValue,
-                    prjctId: null
-                })
-                selectData(searchVcatnListParam);
             } else {
                 handleOpen(response.data);
             }
-
         } catch (error) {
             console.log("insertVcatnAtrz_error: ", error);
+            handleOpen("실패하였습니다.")
         }
     }
 
+
+
+
+
     // 휴가정보 저장정보 설정
     function onInsertVcatnValue(param, e) {
-        if(param == "vcatnTyCd" && (e == "VTW01204" || e == "VTW01205")){
-            handleOpen("파일 미첨부 공가 결재는 연차에서 차감됩니다.");
-        }
-
         // 날짜 parsing
         if (param == "vcatnBgngYmd" || param == "vcatnEndYmd") e = Moment(e).format('YYYYMMDD');
 
+        // 휴가유형 선택
         if (param == "vcatnTyCd") {
+
             // 반차선택
-            if ((e == "VTW01202" || e == "VTW01203" || e == "VTW01205" || e == "VTW01206")) {
+            if ((e == "VTW01202" || e == "VTW01203" || e == "VTW01205")) {
+                setNormalAtrz();
+
                 setInsertVcatnValue({
                     ...insertVcatnValue,
                     vcatnDeCnt: String(0.5),
@@ -604,7 +674,11 @@ const EmpVacation = () => {
                     vcatnEndYmd: null,
                     [param]: e,
                 })
-            } else {
+
+            }
+
+            // 반차제외선택(연차, 공가, 경조휴가, 휴직)
+            else {
                 setInsertVcatnValue({
                     ...insertVcatnValue,
                     vcatnDeCnt: null,
@@ -612,28 +686,51 @@ const EmpVacation = () => {
                     vcatnEndYmd: null,
                     [param]: e,
                 })
+
+                // 공가
+                if (e == "VTW01204") {
+                    setNormalAtrz();
+
+                    setPopupCondolenceVisibleValue({ type: "official", visible: true })
+                }
+
+                // 경조휴가
+                else if (e == "VTW01207" || e == "VTW01208") {
+                    setCondolenceAtrz();
+
+                    setPopupCondolenceVisibleValue({ type: "condolence", visible: true })
+                }
+
+                // 휴직
+                else if (e == "VTW01209") setCondolenceAtrz();
+
+                // 연차
+                else setNormalAtrz();
             }
-        } else {
+        }
+
+        // 휴가유형제외 선택
+        else {
             // 반차선택시 휴가종료일자 설정
-            if (param == "vcatnBgngYmd" &&
-                (insertVcatnValue.vcatnTyCd == "VTW01202" ||
-                    insertVcatnValue.vcatnTyCd == "VTW01203" ||
-                    insertVcatnValue.vcatnTyCd == "VTW01205" ||
-                    insertVcatnValue.vcatnTyCd == "VTW01206")
-            ) {
-                setInsertVcatnValue({
-                    ...insertVcatnValue,
-                    vcatnEndYmd: e,
-                    [param]: e,
-                })
+            if (param == "vcatnBgngYmd" && (insertVcatnValue.vcatnTyCd == "VTW01202" || insertVcatnValue.vcatnTyCd == "VTW01203" || insertVcatnValue.vcatnTyCd == "VTW01205")) {
+                
+                // 주말 및 공휴일 확인
+                if (isSaturday(Moment(e).format("YYYY-MM-DD")) || isSunday(Moment(e).format("YYYY-MM-DD"))) {
+                    handleOpen("주말입니다.")
+                } else if (selectCrtrDateList.find((item => item.hldyClCd == "VTW05003" && item.crtrYmd == e))) {
+                    handleOpen("공휴일입니다.")
+                } else {
+                    setInsertVcatnValue({ ...insertVcatnValue, vcatnEndYmd: e, [param]: e })
+                }
             } else {
-                setInsertVcatnValue({
-                    ...insertVcatnValue,
-                    [param]: e,
-                })
+                setInsertVcatnValue({ ...insertVcatnValue, [param]: e })
             }
         }
     }
+
+
+
+
 
     // 휴가일수설정
     useEffect(() => {
@@ -642,13 +739,14 @@ const EmpVacation = () => {
             let endDate = parseInt(insertVcatnValue.vcatnEndYmd);
             let weekendDayCnt = 0;
 
-            var d1 = new Date(Moment(String(startDate)).format("YYYY-MM-DD"));
-            var d2 = new Date(Moment(String(endDate)).format("YYYY-MM-DD"));
+            var startDay = new Date(Moment(String(startDate)).format("YYYY-MM-DD"));
+            var endDay = new Date(Moment(String(endDate)).format("YYYY-MM-DD"));
 
-            var diff = d2.getTime() - d1.getTime();
+            var diff = endDay.getTime() - startDay.getTime();
             var daydiff = diff / (1000 * 60 * 60 * 24) + 1;
 
-            if (insertVcatnValue.vcatnTyCd && (insertVcatnValue.vcatnTyCd == "VTW01201" || insertVcatnValue.vcatnTyCd == "VTW01204")) {
+            // 휴가기간선택시 
+            if (insertVcatnValue.vcatnTyCd && (insertVcatnValue.vcatnTyCd == "VTW01201" || insertVcatnValue.vcatnTyCd == "VTW01204" || insertVcatnValue.vcatnTyCd == "VTW01207" || insertVcatnValue.vcatnTyCd == "VTW01208" || insertVcatnValue.vcatnTyCd == "VTW01209")) {
                 for (let i = 0; i < daydiff; i++) {
                     let valiCheckDate = Moment((addDays(new Date(Moment(String(startDate)).format("YYYY-MM-DD")), i))).format("YYYY-MM-DD");
 
@@ -658,35 +756,36 @@ const EmpVacation = () => {
                         weekendDayCnt++;
                     }
                 }
-                setInsertVcatnValue({
-                    ...insertVcatnValue,
-                    vcatnDeCnt: String(daydiff - weekendDayCnt)
-                })
+                setInsertVcatnValue({ ...insertVcatnValue, vcatnDeCnt: String(daydiff - weekendDayCnt) })
             }
         }
     }, [insertVcatnValue.vcatnBgngYmd, insertVcatnValue.vcatnEndYmd])
+
+
+
+
 
     // 휴가목록선택
     function onRowClick(e) {
         navigate("/elecAtrz/ElecAtrzDetail", { state: { data: { elctrnAtrzId: e.data.elctrnAtrzId, elctrnAtrzTySeCd: "VTW04901", prjctId: e.data.prjctId } } })
     }
 
+
+
+
+
     // 버튼클릭
     function onButtonClick(e, data) {
         if (e.text == "파일") {
-            setPopupAttachValue({
-                elctrnAtrzId: data.elctrnAtrzId,
-                attachId: data.atchmnflId,
-                visible: true,
-            })
+            setPopupAttachValue({ elctrnAtrzId: data.elctrnAtrzId, attachId: data.atchmnflId, visible: true })
         } else if (e.text == "취소") {
-            setPopupVcatnAtrzCancleValue({
-                data: data,
-                empId: sessionEmpId,
-                visible: true,
-            })
+            setPopupVcatnAtrzCancleValue({ data: data, empId: sessionEmpId, visible: true })
         }
     }
+
+
+
+
 
     // 결재선버튼 callback
     const onAtrzHiding = async (aprvrEmpList) => {
@@ -694,14 +793,19 @@ const EmpVacation = () => {
         setPopupVisibleAtrzValue(false);
     }
 
+
+
+
+
     // 첨부파일변경
     const changeAttchValue = (e) => {
-        setInsertVcatnValue({
-            ...insertVcatnValue,
-            atchmnflId: uuid()
-        })
+        setInsertVcatnValue({ ...insertVcatnValue, atchmnflId: uuid() })
         setAttachments(e.value)
     }
+
+
+
+
 
     // 첨부파일 화면 초기화
     const clearFiles = () => {
@@ -710,8 +814,31 @@ const EmpVacation = () => {
     };
 
 
+
+
+
+    // 일반휴가 결재선설정
+    function setNormalAtrz() {
+        let pushData = popupAtrzValue.filter(item => (item.approvalCode != "VTW00705" && item.approvalCode != "VTW00702" && (item.empId != atrzLnAprvListValue.empId)))
+
+        pushData.push(atrzLnAprvListValue);
+
+        setPopupAtrzValue(pushData);
+    }
+
+    // 경조휴가, 휴직 결재선설정
+    function setCondolenceAtrz() {
+        let pushData = popupAtrzValue.filter(item => (item.approvalCode != "VTW00705" && item.approvalCode != "VTW00702"))
+        
+        if(atrzLnSnrgListValue) pushData.push(selectCondolenceAtrzReviewValue[0], selectCondolenceAtrzApprovalValue[0], atrzLnSnrgListValue );
+        else if(!atrzLnSnrgListValue) pushData.push(selectCondolenceAtrzReviewValue[0], selectCondolenceAtrzApprovalValue[0]);
+
+        setPopupAtrzValue(pushData);
+    }
+
+
     return (
-        <div className="">
+        <div>
             <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
                 <h1 style={{ fontSize: "30px" }}>휴가</h1>
             </div>
@@ -723,40 +850,26 @@ const EmpVacation = () => {
                     <SelectBox
                         placeholder="[년도]"
                         defaultValue={flagYear}
-                        dataSource={getYearList(10, 1)}
+                        dataSource={getYearList(5, 1)}
                         onValueChange={(e) => {
-                            setSearchVcatnListParam({
-                                ...searchVcatnListParam,
-                                searchYear: e,
-                                isSearch: false,
-                            })
-                            setSelectSearchVcatnListParam({
-                                ...selectSearchVcatnListParam,
-                                searchYear: e,
-                                isSearch: false,
-                            })
-                        }} />
+                            setSearchVcatnListParam({ ...searchVcatnListParam, searchYear: e, isSearch: false })
+                            setSelectSearchVcatnListParam({ ...selectSearchVcatnListParam, searchYear: e, isSearch: false })
+                        }} 
+                    />
                 </div>
                 <div className="col-md-1">
                     <Button
                         text="검색"
-                        onClick={(e) => {
-                            setSearchVcatnListParam({
-                                ...searchVcatnListParam,
-                                isSearch: true
-                            })
-                            setSelectSearchVcatnListParam({
-                                ...selectSearchVcatnListParam,
-                                isSearch: true,
-                            })
-                        }}
                         style={{ height: "48px", width: "50px" }}
+                        onClick={(e) => {
+                            setSearchVcatnListParam({ ...searchVcatnListParam, isSearch: true })
+                            setSelectSearchVcatnListParam({ ...selectSearchVcatnListParam, isSearch: true })
+                        }}
                     />
                 </div>
                 <div style={{ marginTop: "10px" }}>
                     <span>※검색시 휴가신청에 작성한 내용은 삭제됩니다.</span>
                 </div>
-
                 <div style={{ display: "flex", marginTop: "30px" }}>
                     <div style={{ width: "63%", marginRight: "25px" }}>
                         <div style={{ marginTop: "30px" }}>
@@ -787,11 +900,11 @@ const EmpVacation = () => {
                             <span>3.결재 취소는 결재 완료 후 가능합니다.</span>
                         </div>
                         {
-                            selectVcatnListValue && selectVcatnListValue.find(item => (item.vcatnTyCd == "VTW01204" || item.vcatnTyCd == "VTW01205") && !item.atchmnflId)
+                            selectVcatnListValue && selectVcatnListValue.find(item => (item.atrzDmndSttsCd != "VTW03704" && item.atrzDmndSttsCd != "VTW03705") && (item.vcatnTyCd == "VTW01204" || item.vcatnTyCd == "VTW01207" || item.vcatnTyCd == "VTW01208" || item.vcatnTyCd == "VTW01209") && !item.atchmnflId)
                                 ?
-                                <div style={{ marginTop: "20px", backgroundColor: "#FFCCCA", height: "50px", borderRadius: "10px", display: "flex", alignItems: "center"}}>
+                                <div style={{ marginTop: "20px", backgroundColor: "#FFCCCA", height: "50px", borderRadius: "10px", display: "flex", alignItems: "center" }}>
                                     <div style={{ fontWeight: "bold", color: "#996666", marginLeft: "20px", fontSize: "16px" }}>공가 파일 미첨부! </div>
-                                    <div style={{marginLeft: "5px"}}>아래 '첨부파일' 버튼을 통해 공가 증빙서류를 첨부해 주세요.</div>
+                                    <div style={{ marginLeft: "5px" }}>아래 '첨부파일' 버튼을 통해 공가 증빙서류를 첨부해 주세요.</div>
                                 </div>
                                 : <></>
                         }
@@ -829,12 +942,7 @@ const EmpVacation = () => {
                                                 dataSource={location.state ? location.state.deptList : deptInfo}
                                                 displayExpr="deptNm"
                                                 valueExpr="deptId"
-                                                onValueChange={(e) => {
-                                                    setAtrzLnAprvListParam({
-                                                        ...atrzLnAprvListParam,
-                                                        deptId: e
-                                                    })
-                                                }}
+                                                onValueChange={(e) => { setAtrzLnAprvListParam({ ...atrzLnAprvListParam, deptId: e }) }}
                                             />
                                         </div>
                                     </>
@@ -864,19 +972,12 @@ const EmpVacation = () => {
                                     value={insertElctrnValue.prjctId}
                                     stylingMode="underlined"
                                     searchEnabled={true}
-                                    onValueChange={(e) => { 
+                                    onValueChange={(e) => {
                                         const selectedItem = selectPrjctList.find(item => item.prjctId === e);
 
-                                        if(selectedItem){
-                                            setInsertElctrnValue({
-                                                ...insertElctrnValue,
-                                                prjctId: e,
-                                            })
-                                            selectData({
-                                                searchType: "atrzLnSrng",
-                                                prjctId: e,
-                                                prjctMngrEmpId: selectedItem.prjctMngrEmpId
-                                            })
+                                        if (selectedItem) {
+                                            setInsertElctrnValue({ ...insertElctrnValue, prjctId: e })
+                                            selectData({ searchType: "atrzLnSrng", prjctId: e, prjctMngrEmpId: selectedItem.prjctMngrEmpId })
                                         }
                                     }}
                                 />
@@ -884,21 +985,58 @@ const EmpVacation = () => {
                         </div>
                         <div className="row" style={{ marginTop: "5px" }}>
                             <div className="col-md-2" style={textAlign}>휴가유형</div>
-                            <div className="col-md-10">
-                                <SelectBox
-                                    dataSource={selectCodeValue}
-                                    placeholder="휴가유형을 선택해주세요"
-                                    valueExpr="cdValue"
-                                    displayExpr="cdNm"
-                                    value={insertVcatnValue.vcatnTyCd}
-                                    stylingMode="underlined"
-                                    onValueChange={(e) => { onInsertVcatnValue("vcatnTyCd", e) }}
-                                />
-                            </div>
+                            {
+                                insertVcatnValue && insertVcatnValue.vcatnTyCd == "VTW01209"
+                                ?
+                                <>
+                                    <div className="col-md-5">
+                                    <SelectBox
+                                        dataSource={selectCodeValue}
+                                        placeholder="휴가유형을 선택해주세요"
+                                        valueExpr="cdValue"
+                                        displayExpr="cdNm"
+                                        value={insertVcatnValue.vcatnTyCd}
+                                        stylingMode="underlined"
+                                        onValueChange={(e) => { 
+                                            onInsertVcatnValue("vcatnTyCd", e) 
+                                            setInsertVcatnValue({
+                                                ...insertVcatnValue,
+                                                vcatnLeaveTyCd: ""
+                                            })
+                                        }}
+                                    />
+                                    </div>
+                                    <div className="col-md-5">
+                                    <SelectBox
+                                        dataSource={selectVcatnLeaveCodeValue}
+                                        placeholder="휴직유형을 선택해주세요"
+                                        valueExpr="cdValue"
+                                        displayExpr="cdNm"
+                                        value={insertVcatnValue.vcatnLeaveTyCd}
+                                        stylingMode="underlined"
+                                        onValueChange={(e) => { 
+                                            if(e == "VTW05302") handleOpen("무급휴직의 기간은 2개월을 초과할 수 없습니다.")
+                                            onInsertVcatnValue("vcatnLeaveTyCd", e)
+                                        }}
+                                    />
+                                    </div>
+                                </>
+                                : 
+                                <div className="col-md-10">
+                                    <SelectBox
+                                        dataSource={selectCodeValue}
+                                        placeholder="휴가유형을 선택해주세요"
+                                        valueExpr="cdValue"
+                                        displayExpr="cdNm"
+                                        value={insertVcatnValue.vcatnTyCd}
+                                        stylingMode="underlined"
+                                        onValueChange={(e) => { onInsertVcatnValue("vcatnTyCd", e) }}
+                                    />
+                                </div>
+                            }
                         </div>
-
                         {
-                            insertVcatnValue.vcatnTyCd != "VTW01202" && insertVcatnValue.vcatnTyCd !== "VTW01203" && insertVcatnValue.vcatnTyCd !== "VTW01205" && insertVcatnValue.vcatnTyCd !== "VTW01206"
+                            insertVcatnValue.vcatnTyCd != "VTW01202" && insertVcatnValue.vcatnTyCd !== "VTW01203" && insertVcatnValue.vcatnTyCd !== "VTW01205"
                                 ?
                                 <div className="row" style={{ marginTop: "5px" }}>
                                     <div className="col-md-2" style={textAlign}>휴가기간</div>
@@ -979,48 +1117,42 @@ const EmpVacation = () => {
                             </div>
                         </div>
                         {
-                            insertVcatnValue && (insertVcatnValue.vcatnTyCd == "VTW01204" || insertVcatnValue.vcatnTyCd == "VTW01205")
-                            ?
-                            <div className="row" style={{ marginTop: "5px" }}>
-                                <div className="col-md-2" style={textAlign}>첨부</div>
-                                <div className="col-md-10">
-                                    <FileUploader
-                                        selectButtonText="첨부파일"
-                                        multiple={true}
-                                        labelText=""
-                                        uploadMode="useButton"
-                                        onValueChanged={changeAttchValue}
-                                        ref={fileUploaderRef}
-                                    />
+                            insertVcatnValue && (insertVcatnValue.vcatnTyCd == "VTW01204" || insertVcatnValue.vcatnTyCd == "VTW01207" || insertVcatnValue.vcatnTyCd == "VTW01208" || insertVcatnValue.vcatnTyCd == "VTW01209")
+                                ?
+                                <div className="row" style={{ marginTop: "5px" }}>
+                                    <div className="col-md-2" style={textAlign}>첨부</div>
+                                    <div className="col-md-10">
+                                        <FileUploader
+                                            selectButtonText="첨부파일"
+                                            multiple={true}
+                                            labelText=""
+                                            uploadMode="useButton"
+                                            onValueChanged={changeAttchValue}
+                                            ref={fileUploaderRef}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                            : <></>
+                                : <></>
                         }
                         <div style={{ display: "inline-block", float: "right", marginTop: "25px" }}>
                             <Button style={{ height: "48px", width: "100px", marginRight: "15px" }} onClick={(e) => { setPopupVisibleAtrzValue(true) }}>결재선지정</Button>
-                            <Button style={{ height: "48px", width: "60px" }} onClick={() => {handleOpen("저장하시겠습니까?", onSaveClick)}}>저장</Button>
+                            <Button style={{ height: "48px", width: "60px" }} onClick={() => { handleOpen("저장하시겠습니까?", onSaveClick) }}>저장</Button>
                         </div>
 
                         {
                             popupAttachValue.visible == true
-                            ?
-                            <EmpVacationAttchList
-                                width={"500px"}
-                                height={"500px"}
-                                title={"전자결재 파일 첨부"}
-                                visible={popupAttachValue.visible}
-                                attachId={popupAttachValue.attachId}
-                                elctrnAtrzId={popupAttachValue.elctrnAtrzId}
-                                onHiding={(e) => {
-                                    setPopupAttachValue({
-                                        attachId: "",
-                                        visible: e
-                                    })
-                                }}
-                            />
-                            : <></>
+                                ?
+                                <EmpVacationAttchList
+                                    width={"500px"}
+                                    height={"500px"}
+                                    title={"전자결재 파일 첨부"}
+                                    visible={popupAttachValue.visible}
+                                    attachId={popupAttachValue.attachId}
+                                    elctrnAtrzId={popupAttachValue.elctrnAtrzId}
+                                    onHiding={(e) => { setPopupAttachValue({ attachId: "", visible: e }) }}
+                                />
+                                : <></>
                         }
-                        
 
                         <ApprovalPopup
                             width={"500px"}
@@ -1041,12 +1173,23 @@ const EmpVacation = () => {
                                 empId={popupVcatnAtrzCancleValue.empId}
                                 onHiding={(e) => {
                                     setPopupVcatnAtrzCancleValue({ visible: e })
-                                    setSearchVcatnListParam({ ...searchVcatnListParam, isSearch: true})
+                                    setSearchVcatnListParam({ ...searchVcatnListParam, isSearch: true })
                                     selectData(searchVcatnListParam);
                                 }}
                             />
-                            :
-                            <></>
+                            : <></>
+                        }
+
+                        {popupCondolenceVisibleValue.visible == true
+                            ?
+                            <EmpVacationCondolencePopup
+                                width={"600px"}
+                                height={popupCondolenceVisibleValue.type == "condolence" ? "940px" : "300px"}
+                                visible={popupCondolenceVisibleValue.visible}
+                                type={popupCondolenceVisibleValue.type}
+                                onHiding={(e) => { setPopupCondolenceVisibleValue({ visible: e }) }}
+                            />
+                            : <></>
                         }
                     </div>
                 </div>
@@ -1181,6 +1324,7 @@ function createBody(selectVcatnInfoValue) {
 }
 
 function elctrnLine(popupAtrzValue) {
+    // console.log("popupAtrzValue : ", popupAtrzValue);
     const atrzLnReviewValue = popupAtrzValue.find(item => item.approvalCode == "VTW00702")
     const atrzLnConfirmValue = popupAtrzValue.find(item => item.approvalCode == "VTW00703")
     const atrzLnSrngValue = popupAtrzValue.find(item => item.approvalCode == "VTW00704")

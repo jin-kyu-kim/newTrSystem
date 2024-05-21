@@ -91,7 +91,7 @@ const EmpWorkTime = () => {
     // 프로젝트 목록 조회
     const getPrjctInfo = async () => {
         try {
-            setSelectPrjctList(await ApiRequest("/boot/common/commonSelect", [{ tbNm: "PRJCT" }, { bizSttsCd: "VTW00402" }]));
+            setSelectPrjctList(await ApiRequest("/boot/common/queryIdSearch", { queryId: "indvdlClmMapper.retrievePrjctList" }));
         } catch (error) {
             console.error("getPrjctInfo_error : " + error);
         }
@@ -778,11 +778,6 @@ const EmpWorkTime = () => {
                                 <div className="row" style={{ marginTop: "30px" }}>
                                     <div className="col-md-3" style={textAlign}>프로젝트<br />(프로젝트명 또는 코드 입력)</div>
                                     <div className="col-md-4">
-                                        {/* <AutoCompleteProject
-                                            placeholderText="프로젝트를 선택해주세요"
-                                            onValueChange={onRefValuePrjctChange}
-                                            sttsBoolean={true}
-                                        /> */}
                                         <SelectBox
                                             dataSource={selectPrjctList}
                                             placeholder="프로젝트를 선택해주세요"

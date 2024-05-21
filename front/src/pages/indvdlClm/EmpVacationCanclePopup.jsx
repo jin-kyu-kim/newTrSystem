@@ -81,9 +81,7 @@ const EmpVacationCanclePopup = ({ width, height, visible, dataMap, empId, onHidi
                     <div style={{ marginTop: "10px" }}>
                         <TextBox
                             ref={rtrcnPrvonsh}
-                            onValueChange={(e) => {
-                                rtrcnPrvonsh.current = e
-                            }}
+                            onValueChange={(e) => { rtrcnPrvonsh.current = e }}
                         />
                     </div>
                 </div>
@@ -160,9 +158,7 @@ const EmpVacationCanclePopup = ({ width, height, visible, dataMap, empId, onHidi
                 showCloseButton={true}
                 contentRender={dataMap && dataMap.atrzDmndSttsCd == "VTW03702" ? createDeleteRender : createCancleRender}
                 title={title}
-                onHiding={(e) => {
-                    onHiding(false);
-                }}
+                onHiding={(e) => { onHiding(false) }}
             />
         </>
     )
