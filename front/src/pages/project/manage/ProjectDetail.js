@@ -20,7 +20,8 @@ const ProjectDetail = () => {
         bgtMngOdrTobe,
         bizSttsCd,
         deptId,
-        prjctNm
+        prjctNm,
+        path
   } = location.state || {};
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [atrzLnSn, setAtrzLnSn] = useState();
@@ -261,7 +262,7 @@ const ProjectDetail = () => {
           type="normal"
           stylingMode="outline"
           style={{ margin : '2px' }}
-          onClick={() => navigate("../project/ProjectList")}
+          onClick={() => navigate(`..${path}`)}
         >
           목록
         </Button>
