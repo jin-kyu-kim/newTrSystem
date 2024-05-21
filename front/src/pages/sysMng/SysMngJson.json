@@ -93,13 +93,13 @@
             { "key": "empFlnm", "value": "성명" },
             { "key": "jbpsNm", "value": "직위" },
             { "key": "deptId", "value": "소속" },
-            { "key": "vtw04805" ,"value": "인사관리", "cellType": "toggle" },
-            { "key": "vtw04804","value": "재무관리", "cellType": "toggle" },
-            { "key": "vtw04807","value": "프로젝트관리", "cellType": "toggle" },
-            { "key": "vtw04803","value": "고객관리", "cellType": "toggle" },
-            { "key": "vtw04802","value": "사업관리", "cellType": "toggle" },
-            { "key": "vtw04806","value": "법제도관리", "cellType": "toggle" },
-            { "key": "vtw04801","value": "전사관리", "cellType": "toggle" }
+            { "key": "VTW04805" ,"value": "인사관리", "cellType": "toggle" },
+            { "key": "VTW04804","value": "재무관리", "cellType": "toggle" },
+            { "key": "VTW04807","value": "프로젝트관리", "cellType": "toggle" },
+            { "key": "VTW04803","value": "고객관리", "cellType": "toggle" },
+            { "key": "VTW04802","value": "사업관리", "cellType": "toggle" },
+            { "key": "VTW04806","value": "법제도관리", "cellType": "toggle" },
+            { "key": "VTW04801","value": "전사관리", "cellType": "toggle" }
         ]
     }
 }
