@@ -69,7 +69,6 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
 
     useEffect(() => {
         if (data.atrzDmndSttsCd === "VTW03701") {
-            console.log("임시저장")
             getTempData();
 
         } else if (data.selectedData) {
@@ -112,13 +111,12 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
             ]);
         }
     }, []);
-    console.log('forms', forms)
+
     const getTempData = async () => {
         const param = {
             queryId: "elecAtrzMapper.retrieveTempClmAtrzDtl",
             elctrnAtrzId: data.elctrnAtrzId
         }
-
         const response = await ApiRequest("/boot/common/queryIdSearch", param);
         setForms(response);
     }
@@ -153,13 +151,9 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
     }, [forms]);
 
     const removeForm = (selectForm) => {
-
-        console.log(selectForm)
-
         if (forms.length === 1) { // 하나일 경우 지우지 않는다.
             return;
         }
-
         setForms([...forms.filter((form) => form.clmAtrzDtlSn !== selectForm.clmAtrzDtlSn)]);
     };
 
@@ -175,9 +169,7 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
                 newForms[index]["bankCd"] = null;
             }
         }
-        console.log("1", newForms);
         newForms[index][fieldName] = e.target.value;
-        console.log("2", newForms);
         setForms(newForms);
     };
 

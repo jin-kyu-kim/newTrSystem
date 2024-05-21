@@ -88,7 +88,7 @@ const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick
               className="dx-field-value"
               readOnly={true}
               style={{ width: "93%" }}
-              value={atrzLnEmpList.filter((item) => item.approvalCode === 'VTW00706')
+              value={atrzLnEmpList?.filter((item) => item.approvalCode === 'VTW00706')
                 .map(item => item.listEmpFlnm).join('; ')}
             />
           </div>
