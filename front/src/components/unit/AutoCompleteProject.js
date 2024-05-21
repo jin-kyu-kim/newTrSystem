@@ -19,14 +19,12 @@ const AutoCompleteProject = ({ placeholderText, onValueChange, sttsBoolean }) =>
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await ApiRequest("/boot/common/commonSelect", [
-          { tbNm: "PRJCT" },
-          {},
-        ]);
+        const response = await ApiRequest('/boot/common/queryIdSearch', {queryId: 'commonMapper.autoCompleteProject'});
 
-        const processedData = response.map(({ prjctId, prjctNm, prjctMngrEmpId, bizSttsCd }) => ({
+        const processedData = response.map(({ prjctId, prjctNm, prjctTag, prjctMngrEmpId, bizSttsCd }) => ({
           key: prjctId,
           value: prjctNm,
+          prjctTag: prjctTag,
           prjctMngrEmpId: prjctMngrEmpId,
           bizSttsCd: bizSttsCd,
         }));
@@ -63,7 +61,7 @@ const AutoCompleteProject = ({ placeholderText, onValueChange, sttsBoolean }) =>
   const ItemTemplate = (item) => {
     return (
         <div className="selectbox-item">
-          {item.value}
+          {item.prjctTag}
         </div>
     );
   };
