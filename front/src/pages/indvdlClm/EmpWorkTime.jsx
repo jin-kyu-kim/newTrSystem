@@ -473,18 +473,13 @@ const EmpWorkTime = () => {
 
         formData.append("deletePrjctMmList", JSON.stringify(deleteWorkHourList));
 
-        if (deleteWorkHourList.length > 0) {
-            try {
-                const response = await axios.post("/boot/indvdlClm/deletePrjctMmAply", formData, {
-                    headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
-                });
-                return;
-            } catch (error) {
-                console.log("deletePrjctMmTemp_error: ", error);
-            }
-        } else {
-            handleOpen("삭제가능한 근무시간이 없습니다.");
+        try {
+            const response = await axios.post("/boot/indvdlClm/deletePrjctMmAply", formData, {
+                headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
+            });
             return;
+        } catch (error) {
+            console.log("deletePrjctMmTemp_error: ", error);
         }
     }
 
