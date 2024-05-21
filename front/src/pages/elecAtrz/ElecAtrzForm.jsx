@@ -58,7 +58,8 @@ const ElecAtrzForm = () => {
     
         try {
             const response = await ApiRequest("/boot/common/queryIdSearch", param);
-            setPrjctList(response);
+            
+            setPrjctList(response.filter(item => item.bizSttsCd == "VTW00402"));
         } catch (error) {
             console.error(error)
         }
