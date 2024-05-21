@@ -931,7 +931,7 @@
           AND (
             (#{actionType} = 'INPUT' AND ATRZ_DMND_STTS_CD IS NULL) OR
             (#{actionType} = 'INPUT_CANCEL' AND ATRZ_DMND_STTS_CD = 'VTW03701') OR
-            (#{actionType} = 'APPROVE' AND ATRZ_DMND_STTS_CD = 'VTW03701' OR ATRZ_DMND_STTS_CD IS NULL) OR
+            (#{actionType} = 'APPROVE' AND (ATRZ_DMND_STTS_CD = 'VTW03701' OR ATRZ_DMND_STTS_CD IS NULL))OR
             (#{actionType} = 'APPROVE_CANCEL' AND ATRZ_DMND_STTS_CD IN ('VTW03702', 'VTW03704'))
             )
           AND PRJCT_CT_ATRZ.EMP_ID = #{empId}
