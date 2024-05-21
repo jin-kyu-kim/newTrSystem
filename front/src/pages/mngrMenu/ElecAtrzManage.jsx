@@ -2,18 +2,17 @@ import React, { useState, useEffect } from "react";
 import elecAtrzManageJson from "./ElecAtrzManageJson.json";
 import SearchInfoSet from "components/composite/SearchInfoSet";
 import CustomTable from "components/unit/CustomTable";
-import { Button, Popup, Tooltip, FileUploader } from "devextreme-react";
+import { Tooltip } from "devextreme-react";
 import ApiRequest from "utils/ApiRequest";
 import "../elecAtrz/ElecAtrz.css";
 import { useNavigate } from "react-router-dom";
 import ElecAtrzManageHistList from "./ElecAtrzManageAttchList";
-import EmpVacationAttchList from "pages/indvdlClm/EmpVacationAttchList";
 import ElecAtrzManageAttchList from "./ElecAtrzManageAttchList";
 
 const ElecAtrzManage = () => {
     //========================선언구간=======================//
     const navigate = useNavigate(); 
-    const { keyColumn, queryId, countQueryId, atchmnFlPopupqueryId, baseColumns, progress, atrzSquareList, searchInfo, atchmnFlPopupColumns, docHistPopupColumns} = elecAtrzManageJson.elecManageMain;
+    const { keyColumn, queryId, countQueryId, atchmnFlPopupqueryId, baseColumns, progress, atrzSquareList, searchInfo} = elecAtrzManageJson.elecManageMain;
     const [searchParam, setSearchParam] = useState({keyColumn : keyColumn, queryId : queryId, searchType : "progress"});
     const [totalCount, setTotalCount] = useState([]);
     const [searchList, setSearchList] = useState([]);
@@ -27,18 +26,14 @@ const ElecAtrzManage = () => {
 
     //페이징
     const [totalItems, setTotalItems] = useState(0);
-    const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [pageSize, setPageSize] = useState(20);
-    //======================================================//
 
-    //======================================================//
     useEffect(() => {
         pageHandle();
     }, [searchParam]);
-    //======================================================//
 
-    //======================조회 이벤트======================//
+    //======================조회======================//
     const pageHandle = async () => {
 
         const countParam = {
@@ -90,15 +85,9 @@ const ElecAtrzManage = () => {
 
     }
 
-    //======================팝업테스트용 선언=================//
+    //======================팝업테스트=================//
     //첨부파일 리스트
     const [atchmnFlId, setAtchmnFlId] = useState([]);
-
-    //문서이력 리스트 
-    const [docHistList, setDocHistList] = useState([]);
-    //======================================================//
-    
-    //======================팝업테스트용 이벤트=================//
 
     //팝업 호출 이벤트
     const onBtnClick = (button, data) => {
@@ -128,14 +117,9 @@ const ElecAtrzManage = () => {
         }
     }
 
-    //팝업 닫기 이벤트(테스트용)
+    //팝업 닫기 이벤트
     const onAtchmnFlHidePopup = (e) => {
         setIsAtchmnFlPopupVisible(false);
-    }
-
-    //팝업 닫기 이벤트(테스트용)
-    const onDocHistHidePopup = (e) => {
-        setIsDocHistPopupVisible(false);
     }
 
     //그리드 로우 클릭 이벤트
@@ -163,7 +147,7 @@ const ElecAtrzManage = () => {
     }
 
     return (
-        <div className="container">
+        <div>
             <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }} ></div>
             <div className="col-md-10 mx-auto" style={{ marginBottom: "20px", display: 'flex' }}>
                 <h3>전자결재(관리자)</h3>
@@ -190,6 +174,7 @@ const ElecAtrzManage = () => {
                   paging={true}
                   onRowDblClick={onRowDblClick}
                   onClick={onBtnClick}
+                  wordWrap={true}
                 />
             </div>
 
