@@ -9,25 +9,25 @@
         "queryId": "sysMngMapper.retrieveElecAtrzMng",
         "countQueryId": "sysMngMapper.elecAtrzMngCount",
         "baseColumns": [
-            {"key": "elctrnAtrzId", "value": "문서번호", "width": 150},
-            {"key": "gnrlAtrzTtl", "value": "결재유형", "width": 200},
-            {"key": "atrzDmndEmpNm", "value": "기안자", "width": 100},
-            {"key": "regDt", "value": "기안요청일", "width": 150},
-            {"key": "title", "value": "결재 명", "width": 400}
+            {"key": "elctrnAtrzDocNo", "value": "문서번호", "width": "8%"},
+            {"key": "gnrlAtrzTtl", "value": "결재유형", "width": "17%"},
+            {"key": "atrzDmndEmpNm", "value": "기안자", "width": "7%"},
+            {"key": "regDt", "value": "기안요청일", "width": "9%"},
+            {"key": "title", "value": "결재 명"}
         ],
         "progress" : [
-          {"key": "cnptNm", "value": "거래처"},
-          {"key": "aprvrEmpNm", "value": "현재결재권자", "width": 100},
-          {"key": "atrzDmndSttsCdNm" , "value": "현재결제단계", "width": 100},
-          {"key": "yn", "value": "결재 회수가능여부", "width": 100}
+          {"key": "cnptNm", "value": "거래처", "width": "13%"},
+          {"key": "aprvrEmpNm", "value": "결재권자", "width": "7%"},
+          {"key": "atrzDmndSttsCdNm" , "value": "결재단계", "width": "7%"},
+          {"key": "yn", "value": "회수가능여부", "width": "9%"}
         ],
         "terminatedAprvrEmp" : [
-            {"key" : "cnptNm", "value":"거래처", "width": 100},
-            {"key" : "atchmnFl", "value":"첨부파일", "button":{"text":"첨부파일", "name" : "atchmnFl"}},
-            {"key" : "docHist", "value":"문서이력", "button":{"text":"문서이력", "name" : "docHist"}}
+            {"key" : "cnptNm", "value":"거래처", "width": "15%"},
+            {"key" : "atchmnFl", "value":"첨부파일", "button":{"text":"첨부파일", "name" : "atchmnFl"}, "width": "10%"},
+            {"key" : "docHist", "value":"문서이력", "button":{"text":"문서이력", "name" : "docHist"}, "width": "10%"}
         ],
         "deny" : [
-          {"key": "CN", "value": "결재", "width": 100}
+          {"key": "CN", "value": "결재", "width": "30%"}
         ],
         "searchInfo" : {
             "searchParams": {

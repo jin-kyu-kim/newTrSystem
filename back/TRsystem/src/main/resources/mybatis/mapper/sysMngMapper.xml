@@ -402,6 +402,7 @@
 	<!-- 전자결재(관리자메뉴) 쿼리  -->
 	<select id="retrieveElecAtrzMng" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT M.ELCTRN_ATRZ_ID						-- 전자결재 ID
+			 , M.ELCTRN_ATRZ_DOC_NO
 		     , M.PRJCT_ID							-- 프로젝트 ID
 		     , M.ELCTRN_ATRZ_TY_SE_CD				-- 전자결재유형코드
 		     , M.TY_CD AS ELCTRN_ATRZ_TY_SE_CD_NM
@@ -424,6 +425,7 @@
 		     , COUNT(*) OVER () AS TOTAL_ITEMS
 		  FROM (
 					SELECT EA.ELCTRN_ATRZ_ID
+						 , EA.ELCTRN_ATRZ_DOC_NO
 					     , EA.PRJCT_ID
 					     , EA.ELCTRN_ATRZ_TY_SE_CD
 					     , CD1.CD_NM AS TY_CD
