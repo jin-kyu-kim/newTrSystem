@@ -727,7 +727,7 @@ const ProjectHrCtAprvDetail = () => {
     };
 
     return (
-        <div className="container">
+        <div>
             <div
                 className="title p-1"
                 style={{ marginTop: "20px", marginBottom: "10px" }}
@@ -744,11 +744,11 @@ const ProjectHrCtAprvDetail = () => {
                 <span>* 수행인력</span>
                 <span style={{color: "red", fontWeight: "bold" }}>개별 승인은 해당 요청행을 클릭하세요</span>
             </div>
-            <CustomTable keyColumn={mm.keyColumn} columns={mm.tableColumns} values={mmValues} paging={true} onClick={onMmBtnClick} summary={true} summaryColumn={mm.summaryColumn} masterDetail={masterDetailMm} handleExpanding={expandingMm} onRowClick={onRowClick}/>
+            <CustomTable keyColumn={mm.keyColumn} columns={mm.tableColumns} values={mmValues} paging={true} onClick={onMmBtnClick} summary={true} summaryColumn={mm.summaryColumn} masterDetail={masterDetailMm} handleExpanding={expandingMm} onRowClick={onRowClick} wordWrap={true}/>
             <div className="" style={{ marginTop: "10px", marginBottom: "10px" }}>
                 <span>* 경비</span>
             </div>
-            <CustomTable keyColumn={ct.keyColumn} columns={ct.tableColumns} values={ctValues} paging={true} onClick={onCtBtnClick} summary={true} summaryColumn={ct.summaryColumn} masterDetail={masterDetailCt} handleExpanding={expandingCt} onRowClick={onRowClick}/>
+            <CustomTable keyColumn={ct.keyColumn} columns={ct.tableColumns} values={ctValues} paging={true} onClick={onCtBtnClick} summary={true} summaryColumn={ct.summaryColumn} masterDetail={masterDetailCt} handleExpanding={expandingCt} onRowClick={onRowClick} wordWrap={true}/>
             <Button text="목록" style={{marginTop: "10px", width: "80px"}} onClick={(e)=>{navigate('/project/ProjectHrCtAprv', {state : {empId: userInfo.empId}})}}/>
             <Popup
                 width={ProjectHrCtAprvDetailJson.popup.width}
