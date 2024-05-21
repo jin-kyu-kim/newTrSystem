@@ -216,9 +216,10 @@ const ElecAtrzNewReq = () => {
             try{
                 const response = await ApiRequest('/boot/common/queryIdSearch', {
                     queryId: "indvdlClmMapper.retrieveElctrnAtrzRefrnInq",
-                    searchType: "atrzLnReftnList", 
-                    repDeptId: "9da3f461-9c7e-cd6c-00b6-c36541b09b0d"
+                    approvalCode: "VTW00706",
+                    state: "ref"
                 })
+                console.log('response', response)
                 setAtrzLnEmpList(response);
             } catch(error) {
                 console.log('error', error);
@@ -321,7 +322,20 @@ const ElecAtrzNewReq = () => {
             const token = localStorage.getItem("token");
 
             if(response){
-                // 첨부파일 저장
+                // 비용청구에서 넘어온 Data Insert 경우
+                if(formData.selectedData){
+                    const updateRows = formData.selectedData.map(data => {
+                        ApiRequest('/boot/common/commonUpdate', [
+                            { tbNm: "CARD_USE_DTLS" },
+                            { prjctCtInptPsbltyYn: "N" },
+                            { lotteCardAprvNo: data.lotteCardAprvNo }
+                        ]);
+                    });
+                    Promise.all(updateRows).then(res => {
+                    }).catch(error => {
+                        console.error("error:", error);
+                    });
+                }
 
                 /**
                  * Todo

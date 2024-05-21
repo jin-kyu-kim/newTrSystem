@@ -466,10 +466,6 @@ public class IndvdlClmDomain {
         retrieveVcatnPrjctMmYnInqMap.put("queryId", "indvdlClmMapper.retrieveVcatnPrjctMmYnInq");
         List<Map<String, Object>> retrieveVcatnPrjctMmYnInqResult = commonService.queryIdSearch(retrieveVcatnPrjctMmYnInqMap);
 
-        System.out.println("=====================");
-        System.out.println("retrieveVcatnStrgInfoResult : " + retrieveVcatnStrgInfoResult);
-        System.out.println("=====================");
-
         if (retrieveVcatnStrgInfoResult.size() == 2) {
             vcatnFlag = "composite";
         } else if (retrieveVcatnStrgInfoResult.get(0).toString().indexOf("NEW") > -1) {
@@ -491,12 +487,14 @@ public class IndvdlClmDomain {
         }
 
         if (vcatnFlag.equals("account")) {
-            if (Double.parseDouble(String.valueOf(retrieveVcatnStrgInfoResult.get(0).get("vcatnRemndrDaycnt"))) - Double.parseDouble(String.valueOf(insertVcatnMap.get("vcatnDeCnt"))) < -15) {
-                errorMsg = "휴가잔여일수는 -15일을 넘을 수 없습니다.";
+            if(insertVcatnMap.get("vcatnTyCd").equals("VTW01201") || insertVcatnMap.get("vcatnTyCd").equals("VTW01202") || insertVcatnMap.get("vcatnTyCd").equals("VTW01203")){
+                if (Double.parseDouble(String.valueOf(retrieveVcatnStrgInfoResult.get(0).get("vcatnRemndrDaycnt"))) - Double.parseDouble(String.valueOf(insertVcatnMap.get("vcatnDeCnt"))) < -15) {
+                    errorMsg = "휴가잔여일수는 -15일을 넘을 수 없습니다.";
+                }
             }
         } else if (vcatnFlag.equals("composite")) {
             Map<String, Object> refNewVcatnMngMap = new HashMap<>();                // 신규휴가정보
-            Map<String, Object> refVcatnMngMap = new HashMap<>();                    // 회계휴가정보
+            Map<String, Object> refVcatnMngMap = new HashMap<>();                   // 회계휴가정보
 
             List<Map<String, Object>> insertNewVcatnMngList = new ArrayList<>();    // 신규휴가입력정보
             List<Map<String, Object>> insertVcatnMngList = new ArrayList<>();       // 회계휴가입력정보
@@ -708,8 +706,8 @@ public class IndvdlClmDomain {
         List<Map<String, Object>> selectVcatnMngResult = commonService.queryIdSearch(selectVcatnMng);
 
         // 신규_회계휴가 정보
-        Map<String, Object> refNewVcatnMngMap = new HashMap<>();                // 신규휴가정보
-        Map<String, Object> refVcatnMngMap = new HashMap<>();                    // 회계휴가정보
+        Map<String, Object> refNewVcatnMngMap = new HashMap<>();    // 신규휴가정보
+        Map<String, Object> refVcatnMngMap = new HashMap<>();       // 회계휴가정보
 
         // 신규_회계 잔여일수 정합성 확인
         for (int i = 0; i < selectVcatnMngResult.size(); i++) {
@@ -737,7 +735,7 @@ public class IndvdlClmDomain {
 
         // 휴가정합성 확인 후 회계휴가 updateMap
         Map<String, Object> updateVcatnMng = new HashMap<>();
-        updateVcatnMng.put("queryId", "indvdlClmMapper.retrieveVcatnAltmntMngMdfcn");
+        updateVcatnMng.put("queryId", "indvdlClmMapper.updateVcatnAltmntMngMdfcn");
         updateVcatnMng.put("vcatnYr", refVcatnMngMap.get("vcatnYr"));
         updateVcatnMng.put("empId", empId);
         updateVcatnMng.put("mdfcnEmpId", mdfcnEmpId);
@@ -774,7 +772,7 @@ public class IndvdlClmDomain {
             caseFlag = 2;
             // case_B1
             // 공가사용하는 경우
-            if (vcatnTyCd.equals("VTW01204") || vcatnTyCd.equals("VTW01205") || vcatnTyCd.equals("VTW01206")) {
+            if (vcatnTyCd.equals("VTW01204") || vcatnTyCd.equals("VTW01205") || vcatnTyCd.equals("VTW01207") || vcatnTyCd.equals("VTW01208")) {
                 updateVcatnMng.put("newPblenVcatnUseDaycnt", vcatnDeCnt);
             }
             // case_B2
@@ -817,6 +815,11 @@ public class IndvdlClmDomain {
         }
 
         int atrzLnSn = 0;
+
+        System.out.println("==========================");
+        System.out.println("caseFlag : " + caseFlag);
+        System.out.println("updateVcatnMng : " + updateVcatnMng);
+        System.out.println("==========================");
 
         if (errorMsg.isEmpty()) {
             try {
@@ -915,7 +918,7 @@ public class IndvdlClmDomain {
         // VCATN_ATRZ(휴가결재저장)
         insertVactnAtrzMapValue.put("elctrnAtrzId", insertDataMapValue.get("elctrnAtrzId"));
         insertVactnAtrzMapValue.put("rtrcnPrvonsh", insertDataMapValue.get("rtrcnPrvonsh"));
-        insertVactnAtrzMapValue.put("vcatnTyCd", "VTW01207");
+        insertVactnAtrzMapValue.put("vcatnTyCd", "VTW01206");
 
         // ATRZ_LN(결재선저장)
         for (int i = 0; i < insertAtrzLnListValue.size(); i++) {
@@ -990,12 +993,12 @@ public class IndvdlClmDomain {
     }
 
     // 휴가신청취소승인
-    public static List<Map<String, Object>> approvalReInsertVcatnAtrz(Map<String, Object> params) throws
-            ParseException {
+    public static List<Map<String, Object>> approvalReInsertVcatnAtrz(Map<String, Object> params) throws ParseException {
         int queryResult = 0;
         int caseFlag = 0;
         String empId = (String) params.get("empId");
         String elctrnAtrzId = (String) params.get("elctrnAtrzId");
+        String rtrcnElctrnAtrzId = (String) params.get("rtrcnElctrnAtrzId");
         String atrzStepCd = (String) params.get("atrzStepCd");
 
         // 결재 승인 paramList
@@ -1010,8 +1013,9 @@ public class IndvdlClmDomain {
             put("tbNm", "VCATN_ATRZ");
         }});
         selectElctrnAtrzList.add(1, new HashMap<>() {{
-            put("elctrnAtrzId", elctrnAtrzId);
+            put("elctrnAtrzId", rtrcnElctrnAtrzId);
         }});
+
         List<Map<String, Object>> selectElctrnAtrzListResult = commonService.commonSelect(selectElctrnAtrzList);
 
         // 날짜비교 포맷팅
@@ -1070,9 +1074,13 @@ public class IndvdlClmDomain {
         updateNewVcatnMngMap.put("state", "UPDATE");
 
 
+        System.out.println("=================================");
+        System.out.println("selectElctrnAtrzListResult : " + selectElctrnAtrzListResult);
+        System.out.println("=================================");
+
         // case_A
         // 공가인경우
-        if (selectElctrnAtrzListResult.get(0).get("vcatnTyCd").equals("VTW01204") || selectElctrnAtrzListResult.get(0).get("vcatnTyCd").equals("VTW01205")) {
+        if (selectElctrnAtrzListResult.get(0).get("vcatnTyCd").equals("VTW01204") || selectElctrnAtrzListResult.get(0).get("vcatnTyCd").equals("VTW01205") || selectElctrnAtrzListResult.get(0).get("vcatnTyCd").equals("VTW01207") || selectElctrnAtrzListResult.get(0).get("vcatnTyCd").equals("VTW01208")) {
             caseFlag = 1;
             updateVcatnMngMap.put("pblenVcatnUseDaycnt", selectElctrnAtrzListResult.get(0).get("vcatnDeCnt"));
         }
@@ -1105,6 +1113,12 @@ public class IndvdlClmDomain {
                 updateNewVcatnMngMap.put("newDaycnt", newVcatnDeCnt);
             }
         }
+
+        System.out.println("==========================");
+        System.out.println("caseFlag : " + caseFlag);
+        System.out.println("updateVcatnMngMap : " + updateVcatnMngMap);
+        System.out.println("updateNewVcatnMngMap : " + updateNewVcatnMngMap);
+        System.out.println("==========================");
 
         int atrzLnSn = 0;
         try {
@@ -1219,6 +1233,169 @@ public class IndvdlClmDomain {
 
         return 0;
     }
+
+    // 직원휴직저장
+    @Transactional
+    public static String insertEmpLeave(
+            Map<String, Object> elctrnAtrzId,           // 전자결재ID
+            Map<String, Object> elctrnTbMap,            // ELCTRN_ATRZ
+            Map<String, Object> insertElctrnMap,        // ELCTRN_ATRZ
+            Map<String, Object> vcatnTbMap,             // VCATN_ATRZ
+            Map<String, Object> insertVcatnMap,         // VCATN_ATRZ
+            Map<String, Object> atrzLnTbMap,            // ATRZ_LN
+            List<Map<String, Object>> insertAtrzLnMap,  // ATRZ_LN
+            Map<String, Object> refrnTbMap,             // REFRN_MAN
+            List<Map<String, Object>> insertRefrnMap,   // REFRN_MAN
+            List<MultipartFile> attachments
+    ) throws SQLException {
+        int queryResult = 0;
+        final String sortKey = "approvalCode";
+
+        String elctrnAtrzValue = (String) elctrnAtrzId.get("elctrnAtrzId");
+
+        Collections.sort(insertAtrzLnMap, new Comparator<Map<String, Object>>() {
+            @Override
+            public int compare(Map<String, Object> map1, Map<String, Object> map2) {
+                Comparable value1 = (Comparable) map1.get(sortKey);
+                Comparable value2 = (Comparable) map2.get(sortKey);
+                return value1.compareTo(value2);
+            }
+        });
+
+        // ELCTRN_ATRZ(전자결재) 테이블 저장
+        List<Map<String, Object>> insertElctrnList = new ArrayList<>();
+
+        Map<String, Object> selectElctrnAtrz = new HashMap<>();
+        selectElctrnAtrz.put("queryId", "indvdlClmMapper.retrieveElctrnAtrzCnt");
+
+        List<Map<String, Object>> selectElctrnAtrzResult = commonService.queryIdSearch(selectElctrnAtrz);
+
+        String refSolYear = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy"));
+
+        insertElctrnMap.put("elctrnAtrzId", elctrnAtrzValue);
+        insertElctrnMap.put("atrzFormDocId", "9632d577-f0bd-11ee-9b25-000c2956283f");
+        insertElctrnMap.put("nowAtrzLnSn", "1");
+        insertElctrnMap.put("elctrnAtrzDocNo", refSolYear + "-01-" + (Integer.parseInt(String.valueOf(selectElctrnAtrzResult.size())) + 1));
+        insertElctrnList.add(0, elctrnTbMap);
+        insertElctrnList.add(1, insertElctrnMap);
+        queryResult = commonService.insertData(insertElctrnList);
+
+        // VCATN_ATRZ(휴가결재), ATCHMNFL(첨부파일) 테이블 저장
+        insertVcatnMap.put("elctrnAtrzId", elctrnAtrzValue);
+        insertVcatnMap.put("newVcatnUseDaycnt", 0);
+        queryResult = commonService.insertFile(vcatnTbMap, insertVcatnMap, attachments, null, null);
+
+        // ATRZ_LN(결재선) 저장
+        List<Map<String, Object>> insertAtrzLnList = new ArrayList<>();
+        insertAtrzLnList.add(0, atrzLnTbMap);
+        for (int i = 0; i < insertAtrzLnMap.size(); i++) {
+            insertAtrzLnMap.get(i).put("elctrnAtrzId", elctrnAtrzValue);
+            insertAtrzLnMap.get(i).put("atrzStepCd", insertAtrzLnMap.get(i).get("approvalCode"));
+            insertAtrzLnMap.get(i).put("aprvrEmpId", insertAtrzLnMap.get(i).get("empId"));
+            insertAtrzLnMap.get(i).put("atrzSttsCD", "VTW00801");
+            insertAtrzLnMap.get(i).put("atrzLnSn", i + 1);
+            insertAtrzLnList.add(i + 1, insertAtrzLnMap.get(i));
+        }
+        queryResult = commonService.insertData(insertAtrzLnList);
+
+        // REFRN_MAN(결재선) 저장
+        List<Map<String, Object>> insertRefrnManList = new ArrayList<>();
+        insertRefrnManList.add(0, refrnTbMap);
+        for (int i = 0; i < insertRefrnMap.size(); i++) {
+            insertRefrnMap.get(i).put("elctrnAtrzId", elctrnAtrzValue);
+            insertRefrnMap.get(i).put("refrnCncrrncClCd", insertRefrnMap.get(i).get("approvalCode"));
+            insertRefrnMap.get(i).put("ccSn", i + 1);
+            insertRefrnManList.add(i + 1, insertRefrnMap.get(i));
+        }
+        queryResult = commonService.insertData(insertRefrnManList);
+
+//            emailSendService.elecAtrzEmailSend(
+//                    String.valueOf(insertAtrzLnMap.get(0).get("empId"))
+//                    ,String.valueOf(insertElctrnMap.get("atrzDmndEmpId"))
+//                    ,"1"
+//                    ,"[" + insertVcatnMap.get("vcatnBgngYmd") + "~" + insertVcatnMap.get("vcatnEndYmd") + "] 휴가결재 결재 요청 완료."
+//                    ,"[" + insertVcatnMap.get("vcatnBgngYmd") + "~" + insertVcatnMap.get("vcatnEndYmd") + "] 휴가결재에 대한 결재가 요청되었습니다."
+//                    ,false
+//                    ,""
+//            );
+
+        return "성공";
+    }
+
+    // 직원휴직승인
+    public static List<Map<String, Object>> updateEmpLeave(Map<String, Object> params) {
+        String errorMsg = "";
+        String empId = (String) params.get("empId");
+        String sessionEmpId = (String) params.get("sessionEmpId");
+        String vcatnBgngYmd = (String) params.get("vcatnBgngYmd");
+        String vcatnEndYmd = (String) params.get("vcatnEndYmd");
+        String vcatnDeCnt = (String) params.get("vcatnDeCnt");
+        String vcantYr = vcatnBgngYmd.substring(0, 4);
+
+        // 프로젝트MM조회
+        Map<String, Object> retrieveVcatnPrjctMmYnInqMap = new HashMap<>();
+        retrieveVcatnPrjctMmYnInqMap.put("queryId", "indvdlClmMapper.retrieveVcatnPrjctMmYnInq");
+        retrieveVcatnPrjctMmYnInqMap.put("empId", empId);
+        retrieveVcatnPrjctMmYnInqMap.put("vcatnBgngYmd", vcatnBgngYmd);
+        retrieveVcatnPrjctMmYnInqMap.put("vcatnEndYmd", vcatnEndYmd);
+        List<Map<String, Object>> retrieveVcatnPrjctMmYnInqResult = commonService.queryIdSearch(retrieveVcatnPrjctMmYnInqMap);
+
+        // case_common
+        // 결재중인 근무시간이 있거나 승인된 근무시간이 있는 경우
+        int cnt = 0;
+        while (cnt < retrieveVcatnPrjctMmYnInqResult.size()) {
+            if (retrieveVcatnPrjctMmYnInqResult.get(cnt).get("atrzDmndSttsCd").equals("VTW03702")) {
+                errorMsg = retrieveVcatnPrjctMmYnInqResult.get(cnt).get("aplyYmd") + "일의 근무시간이 결재중입니다.";
+                break;
+            } else if (retrieveVcatnPrjctMmYnInqResult.get(cnt).get("mmAtrzCmptnYn").equals("Y")) {
+                errorMsg = retrieveVcatnPrjctMmYnInqResult.get(cnt).get("aplyYmd") + "일의 근무시간이 마감되었습니다.";
+                break;
+            }
+            cnt++;
+        }
+
+        if(errorMsg.equals("")){
+            // 휴가정합성 확인 후 회계휴가 updateMap
+            Map<String, Object> updateVcatnMng = new HashMap<>();
+            updateVcatnMng.put("queryId", "indvdlClmMapper.updateVcatnAltmntMngMdfcn");
+            updateVcatnMng.put("vcatnYr", vcantYr);
+            updateVcatnMng.put("empId", empId);
+            updateVcatnMng.put("mdfcnEmpId", sessionEmpId);
+            updateVcatnMng.put("newPblenVcatnUseDaycnt", vcatnDeCnt);
+            updateVcatnMng.put("state", "UPDATE");
+
+            List<Map<String, Object>> updateEmpList = new ArrayList<>();
+
+            updateEmpList.add(0, new HashMap<>() {{
+                put("tbNm", "EMP");
+            }});
+            updateEmpList.add(1, new HashMap<>() {{
+                put("hdofSttsCD", "VTW00303");
+            }});
+            updateEmpList.add(2, new HashMap<>() {{
+                put("empId", empId);
+            }});
+
+            Map<String, Object> insertEmpHistMap = new HashMap<>();
+            insertEmpHistMap.put("queryId", "indvdlClmMapper.insertEmpHist");
+            insertEmpHistMap.put("empId", empId);
+            insertEmpHistMap.put("sessionEmpId", sessionEmpId);
+            insertEmpHistMap.put("vcatnBgngYmd", vcatnBgngYmd);
+            insertEmpHistMap.put("vcatnEndYmd", vcatnEndYmd);
+
+
+            /**
+             * 전자결재 승인 후 아래주석 해제
+             * commonService.updateData(updateEmpList);
+             * commonService.queryIdDataControl(updateVcatnMng);
+             * commonService.queryIdDataControl(insertEmpHistMap);
+             */
+
+        }
+
+        return null;
+    }
+
     /* =================================박지환_작업================================= */
 
     @Transactional

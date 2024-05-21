@@ -6,16 +6,16 @@ const AtrzLnTable = ({atrzLnEmpList, bottomNm}) => {
 
   const renderEmp = (cd) => {
     return(
-        atrzLnEmpList.filter(emp => emp.approvalCode === cd)
+        atrzLnEmpList?.filter(emp => emp.approvalCode === cd)
         .map(emp => emp.empFlnm + ' ' + emp.jbpsNm).join('; ')
     );
   };
   const hasEmp = (cd) => {
-    return atrzLnEmpList.some(emp => emp.approvalCode === cd);
+    return atrzLnEmpList?.some(emp => emp.approvalCode === cd);
   }
   /** 상세조회의 경우 */
   const hasAprvDate = (cd, type) => {
-    const foundEmp = atrzLnEmpList.find(emp => emp.approvalCode === cd && emp.mdfcnDt !== undefined);
+    const foundEmp = atrzLnEmpList?.find(emp => emp.approvalCode === cd && emp.mdfcnDt !== undefined);
     return foundEmp ? (type !== 'date' ? foundEmp.atrzSttsCdNm : foundEmp.mdfcnDt) : undefined;
   }
 

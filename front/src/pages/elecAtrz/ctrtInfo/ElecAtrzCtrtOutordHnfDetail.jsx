@@ -42,6 +42,7 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
         }
   ]
 
+
   /*
     *상태코드에 따른 버튼 변경
     */
@@ -291,7 +292,7 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
 
             <div style={{ textAlign: "right", margin:"10px" }}>
                 {(!["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)) && (
-                        data.elctrnAtrzTySeCd !=="VTW04914" 
+                        !["VTW04911","VTW04912","VTW04913","VTW04914",].includes(data.elctrnAtrzTySeCd) 
                     ) && (
                     <Button name="insert" onClick={()=>handlePopupVisible({name:"insert"})}>{ElecAtrzCtrtOutordHnfJson.insertButton}</Button>
                 )}

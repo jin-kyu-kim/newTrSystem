@@ -44,7 +44,7 @@ const ProjectOutordEmpCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdr, bgtMng
       { tbNm: "OUTORD_LBRCO_PRMPC_DTL" },
       { prjctId: prjctId,
         bgtMngOdr: bgtMngOdrTobe,
-        inptYm : ctrtYmdPrarm+"&"+stbleEndYmdPrarm,  
+        inptYm : ctrtYmdPrarm.replace("-","")+"&"+stbleEndYmdPrarm.replace("-",""),  
       }, 
     ];
 

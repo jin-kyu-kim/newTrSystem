@@ -27,6 +27,7 @@
             ,ELCTRN.ATRZ_DMND_STTS_CD		/* 결재요청상태코드 */
             ,CASE
                 WHEN VCATN.RTRCN_PRVONSH IS NOT NULL THEN CONCAT('취소 ', (SELECT CD_NM FROM CD WHERE CD_VALUE = ELCTRN.ATRZ_DMND_STTS_CD))
+                WHEN ELCTRN.ATRZ_DMND_STTS_CD = 'VTW03705' THEN '취소 문서'
                 ELSE (SELECT CD_NM FROM CD WHERE CD_VALUE = ELCTRN.ATRZ_DMND_STTS_CD)
                 END ATRZ_DMND_STTS_NM       /* 결재요청상태코드명 */
             ,ELCTRN.ELCTRN_ATRZ_ID		    /* 전자결재ID */
@@ -34,10 +35,20 @@
             ,VCATN.ATCHMNFL_ID				/* 첨부파일ID */
             ,ELCTRN.RTRCN_ELCTRN_ATRZ_ID	/* 취소전자결재ID */
             ,CASE
+                WHEN VCATN.VCATN_TY_CD NOT IN('VTW01204', 'VTW01207', 'VTW01208', 'VTW01209')  THEN 'FALSE'
+                WHEN ELCTRN.RTRCN_ELCTRN_ATRZ_ID IS NOT NULL THEN 'FALSE'
+                WHEN ELCTRN.ATRZ_DMND_STTS_CD = 'VTW03704' THEN 'FALSE'
+                WHEN ELCTRN.ATRZ_DMND_STTS_CD = 'VTW03705' THEN 'FALSE'
+                WHEN VCATN.VCATN_TY_CD = 'VTW01206' THEN 'FALSE'
+                ELSE 'TRUE'
+                END ATTACH_BUTTON_CTR
+            ,CASE
                 WHEN (SELECT ATRZ.RTRCN_ELCTRN_ATRZ_ID FROM ELCTRN_ATRZ ATRZ WHERE ATRZ.RTRCN_ELCTRN_ATRZ_ID = VCATN.ELCTRN_ATRZ_ID) IS NOT NULL THEN 'FALSE'
                 WHEN ELCTRN.RTRCN_ELCTRN_ATRZ_ID IS NOT NULL THEN 'FALSE'
+                WHEN ELCTRN.ATRZ_DMND_STTS_CD = 'VTW03704' THEN 'FALSE'
+                WHEN VCATN.VCATN_TY_CD = 'VTW01206' THEN 'FALSE'
                 ELSE 'TRUE'
-                END CANCLE_BUTTONCTR
+                END CANCLE_BUTTON_CTR
         FROM VCATN_ATRZ		VCATN
             ,ELCTRN_ATRZ	ELCTRN
             ,EMP 			EMP
@@ -49,7 +60,7 @@
         <if test="searchYear !=null and !searchYear.equals('')">
             AND VCATN_BGNG_YMD BETWEEN STR_TO_DATE(CONCAT(#{searchYear}, '0401'), '%Y%m%d') AND STR_TO_DATE(CONCAT(#{searchYear} + 1, '0331'), '%Y%m%d')
         </if>
-        ORDER BY VCATN.VCATN_BGNG_YMD DESC
+        ORDER BY VCATN.VCATN_BGNG_YMD DESC, VCATN.VCATN_TY_CD ASC
     </select>
 
 
@@ -287,15 +298,22 @@
             ,DEPT.DEPT_ID
             ,DEPT.DEPT_NM
             ,CONCAT(DEPT_NM, ' ', EMP_FLNM, ' ', (SELECT CD_NM FROM CD WHERE CD_VALUE = EMP.JBPS_CD)) LIST_EMP_FLNM
-            ,'VTW00706' APPROVAL_CODE
+            ,#{approvalCode} APPROVAL_CODE
         FROM EMP		EMP
             ,DEPT 		DEPT
             ,DEPT_HNF	HNF
         WHERE HDOF_STTS_CD = 'VTW00301'
         AND EMP.EMP_ID = HNF.EMP_ID
         AND DEPT.DEPT_ID = HNF.DEPT_ID
-<!--        AND DEPT.DEPT_ID = #{repDeptId}-->
-        AND EMP.EMP_FLNM IN ('이진원', '안주리')
+        <if test="state == 'ref' or state.equals('ref')">
+            AND EMP.EMPNO IN ('VK1434', 'VK1453')
+        </if>
+        <if test="state == 'review' or state.equals('review')">
+            AND EMP.EMPNO IN ('VK1021')
+        </if>
+        <if test="state == 'approval' or state.equals('approval')">
+            AND EMP.EMPNO IN ('VK0011')
+        </if>
         ORDER BY EMPNO
     </select>
 
@@ -347,7 +365,6 @@
             ,ATRZ.APLY_YMD              /* 신청일자 */
             ,ROUND(APLY.MD, 1)	MD		/* 근무시간비율 */
             ,ATRZ.RJCT_PRVONSH			/* 반려사유 */
-            ,ATRZ.PRJCT_APRVR_CD	    /* 프로젝트결재자코드 */
             ,ATRZ.ATRZ_DMND_STTS_CD	    /* 결재요청상태코드 */
             ,(SELECT CD_NM FROM CD WHERE CD_VALUE = ATRZ_DMND_STTS_CD)	ATRZ_DMND_STTS_CD_NM		/* 결재요청상태코드명 */
             ,ATRZ.APRVR_EMP_ID	        /* 결재자직원ID */
@@ -386,7 +403,6 @@
             ,CASE WHEN VCATN_TY_CD IN ('VTW01201', 'VTW01204') THEN 1.0
             ELSE 0.5
             END
-            ,''
             ,''
             ,''
             ,''
@@ -481,7 +497,6 @@
         VALUES
         (
             #{rjctPrvonsh}
-            ,#{prjctAprvrCd}
             ,#{atrzDmndSttsCd}
 <!--            ,"VTW03702"-->
             ,#{aprvrEmpId}
@@ -681,8 +696,8 @@
 
 
     <!-- 휴가배정관리수정_(회계휴가_공가 승인) -->
-    <update id="retrieveVcatnAltmntMngMdfcn" parameterType="map">
-        /* indvdlClmMapper.retrieveVcatnAltmntMngMdfcn */
+    <update id="updateVcatnAltmntMngMdfcn" parameterType="map">
+        /* indvdlClmMapper.updateVcatnAltmntMngMdfcn */
         UPDATE
             VCATN_MNG 	MNG1
             ,(
@@ -798,6 +813,41 @@
         SET ATRZ_DMND_STTS_CD = 'VTW03705'
         WHERE ELCTRN_ATRZ_ID = #{elctrnAtrzId}
     </update>
+
+    <!-- 프로젝트목록조회 -->
+    <select id="retrievePrjctList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        /* indvdlClmMapper.retrievePrjctList */
+        SELECT
+            CONCAT('[', PRJCT_CD_IDNTFR, '] ', '[', EMP_FLNM, '] ', PRJCT_NM) AS PRJCT_NM
+            ,PRJCT_ID
+            ,PRJCT_MNGR_EMP_ID
+            ,EMP_FLNM
+        FROM PRJCT	PRJCT
+            ,EMP 	EMP
+        WHERE BIZ_STTS_CD = 'VTW00402'
+        AND PRJCT_MNGR_EMP_ID = EMP.EMP_ID
+    </select>
+
+    <!-- 직원휴직저장 -->
+    <insert id="insertEmpHist" parameterType="map">
+        /* indvdlClmMapper.insertEmpHist */
+        INSERT INTO EMP_HIST
+        VALUES(
+            #{empId}
+            ,(SELECT NULLIF(COUNT(*), 0) + 1 FROM EMP_HIST WHERE EMP_ID = #{empId})
+            ,'VTW00303'
+            ,(SELECT JBPS_CD FROM EMP WHERE EMP_ID = #{empId})
+            ,NULL
+            ,#{vcatnBgngYmd}
+            ,NULL
+            ,#{vcatnEndYmd}
+            ,NULL
+            ,SYSDATE()
+            ,#{sessionEmpId}
+            ,SYSDATE()
+            ,#{sessionEmpId}
+        )
+    </insert>
 
 
     <!-- =================================박지환_작업================================= -->
@@ -956,6 +1006,7 @@
                           AND pca.EMP_ID = pcaz.EMP_ID
                           AND pca.APLY_YM = pcaz.APLY_YM
                           AND pca.APLY_ODR = pcaz.APLY_ODR
+                          AND pca.PRJCT_ID = pcaz.PRJCT_ID
         WHERE pca.EMP_ID = #{empId}
           AND pca.APLY_YM = #{aplyYm}
           AND pca.APLY_ODR = #{aplyOdr}

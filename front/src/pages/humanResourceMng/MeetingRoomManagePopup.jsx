@@ -121,42 +121,33 @@ const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgR
             handleOpen("선택하신 시간에 예약된 회의가 있습니다.\n예약현황을 확인하신 후 예약하시기 바랍니다.");
             return;
         } else {
-            // const isconfirm = window.confirm("저장하시겠습니까?", "");
-            // if(isconfirm){
-                const insertData = [
-                    { insertMtgRoomRsvtValue }, 
-                    { atndEmpIdList: changeEmpList }
-                ]
-                try {
-                    const response = await ApiRequest("/boot/humanResourceMng/insertMtgRoomRsvt", insertData);
-                    handleOpen("예약되었습니다.");
-                    onHiding(false, true);
-                } catch (error) {
-                    console.log("insertMtgRoomRsvt_error : ", error);
-                }
-            // } else {
-            //     return;
-            // }
+            const insertData = [
+                { insertMtgRoomRsvtValue }, 
+                { atndEmpIdList: changeEmpList }
+            ]
+
+            try {
+                const response = await ApiRequest("/boot/humanResourceMng/insertMtgRoomRsvt", insertData);
+                handleOpen("예약되었습니다.");
+                onHiding(false, true);
+            } catch (error) {
+                console.log("insertMtgRoomRsvt_error : ", error);
+            }
         }
     }
 
     const deleteMtgRoomRsvt = async () => {
-        const isconfirm = window.confirm("예약을 취소하시겠습니까?");
-        if(isconfirm){
-            if(Moment(mtgRoomRsvtValue[0].startDate).format("YYYYMMDDHHmm") < Moment(new Date()).format("YYYYMMDDHHmm")){
-                handleOpen("회의실 예약 시작시간이 지난경우에는 취소하실 수 없습니다.");
-                return;
-            } else {
-                try {
-                    const response = await ApiRequest("/boot/humanResourceMng/deleteMtgRoomRsvt", mtgRoomRsvtValue[0].mtgRoomRsvtSn);
-                    handleOpen("취소되었습니다.");
-                    onHiding(false, true);
-                } catch (error) {
-                    console.log("deleteMtgRoomRsvtt_error : ", error);
-                }
-            }
-        } else {
+        if(Moment(mtgRoomRsvtValue[0].startDate).format("YYYYMMDDHHmm") < Moment(new Date()).format("YYYYMMDDHHmm")){
+            handleOpen("회의실 예약 시작시간이 지난경우에는 취소하실 수 없습니다.");
             return;
+        } else {
+            try {
+                const response = await ApiRequest("/boot/humanResourceMng/deleteMtgRoomRsvt", mtgRoomRsvtValue[0].mtgRoomRsvtSn);
+                handleOpen("취소되었습니다.");
+                onHiding(false, true);
+            } catch (error) {
+                console.log("deleteMtgRoomRsvtt_error : ", error);
+            }
         }
     }
 
@@ -255,12 +246,12 @@ const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgR
                 <div style={{ display: "inline-block", float: "right", marginTop: "25px" }}>
                     {
                         authState == "self" || authState == "all"
-                        ? <Button style={{ height: "48px", width: "90px", marginRight: "15px" }} onClick={deleteMtgRoomRsvt}>예약취소</Button>
+                        ? <Button style={{ height: "48px", width: "90px", marginRight: "15px" }} onClick={() => { handleOpen("예약을 취소하시겠습니까?", deleteMtgRoomRsvt)}}>예약취소</Button>
                         : <></>
                     }
                     {
                         authState != "none"
-                        ? <Button style={{ height: "48px", width: "60px" }} onClick={() => handleOpen("저장히시겠습니까?", insertMtgRoomRsvt)}>저장</Button>
+                        ? <Button style={{ height: "48px", width: "60px" }} onClick={() => handleOpen("저장하시겠습니까?", insertMtgRoomRsvt)}>저장</Button>
                         : <></>
                     }
                     
@@ -278,9 +269,7 @@ const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgR
                 title={title}
                 showCloseButton={true}
                 contentRender={createMtgRoomRender}
-                onHiding={(e) => {
-                    onHiding(false, false);
-                }}
+                onHiding={() => { onHiding(false, false) }}
             />
         </>
     )
