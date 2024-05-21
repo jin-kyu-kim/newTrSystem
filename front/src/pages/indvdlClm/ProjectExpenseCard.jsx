@@ -153,7 +153,7 @@ const ProjectExpenseCard = (props) => {
             </div>
             <ProjectExpenseSubmit selectedItem={selectedItem} getData={props.getData}
                 validateFields={() => validateFields(selectedItem, placeholderAndRequired, setValidationErrors, buttonGroup, empInfo)}
-                handleDelete={handleDelete} buttonGroup={buttonGroup} sendAtrz={sendAtrz} setLoading={props.setLoading} />
+                handleDelete={handleDelete} buttonGroup={buttonGroup} sendAtrz={sendAtrz} />
 
             <div style={{ fontSize: 14, marginBottom: "20px" }}>
                 <p style={{ marginBottom: '10px' }}> ※ 일괄적용 버튼 클릭 시 체크박스로 선택한 항목 중 가장 위에서 선택한 항목으로 일괄적용 됩니다.</p>

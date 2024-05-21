@@ -1009,6 +1009,7 @@
                           AND pca.EMP_ID = pcaz.EMP_ID
                           AND pca.APLY_YM = pcaz.APLY_YM
                           AND pca.APLY_ODR = pcaz.APLY_ODR
+                          AND pca.PRJCT_ID = pcaz.PRJCT_ID
         WHERE pca.EMP_ID = #{empId}
           AND pca.APLY_YM = #{aplyYm}
           AND pca.APLY_ODR = #{aplyOdr}

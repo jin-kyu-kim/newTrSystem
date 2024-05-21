@@ -44,7 +44,7 @@ const ProjectExpense = () => {
 
     useEffect(() => { // 결재상태에 따른 컬럼 list변경
         const columns = atrzDmndSttsCnt.ctReg > 0 ? 'ctAplyBtnColumns' : (atrzDmndSttsCnt.rjct > 0 ? 'rjctCnColumns' : 'ctAplyStrColumns');
-        setChangeColumn(ctAplyTableColumns.concat(ProjectExpenseJson.ProjectExpenseMain[columns]))
+        setChangeColumn(ctAplyTableColumns.concat(ProjectExpenseJson.ProjectExpenseMain[columns]));
     }, [atrzDmndSttsCnt]);
 
     const searchHandle = async (initParam) => {
@@ -157,9 +157,10 @@ const ProjectExpense = () => {
                 const tables = ["PRJCT_CT_ATRZ", "PRJCT_CT_ATDRN", "PRJCT_CT_APLY"];
                 const deleteRow = tables.map(tbNm => ApiRequest("/boot/common/commonDelete", [{ tbNm }, param]));
 
+                const { prjctCtAplySn, ...rest } = param;
                 if(indivTarget?.mmAtrzCmptnYn === null && aplyTarget.length === 1) {
                     const deleteIndiv = await ApiRequest('/boot/common/commonDelete', [
-                        {tbNm: "PRJCT_INDVDL_CT_MM"}, param
+                        {tbNm: "PRJCT_INDVDL_CT_MM"}, rest
                     ]);
                 }
                 Promise.all(deleteRow).then(responses => {
@@ -264,7 +265,6 @@ const ProjectExpense = () => {
                                         aplyOdr={aplyOdr}
                                         setIndex={setIndex}
                                         getData={getData}
-                                        setLoading={setLoading}
                                     />
                                 </React.Suspense>
                             );
