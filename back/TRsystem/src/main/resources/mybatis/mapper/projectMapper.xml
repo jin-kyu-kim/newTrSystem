@@ -916,7 +916,7 @@
                    WHEN pcat.ATRZ_DMND_STTS_CD = 'VTW03703' THEN 2
                    WHEN pcat.ATRZ_DMND_STTS_CD = 'VTW03704' THEN 3
                END AS ID
-		     , CONCAT(CT_PRPOS, ' | ' ,UTZTN_AMT, '원 (', cd.CD_NM, ')') AS TEXT
+		     , CONCAT(cd2.CD_NM, ' | ' ,UTZTN_AMT, '원 (', cd.CD_NM, ')') AS TEXT
 		     , DATE_FORMAT(UTZTN_DT, '%Y-%m-%d %H:%i:%s') AS START_DATE
 		     , DATE_FORMAT(UTZTN_DT, '%Y-%m-%d %H:%i:%s') AS END_DATE
 		     , CONCAT(pca.APLY_YM, '-', pca.APLY_ODR) AS APLY_SN
