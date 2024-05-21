@@ -93,7 +93,7 @@
             { "key": "empFlnm", "value": "성명" },
             { "key": "jbpsNm", "value": "직위" },
             { "key": "deptId", "value": "소속" },
-            { "key": "VTW04805" ,"value": "인사관리", "cellType": "toggle" },
+            { "key": "VTW04805" ,"value": "인사관리", "cellType": "toggle"},
             { "key": "VTW04804","value": "재무관리", "cellType": "toggle" },
             { "key": "VTW04807","value": "프로젝트관리", "cellType": "toggle" },
             { "key": "VTW04803","value": "고객관리", "cellType": "toggle" },
