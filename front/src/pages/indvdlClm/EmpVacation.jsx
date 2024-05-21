@@ -610,7 +610,7 @@ const EmpVacation = () => {
 
         try {
             let axiosUrl = insertVcatnValue.vcatnTyCd == "VTW01209" ? "/boot/indvdlClm/insertEmpLeave" : "/boot/indvdlClm/insertVcatnAtrz";
-            
+
             const response = await axios.post(axiosUrl, formData, {
                 headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${localStorage.getItem("token")}` },
             });
@@ -990,35 +990,29 @@ const EmpVacation = () => {
                                 ?
                                 <>
                                     <div className="col-md-5">
-                                    <SelectBox
-                                        dataSource={selectCodeValue}
-                                        placeholder="휴가유형을 선택해주세요"
-                                        valueExpr="cdValue"
-                                        displayExpr="cdNm"
-                                        value={insertVcatnValue.vcatnTyCd}
-                                        stylingMode="underlined"
-                                        onValueChange={(e) => { 
-                                            onInsertVcatnValue("vcatnTyCd", e) 
-                                            setInsertVcatnValue({
-                                                ...insertVcatnValue,
-                                                vcatnLeaveTyCd: ""
-                                            })
-                                        }}
-                                    />
+                                        <SelectBox
+                                            dataSource={selectCodeValue}
+                                            placeholder="휴가유형을 선택해주세요"
+                                            valueExpr="cdValue"
+                                            displayExpr="cdNm"
+                                            value={insertVcatnValue.vcatnTyCd}
+                                            stylingMode="underlined"
+                                            onValueChange={(e) => { onInsertVcatnValue("vcatnTyCd", e) }}
+                                        />
                                     </div>
                                     <div className="col-md-5">
-                                    <SelectBox
-                                        dataSource={selectVcatnLeaveCodeValue}
-                                        placeholder="휴직유형을 선택해주세요"
-                                        valueExpr="cdValue"
-                                        displayExpr="cdNm"
-                                        value={insertVcatnValue.vcatnLeaveTyCd}
-                                        stylingMode="underlined"
-                                        onValueChange={(e) => { 
-                                            if(e == "VTW05302") handleOpen("무급휴직의 기간은 2개월을 초과할 수 없습니다.")
-                                            onInsertVcatnValue("vcatnLeaveTyCd", e)
-                                        }}
-                                    />
+                                        <SelectBox
+                                            dataSource={selectVcatnLeaveCodeValue}
+                                            placeholder="휴직유형을 선택해주세요"
+                                            valueExpr="cdValue"
+                                            displayExpr="cdNm"
+                                            value={insertVcatnValue.vcatnLeaveTyCd}
+                                            stylingMode="underlined"
+                                            onValueChange={(e) => { 
+                                                if(e == "VTW05302") handleOpen("무급휴직의 기간은 2개월을 초과할 수 없습니다.")
+                                                onInsertVcatnValue("vcatnLeaveTyCd", e)
+                                            }}
+                                        />
                                     </div>
                                 </>
                                 : 
