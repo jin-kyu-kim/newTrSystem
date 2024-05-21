@@ -29,10 +29,10 @@ const AutoCompleteProject = ({ placeholderText, onValueChange, sttsBoolean }) =>
           bizSttsCd: bizSttsCd,
         }));
 
-        if(sttsBoolean && sttsBoolean == true){
-          setSuggestionsData(processedData.filter(item => item.bizSttsCd == "VTW00402"));
-        } else {
+        if(sttsBoolean && sttsBoolean == false){
           setSuggestionsData(processedData);
+        } else {
+          setSuggestionsData(processedData.filter(item => item.bizSttsCd == "VTW00402"));
         }
       } catch (error) {
         console.log(error);
