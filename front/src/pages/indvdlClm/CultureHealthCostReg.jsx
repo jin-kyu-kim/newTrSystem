@@ -220,7 +220,7 @@ const CultureHealthCostReg = (props) => {
         return errors.length === 0;
     };
 
-    const validateDelete = () => {
+    const validateDate = () => {
         const errors = [];
         const year = selectedItem.clmYmd.substring(0, 4);
         const month = selectedItem.clmYmd.substring(4, 6) - 1;
@@ -229,7 +229,7 @@ const CultureHealthCostReg = (props) => {
 
         if (now.getDate() >5) {
             if(now.getFullYear() !== clmYmd.getFullYear() || now.getMonth() !== clmYmd.getMonth()){
-                alert('삭제 불가능한 일자입니다.')
+                alert('수정/삭제 불가능한 일자입니다.')
                 errors.push('Wrong Date');
             }
         }else{
@@ -237,7 +237,7 @@ const CultureHealthCostReg = (props) => {
             let lastMonth = new Date ( firstDayOfMonth.setDate( firstDayOfMonth.getDate() - 1 ) );
             if(!(now.getFullYear() === clmYmd.getFullYear() && now.getMonth() === clmYmd.getMonth()) &&
                 !(lastMonth.getFullYear() === clmYmd.getFullYear() && lastMonth.getMonth() === clmYmd.getMonth())){
-                alert('삭제 불가능한 일자입니다.')
+                alert('수정/삭제 불가능한 일자입니다.')
                 errors.push('Wrong Date');
             }
         }
@@ -330,9 +330,10 @@ const CultureHealthCostReg = (props) => {
     }, []);
 
     const onDeleteClick = async() => {
-        const confirmResult = window.confirm("삭제하시겠습니까?");
-        if (confirmResult) {
-            if (validateDelete()) {
+        if (validateDate()) {
+            const confirmResult = window.confirm("삭제하시겠습니까?");
+            if (confirmResult) {
+                onResetClick();
                 try {
                     const paramCh = [{ tbNm: "CLTUR_PHSTRN_ACT_CT_REG" }, { empId: selectedItem.empId, clturPhstrnActCtSn: selectedItem.clturPhstrnActCtSn }]
                     const responseCh = await ApiRequest("/boot/common/commonDelete", paramCh);
@@ -356,13 +357,17 @@ const CultureHealthCostReg = (props) => {
     };
 
     const onUpdateClick = async() => {
-        deleteFiles.current = [{tbNm: "ATCHMNFL"}];
-        selectedClmAmt.current = selectedItem.clmAmt;
-        selectedClturPhstrnSeCd.current = selectedItem.clturPhstrnSeCd;
-        setInitParam(selectedItem);
-        for(let i = 0; i < selectedItem.atchmnfl.length; i++){
-            deleteFiles.current.push({ atchmnflId: selectedItem.atchmnfl[i].atchmnflId,
-                atchmnflSn: selectedItem.atchmnfl[i].atchmnflSn, strgFileNm: selectedItem.atchmnfl[i].strgFileNm });
+        if(validateDate()){
+            deleteFiles.current = [{tbNm: "ATCHMNFL"}];
+            selectedClmAmt.current = selectedItem.clmAmt;
+            selectedClturPhstrnSeCd.current = selectedItem.clturPhstrnSeCd;
+            setInitParam(selectedItem);
+            if(selectedItem.atchmnfl){
+                for(let i = 0; i < selectedItem.atchmnfl.length; i++){
+                    deleteFiles.current.push({ atchmnflId: selectedItem.atchmnfl[i].atchmnflId,
+                        atchmnflSn: selectedItem.atchmnfl[i].atchmnflSn, strgFileNm: selectedItem.atchmnfl[i].strgFileNm });
+                }
+            }
         }
     };
 

@@ -45,7 +45,6 @@ function AuthProvider(props) {
 
   const tokenExtension = useCallback(async ()=>{
     const result =await setTokenExtension(localStorage.getItem("token"));
-    console.log(result);
     localStorage.setItem("userAuth", JSON.stringify(result.authorities));
     localStorage.setItem("userInfo", JSON.stringify(result.userInfo));
     localStorage.setItem("deptInfo", JSON.stringify(result.deptInfo));

@@ -25,9 +25,7 @@ const ProjectExpenseCard = (props) => {
     const { handleOpen } = useModal();
     const [param, setParam] = useState({
         queryId: queryId,
-        empId: props.empId,
-        aplyYm: props.aplyYm,
-        aplyOdr: props.aplyOdr
+        empId: props.empId
     });
 
     const searchHandle = async (initParam) => {
@@ -149,13 +147,13 @@ const ProjectExpenseCard = (props) => {
     };
 
     return (
-        <div className="container">
+        <div>
             <div className="wrap_search" style={{ margin: "20px" }}>
                 <SearchInfoSet callBack={searchHandle} props={searchInfo} />
             </div>
             <ProjectExpenseSubmit selectedItem={selectedItem} getData={props.getData}
                 validateFields={() => validateFields(selectedItem, placeholderAndRequired, setValidationErrors, buttonGroup, empInfo)}
-                handleDelete={handleDelete} buttonGroup={buttonGroup} sendAtrz={sendAtrz} />
+                handleDelete={handleDelete} buttonGroup={buttonGroup} sendAtrz={sendAtrz} setLoading={props.setLoading} />
 
             <div style={{ fontSize: 14, marginBottom: "20px" }}>
                 <p style={{ marginBottom: '10px' }}> ※ 일괄적용 버튼 클릭 시 체크박스로 선택한 항목 중 가장 위에서 선택한 항목으로 일괄적용 됩니다.</p>

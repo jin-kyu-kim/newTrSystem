@@ -877,12 +877,6 @@
         <if test="empId != null and !empId.equals('')">
             AND cud.EMP_ID = #{empId}
         </if>
-        <if test="aplyYm != null and !aplyYm.equals('')">
-            AND cud.APLY_YM = #{aplyYm}
-        </if>
-        <if test="aplyOdr != null and !aplyOdr.equals('')">
-            AND cud.APLY_ODR = #{aplyOdr}
-        </if>
         <if test="useOffic != null and !useOffic.equals('')">
             AND cud.USE_OFFIC LIKE CONCAT('%', #{useOffic}, '%')
         </if>
@@ -990,7 +984,7 @@
           AND (
             (#{actionType} = 'INPUT' AND ATRZ_DMND_STTS_CD IS NULL) OR
             (#{actionType} = 'INPUT_CANCEL' AND ATRZ_DMND_STTS_CD = 'VTW03701') OR
-            (#{actionType} = 'APPROVE' AND ATRZ_DMND_STTS_CD = 'VTW03701') OR
+            (#{actionType} = 'APPROVE' AND (ATRZ_DMND_STTS_CD = 'VTW03701' OR ATRZ_DMND_STTS_CD IS NULL))OR
             (#{actionType} = 'APPROVE_CANCEL' AND ATRZ_DMND_STTS_CD IN ('VTW03702', 'VTW03704'))
             )
           AND PRJCT_CT_ATRZ.EMP_ID = #{empId}
@@ -1067,6 +1061,7 @@
           AND pcrz.EMP_ID = #{empId}
           AND pcrz.APLY_ODR  = #{aplyOdr}
           AND pcrz.ATRZ_DMND_STTS_CD = 'VTW03703'
+          AND pcrz.ATRZ_DMND_STTS_CD != 'VTW03704'
     </select>
 
     <!-- 개인비용청구 공휴일, 연차 포함 총 근무 시간 -->

@@ -11,7 +11,7 @@ const ProjectExpenseSendPop = ({ visible, onPopHiding, selectedItem, btnName }) 
             elctrnAtrzTySeCd: 'VTW04907',
             gnrlAtrzTtl: btnNm
         }
-        navigate('/elecAtrz/ElecAtrzNewReq', {state: {prjcdId: selectedItem[0]?.prjcdId, formData: formData}})
+        navigate('/elecAtrz/ElecAtrzNewReq', {state: {prjctId: selectedItem[0]?.prjctId, formData: formData}})
     }
 
     const buttonContainerStyle = {

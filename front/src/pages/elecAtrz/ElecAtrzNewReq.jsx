@@ -44,7 +44,11 @@ const ElecAtrzNewReq = () => {
 
     const [atrzLnEmpList, setAtrzLnEmpList] = useState([]);
     const column = { "dataField": "gnrlAtrzCn", "placeholder": "내용을 입력해주세요."};
-    
+
+    // console.log("formData", formData)
+    // console.log("ctrtTyCd", ctrtTyCd)
+    // console.log("data", data)
+    // console.log("prjctData", prjctData)
     /**
      * 계약 지급인 경우 계약코드 및 계약전자결재ID 조회
      */
@@ -377,7 +381,7 @@ const ElecAtrzNewReq = () => {
      * 목록 버튼 클릭시 전자결재 서식 목록으로 이동
      */
     const toAtrzNewReq = () => {
-        if(sttsCd === "VTW03701") {
+        if(["VTW03701","VTW03702","VTW03703","VTW03704","VTW00801","VTW00802"].includes(sttsCd)) {
             navigate("../elecAtrz/ElecAtrz", {state: {prjctId: prjctId}});
         }else if(sttsCd === "VTW03405"){    
             navigate("../elecAtrz/ElecGiveAtrz", {state: {prjctId: prjctId, formData:formData}});
@@ -477,7 +481,7 @@ const ElecAtrzNewReq = () => {
                         <ExpensInfo onSendData={handleChildData} prjctId={prjctId} data={data} prjctData={prjctData}/>
                     </>
                     }
-                    {["VTW04914"].includes(formData.elctrnAtrzTySeCd) && ["VTW04909","VTW04910","VTW04908"].includes(ctrtTyCd?ctrtTyCd:data.ctrtTyCd)&& prjctData && //VTW04914: 외주업체/재료비 지급
+                    {["VTW04911","VTW04912","VTW04913","VTW04914"].includes(formData.elctrnAtrzTySeCd) && ["VTW04909","VTW04910","VTW04908"].includes(ctrtTyCd?ctrtTyCd:data.ctrtTyCd)&& prjctData && //VTW04914: 외주업체/재료비 지급
                     <>
                         <ElecAtrzTabDetail detailData={data} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd?ctrtTyCd:data.ctrtTyCd} prjctData={prjctData} onSendData={handleChildData}/>
                     </>

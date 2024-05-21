@@ -124,7 +124,7 @@ const ProjectExpenseCash = (props) => {
     }
 
     return (
-        <div className="container" style={{ margin: '4%' }}>
+        <div style={{marginLeft: '3%', marginRight: '3%', marginTop: '3%'}}>
             <span style={{ fontSize: 18 }}> 개인이 현금 또는 개인법인카드로 지불한 청구건을 등록합니다.<br />
                 <span style={{ color: "red", fontSize: 14 }}>※ 사용금액이 20만원 이상일 경우<br />
                     1. '전자결재 > 경비 사전 보고'를 작성후 승인 받으시기 바랍니다.<br />
@@ -132,13 +132,13 @@ const ProjectExpenseCash = (props) => {
                 </span>
             </span>
 
-            <div className="dx-fieldset" style={{ width: '80%' }}>
+            <div className="dx-fieldset">
                 {labelValue.map((item, index) =>
                 (!item.special ?
                     <CustomLabelValue props={item} onSelect={handleChgValue} value={item.name === 'utztnDt' ? dateVal[item.name] : value[0][item.name]} key={index} />
                     :
                     <div className="dx-field" key={index} >
-                        <div className="dx-field-label asterisk">{item.label}</div>
+                        <div className={`dx-field-label ${item.required ? 'asterisk' : ''}`}>{item.label}</div>
                         <div className="dx-field-value">
                             <SpecialTypeRender item={item} />
                         </div>
@@ -147,7 +147,7 @@ const ProjectExpenseCash = (props) => {
                 )}
             </div>
 
-            <div style={{ marginTop: '20px', marginLeft: '430px' }}>
+            <div style={{ marginTop: '20px', textAlign: 'center' }}>
                 <ProjectExpenseSubmit getData={props.getData} selectedItem={value} buttonGroup={btnInfo} width={'1000px'}
                     validateFields={() => validateFields(value, placeholderAndRequired, setValidationErrors,
                         btnInfo, empInfo)} />

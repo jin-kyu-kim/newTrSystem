@@ -13,19 +13,20 @@ const ProjectExpense = () => {
     const location = useLocation();
     const { ExpenseInfo, keyColumn, ctAplyTableColumns, elcKeyColumn, columnCharge, buttonsConfig,
         aplyAndAtrzCtQueryId, dmndSttsQueryId, groupingColumn, groupingData, searchInfo } = ProjectExpenseJson.ProjectExpenseMain;
-    const [index, setIndex] = useState(0);
-    const [atrzDmndSttsCnt, setAtrzDmndSttsCnt] = useState({}); // 상태코드별 데이터 개수
-    const [ctAply, setCtAply] = useState([]); // 차수 청구내역 (table1)
-    const [ctAtrz, setCtAtrz] = useState([]); // 전자결재 청구내역 (table2)
-    const [changeColumn, setChangeColumn] = useState([]); // 결재상태 컬럼 -> 버튼렌더를 위해 필요
-    const [ctAtrzCmptnYn, setCtAtrzCmptnYn] = useState(); // 비용결재완료여부
-    const [mmAtrzCmptnYn, setMmAtrzCmptnYn] = useState(); // 근무시간여부
-
+    const [ index, setIndex ] = useState(0);
+    const [ loading, setLoading ] = useState(false);
+    const [ atrzDmndSttsCnt, setAtrzDmndSttsCnt ] = useState({}); // 상태코드별 데이터 개수
+    const [ indivdlList, setIndivdlList ] = useState([]); // 차수 청구내역 (table1)
+    const [ ctAply, setCtAply ] = useState([]); // 차수 청구내역 (table1)
+    const [ ctAtrz, setCtAtrz ] = useState([]); // 전자결재 청구내역 (table2)
+    const [ changeColumn, setChangeColumn ] = useState([]); // 결재상태 컬럼 -> 버튼렌더를 위해 필요
+    const [ ctAtrzCmptnYn, setCtAtrzCmptnYn ] = useState(); // 비용결재완료여부
+    const [ mmAtrzCmptnYn, setMmAtrzCmptnYn ] = useState(); // 근무시간여부
     const admin = location.state ? location.state.admin : undefined;
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const empId = admin != undefined ? admin.empId : userInfo.empId;
-    const [popVisible, setPopVisible] = useState(false);
-    const [histYmOdr, setHistYmOdr] = useState({});
+    const [ popVisible, setPopVisible ] = useState(false);
+    const [ histYmOdr, setHistYmOdr ] = useState({});
     const date = new Date();
     const year = date.getFullYear();
     const month = date.getDate() > 15 ? date.getMonth() + 1 : date.getMonth();
@@ -50,12 +51,10 @@ const ProjectExpense = () => {
         setHistYmOdr({
             aplyYm: initParam?.year + initParam?.month,
             aplyOdr: initParam?.aplyOdr,
-            empId: empId
+            empId: empId,
+            isHist: true
         })
-
-        if (Object.keys(initParam).length !== 0) {
-            setPopVisible(true);
-        }
+        if (Object.keys(initParam).length !== 0) setPopVisible(true);
     };
 
     const getData = async () => {
@@ -75,6 +74,7 @@ const ProjectExpense = () => {
 
     const setCtAtrzCmptnData = (data) => {
         if (data.length !== 0) {
+            setIndivdlList(data);
             setCtAtrzCmptnYn(data?.every(item => item.ctAtrzCmptnYn === null) ? null : data.some(item => item.ctAtrzCmptnYn === 'N') ? 'N' : 'Y');
             setMmAtrzCmptnYn(data?.every(item => item.mmAtrzCmptnYn === null) ? null : data.some(item => item.mmAtrzCmptnYn === 'N') ? 'N' : 'Y');
         }
@@ -109,7 +109,7 @@ const ProjectExpense = () => {
             { empId, aplyYm, aplyOdr }
         ];
         const response = await ApiRequest("/boot/common/commonUpdate", param);
-        if (response === 1) getData();
+        if (response >= 1) getData();
     };
 
     const onClickAction = async (onClick) => {
@@ -127,13 +127,13 @@ const ProjectExpense = () => {
     const onPopHiding = async () => { setPopVisible(false); }
 
     const getButtonsShow = () => {
-        if (ctAply.length === 0) { // 비용청구가 없으면서 근무시간은 존재하는 경우
+        if (ctAply?.length === 0) { // 비용청구가 없으면서 근무시간은 존재하는 경우
             if (ctAtrzCmptnYn === 'Y' && mmAtrzCmptnYn === 'N') return buttonsConfig.hasApprovals;
             if (mmAtrzCmptnYn === 'Y') return buttonsConfig.completed;
         } else {
+            if (atrzDmndSttsCnt.rjct === 0 && atrzDmndSttsCnt.aprv > 0) return buttonsConfig.completed;
             if (atrzDmndSttsCnt.aprvDmnd > 0 || atrzDmndSttsCnt.rjct > 0) return buttonsConfig.hasApprovals;
             if (atrzDmndSttsCnt.inptDdln > 0) return buttonsConfig.noApprovals;
-            if (atrzDmndSttsCnt.rjct === 0 && atrzDmndSttsCnt.aprv > 0) return buttonsConfig.completed;
         }
         return buttonsConfig.default;
     };
@@ -141,11 +141,27 @@ const ProjectExpense = () => {
     const onBtnClick = async (btn, props) => {
         if (btn.name === 'atrzDmndSttsCd') { // aply, atrz, atdrn row삭제
             if (window.confirm("삭제하시겠습니까?")) {
+                const param = { prjctId: props.prjctId, prjctCtAplySn: props.prjctCtAplySn, 
+                    empId: props.empId, aplyYm: props.aplyYm, aplyOdr: props.aplyOdr };
 
-                const param = { prjctId: props.prjctId, prjctCtAplySn: props.prjctCtAplySn, empId, aplyYm, aplyOdr };
+                // PRJCT_INDVDL_CT_MM의 mmAtrzCmptnYn이 null이면 삭제, null이 아니면 삭제 불가
+                const matches = (item) => 
+                    item.aplyYm === props.aplyYm &&
+                    item.aplyOdr === props.aplyOdr &&
+                    item.prjctId === props.prjctId &&
+                    item.empId === props.empId;
+    
+                const indivTarget = indivdlList.find(matches);
+                const aplyTarget = ctAply.filter(matches);
+
                 const tables = ["PRJCT_CT_ATRZ", "PRJCT_CT_ATDRN", "PRJCT_CT_APLY"];
                 const deleteRow = tables.map(tbNm => ApiRequest("/boot/common/commonDelete", [{ tbNm }, param]));
 
+                if(indivTarget?.mmAtrzCmptnYn === null && aplyTarget.length === 1) {
+                    const deleteIndiv = await ApiRequest('/boot/common/commonDelete', [
+                        {tbNm: "PRJCT_INDVDL_CT_MM"}, param
+                    ]);
+                }
                 Promise.all(deleteRow).then(responses => {
                     handleOpen("삭제되었습니다.");
                     getData();
@@ -160,7 +176,7 @@ const ProjectExpense = () => {
                 ])
             }
         } else { // 문서이동
-            // navigate("/elecAtrz/ElecAtrzDetail", {state: {elctrnAtrzId: props.data.elctrnAtrzId}})
+            navigate("/elecAtrz/ElecAtrzDetail", {state: {data: props}})
         }
     }
 
@@ -209,7 +225,8 @@ const ProjectExpense = () => {
 
     return (
         <div>
-            <div style={{ marginBottom: '100px' }}>
+            {/* {loading && (<div className="loading-overlay">요청 중입니다...</div>)} */}
+            <div style={{ marginLeft: '2%', marginRight: '2%', marginBottom: '10%' }}>
                 <div className="mx-auto" style={{ display: 'flex', marginTop: "20px", marginBottom: "30px" }}>
                     <h1 style={{ fontSize: "30px", marginRight: "20px" }}>프로젝트비용</h1>
                     {getButtonsShow().map(({ onClick, text, type }, index) => (
@@ -247,6 +264,7 @@ const ProjectExpense = () => {
                                         aplyOdr={aplyOdr}
                                         setIndex={setIndex}
                                         getData={getData}
+                                        setLoading={setLoading}
                                     />
                                 </React.Suspense>
                             );
@@ -264,6 +282,7 @@ const ProjectExpense = () => {
                 onPopHiding={onPopHiding}
                 aprvInfo={atrzDmndSttsCnt}
                 noDataCase={{ cnt: ctAply.length, yn: mmAtrzCmptnYn }}
+                mmAtrzCmptnYn={mmAtrzCmptnYn}
                 basicInfo={histYmOdr !== null ? histYmOdr : { aplyYm, aplyOdr, empId }}
             />
         </div>
