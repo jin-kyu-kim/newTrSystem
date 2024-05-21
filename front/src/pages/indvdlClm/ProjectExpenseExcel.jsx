@@ -110,7 +110,7 @@ const ProjectExpenseExcel = (props) => {
     }
 
     return (
-        <div className="container" style={{ margin: '4%' }}>
+        <div style={{marginLeft: '5%', marginTop: '7%'}}>
             <span style={{ fontSize: 18 }}>롯데카드 법인카드 사용내역 엑셀을 업로드 합니다.<br />
                 <span style={{ fontSize: 14 }}>
                     <br />
