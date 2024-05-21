@@ -32,7 +32,7 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd, ctrtTyCd}) =
     *상태코드에 따른 버튼 변경
     */
     if(["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)
-        || data.elctrnAtrzTySeCd === "VTW04914"){
+        || ["VTW04911","VTW04912","VTW04913","VTW04914",].includes(data.elctrnAtrzTySeCd)){
         tableColumns = tableColumns.filter(item => item.value !== '삭제');
 
         tableColumns = tableColumns.map((item) => {
@@ -235,7 +235,7 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd, ctrtTyCd}) =
         <div className="elecAtrzNewReq-ctrtInfo">
             <div style={{ textAlign: "right", marginBottom:"10px" }}>
                 {(!["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)) && (
-                    data.elctrnAtrzTySeCd !=="VTW04914" 
+                    !["VTW04911","VTW04912","VTW04913","VTW04914",].includes(data.elctrnAtrzTySeCd) 
                 ) && (
                 <Button name="insert" onClick={()=>handlePopupVisible({name:"insert"})}>{insertButton}</Button>
                 )}

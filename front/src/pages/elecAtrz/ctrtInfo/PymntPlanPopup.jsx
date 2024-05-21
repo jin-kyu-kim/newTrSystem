@@ -22,6 +22,7 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
         jsonData = ElecAtrzOutordCompanyPopupJson
     }
 
+
     const labelValue = jsonData.matrlCtrt.labelValue
     const matrlPlanParam = labelValue.matrlPlan
     matrlPlanParam.param.queryId.prjctId = prjctId;
@@ -148,7 +149,7 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
 
     // 수정테이블 수정가능 여부
     const isEditable = !["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd) 
-                        && data.elctrnAtrzTySeCd !== "VTW04914";
+                        && !["VTW04911","VTW04912","VTW04913","VTW04914",].includes(data.elctrnAtrzTySeCd);
 
     controlReadOnly = !isEditable
     

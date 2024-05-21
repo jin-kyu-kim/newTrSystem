@@ -19,7 +19,7 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
 
 /*  VTW04001 계약직
 *   VTW04002 업체
-*   VTW04003 계약직
+*   VTW04003 프리랜서
 */  
 
 
@@ -80,14 +80,17 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
                 
                 // 첫 번째 NumberBox의 mm 값이 변경될 때, ctrtAmt도 자동으로 설정
                 if (!key) { // mm 값이 업데이트된 경우
-                    updatedValue['indvdlGiveCtrtAmt'] = outordEmpData.untpc * mm; //Tip. 만약 투입MM으로 비율 계산을 할 필요가 없이 단가만 넣으려면 outordEmpData.untpc로 변경
+                    updatedValue['indvdlGiveCtrtAmt'] = outordEmpData.untpc * mm; 
+                    updatedValue['entrpsGiveCtrtAmt'] = outordEmpData.untpc * mm; 
+
                 }
     
                 newValues[index] = updatedValue;
             } else { // 신규 데이터
                 const newEntry = { id, [key || 'mm']: mm };
                 if (!key) {
-                    newEntry['indvdlGiveCtrtAmt'] = outordEmpData.untpc * mm;  //Tip. 만약 투입MM으로 비율 계산을 할 필요가 없이 단가만 넣으려면 outordEmpData.untpc로 변경
+                    newEntry['indvdlGiveCtrtAmt'] = outordEmpData.untpc * mm;  
+                    newEntry['entrpsGiveCtrtAmt'] = outordEmpData.untpc * mm;  
                 }
                 newValues.push(newEntry);
             }
@@ -189,8 +192,8 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
 
     // 수정테이블 수정가능 여부
     const isEditable = !["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd) 
-                        && data.elctrnAtrzTySeCd !== "VTW04914";
-
+                        && !["VTW04911","VTW04912","VTW04913","VTW04914",].includes(data.elctrnAtrzTySeCd);
+ 
     controlReadOnly = !isEditable
     
     return (
