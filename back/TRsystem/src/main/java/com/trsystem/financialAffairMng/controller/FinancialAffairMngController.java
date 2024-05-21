@@ -15,12 +15,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FinancialAffairMngController {
 
-	@PostMapping(value = "/boot/financialAffairMng/retrieveCtData")
-	public List<Map<String, Object>> retrieveCtData(@RequestBody Map<String, Object> params) {
-		
-		return FinancialAffairMngDomain.retrieveCtData(params);
-	}
-
 	@PostMapping(value = "/boot/financialAffairMng/updateClturPhstrnActct")
 	public int updateClturPhstrnActct(@RequestBody List<Map<String, Object>> params) {
 		return FinancialAffairMngDomain.updateClturPhstrnActct(params);
