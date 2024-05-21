@@ -3,7 +3,7 @@ import { Button } from 'devextreme-react/button'
 import { useModal } from "../../components/unit/ModalContext";
 import ApiRequest from "utils/ApiRequest";
 
-const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, buttonGroup, getData, sendAtrz }) => {
+const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, buttonGroup, getData, sendAtrz, setLoading }) => {
   
   const [ isComplete, setIsComplete ] = useState(false);
   const { handleOpen } = useModal();

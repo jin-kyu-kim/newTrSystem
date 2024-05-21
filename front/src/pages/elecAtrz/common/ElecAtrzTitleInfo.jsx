@@ -45,7 +45,7 @@ const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick
       </div>
 
       <h3 style={{ textAlign: "center" }}>{formData.gnrlAtrzTtl}</h3>
-      <div style={{ display: "flex", marginTop: "50px", marginLeft: "50px", fontSize: '17px' }}>
+      <div style={{ display: "flex", marginTop: "10%", marginLeft: "3%", fontSize: '17px' }}>
         <div style={{ flex: 4 }}>
           <table>
             <tr>

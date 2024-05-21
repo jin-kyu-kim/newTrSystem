@@ -14,6 +14,7 @@ const ProjectExpense = () => {
     const { ExpenseInfo, keyColumn, ctAplyTableColumns, elcKeyColumn, columnCharge, buttonsConfig,
         aplyAndAtrzCtQueryId, dmndSttsQueryId, groupingColumn, groupingData, searchInfo } = ProjectExpenseJson.ProjectExpenseMain;
     const [ index, setIndex ] = useState(0);
+    const [ loading, setLoading ] = useState(false);
     const [ atrzDmndSttsCnt, setAtrzDmndSttsCnt ] = useState({}); // 상태코드별 데이터 개수
     const [ indivdlList, setIndivdlList ] = useState([]); // 차수 청구내역 (table1)
     const [ ctAply, setCtAply ] = useState([]); // 차수 청구내역 (table1)
@@ -21,7 +22,6 @@ const ProjectExpense = () => {
     const [ changeColumn, setChangeColumn ] = useState([]); // 결재상태 컬럼 -> 버튼렌더를 위해 필요
     const [ ctAtrzCmptnYn, setCtAtrzCmptnYn ] = useState(); // 비용결재완료여부
     const [ mmAtrzCmptnYn, setMmAtrzCmptnYn ] = useState(); // 근무시간여부
-
     const admin = location.state ? location.state.admin : undefined;
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const empId = admin != undefined ? admin.empId : userInfo.empId;
@@ -225,7 +225,8 @@ const ProjectExpense = () => {
 
     return (
         <div>
-            <div style={{ marginBottom: '100px' }}>
+            {/* {loading && (<div className="loading-overlay">요청 중입니다...</div>)} */}
+            <div style={{ marginLeft: '2%', marginRight: '2%', marginBottom: '10%' }}>
                 <div className="mx-auto" style={{ display: 'flex', marginTop: "20px", marginBottom: "30px" }}>
                     <h1 style={{ fontSize: "30px", marginRight: "20px" }}>프로젝트비용</h1>
                     {getButtonsShow().map(({ onClick, text, type }, index) => (
@@ -263,6 +264,7 @@ const ProjectExpense = () => {
                                         aplyOdr={aplyOdr}
                                         setIndex={setIndex}
                                         getData={getData}
+                                        setLoading={setLoading}
                                     />
                                 </React.Suspense>
                             );
