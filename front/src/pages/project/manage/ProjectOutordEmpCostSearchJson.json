@@ -101,6 +101,7 @@
   },
   {
     "caption": "가용금액",
+    "width": 50,
     "dataField": "calcCt",
     "area": "data",
     "dataType": "number",
