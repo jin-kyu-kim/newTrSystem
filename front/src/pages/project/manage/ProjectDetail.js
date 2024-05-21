@@ -20,7 +20,8 @@ const ProjectDetail = () => {
         bgtMngOdrTobe,
         bizSttsCd,
         deptId,
-        prjctNm
+        prjctNm,
+        path
   } = location.state || {};
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [atrzLnSn, setAtrzLnSn] = useState();
@@ -65,7 +66,7 @@ const ProjectDetail = () => {
 
     if(atrzLnSn === undefined) {
       // null이면 check 할 필요가 없다.
-      const isconfirm = window.confirm("프로젝트 변경을 진행하시겠습니까?");
+      const isconfirm = window.confirm("원가 등록을 진행하시겠습니까?");
       if(isconfirm){
         await projectChgHandle();
       }
@@ -77,21 +78,21 @@ const ProjectDetail = () => {
       if(result != null) {
           if(result === 'VTW03701') {
               // 임시저장인 경우
-              // handleOpen("임시저장된 내역이 있습니다. 수정을 진행하시겠습니까?", projectChgHandle, true);
-              const isconfirm = window.confirm("임시저장된 내역이 있습니다. 수정을 진행하시겠습니까?");
+              // handleOpen("프로젝트 변경을 진행하시겠습니까?", projectChgHandle, true);
+              const isconfirm = window.confirm("프로젝트 변경을 진행하시겠습니까?");
               if(isconfirm) {
                 await projectChgHandle();
               }
           } else if (result === 'VTW03704') {
             // 생성중인 프로젝트가 아니고, 반려인 경우 작동
             // handleOpen("기존에 반려된 요청이 존재합니다. 반려된 요청을 수정하시겠습니까?", projectChgHandle(result), true);
-            const isconfirm = window.confirm("기존에 반려된 요청이 존재합니다. 반려된 요청을 수정하시겠습니까?");
+            const isconfirm = window.confirm("반려된 요청이 존재합니다. 반려된 요청을 수정하시겠습니까?");
             if(isconfirm) {
                 await projectChgHandle(result);
             } else {
-              const isconfirm = window.confirm("기존에 반려된 내용을 제거하시겠습니까? 작성한 데이터가 사라집니다.");
+              const isconfirm = window.confirm("반려된 내용을 제거하시겠습니까? 작성한 데이터가 사라집니다.");
               if(isconfirm) {
-                const isconfirm = window.confirm("정말로 기존에 반려된 내용을 제거하시겠습니까?");
+                const isconfirm = window.confirm("정말로 반려된 내용을 제거하시겠습니까?");
                 if(isconfirm) {
                   await resetPrmpc();
                 }
@@ -244,7 +245,7 @@ const ProjectDetail = () => {
           style={{ margin: "2px" }}
           onClick={onClikcChngBgt}
         >
-          변경원가
+          {bizSttsCd === "VTW00401" ? "원가등록" : "변경원가" }
         </Button>
         <Button
           width={110}
@@ -261,7 +262,7 @@ const ProjectDetail = () => {
           type="normal"
           stylingMode="outline"
           style={{ margin : '2px' }}
-          onClick={() => navigate("../project/ProjectList")}
+          onClick={() => navigate(`..${path}`)}
         >
           목록
         </Button>

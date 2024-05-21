@@ -22,6 +22,7 @@ const ProjectAprvDetail = () => {
     const stbleEndYmd = location.state.stbleEndYmd;
     const bgtMngOdr = location.state.bgtMngOdr;
     const aprvrEmpId = location.state.aprvrEmpId;
+    const path = location.state.path;
     const ProjectAprvDetail = ProjectAprvDetailJson;
     const atrzDmndSttsCd = ProjectAprvDetail.atrzDmndSttsCd;
 
@@ -497,7 +498,7 @@ const ProjectAprvDetail = () => {
                     <div className="buttons" align="right" style={{ marginTop: "5px", marginBottom: "5px" }}>
                         <Button text="승인" visible={btnVisible} onClick={onAprvPopup}/>
                         <Button text="반려" visible={btnVisible} onClick={onRjctPopup}/>
-                        <Button text="목록" onClick={() => navigate("../project/ProjectAprv")}/>
+                        <Button text="목록" onClick={() => navigate(`..${path}`)}/>
                     </div>
                     </div>
                 </div>
