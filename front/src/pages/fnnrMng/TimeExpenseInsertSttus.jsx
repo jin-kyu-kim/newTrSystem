@@ -414,18 +414,39 @@ const handleCheckBoxChange = useCallback((e, key) => {
 //========================화면그리는 구간 ====================================================
   return(
       <div className="">
-          <div className="col-md-10 mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
+          <div className="" style={{ marginTop: "20px", marginBottom: "10px" }}>
                 <h1 style={{ fontSize: "30px" }}>근무시간비용 입력 현황</h1>
           </div>
-          <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
+          <div className="" style={{ marginBottom: "10px" }}>
             <span>* 근무시간비용 입력 현황을 조회합니다.</span>
           </div>
           <div style={{ marginBottom: "20px" }}>
+            <div>
               <SearchPrjctCostSet callBack={searchHandle} props={searchParams} />
+            </div>
+              <div align="right">
               {
-                ddlnYn != 'Y' ? <Button text="마감 및 엑셀다운"  onClick={ddlnExcelDwn}/> :
-                <Button text="엑셀다운"  onClick={excelDwn}/>
+                ddlnYn != 'Y' ? 
+                  <Button 
+                    text="Contained"
+                    type="default"
+                    stylingMode="contained"
+                    style={{ margin: "2px" }}
+                    onClick={ddlnExcelDwn}
+                  >
+                  마감 및 엑셀다운
+                  </Button> :
+                <Button 
+                  text="Contained"
+                  type="default"
+                  stylingMode="contained"
+                  style={{ margin: "2px" }} 
+                  onClick={excelDwn}
+                >
+                  엑셀다운
+                </Button>
               }
+              </div>
           </div>
           <div className="TimeExpenseInsertSttus" style={{ marginBottom: "20px" }}>
               <CustomTable
