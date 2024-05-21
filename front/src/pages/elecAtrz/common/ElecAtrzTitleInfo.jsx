@@ -3,6 +3,8 @@ import { Button } from "devextreme-react/button";
 import { TextBox } from "devextreme-react/text-box";
 import AtrzLnTable from "components/unit/AtrzLnTable";
 import ApprovalPopup from "components/unit/ApprovalPopup";
+import logoImg from "../../../assets/img/vtwLogo.png";
+
 
 const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick, formData, prjctData, onHandleAtrzTitle, atrzParam }) => {
   const [popVisible, setPopVisible] = useState(false);
@@ -40,7 +42,9 @@ const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "flex-start" }}>
-        <div style={{ float: "left", marginRight: "auto" }}>로고</div>
+        <div style={{ float: "left", marginRight: "auto" }}>
+        <img src={logoImg} style={{ width: '50%', marginBottom: '20px' }} />
+        </div>
         <div style={{ display: "inline-block" }}>{setButtons()}</div>
       </div>
 
