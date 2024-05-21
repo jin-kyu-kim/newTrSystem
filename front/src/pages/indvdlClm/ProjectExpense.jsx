@@ -96,7 +96,7 @@ const ProjectExpense = () => {
         }
         const updateStts = ctAply.length === 0
             ? (data.name === 'onInptDdlnClick' ? 'Y' : (data.name === 'onAprvDmndRtrcnClick' ? null : undefined))
-            : (data.name === 'onAprvDmndClick' ? 'N' : (data.name === 'onAprvDmndRtrcnClick' ? null : undefined));
+            : (data.name === 'onInptDdlnClick' ? 'N' : (data.name === 'onAprvDmndRtrcnClick' ? 'N' : undefined));
         if (updateStts !== undefined) updateCtAtrzCmptnYn(updateStts);
         getData();
         handleOpen(data.completeMsg);
