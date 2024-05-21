@@ -109,7 +109,7 @@ const ProjectExpense = () => {
             { empId, aplyYm, aplyOdr }
         ];
         const response = await ApiRequest("/boot/common/commonUpdate", param);
-        if (response === 1) getData();
+        if (response >= 1) getData();
     };
 
     const onClickAction = async (onClick) => {
