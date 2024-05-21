@@ -533,18 +533,69 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
                     </div>
                 </div>
             </div>
-            {readOnly ? <Button text="수정" onClick={onClickUdt} disabled={requestBtnVisible ? false : true}/>:
+            <div className="buttons" align="right" style={{ margin: "20px" }}>
+            
+            {readOnly ? 
+                <Button 
+                    width={110}
+                    text="Contained"
+                    type="default"
+                    stylingMode="contained"
+                    style={{ margin: "2px" }}
+                    onClick={onClickUdt} 
+                    disabled={requestBtnVisible ? false : true}
+                >
+                    수정
+                </Button>
+                    :
                 onHide ? 
                 <div>
-                    <Button text="저장" useSubmitBehavior={true}/>
-                    <Button text="취소" onClick={onHide} />
+                    <Button 
+                        width={110}
+                        text="Contained"
+                        type="default"
+                        stylingMode="contained"
+                        style={{ margin: "2px" }}
+                        useSubmitBehavior={true}
+                    >
+                        저장
+                    </Button>
+                    <Button 
+                        width={110}
+                        text="Contained"
+                        type="default"
+                        stylingMode="contained"
+                        style={{ margin: "2px" }} 
+                        onClick={onHide} 
+                    >
+                        취소
+                    </Button>
                 </div>
                 :
                 <div>
-                    <Button text="저장"useSubmitBehavior={true}/>
-                    <Button text="취소" onClick={onClickUdtCncl} />
+                    <Button
+                        width={110}
+                        text="Contained"
+                        type="default"
+                        stylingMode="contained"
+                        style={{ margin: "2px" }}
+                        useSubmitBehavior={true}
+                    >
+                        저장
+                    </Button>
+                    <Button 
+                        width={110}
+                        text="Contained"
+                        type="default"
+                        stylingMode="contained"
+                        style={{ margin: "2px" }}
+                        onClick={onClickUdtCncl} 
+                    >
+                        취소
+                    </Button>
                 </div>
             }
+            </div>
         </div>
         </form>
     );
