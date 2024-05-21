@@ -216,9 +216,10 @@ const ElecAtrzNewReq = () => {
             try{
                 const response = await ApiRequest('/boot/common/queryIdSearch', {
                     queryId: "indvdlClmMapper.retrieveElctrnAtrzRefrnInq",
-                    searchType: "atrzLnReftnList", 
-                    repDeptId: "9da3f461-9c7e-cd6c-00b6-c36541b09b0d"
+                    approvalCode: "VTW00706",
+                    state: "ref"
                 })
+                console.log('response', response)
                 setAtrzLnEmpList(response);
             } catch(error) {
                 console.log('error', error);
