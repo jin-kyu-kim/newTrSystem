@@ -497,7 +497,6 @@
         VALUES
         (
             #{rjctPrvonsh}
-            ,#{prjctAprvrCd}
             ,#{atrzDmndSttsCd}
 <!--            ,"VTW03702"-->
             ,#{aprvrEmpId}
