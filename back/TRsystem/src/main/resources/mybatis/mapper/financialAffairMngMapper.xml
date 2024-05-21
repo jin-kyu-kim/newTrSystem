@@ -165,6 +165,7 @@
             ON pma.PRJCT_ID = pah.PRJCT_ID
             AND pma.EMP_ID = pah.EMP_ID
             AND pma.APLY_YM = pah.APLY_YM
+            AND pma.APLY_YMD = pah.APLY_YMD
             AND pma.APLY_ODR = pah.APLY_ODR
             AND pah.ATRZ_DMND_STTS_CD = 'VTW03703' -- 결재요청상태코드 : 승인
         JOIN EMP e
