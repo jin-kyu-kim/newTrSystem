@@ -21,10 +21,23 @@ const ProjectOutordEmpCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdr, bgtMng
 
   const OutordEmpDtl = async () => {
 
+    function adjustMonth(dateStr, monthsToAdd) {
+      if (!dateStr) return ""; // 날짜 문자열이 없으면 빈 문자열 반환
+      const [year, month, day] = dateStr.split('-').map(Number);
+      const date = new Date(year, month - 1, day); // month는 0부터 시작하므로 -1
+      date.setMonth(date.getMonth() + monthsToAdd);
+      const newYear = date.getFullYear();
+      const newMonth = ('0' + (date.getMonth() + 1)).slice(-2); // month는 0부터 시작하므로 +1
+      return `${newYear}-${newMonth}`;
+    }
+  
+    // 날짜 문자열 초기화
     const copyCtrtYmd = ctrtYmd ? JSON.parse(JSON.stringify(ctrtYmd)) : "";
     const copyStbleEndYmd = stbleEndYmd ? JSON.parse(JSON.stringify(stbleEndYmd)) : "";
-    const ctrtYmdPrarm = copyCtrtYmd.replace(/-(\d{2})-\d{2}/, '$1');
-    const stbleEndYmdPrarm = copyStbleEndYmd.replace(/-(\d{2})-\d{2}/, '$1');
+    
+    // 날짜 조정
+    const ctrtYmdPrarm = adjustMonth(copyCtrtYmd, -1); // -1달
+    const stbleEndYmdPrarm = adjustMonth(copyStbleEndYmd, 1); // +1달
 
 
     const param = [

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "devextreme/dist/css/dx.common.css";
+import { addMonths, subMonths } from 'date-fns';
 
 import ProjectOutordEmpCostSearchJson from "./ProjectOutordEmpCostSearchJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
@@ -16,9 +17,12 @@ const ProjectOutordEmpCostSearch = ({prjctId}) => {
   const location = useLocation();
   // const prjctId = location.state.prjctId;
 
-  const ctrtYmd = location.state.ctrtYmd;
-  //TODO: const stbleEndYmd = location.state.stbleEndYmd;
-  const stbleEndYmd = '2024-12-31'
+  const ctrtYmdBefore= new Date(location.state.ctrtYmd);
+  const stbleEndYmdBefore = new Date(location.state.stbleEndYmd);
+
+  const ctrtYmd = subMonths(ctrtYmdBefore, 1);
+  const stbleEndYmd = addMonths(stbleEndYmdBefore, 1);
+
   const bgtMngOdr = location.state.bgtMngOdr;
 
   const [pivotGridConfig, setPivotGridConfig] = useState({
