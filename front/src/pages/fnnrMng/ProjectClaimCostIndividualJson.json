@@ -10,15 +10,15 @@
     "ctKeyColumn": "expensCd",
     "mmColumns":
 	[
-        { "key": "deptNm", "value": "소속", "width": 200, "alignment" : "left" },
-        { "key": "empFlnm", "value": "성명", "width": 100, "alignment" : "center"  },
-        { "key": "startAplyOdr", "value": "시작차수", "width": 100, "alignment" : "center" },
-        { "key": "endAplyOdr", "value": "종료차수", "width": 100, "alignment" : "center" },
-        { "key": "expectMm", "value": "배정", "width": 140, "alignment" : "right" },
-        { "key": "totalMdSum", "value": "누적사용", "width": 140, "alignment" : "right" },
-        { "key": "useMm", "value": "가용", "width": 140, "alignment" : "right"  },
-        { "key": "clmMd", "value": "당차수청구", "width": 140, "alignment" : "right"  },
-        { "key": "empId", "value": "상태", "width": 130, "alignment" : "center", "button": { "text": "청구현황",
+        { "key": "deptNm", "value": "소속", "width": "10%", "alignment" : "left" },
+        { "key": "empFlnm", "value": "성명", "width": "10%", "alignment" : "center"  },
+        { "key": "startAplyOdr", "value": "시작차수", "width": "10%", "alignment" : "center" },
+        { "key": "endAplyOdr", "value": "종료차수", "width": "10%", "alignment" : "center" },
+        { "key": "expectMm", "value": "배정", "width": "10%", "alignment" : "right" },
+        { "key": "totalMdSum", "value": "누적사용", "width": "10%", "alignment" : "right" },
+        { "key": "useMm", "value": "가용", "width": "10%", "alignment" : "right"  },
+        { "key": "clmMd", "value": "당차수청구", "width": "10%", "alignment" : "right"  },
+        { "key": "empId", "value": "상태", "width": "10%", "alignment" : "center", "button": { "text": "청구현황",
                                                                                             "name": "empId"
                                                                                         } }
     ],
@@ -31,12 +31,12 @@
     ],
     "ctColumns":
 	[
-        { "key": "expensNm", "value": "비용코드", "width": 300, "alignment" : "left" },
-        { "key": "startAplyOdr", "value": "시작차수", "width": 100, "alignment" : "center" },
-        { "key": "endAplyOdr", "value": "종료차수", "width": 100, "alignment" : "center" },
-        { "key": "totalAmtSum", "value": "누적사용", "width": 280, "alignment" : "right", "dataType": "number" },
-        { "key": "totalAmt", "value": "당차수청구", "width": 280, "alignment" : "right" },
-        { "key": "expensCd", "value": "상태", "width": 130, "alignment" : "center", "button": { "text": "청구현황",
+        { "key": "expensNm", "value": "비용코드", "width": "20%", "alignment" : "left" },
+        { "key": "startAplyOdr", "value": "시작차수", "width": "10%", "alignment" : "center" },
+        { "key": "endAplyOdr", "value": "종료차수", "width": "20%", "alignment" : "center" },
+        { "key": "totalAmtSum", "value": "누적사용", "width": "20%", "alignment" : "right", "dataType": "number" },
+        { "key": "totalAmt", "value": "당차수청구", "width": "20%", "alignment" : "right" },
+        { "key": "expensCd", "value": "상태", "width": "10%", "alignment" : "center", "button": { "text": "청구현황",
                                                                                             "name": "expenseAprv"
                                                                                         } }
     ],
