@@ -79,7 +79,7 @@ const ProjectExpenseCashCardReport = ({basicInfo}) => {
         }
     
         try {
-            const response = await ApiRequest("/boot/financialAffairMng/retrieveCtData", param);
+            const response = await ApiRequest("/boot/indvdlClm/retrieveCtData", param);
         
             setPivotGridConfig({
                 ...pivotGridConfig,
