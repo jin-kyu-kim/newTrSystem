@@ -75,7 +75,8 @@ const ProjectList = () => {
                       , stbleEndYmd: e.data.stbleEndYmd
                       , bgtMngOdrTobe: e.data.bgtMngOdrTobe 
                       , bizSttsCd: e.data.bizSttsCd
-                      , deptId : e.data.deptId}})
+                      , deptId : e.data.deptId
+                      , path: location.pathname}})
   };
 
   return (
