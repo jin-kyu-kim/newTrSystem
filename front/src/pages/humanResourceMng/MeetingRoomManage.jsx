@@ -15,7 +15,6 @@ import "pages/humanResourceMng/MeetingRoomManage.css"
 
 
 const MeetingRoomManage = () => {
-    // 세션설정
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const userAuth = JSON.parse(localStorage.getItem("userAuth"));
 
@@ -108,8 +107,8 @@ const MeetingRoomManage = () => {
             rsvtEmpId: userInfo.empId,
             useYmd: Moment(e.cellData.startDate).format("YYYYMMDD"),
             useEndYmd: Moment(e.cellData.startDate).format("YYYYMMDD"),
-            useBgngHm: Moment(e.cellData.startDate).format("HHMM"),
-            useEndHm: Moment(e.cellData.endDate).format("HHMM"),
+            useBgngHm: Moment(e.cellData.startDate).format("HHmm"),
+            useEndHm: Moment(e.cellData.endDate).format("HHmm"),
             startDate: e.cellData.startDate,
             endDate: e.cellData.endDate,
         }]);
@@ -127,13 +126,9 @@ const MeetingRoomManage = () => {
         popupMtgRoomRsvt.current = selectMtgRoomValue.filter(item => item.mtgRoomRsvtSn == e.appointmentData.mtgRoomRsvtSn);
         selectMtgRoomRsvtAtdrn(e.appointmentData.mtgRoomRsvtSn);
 
-        if(userAuth.find((item) => item == "VTW04805")){
-            setAuthValue("all")
-        } else if(!userAuth.find((item) => item == "VTW04805") && e.appointmentData.rsvtEmpId == userInfo.empId){
-            setAuthValue("self")
-        } else {
-            setAuthValue("none")
-        }
+        if(userAuth.find((item) => item == "VTW04805")) setAuthValue("all")
+        else if(!userAuth.find((item) => item == "VTW04805") && e.appointmentData.rsvtEmpId == userInfo.empId) setAuthValue("self")
+        else setAuthValue("none")
 
         e.cancel = true;
     }
@@ -180,8 +175,10 @@ const MeetingRoomManage = () => {
             month: 'numeric', 
             day: 'numeric' 
         };
+
         const formattedStartDate = e.startDate.toLocaleString('kr', formatOptions);
         const formattedEndDate = e.endDate.toLocaleString('kr', formatOptions);
+
         return formattedStartDate + ' - ' + formattedEndDate;
     }, []);
 
@@ -235,11 +232,7 @@ const MeetingRoomManage = () => {
                     onAppointmentClick={onAppointmentFormOpening}
                     onCellClick={onCellClick}
                     onAppointmentDblClick={onAppointmentDblClick}
-                    onOptionChanged={(e) => {
-                        if (e.name == "currentDate") {
-                            onOptionChanged(Moment(e.value).format('YYYYMMDD'));
-                        }
-                    }}
+                    onOptionChanged={(e) => { if (e.name == "currentDate") onOptionChanged(Moment(e.value).format('YYYYMMDD')) }}
                 >
                     <Resource
                         dataSource={groupData}
