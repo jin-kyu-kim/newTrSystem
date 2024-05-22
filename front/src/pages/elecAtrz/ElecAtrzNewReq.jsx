@@ -18,6 +18,7 @@ import ElecAtrzTabDetail from "./ElecAtrzTabDetail";
 
 import { Button } from 'devextreme-react';
 import { useModal } from "../../components/unit/ModalContext";
+import ApprovalPopup from 'components/unit/ApprovalPopup';
 
 const ElecAtrzNewReq = () => {
 
@@ -43,18 +44,15 @@ const ElecAtrzNewReq = () => {
     const [prjctData, setPrjctData] = useState({});
 
     const [atrzLnEmpList, setAtrzLnEmpList] = useState([]);
+    const [popVisible, setPopVisible] = useState(false);
     const column = { "dataField": "gnrlAtrzCn", "placeholder": "내용을 입력해주세요."};
 
-    // console.log("formData", formData)
-    // console.log("ctrtTyCd", ctrtTyCd)
-    // console.log("data", data)
-    // console.log("prjctData", prjctData)
     /**
      * 계약 지급인 경우 계약코드 및 계약전자결재ID 조회
      */
     useEffect(()=>{
         if(!ctrtTyCd){
-            if(formData.atrzDmndSttsCd === "VTW03701"){   //임시저장
+            if(formData.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407"  || sttsCd === "VTW05405"){   //임시저장
                 
                 const getCtrtInfo = async () => {
                     try {
@@ -116,14 +114,12 @@ const ElecAtrzNewReq = () => {
     }
     
     useEffect(() => {
-
         retrievePrjctInfo();
-
         /**
          * 상태 코드가 임시저장일 때 실행될 코드
          * 상태 코드가 재기안 일때 실행될 코드
          */
-        if(sttsCd === "VTW03701" || sttsCd === "VTW05407") {
+        if(sttsCd === "VTW03701" || sttsCd === "VTW05407" || sttsCd === "VTW05405") {
 
             setAtrzParam(atrzParam => ({
                 ...atrzParam,
@@ -135,7 +131,6 @@ const ElecAtrzNewReq = () => {
             getAttachments();
         }
     }, []);
-
 
     /**
      * 자식컴포넌트에서 받아온 데이터 set 
@@ -168,8 +163,6 @@ const ElecAtrzNewReq = () => {
         }));
     }, [data]);
 
-
-
     /**
      * 첨부파일 조회
      */
@@ -197,7 +190,6 @@ const ElecAtrzNewReq = () => {
             console.error(error);
         }
     }
-
 
     /**
      * 파일 제거 
@@ -241,12 +233,35 @@ const ElecAtrzNewReq = () => {
             }
         }
 
+        /** 취소결재 경우에 승인된 결재선을 가져온다. */
+        const retrieveRtrcnAtrzLn = async () => {
+
+            const param = {
+                elctrnAtrzId: data.ctrtElctrnAtrzId ? data.ctrtElctrnAtrzId : data.elctrnAtrzId,
+            }
+
+            const response = await ApiRequest("/boot/elecAtrz/retrieveRtrcnAtrzLn", param);
+            setAtrzLnEmpList(response);
+        }
+
         if(sttsCd === "VTW03701" || sttsCd === "VTW05407") {
             getTempAtrzLn();
-        } else {    
+        } else if(sttsCd === "VTW05405") {
+            // 결재선을 가져오되, 승인한 사람들에게 취소요청을 하기 위해서 승인된 것만 가져오기.
+            retrieveRtrcnAtrzLn();
+        }else {    
             getAtrzEmp();
         }
     }, []);
+
+    const onAtrzLnPopup = async () => {
+        setPopVisible(true);
+      }
+    
+    const onPopHiding = async (aprvrEmpList) => {
+        setPopVisible(false);
+        getAtrzLn(aprvrEmpList)
+    }
 
     const getAtrzLn = (lnList) => {
         // 결재선 등록후 받은 파라미터
@@ -311,7 +326,9 @@ const ElecAtrzNewReq = () => {
             regEmpId: userInfo.empId,
             atrzFormDocId: formData.atrzFormDocId,
             atrzLnEmpList,
-            sttsCd: sttsCd
+            sttsCd: sttsCd,
+            histElctrnAtrzId: sttsCd === "VTW05405" || sttsCd === "VTW05406" ? data.elctrnAtrzId : data.histElctrnAtrzId,
+            atrzHistSeCd: sttsCd === "VTW05405" || sttsCd === "VTW05406" ? sttsCd : data.atrzHistSeCd != undefined ? data.atrzHistSeCd : "VTW05401"
         }
 
         // console.log("insertParam", insertParam);
@@ -335,6 +352,25 @@ const ElecAtrzNewReq = () => {
                     }).catch(error => {
                         console.error("error:", error);
                     });
+                }
+
+                // 취소결재 변경결재 시 결재선 멈춤
+                if(stts != "VTW03701" &&  (data.atrzHistSeCd === "VTW05405" || sttsCd === "VTW05405")) {
+                    const param = [
+                        {tbNm: "ATRZ_LN"},
+                        {
+                            atrzSttsCd: "VTW00806",
+                            mdfcnDt: date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0],
+                            mdfcnEmpId: userInfo.empId,
+                        },
+                        {
+                            elctrnAtrzId: insertParam.histElctrnAtrzId,
+                            atrzSttsCd: "VTW00801"
+                        }
+                    ]
+                    
+                    const updateResponse = await ApiRequest("/boot/common/commonUpdate", param);
+
                 }
 
                 const formDataAttach = new FormData();      
@@ -391,7 +427,7 @@ const ElecAtrzNewReq = () => {
      * 목록 버튼 클릭시 전자결재 서식 목록으로 이동
      */
     const toAtrzNewReq = () => {
-        if(["VTW03701","VTW03702","VTW03703","VTW03704","VTW00801","VTW00802","VTW05407"].includes(sttsCd)) {
+        if(["VTW03701","VTW03702","VTW03703","VTW03704","VTW00801","VTW00802","VTW05405", "VTW05406", "VTW05407"].includes(sttsCd)) {
             navigate("../elecAtrz/ElecAtrz", {state: {prjctId: prjctId}});
         }else if(sttsCd === "VTW03405"){    
             navigate("../elecAtrz/ElecGiveAtrz", {state: {prjctId: prjctId, formData:formData}});
@@ -411,13 +447,14 @@ const ElecAtrzNewReq = () => {
     }
 
     const onBtnClick = (e) => {
-
         switch (e.element.id) {
             case "requestElecAtrz": requestElecAtrz(); 
                 break;
             case "saveTemp": saveTemp();
                 break;
             case "toAtrzNewReq": toAtrzNewReq();
+                break;
+            case "onAtrzLnPopup": onAtrzLnPopup();
                 break;
             default:
                 break;
@@ -531,6 +568,12 @@ const ElecAtrzNewReq = () => {
                         onClick={onBtnClick} style={{marginRight: '3px'}}/>
                 ))}
                 </div>
+
+                <ApprovalPopup
+                    visible={popVisible}
+                    atrzLnEmpList={atrzLnEmpList}
+                    onHiding={onPopHiding}
+                />
             </div>
         </>
     );

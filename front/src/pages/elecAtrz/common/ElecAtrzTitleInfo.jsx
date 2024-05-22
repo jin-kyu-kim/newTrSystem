@@ -49,14 +49,14 @@ const ElecAtrzTitleInfo = ({ sttsCd, refer, atrzLnEmpList, getAtrzLn, contents, 
         <div style={{ display: "inline-block" }}>{setButtons()}</div>
       </div>
 
-      <h3 style={{ textAlign: "center" }}>{formData.gnrlAtrzTtl}</h3>
+      <h3 style={{ textAlign: "center" }}>{formData.gnrlAtrzTtl}{sttsCd === "VTW05405" || formData.atrzHistSeCd === "VTW05405" ? " - 결재취소" : ""}</h3>
       <div style={{ display: "flex", marginTop: "3%", marginLeft: '2%', marginRight: '2%' }}>
         <div style={{ flex: 4 }}>
           <table>
             <tr>
               <td style={{fontWeight: 'bold'}}>문서번호</td>
               <td> : </td>
-              <td>{formData.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407" ? "" : formData.elctrnAtrzDocNo}</td>
+              <td>{formData.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407" || sttsCd === "VTW05405" ? "" : formData.elctrnAtrzDocNo}</td>
             </tr>
             <tr>
               <td style={{fontWeight: 'bold'}}>프로젝트</td>
@@ -73,7 +73,7 @@ const ElecAtrzTitleInfo = ({ sttsCd, refer, atrzLnEmpList, getAtrzLn, contents, 
             <tr>
               <td style={{fontWeight: 'bold'}}>기안일자</td>
               <td> : </td>
-              <td>{formData.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407" ? "" : formData.regDt}</td>
+              <td>{formData.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407" || sttsCd === "VTW05405" ? "" : formData.regDt}</td>
             </tr>
           </table>
         </div>
@@ -100,11 +100,20 @@ const ElecAtrzTitleInfo = ({ sttsCd, refer, atrzLnEmpList, getAtrzLn, contents, 
 
           <div className="dx-field">
             <div className="dx-field-label" style={{ width: "5%", fontWeight: 'bold' }}>제 목</div>
+            {
+              sttsCd === "VTW05405" ? 
+              <div className="dx-field-label" style={{ width: "120px", fontWeight: 'bold' }}>▶취소결재◀</div>
+              : sttsCd === "VTW05406"?
+              <div className="dx-field-label" style={{ width: "120px", fontWeight: 'bold' }}>▶결재변경◀</div>
+              :
+              <></>
+            }
             <TextBox
               className="dx-field-value"
               style={{ width: "100%" }}
               value={atrzParam.title}
               onValueChanged={onHandleAtrzTitle}
+              readOnly={sttsCd === "VTW05405" || formData.atrzHistSeCd === "VTW05405" ? true : false}
             />
           </div>
 

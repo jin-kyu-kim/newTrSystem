@@ -130,7 +130,7 @@ const ProjectExpense = () => {
             if (ctAtrzCmptnYn === 'Y' && mmAtrzCmptnYn === 'N') return buttonsConfig.hasApprovals;
             if (mmAtrzCmptnYn === 'Y') return buttonsConfig.completed;
         } else {
-            if (atrzDmndSttsCnt.rjct === 0 && atrzDmndSttsCnt.aprv > 0) return buttonsConfig.completed;
+            if (atrzDmndSttsCnt.rjct === 0 && atrzDmndSttsCnt.aprv > 0 && atrzDmndSttsCnt.inptDdln === 0 && atrzDmndSttsCnt.ctReg === 0) return buttonsConfig.completed;
             if (atrzDmndSttsCnt.aprvDmnd > 0 || atrzDmndSttsCnt.rjct > 0) return buttonsConfig.hasApprovals;
             if (atrzDmndSttsCnt.inptDdln > 0) return buttonsConfig.noApprovals;
         }
@@ -260,7 +260,7 @@ const ProjectExpense = () => {
                     <RenderTopTable title={`* ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} />}
                 <RenderTopTable title='* 전자결재 청구 내역' keyColumn={elcKeyColumn} columns={columnCharge} values={ctAtrz} />
 
-                {atrzDmndSttsCnt.ctReg >= 0 || ctAtrzCmptnYn === null || ctAtrzCmptnYn === undefined
+                {atrzDmndSttsCnt.ctReg > 0 || ctAtrzCmptnYn === null || ctAtrzCmptnYn === undefined
                     ? <TabPanel
                         dataSource={ExpenseInfo}
                         selectedIndex={index}
