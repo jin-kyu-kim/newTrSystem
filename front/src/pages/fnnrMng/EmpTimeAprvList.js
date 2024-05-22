@@ -36,7 +36,6 @@ const EmpTimeAprvList = () => {
 
   // 검색으로 조회할 때
   const searchHandle = async (initParam) => {
-    console.log("이거뭐야?",searchInfo)
     setParam({
       ...initParam,
       yearItem : initParam?.year,
@@ -62,7 +61,7 @@ const EmpTimeAprvList = () => {
     
     fields: [
       {
-        caption: '프로젝트명',
+        caption: '직원명',
         width: 120,
         dataField: 'empFlnm',
         area: 'row',
@@ -86,7 +85,7 @@ const EmpTimeAprvList = () => {
   },
    
       {
-        caption: '이름',
+        caption: '프로젝트명',
        dataField: 'prjctNm',
        area: 'row',
      },
