@@ -18,6 +18,7 @@ import ElecAtrzTabDetail from "./ElecAtrzTabDetail";
 
 import { Button } from 'devextreme-react';
 import { useModal } from "../../components/unit/ModalContext";
+import ApprovalPopup from 'components/unit/ApprovalPopup';
 
 const ElecAtrzNewReq = () => {
 
@@ -43,12 +44,9 @@ const ElecAtrzNewReq = () => {
     const [prjctData, setPrjctData] = useState({});
 
     const [atrzLnEmpList, setAtrzLnEmpList] = useState([]);
+    const [popVisible, setPopVisible] = useState(false);
     const column = { "dataField": "gnrlAtrzCn", "placeholder": "내용을 입력해주세요."};
 
-    // console.log("formData", formData)
-    // console.log("ctrtTyCd", ctrtTyCd)
-    // console.log("data", data)
-    // console.log("prjctData", prjctData)
     /**
      * 계약 지급인 경우 계약코드 및 계약전자결재ID 조회
      */
@@ -116,9 +114,7 @@ const ElecAtrzNewReq = () => {
     }
     
     useEffect(() => {
-
         retrievePrjctInfo();
-
         /**
          * 상태 코드가 임시저장일 때 실행될 코드
          * 상태 코드가 재기안 일때 실행될 코드
@@ -135,7 +131,6 @@ const ElecAtrzNewReq = () => {
             getAttachments();
         }
     }, []);
-
 
     /**
      * 자식컴포넌트에서 받아온 데이터 set 
@@ -168,8 +163,6 @@ const ElecAtrzNewReq = () => {
         }));
     }, [data]);
 
-
-
     /**
      * 첨부파일 조회
      */
@@ -197,7 +190,6 @@ const ElecAtrzNewReq = () => {
             console.error(error);
         }
     }
-
 
     /**
      * 파일 제거 
@@ -261,6 +253,15 @@ const ElecAtrzNewReq = () => {
             getAtrzEmp();
         }
     }, []);
+
+    const onAtrzLnPopup = async () => {
+        setPopVisible(true);
+      }
+    
+    const onPopHiding = async (aprvrEmpList) => {
+        setPopVisible(false);
+        getAtrzLn(aprvrEmpList)
+    }
 
     const getAtrzLn = (lnList) => {
         // 결재선 등록후 받은 파라미터
@@ -430,13 +431,14 @@ const ElecAtrzNewReq = () => {
     }
 
     const onBtnClick = (e) => {
-
         switch (e.element.id) {
             case "requestElecAtrz": requestElecAtrz(); 
                 break;
             case "saveTemp": saveTemp();
                 break;
             case "toAtrzNewReq": toAtrzNewReq();
+                break;
+            case "onAtrzLnPopup": onAtrzLnPopup();
                 break;
             default:
                 break;
@@ -550,6 +552,12 @@ const ElecAtrzNewReq = () => {
                         onClick={onBtnClick} style={{marginRight: '3px'}}/>
                 ))}
                 </div>
+
+                <ApprovalPopup
+                    visible={popVisible}
+                    atrzLnEmpList={atrzLnEmpList}
+                    onHiding={onPopHiding}
+                />
             </div>
         </>
     );
