@@ -6,8 +6,7 @@ import ApprovalPopup from "components/unit/ApprovalPopup";
 import logoImg from "../../../assets/img/vtwLogo.png";
 import '../ElecAtrz.css'
 
-
-const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick, formData, prjctData, onHandleAtrzTitle, atrzParam }) => {
+const ElecAtrzTitleInfo = ({ sttsCd, refer, atrzLnEmpList, getAtrzLn, contents, onClick, formData, prjctData, onHandleAtrzTitle, atrzParam }) => {
   const [popVisible, setPopVisible] = useState(false);
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
@@ -22,18 +21,21 @@ const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick
 
   const setButtons = () => {
     let buttonsToRender;
+
+    const defaultButtons = ['print', 'docHist', 'list'];
+    const buttonIdToShow = {
+      'VTW00801': ['aprv', 'rjct', 'print', 'docHist', 'list'],
+      'VTW03702': ['print', 'cancel', 'reAtrz', 'docHist', 'list'],
+      'VTW03703': ['print', 'update', 'cancel', 'reAtrz', 'docHist', 'list'],
+      'VTW03704': ['reAtrz', 'list', 'docHist']
+    };
+
     if (onHandleAtrzTitle) {
       buttonsToRender = contents; // 기안 작성페이지의 경우 모든 contents 렌더
     } else {
-      const defaultButtons = ['reAtrz', 'print', 'docHist'];
-      const buttonIdToShow = {
-        'VTW00801': ['aprv', 'rjct', 'print', 'docHist'],
-        'VTW03701': [ 'print', 'docHist'],
-      };
-      const currentButtons = buttonIdToShow[sttsCd] || defaultButtons;
+      const currentButtons = ((refer === null || refer === undefined) && buttonIdToShow[sttsCd]) || defaultButtons;
       buttonsToRender = contents.filter(item => currentButtons.includes(item.id));
     }
-
     return buttonsToRender.map((item, index) => (
       <Button id={item.id} text={item.text} type={item.type} style={{ marginRight: '6px' }} 
        key={index} onClick={item.id === 'onAtrzLnPopup' ? onAtrzLnPopup : onClick} />

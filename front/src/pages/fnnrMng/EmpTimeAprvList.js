@@ -1,19 +1,27 @@
 import { useState, useEffect } from "react";
 import React from 'react';
+import {useLocation} from "react-router-dom";
 import PivotGrid, { Export, FieldChooser } from 'devextreme-react/pivot-grid';
 import PivotGridDataSource from 'devextreme/ui/pivot_grid/data_source';
 import  EmpTimeAprvListJson from "./EmpTimeAprvListJson.json";
 import ApiRequest from "../../utils/ApiRequest";
 import SearchPrjctCostSet from "../../components/composite/SearchPrjctCostSet";
 import CustomPivotGrid from "components/unit/CustomPivotGrid";
-
+import SearchInfoSet from "components/composite/SearchInfoSet";
 
 const EmpTimeAprvList = () => {
   const [values, setValues] = useState([]);
   const [param, setParam] = useState({});
-  const { keyColumn, queryId, tableColumns, searchParams  } = EmpTimeAprvListJson;
+  const location = useLocation();
+  const { keyColumn, queryId, tableColumns, searchParams ,searchInfo } = EmpTimeAprvListJson;
   const [ searchIsVal, setSearchIsVal] = useState(false);
-
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = date.getDate() > 15 ? date.getMonth() + 1 : date.getMonth();
+  const monthVal = month < 10 ? "0" + month : month;
+  const admin = location.state ? location.state.admin : undefined;
+  const aplyYm = admin != undefined ? admin.aplyYm : year + monthVal;
+  const aplyOdr = admin != undefined ? admin.aplyOdr : date.getDate() > 15 ? "1" : "2";
   useEffect(() => {
 
   }, []); 
@@ -28,8 +36,12 @@ const EmpTimeAprvList = () => {
 
   // 검색으로 조회할 때
   const searchHandle = async (initParam) => {
+    console.log("이거뭐야?",searchInfo)
     setParam({
       ...initParam,
+      yearItem : initParam?.year,
+      monthItem : initParam?.month,
+      aplyOdr: initParam?.aplyOdr,
       queryId: queryId,
     });
     setSearchIsVal(true);
@@ -110,8 +122,8 @@ return(
        
       </div>
       {/* <SearchPrjctCostSet callBack={searchHandle} props={searchParams} /> */}
-      <div className="wrap_search" style={{marginBottom: "20px"}}>
-                  <SearchPrjctCostSet callBack={searchHandle} props={searchParams}/>
+      <div className="wrap_search" style={{marginBottom: "20px", width: 700}}>
+                  <SearchInfoSet  callBack={searchHandle} props={searchInfo}/>
                   {/* <SearchOdrRange callBack={searchHandle} props={searchParams}/> */}
               </div>
               <CustomPivotGrid

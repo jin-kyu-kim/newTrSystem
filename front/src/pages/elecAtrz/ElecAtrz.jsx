@@ -13,15 +13,25 @@ const ElecAtrz = () => {
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const empId = userInfo.empId;
   const { keyColumn, queryId, countQueryId, barList, searchInfo, baseColumns } = elecAtrzJson.elecMain;
-  const [param, setParam] = useState({});
-  const [clickBox, setClickBox] = useState(null);
-  const [titleRow, setTitleRow] = useState([]);
-  const [totalCount, setTotalCount] = useState([]);
-  const [selectedList, setSelectedList] = useState([]);
+  const [ param, setParam ] = useState({});
+  const [ clickBox, setClickBox ] = useState(null);
+  const [ titleRow, setTitleRow ] = useState([]);
+  const [ totalCount, setTotalCount ] = useState([]);
+  const [ selectedList, setSelectedList ] = useState([]);
 
   const onNewReq = async () => {
     navigate("../elecAtrz/ElecAtrzForm");
   };
+
+  useEffect(() => {
+    setParam({
+      queryId: queryId,
+      empId: empId,
+      refer: null,
+      sttsCd: 'VTW00801'
+    })
+    setTitleRow(baseColumns.concat(elecAtrzJson.elecMain['progressApproval']))
+  }, []);
 
   useEffect(() => {
     const getAtrz = async () => {
@@ -99,11 +109,10 @@ const ElecAtrz = () => {
   };
 
   const sendDetail = (e, param) => {
-
     if (e.data.atrzDmndSttsCd === 'VTW03701') {  //임시저장
       navigate('/elecAtrz/ElecAtrzNewReq', { state: { formData: e.data, sttsCd: param.sttsCd, prjctId: e.data.prjctId } });
     } else {
-      navigate('/elecAtrz/ElecAtrzDetail', { state: { data: e.data, sttsCd: param.sttsCd, prjctId: e.data.prjctId } });
+      navigate('/elecAtrz/ElecAtrzDetail', { state: { data: e.data, sttsCd: param.sttsCd, prjctId: e.data.prjctId, refer: param.refer } });
     }
   };
 

@@ -107,6 +107,9 @@ const EmpVacation = () => {
     // 첨부파일데이터
     const fileUploaderRef = useRef(null);
 
+    // 화면로딩안내
+    const [loading, setLoading] = useState(false);
+
     // 세션설정
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const deptInfo = JSON.parse(localStorage.getItem("deptInfo"));
@@ -410,26 +413,28 @@ const EmpVacation = () => {
                     if (i == atrzLnAprvListResult.length - 1) {
                         const returnReslut = atrzLnAprv(jbttlCd, pushData);
 
-                        // 전자결재 승인권자목록정보
-                        setAtrzLnAprvListValue({
-                            approvalCode: "VTW00705",                   // 결재단계코드(승인)
-                            empId: returnReslut[0].empId,
-                            empFlnm: returnReslut[0].empFlnm,
-                            jbpsNm: returnReslut[0].jbpsNm,
-                            listEmpFlnm: returnReslut[0].atrzLnAprvNm,
-                        })
-
-                        // 전자결재 결재선승인권자목록정보
-                        setPopupAtrzValue(prevState => [
-                            ...prevState,
-                            {
-                                approvalCode: "VTW00705",               // 결재단계코드(승인)
+                        if(!popupAtrzValue.find(item => item.approvalCode == "VTW00705" && item.empId == returnReslut[0].empId)){
+                            // 전자결재 승인권자목록정보
+                            setAtrzLnAprvListValue({
+                                approvalCode: "VTW00705",                   // 결재단계코드(승인)
                                 empId: returnReslut[0].empId,
                                 empFlnm: returnReslut[0].empFlnm,
                                 jbpsNm: returnReslut[0].jbpsNm,
                                 listEmpFlnm: returnReslut[0].atrzLnAprvNm,
-                            }
-                        ])
+                            })
+    
+                            // 전자결재 결재선승인권자목록정보
+                            setPopupAtrzValue(prevState => [
+                                ...prevState,
+                                {
+                                    approvalCode: "VTW00705",               // 결재단계코드(승인)
+                                    empId: returnReslut[0].empId,
+                                    empFlnm: returnReslut[0].empFlnm,
+                                    jbpsNm: returnReslut[0].jbpsNm,
+                                    listEmpFlnm: returnReslut[0].atrzLnAprvNm,
+                                }
+                            ])
+                        }
                     }
                 }
             }
@@ -515,7 +520,7 @@ const EmpVacation = () => {
         let accountVcatnList = selectVcatnInfoValue.filter(item => item.vcatnFlag == "ACCOUNT")[0];    // 회계휴가정보
 
         // 경조휴가 첨부파일 확인
-        if((insertVcatnValue.vcatnTyCd == "VTW01207" || insertVcatnValue.vcatnTyCd == "VTW01208" || insertVcatnValue.vcatnTyCd == "VTW01209") && attachments.length < 1){
+        if(["VTW01207", "VTW01208", "VTW01209"].includes(insertVcatnValue.vcatnTyCd) && attachments.length < 1){
             errorMsg = "경조휴가 및 휴직 신청 시 첨부파일을 등록해주세요.";
         }
 
@@ -609,6 +614,7 @@ const EmpVacation = () => {
         Object.values(attachments).forEach((attachment) => formData.append("attachments", attachment));
 
         try {
+            setLoading(true);
             let axiosUrl = insertVcatnValue.vcatnTyCd == "VTW01209" ? "/boot/indvdlClm/insertEmpLeave" : "/boot/indvdlClm/insertVcatnAtrz";
 
             const response = await axios.post(axiosUrl, formData, {
@@ -622,7 +628,7 @@ const EmpVacation = () => {
                 elctrnAtrzId = uuid();
 
                 // 첨부파일초기화
-                if (insertVcatnValue.vcatnTyCd == "VTW01204" || insertVcatnValue.vcatnTyCd == "VTW01207" || insertVcatnValue.vcatnTyCd == "VTW01208" || insertVcatnValue.vcatnTyCd == "VTW01209") clearFiles();
+                if (["VTW01204", "VTW01207", "VTW01208", "VTW01209"].includes(insertVcatnValue.vcatnTyCd)) clearFiles();
 
                 // 화면초기화
                 setSearchVcatnListParam({ ...searchVcatnListParam, isSearch: true })
@@ -646,8 +652,9 @@ const EmpVacation = () => {
                 handleOpen(response.data);
             }
         } catch (error) {
-            console.log("insertVcatnAtrz_error: ", error);
             handleOpen("실패하였습니다.")
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -664,7 +671,7 @@ const EmpVacation = () => {
         if (param == "vcatnTyCd") {
 
             // 반차선택
-            if ((e == "VTW01202" || e == "VTW01203" || e == "VTW01205")) {
+            if (["VTW01202", "VTW01203", "VTW01205"].includes(e)) {
                 setNormalAtrz();
 
                 setInsertVcatnValue({
@@ -712,7 +719,7 @@ const EmpVacation = () => {
         // 휴가유형제외 선택
         else {
             // 반차선택시 휴가종료일자 설정
-            if (param == "vcatnBgngYmd" && (insertVcatnValue.vcatnTyCd == "VTW01202" || insertVcatnValue.vcatnTyCd == "VTW01203" || insertVcatnValue.vcatnTyCd == "VTW01205")) {
+            if (param == "vcatnBgngYmd" && ["VTW01202", "VTW01203", "VTW01205"].includes(insertVcatnValue.vcatnTyCd)) {
                 
                 // 주말 및 공휴일 확인
                 if (isSaturday(Moment(e).format("YYYY-MM-DD")) || isSunday(Moment(e).format("YYYY-MM-DD"))) {
@@ -746,7 +753,7 @@ const EmpVacation = () => {
             var daydiff = diff / (1000 * 60 * 60 * 24) + 1;
 
             // 휴가기간선택시 
-            if (insertVcatnValue.vcatnTyCd && (insertVcatnValue.vcatnTyCd == "VTW01201" || insertVcatnValue.vcatnTyCd == "VTW01204" || insertVcatnValue.vcatnTyCd == "VTW01207" || insertVcatnValue.vcatnTyCd == "VTW01208" || insertVcatnValue.vcatnTyCd == "VTW01209")) {
+            if (insertVcatnValue.vcatnTyCd && ["VTW01201", "VTW01204", "VTW01207", "VTW01208", "VTW01209"].includes(insertVcatnValue.vcatnTyCd)) {
                 for (let i = 0; i < daydiff; i++) {
                     let valiCheckDate = Moment((addDays(new Date(Moment(String(startDate)).format("YYYY-MM-DD")), i))).format("YYYY-MM-DD");
 
@@ -839,6 +846,11 @@ const EmpVacation = () => {
 
     return (
         <div>
+            {loading && (
+                <div className="loading-overlay">
+                    <div style={{fontWeight: "bold", transform: "translate(0px, 150px)"}}> 요청 중입니다... </div>
+                </div>
+            )}
             <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
                 <h1 style={{ fontSize: "30px" }}>휴가</h1>
             </div>

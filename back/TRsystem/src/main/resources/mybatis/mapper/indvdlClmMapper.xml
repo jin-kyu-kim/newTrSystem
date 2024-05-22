@@ -314,6 +314,9 @@
         <if test="state == 'approval' or state.equals('approval')">
             AND EMP.EMPNO IN ('VK0011')
         </if>
+        <if test="state == 'elecRef' or state.equals('elecRef')">
+            AND EMP.EMPNO IN ('VK1434', 'VK1453', 'VK1021')
+        </if>
         ORDER BY EMPNO
     </select>
 

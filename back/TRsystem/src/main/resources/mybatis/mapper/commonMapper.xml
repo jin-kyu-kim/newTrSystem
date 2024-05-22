@@ -12,6 +12,9 @@
 			 , CONCAT('[',PRJCT_CD_IDNTFR,'] ','[',(SELECT EMP_FLNM FROM EMP WHERE EMP_ID = PRJCT_MNGR_EMP_ID ),'] ',PRJCT_NM) AS PRJCT_TAG
 			 , PRJCT_STLE_CD
 		FROM PRJCT
+		<if test="bizSttsCd != null and !bizSttsCd.equals('')">
+			WHERE BIZ_STTS_CD = 'VTW00402'
+		</if>
 		ORDER BY PRJCT_STLE_CD DESC
 	</select>
 </mapper>

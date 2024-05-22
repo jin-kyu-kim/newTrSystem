@@ -1,11 +1,8 @@
 import { useEffect, useState, useRef } from "react"
 import { useLocation } from "react-router-dom";
-import { useModal } from "../../components/unit/ModalContext";
-
-import axios from "axios";
 
 import { SelectBox, Button, DateBox, NumberBox, Scheduler, Form } from "devextreme-react";
-import { Resource } from 'devextreme-react/scheduler';
+import { Resource, AppointmentDragging } from 'devextreme-react/scheduler';
 
 // 날짜관련
 // npm install date-fns
@@ -14,24 +11,11 @@ import { isSaturday, isSunday, startOfMonth, endOfMonth } from 'date-fns'
 // 날짜관련
 // npm install moment
 import Moment from "moment"
+
+import axios from "axios";
 import ApiRequest from "utils/ApiRequest";
+import { useModal } from "components/unit/ModalContext";
 import '../project/approval/ProjectHtCtAprvPop.css';
-
-
-/**
- * 2023.03.27(박지환)
- * [확인완료]
- * 
- * [확인필요]
- * 
- * [작업필요]
- * 1. 15일보다 크면 1차수, 15일보다 작으면 2차수 고정
- * 2. 15일보다 크면 시작일자 1일 종료일자 15일 고정, 
- *    15일보다 작으면 시작일자 16일 종료일자 마지막날짜 고정
- * 3. 년도/월 검색조건 선택 시 State로 관리하여 화면 렌더링 발생함
- *    Ref로 관리하여 화면 렌더링 차단
- * 4. 공휴일, 주말, 근무일자 데이터조회하여 변경
- */
 
 const token = localStorage.getItem("token");
 
@@ -270,11 +254,10 @@ const EmpWorkTime = () => {
                 selectData(searchPrjctIndvdlCtMmParam);
                 handleOpen("승인요청되었습니다.");
             } catch (error) {
-                console.log("insertPrjctMmAply_error: ", error);
+                handleOpen("승인요청에 실패했습니다.")
             }
         } else {
             handleOpen("승인요청 가능한 근무시간이 없습니다.");
-            return;
         }
     }
 
@@ -292,11 +275,10 @@ const EmpWorkTime = () => {
                 selectData(searchPrjctIndvdlCtMmParam);
                 handleOpen("승인취소되었습니다.");
             } catch (error) {
-                console.log("updatePrjctMmAply_error: ", error);
+                handleOpen("승인취소에 실패했습니다.")
             }
         } else {
             handleOpen("승인취소 가능한 근무시간이 없습니다.");
-            return;
         }
     }
 
@@ -422,11 +404,11 @@ const EmpWorkTime = () => {
 
         if (param.length > 0) {
             try {
-                const response = await axios.post("/boot/indvdlClm/insertPrjctMmAplyTemp", formData, {
-                    headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
-                });
+                const response = await axios.post("/boot/indvdlClm/insertPrjctMmAplyTemp", formData, { headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` }, });
+                selectData(searchPrjctIndvdlCtMmParam);
             } catch (error) {
-                console.log("insertPrjctMmTemp_error: ", error);
+                handleOpen("저장에 실패했습니다.");
+                setInsertWorkHourList(insertWorkHourList.filter(item => item.stateType != "temp"));
             }
         } else {
             handleOpen("근무시간을 입력해주세요.");
@@ -474,12 +456,10 @@ const EmpWorkTime = () => {
         formData.append("deletePrjctMmList", JSON.stringify(deleteWorkHourList));
 
         try {
-            const response = await axios.post("/boot/indvdlClm/deletePrjctMmAply", formData, {
-                headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
-            });
-            return;
+            const response = await axios.post("/boot/indvdlClm/deletePrjctMmAply", formData, { headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` }, });
+            if(deleteWorkHourList.length > 1) handleOpen ("삭제되었습니다.")
         } catch (error) {
-            console.log("deletePrjctMmTemp_error: ", error);
+            handleOpen("삭제에 실패했습니다.")
         }
     }
 
@@ -526,6 +506,11 @@ const EmpWorkTime = () => {
     /* devextreme 이벤트 컨트롤 */
     function onCellClick(e) {
         e.cancel = true;
+    }
+
+    /* devextreme 이벤트 컨트롤 */
+    function onDragStart(e){
+        e.cancel = true
     }
 
     return (
@@ -609,7 +594,7 @@ const EmpWorkTime = () => {
                 </div>
                 <div className="col-md-8">
                     <div style={{ display: "inline-block", float: "right" }}>
-                        <Button text="전체삭제" onClick={() => handleOpen("승인된 목록을 제외한 근무시간들이 삭제됩니다.\n삭제하시겠습니까?", onDeleteListClick)} />
+                        <Button text="전체삭제" onClick={() => { handleOpen("[승인], [결재중] 항목을 제외한 시간이 삭제됩니다.", onDeleteListClick) }} />
                     </div>
                 </div>
             </div>
@@ -680,6 +665,9 @@ const EmpWorkTime = () => {
                         <Resource
                             dataSource={resourcesData}
                             fieldExpr="atrzDmndSttsCd"
+                        />
+                        <AppointmentDragging
+                            onDragStart={onDragStart}
                         />
                     </Scheduler>
                 </div>
