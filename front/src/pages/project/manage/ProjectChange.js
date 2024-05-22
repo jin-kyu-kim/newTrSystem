@@ -316,7 +316,7 @@ const ProjectChange = () => {
           
           // 수행으로 수정
           if(bizSttsCd !== "VTW00401") {
-            handlePrjctBizStts("VTW00403");
+            handlePrjctBizStts("VTW00402");
           }
           
           // 임시저장으로 수정

@@ -26,7 +26,7 @@
       { "key": "aftrTotBgt", "value": "변경 후 매출액(원)", "width":"20%", "alignment": "center", "currency": true },
       { "key": "bgt", "value":"원가별집계(원)", "width": "20%", "alignment": "center","currency": true },
       { "key": "chgBgt", "value":"매출액 - 원가별집계(원)", "width": "20%", "alignment": "center","currency": true },
-      { "key": "rate", "value":"비율(%)", "width": "20%", "alignment": "center"}
+      { "key": "rate", "value":"비율(%)", "width": "20%", "alignment": "center", "rate": true}
   ]
      
   }
