@@ -368,14 +368,39 @@ public class ElecAtrzDomain {
 	public static int insertClmAtrzDtl(List<Map<String, Object>> paramList, String elctrnAtrzId) {
 	
 		int result = -1;
-		System.out.println(paramList);
+		
+		List<Map<String, Object>> insertList = new ArrayList<>();
+		Map<String, Object> tbNm = new HashMap<>();
+		
+		tbNm = paramList.get(0);
+		insertList.add(tbNm);
 		
 		for(int i = 1; i < paramList.size(); i++) {
-			paramList.get(i).put("elctrnAtrzId", elctrnAtrzId);
+			Map<String, Object> insertInfo = new HashMap<>();
+			
+			insertInfo.put("elctrnAtrzId", elctrnAtrzId);
+			insertInfo.put("dpstDmndYmd", String.valueOf(paramList.get(i).get("dpstDmndYmd")).equals("") ? null : paramList.get(i).get("dpstDmndYmd"));
+			insertInfo.put("dpstActno", String.valueOf(paramList.get(i).get("dpstActno")).equals("") ? null : paramList.get(i).get("dpstActno"));
+			insertInfo.put("rciptPblcnYmd", String.valueOf(paramList.get(i).get("rciptPblcnYmd")).equals("") ? null : paramList.get(i).get("rciptPblcnYmd"));
+			insertInfo.put("expensCd", String.valueOf(paramList.get(i).get("expensCd")).equals("") ? null : paramList.get(i).get("expensCd"));
+			insertInfo.put("dpstrFlnm", String.valueOf(paramList.get(i).get("dpstrFlnm")).equals("") ? null : paramList.get(i).get("dpstrFlnm"));
+			insertInfo.put("clmAmt", String.valueOf(paramList.get(i).get("clmAmt")).equals("") ? null : paramList.get(i).get("clmAmt"));
+			insertInfo.put("dtlUseDtls", String.valueOf(paramList.get(i).get("dtlUseDtls")).equals("") ? null : paramList.get(i).get("dtlUseDtls"));
+			insertInfo.put("ctStlmSeCd", String.valueOf(paramList.get(i).get("ctStlmSeCd")).equals("") ? null : paramList.get(i).get("ctStlmSeCd"));
+			insertInfo.put("vatInclsAmt", String.valueOf(paramList.get(i).get("vatInclsAmt")).equals("") ? null : paramList.get(i).get("vatInclsAmt"));
+			insertInfo.put("bankCd", String.valueOf(paramList.get(i).get("bankCd")).equals("") ? null : paramList.get(i).get("bankCd"));
+			insertInfo.put("taxBillPblcnYmd", String.valueOf(paramList.get(i).get("taxBillPblcnYmd")).equals("") ? null : paramList.get(i).get("taxBillPblcnYmd"));
+			insertInfo.put("cnptNm", String.valueOf(paramList.get(i).get("cnptNm")).equals("") ? null : paramList.get(i).get("cnptNm"));
+			insertInfo.put("clmPrpos", String.valueOf(paramList.get(i).get("clmPrpos")).equals("") ? null : paramList.get(i).get("clmPrpos"));
+			insertInfo.put("taxAmt", String.valueOf(paramList.get(i).get("taxAmt")).equals("") ? null : paramList.get(i).get("taxAmt"));
+			insertInfo.put("clmAtrzDtlSn", String.valueOf(paramList.get(i).get("clmAtrzDtlSn")).equals("") ? null : paramList.get(i).get("clmAtrzDtlSn"));
+
+			insertList.add(insertInfo);
 		}
 		
+		
 		try {
-			result = commonService.insertData(paramList);
+			result = commonService.insertData(insertList);
 		} catch (Exception e) {
 			return result;
 		}
