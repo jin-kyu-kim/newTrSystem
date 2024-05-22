@@ -18,6 +18,7 @@ const ElecAtrzDetail = () => {
     const location = useLocation();
     const detailData = location.state.data;
     const sttsCd = location.state.sttsCd;
+    const refer = location.state.refer;
     const prjctId = location.state.prjctId;
     const [ prjctData, setPrjctData ] = useState({});
     const [ atrzOpnn, setAtrzOpnn ] = useState([]);
@@ -538,6 +539,7 @@ const ElecAtrzDetail = () => {
                     atrzLnEmpList={atrzOpnn}
                     contents={header}
                     sttsCd={sttsCd}
+                    refer={refer}
                     formData={detailData}
                     prjctData={prjctData}
                     atrzParam={detailData}
@@ -553,7 +555,7 @@ const ElecAtrzDetail = () => {
                 계약 지급품의   VTW04914
                 ... TODO  그 외 
                 의 경우에는 컴포넌트 렌더링 */}
-            {(['VTW04901', 'VTW04907', 'VTW04908', 'VTW04909', 'VTW04910'].includes(detailData.elctrnAtrzTySeCd)) && (
+            {(['VTW04901', 'VTW04907', 'VTW04908', 'VTW04909', 'VTW04910', 'VTW04915'].includes(detailData.elctrnAtrzTySeCd)) && (
                 <ElecAtrzTabDetail
                     dtlInfo={dtlInfo}
                     detailData={detailData}
