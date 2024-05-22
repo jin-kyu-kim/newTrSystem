@@ -403,7 +403,7 @@ const EmpVcatnAltmntMng = () => {
                             <div className="col-md-4">
                                 <SelectBox
                                     placeholder=""
-                                    dataSource={[{ id: "N", value: "회계년도휴가" }, { id: "Y", value: "신규휴가" }]}
+                                    dataSource={[{ id: "N", value: "회계년도 기준 휴가" }, { id: "Y", value: "1년 미만 근속자 휴가" }]}
                                     value={selectValue ? selectValue.newVcatnYn : ""}
                                     valueExpr="id"
                                     displayExpr="value"
