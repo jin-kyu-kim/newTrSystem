@@ -3,7 +3,7 @@ import { FormControl, InputLabel, Select, MenuItem, TextField, Button, Grid, Tab
 import { DateBox } from "devextreme-react/date-box";
 import ApiRequest from "utils/ApiRequest";
 
-const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
+const ExpensInfo = ({ onSendData, prjctId, prjctData, data, sttsCd}) => {
 
     const [ctStlmSeCdList, setCtStlmSeCdList] = useState([]);
     const [bankCdList, setBankCdList] = useState([]);
@@ -68,7 +68,7 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
     const [forms, setForms] = useState([]);
 
     useEffect(() => {
-        if (data.atrzDmndSttsCd === "VTW03701") {
+        if (data.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407") {
             getTempData();
 
         } else if (data.selectedData) {

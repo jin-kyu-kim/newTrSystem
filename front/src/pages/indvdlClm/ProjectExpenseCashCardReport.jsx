@@ -9,8 +9,8 @@ const ProjectExpenseCashCardReport = ({basicInfo}) => {
     const [pivotGridConfig, setPivotGridConfig] = useState({
         fields: [
             {
-                caption: "프로젝트 명(코드)",
-                width: 80,
+                caption: "프로젝트명",
+                width: 10,
                 dataField: "prjctNmCd",
                 area: "row",
                 expanded: true,
@@ -79,7 +79,7 @@ const ProjectExpenseCashCardReport = ({basicInfo}) => {
         }
     
         try {
-            const response = await ApiRequest("/boot/financialAffairMng/retrieveCtData", param);
+            const response = await ApiRequest("/boot/indvdlClm/retrieveCtData", param);
         
             setPivotGridConfig({
                 ...pivotGridConfig,
@@ -92,35 +92,58 @@ const ProjectExpenseCashCardReport = ({basicInfo}) => {
 
     const dataSource = new PivotGridDataSource(pivotGridConfig);
 
+    const onCellPrepared = (e) => {
+
+        // row collapse block 상태일 때 화살표 아이콘 삭제
+        if(e.area === 'row' && e.cell.expanded === true){
+
+            const childNodes = e.cellElement.childNodes;
+            Array.from(childNodes).forEach(node => {    
+                if (node.classList.contains('dx-expand-icon-container')) {
+                    node.remove();
+                }
+            });
+
+            const children = e.cellElement.childNodes;
+            Array.from(children).forEach(node => {
+                if (node.classList.contains('dx-expand-icon-container')) {
+                    node.remove();
+                }
+            });
+
+        }
+    };
+
     return (
-    <div style={{ marginBottom: "20px" }}>
-        <PivotGrid
-            id="sales"
-            dataSource={dataSource}
-            allowSortingBySummary={true}
-            allowSorting={false}
-            allowFiltering={false}
-            allowExpandAll={false}
-            height={"60%"}
-            showBorders={true}
-            showRowTotals={true}
-            wordWrapEnabled={true}
-            >
-            <FieldPanel
-                showRowFields={true}
-                visible={true}
-                showTotals={false}
-                showColumnFields={false}
-                showDataFields={false}
-                showFilterFields={false}
-                allowFieldDragging={false}
+        <div style={{ marginBottom: "20px" }}>
+            <PivotGrid
+                id="sales"
+                dataSource={dataSource}
+                allowSortingBySummary={true}
                 allowSorting={false}
+                allowFiltering={false}
+                allowExpandAll={false}
+                height={"60%"}
+                showBorders={true}
+                showRowTotals={true}
                 wordWrapEnabled={true}
-            />
-            <FieldChooser enabled={false} />
-            <Scrolling mode="virtual" />
-        </PivotGrid>
-    </div>
+                onCellPrepared={onCellPrepared}
+                >
+                <FieldPanel
+                    showRowFields={true}
+                    visible={true}
+                    showTotals={false}
+                    showColumnFields={false}
+                    showDataFields={false}
+                    showFilterFields={false}
+                    allowFieldDragging={false}
+                    allowSorting={false}
+                    wordWrapEnabled={true}
+                />
+                <FieldChooser enabled={false} />
+                <Scrolling mode="virtual" />
+            </PivotGrid>
+        </div>
     )
 }
 export default ProjectExpenseCashCardReport;

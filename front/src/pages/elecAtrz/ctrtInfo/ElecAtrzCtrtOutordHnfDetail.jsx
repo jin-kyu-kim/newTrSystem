@@ -46,7 +46,7 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
   /*
     *상태코드에 따른 버튼 변경
     */
-    if(["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707"].includes(sttsCd)
+    if(["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW00801","VTW00802"].includes(sttsCd)
        || ["VTW04911","VTW04912","VTW04913","VTW04914",].includes(data.elctrnAtrzTySeCd)){
         tableColumns = tableColumns.filter(item => item.value !== '삭제');
 
@@ -109,11 +109,13 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
         if(sttsCd === "VTW03701") {
             getTempData();
         /* 전자결재 목록 조회 */
-        }else if(["VTW03702","VTW03703","VTW03704","VTW03705"].includes(sttsCd)) {
+        }else if(["VTW03702","VTW03703","VTW03704","VTW03705","VTW00801","VTW00802"].includes(sttsCd)) {
             getTempData();
         }
         /* 지급 조회 */
         else if(["VTW03405"].includes(sttsCd)){   
+            getTempData();
+        } else if(sttsCd === "VTW05407") {
             getTempData();
         }
     }, [data.ctrtElctrnAtrzId])
@@ -287,11 +289,12 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
                 summary={true}
                 summaryColumn={summaryColumn}
                 scrolling={true}
+                wordWrap={true}
             />
             }
 
             <div style={{ textAlign: "right", margin:"10px" }}>
-                {(!["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)) && (
+                {(!["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405","VTW00801","VTW00802"].includes(sttsCd)) && (
                         !["VTW04911","VTW04912","VTW04913","VTW04914",].includes(data.elctrnAtrzTySeCd) 
                     ) && (
                     <Button name="insert" onClick={()=>handlePopupVisible({name:"insert"})}>{ElecAtrzCtrtOutordHnfJson.insertButton}</Button>

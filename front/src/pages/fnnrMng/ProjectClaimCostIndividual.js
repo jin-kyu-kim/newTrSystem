@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Popup } from "devextreme-react";
-import { useNavigate } from "react-router-dom";
 
 import ApiRequest from '../../utils/ApiRequest';
 import CustomTable from "../../components/unit/CustomTable";
@@ -18,8 +17,6 @@ const ProjectClaimCostIndividual = ({ prjctId, prjctNm, startYmOdr, endYmOdr, em
   const [ctDetailValues, setCtDetailValues] = useState([]);
   const [mmPopupVisible, setMmPopupVisible] = useState(false);
   const [ctPopupVisible, setCtPopupVisible] = useState(false);
-
-  const navigate = useNavigate();
 
   useEffect(() => {
       getMMData();
