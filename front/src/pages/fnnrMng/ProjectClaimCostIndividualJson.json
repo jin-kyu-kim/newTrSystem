@@ -10,7 +10,7 @@
     "ctKeyColumn": "expensCd",
     "mmColumns":
 	[
-        { "key": "deptNm", "value": "소속", "alignment" : "left" },
+        { "key": "deptNm", "value": "소속", "width": "18%", "alignment" : "left" },
         { "key": "empFlnm", "value": "성명", "alignment" : "center"  },
         { "key": "startAplyOdr", "value": "시작차수", "alignment" : "center" },
         { "key": "endAplyOdr", "value": "종료차수", "alignment" : "center" },
