@@ -77,7 +77,11 @@ const GridRows = ({ columns, onClick, handleCheckBoxChange, checkBoxValue }) => 
 
     // 날짜 형식을 변환하는 함수
     const formatDate = (dateStr) => {
-      return `${dateStr.substring(0, 4)}-${dateStr.substring(4, 6)}-${dateStr.substring(6, 8)}`;
+      if(dateStr.length>6){
+        return `${dateStr.substring(0, 4)}-${dateStr.substring(4, 6)}-${dateStr.substring(6, 8)}`;
+      }else{
+        return `${dateStr.substring(0, 4)}-${dateStr.substring(4, 6)}`;
+      }
     };
     
     const DateCell = (data) => {
