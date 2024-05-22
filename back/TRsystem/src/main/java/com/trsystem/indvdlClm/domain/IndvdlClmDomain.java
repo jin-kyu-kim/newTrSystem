@@ -342,43 +342,49 @@ public class IndvdlClmDomain {
 
     /* =================================박지환_작업================================= */
     // 프로젝트근무시간임시저장
-    public static List<Map<String, Object>> insertPrjctMmAplyTemp
-    (List<Map<String, Object>> insertPrjctMmTempListValue) {
+    @Transactional
+    public static String insertPrjctMmAplyTemp(List<Map<String, Object>> insertPrjctMmTempListValue) {
         // PRJCT_INDVDL_CT_MM(프로젝트개인비용MM) INSERT/UPDATE
         for (Map<String, Object> insertPrjctMmTempMap : insertPrjctMmTempListValue) {
             Map<String, Object> mergePrjctIndvdlCtMmMap = new HashMap<>();
             mergePrjctIndvdlCtMmMap = insertPrjctMmTempMap;
             mergePrjctIndvdlCtMmMap.put("queryId", "indvdlClmMapper.mergePrjctIndvdlCtMmStrg");
-            List<Map<String, Object>> mergePrjctIndvdlCtMmData = commonService.queryIdSearch(mergePrjctIndvdlCtMmMap);
+            mergePrjctIndvdlCtMmMap.put("state", "INSERT");
+            commonService.queryIdDataControl(mergePrjctIndvdlCtMmMap);
         }
-
 
         for (Map<String, Object> insertPrjctMmTempMap : insertPrjctMmTempListValue) {
             Map<String, Object> insertPrjctMmAplyMap = new HashMap<>();
             insertPrjctMmAplyMap = insertPrjctMmTempMap;
             insertPrjctMmAplyMap.put("queryId", "indvdlClmMapper.insertPrjctMmAplyStrg");
-            List<Map<String, Object>> insertPrjctMmAplyResult = commonService.queryIdSearch(insertPrjctMmAplyMap);
+            insertPrjctMmAplyMap.put("state", "INSERT");
+            commonService.queryIdDataControl(insertPrjctMmAplyMap);
 
             Map<String, Object> insertPrjctMmAtrzMap = new HashMap<>();
             insertPrjctMmAtrzMap = insertPrjctMmTempMap;
             insertPrjctMmAtrzMap.put("queryId", "indvdlClmMapper.insertPrjctMmAtrzStrg");
-            List<Map<String, Object>> insertPrjctMmAtrzResult = commonService.queryIdSearch(insertPrjctMmAtrzMap);
+            insertPrjctMmAtrzMap.put("state", "INSERT");
+            commonService.queryIdDataControl(insertPrjctMmAtrzMap);
         }
+
         return null;
     }
 
     // 프로젝트근무시간삭제
+    @Transactional
     public static List<Map<String, Object>> deletePrjctMmAply(List<Map<String, Object>> deletePrjctMmListValue) {
         for (Map<String, Object> deletePrjctMmAtrzParam : deletePrjctMmListValue) {
             Map<String, Object> deletePrjctMmAtrzMap = new HashMap<>();
             deletePrjctMmAtrzMap = deletePrjctMmAtrzParam;
             deletePrjctMmAtrzMap.put("queryId", "indvdlClmMapper.deletePrjctMmAtrz");
-            List<Map<String, Object>> deletePrjctMmAtrzResult = commonService.queryIdSearch(deletePrjctMmAtrzMap);
+            deletePrjctMmAtrzMap.put("state", "DELETE");
+            commonService.queryIdDataControl(deletePrjctMmAtrzMap);
 
             Map<String, Object> deletePrjctMmAplyMap = new HashMap<>();
             deletePrjctMmAplyMap = deletePrjctMmAtrzParam;
             deletePrjctMmAplyMap.put("queryId", "indvdlClmMapper.deletePrjctMmAply");
-            List<Map<String, Object>> deletePrjctMmAplyResult = commonService.queryIdSearch(deletePrjctMmAplyMap);
+            deletePrjctMmAplyMap.put("state", "DELETE");
+            commonService.queryIdDataControl(deletePrjctMmAplyMap);
         }
 
         return null;
@@ -386,16 +392,15 @@ public class IndvdlClmDomain {
 
 
     // 프로젝트근무시간승인요청
-    public static List<Map<String, Object>> insertPrjctMmAply
-    (List<Map<String, Object>> insertWorkHourListValue) {
-        int result;
-
+    @Transactional
+    public static List<Map<String, Object>> insertPrjctMmAply (List<Map<String, Object>> insertWorkHourListValue) {
         for (Map<String, Object> updateWorkHourMap : insertWorkHourListValue) {
             Map<String, Object> updatePrjctMmAtrzMap = new HashMap<>();
             updatePrjctMmAtrzMap = updateWorkHourMap;
             updatePrjctMmAtrzMap.put("queryId", "indvdlClmMapper.retrievePrjctMmSttsInq");
             updatePrjctMmAtrzMap.put("atrzDmndSttsCd", "VTW03702");
-            List<Map<String, Object>> updatePrjctMmAtrzResult = commonService.queryIdSearch(updatePrjctMmAtrzMap);
+            updatePrjctMmAtrzMap.put("state", "UPDATE");
+            commonService.queryIdDataControl(updatePrjctMmAtrzMap);
         }
 
         return null;
@@ -412,18 +417,6 @@ public class IndvdlClmDomain {
             updatePrjctMmAtrzMap.put("atrzDmndSttsCd", "VTW03701");
             List<Map<String, Object>> updatePrjctMmAtrzResult = commonService.queryIdSearch(updatePrjctMmAtrzMap);
         }
-
-//        for(int i = 0; i < params.size(); i++){
-//            Map<String, Object> updatePrjctMmAtrzMap = new HashMap<>();
-//            updatePrjctMmAtrzMap = params.get(i);
-//            updatePrjctMmAtrzMap.put("queryId", "indvdlClmMapper.retrievePrjctMmSttsInq");
-//            List<Map<String, Object>> updatePrjctMmAtrzResult = commonService.queryIdSearch(updatePrjctMmAtrzMap);
-//        }
-//
-//        Map<String, Object> updatePrjctIndvdlCtMmMap = new HashMap<>();
-//        updatePrjctIndvdlCtMmMap.putAll(params.get(0));
-//        updatePrjctIndvdlCtMmMap.put("queryId", "indvdlClmMapper.updatePrjctIndvdlCtMm");
-//        List<Map<String, Object>> updatePrjctIndvdlCtMmResult = commonService.queryIdSearch(updatePrjctIndvdlCtMmMap);
 
         return null;
     }
