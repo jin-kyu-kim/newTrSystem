@@ -278,7 +278,7 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
 
     return (
         <div>
-            {(["VTW03701","VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405", "VTW05407"].includes(sttsCd)) 
+            {(["VTW03701","VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405","VTW00801","VTW00802","VTW05407"].includes(sttsCd)) 
                 && (["VTW04911","VTW04912","VTW04913","VTW04914"].includes(detailData.elctrnAtrzTySeCd)) 
                 &&
                  (
