@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -55,8 +56,9 @@ public class IndvdlClmController {
 
     /* =================================박지환_작업================================= */
     // 프로젝트근무시간임시저장
+    @Transactional
     @PostMapping(value = "/boot/indvdlClm/insertPrjctMmAplyTemp" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public List<Map<String, Object>> insertPrjctMmAplyTemp (@RequestPart(required = false) String insertPrjctMmTempList) throws JsonProcessingException {
+    public String insertPrjctMmAplyTemp (@RequestPart(required = false) String insertPrjctMmTempList) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
 
         List<Map<String, Object>> insertPrjctMmTempListValue = new ArrayList<>();
@@ -67,6 +69,7 @@ public class IndvdlClmController {
     }
 
     // 프로젝트근무시간삭제
+    @Transactional
     @PostMapping(value = "/boot/indvdlClm/deletePrjctMmAply" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public List<Map<String, Object>> deletePrjctMmAply (@RequestPart(required = false) String deletePrjctMmList) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
@@ -79,6 +82,7 @@ public class IndvdlClmController {
     }
 
     // 프로젝트근무시간승인요청
+    @Transactional
     @PostMapping(value = "/boot/indvdlClm/insertPrjctMmAply" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public List<Map<String, Object>> insertPrjctMmAply (@RequestPart(required = false) String insertWorkHourList) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
