@@ -14,27 +14,13 @@ const ElectGiveAtrzClm = ({ detailData, sttsCd, onSendData}) => {
     // const [labelValue, setLabelValue] = useState(ElectGiveAtrzClmJson.labelValue);
     const labelValue = ElectGiveAtrzClmJson.labelValue;
 
-    // console.log("detailData clm 이라고!", detailData)
-    // console.log("sttsCd", sttsCd)
-    // console.log("formData clm 이라고", formData)
-
-    // useEffect(() => {
-    //     // 객체를 새로 생성하여 불변성을 유지
-    //     const newLabelValue = {...labelValue};
-        
-        if (!formData || formData.atrzDmndSttsCd === "VTW03701") { // 임시저장
-            labelValue.giveYmd.param.queryId.ctrtElctrnAtrzId = detailData.ctrtElctrnAtrzId;
-        } else {
-            labelValue.giveYmd.param.queryId.ctrtElctrnAtrzId = formData.ctrtElctrnAtrzId;
-        }
-
-    //     setLabelValue(newLabelValue); // 상태 업데이트
-    // }, [detailData, formData]);
-
-    // useEffect(()=>{
-    //     console.log("labelValue", labelValue)
-    // },[labelValue])
-
+    if (!formData || formData.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407") { // 임시저장
+        labelValue.giveYmd.param.queryId.ctrtElctrnAtrzId = detailData.ctrtElctrnAtrzId;
+        labelValue.giveYmd.param.queryId.ctrtTyCd = ctrtTyCd
+    } else {
+        labelValue.giveYmd.param.queryId.ctrtElctrnAtrzId = formData.ctrtElctrnAtrzId;
+        labelValue.giveYmd.param.queryId.ctrtTyCd = ctrtTyCd
+    }
     
     /* readOnly 조절 */
     let controlReadOnly = false;
@@ -45,7 +31,7 @@ const ElectGiveAtrzClm = ({ detailData, sttsCd, onSendData}) => {
 
 
     useEffect(()=>{
-        if(!formData || formData.atrzDmndSttsCd === "VTW03701"){
+        if(!formData || formData.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407"){
             const getCtrtInfo = async () => {
                     const param = [{ tbNm: "CTRT_GIVE_ATRZ" }, { elctrnAtrzId: formData? formData.elctrnAtrzId : detailData.elctrnAtrzId }] 
                     try {

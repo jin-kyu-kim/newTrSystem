@@ -113,6 +113,8 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
         }
         else if(["VTW03405"].includes(sttsCd)){   //지급
             getTempData();
+        } else if(sttsCd === "VTW05407") {
+            getTempData();
         }
     }, [data.ctrtElctrnAtrzId])
 

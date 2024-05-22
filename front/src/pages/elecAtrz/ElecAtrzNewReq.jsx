@@ -116,8 +116,9 @@ const ElecAtrzNewReq = () => {
 
         /**
          * 상태 코드가 임시저장일 때 실행될 코드
+         * 상태 코드가 재기안 일때 실행될 코드
          */
-        if(sttsCd === "VTW03701") {
+        if(sttsCd === "VTW03701" || sttsCd === "VTW05407") {
 
             setAtrzParam(atrzParam => ({
                 ...atrzParam,
@@ -244,8 +245,7 @@ const ElecAtrzNewReq = () => {
             }
         }
 
-        if(sttsCd === "VTW03701") {
-
+        if(sttsCd === "VTW03701" || sttsCd === "VTW05407") {
             getTempAtrzLn();
         } else {
             
@@ -306,11 +306,11 @@ const ElecAtrzNewReq = () => {
         /**
          * 전자결재 & 첨부파일 저장
          */
-
+        
         const insertParam = {
             param,
             atrzDmndSttsCd: stts,
-            elctrnAtrzId: data.elctrnAtrzId !== undefined ? data.elctrnAtrzId : uuid(),
+            elctrnAtrzId: data.elctrnAtrzId !== undefined && sttsCd === "VTW03701" ? data.elctrnAtrzId : uuid(),
             prjctId: prjctId,
             elctrnAtrzTySeCd: data.elctrnAtrzTySeCd,
             regDt: date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0],
@@ -325,15 +325,24 @@ const ElecAtrzNewReq = () => {
             const token = localStorage.getItem("token");
 
             if(response){
-                // 첨부파일 저장
+                // 비용청구에서 넘어온 Data Insert 경우
+                if(formData.selectedData){
+                    const updateRows = formData.selectedData.map(data => {
+                        ApiRequest('/boot/common/commonUpdate', [
+                            { tbNm: "CARD_USE_DTLS" },
+                            { prjctCtInptPsbltyYn: "N" },
+                            { lotteCardAprvNo: data.lotteCardAprvNo }
+                        ]);
+                    });
+                    Promise.all(updateRows).then(res => {
+                    }).catch(error => {
+                        console.error("error:", error);
+                    });
+                }
 
-                /**
-                 * Todo
-                 * 임시저장을 가져와서 온 경우 : 첨부파일 아이디가 존재함..? 이걸 수정?
-                 */
                 const formDataAttach = new FormData();      
                 formDataAttach.append("tbNm", JSON.stringify({tbNm : insertTable}));
-                if(data.atchmnflId !== undefined){
+                if(data.atchmnflId !== undefined && sttsCd === "VTW03701"){
                     formDataAttach.append("data", JSON.stringify({atchmnflId : data.atchmnflId}));
                 } else {
                     formDataAttach.append("data", JSON.stringify({atchmnflId : uuid()}));
@@ -383,7 +392,7 @@ const ElecAtrzNewReq = () => {
      * 목록 버튼 클릭시 전자결재 서식 목록으로 이동
      */
     const toAtrzNewReq = () => {
-        if(sttsCd === "VTW03701") {
+        if(["VTW03701","VTW03702","VTW03703","VTW03704","VTW00801","VTW00802","VTW05407"].includes(sttsCd)) {
             navigate("../elecAtrz/ElecAtrz", {state: {prjctId: prjctId}});
         }else if(sttsCd === "VTW03405"){    
             navigate("../elecAtrz/ElecGiveAtrz", {state: {prjctId: prjctId, formData:formData}});
@@ -464,6 +473,7 @@ const ElecAtrzNewReq = () => {
                     prjctData={prjctData}
                     formData={formData}
                     atrzParam={atrzParam}
+                    sttsCd={sttsCd}
                 />
                 <div dangerouslySetInnerHTML={{ __html: formData.docFormDc }} />
                     {["VTW04909","VTW04910"].includes(formData.elctrnAtrzTySeCd) && !["VTW03405"].includes(formData.docSeCd) &&   //VTW04909: 외주업체 계약, VTW04910: 재료비 계약
@@ -480,7 +490,7 @@ const ElecAtrzNewReq = () => {
                     }
                     {["VTW04907"].includes(formData.elctrnAtrzTySeCd) &&    //VTW04907: 비용사용(청구,출장비청구)
                     <>
-                        <ExpensInfo onSendData={handleChildData} prjctId={prjctId} data={data} prjctData={prjctData}/>
+                        <ExpensInfo onSendData={handleChildData} prjctId={prjctId} data={data} prjctData={prjctData} sttsCd={sttsCd}/>
                     </>
                     }
                     {["VTW04914"].includes(formData.elctrnAtrzTySeCd) && ["VTW04909","VTW04910","VTW04908"].includes(ctrtTyCd)&& prjctData && //VTW04914: 외주업체/재료비 지급

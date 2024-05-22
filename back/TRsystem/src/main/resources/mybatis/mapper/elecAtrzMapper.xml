@@ -120,6 +120,9 @@
 					<when test="sttsCd != null and sttsCd.equals('VTW03701')">
 						NULL AS ATRZ_STTS_CD_NM,
 					</when>
+					<when test="sttsCd != null and sttsCd.equals('VTW05407')">
+						NULL AS ATRZ_STTS_CD_NM,
+					</when>
 					<otherwise>
 						cd2.CD_NM AS ATRZ_STTS_CD_NM,
 					</otherwise>
@@ -127,7 +130,8 @@
 				e.EMP_FLNM,
 				(SELECT CD_NM FROM CD WHERE CD_VALUE = e.JBPS_CD) JBPS_NM,
 				NULL AS LIST_EMP_FLNM,
-				CASE WHEN (ln.APRV_YMD IS NOT NULL OR ln.RJCT_YMD IS NOT NULL) THEN DATE_FORMAT(ln.MDFCN_DT, '%Y.%m.%d %H:%i:%s')
+				CASE WHEN #{sttsCd} = 'VTW05407' THEN ''
+					 WHEN (ln.APRV_YMD IS NOT NULL OR ln.RJCT_YMD IS NOT NULL) THEN DATE_FORMAT(ln.MDFCN_DT, '%Y.%m.%d %H:%i:%s')
 					 ELSE ''
 				 END AS MDFCN_DT,
 				ln.RJCT_PRVONSH

@@ -4,7 +4,7 @@ import { DateBox } from "devextreme-react/date-box";
 import ApiRequest from "utils/ApiRequest";
 import { useCookies } from "react-cookie";
 
-const ExpensInfo = ({onSendData, prjctId, prjctData, data}) => {
+const ExpensInfo = ({ onSendData, prjctId, prjctData, data, sttsCd}) => {
 
     const [ ctStlmSeCdList, setCtStlmSeCdList ] = useState([]);
     const [ bankCdList, setBankCdList ] = useState([]);
@@ -76,9 +76,7 @@ const ExpensInfo = ({onSendData, prjctId, prjctData, data}) => {
     const [forms, setForms] = useState([]);
 
     useEffect(() => {
-
-        if(data.atrzDmndSttsCd === "VTW03701") {
-            console.log("임시저장")
+        if (data.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407") {
             getTempData();
         } else {
             setForms([

@@ -31,8 +31,8 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd, ctrtTyCd}) =
     /*
     *상태코드에 따른 버튼 변경
     */
-    if(["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)
-        || data.elctrnAtrzTySeCd === "VTW04914"){
+    if(["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd) // 입력이 불가능한 상태로 만드는 것. 취소결재 만들때는 필요할듯
+        || ["VTW04911","VTW04912","VTW04913","VTW04914",].includes(data.elctrnAtrzTySeCd)){
         tableColumns = tableColumns.filter(item => item.value !== '삭제');
 
         tableColumns = tableColumns.map((item) => {
@@ -61,6 +61,8 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd, ctrtTyCd}) =
         }else if(["VTW03702","VTW03703","VTW03704","VTW03705"].includes(sttsCd)) {
             getTempData();
         }else if(["VTW03405"].includes(sttsCd)){   //지급
+            getTempData();
+        }else if(sttsCd === "VTW05407") { // 재기안
             getTempData();
         }
     }, [data.ctrtElctrnAtrzId])
@@ -235,7 +237,7 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd, ctrtTyCd}) =
         <div className="elecAtrzNewReq-ctrtInfo">
             <div style={{ textAlign: "right", marginBottom:"10px" }}>
                 {(!["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)) && (
-                    data.elctrnAtrzTySeCd !=="VTW04914" 
+                    !["VTW04911","VTW04912","VTW04913","VTW04914",].includes(data.elctrnAtrzTySeCd) // 취소 시 수정
                 ) && (
                 <Button name="insert" onClick={()=>handlePopupVisible({name:"insert"})}>{insertButton}</Button>
                 )}
