@@ -25,10 +25,10 @@ const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick
     if (onHandleAtrzTitle) {
       buttonsToRender = contents; // 기안 작성페이지의 경우 모든 contents 렌더
     } else {
-      const defaultButtons = ['print', 'docHist'];
+      const defaultButtons = ['reAtrz', 'print', 'docHist'];
       const buttonIdToShow = {
         'VTW00801': ['aprv', 'rjct', 'print', 'docHist'],
-        'VTW03701': ['reAtrz', 'print', 'docHist'],
+        'VTW03701': [ 'print', 'docHist'],
       };
       const currentButtons = buttonIdToShow[sttsCd] || defaultButtons;
       buttonsToRender = contents.filter(item => currentButtons.includes(item.id));
@@ -54,7 +54,7 @@ const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick
             <tr>
               <td style={{fontWeight: 'bold'}}>문서번호</td>
               <td> : </td>
-              <td>{formData.atrzDmndSttsCd === "VTW03701" ? "" : formData.elctrnAtrzDocNo}</td>
+              <td>{formData.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407" ? "" : formData.elctrnAtrzDocNo}</td>
             </tr>
             <tr>
               <td style={{fontWeight: 'bold'}}>프로젝트</td>
@@ -71,7 +71,7 @@ const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick
             <tr>
               <td style={{fontWeight: 'bold'}}>기안일자</td>
               <td> : </td>
-              <td>{formData.atrzDmndSttsCd === "VTW03701" ? "" : formData.regDt}</td>
+              <td>{formData.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407" ? "" : formData.regDt}</td>
             </tr>
           </table>
         </div>

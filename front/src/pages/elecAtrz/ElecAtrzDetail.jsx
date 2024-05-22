@@ -47,6 +47,8 @@ const ElecAtrzDetail = () => {
                 break;
             case "docHist": //console.log("문서이력 클릭");
                 break;
+            case "reAtrz": onReReq();
+                break;
             default:
                 break;
         }
@@ -518,6 +520,17 @@ const ElecAtrzDetail = () => {
     useEffect(()=>{
         
     },[data])
+
+    /**
+     * 재기안: VTW05407
+     */
+    const onReReq = async () => {
+
+        console.log(detailData)
+        navigate('/elecAtrz/ElecAtrzNewReq', { state: { formData: detailData, sttsCd: "VTW05407", prjctId: detailData.prjctId } });
+        // electrn
+
+    }
 
     return (
         <div className="container" style={{ marginTop: "10px" }}>

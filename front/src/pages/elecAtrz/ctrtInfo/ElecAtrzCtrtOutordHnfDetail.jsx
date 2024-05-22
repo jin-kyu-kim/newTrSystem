@@ -115,6 +115,8 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
         /* 지급 조회 */
         else if(["VTW03405"].includes(sttsCd)){   
             getTempData();
+        } else if(sttsCd === "VTW05407") {
+            getTempData();
         }
     }, [data.ctrtElctrnAtrzId])
 
