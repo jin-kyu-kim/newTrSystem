@@ -104,10 +104,13 @@
       {"key": "rm", "value": "비고"}
     ],
     "header": [
+      { "text": "출력", "id": "print", "type": "success" },
+      { "text": "결재변경", "id": "update", "type": "default" },
+      { "text": "결재취소", "id": "cancel", "type": "danger" },
+      { "text": "재기안", "id": "reAtrz", "type": "default" },
       { "text": "승인", "id": "aprv", "type": "default" },
       { "text": "반려", "id": "rjct", "type": "danger" },
-      { "text": "재기안", "id": "reAtrz", "type": "default" },
-      { "text": "출력", "id": "print", "type": "success" },
+      { "text": "목록", "id": "list", "type": "normal" },
       { "text": "문서이력", "id": "docHist", "type": "normal" }
     ],
     "queryId": "elecAtrzMapper.retrieveAtrzLn",
