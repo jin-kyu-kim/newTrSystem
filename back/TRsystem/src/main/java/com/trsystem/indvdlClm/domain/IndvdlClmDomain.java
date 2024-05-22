@@ -904,7 +904,7 @@ public class IndvdlClmDomain {
         insertElctrnAtrzMapValue.put("regEmpId", insertDataMapValue.get("empId"));
         insertElctrnAtrzMapValue.put("mdfcnEmpId", insertDataMapValue.get("empId"));
         insertElctrnAtrzMapValue.put("elctrnAtrzTySeCd", "VTW04915");
-        insertElctrnAtrzMapValue.put("atrzFormDocId", "9632d577-f0bd-11ee-9b25-000c2956283f");
+        insertElctrnAtrzMapValue.put("atrzFormDocId", "901c0b88-21b9-d716-b2c2-c1f7c2b10fc4");
         insertElctrnAtrzMapValue.put("elctrnAtrzDocNo", refSolYear + "-15-" + (Integer.parseInt(String.valueOf(selectElctrnAtrzResult.size())) + 1));
         insertElctrnAtrzMapValue.put("rtrcnElctrnAtrzId", insertDataMapValue.get("rtrcnElctrnAtrzId"));
 
