@@ -796,6 +796,7 @@
 		   AND pma.PRJCT_ID = #{prjctId}
 		   AND pma.APLY_YM = #{aplyYm}
 		   AND pma.APLY_ODR = #{aplyOdr}
+           AND pmat.ATRZ_DMND_STTS_CD NOT IN ('VTW03701', 'VTW03708')
        <if test="empId != null">
             <if test="!empId.equals('')">
                 AND pma.EMP_ID = #{empId}
