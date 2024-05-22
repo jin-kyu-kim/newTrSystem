@@ -138,7 +138,6 @@ const ProjectExpenseCard = (props) => {
         }
         setPopVisible(true);
     };
-
     const onPopHiding = () => { setPopVisible(false); };
 
     const cellRenderConfig = {

@@ -226,7 +226,7 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
                 item.hnfCtrtDtlMm.forEach(mmItem => {
                     
                     acc[groupKey].mm += mmItem.mm;
-                    acc[groupKey].total += (mmItem.entrpsGiveCtrtAmt?mmItem.entrpsGiveCtrtAmt:0)+(mmItem.indvdlGiveCtrtAmt);
+                    acc[groupKey].total += (mmItem.entrpsGiveCtrtAmt || 0)+(mmItem.indvdlGiveCtrtAmt || 0);
                     if (!acc[groupKey][`mm-${mmItem.id}`]) {
                         acc[groupKey][`mm-${mmItem.id}`] = 0; 
                     }
@@ -237,9 +237,9 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
                         acc[groupKey][`indvcash-${mmItem.id}`] = 0; 
                     }
                     acc[groupKey][`mm-${mmItem.id}`] += mmItem.mm;
-                    acc[groupKey][`indvcash-${mmItem.id}`] += mmItem.indvdlGiveCtrtAmt;
+                    acc[groupKey][`indvcash-${mmItem.id}`] += mmItem.indvdlGiveCtrtAmt || 0 ;
                     if(mmItem.entrpsGiveCtrtAmt){
-                        acc[groupKey][`cash-${mmItem.id}`] += mmItem.entrpsGiveCtrtAmt;
+                        acc[groupKey][`cash-${mmItem.id}`] += mmItem.entrpsGiveCtrtAmt || 0;
                     }
                     
                 });

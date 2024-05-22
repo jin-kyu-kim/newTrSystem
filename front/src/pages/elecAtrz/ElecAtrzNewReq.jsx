@@ -322,7 +322,20 @@ const ElecAtrzNewReq = () => {
             const token = localStorage.getItem("token");
 
             if(response){
-                // 첨부파일 저장
+                // 비용청구에서 넘어온 Data Insert 경우
+                if(formData.selectedData){
+                    const updateRows = formData.selectedData.map(data => {
+                        ApiRequest('/boot/common/commonUpdate', [
+                            { tbNm: "CARD_USE_DTLS" },
+                            { prjctCtInptPsbltyYn: "N" },
+                            { lotteCardAprvNo: data.lotteCardAprvNo }
+                        ]);
+                    });
+                    Promise.all(updateRows).then(res => {
+                    }).catch(error => {
+                        console.error("error:", error);
+                    });
+                }
 
                 /**
                  * Todo

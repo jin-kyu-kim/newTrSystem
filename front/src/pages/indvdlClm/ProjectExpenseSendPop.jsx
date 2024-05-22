@@ -9,7 +9,8 @@ const ProjectExpenseSendPop = ({ visible, onPopHiding, selectedItem, btnName }) 
         const formData = {
             selectedData: selectedItem,
             elctrnAtrzTySeCd: 'VTW04907',
-            gnrlAtrzTtl: btnNm
+            gnrlAtrzTtl: btnNm,
+            atrzFormDocId: btnNm === '경비 청구' ? '2d910674-132a-11ef-bf20-02a5fafa82da' : '2d911d83-132a-11ef-bf20-02a5fafa82da'
         }
         navigate('/elecAtrz/ElecAtrzNewReq', {state: {prjctId: selectedItem[0]?.prjctId, formData: formData}})
     }

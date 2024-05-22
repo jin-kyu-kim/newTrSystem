@@ -44,7 +44,7 @@ const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdr, bg
       { prjctId: prjctId,
         bgtMngOdr: bgtMngOdrTobe,
         expensCd: "VTW04501&VTW04528",
-        useYm : ctrtYmdPrarm+"&"+stbleEndYmdPrarm,  
+        useYm : ctrtYmdPrarm.replace("-","")+"&"+stbleEndYmdPrarm.replace("-",""),  
       }, 
     ];
 

@@ -241,7 +241,7 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
         <div className="container" style={mainRightContainerStyle}>
           <div className="container" style={tableDetailStyle}>
             <p><strong>{orderWorkBgngMm}-{flagOrder}차수 TR입력 현황 </strong></p>
-            <CustomTable  keyColumn={trAplyKeyColumn}  columns={trAplyTableColumns}  values={trAplyValues}  onCellClick={onCellClick} />
+            <CustomTable  keyColumn="mdSum"  columns={trAplyTableColumns}  values={trAplyValues}  onCellClick={onCellClick} />
         </div>
           
 {/* ----------------------------------결제 신청 현황 ------------------------------------------------*/}

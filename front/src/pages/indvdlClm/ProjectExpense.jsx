@@ -14,7 +14,6 @@ const ProjectExpense = () => {
     const { ExpenseInfo, keyColumn, ctAplyTableColumns, elcKeyColumn, columnCharge, buttonsConfig,
         aplyAndAtrzCtQueryId, dmndSttsQueryId, groupingColumn, groupingData, searchInfo } = ProjectExpenseJson.ProjectExpenseMain;
     const [ index, setIndex ] = useState(0);
-    const [ loading, setLoading ] = useState(false);
     const [ atrzDmndSttsCnt, setAtrzDmndSttsCnt ] = useState({}); // 상태코드별 데이터 개수
     const [ indivdlList, setIndivdlList ] = useState([]); // 차수 청구내역 (table1)
     const [ ctAply, setCtAply ] = useState([]); // 차수 청구내역 (table1)
@@ -76,7 +75,7 @@ const ProjectExpense = () => {
         if (data.length !== 0) {
             setIndivdlList(data);
             setCtAtrzCmptnYn(data?.every(item => item.ctAtrzCmptnYn === null) ? null : data.some(item => item.ctAtrzCmptnYn === 'N') ? 'N' : 'Y');
-            setMmAtrzCmptnYn(data?.every(item => item.mmAtrzCmptnYn === null) ? null : data.some(item => item.mmAtrzCmptnYn === 'N') ? 'N' : 'Y');
+            setMmAtrzCmptnYn(data?.every(item => item.mmAtrzCmptnYn === null) ? null : data.some(item => item.mmAtrzCmptnYn === 'Y') ? 'Y' : 'N');
         }
     };
 
@@ -96,7 +95,7 @@ const ProjectExpense = () => {
         }
         const updateStts = ctAply.length === 0
             ? (data.name === 'onInptDdlnClick' ? 'Y' : (data.name === 'onAprvDmndRtrcnClick' ? null : undefined))
-            : (data.name === 'onAprvDmndClick' ? 'N' : (data.name === 'onAprvDmndRtrcnClick' ? null : undefined));
+            : (data.name === 'onInptDdlnClick' ? 'N' : (data.name === 'onAprvDmndRtrcnClick' ? 'N' : undefined));
         if (updateStts !== undefined) updateCtAtrzCmptnYn(updateStts);
         getData();
         handleOpen(data.completeMsg);
@@ -155,26 +154,40 @@ const ProjectExpense = () => {
                 const aplyTarget = ctAply.filter(matches);
 
                 const tables = ["PRJCT_CT_ATRZ", "PRJCT_CT_ATDRN", "PRJCT_CT_APLY"];
-                const deleteRow = tables.map(tbNm => ApiRequest("/boot/common/commonDelete", [{ tbNm }, param]));
-
-                const { prjctCtAplySn, ...rest } = param;
-                if(indivTarget?.mmAtrzCmptnYn === null && aplyTarget.length === 1) {
-                    const deleteIndiv = await ApiRequest('/boot/common/commonDelete', [
-                        {tbNm: "PRJCT_INDVDL_CT_MM"}, rest
-                    ]);
-                }
-                Promise.all(deleteRow).then(responses => {
-                    handleOpen("삭제되었습니다.");
-                    getData();
-                }).catch(error => {
-                    console.error("error:", error);
-                });
-
-                const cardResult = ApiRequest('/boot/common/commonUpdate', [
-                    { tbNm: "CARD_USE_DTLS" },
-                    { prjctCtInptPsbltyYn: "Y" },
-                    { lotteCardAprvNo: props.lotteCardAprvNo }
-                ])
+                const deleteRow = async () => {
+                    for (const tbNm of tables) {
+                        try {
+                            await ApiRequest("/boot/common/commonDelete", [{ tbNm }, param]);
+                        } catch (error) {
+                            throw error;
+                        }
+                    }
+                };
+                const allDelete = async () => {
+                    try {
+                        await deleteRow();
+            
+                        const { prjctCtAplySn, ...rest } = param;
+                        if (indivTarget?.mmAtrzCmptnYn === null && aplyTarget.length === 1) {
+                            await ApiRequest('/boot/common/commonDelete', [
+                                { tbNm: "PRJCT_INDVDL_CT_MM" }, rest
+                            ]);
+                        }
+                        const cardResult = await ApiRequest('/boot/common/commonUpdate', [
+                            { tbNm: "CARD_USE_DTLS" },
+                            { prjctCtInptPsbltyYn: "Y" },
+                            { lotteCardAprvNo: props.lotteCardAprvNo }
+                        ]);
+            
+                        if (cardResult) {
+                            handleOpen("삭제되었습니다.");
+                            getData();
+                        }
+                    } catch (error) {
+                        console.error("Error:", error);
+                    }
+                };
+                allDelete();
             }
         } else { // 문서이동
             navigate("/elecAtrz/ElecAtrzDetail", {state: {data: props}})
@@ -226,7 +239,6 @@ const ProjectExpense = () => {
 
     return (
         <div>
-            {/* {loading && (<div className="loading-overlay">요청 중입니다...</div>)} */}
             <div style={{ marginLeft: '2%', marginRight: '2%', marginBottom: '10%' }}>
                 <div className="mx-auto" style={{ display: 'flex', marginTop: "20px", marginBottom: "30px" }}>
                     <h1 style={{ fontSize: "30px", marginRight: "20px" }}>프로젝트비용</h1>
@@ -248,7 +260,7 @@ const ProjectExpense = () => {
                     <RenderTopTable title={`* ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} />}
                 <RenderTopTable title='* 전자결재 청구 내역' keyColumn={elcKeyColumn} columns={columnCharge} values={ctAtrz} />
 
-                {atrzDmndSttsCnt.ctReg > 0 || ctAtrzCmptnYn === null || ctAtrzCmptnYn === undefined
+                {atrzDmndSttsCnt.ctReg >= 0 || ctAtrzCmptnYn === null || ctAtrzCmptnYn === undefined
                     ? <TabPanel
                         dataSource={ExpenseInfo}
                         selectedIndex={index}

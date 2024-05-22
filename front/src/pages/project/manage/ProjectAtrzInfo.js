@@ -9,7 +9,6 @@ import AtrzInfo from './ProjectAtrzInfoJson.json';
 const ProjectAtrzInfo = ({prjctId, atrzLnSn}) => {
 const [atrzInfoData, setAtrzInfoData] = useState([]);
 const [atrzDate, setAtrzDate] = useState([]);
-const navigate = useNavigate();
 
 useEffect(() => {
   let order = [];
@@ -79,7 +78,7 @@ const handleTreeViewSelectionChange = useCallback((e) => {
               selectByClick={true}
               displayExpr={(e) => e.regDt.substr(0,10)}
               keyExpr="atrzLnSn"
-              onItemSelectionChanged={handleTreeViewSelectionChange}
+              onItemClick={handleTreeViewSelectionChange}
               noDataText='결재정보가 없습니다.'
             />
           </div>
