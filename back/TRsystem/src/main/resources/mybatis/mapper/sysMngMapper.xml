@@ -505,7 +505,7 @@
 				AND ea.ATRZ_DMND_EMP_ID = #{empId}
 			)
 		AS RESULT
-		ORDER BY REG_DT ASC
+		ORDER BY REG_DT DESC
 		LIMIT 4
 	</select>
 	
@@ -604,7 +604,7 @@
     		   AND pald.ATRZ_STTS_CD != 'VTW00805'														-- 결재상태코드 취소 아닐시
 			)
 		AS RESULT
-		ORDER BY REG_DT ASC
+		ORDER BY REG_DT DESC
 		LIMIT 4
 	</select>
 
