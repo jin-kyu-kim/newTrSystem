@@ -253,6 +253,7 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
 
         switch (detailData.elctrnAtrzTySeCd) {
             case 'VTW04901':
+            case 'VTW04915':
                 return <VacInfoTab vacDtl={vacDtl} dtlInfo={dtlInfo} />;
             case 'VTW04907':
                 return <ClmTab columns={clmColumns} groupingColumn={groupingColumn}/>;

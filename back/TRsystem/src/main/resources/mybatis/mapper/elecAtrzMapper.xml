@@ -65,6 +65,7 @@
 				AND ATRZ_DMND_EMP_ID = #{empId}
 				AND ea.ATRZ_DMND_STTS_CD = #{sttsCd}
 				AND ea.NOW_ATRZ_LN_SN = al.ATRZ_LN_SN
+
 			</when>
 			<when test='sttsCd != null and refer == true and sttsCd.startsWith("VTW037")'>
 				AND rm.EMP_ID = #{empId}
