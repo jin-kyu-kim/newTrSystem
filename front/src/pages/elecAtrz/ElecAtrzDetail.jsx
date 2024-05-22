@@ -10,8 +10,8 @@ import CustomTable from 'components/unit/CustomTable';
 import ElecAtrzTabDetail from './ElecAtrzTabDetail';
 import electAtrzJson from './ElecAtrzJson.json';
 import ApiRequest from 'utils/ApiRequest';
-import './ElecAtrz.css'
 import { useModal } from "../../components/unit/ModalContext";
+import './ElecAtrz.css'
 
 const ElecAtrzDetail = () => {
     const navigate = useNavigate();
@@ -30,14 +30,13 @@ const ElecAtrzDetail = () => {
     const [ atachFileList, setAtachFileList ] = useState([]);
     const [ aplyYmd, setAplyYmd ] = useState();
     const [ odr, setOdr ] = useState();
-    const [rjctPopupVisible, setRjctPopupVisible] = useState(false);
-    const [aprvPopupVisible, setAprvPopupVisible] = useState(false);
-    const [opnnCn, setOpnnCn] = useState("");
-    const [data, setData] = useState(location.state.data);
+    const [ rjctPopupVisible, setRjctPopupVisible ] = useState(false);
+    const [ aprvPopupVisible, setAprvPopupVisible ] = useState(false);
+    const [ opnnCn, setOpnnCn ] = useState("");
+    const [ data, setData ] = useState(location.state.data);
     const { handleOpen } = useModal();
 
     const onBtnClick = (e) => {
-
         switch (e.element.id) {
             case "aprv": ; onAprvPopup();
                 break;
@@ -50,12 +49,13 @@ const ElecAtrzDetail = () => {
             case "reAtrz": onReReq();
                 break;
             case "cancel": onCancelReq();
-            break;
+                break;
+            case "list": navigate('/elecAtrz/ElecAtrz') ;
+                break;
             default:
                 break;
         }
     }
-
     useEffect(() => {
         getVacInfo();
         getPrjct();
@@ -81,7 +81,6 @@ const ElecAtrzDetail = () => {
             const response = await ApiRequest('/boot/common/commonSelect', [
                 { tbNm: "VCATN_ATRZ" }, { elctrnAtrzId: detailData.elctrnAtrzId }
             ]);
-            console.log('response', response)
             setDtlInfo(response[0]);
         } catch (error) {
             console.log('error', error);
@@ -123,11 +122,9 @@ const ElecAtrzDetail = () => {
             queryId: "elecAtrzMapper.retrieveMaxAtrzLnSn",
             elctrnAtrzId: detailData.elctrnAtrzId
         }
-
         try {
             const response = await ApiRequest("/boot/common/queryIdSearch", param);
             setMaxAtrzLnSn(response[0].maxAtrzLnSn);
-
         } catch (error) {
             console.error(error)
         }
@@ -159,7 +156,6 @@ const ElecAtrzDetail = () => {
          * 휴가 결재일 경우 승인처리를 따로 해준다.
          */
         if(isconfirm) {
-
             if(detailData.elctrnAtrzTySeCd === "VTW04901") {    
                 /** 
                  * 휴가결재  승인처리 
@@ -189,7 +185,6 @@ const ElecAtrzDetail = () => {
                         ]
                 }
                 const response = vacAprvProcess(param).then((value) => {
-
                     if(value[0].atrzLnSn > 0) {
                         upNowAtrzLnSn(value[0].atrzLnSn);
                     } else {
@@ -197,7 +192,6 @@ const ElecAtrzDetail = () => {
                         return;
                     }
                 });
-
             } else if (detailData.elctrnAtrzTySeCd === "VTW04915") {
                 /**
                  * 휴가취소 결재 승인 처리
@@ -224,7 +218,6 @@ const ElecAtrzDetail = () => {
                 }
 
                 const response = vacCancelAprvProcess(param).then((value) => {
-
                     if(value[0].atrzLnSn > 0) {
                         upNowAtrzLnSn(value[0].atrzLnSn);
                     } else {
@@ -272,7 +265,6 @@ const ElecAtrzDetail = () => {
      */
     const aprvProcess = async (param) => {
         const response = await ApiRequest("/boot/elecAtrz/aprvElecAtrz", param);
-
         return response;
     }
 
@@ -519,16 +511,10 @@ const ElecAtrzDetail = () => {
             };
     },[])
 
-    useEffect(()=>{
-        
-    },[data])
-
     /**
      * 재기안: VTW05407
      */
     const onReReq = async () => {
-
-        console.log(detailData)
         navigate('/elecAtrz/ElecAtrzNewReq', { state: { formData: detailData, sttsCd: "VTW05407", prjctId: detailData.prjctId } });
     }
 
@@ -536,14 +522,29 @@ const ElecAtrzDetail = () => {
      * 결재 취소: VTW05405
      */
     const onCancelReq = async () => {
-
-        console.log(detailData)
         navigate('/elecAtrz/ElecAtrzNewReq', { state: { formData: detailData, sttsCd: "VTW05405", prjctId: detailData.prjctId,  }});
     }
+    const renderButtons = () => {
+        let filter = [];
+      
+        if (sttsCd === 'VTW00801') {
+            filter = header.filter(item => item.id === 'aprv' || item.id === 'rjct');
+        } else if (sttsCd === 'VTW03702') {
+            filter = header.filter(item => item.id === 'cancel' || item.id === 'reAtrz');
+        } else if (sttsCd === 'VTW03703') {
+            filter = header.filter(item => item.id === 'update' || item.id === 'cancel' || item.id === 'reAtrz');
+        } else if (sttsCd === 'VTW03704') {
+            filter = header.filter(item => item.id === 'reAtrz');
+        }
+      
+        return filter.map((item, index) => (
+          <Button id={item.id} text={item.text} key={index} type={item.type} 
+                  onClick={onBtnClick} style={{marginRight: '3px'}}/>
+        ));
+    };
 
     return (
         <div className="container" style={{ marginTop: "10px" }}>
-            {/* {atrzOpnn.length !== 0 &&  */}  
                 <ElecAtrzTitleInfo
                     atrzLnEmpList={atrzOpnn}
                     contents={header}
@@ -554,8 +555,6 @@ const ElecAtrzDetail = () => {
                     atrzParam={detailData}
                     onClick={onBtnClick}
                 />
-                {/* } */}
-
             {/* 휴가           VTW04901, 
                 청구           VTW04907,
                 외주인력 계약   VTW04908,
@@ -582,7 +581,6 @@ const ElecAtrzDetail = () => {
                     prjctData={prjctData}
                 />
             )}
-
             <div dangerouslySetInnerHTML={{ __html: detailData.cn }} />
 
             <hr className='elecDtlLine' style={{marginTop: '100px'}}/>
@@ -602,11 +600,8 @@ const ElecAtrzDetail = () => {
                 values={atrzOpnnVal}
             />
             <div style={{textAlign: 'center', marginBottom: '100px', marginTop: '20px'}}>
-                {sttsCd === 'VTW00801' && header.filter(item => item.id === 'aprv' || item.id === 'rjct').map((item, index) => (
-                    <Button id={item.id} text={item.text} key={index} type={item.type} 
-                        onClick={onBtnClick} style={{marginRight: '3px'}}/>
-                ))}
-                 <Button text='목록' type='default' 
+                {renderButtons()}
+                 <Button text='목록' type='normal' 
                     onClick={() => {location.state.docSeCd !=='VTW03405'
                                     ? navigate('/elecAtrz/ElecAtrz') 
                                     : navigate('/elecAtrz/ElecGiveAtrz',{state :{prjctId: prjctId, formData: location.state.formData}}) }} />

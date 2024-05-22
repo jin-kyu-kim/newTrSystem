@@ -36,7 +36,7 @@
       ],
       "progressApproval": [
         {"key": "selectBtn", "value": "결재", "width": "15%", "buttons": [
-          { "text": "승인", "name": "aprv", "visible": {"key": "sttsCd", "value": "VTW00802"}, "type": "default"},
+          { "text": "승인", "name": "aprv", "visible": {"key": "sttsCd", "value": "VTW00802"}, "type": "default", "showAll": true},
           { "text": "보류", "name": "hold", "visible": {"key": "sttsCd", "value": "VTW00804"}, "type": "normal"},
           { "text": "반려", "name": "rjct", "visible": {"key": "sttsCd", "value": "VTW00803"}, "type": "danger"}
         ]}
