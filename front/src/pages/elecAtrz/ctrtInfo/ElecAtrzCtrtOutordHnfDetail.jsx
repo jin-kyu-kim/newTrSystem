@@ -287,6 +287,7 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
                 summary={true}
                 summaryColumn={summaryColumn}
                 scrolling={true}
+                wordWrap={true}
             />
             }
 

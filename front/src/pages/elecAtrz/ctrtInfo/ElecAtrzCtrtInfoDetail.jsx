@@ -248,6 +248,7 @@ const ElecAtrzCtrtInfoDetail = ({data, prjctId, onSendData, sttsCd, ctrtTyCd}) =
             summary={true}
             summaryColumn={summaryColumn}
             onClick={handlePopupVisible}
+            wordWrap={true}
             />
 
             <Popup
