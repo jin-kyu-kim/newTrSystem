@@ -85,7 +85,7 @@ const GridRows = ({ columns, onClick, handleCheckBoxChange, checkBoxValue }) => 
     };
 
     for (let i = 0; i < columns.length; i++) {
-      const { key, value, width, alignment, button, buttons, visible, toggle, subColumns, chkBox , grouping, currency, unit, dateFormat } = columns[i];
+      const { key, value, width, alignment, button, buttons, visible, toggle, subColumns, chkBox , grouping, currency, unit, dateFormat, rate } = columns[i];
 
       if(subColumns){
         /*===============헤더 하위 뎁스 컬럼 설정===================*/
@@ -198,6 +198,18 @@ const GridRows = ({ columns, onClick, handleCheckBoxChange, checkBoxValue }) => 
           >
           </Column>
       );
+      }else if(rate){
+        result.push(
+          <Column
+            key={key}
+            dataField={key}
+            caption={value}
+            width={width}
+            alignment={alignment || 'center'}
+            format={"00.00%"}
+          >
+          </Column>
+        );
       }
       else {
         /*=====================일반 셀 설정=========================*/
