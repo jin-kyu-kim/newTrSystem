@@ -18,6 +18,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.trsystem.financialAffairMng.domain.FinancialAffairMngDomain;
+import com.trsystem.indvdlClm.domain.IndvdlClmDomain;
+
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequiredArgsConstructor
 public class IndvdlClmController {
@@ -223,6 +237,16 @@ public class IndvdlClmController {
     public List<Map<String, Object>> updateEmpLeave (@RequestBody Map<String, Object> params) {
         return IndvdlClmDomain.updateEmpLeave(params);
     }
+    
+    /**
+     * 비용 출력 화면 
+     * @param params
+     * @return
+     */
+	@PostMapping(value = "/boot/indvdlClm/retrieveCtData")
+	public List<Map<String, Object>> retrieveCtData(@RequestBody Map<String, Object> params) {
+		return FinancialAffairMngDomain.retrieveCtData(params);
+	}
 
     /* =================================박지환_작업================================= */
 

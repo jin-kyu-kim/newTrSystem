@@ -34,7 +34,6 @@ const ElecAtrzDetail = () => {
     const [opnnCn, setOpnnCn] = useState("");
     const [data, setData] = useState(location.state.data);
     const { handleOpen } = useModal();
-    // console.log("location 디테일!!!", location);
 
     const onBtnClick = (e) => {
 
@@ -46,6 +45,8 @@ const ElecAtrzDetail = () => {
             case "print": //console.log("출력 클릭"); 
                 break;
             case "docHist": //console.log("문서이력 클릭");
+                break;
+            case "reAtrz": onReReq();
                 break;
             default:
                 break;
@@ -488,7 +489,7 @@ const ElecAtrzDetail = () => {
      * 계약 지급인 경우 계약코드 select
      */
     useEffect(()=>{
-            if(detailData.elctrnAtrzTySeCd === "VTW04914"){   //지급
+            if(['VTW04911','VTW04912','VTW04913','VTW04914'].includes(detailData.elctrnAtrzTySeCd)){   //지급
                 
             const getCtrtInfo = async () => {
                     try {
@@ -518,6 +519,17 @@ const ElecAtrzDetail = () => {
     useEffect(()=>{
         
     },[data])
+
+    /**
+     * 재기안: VTW05407
+     */
+    const onReReq = async () => {
+
+        console.log(detailData)
+        navigate('/elecAtrz/ElecAtrzNewReq', { state: { formData: detailData, sttsCd: "VTW05407", prjctId: detailData.prjctId } });
+        // electrn
+
+    }
 
     return (
         <div className="container" style={{ marginTop: "10px" }}>
@@ -550,7 +562,7 @@ const ElecAtrzDetail = () => {
                     prjctData={prjctData}
                 />
             )}
-            {(['VTW04914'].includes(detailData.elctrnAtrzTySeCd)) && (data.ctrtElctrnAtrzId) &&(
+            {(['VTW04911','VTW04912','VTW04913','VTW04914'].includes(detailData.elctrnAtrzTySeCd)) && (data.ctrtElctrnAtrzId) &&(
                 <ElecAtrzTabDetail
                     dtlInfo={dtlInfo}
                     detailData={data}

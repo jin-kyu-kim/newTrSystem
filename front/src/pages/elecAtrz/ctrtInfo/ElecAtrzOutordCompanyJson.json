@@ -30,13 +30,13 @@
         "key": "expectCt",
         "value": "가용금액",
         "type": "sum",
-        "format": "Total: {0}원"
+        "format": "총: {0}원"
       },
       {
         "key": "totAmt",
         "value": "총 사용액",
         "type": "sum",
-        "format": "Total: {0}원"
+        "format": "총: {0}원"
       }
     ]
   }

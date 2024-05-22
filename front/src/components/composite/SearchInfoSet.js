@@ -1,16 +1,19 @@
+// SearchInfoSet.js
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SelectBox from "devextreme-react/select-box";
 import TextBox from "devextreme-react/text-box";
 import Button from "devextreme-react/button";
-import Box, { Item } from "devextreme-react/box"
+import Box, { Item } from "devextreme-react/box";
 import CustomComboBox from 'components/unit/CustomComboBox';
 import CustomDateRangeBox from "components/unit/CustomDateRangeBox";
+import AutoCompleteProject from "components/unit/AutoCompleteProject";
 
 const SearchInfoSet = ({ callBack, props, insertPage }) => {
   const navigate = useNavigate();
-  const [ initParam, setInitParam ] = useState({});
-  const [ ymOdrData, setYmOdrData ] = useState({});
+  const [initParam, setInitParam] = useState({});
+  const [ymOdrData, setYmOdrData] = useState({});
   const { searchParams, textBoxItem, selectBoxItem } = props;
   let btnName = searchParams.btnName ? searchParams.btnName : '검색';
 
@@ -86,6 +89,13 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
     });
   };
 
+  const handleChgPrjct = (selectedOption) => {
+    setInitParam({
+      ...initParam,
+      prjctId: selectedOption[0].prjctId,
+    });
+  };
+
   const handleSubmit = () => {
     callBack(initParam);
   };
@@ -93,18 +103,14 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
   const onClickInsertBtn = () => {
     navigate(insertPage, {
       state: { editMode: "create" }
-    })
+    });
   };
 
   return (
     <div className="box_search" width="100%">
-      <Box
-        direction="row"
-        width="100%"
-        height={40}
-      >
+      <Box direction="row" width="100%" height={40}>
         {searchParams.yearList && searchParams.yearList.map((item) => (
-          <Item ratio={0} baseSize={"120"} visible={item.visible}>
+          <Item key={item.name} ratio={0} baseSize={"120"} visible={item.visible}>
             <SelectBox
               dataSource={ymOdrData[item.name]}
               name={item.name}
@@ -118,34 +124,30 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
           </Item>
         ))}
 
-        {selectBoxItem && selectBoxItem.map((item, index) => {
-          return (
-            <Item key={index} ratio={1}>
-              <CustomComboBox
-                props={item.param}
-                onSelect={handleChgState}
-                placeholder={item.placeholder}
-                value={initParam[item.param.name]}
-              />
-            </Item>
-          )
-        })}
+        {selectBoxItem && selectBoxItem.map((item, index) => (
+          <Item key={index} ratio={1}>
+            <CustomComboBox
+              props={item.param}
+              onSelect={handleChgState}
+              placeholder={item.placeholder}
+              value={initParam[item.param.name]}
+            />
+          </Item>
+        ))}
 
-        {textBoxItem && textBoxItem.map((item, index) => {
-          return (
-            <Item key={index} ratio={1} >
-              <TextBox
-                placeholder={item.placeholder}
-                stylingMode="underlined"
-                size="medium"
-                onEnterKey={handleSubmit}
-                name={item.name}
-                showClearButton={true}
-                onValueChanged={(e) => handleChgState({ name: e.component.option('name'), value: e.value })}
-              />
-            </Item>
-          )
-        })}
+        {textBoxItem && textBoxItem.map((item, index) => (
+          <Item key={index} ratio={1}>
+            <TextBox
+              placeholder={item.placeholder}
+              stylingMode="underlined"
+              size="medium"
+              onEnterKey={handleSubmit}
+              name={item.name}
+              showClearButton={true}
+              onValueChanged={(e) => handleChgState({ name: e.component.option('name'), value: e.value })}
+            />
+          </Item>
+        ))}
 
         {searchParams.dateRange &&
           <Item ratio={2}>
@@ -155,17 +157,24 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
             />
           </Item>
         }
-
-        <Item ratio={1} >
+        {searchParams.project &&
+          <Item ratio={1}>
+            <AutoCompleteProject 
+              placeholderText="프로젝트 명"
+              onValueChange={handleChgPrjct}
+            />
+          </Item>
+        }
+        <Item ratio={1}>
           <Box>
-            <Item ratio={1} >
-              <Button onClick={handleSubmit} text={btnName} style={{margin: "5px"}} />
+            <Item ratio={1}>
+              <Button onClick={handleSubmit} text={btnName} style={{ margin: "5px" }} />
             </Item>
 
             {searchParams.insertButton &&
-                <Item ratio={1}>
-                  <Button type='default' text="입력" onClick={onClickInsertBtn} style={{margin: "5px"}} />
-                </Item>
+              <Item ratio={1}>
+                <Button type='default' text="입력" onClick={onClickInsertBtn} style={{ margin: "5px" }} />
+              </Item>
             }
           </Box>
         </Item>
@@ -173,4 +182,5 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
     </div>
   );
 };
+
 export default SearchInfoSet;
