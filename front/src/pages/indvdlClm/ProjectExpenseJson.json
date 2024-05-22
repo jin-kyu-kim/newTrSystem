@@ -179,7 +179,7 @@
           "queryId": "commonMapper.autoCompleteProject"
         },
         "valueExpr" : "prjctId",
-        "displayExpr": "prjctNm",
+        "displayExpr": "prjctTag",
         "name": "prjctId",
         "values": [ "prjctId", "prjctMngrEmpId", "prjctStleCd" ]
       },
