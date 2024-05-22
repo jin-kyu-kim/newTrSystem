@@ -30,7 +30,7 @@
       "baseColumns": [
           {"key": "elctrnAtrzDocNo", "value": "문서번호", "width": "13%"},
           {"key": "gnrlAtrzTtl", "value": "결재유형", "width": "13%"},
-          {"key": "atrzDmndEmpNm", "value": "기안자", "width": "13%"},
+          {"key": "atrzDmndEmpNm", "value": "기안자", "width": "10%"},
           {"key": "regDt", "value": "기안요청일", "width": "14%"},
           {"key": "title", "value": "결재 명", "width": "20%"}
       ],

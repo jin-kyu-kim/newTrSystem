@@ -49,7 +49,7 @@ const ElecAtrzTitleInfo = ({ sttsCd, refer, atrzLnEmpList, getAtrzLn, contents, 
         <div style={{ display: "inline-block" }}>{setButtons()}</div>
       </div>
 
-      <h3 style={{ textAlign: "center" }}>{formData.gnrlAtrzTtl}{sttsCd === "VTW05405" ? " - 결재취소" : ""}</h3>
+      <h3 style={{ textAlign: "center" }}>{formData.gnrlAtrzTtl}{sttsCd === "VTW05405" || formData.atrzHistSeCd === "VTW05405" ? " - 결재취소" : ""}</h3>
       <div style={{ display: "flex", marginTop: "3%", marginLeft: '2%', marginRight: '2%' }}>
         <div style={{ flex: 4 }}>
           <table>
@@ -103,7 +103,7 @@ const ElecAtrzTitleInfo = ({ sttsCd, refer, atrzLnEmpList, getAtrzLn, contents, 
             {
               sttsCd === "VTW05405" ? 
               <div className="dx-field-label" style={{ width: "120px", fontWeight: 'bold' }}>▶취소결재◀</div>
-              : sttsCd === "VTW05406" ?
+              : sttsCd === "VTW05406"?
               <div className="dx-field-label" style={{ width: "120px", fontWeight: 'bold' }}>▶결재변경◀</div>
               :
               <></>
@@ -113,7 +113,7 @@ const ElecAtrzTitleInfo = ({ sttsCd, refer, atrzLnEmpList, getAtrzLn, contents, 
               style={{ width: "100%" }}
               value={atrzParam.title}
               onValueChanged={onHandleAtrzTitle}
-              readOnly={sttsCd === "VTW05405" ? true : false}
+              readOnly={sttsCd === "VTW05405" || formData.atrzHistSeCd === "VTW05405" ? true : false}
             />
           </div>
 

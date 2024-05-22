@@ -325,13 +325,10 @@ const ElecAtrzNewReq = () => {
             regEmpId: userInfo.empId,
             atrzFormDocId: formData.atrzFormDocId,
             atrzLnEmpList,
-            sttsCd: sttsCd
+            sttsCd: sttsCd,
+            histElctrnAtrzId: sttsCd === "VTW05405" || sttsCd === "VTW05406" ? data.elctrnAtrzId : data.histElctrnAtrzId,
+            atrzHistSeCd: sttsCd === "VTW05405" || sttsCd === "VTW05406" ? sttsCd : data.atrzHistSeCd != undefined ? data.atrzHistSeCd : "VTW05401"
         }
-
-
-        // 취소 결재 요청 시에는 파람을 추가해준다.
-
-
 
         // console.log("insertParam", insertParam);
 
@@ -354,6 +351,25 @@ const ElecAtrzNewReq = () => {
                     }).catch(error => {
                         console.error("error:", error);
                     });
+                }
+
+                // 취소결재 변경결재 시 결재선 멈춤
+                if(stts != "VTW03701" &&  (data.atrzHistSeCd === "VTW05405" || sttsCd === "VTW05405")) {
+                    const param = [
+                        {tbNm: "ATRZ_LN"},
+                        {
+                            atrzSttsCd: "VTW00806",
+                            mdfcnDt: date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0],
+                            mdfcnEmpId: userInfo.empId,
+                        },
+                        {
+                            elctrnAtrzId: insertParam.histElctrnAtrzId,
+                            atrzSttsCd: "VTW00801"
+                        }
+                    ]
+                    
+                    const updateResponse = await ApiRequest("/boot/common/commonUpdate", param);
+
                 }
 
                 const formDataAttach = new FormData();      
