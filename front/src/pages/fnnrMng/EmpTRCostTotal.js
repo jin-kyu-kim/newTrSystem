@@ -140,6 +140,7 @@ const EmpTRCostTotal = () => {
         summaryColumn={summaryColumn}
         smallSummaryColumn={smallSummaryColumn}
         excel={true}
+        wordWrap={true}
         onExcel={onExporting}
       />  
       

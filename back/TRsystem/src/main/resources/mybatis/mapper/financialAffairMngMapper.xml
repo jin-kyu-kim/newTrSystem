@@ -961,7 +961,6 @@
         <if test="prjctId != null and prjctId !=''">
             AND PMA.PRJCT_ID = #{prjctId}
         </if>
-
     </select>
 
 

@@ -8,16 +8,15 @@
           { "key": "empFlnm", "value": "이름", "width": 200, "alignment": "center" },
           { "key": "md", "value": "시간", "width": 170, "alignment": "center" }
     ],
-
-    "searchParams":
-  {
-    "yearItem": true,
-    "monthItem": true,
-    "aplyOdr": true,
-    "prjctId" : true
-
+  "searchInfo": {
+    "searchParams": { 
+      "btnName": "검색",
+      "yearList": [
+        { "name": "year", "visible": true, "placeholder": "[연도]", "displayExpr": "value", "valueExpr": "value" },
+        { "name": "month", "visible": true, "placeholder": "[월]", "displayExpr": "value", "valueExpr": "value" },
+        { "name": "aplyOdr", "visible": true, "placeholder": "[차수]", "displayExpr": "text", "valueExpr": "value" }
+      ],
+      "project" : {}
+    }
   }
-
-
-    
     }
