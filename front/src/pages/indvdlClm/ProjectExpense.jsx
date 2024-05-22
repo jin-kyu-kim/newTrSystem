@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useCookies } from "react-cookie";
 import { Button, TabPanel } from "devextreme-react";
 import ProjectExpenseJson from "./ProjectExpenseJson.json"
 import ProjectExpensePopup from './ProjectExpensePopup';
@@ -15,18 +14,19 @@ const ProjectExpense = () => {
     const { ExpenseInfo, keyColumn, ctAplyTableColumns, elcKeyColumn, columnCharge, buttonsConfig,
         aplyAndAtrzCtQueryId, dmndSttsQueryId, groupingColumn, groupingData, searchInfo } = ProjectExpenseJson.ProjectExpenseMain;
     const [ index, setIndex ] = useState(0);
+    const [ loading, setLoading ] = useState(false);
     const [ atrzDmndSttsCnt, setAtrzDmndSttsCnt ] = useState({}); // 상태코드별 데이터 개수
+    const [ indivdlList, setIndivdlList ] = useState([]); // 차수 청구내역 (table1)
     const [ ctAply, setCtAply ] = useState([]); // 차수 청구내역 (table1)
     const [ ctAtrz, setCtAtrz ] = useState([]); // 전자결재 청구내역 (table2)
     const [ changeColumn, setChangeColumn ] = useState([]); // 결재상태 컬럼 -> 버튼렌더를 위해 필요
     const [ ctAtrzCmptnYn, setCtAtrzCmptnYn ] = useState(); // 비용결재완료여부
     const [ mmAtrzCmptnYn, setMmAtrzCmptnYn ] = useState(); // 근무시간여부
-    
-    const [ cookies ] = useCookies([]);
+    const admin = location.state ? location.state.admin : undefined;
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    const empId = admin != undefined ? admin.empId : userInfo.empId;
     const [ popVisible, setPopVisible ] = useState(false);
     const [ histYmOdr, setHistYmOdr ] = useState({});
-    const admin = location.state ? location.state.admin : undefined;
-    const empId = admin != undefined ? admin.empId : cookies.userInfo.empId;
     const date = new Date();
     const year = date.getFullYear();
     const month = date.getDate() > 15 ? date.getMonth() + 1 : date.getMonth();
@@ -40,24 +40,21 @@ const ProjectExpense = () => {
             if (args.name === "selectedIndex") setIndex(args.value);
         }, [setIndex]
     );
-
     useEffect(() => { getData(); }, []);
 
     useEffect(() => { // 결재상태에 따른 컬럼 list변경
         const columns = atrzDmndSttsCnt.ctReg > 0 ? 'ctAplyBtnColumns' : (atrzDmndSttsCnt.rjct > 0 ? 'rjctCnColumns' : 'ctAplyStrColumns');
-        setChangeColumn(ctAplyTableColumns.concat(ProjectExpenseJson.ProjectExpenseMain[columns]))
+        setChangeColumn(ctAplyTableColumns.concat(ProjectExpenseJson.ProjectExpenseMain[columns]));
     }, [atrzDmndSttsCnt]);
 
     const searchHandle = async (initParam) => {
         setHistYmOdr({
             aplyYm: initParam?.year + initParam?.month,
             aplyOdr: initParam?.aplyOdr,
-            empId: empId
+            empId: empId,
+            isHist: true
         })
-
-        if(Object.keys(initParam).length !== 0){
-            setPopVisible(true);
-        }
+        if (Object.keys(initParam).length !== 0) setPopVisible(true);
     };
 
     const getData = async () => {
@@ -76,8 +73,11 @@ const ProjectExpense = () => {
     };
 
     const setCtAtrzCmptnData = (data) => {
-        setCtAtrzCmptnYn(data?.every(item => item.ctAtrzCmptnYn === 'Y') ? 'Y' : 'N');
-        setMmAtrzCmptnYn(data?.every(item => item.mmAtrzCmptnYn === null) ? null : data.some(item => item.mmAtrzCmptnYn === 'N') ? 'N' : 'Y');
+        if (data.length !== 0) {
+            setIndivdlList(data);
+            setCtAtrzCmptnYn(data?.every(item => item.ctAtrzCmptnYn === null) ? null : data.some(item => item.ctAtrzCmptnYn === 'N') ? 'N' : 'Y');
+            setMmAtrzCmptnYn(data?.every(item => item.mmAtrzCmptnYn === null) ? null : data.some(item => item.mmAtrzCmptnYn === 'Y') ? 'Y' : 'N');
+        }
     };
 
     const setCtAtrzDmndSttsData = (data) => {
@@ -91,12 +91,12 @@ const ProjectExpense = () => {
             actionType: data.actionType, // PRJCT_CT_ATRZ : 결재요청상태 update (입력마감 / 승인요청)
             empId, aplyYm, aplyOdr
         };
-        if(ctAply.length !== 0){
+        if (ctAply.length !== 0) {
             const response = await ApiRequest("/boot/common/queryIdDataControl", param);
         }
         const updateStts = ctAply.length === 0
             ? (data.name === 'onInptDdlnClick' ? 'Y' : (data.name === 'onAprvDmndRtrcnClick' ? null : undefined))
-            : (data.name === 'onAprvDmndClick' ? 'N' : (data.name === 'onAprvDmndRtrcnClick' ? null : undefined));
+            : (data.name === 'onInptDdlnClick' ? 'N' : (data.name === 'onAprvDmndRtrcnClick' ? 'N' : undefined));
         if (updateStts !== undefined) updateCtAtrzCmptnYn(updateStts);
         getData();
         handleOpen(data.completeMsg);
@@ -109,7 +109,7 @@ const ProjectExpense = () => {
             { empId, aplyYm, aplyOdr }
         ];
         const response = await ApiRequest("/boot/common/commonUpdate", param);
-        if(response === 1) getData();
+        if (response >= 1) getData();
     };
 
     const onClickAction = async (onClick) => {
@@ -117,25 +117,23 @@ const ProjectExpense = () => {
             setHistYmOdr(null)
             setPopVisible(true);
         } else {
-            if (window.confirm(onClick.msg)) {
-                if(mmAtrzCmptnYn === null){
-                    handleOpen('경비청구 건수가 없을 경우 근무시간을 먼저 승인 요청 해주시기 바랍니다.')
-                    return;
-                }
-                prjctCtAtrzUpdate(onClick);
+            if (mmAtrzCmptnYn === undefined || mmAtrzCmptnYn === null) {
+                handleOpen('경비청구 건수가 없을 경우 근무시간을 먼저 승인 요청 해주시기 바랍니다.')
+                return;
             }
+            prjctCtAtrzUpdate(onClick);
         }
     };
     const onPopHiding = async () => { setPopVisible(false); }
 
     const getButtonsShow = () => {
-        if(ctAply.length === 0){ // 비용청구가 없으면서 근무시간은 존재하는 경우
+        if (ctAply?.length === 0) { // 비용청구가 없으면서 근무시간은 존재하는 경우
             if (ctAtrzCmptnYn === 'Y' && mmAtrzCmptnYn === 'N') return buttonsConfig.hasApprovals;
             if (mmAtrzCmptnYn === 'Y') return buttonsConfig.completed;
-        } else{
+        } else {
+            if (atrzDmndSttsCnt.rjct === 0 && atrzDmndSttsCnt.aprv > 0) return buttonsConfig.completed;
             if (atrzDmndSttsCnt.aprvDmnd > 0 || atrzDmndSttsCnt.rjct > 0) return buttonsConfig.hasApprovals;
             if (atrzDmndSttsCnt.inptDdln > 0) return buttonsConfig.noApprovals;
-            if (atrzDmndSttsCnt.rjct === 0 && atrzDmndSttsCnt.aprv > 0) return buttonsConfig.completed;
         }
         return buttonsConfig.default;
     };
@@ -143,20 +141,72 @@ const ProjectExpense = () => {
     const onBtnClick = async (btn, props) => {
         if (btn.name === 'atrzDmndSttsCd') { // aply, atrz, atdrn row삭제
             if (window.confirm("삭제하시겠습니까?")) {
+                const param = { prjctId: props.prjctId, prjctCtAplySn: props.prjctCtAplySn, 
+                    empId: props.empId, aplyYm: props.aplyYm, aplyOdr: props.aplyOdr };
 
-                const param = { prjctId: props.prjctId, prjctCtAplySn: props.prjctCtAplySn, empId, aplyYm, aplyOdr };
-                const tables = ["PRJCT_CT_ATRZ", "PRJCT_CT_APLY", "PRJCT_CT_ATDRN"];
-                const deleteRow = tables.map(tbNm => ApiRequest("/boot/common/commonDelete", [{ tbNm }, param]));
+                // PRJCT_INDVDL_CT_MM의 mmAtrzCmptnYn이 null이면 삭제, null이 아니면 삭제 불가
+                const matches = (item) => 
+                    item.aplyYm === props.aplyYm &&
+                    item.aplyOdr === props.aplyOdr &&
+                    item.prjctId === props.prjctId &&
+                    item.empId === props.empId;
+    
+                const indivTarget = indivdlList.find(matches);
+                const aplyTarget = ctAply.filter(matches);
 
-                Promise.all(deleteRow).then(responses => {
+                const tables = ["PRJCT_CT_ATRZ", "PRJCT_CT_ATDRN", "PRJCT_CT_APLY"];
+                const deleteRow = async () => {
+                    for (const tbNm of tables) {
+                        try {
+                            await ApiRequest("/boot/common/commonDelete", [{ tbNm }, param]);
+                        } catch (error) {
+                            throw error;
+                        }
+                    }
+                };
+                deleteRow().then(() => {
+                }).catch(error => {
+                    console.error("Error:", error);
+                });
+
+                const { prjctCtAplySn, ...rest } = param;
+                if(indivTarget?.mmAtrzCmptnYn === null && aplyTarget.length === 1) {
+                    const deleteIndiv = await ApiRequest('/boot/common/commonDelete', [
+                        {tbNm: "PRJCT_INDVDL_CT_MM"}, rest
+                    ]);
+                }
+                const cardResult = ApiRequest('/boot/common/commonUpdate', [
+                    { tbNm: "CARD_USE_DTLS" },
+                    { prjctCtInptPsbltyYn: "Y" },
+                    { lotteCardAprvNo: props.lotteCardAprvNo }
+                ]);
+               
+                if(cardResult){
                     handleOpen("삭제되었습니다.");
                     getData();
-                }).catch(error => {
-                    console.error("error:", error);
-                });
+                }
+
             }
         } else { // 문서이동
-            // navigate("/elecAtrz/ElecAtrzDetail", {state: {elctrnAtrzId: props.data.elctrnAtrzId}})
+            navigate("/elecAtrz/ElecAtrzDetail", {state: {data: props}})
+        }
+    }
+
+    const calculateCustomSummary = (options) => {
+        const storeInfo = options.component.getDataSource().store()._array
+        let utztnAmt = 0;
+
+        storeInfo.forEach((item) => {
+            if (item.atrzDmndSttsCd !== 'VTW03704') {
+                utztnAmt += item.utztnAmt;
+            }
+        });
+        const totalAmt = utztnAmt;
+
+        if (options.summaryProcess ==="finalize") {
+            if (options.name === "utztnAmt") {
+                options.totalValue = totalAmt;
+            }
         }
     }
 
@@ -177,31 +227,36 @@ const ProjectExpense = () => {
                     onClick={onBtnClick}
                     grouping={groupingColumn}
                     groupingData={groupingData}
+                    noDataText={'등록된 청구내역이 없습니다.'}
                     groupingCustomizeText={groupingCustomizeText}
+                    calculateCustomSummary={calculateCustomSummary}
                 />
             </div>
         );
     };
 
     return (
-        <div className="container">
-            <div style={{ marginBottom: '100px' }}>
+        <div>
+            {/* {loading && (<div className="loading-overlay">요청 중입니다...</div>)} */}
+            <div style={{ marginLeft: '2%', marginRight: '2%', marginBottom: '10%' }}>
                 <div className="mx-auto" style={{ display: 'flex', marginTop: "20px", marginBottom: "30px" }}>
                     <h1 style={{ fontSize: "30px", marginRight: "20px" }}>프로젝트비용</h1>
                     {getButtonsShow().map(({ onClick, text, type }, index) => (
-                        <Button key={index} text={text} type={type} onClick={() => onClickAction(onClick)} style={{ marginRight: '5px' }} />))}
+                        <Button key={index} text={text} type={type} style={{ marginRight: '5px' }}
+                            onClick={onClick.name !== 'onPrintClick' ? () => handleOpen(onClick.msg, () => onClickAction(onClick))
+                                : () => onClickAction(onClick)} />))}
                 </div>
 
-                <div style={{marginBottom: '50px', width: 600 }}>
+                <div style={{ marginBottom: '50px', width: 600 }}>
                     {admin != undefined ? <></> :
-                    <SearchInfoSet
-                        callBack={searchHandle}
-                        props={searchInfo}
-                    /> }
+                        <SearchInfoSet
+                            callBack={searchHandle}
+                            props={searchInfo}
+                        />}
                 </div>
                 {admin != undefined ?
-                <RenderTopTable title={`*${admin.empno} ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} /> :
-                <RenderTopTable title={`* ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} /> }
+                    <RenderTopTable title={`*${admin.empno} ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} /> :
+                    <RenderTopTable title={`* ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} />}
                 <RenderTopTable title='* 전자결재 청구 내역' keyColumn={elcKeyColumn} columns={columnCharge} values={ctAtrz} />
 
                 {atrzDmndSttsCnt.ctReg > 0 || ctAtrzCmptnYn === null || ctAtrzCmptnYn === undefined
@@ -211,7 +266,6 @@ const ProjectExpense = () => {
                         onOptionChanged={onSelectionChanged}
                         itemTitleRender={itemTitleRender}
                         animationEnabled={true}
-                        height={1500}
                         itemComponent={({ data }) => {
                             const Component = React.lazy(() => import(`${data.url}`));
                             return (
@@ -232,13 +286,14 @@ const ProjectExpense = () => {
                         background: "#F2F2F2",
                         display: "flex",
                         alignItems: "center"
-                    }}><span style={{marginLeft: '200px', fontSize: '16pt'}}>입력 마감되었습니다.</span></div>}
+                    }}><span style={{ marginLeft: '200px', fontSize: '16pt' }}>입력 마감되었습니다.</span></div>}
             </div>
             <ProjectExpensePopup
                 visible={popVisible}
                 onPopHiding={onPopHiding}
                 aprvInfo={atrzDmndSttsCnt}
-                noDataCase={{cnt: ctAply.length, yn: mmAtrzCmptnYn}}
+                noDataCase={{ cnt: ctAply.length, yn: mmAtrzCmptnYn }}
+                mmAtrzCmptnYn={mmAtrzCmptnYn}
                 basicInfo={histYmOdr !== null ? histYmOdr : { aplyYm, aplyOdr, empId }}
             />
         </div>

@@ -1,22 +1,22 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import routes from './app-routes';
 import { SideNavInnerToolbar as SideNavBarLayout } from './layouts';
-import { Footer } from './components';
 import React, {useTransition} from 'react';
 import { useScreenSizeClass } from './utils/media-query';
-import {useCookies} from "react-cookie";
+import { useMediaQuery } from '../../utils/useMediaQuery';
 
 function CheckAuth(isPrivate){
     // 토큰이 저장된 상태를 검사하는 로직
     const token = localStorage.getItem('token');
-    const [cookies] = useCookies(["userInfo", "userAuth","deptInfo"]);
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    const userAuth = JSON.parse(localStorage.getItem("userAuth"));
 
-    if(token && isPrivate && cookies.userAuth !== undefined){
-        if(cookies.userAuth.find(item => item === "VTW04801")){
+    if(token && isPrivate && userInfo){
+        if(userAuth.find(item => item === "VTW04801")){
             return "TRUE";
         }
 
-        const isPrivateFound = cookies.userAuth.some(item => item === isPrivate);
+        const isPrivateFound = userAuth.some(item => item === isPrivate);
         if(isPrivateFound){
             return "TRUE";
         }else{
@@ -51,6 +51,7 @@ const PublicRoute = ({ children }) => {
 
 export default function Content() {
     const screenSizeClass = useScreenSizeClass();
+    const isLargeScreen = useMediaQuery('(min-width: 1650px)');
     const [isPending,startTransition] = useTransition();
 
   return (
@@ -65,18 +66,13 @@ export default function Content() {
                         <PrivateRoute isPrivate={isPrivate}>
                           <div className={`app ${screenSizeClass}`} style={{opacity: isPending ? 0.2 : 1}}>
                             <SideNavBarLayout>
-                            <div className={'content-block'}>
-                                <div className={'dx-card responsive-paddings'}> 
-                                {React.createElement(element)}
+                              {/*<div className={'content-block'}>*/}
+                                <div className={'dx-card responsive-paddings'}>
+                                  <div className={'contenter'}>
+                                    {React.createElement(element)}
+                                  </div>
                                 </div>
-                                <div style={{paddingBottom:"20px" }}>
-                                <Footer>
-                                    Copyright © 2024 VTW Inc TRSystem.
-                                        <br />
-                                        All trademarks or registered trademarks are property of their respective owners.
-                                 </Footer>
-                                </div>
-                              </div>
+                              {/*</div>*/}
                             </SideNavBarLayout>
                           </div>
                         </PrivateRoute>
@@ -93,4 +89,5 @@ export default function Content() {
 </>
   );
 }
+
 

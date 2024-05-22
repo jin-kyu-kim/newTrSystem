@@ -2,49 +2,41 @@ import React, { useCallback, useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { TabPanel } from "devextreme-react";
 import { useLocation } from "react-router-dom";
-import ApiRequest from "../../../utils/ApiRequest";
-import { useCookies } from "react-cookie";
-
-import ProjectDetailJson from "./ProjectDetailJson.json";
-
 import Button from "devextreme-react/button";
+
+import ApiRequest from "../../../utils/ApiRequest";
+import ProjectDetailJson from "./ProjectDetailJson.json";
 import { useModal } from "../../../components/unit/ModalContext";
-//TODO. 프로젝트 리스트에서 프로젝트 상태?형태?코드 정보 받아와서 그 정보에따라 변경원가 클릭시 작동 다르게 하기.
 
 const ProjectDetail = () => {
   const navigate = useNavigate ();
   const location = useLocation();
-  const prjctId = location.state.prjctId;
-  const totBgt = location.state.totBgt;
-  const bgtMngOdr = location.state.bgtMngOdr;
-  const ctrtYmd = location.state.ctrtYmd;
-  const stbleEndYmd = location.state.stbleEndYmd;
-  const bgtMngOdrTobe = location.state.bgtMngOdrTobe;
-  const bizSttsCd = location.state.bizSttsCd;
-  const deptId = location.state.deptId;
+  const {
+        prjctId,
+        totBgt,
+        bgtMngOdr,
+        ctrtYmd,
+        stbleEndYmd,
+        bgtMngOdrTobe,
+        bizSttsCd,
+        deptId,
+        prjctNm,
+        path
+  } = location.state || {};
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [atrzLnSn, setAtrzLnSn] = useState();
-  const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const atrzDmndSttsCd = "VTW03703";
 
-  const ProjectDetail = ProjectDetailJson;
   const { handleOpen } = useModal();
-  const empId = cookies.userInfo.empId;
+  const empId = userInfo.empId;
 
-  console.log("bgtMngOdrTobe", bgtMngOdrTobe)
-  console.log("bgtMngOdr", bgtMngOdr)
-  console.log("atrzLnSn",   atrzLnSn)
-  console.log("ctrtYmd",   ctrtYmd)
-  console.log("stbleEndYmd",   stbleEndYmd)
-
-  
+  /* 화면 최초 셋팅 */
   useEffect(() => {
-  
     const param = { 
       queryId: "projectMapper.retrievePrjctAtrzLnSn",
       prjctId: prjctId,
     };
-
     const response = ApiRequest("/boot/common/queryIdSearch", param);
 
     response.then((value) => {
@@ -56,8 +48,7 @@ const ProjectDetail = () => {
   }, []);
 
 
-
-  // 탭 변경시 인덱스 설정
+  /* 탭 변경시 인덱스 설정 */
   const onSelectionChanged = useCallback(
     (args) => {
       if (args.name === "selectedIndex") {
@@ -66,16 +57,16 @@ const ProjectDetail = () => {
     },
     [setSelectedIndex]
   );
-  
   const itemTitleRender = (a) => <span>{a.TabName}</span>;
 
-  /**
-   * 변경원가 버튼 클릭
-   */
+
+  /* 변경원가 버튼 클릭 */
   const onClikcChngBgt = async () => {
+
+
     if(atrzLnSn === undefined) {
       // null이면 check 할 필요가 없다.
-      const isconfirm = window.confirm("프로젝트 변경을 진행하시겠습니까?");
+      const isconfirm = window.confirm("원가 등록을 진행하시겠습니까?");
       if(isconfirm){
         await projectChgHandle();
       }
@@ -85,37 +76,40 @@ const ProjectDetail = () => {
       });
 
       if(result != null) {
-        if(result === 'VTW03701') {
-          // 임시저장인 경우
-          const isconfirm = window.confirm("임시저장된 내역이 있습니다. 수정을 진행하시겠습니까?");
-          if(isconfirm) {
-            await projectChgHandle();
-          }
-        } else if (result === 'VTW03704' ) {
-          // 반려인 경우
-          const isconfirm = window.confirm("기존에 반려된 요청이 존재합니다. 반려된 요청을 수정하시겠습니까?");
-          if(isconfirm) {
-              const isconfirm = window.confirm("기존에 반려된 요청의 변경 사항을 초기화하여 수정하시겠습니까?");
+          if(result === 'VTW03701') {
+              // 임시저장인 경우
+              // handleOpen("프로젝트 변경을 진행하시겠습니까?", projectChgHandle, true);
+              const isconfirm = window.confirm("프로젝트 변경을 진행하시겠습니까?");
               if(isconfirm) {
-                await resetPrmpc();
-              } else {
-                const isconfirm = window.confirm("반려된 요청을 이어서 수정하시겠습니까?");
-                if(isconfirm){
-                  await projectChgHandle();
+                await projectChgHandle();
+              }
+          } else if (result === 'VTW03704') {
+            // 생성중인 프로젝트가 아니고, 반려인 경우 작동
+            // handleOpen("기존에 반려된 요청이 존재합니다. 반려된 요청을 수정하시겠습니까?", projectChgHandle(result), true);
+            const isconfirm = window.confirm("반려된 요청이 존재합니다. 반려된 요청을 수정하시겠습니까?");
+            if(isconfirm) {
+                await projectChgHandle(result);
+            } else {
+              const isconfirm = window.confirm("반려된 내용을 제거하시겠습니까? 작성한 데이터가 사라집니다.");
+              if(isconfirm) {
+                const isconfirm = window.confirm("정말로 반려된 내용을 제거하시겠습니까?");
+                if(isconfirm) {
+                  await resetPrmpc();
                 }
               }
-          } 
-        } else {
-          const isconfirm = window.confirm("프로젝트 변경을 진행하시겠습니까?");
-          if(isconfirm){
-            await projectChgHandle();
+            }
+
+          } else {
+            const isconfirm = window.confirm("프로젝트 변경을 진행하시겠습니까?");
+            if(isconfirm){
+              await projectChgHandle();
+            }
           }
-        }
       }
     }
   };
 
-  const projectChgHandle = async () => {
+  const projectChgHandle = async (bfeAtrzDmndSttsCd) => {
 
       let targetOdr;
       
@@ -130,20 +124,24 @@ const ProjectDetail = () => {
       navigate("../project/ProjectChange",
         {
         state: { prjctId: prjctId
-               , ctrtYmd: ctrtYmd
-               , stbleEndYmd: stbleEndYmd
+               , originCtrtYmd: ctrtYmd
+               , originStbleEndYmd: stbleEndYmd
                , bgtMngOdr:bgtMngOdr
                , bgtMngOdrTobe: bgtMngOdrTobe
                , targetOdr: targetOdr
                , bizSttsCd: bizSttsCd
                , atrzLnSn: atrzLnSn
-               , deptId: deptId},
+               , deptId: deptId
+               , prjctNm: prjctNm
+               , bfeAtrzDmndSttsCd: bfeAtrzDmndSttsCd
+              },
       })
   }
 
   /**
    * 승인이 반려된 차수일 때 이를 초기화 요청 시
    * 다음차수로 올린 뒤 최종 승인 완료된 값을 넣어준다.
+   * + 프로젝트를 수행중으로 바꾼다.
    */
   const resetPrmpc = async () => {
     const date = new Date();
@@ -155,24 +153,26 @@ const ProjectDetail = () => {
       bgtMngOdrTobe: bgtMngOdrTobe,
       atrzDmndSttsCd: "VTW03701",
       regDt : date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0],
-      regEmpId: empId
+      regEmpId: empId,
+      bizSttsCd: bizSttsCd
     };
 
     try {
       const response = await ApiRequest("/boot/prjct/resetPrmpc", param);
-      console.log(response);
       if(response > 0) {
         navigate("../project/ProjectChange",
         {
-        state: { prjctId: prjctId
-               , ctrtYmd: ctrtYmd
-               , stbleEndYmd: stbleEndYmd
-               , bgtMngOdr: bgtMngOdr
-               , bgtMngOdrTobe: response
-               , targetOdr: response
-               , bizSttsCd: bizSttsCd
-               , atrzLnSn: atrzLnSn
-               , deptId: deptId},
+          state: {
+            prjctId: prjctId
+            , originCtrtYmd: ctrtYmd
+            , originStbleEndYmd: stbleEndYmd
+            , bgtMngOdr: bgtMngOdr
+            , bgtMngOdrTobe: response
+            , targetOdr: response
+            , bizSttsCd: bizSttsCd
+            , atrzLnSn: atrzLnSn
+            , deptId: deptId
+          },
         })
       }
 
@@ -189,7 +189,6 @@ const ProjectDetail = () => {
    * @returns 
    */
   const chkBgtOdr = async () => {
-    console.log("반려/임시저장 여부 확인");
 
     const param = { 
       queryId: "projectMapper.retrieveTmprRjctBgtOdr",
@@ -234,7 +233,7 @@ const ProjectDetail = () => {
       >
         <div style={{ marginRight: "20px", marginLeft: "20px" }}>
           <h1 style={{ fontSize: "30px" }}>프로젝트 관리</h1>
-          <div>{location.state.prjctNm}</div>
+          <div>{prjctNm}</div>
         </div>
       </div>
       <div className="buttons" align="right" style={{ margin: "20px" }}>
@@ -246,7 +245,7 @@ const ProjectDetail = () => {
           style={{ margin: "2px" }}
           onClick={onClikcChngBgt}
         >
-          변경원가
+          {bizSttsCd === "VTW00401" ? "원가등록" : "변경원가" }
         </Button>
         <Button
           width={110}
@@ -263,7 +262,7 @@ const ProjectDetail = () => {
           type="normal"
           stylingMode="outline"
           style={{ margin : '2px' }}
-          onClick={() => navigate("../project/ProjectList")}
+          onClick={() => navigate(`..${path}`)}
         >
           목록
         </Button>
@@ -279,7 +278,7 @@ const ProjectDetail = () => {
         <TabPanel
           height="auto"
           width="auto"
-          dataSource={ProjectDetail}
+          dataSource={ProjectDetailJson}
           selectedIndex={selectedIndex}
           onOptionChanged={onSelectionChanged}
           itemTitleRender={itemTitleRender}
@@ -296,6 +295,7 @@ const ProjectDetail = () => {
                   bgtMngOdr={bgtMngOdr} 
                   bgtMngOdrTobe={bgtMngOdrTobe} 
                   atrzDmndSttsCd={atrzDmndSttsCd}
+                  bizSttsCd={bizSttsCd}
                 />
               </React.Suspense>
             );

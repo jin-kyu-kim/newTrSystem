@@ -1,28 +1,31 @@
-import DataGrid, { Column, Export, Pager, Paging, Summary, TotalItem, GroupItem, Grouping, MasterDetail } from "devextreme-react/data-grid";
+import DataGrid, { Column, Export, Pager, Paging, Summary, TotalItem, GroupItem, Grouping, MasterDetail, Scrolling, ColumnFixing } from "devextreme-react/data-grid";
 import GridRows from "./GridRows";
 import AllowedPageSize from "./AllowedPageSize";
 
 const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, onClick,
                        wordWrap, onRowClick, excel, onExcel,onCellClick, grouping, groupingData, groupingCustomizeText,
-                       masterDetail, handleExpanding, focusedRowIndex, handleCheckBoxChange, checkBoxValue, prjctCmpr }) => {
+                       masterDetail, handleExpanding, focusedRowIndex, handleCheckBoxChange, checkBoxValue, prjctCmpr,
+                       noDataText, calculateCustomSummary, scrolling }) => {
+
+  const columnWidth = scrolling && { columnWidth: "auto" };
   return (
     <div className="wrap_table">
       <DataGrid
         keyExpr={keyColumn}
         id={"dataGrid"}
-        className={"table"}
         dataSource={values}
         showBorders={true}
-        showColumnLines={false}
+        showColumnLines={true}
         focusedRowEnabled={true}
         columnAutoWidth={false}
-        noDataText=""
+        noDataText={noDataText}
         onRowExpanding={handleExpanding}
         onRowDblClick={onRowDblClick}
         focusedRowIndex={focusedRowIndex}
         onRowClick={onRowClick}
         onExporting={onExcel}
         onCellClick={onCellClick}
+        {...columnWidth}
         onCellPrepared={(e) => {
 
           if (e.rowType === 'header') {
@@ -32,7 +35,11 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
 
           // 프로젝트 변경원가 비교 시 사용
           if(prjctCmpr!= undefined && prjctCmpr == true) {
-            if(e.rowType === 'data' && e.column.dataField === 'ajmtBgt' && e.data.ajmtBgt != 0) {
+            if(e.rowType === 'data' && e.column.dataField === 'ajmtBgt' && e.data.ajmtBgt < 0) {
+              e.cellElement.style.color = 'blue'
+            }
+
+            if(e.rowType === 'data' && e.column.dataField === 'ajmtBgt' && e.data.ajmtBgt > 0) {
               e.cellElement.style.color = 'red'
             }
           }
@@ -78,9 +85,10 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
         }
 
         {grouping &&
-          <Summary> 
+          <Summary calculateCustomSummary={calculateCustomSummary}> 
           {grouping.map(item => (
             <GroupItem
+              key={item.key}
               column={item.key}
               summaryType={item.summaryType}
               valueFormat={item.valueFormat}
@@ -90,6 +98,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
             ))}
         
           <TotalItem
+            key={groupingData.dataField}
             column={groupingData.totalTextColumn}
             customizeText={() => {
               return "총 계";
@@ -97,6 +106,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
           />
           {grouping.map(item => (
             <TotalItem
+                key={item.key}
                 name={item.key}
                 column={item.key}
                 summaryType={item.summaryType}
@@ -117,6 +127,12 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
           enabled={true}
           component={masterDetail}
       />}
+      {scrolling &&
+      <>
+      <ColumnFixing enabled={true} />
+      <Scrolling mode="virtual" />
+      </>
+      }
       </DataGrid>
     </div>
   );

@@ -27,6 +27,7 @@
             ,ELCTRN.ATRZ_DMND_STTS_CD		/* 결재요청상태코드 */
             ,CASE
                 WHEN VCATN.RTRCN_PRVONSH IS NOT NULL THEN CONCAT('취소 ', (SELECT CD_NM FROM CD WHERE CD_VALUE = ELCTRN.ATRZ_DMND_STTS_CD))
+                WHEN ELCTRN.ATRZ_DMND_STTS_CD = 'VTW03705' THEN '취소 문서'
                 ELSE (SELECT CD_NM FROM CD WHERE CD_VALUE = ELCTRN.ATRZ_DMND_STTS_CD)
                 END ATRZ_DMND_STTS_NM       /* 결재요청상태코드명 */
             ,ELCTRN.ELCTRN_ATRZ_ID		    /* 전자결재ID */
@@ -34,10 +35,20 @@
             ,VCATN.ATCHMNFL_ID				/* 첨부파일ID */
             ,ELCTRN.RTRCN_ELCTRN_ATRZ_ID	/* 취소전자결재ID */
             ,CASE
+                WHEN VCATN.VCATN_TY_CD NOT IN('VTW01204', 'VTW01207', 'VTW01208', 'VTW01209')  THEN 'FALSE'
+                WHEN ELCTRN.RTRCN_ELCTRN_ATRZ_ID IS NOT NULL THEN 'FALSE'
+                WHEN ELCTRN.ATRZ_DMND_STTS_CD = 'VTW03704' THEN 'FALSE'
+                WHEN ELCTRN.ATRZ_DMND_STTS_CD = 'VTW03705' THEN 'FALSE'
+                WHEN VCATN.VCATN_TY_CD = 'VTW01206' THEN 'FALSE'
+                ELSE 'TRUE'
+                END ATTACH_BUTTON_CTR
+            ,CASE
                 WHEN (SELECT ATRZ.RTRCN_ELCTRN_ATRZ_ID FROM ELCTRN_ATRZ ATRZ WHERE ATRZ.RTRCN_ELCTRN_ATRZ_ID = VCATN.ELCTRN_ATRZ_ID) IS NOT NULL THEN 'FALSE'
                 WHEN ELCTRN.RTRCN_ELCTRN_ATRZ_ID IS NOT NULL THEN 'FALSE'
+                WHEN ELCTRN.ATRZ_DMND_STTS_CD = 'VTW03704' THEN 'FALSE'
+                WHEN VCATN.VCATN_TY_CD = 'VTW01206' THEN 'FALSE'
                 ELSE 'TRUE'
-                END CANCLE_BUTTONCTR
+                END CANCLE_BUTTON_CTR
         FROM VCATN_ATRZ		VCATN
             ,ELCTRN_ATRZ	ELCTRN
             ,EMP 			EMP
@@ -49,7 +60,7 @@
         <if test="searchYear !=null and !searchYear.equals('')">
             AND VCATN_BGNG_YMD BETWEEN STR_TO_DATE(CONCAT(#{searchYear}, '0401'), '%Y%m%d') AND STR_TO_DATE(CONCAT(#{searchYear} + 1, '0331'), '%Y%m%d')
         </if>
-        ORDER BY VCATN.VCATN_BGNG_YMD DESC
+        ORDER BY VCATN.VCATN_BGNG_YMD DESC, VCATN.VCATN_TY_CD ASC
     </select>
 
 
@@ -121,11 +132,11 @@
             ,EMP 		EMP
         WHERE VMNG.EMP_ID = EMP.EMP_ID
         AND NEW_VCATN_YN = 'Y'
-        <if test="vcatnBgngYmd == null or vcatnBgngYmd.equals('')">
+        <if test="searchYear == null or searchYear.equals('')">
             AND DATE_FORMAT(SYSDATE(), '%Y%m%d') BETWEEN ALTMNT_BGNG_YMD AND ALTMNT_USE_END_YMD
         </if>
-        <if test="vcatnBgngYmd != null and !vcatnBgngYmd.equals('')">
-            AND #{vcatnBgngYmd} BETWEEN ALTMNT_BGNG_YMD AND ALTMNT_USE_END_YMD
+        <if test="searchYear != null and !searchYear.equals('')">
+            AND #{searchYear} BETWEEN SUBSTR(ALTMNT_BGNG_YMD, 1, 4) AND SUBSTR(ALTMNT_USE_END_YMD, 1, 4)
         </if>
         <if test="empId !=null and !empId.equals('')">
             AND EMP.EMP_ID = #{empId}
@@ -287,15 +298,22 @@
             ,DEPT.DEPT_ID
             ,DEPT.DEPT_NM
             ,CONCAT(DEPT_NM, ' ', EMP_FLNM, ' ', (SELECT CD_NM FROM CD WHERE CD_VALUE = EMP.JBPS_CD)) LIST_EMP_FLNM
-            ,'VTW00706' APPROVAL_CODE
+            ,#{approvalCode} APPROVAL_CODE
         FROM EMP		EMP
             ,DEPT 		DEPT
             ,DEPT_HNF	HNF
         WHERE HDOF_STTS_CD = 'VTW00301'
         AND EMP.EMP_ID = HNF.EMP_ID
         AND DEPT.DEPT_ID = HNF.DEPT_ID
-        AND DEPT.DEPT_ID = #{repDeptId}
-        AND EMP.EMP_FLNM IN ('이진원', '안주리')
+        <if test="state == 'ref' or state.equals('ref')">
+            AND EMP.EMPNO IN ('VK1434', 'VK1453')
+        </if>
+        <if test="state == 'review' or state.equals('review')">
+            AND EMP.EMPNO IN ('VK1021')
+        </if>
+        <if test="state == 'approval' or state.equals('approval')">
+            AND EMP.EMPNO IN ('VK0011')
+        </if>
         ORDER BY EMPNO
     </select>
 
@@ -347,7 +365,6 @@
             ,ATRZ.APLY_YMD              /* 신청일자 */
             ,ROUND(APLY.MD, 1)	MD		/* 근무시간비율 */
             ,ATRZ.RJCT_PRVONSH			/* 반려사유 */
-            ,ATRZ.PRJCT_APRVR_CD	    /* 프로젝트결재자코드 */
             ,ATRZ.ATRZ_DMND_STTS_CD	    /* 결재요청상태코드 */
             ,(SELECT CD_NM FROM CD WHERE CD_VALUE = ATRZ_DMND_STTS_CD)	ATRZ_DMND_STTS_CD_NM		/* 결재요청상태코드명 */
             ,ATRZ.APRVR_EMP_ID	        /* 결재자직원ID */
@@ -357,9 +374,10 @@
             ,''	VCATN_TY_CD				/* 휴가유형코드 */
             ,CONCAT(
                 ROUND(md * 8), '시간 | ',
-                (SELECT PRJCT_NM FROM PRJCT PRJCT WHERE PRJCT.PRJCT_ID = ATRZ.PRJCT_ID), '',
+                (SELECT PRJCT_NM FROM PRJCT PRJCT WHERE PRJCT.PRJCT_ID = ATRZ.PRJCT_ID), ' ',
                 IFNULL((SELECT EMP_FLNM FROM EMP EMP WHERE EMP.EMP_ID = APRVR_EMP_ID), ''), ' ',
-                IFNULL((SELECT CD_NM FROM CD WHERE CD_VALUE = ATRZ_DMND_STTS_CD), '')
+                IFNULL((SELECT CD_NM FROM CD WHERE CD_VALUE = ATRZ_DMND_STTS_CD), ''), ' ',
+                IFNULL(RJCT_PRVONSH, '')
             ) TEXT                      /* 결재상태내용 */
             ,''	VCATN_BGNG_YMD          /* 휴가시작일자 */
             ,''	VCATN_END_YMD           /* 휴가종료일자 */
@@ -392,7 +410,6 @@
             ,''
             ,''
             ,''
-            ,''
             ,VCATN_TY_CD
             ,CONCAT(VCATN_TY_NM, ' ', VCATN_TIME)
             ,VCATN_BGNG_YMD
@@ -406,8 +423,8 @@
 
 
     <!-- 프로젝트개인비용저장 -->
-    <insert id="retrievePrjctIndvdlCtMmStrg" parameterType="map">
-        /* indvdlClmMapper.retrievePrjctIndvdlCtMmStrg */
+    <insert id="mergePrjctIndvdlCtMmStrg" parameterType="map">
+        /* indvdlClmMapper.mergePrjctIndvdlCtMmStrg */
         INSERT INTO PRJCT_INDVDL_CT_MM
         VALUES (
             #{prjctId}			/* 프로젝트ID */
@@ -428,8 +445,8 @@
 
 
     <!-- 프로젝트MM신청삭제 -->
-    <delete id="retrievePrjctMmAplyDel" parameterType="map">
-        /* indvdlClmMapper.retrievePrjctMmAplyDel */
+    <delete id="deletePrjctMmAply" parameterType="map">
+        /* indvdlClmMapper.deletePrjctMmAply */
         DELETE FROM PRJCT_MM_APLY
         WHERE EMP_ID = #{empId}
         AND APLY_YM = #{aplyYm}
@@ -440,8 +457,8 @@
 
 
     <!-- 프로젝트MM결재삭제 -->
-    <delete id="retrievePrjctMmAtrzDel" parameterType="map">
-        /* indvdlClmMapper.retrievePrjctMmAtrzDel */
+    <delete id="deletePrjctMmAtrz" parameterType="map">
+        /* indvdlClmMapper.deletePrjctMmAtrz */
         DELETE FROM PRJCT_MM_ATRZ
         WHERE EMP_ID = #{empId}
         AND APLY_YM = #{aplyYm}
@@ -452,8 +469,8 @@
 
 
     <!-- 프로젝트MM신청저장 -->
-    <insert id="retrievePrjctMmAplyStrg" parameterType="map">
-        /* indvdlClmMapper.retrievePrjctMmAplyStrg */
+    <insert id="insertPrjctMmAplyStrg" parameterType="map">
+        /* indvdlClmMapper.insertPrjctMmAplyStrg */
         INSERT INTO PRJCT_MM_APLY
         VALUES
         (
@@ -474,15 +491,14 @@
 
 
     <!-- 프로젝트MM결재저장 -->
-    <insert id="retrievePrjctMmAtrzStrg" parameterType="map">
-        /* indvdlClmMapper.retrievePrjctMmAtrzStrg */
+    <insert id="insertPrjctMmAtrzStrg" parameterType="map">
+        /* indvdlClmMapper.insertPrjctMmAtrzStrg */
         INSERT INTO PRJCT_MM_ATRZ
         VALUES
         (
             #{rjctPrvonsh}
-            ,#{prjctAprvrCd}
-<!--            ,#{atrzDmndSttsCd}-->
-            ,"VTW03702"
+            ,#{atrzDmndSttsCd}
+<!--            ,"VTW03702"-->
             ,#{aprvrEmpId}
             ,#{prjctId}
             ,#{empId}
@@ -496,7 +512,6 @@
             ,#{empId}
             ,#{aplyYmd}
         )
-
     </insert>
 
 
@@ -505,7 +520,7 @@
         /* indvdlClmMapper.retrievePrjctMmSttsInq */
         UPDATE PRJCT_MM_ATRZ
         SET
-            ATRZ_DMND_STTS_CD = ''
+            ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
             ,MDFCN_DT = SYSDATE()
             ,MDFCN_EMP_ID = #{empId}
         WHERE EMP_ID = #{empId}
@@ -514,6 +529,22 @@
         AND APLY_YMD = #{aplyYmd}
         AND PRJCT_ID = #{prjctId}
     </update>
+
+
+<!--    &lt;!&ndash; 프로젝트MM결재수정 &ndash;&gt;-->
+<!--    <update id="retrievePrjctMmSttsInq" parameterType="map">-->
+<!--        /* indvdlClmMapper.retrievePrjctMmSttsInq */-->
+<!--        UPDATE PRJCT_MM_ATRZ-->
+<!--        SET-->
+<!--            ATRZ_DMND_STTS_CD = ''-->
+<!--            ,MDFCN_DT = SYSDATE()-->
+<!--            ,MDFCN_EMP_ID = #{empId}-->
+<!--        WHERE EMP_ID = #{empId}-->
+<!--        AND APLY_YM = #{aplyYm}-->
+<!--        AND APLY_ODR = #{aplyOdr}-->
+<!--        AND APLY_YMD = #{aplyYmd}-->
+<!--        AND PRJCT_ID = #{prjctId}-->
+<!--    </update>-->
 
     <!-- 프로젝트개인비용MM수정 -->
     <update id="updatePrjctIndvdlCtMm" parameterType="map">
@@ -585,9 +616,10 @@
             ,(SELECT CD_NM FROM CD WHERE CD_VALUE = CRTR_DATE.HLDY_CL_CD)	HLDY_CL_NM	/* 일자종류명 */
             ,HLDY_NM 		/* 공휴일명 */
             ,RM				/* 내용 */
+            ,VCATN_CNTRL_YMD_YN /* 휴가통제일자여부 */
         FROM CRTR_DATE
         WHERE SUBSTR(CRTR_YMD, 1, 4) BETWEEN DATE_FORMAT(SYSDATE(), '%Y') - 1 AND DATE_FORMAT(SYSDATE(), '%Y') + 1
-        AND HLDY_CL_CD = 'VTW05003'
+        AND (HLDY_CL_CD = 'VTW05003' OR VCATN_CNTRL_YMD_YN = 'Y')
     </select>
 
 
@@ -663,42 +695,159 @@
     </select>
 
 
-    <!-- 휴가배정관리수정_(회계휴가_공가) -->
-    <update id="retrieveVcatnAltmntMngMdfcn" parameterType="map">
-        /* indvdlClmMapper.retrieveVcatnAltmntMngMdfcn */
+    <!-- 휴가배정관리수정_(회계휴가_공가 승인) -->
+    <update id="updateVcatnAltmntMngMdfcn" parameterType="map">
+        /* indvdlClmMapper.updateVcatnAltmntMngMdfcn */
         UPDATE
-            VCATN_MNG
+            VCATN_MNG 	MNG1
+            ,(
+                SELECT
+                    USE_DAYCNT + #{newDaycnt} AS NEW_DAYCNT
+                    ,VCATN_REMNDR_DAYCNT - #{newDaycnt} AS NEW_VCATN_REMNDR_DAYCNT
+                    ,PBLEN_VCATN_USE_DAYCNT + #{newPblenVcatnUseDaycnt} AS NEW_PBLEN_VCATN_USE_DAYCNT
+                FROM VCATN_MNG
+                WHERE VCATN_YR = #{vcatnYr}
+                AND EMP_ID = #{empId}
+            )	        MNG2
         SET
-            MDFCN_DT 					= SYSDATE()						/* 수정일시 */
-            ,MDFCN_EMP_ID 				= #{mdfcnEmpId}					/* 수정직원ID */
-            <if test="pblenVcatnUseDaycnt == null or pblenVcatnUseDaycnt.equals('')">
-                ,USE_DAYCNT					= #{useDaycnt}              /* 사용일수 */
-                ,VCATN_REMNDR_DAYCNT	    = #{vcatnRemndrDaycnt}      /* 휴가잔여일수 */
+            MDFCN_DT = SYSDATE()			/* 수정일시 */
+            ,MDFCN_EMP_ID = #{mdfcnEmpId}	/* 수정직원ID */
+            <if test="newPblenVcatnUseDaycnt == null or newPblenVcatnUseDaycnt.equals('')">
+                ,MNG1.USE_DAYCNT = MNG2.NEW_DAYCNT							/* 사용일수 */
+                ,MNG1.VCATN_REMNDR_DAYCNT = MNG2.NEW_VCATN_REMNDR_DAYCNT	/* 휴가잔여일수 */
             </if>
-            <if test="pblenVcatnUseDaycnt != null and !pblenVcatnUseDaycnt.equals('')">
-                ,PBLEN_VCATN_USE_DAYCNT	= #{pblenVcatnUseDaycnt}		/* 공적휴가사용일수 */
+            <if test="newPblenVcatnUseDaycnt != null and !newPblenVcatnUseDaycnt.equals('')">
+                ,PBLEN_VCATN_USE_DAYCNT	= MNG2.NEW_PBLEN_VCATN_USE_DAYCNT	/* 공적휴가사용일수 */
             </if>
-        WHERE EMP_ID = #{empId}
-        AND VCATN_YR = #{vcatnYr}
-        <if test="newVcatnYn != null and !newVcatnYn.equals('')">
-            AND NEW_VCATN_YN = #{newVcatnYn}
-        </if>
+        WHERE MNG1.VCATN_YR = #{vcatnYr}
+        AND MNG1.EMP_ID = #{empId}
     </update>
 
-    <!-- 휴가배정관리수정_(신규휴가) -->
+    <!-- 휴가배정관리수정_(신규휴가 승인) -->
     <update id="retrieveNewVcatnAltmntMngMdfcn" parameterType="map">
         /* indvdlClmMapper.retrieveNewVcatnAltmntMngMdfcn */
         UPDATE
-            VCATN_MNG
+            VCATN_MNG 	MNG1
+            ,(
+                SELECT
+                    NEW_USE_DAYCNT + #{newDaycnt} AS NEW_DAYCNT
+                    ,NEW_REMNDR_DAYCNT - #{newDaycnt} AS NEW_VCATN_REMNDR_DAYCNT
+                FROM VCATN_MNG
+                WHERE VCATN_YR = #{vcatnYr}
+                AND EMP_ID = #{empId}
+                AND NEW_VCATN_YN = #{newVcatnYn}
+            )	        MNG2
         SET
-            NEW_USE_DAYCNT	            = #{newUseDaycnt}				/* 신규사용일수 */
-            ,NEW_REMNDR_DAYCNT	        = #{newRemndrDaycnt}			/* 신규잔여일수 */
-            ,MDFCN_DT 					= SYSDATE()						/* 수정일시 */
-            ,MDFCN_EMP_ID 				= #{mdfcnEmpId}					/* 수정직원ID */
-        WHERE EMP_ID = #{empId}
-        AND VCATN_YR = #{vcatnYr}
+            MDFCN_DT = SYSDATE()									/* 수정일시 */
+            ,MDFCN_EMP_ID = #{mdfcnEmpId}							/* 수정직원ID */
+            ,MNG1.NEW_USE_DAYCNT = MNG2.NEW_DAYCNT					/* 신규사용일수 */
+            ,MNG1.NEW_REMNDR_DAYCNT = MNG2.NEW_VCATN_REMNDR_DAYCNT	/* 신규잔여일수 */
+        WHERE MNG1.EMP_ID = #{empId}
+        AND MNG1.NEW_VCATN_YN = #{newVcatnYn}
     </update>
 
+
+    <!-- 휴가배정관리수정_(회계휴가_공가 취소승인) -->
+    <update id="updateVcatnAltmntMngCnclMdfcn" parameterType="map">
+        /* indvdlClmMapper.updateVcatnAltmntMngCnclMdfcn */
+        UPDATE
+            VCATN_MNG 	MNG1
+            ,(
+                SELECT
+                    USE_DAYCNT - #{newDaycnt} AS NEW_DAYCNT
+                    ,VCATN_REMNDR_DAYCNT + #{newDaycnt} AS NEW_VCATN_REMNDR_DAYCNT
+                    ,PBLEN_VCATN_USE_DAYCNT - #{newPblenVcatnUseDaycnt} AS NEW_PBLEN_VCATN_USE_DAYCNT
+                FROM VCATN_MNG
+                WHERE VCATN_YR = #{vcatnYr}
+                AND EMP_ID = #{empId}
+            )	        MNG2
+        SET
+            MDFCN_DT = SYSDATE()			/* 수정일시 */
+            ,MDFCN_EMP_ID = #{mdfcnEmpId}	/* 수정직원ID */
+            <if test="newPblenVcatnUseDaycnt == null or newPblenVcatnUseDaycnt.equals('')">
+                ,MNG1.USE_DAYCNT = MNG2.NEW_DAYCNT							/* 사용일수 */
+                ,MNG1.VCATN_REMNDR_DAYCNT = MNG2.NEW_VCATN_REMNDR_DAYCNT	/* 휴가잔여일수 */
+            </if>
+            <if test="newPblenVcatnUseDaycnt != null and !newPblenVcatnUseDaycnt.equals('')">
+                ,PBLEN_VCATN_USE_DAYCNT	= MNG2.NEW_PBLEN_VCATN_USE_DAYCNT	/* 공적휴가사용일수 */
+            </if>
+        WHERE MNG1.VCATN_YR = #{vcatnYr}
+        AND MNG1.EMP_ID = #{empId}
+    </update>
+
+
+    <!-- 휴가배정관리수정_(신규휴가 취소승인) -->
+    <update id="updateNewVcatnAltmntMngCnclMdfcn" parameterType="map">
+        /* indvdlClmMapper.updateNewVcatnAltmntMngCnclMdfcn */
+        UPDATE
+            VCATN_MNG 	MNG1
+            ,(
+                SELECT
+                    NEW_USE_DAYCNT - #{newDaycnt} AS NEW_DAYCNT
+                    ,NEW_REMNDR_DAYCNT + #{newDaycnt} AS NEW_VCATN_REMNDR_DAYCNT
+                FROM VCATN_MNG
+                WHERE EMP_ID = #{empId}
+                AND NEW_VCATN_YN = #{newVcatnYn}
+            )	        MNG2
+        SET
+            MDFCN_DT = SYSDATE()									/* 수정일시 */
+            ,MDFCN_EMP_ID = #{mdfcnEmpId}							/* 수정직원ID */
+            ,MNG1.NEW_USE_DAYCNT = MNG2.NEW_DAYCNT					/* 신규사용일수 */
+            ,MNG1.NEW_REMNDR_DAYCNT = MNG2.NEW_VCATN_REMNDR_DAYCNT	/* 신규잔여일수 */
+        WHERE MNG1.EMP_ID = #{empId}
+        AND MNG1.NEW_VCATN_YN = #{newVcatnYn}
+    </update>
+
+
+    <!-- 전자결재 MAX ROW 조회-->
+    <select id="retrieveElctrnAtrzCnt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        /* indvdlClmMapper.retrieveElctrnAtrzCnt */
+        SELECT *
+        FROM ELCTRN_ATRZ
+    </select>
+
+    <!-- 휴가취소결재수정 -->
+    <update id="updateElctrnAtrzCncl" parameterType="map">
+        /* indvdlClmMapper.updateElctrnAtrzCncl */
+        UPDATE ELCTRN_ATRZ
+        SET ATRZ_DMND_STTS_CD = 'VTW03705'
+        WHERE ELCTRN_ATRZ_ID = #{elctrnAtrzId}
+    </update>
+
+    <!-- 프로젝트목록조회 -->
+    <select id="retrievePrjctList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        /* indvdlClmMapper.retrievePrjctList */
+        SELECT
+            CONCAT('[', PRJCT_CD_IDNTFR, '] ', '[', EMP_FLNM, '] ', PRJCT_NM) AS PRJCT_NM
+            ,PRJCT_ID
+            ,PRJCT_MNGR_EMP_ID
+            ,EMP_FLNM
+        FROM PRJCT	PRJCT
+            ,EMP 	EMP
+        WHERE BIZ_STTS_CD = 'VTW00402'
+        AND PRJCT_MNGR_EMP_ID = EMP.EMP_ID
+    </select>
+
+    <!-- 직원휴직저장 -->
+    <insert id="insertEmpHist" parameterType="map">
+        /* indvdlClmMapper.insertEmpHist */
+        INSERT INTO EMP_HIST
+        VALUES(
+            #{empId}
+            ,(SELECT NULLIF(COUNT(*), 0) + 1 FROM EMP_HIST WHERE EMP_ID = #{empId})
+            ,'VTW00303'
+            ,(SELECT JBPS_CD FROM EMP WHERE EMP_ID = #{empId})
+            ,NULL
+            ,#{vcatnBgngYmd}
+            ,NULL
+            ,#{vcatnEndYmd}
+            ,NULL
+            ,SYSDATE()
+            ,#{sessionEmpId}
+            ,SYSDATE()
+            ,#{sessionEmpId}
+        )
+    </insert>
 
 
     <!-- =================================박지환_작업================================= -->
@@ -718,18 +867,12 @@
             UTZTN_DT,
             USE_OFFIC,
             UTZTN_AMT,
-            APRV_NO
+            LOTTE_CARD_APRV_NO
         FROM CARD_USE_DTLS cud
         WHERE 1 = 1
             AND cud.PRJCT_CT_INPT_PSBLTY_YN = 'Y'
         <if test="empId != null and !empId.equals('')">
             AND cud.EMP_ID = #{empId}
-        </if>
-        <if test="aplyYm != null and !aplyYm.equals('')">
-            AND cud.APLY_YM = #{aplyYm}
-        </if>
-        <if test="aplyOdr != null and !aplyOdr.equals('')">
-            AND cud.APLY_ODR = #{aplyOdr}
         </if>
         <if test="useOffic != null and !useOffic.equals('')">
             AND cud.USE_OFFIC LIKE CONCAT('%', #{useOffic}, '%')
@@ -838,7 +981,7 @@
           AND (
             (#{actionType} = 'INPUT' AND ATRZ_DMND_STTS_CD IS NULL) OR
             (#{actionType} = 'INPUT_CANCEL' AND ATRZ_DMND_STTS_CD = 'VTW03701') OR
-            (#{actionType} = 'APPROVE' AND ATRZ_DMND_STTS_CD = 'VTW03701') OR
+            (#{actionType} = 'APPROVE' AND (ATRZ_DMND_STTS_CD = 'VTW03701' OR ATRZ_DMND_STTS_CD IS NULL))OR
             (#{actionType} = 'APPROVE_CANCEL' AND ATRZ_DMND_STTS_CD IN ('VTW03702', 'VTW03704'))
             )
           AND PRJCT_CT_ATRZ.EMP_ID = #{empId}
@@ -863,6 +1006,7 @@
                           AND pca.EMP_ID = pcaz.EMP_ID
                           AND pca.APLY_YM = pcaz.APLY_YM
                           AND pca.APLY_ODR = pcaz.APLY_ODR
+                          AND pca.PRJCT_ID = pcaz.PRJCT_ID
         WHERE pca.EMP_ID = #{empId}
           AND pca.APLY_YM = #{aplyYm}
           AND pca.APLY_ODR = #{aplyOdr}
@@ -915,6 +1059,7 @@
           AND pcrz.EMP_ID = #{empId}
           AND pcrz.APLY_ODR  = #{aplyOdr}
           AND pcrz.ATRZ_DMND_STTS_CD = 'VTW03703'
+          AND pcrz.ATRZ_DMND_STTS_CD != 'VTW03704'
     </select>
 
     <!-- 개인비용청구 공휴일, 연차 포함 총 근무 시간 -->

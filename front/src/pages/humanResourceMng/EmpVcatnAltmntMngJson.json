@@ -1,13 +1,13 @@
 {
     "listKeyColumn": "empno",
     "listTableColumns": [
-        {"key": "empno", "value": "사번", "width":100},
-        {"key": "empFlnm", "value": "성명"},
-        {"key": "jobNm", "value": "직위"},
-        {"key": "tableAltmntDaycnt", "value": "배정", "width":70},
-        {"key": "tableUseDaycnt", "value": "사용", "width":70},
-        {"key": "tableRemndrDaycnt", "value": "잔여", "width":70},
-        {"key": "hdofSttsNm", "value": "재직상태", "width":100},
-        {"key": "link", "value": "화면", "width":100, "button":{"text" : "이동"}}
+        {"key": "empno", "value": "사번", "width":"15%"},
+        {"key": "empFlnm", "value": "성명", "width":"15%"},
+        {"key": "jobNm", "value": "직위", "width":"13%"},
+        {"key": "tableAltmntDaycnt", "value": "배정", "width": "10%"},
+        {"key": "tableUseDaycnt", "value": "사용", "width": "10%"},
+        {"key": "tableRemndrDaycnt", "value": "잔여", "width": "10%"},
+        {"key": "hdofSttsNm", "value": "재직상태", "width": "10%"},
+        {"key": "link", "value": "화면", "width": "10%", "button":{"text" : "이동"}}
     ]
 }

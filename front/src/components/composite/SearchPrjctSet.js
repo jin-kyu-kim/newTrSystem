@@ -5,6 +5,7 @@ import Box, {Item} from "devextreme-react/box"
 import { Button } from "devextreme-react/button";
 import { Popup } from "devextreme-react/popup";
 
+import "./SearchPrjctSet.css";
 import CustomDateRangeBox from "../unit/CustomDateRangeBox";
 import CustomCdComboBox from "../unit/CustomCdComboBox";
 import AutoCompleteProject from "../unit/AutoCompleteProject";
@@ -82,9 +83,8 @@ const SearchPrjctSet = ({ callBack, props, popup }) => {
   return (
     <div className="box_search" width="100%">
       <Box
-        direction="row"
-        width="100%"
-        height={40}
+        className="searchPrjctSet"
+        style={{display: "flex", alignItems: "center", height: 40}}
       >
         <Item className="prmpcInptSeCdItem" ratio={1} visible={props.prmpcInptSeCdItem}>
           <CustomCdComboBox
@@ -154,13 +154,15 @@ const SearchPrjctSet = ({ callBack, props, popup }) => {
             onEndDateChange={handleEndDateChange}
           />
         </Item>
-        <Item className="searchBtnItem" ratio={1} visible={props.searchBtnItem}>
-          <Button
-            onClick={handleSubmit} text="검색"
-          />
-        </Item>
-        <Item ratio={1} visible={props.insertBtnItem}>
-          <Button text="등록" onClick={onClickInsertBtn} />
+        <Item ratio={1} >
+          <Box>
+            <Item className="searchBtnItem" ratio={1} visible={props.searchBtnItem}>
+              <Button onClick={handleSubmit} text="검색" style={{margin: "5px 0px 0px 5px"}} />
+            </Item>
+            <Item ratio={1} visible={props.insertBtnItem}>
+              <Button text="등록" type='default' onClick={onClickInsertBtn} style={{margin: "5px 0px 0px 5px"}} />
+            </Item>
+          </Box>
         </Item>
       </Box>
       {popup ?

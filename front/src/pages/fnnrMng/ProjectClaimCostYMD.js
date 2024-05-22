@@ -25,7 +25,7 @@ const ProjectClaimCostYMD = ({ prjctId, prjctNm, startYmOdr, endYmOdr, empId, ex
             expensCd: expensCd
         };
         try{
-            const response = await ApiRequest('/boot/common/queryIdSearch', param);
+            const response = await ApiRequest('/boot/financialAffairMng/retrievePrjctCtClmYMDAccto', param);
             setExpenstAprvData(response);
         }catch (error){
             console.log(error);
@@ -36,23 +36,23 @@ const ProjectClaimCostYMD = ({ prjctId, prjctNm, startYmOdr, endYmOdr, empId, ex
         fields: [{
             caption: '프로젝트명',
             dataField: 'prjctNm',
-            width: 250,
+            width: 150,
             area: 'row',
             expanded: true,
         }, {
             caption: '직원명',
             dataField: 'empFlnm',
-            width: 150,
+            width: 100,
             area: 'row',
             expanded: true,
         }, {
             caption: '비용코드',
             dataField: 'cdNm',
-            width: 350,
+            width: '10%',
             area: 'row',
         }, {
             dataField: 'pivotDate',
-            width: 70,
+            width: 30,
             area: 'column',
         }, {
             groupName: 'date',
@@ -68,22 +68,22 @@ const ProjectClaimCostYMD = ({ prjctId, prjctNm, startYmOdr, endYmOdr, empId, ex
             dataType: 'number',
             summaryType: 'sum',
             format: 'fixedPoint',
-            width: 70,
+            width: 30,
             area: 'data',
-            customizeText: function(cellInfo) {
-                return cellInfo.valueText === '0'  ? '' : cellInfo.valueText;
-            }
+            // customizeText: function(cellInfo) {
+            //     return cellInfo.valueText === '0'  ? '' : cellInfo.valueText;
+            // }
         }, {
             caption: '근무시간',
             dataField: 'md',
             dataType: 'number',
             summaryType: 'sum',
             format: 'fixedPoint',
-            width: 70,
+            width: 30,
             area: 'data',
-            customizeText: function(cellInfo) {
-                return cellInfo.valueText === '0'  ? '' : cellInfo.valueText;
-            }
+            // customizeText: function(cellInfo) {
+            //     return cellInfo.valueText === '0'  ? '' : cellInfo.valueText;
+            // }
         }],
         store: expenseAprvData,
         retrieveFields: false,

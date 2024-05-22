@@ -19,7 +19,7 @@
     "caption": "등급",
     "dataField": "hnfGradNm",
     "width": 100,
-    "area": "row",
+    "area": "filter",
     "expanded": true,
     "showTotals": false
   },
@@ -27,7 +27,7 @@
     "caption": "담당업무",
     "dataField": "tkcgJob",
     "width": 100,
-    "area": "row",
+    "area": "filter",
     "expanded": true,
     "showTotals": false
   },
@@ -66,18 +66,7 @@
     "expanded": true
   },
   {
-    "caption": "예산",
-    "dataField": "expectMm",
-    "dataType": "number",
-    "summaryType": "sum",
-    "area": "data",
-    "format": {
-      "type": "fixedPoint",
-      "precision": 2
-    }
-  },
-  {
-    "caption": "사용",
+    "caption": "투입",
     "dataField": "mm",
     "area": "data",
     "dataType": "number",
@@ -89,24 +78,37 @@
   },
   {
     "caption": "가용",
-    "dataField": "calcCt",
-    "area": "data",
+    "dataField": "expectMm",
     "dataType": "number",
     "summaryType": "sum",
+    "area": "data",
     "format": {
       "type": "fixedPoint",
       "precision": 2
     }
-  },{
-    "caption": "금액",
-    "width": 30,
-    "dataField": "untpc",
+  },
+  {
+    "caption": "사용금액",
+    "width": 50,
+    "dataField": "giveCt",
     "area": "data",
     "dataType": "number",
     "summaryType": "sum",
     "format": {
        "type": "fixedPoint",
         "thousandsSeparator": ","
+    }
+  },
+  {
+    "caption": "가용금액",
+    "width": 50,
+    "dataField": "calcCt",
+    "area": "data",
+    "dataType": "number",
+    "summaryType": "sum",
+    "format": {
+      "type": "fixedPoint",
+      "thousandsSeparator": ","
     }
   }
 ]

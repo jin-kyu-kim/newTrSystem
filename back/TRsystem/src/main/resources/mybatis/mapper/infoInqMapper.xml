@@ -3,111 +3,102 @@
 
 <mapper namespace="com.trsystem.mybatis.mapper.infoInqMapper">
 	<select id="retrieveEmpList" parameterType="map" resultType="com.trsystem.LowerHashMap">
-
-		SELECT
-		E.EMP_ID AS EMP_ID,
-		E.EMPNO AS EMPNO,
-		E.EMP_FLNM AS EMP_FLNM,
-		E.EMP_TY_CD AS EMP_TY_CD,
-		C.CD_NM AS JBPS_NM,
-		MAX(EH.JNCMP_YMD) AS JNCMP_YMD, -- 최신 JNCMP_YMD로 수정
-		GROUP_CONCAT(DISTINCT D.DEPT_NM) AS DEPT_ID,
-		E.TELNO AS TELNO,
-		E.EML AS EML,
-		C2.CD_NM AS HDOF_STTS_NM,
-		COUNT(*) OVER () AS TOTAL_ITEMS,
-		C3.CD_NM AS BANK_NM,
-		E.ACTNO AS ACTNO,
-		C.CD_VALUE AS JBPS_CD,
-		C3.CD_VALUE AS BANK_CD,
-		C2.CD_VALUE AS HDOF_STTS_CD
-		FROM
-		EMP E
-		LEFT OUTER JOIN
-		CD C ON C.CD_VALUE = E.JBPS_CD
-		LEFT OUTER JOIN
-		DEPT_HNF DF ON E.EMP_ID = DF.EMP_ID
-		LEFT OUTER JOIN
-		DEPT D ON D.DEPT_ID = DF.DEPT_ID
-		LEFT OUTER JOIN
-		CD C2 ON C2.CD_VALUE = E.HDOF_STTS_CD
-		LEFT OUTER JOIN
-		CD C3 ON C3.CD_VALUE = E.BANK_CD
-		LEFT OUTER JOIN
-		EMP_HIST EH ON EH.EMP_ID = E.EMP_ID
+	SELECT *
+    FROM (SELECT
+			E.EMP_ID AS EMP_ID,
+			E.EMPNO AS EMPNO,
+			E.EMP_FLNM AS EMP_FLNM,
+			E.EMP_TY_CD AS EMP_TY_CD,
+			C.CD_NM AS JBPS_NM,
+			MAX(EH.JNCMP_YMD) AS JNCMP_YMD, -- 최신 JNCMP_YMD로 수정
+			GROUP_CONCAT(DISTINCT D.DEPT_NM) AS DEPT_ID,
+			E.TELNO AS TELNO,
+			E.EML AS EML,
+			C2.CD_NM AS HDOF_STTS_NM,
+			COUNT(*) OVER () AS TOTAL_ITEMS,
+			C3.CD_NM AS BANK_NM,
+			E.ACTNO AS ACTNO,
+			C.CD_VALUE AS JBPS_CD,
+			C3.CD_VALUE AS BANK_CD,
+			C2.CD_VALUE AS HDOF_STTS_CD
+		FROM EMP E
+		LEFT OUTER JOIN CD C ON C.CD_VALUE = E.JBPS_CD
+		LEFT OUTER JOIN DEPT_HNF DF ON E.EMP_ID = DF.EMP_ID
+		LEFT OUTER JOIN DEPT D ON D.DEPT_ID = DF.DEPT_ID
+		LEFT OUTER JOIN CD C2 ON C2.CD_VALUE = E.HDOF_STTS_CD
+		LEFT OUTER JOIN CD C3 ON C3.CD_VALUE = E.BANK_CD
+		LEFT OUTER JOIN EMP_HIST EH ON EH.EMP_ID = E.EMP_ID
 		WHERE 1=1
-							AND EMP_TY_CD NOT LIKE 'VTW00203%'
-	                        <if test="empno != null and empno !=''">
-	                            AND E.EMPNO LIKE CONCAT('%', #{empno}, '%')
-	                        </if>
-	 
-	                        <if test="empFlnm != null and empFlnm !=''">
-	                            AND E.EMP_FLNM LIKE CONCAT('%', #{empFlnm}, '%')
-	                        </if>
-	 
-	                        <if test="jbpsNm != null and jbpsNm !=''">
-	                            AND E.JBPS_CD = #{jbpsNm}
-	                        </if>
-	 
-	                        <if test="telNo != null and telNo !=''">
-	                            AND E.TELNO LIKE CONCAT('%', #{telNo}, '%')
-	                        </if>
-	                        <if test="deptId != null and deptId !=''">
-	                            AND D.DEPT_ID = #{deptId}
-	                        </if>
-	 
-	                        <if test="hdofSttsNm != null and hdofSttsNm !=''">
-	                            AND C2.CD_VALUE = #{hdofSttsNm}
-	                        </if>
-	                        <if test="hdofSttsNm == null and hdofSttsNm !=''">
-								AND C2.CD_Value = "VTW00301"
-							</if>
-	                         <if test="empId != null and empId !=''">
-	                            AND E.EMP_ID = #{empId}
-	                        </if>
+		AND EMP_TY_CD != 'VTW00203'
+		AND E.HDOF_STTS_CD = 'VTW00301'
+		AND E.EMPNO NOT BETWEEN 'VK0101' AND 'VK0111'
+		<if test="empno != null and empno !=''">
+			AND E.EMPNO LIKE CONCAT('%', #{empno}, '%')
+		</if>
+		<if test="empFlnm != null and empFlnm !=''">
+			AND E.EMP_FLNM LIKE CONCAT('%', #{empFlnm}, '%')
+		</if>
+		<if test="jbpsNm != null and jbpsNm !=''">
+			AND E.JBPS_CD = #{jbpsNm}
+		</if>
+		<if test="telNo != null and telNo !=''">
+			AND E.TELNO LIKE CONCAT('%', #{telNo}, '%')
+		</if>
+		<if test="deptId != null and deptId !=''">
+			AND D.DEPT_ID = #{deptId}
+		</if>
+		<if test="hdofSttsNm != null and hdofSttsNm !=''">
+			AND C2.CD_VALUE = #{hdofSttsNm}
+		</if>
+		<if test="hdofSttsNm == null and hdofSttsNm !=''">
+			AND C2.CD_Value = "VTW00301"
+		</if>
+		<if test="empId != null and empId !=''">
+			AND E.EMP_ID = #{empId}
+		</if>
 		GROUP BY
-		E.EMP_ID, E.EMPNO, E.EMP_FLNM, E.EMP_TY_CD, C.CD_NM,
-		E.TELNO, E.EML, C2.CD_NM, C3.CD_NM, E.ACTNO, C.CD_VALUE, C3.CD_VALUE, C2.CD_VALUE
-		ORDER BY
-		E.JBPS_CD ASC
+			E.EMP_ID, E.EMPNO, E.EMP_FLNM, E.EMP_TY_CD, C.CD_NM,
+			E.TELNO, E.EML, C2.CD_NM, C3.CD_NM, E.ACTNO, C.CD_VALUE, C3.CD_VALUE, C2.CD_VALUE ) T
+		ORDER BY JBPS_CD ASC
 	</select>
+
 	<!--직급발령정보 조회-->
 	<select id="retrieveEmpJbpsHist" parameterType="map" resultType="com.trsystem.LowerHashMap">
-	WITH EMP_HIST_RANK AS (
-    SELECT
-       		EMP_ID,
-       	 	JBPS_CD,
-        	EMP_HIST_SN,
-        	ROW_NUMBER() OVER (PARTITION BY EMP_ID ORDER BY REG_DT) AS RowNum ,
-       		REG_DT,
-        	EMP_INFO_CHG_ODR,
-        	REG_EMP_ID 
-    FROM 
-    		EMP_HIST
-	)
-	SELECT	
-		    A.EMP_ID,
-		    B.EMP_INFO_CHG_ODR,
-		    B.EMP_HIST_SN,
-		    A.JBPS_CD AS JBPS_CD,
-		    C.CD_NM AS JBPS_NM,
-		    DATE_FORMAT(B.REG_DT,'%Y-%m-%d') AS REG_DT,
-		    D.EMPNO AS REG_EMPNO
-	FROM 
-		EMP_HIST_RANK A
-		JOIN EMP_HIST_RANK B ON A.EMP_ID = B.EMP_ID AND A.RowNum = B.RowNum - 1
-		LEFT OUTER JOIN CD C ON C.CD_VALUE =A.JBPS_CD
-		LEFT OUTER JOIN EMP D ON D.EMP_ID=A.REG_EMP_ID 
-	WHERE 
-	  	1=1
-	  	AND A.JBPS_CD <![CDATA[<>]]> B.JBPS_CD
-	 	<if test="empId != null and empId !=''">
-		AND A.EMP_ID = #{empId}
-		</if>
-	ORDER BY 
-		EMP_HIST_SN DESC;
-		
-	</select>	
+		WITH EMP_HIST_RANK AS (
+		SELECT
+				EMP_ID,
+				JBPS_CD,
+				EMP_HIST_SN,
+				ROW_NUMBER() OVER (PARTITION BY EMP_ID ORDER BY REG_DT) AS RowNum ,
+				REG_DT,
+				EMP_INFO_CHG_ODR,
+				REG_EMP_ID
+		FROM
+				EMP_HIST
+		)
+		SELECT
+				A.EMP_ID,
+				B.EMP_INFO_CHG_ODR,
+				B.EMP_HIST_SN,
+				A.JBPS_CD AS JBPS_CD,
+				C.CD_NM AS JBPS_NM,
+				DATE_FORMAT(B.REG_DT,'%Y-%m-%d') AS REG_DT,
+				D.EMPNO AS REG_EMPNO
+		FROM
+			EMP_HIST_RANK A
+			JOIN EMP_HIST_RANK B ON A.EMP_ID = B.EMP_ID AND A.RowNum = B.RowNum - 1
+			LEFT OUTER JOIN CD C ON C.CD_VALUE =A.JBPS_CD
+			LEFT OUTER JOIN EMP D ON D.EMP_ID=A.REG_EMP_ID
+		WHERE
+			1=1
+			AND A.JBPS_CD <![CDATA[<>]]> B.JBPS_CD
+			<if test="empId != null and empId !=''">
+			AND A.EMP_ID = #{empId}
+			</if>
+		ORDER BY
+			EMP_HIST_SN DESC;
+	</select>
+
 	<select id="retrieveEmpAcbg" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT 				
 			ACBG_SN
@@ -219,10 +210,10 @@
 			)
 		</if>
 		ORDER BY
-		CASE
-		WHEN SGNAL_ORDR IN (1, 3) THEN 0
-		ELSE 1
-		END,
+			CASE
+			WHEN SGNAL_ORDR IN (1, 3) THEN 0
+			ELSE 1
+			END,
 		REG_DT DESC
 	</select>
 
@@ -250,14 +241,12 @@
 	</select>
 	
 	<select id="retriveDeptSearchList" parameterType="map" resultType="com.trsystem.LowerHashMap">
-    
-    SELECT 
-       A.DEPT_NM AS DEPT_NM, 
-       B.DEPT_ID AS DEPT_ID 
-    FROM DEPT A 
-    INNER JOIN DEPT_HNF B ON A.DEPT_ID = B.DEPT_ID 
-    
-</select>
+		SELECT
+			DEPT_NM,
+			DEPT_ID
+		FROM DEPT
+		WHERE END_YN = 'N'
+	</select>
 
 	<select id="retrieveEmpBassInfo" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT
@@ -271,10 +260,8 @@
 				 LEFT OUTER JOIN DEPT D ON D.DEPT_ID  = DH.DEPT_ID
 		WHERE E.EMP_ID = #{empId}
 	</select>
-	
-	
-	<select id="selectEmpInfoCnt" parameterType="map" resultType="com.trsystem.LowerHashMap">
 
+	<select id="selectEmpInfoCnt" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT COUNT(*) AS CNT FROM EMP_DTL WHERE EMP_ID = #{empId}
 	</select>
 

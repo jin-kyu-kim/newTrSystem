@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef  } from 'react';
 import electAtrzJson from './ElecAtrzJson.json';
 import ApiRequest from 'utils/ApiRequest';
 import './ElecAtrz.css';
@@ -8,15 +8,11 @@ import ElectGiveAtrzClm from './ElectGiveAtrzClm';
 import ElecAtrzCtrtOutordHnfDetail from './ctrtInfo/ElecAtrzCtrtOutordHnfDetail';
 
 
-const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prjctData }) => {
+const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prjctData, onSendData }) => {
     const { vacDtl, clmColumns,  groupingColumn, groupingData, ctrtInfo } = electAtrzJson.electAtrzDetail;
     const [ data, setData ] = useState([]);
-
-
-    console.log("detailData 탭디테일!!", detailData);
-    console.log("ctrtTyCd 탭디테일!!", ctrtTyCd);
-    console.log("prjctData 탭디테일!!", prjctData);
-    console.log("sttsCd 탭디테일!!", sttsCd);
+    const [ ctrtData, setCtrtData ] = useState({})
+    const [ clmData, setClmData ] = useState({})
 
     /* ===================================  필요 데이터 조회  ====================================*/
     useEffect(() => {
@@ -39,7 +35,7 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
             getExpensClm();
 
         /* 재료비 계약, 외주업체 계약, 외주인력 계약 */
-        } else if(["VTW04908","VTW04909","VTW04910","VTW04914"].includes(detailData.elctrnAtrzTySeCd)){
+        } else if(["VTW04908","VTW04909","VTW04910","VTW04911","VTW04912","VTW04913","VTW04914"].includes(detailData.elctrnAtrzTySeCd)){
 
             const getCtrtInfo = async () => {
                 
@@ -50,7 +46,6 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
                                      [{ tbNm: "CTRT_ATRZ" }, { elctrnAtrzId: elctrnAtrzId }]
                     );
                     setData(response);
-                    console.log("response",response);
     
                 } catch (error) {
                     console.log('error', error);
@@ -172,6 +167,86 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
         );
     }
 
+
+    const handleCtrtData = (data) => {
+        if(Array.isArray(data)){
+            setCtrtData(prevData => ({
+                ...prevData,
+                arrayData: data
+            }));
+        }else if(typeof data === "object"){
+            setCtrtData(prevData => ({
+                ...prevData,
+                ...data
+            }));
+        }
+    }
+
+    const handleData = (data) => {
+        if(Array.isArray(data)){
+            setClmData(prevData => ({
+                ...prevData,
+                arrayData: data
+            }));
+        }else if(typeof data === "object"){
+            setClmData(prevData => ({
+                ...prevData,
+                ...data
+            }));
+        }
+    }
+
+    //외주업체, 재료비 ctrtYmd   ctrtAmt  pay
+    //외주인력 id  entrpsGiveCtrtAmt  hnfCtrtDtlMm
+    useEffect(() => {
+        if (clmData.rate) {
+            let ctrtItems = [];
+
+            if(ctrtData.arrayData.length>1){
+      
+                ctrtData.arrayData.forEach((child) => {
+                    //외주인력
+                    if (child.hnfCtrtDtlMm) {
+                        child.hnfCtrtDtlMm.forEach((item) => {
+                            if (item.id === clmData.giveYmd) {    
+                                item.giveAmt = item.entrpsGiveCtrtAmt + item.entrpsGiveCtrtAmt * (parseFloat(clmData.rate) / 100);
+                                item.outordLbrcoPrmpcSn = child.outordLbrcoPrmpcSn;          
+                                item.elctrnAtrzId = child.elctrnAtrzId;
+
+                                ctrtItems.push(item);
+                            }
+                        });
+                    }
+                    //재료비,외주업체
+                    if (child.pay) {
+                        child.pay.forEach((item) => {
+                            if (item.ctrtYmd === clmData.giveYmd) {    
+                                item.giveAmt = item.ctrtAmt + item.ctrtAmt * (parseFloat(clmData.rate) / 100);
+                                                            
+                                ctrtItems.push(item);
+                            }
+                        });
+                    }
+                });
+
+                setClmData((prev) => ({
+                    ...prev,
+                    ctrt: ctrtItems,
+                    
+                }));
+            }
+        }
+    }, [ctrtData, clmData.rate, clmData.giveYmd, setClmData]);
+
+
+    useEffect(()=>{
+        if(!!onSendData){
+            onSendData(clmData);
+        }
+    },[clmData])
+
+
+
     /* ================  전자결재유형코드에 따른 특수 컴포넌트 렌더링  =================*/
 
     const renderSpecialComponent = () => {
@@ -184,15 +259,17 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
             case 'VTW04908':
             case 'VTW04909':
             case 'VTW04910':
+            case 'VTW04911':
+            case 'VTW04912':
+            case 'VTW04913':
             case 'VTW04914':
                 return  <>
                         <h3>계약정보</h3>
-
                         <CtrtInfo ctrtInfo={ctrtInfo} data={data} ctrtTyCd={ctrtTyCd}/>
-                        {((detailData.ctrtElctrnAtrzId && detailData.elctrnAtrzTySeCd === "VTW04914" && ctrtTyCd !== "VTW04908") || ["VTW04909","VTW04910"].includes(detailData.elctrnAtrzTySeCd))
+                        {((detailData.ctrtElctrnAtrzId && ["VTW04912","VTW04913","VTW04914"].includes(detailData.elctrnAtrzTySeCd) && (ctrtTyCd? ctrtTyCd !== "VTW04908" : detailData.ctrtTyCd !== "VTW04908")) || ["VTW04909","VTW04910"].includes(detailData.elctrnAtrzTySeCd))
                         ? 
-                        <ElecAtrzCtrtInfoDetail data={detailData} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd } /> 
-                        : <ElecAtrzCtrtOutordHnfDetail data={detailData} sttsCd={sttsCd} prjctData={prjctData} prjctId={prjctId} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd } />}
+                        <ElecAtrzCtrtInfoDetail data={detailData} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd } onSendData={handleCtrtData} /> 
+                        : <ElecAtrzCtrtOutordHnfDetail data={detailData} sttsCd={sttsCd} prjctData={prjctData} prjctId={prjctId} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd } onSendData={handleCtrtData}/>}                   
                         </>
             default:
                 return null;

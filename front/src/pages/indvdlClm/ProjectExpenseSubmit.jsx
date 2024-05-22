@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { Button } from 'devextreme-react/button'
-import ApiRequest from "utils/ApiRequest";
 import { useModal } from "../../components/unit/ModalContext";
+import ApiRequest from "utils/ApiRequest";
 
-const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, buttonGroup, getData }) => {
+const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, buttonGroup, getData, sendAtrz }) => {
+  
   const [ isComplete, setIsComplete ] = useState(false);
   const { handleOpen } = useModal();
+
   useEffect(() => {
     if (selectedItem.length > 0 && isComplete) {
       handleOpen("등록되었습니다.");
@@ -14,14 +16,13 @@ const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, butt
   }, [isComplete]);
 
   const handleSubmit = async () => {
+
     const validationResults = await validateFields();
 
     if (!validationResults.isValid) {
       validationResults.messages.length !== 0 && handleOpen(validationResults.messages.join('\n'));
       return;
     }
-
-    if (!window.confirm("등록하시겠습니까?")) return;
 
     try {
       let result;
@@ -44,8 +45,9 @@ const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, butt
         const updates = selectedItem.map(item => ApiRequest("/boot/common/commonUpdate", [
           { tbNm: "CARD_USE_DTLS" },
           { prjctCtInptPsbltyYn: "N" },
-          { cardUseSn: item.cardUseSn }
+          { lotteCardAprvNo: item.lotteCardAprvNo }
         ]));
+
         await Promise.all(updates);
       }
       return true;
@@ -86,13 +88,16 @@ const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, butt
       aplyYm: oneRow.aplyYm,
       aplyOdr: oneRow.aplyOdr,
     };
+    
     return { ...baseProps, ...additionalProps };
   }; 
 
   return (
     <div style={{marginBottom: '20px'}}>
       {buttonGroup.map((btn, index) => (
-        <Button onClick={btn.onClick === 'handleDelete' ? handleDelete : handleSubmit} 
+        <Button onClick={btn.onClick === 'handleDelete' ? () => handleOpen(btn.msg, handleDelete)
+         : btn.onClick === 'handleSubmit' ? () => handleOpen(btn.msg, handleSubmit, true) 
+         : () => sendAtrz(selectedItem) } 
           useSubmitBehavior={true} type={btn.type} text={btn.text} 
           style={{marginRight: '10px'}} key={index} />
       ))}

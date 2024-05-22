@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Popup } from "devextreme-react/popup";
 import { Button } from 'devextreme-react/button';
+import { parse, addMonths, subMonths  } from 'date-fns';
 
 import CustomTable from 'components/unit/CustomTable';
 
@@ -15,9 +16,6 @@ import ApiRequest from "utils/ApiRequest";
  * onSendData : 부모창으로 데이터 전송 위한 함수
  */
 const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, sttsCd, ctrtTyCd }) => {
-    // console.log("prjctData 이거뭐냐", prjctData);
-    // console.log("sttsCd 이거뭐냐", sttsCd);
-    // console.log("data 이거뭐냐", data);
 
     const ctrtYmd = prjctData.ctrtYmd;
     const stbleEndYmd = prjctData.stbleEndYmd; 
@@ -44,11 +42,12 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
         }
   ]
 
+
   /*
     *상태코드에 따른 버튼 변경
     */
     if(["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707"].includes(sttsCd)
-       || data.elctrnAtrzTySeCd === "VTW04914"){
+       || ["VTW04911","VTW04912","VTW04913","VTW04914",].includes(data.elctrnAtrzTySeCd)){
         tableColumns = tableColumns.filter(item => item.value !== '삭제');
 
         tableColumns = tableColumns.map((item) => {
@@ -67,13 +66,13 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
 
 
    /* =========================  월별 데이터 생성  =========================*/
-    const makeMonthlyData = (start, end) => {
-        const startData = new Date(start.substring(0, 4), start.substring(4, 6) - 1, start.substring(6, 8));
-        const endData = new Date(end.substring(0, 4), end.substring(4, 6) - 1, end.substring(6, 8));
+    const makeMonthlyData = (start, end) => {      
+        const startData = start ? subMonths(parse(start, 'yyyyMMdd', new Date()), 1) : subMonths(new Date(), 1);
+        const endData = end ? addMonths(parse(end, 'yyyyMMdd', new Date()), 1) : addMonths(start, 16);
 
-        const result = [{ "key": "atrzStepCdNm", "value": "구분"},
-                        { "key": "mm", "value": "총MM"},
-                        { "key": "total", "value": "총합계", "currency": true}
+        const result = [{ "key": "atrzStepCdNm", "value": "구분", "fixed": true},
+                        { "key": "mm", "value": "총MM", "fixed": true},
+                        { "key": "total", "value": "총합계",  "fixed": true, "currency": true,}
                     ];
 
         let currentDate = new Date(startData);
@@ -83,13 +82,15 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
             result.push({ value: formattedYearMonth,
                 subColumns: [
                         { key: `mm-${yearMonth}`, value: "MM"},
-                        { key: `cash-${yearMonth}`, value: "금액", "currency": true}
+                        { key: `cash-${yearMonth}`, value: "업체금액", "currency": true},
+                        { key: `indvcash-${yearMonth}`, value: "개인금액", "currency": true}
                 ]
             })
 
             summaryColumn.push(
-                { key: `mm-${yearMonth}`, value: `mm-${yearMonth}`, type: "sum", format: "총 {0} MM", precision: 2 },
-                { key: `cash-${yearMonth}`, value: `cash-${yearMonth}`, type: "sum", format: "총 {0} 원", precision: 0 }
+                { key: `mm-${yearMonth}`, value: `mm-${yearMonth}`, type: "sum", format: "총 {0} MM", precision: 2,  },
+                { key: `cash-${yearMonth}`, value: `cash-${yearMonth}`, type: "sum", format: "총 {0} 원", precision: 0 },
+                { key: `indvcash-${yearMonth}`, value: `indvcash-${yearMonth}`, type: "sum", format: "총 {0} 원", precision: 0 }
             )
 
             currentDate.setMonth(currentDate.getMonth() + 1);
@@ -111,12 +112,15 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
         }else if(["VTW03702","VTW03703","VTW03704","VTW03705"].includes(sttsCd)) {
             getTempData();
         }
-        else if(["VTW03405"].includes(sttsCd)){   //지급
+        /* 지급 조회 */
+        else if(["VTW03405"].includes(sttsCd)){   
             getTempData();
         } else if(sttsCd === "VTW05407") {
             getTempData();
         }
     }, [data.ctrtElctrnAtrzId])
+
+    
 
     const getTempData = async () => {
         const dtlParam = {
@@ -125,16 +129,14 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
             elctrnAtrzTySeCd: ctrtTyCd ? ctrtTyCd : data.elctrnAtrzTySeCd
         };
         const dtlResponse = await ApiRequest("/boot/common/queryIdSearch", dtlParam);
-   
+    
         const dtlCndParam = [
             { tbNm: "HNF_CTRT_DTL_MM" },
             { elctrnAtrzId: data.ctrtElctrnAtrzId ? data.ctrtElctrnAtrzId : data.elctrnAtrzId }
         ];
-   
+    
         const dtlCndResponse = await ApiRequest("/boot/common/commonSelect", dtlCndParam);
-   
-        console.log("dtlCndResponse", dtlCndResponse);
-   
+    
         const result = dtlResponse.map((ctrtItem) => {
             const hnfCtrtDtlMmItems = dtlCndResponse
                 .filter((hnfItem) => hnfItem.inptHnfId === ctrtItem.inptHnfId)
@@ -145,16 +147,15 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
                         id: inptYm
                     };
                 });
-   
+    
             return {
                 ...ctrtItem,
                 hnfCtrtDtlMm: hnfCtrtDtlMmItems
             };
         });
-   
+    
         handlePopupData(result);
     };
-
 
 
 
@@ -184,22 +185,30 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
         setSelectedData({});
     },[]);
 
+    
     /**
      * Popup data 처리
      */
-    const handlePopupData = (data) => {
-        const existingIndex = tableData.findIndex(item => item.inptHnfId === data.inptHnfId);
-        
-        if(existingIndex >=0){
-            const updatedData = [...tableData];
-            updatedData[existingIndex] = data;
-            setTableData(updatedData);
-        } else {
-            const maxSn = tableData.length > 0 ? Math.max(...tableData.map(item => item.inptHnfId || 0)) : 0;
-            // data.inptHnfId = maxSn + 1;  
-            setTableData(prev => [...prev, data]);
-        }
-    }
+    const handlePopupData = (dataArray) => {
+        const newDataArray = Array.isArray(dataArray) ? dataArray : [dataArray];
+        const updatedTableData = [...tableData];
+    
+        newDataArray.forEach((data) => {
+            const existingIndex = updatedTableData.findIndex(
+                (item) => item.entrpsCtrtDtlSn === data.entrpsCtrtDtlSn
+            );
+    
+            if (existingIndex >= 0) {
+                updatedTableData[existingIndex] = data;
+            } else {
+                const maxSn = updatedTableData.length > 0 ? Math.max(...updatedTableData.map(item => item.entrpsCtrtDtlSn || 0)) : 0;
+                data.entrpsCtrtDtlSn = maxSn + 1;
+                updatedTableData.push(data);
+            }
+        });
+        setTableData(updatedTableData);
+    };
+
 
     /* =========================  SummaryTable 데이터 처리  =========================*/
     useEffect(() => {
@@ -216,19 +225,25 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
                         key: item.outordHnfCtrtSeCd,
                     };
                 }
-        
                 item.hnfCtrtDtlMm.forEach(mmItem => {
                     
                     acc[groupKey].mm += mmItem.mm;
-                    acc[groupKey].total += mmItem.ctrtAmt;
+                    acc[groupKey].total += (mmItem.entrpsGiveCtrtAmt || 0)+(mmItem.indvdlGiveCtrtAmt || 0);
                     if (!acc[groupKey][`mm-${mmItem.id}`]) {
                         acc[groupKey][`mm-${mmItem.id}`] = 0; 
                     }
                     if (!acc[groupKey][`cash-${mmItem.id}`]) {
                         acc[groupKey][`cash-${mmItem.id}`] = 0; 
                     }
+                    if (!acc[groupKey][`indvcash-${mmItem.id}`]) {
+                        acc[groupKey][`indvcash-${mmItem.id}`] = 0; 
+                    }
                     acc[groupKey][`mm-${mmItem.id}`] += mmItem.mm;
-                    acc[groupKey][`cash-${mmItem.id}`] += mmItem.ctrtAmt;
+                    acc[groupKey][`indvcash-${mmItem.id}`] += mmItem.indvdlGiveCtrtAmt || 0 ;
+                    if(mmItem.entrpsGiveCtrtAmt){
+                        acc[groupKey][`cash-${mmItem.id}`] += mmItem.entrpsGiveCtrtAmt || 0;
+                    }
+                    
                 });
         
                 return acc;
@@ -265,6 +280,7 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
     /* =========================  화면 표출  =========================*/
     return (
         <div>
+            {summaryTableData && monthlyData && summaryColumn &&
             <CustomTable
                 keyColumn={"key"}
                 columns={monthlyData}
@@ -272,12 +288,14 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
                 pagerVisible={false}
                 summary={true}
                 summaryColumn={summaryColumn}
-                // smallSummaryColumn={summaryColumn}
+                scrolling={true}
+                wordWrap={true}
             />
+            }
 
-            <div style={{ textAlign: "right", marginBottom:"10px" }}>
+            <div style={{ textAlign: "right", margin:"10px" }}>
                 {(!["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd)) && (
-                        data.elctrnAtrzTySeCd !=="VTW04914" 
+                        !["VTW04911","VTW04912","VTW04913","VTW04914",].includes(data.elctrnAtrzTySeCd) 
                     ) && (
                     <Button name="insert" onClick={()=>handlePopupVisible({name:"insert"})}>{ElecAtrzCtrtOutordHnfJson.insertButton}</Button>
                 )}
@@ -291,6 +309,8 @@ const ElecAtrzCtrtOutordHnfDetail = ({data, prjctId, onSendData, prjctData, stts
                 onClick={handlePopupVisible}
                 summary={true}
                 summaryColumn={ElecAtrzCtrtOutordHnfJson.summaryColumn}
+                scrolling={true}
+                wordWrap={true}
             />
 
             <Popup

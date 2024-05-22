@@ -46,15 +46,25 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
         aplyOdr: odrVal
       });
     }
-
     setYmOdrData({
       year: yearList,
       month: monthList,
       aplyOdr: [{ "id": "1", "value": "1", "text": "1회차" }, { "id": "2", "value": "2", "text": "2회차" }]
     });
-
     callBack(initParam);
   }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Enter') {
+        callBack(initParam);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [initParam]);
 
   const handleChgState = ({ name, value }) => {
     setInitParam({
@@ -128,6 +138,7 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
                 placeholder={item.placeholder}
                 stylingMode="underlined"
                 size="medium"
+                onEnterKey={handleSubmit}
                 name={item.name}
                 showClearButton={true}
                 onValueChanged={(e) => handleChgState({ name: e.component.option('name'), value: e.value })}
@@ -146,14 +157,18 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
         }
 
         <Item ratio={1} >
-          <Button type='default' onClick={handleSubmit} text={btnName} />
-        </Item>
+          <Box>
+            <Item ratio={1} >
+              <Button onClick={handleSubmit} text={btnName} style={{margin: "5px"}} />
+            </Item>
 
-        {searchParams.insertButton &&
-          <Item ratio={1}>
-            <Button text="입력" onClick={onClickInsertBtn} />
-          </Item>
-        }
+            {searchParams.insertButton &&
+                <Item ratio={1}>
+                  <Button type='default' text="입력" onClick={onClickInsertBtn} style={{margin: "5px"}} />
+                </Item>
+            }
+          </Box>
+        </Item>
       </Box>
     </div>
   );

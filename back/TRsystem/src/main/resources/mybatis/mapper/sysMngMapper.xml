@@ -26,16 +26,49 @@
     </select>
 
     <select id="authCdList" parameterType="map" resultType="com.trsystem.LowerHashMap">
-        SELECT
-            ag.AUTHRT_GROUP_ID,
-            ag.AUTHRT_GROUP_NM,
-            ag.AUTHRT_GROUP_CN,
-            GROUP_CONCAT(am.AUTHRT_CD) AS AUTHRT_CDs,
-            GROUP_CONCAT(cd.CD_NM) AS AUTHRT_CD_NMs
-        FROM AUTHRT_GROUP ag
-                 JOIN AUTHRT_MAPNG am ON ag.AUTHRT_GROUP_ID = am.AUTHRT_GROUP_ID
-                 JOIN CD cd ON am.AUTHRT_CD = cd.CD_VALUE
-        GROUP BY ag.AUTHRT_GROUP_ID, ag.AUTHRT_GROUP_NM, ag.AUTHRT_GROUP_CN;
+		SELECT
+			E.EMP_ID,
+			E.EMPNO,
+			(SELECT CD_NM FROM CD WHERE CD_VALUE = E.JBPS_CD) AS JBPS_NM,
+			E.EMP_FLNM,
+			E.JBPS_CD,
+			GROUP_CONCAT(DISTINCT D.DEPT_NM) AS DEPT_ID,
+			IFNULL(MAX(CASE WHEN U.AUTHRT_CD = 'VTW04801' THEN 'Y' END), 'N') AS VTW04801,
+			IFNULL(MAX(CASE WHEN U.AUTHRT_CD = 'VTW04802' THEN 'Y' END), 'N') AS VTW04802,
+			IFNULL(MAX(CASE WHEN U.AUTHRT_CD = 'VTW04803' THEN 'Y' END), 'N') AS VTW04803,
+			IFNULL(MAX(CASE WHEN U.AUTHRT_CD = 'VTW04804' THEN 'Y' END), 'N') AS VTW04804,
+			IFNULL(MAX(CASE WHEN U.AUTHRT_CD = 'VTW04805' THEN 'Y' END), 'N') AS VTW04805,
+			IFNULL(MAX(CASE WHEN U.AUTHRT_CD = 'VTW04806' THEN 'Y' END), 'N') AS VTW04806,
+			IFNULL(MAX(CASE WHEN U.AUTHRT_CD = 'VTW04807' THEN 'Y' END), 'N') AS VTW04807,
+			COUNT(*) OVER () AS TOTAL_ITEMS
+		FROM EMP E
+			LEFT JOIN USER_AUTHRT U ON E.EMP_ID = U.EMP_ID
+			LEFT OUTER JOIN DEPT_HNF DF ON E.EMP_ID = DF.EMP_ID
+			LEFT OUTER JOIN DEPT D ON D.DEPT_ID = DF.DEPT_ID
+		WHERE 1=1
+		AND EMP_TY_CD NOT LIKE 'VTW00203%'
+		AND E.HDOF_STTS_CD != 'VTW00302'
+		AND E.JBPS_CD != 'VTW00119'
+		<if test="hdofSttsNm != null and !hdofSttsNm.equals('')">
+			AND E.HDOF_STTS_CD LIKE CONCAT('%', #{hdofSttsNm}, '%')
+		</if>
+		<if test="jbpsNm != null and !jbpsNm.equals('')">
+			AND E.JBPS_CD LIKE CONCAT('%', #{jbpsNm}, '%')
+		</if>
+		<if test="deptId != null and deptId !=''">
+			AND D.DEPT_ID LIKE CONCAT('%', #{deptId}, '%')
+		</if>
+		<if test="empno != null and empno !=''">
+			AND E.EMPNO LIKE CONCAT('%', #{empno}, '%')
+		</if>
+		<if test="empFlnm != null and empFlnm !=''">
+			AND E.EMP_FLNM LIKE CONCAT('%', #{empFlnm}, '%')
+		</if>
+		<if test="telNo != null and telNo !=''">
+			AND E.TELNO LIKE CONCAT('%', #{telNo}, '%')
+		</if>
+		GROUP BY E.EMP_ID, E.EMPNO, E.JBPS_CD, E.EMP_FLNM, E.EMPNO
+		ORDER BY E.EMPNO
     </select>
 
     <select id="customersList" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -84,13 +117,11 @@
     </select>
 
     <select id="userAuth" parameterType="String" resultType="com.trsystem.LowerHashMap">
-    SELECT ag.AUTHRT_GROUP_ID , am.AUTHRT_CD
-    FROM AUTHRT_GROUP ag
-             JOIN AUTHRT_MAPNG am
-             JOIN LGN_USER_AUTHRT lua
-                  ON ag.AUTHRT_GROUP_ID = am.AUTHRT_GROUP_ID
-                      AND lua.AUTHRT_GROUP_ID = ag.AUTHRT_GROUP_ID
-    WHERE lua.EMP_ID = #{empId}
+	SELECT A.AUTHRT_CD
+	FROM EMP E
+    JOIN USER_AUTHRT A
+	  ON E.EMP_ID = A.EMP_ID
+    WHERE A.EMP_ID = #{empId}
     </select>
 
     <select id="userDept" parameterType="String" resultType="com.trsystem.LowerHashMap">
@@ -112,7 +143,7 @@
 			, NOTICE_TTL
 			, SGNAL_ORDR
 			, e.EMP_FLNM AS REG_EMP_ID
-			, DATE_FORMAT(n.REG_DT, '%Y-%m-%d %H:%i') AS REG_DT
+			, DATE_FORMAT(n.REG_DT, '%Y-%m-%d') AS REG_DT
 			, COUNT(*) OVER () AS TOTAL_ITEMS
 		FROM NOTICE n
 		LEFT JOIN EMP e ON n.REG_EMP_ID = e.EMP_ID
@@ -129,242 +160,458 @@
 	
 	<!-- main 현차수 TR 입력사항-->
 	<select id="retrieveInptSttus" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		select
-		E.EMP_ID
-		,CONCAT((select COUNT(*)*8 FROM CRTR_DATE WHERE CRTR_YMD LIKE CONCAT(#{aplyYm},'%') AND CRTR_ODR = #{aplyOdr} AND HLDY_CL_CD ="VTW05001"),"시간") AS TOTAL
-		,CONCAT(IFNULL(AA.SUM,0),"시간")AS SUM		
-		,CONCAT((CASE WHEN AA.STTS_CD = 'VTW03704' THEN AA.SUM  ELSE 0 END),"시간") AS MM_REJECT			
-		,CONCAT((CASE WHEN AA.STTS_CD = 'VTW03703' THEN AA.SUM  ELSE 0 END),"시간") AS MM_COMPLETE
-		,CONCAT(IFNULL(BB.CNT,0),"건")AS CNT		
-		,CONCAT((CASE WHEN BB.STTS_CD = 'VTW03704' THEN BB.CNT  ELSE 0 END),"건") AS APLY_REJECT			
-		,CONCAT((CASE WHEN BB.STTS_CD = 'VTW03703' THEN BB.CNT  ELSE 0 END),"건") AS APLY_COMPLETE  	
-		from EMP E
-		LEFT OUTER JOIN(
-				select 
-		 			(count(*)*8)as SUM
-		 			,pma.EMP_ID 
-		 			,pmaz.ATRZ_DMND_STTS_CD STTS_CD
-		 		from 
-		 			PRJCT_MM_APLY pma 
-		 		JOIN 
-		 			PRJCT_MM_ATRZ pmaz
-			 		ON pma.PRJCT_ID =pmaz.PRJCT_ID 
-				 		AND pma.EMP_ID =pmaz.EMP_ID 
-				 		AND pma.APLY_YM =pmaz.APLY_YM 
-				 		AND pma.APLY_ODR =pmaz.APLY_ODR 
-				 		AND pma.APLY_YMD =pmaz.APLY_YMD 
-		 		WHERE
-		 		1=1
-				  AND pma.APLY_YM = #{aplyYm}
-				  AND pma.APLY_ODR =#{aplyOdr}
-		 		group by 
-		 			pma.EMP_ID, STTS_CD
-		)AA ON AA.EMP_ID =E.EMP_ID 
-		LEFT OUTER JOIN(
-			   	 SELECT
-			   	 Count(*) as CNT
-			   	 , pca.EMP_ID
-			   	 , pcaz.ATRZ_DMND_STTS_CD STTS_CD
-				 FROM PRJCT_CT_APLY pca
-				 JOIN PRJCT_CT_ATRZ pcaz
-					 ON pca.PRJCT_CT_APLY_SN = pcaz.PRJCT_CT_APLY_SN
-						  AND pca.EMP_ID = pcaz.EMP_ID
-						  AND pca.APLY_YM = pcaz.APLY_YM
-						  AND pca.APLY_ODR = pcaz.APLY_ODR
-				WHERE
-					 1=1
-					  AND pca.APLY_YM = #{aplyYm}
-					  AND pca.APLY_ODR = #{aplyOdr}
-		 		group by 
-		 			pca.EMP_ID, STTS_CD
-		)BB ON BB.EMP_ID =E.EMP_ID
-		where 
-		1=1
-		AND E.EMP_ID =#{empId}
+			     SELECT
+	             CONCAT((select COUNT(*)*8 FROM CRTR_DATE WHERE CRTR_YMD LIKE '202405%' AND CRTR_ODR = '1' AND HLDY_CL_CD ="VTW05001"),"시간") AS TOTAL 
+	          , CONCAT(IFNULL(CC.MD_SUM,0) * 8,"시간") AS MD_SUM
+	          , CONCAT(IFNULL(CC.MM_APRV, 0),"시간") AS MM_APRV 
+	          , CONCAT(IFNULL(CC.MM_REJECT, 0),"시간") AS MM_REJECT 
+	          , CONCAT(IFNULL(BB.CT_CNT, 0),"건") AS CT_CNT 
+	          , CONCAT(IFNULL(BB.PRJ_REJECT, 0),"건") AS CT_REJECT	 
+	          , CONCAT(IFNULL(BB.PRJ_COMPLETE, 0),"건") AS CT_COMPLETE	
+	      FROM EMP AA
+	      LEFT JOIN (
+				  SELECT T1.EMP_ID
+				       , T1.APLY_YM
+				       , T1.APLY_ODR
+				 	   , IFNULL(T1.CT_CNT, 0) AS CT_CNT
+				   	   , IFNULL(T2.PRJ_COMPLETE, 0) AS PRJ_COMPLETE
+				 	   , IFNULL(T3.PRJ_REJECT, 0) AS PRJ_REJECT
+				 	   , IFNULL(T4.PRJ_REQUEST, 0) AS PRJ_REQUEST
+			  		FROM (
+				  SELECT pca.EMP_ID
+					   , pca.APLY_YM 
+					   , pca.APLY_ODR 
+					   , COUNT(1) CT_CNT
+				    FROM PRJCT_CT_APLY pca
+				    JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
+				   WHERE 1=1
+				     AND pca.APLY_YM = #{aplyYm}
+				     AND pca.APLY_ODR = #{aplyOdr}
+ 				     AND pcat.ATRZ_DMND_STTS_CD IS NOT NULL
+ 				     AND (pca.CT_ATRZ_SE_CD = 'VTW01902' OR pca.CT_ATRZ_SE_CD = 'VTW01903')
+				  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR
+			  ) T1
+		  LEFT JOIN (
+				  SELECT pca.EMP_ID
+					   , pca.APLY_YM 
+					   , pca.APLY_ODR 
+					   , COUNT(1) AS PRJ_COMPLETE
+				    FROM PRJCT_CT_APLY pca
+				    JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
+				   WHERE 1=1
+				     AND pca.APLY_YM = #{aplyYm}
+				     AND pca.APLY_ODR = #{aplyOdr}
+				     AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703'
+				     AND (pca.CT_ATRZ_SE_CD = 'VTW01902' OR pca.CT_ATRZ_SE_CD = 'VTW01903')
+				  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR
+			  ) T2 ON (T1.EMP_ID = T2.EMP_ID)
+		  LEFT JOIN (
+				  SELECT pca.EMP_ID
+					   , pca.APLY_YM 
+					   , pca.APLY_ODR 
+					   , COUNT(1) AS PRJ_REJECT
+				    FROM PRJCT_CT_APLY pca
+				    JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
+				   WHERE 1=1
+				     AND pca.APLY_YM = #{aplyYm}
+				     AND pca.APLY_ODR = #{aplyOdr}
+				     AND pcat.ATRZ_DMND_STTS_CD = 'VTW03704'
+				     AND (pca.CT_ATRZ_SE_CD = 'VTW01902' OR pca.CT_ATRZ_SE_CD = 'VTW01903')
+				  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR
+			  ) T3 ON (T1.EMP_ID = T3.EMP_ID)
+		  LEFT JOIN (
+				  SELECT pca.EMP_ID
+					   , pca.APLY_YM 
+					   , pca.APLY_ODR 
+					   , COUNT(1) AS PRJ_REQUEST
+				    FROM PRJCT_CT_APLY pca
+				    JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
+				   WHERE 1=1
+				     AND pca.APLY_YM = #{aplyYm}
+				     AND pca.APLY_ODR = #{aplyOdr}
+				     AND pcat.ATRZ_DMND_STTS_CD = 'VTW03702'
+				     AND (pca.CT_ATRZ_SE_CD = 'VTW01902' OR pca.CT_ATRZ_SE_CD = 'VTW01903')
+				  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR
+			  ) T4 ON (T1.EMP_ID = T4.EMP_ID)
+	    ) BB ON BB.EMP_ID = AA.EMP_ID
+	    LEFT OUTER JOIN (
+	        SELECT T1.EMP_ID
+	         	 , T1.APLY_YM
+	         	 , T1.APLY_ODR
+	         	 , IFNULL(SUM(T1.MM_CNT), 0) AS MD_SUM
+	         	 , IFNULL(SUM(T2.MM_APRV), 0) * 8 AS MM_APRV
+	         	 , IFNULL(SUM(T3.MM_REJECT), 0) * 8 AS MM_REJECT
+	         	 , IFNULL(SUM(T4.MM_REQUEST), 0) * 8 AS MM_REQUEST
+	         	 , IFNULL(SUM(T2.VAC), 0) * 8 AS VAC_SUM
+	        FROM (
+				SELECT pca.EMP_ID
+				     , pca.APLY_YM 
+				     , pca.APLY_ODR 
+				     , SUM(MD) MM_CNT
+				     , pca.APLY_YMD
+				     , 0 AS VAC
+			      FROM PRJCT_MM_APLY pca
+			      JOIN PRJCT_MM_ATRZ pcat ON (pcat.APLY_YMD = pca.APLY_YMD AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
+			     WHERE 1=1
+			       AND pca.APLY_YM = #{aplyYm}
+			       AND pca.APLY_ODR = #{aplyOdr}
+			    GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR, pca.APLY_YMD
+			    UNION
+			  SELECT dv.ATRZ_DMND_EMP_ID
+			       , dv.APLY_YM
+			       , dv.APLY_ODR
+			       , 0 AS MM_CNT
+			       , dv.APLY_YMD
+			       , dv.VCATN_DE_CNT AS VAC
+			    FROM (
+					  WITH RECURSIVE DAILY_VACATION AS (SELECT
+					          ELC.ELCTRN_ATRZ_ID ,
+					          ELC.ATRZ_DMND_STTS_CD,
+					          VAC.VCATN_TY_CD,
+					          DATE(VAC.VCATN_BGNG_YMD) as dt,
+					          DATE(VAC.VCATN_END_YMD) as end_dt,
+					          ELC.ATRZ_DMND_EMP_ID,
+					          ELC.PRJCT_ID,
+					          VAC.VCATN_DE_CNT
+					     FROM ELCTRN_ATRZ ELC
+					     JOIN VCATN_ATRZ VAC 
+					       ON ELC.ELCTRN_ATRZ_ID = VAC.ELCTRN_ATRZ_ID
+					    WHERE 1=1
+					      AND ELC.ATRZ_DMND_STTS_CD = 'VTW03703'
+					      AND VAC.VCATN_TY_CD != 'VTW01207'
+					    UNION ALL
+					   SELECT
+					          dr.ELCTRN_ATRZ_ID ,
+					          dr.ATRZ_DMND_STTS_CD,
+					          dr.VCATN_TY_CD,
+					          DATE_ADD(dr.dt, INTERVAL 1 DAY) as dt,
+					          dr.end_dt,
+					          dr.ATRZ_DMND_EMP_ID,
+					          dr.PRJCT_ID,
+					          dr.VCATN_DE_CNT
+					    FROM DAILY_VACATION dr
+					    <![CDATA[ 
+					   WHERE dr.dt < dr.end_dt)
+					    ]]>
+					  SELECT ELCTRN_ATRZ_ID
+						   , ATRZ_DMND_STTS_CD
+						   , VCATN_TY_CD
+						   , dt
+						   , DATE_FORMAT(dt, '%Y%m%d') AS APLY_YMD
+						   , SUBSTR(DATE_FORMAT(dt, '%Y%m%d'), 1, 6) AS APLY_YM
+						   , CASE 
+						 	 WHEN SUBSTR(DATE_FORMAT(dt, '%Y%m%d'), 7, 8) BETWEEN '01' AND '15' THEN '1'
+						 	 ELSE '2'
+						 END AS APLY_ODR
+						   , ATRZ_DMND_EMP_ID
+						   , PRJCT_ID
+						   , VCATN_DE_CNT
+					   FROM DAILY_VACATION
+				) dv
+			 JOIN CRTR_DATE crd ON crd.CRTR_YMD = dv.APLY_YMD AND crd.HLDY_CL_CD = 'VTW05001'
+			WHERE 1=1
+			  AND dv.APLY_YM = #{aplyYm}
+			  AND dv.APLY_ODR = #{aplyOdr}
+			  AND dv.ATRZ_DMND_STTS_CD = 'VTW03703'
+	        ) T1 
+	        LEFT JOIN (
+			  SELECT pca.EMP_ID
+				   , pca.APLY_YM 
+				   , pca.APLY_ODR 
+				   , SUM(MD) AS MM_APRV
+				   , pca.APLY_YMD
+				   , 0 AS VAC
+			    FROM PRJCT_MM_APLY pca
+			    JOIN PRJCT_MM_ATRZ pcat ON (pcat.APLY_YMD = pca.APLY_YMD AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
+			   WHERE 1=1
+			     AND pca.APLY_YM = #{aplyYm}
+			     AND pca.APLY_ODR = #{aplyOdr}
+			     AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703'
+			  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR, pca.APLY_YMD
+			  UNION
+			  SELECT dv.ATRZ_DMND_EMP_ID
+			       , dv.APLY_YM
+			       , dv.APLY_ODR
+			       , 0 AS MM_APRV
+			       , dv.APLY_YMD
+			       , dv.VCATN_DE_CNT AS VAC
+			    FROM (
+					  WITH RECURSIVE DAILY_VACATION AS (SELECT
+					          ELC.ELCTRN_ATRZ_ID ,
+					          ELC.ATRZ_DMND_STTS_CD,
+					          VAC.VCATN_TY_CD,
+					          DATE(VAC.VCATN_BGNG_YMD) as dt,
+					          DATE(VAC.VCATN_END_YMD) as end_dt,
+					          ELC.ATRZ_DMND_EMP_ID,
+					          ELC.PRJCT_ID,
+					          VAC.VCATN_DE_CNT
+					     FROM ELCTRN_ATRZ ELC
+					     JOIN VCATN_ATRZ VAC 
+					       ON ELC.ELCTRN_ATRZ_ID = VAC.ELCTRN_ATRZ_ID
+					    WHERE 1=1
+					      AND ELC.ATRZ_DMND_STTS_CD = 'VTW03703'
+					      AND VAC.VCATN_TY_CD != 'VTW01207'
+					    UNION ALL
+					   SELECT
+					          dr.ELCTRN_ATRZ_ID ,
+					          dr.ATRZ_DMND_STTS_CD,
+					          dr.VCATN_TY_CD,
+					          DATE_ADD(dr.dt, INTERVAL 1 DAY) as dt,
+					          dr.end_dt,
+					          dr.ATRZ_DMND_EMP_ID,
+					          dr.PRJCT_ID,
+					          dr.VCATN_DE_CNT
+					    FROM DAILY_VACATION dr
+					    <![CDATA[ 
+					   WHERE dr.dt < dr.end_dt)
+					    ]]>
+					  SELECT ELCTRN_ATRZ_ID
+						   , ATRZ_DMND_STTS_CD
+						   , VCATN_TY_CD
+						   , dt
+						   , DATE_FORMAT(dt, '%Y%m%d') AS APLY_YMD
+						   , SUBSTR(DATE_FORMAT(dt, '%Y%m%d'), 1, 6) AS APLY_YM
+						   , CASE 
+						 	 WHEN SUBSTR(DATE_FORMAT(dt, '%Y%m%d'), 7, 8) BETWEEN '01' AND '15' THEN '1'
+						 	 ELSE '2'
+						 END AS APLY_ODR
+						   , ATRZ_DMND_EMP_ID
+						   , PRJCT_ID
+						   , VCATN_DE_CNT
+					   FROM DAILY_VACATION
+				) dv
+			 JOIN CRTR_DATE crd ON crd.CRTR_YMD = dv.APLY_YMD AND crd.HLDY_CL_CD = 'VTW05001'
+			WHERE 1=1
+			  AND dv.APLY_YM = #{aplyYm}
+			  AND dv.APLY_ODR = #{aplyOdr}
+			  AND dv.ATRZ_DMND_STTS_CD = 'VTW03703'
+	        ) T2 ON (T1.EMP_ID = T2.EMP_ID AND T1.APLY_YMD = T2.APLY_YMD AND T1.MM_CNT = T2.MM_APRV)
+	        LEFT JOIN (
+	 			  SELECT pca.EMP_ID
+					   , pca.APLY_YM 
+					   , pca.APLY_ODR 
+					   , SUM(MD) AS MM_REJECT
+					   , pca.APLY_YMD
+	   			       , 0 AS VAC
+				    FROM PRJCT_MM_APLY pca
+				    JOIN PRJCT_MM_ATRZ pcat ON (pcat.APLY_YMD = pca.APLY_YMD AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
+				   WHERE 1=1
+				     AND pca.APLY_YM = #{aplyYm}
+				     AND pca.APLY_ODR =#{aplyOdr}
+				     AND pcat.ATRZ_DMND_STTS_CD = 'VTW03704'
+				  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR, pca.APLY_YMD      
+	        ) T3 ON (T1.EMP_ID = T3.EMP_ID AND T1.APLY_YMD = T3.APLY_YMD AND T1.MM_CNT = T3.MM_REJECT)
+	        LEFT JOIN (
+	 			  SELECT pca.EMP_ID
+					   , pca.APLY_YM 
+					   , pca.APLY_ODR 
+					   , SUM(MD) AS MM_REQUEST
+					   , pca.APLY_YMD
+	   			       , 0 AS VAC
+				    FROM PRJCT_MM_APLY pca
+				    JOIN PRJCT_MM_ATRZ pcat ON (pcat.APLY_YMD = pca.APLY_YMD AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
+				   WHERE 1=1
+				     AND pca.APLY_YM = #{aplyYm}
+				     AND pca.APLY_ODR = #{aplyOdr}
+				     AND pcat.ATRZ_DMND_STTS_CD = 'VTW03702'
+				  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR, pca.APLY_YMD      
+	        ) T4 ON (T1.EMP_ID = T4.EMP_ID AND T1.APLY_YMD = T4.APLY_YMD AND T1.MM_CNT = T4.MM_REQUEST)
+	        GROUP BY T1.EMP_ID, T1.APLY_YM, T1.APLY_ODR
+	    ) CC
+	        ON CC.EMP_ID = AA.EMP_ID
+	    WHERE 1 = 1
+          AND AA.EMP_ID = #{empId}
 	</select>
 	
 	<!-- main 결재 신청현황 -->
 	<select id="retrieveAtrzAplySttus" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		select * from
-			   	(SELECT
-			   	  pca.EMP_ID AS ID														-- 사번
-			   	 , '프로젝트 비용' AS TY_SE													-- 결재유형
-			   	 ,CONCAT(pca.APLY_YM ,'-',pca.APLY_ODR ,'차수 프로젝트 비용') AS TITLE				-- 결재명
-			   	 , e.EMP_FLNM 			  AS ATRZ_EMP_NM								-- 기안자명
-			   	 , DATE_FORMAT(pca.REG_DT, '%Y-%m-%d') AS REG_DT						-- 결재 올린날
-			   	 , sttsCd.CD_NM	AS ATRZ_STTS_CD_NM										-- 결자생태명
-			   	 , pcaz.APRVR_EMP_ID AS APRPVR_ID										-- 결재자 ID
-				 FROM PRJCT_CT_APLY pca
-				 JOIN PRJCT_CT_ATRZ pcaz
-					 ON pca.PRJCT_CT_APLY_SN = pcaz.PRJCT_CT_APLY_SN
-						  AND pca.EMP_ID = pcaz.EMP_ID
-						  AND pca.APLY_YM = pcaz.APLY_YM
-						  AND pca.APLY_ODR = pcaz.APLY_ODR
-				 LEFT JOIN CD sttsCd ON pcaz.ATRZ_DMND_STTS_CD = sttsCd.CD_VALUE -- 결재상태명
-				 LEFT JOIN EMP e on e.EMP_ID =pca.EMP_ID
-				 WHERE 
-				 1=1
-				 AND pca.EMP_ID = #{empId}
-		 		group by 
-		 			pca.EMP_ID, pca.REG_DT,pca.APLY_YM,pca.APLY_ODR,pcaz.APRVR_EMP_ID,sttsCd.CD_NM	
-			union all
-				select 
-		 			 pma.EMP_ID AS ID												-- 사번
-		 			, '근무시간'	AS TY_SE											-- 결재유형
-		 			,CONCAT(pma.APLY_YM ,'-',pma.APLY_ODR ,'근무시간') AS TITLE  		-- 결재명
-		 			, e.EMP_FLNM AS ATRZ_EMP_NM										-- 기안자명
-		 			, DATE_FORMAT(pma.REG_DT, '%Y-%m-%d') AS REG_DT					-- 기안일자
-		 			, sttsCd.CD_NM AS ATRZ_STTS_CD_NM								-- 결자생태명
-		 			, pmaz.APRVR_EMP_ID	AS APRPVR_ID								-- 결재자 ID
-		 		from 
-		 			PRJCT_MM_APLY pma 
-		 		JOIN 
-		 			PRJCT_MM_ATRZ pmaz
-			 		ON pma.PRJCT_ID =pmaz.PRJCT_ID 
-				 		AND pma.EMP_ID =pmaz.EMP_ID 
-				 		AND pma.APLY_YM =pmaz.APLY_YM 
-				 		AND pma.APLY_ODR =pmaz.APLY_ODR 
-				 		AND pma.APLY_YMD =pmaz.APLY_YMD
-				LEFT JOIN CD sttsCd ON pmaz.ATRZ_DMND_STTS_CD = sttsCd.CD_VALUE -- 결재상태명
-				 LEFT JOIN EMP e on e.EMP_ID =pma.EMP_ID
-		 		WHERE
-		 		1=1
-		 		AND pma.EMP_ID = #{empId}
-		 		group by 
-		 		pma.EMP_ID,pma.REG_DT,pma.APLY_YM,pma.APLY_ODR,pmaz.APRVR_EMP_ID,sttsCd.CD_NM 
-		 		union ALL 
-		 		SELECT DISTINCT
-		 			ea.ELCTRN_ATRZ_ID AS ID							-- 전자결재 id
-					, tyCd.CD_NM AS TY_SE							-- 전자결재 결재구분명
-					, COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cta.CTRT_ATRZ_TTL, cga.ATRZ_TTL,
+		SELECT DISTINCT * FROM
+			(SELECT
+			   	pca.EMP_ID AS ID							                        -- 사번
+			   	, '프로젝트 비용' AS TY_SE					                        -- 결재유형
+			   	, CONCAT(pca.APLY_YM ,'-',pca.APLY_ODR ,'차수 프로젝트 비용') AS TITLE -- 결재명
+			   	, e.EMP_FLNM AS ATRZ_EMP_NM								            -- 기안자명
+			   	, DATE_FORMAT(pca.REG_DT, '%Y-%m-%d') AS REG_DT					    -- 기안일
+			   	, sttsCd.CD_NM	AS ATRZ_STTS_CD_NM								    -- 결자생태명
+				, NULL AS ELCTRN_ATRZ_TY_SE_CD
+				, NULL AS PRJCT_ID
+				, NULL AS ELCTRN_ATRZ_ID
+				, NULL AS ELCTRN_ATRZ_DOC_NO
+				, NULL AS CN
+			FROM PRJCT_CT_APLY pca
+			JOIN PRJCT_CT_ATRZ pcaz
+				ON pca.PRJCT_CT_APLY_SN = pcaz.PRJCT_CT_APLY_SN
+					AND pca.EMP_ID = pcaz.EMP_ID
+					AND pca.APLY_YM = pcaz.APLY_YM
+					AND pca.APLY_ODR = pcaz.APLY_ODR
+			LEFT JOIN CD sttsCd ON pcaz.ATRZ_DMND_STTS_CD = sttsCd.CD_VALUE
+			LEFT JOIN EMP e on e.EMP_ID =pca.EMP_ID
+			WHERE 1=1
+				AND pca.EMP_ID = #{empId}
+		 	GROUP BY
+		 		pca.EMP_ID, pca.REG_DT,pca.APLY_YM,pca.APLY_ODR,pcaz.APRVR_EMP_ID,sttsCd.CD_NM
+			UNION ALL
+			SELECT
+		 		pma.EMP_ID AS ID
+		 		, '근무시간'	AS TY_SE
+		 		, CONCAT(pma.APLY_YM ,'-',pma.APLY_ODR ,'근무시간') AS TITLE
+		 		, e.EMP_FLNM AS ATRZ_EMP_NM
+		 		, DATE_FORMAT(pma.REG_DT, '%Y-%m-%d') AS REG_DT
+		 		, sttsCd.CD_NM AS ATRZ_STTS_CD_NM
+		 		, NULL AS ELCTRN_ATRZ_TY_SE_CD
+		 		, NULL AS PRJCT_ID
+				, NULL AS ELCTRN_ATRZ_ID
+				, NULL AS ELCTRN_ATRZ_DOC_NO
+				, NULL AS CN
+		 	FROM
+		 		PRJCT_MM_APLY pma
+		 	JOIN PRJCT_MM_ATRZ pmaz ON pma.PRJCT_ID =pmaz.PRJCT_ID
+				AND pma.EMP_ID =pmaz.EMP_ID
+				AND pma.APLY_YM =pmaz.APLY_YM
+				AND pma.APLY_ODR =pmaz.APLY_ODR
+				AND pma.APLY_YMD =pmaz.APLY_YMD
+			LEFT JOIN CD sttsCd ON pmaz.ATRZ_DMND_STTS_CD = sttsCd.CD_VALUE
+			LEFT JOIN EMP e on e.EMP_ID =pma.EMP_ID
+		 	WHERE 1=1
+		 	AND pma.EMP_ID = #{empId}
+		 	GROUP BY
+		 		pma.EMP_ID,pma.REG_DT,pma.APLY_YM,pma.APLY_ODR,pmaz.APRVR_EMP_ID,sttsCd.CD_NM
+			UNION ALL
+		 	SELECT DISTINCT
+		 		ea.ATRZ_DMND_EMP_ID AS ID
+				, tyCd.CD_NM AS TY_SE
+				, COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cta.CTRT_ATRZ_TTL, cga.ATRZ_TTL,
 					CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD), ' [', va.VCATN_BGNG_YMD, ' ~ ', va.VCATN_END_YMD, ' (', va.VCATN_DE_CNT, '일)]')) AS TITLE
-					, e1.EMP_FLNM AS ATRZ_EMP_NM				 	-- 기안자
-					, DATE_FORMAT(ea.REG_DT, '%Y-%m-%d') AS REG_DT 	-- 기안일자
-					, sttsCd.CD_NM AS ATRZ_STTS_CD 					-- 결재상태 (VTW008)
-					, ea.ELCTRN_ATRZ_TY_SE_CD 						-- 전자결재 유형 코드
-				FROM ELCTRN_ATRZ ea
-				LEFT JOIN ATRZ_LN al
-				ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID
+				, e1.EMP_FLNM AS ATRZ_EMP_NM
+				, DATE_FORMAT(ea.REG_DT, '%Y-%m-%d') AS REG_DT
+				, sttsCd.CD_NM AS ATRZ_STTS_CD
+				, ea.ELCTRN_ATRZ_TY_SE_CD
+		 		, ea.PRJCT_ID
+				, ea.ELCTRN_ATRZ_ID
+				, ea.ELCTRN_ATRZ_DOC_NO
+				, COALESCE(ga.GNRL_ATRZ_CN, ca.CLM_ATRZ_CN, cta.CTRT_ATRZ_CN, cga.STLM_CN) AS CN
+			FROM ELCTRN_ATRZ ea
+			LEFT JOIN ATRZ_LN al ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID
 				AND ea.NOW_ATRZ_LN_SN = al.ATRZ_LN_SN
-				LEFT JOIN CD tyCd ON ea.ELCTRN_ATRZ_TY_SE_CD = tyCd.CD_VALUE -- 전자결재 유형코드 명
-				LEFT JOIN CD sttsCd ON al.ATRZ_STTS_CD = sttsCd.CD_VALUE -- 결재상태 (VTW008) 명
-				LEFT JOIN GNRL_ATRZ ga ON ea.ELCTRN_ATRZ_ID = ga.ELCTRN_ATRZ_ID -- 일반결재
-				LEFT JOIN CLM_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID -- 청구결재 - 거래처명
-				LEFT JOIN VCATN_ATRZ va ON ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID -- 휴가결재 제목
-				LEFT JOIN CTRT_ATRZ cta ON ea.ELCTRN_ATRZ_ID = cta.ELCTRN_ATRZ_ID -- 계약 지급
-				LEFT JOIN CTRT_GIVE_ATRZ cga ON ea.ELCTRN_ATRZ_ID = cga.ELCTRN_ATRZ_ID -- 계약 지급
-				JOIN EMP e1 ON ea.ATRZ_DMND_EMP_ID = e1.EMP_ID
-				WHERE 1=1
-					AND ea.ATRZ_DMND_EMP_ID = #{empId}
-					)
-				AS RESULT 
-				ORDER BY REG_DT ASC
-				LIMIT 4
+			LEFT JOIN CD tyCd ON ea.ELCTRN_ATRZ_TY_SE_CD = tyCd.CD_VALUE -- 전자결재 유형코드 명
+			LEFT JOIN CD sttsCd ON al.ATRZ_STTS_CD = sttsCd.CD_VALUE -- 결재상태 (VTW008) 명
+			LEFT JOIN GNRL_ATRZ ga ON ea.ELCTRN_ATRZ_ID = ga.ELCTRN_ATRZ_ID -- 일반결재
+			LEFT JOIN CLM_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID -- 청구결재 - 거래처명
+			LEFT JOIN VCATN_ATRZ va ON ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID -- 휴가결재 제목
+			LEFT JOIN CTRT_ATRZ cta ON ea.ELCTRN_ATRZ_ID = cta.ELCTRN_ATRZ_ID -- 계약 지급
+			LEFT JOIN CTRT_GIVE_ATRZ cga ON ea.ELCTRN_ATRZ_ID = cga.ELCTRN_ATRZ_ID -- 계약 지급
+			JOIN EMP e1 ON ea.ATRZ_DMND_EMP_ID = e1.EMP_ID
+			WHERE 1=1
+				AND ea.ATRZ_DMND_EMP_ID = #{empId}
+			)
+		AS RESULT
+		ORDER BY REG_DT ASC
+		LIMIT 4
 	</select>
 	
 	<!-- main 결재리스트-->
 	<select id="retiveAtrzList" parameterType="map" resultType="com.trsystem.LowerHashMap">
-	select * from
-			  (
-			   	SELECT
-			   	  pca.EMP_ID AS ID														-- 사번
-			   	 , '프로젝트 비용' AS TY_SE														-- 결재유형
-			   	 ,CONCAT(pca.APLY_YM ,'-',pca.APLY_ODR ,'차수 프로젝트 비용') AS TITLE				-- 결재명
-			   	 , e.EMP_FLNM 			  AS ATRZ_EMP_NM								-- 기안자명
-			   	 , DATE_FORMAT(pca.REG_DT, '%Y-%m-%d') AS REG_DT						-- 결재 올린날
-			   	 , sttsCd.CD_NM	AS ATRZ_STTS_CD_NM										-- 결자생태명
-			   	 , pcaz.APRVR_EMP_ID AS APRPVR_ID										-- 결재자 ID
-				 FROM PRJCT_CT_APLY pca
-				 JOIN PRJCT_CT_ATRZ pcaz
-					 ON pca.PRJCT_CT_APLY_SN = pcaz.PRJCT_CT_APLY_SN
-						  AND pca.EMP_ID = pcaz.EMP_ID
-						  AND pca.APLY_YM = pcaz.APLY_YM
-						  AND pca.APLY_ODR = pcaz.APLY_ODR
-				 LEFT JOIN CD sttsCd ON pcaz.ATRZ_DMND_STTS_CD = sttsCd.CD_VALUE -- 결재상태명
-				 LEFT JOIN EMP e on e.EMP_ID =pca.EMP_ID
-				 WHERE 
-				 1=1
-				 AND pcaz.ATRZ_DMND_STTS_CD = "VTW03702"
-				 AND pcaz.APRVR_EMP_ID = #{empId}
-		 		group by 
-		 			pca.EMP_ID, pca.REG_DT,pca.APLY_YM,pca.APLY_ODR,pcaz.APRVR_EMP_ID,sttsCd.CD_NM	
+		SELECT DISTINCT * FROM
+			(SELECT
+				pca.PRJCT_ID AS ID														-- 프로젝트ID
+				, '프로젝트 비용' AS TY_SE												-- 결재유형
+				, CONCAT(pca.APLY_YM ,'-',pca.APLY_ODR ,'차수 프로젝트 비용') AS TITLE		-- 결재명
+				, e.EMP_FLNM AS ATRZ_EMP_NM												-- 기안자명
+				, DATE_FORMAT(pca.REG_DT, '%Y-%m-%d') AS REG_DT							-- 결재 올린날
+				, sttsCd.CD_NM	AS ATRZ_STTS_CD_NM										-- 결자생태명
+				, pcaz.APRVR_EMP_ID AS APRPVR_ID										-- 결재자 ID
+				, NULL AS CN
+				, NULL AS ELCTRN_ATRZ_ID
+			FROM PRJCT_CT_APLY pca JOIN PRJCT_CT_ATRZ pcaz ON pca.PRJCT_CT_APLY_SN = pcaz.PRJCT_CT_APLY_SN
+				AND pca.EMP_ID = pcaz.EMP_ID
+				AND pca.APLY_YM = pcaz.APLY_YM
+				AND pca.APLY_ODR = pcaz.APLY_ODR
+			LEFT JOIN CD sttsCd ON pcaz.ATRZ_DMND_STTS_CD = sttsCd.CD_VALUE -- 결재상태명
+			LEFT JOIN EMP e on e.EMP_ID =pca.EMP_ID
+			WHERE 1=1
+				AND pcaz.ATRZ_DMND_STTS_CD = "VTW03702"
+				AND pcaz.APRVR_EMP_ID = #{empId}
+		 	GROUP BY
+		 		pca.PRJCT_ID, pca.REG_DT,pca.APLY_YM,pca.APLY_ODR,pcaz.APRVR_EMP_ID,sttsCd.CD_NM,e.EMP_FLNM
 			UNION ALL
-				select 
-		 			 pma.EMP_ID AS ID												-- 사번
-		 			, '근무시간'	AS TY_SE											-- 결재유형
-		 			,CONCAT(pma.APLY_YM ,'-',pma.APLY_ODR ,'차수 근무시간') AS TITLE  -- 결재명
-		 			, e.EMP_FLNM AS ATRZ_EMP_NM										-- 기안자명
-		 			, DATE_FORMAT(pma.REG_DT, '%Y-%m-%d') AS REG_DT					-- 기안일자
-		 			, sttsCd.CD_NM AS ATRZ_STTS_CD_NM								-- 결자생태명
-		 			, pmaz.APRVR_EMP_ID	AS APRPVR_ID								-- 결재자 ID
-		 		from 
-		 			PRJCT_MM_APLY pma 
-		 		JOIN 
-		 			PRJCT_MM_ATRZ pmaz
-			 		ON pma.PRJCT_ID =pmaz.PRJCT_ID 
-				 		AND pma.EMP_ID =pmaz.EMP_ID 
-				 		AND pma.APLY_YM =pmaz.APLY_YM 
-				 		AND pma.APLY_ODR =pmaz.APLY_ODR 
-				 		AND pma.APLY_YMD =pmaz.APLY_YMD
-				LEFT JOIN CD sttsCd ON pmaz.ATRZ_DMND_STTS_CD = sttsCd.CD_VALUE -- 결재상태명
-				 LEFT JOIN EMP e on e.EMP_ID =pma.EMP_ID
-		 		WHERE
-		 		1=1
+			SELECT
+		 		pma.PRJCT_ID AS ID												-- 프로젝트ID
+		 		, '근무시간'	AS TY_SE											-- 결재유형
+		 		, CONCAT(pma.APLY_YM ,'-',pma.APLY_ODR ,'차수 근무시간') AS TITLE  -- 결재명
+		 		, e.EMP_FLNM AS ATRZ_EMP_NM										-- 기안자명
+		 		, DATE_FORMAT(pma.REG_DT, '%Y-%m-%d') AS REG_DT					-- 기안일자
+		 		, sttsCd.CD_NM AS ATRZ_STTS_CD_NM								-- 결자생태명
+		 		, pmaz.APRVR_EMP_ID	AS APRPVR_ID								-- 결재자 ID
+				, NULL AS CN
+				, NULL AS ELCTRN_ATRZ_ID
+		 	FROM PRJCT_MM_APLY pma
+		 	JOIN PRJCT_MM_ATRZ pmaz ON pma.PRJCT_ID =pmaz.PRJCT_ID
+				AND pma.EMP_ID =pmaz.EMP_ID
+				AND pma.APLY_YM =pmaz.APLY_YM
+				AND pma.APLY_ODR =pmaz.APLY_ODR
+				AND pma.APLY_YMD =pmaz.APLY_YMD
+			LEFT JOIN CD sttsCd ON pmaz.ATRZ_DMND_STTS_CD = sttsCd.CD_VALUE -- 결재상태명
+			LEFT JOIN EMP e on e.EMP_ID =pma.EMP_ID
+		 	WHERE 1=1
 		 		AND pmaz.ATRZ_DMND_STTS_CD = "VTW03702"
 		 		AND pmaz.APRVR_EMP_ID = #{empId}
-		 		group by 
-		 		pma.EMP_ID,pma.REG_DT,pma.APLY_YM,pma.APLY_ODR,pmaz.APRVR_EMP_ID,sttsCd.CD_NM 
+		 	GROUP BY
+		 		pma.PRJCT_ID,pma.REG_DT,pma.APLY_YM,pma.APLY_ODR,pmaz.APRVR_EMP_ID,sttsCd.CD_NM,e.EMP_FLNM	 
 		 	UNION ALL 
-		 		SELECT DISTINCT
-		 			ea.ELCTRN_ATRZ_ID AS ID							-- 전자결재 id
-					, tyCd.CD_NM AS TY_SE							-- 전자결재 결재구분명
-					, COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cta.CTRT_ATRZ_TTL, cga.ATRZ_TTL,
+		 	SELECT DISTINCT
+		 		NULL AS ID							-- 전자결재 id
+				, tyCd.CD_NM AS TY_SE							-- 전자결재 결재구분명
+				, COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cta.CTRT_ATRZ_TTL, cga.ATRZ_TTL,
 					CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD), ' [', va.VCATN_BGNG_YMD, ' ~ ', va.VCATN_END_YMD, ' (', va.VCATN_DE_CNT, '일)]')) AS TITLE
-					, e1.EMP_FLNM AS ATRZ_EMP_NM				 	-- 기안자
-					, DATE_FORMAT(ea.REG_DT, '%Y-%m-%d') AS REG_DT 	-- 기안일자
-					, sttsCd.CD_NM AS ATRZ_STTS_CD 					-- 결재상태 (VTW008)
-					, ea.ELCTRN_ATRZ_TY_SE_CD 						-- 전자결재 유형 코드
-				FROM ELCTRN_ATRZ ea
-				LEFT JOIN ATRZ_LN al
-				ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID
+				, e1.EMP_FLNM AS ATRZ_EMP_NM				 	-- 기안자
+				, DATE_FORMAT(ea.REG_DT, '%Y-%m-%d') AS REG_DT 	-- 기안일자
+				, sttsCd.CD_NM AS ATRZ_STTS_CD 					-- 결재상태 (VTW008)
+				, ea.ELCTRN_ATRZ_TY_SE_CD 						-- 전자결재 유형 코드
+		 		, COALESCE(ga.GNRL_ATRZ_CN, ca.CLM_ATRZ_CN, cta.CTRT_ATRZ_CN, cga.STLM_CN) AS CN
+				, ea.ELCTRN_ATRZ_ID
+			FROM ELCTRN_ATRZ ea
+			LEFT JOIN ATRZ_LN al ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID
 				AND ea.NOW_ATRZ_LN_SN = al.ATRZ_LN_SN
-				LEFT JOIN CD tyCd ON ea.ELCTRN_ATRZ_TY_SE_CD = tyCd.CD_VALUE -- 전자결재 유형코드 명
-				LEFT JOIN CD sttsCd ON al.ATRZ_STTS_CD = sttsCd.CD_VALUE -- 결재상태 (VTW008) 명
-				LEFT JOIN GNRL_ATRZ ga ON ea.ELCTRN_ATRZ_ID = ga.ELCTRN_ATRZ_ID -- 일반결재
-				LEFT JOIN CLM_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID -- 청구결재 - 거래처명
-				LEFT JOIN VCATN_ATRZ va ON ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID -- 휴가결재 제목
-				LEFT JOIN CTRT_ATRZ cta ON ea.ELCTRN_ATRZ_ID = cta.ELCTRN_ATRZ_ID -- 계약 지급
-				LEFT JOIN CTRT_GIVE_ATRZ cga ON ea.ELCTRN_ATRZ_ID = cga.ELCTRN_ATRZ_ID -- 계약 지급
-				JOIN EMP e1 ON ea.ATRZ_DMND_EMP_ID = e1.EMP_ID
-				WHERE 1=1
-					AND ea.ATRZ_DMND_STTS_CD ="VTW03702"
-					AND al.APRVR_EMP_ID = #{empId}
+			LEFT JOIN CD tyCd ON ea.ELCTRN_ATRZ_TY_SE_CD = tyCd.CD_VALUE -- 전자결재 유형코드 명
+			LEFT JOIN CD sttsCd ON al.ATRZ_STTS_CD = sttsCd.CD_VALUE -- 결재상태 (VTW008) 명
+			LEFT JOIN GNRL_ATRZ ga ON ea.ELCTRN_ATRZ_ID = ga.ELCTRN_ATRZ_ID -- 일반결재
+			LEFT JOIN CLM_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID -- 청구결재 - 거래처명
+			LEFT JOIN VCATN_ATRZ va ON ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID -- 휴가결재 제목
+			LEFT JOIN CTRT_ATRZ cta ON ea.ELCTRN_ATRZ_ID = cta.ELCTRN_ATRZ_ID -- 계약 지급
+			LEFT JOIN CTRT_GIVE_ATRZ cga ON ea.ELCTRN_ATRZ_ID = cga.ELCTRN_ATRZ_ID -- 계약 지급
+			JOIN EMP e1 ON ea.ATRZ_DMND_EMP_ID = e1.EMP_ID
+			WHERE 1=1
+				AND ea.ATRZ_DMND_STTS_CD ="VTW03702"
+				AND al.APRVR_EMP_ID = #{empId}
 			UNION ALL
-				SELECT 
-					pal.PRJCT_ID AS ID																	-- 프로젝트ID
-				  , '프로젝트 승인' AS TY_SE																	-- 결재 구분	
-				  , p.PRJCT_NM AS TITLE																	-- 프로젝트명
-				  , e.EMP_FLNM	AS ATRZ_EMP_NM															-- 직원이름(기안자)
-				  , DATE_FORMAT(pal.REG_DT, '%Y-%m-%d') AS REG_DT 										-- 계약일자
-				  , (SELECT CD_NM FROM CD WHERE CD_VALUE = pald.ATRZ_STTS_CD) AS ATRZ_STTS_CD_NM		-- 결재상태코드명
-				  , pald.ATRZ_STTS_CD																	-- 결재상태코드
-			  FROM PRJCT_ATRZ_LN pal																	-- 프로젝트 결재선
-			  JOIN PRJCT_ATRZ_LN_DTL pald ON(pal.PRJCT_ID = pald.PRJCT_ID AND pal.ATRZ_LN_SN = pald.ATRZ_LN_SN AND pal.NOW_ATRZ_STEP_CD = pald.ATRZ_STEP_CD) -- 프로젝트 결재선 상세
-			  JOIN PRJCT p ON (p.PRJCT_ID = pal.PRJCT_ID AND p.PRJCT_ID = pald.PRJCT_ID)				-- 프로젝트테이블의 ID와 결재상세 테이블 ID JOIN
-			  JOIN EMP e  ON (e.EMP_ID = pal.REG_EMP_ID)												-- 사원 ID와 결재테이블 등록 ID JOIN
-			 WHERE 1=1
+			SELECT
+				pal.PRJCT_ID AS ID																	-- 프로젝트ID
+				, '프로젝트 승인' AS TY_SE															-- 결재 구분
+				, p.PRJCT_NM AS TITLE																-- 프로젝트명
+				, e.EMP_FLNM AS ATRZ_EMP_NM														-- 직원이름(기안자)
+				, DATE_FORMAT(pal.REG_DT, '%Y-%m-%d') AS REG_DT 									-- 계약일자
+				, (SELECT CD_NM FROM CD WHERE CD_VALUE = pald.ATRZ_STTS_CD) AS ATRZ_STTS_CD_NM		-- 결재상태코드명
+				, pald.ATRZ_STTS_CD
+				, NULL AS CN
+				, NULL AS ELCTRN_ATRZ_ID
+			FROM PRJCT_ATRZ_LN pal																	-- 프로젝트 결재선
+			JOIN PRJCT_ATRZ_LN_DTL pald ON(pal.PRJCT_ID = pald.PRJCT_ID AND pal.ATRZ_LN_SN = pald.ATRZ_LN_SN AND pal.NOW_ATRZ_STEP_CD = pald.ATRZ_STEP_CD) -- 프로젝트 결재선 상세
+			JOIN PRJCT p ON (p.PRJCT_ID = pal.PRJCT_ID AND p.PRJCT_ID = pald.PRJCT_ID)				-- 프로젝트테이블의 ID와 결재상세 테이블 ID JOIN
+			JOIN EMP e  ON (e.EMP_ID = pal.REG_EMP_ID)												-- 사원 ID와 결재테이블 등록 ID JOIN
+			WHERE 1=1
 			   AND pald.APRVR_EMP_ID = #{empId} 
 			   AND pald.ATRZ_STTS_CD != 'VTW00803'														-- 결재상태코드 반려 아닐시
     		   AND pald.ATRZ_STTS_CD != 'VTW00805'														-- 결재상태코드 취소 아닐시
-				)
-				AS RESULT 
-				ORDER BY REG_DT ASC
-				LIMIT 4
-				
+			)
+		AS RESULT
+		ORDER BY REG_DT ASC
+		LIMIT 4
 	</select>
+
 	<!-- 전자결재(관리자메뉴) 쿼리  -->
 	<select id="retrieveElecAtrzMng" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT M.ELCTRN_ATRZ_ID						-- 전자결재 ID
+			 , M.ELCTRN_ATRZ_DOC_NO
 		     , M.PRJCT_ID							-- 프로젝트 ID
 		     , M.ELCTRN_ATRZ_TY_SE_CD				-- 전자결재유형코드
 		     , M.TY_CD AS ELCTRN_ATRZ_TY_SE_CD_NM
@@ -387,6 +634,7 @@
 		     , COUNT(*) OVER () AS TOTAL_ITEMS
 		  FROM (
 					SELECT EA.ELCTRN_ATRZ_ID
+						 , EA.ELCTRN_ATRZ_DOC_NO
 					     , EA.PRJCT_ID
 					     , EA.ELCTRN_ATRZ_TY_SE_CD
 					     , CD1.CD_NM AS TY_CD

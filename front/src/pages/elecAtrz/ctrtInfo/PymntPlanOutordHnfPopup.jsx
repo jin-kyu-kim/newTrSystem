@@ -3,10 +3,10 @@ import { Button } from "devextreme-react/button";
 import CustomLabelValue from "components/unit/CustomLabelValue";
 import PymntPlanOutordHnfPopupJson from "./PymntPlanOutordHnfPopupJson.json";
 import NumberBox from 'devextreme-react/number-box';
-import { parse, format, addMonths } from 'date-fns';
+import { parse, format, addMonths, subMonths  } from 'date-fns';
 import { useModal } from "../../../components/unit/ModalContext";
 
-const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVisible, handlePopupData, selectedData, tableData, data, sttsCd, ctrtTyCd }) => {
+const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVisible, handlePopupData, selectedData, tableData, data, sttsCd }) => {
 
     const labelValue = PymntPlanOutordHnfPopupJson.hnfCtrt.labelValue;
     labelValue.expectInptHnfId.param.queryId.prjctId = prjctId;
@@ -17,10 +17,16 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
     const { handleOpen } = useModal();
     let controlReadOnly = false;
 
+/*  VTW04001 계약직
+*   VTW04002 업체
+*   VTW04003 프리랜서
+*/  
+
+
 /* =========================  사업기간에 따른 우측 input box 생성  =========================*/
     const makePeriod = (ctrtYmd, stbleEndYmd) => {
-        const start = parse(ctrtYmd || format(new Date(), 'yyyy-MM-dd'), 'yyyyMMdd', new Date());
-        const end = stbleEndYmd ? parse(stbleEndYmd, 'yyyyMMdd', new Date()) : addMonths(start, 15);
+        const start = ctrtYmd ? subMonths(parse(ctrtYmd, 'yyyyMMdd', new Date()), 1) : subMonths(new Date(), 1);
+        const end = stbleEndYmd ? addMonths(parse(stbleEndYmd, 'yyyyMMdd', new Date()), 1) : addMonths(start, 16);
         const periods = [];
 
         for (let currentDate = start; currentDate <= end; currentDate = addMonths(currentDate, 1)) {
@@ -41,7 +47,6 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
         acc[year].push(month.replace('월', ''));
         return acc;
       }, {});
-
       setStructuredData(periodData);
     }
 
@@ -58,6 +63,10 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
             handleOpen("계획투입인원을 먼저 선택해주세요.");
             return;
         }
+        if(!outordEmpData.outordHnfCtrtSeCd){
+            handleOpen("계약구분을 먼저 선택해주세요.");
+            return;
+        }
 
         const fullId = e.element.id;
         const mm = e.component.option('value');
@@ -67,19 +76,22 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
         setInputValue(currentValues => {
             const newValues = JSON.parse(JSON.stringify(currentValues));
             if (index >= 0) { // 기존 데이터 변경
+
                 const updatedValue = { ...newValues[index], [key || 'mm']: mm };
                 
-                // 첫 번째 NumberBox의 mm 값이 변경될 때, ctrtAmt도 자동으로 설정
+                // 첫 번째 NumberBox의 mm 값이 변경될 때
                 if (!key) { // mm 값이 업데이트된 경우
-                    updatedValue['ctrtAmt'] = outordEmpData.untpc * mm; //Tip. 만약 투입MM으로 비율 계산을 할 필요가 없이 단가만 넣으려면 outordEmpData.untpc로 변경
+                    updatedValue['entrpsGiveCtrtAmt'] = outordEmpData.untpc * mm; 
                 }
     
                 newValues[index] = updatedValue;
             } else { // 신규 데이터
+
                 const newEntry = { id, [key || 'mm']: mm };
                 if (!key) {
-                    newEntry['ctrtAmt'] = outordEmpData.untpc * mm;  //Tip. 만약 투입MM으로 비율 계산을 할 필요가 없이 단가만 넣으려면 outordEmpData.untpc로 변경
+                    newEntry['entrpsGiveCtrtAmt'] = outordEmpData.untpc * mm;  
                 }
+
                 newValues.push(newEntry);
             }
     
@@ -106,9 +118,15 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
     };
     
     const calculateTotalAmt = (values) => {
+        let totAmt = 0;
         if(!!values){
-            const totAmt = values.map(item => (item.mm || 0) * (item.ctrtAmt || 0))
+            if(outordEmpData.outordHnfCtrtSeCd !== "VTW04003"){
+                totAmt = values.map(item =>(item.indvdlGiveCtrtAmt || 0) + (item.entrpsGiveCtrtAmt || 0))
                                 .reduce((acc, cur) => acc + cur, 0);
+            }else{
+                totAmt = values.map(item => (item.mm || 0 ) * (item.entrpsGiveCtrtAmt || 0))
+                                .reduce((acc, cur) => acc + cur, 0);
+            }
             return Number(totAmt.toFixed(2));
         }
     };
@@ -150,6 +168,12 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
      *  입력값 변경시 데이터 핸들링
      */
     const handleChgState = ({name, value}) => {
+        //계약구분의 변경이 일어날 경우 초기화
+        if(name==="outordHnfCtrtSeCd"){
+            if(outordEmpData.outordHnfCtrtSeCd !== value){
+                setInputValue([]);
+            }          
+        }
         setOutordEmpData(outordEmpData => ({
             ...outordEmpData,
             [name]: value
@@ -170,13 +194,13 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
 
         setOutordEmpData(selectedData);
         setInputValue(selectedData.hnfCtrtDtlMm?selectedData.hnfCtrtDtlMm:[]); //수정 시 월별 값 셋팅
-
     }, [selectedData]);
 
     // 수정테이블 수정가능 여부
     const isEditable = !["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405"].includes(sttsCd) 
-                        && data.elctrnAtrzTySeCd !== "VTW04914";
+                        && !["VTW04911","VTW04912","VTW04913","VTW04914",].includes(data.elctrnAtrzTySeCd);
 
+ 
     controlReadOnly = !isEditable
     
     return (
@@ -186,9 +210,9 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
                     <div className="project-change-content-inner-left">
                         <div className="dx-fieldset">
                             <CustomLabelValue props={labelValue.expectInptHnfId} onSelect={handleChgState} value={outordEmpData.expectInptHnfId} readOnly={controlReadOnly}/>
-                            <CustomLabelValue props={labelValue.usefulAmt} onSelect={handleChgState} readOnly={true} value={outordEmpData.usefulAmt}/>
-                            <CustomLabelValue props={labelValue.inptHnfId} onSelect={handleChgState} value={outordEmpData.inptHnfId} readOnly={controlReadOnly}/>
                             <CustomLabelValue props={labelValue.outordHnfCtrtSeCd} onSelect={handleChgState} value={outordEmpData.outordHnfCtrtSeCd} readOnly={controlReadOnly}/>
+                            <CustomLabelValue props={labelValue.usefulAmt} onSelect={handleChgState} readOnly={true} value={outordEmpData.usefulAmt}/>
+                            <CustomLabelValue props={labelValue.inptHnfId} onSelect={handleChgState} value={outordEmpData.inptHnfId} readOnly={controlReadOnly}/>                    
                             <CustomLabelValue props={labelValue.hnfRoleCd} onSelect={handleChgState} value={outordEmpData.hnfRoleCd} readOnly={controlReadOnly}/>
                             <CustomLabelValue props={labelValue.hnfGradCd} onSelect={handleChgState} value={outordEmpData.hnfGradCd} readOnly={controlReadOnly}/>
                             <CustomLabelValue props={labelValue.tkcgJob} onSelect={handleChgState} value={outordEmpData.tkcgJob} readOnly={controlReadOnly}/>
@@ -200,27 +224,31 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
                     </div>
                     <div className="project-change-content-inner-right">
                     <div className="dx-fieldset">
-                        <div className="dx-field">
-                            <div className="dx-field-value">
-                            <table style={{ width: "100%", borderSpacing: "10px"}}>
+                        <div className="" style={{ display: "flex", flexDirection: "column", alignItems: "stretch" }}>
+                            {/* <div className="dx-field-value"> */}
+                            <table style={{ width: "100%", borderSpacing: "10px", tableLayout: "fixed" }}>
                                 <thead>
                                     <tr >
                                     {Object.keys(structuredData).map((year, index) => (
-                                        <React.Fragment key={year}>
-                                        <th key={year} style={{ width: "50px", textAlign: "center" }}> {year}년 </th>
-                                        <th key={index} style={{textAlign:"center"}}> 투입MM </th>
-                                        <th style={{textAlign:"center", width: "10px"}}> 단가 </th>
+                                        <React.Fragment key={year} >
+                                        <th key={year} style={{ width: "8%", textAlign: "center" }}> {year}년 </th>
+                                        <th key={index} style={{ width: "20%", textAlign:"center"}}> 투입MM </th>
+                                        { outordEmpData.outordHnfCtrtSeCd !== "VTW04003" &&
+                                        <th style={{textAlign:"center", width: "30%"}}> 업체계약금액 </th>
+                                        }
+                                        <th style={{textAlign:"center", width: "30%"}}> 개인계약금액 </th>
+                                        
                                         </React.Fragment>
                                     ))}
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {Array.from({ length: Math.max(...Object.values(structuredData).map(months => months.length)) }).map((_, rowIndex) => (
-                                    <tr key={rowIndex}>
+                                    <tr key={rowIndex} >
                                         {Object.values(structuredData).map((months, colIndex) => (
-                                        <>
-                                        <td key={colIndex} style={{width:"10px", padding:"5px", textAlign: "center"}}>{months[rowIndex] ? `${months[rowIndex]}월` : ''}</td>
-                                        <td key={months} style={{width:"50px", padding:"5px"}}>
+                                        <React.Fragment key={months} >
+                                        <td key={colIndex} >{months[rowIndex] ? `${months[rowIndex]}월` : ''}</td>
+                                        <td key={months} style={{width:"20%", padding:"5px"}}>
                                             {months[rowIndex] ? 
                                                 (<NumberBox 
                                                     key={months[rowIndex]}
@@ -237,24 +265,40 @@ const PymntPlanOutordHnfPopup = ({ prjctId, ctrtYmd, stbleEndYmd, handlePopupVis
                                                     onChange={handleInputChange}
                                                     readOnly={controlReadOnly}
                                                 />): ''}</td>
+            
+                                            <td style={{width:"30%", padding:"5px"}}>
+                                            {months[rowIndex] ? 
+                                                <NumberBox 
+                                                    id={`${Object.keys(structuredData)[colIndex]}${months[rowIndex]}_entrpsGiveCtrtAmt`} 
+                                                    value ={inputValue.find(item => item.id === `${Object.keys(structuredData)[colIndex]}${months[rowIndex]}`)?.entrpsGiveCtrtAmt || 0}
+                                                    readOnly={ controlReadOnly === true ? true : false}
+                                                    format="#,##0 원"
+                                                    defaultValue={0}
+                                                    onChange={handleInputChange}                                                      
+                                                /> : ''}
+                                            </td>
+                                            
+                                            { outordEmpData.outordHnfCtrtSeCd !== "VTW04003" &&   
                                             <td style={{width:"30%", padding:"5px"}}>
                                                 {months[rowIndex] ? 
                                                     <NumberBox 
-                                                        id={`${Object.keys(structuredData)[colIndex]}${months[rowIndex]}_ctrtAmt`} 
-                                                        value ={inputValue.find(item => item.id === `${Object.keys(structuredData)[colIndex]}${months[rowIndex]}`)?.ctrtAmt || 0}
+                                                        id={`${Object.keys(structuredData)[colIndex]}${months[rowIndex]}_indvdlGiveCtrtAmt`} 
+                                                        value ={inputValue.find(item => item.id === `${Object.keys(structuredData)[colIndex]}${months[rowIndex]}`)?.indvdlGiveCtrtAmt || 0}
                                                         readOnly={ controlReadOnly === true ? true : false}
                                                         format="#,##0 원"
                                                         defaultValue={0}
                                                         onChange={handleInputChange}                                                      
                                                     /> : ''}
                                             </td>
-                                        </>
+                                            }
+                                            
+                                        </React.Fragment>
                                         ))}
                                     </tr>
                                     ))}
                                 </tbody>
                                 </table>
-                            </div>
+                            {/* </div> */}
                         </div>
                     </div>
                 </div>

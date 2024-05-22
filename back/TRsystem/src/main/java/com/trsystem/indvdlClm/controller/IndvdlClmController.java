@@ -1,22 +1,24 @@
 package com.trsystem.indvdlClm.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.trsystem.indvdlClm.domain.IndvdlClmDomain;
-import lombok.RequiredArgsConstructor;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.http.MediaType;
 
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.trsystem.financialAffairMng.domain.FinancialAffairMngDomain;
+import com.trsystem.indvdlClm.domain.IndvdlClmDomain;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
@@ -52,19 +54,40 @@ public class IndvdlClmController {
     }
 
     /* =================================박지환_작업================================= */
-    // 프로젝트근무시간저장
-    @PostMapping(value = "/boot/indvdlClm/insertPrjctMmAply" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public List<Map<String, Object>> insertPrjctMmAply (@RequestPart(required = false) String insertWorkHourList,
-                                                        @RequestPart(required = false) String deleteWorkHourList) throws JsonProcessingException {
+    // 프로젝트근무시간임시저장
+    @PostMapping(value = "/boot/indvdlClm/insertPrjctMmAplyTemp" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public List<Map<String, Object>> insertPrjctMmAplyTemp (@RequestPart(required = false) String insertPrjctMmTempList) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
 
-        List<Map<String, Object>> insertWorkHourMap = new ArrayList<>();
-        List<Map<String, Object>> deleteWorkHourMap = new ArrayList<>();
+        List<Map<String, Object>> insertPrjctMmTempListValue = new ArrayList<>();
+//
+        insertPrjctMmTempListValue = mapper.readValue(insertPrjctMmTempList,ArrayList.class);
 
-        insertWorkHourMap = mapper.readValue(insertWorkHourList,ArrayList.class);
-        deleteWorkHourMap = mapper.readValue(deleteWorkHourList,ArrayList.class);
+        return IndvdlClmDomain.insertPrjctMmAplyTemp(insertPrjctMmTempListValue);
+    }
 
-        return IndvdlClmDomain.insertPrjctMmAply(insertWorkHourMap, deleteWorkHourMap);
+    // 프로젝트근무시간삭제
+    @PostMapping(value = "/boot/indvdlClm/deletePrjctMmAply" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public List<Map<String, Object>> deletePrjctMmAply (@RequestPart(required = false) String deletePrjctMmList) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+
+        List<Map<String, Object>> deletePrjctMmListValue = new ArrayList<>();
+//
+        deletePrjctMmListValue = mapper.readValue(deletePrjctMmList,ArrayList.class);
+
+        return IndvdlClmDomain.deletePrjctMmAply(deletePrjctMmListValue);
+    }
+
+    // 프로젝트근무시간승인요청
+    @PostMapping(value = "/boot/indvdlClm/insertPrjctMmAply" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public List<Map<String, Object>> insertPrjctMmAply (@RequestPart(required = false) String insertWorkHourList) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+
+        List<Map<String, Object>> insertWorkHourListValue = new ArrayList<>();
+
+        insertWorkHourListValue = mapper.readValue(insertWorkHourList,ArrayList.class);
+
+        return IndvdlClmDomain.insertPrjctMmAply(insertWorkHourListValue);
     }
 
     // 프로젝트근무시간요청취소
@@ -153,6 +176,63 @@ public class IndvdlClmController {
     public int deleteVcatnAtrz (@RequestBody Map<String, Object> dataMap) throws SQLException{
         return IndvdlClmDomain.deleteVcatnAtrz(dataMap);
     }
+
+    // 직원휴직저장
+    @PostMapping(value = "/boot/indvdlClm/insertEmpLeave", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public String insertEmpLeave (
+            @RequestPart(required = false) String elctrnAtrzId,
+            @RequestPart(required = false) List<MultipartFile> attachments,
+            @RequestPart(required = false) String elctrnTbNm,
+            @RequestPart(required = false) String insertElctrnValue,
+            @RequestPart(required = false) String vcatnTbNm,
+            @RequestPart(required = false) String insertVcatnValue,
+            @RequestPart(required = false) String atrzLnTbNm,
+            @RequestPart(required = false) String insertAtrzLnValue,
+            @RequestPart(required = false) String refrnTbNm,
+            @RequestPart(required = false) String insertRefrnValue
+    ) throws JsonProcessingException, SQLException {
+
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> elctrnAtrzIdValue = mapper.readValue(elctrnAtrzId,Map.class);
+        Map<String, Object> elctrnTbMap = mapper.readValue(elctrnTbNm,Map.class);
+        Map<String, Object> insertElctrnMap = mapper.readValue(insertElctrnValue,Map.class);
+        Map<String, Object> vcatnTbMap = mapper.readValue(vcatnTbNm,Map.class);
+        Map<String, Object> insertVcatnMap = mapper.readValue(insertVcatnValue,Map.class);
+        Map<String, Object> atrzLnTbMap = mapper.readValue(atrzLnTbNm,Map.class);
+        List<Map<String, Object>> insertAtrzLnMap = mapper.readValue(insertAtrzLnValue,ArrayList.class);
+        Map<String, Object> refrnTbMap = mapper.readValue(refrnTbNm,Map.class);
+        List<Map<String, Object>> insertRefrnMap = mapper.readValue(insertRefrnValue,ArrayList.class);
+
+        return IndvdlClmDomain.insertEmpLeave(
+                elctrnAtrzIdValue,
+                elctrnTbMap,
+                insertElctrnMap,
+                vcatnTbMap,
+                insertVcatnMap,
+                atrzLnTbMap,
+                insertAtrzLnMap,
+                refrnTbMap,
+                insertRefrnMap,
+                attachments
+        );
+    }
+
+    // 직원휴직승인
+    @PostMapping(value = "/boot/indvdlClm/updateEmpLeave")
+    public List<Map<String, Object>> updateEmpLeave (@RequestBody Map<String, Object> params) {
+        return IndvdlClmDomain.updateEmpLeave(params);
+    }
+    
+    /**
+     * 비용 출력 화면 
+     * @param params
+     * @return
+     */
+	@PostMapping(value = "/boot/indvdlClm/retrieveCtData")
+	public List<Map<String, Object>> retrieveCtData(@RequestBody Map<String, Object> params) {
+		return FinancialAffairMngDomain.retrieveCtData(params);
+	}
+
     /* =================================박지환_작업================================= */
 
 }

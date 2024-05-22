@@ -80,6 +80,7 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
         } else {    //신규 데이터      
                 updatedValues.push({ id, value });    // 새로운 값 객체 추가        
         }
+
         setInputValue(updatedValues); // 업데이트된 배열로 상태 설정
        
 
@@ -388,7 +389,7 @@ const onRowUpdateingMonthData = async() => {
         //통제성경비, 일반경비
         if(popupInfo.menuName==="ProjectGeneralBudgetCostJson" || popupInfo.menuName==="ProjectControlBudgetCostJson"){
             setContents(
-                <div className="dx-fieldset">
+                <div className="dx-fieldset" key="expensCd">
                     <div className="dx-field">
                         <div className="dx-field-label asterisk">비용코드</div>
                         <div className="dx-field-value">
@@ -411,7 +412,7 @@ const onRowUpdateingMonthData = async() => {
         //외주인력
         }else if(popupInfo.menuName==="ProjectOutordEmpCostJson"){
             setContents(
-                <div className="dx-fieldset">
+                <div className="dx-fieldset" key="hnfRoleCd">
                     <CustomLabelValue props={popupInfo.labelValue.outordEmpId} value={data.outordEmpId} onSelect={handleChgState}/>
                     <div className="dx-field">    
                         <div className="dx-field-label asterisk">역할</div>
@@ -452,7 +453,7 @@ const onRowUpdateingMonthData = async() => {
         //자사인력
         }else if(popupInfo.menuName==="ProjectEmpCostJson"){
             setContents(
-                <div className="dx-fieldset">
+                <div className="dx-fieldset" key="hnfRoleCd">
                     <CustomLabelValue 
                         props={popupInfo.labelValue.empId} 
                         value={data.empId} 
@@ -536,13 +537,16 @@ const onRowUpdateingMonthData = async() => {
                                             />): ''}</td>
                                             { (popupInfo.menuName === "ProjectEmpCostJson" || popupInfo.menuName === "ProjectOutordEmpCostJson") &&
                                             <td style={{width:"20%", padding:"5px"}}>
-                                                <NumberBox 
-                                                    value= {(data.mmnyLbrcoPrmpcSn || data.outordLbrcoPrmpcSn)? 
-                                                            transformedData.find(item => item.id === `${Object.keys(structuredData)[colIndex]}${months[rowIndex]}_untpc`)?.value || 0 
-                                                            : data.userDfnValue ? data.userDfnValue : data.untpc}
+                                                {months[rowIndex] ? ( 
+                                                <NumberBox                      
+                                                    value={(data.mmnyLbrcoPrmpcSn || data.outordLbrcoPrmpcSn) ? (
+                                                        transformedData.find(item => item.id === `${Object.keys(structuredData)[colIndex]}${months[rowIndex]}_untpc`)?.value ||
+                                                        data.userDfnValue || 
+                                                        data.untpc
+                                                    ) : 0}
                                                     readOnly={true}
-                                                    format={"#,### 원"}
-                                                    />
+                                                    format={"#,### 원"}                                                  
+                                                    />): ''}
                                             </td>
                                             }
                                         </>

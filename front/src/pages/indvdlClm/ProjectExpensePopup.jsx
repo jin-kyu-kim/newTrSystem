@@ -7,15 +7,13 @@ import ProjectExpenseJson from "../indvdlClm/ProjectExpenseJson.json";
 import CustomPivotGrid from "../../components/unit/CustomPivotGrid";
 import ApiRequest from "../../utils/ApiRequest";
 import ReactToPrint from 'react-to-print';
-import { useModal } from "../../components/unit/ModalContext";
 
-const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noDataCase }) => {
+const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noDataCase, mmAtrzCmptnYn }) => {
     const { projectExpensePopup, projectExpensePopQueryIdList } = ProjectExpenseJson;
     const [ empInfo, setEmpInfo ] = useState({});
     const [ totalInfo, setTotalInfo ] = useState({});
     const [ data, setData ] = useState([]);
     const contentRef = useRef(null);
-    const { handleOpen } = useModal();
     const commonParams = {
         aplyYm: basicInfo.aplyYm,
         aplyOdr: basicInfo.aplyOdr,
@@ -113,7 +111,7 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
                         values={dataSource}
                         blockCollapse={true}
                         grandTotals={true}
-                        width={1000}
+                        width={'100%'}
                     />
                 )
             default:
@@ -124,7 +122,8 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
     const contentArea = () => {
         return (
             <div>
-                {(aprvInfo.totCnt === aprvInfo.aprv || (aprvInfo.totCnt === aprvInfo.aprv + aprvInfo.rjct) || noDataCase.cnt === 0 && noDataCase.yn === 'Y') ? 
+                {(aprvInfo.totCnt === aprvInfo.aprv && mmAtrzCmptnYn === 'Y' 
+                || (aprvInfo.totCnt === aprvInfo.aprv + aprvInfo.rjct) && mmAtrzCmptnYn === 'Y' || noDataCase.cnt === 0 && noDataCase.yn === 'Y') ? 
                     <div ref={contentRef} >
                         <div style={{ textAlign: 'right' }}>
                             <ReactToPrint 
@@ -142,6 +141,8 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
                             </div>
                         ))}
                     </div>
+                : mmAtrzCmptnYn === 'N' || noDataCase.yn === 'N' 
+                ? <span>진행중인 근무시간 요청이 있습니다. 승인 완료 후 출력하시기 바랍니다.</span>
                 : <span>결재 진행중인 청구내역이 있습니다.</span> }
             </div>
         );
@@ -150,8 +151,8 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
     return (
         <div style={{marginBottom: '100px'}}>
             <Popup
-                width={1050}
-                height={1000}
+                width={"95%"}
+                height={"95%"}
                 visible={visible}
                 onHiding={onPopHiding}
                 showCloseButton={true}

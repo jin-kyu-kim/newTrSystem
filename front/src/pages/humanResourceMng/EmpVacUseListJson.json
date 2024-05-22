@@ -4,13 +4,13 @@
     "keyColumn": "empno",
     "tableColumns": 
 	[
-        { "key": "empno", "value": "사번", "width": 150, "alignment" : "center"},
-        { "key": "empFlnm", "value": "성명", "width": 150 , "alignment" : "center"},
-        { "key": "vcatnTyCd", "value": "휴가구분", "width": 100, "alignment" : "center" },
-        { "key": "vcatnBgngYmd", "value": "시작일", "width": 150, "alignment" : "center" },
-        { "key": "vcatnEndYmd", "value": "종료일", "width": 150, "alignment" : "center" }, 
-        { "key": "vcatnDeCnt", "value": "휴가일수", "width": 100, "alignment" : "center" },
-       { "key": "vcatnPrvonsh", "value": "휴가사유", "width": 200, "alignment" : "center"} 
+        { "key": "empno", "value": "사번", "width": "10%", "alignment" : "center"},
+        { "key": "empFlnm", "value": "성명", "width": "10%" , "alignment" : "center"},
+        { "key": "vcatnTyCd", "value": "휴가구분", "width": "10%", "alignment" : "center" },
+        { "key": "vcatnBgngYmd", "value": "시작일", "width": "15%", "alignment" : "center" },
+        { "key": "vcatnEndYmd", "value": "종료일", "width": "15%", "alignment" : "center" }, 
+        { "key": "vcatnDeCnt", "value": "휴가일수", "width": "10%", "alignment" : "center" },
+       { "key": "vcatnPrvonsh", "value": "휴가사유", "width": "30%", "alignment" : "center"} 
 	],
     "searchParams":
 	{

@@ -370,6 +370,9 @@ public class ProjectBaseDomain {
 		int aprvBgtMngOdr = 0;
 		int bgtMngOdrTobe = Integer.parseInt(String.valueOf(param.get("bgtMngOdrTobe")));
 		
+		String prjctId = String.valueOf(param.get("prjctId"));
+		String bizSttsCd = String.valueOf(param.get("bizSttsCd"));
+		
 		// 승인된 차수가 존재하는 경우에 승인된 차수 따로 빼둬서 데이터를 넣을 때 사용한다.
 		if(param.get("bgtMngOdr") != null) {
 			aprvBgtMngOdr = Integer.parseInt(String.valueOf(param.get("bgtMngOdr")));
@@ -400,7 +403,12 @@ public class ProjectBaseDomain {
 	    	if(aprvBgtMngOdr > 0 && result > 0) {
 	    		
 	    		// 승인된 차수의 예산 값들을 새로 만들어진 차수에 copy 해준다.
-	    		batchSkillService.executeAddPrjctBgtPrmpc(String.valueOf(param.get("prjctId")), aprvBgtMngOdr, bgtMngOdrTobe + 1);
+	    		batchSkillService.executeAddPrjctBgtPrmpc(prjctId, aprvBgtMngOdr, bgtMngOdrTobe + 1);
+	    		
+	    		// bizSttsCd가 변경중(VTW00403)인 경우 수행중으로 바꿔준다.
+	    		if(bizSttsCd.equals("VTW00403")) {
+	    			updatePrjctBizSttsCd("VTW00402", prjctId);
+	    		}
 	    	}
 	    	
 	    	return bgtMngOdrTobe + 1;
@@ -408,6 +416,32 @@ public class ProjectBaseDomain {
 	    	return result;
 		}
 	}
+	
+	/**
+	 * 프로젝트 수행상태를 변경해주는 메소드
+	 * @param param
+	 * @return
+	 */
+	public static int updatePrjctBizSttsCd(String bizSttsCd, String prjctId) {
+		List<Map<String, Object>> updateParams = new ArrayList<>();
+		Map<String, Object> tbParam = new HashMap<>();
+		Map<String, Object> infoParam = new HashMap<>();
+		Map<String, Object> conditionParam = new HashMap<>();
+		int result = 0;
+		
+		tbParam.put("tbNm", "PRJCT");
+		infoParam.put("bizSttsCd", bizSttsCd);
+		conditionParam.put("prjctId", prjctId);
+		
+		updateParams.add(0, tbParam);
+		updateParams.add(1, infoParam);
+		updateParams.add(2, conditionParam);
+		
+		result = commonService.updateData(updateParams);
+		
+		return result;
+	}
+	
 
 	public static List<Map<String, Object>> retrievePjrctCost(Map<String, Object>param){
 		List<Map<String, Object>> result = new ArrayList<>();
@@ -618,7 +652,8 @@ public class ProjectBaseDomain {
 		paramCtMm.put("empId", param.get("empId"));
 		paramCtMm.put("aplyYm", nowYm);
 		paramCtMm.put("aplyOdr", nowOdr);
-		commonService.queryIdSearch(paramCtMm);
+		paramCtMm.put("state", "INSERT");
+		commonService.queryIdDataControl(paramCtMm);
 
 		// (PRJCT_CT_APLY)
 		// ID로 서치
@@ -656,7 +691,8 @@ public class ProjectBaseDomain {
 
 		// 기존 값 업데이트 -> 코드 VTW03708(이월)
 		paramAply.put("queryId", "projectMapper.updatePrjctCtAtrz");
-		commonService.queryIdSearch(paramAply);
+		paramAply.put("state", "UPDATE");
+		commonService.queryIdDataControl(paramAply);
 
 		// 가져온 값의 aplyYm, aplyOdr 바꿔서 인서트
 		List<Map<String, Object>> insertAtrz = new ArrayList<>();

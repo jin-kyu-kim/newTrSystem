@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.trsystem.mybatis.mapper.commonMapper">
+	<select id="autoCompleteProject" resultType="com.trsystem.LowerHashMap">
+		SELECT PRJCT_ID
+		     , PRJCT_NM
+		     , PRJCT_MNGR_EMP_ID
+			 , BIZ_STTS_CD
+			 , CONCAT('[',PRJCT_CD_IDNTFR,'] ','[',(SELECT EMP_FLNM FROM EMP WHERE EMP_ID = PRJCT_MNGR_EMP_ID ),'] ',PRJCT_NM) AS PRJCT_TAG
+			 , PRJCT_STLE_CD
+		FROM PRJCT
+		ORDER BY PRJCT_STLE_CD DESC
+	</select>
+</mapper>

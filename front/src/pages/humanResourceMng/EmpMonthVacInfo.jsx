@@ -6,7 +6,6 @@ import Calendar from "components/unit/Calendar"
 import ApiRequest from "utils/ApiRequest";
 
 
-import 'devextreme/dist/css/dx.light.css';
 import EmpMonthVacInfoJson from "./EmpMonthVacInfoJson.json"
 import CustomEmpComboBox from "components/unit/CustomEmpComboBox"
 
@@ -116,7 +115,7 @@ const EmpMonthVacInfo = () => {
 
 
     return (
-        <div className="">
+        <div style={{ marginLeft: "10%", marginRight: "10%" }}>
             <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
                 <h1 style={{ fontSize: "30px" }}>월별휴가정보</h1>
             </div>
@@ -124,7 +123,7 @@ const EmpMonthVacInfo = () => {
                 <span>* 직원의 월별 휴가정보를 조회합니다.</span>
             </div>
             <div className="row">
-                <div className="col-md-2" style={{ marginRight: "-20px" }}>
+                <div style={{ marginRight: "-20px", width: "150px" }}>
                     <SelectBox
                         placeholder="[년도]"
                         defaultValue={new Date().getFullYear()}
@@ -133,7 +132,7 @@ const EmpMonthVacInfo = () => {
                         onValueChange={(e) => { onSearchChg("searchYear", e) }}
                     />
                 </div>
-                <div className="col-md-1" style={{ marginRight: "-20px" }}>
+                <div style={{ marginRight: "-20px", width: "120px" }}>
                     <SelectBox
                         dataSource={getMonthList()}
                         defaultValue={(new Date().getMonth() + 1)}
@@ -144,7 +143,7 @@ const EmpMonthVacInfo = () => {
                         onValueChange={(e) => { onSearchChg("searchMonth", e) }}
                     />
                 </div>
-                <div className="col-md-3" style={{ marginRight: "-20px" }}>
+                <div style={{ marginRight: "-20px", width: "300px" }}>
                     <CustomEmpComboBox
                         value={searchParam.empId}
                         readOnly={false}
@@ -154,9 +153,7 @@ const EmpMonthVacInfo = () => {
                     />
                 </div>
                 <div className="col-md-1">
-                    <Button
-                        onClick={searchHandle} text="검색" style={{ height: "48px", width: "50px" }}
-                    />
+                    <Button onClick={searchHandle} text="검색" style={{ height: "48px", width: "50px" }} />
                 </div>
             </div>
             <div className="mx-auto" style={{ marginBottom: "20px", marginTop: "30px" }}>

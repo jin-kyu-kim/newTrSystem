@@ -51,6 +51,7 @@ const CustomDateRangeBox = ({ onStartDateChange, onEndDateChange }) => {
           value={selectedStartDate}
           onValueChanged={handleStartDateChange}
           width="100%"
+          showClearButton={true}
           dateSerializationFormat="yyyyMMdd"
           placeholder="시작 일자"
           displayFormat="yyyy-MM-dd"
@@ -62,6 +63,7 @@ const CustomDateRangeBox = ({ onStartDateChange, onEndDateChange }) => {
           value={selectedEndDate}
           onValueChanged={handleEndDateChange}
           width="100%'"
+          showClearButton={true}
           dateSerializationFormat="yyyyMMdd"
           placeholder="종료 일자"
           displayFormat="yyyy-MM-dd"

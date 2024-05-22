@@ -5,7 +5,6 @@ import {FileUploader} from "devextreme-react";
 import DataGrid, {Column} from 'devextreme-react/data-grid';
 import uuid from "react-uuid";
 import ApiRequest from "../../utils/ApiRequest";
-import {useCookies} from "react-cookie";
 import axios from "axios";
 import CustomLabelValue from "../../components/unit/CustomLabelValue";
 
@@ -30,7 +29,7 @@ const button = {
 }
 
 const CultureHealthCostReg = (props) => {
-    const [cookies] = useCookies([]);
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const token = localStorage.getItem("token");
     const [values, setValues] = useState([]);
     const [attachments, setAttachments] = useState([]);
@@ -38,14 +37,15 @@ const CultureHealthCostReg = (props) => {
     const deleteFiles = useRef([{tbNm: "ATCHMNFL"}]);
     const [selectedItem, setSelectedItem] = useState(null);
     let selectedClmAmt = useRef(0);
+    let selectedClturPhstrnSeCd = useRef(null);
     let now = new Date();
     const Json = CultureHealthCostJson;
     const {labelValue} = Json;
     const [initParam, setInitParam] = useState({
         "clmAmt": 0,
         "clmYmd": now.getFullYear()+('0' + (now.getMonth() + 1)).slice(-2)+('0' + now.getDate()).slice(-2),
-        "empId": cookies.userInfo.empId,
-        "regEmpId": cookies.userInfo.empId
+        "empId": userInfo.empId,
+        "regEmpId": userInfo.empId
     });
 
     useEffect(() => {
@@ -104,7 +104,7 @@ const CultureHealthCostReg = (props) => {
     const searchTable = async () => {
         const params = {
             queryId: Json.queryId,
-            empId: cookies.userInfo.empId,
+            empId: userInfo.empId,
             clmYmd: props.year
         }
         try{
@@ -160,6 +160,15 @@ const CultureHealthCostReg = (props) => {
         }
     }
 
+    const validateUser = () => {
+        const errors = [];
+        if (userInfo.empTyCd !== 'VTW00201') {
+            alert('등록이 불가능한 사용자입니다.')
+            errors.push('Invalid user');
+        }
+        return errors.length === 0;
+    };
+
     const validateFile = () => {
         let maxSize = 0;
         attachments.map((file) => {
@@ -211,7 +220,7 @@ const CultureHealthCostReg = (props) => {
         return errors.length === 0;
     };
 
-    const validateDelete = () => {
+    const validateDate = () => {
         const errors = [];
         const year = selectedItem.clmYmd.substring(0, 4);
         const month = selectedItem.clmYmd.substring(4, 6) - 1;
@@ -220,7 +229,7 @@ const CultureHealthCostReg = (props) => {
 
         if (now.getDate() >5) {
             if(now.getFullYear() !== clmYmd.getFullYear() || now.getMonth() !== clmYmd.getMonth()){
-                alert('삭제 불가능한 일자입니다.')
+                alert('수정/삭제 불가능한 일자입니다.')
                 errors.push('Wrong Date');
             }
         }else{
@@ -228,7 +237,7 @@ const CultureHealthCostReg = (props) => {
             let lastMonth = new Date ( firstDayOfMonth.setDate( firstDayOfMonth.getDate() - 1 ) );
             if(!(now.getFullYear() === clmYmd.getFullYear() && now.getMonth() === clmYmd.getMonth()) &&
                 !(lastMonth.getFullYear() === clmYmd.getFullYear() && lastMonth.getMonth() === clmYmd.getMonth())){
-                alert('삭제 불가능한 일자입니다.')
+                alert('수정/삭제 불가능한 일자입니다.')
                 errors.push('Wrong Date');
             }
         }
@@ -239,7 +248,7 @@ const CultureHealthCostReg = (props) => {
     const handleSubmit = async() => {
         const confirmResult = window.confirm("등록하시겠습니까?");
         if (confirmResult) {
-            if (validateData() && validateFile()) {
+            if (validateData() && validateFile() && validateUser()) {
                 if(!initParam.clturPhstrnActCtSn){
                     try{
                         const formData = new FormData();
@@ -266,7 +275,7 @@ const CultureHealthCostReg = (props) => {
                     }
                 } else {
                     const formData = new FormData();
-                    const tbData = {tbNm: "CLTUR_PHSTRN_ACT_CT_REG", snColumn: "clturPhstrnActCtSn", snSearch:{empId: cookies.userInfo.empId}}
+                    const tbData = {tbNm: "CLTUR_PHSTRN_ACT_CT_REG", snColumn: "clturPhstrnActCtSn", snSearch:{empId: userInfo.empId}}
                     formData.append("tbNm", JSON.stringify(tbData));
                     if(attachments.length > 0){
                         formData.append("data", JSON.stringify({
@@ -298,9 +307,10 @@ const CultureHealthCostReg = (props) => {
                         },
                     })
                     if (response.status === 200) {
-                        if(selectedClmAmt.current !== initParam.clmAmt){
+                        if(selectedClmAmt.current !== initParam.clmAmt || selectedClturPhstrnSeCd !== initParam.clturPhstrnActCtSn){
                             let param = initParam;
                             param.selectedClmAmt = selectedClmAmt.current;
+                            param.selectedClturPhstrnSeCd = selectedClturPhstrnSeCd.current;
                             await ApiRequest('/boot/indvdlClm/editClturPhstrnActCt', param);
                         }
                         deleteFiles.current = [{tbNm: "ATCHMNFL"}];
@@ -320,9 +330,10 @@ const CultureHealthCostReg = (props) => {
     }, []);
 
     const onDeleteClick = async() => {
-        const confirmResult = window.confirm("삭제하시겠습니까?");
-        if (confirmResult) {
-            if (validateDelete()) {
+        if (validateDate()) {
+            const confirmResult = window.confirm("삭제하시겠습니까?");
+            if (confirmResult) {
+                onResetClick();
                 try {
                     const paramCh = [{ tbNm: "CLTUR_PHSTRN_ACT_CT_REG" }, { empId: selectedItem.empId, clturPhstrnActCtSn: selectedItem.clturPhstrnActCtSn }]
                     const responseCh = await ApiRequest("/boot/common/commonDelete", paramCh);
@@ -346,12 +357,17 @@ const CultureHealthCostReg = (props) => {
     };
 
     const onUpdateClick = async() => {
-        deleteFiles.current = [{tbNm: "ATCHMNFL"}];
-        selectedClmAmt.current = selectedItem.clmAmt;
-        setInitParam(selectedItem);
-        for(let i = 0; i < selectedItem.atchmnfl.length; i++){
-            deleteFiles.current.push({ atchmnflId: selectedItem.atchmnfl[i].atchmnflId,
-                atchmnflSn: selectedItem.atchmnfl[i].atchmnflSn, strgFileNm: selectedItem.atchmnfl[i].strgFileNm });
+        if(validateDate()){
+            deleteFiles.current = [{tbNm: "ATCHMNFL"}];
+            selectedClmAmt.current = selectedItem.clmAmt;
+            selectedClturPhstrnSeCd.current = selectedItem.clturPhstrnSeCd;
+            setInitParam(selectedItem);
+            if(selectedItem.atchmnfl){
+                for(let i = 0; i < selectedItem.atchmnfl.length; i++){
+                    deleteFiles.current.push({ atchmnflId: selectedItem.atchmnfl[i].atchmnflId,
+                        atchmnflSn: selectedItem.atchmnfl[i].atchmnflSn, strgFileNm: selectedItem.atchmnfl[i].strgFileNm });
+                }
+            }
         }
     };
 
@@ -363,8 +379,8 @@ const CultureHealthCostReg = (props) => {
             "clturPhstrnSeCd": null,
             "actIem": null,
             "frcsNm": null,
-            "empId": cookies.userInfo.empId,
-            "regEmpId": cookies.userInfo.empId,
+            "empId": userInfo.empId,
+            "regEmpId": userInfo.empId,
             "atchmnflId": null
         })
     }

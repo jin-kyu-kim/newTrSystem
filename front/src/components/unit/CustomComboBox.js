@@ -33,6 +33,7 @@ const CustomComboBox = ({props, onSelect, label, placeholder, value, readOnly, r
         try {
             if(props.queryId) {
                 response = await ApiRequest("/boot/common/queryIdSearch", param);
+                console.log('res', response)
             }else{
                 response = await ApiRequest("/boot/common/commonSelect", param);
             }
@@ -59,15 +60,14 @@ const CustomComboBox = ({props, onSelect, label, placeholder, value, readOnly, r
             displayExpr={props.displayExpr}
             placeholder={placeholder}
             onValueChanged={(e)=> {
-                if(props.queryId) {
-                    const selectedItem = values.find(item => item[props.name] === e.value);
+                const selectedItem = values.find(item => item[props.name] === e.value);
 
+                if(props.queryId) {
                     if(selectedItem) {
                         props.values.forEach(propName => {
                             onSelect({name: propName, value: selectedItem[propName]});
                         });
-                    }
-                    else{
+                    } else {
                         props.values.forEach(propName => {
                             onSelect({name: propName, value: undefined});
                         });
@@ -79,7 +79,13 @@ const CustomComboBox = ({props, onSelect, label, placeholder, value, readOnly, r
                         onSelect({name: props.nameNm, value: selectedItem.cdNm});
                     }
                     
-                    onSelect({name: props.name, value: e.value});
+                    if(props.values){
+                        props.values.forEach(propName => {
+                            onSelect({name: propName, value: selectedItem[propName]});
+                        });
+                    } else{
+                        onSelect({name: props.name, value: e.value});
+                    }
                 }
             }}
             searchEnabled={true}

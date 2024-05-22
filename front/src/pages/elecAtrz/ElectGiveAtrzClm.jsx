@@ -5,13 +5,12 @@ import CustomLabelValue from "components/unit/CustomLabelValue";
 import ApiRequest from "utils/ApiRequest";
 import { Button } from "devextreme-react";
 
-const ElectGiveAtrzClm = ({ detailData, sttsCd, onSendData}) => {
+const ElectGiveAtrzClm = ({ detailData, sttsCd, onSendData, ctrtTyCd}) => {
     const location = useLocation();
     const formData = location.state.formData;
     const [clmData, setClmData] = 
       useState({"ctrtElctrnAtrzId": formData ? formData.ctrtElctrnAtrzId : detailData.ctrtElctrnAtrzId
                 ,"tbNm": "CTRT_GIVE_ATRZ"});
-    // const [labelValue, setLabelValue] = useState(ElectGiveAtrzClmJson.labelValue);
     const labelValue = ElectGiveAtrzClmJson.labelValue;
 
     if (!formData || formData.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407") { // 임시저장
@@ -29,7 +28,7 @@ const ElectGiveAtrzClm = ({ detailData, sttsCd, onSendData}) => {
         controlReadOnly = true;
     }
 
-
+    /* 계약청구 데이터 조회 */
     useEffect(()=>{
         if(!formData || formData.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407"){
             const getCtrtInfo = async () => {
@@ -48,9 +47,38 @@ const ElectGiveAtrzClm = ({ detailData, sttsCd, onSendData}) => {
         }
     },[])
 
-
+    /* 부모창으로 데이터 전달 */
     useEffect(()=>{
-        console.log("clmData", clmData)
+        // clmData.useYn 인경우 clmData.useYn, clmData.vatExclAmt, clmData.giveYmd, clmData.ctrtElctrnAtrzId 지우기
+        // if (clmData.useYn === 'N' && (clmData.vatExclAmt || clmData.giveYmd || clmData.ctrtElctrnAtrzId)) {
+        //     setClmData((prev) => ({
+        //         useYn: prev.useYn,
+        //         vatExclAmt: '',
+        //         giveYmd: '',
+        //         ctrtElctrnAtrzId: ''
+        //     }));
+        // } 
+
+        if (!clmData.rate && clmData.giveAmt && clmData.vatExclAmt) {
+            const giveAmt = clmData.giveAmt;
+            const vatExclAmt = clmData.vatExclAmt;          
+            const rate = ((giveAmt - vatExclAmt) / vatExclAmt) * 100;
+    
+            if (clmData.rate !== rate) {
+                setClmData((pre) => ({
+                    ...pre,
+                    rate: rate
+                }));
+            }
+           
+            if(!clmData.oldData){
+                setClmData((pre)=>({
+                    ...pre,
+                    oldData : clmData.giveYmd
+                }))
+            }
+        }
+            
         if(onSendData){
             onSendData(clmData);
         }
@@ -77,7 +105,8 @@ const ElectGiveAtrzClm = ({ detailData, sttsCd, onSendData}) => {
 
         setClmData(clmData => ({
             ...clmData,
-            giveAmt : giveAmt
+            giveAmt : giveAmt,
+            rate : rate
         }));
     }
 

@@ -9,12 +9,13 @@ import ProjectRegistJson from "./ProjectRegistJson.json"
 import CustomLabelValue from "../../../components/unit/CustomLabelValue"
 import Button from "devextreme-react/button";
 
-import { useCookies } from "react-cookie";
-import { set } from "date-fns";
 import { TextBox } from "devextreme-react/text-box";
 import { useModal } from "../../../components/unit/ModalContext";
 
-const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targetOdr, atrzLnSn }) => {
+let originCtmmnyId;
+let originIdntfr;
+
+const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targetOdr, atrzLnSn, requestBtnVisible }) => {
     const labelValue = ProjectRegistJson.labelValue;
     const updateColumns = ProjectRegistJson.updateColumns;
     const navigate = useNavigate();
@@ -22,7 +23,6 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
 
     const [data, setData] = useState([]);
     const [stleCd, setStleCd] = useState();
-    const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
     const [updateParam, setUpdateParam] = useState([]);
     const [prjctCdIdntfr, setPrjctCdIdntfr] = useState();
     const [ctmmnyId, setCtmmnyId] = useState();
@@ -35,12 +35,19 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
     const [bizEndYmd, setBizEndYmd] = useState();
     const [stbleEndYmd, setStbleEndYmd] = useState();
     const [igiYmd, setIgiYmd] = useState();
+
     const { handleOpen } = useModal();
 
-    const empId = cookies.userInfo.empId;
-    const deptId = cookies.userInfo.deptId;
+    /** 유저 정보 */
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    const userAuth = JSON.parse(localStorage.getItem("userAuth"));
+    const deptInfo = JSON.parse(localStorage.getItem("deptInfo"));
+
+    const empId = userInfo.empId;
+    const deptId = deptInfo.length != 0 ? deptInfo[0].deptId : null;
 
     useEffect(() => {
+
         const date = new Date();
 
             setData({
@@ -59,6 +66,7 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
     }, [stleCd]);
 
     useEffect(() => {
+
         createPrjctCdIdntfr(ctmmnyId);
         setData({
             ...data,
@@ -81,21 +89,30 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
                 bizSttsCd: "VTW00401",
                 regEmpId: empId,
                 regDt: date.toISOString().split('T')[0]+' '+date.toTimeString().split(' ')[0]
-            })
+            })  
         }
 
         setUpdateParam(updateColumns);
     }, []);
 
     const BaseInfoData = async () => {
-        const param = [ 
-            { tbNm: "PRJCT" }, 
-            { 
-            prjctId: prjctId, 
-            }, 
-        ]; 
+
+        /**
+         * To Do
+         * 조회 테이블을 수정해야함
+         * PRJCT -> PRJCT_HIST
+         * 
+         * 쿼리 사용해서 Max 인 Sn으로 조회해아한다.
+         * 
+         */
+
+        const param = {
+            queryId: "projectMapper.retrieveTempPrjctInfo",
+            prjctId: prjctId,
+        }
+
         try {
-            const response = await ApiRequest("/boot/common/commonSelect", param);
+            const response = await ApiRequest("/boot/common/queryIdSearch", param);
             setData(response[0]);
             setBeffatPbancDdlnYmd(response[0].beffatPbancDdlnYmd);
             setExpectOrderYmd(response[0].expectOrderYmd);
@@ -106,6 +123,9 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
             setStbleEndYmd(response[0].stbleEndYmd);
             setIgiYmd(response[0].igiYmd);
             setPrjctCdIdntfr(response[0].prjctCdIdntfr);
+
+            originCtmmnyId = response[0].ctmmnyId;
+            originIdntfr = response[0].prjctCdIdntfr;
 
         } catch (error) {
             console.error('Error fetching data', error);
@@ -177,6 +197,8 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
 
         const colums = {
             ...updateParam,
+            regEmpId: empId,
+            regDt: mdfcnDt,
             mdfcnEmpId: empId,
             mdfcnDt: mdfcnDt,
         };
@@ -188,26 +210,29 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
             }
         }
 
-        const param = [
-            { tbNm: "PRJCT" },
-            { 
-                ...colums,
-                beffatPbancDdlnYmd: beffatPbancDdlnYmd,
-                expectOrderYmd: expectOrderYmd,
-                propseDdlnYmd: propseDdlnYmd,
-                propsePrsntnYmd: propsePrsntnYmd,
-                ctrtYmd: ctrtYmd,
-                bizEndYmd: bizEndYmd,
-                stbleEndYmd: stbleEndYmd,
-                igiYmd: igiYmd,
-                prjctCdIdntfr: prjctCdIdntfr
-            },
-            {
-                prjctId: prjctId,
-            }
-        ];
+        const param ={   
+            queryId: "projectMapper.insertTempPrjctInfo",
+            ...colums,
+            bizSttsCd: data.bizSttsCd,
+            prjctMngrEmpId: data.prjctMngrEmpId,
+            beffatPbancDdlnYmd: beffatPbancDdlnYmd,
+            expectOrderYmd: expectOrderYmd,
+            propseDdlnYmd: propseDdlnYmd,
+            propsePrsntnYmd: propsePrsntnYmd,
+            ctrtYmd: ctrtYmd,
+            bizEndYmd: bizEndYmd,
+            stbleEndYmd: stbleEndYmd,
+            igiYmd: igiYmd,
+            prjctCdIdntfr: prjctCdIdntfr,
+            prjctId: prjctId,
+            atrzDmndSttsCd: "VTW03701",
+            bgtMngOdr: targetOdr,
+            state: "INSERT"
+        }
+
+
         try {
-            const response = await ApiRequest("/boot/common/commonUpdate", param);
+            const response = await ApiRequest("/boot/common/queryIdDataControl", param);
 
             if(response > 0) {
                 handleOpen('성공적으로 수정되었습니다.');
@@ -219,7 +244,7 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
                              ctrtYmd: ctrtYmd.substr(0, 4) + '-' + ctrtYmd.substr(4, 2) + '-' + ctrtYmd.substr(6, 2), 
                              stbleEndYmd: stbleEndYmd.substr(0, 4) + '-' + stbleEndYmd.substr(4, 2) + '-' + stbleEndYmd.substr(6, 2),
                              targetOdr: targetOdr,
-                             atrzLnSn, 
+                             atrzLnSn: atrzLnSn, 
                              bgtMngOdr: bgtMngOdr
                             },
                 })
@@ -243,7 +268,6 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
             if(isconfirm){
                 insertProject();
             } else {
-                //console.log("취소");
                 return;
             }
         }
@@ -265,13 +289,42 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
                 bizEndYmd: bizEndYmd,
                 stbleEndYmd: stbleEndYmd,
                 igiYmd: igiYmd,
-                prjctCdIdntfr: prjctCdIdntfr
+                prjctCdIdntfr: prjctCdIdntfr,
+                prjctHistSn: 1
             }
         ];
         try {
             const response = await ApiRequest("/boot/common/commonInsert", param);
 
             if(response > 0) {
+
+                /**
+                 * 프로젝트 이력 테이블에도 등록
+                 */
+                const histParam = [
+                    { tbNm: "PRJCT_HIST" },
+                    {
+                        ...data,
+                        beffatPbancDdlnYmd: beffatPbancDdlnYmd,
+                        expectOrderYmd: expectOrderYmd,
+                        propseDdlnYmd: propseDdlnYmd,
+                        propsePrsntnYmd: propsePrsntnYmd,
+                        ctrtYmd: ctrtYmd,
+                        bizEndYmd: bizEndYmd,
+                        stbleEndYmd: stbleEndYmd,
+                        igiYmd: igiYmd,
+                        prjctCdIdntfr: prjctCdIdntfr,
+                        prjctHistSn: 1,
+                        bgtMngOdr: 1,
+                        atrzDmndSttsCd: "VTW03701"
+                    }
+                ];
+
+                const histResponse = await ApiRequest("/boot/common/commonInsert", histParam);
+
+                if(histResponse < 1) {
+                    handleOpen('프로젝트 등록에 실패하였습니다.');
+                }
 
                 await handlePrjctMngAuth().then((value) => {
                     if(value > 0) {
@@ -333,10 +386,16 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
         }
 
         try {
-            await ApiRequest("/boot/common/queryIdSearch", param).then((response) => {
 
-                setPrjctCdIdntfr(value + response[0].prjctCdSn);
-            });
+            if(originCtmmnyId == value) {
+                setPrjctCdIdntfr(originIdntfr)
+            } else {
+                
+                await ApiRequest("/boot/common/queryIdSearch", param).then((response) => {
+                    
+                    setPrjctCdIdntfr(value + response[0].prjctCdSn);
+                });
+            }
         } catch (error) {
             console.error('Error fetching data', error);
         }
@@ -350,7 +409,7 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
             if(data.prjctStleCd) {
                 if(data.prjctStleCd === "VTW01801") {
                     result.push(
-                        <div className="project-regist-content">
+                        <div className="project-regist-content" key="1">
                             <div className="dx-fieldset">
                                 <CustomLabelValue props={labelValue.beffatPbancDdlnYmd} onSelect={handleChgDate} value={beffatPbancDdlnYmd} readOnly={readOnly}/>
                                 <CustomLabelValue props={labelValue.expectOrderYmd} onSelect={handleChgDate} value={expectOrderYmd} readOnly={readOnly}/>
@@ -364,7 +423,7 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
                     )
                 } else if(data.prjctStleCd === "VTW01802") {
                     result.push(
-                        <div className="project-regist-content">
+                        <div className="project-regist-content" key="1">
                             <div className="dx-fieldset">
                                 <CustomLabelValue props={labelValue.beffatPbancDdlnYmd} onSelect={handleChgDate} value={beffatPbancDdlnYmd} readOnly={readOnly}/>
                                 <CustomLabelValue props={labelValue.expectOrderYmd} onSelect={handleChgDate} value={expectOrderYmd} readOnly={readOnly}/>
@@ -381,7 +440,7 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
                     )
                 } else if(data.prjctStleCd === "VTW01803") {
                     result.push(
-                        <div className="project-regist-content">
+                        <div className="project-regist-content" key="1">
                             <div className="dx-fieldset">
                                 <CustomLabelValue props={labelValue.ctrtYmd} onSelect={handleChgDate} value={ctrtYmd} readOnly={readOnly}/>
                                 <CustomLabelValue props={labelValue.stbleEndYmd} onSelect={handleChgDate} value={stbleEndYmd} readOnly={readOnly}/>
@@ -392,7 +451,7 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
                 }
             } else {
                 result.push(
-                    <div>
+                    <div key="1">
                         <p>프로젝트 형태를 선택하지 않아 일정을 작성할 수 없습니다.</p>
                         <p>프로젝트를 선택해주세요.</p>
                     </div>
@@ -430,7 +489,7 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
                         <div className="dx-field">
                             <div className="dx-field-label asterisk">프로젝트 코드</div>
                             <div className="dx-field-value">
-                            <TextBox value={prjctCdIdntfr} readOnly={true}/>
+                            <TextBox value={prjctCdIdntfr} readOnly={true} placeholder="고객사를 선택해주세요"/>
                             </div>
                         </div>
                     </div>
@@ -474,18 +533,69 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
                     </div>
                 </div>
             </div>
-            {readOnly ? <Button text="수정" onClick={onClickUdt}/>:
+            <div className="buttons" align="right" style={{ margin: "20px" }}>
+            
+            {readOnly ? 
+                <Button 
+                    width={110}
+                    text="Contained"
+                    type="default"
+                    stylingMode="contained"
+                    style={{ margin: "2px" }}
+                    onClick={onClickUdt} 
+                    disabled={requestBtnVisible ? false : true}
+                >
+                    수정
+                </Button>
+                    :
                 onHide ? 
                 <div>
-                    <Button text="저장" useSubmitBehavior={true}/>
-                    <Button text="취소" onClick={onHide} />
+                    <Button 
+                        width={110}
+                        text="Contained"
+                        type="default"
+                        stylingMode="contained"
+                        style={{ margin: "2px" }}
+                        useSubmitBehavior={true}
+                    >
+                        저장
+                    </Button>
+                    <Button 
+                        width={110}
+                        text="Contained"
+                        type="default"
+                        stylingMode="contained"
+                        style={{ margin: "2px" }} 
+                        onClick={onHide} 
+                    >
+                        취소
+                    </Button>
                 </div>
                 :
                 <div>
-                    <Button text="저장"useSubmitBehavior={true}/>
-                    <Button text="취소" onClick={onClickUdtCncl} />
+                    <Button
+                        width={110}
+                        text="Contained"
+                        type="default"
+                        stylingMode="contained"
+                        style={{ margin: "2px" }}
+                        useSubmitBehavior={true}
+                    >
+                        저장
+                    </Button>
+                    <Button 
+                        width={110}
+                        text="Contained"
+                        type="default"
+                        stylingMode="contained"
+                        style={{ margin: "2px" }}
+                        onClick={onClickUdtCncl} 
+                    >
+                        취소
+                    </Button>
                 </div>
             }
+            </div>
         </div>
         </form>
     );

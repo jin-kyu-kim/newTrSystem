@@ -3,13 +3,13 @@
     "queryId": "projectMapper.retrieveOutordEntrpsList",
     "keyColumn": "outordEntrpsId",
     "tableColumns": [
-        { "key": "outordEntrpsNm", "value": "업체명", "width": 150, "alignment": "center" },
-        { "key": "brno", "value": "사업자등록번호", "width": 150, "alignment": "center" },
-        { "key": "picFlnm", "value": "담당자", "width": 100, "alignment": "center" },
-        { "key": "telno", "value": "전화번호", "width": 170, "alignment": "center" },
-        { "key": "addr", "value": "주소", "width": 150, "alignment": "center" },
-        { "key": "fileNm", "value": "과거 참여프로젝트", "width": 200, "alignment": "center" },
-        { "value": "삭제",  "button": {"text" : "삭제"},"width": 30}
+        { "key": "outordEntrpsNm", "value": "업체명", "alignment": "center" },
+        { "key": "brno", "value": "사업자등록번호", "alignment": "center", "width": "15%" },
+        { "key": "picFlnm", "value": "담당자", "alignment": "center", "width": "10%" },
+        { "key": "telno", "value": "전화번호", "alignment": "center", "width": "15%" },
+        { "key": "addr", "value": "주소", "alignment": "center" },
+        { "key": "fileNm", "value": "과거 참여프로젝트", "alignment": "center" },
+        { "value": "삭제",  "button": {"text" : "삭제"},"alignment": "center" , "width": "8%"}
     ],
     "searchInfo": {
         "searchParams": {

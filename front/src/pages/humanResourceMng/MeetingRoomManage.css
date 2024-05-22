@@ -1,8 +1,21 @@
-/* .dx-scheduler-appointment-title{
+.dx-scheduler-appointment-title{
   all:unset;
 }
 
 .dx-scheduler-appointment-content{
   all:unset;
   font-size: 10px;
-} */
+}
+
+.dx-item.dx-scheduler-appointment.dx-scheduler-appointment-vertical.dx-resizable.dx-scheduler-appointment-has-resource-color{
+  min-width: 70px;
+}
+
+.dx-scheduler-appointment-title{
+  font-size: 12px;
+  margin-left: 3px;
+}
+
+.dx-scheduler-appointment-content-date{
+  margin-top: 3px;
+}

@@ -13,12 +13,12 @@
                             },
                         "valueExpr" : "expectCtrtEntrpsNm",
                         "displayExpr": "expectCtrtEntrpsNm",
-                        "values" : ["cntrctamount","matrlCtSn","dlvgdsEntrpsNm","dtlCn","expectCtrtEntrpsNm","prductNm","prjctId","qy","tot","untpc"],
+                        "values" : ["ctrtAmt","matrlCtSn","dlvgdsEntrpsNm","dtlCn","expectCtrtEntrpsNm","prductNm","prjctId","qy","tot","untpc"],
                         "name" : "expectCtrtEntrpsNm"
                         }
             },
-            "cntrctamount": {
-                "name": "cntrctamount",
+            "ctrtAmt": {
+                "name": "ctrtAmt",
                 "type": "NumberBox",
                 "label": "가용금액",
                 "placeholder": "가용금액",
@@ -82,7 +82,7 @@
         "tableColumns": [
             {"key": "giveOdrCd", "value": "지급 차수", "isRequire": true, "editType" : "selectBox" ,"comCd" : "VTW032" },
             {"key": "ctrtYmd", "value": "지급 일자", "type": "date", "format": "yyyy-MM", "isRequire": true},
-            {"key": "ctrtAmt", "value": "지급 금액", "type": "number", "format":"#,###", "isRequire": true}
+            {"key": "ctrtAmt", "value": "지급 금액", "type": "number", "format":"#,###", "isRequire": true, "fixedPoint": true}
         ]
     }
 }

@@ -5,7 +5,7 @@
 
 <mapper namespace="com.trsystem.mybatis.mapper.projectMapper">
     <select id="retrievePrjctList" parameterType="map" resultType="com.trsystem.LowerHashMap">
-        SELECT ROW_NUMBER()OVER ()ROWNUM
+        SELECT PRJCT_CD_IDNTFR
             , (SELECT CD_NM FROM CD WHERE CD_VALUE = PRJCT_STLE_CD) AS PRJCT_STLE_CD
             , p.PRJCT_ID
             , PRJCT_NM
@@ -23,7 +23,9 @@
             , DEPT_ID
             , COUNT(*) OVER () AS TOTAL_ITEMS
             FROM PRJCT p
+            <if test="!path.equals('/mngrMenu/ProjectList')">
             JOIN PRJCT_MNG_AUTHRT PMA ON (PMA.PRJCT_ID = p.PRJCT_ID AND PMA.EMP_ID = #{empId})
+            </if>
             WHERE 1 = 1
         <if test="prjctStleCd != null and !prjctStleCd.equals('')">
       AND p.PRJCT_STLE_CD = #{prjctStleCd}
@@ -49,7 +51,7 @@
         <if test="ctmmnyNm != null and !ctmmnyNm.equals('')">
             AND CTMMNY_ID IN (SELECT CTMMNY_ID FROM CTMMNY_INFO WHERE CTMMNY_NM LIKE CONCAT('%',#{ctmmnyNm},'%'))
         </if>
-    ORDER BY p.REG_DT DESC
+    ORDER BY p.CTRT_YMD DESC
     </select>
 
     <select id="retrieveMyPrjctList" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -161,7 +163,16 @@
 			  JOIN PRJCT p ON (p.PRJCT_ID = pal.PRJCT_ID AND p.PRJCT_ID = pald.PRJCT_ID)
 			  JOIN EMP e  ON (e.EMP_ID = pal.REG_EMP_ID)
 			 WHERE 1=1
-			   AND (pald.APRVR_EMP_ID = #{empId} OR pal.REG_EMP_ID = #{empId})
+                <choose>
+					<when test="path != null and !path.equals('')">
+		                <if test="!path.equals('/mngrMenu/ProjectAprv')">
+					   AND (pald.APRVR_EMP_ID = #{empId} OR pal.REG_EMP_ID = #{empId})
+		                </if>
+					</when>
+					<otherwise>
+					   AND (pald.APRVR_EMP_ID = #{empId} OR pal.REG_EMP_ID = #{empId})
+					</otherwise>
+				</choose>
 		        <if test="prmpcInptSeCd != null and !prmpcInptSeCd.equals('')">
 		       AND pal.PRMPC_INPT_SE_CD = #{prmpcInptSeCd}
 		        </if>
@@ -219,9 +230,9 @@
              , (SELECT CD_NM FROM CD WHERE CD_VALUE = A.MATRL_CT_IEM_CD) AS MATRL_CT_IEM_NM
              , A.PRDUCT_NM
              , A.QY
-             , A.CNTRCTAMOUNT
+             , A.CTRT_AMT
              , IFNULL(B.QY,0)  AS USE_AMT
-             , IFNULL(A.CNTRCTAMOUNT - B.QY, 0) AS AVAIL
+             , IFNULL(A.CTRT_AMT - B.QY, 0) AS AVAIL
         FROM MATRL_CT_PRMPC A
                  LEFT JOIN MATRL_CT_EXCN B ON A.PRJCT_ID = B.PRJCT_ID
         WHERE 1=1
@@ -234,9 +245,9 @@
              , (SELECT CD_NM FROM CD WHERE CD_VALUE = A.MATRL_CT_IEM_CD) AS MATRL_CT_IEM_NM
              , A.PRDUCT_NM
              , A.QY
-             , A.CNTRCTAMOUNT
+             , A.CTRT_AMT
              , B.QY  AS USE_AMT
-             , (A.CNTRCTAMOUNT - B.QY) AS AVAIL
+             , (A.CTRT_AMT - B.QY) AS AVAIL
         FROM MATRL_CT_PRMPC A
                  RIGHT JOIN MATRL_CT_EXCN B ON A.PRJCT_ID = B.PRJCT_ID
         WHERE 1=1
@@ -413,33 +424,47 @@
     </select>
 
     <select id="retrieveProjectOutordEmpCostSearch" parameterType="map" resultType="com.trsystem.LowerHashMap">
-        SELECT Z1.YM, Z2.OUTORD_EMP_ID, Z2.INPT_YM, Z2.EXPECT_MM, Z2.MM, Z2.MM - Z2.EXPECT_MM AS CALC_MM
-        FROM (SELECT DATE_FORMAT((#{ctrtYmd} + INTERVAL (a.a + (10 * b.a) + (100 * c.a)) MONTH), '%Y-%m') AS YM
-             FROM (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT
-                 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS a
-                      CROSS JOIN (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL
-                                  SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS b
-                      CROSS JOIN (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL
-                                  SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS c
+		SELECT Z1.YM
+			 , Z2.OUTORD_EMP_ID
+			 , Z2.INPT_YM
+			 , IFNULL(Z2.EXPECT_MM,0) EXPECT_MM
+			 , IFNULL(Z2.UNTPC,0) UNTPC
+			 , IFNULL(Z2.MM,0) MM
+			 , IFNULL(Z2.GIVE_CT,0) GIVE_CT
+			 , ((IFNULL(Z2.UNTPC,0)*IFNULL(Z2.EXPECT_MM,0))- IFNULL(Z2.GIVE_CT,0)) AS CALC_CT
+		FROM (SELECT DATE_FORMAT((#{ctrtYmd} + INTERVAL (a.a + (10 * b.a) + (100 * c.a)) MONTH), '%Y-%m') AS YM
+			 FROM (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT
+				 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS a
+					  CROSS JOIN (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL
+								  SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS b
+					  CROSS JOIN (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL
+								  SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS c
              WHERE (#{ctrtYmd} + INTERVAL (a.a + (10 * b.a) + (100 * c.a)) MONTH)<![CDATA[<=]]> #{stbleEndYmd}
         ORDER BY YM
             ) Z1
             LEFT OUTER JOIN (
-        SELECT T1.OUTORD_EMP_ID, T1.INPT_YM, T1.EXPECT_MM, T2.MM
+	  SELECT T1.OUTORD_EMP_ID
+		   , T1.INPT_YM
+		   , T1.EXPECT_MM
+		   , T2.MM
+		   , T1.UNTPC
+		   , T2.GIVE_CT
         FROM (
-            SELECT B.PRJCT_ID, A.OUTORD_EMP_ID,
-            IF(CHAR_LENGTH (B.INPT_YM) = 6
-                , DATE_FORMAT(DATE (CONCAT(B.INPT_YM, '01')), '%Y-%m')
-                , DATE_FORMAT(DATE (CONCAT(B.INPT_YM, '-01')), '%Y-%m')
-            ) AS INPT_YM
-            , B.EXPECT_MM
+			SELECT B.PRJCT_ID
+				 , A.OUTORD_LBRCO_PRMPC_SN
+				 , A.OUTORD_EMP_ID
+				 , IF(CHAR_LENGTH (B.INPT_YM) = 6, DATE_FORMAT(DATE (CONCAT(B.INPT_YM, '01')), '%Y-%m'), DATE_FORMAT(DATE (CONCAT(B.INPT_YM, '-01')), '%Y-%m')
+				   ) AS INPT_YM
+				 , B.EXPECT_MM
+				 , B.UNTPC
             FROM OUTORD_LBRCO_PRMPC A
             JOIN OUTORD_LBRCO_PRMPC_DTL B
             ON A.PRJCT_ID = B.PRJCT_ID
             AND A.BGT_MNG_ODR = B.BGT_MNG_ODR
             AND A.OUTORD_LBRCO_PRMPC_SN = B.OUTORD_LBRCO_PRMPC_SN
             WHERE A.PRJCT_ID = #{prjctId}
-              AND A.OUTORD_EMP_ID = #{outordEmpId}) T1
+              AND A.OUTORD_EMP_ID = #{outordEmpId}
+              AND A.BGT_MNG_ODR = #{bgtMngOdr}) T1
             LEFT JOIN OUTORD_LBRCO_EXCN T2
         ON T1.PRJCT_ID = T2.PRJCT_ID
             AND T1.OUTORD_EMP_ID = T2.OUTORD_EMP_ID
@@ -448,19 +473,26 @@
             , DATE_FORMAT(DATE (CONCAT(T2.INPT_YM, '-01')), '%Y-%m')
             )
         UNION
-        SELECT T1.OUTORD_EMP_ID, T1.INPT_YM, T1.EXPECT_MM, T2.MM
+		SELECT T1.OUTORD_EMP_ID
+			 , T1.INPT_YM
+			 , T1.EXPECT_MM
+			 , T2.MM
+			 , T1.UNTPC
+			 , T2.GIVE_CT
         FROM (
-            SELECT B.PRJCT_ID, A.OUTORD_EMP_ID,
-            IF(CHAR_LENGTH (B.INPT_YM) = 6
-                , DATE_FORMAT(DATE (CONCAT(B.INPT_YM, '01')), '%Y-%m')
-                , DATE_FORMAT(DATE (CONCAT(B.INPT_YM, '-01')), '%Y-%m')
-            ) AS INPT_YM
-            , B.EXPECT_MM
+			SELECT B.PRJCT_ID
+				 , A.OUTORD_EMP_ID
+				 , A.OUTORD_LBRCO_PRMPC_SN
+				 , IF(CHAR_LENGTH (B.INPT_YM) = 6, DATE_FORMAT(DATE (CONCAT(B.INPT_YM, '01')), '%Y-%m'), DATE_FORMAT(DATE (CONCAT(B.INPT_YM, '-01')), '%Y-%m')
+				   ) AS INPT_YM
+				 , B.EXPECT_MM
+				 , B.UNTPC
             FROM OUTORD_LBRCO_PRMPC A
             JOIN OUTORD_LBRCO_PRMPC_DTL B
             ON A.PRJCT_ID = B.PRJCT_ID
             AND A.BGT_MNG_ODR = B.BGT_MNG_ODR
-            AND A.OUTORD_LBRCO_PRMPC_SN = B.OUTORD_LBRCO_PRMPC_SN) T1
+            AND A.OUTORD_LBRCO_PRMPC_SN = B.OUTORD_LBRCO_PRMPC_SN
+            AND A.BGT_MNG_ODR = #{bgtMngOdr}) T1
             RIGHT JOIN OUTORD_LBRCO_EXCN T2
             ON T1.PRJCT_ID = T2.PRJCT_ID
             AND T1.OUTORD_EMP_ID = T2.OUTORD_EMP_ID
@@ -570,7 +602,9 @@
  	 	 , pald.APRV_YMD AS STEP_APRV_YMD
  	 	 , pald.RJCT_YMD AS STEP_RJCT_YMD
  	 	 , CASE WHEN pald.APRV_YMD IS NOT NULL THEN DATE_FORMAT(pald.MDFCN_DT, '%Y.%m.%d %H:%i:%s')
- 	 		 	WHEN pald.APRV_YMD IS NULL THEN NULL 
+ 	 	 		WHEN pald.RJCT_YMD IS NOT NULL THEN DATE_FORMAT(pald.MDFCN_DT, '%Y.%m.%d %H:%i:%s')
+ 	 		 	WHEN pald.APRV_YMD IS NULL THEN NULL
+ 	 		 	WHEN pald.RJCT_YMD IS NULL THEN NULL
  	 	 	END AS MDFCN_DT
 	  FROM PRJCT_ATRZ_LN_DTL pald 
 	  JOIN CD c1 ON (c1.CD_VALUE = pald.ATRZ_STEP_CD)
@@ -593,27 +627,20 @@
     
 	<select id="retrieveAprvrEmpId" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		<![CDATA[
-	    WITH RECURSIVE CTE(DEPT_ID, DEPT_NM, UP_DEPT_ID, EMP_ID, DEPTH) AS (
-	        SELECT d1.DEPT_ID, DEPT_NM, UP_DEPT_ID, dh1.EMP_ID, 1
-	        FROM DEPT d1
-	        JOIN DEPT_HNF dh1 ON (d1.DEPT_ID = dh1.DEPT_ID)
-	        WHERE UP_DEPT_ID IS NULL
-	        UNION ALL
-	        SELECT cd.DEPT_ID, cd.DEPT_NM, cd.UP_DEPT_ID, dh2.EMP_ID, DEPTH + 1
-	        FROM DEPT cd
-	        JOIN DEPT_HNF dh2 ON (cd.DEPT_ID = dh2.DEPT_ID)
-	        INNER JOIN CTE B ON (B.DEPT_ID = cd.UP_DEPT_ID)
-	    )
-	    SELECT @r AS DEPT_ID
-	         , (SELECT @r := UP_DEPT_ID FROM CTE WHERE DEPT_ID = @r LIMIT 1) AS UP_DEPT_ID
-	         , dh.EMP_ID
-	         , cte.DEPTH
-	    FROM (SELECT @r := #{deptId}) AS vars, (SELECT * FROM CTE WHERE DEPT_ID != #{deptId}) AS h
-	    JOIN DEPT_HNF dh ON (dh.DEPT_ID = @r)
-	    JOIN CTE cte ON (cte.DEPT_ID = @r)
-	    WHERE @r <> '-'
-	    AND dh.JBTTL_CD = 'VTW01001'
-	    ORDER BY cte.DEPTH ASC
+		WITH RECURSIVE CTE(DEPT_ID, DEPT_NM, UP_DEPT_ID, DEPTH) AS (
+			SELECT d1.DEPT_ID, d1.DEPT_NM, d1.UP_DEPT_ID, 1
+		  	  FROM DEPT d1
+		 	 WHERE d1.DEPT_ID = #{deptId}
+			 UNION
+			SELECT d2.DEPT_ID, d2.DEPT_NM, d2.UP_DEPT_ID, DEPTH + 1
+			  FROM CTE cte
+			JOIN DEPT d2 ON cte.UP_DEPT_ID = d2.DEPT_ID
+		)
+		SELECT cte.DEPT_ID, cte.UP_DEPT_ID, dh.EMP_ID, cte.DEPTH
+		  FROM CTE cte
+		JOIN DEPT_HNF dh ON cte.DEPT_ID = dh.DEPT_ID
+		WHERE dh.JBTTL_CD = 'VTW01001'
+		ORDER BY cte.DEPTH DESC
 		]]>
     </select>
     
@@ -889,7 +916,7 @@
                    WHEN pcat.ATRZ_DMND_STTS_CD = 'VTW03703' THEN 2
                    WHEN pcat.ATRZ_DMND_STTS_CD = 'VTW03704' THEN 3
                END AS ID
-		     , CONCAT(CT_PRPOS, ' | ' ,UTZTN_AMT, '원 (', cd.CD_NM, ')') AS TEXT
+		     , CONCAT(cd2.CD_NM, ' | ' ,UTZTN_AMT, '원 (', cd.CD_NM, ')') AS TEXT
 		     , DATE_FORMAT(UTZTN_DT, '%Y-%m-%d %H:%i:%s') AS START_DATE
 		     , DATE_FORMAT(UTZTN_DT, '%Y-%m-%d %H:%i:%s') AS END_DATE
 		     , CONCAT(pca.APLY_YM, '-', pca.APLY_ODR) AS APLY_SN
@@ -1078,7 +1105,7 @@
             <if test="tbCostNm == 'MATRL_CT_PRMPC'">
 			    ( SELECT SUM(T.TOTAL) AS CN
 					FROM (
-					SELECT CNTRCTAMOUNT AS TOTAL  FROM MATRL_CT_PRMPC M
+					SELECT CTRT_AMT AS TOTAL  FROM MATRL_CT_PRMPC M
 					WHERE 1=1
 					AND M.PRJCT_ID = #{prjctId}
 					AND M.BGT_MNG_ODR = #{bgtMngOdr}
@@ -1093,10 +1120,10 @@
 					ON M.PRJCT_ID = S.PRJCT_ID AND M.BGT_MNG_ODR = S.BGT_MNG_ODR AND M.EXPENS_PRMPC_SN = S.EXPENS_PRMPC_SN 
 					WHERE 1=1
 					<if test="control != null and control != ''">
-						AND M.EXPENS_CD BETWEEN 'VTW04528' AND 'VTW04535'
+						AND M.EXPENS_CD BETWEEN 'VTW04529' AND 'VTW04535'
 					</if>
 					<if test="general != null and general != ''">
-						AND M.EXPENS_CD BETWEEN 'VTW04501' AND 'VTW04527'
+						AND M.EXPENS_CD BETWEEN 'VTW04501' AND 'VTW04528'
 					</if>
 					AND M.PRJCT_ID =  #{prjctId}
 					AND M.BGT_MNG_ODR = #{bgtMngOdr}
@@ -1202,7 +1229,10 @@
                      FROM MMNY_INPT_MM MIM
                               INNER JOIN PRJCT_BGT_PRMPC PBP ON PBP.PRJCT_ID = MIM.PRJCT_ID
                          AND PBP.BGT_MNG_ODR = MIM.BGT_MNG_ODR
-                              INNER JOIN MMNY_LBRCO_PRMPC MLP ON MLP.PRJCT_ID = MIM.PRJCT_ID
+                              INNER JOIN MMNY_LBRCO_PRMPC MLP     
+                              ON MLP.PRJCT_ID = MIM.PRJCT_ID 
+                              AND MLP.BGT_MNG_ODR = MIM.BGT_MNG_ODR 
+                              AND MLP.MMNY_LBRCO_PRMPC_SN = MIM.MMNY_LBRCO_PRMPC_SN
                      WHERE MIM.PRJCT_ID = #{prjctId}
                        AND PBP.ATRZ_DMND_STTS_CD  = #{atrzDmndSttsCd}
                        AND MIM.BGT_MNG_ODR = MLP.BGT_MNG_ODR
@@ -1230,8 +1260,10 @@
                       OUTORD_LBRCO_PRMPC_DTL OLPD
                           INNER JOIN PRJCT_BGT_PRMPC PBP ON PBP.PRJCT_ID  = OLPD.PRJCT_ID
                           AND PBP.BGT_MNG_ODR = OLPD.BGT_MNG_ODR
-                          INNER JOIN OUTORD_LBRCO_PRMPC OLP ON OLP.PRJCT_ID = OLPD.PRJCT_ID
+                          INNER JOIN OUTORD_LBRCO_PRMPC OLP 
+                          ON OLP.PRJCT_ID = OLPD.PRJCT_ID
                           AND OLPD.BGT_MNG_ODR = OLP.BGT_MNG_ODR
+                          AND OLPD.OUTORD_LBRCO_PRMPC_SN = OLP.OUTORD_LBRCO_PRMPC_SN
                   WHERE OLPD.PRJCT_ID = #{prjctId}
                     AND PBP.ATRZ_DMND_STTS_CD  = #{atrzDmndSttsCd}
                     AND OLPD.BGT_MNG_ODR = #{bgtMngOdr}
@@ -1326,7 +1358,7 @@
              FROM(
                      SELECT
                          '재료비',
-                         IFNULL(SUM(MCP.CNTRCTAMOUNT),0) '예산',
+                         IFNULL(SUM(MCP.CTRT_AMT),0) '예산',
                          IFNULL((
                                     SELECT
                                         SUM(USE_AMT)
@@ -1414,10 +1446,13 @@
 		        <if test="hdofSttsNm != null and hdofSttsNm !=''">
 		            AND C2.CD_VALUE = #{hdofSttsNm}
 		        </if>
+		           AND E.EMP_TY_CD != 'VTW00203'
+		           AND E.EMPNO NOT IN ('VK0101', 'VK0102', 'VK0103', 'VK0104', 'VK0105', 'VK0106', 'VK0107', 'VK0108', 'VK0109', 'VK0110', 'VM1000')
+		           AND D.END_YN = 'N'
 		        GROUP BY
 		        E.EMP_ID, E.EMPNO, E.EMP_FLNM, E.EMP_TY_CD, C.CD_NM,
 		        E.TELNO, E.EML, C2.CD_NM, C3.CD_NM, E.ACTNO, C.CD_VALUE, C3.CD_VALUE, C2.CD_VALUE,READ_YN, WRITE_YN
-		        ORDER BY E.JBPS_CD ASC
+		        ORDER BY E.EMPNO ASC
 		        ) A
     </select>
 
@@ -1571,6 +1606,7 @@
     <select id="retrievePrjctPrmpcBgtCmpr" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT
 			   PRMPC_ACCTO_TOT,
+			   KIND,
 			   CT_NM,
 			   BFE_BGT,
 			   AFTR_BGT,
@@ -1578,6 +1614,7 @@
 		 FROM (
 			   SELECT
 					  '인건비' AS PRMPC_ACCTO_TOT,
+					  '1' AS KIND,
 					  자사인력인건비 AS CT_NM,
 					  T1.BFE_BGT,
 					  T1.AFTR_BGT,
@@ -1592,7 +1629,7 @@
 							 			  JOIN PRJCT_BGT_PRMPC PBP 
 										    ON PBP.PRJCT_ID = MIM.PRJCT_ID AND PBP.BGT_MNG_ODR = MIM.BGT_MNG_ODR
 							 			  JOIN MMNY_LBRCO_PRMPC MLP 
-										    ON MLP.PRJCT_ID = MIM.PRJCT_ID AND MIM.BGT_MNG_ODR = MLP.BGT_MNG_ODR
+										    ON MLP.PRJCT_ID = MIM.PRJCT_ID AND MIM.BGT_MNG_ODR = MLP.BGT_MNG_ODR AND MLP.MMNY_LBRCO_PRMPC_SN = MIM.MMNY_LBRCO_PRMPC_SN
 							 			WHERE MIM.PRJCT_ID = #{prjctId}
 							 			  AND PBP.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
 							 			  AND MIM.BGT_MNG_ODR = #{bgtMngOdrTobe}
@@ -1600,8 +1637,8 @@
 						 FROM MMNY_INPT_MM MIM
 					     JOIN PRJCT_BGT_PRMPC PBP 
 						   ON PBP.PRJCT_ID = MIM.PRJCT_ID AND PBP.BGT_MNG_ODR = MIM.BGT_MNG_ODR
-						 JOIN MMNY_LBRCO_PRMPC MLP 
-						   ON MLP.PRJCT_ID = MIM.PRJCT_ID
+						 JOIN MMNY_LBRCO_PRMPC MLP  
+						   ON MLP.PRJCT_ID = MIM.PRJCT_ID AND MIM.BGT_MNG_ODR = MLP.BGT_MNG_ODR AND MLP.MMNY_LBRCO_PRMPC_SN = MIM.MMNY_LBRCO_PRMPC_SN
 						WHERE MIM.PRJCT_ID = #{prjctId}
 						  AND PBP.ATRZ_DMND_STTS_CD  = 'VTW03703'
 						  AND MIM.BGT_MNG_ODR = MLP.BGT_MNG_ODR
@@ -1610,6 +1647,7 @@
 			 UNION ALL
 			 SELECT
 				    '인건비' AS PRMPC_ACCTO_TOT,
+				    '1' AS KIND,
 				    외주인력인건비 AS CT_NM,
 				    T2.BFE_BGT,
 				    T2.AFTR_BGT,
@@ -1624,7 +1662,7 @@
 			     						JOIN PRJCT_BGT_PRMPC PBP 
 										  ON PBP.PRJCT_ID  = OLPD.PRJCT_ID AND PBP.BGT_MNG_ODR = OLPD.BGT_MNG_ODR
 			     						JOIN OUTORD_LBRCO_PRMPC OLP 
-										  ON OLP.PRJCT_ID = OLPD.PRJCT_ID AND OLPD.BGT_MNG_ODR = OLP.BGT_MNG_ODR
+										  ON OLP.PRJCT_ID = OLPD.PRJCT_ID AND OLPD.BGT_MNG_ODR = OLP.BGT_MNG_ODR AND OLPD.OUTORD_LBRCO_PRMPC_SN = OLP.OUTORD_LBRCO_PRMPC_SN
 			     					   WHERE OLPD.PRJCT_ID = #{prjctId}
 			     						 AND PBP.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
 			     						 AND OLPD.BGT_MNG_ODR = #{bgtMngOdrTobe}
@@ -1633,7 +1671,7 @@
 			     	   JOIN PRJCT_BGT_PRMPC PBP 
 					     ON PBP.PRJCT_ID = OLPD.PRJCT_ID AND PBP.BGT_MNG_ODR = OLPD.BGT_MNG_ODR
 			     	   JOIN OUTORD_LBRCO_PRMPC OLP 
-					     ON OLP.PRJCT_ID = OLPD.PRJCT_ID AND OLPD.BGT_MNG_ODR = OLP.BGT_MNG_ODR
+					     ON OLP.PRJCT_ID = OLPD.PRJCT_ID AND OLPD.BGT_MNG_ODR = OLP.BGT_MNG_ODR AND OLPD.OUTORD_LBRCO_PRMPC_SN = OLP.OUTORD_LBRCO_PRMPC_SN
 			     	  WHERE OLPD.PRJCT_ID = #{prjctId}
 			     		AND PBP.ATRZ_DMND_STTS_CD = 'VTW03703'
 			     		AND OLPD.BGT_MNG_ODR = #{bgtMngOdr}
@@ -1641,6 +1679,7 @@
 			 UNION ALL
 			 SELECT
 				    '경비' AS PRMPC_ACCTO_TOT,
+				    '3' AS KIND,
 				    일반경비 AS CT_NM,
 				    T3.BFE_BGT,
 				    T3.AFTR_BGT,
@@ -1670,6 +1709,7 @@
 			 UNION ALL
 			 SELECT
 				    '경비' AS PRMPC_ACCTO_TOT,
+				    '3' AS KIND,
 				    통제성경비 AS CT_NM,
 				    T4.BFE_BGT,
 				    T4.AFTR_BGT,
@@ -1701,6 +1741,7 @@
 			 UNION ALL
 			 SELECT
 				    '외주업체비' AS PRMPC_ACCTO_TOT,
+				    '2' AS KIND,
 				    외주업체비용 AS CT_NM,
 				    T5.BFE_BGT,
 				    T5.AFTR_BGT,
@@ -1728,6 +1769,7 @@
 			 UNION ALL
 			 SELECT
 					'재료비' AS PRMPC_ACCTO_TOT,
+					'4' AS KIND,
 					재료비 AS CT_NM,
 					T6.BFE_BGT,
 					T6.AFTR_BGT,
@@ -1735,10 +1777,10 @@
 			   FROM (
 				     SELECT
 						    '재료비',
-						    IFNULL(SUM(MCP.CNTRCTAMOUNT),0) BFE_BGT,
+						    IFNULL(SUM(MCP.CTRT_AMT),0) BFE_BGT,
 						    IFNULL((
 									SELECT
-										   SUM(MCP.CNTRCTAMOUNT)
+										   SUM(MCP.CTRT_AMT)
 									  FROM MATRL_CT_PRMPC MCP
 									  JOIN PRJCT_BGT_PRMPC PBP ON PBP .PRJCT_ID = MCP.PRJCT_ID AND PBP.BGT_MNG_ODR = MCP.BGT_MNG_ODR
 									  WHERE MCP.PRJCT_ID = #{prjctId}
@@ -1762,5 +1804,294 @@
 		 WHERE 1=1
 		   AND PRJCT_ID = #{prjctId}
 		   AND ATRZ_DMND_STTS_CD = 'VTW03703'
+	</select>
+	
+	<select id="retrievePrjctPrmpcTotBgtCmpr" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT
+				T1.BFE_TOT_BGT,
+				T1.AFTR_TOT_BGT, 
+				T1.AFTR_MM_BGT + T1.AFTR_OUT_MM_BGT + T1.AFTR_GNR_BGT + T1.AFTR_MATRL_BGT + T1.AFTR_OUT_ENTRPS_BGT + T1.AFTR_CNTRL_BGT AS BGT,
+				T1.AFTR_TOT_BGT - (T1.AFTR_MM_BGT + T1.AFTR_OUT_MM_BGT + T1.AFTR_GNR_BGT + T1.AFTR_MATRL_BGT + T1.AFTR_OUT_ENTRPS_BGT + T1.AFTR_CNTRL_BGT) AS CHG_BGT, 
+				CONCAT(100 - ROUND((T1.AFTR_MM_BGT + T1.AFTR_OUT_MM_BGT + T1.AFTR_GNR_BGT + T1.AFTR_MATRL_BGT + T1.AFTR_OUT_ENTRPS_BGT + T1.AFTR_CNTRL_BGT) / T1.AFTR_TOT_BGT * 100, 2), "%") AS RATE
+		 FROM (
+		   		 SELECT
+		   		 	    IFNULL((
+				   		 		 SELECT (COALESCE(T.TOT_BGT, 0) + SUM(COALESCE(T.CMMN_EXPENS_AMT, 0))) 
+								   FROM (
+									  	 SELECT M.TOT_BGT, M.PRJCT_ID,S.CNSRTM_CO_NM,S.CMMN_EXPENS_AMT 
+									 	   FROM PRJCT M
+										   LEFT JOIN PRJCT_CNSRTM S
+											 ON M.PRJCT_ID = S.PRJCT_ID AND S.SLS_AM_RFLT_YN  = 'Y'
+										  WHERE 1=1
+										    AND M.PRJCT_ID = #{prjctId}
+				   						) T
+				   		 		), 0) AS BFE_TOT_BGT
+		   		 	  , IFNULL((
+								SELECT COALESCE(T.TOT_BGT, 0) + COALESCE(T.CMMN_EXPENS_AMT, 0)
+								   FROM (
+									  	 SELECT ph.TOT_BGT, SUM(S.CMMN_EXPENS_AMT) AS CMMN_EXPENS_AMT 
+									 	   FROM PRJCT_HIST ph
+										   LEFT JOIN PRJCT_CNSRTM S
+											 ON ph.PRJCT_ID = S.PRJCT_ID AND S.SLS_AM_RFLT_YN  = 'Y'
+										  WHERE 1=1
+										    AND ph.PRJCT_ID = #{prjctId}
+										    AND ph.PRJCT_HIST_SN = (SELECT MAX(PRJCT_HIST_SN)
+										    						 FROM PRJCT_HIST ph2
+										    						WHERE ph2.PRJCT_ID = #{prjctId}
+										    						<if test="type.equals('aprv')">
+																		<![CDATA[ 
+								 		    						  AND ph2.BGT_MNG_ODR <= #{bgtMngOdrTobe}
+								 		    						  AND ph2.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
+																		]]>
+																	</if>
+										    					  )
+										    GROUP BY TOT_BGT
+										) T
+				   			    ), 0) AS AFTR_TOT_BGT
+					  , IFNULL((
+					 			SELECT SUM(IFNULL(MIM.EXPECT_MM, 0) * IFNULL(MIM.UNTPC, 0))
+					 			  FROM MMNY_INPT_MM MIM
+					 			  JOIN PRJCT_BGT_PRMPC PBP 
+								    ON PBP.PRJCT_ID = MIM.PRJCT_ID AND PBP.BGT_MNG_ODR = MIM.BGT_MNG_ODR
+					 			  JOIN MMNY_LBRCO_PRMPC MLP 
+								    ON MLP.PRJCT_ID = MIM.PRJCT_ID AND MIM.BGT_MNG_ODR = MLP.BGT_MNG_ODR AND MLP.MMNY_LBRCO_PRMPC_SN = MIM.MMNY_LBRCO_PRMPC_SN
+					 			WHERE MIM.PRJCT_ID = #{prjctId}
+					 			  AND PBP.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
+					 			  AND MIM.BGT_MNG_ODR = #{bgtMngOdrTobe}
+					  			), 0) AS AFTR_MM_BGT
+					  , IFNULL((
+		     					SELECT SUM(IFNULL(OLP.UNTPC,0) * IFNULL(OLPD.EXPECT_MM,0))
+		     					  FROM OUTORD_LBRCO_PRMPC_DTL OLPD
+		     					  JOIN PRJCT_BGT_PRMPC PBP 
+									ON PBP.PRJCT_ID  = OLPD.PRJCT_ID AND PBP.BGT_MNG_ODR = OLPD.BGT_MNG_ODR
+		     					  JOIN OUTORD_LBRCO_PRMPC OLP 
+									ON OLP.PRJCT_ID = OLPD.PRJCT_ID AND OLPD.BGT_MNG_ODR = OLP.BGT_MNG_ODR AND OLPD.OUTORD_LBRCO_PRMPC_SN = OLP.OUTORD_LBRCO_PRMPC_SN
+		     					 WHERE OLPD.PRJCT_ID = #{prjctId}
+		     					   AND PBP.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
+		     					   AND OLPD.BGT_MNG_ODR = #{bgtMngOdrTobe}
+		     				   ),0) AS AFTR_OUT_MM_BGT
+					  , IFNULL((
+							    SELECT SUM(EXPECT_CT)
+							      FROM OUTORD_ENTRPS_CT_PRMPC OECP
+							      JOIN PRJCT_BGT_PRMPC PBP 
+								    ON PBP.PRJCT_ID = OECP.PRJCT_ID AND PBP.BGT_MNG_ODR = OECP.BGT_MNG_ODR
+							     WHERE OECP.PRJCT_ID = #{prjctId}
+							       AND PBP.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
+							       AND OECP.BGT_MNG_ODR = #{bgtMngOdrTobe}
+					           ), 0) AS AFTR_OUT_ENTRPS_BGT
+				      , IFNULL((
+							    SELECT
+								  	   SUM(EMPD.EXPECT_CT)
+							   	  FROM EXPENS_MNBY_PRMPC_DTLS EMPD
+							   	  JOIN PRJCT_BGT_PRMPC PBP ON PBP .PRJCT_ID = EMPD.PRJCT_ID AND PBP.BGT_MNG_ODR = EMPD.BGT_MNG_ODR
+							   	 WHERE EMPD.PRJCT_ID = #{prjctId}
+							       AND EMPD.EXPENS_CD  BETWEEN 'VTW04501' AND 'VTW04528'
+							       AND PBP.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
+							       AND EMPD.BGT_MNG_ODR = #{bgtMngOdrTobe}
+						     ),0) AS AFTR_GNR_BGT
+					   , IFNULL((
+							    SELECT
+							  	 	   SUM(EMPD.EXPECT_CT)
+							      FROM EXPENS_MNBY_PRMPC_DTLS EMPD
+							      JOIN PRJCT_BGT_PRMPC PBP 
+								    ON PBP.PRJCT_ID = EMPD.PRJCT_ID AND PBP.BGT_MNG_ODR = EMPD.BGT_MNG_ODR
+							     WHERE EMPD.PRJCT_ID = #{prjctId}
+							       AND EMPD.EXPENS_CD  BETWEEN 'VTW04529' AND 'VTW04535'
+							       AND PBP.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
+							       AND EMPD.BGT_MNG_ODR = #{bgtMngOdrTobe}
+							   ),0) AS AFTR_CNTRL_BGT
+					  , IFNULL((
+								SELECT
+									   SUM(MCP.CTRT_AMT)
+								  FROM MATRL_CT_PRMPC MCP
+								  JOIN PRJCT_BGT_PRMPC PBP ON PBP.PRJCT_ID = MCP.PRJCT_ID AND PBP.BGT_MNG_ODR = MCP.BGT_MNG_ODR
+								  WHERE MCP.PRJCT_ID = #{prjctId}
+									AND PBP.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
+									AND MCP.BGT_MNG_ODR = #{bgtMngOdrTobe}
+							   ),0) AS AFTR_MATRL_BGT
+			  ) T1
+	</select>
+	
+	<select id="retrieveTempPrjctInfo" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT PRJCT_NM
+			 , PRJCT_STLE_CD
+			 , DEPT_ID
+			 , PRJCT_MNGR_EMP_ID
+			 , TOT_BGT
+			 , BDDPR_PC
+			 , MMNY_SLS_AM
+			 , BIZ_FLFMT_TY_CD
+			 , CTMMNY_ID
+			 , PIC_FLNM
+			 , PIC_TELNO
+			 , PIC_EML
+			 , BEFFAT_PBANC_DDLN_YMD
+			 , EXPECT_ORDER_YMD
+			 , PROPSE_DDLN_YMD
+			 , PROPSE_PRSNTN_YMD
+			 , CTRT_YMD
+			 , BIZ_END_YMD
+			 , STBLE_END_YMD
+			 , IGI_YMD
+			 , PRJCT_CD_IDNTFR
+			 , PRJCT_HIST_SN
+			 , BIZ_STTS_CD
+		  FROM PRJCT_HIST 
+		 WHERE 1=1
+		   AND PRJCT_ID = #{prjctId}
+		   AND PRJCT_HIST_SN = (
+			 	SELECT MAX(PRJCT_HIST_SN)
+			 	  FROM PRJCT_HIST ph 
+			 	 WHERE PRJCT_ID = #{prjctId}
+		)
+	</select>
+	
+	<insert id="insertTempPrjctInfo" parameterType="map">
+		INSERT INTO PRJCT_HIST (
+			PRJCT_ID
+			, PRJCT_NM
+			, PRJCT_STLE_CD
+			, DEPT_ID
+			, PRJCT_MNGR_EMP_ID
+			, TOT_BGT
+			, BDDPR_PC
+			, MMNY_SLS_AM
+			, BIZ_FLFMT_TY_CD
+			, CTMMNY_ID
+			, PIC_FLNM
+			, PIC_TELNO
+			, PIC_EML
+			, BEFFAT_PBANC_DDLN_YMD
+			, EXPECT_ORDER_YMD
+			, PROPSE_DDLN_YMD
+			, PROPSE_PRSNTN_YMD
+			, CTRT_YMD
+			, BIZ_END_YMD
+			, STBLE_END_YMD
+			, IGI_YMD
+		    , PRJCT_CD_IDNTFR
+		    , PRJCT_HIST_SN
+			, REG_EMP_ID
+			, REG_DT
+			, MDFCN_EMP_ID
+			, MDFCN_DT
+			, ATRZ_DMND_STTS_CD
+			, BIZ_STTS_CD
+			, BGT_MNG_ODR
+		)
+		VALUES (
+			#{prjctId}
+			, #{prjctNm}
+			, #{prjctStleCd}
+			, #{deptId}
+			, #{prjctMngrEmpId}
+			, #{totBgt}
+			, #{bddprPc}
+			, #{mmnySlsAm}
+			, #{bizFlfmtTyCd}
+			, #{ctmmnyId}
+			, #{picFlnm}
+			, #{picTelno}
+			, #{picEml}
+			, #{beffatPbancDdlnYmd}
+			, #{expectOrderYmd}
+			, #{propseDdlnYmd}
+			, #{propsePrsntnYmd}
+			, #{ctrtYmd}
+			, #{bizEndYmd}
+			, #{stbleEndYmd}
+			, #{igiYmd}
+			, #{prjctCdIdntfr}
+		    , (SELECT T.PRJCT_HIST_SN 
+		    	 FROM (SELECT MAX(PRJCT_HIST_SN) + 1 AS PRJCT_HIST_SN
+			  	 		 FROM PRJCT_HIST 
+			 			WHERE PRJCT_ID = #{prjctId}) AS T)
+			, #{regEmpId}
+			, #{regDt}
+			, #{mdfcnEmpId}
+			, #{mdfcnDt}
+			, #{atrzDmndSttsCd}
+			, #{bizSttsCd}
+			, #{bgtMngOdr}
+		)
+	</insert>
+	
+	<update id="updateTempPrjctAtrzDmndSttsCd" parameterType="map">
+		UPDATE PRJCT_HIST
+		   SET ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
+		   	 , MDFCN_EMP_ID = #{mdfcnEmpId}
+		   	 , MDFCN_DT = #{mdfcnDt}
+		 WHERE 1=1
+		   AND PRJCT_ID = #{prjctId}
+   		   AND PRJCT_HIST_SN = (SELECT T.PRJCT_HIST_SN 
+						    	  FROM (SELECT MAX(PRJCT_HIST_SN) AS PRJCT_HIST_SN
+							  	 		  FROM PRJCT_HIST 
+							 			 WHERE PRJCT_ID = #{prjctId}
+							 			) AS T)
+	</update>
+	
+	<update id="updatePrjctData" parameterType="map">
+		UPDATE PRJCT p, (SELECT PRJCT_NM
+							  , PRJCT_STLE_CD
+						 	  , DEPT_ID
+						 	  , PRJCT_MNGR_EMP_ID
+						 	  , TOT_BGT
+							  , BDDPR_PC
+							  , MMNY_SLS_AM
+							  , BIZ_FLFMT_TY_CD
+							  , CTMMNY_ID
+							  , PIC_FLNM
+							  , PIC_TELNO
+							  , PIC_EML
+							  , BEFFAT_PBANC_DDLN_YMD
+							  , EXPECT_ORDER_YMD
+							  , PROPSE_DDLN_YMD
+							  , PROPSE_PRSNTN_YMD
+							  , CTRT_YMD
+							  , BIZ_END_YMD
+							  , STBLE_END_YMD
+							  , IGI_YMD
+						      , PRJCT_CD_IDNTFR
+						      , PRJCT_HIST_SN
+						   FROM PRJCT_HIST
+						  WHERE 1=1
+						    AND PRJCT_ID = #{prjctId}
+						    AND PRJCT_HIST_SN = (SELECT T.PRJCT_HIST_SN 
+										           FROM (SELECT MAX(PRJCT_HIST_SN) AS PRJCT_HIST_SN
+											  	 	       FROM PRJCT_HIST 
+											 		     WHERE PRJCT_ID = #{prjctId}) AS T)
+											 		    ) ph
+		   SET p.PRJCT_NM = ph.PRJCT_NM
+			 , p.PRJCT_STLE_CD = ph.PRJCT_STLE_CD
+			 , p.DEPT_ID = ph.DEPT_ID
+			 , p.PRJCT_MNGR_EMP_ID = ph.PRJCT_MNGR_EMP_ID
+		 	 , p.TOT_BGT = ph.TOT_BGT
+			 , p.BDDPR_PC = ph.BDDPR_PC
+			 , p.MMNY_SLS_AM = ph.MMNY_SLS_AM
+			 , p.BIZ_FLFMT_TY_CD = ph.BIZ_FLFMT_TY_CD
+			 , p.CTMMNY_ID = ph.CTMMNY_ID
+			 , p.PIC_FLNM = ph.PIC_FLNM
+			 , p.PIC_TELNO = ph.PIC_TELNO
+			 , p.PIC_EML = ph.PIC_EML
+			 , p.BEFFAT_PBANC_DDLN_YMD = ph.BEFFAT_PBANC_DDLN_YMD
+			 , p.EXPECT_ORDER_YMD = ph.EXPECT_ORDER_YMD
+			 , p.PROPSE_DDLN_YMD = ph.PROPSE_DDLN_YMD
+			 , p.PROPSE_PRSNTN_YMD = ph.PROPSE_PRSNTN_YMD
+			 , p.CTRT_YMD = ph.CTRT_YMD
+			 , p.BIZ_END_YMD = ph.BIZ_END_YMD
+			 , p.STBLE_END_YMD = ph.STBLE_END_YMD
+			 , p.IGI_YMD = ph.IGI_YMD
+		     , p.PRJCT_CD_IDNTFR = ph.PRJCT_CD_IDNTFR
+		     , p.PRJCT_HIST_SN = ph.PRJCT_HIST_SN
+		   WHERE PRJCT_ID = #{prjctId}
+	</update>
+	
+ 	<select id="retrivePrjctPeriod" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT DATE_FORMAT(CTRT_YMD, '%Y-%m-%d') AS CTRT_YMD
+		     , DATE_FORMAT(STBLE_END_YMD, '%Y-%m-%d') AS STBLE_END_YMD
+		  FROM PRJCT_HIST ph
+		 WHERE 1=1
+		   AND PRJCT_ID = #{prjctId}
+		   AND PRJCT_HIST_SN = (SELECT MAX(PRJCT_HIST_SN) FROM PRJCT_HIST WHERE PRJCT_ID = #{prjctId})
 	</select>
 </mapper>

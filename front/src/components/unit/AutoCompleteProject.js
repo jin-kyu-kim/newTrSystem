@@ -2,8 +2,7 @@ import ApiRequest from "../../utils/ApiRequest";
 
 import React, { useEffect, useState } from "react";
 import SelectBox from 'devextreme-react/select-box';
-import 'devextreme/dist/css/dx.common.css';
-import 'devextreme/dist/css/dx.light.css';
+import './AutoCompleteProject.css';
 
 // 2024.03.21(박지환)
 // return값 추가 (prjctMngrEmpId)
@@ -20,22 +19,20 @@ const AutoCompleteProject = ({ placeholderText, onValueChange, sttsBoolean }) =>
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await ApiRequest("/boot/common/commonSelect", [
-          { tbNm: "PRJCT" },
-          {},
-        ]);
+        const response = await ApiRequest('/boot/common/queryIdSearch', {queryId: 'commonMapper.autoCompleteProject'});
 
-        const processedData = response.map(({ prjctId, prjctNm, prjctMngrEmpId, bizSttsCd }) => ({
+        const processedData = response.map(({ prjctId, prjctNm, prjctTag, prjctMngrEmpId, bizSttsCd }) => ({
           key: prjctId,
           value: prjctNm,
+          prjctTag: prjctTag,
           prjctMngrEmpId: prjctMngrEmpId,
           bizSttsCd: bizSttsCd,
         }));
 
-        if(sttsBoolean && sttsBoolean == true){
-          setSuggestionsData(processedData.filter(item => item.bizSttsCd == "VTW00402"));
-        } else {
+        if(sttsBoolean && sttsBoolean == false){
           setSuggestionsData(processedData);
+        } else {
+          setSuggestionsData(processedData.filter(item => item.bizSttsCd == "VTW00402"));
         }
       } catch (error) {
         console.log(error);
@@ -61,8 +58,17 @@ const AutoCompleteProject = ({ placeholderText, onValueChange, sttsBoolean }) =>
     setValid(true); // Ensure that the SelectBox is valid after blur
   };
 
+  const ItemTemplate = (item) => {
+    return (
+        <div className="selectbox-item">
+          {item.prjctTag}
+        </div>
+    );
+  };
+
   return (
     <SelectBox
+      id="autoCompleteProject"
       dataSource={suggestionsData}
       valueExpr="key"
       displayExpr="value"
@@ -89,6 +95,15 @@ const AutoCompleteProject = ({ placeholderText, onValueChange, sttsBoolean }) =>
       searchEnabled={true}
       stylingMode="underlined"
       onBlur={handleBlur}
+      itemRender={ItemTemplate}
+      dropDownOptions={{
+        position: {
+          collision: 'none',
+          my: 'top',
+          at: 'bottom',
+          of: '#autoCompleteProject'
+        },
+      }}
     />
   );
 };

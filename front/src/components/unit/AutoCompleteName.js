@@ -2,8 +2,7 @@ import ApiRequest from "../../utils/ApiRequest";
 
 import React, { useEffect, useState } from "react";
 import SelectBox from 'devextreme-react/select-box';
-import 'devextreme/dist/css/dx.common.css';
-import 'devextreme/dist/css/dx.light.css';
+
 
 const AutoCompleteName = ({ placeholderText, onValueChange, readOnlyValue, value}) => {
   const [suggestionsData, setSuggestionsData] = useState([]);

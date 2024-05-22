@@ -1,5 +1,4 @@
 import ApiRequest from "./ApiRequest";
-import {Cookies} from "react-cookie";
 
 export async function signIn(empno, password) {
     try {

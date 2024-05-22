@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 
 import ProjectJson from "../manage/ProjectListJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
@@ -6,9 +6,7 @@ import SearchPrjctSet from "../../../components/composite/SearchPrjctSet";
 import CustomTable from "../../../components/unit/CustomTable";
 
 import "react-datepicker/dist/react-datepicker.css";
-import { useNavigate } from "react-router-dom";
-import { Button } from "devextreme-react";
-import { useCookies } from "react-cookie";
+import {useLocation, useNavigate} from "react-router-dom";
 
 const ProjectList = () => {
   const [values, setValues] = useState([]);
@@ -18,10 +16,14 @@ const ProjectList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
-  const [cookies] = useCookies(["userInfo", "userAuth"]);
+  const location = useLocation();
 
 
-  const userEmpId = cookies.userInfo.empId;
+
+  /** 유저 정보 */
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const empId = userInfo.empId;
+
   const navigate = useNavigate();
 
   const { keyColumn, queryId, tableColumns, searchParams, popup } = ProjectJson;
@@ -42,7 +44,8 @@ const ProjectList = () => {
       currentPage: currentPage,
       startVal: 0,
       pageSize: pageSize,
-      empId: userEmpId,
+      empId: empId,
+      path: location.pathname
     });
   };
 
@@ -72,11 +75,12 @@ const ProjectList = () => {
                       , stbleEndYmd: e.data.stbleEndYmd
                       , bgtMngOdrTobe: e.data.bgtMngOdrTobe 
                       , bizSttsCd: e.data.bizSttsCd
-                      , deptId : e.data.deptId}})
+                      , deptId : e.data.deptId
+                      , path: location.pathname}})
   };
 
   return (
-    <div className="container">
+    <div className="">
       <div
         className="title p-1"
         style={{ marginTop: "20px", marginBottom: "10px" }}

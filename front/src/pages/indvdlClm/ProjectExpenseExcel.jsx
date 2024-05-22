@@ -15,8 +15,8 @@ const ProjectExpenseExcel = (props) => {
     const aplyYm = props.aplyYm;
     const aplyOdr = props.aplyOdr;
 
-    const [ excel, setExcel ] = useState();
-    const [ aprvNoList, setAprvNoList ] = useState([]);
+    const [excel, setExcel] = useState();
+    const [aprvNoList, setAprvNoList] = useState([]);
 
     const currentDate = new Date();
     const year = currentDate.getFullYear();
@@ -31,21 +31,25 @@ const ProjectExpenseExcel = (props) => {
     useEffect(() => {
         const getCardUseDtl = async () => {
             // 중복검사를 위한 기존 list
-            try{
+            try {
                 const response = await ApiRequest('/boot/common/commonSelect', [
-                    {tbNm: "CARD_USE_DTLS"}, {empId}
-                ]); 
-                const tmpList = response.map(item => item.aprvNo);
-                setAprvNoList(tmpList);
-            } catch(error){
+                    { tbNm: "CARD_USE_DTLS" }, { empId }
+                ]);
+                if (response.length !== 0) {
+                    const tmpList = response
+                        .filter(item => item.prjctCtInptPsbltyYn === "Y")
+                        .map(item => item.lotteCardAprvNo);
+                    setAprvNoList(tmpList);
+                }
+            } catch (error) {
                 console.log('error', error);
             }
         };
         getCardUseDtl();
     }, []);
-
+    
     const onClick = async () => {
-        if (excel === undefined){
+        if (excel === undefined) {
             handleOpen("파일을 등록해주세요.");
             return;
         }
@@ -54,28 +58,28 @@ const ProjectExpenseExcel = (props) => {
         param.push({
             tbNm: "CARD_USE_DTLS",
             snColumn: "CARD_USE_SN",
-            snSearch: {empId, aplyYm, aplyOdr}
+            snSearch: { empId, aplyYm, aplyOdr }
         });
 
-        if(excel[0].__EMPTY_4 === "승인일자" && excel[0].__EMPTY_5 === "승인시간") {
+        if (excel[0].__EMPTY_4 === "승인일자" && excel[0].__EMPTY_5 === "승인시간") {
             for (let i = 1; i < excel?.length; i++) {
-                const aprvNo = excel[i].__EMPTY_20; // aprvNo[승인번호] -> __EMPTY_20
-
+                const lotteCardAprvNo = excel[i].__EMPTY_20; // aprvNo[승인번호] -> __EMPTY_20
+                
                 // 기존 aprvList에 승인번호가 포함되어 있지 않은 경우만 처리
-                if (!aprvNoList.includes(aprvNo)) {
+                if (!aprvNoList.includes(lotteCardAprvNo)) {
 
-                    if(!excel[i].__EMPTY_7.includes('-')){
-                        
+                    if (!excel[i].__EMPTY_7.includes('-')) {
+
                         const utztnAmt = excel[i].__EMPTY_7.replace(/,/g, "");
                         const date = excel[i].__EMPTY_4.replace(/\./g, "");
                         const time = excel[i].__EMPTY_5.replace(/:/g, "");
 
                         const data = {
                             empId, aplyYm, aplyOdr,
-                            "utztnDt": date+time,
+                            "utztnDt": date + time,
                             "useOffic": excel[i].__EMPTY_6,
                             "utztnAmt": utztnAmt,
-                            "aprvNo": excel[i].__EMPTY_20,
+                            "lotteCardAprvNo": excel[i].__EMPTY_20,
                             "prjctCtInptPsbltyYn": "Y",
                             "regEmpId": props.empId,
                             "regDt": formattedDate,
@@ -86,7 +90,7 @@ const ProjectExpenseExcel = (props) => {
                 }
             }
             try {
-                if(param.length === 1) {
+                if (param.length === 1) {
                     handleOpen('이미 등록된 사용내역입니다.');
                     return;
                 }
@@ -105,16 +109,16 @@ const ProjectExpenseExcel = (props) => {
         }
     }
 
-    return(
-        <div className="container" style={{margin: '4%'}}>
-            <span style={{fontSize: 18}}>롯데카드 법인카드 사용내역 엑셀을 업로드 합니다.<br/>
-                <span style={{fontSize: 14}}>
-                    <br/>
-                    1. <a href="https://corp.lottecard.co.kr/app/LCMANAA_V100.lc" target="_blank">롯데법인카드 홈페이지</a> > 이용조회 > 승인내역조회에서 조회 후 저장한 엑셀파일을 업로드 합니다.<br/>
-                    2. 엑셀 파일을 업로드 후 롯데법인카드 내역 청구 탭에서 선택하여 청구하시면 됩니다.<br/>
+    return (
+        <div style={{marginLeft: '5%', marginTop: '7%'}}>
+            <span style={{ fontSize: 18 }}>롯데카드 법인카드 사용내역 엑셀을 업로드 합니다.<br />
+                <span style={{ fontSize: 14 }}>
+                    <br />
+                    1. <a href="https://corp.lottecard.co.kr/app/LCMANAA_V100.lc" target="_blank">롯데법인카드 홈페이지</a> > 이용조회 > 승인내역조회에서 조회 후 저장한 엑셀파일을 업로드 합니다.<br />
+                    2. 엑셀 파일을 업로드 후 롯데법인카드 내역 청구 탭에서 선택하여 청구하시면 됩니다.<br />
                 </span>
             </span>
-            <ExcelUpload excel={excel} setExcel={setExcel}/>
+            <ExcelUpload excel={excel} setExcel={setExcel} />
             <Button style={button} text="업로드" type='default' onClick={onClick} ></Button>
         </div>
     );

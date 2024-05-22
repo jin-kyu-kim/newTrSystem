@@ -6,9 +6,7 @@ import SearchPrjctSet from "../../../components/composite/SearchPrjctSet";
 import CustomTable from "../../../components/unit/CustomTable";
 
 import "react-datepicker/dist/react-datepicker.css";
-import { useNavigate } from "react-router-dom";
-
-import { useCookies } from "react-cookie";
+import {useLocation, useNavigate} from "react-router-dom";
 
 const ProjectAprv = () => {
   const [values, setValues] = useState([]);
@@ -18,8 +16,16 @@ const ProjectAprv = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
+  const location = useLocation();
 
-  const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
+
+  /** 유저 정보 */  
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const userAuth = JSON.parse(localStorage.getItem("userAuth"));
+  const deptInfo = JSON.parse(localStorage.getItem("deptInfo"));
+
+  const empId = userInfo.empId;
+  const deptId = deptInfo.length != 0 ? deptInfo[0].deptId : null;
 
   const {keyColumn, queryId, tableColumns, searchParams} = ProjectJson; 
 
@@ -37,11 +43,12 @@ const ProjectAprv = () => {
     setCurrentPage(1);
     setParam({
       ...initParam,
-      empId: cookies.userInfo.empId,
+      empId: empId,
       queryId: queryId,
       currentPage: currentPage,
       startVal: 0,
       pageSize: pageSize,
+      path: location.pathname
     });
   };
 
@@ -71,12 +78,13 @@ const ProjectAprv = () => {
               , nowAtrzStepCd: e.data.nowAtrzStepCd
               , aprvrEmpId : e.data.aprvrEmpId
               , ctrtYmd: e.data.ctrtYmd
-              , stbleEndYmd: e.data.stbleEndYmd } }
+              , stbleEndYmd: e.data.stbleEndYmd
+              , path: location.pathname} }
     );
   }
 
   return (
-    <div className="container">
+    <div>
       <div
         className="title p-1"
         style={{ marginTop: "20px", marginBottom: "10px" }}

@@ -1,11 +1,5 @@
 export const navigation = [
   {
-    text: 'Home',
-    path: '/home',
-    icon: 'home',
-    auth: 'USER'
-  },
-  {
     text: '정보조회',
     icon: 'info',
     auth: 'USER',
@@ -29,7 +23,7 @@ export const navigation = [
         auth: 'USER'
       },{
         text: '회의실예약',
-        path: '/humanResourceMng/MeetingRoomManage2',
+        path: '/humanResourceMng/MeetingRoomManage',
         auth: 'VTW04805'
       }
       // ,{
@@ -80,10 +74,10 @@ export const navigation = [
         path: '/project/ProjectHrCtAprv',
         auth: 'VTW04807'
       },{
-        text: '외주비용승인',
-        path: '/project/ProjectOutordAprv',
-        auth: 'VTW04807'
-      },{
+      //   text: '외주비용승인',
+      //   path: '/project/ProjectOutordAprv',
+      //   auth: 'VTW04807'
+      // },{
         text: '파트너업체관리',
         path: '/project/ProjectOutordCompany'
       },{
@@ -118,7 +112,7 @@ export const navigation = [
         auth: 'VTW04805'
       },{
         text: '회의실예약관리',
-        path: '/humanResourceMng/MeetingRoomManage',
+        path: '/humanResourceMng/MeetingRoomManageAdmin',
         auth: 'VTW04805'
       },
     ]
@@ -153,7 +147,8 @@ export const navigation = [
         auth: 'VTW04804',
       },{
         text: '비용엑셀업로드',
-        path: '/46'
+        path: '/fnnrMng/CorpCardCtUld',
+        auth: 'VTW04804' 
       },
     ]
   },{
@@ -169,10 +164,6 @@ export const navigation = [
       {
         text: '권한관리',
         path: '/sysMng/EmpAuth',
-        auth: 'VTW04801'
-      },{
-        text: '권한부여관리',
-        path: '/sysMng/EmpAuthorization',
         auth: 'VTW04801'
       },{
         text: '코드관리',
@@ -191,29 +182,30 @@ export const navigation = [
     items: [
       {
         text: '프로젝트관리',
-        path: '/71',
+        path: '/mngrMenu/ProjectList',
         auth: 'VTW04801'
       },{
         text: '프로젝트승인',
-        path: '/72',
-        auth: 'VTW04801'
-      },{
-        text: '전자결재서식관리',
-        path: '/mngrMenu/ElecAtrzFormManage',
+        path: '/mngrMenu/ProjectAprv',
         auth: 'VTW04801'
       },{
         text: '전자결재',
         path: '/mngrMenu/ElecAtrzManage',
         auth: 'VTW04801'
       },{
-        text: '개발및연구',
-        path: '/75',
+        text: '전자결재서식관리',
+        path: '/mngrMenu/ElecAtrzFormManage',
         auth: 'VTW04801'
-      },{
-        text: 'MM확인하기',
-        path: '/76',
-        auth: 'VTW04801'
-      },
+      }
+      // ,{
+      //   text: '개발및연구',
+      //   path: '/75',
+      //   auth: 'VTW04801'
+      // },{
+      //   text: 'MM확인하기',
+      //   path: '/76',
+      //   auth: 'VTW04801'
+      // },
     ]
   }
   ];

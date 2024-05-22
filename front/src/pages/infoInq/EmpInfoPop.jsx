@@ -1,16 +1,14 @@
 import React, { useState, useEffect , useRef} from "react";
 import EmpInfoJson from "./EmpInfoJson.json";
 import ApiRequest from "utils/ApiRequest";
-import { useCookies } from "react-cookie";
 import { Button } from "devextreme-react";
-import ReactToPrint from "react-to-print";
 import {Item,Form,GroupItem,} from "devextreme-react/form";
 import CustomEditTable from "components/unit/CustomEditTable";
 import printJS from "print-js";
 
 const EmpInfoPop = ({ naviEmpId }) => {
   /*유저세션*/
-  const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const [degree, setDegree] = useState([]);
   const componentRef = useRef();
 
@@ -28,7 +26,7 @@ const EmpInfoPop = ({ naviEmpId }) => {
     if(naviEmpId.length !== 0){
         empId = naviEmpId;
     } else {
-        empId = cookies.userInfo.empId;
+        empId = userInfo.empId;
     }
 
     /* 기본 정보 */

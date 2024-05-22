@@ -5,9 +5,10 @@ import ApiRequest from '../../utils/ApiRequest';
 import SysMng from './SysMngJson.json';
 
 const CustomersList = () => {
-    const [values, setValues] = useState([]);
-    const [param, setParam] = useState({});
-    const [totalItems, setTotalItems] = useState(0);
+    const [ values, setValues ] = useState([]);
+    const [ param, setParam ] = useState({});
+    const [ totalItems, setTotalItems ] = useState(0);
+    const [ isLoading, setIsLoading ] = useState(false);
     const { keyColumn, queryId, tableColumns, searchInfo, tbNm, ynVal } = SysMng.customersJson;
 
     useEffect(() => {
@@ -24,16 +25,21 @@ const CustomersList = () => {
     };
 
     const pageHandle = async () => {
+        setIsLoading(true);
         try {
             const response = await ApiRequest("/boot/common/queryIdSearch", param);
-            setValues(response);
+            
             if (response.length !== 0) {
+                setValues(response);
                 setTotalItems(response[0].totalItems);
             } else {
+                setValues([]);
                 setTotalItems(0);
             }
         } catch (error) {
             console.log(error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -65,16 +71,18 @@ const CustomersList = () => {
 
             <div>검색된 건 수 : {totalItems} 건</div>
             <div style={{ marginBottom: '100px' }}>
-                <CustomEditTable
-                    tbNm={tbNm}
-                    values={values}
-                    columns={tableColumns}
-                    keyColumn={keyColumn}
-                    callback={pageHandle}
-                    ynVal={ynVal}
-                    handleYnVal={handleYnVal}
-                    noDataText={'등록된 데이터가 없습니다.'}
-                  />
+
+            {isLoading ? <></>
+            : <CustomEditTable
+                tbNm={tbNm}
+                values={values}
+                columns={tableColumns}
+                keyColumn={keyColumn}
+                callback={pageHandle}
+                ynVal={ynVal}
+                handleYnVal={handleYnVal}
+                noDataText={'등록된 데이터가 없습니다.'}
+            /> }
             </div>
         </div>
     );

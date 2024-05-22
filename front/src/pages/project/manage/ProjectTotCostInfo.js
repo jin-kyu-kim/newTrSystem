@@ -2,16 +2,13 @@ import React from "react";
 
 import { useState, useEffect } from "react";
 
-import "devextreme/dist/css/dx.common.css";
-import "devextreme/dist/css/dx.light.css";
-import "devextreme/dist/css/dx.material.blue.light.css";
 import CustomTable from "components/unit/CustomTable";
 import ProjectPrmpcBgtCmpr from "./ProjectPrmpcBgtCmpr";
 
 import ProjectTotCostInfoJson from "./ProjectTotCostInfoJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
 
-const ProjectTotCostInfo = ({prjctId, atrzDmndSttsCd, bgtMngOdr,}) => {
+const ProjectTotCostInfo = ({prjctId, atrzDmndSttsCd, bgtMngOdr, nowAtrzStepCd}) => {
   const [data, setData] = useState([]);
   const { keyColumn, queryId, aprvQueryId, tableColumns, wordWrap, groupingColumn ,groupingData} = ProjectTotCostInfoJson;
 
@@ -52,8 +49,9 @@ const ProjectTotCostInfo = ({prjctId, atrzDmndSttsCd, bgtMngOdr,}) => {
 
     const response = await ApiRequest("/boot/common/queryIdSearch", param);
 
-    if(response[0].aprvOdr == bgtMngOdr) {
-      setAprvOdr(response[0].aprvOdr-1);
+    // 종결이면 현재 보고 있는 화면은 승인이 완료된 것임. 따라서 bgtMngOdr보다 하나 작은 것을 가져와야 한다.
+    if(nowAtrzStepCd === "VTW00708") {
+      setAprvOdr(bgtMngOdr - 1);
       setEndYn(true)
     } else {
       setAprvOdr(response[0].aprvOdr);
@@ -80,6 +78,7 @@ const ProjectTotCostInfo = ({prjctId, atrzDmndSttsCd, bgtMngOdr,}) => {
           bgtMngOdr={aprvOdr}
           bgtMngOdrTobe={bgtMngOdr}
           atrzDmndSttsCd={endYn == true ? "VTW03703" : "VTW03702"}
+          type="aprv"
         />
       }
     </div>

@@ -8,7 +8,7 @@
       "index" : 0
     },
     {
-      "TabName": "실행원가계산서",
+      "TabName": "변경원가계산서",
       "tabId": "ProjectCostCalc",
       "url": "pages/project/manage/ProjectCostCalc",
       "index" : 1

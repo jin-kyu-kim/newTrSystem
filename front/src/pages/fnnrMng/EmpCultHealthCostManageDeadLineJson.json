@@ -7,7 +7,7 @@
   "tableColumns": [
     { "key": "bankName", "value": "은행", "alignment": "center" },
     {  "key": "actno", "value": "계좌번호", "alignment": "center" },
-    {  "key": "dpstAmt", "value": "지급금액", "alignment": "center" },
+    {  "key": "dpstAmt", "value": "지급금액", "format":"#,###", "alignment": "center" },
     {  "key": "empFlnm", "value": "이름", "alignment": "center" },
     {  "key": "remark", "value": "구분", "alignment": "center" }
   ],

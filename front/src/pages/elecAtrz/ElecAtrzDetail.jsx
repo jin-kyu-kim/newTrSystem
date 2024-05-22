@@ -10,7 +10,6 @@ import CustomTable from 'components/unit/CustomTable';
 import ElecAtrzTabDetail from './ElecAtrzTabDetail';
 import electAtrzJson from './ElecAtrzJson.json';
 import ApiRequest from 'utils/ApiRequest';
-import { useCookies } from 'react-cookie';
 import './ElecAtrz.css'
 import { useModal } from "../../components/unit/ModalContext";
 
@@ -24,13 +23,14 @@ const ElecAtrzDetail = () => {
     const [ atrzOpnn, setAtrzOpnn ] = useState([]);
     const [ atrzOpnnVal, setAtrzOpnnVal ] = useState([]);
     const { header, keyColumn, columns, queryId, atchFlQueryId } = electAtrzJson.electAtrzDetail;
-    const [ cookies ] = useCookies(["userInfo"]);
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const [ maxAtrzLnSn, setMaxAtrzLnSn ] = useState();
     const [ dtlInfo, setDtlInfo ] = useState({});
     const [ atachFileList, setAtachFileList ] = useState([]);
     const [ aplyYmd, setAplyYmd ] = useState();
     const [ odr, setOdr ] = useState();
     const [rjctPopupVisible, setRjctPopupVisible] = useState(false);
+    const [aprvPopupVisible, setAprvPopupVisible] = useState(false);
     const [opnnCn, setOpnnCn] = useState("");
     const [data, setData] = useState(location.state.data);
     const { handleOpen } = useModal();
@@ -39,7 +39,7 @@ const ElecAtrzDetail = () => {
     const onBtnClick = (e) => {
 
         switch (e.element.id) {
-            case "aprv": ; aprvAtrz();
+            case "aprv": ; onAprvPopup();
                 break;
             case "rjct": ; onRjctPopup();
                 break;
@@ -79,6 +79,7 @@ const ElecAtrzDetail = () => {
             const response = await ApiRequest('/boot/common/commonSelect', [
                 { tbNm: "VCATN_ATRZ" }, { elctrnAtrzId: detailData.elctrnAtrzId }
             ]);
+            console.log('response', response)
             setDtlInfo(response[0]);
         } catch (error) {
             console.log('error', error);
@@ -167,7 +168,7 @@ const ElecAtrzDetail = () => {
                         vcatnTyCd: dtlInfo.vcatnTyCd,
                         vcatnBgngYmd: dtlInfo.vcatnBgngYmd,
                         vcatnEndYmd: dtlInfo.vcatnEndYmd,
-                        mdfcnEmpId: cookies.userInfo.empId,
+                        mdfcnEmpId: userInfo.empId,
                         atrzStepCd: detailData.atrzStepCd,
                         aprvParam: [
                             { tbNm: "ATRZ_LN" },
@@ -175,11 +176,12 @@ const ElecAtrzDetail = () => {
                                 atrzSttsCd: "VTW00802",
                                 aprvYmd: date,
                                 mdfcnDt: mdfcnDt,
-                                mdfcnEmpId: cookies.userInfo.empId,
+                                mdfcnEmpId: userInfo.empId,
+                                atrzOpnnCn: opnnCn,
                             },
                             { 
                                 elctrnAtrzId: detailData.elctrnAtrzId,
-                                aprvrEmpId: cookies.userInfo.empId,
+                                aprvrEmpId: userInfo.empId,
                                 atrzLnSn: nowAtrzLnSn
                             }
                         ]
@@ -208,11 +210,12 @@ const ElecAtrzDetail = () => {
                             atrzSttsCd: "VTW00802",
                             aprvYmd: date,
                             mdfcnDt: mdfcnDt,
-                            mdfcnEmpId: cookies.userInfo.empId,
+                            mdfcnEmpId: userInfo.empId,
+                            atrzOpnnCn: opnnCn,
                         },
                         { 
                             elctrnAtrzId: detailData.elctrnAtrzId,
-                            aprvrEmpId: cookies.userInfo.empId,
+                            aprvrEmpId: userInfo.empId,
                             atrzLnSn: nowAtrzLnSn
                         }
                     ]
@@ -237,19 +240,20 @@ const ElecAtrzDetail = () => {
                         atrzSttsCd: "VTW00802",
                         aprvYmd: date,
                         mdfcnDt: mdfcnDt,
-                        mdfcnEmpId: cookies.userInfo.empId,
+                        mdfcnEmpId: userInfo.empId,
+                        atrzOpnnCn: opnnCn,
                     },
                     { 
                         elctrnAtrzId: detailData.elctrnAtrzId,
-                        aprvrEmpId: cookies.userInfo.empId,
+                        aprvrEmpId: userInfo.empId,
                         atrzLnSn: nowAtrzLnSn
                     }
                 ]
 
                 const response = aprvProcess(param).then((value) => {
-                    if(value > 0) {
+                    if(value.atrzLnSn > 0) {
                         // 단계 올리기
-                        upNowAtrzLnSn(value);
+                        upNowAtrzLnSn(value.atrzLnSn);
                     } else {
                         handleOpen("승인 처리에 실패하였습니다.");
                         return;
@@ -293,14 +297,14 @@ const ElecAtrzDetail = () => {
                 atrzDmndSttsCd: "VTW03703",
                 nowAtrzLnSn: maxAtrzLnSn,
                 mdfcnDt: new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0],
-                mdfcnEmpId: cookies.userInfo.empId
+                mdfcnEmpId: userInfo.empId
             }
         } else {
             // max와 현재가 다르면 중간승인임.
             updParam = {
                 nowAtrzLnSn: nowAtrzLnSn,
                 mdfcnDt: new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0],
-                mdfcnEmpId: cookies.userInfo.empId
+                mdfcnEmpId: userInfo.empId
             }
         }
 
@@ -337,9 +341,15 @@ const ElecAtrzDetail = () => {
         setRjctPopupVisible(true);
     }
 
+    const onAprvPopup = () => {
+        setAprvPopupVisible(true);
+    }
+
     // 팝업 close
     const handleClose = () => {
         setRjctPopupVisible(false);
+        setAprvPopupVisible(false);
+        setOpnnCn("");
     };
 
     // 반려 의견 입력
@@ -359,14 +369,14 @@ const ElecAtrzDetail = () => {
                 { tbNm: "ATRZ_LN" },
                 { 
                     atrzSttsCd: "VTW00803",
-                    rjctPrvonsh: opnnCn,
+                    atrzOpnnCn: opnnCn,
                     rjctYmd: date,
                     mdfcnDt: mdfcnDt,
-                    mdfcnEmpId: cookies.userInfo.empId,
+                    mdfcnEmpId: userInfo.empId,
                 },
                 { 
                     elctrnAtrzId: detailData.elctrnAtrzId,
-                    aprvrEmpId: cookies.userInfo.empId,
+                    aprvrEmpId: userInfo.empId,
                     atrzLnSn: nowAtrzLnSn
                 }
             ]
@@ -400,7 +410,7 @@ const ElecAtrzDetail = () => {
             { 
                 atrzDmndSttsCd: "VTW03704",
                 mdfcnDt: mdfcnDt,
-                mdfcnEmpId: cookies.userInfo.empId,
+                mdfcnEmpId: userInfo.empId,
             },
             { 
                 elctrnAtrzId: detailData.elctrnAtrzId,
@@ -417,7 +427,7 @@ const ElecAtrzDetail = () => {
     const handlePrcjtCost = async () => {
 
         const regDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
-        const regEmpId = cookies.userInfo.empId;
+        const regEmpId = userInfo.empId;
 
         const param = {
             aplyYm: aplyYmd,
@@ -559,6 +569,7 @@ const ElecAtrzDetail = () => {
                     detailData={data}
                     sttsCd={sttsCd}
                     prjctId={prjctId}
+                    prjctData={prjctData}
                 />
             )}
 
@@ -580,16 +591,34 @@ const ElecAtrzDetail = () => {
                 columns={columns}
                 values={atrzOpnnVal}
             />
-            <div style={{textAlign: 'center', marginBottom: '100px'}}>
+            <div style={{textAlign: 'center', marginBottom: '100px', marginTop: '20px'}}>
                 {sttsCd === 'VTW00801' && header.filter(item => item.id === 'aprv' || item.id === 'rjct').map((item, index) => (
                     <Button id={item.id} text={item.text} key={index} type={item.type} 
                         onClick={onBtnClick} style={{marginRight: '3px'}}/>
                 ))}
-                 <Button text='목록' type='normal' 
+                 <Button text='목록' type='default' 
                     onClick={() => {location.state.docSeCd !=='VTW03405'
                                     ? navigate('/elecAtrz/ElecAtrz') 
                                     : navigate('/elecAtrz/ElecGiveAtrz',{state :{prjctId: prjctId, formData: location.state.formData}}) }} />
             </div>
+            <Popup
+                width={"80%"}
+                height={"80%"}
+                visible={aprvPopupVisible}
+                onHiding={handleClose}
+                showCloseButton={true}
+                title={"승인 의견"}
+            >
+                <TextArea 
+                    height="50%"
+                    valueChangeEvent="change"
+                    onValueChanged={onTextAreaValueChanged}
+                    placeholder="승인 의견을 입력해주세요."
+                />
+                <br/>
+                <Button text="승인" onClick={aprvAtrz}/>
+                <Button text="취소" onClick={handleClose}/>
+            </Popup>
             <Popup
                 width={"80%"}
                 height={"80%"}

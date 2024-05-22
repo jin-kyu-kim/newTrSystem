@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import { Button } from "devextreme-react/button";
 import { Tooltip } from 'devextreme-react/tooltip';
@@ -11,14 +10,14 @@ import "./ElecAtrz.css";
 
 const ElecAtrz = () => {
   const navigate = useNavigate();
-  const [ cookies ] = useCookies(["userInfo", "userAuth"]);
-  const empId = cookies.userInfo.empId;
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const empId = userInfo.empId;
   const { keyColumn, queryId, countQueryId, barList, searchInfo, baseColumns } = elecAtrzJson.elecMain;
-  const [ param, setParam ] = useState({});
-  const [ clickBox, setClickBox ] = useState(null);
-  const [ titleRow, setTitleRow ] = useState([]);
-  const [ totalCount, setTotalCount ] = useState([]);
-  const [ selectedList, setSelectedList ] = useState([]);
+  const [param, setParam] = useState({});
+  const [clickBox, setClickBox] = useState(null);
+  const [titleRow, setTitleRow] = useState([]);
+  const [totalCount, setTotalCount] = useState([]);
+  const [selectedList, setSelectedList] = useState([]);
 
   const onNewReq = async () => {
     navigate("../elecAtrz/ElecAtrzForm");
@@ -28,12 +27,14 @@ const ElecAtrz = () => {
     const getAtrz = async () => {
       try {
         const response = await ApiRequest('/boot/common/queryIdSearch', param)
-        setSelectedList(response)
+        if (response) {
+          setSelectedList(response)
+        }
       } catch (error) {
         console.log('error', error)
       }
     };
-    if (Object.keys(param).length !== 0) getAtrz();
+    getAtrz();
   }, [param])
 
   const searchHandle = async (initParam) => {
@@ -45,10 +46,10 @@ const ElecAtrz = () => {
 
   useEffect(() => {
     const getAllCount = async () => {
-      try{
+      try {
         const response = await ApiRequest('/boot/common/queryIdSearch', { queryId: countQueryId, empId: empId });
         setTotalCount(response);
-      } catch(error) {
+      } catch (error) {
         console.log('error', error);
       }
     }
@@ -60,7 +61,7 @@ const ElecAtrz = () => {
     setSelectedList([]);
     setTitleRow(baseColumns.concat(elecAtrzJson.elecMain[keyNm]));
     setParam({
-      queryId: queryId, 
+      queryId: queryId,
       empId: empId,
       refer: refer,
       sttsCd: sttsCd
@@ -69,7 +70,7 @@ const ElecAtrz = () => {
 
   const ElecBar = ({ text, barColor, color, width, children }) => {
     return (
-      <div style={{width}}>
+      <div style={{ width }}>
         <div className='elec-bar' style={{ backgroundColor: barColor, color: color }}>{text}</div>
         <div className="elec-square-container">{children}</div>
       </div>
@@ -78,12 +79,12 @@ const ElecAtrz = () => {
 
   const ElecSquare = ({ keyNm, info }) => {
     return (
-      <div id={keyNm} onClick={() => getList(keyNm, info.refer, info.sttsCd)} style={(clickBox === keyNm) ? 
+      <div id={keyNm} onClick={() => getList(keyNm, info.refer, info.sttsCd)} style={(clickBox === keyNm) ?
         { backgroundColor: '#4473a5', color: 'white' } : { backgroundColor: info.squareColor }} className='elec-square' >
 
         <div className="elec-square-text" style={{ color: (clickBox === info.text) && 'white' }}>{info.text}</div>
         <div className="elec-square-count" style={{ color: (clickBox === info.text) && 'white' }}>
-          {totalCount.length !== 0 && (totalCount[0][keyNm] === 0 ? 0 : <span>{totalCount[0][keyNm]}</span> )} 건
+          {totalCount.length !== 0 && (totalCount[0][keyNm] === 0 ? 0 : <span>{totalCount[0][keyNm]}</span>)} 건
         </div>
         <Tooltip
           target={`#${keyNm}`}
@@ -91,7 +92,7 @@ const ElecAtrz = () => {
           hideEvent="mouseleave"
           position="top"
           hideOnOutsideClick={false} >
-            <div className='elecTooltip'>{info.tooltip}</div>
+          <div className='elecTooltip'>{info.tooltip}</div>
         </Tooltip>
       </div>
     );
@@ -99,18 +100,27 @@ const ElecAtrz = () => {
 
   const sendDetail = (e, param) => {
 
-    if(e.data.atrzDmndSttsCd === 'VTW03701') {  //임시저장
-      navigate('/elecAtrz/ElecAtrzNewReq', {state: {formData: e.data, sttsCd: param.sttsCd, prjctId: e.data.prjctId}});
+    if (e.data.atrzDmndSttsCd === 'VTW03701') {  //임시저장
+      navigate('/elecAtrz/ElecAtrzNewReq', { state: { formData: e.data, sttsCd: param.sttsCd, prjctId: e.data.prjctId } });
     } else {
-      navigate('/elecAtrz/ElecAtrzDetail', {state: {data: e.data, sttsCd: param.sttsCd, prjctId: e.data.prjctId}});
+      navigate('/elecAtrz/ElecAtrzDetail', { state: { data: e.data, sttsCd: param.sttsCd, prjctId: e.data.prjctId } });
     }
   };
 
+  const onClickBtn = async (button, data) => {
+    if(button.name === 'delete'){
+      const res = await ApiRequest('/boot/elecAtrz/deleteTempAtrz', {
+        elctrnAtrzId: data.elctrnAtrzId, atrzTySeCd: data.elctrnAtrzTySeCd
+      });
+      if(res >= 1) getList();
+    } 
+  }
+
   return (
-    <div className="container">
-      <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }} ></div>
-      <div className="col-md-10 mx-auto" style={{ marginBottom: "20px", display: 'flex' }}>
-        <h3 style={{marginRight: '50px'}}>전자결재</h3>
+    <div>
+      <div className="title p-1" style={{ marginTop: "10px", marginBottom: "10px" }} ></div>
+      <div className="col-md-10 mx-auto" style={{ marginBottom: "15px", display: 'flex' }}>
+        <h3 style={{ marginRight: '50px' }}>전자결재</h3>
         <div>
           <Button text="신규 기안 작성" onClick={onNewReq} type='danger'></Button>
         </div>
@@ -124,22 +134,23 @@ const ElecAtrz = () => {
                 key={child.key}
                 keyNm={child.key}
                 info={child.info}
-              /> ))}
+              />))}
           </ElecBar>
         ))}
       </div>
 
-      {(selectedList.length !== 0 || param.sttsCd !== undefined) && (
-        <div style={{ marginTop: '20px' }}>
-          <div style={{marginBottom: '15px'}}><SearchInfoSet callBack={searchHandle} props={searchInfo} /></div>
-          <CustomTable
-            keyColumn={keyColumn}
-            values={selectedList}
-            columns={titleRow}
-            wordWrap={true}
-            onRowClick={(e) => sendDetail(e, param)}
-          />
-        </div> )}
+      <div style={{ marginTop: '20px' }}>
+        <div style={{ marginBottom: '15px' }}><SearchInfoSet callBack={searchHandle} props={searchInfo} /></div>
+        <CustomTable
+          keyColumn={keyColumn}
+          values={selectedList.length !== 0 ? selectedList : []}
+          columns={titleRow}
+          wordWrap={true}
+          noDataText={'결재 기안 문서가 없습니다.'}
+          onClick={onClickBtn}
+          onRowClick={(e) => sendDetail(e, param)}
+        />
+      </div>
     </div>
   );
 };

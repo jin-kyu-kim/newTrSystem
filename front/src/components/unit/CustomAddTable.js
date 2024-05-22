@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import ApiRequest from "utils/ApiRequest";
 import { useModal } from "./ModalContext";
 
-const CustomAddTable = ({ columns, values, pagerVisible, prjctId, json, bgtMngOdrTobe, cdValues, ctrtYmd, stbleEndYmd, deptId, targetOdr, bizSttsCd, atrzLnSn }) => {
+const CustomAddTable = ({ columns, values, pagerVisible, prjctId, json, bgtMngOdr, bgtMngOdrTobe, cdValues, ctrtYmd, stbleEndYmd, deptId, targetOdr, bizSttsCd, atrzLnSn }) => {
   const navigate = useNavigate();
   const [param, setParam] = useState([]);
   const [value, setValue] = useState([]);
@@ -172,7 +172,8 @@ const CustomAddTable = ({ columns, values, pagerVisible, prjctId, json, bgtMngOd
 const reload = () => {
     navigate("../project/ProjectChange",
         {
-    state: { prjctId: prjctId, 
+    state: { prjctId: prjctId,
+             bgtMngOdr: bgtMngOdr,
              bgtMngOdrTobe: bgtMngOdrTobe,
              ctrtYmd: ctrtYmd, 
              stbleEndYmd: stbleEndYmd,

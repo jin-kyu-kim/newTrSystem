@@ -74,9 +74,6 @@
   font-weight: bold;
 }
 
-.editGridStyle .dx-datagrid .dx-header-row {
-  background-color: #f0f0f0; 
-}
 .dx-header-row>td>.dx-datagrid-text-content {
   font-weight: bolder;
   font-size: medium;
@@ -117,5 +114,5 @@
 }
 
 .dx-datagrid-rowsview .dx-master-detail-row:not(.dx-datagrid-edit-form) .dx-master-detail-cell, .dx-datagrid-rowsview .dx-master-detail-row:not(.dx-datagrid-edit-form)>.dx-datagrid-group-space {
-  background-color: rgb(222, 242, 250);
+  background-color: rgb(246, 252, 254);
 }

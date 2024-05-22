@@ -1,7 +1,4 @@
 import ApiRequest from "../../utils/ApiRequest";
-import {Cookies} from "react-cookie";
-
-
 //회의실용
 /*
 * const room = {
@@ -14,6 +11,17 @@ import {Cookies} from "react-cookie";
 *  startDate: "20240412",                                          //회의시작 시간
 *  endDate: "20240412"                                             //회의끝 시간
 * };
+*/
+
+//비용업로드
+/* const param = {
+  //  type : "expenseExl",                                            
+      toEmpId: "515ad1c7-d21c-0e39-2c01-d266a05a55e2",              
+      reportEmpId: "515ad1c7-d21c-0e39-2c01-d266a05a55e2",            
+      title: title,                                                  
+      content : content,                                      
+      fileName: fileName                                 
+  * };
 */
 
 //전결
@@ -44,11 +52,9 @@ import {Cookies} from "react-cookie";
 * };
 */
 
-export async function sendEmailRoomRes(param) {
-    console.log("여기 오나요 ", param)
+export async function sendEmail(param) {
     try {
       const response = await ApiRequest('/boot/sysMng/sendEmail', param);
-      console.log("결과뭐에요? ", response.data)
       return response.data;
     } catch (error) {
       console.error("Error sending email: ", error);

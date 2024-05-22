@@ -4,8 +4,9 @@ import Form, { Item } from 'devextreme-react/form';
 import { Button } from "devextreme-react/button";
 import ElectAtrzRenderForm from "./ElectAtrzRenderForm";
 import ApiRequest from "utils/ApiRequest";
-import { useCookies } from 'react-cookie';
 import { useModal } from "../../components/unit/ModalContext";
+import AutoCompleteProject from "../../components/unit/AutoCompleteProject";
+import CustomComboBox from "components/unit/CustomComboBox";
 
 const ElecAtrzForm = () => {
     const navigate = useNavigate();
@@ -16,13 +17,13 @@ const ElecAtrzForm = () => {
     const [prjctList, setPrjctList] = useState([])
     const [deptList, setDeptList] = useState([])
     const { handleOpen } = useModal();
-    const [cookies] = useCookies(["userInfo", "userAuth", "deptInfo"]);
+    const userInfo = JSON.parse(localStorage.getItem("deptInfo"));
     useEffect(() => {
         setPrjctId(location.state ? location.state.prjctId : "");
 
         retrieveForm();
         retrievePrjctList();
-        setDeptList(cookies.deptInfo);
+        setDeptList(userInfo);
 
     }, []);
 
@@ -51,16 +52,18 @@ const ElecAtrzForm = () => {
          * 프로젝트가 만료되면 전자결재 상신이 이뤄지지 않도록
          * => 현재 VTW00402 프로젝트 수행중인 프로젝트만 가져오도록 되어 있음. -> 이정도면 될지 좀 더 고민해보기.
          */
-        const param = [
-            { tbNm: "PRJCT" },
-            { bizSttsCd: "VTW00402"}
-        ]
+        const param = {
+            queryId: "commonMapper.autoCompleteProject"
+        }
+    
         try {
-            const response = await ApiRequest("/boot/common/commonSelect", param);
-            setPrjctList(response);
+            const response = await ApiRequest("/boot/common/queryIdSearch", param);
+            
+            setPrjctList(response.filter(item => item.bizSttsCd == "VTW00402"));
         } catch (error) {
             console.error(error)
         }
+
     }
 
     const handleChgPrjctState = (e) => {
@@ -82,7 +85,6 @@ const ElecAtrzForm = () => {
 
     const validationRules = {
         prjct: [{ type: 'required', message: '프로젝트는 필수로 선택해야합니다.' }],
-        dept: [{ type: 'required', message: '부서는 필수로 선택해야합니다.' }],
     };
 
     return (
@@ -113,7 +115,7 @@ const ElecAtrzForm = () => {
                     editorOptions={{
                         items: prjctList,
                         value: prjctId,
-                        displayExpr: "prjctNm",
+                        displayExpr: "prjctTag",
                         valueExpr: "prjctId",
                         searchEnabled: true, // 검색 가능 옵션 추가
                         onValueChanged: handleChgPrjctState
@@ -121,21 +123,6 @@ const ElecAtrzForm = () => {
                     text="프로젝트 선택"
                 >
                 </Item>
-                {/* <Item>
-                    <h4>2. 부서 선택</h4>
-                </Item>
-                <Item
-                    editorType="dxSelectBox"
-                    validationRules={validationRules.dept}
-                    editorOptions={{
-                        items: deptList,
-                        value: deptId,
-                        displayExpr: "deptNm",
-                        valueExpr: "deptId",
-                        onValueChanged: handleChgDeptState
-                    }}
-                    >
-                </Item> */}
             </Form>
             <div style={{paddingTop: "26px", paddingBotton:"10px"}}>
                 <h4>2. 서식 선택</h4>

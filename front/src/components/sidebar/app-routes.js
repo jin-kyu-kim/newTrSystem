@@ -99,13 +99,6 @@ const routes = [
     element: React.lazy(() => import("../../pages/sysMng/EmpAuth")),
     isPrivate:"VTW04801"
   },
-  // 권한부여관리
-  {
-    path: "/sysMng/EmpAuthorization",
-    name: "EmpAuth",
-    element: React.lazy(() => import("../../pages/sysMng/EmpAuthorization")),
-    isPrivate:"VTW04801"
-  },
   // 고객사관리
   {
     path: "/sysMng/CustomersList",
@@ -267,6 +260,13 @@ const routes = [
     element: React.lazy(() => import("../../pages/fnnrMng/TimeExpenseClosingList")),
     isPrivate:"VTW04804"
   },
+  // 재무 관리 > 비용엑셀 업로드
+  {
+    path: "/fnnrMng/CorpCardCtUld",
+    name: "CorpCardCtUld",
+    element: React.lazy(() => import("../../pages/fnnrMng/CorpCardCtUld")),
+    isPrivate:"VTW04804"
+  },
   // 개인 청구 > 문화체력비용
   {
     path: "/indvdlClm/CultureHealthCost",
@@ -371,10 +371,22 @@ const routes = [
     isPrivate:"VTW04804"
   },
   {// 회의실 예약
-    path: "/humanResourceMng/MeetingRoomManage2",
-    name: "MeetingRoomManage2",
+    path: "/humanResourceMng/MeetingRoomManageAdmin",
+    name: "MeetingRoomManageAdmin",
     element: React.lazy(() => import("../../pages/humanResourceMng/MeetingRoomManage")),
     isPrivate:"VTW04805"
+  },
+  {// 관리자메뉴 > 프로젝트관리(관리자)
+    path: "/mngrMenu/ProjectList",
+    name: "ProjectListAdmin",
+    element: React.lazy(() => import("../../pages/project/manage/ProjectList")),
+    isPrivate:"VTW04801"
+  },
+  {// 관리자메뉴 > 프로젝트승인(관리자)
+    path: "/mngrMenu/ProjectAprv",
+    name: "ProjectAprvAdmin",
+    element: React.lazy(() => import("../../pages/project/approval/ProjectAprv")),
+    isPrivate:"VTW04801"
   }
 ];
 

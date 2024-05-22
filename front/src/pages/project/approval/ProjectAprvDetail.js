@@ -2,7 +2,6 @@ import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { TabPanel } from "devextreme-react";
 import Button from "devextreme-react/button";
-import { useCookies } from "react-cookie";
 import Popup from "devextreme-react/popup";
 
 import ApiRequest from "utils/ApiRequest";
@@ -23,7 +22,7 @@ const ProjectAprvDetail = () => {
     const stbleEndYmd = location.state.stbleEndYmd;
     const bgtMngOdr = location.state.bgtMngOdr;
     const aprvrEmpId = location.state.aprvrEmpId;
-    const [cookies, setCookie] = useCookies(["userInfo", "userAuth"]);
+    const path = location.state.path;
     const ProjectAprvDetail = ProjectAprvDetailJson;
     const atrzDmndSttsCd = ProjectAprvDetail.atrzDmndSttsCd;
 
@@ -35,10 +34,18 @@ const ProjectAprvDetail = () => {
     const [btnVisible, setBtnVisible] = useState(false);
     const { handleOpen } = useModal();
 
+    /** 유저 정보 */
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    const userAuth = JSON.parse(localStorage.getItem("userAuth"));
+    const deptInfo = JSON.parse(localStorage.getItem("deptInfo"));
+
+    const empId = userInfo.empId;
+    const deptId = deptInfo.length != 0 ? deptInfo[0].deptId : null;
+
     useEffect(() => {
 
         if(atrzSttsCd === 'VTW00801') {
-            if(aprvrEmpId === cookies.userInfo.empId) handleBtnVisible();
+            if(aprvrEmpId === empId) handleBtnVisible();
         }
 
         const param = {
@@ -86,12 +93,12 @@ const ProjectAprvDetail = () => {
                     AtrzOpnnCn: opnnCn,
                     aprvYmd: date,
                     mdfcnDt: mdfcnDt,
-                    mdfcnEmpId: cookies.userInfo.empId,
+                    mdfcnEmpId: empId,
                 },
                 {
                     prjctId: prjctId,
                     atrzLnSn: atrzLnSn,
-                    aprvrEmpId: cookies.userInfo.empId,
+                    aprvrEmpId: empId,
                     atrzStepCd: atrzStepCd
                 }
             ]
@@ -99,39 +106,26 @@ const ProjectAprvDetail = () => {
             // const response = await ApiRequest("/boot/common/commonUpdate", atrzLnDtlParam);
             const result = await requestProcess(atrzLnDtlParam).then((value) => {
                 
-                // if(value > 0) {
                 if(value != null) {
-                    // let nowStep;
-
-                    // switch(atrzStepCd) {
-                    //     case "VTW00701":
-                    //         nowStep = "VTW00702";
-                    //         break;
-                    //     case "VTW00702":
-                    //         nowStep = "VTW00703";
-                    //         break;
-                    //     case "VTW00703":
-                    //         nowStep = "VTW00704";
-                    //         break;
-                    //     case "VTW00704":
-                    //         nowStep = "VTW00705";
-                    //         break;
-                    //     case "VTW00705":
-                    //         nowStep = "VTW00708";
-                    //         break;
-                    // }
                     const nowStep = value;
                     handleNowAtrzStepCd(nowStep);
                     // 마지막 결재자일 경우
-                    if(atrzStepCd === "VTW00705") { 
+                    if(nowStep === "VTW00708") { 
                         
                         // PRJCT_BGT_PRMPC 테이블 승인으로 수정
                         // ATRZ_DMND_STTS_CD -> VTW03703(승인)
                         handleBgtPrmpc("VTW03703");
     
+                        // PRJCT_HIST 테이블을 승인 상태로 수정
+                        handleTempPrjct("VTW03703");
+
+                        // PRJCT_HIST 테이블 데이터 -> PRJCT
+                        handlePrjctInfo();
+
                         // PRJCT 테이블
                         // BIZ_STTS_CD 컬럼 -> VTW00402(수행)
                         handlePrjctBizStts("VTW00402");
+
                     }
     
                     handleOpen("승인이 완료되었습니다.");
@@ -163,7 +157,7 @@ const ProjectAprvDetail = () => {
                     rjctPrvonsh: opnnCn,
                     rjctYmd: date,
                     mdfcnDt: mdfcnDt,
-                    mdfcnEmpId: cookies.userInfo.empId,
+                    mdfcnEmpId: empId,
                 },
                 {
                     prjctId: prjctId,
@@ -180,6 +174,9 @@ const ProjectAprvDetail = () => {
                 // PRJCT_BGT_PRMPC 테이블 반려로 수정 << todo
                 // 컬럼 ATRZ_DMND_STTS_CD -> VTW03704
                 handleBgtPrmpc("VTW03704");
+
+                // PRJCT_HIST 테이블 임시저장으로 수정
+                handleTempPrjct("VTW03701");
 
                 handleOpen("반려 되었습니다.");
                 navigate("../project/ProjectAprv");
@@ -203,7 +200,7 @@ const ProjectAprvDetail = () => {
             { tbNm: "PRJCT_ATRZ_LN" },
             { 
                 nowAtrzStepCd: nowStep,
-                mdfcnEmpId: cookies.userInfo.empId,
+                mdfcnEmpId: empId,
                 mdfcnDt: mdfcnDt,
             },
             {
@@ -225,39 +222,84 @@ const ProjectAprvDetail = () => {
         const date = getToday();
     
         const param = [
-          { tbNm : "PRJCT_BGT_PRMPC" },
-          {
-            atrzDmndSttsCd: cdValue,
-            atrzCmptnYmd: date,
-            mdfcnEmpId: cookies.userInfo.empId,
-            mdfcnDt: mdfcnDt,
-          },
-          {
-            prjctId: prjctId,
-            bgtMngOdr: bgtMngOdr,
-          }
+            { tbNm : "PRJCT_BGT_PRMPC" },
+            {
+                atrzDmndSttsCd: cdValue,
+                atrzCmptnYmd: date,
+                mdfcnEmpId: empId,
+                mdfcnDt: mdfcnDt,
+            },
+            {
+                prjctId: prjctId,
+                bgtMngOdr: bgtMngOdr,
+            }
         ]
     
         await ApiRequest("/boot/common/commonUpdate", param);
-      }
+    }
     
-      const handlePrjctBizStts = async (cdValue) => {
+    const handlePrjctBizStts = async (cdValue) => {
+        const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
+
+        const param = [
+            { tbNm : "PRJCT" },
+            {
+                bizSttsCd: cdValue,
+                mdfcnEmpId: empId,
+                mdfcnDt: mdfcnDt,
+            },
+            {
+                prjctId: prjctId,
+            }
+        ]
+
+        await ApiRequest("/boot/common/commonUpdate", param);
+    }
+
+    /**
+     * 프로젝트 최종 승인이 된 뒤 프로젝트 데이터들을 수정해줌.
+     */
+    const handlePrjctInfo = async () => {
         const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
     
-        const param = [
-          { tbNm : "PRJCT" },
-          {
-            bizSttsCd: cdValue,
-            mdfcnEmpId: cookies.userInfo.empId,
-            mdfcnDt: mdfcnDt,
-          },
-          {
+        const param = {
+            queryId: "projectMapper.updatePrjctData",
             prjctId: prjctId,
-          }
-        ]
+            mdfcnEmpId: empId,
+            mdfcnDt: mdfcnDt,
+            state: "UPDATE"
+        } 
+
+        try {
+            await ApiRequest("/boot/common/queryIdDataControl", param);
+        } catch (error) {
+            console.error('Error fetching data', error);
+        }
+
+    }
+
+   /**
+   * PRJCT_HIST(프로젝트이력) 테이블의 ATRZ_DMND_STTS_CD(승인요청상태코드)를 변경한다.
+   * @param {"VTW03701", "VTW03702", "VTW03703"} cdValue : ATRZ_DMND_STTS_CD(승인요청상태코드)
+   */
+    const handleTempPrjct = async (cdValue) => {
+        const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
     
-        await ApiRequest("/boot/common/commonUpdate", param);
-      }
+        const param = {
+            queryId: "projectMapper.updateTempPrjctAtrzDmndSttsCd",
+            prjctId: prjctId,
+            atrzDmndSttsCd: cdValue,
+            mdfcnEmpId: empId,
+            mdfcnDt: mdfcnDt,
+            state: "UPDATE"
+        } 
+
+        try {
+            await ApiRequest("/boot/common/queryIdDataControl", param);
+        } catch (error) {
+            console.error('Error fetching data', error);
+        }
+    }
 
     // 탭 변경 시 인덱스 설정
     const onSelectionChanged = useCallback(
@@ -353,32 +395,32 @@ const ProjectAprvDetail = () => {
         )
 
         rowInfo.map((item, index) => {
-
+            console.log(item)
             header.push(
-                <th className="table-atrzLn-th">
+                <th className="table-atrzLn-th" key={item.atrzStepNm}>
                     {item.atrzStepNm}
                 </th>
             );
 
             stts.push(
-                <td className="table-atrzLn-td">
+                <td className="table-atrzLn-td" key={item.atrzSttsNm}>
                     {item.atrzSttsNm}
                 </td>
             );
             emp.push(
-                <td className="table-atrzLn-td">
+                <td className="table-atrzLn-td" key={item.aprvrEmpFlnm}>
                     {item.aprvrEmpFlnm}
                 </td>
             )
             if(item.atrzSttsNm === '반려') {
                 ymd.push(
-                    <td className="table-atrzLn-td">
+                    <td className="table-atrzLn-td" key={item.mdfcnDt}>
                         {item.mdfcnDt}
                     </td>
                 )
             } else {
                 ymd.push(
-                    <td className="table-atrzLn-td">
+                    <td className="table-atrzLn-td" key={item.mdfcnDt}>
                         {item.mdfcnDt}
                     </td>
                 )
@@ -387,7 +429,7 @@ const ProjectAprvDetail = () => {
 
 
         const test = (
-            <table className="table-atrzLn">
+            <table className="table-atrzLn" key="table-atrzLn">
                 {/* <colgroup>
                     <col width="8%"/>
                     <col width="23%"/>
@@ -397,7 +439,7 @@ const ProjectAprvDetail = () => {
                 </colgroup> */}
                 <tbody>
                     <tr>
-                        <th className="table-atrzLn-th" rowspan={4}>결재</th>
+                        <th className="table-atrzLn-th" rowSpan={4}>결재</th>
                         {header}
                         {/* {defalultHeader} */}
                     </tr>
@@ -456,7 +498,7 @@ const ProjectAprvDetail = () => {
                     <div className="buttons" align="right" style={{ marginTop: "5px", marginBottom: "5px" }}>
                         <Button text="승인" visible={btnVisible} onClick={onAprvPopup}/>
                         <Button text="반려" visible={btnVisible} onClick={onRjctPopup}/>
-                        <Button text="목록" onClick={() => navigate("../project/ProjectAprv")}/>
+                        <Button text="목록" onClick={() => navigate(`..${path}`)}/>
                     </div>
                     </div>
                 </div>
@@ -483,7 +525,15 @@ const ProjectAprvDetail = () => {
                             if(data.index === selectedIndex) {
                                 return (
                                     <React.Suspense fallback={<div>Loading...</div>}>
-                                        <Component prjctId={prjctId} ctrtYmd={ctrtYmd} stbleEndYmd={stbleEndYmd} bgtMngOdr={bgtMngOdr} atrzDmndSttsCd={atrzDmndSttsCd}/>
+                                        <Component 
+                                            prjctId={prjctId} 
+                                            ctrtYmd={ctrtYmd} 
+                                            stbleEndYmd={stbleEndYmd} 
+                                            bgtMngOdr={bgtMngOdr} 
+                                            atrzDmndSttsCd={atrzDmndSttsCd}
+                                            nowAtrzStepCd={nowAtrzStepCd}
+                                            atrzLnSn={atrzLnSn}
+                                        />
                                     </React.Suspense>
                                 );
                             }

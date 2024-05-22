@@ -1,0 +1,8 @@
+.dx-dropdowneditor-overlay .dx-list {
+    max-height: 30rem;
+}
+
+.selectbox-item {
+    white-space: normal;
+    word-wrap: break-word;
+}
