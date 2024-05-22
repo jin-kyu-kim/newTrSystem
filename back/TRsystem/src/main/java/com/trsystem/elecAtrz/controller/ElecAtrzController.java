@@ -51,5 +51,10 @@ public class ElecAtrzController {
 	public int insertPrjctCt(@RequestBody Map<String, Object> param) {
 		return ElecAtrzDomain.insertPrjctCt(param);
 	}
+	
+	@PostMapping(value = "/boot/elecAtrz/retrieveRtrcnAtrzLn")
+	public List<Map<String, Object>> retrieveRtrcnAtrzLn(@RequestBody Map<String, Object> params) {
+		return ElecAtrzDomain.retrieveRtrcnAtrzLn(params);
+	}
 
 }

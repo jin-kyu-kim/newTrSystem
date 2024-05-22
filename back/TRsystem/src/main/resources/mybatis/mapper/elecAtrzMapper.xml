@@ -47,7 +47,8 @@
 			COALESCE(ga.ATCHMNFL_ID, ca.ATCHMNFL_ID, cta.ATCHMNFL_ID, cga.ATCHMNFL_ID) AS ATCHMNFL_ID,
 			al.ATRZ_OPNN_CN,
 			ea.ATRZ_FORM_DOC_ID,
-			ea.ELCTRN_ATRZ_DOC_NO
+			ea.ELCTRN_ATRZ_DOC_NO,
+			ea.RTRCN_ELCTRN_ATRZ_ID
 		FROM ELCTRN_ATRZ ea
 		LEFT JOIN ATRZ_LN al ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID -- 현재 결재단계만
 		LEFT JOIN REFRN_MAN rm ON ea.ELCTRN_ATRZ_ID = rm.ELCTRN_ATRZ_ID -- 참조자의 경우
@@ -587,6 +588,45 @@
 				)
 		ON DUPLICATE KEY UPDATE GIVE_AMT = #{giveAmt}
 	</insert>
+	
+	<select id="retrieveAprvAtrzLn" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT
+			   e.EMP_ID,
+			   ln.ATRZ_STEP_CD AS APPROVAL_CODE,
+			   cd.CD_NM AS ATRZ_STEP_CD_NM,
+			   NULL AS ATRZ_STTS_CD_NM,
+			   e.EMP_FLNM,
+			   (SELECT CD_NM FROM CD WHERE CD_VALUE = e.JBPS_CD) JBPS_NM,
+			   NULL AS LIST_EMP_FLNM,
+			   '' AS MDFCN_DT,
+			   NULL AS ATRZ_OPNN_CN
+		  FROM ATRZ_LN ln
+		  LEFT JOIN EMP e ON ln.APRVR_EMP_ID = e.EMP_ID
+		  LEFT JOIN CD cd ON ln.ATRZ_STEP_CD = cd.CD_VALUE
+		  LEFT JOIN CD cd2 ON ln.ATRZ_STTS_CD = cd2.CD_VALUE
+		 WHERE 1=1
+	  	   AND ln.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
+		   AND ln.ATRZ_STTS_CD = 'VTW00802'
+	</select>
+		
+	<select id="retrieveRefrnAtrzLn" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT
+			   e.EMP_ID,
+			   rm.REFRN_CNCRRNC_CL_CD AS APPROVAL_CODE,
+			   NULL AS ATRZ_STEP_CD_NM,
+			   NULL AS ATRZ_STTS_CD_NM,
+			   e.EMP_FLNM,
+			   (SELECT CD_NM FROM CD WHERE CD_VALUE = e.JBPS_CD) JBPS_NM,
+			   CONCAT(d.DEPT_NM, ' ', e.EMP_FLNM, ' ', (SELECT CD_NM FROM CD WHERE CD_VALUE = e.JBPS_CD)) LIST_EMP_FLNM,
+			   NULL AS APRV_YMD,
+			   NULL AS ATRZ_OPNN_CN
+		  FROM REFRN_MAN rm
+		  LEFT JOIN EMP e ON rm.EMP_ID = e.EMP_ID
+ 		  LEFT JOIN DEPT_HNF dh ON e.EMP_ID = dh.EMP_ID
+	  	  LEFT JOIN DEPT d ON dh.DEPT_ID = d.DEPT_ID
+	     WHERE rm.ELCTRN_ATRZ_ID = 'dc59cbd0-7fbc-7282-e038-bb33873ce466'
+		   AND (rm.REFRN_CNCRRNC_CL_CD LIKE '%VTW00706' OR rm.REFRN_CNCRRNC_CL_CD LIKE '%VTW00707') 
+	</select>
 	
 	
 </mapper>

@@ -1064,4 +1064,61 @@ public class ElecAtrzDomain {
 
         return result;
     }
+
+    /**
+     * 취소결재용 결재라인을 만든다.
+     * @param params
+     * @return 결재라인
+     */
+    public static List<Map<String, Object>> retrieveRtrcnAtrzLn(Map<String, Object> params) {
+    	
+    	List<Map<String, Object>> resultList = new ArrayList<>();
+    	
+    	String elctrnAtrzId = String.valueOf(params.get("elctrnAtrzId"));
+    	String aprvQueryId = "elecAtrzMapper.retrieveAprvAtrzLn";
+
+    	// 승인된 결재라인
+    	Map<String, Object> aprvMap = new HashMap<>();
+    	aprvMap.put("queryId", aprvQueryId);
+    	aprvMap.put("elctrnAtrzId", elctrnAtrzId);
+    	
+    	List<Map<String, Object>> aprvList = new ArrayList<>();
+    	aprvList = commonService.queryIdSearch(aprvMap);
+    	String atrzStepCd[] = {"VTW00705", "VTW00704", "VTW00703", "VTW00702", "VTW00701"};
+    	
+    	
+    	for(int i = 0; i < aprvList.size(); i++) {
+    		
+    		Map<String, Object> resultMap = new HashMap<>();
+    		resultMap.put("empId", aprvList.get(i).get("empId"));
+    		resultMap.put("approvalCode", atrzStepCd[i]);
+    		resultMap.put("atrzStepCdNm", aprvList.get(i).get("atrzStepCdNm"));
+    		resultMap.put("atrzSttsCdNm", aprvList.get(i).get("atrzSttsCdNm"));
+    		resultMap.put("empFlnm", aprvList.get(i).get("empFlnm"));
+    		resultMap.put("jbpsNm", aprvList.get(i).get("jbpsNm"));
+    		resultMap.put("listEmpFlnm", aprvList.get(i).get("listEmpFlnm"));
+    		resultMap.put("mdfcnDt", aprvList.get(i).get("mdfcnDt"));
+    		resultMap.put("atrzOpnnCn", aprvList.get(i).get("atrzOpnnCn"));
+    		resultMap.put("atrzStepCdNm", aprvList.get(i).get("atrzStepCdNm"));
+    		
+    		resultList.add(resultMap);
+    	}
+    	
+    	// 참조/합의 라인
+    	String refrnQueryId = "elecAtrzMapper.retrieveRefrnAtrzLn";
+    	
+    	Map<String, Object> refrnMap = new HashMap<>();
+    	refrnMap.put("queryId", refrnQueryId);
+    	refrnMap.put("elctrnAtrzId", elctrnAtrzId);
+    	
+    	List<Map<String, Object>> refrnList = new ArrayList<>();
+    	refrnList = commonService.queryIdSearch(refrnMap);
+    	
+    	for(int i = 0; i < refrnList.size(); i++) {
+    		resultList.add(refrnList.get(i));
+    	}
+    	
+		return resultList;    	
+    	
+    }
 }  

@@ -48,6 +48,8 @@ const ElecAtrzDetail = () => {
                 break;
             case "reAtrz": onReReq();
                 break;
+            case "cancel": onCancelReq();
+            break;
             default:
                 break;
         }
@@ -527,8 +529,15 @@ const ElecAtrzDetail = () => {
 
         console.log(detailData)
         navigate('/elecAtrz/ElecAtrzNewReq', { state: { formData: detailData, sttsCd: "VTW05407", prjctId: detailData.prjctId } });
-        // electrn
+    }
 
+    /**
+     * 결재 취소: VTW05405
+     */
+    const onCancelReq = async () => {
+
+        console.log(detailData)
+        navigate('/elecAtrz/ElecAtrzNewReq', { state: { formData: detailData, sttsCd: "VTW05405", prjctId: detailData.prjctId,  }});
     }
 
     return (
