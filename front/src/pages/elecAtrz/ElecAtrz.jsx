@@ -157,7 +157,7 @@ const ElecAtrz = () => {
           wordWrap={true}
           noDataText={'결재 기안 문서가 없습니다.'}
           onClick={onClickBtn}
-          onRowClick={(e) => sendDetail(e, param.stts === undefined ? {} : param)}
+          onRowClick={(e) => sendDetail(e, param)}
         />
       </div>
     </div>
