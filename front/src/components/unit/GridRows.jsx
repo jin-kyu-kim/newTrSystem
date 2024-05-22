@@ -72,6 +72,12 @@ const GridRows = ({ columns, onClick, handleCheckBoxChange, checkBoxValue }) => 
             return(
                 <Button name = {button.name} text={button.text} onClick={() => onClick(button, data)} disabled={disabled}/>
             )
+        } else{
+          return(
+            buttons.map(btn => (
+              <Button name = {btn.name} text={btn.text} onClick={() => onClick(btn, data)} type={btn.type} style={{marginRight: '2%'}}/>
+            ))
+          )
         }
     }
 

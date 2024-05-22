@@ -130,7 +130,7 @@ const ProjectExpense = () => {
             if (ctAtrzCmptnYn === 'Y' && mmAtrzCmptnYn === 'N') return buttonsConfig.hasApprovals;
             if (mmAtrzCmptnYn === 'Y') return buttonsConfig.completed;
         } else {
-            if (atrzDmndSttsCnt.rjct === 0 && atrzDmndSttsCnt.aprv > 0) return buttonsConfig.completed;
+            if (atrzDmndSttsCnt.rjct === 0 && atrzDmndSttsCnt.aprv > 0 && atrzDmndSttsCnt.inptDdln === 0) return buttonsConfig.completed;
             if (atrzDmndSttsCnt.aprvDmnd > 0 || atrzDmndSttsCnt.rjct > 0) return buttonsConfig.hasApprovals;
             if (atrzDmndSttsCnt.inptDdln > 0) return buttonsConfig.noApprovals;
         }
