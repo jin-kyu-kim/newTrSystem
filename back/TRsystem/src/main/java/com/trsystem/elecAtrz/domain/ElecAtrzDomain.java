@@ -1129,6 +1129,8 @@ public class ElecAtrzDomain {
      */
     public static int updateHistElctrnAtrz(Map<String, Object> params) {
     	
+    	int result = 0;
+    	
     	// 0. 결재취소 요청인지 변경결재 요청인지 확인한다.	
     	String atrzHistSeCd = String.valueOf(params.get("atrzHistSeCd"));			// 취소/변경 구분코드
     	String histElctrnAtrzId = String.valueOf(params.get("histElctrnAtrzId"));	// 취소/변경 대상 전자결재 ID
@@ -1145,22 +1147,61 @@ public class ElecAtrzDomain {
 
     	
     	tbNm.put("tbNm", "ELCTRN_ATRZ");
+    	infoMap.put("atrzDmndSttsCd", "VTW03705");
+    	conditionMap.put("elctrnAtrzId", histElctrnAtrzId);
+    	
     	updateParams.add(0, tbNm);
+    	updateParams.add(1, infoMap);
+    	updateParams.add(2, conditionMap);
     	
-    	infoMap.put("atrzSttsCd", histElctrnAtrzId);
-    	conditionMap.put("elctrnAtrzId", updateParams);
-    	
-    	commonService.updateData(updateParams);
-    	
-    	updateParams.clear();
-    	tbNm.clear();
-    	infoMap.clear();
-    	conditionMap.clear();
-    	
-    	// 2. 청구결재의 경우 해당 전자결재아이디로 PRJCT_CT_APLY를 조회한 뒤,(1건이 나올 것으로 기대함)
-    	// 이 경우, 결재중인 전자결재를 결채취소 요청한 경우에는 response가 0일 것임. -> 예외처리
-    	
-    	// 조회한 프로젝트 아이디, 차수, EMP_ID, 순번을 통해서 PRJCT_CT_ATRZ를 취소로 변경한다. 
+    	try {
+    		result = commonService.updateData(updateParams);
+        	
+        	updateParams.clear();
+        	infoMap.clear();
+        	conditionMap.clear();
+        	
+        	// 2. 청구결재의 경우 해당 전자결재아이디로 PRJCT_CT_APLY를 조회한 뒤,(1건이 나올 것으로 기대함)
+        	// 이 경우, 결재중인 전자결재를 결채취소 요청한 경우에는 response가 0일 것임. -> 예외처리
+        	// 조회한 프로젝트 아이디, 차수, EMP_ID, 순번을 통해서 PRJCT_CT_ATRZ를 취소로 변경한다. 
+        	if(elctrnAtrzTySeCd.equals("VTW04907")) {
+
+        		List<Map<String, Object>> selectParams = new ArrayList<>();
+        		Map<String, Object> selectMap = new HashMap<>();
+        		tbNm.put("tbNm", "PRJCT_CT_APLY");
+        		selectMap.put("elctrnAtrzId", histElctrnAtrzId);
+        		
+        		selectParams.add(0, tbNm);
+        		selectParams.add(1, selectMap);
+        		
+        		List<Map<String, Object>> resultList = new ArrayList<>();
+        		
+        		resultList = commonService.commonSelect(selectParams);
+        		
+        		if(resultList.size() > 0) {
+        			tbNm.put("tbNm", "PRJCT_CT_ATRZ");
+        	    	infoMap.put("atrzDmndSttsCd", "VTW03705");
+        	    	conditionMap.put("prjctId", String.valueOf(resultList.get(0).get("prjctId")));
+        	    	conditionMap.put("empId", String.valueOf(resultList.get(0).get("empId")));
+        	    	conditionMap.put("aplyYm", String.valueOf(resultList.get(0).get("aplyYm")));
+        	    	conditionMap.put("aplyOdr", String.valueOf(resultList.get(0).get("aplyOdr")));
+        	    	conditionMap.put("prjctCtAplySn", String.valueOf(resultList.get(0).get("prjctCtAplySn")));
+        			
+        	    	updateParams.add(0, tbNm);
+        	    	updateParams.add(1, infoMap);
+        	    	updateParams.add(2, conditionMap);
+        	    	
+        	    	commonService.updateData(updateParams);
+        	    	
+        	    	updateParams.clear();
+        	    	infoMap.clear();
+        	    	conditionMap.clear();
+        		}
+        		
+        	}
+    	} catch(Exception e) {
+    	   return -1;
+    	}
     	
     	// 3. 지급결재의 경우? To do
     	
