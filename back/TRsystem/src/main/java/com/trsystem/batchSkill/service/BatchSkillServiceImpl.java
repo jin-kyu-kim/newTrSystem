@@ -234,11 +234,19 @@ public class BatchSkillServiceImpl implements BatchSkillService {
             String queryIdDeleteFromMainTableMM = "batchMapper.deleteFromMainTableMM";
             String queryIdDropTempTableMM = "batchMapper.dropTempTableMM";
 			String queryIdMM = "batchMapper.executeCostUpdateMM";
+			
 			String queryIdCreateTempTableCT = "batchMapper.createTempTableCT";
             String queryIdInsertIntoTempTableCT = "batchMapper.insertIntoTempTableCT";
             String queryIdDeleteFromMainTableCT = "batchMapper.deleteFromMainTableCT";
             String queryIdDropTempTableCT = "batchMapper.dropTempTableCT";
 			String queryIdCT = "batchMapper.executeCostUpdateCT";
+			
+			String queryIdCreateTempTableMatrlCt = "batchMapper.createTempTableMatrlCt";
+            String queryIdInsertIntoTempTableMatrlCt = "batchMapper.insertIntoTempTableMatrlCt";
+            String queryIdDeleteFromMainTableMatrlCt = "batchMapper.deleteFromMainTableMatrlCt";
+            String queryIdDropTempTableMatrlCt = "batchMapper.dropTempTableMatrlCt";
+			String queryIdMatrlCt = "batchMapper.executeCostUpdateMatralCt";
+			
 			
 			logger.info("Starting executeCostUpdate");
 			
@@ -285,8 +293,36 @@ public class BatchSkillServiceImpl implements BatchSkillService {
 			// CT(비용) 업데이트 쿼리 실행
 			int resultCT = sqlSession.insert("com.trsystem.mybatis.mapper." + queryIdCT);
 			logger.info("CT data updated: {} rows", resultCT);
+			
+			
+			
+			//재료비 배치 업데이트 실행
+			// 임시 테이블 생성
+            sqlSession.update("com.trsystem.mybatis.mapper." + queryIdCreateTempTableMatrlCt);
+            logger.info("TemporaryMatrlCt table created");
+            
+            // 임시 테이블에 데이터 삽입
+            sqlSession.insert("com.trsystem.mybatis.mapper." + queryIdInsertIntoTempTableMatrlCt);
+            logger.info("Data inserted into temporaryMatrlCt table");
+            
+            // 메인 테이블에서 데이터 삭제
+            int resultDeleteMatrlCt = sqlSession.delete("com.trsystem.mybatis.mapper." + queryIdDeleteFromMainTableMatrlCt);
+            logger.info("Data deleted from main table: {} rows", resultDeleteMatrlCt);
+            
+            // 임시 테이블 삭제
+            sqlSession.update("com.trsystem.mybatis.mapper." + queryIdDropTempTableMatrlCt);
+            logger.info("TemporaryMatrlCt table dropped");			
+			
+			// 재료비 업데이트 쿼리 실행
+			int resultMatrlCt = sqlSession.insert("com.trsystem.mybatis.mapper." + queryIdMatrlCt);
+			logger.info("CT data updated: {} rows", resultCT);
+			
+			
+			
+			
+			
 		
-			return resultMM + resultCT;
+			return resultMM + resultCT + resultMatrlCt;
 		} catch (Exception e) {
 			logger.error("Error during executeCostUpdate", e);
 			throw e;		
