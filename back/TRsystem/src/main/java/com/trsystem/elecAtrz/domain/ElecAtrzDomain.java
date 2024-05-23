@@ -368,14 +368,39 @@ public class ElecAtrzDomain {
 	public static int insertClmAtrzDtl(List<Map<String, Object>> paramList, String elctrnAtrzId) {
 	
 		int result = -1;
-		System.out.println(paramList);
+		
+		List<Map<String, Object>> insertList = new ArrayList<>();
+		Map<String, Object> tbNm = new HashMap<>();
+		
+		tbNm = paramList.get(0);
+		insertList.add(tbNm);
 		
 		for(int i = 1; i < paramList.size(); i++) {
-			paramList.get(i).put("elctrnAtrzId", elctrnAtrzId);
+			Map<String, Object> insertInfo = new HashMap<>();
+			
+			insertInfo.put("elctrnAtrzId", elctrnAtrzId);
+			insertInfo.put("dpstDmndYmd", String.valueOf(paramList.get(i).get("dpstDmndYmd")).equals("") ? null : paramList.get(i).get("dpstDmndYmd"));
+			insertInfo.put("dpstActno", String.valueOf(paramList.get(i).get("dpstActno")).equals("") ? null : paramList.get(i).get("dpstActno"));
+			insertInfo.put("rciptPblcnYmd", String.valueOf(paramList.get(i).get("rciptPblcnYmd")).equals("") ? null : paramList.get(i).get("rciptPblcnYmd"));
+			insertInfo.put("expensCd", String.valueOf(paramList.get(i).get("expensCd")).equals("") ? null : paramList.get(i).get("expensCd"));
+			insertInfo.put("dpstrFlnm", String.valueOf(paramList.get(i).get("dpstrFlnm")).equals("") ? null : paramList.get(i).get("dpstrFlnm"));
+			insertInfo.put("clmAmt", String.valueOf(paramList.get(i).get("clmAmt")).equals("") ? null : paramList.get(i).get("clmAmt"));
+			insertInfo.put("dtlUseDtls", String.valueOf(paramList.get(i).get("dtlUseDtls")).equals("") ? null : paramList.get(i).get("dtlUseDtls"));
+			insertInfo.put("ctStlmSeCd", String.valueOf(paramList.get(i).get("ctStlmSeCd")).equals("") ? null : paramList.get(i).get("ctStlmSeCd"));
+			insertInfo.put("vatInclsAmt", String.valueOf(paramList.get(i).get("vatInclsAmt")).equals("") ? null : paramList.get(i).get("vatInclsAmt"));
+			insertInfo.put("bankCd", String.valueOf(paramList.get(i).get("bankCd")).equals("") ? null : paramList.get(i).get("bankCd"));
+			insertInfo.put("taxBillPblcnYmd", String.valueOf(paramList.get(i).get("taxBillPblcnYmd")).equals("") ? null : paramList.get(i).get("taxBillPblcnYmd"));
+			insertInfo.put("cnptNm", String.valueOf(paramList.get(i).get("cnptNm")).equals("") ? null : paramList.get(i).get("cnptNm"));
+			insertInfo.put("clmPrpos", String.valueOf(paramList.get(i).get("clmPrpos")).equals("") ? null : paramList.get(i).get("clmPrpos"));
+			insertInfo.put("taxAmt", String.valueOf(paramList.get(i).get("taxAmt")).equals("") ? null : paramList.get(i).get("taxAmt"));
+			insertInfo.put("clmAtrzDtlSn", String.valueOf(paramList.get(i).get("clmAtrzDtlSn")).equals("") ? null : paramList.get(i).get("clmAtrzDtlSn"));
+
+			insertList.add(insertInfo);
 		}
 		
+		
 		try {
-			result = commonService.insertData(paramList);
+			result = commonService.insertData(insertList);
 		} catch (Exception e) {
 			return result;
 		}
@@ -1038,5 +1063,107 @@ public class ElecAtrzDomain {
         }
 
         return result;
+    }
+
+    /**
+     * 취소결재용 결재선을 만든다.
+     * @param params
+     * @return 결재라인
+     */
+    public static List<Map<String, Object>> retrieveRtrcnAtrzLn(Map<String, Object> params) {
+    	
+    	List<Map<String, Object>> resultList = new ArrayList<>();
+    	
+    	String elctrnAtrzId = String.valueOf(params.get("elctrnAtrzId"));
+    	String aprvQueryId = "elecAtrzMapper.retrieveAprvAtrzLn";
+
+    	// 승인된 결재라인을 가져온다.
+    	Map<String, Object> aprvMap = new HashMap<>();
+    	aprvMap.put("queryId", aprvQueryId);
+    	aprvMap.put("elctrnAtrzId", elctrnAtrzId);
+    	
+    	List<Map<String, Object>> aprvList = new ArrayList<>();
+    	aprvList = commonService.queryIdSearch(aprvMap);
+    	String atrzStepCd[] = {"VTW00705", "VTW00704", "VTW00703", "VTW00702", "VTW00701"};
+    	
+    	// 승인된 결재라인을 바탕으로 새롭게 결재라인을 생성해준다.
+    	for(int i = 0; i < aprvList.size(); i++) {
+    		
+    		Map<String, Object> resultMap = new HashMap<>();
+    		resultMap.put("empId", aprvList.get(i).get("empId"));
+    		resultMap.put("approvalCode", atrzStepCd[i]);
+    		resultMap.put("atrzStepCdNm", aprvList.get(i).get("atrzStepCdNm"));
+    		resultMap.put("atrzSttsCdNm", aprvList.get(i).get("atrzSttsCdNm"));
+    		resultMap.put("empFlnm", aprvList.get(i).get("empFlnm"));
+    		resultMap.put("jbpsNm", aprvList.get(i).get("jbpsNm"));
+    		resultMap.put("listEmpFlnm", aprvList.get(i).get("listEmpFlnm"));
+    		resultMap.put("mdfcnDt", aprvList.get(i).get("mdfcnDt"));
+    		resultMap.put("atrzOpnnCn", aprvList.get(i).get("atrzOpnnCn"));
+    		resultMap.put("atrzStepCdNm", aprvList.get(i).get("atrzStepCdNm"));
+    		
+    		resultList.add(resultMap);
+    	}
+    	
+    	// 참조/합의 결재선을 가져온다.
+    	String refrnQueryId = "elecAtrzMapper.retrieveRefrnAtrzLn";
+    	
+    	Map<String, Object> refrnMap = new HashMap<>();
+    	refrnMap.put("queryId", refrnQueryId);
+    	refrnMap.put("elctrnAtrzId", elctrnAtrzId);
+    	
+    	List<Map<String, Object>> refrnList = new ArrayList<>();
+    	refrnList = commonService.queryIdSearch(refrnMap);
+    	
+    	for(int i = 0; i < refrnList.size(); i++) {
+    		resultList.add(refrnList.get(i));
+    	}
+    	
+		return resultList;    	
+    	
+    }
+    
+    /**
+     * 결재 취소 혹은 변경결재로 인한 후속조치를 실행하는 메소드
+     * @param params
+     * @return
+     */
+    public static int updateHistElctrnAtrz(Map<String, Object> params) {
+    	
+    	// 0. 결재취소 요청인지 변경결재 요청인지 확인한다.	
+    	String atrzHistSeCd = String.valueOf(params.get("atrzHistSeCd"));			// 취소/변경 구분코드
+    	String histElctrnAtrzId = String.valueOf(params.get("histElctrnAtrzId"));	// 취소/변경 대상 전자결재 ID
+    	String elctrnAtrzTySeCd = String.valueOf(params.get("elctrnAtrzTySeCd"));	// 전자결재 구분코드
+    	
+    	Map<String, Object> tbNm = new HashMap<>();
+    	Map<String, Object> infoMap = new HashMap<>();
+    	Map<String, Object> conditionMap = new HashMap<>();
+    	List<Map<String, Object>> updateParams = new ArrayList<>();
+    	
+    	// 1. 이력 컬럼에 있는 전자결재에 대한 처리
+    	// target table:  ELCTRN_ATRZ
+    	// -> ATRZ_STTS_CD를 VTW03705(취소)로 변경
+
+    	
+    	tbNm.put("tbNm", "ELCTRN_ATRZ");
+    	updateParams.add(0, tbNm);
+    	
+    	infoMap.put("atrzSttsCd", histElctrnAtrzId);
+    	conditionMap.put("elctrnAtrzId", updateParams);
+    	
+    	commonService.updateData(updateParams);
+    	
+    	updateParams.clear();
+    	tbNm.clear();
+    	infoMap.clear();
+    	conditionMap.clear();
+    	
+    	// 2. 청구결재의 경우 해당 전자결재아이디로 PRJCT_CT_APLY를 조회한 뒤,(1건이 나올 것으로 기대함)
+    	// 이 경우, 결재중인 전자결재를 결채취소 요청한 경우에는 response가 0일 것임. -> 예외처리
+    	
+    	// 조회한 프로젝트 아이디, 차수, EMP_ID, 순번을 통해서 PRJCT_CT_ATRZ를 취소로 변경한다. 
+    	
+    	// 3. 지급결재의 경우? To do
+    	
+    	return 0;
     }
 }  

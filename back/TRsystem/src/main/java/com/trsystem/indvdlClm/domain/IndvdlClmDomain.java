@@ -342,43 +342,49 @@ public class IndvdlClmDomain {
 
     /* =================================박지환_작업================================= */
     // 프로젝트근무시간임시저장
-    public static List<Map<String, Object>> insertPrjctMmAplyTemp
-    (List<Map<String, Object>> insertPrjctMmTempListValue) {
+    @Transactional
+    public static String insertPrjctMmAplyTemp(List<Map<String, Object>> insertPrjctMmTempListValue) {
         // PRJCT_INDVDL_CT_MM(프로젝트개인비용MM) INSERT/UPDATE
         for (Map<String, Object> insertPrjctMmTempMap : insertPrjctMmTempListValue) {
             Map<String, Object> mergePrjctIndvdlCtMmMap = new HashMap<>();
             mergePrjctIndvdlCtMmMap = insertPrjctMmTempMap;
             mergePrjctIndvdlCtMmMap.put("queryId", "indvdlClmMapper.mergePrjctIndvdlCtMmStrg");
-            List<Map<String, Object>> mergePrjctIndvdlCtMmData = commonService.queryIdSearch(mergePrjctIndvdlCtMmMap);
+            mergePrjctIndvdlCtMmMap.put("state", "INSERT");
+            commonService.queryIdDataControl(mergePrjctIndvdlCtMmMap);
         }
-
 
         for (Map<String, Object> insertPrjctMmTempMap : insertPrjctMmTempListValue) {
             Map<String, Object> insertPrjctMmAplyMap = new HashMap<>();
             insertPrjctMmAplyMap = insertPrjctMmTempMap;
             insertPrjctMmAplyMap.put("queryId", "indvdlClmMapper.insertPrjctMmAplyStrg");
-            List<Map<String, Object>> insertPrjctMmAplyResult = commonService.queryIdSearch(insertPrjctMmAplyMap);
+            insertPrjctMmAplyMap.put("state", "INSERT");
+            commonService.queryIdDataControl(insertPrjctMmAplyMap);
 
             Map<String, Object> insertPrjctMmAtrzMap = new HashMap<>();
             insertPrjctMmAtrzMap = insertPrjctMmTempMap;
             insertPrjctMmAtrzMap.put("queryId", "indvdlClmMapper.insertPrjctMmAtrzStrg");
-            List<Map<String, Object>> insertPrjctMmAtrzResult = commonService.queryIdSearch(insertPrjctMmAtrzMap);
+            insertPrjctMmAtrzMap.put("state", "INSERT");
+            commonService.queryIdDataControl(insertPrjctMmAtrzMap);
         }
+
         return null;
     }
 
     // 프로젝트근무시간삭제
+    @Transactional
     public static List<Map<String, Object>> deletePrjctMmAply(List<Map<String, Object>> deletePrjctMmListValue) {
         for (Map<String, Object> deletePrjctMmAtrzParam : deletePrjctMmListValue) {
             Map<String, Object> deletePrjctMmAtrzMap = new HashMap<>();
             deletePrjctMmAtrzMap = deletePrjctMmAtrzParam;
             deletePrjctMmAtrzMap.put("queryId", "indvdlClmMapper.deletePrjctMmAtrz");
-            List<Map<String, Object>> deletePrjctMmAtrzResult = commonService.queryIdSearch(deletePrjctMmAtrzMap);
+            deletePrjctMmAtrzMap.put("state", "DELETE");
+            commonService.queryIdDataControl(deletePrjctMmAtrzMap);
 
             Map<String, Object> deletePrjctMmAplyMap = new HashMap<>();
             deletePrjctMmAplyMap = deletePrjctMmAtrzParam;
             deletePrjctMmAplyMap.put("queryId", "indvdlClmMapper.deletePrjctMmAply");
-            List<Map<String, Object>> deletePrjctMmAplyResult = commonService.queryIdSearch(deletePrjctMmAplyMap);
+            deletePrjctMmAplyMap.put("state", "DELETE");
+            commonService.queryIdDataControl(deletePrjctMmAplyMap);
         }
 
         return null;
@@ -386,16 +392,15 @@ public class IndvdlClmDomain {
 
 
     // 프로젝트근무시간승인요청
-    public static List<Map<String, Object>> insertPrjctMmAply
-    (List<Map<String, Object>> insertWorkHourListValue) {
-        int result;
-
+    @Transactional
+    public static List<Map<String, Object>> insertPrjctMmAply (List<Map<String, Object>> insertWorkHourListValue) {
         for (Map<String, Object> updateWorkHourMap : insertWorkHourListValue) {
             Map<String, Object> updatePrjctMmAtrzMap = new HashMap<>();
             updatePrjctMmAtrzMap = updateWorkHourMap;
             updatePrjctMmAtrzMap.put("queryId", "indvdlClmMapper.retrievePrjctMmSttsInq");
             updatePrjctMmAtrzMap.put("atrzDmndSttsCd", "VTW03702");
-            List<Map<String, Object>> updatePrjctMmAtrzResult = commonService.queryIdSearch(updatePrjctMmAtrzMap);
+            updatePrjctMmAtrzMap.put("state", "UPDATE");
+            commonService.queryIdDataControl(updatePrjctMmAtrzMap);
         }
 
         return null;
@@ -412,18 +417,6 @@ public class IndvdlClmDomain {
             updatePrjctMmAtrzMap.put("atrzDmndSttsCd", "VTW03701");
             List<Map<String, Object>> updatePrjctMmAtrzResult = commonService.queryIdSearch(updatePrjctMmAtrzMap);
         }
-
-//        for(int i = 0; i < params.size(); i++){
-//            Map<String, Object> updatePrjctMmAtrzMap = new HashMap<>();
-//            updatePrjctMmAtrzMap = params.get(i);
-//            updatePrjctMmAtrzMap.put("queryId", "indvdlClmMapper.retrievePrjctMmSttsInq");
-//            List<Map<String, Object>> updatePrjctMmAtrzResult = commonService.queryIdSearch(updatePrjctMmAtrzMap);
-//        }
-//
-//        Map<String, Object> updatePrjctIndvdlCtMmMap = new HashMap<>();
-//        updatePrjctIndvdlCtMmMap.putAll(params.get(0));
-//        updatePrjctIndvdlCtMmMap.put("queryId", "indvdlClmMapper.updatePrjctIndvdlCtMm");
-//        List<Map<String, Object>> updatePrjctIndvdlCtMmResult = commonService.queryIdSearch(updatePrjctIndvdlCtMmMap);
 
         return null;
     }
@@ -590,7 +583,7 @@ public class IndvdlClmDomain {
             String refSolYear = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy"));
 
             insertElctrnMap.put("elctrnAtrzId", elctrnAtrzValue);
-            insertElctrnMap.put("atrzFormDocId", "9632d577-f0bd-11ee-9b25-000c2956283f");
+            insertElctrnMap.put("atrzFormDocId", "2d90b8ef-132a-11ef-bf20-02a5fafa82da");
             insertElctrnMap.put("nowAtrzLnSn", "1");
             insertElctrnMap.put("elctrnAtrzDocNo", refSolYear + "-01-" + (Integer.parseInt(String.valueOf(selectElctrnAtrzResult.size())) + 1));
             insertElctrnList.add(0, elctrnTbMap);
@@ -911,9 +904,9 @@ public class IndvdlClmDomain {
         insertElctrnAtrzMapValue.put("regEmpId", insertDataMapValue.get("empId"));
         insertElctrnAtrzMapValue.put("mdfcnEmpId", insertDataMapValue.get("empId"));
         insertElctrnAtrzMapValue.put("elctrnAtrzTySeCd", "VTW04915");
-        insertElctrnAtrzMapValue.put("atrzFormDocId", "9632d577-f0bd-11ee-9b25-000c2956283f");
+        insertElctrnAtrzMapValue.put("atrzFormDocId", "901c0b88-21b9-d716-b2c2-c1f7c2b10fc4");
         insertElctrnAtrzMapValue.put("elctrnAtrzDocNo", refSolYear + "-15-" + (Integer.parseInt(String.valueOf(selectElctrnAtrzResult.size())) + 1));
-        insertElctrnAtrzMapValue.put("rtrcnElctrnAtrzId", insertDataMapValue.get("rtrcnElctrnAtrzId"));
+        insertElctrnAtrzMapValue.put("histElctrnAtrzId", insertDataMapValue.get("histElctrnAtrzId"));
 
         // VCATN_ATRZ(휴가결재저장)
         insertVactnAtrzMapValue.put("elctrnAtrzId", insertDataMapValue.get("elctrnAtrzId"));
@@ -971,7 +964,7 @@ public class IndvdlClmDomain {
 
         Map<String, Object> updateElctrnAtrz = new HashMap<>();
         updateElctrnAtrz.put("queryId", "indvdlClmMapper.updateElctrnAtrzCncl");
-        updateElctrnAtrz.put("elctrnAtrzId", insertDataMapValue.get("rtrcnElctrnAtrzId"));
+        updateElctrnAtrz.put("elctrnAtrzId", insertDataMapValue.get("histElctrnAtrzId"));
 
         commonService.queryIdSearch(updateElctrnAtrz);
         commonService.insertData(insertElctrnAtrzList);
@@ -998,8 +991,9 @@ public class IndvdlClmDomain {
         int caseFlag = 0;
         String empId = (String) params.get("empId");
         String elctrnAtrzId = (String) params.get("elctrnAtrzId");
-        String rtrcnElctrnAtrzId = (String) params.get("rtrcnElctrnAtrzId");
+        String histElctrnAtrzId = (String) params.get("histElctrnAtrzId");
         String atrzStepCd = (String) params.get("atrzStepCd");
+        String mdfcnEmpId = (String) params.get("mdfcnEmpId");
 
         // 결재 승인 paramList
         List<Map<String, Object>> aprvParamList = new ArrayList<>();
@@ -1013,7 +1007,7 @@ public class IndvdlClmDomain {
             put("tbNm", "VCATN_ATRZ");
         }});
         selectElctrnAtrzList.add(1, new HashMap<>() {{
-            put("elctrnAtrzId", rtrcnElctrnAtrzId);
+            put("elctrnAtrzId", histElctrnAtrzId);
         }});
 
         List<Map<String, Object>> selectElctrnAtrzListResult = commonService.commonSelect(selectElctrnAtrzList);
@@ -1062,7 +1056,7 @@ public class IndvdlClmDomain {
         updateVcatnMngMap.put("queryId", "indvdlClmMapper.updateVcatnAltmntMngCnclMdfcn");
         updateVcatnMngMap.put("empId", empId);
         updateVcatnMngMap.put("vcatnYr", vcatnYr);
-//        updateVcatnMngMap.put("mdfcnEmpId", "세션ID넣어주세요");
+        updateVcatnMngMap.put("mdfcnEmpId", mdfcnEmpId);
         updateVcatnMngMap.put("state", "UPDATE");
 
 
@@ -1070,7 +1064,7 @@ public class IndvdlClmDomain {
         Map<String, Object> updateNewVcatnMngMap = new HashMap<>();
         updateNewVcatnMngMap.put("queryId", "indvdlClmMapper.updateNewVcatnAltmntMngCnclMdfcn");
         updateNewVcatnMngMap.put("empId", empId);
-//        updateNewVcatnMngMap.put("mdfcnEmpId", "세션ID넣어주세요");
+        updateNewVcatnMngMap.put("mdfcnEmpId", mdfcnEmpId);
         updateNewVcatnMngMap.put("state", "UPDATE");
 
 
@@ -1082,7 +1076,7 @@ public class IndvdlClmDomain {
         // 공가인경우
         if (selectElctrnAtrzListResult.get(0).get("vcatnTyCd").equals("VTW01204") || selectElctrnAtrzListResult.get(0).get("vcatnTyCd").equals("VTW01205") || selectElctrnAtrzListResult.get(0).get("vcatnTyCd").equals("VTW01207") || selectElctrnAtrzListResult.get(0).get("vcatnTyCd").equals("VTW01208")) {
             caseFlag = 1;
-            updateVcatnMngMap.put("pblenVcatnUseDaycnt", selectElctrnAtrzListResult.get(0).get("vcatnDeCnt"));
+            updateVcatnMngMap.put("newPblenVcatnUseDaycnt", selectElctrnAtrzListResult.get(0).get("vcatnDeCnt"));
         }
         // case_B
         // 공가가아닌경우

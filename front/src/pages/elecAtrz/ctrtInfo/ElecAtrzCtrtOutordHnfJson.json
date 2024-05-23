@@ -12,10 +12,10 @@
         { "key": "hnfGradCdNm", "value": "등급", "width": "5%" },
         { "key": "tkcgJob", "value": "담당업무", "width": "7%" },
         { "key": "untpc", "value": "단가", "currency": true, "width": "10%"},
-        { "key": "inptPrnmntYmd", "value": "투입시작일", "dateFormat": true, "width": "8%"},
-        { "key": "withdrPrnmntYmd", "value": "투입종료일", "dateFormat": true, "width": "8%"},
-        {  "value": "수정", "width": "5%", "button": {"text" : "수정", "name" : "update"} },
-        {  "value": "삭제", "width": "5%", "button": {"text" : "삭제", "name" : "delete"} } 
+        { "key": "inptPrnmntYmd", "value": "투입시작일", "dateFormat": true, "width": "7%"},
+        { "key": "withdrPrnmntYmd", "value": "투입종료일", "dateFormat": true, "width": "7%"},
+        {  "value": "수정", "width": "6%", "button": {"text" : "수정", "name" : "update"} },
+        {  "value": "삭제", "width": "6%", "button": {"text" : "삭제", "name" : "delete"} } 
   ],
   "summaryColumn": [
         {

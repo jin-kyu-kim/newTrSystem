@@ -72,6 +72,7 @@ const AutoCompleteProject = ({ placeholderText, onValueChange, sttsBoolean }) =>
       dataSource={suggestionsData}
       valueExpr="key"
       displayExpr="value"
+      showClearButton={true}
       // onValueChanged={handleSelectChange(e)}
       onValueChange={(e) => {
         const selectItemValue = [];

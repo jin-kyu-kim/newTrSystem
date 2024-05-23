@@ -20,6 +20,8 @@ const token = localStorage.getItem("token");
 const EmpVacationCanclePopup = ({ width, height, visible, dataMap, empId, onHiding, title }) => {
     const { handleOpen } = useModal();
 
+    const [loading, setLoading] = useState(false);
+
     useEffect(() => {
         getElctrnAtrz();
         getAtrzLn();
@@ -130,7 +132,7 @@ const EmpVacationCanclePopup = ({ width, height, visible, dataMap, empId, onHidi
         const formData = new FormData();
 
         formData.append("insertDataMap", JSON.stringify(
-            { empId: empId, elctrnAtrzId: elctrnAtrzId, rtrcnElctrnAtrzId: dataMap.elctrnAtrzId, rtrcnPrvonsh: rtrcnPrvonsh.current },
+            { empId: empId, elctrnAtrzId: elctrnAtrzId, histElctrnAtrzId: dataMap.elctrnAtrzId, rtrcnPrvonsh: rtrcnPrvonsh.current },
         ));
 
         formData.append("insertElctrnAtrzMap", JSON.stringify(selectElctrnAtrzValue[0]));
@@ -139,18 +141,26 @@ const EmpVacationCanclePopup = ({ width, height, visible, dataMap, empId, onHidi
         formData.append("insertRefrnManList", JSON.stringify(selectRefrnManList));
 
         try {
+            setLoading(true)
             const response = await axios.post("/boot/indvdlClm/reInsertVcatnAtrz", formData, {
                 headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
             });
-            handleOpen("취소요청되었습니다.")
             onHiding(false);
+            handleOpen("취소요청되었습니다.")
         } catch (error) {
-            console.log("insertVcatnAtrz_error : ", error);
+            handleOpen("취소요청에 실패했습니다.")
+        } finally {
+            setLoading(false);
         }
     }
 
     return (
         <>
+            {loading && (
+                <div className="loading-overlay">
+                    <div style={{fontWeight: "bold", transform: "translate(0px, -250px)"}}> 요청 중입니다... </div>
+                </div>
+            )}
             <Popup
                 width={width}
                 height={height}

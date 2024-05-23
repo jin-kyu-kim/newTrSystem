@@ -33,18 +33,18 @@
             ,ELCTRN.ELCTRN_ATRZ_ID		    /* 전자결재ID */
             ,ELCTRN.PRJCT_ID 				/* 프로젝트ID */
             ,VCATN.ATCHMNFL_ID				/* 첨부파일ID */
-            ,ELCTRN.RTRCN_ELCTRN_ATRZ_ID	/* 취소전자결재ID */
+            ,ELCTRN.HIST_ELCTRN_ATRZ_ID	/* 취소전자결재ID */
             ,CASE
                 WHEN VCATN.VCATN_TY_CD NOT IN('VTW01204', 'VTW01207', 'VTW01208', 'VTW01209')  THEN 'FALSE'
-                WHEN ELCTRN.RTRCN_ELCTRN_ATRZ_ID IS NOT NULL THEN 'FALSE'
+                WHEN ELCTRN.HIST_ELCTRN_ATRZ_ID IS NOT NULL THEN 'FALSE'
                 WHEN ELCTRN.ATRZ_DMND_STTS_CD = 'VTW03704' THEN 'FALSE'
                 WHEN ELCTRN.ATRZ_DMND_STTS_CD = 'VTW03705' THEN 'FALSE'
                 WHEN VCATN.VCATN_TY_CD = 'VTW01206' THEN 'FALSE'
                 ELSE 'TRUE'
                 END ATTACH_BUTTON_CTR
             ,CASE
-                WHEN (SELECT ATRZ.RTRCN_ELCTRN_ATRZ_ID FROM ELCTRN_ATRZ ATRZ WHERE ATRZ.RTRCN_ELCTRN_ATRZ_ID = VCATN.ELCTRN_ATRZ_ID) IS NOT NULL THEN 'FALSE'
-                WHEN ELCTRN.RTRCN_ELCTRN_ATRZ_ID IS NOT NULL THEN 'FALSE'
+                WHEN (SELECT ATRZ.HIST_ELCTRN_ATRZ_ID FROM ELCTRN_ATRZ ATRZ WHERE ATRZ.HIST_ELCTRN_ATRZ_ID = VCATN.ELCTRN_ATRZ_ID) IS NOT NULL THEN 'FALSE'
+                WHEN ELCTRN.HIST_ELCTRN_ATRZ_ID IS NOT NULL THEN 'FALSE'
                 WHEN ELCTRN.ATRZ_DMND_STTS_CD = 'VTW03704' THEN 'FALSE'
                 WHEN VCATN.VCATN_TY_CD = 'VTW01206' THEN 'FALSE'
                 ELSE 'TRUE'
@@ -313,6 +313,9 @@
         </if>
         <if test="state == 'approval' or state.equals('approval')">
             AND EMP.EMPNO IN ('VK0011')
+        </if>
+        <if test="state == 'elecRef' or state.equals('elecRef')">
+            AND EMP.EMPNO IN ('VK1434', 'VK1453', 'VK1021')
         </if>
         ORDER BY EMPNO
     </select>

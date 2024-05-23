@@ -176,10 +176,11 @@
       "placeholder": "\"[\"입력시 사용가능한 프로젝트 전체 조회",
       "param": {
         "queryId" : {
-          "queryId": "commonMapper.autoCompleteProject"
+          "queryId": "commonMapper.autoCompleteProject",
+          "bizSttsCd": "VTW00402"
         },
         "valueExpr" : "prjctId",
-        "displayExpr": "prjctNm",
+        "displayExpr": "prjctTag",
         "name": "prjctId",
         "values": [ "prjctId", "prjctMngrEmpId", "prjctStleCd" ]
       },

@@ -13,15 +13,25 @@ const ElecAtrz = () => {
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const empId = userInfo.empId;
   const { keyColumn, queryId, countQueryId, barList, searchInfo, baseColumns } = elecAtrzJson.elecMain;
-  const [param, setParam] = useState({});
-  const [clickBox, setClickBox] = useState(null);
-  const [titleRow, setTitleRow] = useState([]);
-  const [totalCount, setTotalCount] = useState([]);
-  const [selectedList, setSelectedList] = useState([]);
+  const [ param, setParam ] = useState({});
+  const [ clickBox, setClickBox ] = useState(null);
+  const [ titleRow, setTitleRow ] = useState([]);
+  const [ totalCount, setTotalCount ] = useState([]);
+  const [ selectedList, setSelectedList ] = useState([]);
 
   const onNewReq = async () => {
     navigate("../elecAtrz/ElecAtrzForm");
   };
+
+  useEffect(() => {
+    setParam({
+      queryId: queryId,
+      empId: empId,
+      refer: null,
+      sttsCd: 'VTW00801'
+    })
+    setTitleRow(baseColumns.concat(elecAtrzJson.elecMain['progressApproval']))
+  }, []);
 
   useEffect(() => {
     const getAtrz = async () => {
@@ -29,6 +39,8 @@ const ElecAtrz = () => {
         const response = await ApiRequest('/boot/common/queryIdSearch', param)
         if (response) {
           setSelectedList(response)
+        } else{
+          setSelectedList([])
         }
       } catch (error) {
         console.log('error', error)
@@ -99,15 +111,20 @@ const ElecAtrz = () => {
   };
 
   const sendDetail = (e, param) => {
-
-    if (e.data.atrzDmndSttsCd === 'VTW03701') {  //임시저장
-      navigate('/elecAtrz/ElecAtrzNewReq', { state: { formData: e.data, sttsCd: param.sttsCd, prjctId: e.data.prjctId } });
+    if(e.event.target.className === "dx-button-content" || e.event.target.className === "dx-button-text") {
+      return;
     } else {
-      navigate('/elecAtrz/ElecAtrzDetail', { state: { data: e.data, sttsCd: param.sttsCd, prjctId: e.data.prjctId } });
+      if (e.data.atrzDmndSttsCd === 'VTW03701') {  //임시저장
+        navigate('/elecAtrz/ElecAtrzNewReq', { state: { formData: e.data, sttsCd: param.sttsCd, prjctId: e.data.prjctId } });
+      } else {
+        navigate('/elecAtrz/ElecAtrzDetail', { state: { data: e.data, sttsCd: param.sttsCd, prjctId: e.data.prjctId, refer: param.refer } });
+      }
     }
+
   };
 
   const onClickBtn = async (button, data) => {
+    console.log('button', button)
     if(button.name === 'delete'){
       const res = await ApiRequest('/boot/elecAtrz/deleteTempAtrz', {
         elctrnAtrzId: data.elctrnAtrzId, atrzTySeCd: data.elctrnAtrzTySeCd
@@ -117,7 +134,7 @@ const ElecAtrz = () => {
   }
 
   return (
-    <div>
+    <div style={{marginBottom: '10%'}}>
       <div className="title p-1" style={{ marginTop: "10px", marginBottom: "10px" }} ></div>
       <div className="col-md-10 mx-auto" style={{ marginBottom: "15px", display: 'flex' }}>
         <h3 style={{ marginRight: '50px' }}>전자결재</h3>

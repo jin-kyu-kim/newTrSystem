@@ -3,7 +3,7 @@ import { FormControl, InputLabel, Select, MenuItem, TextField, Button, Grid, Tab
 import { DateBox } from "devextreme-react/date-box";
 import ApiRequest from "utils/ApiRequest";
 
-const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
+const ExpensInfo = ({ onSendData, prjctId, prjctData, data, sttsCd}) => {
 
     const [ctStlmSeCdList, setCtStlmSeCdList] = useState([]);
     const [bankCdList, setBankCdList] = useState([]);
@@ -68,7 +68,7 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
     const [forms, setForms] = useState([]);
 
     useEffect(() => {
-        if (data.atrzDmndSttsCd === "VTW03701") {
+        if (data.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407" || sttsCd === "VTW05405" ) {
             getTempData();
 
         } else if (data.selectedData) {
@@ -395,6 +395,7 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
                                                 value={forms[index].ctStlmSeCd}
                                                 onChange={(e) => handleInputChange(e, index, "ctStlmSeCd")}
                                                 fullWidth
+                                                readOnly={sttsCd === "VTW05405" ? true : false}
                                             >
                                                 {ctStlmSeCdList.map((item, index) => (
                                                     <MenuItem key={index} value={item.cdValue}>
@@ -414,6 +415,7 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
                                             value={forms[index].ctStlmSeCd !== "VTW01904" ? forms[index].rciptPblcnYmd : forms[index].taxBillPblcnYmd}
                                             onValueChanged={(e) => handleDateChange(e.value, index, forms[index].ctStlmSeCd !== "VTW01904" ? "rciptPblcnYmd" : "taxBillPblcnYmd")}
                                             width="100%"
+                                            readOnly={sttsCd === "VTW05405" ? true : false}
                                         />
                                     </Grid>
                                     <Grid item xs={3}>
@@ -425,6 +427,7 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
                                             variant="outlined"
                                             value={forms[index].dtlUseDtls}
                                             onChange={(e) => handleInputChange(e, index, "dtlUseDtls")}
+                                            disabled={sttsCd === "VTW05405" ? true : false}
                                         />
                                     </Grid>
                                     <Grid item xs={1.1}>
@@ -438,6 +441,7 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
                                                 parseInt(forms[index].clmAmt) === NaN ? 0 : parseInt(forms[index].clmAmt).toLocaleString()
                                             }
                                             onChange={(e) => handleNumberInputChange(e, index, "clmAmt")}
+                                            disabled={sttsCd === "VTW05405" ? true : false}
                                         />
                                     </Grid>
                                     <Grid item xs={1.1}>
@@ -453,12 +457,13 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
                                                     parseInt(forms[index].vat) === NaN ? 0 : parseInt(forms[index].vat).toLocaleString()
                                                 }
                                                 onChange={(e) => handleNumberInputChange(e, index, "vat")}
+                                                disabled={sttsCd === "VTW05405" ? true : false}
                                             /> 
                                             : 
                                             <Button
                                             variant="contained"
                                             style={{marginTop: "10px", width:"100%"}}
-                                            disabled={!["VTW01904", "VTW01905", "VTW01906"].includes(forms[index].ctStlmSeCd)}
+                                            disabled={sttsCd === "VTW05405" ? true : !["VTW01904", "VTW01905", "VTW01906"].includes(forms[index].ctStlmSeCd)}
                                             onClick={() => onCalVat(index)}
                                             >
                                                 {forms[index].ctStlmSeCd === "VTW01905" ? "-3.3%" : 
@@ -478,7 +483,7 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
                                                 parseInt(forms[index].vatInclsAmt) === NaN ? 0 : parseInt(forms[index].vatInclsAmt).toLocaleString()
                                             }
                                             onChange={(e) => handleNumberInputChange(e, index, "vatInclsAmt")}
-                                            disabled={!["VTW01904", "VTW01905", "VTW01906"].includes(forms[index].ctStlmSeCd)}
+                                            disabled={sttsCd === "VTW05405" ? true : !["VTW01904", "VTW01905", "VTW01906"].includes(forms[index].ctStlmSeCd)}
                                         />
                                     </Grid>
                                     <Grid item xs={2}>
@@ -490,7 +495,7 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
                                             dateSerializationFormat="yyyyMMdd"
                                             value={forms[index].dpstDmndYmd}
                                             onValueChanged={(e) => handleDateChange(e.value, index, "dpstDmndYmd")}
-                                            disabled={!["VTW01904", "VTW01905", "VTW01906"].includes(forms[index].ctStlmSeCd)}
+                                            disabled={sttsCd === "VTW05405" ? true : !["VTW01904", "VTW01905", "VTW01906"].includes(forms[index].ctStlmSeCd)}
                                         />
                                     </Grid>
                                 </Grid>
@@ -512,6 +517,7 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
                                                         },
                                                     },
                                                 }}
+                                                readOnly={sttsCd === "VTW05405" ? true : false}
                                             >
                                                 {expensCdList.map((item, index) => (
                                                     <MenuItem key={index} value={item.expensCd}>{item.cdNm}</MenuItem>
@@ -528,6 +534,7 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
                                             variant="outlined"
                                             value={forms[index].cnptNm}
                                             onChange={(e) => handleInputChange(e, index, "cnptNm")}
+                                            disabled={sttsCd === "VTW05405" ? true : false}
                                         />
                                     </Grid>
                                     <Grid item xs={3}>
@@ -539,6 +546,7 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
                                             variant="outlined"
                                             value={forms[index].clmPrpos}
                                             onChange={(e) => handleInputChange(e, index, "clmPrpos")}
+                                            disabled={sttsCd === "VTW05405" ? true : false}
                                         />
                                     </Grid>
                                     <Grid item xs={1.5}>
@@ -557,7 +565,7 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
                                                         },
                                                     },
                                                 }}
-
+                                                readOnly={sttsCd === "VTW05405" ? true : false}
                                             >
                                                 {bankCdList.map((item, index) => (
                                                     <MenuItem key={index} value={item.cdValue}>{item.cdNm}</MenuItem>
@@ -574,7 +582,7 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
                                             variant={!["VTW01904", "VTW01905", "VTW01906"].includes(forms[index].ctStlmSeCd) ? "filled" : "outlined"}
                                             value={forms[index].dpstrFlnm}
                                             onChange={(e) => handleInputChange(e, index, "dpstrFlnm")}
-                                            disabled={!["VTW01904", "VTW01905", "VTW01906"].includes(forms[index].ctStlmSeCd)}
+                                            disabled={sttsCd === "VTW05405" ? true : !["VTW01904", "VTW01905", "VTW01906"].includes(forms[index].ctStlmSeCd)}
                                         />
                                     </Grid>
                                     <Grid item xs={2}>
@@ -586,7 +594,7 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
                                             variant={!["VTW01904", "VTW01905", "VTW01906"].includes(forms[index].ctStlmSeCd) ? "filled" : "outlined"}
                                             value={forms[index].dpstActno}
                                             onChange={(e) => handleInputChange(e, index, "dpstActno")}
-                                            disabled={!["VTW01904", "VTW01905", "VTW01906"].includes(forms[index].ctStlmSeCd)}
+                                            disabled={sttsCd === "VTW05405" ? true : !["VTW01904", "VTW01905", "VTW01906"].includes(forms[index].ctStlmSeCd)}
                                         />
                                     </Grid>
                                 </Grid>
@@ -599,6 +607,7 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
                                     color="primary"
                                     style={{ marginTop: "10px", marginRight: "10px", marginBottom: "10px" }}
                                     onClick={addForm}
+                                    disabled={sttsCd === "VTW05405" ? true : false}
                                 >
                                     추가
                                 </Button>
@@ -608,6 +617,7 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data }) => {
                                 color="secondary"
                                 style={{ marginTop: "10px", marginBottom: "10px" }}
                                 onClick={() => removeForm(form)}
+                                disabled={sttsCd === "VTW05405" ? true : false}
                             >
                                 삭제
                             </Button>

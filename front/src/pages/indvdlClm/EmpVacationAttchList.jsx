@@ -1,25 +1,29 @@
 import { useState, useEffect } from "react";
 import { Popup, FileUploader, Button } from "devextreme-react";
-import ApiRequest from "../../utils/ApiRequest";
-import { gridColumnLookupSelector } from "@mui/x-data-grid";
+
+// 랜덤채번 import
+import uuid from "react-uuid";
+
+import ApiRequest from "utils/ApiRequest";
+import { useModal } from "components/unit/ModalContext";
+
+import axios from "axios";
 
 const EmpVacationAttchList = ({ visible, attachId, onHiding, elctrnAtrzId }) => {
-    const [attachListValue, setAttachListValue] = useState([]);
+    const { handleOpen } = useModal();
 
-    const [insertAttachListValue, setInsertAttachListValue] = useState();
-    const [deleteAttachListValue, setDeleteAttachListValue] = useState();
-
+    // 첨부파일조회
     useEffect(() => {
         selectData();
     }, [])
 
     // 첨부파일조회
+    const [attachListValue, setAttachListValue] = useState([]);
+
+    // 첨부파일조회
     const selectData = async () => {
         try {
-            // const response = await ApiRequest("/boot/common/queryIdSearch", { queryId: "indvdlClmMapper.retrieveAtchmnflInq", atchmnflId: attachId });
-            const response = await ApiRequest('/boot/common/commonSelect', [
-                { tbNm: "ATCHMNFL" }, { atchmnflId: attachId }
-            ]);
+            const response = await ApiRequest('/boot/common/commonSelect', [ { tbNm: "ATCHMNFL" }, { atchmnflId: attachId } ]);
             setAttachListValue(response);
         } catch (error) {
             console.log("selectData_error : ", error);
@@ -27,43 +31,98 @@ const EmpVacationAttchList = ({ visible, attachId, onHiding, elctrnAtrzId }) => 
     };
 
 
+
+
+    // 첨부파일저장
+    const [insertAttachListValue, setInsertAttachListValue] = useState();
+
+    // 첨부파일삭제
+    const [deleteAttachListValue, setDeleteAttachListValue] = useState([{tbNm: "ATCHMNFL"}]);
+
+
+
+
+    
+    function changeAttchValue(e) {
+        setInsertAttachListValue(e.value);
+    }
+
+
+
+
+
+    // 첨부파일삭제
     function onDelete(attachValue) {
         let existAttachList = attachListValue.filter(item => item.atchmnflSn != attachValue.atchmnflSn);
-        let deleteAttachList = attachListValue.filter(item => item.atchmnflSn == attachValue.atchmnflSn);
+        let deleteAttachList = attachListValue.filter(item => item.atchmnflSn == attachValue.atchmnflSn)[0];
         setAttachListValue(existAttachList);
-        setDeleteAttachListValue([{tbNm: "ATCHMNFL"}], deleteAttachList);
+        setInsertAttachListValue(existAttachList);
+
+        let deleteData = [
+            { tbNm: "ATCHMNFL" }, 
+            { atchmnflId: deleteAttachList.atchmnflId ,atchmnflSn: deleteAttachList.atchmnflSn, strgFileNm: deleteAttachList.strgFileNm }
+        ];
+
+        onDeleteClick(deleteData);
     }
 
-    function changeAttchValue(e) {
-        // console.log(e);
-    }
-
-    function onSaveClick(){
+    // 첨부파일삭제
+    const onDeleteClick = async (deleteData) => {
         const formData = new FormData();
 
         formData.append("tbNm", JSON.stringify({tbNm: "VCATN_ATRZ"}));
         formData.append("idColumn", JSON.stringify({elctrnAtrzId: elctrnAtrzId}));
+        formData.append("deleteFiles", JSON.stringify(deleteData));
 
-        // case_1)
-        // 첨부파일 신규등록
-
-        // case_2)
-        // 기존 첨부파일 전체삭제
-
-        // case_3)
-        // 첨부파일 추가등록
-
-        // case_4)
-        // 기존 첨부파일 삭제 및 신규첨부파일 등록
+        if(insertAttachListValue && insertAttachListValue.length > 0 ) Object.values(insertAttachListValue).forEach((insertAttachList) => formData.append("attachments", insertAttachList));
 
         if(attachId){
-            formData.append("deleteFiles", JSON.stringify(deleteAttachListValue));
+            formData.append("data", JSON.stringify({atchmnflId: attachId}));
         } else {
-            formData.append("data", JSON.stringify());
+            formData.append("data", JSON.stringify({atchmnflId : uuid()}));
+        }
+
+        const responseAttach = await axios.post("/boot/common/insertlongText", formData, {
+            headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${localStorage.getItem("token")}` },
+        });
+    }
+
+
+
+
+
+    // 첨부파일저장
+    const onSaveClick = async () => {
+        const formData = new FormData();
+
+        formData.append("tbNm", JSON.stringify({tbNm: "VCATN_ATRZ"}));
+        formData.append("idColumn", JSON.stringify({elctrnAtrzId: elctrnAtrzId}));
+        formData.append("deleteFiles", JSON.stringify(deleteAttachListValue));
+
+        try{
+            if(insertAttachListValue && insertAttachListValue.length > 0 ) Object.values(insertAttachListValue).forEach((insertAttachList) => formData.append("attachments", insertAttachList));
+
+            if(attachId){
+                formData.append("data", JSON.stringify({atchmnflId: attachId}));
+            } else {
+                formData.append("data", JSON.stringify({atchmnflId : uuid()}));
+            }
+
+            const responseAttach = await axios.post("/boot/common/insertlongText", formData, {
+                headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${localStorage.getItem("token")}` },
+            });
+            handleOpen("저장되었습니다.")
+            onHiding(false)
+        } catch {
+            handleOpen("저장에 실패했습니다.")
         }
     }
 
 
+
+
+
+    // 화면렌더링
     function createRenderData() {
         const renderData = [];
         
@@ -105,10 +164,7 @@ const EmpVacationAttchList = ({ visible, attachId, onHiding, elctrnAtrzId }) => 
                 showCloseButton={true}
                 contentRender={createRenderData}
                 title={"전자결재 파일 첨부"}
-                onHiding={() => {
-                    onHiding(false);
-                }}
-
+                onHiding={() => { onHiding(false) }}
             />
         </div>
     )
