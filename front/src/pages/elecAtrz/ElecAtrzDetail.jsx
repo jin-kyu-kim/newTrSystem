@@ -339,7 +339,7 @@ const ElecAtrzDetail = () => {
                     }
 
                     // 1. 이력 컬럼에 있는 전자결재에 대한 처리 -> 
-                    // const response = await ApiRequest("/boot/elecAtrz/updateHistElctrnAtrz", param);
+                    const response = await ApiRequest("/boot/elecAtrz/updateHistElctrnAtrz", param);
 
                 }
 

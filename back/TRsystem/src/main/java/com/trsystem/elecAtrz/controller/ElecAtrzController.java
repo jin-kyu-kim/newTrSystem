@@ -67,6 +67,11 @@ public class ElecAtrzController {
 		return ElecAtrzDomain.retrieveRtrcnAtrzLn(params);
 	}
 	
+	/**
+	 * 결재 취소 혹은 변경결재로 인한 후속조치를 실행
+	 * @param params
+	 * @return
+	 */
 	@PostMapping(value = "/boot/elecAtrz/updateHistElctrnAtrz")
 	public int updateHistElctrnAtrz(@RequestBody Map<String, Object> params) {
 		return ElecAtrzDomain.updateHistElctrnAtrz(params);
