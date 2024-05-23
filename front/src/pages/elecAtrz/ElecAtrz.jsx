@@ -6,15 +6,20 @@ import CustomTable from "components/unit/CustomTable";
 import SearchInfoSet from "components/composite/SearchInfoSet";
 import elecAtrzJson from "./ElecAtrzJson.json";
 import ApiRequest from 'utils/ApiRequest';
-import "./ElecAtrz.css";
 import ElecAtrzHistPopup from "./common/ElecAtrzHistPopup";
+import "./ElecAtrz.css";
 
 const ElecAtrz = () => {
   const navigate = useNavigate();
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const empId = userInfo.empId;
   const { keyColumn, queryId, countQueryId, barList, searchInfo, baseColumns } = elecAtrzJson.elecMain;
-  const [ param, setParam ] = useState({});
+  const [ param, setParam ] = useState({
+    queryId: queryId,
+    empId: empId,
+    refer: null,
+    sttsCd: 'VTW00801'
+  });
   const [ clickBox, setClickBox ] = useState(null);
   const [ titleRow, setTitleRow ] = useState([]);
   const [ totalCount, setTotalCount ] = useState([]);
@@ -31,12 +36,6 @@ const ElecAtrz = () => {
   };
 
   useEffect(() => {
-    setParam({
-      queryId: queryId,
-      empId: empId,
-      refer: null,
-      sttsCd: 'VTW00801'
-    })
     setTitleRow(baseColumns.concat(elecAtrzJson.elecMain['progressApproval']))
   }, []);
 
@@ -127,11 +126,9 @@ const ElecAtrz = () => {
         navigate('/elecAtrz/ElecAtrzDetail', { state: { data: e.data, sttsCd: param.sttsCd, prjctId: e.data.prjctId, refer: param.refer } });
       }
     }
-
   };
 
   const onClickBtn = async (button, data) => {
-    console.log('button', button)
     if(button.name === 'delete'){
       const res = await ApiRequest('/boot/elecAtrz/deleteTempAtrz', {
         elctrnAtrzId: data.elctrnAtrzId, atrzTySeCd: data.elctrnAtrzTySeCd
