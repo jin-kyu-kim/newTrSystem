@@ -583,7 +583,7 @@ public class IndvdlClmDomain {
             String refSolYear = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy"));
 
             insertElctrnMap.put("elctrnAtrzId", elctrnAtrzValue);
-            insertElctrnMap.put("atrzFormDocId", "9632d577-f0bd-11ee-9b25-000c2956283f");
+            insertElctrnMap.put("atrzFormDocId", "2d90b8ef-132a-11ef-bf20-02a5fafa82da");
             insertElctrnMap.put("nowAtrzLnSn", "1");
             insertElctrnMap.put("elctrnAtrzDocNo", refSolYear + "-01-" + (Integer.parseInt(String.valueOf(selectElctrnAtrzResult.size())) + 1));
             insertElctrnList.add(0, elctrnTbMap);
@@ -906,7 +906,7 @@ public class IndvdlClmDomain {
         insertElctrnAtrzMapValue.put("elctrnAtrzTySeCd", "VTW04915");
         insertElctrnAtrzMapValue.put("atrzFormDocId", "901c0b88-21b9-d716-b2c2-c1f7c2b10fc4");
         insertElctrnAtrzMapValue.put("elctrnAtrzDocNo", refSolYear + "-15-" + (Integer.parseInt(String.valueOf(selectElctrnAtrzResult.size())) + 1));
-        insertElctrnAtrzMapValue.put("rtrcnElctrnAtrzId", insertDataMapValue.get("rtrcnElctrnAtrzId"));
+        insertElctrnAtrzMapValue.put("histElctrnAtrzId", insertDataMapValue.get("histElctrnAtrzId"));
 
         // VCATN_ATRZ(휴가결재저장)
         insertVactnAtrzMapValue.put("elctrnAtrzId", insertDataMapValue.get("elctrnAtrzId"));
@@ -964,7 +964,7 @@ public class IndvdlClmDomain {
 
         Map<String, Object> updateElctrnAtrz = new HashMap<>();
         updateElctrnAtrz.put("queryId", "indvdlClmMapper.updateElctrnAtrzCncl");
-        updateElctrnAtrz.put("elctrnAtrzId", insertDataMapValue.get("rtrcnElctrnAtrzId"));
+        updateElctrnAtrz.put("elctrnAtrzId", insertDataMapValue.get("histElctrnAtrzId"));
 
         commonService.queryIdSearch(updateElctrnAtrz);
         commonService.insertData(insertElctrnAtrzList);
@@ -1007,7 +1007,7 @@ public class IndvdlClmDomain {
             put("tbNm", "VCATN_ATRZ");
         }});
         selectElctrnAtrzList.add(1, new HashMap<>() {{
-            put("elctrnAtrzId", rtrcnElctrnAtrzId);
+            put("elctrnAtrzId", histElctrnAtrzId);
         }});
 
         List<Map<String, Object>> selectElctrnAtrzListResult = commonService.commonSelect(selectElctrnAtrzList);
@@ -1076,7 +1076,7 @@ public class IndvdlClmDomain {
         // 공가인경우
         if (selectElctrnAtrzListResult.get(0).get("vcatnTyCd").equals("VTW01204") || selectElctrnAtrzListResult.get(0).get("vcatnTyCd").equals("VTW01205") || selectElctrnAtrzListResult.get(0).get("vcatnTyCd").equals("VTW01207") || selectElctrnAtrzListResult.get(0).get("vcatnTyCd").equals("VTW01208")) {
             caseFlag = 1;
-            updateVcatnMngMap.put("pblenVcatnUseDaycnt", selectElctrnAtrzListResult.get(0).get("vcatnDeCnt"));
+            updateVcatnMngMap.put("newPblenVcatnUseDaycnt", selectElctrnAtrzListResult.get(0).get("vcatnDeCnt"));
         }
         // case_B
         // 공가가아닌경우
