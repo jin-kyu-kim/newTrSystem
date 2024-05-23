@@ -7,6 +7,7 @@ import SearchInfoSet from "components/composite/SearchInfoSet";
 import elecAtrzJson from "./ElecAtrzJson.json";
 import ApiRequest from 'utils/ApiRequest';
 import "./ElecAtrz.css";
+import ElecAtrzHistPopup from "./common/ElecAtrzHistPopup";
 
 const ElecAtrz = () => {
   const navigate = useNavigate();
@@ -18,6 +19,12 @@ const ElecAtrz = () => {
   const [ titleRow, setTitleRow ] = useState([]);
   const [ totalCount, setTotalCount ] = useState([]);
   const [ selectedList, setSelectedList ] = useState([]);
+
+  /**
+   * 이력 팝업 관련
+   */
+  const [ histPopVisible, setHistPopVisible ] = useState(false);
+  const [ selectedData, setSelectedData ] = useState([]);
 
   const onNewReq = async () => {
     navigate("../elecAtrz/ElecAtrzForm");
@@ -130,7 +137,22 @@ const ElecAtrz = () => {
         elctrnAtrzId: data.elctrnAtrzId, atrzTySeCd: data.elctrnAtrzTySeCd
       });
       if(res >= 1) getList();
-    } 
+    } else if(button.name === "docHist") {
+      await onSetPopData(data);
+      await onHistPopAppear();
+    }
+  }
+
+  const onHistPopHiding = async () => {
+    setHistPopVisible(false);
+  }
+
+  const onHistPopAppear = async () => {
+    setHistPopVisible(true);
+  }
+
+  const onSetPopData = async (data) => {
+    setSelectedData(data);
   }
 
   return (
@@ -168,6 +190,12 @@ const ElecAtrz = () => {
           onRowClick={(e) => sendDetail(e, param)}
         />
       </div>
+      <ElecAtrzHistPopup
+        visible={histPopVisible}
+        onPopHiding={onHistPopHiding}
+        data={selectedData}
+        param={param}
+      />
     </div>
   );
 };
