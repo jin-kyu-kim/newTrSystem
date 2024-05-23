@@ -142,10 +142,8 @@ const EmpVcatnAltmntMngExcelUpload = ({ onHiding, visible }) => {
     // 엑셀양식다운로드
     function onExeclDownload(){
         const downloadFile = document.createElement("a");
-        // downloadFile.href = "/upload/" + `${selectExcelAttachFile[0].strgFileNm}`;      // 해당경로변경필요
-        // downloadFile.download = `${selectExcelAttachFile[0].realFileNm}`;
-        downloadFile.href = "/upload/휴가배정엑셀업로드.xlsx";
-        downloadFile.download = "휴가배정엑셀업로드.xlsx"
+        downloadFile.href = "/upload/UpdVacAssgnExcel.xlsx"; 
+        downloadFile.download = "휴가배정엑셀업로드.xlsx";
 
         document.body.appendChild(downloadFile);
         downloadFile.click();
