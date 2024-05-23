@@ -59,13 +59,10 @@
             CONCAT(SUBSTR(#{startYmOdr},1, 6),'-',SUBSTR(#{startYmOdr}, 7, 1)) AS START_APLY_ODR,
             CONCAT(SUBSTR(#{endYmOdr},1, 6),'-',SUBSTR(#{endYmOdr}, 7, 1)) AS END_APLY_ODR,
             IFNULL(mmp.EXPECT_MM,0) AS EXPECT_MM,
-            ROUND(SUM(CASE WHEN pmat.ATRZ_DMND_STTS_CD='VTW03703' THEN pma.MD ELSE 0 END)/MM_QUERY.MM,2) AS TOTAL_MD_SUM,
-            ROUND((IFNULL(mmp.EXPECT_MM,0) - ROUND(SUM(CASE WHEN pmat.ATRZ_DMND_STTS_CD='VTW03703' THEN pma.MD ELSE 0 END)/MM_QUERY.MM,2)),2) AS USE_MM,
+            ROUND(SUM(CASE WHEN pmat.ATRZ_DMND_STTS_CD='VTW03703' THEN pma.MD ELSE 0 END/mm.COUNT),2) AS TOTAL_MD_SUM,
+            ROUND((IFNULL(mmp.EXPECT_MM,0) - ROUND(SUM(CASE WHEN pmat.ATRZ_DMND_STTS_CD='VTW03703' THEN pma.MD ELSE 0 END/mm.COUNT),2)),2) AS USE_MM,
             SUM(pma.MD*8) AS CLM_MD
-        FROM (SELECT
-        (SELECT COUNT(CRTR_YMD) FROM CRTR_DATE WHERE HLDY_CL_CD = 'VTW05001' AND DATE_FORMAT(CRTR_YMD, '%Y%m') BETWEEN SUBSTR(#{startYmOdr},1, 6) AND SUBSTR(#{endYmOdr},1, 6)) AS MM
-        ) AS MM_QUERY,
-        PRJCT_MM_APLY pma
+        FROM PRJCT_MM_APLY pma
         LEFT JOIN PRJCT_MM_ATRZ pmat ON pmat.PRJCT_ID = pma.PRJCT_ID AND (pmat.EMP_ID = pma.EMP_ID OR (pmat.EMP_ID IS NULL AND pma.EMP_ID IS NULL)) AND pmat.APLY_YM = pma.APLY_YM AND pmat.APLY_ODR = pma.APLY_ODR AND pmat.APLY_YMD = pma.APLY_YMD
         JOIN PRJCT_INDVDL_CT_MM picm
             ON pma.PRJCT_ID = picm.PRJCT_ID
@@ -75,6 +72,13 @@
             AND picm.MM_ATRZ_CMPTN_YN = 'Y'
         JOIN EMP e
             ON e.EMP_ID = picm.EMP_ID
+        JOIN (
+            SELECT DATE_FORMAT(CRTR_YMD, '%Y%m') AS YM,
+            COUNT(*) AS COUNT
+            FROM CRTR_DATE
+            WHERE HLDY_CL_CD = 'VTW05001'
+            GROUP BY DATE_FORMAT(CRTR_YMD, '%Y%m')
+        ) AS mm ON (pma.APLY_YM = mm.YM)
         JOIN (
             SELECT GROUP_CONCAT(DISTINCT d.DEPT_NM) AS DEPT_NM, pma.EMP_ID
             FROM DEPT d
@@ -105,7 +109,7 @@
         <if test="empId != null and !empId.equals('')">
             AND pma.EMP_ID = #{empId}
         </if>
-        GROUP BY pma.EMP_ID, mmp.EXPECT_MM, MM_QUERY.MM
+        GROUP BY pma.EMP_ID, mmp.EXPECT_MM
     </select>
 
     <!--프로젝트청구현황개인별 경비-->
