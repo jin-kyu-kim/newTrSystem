@@ -74,11 +74,11 @@ const EmpExpenseAprvProject = ({ prjctId, aplyYm, aplyOdr }) => {
                 });
             }
 
-            if (matchingRowData.length === 0) {
-                combinedData.push({
-                    pivotDate: pivotDate,
-                });
-            }
+            // if (matchingRowData.length === 0) {
+            //     combinedData.push({
+            //         pivotDate: pivotDate,
+            //     });
+            // }
         }
 
         return combinedData;
@@ -88,7 +88,7 @@ const EmpExpenseAprvProject = ({ prjctId, aplyYm, aplyOdr }) => {
         fields: [{
             caption: '프로젝트명',
             dataField: 'prjctNm',
-            width: 150,
+            width: 120,
             area: 'row',
             expanded: true,
         }, {
