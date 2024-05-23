@@ -54,7 +54,8 @@
 			ea.ATRZ_FORM_DOC_ID,
 			ea.ELCTRN_ATRZ_DOC_NO,
 			ea.HIST_ELCTRN_ATRZ_ID,
-			ea.ATRZ_HIST_SE_CD
+			ea.ATRZ_HIST_SE_CD,
+			va.VCATN_TY_CD
 		FROM ELCTRN_ATRZ ea
 		LEFT JOIN ATRZ_LN al ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID -- 현재 결재단계만
 		LEFT JOIN REFRN_MAN rm ON ea.ELCTRN_ATRZ_ID = rm.ELCTRN_ATRZ_ID -- 참조자의 경우
@@ -616,6 +617,7 @@
 		 WHERE 1=1
 	  	   AND ln.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
 		   AND ln.ATRZ_STTS_CD = 'VTW00802'
+		   ORDER BY ln.ATRZ_LN_SN DESC
 	</select>
 		
 	<select id="retrieveRefrnAtrzLn" parameterType="map" resultType="com.trsystem.LowerHashMap">

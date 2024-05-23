@@ -197,7 +197,7 @@ const ElecAtrzNewReq = () => {
      */
     const attachFileDelete = (deleteItem) => {
 
-        setDeleteFiles([...deleteFiles, { atchmnflId: data.atchmnflId ,atchmnflSn: deleteItem.atchmnflSn, strgFileNm: deleteItem.strgFileNm }]);
+        setDeleteFiles([...deleteFiles, { atchmnflId: sttsCd === "VTW05405" || sttsCd === "VTW05406" || sttsCd === "VTW05407" ? '' : data.atchmnflId ,atchmnflSn: deleteItem.atchmnflSn, strgFileNm: deleteItem.strgFileNm }]);
         setNewAttachments(newAttachments.filter(item => item !== deleteItem));
     }
 
@@ -373,21 +373,31 @@ const ElecAtrzNewReq = () => {
 
                 }
 
-                const formDataAttach = new FormData();      
+                const formDataAttach = new FormData();
+
                 formDataAttach.append("tbNm", JSON.stringify({tbNm : insertTable}));
-                if(data.atchmnflId !== undefined && sttsCd === "VTW03701"){
+
+
+                // 1. 임시저장 -> 
+
+                if(data.atchmnflId !== undefined && sttsCd === "VTW03701") {
+
                     formDataAttach.append("data", JSON.stringify({atchmnflId : data.atchmnflId}));
+                } else if(sttsCd === "VTW05405" || sttsCd === "VTW05406" || sttsCd === "VTW05407") {
+
+                    formDataAttach.append("data", JSON.stringify({atchmnflId : uuid()}));
                 } else {
                     formDataAttach.append("data", JSON.stringify({atchmnflId : uuid()}));
                 }
 
-                if(data.elctrnAtrzId !== undefined){
+                if(data.elctrnAtrzId !== undefined && sttsCd === "VTW03701"){
                     formDataAttach.append("idColumn", JSON.stringify({elctrnAtrzId: data.elctrnAtrzId})); //결재ID
                 } else {
                     formDataAttach.append("idColumn", JSON.stringify({elctrnAtrzId: response})); //결재ID
                 }
-                formDataAttach.append("deleteFiles", JSON.stringify(deleteFiles));
-                Object.values(attachments)
+
+                    formDataAttach.append("deleteFiles", JSON.stringify(deleteFiles));
+                    Object.values(attachments)
                     .forEach((attachment) => formDataAttach.append("attachments", attachment));
 
                     for (let [key, value] of formDataAttach.entries()) {
@@ -407,9 +417,9 @@ const ElecAtrzNewReq = () => {
                     navigate("/elecAtrz/ElecAtrz");
                 }
 
-        }else{
-            handleOpen("전자결재 요청에 실패하였습니다. 관리자에게 문의하세요. ")
-        }
+            }else{
+                handleOpen("전자결재 요청에 실패하였습니다. 관리자에게 문의하세요. ")
+            }
 
         } catch (error) {
             console.error(error)
@@ -545,6 +555,14 @@ const ElecAtrzNewReq = () => {
                 <hr/>
                 <div style={{marginBottom: "30px"}}>
                     <div> * 첨부파일</div>
+                    {
+                        sttsCd === "VTW05405" || sttsCd === "VTW05406" || sttsCd === "VTW05407" ?
+                        <>
+                        <div> * 이전 전자결재에 첨부된 파일</div>
+                        <div> 취소/변경/재기안 문서 작성 시 재 업로드하시기 바랍니다.</div>
+                        </>
+                        : <></>
+                    }
                     <FileUploader
                         multiple={true}
                         accept="*/*"

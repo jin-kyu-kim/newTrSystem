@@ -36,6 +36,8 @@ const ElecAtrzDetail = () => {
     const [ data, setData ] = useState(location.state.data);
     const { handleOpen } = useModal();
 
+    console.log(detailData)
+
     const onBtnClick = (e) => {
         switch (e.element.id) {
             case "aprv": ; onAprvPopup();
@@ -200,6 +202,8 @@ const ElecAtrzDetail = () => {
                     empId: detailData.atrzDmndEmpId,
                     elctrnAtrzId: detailData.elctrnAtrzId,
                     atrzStepCd: detailData.atrzStepCd,
+                    histElctrnAtrzId: detailData.histElctrnAtrzId,
+                    mdfcnEmpId: userInfo.empId,
                     aprvParam: [
                         { tbNm: "ATRZ_LN" },
                         { 
@@ -313,13 +317,38 @@ const ElecAtrzDetail = () => {
             const response = await ApiRequest("/boot/common/commonUpdate", param);
             if(response > 0) {
 
-                // 청구결재이면서 촤종 숭인인 경우 프로젝트 비용에 내용을 반영해준다.
-                if(detailData.elctrnAtrzTySeCd === "VTW04907" && nowAtrzLnSn > maxAtrzLnSn) {
-                    const clmResult = handlePrcjtCost();
-                    if(clmResult < 0) {
-                        handleOpen("승인 처리에 실패하였습니다.");
+                // 결재 취소나 변경결재가 아닌 경우
+                if(detailData.atrzHistSeCd != "VTW05405" && detailData.atrzHistSeCd != "VTW05406") {
+
+                    // 청구결재이면서 촤종 숭인인 경우 프로젝트 비용에 내용을 반영해준다.
+                    if(detailData.elctrnAtrzTySeCd === "VTW04907" && nowAtrzLnSn > maxAtrzLnSn) {
+                        const clmResult = handlePrcjtCost();
+                        if(clmResult < 0) {
+                            handleOpen("승인 처리에 실패하였습니다.");
+                        }
                     }
                 }
+
+                // 결재 취소에 대한 최종 승인인 경우, 후속 처리를 진행한다.
+                if(detailData.atrzHistSeCd === "VTW05405" && nowAtrzLnSn > maxAtrzLnSn) {
+
+                    const param = {
+                        atrzHistSeCd: detailData.atrzHistSeCd,
+                        histElctrnAtrzId: detailData.histElctrnAtrzId,
+                        elctrnAtrzTySeCd: detailData.elctrnAtrzTySeCd
+                    }
+
+                    // 1. 이력 컬럼에 있는 전자결재에 대한 처리 -> 
+                    const response = await ApiRequest("/boot/elecAtrz/updateHistElctrnAtrz", param);
+
+                }
+
+                // 변경결재에 대한 최종 승인인 경우, 후속 처리를 진행한다.
+                if(detailData.atrzHistSeCd === "VTW05406" && nowAtrzLnSn > maxAtrzLnSn) {
+                    
+                }
+
+
                 handleOpen("승인 처리되었습니다.");
                 navigate('/elecAtrz/ElecAtrz');
             } else {

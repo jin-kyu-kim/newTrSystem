@@ -82,12 +82,15 @@
             JOIN PRJCT_MM_APLY pma ON (pma.EMP_ID = dh.EMP_ID)
             GROUP BY pma.EMP_ID
         ) dept ON dept.EMP_ID = e.EMP_ID
-        LEFT JOIN (SELECT mlp.PRJCT_ID, mlp.EMP_ID, mlp.MMNY_LBRCO_PRMPC_SN, mim.EXPECT_MM
+        LEFT JOIN (SELECT mlp.PRJCT_ID, mlp.EMP_ID, mlp.MMNY_LBRCO_PRMPC_SN, mim.EXPECT_MM, MAX(mlp.BGT_MNG_ODR)
             FROM MMNY_LBRCO_PRMPC mlp
             JOIN MMNY_INPT_MM mim ON (mim.PRJCT_ID = mlp.PRJCT_ID AND mim.MMNY_LBRCO_PRMPC_SN = mlp.MMNY_LBRCO_PRMPC_SN AND mlp.BGT_MNG_ODR = mim.BGT_MNG_ODR)
+            JOIN PRJCT_BGT_PRMPC pbp ON (mim.PRJCT_ID = pbp.PRJCT_ID AND mlp.BGT_MNG_ODR = pbp.BGT_MNG_ODR)
             WHERE 1=1
             AND mim.PRJCT_ID = #{prjctId}
-            AND CONCAT(mim.INPT_YM, mlp.BGT_MNG_ODR) BETWEEN #{startYmOdr} AND #{endYmOdr})
+            AND mim.INPT_YM BETWEEN SUBSTR(#{startYmOdr},1, 6) AND SUBSTR(#{endYmOdr},1, 6)
+            AND pbp.ATRZ_DMND_STTS_CD = 'VTW03703'
+            GROUP BY mlp.EMP_ID, mlp.MMNY_LBRCO_PRMPC_SN, mim.EXPECT_MM)
             mmp ON (mmp.EMP_ID = pma.EMP_ID)
         WHERE 1 = 1
         <if test="prjctId != null and !prjctId.equals('')">
@@ -920,41 +923,73 @@
 
     <!--근무시간 승인 내역 -->
     <select id="retrievePrjctMmAplyList" parameterType="map" resultType="com.trsystem.LowerHashMap">
-        SELECT
-        P.PRJCT_ID AS PRJCT_ID,
-        DATE_FORMAT(PMA.APLY_YMD , '%Y-%m-%d') AS APLY_YMD,
-        P.PRJCT_NM AS PRJCT_NM,
-        E.EMP_FLNM AS EMP_FLNM,
-        CASE
-        WHEN PMA.MD = 1 THEN 8
-        WHEN PMA.MD = 0.5 THEN 4
-        ELSE 0
-        END AS MD
-        FROM PRJCT_MM_APLY PMA, PRJCT P , PRJCT_INDVDL_CT_MM PICM, EMP E
-        WHERE 1=1
-        AND PMA.PRJCT_ID = PICM.PRJCT_ID
-        AND   PMA.EMP_ID = PICM.EMP_ID
-        AND   PMA.APLY_YM = PICM.APLY_YM
-        AND   PMA.APLY_ODR = PICM.APLY_ODR
-        AND   P.PRJCT_ID  = PMA.PRJCT_ID
-        AND   PMA.EMP_ID  = E.EMP_ID
-        AND PICM.MM_ATRZ_CMPTN_YN = 'Y'
-        <if test="yearItem != null and yearItem !=''">
-            AND DATE_FORMAT(PMA.APLY_YMD , '%Y') = #{yearItem}
-        </if>
-
-        <if test="monthItem != null and monthItem !=''">
-            AND DATE_FORMAT(PMA.APLY_YMD , '%m') = #{monthItem}
-        </if>
-
-        <if test="aplyOdr != null and aplyOdr !=''">
-            AND PMA.APLY_ODR = #{aplyOdr}
-        </if>
-
-        <if test="prjctId != null and prjctId !=''">
-            AND PMA.PRJCT_ID = #{prjctId}
-        </if>
-    </select>
+       SELECT DISTINCT
+		    Z.CRTR_YMD AS APLY_YMD,
+		    M.PRJCT_ID AS PRJCT_ID,
+		    M.PRJCT_NM AS PRJCT_NM,
+		    M.EMP_FLNM AS EMP_FLNM,
+		    IFNULL(T.MD, 0) AS MD
+		FROM
+		    (
+		        SELECT 
+		            DATE_FORMAT(cd.CRTR_YMD, '%Y-%m-%d') AS CRTR_YMD
+		        FROM 
+		            CRTR_DATE cd
+		        WHERE 
+		            cd.CRTR_YMD LIKE '202405%' AND cd.CRTR_ODR = '1'
+		    ) Z
+	JOIN (
+	    SELECT DISTINCT
+	        P.PRJCT_ID,
+	        P.PRJCT_NM,
+	        E.EMP_FLNM
+	    FROM 
+	        PRJCT P
+	        JOIN PRJCT_MM_APLY PMA ON P.PRJCT_ID = PMA.PRJCT_ID
+	        JOIN PRJCT_INDVDL_CT_MM PICM ON PMA.PRJCT_ID = PICM.PRJCT_ID AND PMA.EMP_ID = PICM.EMP_ID AND PMA.APLY_YM = PICM.APLY_YM AND PMA.APLY_ODR = PICM.APLY_ODR
+	        JOIN EMP E ON PMA.EMP_ID = E.EMP_ID
+	    WHERE 
+	        PICM.MM_ATRZ_CMPTN_YN = 'Y'
+	        <if test="aplyYmd != null and aplyYmd != ''">
+	            AND DATE_FORMAT(PMA.APLY_YMD , '%Y-%m-%d') = #{aplyYmd}
+	        </if>
+	        <if test="aplyOdr != null and aplyOdr != ''">
+	            AND PMA.APLY_ODR = #{aplyOdr}
+	        </if>
+	        <if test="prjctId != null and prjctId != ''">
+	            AND P.PRJCT_ID = #{prjctId}
+	        </if>
+		) M ON 1=1
+		LEFT JOIN (
+		    SELECT
+		        P.PRJCT_ID AS PRJCT_ID,
+		        DATE_FORMAT(PMA.APLY_YMD , '%Y-%m-%d') AS APLY_YMD,
+		        P.PRJCT_NM AS PRJCT_NM,
+		        E.EMP_FLNM AS EMP_FLNM,
+		        CASE
+		            WHEN PMA.MD = 1 THEN 8
+		            WHEN PMA.MD = 0.5 THEN 4
+		            ELSE 0
+		        END AS MD
+		    FROM 
+		        PRJCT_MM_APLY PMA
+		        JOIN PRJCT P ON P.PRJCT_ID = PMA.PRJCT_ID
+		        JOIN PRJCT_INDVDL_CT_MM PICM ON PMA.PRJCT_ID = PICM.PRJCT_ID AND PMA.EMP_ID = PICM.EMP_ID AND PMA.APLY_YM = PICM.APLY_YM AND PMA.APLY_ODR = PICM.APLY_ODR
+		        JOIN EMP E ON PMA.EMP_ID = E.EMP_ID
+		    WHERE 
+		        PICM.MM_ATRZ_CMPTN_YN = 'Y'
+		        <if test="aplyYmd != null and aplyYmd != ''">
+		            AND DATE_FORMAT(PMA.APLY_YMD , '%Y-%m-%d') = #{aplyYmd}
+		        </if>
+		        <if test="aplyOdr != null and aplyOdr != ''">
+		            AND PMA.APLY_ODR = #{aplyOdr}
+		        </if>
+		        <if test="prjctId != null and prjctId != ''">
+		            AND P.PRJCT_ID = #{prjctId}
+		        </if>
+		) T ON T.APLY_YMD = Z.CRTR_YMD AND M.PRJCT_ID = T.PRJCT_ID
+		ORDER BY M.EMP_FLNM, APLY_YMD;
+</select>
 
 
     <!--근무시간, 경비 통합승인 내역 -->
