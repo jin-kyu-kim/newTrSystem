@@ -82,12 +82,15 @@
             JOIN PRJCT_MM_APLY pma ON (pma.EMP_ID = dh.EMP_ID)
             GROUP BY pma.EMP_ID
         ) dept ON dept.EMP_ID = e.EMP_ID
-        LEFT JOIN (SELECT mlp.PRJCT_ID, mlp.EMP_ID, mlp.MMNY_LBRCO_PRMPC_SN, mim.EXPECT_MM
+        LEFT JOIN (SELECT mlp.PRJCT_ID, mlp.EMP_ID, mlp.MMNY_LBRCO_PRMPC_SN, mim.EXPECT_MM, MAX(mlp.BGT_MNG_ODR)
             FROM MMNY_LBRCO_PRMPC mlp
             JOIN MMNY_INPT_MM mim ON (mim.PRJCT_ID = mlp.PRJCT_ID AND mim.MMNY_LBRCO_PRMPC_SN = mlp.MMNY_LBRCO_PRMPC_SN AND mlp.BGT_MNG_ODR = mim.BGT_MNG_ODR)
+            JOIN PRJCT_BGT_PRMPC pbp ON (mim.PRJCT_ID = pbp.PRJCT_ID AND mlp.BGT_MNG_ODR = pbp.BGT_MNG_ODR)
             WHERE 1=1
             AND mim.PRJCT_ID = #{prjctId}
-            AND CONCAT(mim.INPT_YM, mlp.BGT_MNG_ODR) BETWEEN #{startYmOdr} AND #{endYmOdr})
+            AND mim.INPT_YM BETWEEN SUBSTR(#{startYmOdr},1, 6) AND SUBSTR(#{endYmOdr},1, 6)
+            AND pbp.ATRZ_DMND_STTS_CD = 'VTW03703'
+            GROUP BY mlp.EMP_ID, mlp.MMNY_LBRCO_PRMPC_SN, mim.EXPECT_MM)
             mmp ON (mmp.EMP_ID = pma.EMP_ID)
         WHERE 1 = 1
         <if test="prjctId != null and !prjctId.equals('')">
