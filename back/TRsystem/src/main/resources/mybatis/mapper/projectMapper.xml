@@ -1223,7 +1223,7 @@
                          IFNULL(SUM(IFNULL(MIM.EXPECT_MM,0 ) * IFNULL(MIM.UNTPC, 0)),0) '예산',
                          IFNULL((
                                     SELECT
-                                        SUM(IFNULL(GIVE_CT * MM, 0))
+                                        SUM(IFNULL(GIVE_CT, 0))
                                     FROM MMNY_LBRCO_EXCN
                                     WHERE PRJCT_ID = #{prjctId}
                                 ),0) 사용
@@ -1253,7 +1253,7 @@
                       IFNULL(SUM(IFNULL(OLP.UNTPC,0) * IFNULL(OLPD.EXPECT_MM,0)),0) AS 예산,
                       IFNULL((
                                  SELECT
-                                     SUM(IFNULL(GIVE_CT * MM, 0))
+                                     SUM(IFNULL(GIVE_CT, 0))
                                  FROM OUTORD_LBRCO_EXCN
                                  WHERE PRJCT_ID = #{prjctId}
                              ),0) 사용
