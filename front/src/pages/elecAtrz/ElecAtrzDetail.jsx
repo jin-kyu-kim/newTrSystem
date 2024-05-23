@@ -16,10 +16,11 @@ import './ElecAtrz.css'
 const ElecAtrzDetail = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const detailData = location.state.data;
+    const detailInfo = location.state.data;
     const sttsCd = location.state.sttsCd;
     const refer = location.state.refer;
     const prjctId = location.state.prjctId;
+    const [ detailData, setDetailData ] = useState({});
     const [ prjctData, setPrjctData ] = useState({});
     const [ atrzOpnn, setAtrzOpnn ] = useState([]);
     const [ atrzOpnnVal, setAtrzOpnnVal ] = useState([]);
@@ -36,7 +37,13 @@ const ElecAtrzDetail = () => {
     const [ data, setData ] = useState(location.state.data);
     const { handleOpen } = useModal();
 
-    console.log(detailData)
+    useEffect(() => {
+        const getDetailData = async () => {
+            const res = await ApiRequest('/boot/common/queryIdSearch', { queryId: "elecAtrzMapper.elecAtrzDetail", elctrnAtrzId: detailData.elctrnAtrzId })
+            if (res) setDetailData({ ...detailInfo, ...res[0] })
+        }
+        getDetailData();
+    }, []);
 
     const onBtnClick = (e) => {
         switch (e.element.id) {
@@ -61,13 +68,15 @@ const ElecAtrzDetail = () => {
         }
     }
     useEffect(() => {
-        getVacInfo();
-        getPrjct();
-        getAtrzLn();
-        getMaxAtrzLnSn();
-        getAtchFiles();
-        setAplyYmdOdr();
-    }, []);
+        if(detailData.elctrnAtrzId){
+            getVacInfo();
+            getPrjct();
+            getAtrzLn();
+            getMaxAtrzLnSn();
+            getAtchFiles();
+            setAplyYmdOdr();    
+        }
+    }, [detailData]);
 
     const getAtchFiles = async () => {
         try{
@@ -128,7 +137,7 @@ const ElecAtrzDetail = () => {
         }
         try {
             const response = await ApiRequest("/boot/common/queryIdSearch", param);
-            setMaxAtrzLnSn(response[0].maxAtrzLnSn);
+            if(response[0]) setMaxAtrzLnSn(response[0].maxAtrzLnSn);
         } catch (error) {
             console.error(error)
         }
@@ -587,21 +596,18 @@ const ElecAtrzDetail = () => {
     }
 
     const renderButtons = () => {
-        let filter = [];
-      
-        if (sttsCd === 'VTW00801') {
-            filter = header.filter(item => item.id === 'aprv' || item.id === 'rjct');
-        } else if (sttsCd === 'VTW03702') {
-            filter = header.filter(item => item.id === 'cancel' || item.id === 'reAtrz');
-        } else if (sttsCd === 'VTW03703') {
-            filter = header.filter(item => item.id === 'update' || item.id === 'cancel' || item.id === 'reAtrz');
-        } else if (sttsCd === 'VTW03704') {
-            filter = header.filter(item => item.id === 'reAtrz');
-        }
+        const conditions = [
+          { sttsCd: 'VTW00801', ids: ['aprv', 'rjct'] },
+          { sttsCd: 'VTW03702', ids: ['cancel', 'reAtrz'] },
+          { sttsCd: 'VTW03703', ids: ['update', 'cancel', 'reAtrz'] },
+          { sttsCd: 'VTW03704', ids: ['reAtrz'] }
+        ];
+        const condition = conditions.find(cond => cond.sttsCd === sttsCd && (refer === null || refer === undefined));
+        const filter = condition ? header.filter(item => condition.ids.includes(item.id)) : [];
       
         return filter.map((item, index) => (
           <Button id={item.id} text={item.text} key={index} type={item.type} 
-                  onClick={onBtnClick} style={{marginRight: '3px'}}/>
+                  onClick={onBtnClick} style={{ marginRight: '3px' }} />
         ));
     };
 
