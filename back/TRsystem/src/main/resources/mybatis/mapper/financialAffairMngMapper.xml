@@ -371,11 +371,11 @@
 <!--        </if>-->
 <!--        ) a-->
 <!--        LEFT JOIN (-->
-            SELECT
-                CONCAT(p.PRJCT_NM, ' (PM : ', (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = pah.APRVR_EMP_ID), ')') AS PRJCT_NM,
+            SELECT DISTINCT
+                CONCAT(p.PRJCT_NM, ' (PM : ', (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = p.PRJCT_MNGR_EMP_ID), ')') AS PRJCT_NM,
                 (SELECT CD_NM FROM CD WHERE CD_VALUE = pca.EXPENS_CD) AS EXPENS_CD,
                 e.EMP_FLNM,
-                CONCAT(e.EMP_FLNM, ' | 상세내역 : ', pca.CT_PRPOS, ' | 용도 : ', pca.ATDRN) AS PRJCT_DETAIL,
+                CONCAT('성명 : ',e.EMP_FLNM, ' | 상세내역 : ', pca.CT_PRPOS, ' | 용도 : ', pca.ATDRN) AS PRJCT_DETAIL,
                 CONCAT('상세내역 : ', pca.CT_PRPOS, ' | 용도 : ', pca.ATDRN) AS EMP_DETAIL,
                 pca.UTZTN_AMT,
                 CONCAT(SUBSTR(pca.UTZTN_DT, 1, 4),'-',SUBSTR(pca.UTZTN_DT, 5, 2),'-',SUBSTR(pca.UTZTN_DT, 7, 2)) AS UTZTN_DT
