@@ -378,7 +378,7 @@
 <!--        </if>-->
 <!--        ) a-->
 <!--        LEFT JOIN (-->
-            SELECT DISTINCT
+            SELECT
                 CONCAT(p.PRJCT_NM, ' (PM : ', (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = p.PRJCT_MNGR_EMP_ID), ')') AS PRJCT_NM,
                 (SELECT CD_NM FROM CD WHERE CD_VALUE = pca.EXPENS_CD) AS EXPENS_CD,
                 e.EMP_FLNM,
@@ -392,6 +392,7 @@
                 AND pca.EMP_ID = pah.EMP_ID
                 AND pca.APLY_YM = pah.APLY_YM
                 AND pca.APLY_ODR = pah.APLY_ODR
+                AND pca.PRJCT_CT_APLY_SN = pah.PRJCT_CT_APLY_SN 
                 AND pah.ATRZ_DMND_STTS_CD = 'VTW03703' -- 결재요청상태코드 : 승인
             JOIN EMP e
                 ON pca.EMP_ID = e.EMP_ID
