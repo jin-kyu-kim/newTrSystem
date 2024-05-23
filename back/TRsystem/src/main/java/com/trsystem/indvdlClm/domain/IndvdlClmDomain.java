@@ -583,7 +583,7 @@ public class IndvdlClmDomain {
             String refSolYear = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy"));
 
             insertElctrnMap.put("elctrnAtrzId", elctrnAtrzValue);
-            insertElctrnMap.put("atrzFormDocId", "9632d577-f0bd-11ee-9b25-000c2956283f");
+            insertElctrnMap.put("atrzFormDocId", "2d90b8ef-132a-11ef-bf20-02a5fafa82da");
             insertElctrnMap.put("nowAtrzLnSn", "1");
             insertElctrnMap.put("elctrnAtrzDocNo", refSolYear + "-01-" + (Integer.parseInt(String.valueOf(selectElctrnAtrzResult.size())) + 1));
             insertElctrnList.add(0, elctrnTbMap);
