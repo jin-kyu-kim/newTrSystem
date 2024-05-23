@@ -438,6 +438,7 @@
 				, NULL AS ELCTRN_ATRZ_ID
 				, NULL AS ELCTRN_ATRZ_DOC_NO
 				, NULL AS CN
+				, NULL AS ATRZ_DMND_STTS_CD
 			FROM PRJCT_CT_APLY pca
 			JOIN PRJCT_CT_ATRZ pcaz
 				ON pca.PRJCT_CT_APLY_SN = pcaz.PRJCT_CT_APLY_SN
@@ -463,6 +464,7 @@
 				, NULL AS ELCTRN_ATRZ_ID
 				, NULL AS ELCTRN_ATRZ_DOC_NO
 				, NULL AS CN
+				, NULL AS ATRZ_DMND_STTS_CD
 		 	FROM
 		 		PRJCT_MM_APLY pma
 		 	JOIN PRJCT_MM_ATRZ pmaz ON pma.PRJCT_ID =pmaz.PRJCT_ID
@@ -490,6 +492,7 @@
 				, ea.ELCTRN_ATRZ_ID
 				, ea.ELCTRN_ATRZ_DOC_NO
 				, COALESCE(ga.GNRL_ATRZ_CN, ca.CLM_ATRZ_CN, cta.CTRT_ATRZ_CN, cga.STLM_CN) AS CN
+		 		, ea.ATRZ_DMND_STTS_CD
 			FROM ELCTRN_ATRZ ea
 			LEFT JOIN ATRZ_LN al ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID
 				AND ea.NOW_ATRZ_LN_SN = al.ATRZ_LN_SN
@@ -513,15 +516,18 @@
 	<select id="retiveAtrzList" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT DISTINCT * FROM
 			(SELECT
-				pca.PRJCT_ID AS ID														-- 프로젝트ID
+				pca.PRJCT_ID														-- 프로젝트ID
 				, '프로젝트 비용' AS TY_SE												-- 결재유형
 				, CONCAT(pca.APLY_YM ,'-',pca.APLY_ODR ,'차수 프로젝트 비용') AS TITLE		-- 결재명
 				, e.EMP_FLNM AS ATRZ_EMP_NM												-- 기안자명
 				, DATE_FORMAT(pca.REG_DT, '%Y-%m-%d') AS REG_DT							-- 결재 올린날
 				, sttsCd.CD_NM	AS ATRZ_STTS_CD_NM										-- 결자생태명
 				, pcaz.APRVR_EMP_ID AS APRPVR_ID										-- 결재자 ID
+				, NULL AS ELCTRN_ATRZ_TY_SE_CD
 				, NULL AS CN
 				, NULL AS ELCTRN_ATRZ_ID
+				, NULL AS ELCTRN_ATRZ_DOC_NO
+				, NULL AS ATRZ_DMND_STTS_CD
 			FROM PRJCT_CT_APLY pca JOIN PRJCT_CT_ATRZ pcaz ON pca.PRJCT_CT_APLY_SN = pcaz.PRJCT_CT_APLY_SN
 				AND pca.EMP_ID = pcaz.EMP_ID
 				AND pca.APLY_YM = pcaz.APLY_YM
@@ -535,15 +541,18 @@
 		 		pca.PRJCT_ID, pca.REG_DT,pca.APLY_YM,pca.APLY_ODR,pcaz.APRVR_EMP_ID,sttsCd.CD_NM,e.EMP_FLNM
 			UNION ALL
 			SELECT
-		 		pma.PRJCT_ID AS ID												-- 프로젝트ID
+		 		pma.PRJCT_ID												-- 프로젝트ID
 		 		, '근무시간'	AS TY_SE											-- 결재유형
 		 		, CONCAT(pma.APLY_YM ,'-',pma.APLY_ODR ,'차수 근무시간') AS TITLE  -- 결재명
 		 		, e.EMP_FLNM AS ATRZ_EMP_NM										-- 기안자명
 		 		, DATE_FORMAT(pma.REG_DT, '%Y-%m-%d') AS REG_DT					-- 기안일자
 		 		, sttsCd.CD_NM AS ATRZ_STTS_CD_NM								-- 결자생태명
 		 		, pmaz.APRVR_EMP_ID	AS APRPVR_ID								-- 결재자 ID
+				, NULL AS ELCTRN_ATRZ_TY_SE_CD
 				, NULL AS CN
 				, NULL AS ELCTRN_ATRZ_ID
+				, NULL AS ELCTRN_ATRZ_DOC_NO
+				, NULL AS ATRZ_DMND_STTS_CD
 		 	FROM PRJCT_MM_APLY pma
 		 	JOIN PRJCT_MM_ATRZ pmaz ON pma.PRJCT_ID =pmaz.PRJCT_ID
 				AND pma.EMP_ID =pmaz.EMP_ID
@@ -559,16 +568,19 @@
 		 		pma.PRJCT_ID,pma.REG_DT,pma.APLY_YM,pma.APLY_ODR,pmaz.APRVR_EMP_ID,sttsCd.CD_NM,e.EMP_FLNM	 
 		 	UNION ALL 
 		 	SELECT DISTINCT
-		 		NULL AS ID							-- 전자결재 id
+		 		ea.PRJCT_ID							-- 전자결재 id
 				, tyCd.CD_NM AS TY_SE							-- 전자결재 결재구분명
 				, COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cta.CTRT_ATRZ_TTL, cga.ATRZ_TTL,
 					CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD), ' [', va.VCATN_BGNG_YMD, ' ~ ', va.VCATN_END_YMD, ' (', va.VCATN_DE_CNT, '일)]')) AS TITLE
 				, e1.EMP_FLNM AS ATRZ_EMP_NM				 	-- 기안자
-				, DATE_FORMAT(ea.REG_DT, '%Y-%m-%d') AS REG_DT 	-- 기안일자
+				, DATE_FORMAT(ea.REG_DT, '%Y-%m-%d %H:%i:%s') AS REG_DT 	-- 기안일자
 				, sttsCd.CD_NM AS ATRZ_STTS_CD 					-- 결재상태 (VTW008)
+				, NULL AS APRPVR_ID 					-- 결재상태 (VTW008)
 				, ea.ELCTRN_ATRZ_TY_SE_CD 						-- 전자결재 유형 코드
 		 		, COALESCE(ga.GNRL_ATRZ_CN, ca.CLM_ATRZ_CN, cta.CTRT_ATRZ_CN, cga.STLM_CN) AS CN
 				, ea.ELCTRN_ATRZ_ID
+				, ea.ELCTRN_ATRZ_DOC_NO
+				, al.ATRZ_STTS_CD AS ATRZ_DMND_STTS_CD
 			FROM ELCTRN_ATRZ ea
 			LEFT JOIN ATRZ_LN al ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID
 				AND ea.NOW_ATRZ_LN_SN = al.ATRZ_LN_SN
@@ -592,8 +604,11 @@
 				, DATE_FORMAT(pal.REG_DT, '%Y-%m-%d') AS REG_DT 									-- 계약일자
 				, (SELECT CD_NM FROM CD WHERE CD_VALUE = pald.ATRZ_STTS_CD) AS ATRZ_STTS_CD_NM		-- 결재상태코드명
 				, pald.ATRZ_STTS_CD
-				, NULL AS CN
+				, NULL AS ELCTRN_ATRZ_TY_SE_CD
+			    , NULL AS CN
 				, NULL AS ELCTRN_ATRZ_ID
+				, NULL AS ELCTRN_ATRZ_DOC_NO
+				, NULL AS ATRZ_DMND_STTS_CD
 			FROM PRJCT_ATRZ_LN pal																	-- 프로젝트 결재선
 			JOIN PRJCT_ATRZ_LN_DTL pald ON(pal.PRJCT_ID = pald.PRJCT_ID AND pal.ATRZ_LN_SN = pald.ATRZ_LN_SN AND pal.NOW_ATRZ_STEP_CD = pald.ATRZ_STEP_CD) -- 프로젝트 결재선 상세
 			JOIN PRJCT p ON (p.PRJCT_ID = pal.PRJCT_ID AND p.PRJCT_ID = pald.PRJCT_ID)				-- 프로젝트테이블의 ID와 결재상세 테이블 ID JOIN

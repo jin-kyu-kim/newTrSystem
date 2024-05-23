@@ -148,8 +148,8 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
 
 
     // 수정테이블 수정가능 여부
-    const isEditable = !["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405","VTW00801","VTW00802"].includes(sttsCd) 
-                        && !["VTW04911","VTW04912","VTW04913","VTW04914",].includes(data.elctrnAtrzTySeCd); // 취소 만들 떄 추가 수정
+    const isEditable = !["VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405","VTW00801","VTW00802", "VTW05405"].includes(sttsCd) 
+                        && !["VTW04911","VTW04912","VTW04913","VTW04914",].includes(data.elctrnAtrzTySeCd); // 취소결재(VTW05405) 경우 추가
 
     controlReadOnly = !isEditable
     

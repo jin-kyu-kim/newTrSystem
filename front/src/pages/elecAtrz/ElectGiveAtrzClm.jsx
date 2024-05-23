@@ -13,7 +13,7 @@ const ElectGiveAtrzClm = ({ detailData, sttsCd, onSendData, ctrtTyCd}) => {
                 ,"tbNm": "CTRT_GIVE_ATRZ"});
     const labelValue = ElectGiveAtrzClmJson.labelValue;
 
-    if (!formData || formData.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407") { // 임시저장
+    if (!formData || formData.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05405" || sttsCd === "VTW05406" || sttsCd === "VTW05407") { // 임시저장
         labelValue.giveYmd.param.queryId.ctrtElctrnAtrzId = detailData.ctrtElctrnAtrzId;
         labelValue.giveYmd.param.queryId.ctrtTyCd = ctrtTyCd
     } else {
@@ -30,7 +30,7 @@ const ElectGiveAtrzClm = ({ detailData, sttsCd, onSendData, ctrtTyCd}) => {
 
     /* 계약청구 데이터 조회 */
     useEffect(()=>{
-        if(!formData || formData.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407"){
+        if(!formData || formData.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05405" || sttsCd === "VTW05406" || sttsCd === "VTW05407"){
             const getCtrtInfo = async () => {
                     const param = [{ tbNm: "CTRT_GIVE_ATRZ" }, { elctrnAtrzId: formData? formData.elctrnAtrzId : detailData.elctrnAtrzId }] 
                     try {

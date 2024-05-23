@@ -111,7 +111,7 @@ const ApprovalPopup = ({ visible, atrzLnEmpList, onHiding }) => {
     return (
         <div>
             <Popup
-                height={660}
+                height={700}
                 visible={visible}
                 contentRender={addAprvrEmpArea}
                 title="* 결재선지정"

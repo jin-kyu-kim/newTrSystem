@@ -30,18 +30,23 @@
       "baseColumns": [
           {"key": "elctrnAtrzDocNo", "value": "문서번호", "width": "13%"},
           {"key": "gnrlAtrzTtl", "value": "결재유형", "width": "13%"},
-          {"key": "atrzDmndEmpNm", "value": "기안자", "width": "13%"},
+          {"key": "atrzDmndEmpNm", "value": "기안자", "width": "10%"},
           {"key": "regDt", "value": "기안요청일", "width": "14%"},
           {"key": "title", "value": "결재 명", "width": "20%"}
       ],
       "progressApproval": [
-        {"key": "atrzOpnnCn", "value": "결재", "width": "15%"}
+        {"key": "selectBtn", "value": "결재", "width": "15%", "buttons": [
+          { "text": "승인", "name": "aprv", "visible": {"key": "sttsCd", "value": "VTW00802"}, "type": "default", "showAll": true},
+          { "text": "보류", "name": "hold", "visible": {"key": "sttsCd", "value": "VTW00804"}, "type": "normal"},
+          { "text": "반려", "name": "rjct", "visible": {"key": "sttsCd", "value": "VTW00803"}, "type": "danger"}
+        ]}
       ],
       "progress": [
         {"key": "cnptNm", "value": "거래처", "width": "10%"},
         {"key": "aprvrEmpId", "value": "현재결재권자", "width": "7%"},
         {"key": "atrzStepCdNm" , "value": "현재결재단계", "width": "8%"},
-        {"key": "yn", "value": "결재 회수가능여부", "width": "7%"}
+        {"key": "yn", "value": "결재 회수가능여부", "width": "7%", "button": { 
+          "text": "회수", "name": "yn" }}
       ],
       "progressRefer": [
         {"key": "aprvrEmpId", "value": "현재 결재권자", "width": "13%"},
@@ -59,7 +64,7 @@
         {"key": "atrzStepCdNm", "value": "현재 결재단계", "width": "15%"}
       ],
       "deny": [
-        {"key": "atrzOpnnCn", "value": "결재", "width": "8%"}
+        {"key": "atrzOpnnCn", "value": "결재의견", "width": "8%"}
       ],
       "temp": [
         {"key": "delete", "value": "삭제", "width": "10%", "button": { 
@@ -104,10 +109,13 @@
       {"key": "rm", "value": "비고"}
     ],
     "header": [
+      { "text": "출력", "id": "print", "type": "success" },
+      { "text": "결재변경", "id": "update", "type": "default" },
+      { "text": "결재취소", "id": "cancel", "type": "danger" },
+      { "text": "재기안", "id": "reAtrz", "type": "default" },
       { "text": "승인", "id": "aprv", "type": "default" },
       { "text": "반려", "id": "rjct", "type": "danger" },
-      { "text": "재기안", "id": "reAtrz", "type": "default" },
-      { "text": "출력", "id": "print", "type": "success" },
+      { "text": "목록", "id": "list", "type": "normal" },
       { "text": "문서이력", "id": "docHist", "type": "normal" }
     ],
     "queryId": "elecAtrzMapper.retrieveAtrzLn",

@@ -139,20 +139,20 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
       } else if(e.data.tySe === "근무시간"){ //근무시간 현황
         navigate("/indvdlClm/EmpWorkTime", {state: {id : e.data.id }});
       } else if(e.data.elctrnAtrzTySeCd.startsWith("VTW049")){ //기타 전자결재 내역
-        console.log('e.data', e.data)
-        navigate("/elecAtrz/ElecAtrzDetail", {state: {data : e.data}});
+        navigate("/elecAtrz/ElecAtrzDetail", {state: {data : e.data, prjctId: e.data.prjctId, sttsCd: e.data.atrzDmndSttsCd}});
       }
     };
     //결재 리스트 테이블 클릭
     const onAtrzRowClick = (e) => {
       if(e.data.tySe === "프로젝트 비용"){ //프로젝트비용 (프로젝트시간비용승인)
-        navigate("/project/ProjectHrCtAprvDetail", {state: {prjctId : e.data.id }});
+        navigate("/project/ProjectHrCtAprvDetail", {state: {prjctId : e.data.prjctId }});
       }else if(e.data.tySe === "근무시간"){ //근무시간 현황 (프로젝트시간비용승인)
-        navigate("/project/ProjectHrCtAprvDetail", {state: {prjctId : e.data.id }});
+        navigate("/project/ProjectHrCtAprvDetail", {state: {prjctId : e.data.prjctId }});
       }else if(e.data.tySe === "프로젝트 승인"){ //프로젝트 승인페이지(이동전 데이터 조회)
         projectSearch(e.data.id)
-      }else if(e.data.aprpvrId.startsWith("VTW049")){ //기타 전자결재 내역                                                   
-        navigate("/elecAtrz/ElecAtrzDetail", {state: {data : e.data}});
+      }else if(e.data.elctrnAtrzTySeCd.startsWith("VTW049")){ //기타 전자결재 내역          
+        console.log('확인', e.data)                                         
+        navigate("/elecAtrz/ElecAtrzDetail", {state: {data : e.data, prjctId: e.data.prjctId, sttsCd: e.data.atrzDmndSttsCd}});
       }
     };
 

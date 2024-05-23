@@ -6,8 +6,7 @@ import ApprovalPopup from "components/unit/ApprovalPopup";
 import logoImg from "../../../assets/img/vtwLogo.png";
 import '../ElecAtrz.css'
 
-
-const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick, formData, prjctData, onHandleAtrzTitle, atrzParam }) => {
+const ElecAtrzTitleInfo = ({ sttsCd, refer, atrzLnEmpList, getAtrzLn, contents, onClick, formData, prjctData, onHandleAtrzTitle, atrzParam }) => {
   const [popVisible, setPopVisible] = useState(false);
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
@@ -22,18 +21,21 @@ const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick
 
   const setButtons = () => {
     let buttonsToRender;
+
+    const defaultButtons = ['print', 'docHist', 'list'];
+    const buttonIdToShow = {
+      'VTW00801': ['aprv', 'rjct', 'print', 'docHist', 'list'],
+      'VTW03702': ['print', 'cancel', 'reAtrz', 'docHist', 'list'],
+      'VTW03703': ['print', 'update', 'cancel', 'reAtrz', 'docHist', 'list'],
+      'VTW03704': ['reAtrz', 'list', 'docHist']
+    };
+
     if (onHandleAtrzTitle) {
       buttonsToRender = contents; // 기안 작성페이지의 경우 모든 contents 렌더
     } else {
-      const defaultButtons = ['reAtrz', 'print', 'docHist'];
-      const buttonIdToShow = {
-        'VTW00801': ['aprv', 'rjct', 'print', 'docHist'],
-        'VTW03701': [ 'print', 'docHist'],
-      };
-      const currentButtons = buttonIdToShow[sttsCd] || defaultButtons;
+      const currentButtons = ((refer === null || refer === undefined) && buttonIdToShow[sttsCd]) || defaultButtons;
       buttonsToRender = contents.filter(item => currentButtons.includes(item.id));
     }
-
     return buttonsToRender.map((item, index) => (
       <Button id={item.id} text={item.text} type={item.type} style={{ marginRight: '6px' }} 
        key={index} onClick={item.id === 'onAtrzLnPopup' ? onAtrzLnPopup : onClick} />
@@ -47,14 +49,14 @@ const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick
         <div style={{ display: "inline-block" }}>{setButtons()}</div>
       </div>
 
-      <h3 style={{ textAlign: "center" }}>{formData.gnrlAtrzTtl}</h3>
+      <h3 style={{ textAlign: "center" }}>{formData.gnrlAtrzTtl}{sttsCd === "VTW05405" || formData.atrzHistSeCd === "VTW05405" ? " - 결재취소" : ""}</h3>
       <div style={{ display: "flex", marginTop: "3%", marginLeft: '2%', marginRight: '2%' }}>
         <div style={{ flex: 4 }}>
           <table>
             <tr>
               <td style={{fontWeight: 'bold'}}>문서번호</td>
               <td> : </td>
-              <td>{formData.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407" ? "" : formData.elctrnAtrzDocNo}</td>
+              <td>{formData.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407" || sttsCd === "VTW05405" ? "" : formData.elctrnAtrzDocNo}</td>
             </tr>
             <tr>
               <td style={{fontWeight: 'bold'}}>프로젝트</td>
@@ -71,7 +73,7 @@ const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick
             <tr>
               <td style={{fontWeight: 'bold'}}>기안일자</td>
               <td> : </td>
-              <td>{formData.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407" ? "" : formData.regDt}</td>
+              <td>{formData.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407" || sttsCd === "VTW05405" ? "" : formData.regDt}</td>
             </tr>
           </table>
         </div>
@@ -98,11 +100,20 @@ const ElecAtrzTitleInfo = ({ sttsCd, atrzLnEmpList, getAtrzLn, contents, onClick
 
           <div className="dx-field">
             <div className="dx-field-label" style={{ width: "5%", fontWeight: 'bold' }}>제 목</div>
+            {
+              sttsCd === "VTW05405" ? 
+              <div className="dx-field-label" style={{ width: "120px", fontWeight: 'bold' }}>▶취소결재◀</div>
+              : sttsCd === "VTW05406"?
+              <div className="dx-field-label" style={{ width: "120px", fontWeight: 'bold' }}>▶결재변경◀</div>
+              :
+              <></>
+            }
             <TextBox
               className="dx-field-value"
               style={{ width: "100%" }}
               value={atrzParam.title}
               onValueChanged={onHandleAtrzTitle}
+              readOnly={sttsCd === "VTW05405" || formData.atrzHistSeCd === "VTW05405" ? true : false}
             />
           </div>
 
