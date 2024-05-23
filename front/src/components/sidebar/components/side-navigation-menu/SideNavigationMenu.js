@@ -31,7 +31,6 @@ export default function SideNavigationMenu(props) {
     openMenu,
     compactMode,
     onMenuReady,
-    status
   } = props;
 
   const { isLarge } = useScreenSize();
