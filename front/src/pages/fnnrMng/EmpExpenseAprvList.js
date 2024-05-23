@@ -15,22 +15,23 @@ const EmpExpenseAprvList = () => {
     const [param, setParam] = useState([]);
     const [searchItems, setSearchItems] = useState([]);
 
+    const location = useLocation();
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getDate() > 15 ? date.getMonth() + 1 : date.getMonth();
+    const monthVal = month < 10 ? "0" + month : month;
+    const admin = location.state ? location.state.admin : undefined;
+    const aplyYm = admin != undefined ? admin.aplyYm : year + monthVal;
+    const aplyOdr = admin != undefined ? admin.aplyOdr : date.getDate() > 15 ? "1" : "2";
+
     const searchHandle = async (initParam) => {
 
         if(initParam.yearItem == null || initParam.monthItem == null) {
 
-            const date = new Date();
-            const year = date.getFullYear();
-            const month = date.getMonth() + 1;
-            const day = date.getDate();
-
-            let odrVal = day > 15 ? "1" : "2";
-            let monthVal = month < 10 ? "0" + month : month;
-
             setParam({
                 ...param,
-                aplyYm: year + monthVal,
-                aplyOdr: odrVal,
+                aplyYm: aplyYm,
+                aplyOdr: aplyOdr,
                 // dateList: generateDates(year, monthVal, odrVal)
             })
 
@@ -50,7 +51,6 @@ const EmpExpenseAprvList = () => {
             expensCd = initParam.expensCd;
 
         if(initParam.inqMthd == "month"){
-
             setParam({
                 ...param,
                 prjctId: prjctId,
@@ -60,7 +60,6 @@ const EmpExpenseAprvList = () => {
                 expensCd: expensCd
             })
         } else {
-
             setParam({
                 ...param,
                 prjctId: prjctId,
