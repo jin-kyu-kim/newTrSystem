@@ -572,7 +572,7 @@
 				   WHERE 1=1
 				     AND pca.APLY_YM = #{aplyYm}
 				     AND pca.APLY_ODR = #{aplyOdr}
- 				     AND pcat.ATRZ_DMND_STTS_CD IS NOT NULL
+ 				     AND pcat.ATRZ_DMND_STTS_CD IN ('VTW03701','VTW03702','VTW03703','VTW03704')
  				     AND (pca.CT_ATRZ_SE_CD = 'VTW01902' OR pca.CT_ATRZ_SE_CD = 'VTW01903')
 				  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR
 			  ) T1
