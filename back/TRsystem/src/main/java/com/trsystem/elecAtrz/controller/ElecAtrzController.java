@@ -47,14 +47,29 @@ public class ElecAtrzController {
 		return ElecAtrzDomain.aprvElecAtrz(paramList);
 	}
 	
+	/**
+	 * 청구결재 승인 후 후속처리: 프로젝트 비용에 데이터를 넣어준다.
+	 * @param param
+	 * @return
+	 */
 	@PostMapping(value = "/boot/elecAtrz/insertPrjctCt")
 	public int insertPrjctCt(@RequestBody Map<String, Object> param) {
 		return ElecAtrzDomain.insertPrjctCt(param);
 	}
 	
+	/**
+	 * 취소결재용 전자결재 결재선 생성
+	 * @param params
+	 * @return
+	 */
 	@PostMapping(value = "/boot/elecAtrz/retrieveRtrcnAtrzLn")
 	public List<Map<String, Object>> retrieveRtrcnAtrzLn(@RequestBody Map<String, Object> params) {
 		return ElecAtrzDomain.retrieveRtrcnAtrzLn(params);
 	}
-
+	
+	@PostMapping(value = "/boot/elecAtrz/updateHistElctrnAtrz")
+	public int updateHistElctrnAtrz(@RequestBody Map<String, Object> params) {
+		return ElecAtrzDomain.updateHistElctrnAtrz(params);
+	}
+	
 }

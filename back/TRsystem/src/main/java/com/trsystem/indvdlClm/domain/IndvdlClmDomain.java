@@ -991,8 +991,9 @@ public class IndvdlClmDomain {
         int caseFlag = 0;
         String empId = (String) params.get("empId");
         String elctrnAtrzId = (String) params.get("elctrnAtrzId");
-        String rtrcnElctrnAtrzId = (String) params.get("rtrcnElctrnAtrzId");
+        String histElctrnAtrzId = (String) params.get("histElctrnAtrzId");
         String atrzStepCd = (String) params.get("atrzStepCd");
+        String mdfcnEmpId = (String) params.get("mdfcnEmpId");
 
         // 결재 승인 paramList
         List<Map<String, Object>> aprvParamList = new ArrayList<>();
@@ -1055,7 +1056,7 @@ public class IndvdlClmDomain {
         updateVcatnMngMap.put("queryId", "indvdlClmMapper.updateVcatnAltmntMngCnclMdfcn");
         updateVcatnMngMap.put("empId", empId);
         updateVcatnMngMap.put("vcatnYr", vcatnYr);
-//        updateVcatnMngMap.put("mdfcnEmpId", "세션ID넣어주세요");
+        updateVcatnMngMap.put("mdfcnEmpId", mdfcnEmpId);
         updateVcatnMngMap.put("state", "UPDATE");
 
 
@@ -1063,7 +1064,7 @@ public class IndvdlClmDomain {
         Map<String, Object> updateNewVcatnMngMap = new HashMap<>();
         updateNewVcatnMngMap.put("queryId", "indvdlClmMapper.updateNewVcatnAltmntMngCnclMdfcn");
         updateNewVcatnMngMap.put("empId", empId);
-//        updateNewVcatnMngMap.put("mdfcnEmpId", "세션ID넣어주세요");
+        updateNewVcatnMngMap.put("mdfcnEmpId", mdfcnEmpId);
         updateNewVcatnMngMap.put("state", "UPDATE");
 
 
