@@ -78,11 +78,11 @@ const EmpExpenseAprvIndividual = ({ empNo, aplyYm, aplyOdr, expensCd }) => {
                 });
             }
 
-            if (matchingRowData.length === 0) {
-                combinedData.push({
-                    pivotDate: pivotDate,
-                });
-            }
+            // if (matchingRowData.length === 0) {
+            //     combinedData.push({
+            //         pivotDate: pivotDate,
+            //     });
+            // }
         }
 
         return combinedData;
@@ -98,7 +98,7 @@ const EmpExpenseAprvIndividual = ({ empNo, aplyYm, aplyOdr, expensCd }) => {
         }, {
             caption: '프로젝트명',
             dataField: 'prjctNm',
-            width: 250,
+            width: 150,
             area: 'row',
             expanded: true,
             showTotals: false,
@@ -111,7 +111,7 @@ const EmpExpenseAprvIndividual = ({ empNo, aplyYm, aplyOdr, expensCd }) => {
         },  {
             caption: '상세내역',
             dataField: 'empDetail',
-            width: 250,
+            width: 200,
             area: 'row',
         }, {
             dataField: 'pivotDate',
