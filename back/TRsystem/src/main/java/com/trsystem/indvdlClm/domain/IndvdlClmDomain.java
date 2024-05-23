@@ -919,6 +919,8 @@ public class IndvdlClmDomain {
             insertMap = insertAtrzLnListValue.get(i);
             insertMap.put("elctrnAtrzId", elctrnAtrzId);
             insertMap.put("atrzSttsCd", "VTW00801");
+            insertMap.put("aprvYmd", null);
+            insertMap.put("atrzOpnnCn", null);
             insertAtrzLnListValue.set(i, insertMap);
         }
 
@@ -1267,7 +1269,7 @@ public class IndvdlClmDomain {
         String refSolYear = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy"));
 
         insertElctrnMap.put("elctrnAtrzId", elctrnAtrzValue);
-        insertElctrnMap.put("atrzFormDocId", "9632d577-f0bd-11ee-9b25-000c2956283f");
+        insertElctrnMap.put("atrzFormDocId", "2d91110f-132a-11ef-bf20-02a5fafa82da");
         insertElctrnMap.put("nowAtrzLnSn", "1");
         insertElctrnMap.put("elctrnAtrzDocNo", refSolYear + "-01-" + (Integer.parseInt(String.valueOf(selectElctrnAtrzResult.size())) + 1));
         insertElctrnList.add(0, elctrnTbMap);

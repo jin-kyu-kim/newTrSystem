@@ -12,7 +12,7 @@ import { useMenuPatch } from '../../utils/patches';
 import vtwPng from "../../../../assets/img/vtw.png";
 import { Link } from "react-router-dom";
 
-export default function SideNavInnerToolbar({ children, status }) {
+export default function SideNavInnerToolbar({ children }) {
   const scrollViewRef = useRef(null);
   const navigate = useNavigate();
   const [, startTransition] = useTransition();
@@ -89,7 +89,6 @@ export default function SideNavInnerToolbar({ children, status }) {
 
         <Template name={'menu'}>
           <SideNavigationMenu
-            status={status}
             compactMode={menuStatus === MenuStatus.Closed}
             selectedItemChanged={onNavigationChanged}
             openMenu={temporaryOpenMenu}

@@ -29,12 +29,15 @@ import java.util.Map;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.XML;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class BatchSkillServiceImpl implements BatchSkillService { 
 	private final ApplicationYamlRead applicationYamlRead;
     private static CommonService commonService;
 	private final SqlSession sqlSession;
+	private static final Logger logger = LoggerFactory.getLogger(BatchSkillServiceImpl.class);
 	
 	public BatchSkillServiceImpl(ApplicationYamlRead applicationYamlRead, CommonService commonService, SqlSession sqlSession) {
         this.applicationYamlRead = applicationYamlRead;
@@ -226,14 +229,66 @@ public class BatchSkillServiceImpl implements BatchSkillService {
 	@Transactional
 	public int executeCostUpdate() {
 		try {
+			String queryIdCreateTempTableMM = "batchMapper.createTempTableMM";
+            String queryIdInsertIntoTempTableMM = "batchMapper.insertIntoTempTableMM";
+            String queryIdDeleteFromMainTableMM = "batchMapper.deleteFromMainTableMM";
+            String queryIdDropTempTableMM = "batchMapper.dropTempTableMM";
 			String queryIdMM = "batchMapper.executeCostUpdateMM";
-			int resultMM = sqlSession.insert("com.trsystem.mybatis.mapper." + queryIdMM);
-			
+			String queryIdCreateTempTableCT = "batchMapper.createTempTableCT";
+            String queryIdInsertIntoTempTableCT = "batchMapper.insertIntoTempTableCT";
+            String queryIdDeleteFromMainTableCT = "batchMapper.deleteFromMainTableCT";
+            String queryIdDropTempTableCT = "batchMapper.dropTempTableCT";
 			String queryIdCT = "batchMapper.executeCostUpdateCT";
+			
+			logger.info("Starting executeCostUpdate");
+			
+			//MM 배치 업데이트 실행 
+			// 임시 테이블 생성
+            sqlSession.update("com.trsystem.mybatis.mapper." + queryIdCreateTempTableMM);
+            logger.info("TemporaryMM table created");
+            
+            // 임시 테이블에 데이터 삽입
+            sqlSession.insert("com.trsystem.mybatis.mapper." + queryIdInsertIntoTempTableMM);
+            logger.info("Data inserted into temporaryMM table");
+            
+            // 메인 테이블에서 데이터 삭제
+            int resultDeleteMM = sqlSession.delete("com.trsystem.mybatis.mapper." + queryIdDeleteFromMainTableMM);
+            logger.info("Data deleted from main table: {} rows", resultDeleteMM);
+            
+            // 임시 테이블 삭제
+            sqlSession.update("com.trsystem.mybatis.mapper." + queryIdDropTempTableMM);
+            logger.info("TemporaryMM table dropped");
+            
+            // MM 업데이트 쿼리 실행
+			int resultMM = sqlSession.insert("com.trsystem.mybatis.mapper." + queryIdMM);
+			logger.info("MM data updated: {} rows", resultMM);
+			
+			
+			
+			//CT(경비) 배치 업데이트 실행
+			// 임시 테이블 생성
+            sqlSession.update("com.trsystem.mybatis.mapper." + queryIdCreateTempTableCT);
+            logger.info("TemporaryCT table created");
+            
+            // 임시 테이블에 데이터 삽입
+            sqlSession.insert("com.trsystem.mybatis.mapper." + queryIdInsertIntoTempTableCT);
+            logger.info("Data inserted into temporaryCT table");
+            
+            // 메인 테이블에서 데이터 삭제
+            int resultDeleteCT = sqlSession.delete("com.trsystem.mybatis.mapper." + queryIdDeleteFromMainTableCT);
+            logger.info("Data deleted from main table: {} rows", resultDeleteCT);
+            
+            // 임시 테이블 삭제
+            sqlSession.update("com.trsystem.mybatis.mapper." + queryIdDropTempTableCT);
+            logger.info("TemporaryCT table dropped");
+			
+			// CT(비용) 업데이트 쿼리 실행
 			int resultCT = sqlSession.insert("com.trsystem.mybatis.mapper." + queryIdCT);
+			logger.info("CT data updated: {} rows", resultCT);
 		
 			return resultMM + resultCT;
 		} catch (Exception e) {
+			logger.error("Error during executeCostUpdate", e);
 			throw e;		
 		}
 	}
