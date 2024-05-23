@@ -25,6 +25,7 @@
                 END VCATN_PRVONSH           /* 휴가사유 */
             ,VCATN.RTRCN_PRVONSH            /* 휴가취쇼사유 */
             ,ELCTRN.ATRZ_DMND_STTS_CD		/* 결재요청상태코드 */
+            ,ELCTRN.ELCTRN_ATRZ_TY_SE_CD	/* 전자결재유형구분코드 */
             ,CASE
                 WHEN VCATN.RTRCN_PRVONSH IS NOT NULL THEN CONCAT('취소 ', (SELECT CD_NM FROM CD WHERE CD_VALUE = ELCTRN.ATRZ_DMND_STTS_CD))
                 WHEN ELCTRN.ATRZ_DMND_STTS_CD = 'VTW03705' THEN '취소 문서'
@@ -33,7 +34,12 @@
             ,ELCTRN.ELCTRN_ATRZ_ID		    /* 전자결재ID */
             ,ELCTRN.PRJCT_ID 				/* 프로젝트ID */
             ,VCATN.ATCHMNFL_ID				/* 첨부파일ID */
-            ,ELCTRN.HIST_ELCTRN_ATRZ_ID	/* 취소전자결재ID */
+            ,ELCTRN.HIST_ELCTRN_ATRZ_ID	    /* 취소전자결재ID */
+            ,CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = VCATN.VCATN_TY_CD), ' [', VCATN.VCATN_BGNG_YMD, ' ~ ', VCATN.VCATN_END_YMD, ' (', VCATN.VCATN_DE_CNT, '일)]') TITLE /* 전자결재제목 */
+            ,ELCTRN.ELCTRN_ATRZ_DOC_NO		/* 전자결재문서번호 */
+            ,ELCTRN.ATRZ_FORM_DOC_ID		/* 결재문서ID */
+            ,FORM.GNRL_ATRZ_TTL				/* 결재문서명 */
+            ,DATE_FORMAT(ELCTRN.REG_DT, '%Y-%m-%d %H:%i:%s') AS REG_DT
             ,CASE
                 WHEN VCATN.VCATN_TY_CD NOT IN('VTW01204', 'VTW01207', 'VTW01208', 'VTW01209')  THEN 'FALSE'
                 WHEN ELCTRN.HIST_ELCTRN_ATRZ_ID IS NOT NULL THEN 'FALSE'
@@ -49,9 +55,10 @@
                 WHEN VCATN.VCATN_TY_CD = 'VTW01206' THEN 'FALSE'
                 ELSE 'TRUE'
                 END CANCLE_BUTTON_CTR
-        FROM VCATN_ATRZ		VCATN
-            ,ELCTRN_ATRZ	ELCTRN
-            ,EMP 			EMP
+        FROM VCATN_ATRZ				VCATN
+        JOIN ELCTRN_ATRZ ELCTRN ON VCATN.ELCTRN_ATRZ_ID = ELCTRN.ELCTRN_ATRZ_ID
+        JOIN EMP EMP ON ELCTRN.ATRZ_DMND_EMP_ID = EMP.EMP_ID
+        LEFT JOIN ELCTRN_ATRZ_DOC_FORM FORM ON ELCTRN.ATRZ_FORM_DOC_ID = FORM.ATRZ_FORM_DOC_ID
         WHERE VCATN.ELCTRN_ATRZ_ID = ELCTRN.ELCTRN_ATRZ_ID
         AND ELCTRN.ATRZ_DMND_EMP_ID = EMP.EMP_ID
         <if test="empId !=null and !empId.equals('')">
