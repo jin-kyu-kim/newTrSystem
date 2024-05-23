@@ -52,6 +52,8 @@ const ElecAtrzDetail = () => {
                 break;
             case "cancel": onCancelReq();
                 break;
+            case "update": onUpdateReq();
+            break;
             case "list": navigate('/elecAtrz/ElecAtrz') ;
                 break;
             default:
@@ -345,7 +347,19 @@ const ElecAtrzDetail = () => {
 
                 // 변경결재에 대한 최종 승인인 경우, 후속 처리를 진행한다.
                 if(detailData.atrzHistSeCd === "VTW05406" && nowAtrzLnSn > maxAtrzLnSn) {
-                    
+                    const param = {
+                        atrzHistSeCd: detailData.atrzHistSeCd,
+                        histElctrnAtrzId: detailData.histElctrnAtrzId,
+                        elctrnAtrzTySeCd: detailData.elctrnAtrzTySeCd
+                    }
+
+                    // 1. 이력 컬럼에 있는 전자결재에 대한 처리 -> 
+                    const response = await ApiRequest("/boot/elecAtrz/updateHistElctrnAtrz", param);
+                    const clmResult = handlePrcjtCost();
+                    if(clmResult < 0) {
+                        handleOpen("승인 처리에 실패하였습니다.");
+                    }
+
                 }
 
 
@@ -410,6 +424,16 @@ const ElecAtrzDetail = () => {
                 handleDmndStts(nowAtrzLnSn).then((value) => {
                     console.log(value);
                     if(value > 0) {
+
+                        // 취소결재를 반려한 경우
+                        if(detailData.atrzHistSeCd === "VTW05405") {
+                            // HIST_ELCTRN_ATRZ_ID 의 값을 다시 결재중으로 변경
+                            // HIST_ELCTRN_ATRZ_ID의 결재선을 다시 결재중으로 변경
+                            
+
+                        }
+
+
                         handleOpen("반려 처리되었습니다.");
                         
                         navigate('/elecAtrz/ElecAtrz');
@@ -551,8 +575,17 @@ const ElecAtrzDetail = () => {
      * 결재 취소: VTW05405
      */
     const onCancelReq = async () => {
-        navigate('/elecAtrz/ElecAtrzNewReq', { state: { formData: detailData, sttsCd: "VTW05405", prjctId: detailData.prjctId,  }});
+        navigate('/elecAtrz/ElecAtrzNewReq', { state: { formData: detailData, sttsCd: "VTW05405", prjctId: detailData.prjctId, }});
     }
+
+    /**
+     * 
+     * @returns 
+     */
+    const onUpdateReq = async () => {
+        navigate('/elecAtrz/ElecAtrzNewReq', { state: { formData: detailData, sttsCd: "VTW05406", prjctId: detailData.prjctId, }});
+    }
+
     const renderButtons = () => {
         let filter = [];
       

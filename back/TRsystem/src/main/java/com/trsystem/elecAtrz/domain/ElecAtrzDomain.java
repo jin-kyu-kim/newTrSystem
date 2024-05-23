@@ -1147,7 +1147,15 @@ public class ElecAtrzDomain {
 
     	
     	tbNm.put("tbNm", "ELCTRN_ATRZ");
-    	infoMap.put("atrzDmndSttsCd", "VTW03705");
+    	
+    	if(histElctrnAtrzId.equals("VTW05405")) {
+    		
+    		infoMap.put("atrzDmndSttsCd", "VTW03705");	// 변경
+    	} else if(histElctrnAtrzId.equals("VTW05406")) {
+    		
+    		infoMap.put("atrzDmndSttsCd", "VTW03706");	// 취소
+    	}
+    	
     	conditionMap.put("elctrnAtrzId", histElctrnAtrzId);
     	
     	updateParams.add(0, tbNm);
@@ -1202,8 +1210,6 @@ public class ElecAtrzDomain {
     	} catch(Exception e) {
     	   return -1;
     	}
-    	
-    	// 3. 지급결재의 경우? To do
     	
     	return 0;
     }
