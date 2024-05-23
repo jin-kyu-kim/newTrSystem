@@ -122,8 +122,11 @@
             (
                 SELECT SUM(a.UTZTN_AMT)
                 FROM PRJCT_CT_APLY a
+                LEFT JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_ID = a.PRJCT_ID AND pcat.EMP_ID = a.EMP_ID
+                AND pcat.APLY_YM = a.APLY_YM AND pcat.APLY_ODR = a.APLY_ODR AND pcat.PRJCT_CT_APLY_SN = a.PRJCT_CT_APLY_SN)
                 WHERE a.EXPENS_CD = pca.EXPENS_CD
                 AND a.PRJCT_ID = pca.PRJCT_ID
+                AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703'
                 GROUP BY a.EXPENS_CD
             ) AS TOTAL_AMT_SUM,
             SUM(pca.UTZTN_AMT) AS TOTAL_AMT
@@ -133,7 +136,6 @@
             AND pca.EMP_ID  = picm.EMP_ID
             AND pca.APLY_YM = picm.APLY_YM
             AND pca.APLY_ODR = picm.APLY_ODR
-            AND picm.CT_ATRZ_CMPTN_YN = 'Y'
         WHERE 1 = 1
         <if test="prjctId != null and !prjctId.equals('')">
             AND pca.PRJCT_ID = #{prjctId}
