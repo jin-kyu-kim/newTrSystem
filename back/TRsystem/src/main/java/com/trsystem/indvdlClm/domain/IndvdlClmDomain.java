@@ -906,7 +906,7 @@ public class IndvdlClmDomain {
         insertElctrnAtrzMapValue.put("elctrnAtrzTySeCd", "VTW04915");
         insertElctrnAtrzMapValue.put("atrzFormDocId", "901c0b88-21b9-d716-b2c2-c1f7c2b10fc4");
         insertElctrnAtrzMapValue.put("elctrnAtrzDocNo", refSolYear + "-15-" + (Integer.parseInt(String.valueOf(selectElctrnAtrzResult.size())) + 1));
-        insertElctrnAtrzMapValue.put("rtrcnElctrnAtrzId", insertDataMapValue.get("rtrcnElctrnAtrzId"));
+        insertElctrnAtrzMapValue.put("histElctrnAtrzId", insertDataMapValue.get("histElctrnAtrzId"));
 
         // VCATN_ATRZ(휴가결재저장)
         insertVactnAtrzMapValue.put("elctrnAtrzId", insertDataMapValue.get("elctrnAtrzId"));
@@ -964,7 +964,7 @@ public class IndvdlClmDomain {
 
         Map<String, Object> updateElctrnAtrz = new HashMap<>();
         updateElctrnAtrz.put("queryId", "indvdlClmMapper.updateElctrnAtrzCncl");
-        updateElctrnAtrz.put("elctrnAtrzId", insertDataMapValue.get("rtrcnElctrnAtrzId"));
+        updateElctrnAtrz.put("elctrnAtrzId", insertDataMapValue.get("histElctrnAtrzId"));
 
         commonService.queryIdSearch(updateElctrnAtrz);
         commonService.insertData(insertElctrnAtrzList);
@@ -991,7 +991,7 @@ public class IndvdlClmDomain {
         int caseFlag = 0;
         String empId = (String) params.get("empId");
         String elctrnAtrzId = (String) params.get("elctrnAtrzId");
-        String rtrcnElctrnAtrzId = (String) params.get("rtrcnElctrnAtrzId");
+        String histElctrnAtrzId = (String) params.get("histElctrnAtrzId");
         String atrzStepCd = (String) params.get("atrzStepCd");
 
         // 결재 승인 paramList
@@ -1006,7 +1006,7 @@ public class IndvdlClmDomain {
             put("tbNm", "VCATN_ATRZ");
         }});
         selectElctrnAtrzList.add(1, new HashMap<>() {{
-            put("elctrnAtrzId", rtrcnElctrnAtrzId);
+            put("elctrnAtrzId", histElctrnAtrzId);
         }});
 
         List<Map<String, Object>> selectElctrnAtrzListResult = commonService.commonSelect(selectElctrnAtrzList);

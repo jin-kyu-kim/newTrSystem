@@ -132,7 +132,7 @@ const EmpVacationCanclePopup = ({ width, height, visible, dataMap, empId, onHidi
         const formData = new FormData();
 
         formData.append("insertDataMap", JSON.stringify(
-            { empId: empId, elctrnAtrzId: elctrnAtrzId, rtrcnElctrnAtrzId: dataMap.elctrnAtrzId, rtrcnPrvonsh: rtrcnPrvonsh.current },
+            { empId: empId, elctrnAtrzId: elctrnAtrzId, histElctrnAtrzId: dataMap.elctrnAtrzId, rtrcnPrvonsh: rtrcnPrvonsh.current },
         ));
 
         formData.append("insertElctrnAtrzMap", JSON.stringify(selectElctrnAtrzValue[0]));
