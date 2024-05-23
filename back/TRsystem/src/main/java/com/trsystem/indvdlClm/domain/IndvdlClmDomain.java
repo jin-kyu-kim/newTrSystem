@@ -1075,7 +1075,7 @@ public class IndvdlClmDomain {
         // 공가인경우
         if (selectElctrnAtrzListResult.get(0).get("vcatnTyCd").equals("VTW01204") || selectElctrnAtrzListResult.get(0).get("vcatnTyCd").equals("VTW01205") || selectElctrnAtrzListResult.get(0).get("vcatnTyCd").equals("VTW01207") || selectElctrnAtrzListResult.get(0).get("vcatnTyCd").equals("VTW01208")) {
             caseFlag = 1;
-            updateVcatnMngMap.put("pblenVcatnUseDaycnt", selectElctrnAtrzListResult.get(0).get("vcatnDeCnt"));
+            updateVcatnMngMap.put("newPblenVcatnUseDaycnt", selectElctrnAtrzListResult.get(0).get("vcatnDeCnt"));
         }
         // case_B
         // 공가가아닌경우
