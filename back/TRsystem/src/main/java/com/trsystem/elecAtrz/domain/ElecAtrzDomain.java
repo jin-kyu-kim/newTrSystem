@@ -1066,7 +1066,7 @@ public class ElecAtrzDomain {
     }
 
     /**
-     * 취소결재용 결재라인을 만든다.
+     * 취소결재용 결재선을 만든다.
      * @param params
      * @return 결재라인
      */
@@ -1077,7 +1077,7 @@ public class ElecAtrzDomain {
     	String elctrnAtrzId = String.valueOf(params.get("elctrnAtrzId"));
     	String aprvQueryId = "elecAtrzMapper.retrieveAprvAtrzLn";
 
-    	// 승인된 결재라인
+    	// 승인된 결재라인을 가져온다.
     	Map<String, Object> aprvMap = new HashMap<>();
     	aprvMap.put("queryId", aprvQueryId);
     	aprvMap.put("elctrnAtrzId", elctrnAtrzId);
@@ -1086,7 +1086,7 @@ public class ElecAtrzDomain {
     	aprvList = commonService.queryIdSearch(aprvMap);
     	String atrzStepCd[] = {"VTW00705", "VTW00704", "VTW00703", "VTW00702", "VTW00701"};
     	
-    	
+    	// 승인된 결재라인을 바탕으로 새롭게 결재라인을 생성해준다.
     	for(int i = 0; i < aprvList.size(); i++) {
     		
     		Map<String, Object> resultMap = new HashMap<>();
@@ -1104,7 +1104,7 @@ public class ElecAtrzDomain {
     		resultList.add(resultMap);
     	}
     	
-    	// 참조/합의 라인
+    	// 참조/합의 결재선을 가져온다.
     	String refrnQueryId = "elecAtrzMapper.retrieveRefrnAtrzLn";
     	
     	Map<String, Object> refrnMap = new HashMap<>();
@@ -1120,5 +1120,97 @@ public class ElecAtrzDomain {
     	
 		return resultList;    	
     	
+    }
+    
+    /**
+     * 결재 취소 혹은 변경결재로 인한 후속조치를 실행하는 메소드
+     * @param params
+     * @return
+     */
+    public static int updateHistElctrnAtrz(Map<String, Object> params) {
+    	
+    	int result = 0;
+    	
+    	// 0. 결재취소 요청인지 변경결재 요청인지 확인한다.	
+    	String atrzHistSeCd = String.valueOf(params.get("atrzHistSeCd"));			// 취소/변경 구분코드
+    	String histElctrnAtrzId = String.valueOf(params.get("histElctrnAtrzId"));	// 취소/변경 대상 전자결재 ID
+    	String elctrnAtrzTySeCd = String.valueOf(params.get("elctrnAtrzTySeCd"));	// 전자결재 구분코드
+    	
+    	Map<String, Object> tbNm = new HashMap<>();
+    	Map<String, Object> infoMap = new HashMap<>();
+    	Map<String, Object> conditionMap = new HashMap<>();
+    	List<Map<String, Object>> updateParams = new ArrayList<>();
+    	
+    	// 1. 이력 컬럼에 있는 전자결재에 대한 처리
+    	// target table:  ELCTRN_ATRZ
+    	// -> ATRZ_STTS_CD를 VTW03705(취소)로 변경
+
+    	
+    	tbNm.put("tbNm", "ELCTRN_ATRZ");
+    	
+    	if(histElctrnAtrzId.equals("VTW05405")) {
+    		
+    		infoMap.put("atrzDmndSttsCd", "VTW03705");	// 변경
+    	} else if(histElctrnAtrzId.equals("VTW05406")) {
+    		
+    		infoMap.put("atrzDmndSttsCd", "VTW03706");	// 취소
+    	}
+    	
+    	conditionMap.put("elctrnAtrzId", histElctrnAtrzId);
+    	
+    	updateParams.add(0, tbNm);
+    	updateParams.add(1, infoMap);
+    	updateParams.add(2, conditionMap);
+    	
+    	try {
+    		result = commonService.updateData(updateParams);
+        	
+        	updateParams.clear();
+        	infoMap.clear();
+        	conditionMap.clear();
+        	
+        	// 2. 청구결재의 경우 해당 전자결재아이디로 PRJCT_CT_APLY를 조회한 뒤,(1건이 나올 것으로 기대함)
+        	// 이 경우, 결재중인 전자결재를 결채취소 요청한 경우에는 response가 0일 것임. -> 예외처리
+        	// 조회한 프로젝트 아이디, 차수, EMP_ID, 순번을 통해서 PRJCT_CT_ATRZ를 취소로 변경한다. 
+        	if(elctrnAtrzTySeCd.equals("VTW04907")) {
+
+        		List<Map<String, Object>> selectParams = new ArrayList<>();
+        		Map<String, Object> selectMap = new HashMap<>();
+        		tbNm.put("tbNm", "PRJCT_CT_APLY");
+        		selectMap.put("elctrnAtrzId", histElctrnAtrzId);
+        		
+        		selectParams.add(0, tbNm);
+        		selectParams.add(1, selectMap);
+        		
+        		List<Map<String, Object>> resultList = new ArrayList<>();
+        		
+        		resultList = commonService.commonSelect(selectParams);
+        		
+        		if(resultList.size() > 0) {
+        			tbNm.put("tbNm", "PRJCT_CT_ATRZ");
+        	    	infoMap.put("atrzDmndSttsCd", "VTW03705");
+        	    	conditionMap.put("prjctId", String.valueOf(resultList.get(0).get("prjctId")));
+        	    	conditionMap.put("empId", String.valueOf(resultList.get(0).get("empId")));
+        	    	conditionMap.put("aplyYm", String.valueOf(resultList.get(0).get("aplyYm")));
+        	    	conditionMap.put("aplyOdr", String.valueOf(resultList.get(0).get("aplyOdr")));
+        	    	conditionMap.put("prjctCtAplySn", String.valueOf(resultList.get(0).get("prjctCtAplySn")));
+        			
+        	    	updateParams.add(0, tbNm);
+        	    	updateParams.add(1, infoMap);
+        	    	updateParams.add(2, conditionMap);
+        	    	
+        	    	commonService.updateData(updateParams);
+        	    	
+        	    	updateParams.clear();
+        	    	infoMap.clear();
+        	    	conditionMap.clear();
+        		}
+        		
+        	}
+    	} catch(Exception e) {
+    	   return -1;
+    	}
+    	
+    	return 0;
     }
 }  

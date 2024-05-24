@@ -425,8 +425,8 @@
 	
 	<!-- main 결재 신청현황 -->
 	<select id="retrieveAtrzAplySttus" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT DISTINCT * FROM
-			(SELECT
+	SELECT  * FROM
+			(SELECT DISTINCT
 			   	pca.EMP_ID AS ID							                        -- 사번
 			   	, '프로젝트 비용' AS TY_SE					                        -- 결재유형
 			   	, CONCAT(pca.APLY_YM ,'-',pca.APLY_ODR ,'차수 프로젝트 비용') AS TITLE -- 결재명
@@ -437,8 +437,6 @@
 				, NULL AS PRJCT_ID
 				, NULL AS ELCTRN_ATRZ_ID
 				, NULL AS ELCTRN_ATRZ_DOC_NO
-				, NULL AS CN
-				, NULL AS ATRZ_DMND_STTS_CD
 			FROM PRJCT_CT_APLY pca
 			JOIN PRJCT_CT_ATRZ pcaz
 				ON pca.PRJCT_CT_APLY_SN = pcaz.PRJCT_CT_APLY_SN
@@ -452,7 +450,7 @@
 		 	GROUP BY
 		 		pca.EMP_ID, pca.REG_DT,pca.APLY_YM,pca.APLY_ODR,pcaz.APRVR_EMP_ID,sttsCd.CD_NM
 			UNION ALL
-			SELECT
+			SELECT DISTINCT
 		 		pma.EMP_ID AS ID
 		 		, '근무시간'	AS TY_SE
 		 		, CONCAT(pma.APLY_YM ,'-',pma.APLY_ODR ,'근무시간') AS TITLE
@@ -463,8 +461,6 @@
 		 		, NULL AS PRJCT_ID
 				, NULL AS ELCTRN_ATRZ_ID
 				, NULL AS ELCTRN_ATRZ_DOC_NO
-				, NULL AS CN
-				, NULL AS ATRZ_DMND_STTS_CD
 		 	FROM
 		 		PRJCT_MM_APLY pma
 		 	JOIN PRJCT_MM_ATRZ pmaz ON pma.PRJCT_ID =pmaz.PRJCT_ID
@@ -491,8 +487,6 @@
 		 		, ea.PRJCT_ID
 				, ea.ELCTRN_ATRZ_ID
 				, ea.ELCTRN_ATRZ_DOC_NO
-				, COALESCE(ga.GNRL_ATRZ_CN, ca.CLM_ATRZ_CN, cta.CTRT_ATRZ_CN, cga.STLM_CN) AS CN
-		 		, ea.ATRZ_DMND_STTS_CD
 			FROM ELCTRN_ATRZ ea
 			LEFT JOIN ATRZ_LN al ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID
 				AND ea.NOW_ATRZ_LN_SN = al.ATRZ_LN_SN
@@ -524,7 +518,6 @@
 				, sttsCd.CD_NM	AS ATRZ_STTS_CD_NM										-- 결자생태명
 				, pcaz.APRVR_EMP_ID AS APRPVR_ID										-- 결재자 ID
 				, NULL AS ELCTRN_ATRZ_TY_SE_CD
-				, NULL AS CN
 				, NULL AS ELCTRN_ATRZ_ID
 				, NULL AS ELCTRN_ATRZ_DOC_NO
 				, NULL AS ATRZ_DMND_STTS_CD
@@ -549,7 +542,6 @@
 		 		, sttsCd.CD_NM AS ATRZ_STTS_CD_NM								-- 결자생태명
 		 		, pmaz.APRVR_EMP_ID	AS APRPVR_ID								-- 결재자 ID
 				, NULL AS ELCTRN_ATRZ_TY_SE_CD
-				, NULL AS CN
 				, NULL AS ELCTRN_ATRZ_ID
 				, NULL AS ELCTRN_ATRZ_DOC_NO
 				, NULL AS ATRZ_DMND_STTS_CD
@@ -577,7 +569,6 @@
 				, sttsCd.CD_NM AS ATRZ_STTS_CD 					-- 결재상태 (VTW008)
 				, NULL AS APRPVR_ID 					-- 결재상태 (VTW008)
 				, ea.ELCTRN_ATRZ_TY_SE_CD 						-- 전자결재 유형 코드
-		 		, COALESCE(ga.GNRL_ATRZ_CN, ca.CLM_ATRZ_CN, cta.CTRT_ATRZ_CN, cga.STLM_CN) AS CN
 				, ea.ELCTRN_ATRZ_ID
 				, ea.ELCTRN_ATRZ_DOC_NO
 				, al.ATRZ_STTS_CD AS ATRZ_DMND_STTS_CD
@@ -605,7 +596,6 @@
 				, (SELECT CD_NM FROM CD WHERE CD_VALUE = pald.ATRZ_STTS_CD) AS ATRZ_STTS_CD_NM		-- 결재상태코드명
 				, pald.ATRZ_STTS_CD
 				, NULL AS ELCTRN_ATRZ_TY_SE_CD
-			    , NULL AS CN
 				, NULL AS ELCTRN_ATRZ_ID
 				, NULL AS ELCTRN_ATRZ_DOC_NO
 				, NULL AS ATRZ_DMND_STTS_CD

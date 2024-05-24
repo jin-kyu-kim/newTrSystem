@@ -16,7 +16,6 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
 
     /* ===================================  필요 데이터 조회  ====================================*/
     useEffect(() => {
-
         /* 경비 청구 */
         if(["VTW04907"].includes(detailData.elctrnAtrzTySeCd)){
             const getExpensClm = async () => {

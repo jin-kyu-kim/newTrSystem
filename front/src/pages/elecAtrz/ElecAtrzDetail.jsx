@@ -16,10 +16,11 @@ import './ElecAtrz.css'
 const ElecAtrzDetail = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const detailData = location.state.data;
+    const detailInfo = location.state.data;
     const sttsCd = location.state.sttsCd;
     const refer = location.state.refer;
     const prjctId = location.state.prjctId;
+    const [ detailData, setDetailData ] = useState({});
     const [ prjctData, setPrjctData ] = useState({});
     const [ atrzOpnn, setAtrzOpnn ] = useState([]);
     const [ atrzOpnnVal, setAtrzOpnnVal ] = useState([]);
@@ -36,6 +37,14 @@ const ElecAtrzDetail = () => {
     const [ data, setData ] = useState(location.state.data);
     const { handleOpen } = useModal();
 
+    useEffect(() => {
+        const getDetailData = async () => {
+            const res = await ApiRequest('/boot/common/queryIdSearch', { queryId: "elecAtrzMapper.elecAtrzDetail", elctrnAtrzId: detailInfo.elctrnAtrzId })
+            if (res) setDetailData({ ...detailInfo, ...res[0] })
+        }
+        getDetailData();
+    }, []);
+
     const onBtnClick = (e) => {
         switch (e.element.id) {
             case "aprv": ; onAprvPopup();
@@ -50,20 +59,25 @@ const ElecAtrzDetail = () => {
                 break;
             case "cancel": onCancelReq();
                 break;
+            case "update": onUpdateReq();
+            break;
             case "list": navigate('/elecAtrz/ElecAtrz') ;
                 break;
             default:
                 break;
         }
     }
+
     useEffect(() => {
-        getVacInfo();
-        getPrjct();
-        getAtrzLn();
-        getMaxAtrzLnSn();
-        getAtchFiles();
-        setAplyYmdOdr();
-    }, []);
+        if(detailData.elctrnAtrzId){
+            getVacInfo();
+            getPrjct();
+            getAtrzLn();
+            getMaxAtrzLnSn();
+            getAtchFiles();
+            setAplyYmdOdr();
+        }
+    }, [detailData]);
 
     const getAtchFiles = async () => {
         try{
@@ -75,7 +89,6 @@ const ElecAtrzDetail = () => {
             console.log('error', error);
         }
     };
-    
     const getVacInfo = async () => {
         try {
             const response = await ApiRequest('/boot/common/commonSelect', [
@@ -124,7 +137,7 @@ const ElecAtrzDetail = () => {
         }
         try {
             const response = await ApiRequest("/boot/common/queryIdSearch", param);
-            setMaxAtrzLnSn(response[0].maxAtrzLnSn);
+            if(response[0]) setMaxAtrzLnSn(response[0].maxAtrzLnSn);
         } catch (error) {
             console.error(error)
         }
@@ -200,6 +213,8 @@ const ElecAtrzDetail = () => {
                     empId: detailData.atrzDmndEmpId,
                     elctrnAtrzId: detailData.elctrnAtrzId,
                     atrzStepCd: detailData.atrzStepCd,
+                    histElctrnAtrzId: detailData.histElctrnAtrzId,
+                    mdfcnEmpId: userInfo.empId,
                     aprvParam: [
                         { tbNm: "ATRZ_LN" },
                         { 
@@ -313,13 +328,50 @@ const ElecAtrzDetail = () => {
             const response = await ApiRequest("/boot/common/commonUpdate", param);
             if(response > 0) {
 
-                // 청구결재이면서 촤종 숭인인 경우 프로젝트 비용에 내용을 반영해준다.
-                if(detailData.elctrnAtrzTySeCd === "VTW04907" && nowAtrzLnSn > maxAtrzLnSn) {
+                // 결재 취소나 변경결재가 아닌 경우
+                if(detailData.atrzHistSeCd != "VTW05405" && detailData.atrzHistSeCd != "VTW05406") {
+
+                    // 청구결재이면서 촤종 숭인인 경우 프로젝트 비용에 내용을 반영해준다.
+                    if(detailData.elctrnAtrzTySeCd === "VTW04907" && nowAtrzLnSn > maxAtrzLnSn) {
+                        const clmResult = handlePrcjtCost();
+                        if(clmResult < 0) {
+                            handleOpen("승인 처리에 실패하였습니다.");
+                        }
+                    }
+                }
+
+                // 결재 취소에 대한 최종 승인인 경우, 후속 처리를 진행한다.
+                if(detailData.atrzHistSeCd === "VTW05405" && nowAtrzLnSn > maxAtrzLnSn) {
+
+                    const param = {
+                        atrzHistSeCd: detailData.atrzHistSeCd,
+                        histElctrnAtrzId: detailData.histElctrnAtrzId,
+                        elctrnAtrzTySeCd: detailData.elctrnAtrzTySeCd
+                    }
+
+                    // 1. 이력 컬럼에 있는 전자결재에 대한 처리 -> 
+                    const response = await ApiRequest("/boot/elecAtrz/updateHistElctrnAtrz", param);
+
+                }
+
+                // 변경결재에 대한 최종 승인인 경우, 후속 처리를 진행한다.
+                if(detailData.atrzHistSeCd === "VTW05406" && nowAtrzLnSn > maxAtrzLnSn) {
+                    const param = {
+                        atrzHistSeCd: detailData.atrzHistSeCd,
+                        histElctrnAtrzId: detailData.histElctrnAtrzId,
+                        elctrnAtrzTySeCd: detailData.elctrnAtrzTySeCd
+                    }
+
+                    // 1. 이력 컬럼에 있는 전자결재에 대한 처리 -> 
+                    const response = await ApiRequest("/boot/elecAtrz/updateHistElctrnAtrz", param);
                     const clmResult = handlePrcjtCost();
                     if(clmResult < 0) {
                         handleOpen("승인 처리에 실패하였습니다.");
                     }
+
                 }
+
+
                 handleOpen("승인 처리되었습니다.");
                 navigate('/elecAtrz/ElecAtrz');
             } else {
@@ -381,6 +433,16 @@ const ElecAtrzDetail = () => {
                 handleDmndStts(nowAtrzLnSn).then((value) => {
                     console.log(value);
                     if(value > 0) {
+
+                        // 취소결재를 반려한 경우
+                        if(detailData.atrzHistSeCd === "VTW05405") {
+                            // HIST_ELCTRN_ATRZ_ID 의 값을 다시 결재중으로 변경
+                            // HIST_ELCTRN_ATRZ_ID의 결재선을 다시 결재중으로 변경
+                            
+
+                        }
+
+
                         handleOpen("반려 처리되었습니다.");
                         
                         navigate('/elecAtrz/ElecAtrz');
@@ -522,24 +584,30 @@ const ElecAtrzDetail = () => {
      * 결재 취소: VTW05405
      */
     const onCancelReq = async () => {
-        navigate('/elecAtrz/ElecAtrzNewReq', { state: { formData: detailData, sttsCd: "VTW05405", prjctId: detailData.prjctId,  }});
+        navigate('/elecAtrz/ElecAtrzNewReq', { state: { formData: detailData, sttsCd: "VTW05405", prjctId: detailData.prjctId, }});
     }
+
+    /**
+     * 
+     * @returns 
+     */
+    const onUpdateReq = async () => {
+        navigate('/elecAtrz/ElecAtrzNewReq', { state: { formData: detailData, sttsCd: "VTW05406", prjctId: detailData.prjctId, }});
+    }
+
     const renderButtons = () => {
-        let filter = [];
-      
-        if (sttsCd === 'VTW00801') {
-            filter = header.filter(item => item.id === 'aprv' || item.id === 'rjct');
-        } else if (sttsCd === 'VTW03702') {
-            filter = header.filter(item => item.id === 'cancel' || item.id === 'reAtrz');
-        } else if (sttsCd === 'VTW03703') {
-            filter = header.filter(item => item.id === 'update' || item.id === 'cancel' || item.id === 'reAtrz');
-        } else if (sttsCd === 'VTW03704') {
-            filter = header.filter(item => item.id === 'reAtrz');
-        }
+        const conditions = [
+          { sttsCd: 'VTW00801', ids: ['aprv', 'rjct'] },
+          { sttsCd: 'VTW03702', ids: ['cancel', 'reAtrz'] },
+          { sttsCd: 'VTW03703', ids: ['update', 'cancel', 'reAtrz'] },
+          { sttsCd: 'VTW03704', ids: ['reAtrz'] }
+        ];
+        const condition = conditions.find(cond => cond.sttsCd === sttsCd && (refer === null || refer === undefined));
+        const filter = condition ? header.filter(item => condition.ids.includes(item.id)) : [];
       
         return filter.map((item, index) => (
           <Button id={item.id} text={item.text} key={index} type={item.type} 
-                  onClick={onBtnClick} style={{marginRight: '3px'}}/>
+                  onClick={onBtnClick} style={{ marginRight: '3px' }} />
         ));
     };
 

@@ -597,13 +597,16 @@ const EmpVacation = () => {
     const insertVcatnAtrz = async (params) => {
         const formData = new FormData();
 
+        let insertData = insertVcatnValue;
+        if (insertVcatnValue.vcatnTyCd == "VTW01209") insertData["vcatnTyCd"] = insertVcatnValue.vcatnLeaveTyCd
+
         formData.append("elctrnAtrzId", JSON.stringify({ elctrnAtrzId: elctrnAtrzId }));
 
         formData.append("elctrnTbNm", JSON.stringify({ tbNm: "ELCTRN_ATRZ" }));
         formData.append("insertElctrnValue", JSON.stringify(params));
 
         formData.append("vcatnTbNm", JSON.stringify({ tbNm: "VCATN_ATRZ" }));
-        formData.append("insertVcatnValue", JSON.stringify(insertVcatnValue));
+        formData.append("insertVcatnValue", JSON.stringify(insertData));
 
         formData.append("atrzLnTbNm", JSON.stringify({ tbNm: "ATRZ_LN" }));
         formData.append("insertAtrzLnValue", JSON.stringify(popupAtrzValue.filter(item => item.approvalCode == "VTW00702" || item.approvalCode == "VTW00703" || item.approvalCode == "VTW00704" || item.approvalCode == "VTW00705")));
@@ -615,7 +618,7 @@ const EmpVacation = () => {
 
         try {
             setLoading(true);
-            let axiosUrl = insertVcatnValue.vcatnTyCd == "VTW01209" ? "/boot/indvdlClm/insertEmpLeave" : "/boot/indvdlClm/insertVcatnAtrz";
+            let axiosUrl = ["VTW05301", "VTW05302", "VTW053013"].includes(insertData.vcatnTyCd) ? "/boot/indvdlClm/insertEmpLeave" : "/boot/indvdlClm/insertVcatnAtrz";
 
             const response = await axios.post(axiosUrl, formData, {
                 headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${localStorage.getItem("token")}` },
@@ -774,7 +777,20 @@ const EmpVacation = () => {
 
     // 휴가목록선택
     function onRowClick(e) {
-        navigate("/elecAtrz/ElecAtrzDetail", { state: { data: { elctrnAtrzId: e.data.elctrnAtrzId, elctrnAtrzTySeCd: "VTW04901", prjctId: e.data.prjctId } } })
+        if(e.event.target.className === "dx-button-content" || e.event.target.className === "dx-button-text") {
+            return;
+        }
+        
+        navigate("/elecAtrz/ElecAtrzDetail", { state: { data: { 
+            elctrnAtrzId: e.data.elctrnAtrzId, 
+            gnrlAtrzTtl: e.data.gnrlAtrzTtl,
+            elctrnAtrzDocNo: e.data.elctrnAtrzDocNo,
+            elctrnAtrzTySeCd: e.data.elctrnAtrzTySeCd, 
+            prjctId: e.data.prjctId,
+            regDt: e.data.regDt,
+            atchmnflId: e.data.atchmnflId,
+            title: e.data.title
+        } } })
     }
 
 
@@ -926,7 +942,8 @@ const EmpVacation = () => {
                                 columns={listTableColumns}
                                 values={selectVcatnListValue}
                                 wordWrap={true}
-                                onRowDblClick={onRowClick}
+                                // onRowDblClick={onRowClick}
+                                onRowClick={(e) => onRowClick(e)}
                                 onClick={onButtonClick}
                             />
                         </div>
@@ -1155,7 +1172,11 @@ const EmpVacation = () => {
                                     visible={popupAttachValue.visible}
                                     attachId={popupAttachValue.attachId}
                                     elctrnAtrzId={popupAttachValue.elctrnAtrzId}
-                                    onHiding={(e) => { setPopupAttachValue({ attachId: "", visible: e }) }}
+                                    onHiding={(e) => { if(e == false) {
+                                        setPopupAttachValue({ attachId: "", visible: e })
+                                        setSearchVcatnListParam({ ...searchVcatnListParam, isSearch: true })
+                                        selectData(searchVcatnListParam);
+                                    } }}
                                 />
                                 : <></>
                         }

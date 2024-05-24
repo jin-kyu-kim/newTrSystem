@@ -1,0 +1,12 @@
+{
+    "menuName": "ElecAtrzHistPopup",
+    "queryId": "elecAtrzMapper.retrieveAtrzHist",
+    "keyColumn": "elctrnAtrzId",
+    "columns": [
+        { "key": "atrzHistSeCdNm", "value": "이력 구분", "width": "20%", "alignment": "center"},
+        { "key": "regDt", "value": "이력 날짜", "width": "20%", "alignment": "center"},
+        { "key": "empno", "value": "사번", "width": "20%", "alignment": "center"},
+        { "key": "empFlnm", "value": "성명", "width": "20%", "alignment": "center"},
+        { "key": "histElctrnAtrzId", "value": "연결문서 확인", "width": "20%", "alignment": "center", "button": { "text": "연결문서 확인", "name": "histElctrnAtrzId", "visible": {"key": "histElctrnAtrzId", "value": ""}}}
+    ]
+}

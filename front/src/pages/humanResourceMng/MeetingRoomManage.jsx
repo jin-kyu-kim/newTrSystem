@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 import { Scheduler } from 'devextreme-react';
-import { Resource, View } from 'devextreme-react/scheduler';
+import { Resource, View, AppointmentDragging } from 'devextreme-react/scheduler';
 
 // 날짜관련
 // npm install moment
@@ -139,9 +139,14 @@ const MeetingRoomManage = () => {
         setPopupMeetingRoomValue({ visible: true, state: "update" })
     }
 
-    // 더블클릭이벤트 차단
+    /* devextreme 이벤트 컨트롤 */
     function onAppointmentDblClick(e) {
         e.cancel = true;
+    }
+
+    /* devextreme 이벤트 컨트롤 */
+    function onDragStart(e){
+        e.cancel = true
     }
 
     // grouping 설정
@@ -254,6 +259,9 @@ const MeetingRoomManage = () => {
                     <View
                         type="agenda"
                         name="일정"
+                    />
+                    <AppointmentDragging
+                        onDragStart={onDragStart}
                     />
                 </Scheduler>
 
