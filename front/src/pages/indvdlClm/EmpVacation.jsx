@@ -119,9 +119,7 @@ const EmpVacation = () => {
     let jbttlCd = location.state ? location.state.deptList[0].jbttlCd : deptInfo[0].jbttlCd
 
 
-    useEffect(() => {
-        console.log("loading : ", loading);
-    }, [loading])
+
 
 
     // 1. 월별 근무일_공휴일정보조회
