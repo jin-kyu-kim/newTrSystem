@@ -11,9 +11,12 @@ const CustomModal = ({ open, close, message, onClick, isStepOne }) => {
     };
 
     const handleOnClick = () => {
-        onClick();
         if (isStepOne) {
             close();
+            onClick();
+        } else {
+            close();
+            onClick();
         }
     };
 
@@ -41,7 +44,7 @@ const CustomModal = ({ open, close, message, onClick, isStepOne }) => {
                                 text='확인'
                                 stylingMode="contained"
                                 type="default"
-                                onClick={() => handleOnClick()}
+                                onClick={handleOnClick}
                                 style={{
                                     width: '45%',
                                     backgroundColor: 'rgb(128, 184, 245)',
