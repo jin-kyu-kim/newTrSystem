@@ -39,7 +39,7 @@ const ElecAtrzDetail = () => {
 
     useEffect(() => {
         const getDetailData = async () => {
-            const res = await ApiRequest('/boot/common/queryIdSearch', { queryId: "elecAtrzMapper.elecAtrzDetail", elctrnAtrzId: detailData.elctrnAtrzId })
+            const res = await ApiRequest('/boot/common/queryIdSearch', { queryId: "elecAtrzMapper.elecAtrzDetail", elctrnAtrzId: detailInfo.elctrnAtrzId })
             if (res) setDetailData({ ...detailInfo, ...res[0] })
         }
         getDetailData();
@@ -67,6 +67,7 @@ const ElecAtrzDetail = () => {
                 break;
         }
     }
+
     useEffect(() => {
         if(detailData.elctrnAtrzId){
             getVacInfo();
@@ -74,7 +75,7 @@ const ElecAtrzDetail = () => {
             getAtrzLn();
             getMaxAtrzLnSn();
             getAtchFiles();
-            setAplyYmdOdr();    
+            setAplyYmdOdr();
         }
     }, [detailData]);
 
@@ -88,7 +89,6 @@ const ElecAtrzDetail = () => {
             console.log('error', error);
         }
     };
-    
     const getVacInfo = async () => {
         try {
             const response = await ApiRequest('/boot/common/commonSelect', [
