@@ -8,6 +8,7 @@ import elecAtrzJson from "./ElecAtrzJson.json";
 import ApiRequest from 'utils/ApiRequest';
 import ElecAtrzHistPopup from "./common/ElecAtrzHistPopup";
 import "./ElecAtrz.css";
+import { useModal } from "../../components/unit/ModalContext";
 
 const ElecAtrz = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const ElecAtrz = () => {
   const [ titleRow, setTitleRow ] = useState([]);
   const [ totalCount, setTotalCount ] = useState([]);
   const [ selectedList, setSelectedList ] = useState([]);
+  const { handleOpen } = useModal();
 
   /**
    * 이력 팝업 관련
@@ -140,7 +142,7 @@ const ElecAtrz = () => {
     } else if(button.name === "aprv") {
       console.log(data);
     } else if(button.name === "recall") {
-      console.log(data);
+      handleOpen("회수 하시겠습니까?",  () => elctrnAtrzRecall(data), true);
     }
   }
 
@@ -154,6 +156,42 @@ const ElecAtrz = () => {
 
   const onSetPopData = async (data) => {
     setSelectedData(data);
+  }
+
+  /**
+   * 결재를 회수한다.
+   */
+  const elctrnAtrzRecall = async (data) => {
+    /**
+     * 1. 회수 가능: 결재선 1번라인이 심사중일 경우
+     * 2. 
+     */
+
+
+    const param = [
+      { tbNm: "ELCTRN_ATRZ" },
+      {
+        atrzDmndSttsCd: "VTW03701"
+      },
+      {
+        elctrnAtrzId: data.elctrnAtrzId
+      }
+    ]
+
+    try {
+      const response = await ApiRequest("/boot/common/commonUpdate", param);
+  
+      if(response > 0) {
+        handleOpen("회수되었습니다. 임시저장 목록에서 확인가능합니다.");
+        searchHandle();
+      } else {
+        handleOpen("회수에 실패하였습니다. 관리자에게 문의해주세요");
+      }
+
+    } catch (error) {
+      console.error(error);
+    }
+
   }
 
 
