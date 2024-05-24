@@ -120,7 +120,7 @@ const CultureHealthCostReg = (props) => {
 
                     if(!tmpList.includes(JSON.stringify(tmpElement))){
                         tmpList.push(JSON.stringify(tmpElement));
-                        tmpElement.month = getLastMonth(element.clmYmd);
+                        tmpElement.month = element.clmYmd.substring(0, 4)+"/"+element.clmYmd.substring(4, 6);
                         tmpElement.clmYmd = element.clmYmd;
                         tmpElement.clmAmt = element.clmAmt;
                         tmpElement.actIem = element.actIem;
@@ -210,11 +210,6 @@ const CultureHealthCostReg = (props) => {
             || !initParam.actIem || !initParam.frcsNm || !initParam.frcsNm) {
             alert('입력되지 않은 항목이 있습니다.')
             errors.push('Data required');
-        }
-
-        if (!initParam.atchmnflId) {
-            alert('파일이 첨부되지 않았습니다.')
-            errors.push('File required');
         }
 
         return errors.length === 0;
@@ -342,9 +337,12 @@ const CultureHealthCostReg = (props) => {
                         const responseMn = await ApiRequest('/boot/indvdlClm/minusClturPhstrnActCt', paramMn);
                         if (responseMn === 1) {
                             const paramAt = [{ tbNm: "ATCHMNFL" }, { atchmnflId: selectedItem.atchmnflId }]
-                            await ApiRequest("/boot/common/commonDelete", paramAt);
-                            searchTable();
+                            if(selectedItem.atchmnflId != null){
+                                await ApiRequest("/boot/common/commonDelete", paramAt);
+                                searchTable();
+                            }
                             props.searchGrid();
+                            searchTable();
                             setSelectedItem(null);
                             window.alert("삭제되었습니다.");
                         }

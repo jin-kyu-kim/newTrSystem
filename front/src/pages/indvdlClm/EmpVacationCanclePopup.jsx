@@ -38,8 +38,12 @@ const EmpVacationCanclePopup = ({ width, height, visible, dataMap, empId, onHidi
 
 
 
+    // 취소사유
+    const [rtrcnPrvonsh, setRtrcnPrvonsh] = useState();
 
-    const rtrcnPrvonsh = useRef(null);
+
+
+
 
     const getElctrnAtrz = async () => {
         setSelectElctrnAtrzValue(await ApiRequest('/boot/common/commonSelect', [{ tbNm: "ELCTRN_ATRZ" }, { elctrnAtrzId: dataMap.elctrnAtrzId }]));
@@ -82,13 +86,12 @@ const EmpVacationCanclePopup = ({ width, height, visible, dataMap, empId, onHidi
                     <div style={{ marginTop: "30px" }}><h5>* 취소 사유</h5></div>
                     <div style={{ marginTop: "10px" }}>
                         <TextBox
-                            ref={rtrcnPrvonsh}
-                            onValueChange={(e) => { rtrcnPrvonsh.current = e }}
+                            onValueChange={(e) => setRtrcnPrvonsh(e)}
                         />
                     </div>
                 </div>
                 <div style={{ display: "inline-block", float: "right", marginTop: "25px" }}>
-                    <Button style={{ height: "48px", width: "80px", marginRight: "15px" }} onClick={onVcatnAtrzCancle}>취소요청</Button>
+                    <Button style={{ height: "48px", width: "80px", marginRight: "15px" }} onClick={() => handleOpen("취소요청 하시겠습니까?", onVcatnAtrzCancle)}>취소요청</Button>
                 </div>
             </>
         )
@@ -113,7 +116,8 @@ const EmpVacationCanclePopup = ({ width, height, visible, dataMap, empId, onHidi
         if (dataMap.atrzDmndSttsCd == "VTW03702") {
             deleteVcatnAtrz();
         } else if (dataMap.atrzDmndSttsCd == "VTW03703") {
-            insertVcatnAtrz();
+            if(rtrcnPrvonsh) insertVcatnAtrz();
+            else handleOpen("취소사유는 필수입니다.");
         }
     }
 
@@ -132,7 +136,7 @@ const EmpVacationCanclePopup = ({ width, height, visible, dataMap, empId, onHidi
         const formData = new FormData();
 
         formData.append("insertDataMap", JSON.stringify(
-            { empId: empId, elctrnAtrzId: elctrnAtrzId, histElctrnAtrzId: dataMap.elctrnAtrzId, rtrcnPrvonsh: rtrcnPrvonsh.current },
+            { empId: empId, elctrnAtrzId: elctrnAtrzId, histElctrnAtrzId: dataMap.elctrnAtrzId, rtrcnPrvonsh: rtrcnPrvonsh },
         ));
 
         formData.append("insertElctrnAtrzMap", JSON.stringify(selectElctrnAtrzValue[0]));
