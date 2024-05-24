@@ -15,9 +15,7 @@ import CustomTable from "components/unit/CustomTable";
 const EmpVcatnAltmntMngExcelUpload = ({ onHiding, visible }) => {
     const { handleOpen } = useModal();
     
-    
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-
 
     const popupRef = useRef(null);
 
@@ -38,21 +36,6 @@ const EmpVcatnAltmntMngExcelUpload = ({ onHiding, visible }) => {
         setSelectEmpList(await ApiRequest("/boot/common/queryIdSearch", { queryId: "humanResourceMngMapper.retrieveEmpList" }));
     }
 
-
-
-
-
-    // 엑셀업로드 첨부파일조회
-    const [selectExcelAttachFile, setSelectExcelAttachFile] = useState();
-
-    // 엑셀업로드 첨부파일조회
-    const getExcelAttachFile = async () => {
-        try {
-            setSelectExcelAttachFile(await ApiRequest('/boot/common/commonSelect', [ { tbNm: "ATCHMNFL" }, { atchmnflId: "a75e2f32-0a30-cf43-c3ab-5f36b65daae6" } ]));
-        } catch (error) {
-            console.log("selectData_error : ", error);
-        }
-    };
 
 
 
@@ -209,10 +192,7 @@ const EmpVcatnAltmntMngExcelUpload = ({ onHiding, visible }) => {
                 showCloseButton={true}
                 ref={popupRef}
                 contentRender={createRenderData}
-                onHiding={() => {
-                    onHiding(false);
-                }}
-
+                onHiding={() => { onHiding(false) }}
             />
         </div>
     )
