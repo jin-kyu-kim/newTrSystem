@@ -9,7 +9,6 @@ import '../ElecAtrz.css'
 const ElecAtrzTitleInfo = ({ sttsCd, refer, atrzLnEmpList, getAtrzLn, contents, onClick, formData, prjctData, onHandleAtrzTitle, atrzParam }) => {
   const [popVisible, setPopVisible] = useState(false);
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-
   const onAtrzLnPopup = async () => {
     setPopVisible(true);
   }
@@ -113,7 +112,7 @@ const ElecAtrzTitleInfo = ({ sttsCd, refer, atrzLnEmpList, getAtrzLn, contents, 
               style={{ width: "100%" }}
               value={atrzParam.title}
               onValueChanged={onHandleAtrzTitle}
-              readOnly={sttsCd === "VTW05405" || formData.atrzHistSeCd === "VTW05405" ? true : false}
+              readOnly={sttsCd === "VTW05405" || sttsCd === "VTW03702" || sttsCd === "VTW03703" || formData.atrzHistSeCd === "VTW05405" ||  sttsCd === "VTW00801" ? true : false}
             />
           </div>
 

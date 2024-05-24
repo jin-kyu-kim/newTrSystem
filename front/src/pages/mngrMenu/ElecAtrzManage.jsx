@@ -8,12 +8,13 @@ import "../elecAtrz/ElecAtrz.css";
 import { useNavigate } from "react-router-dom";
 import ElecAtrzManageHistList from "./ElecAtrzManageAttchList";
 import ElecAtrzManageAttchList from "./ElecAtrzManageAttchList";
+import CustomStore from 'devextreme/data/custom_store';
 
 const ElecAtrzManage = () => {
     //========================선언구간=======================//
     const navigate = useNavigate(); 
     const { keyColumn, queryId, countQueryId, atchmnFlPopupqueryId, baseColumns, progress, atrzSquareList, searchInfo} = elecAtrzManageJson.elecManageMain;
-    const [searchParam, setSearchParam] = useState({keyColumn : keyColumn, queryId : queryId, searchType : "progress"});
+    const [searchParam, setSearchParam] = useState({keyColumn : keyColumn, queryId : queryId, searchType : "progress", startVal: 0, pageSize: 20});
     const [totalCount, setTotalCount] = useState([]);
     const [searchList, setSearchList] = useState([]);
     const [columnTitle, setColumnTitle]= useState(baseColumns.concat(progress));
@@ -29,9 +30,11 @@ const ElecAtrzManage = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [pageSize, setPageSize] = useState(20);
 
+    const [pageIndex, setPageIndex] = useState(1);   
+
     useEffect(() => {
         pageHandle();
-    }, [searchParam]);
+    }, [searchParam, pageIndex]);
 
     //======================조회======================//
     const pageHandle = async () => {
@@ -43,13 +46,18 @@ const ElecAtrzManage = () => {
         try{
             const cntResp = await ApiRequest('/boot/common/queryIdSearch', countParam)
             const atrzResp = await ApiRequest('/boot/common/queryIdSearch', searchParam)
-
             setTotalCount(cntResp);
             setSearchList(atrzResp);
-            
+
+            if(clickBox === "progress") {
+                setTotalItems(cntResp[0].progress)
+            } else if (clickBox === "terminatedAprvrEmp") {
+                setTotalItems(cntResp[0].terminatedAprvrEmp)
+            } else if (clickBox === "deny") {
+                setTotalItems(cntResp[0].deny)
+            } 
+
             if(atrzResp.length !== 0){
-                setTotalPages(Math.ceil(atrzResp[0].totalItems / pageSize));
-                setTotalItems(atrzResp[0].totalItems);
             } else {
                 setTotalPages(1);
             }
@@ -65,7 +73,9 @@ const ElecAtrzManage = () => {
           ...initParam,
           queryId : queryId,
           keyColumn : keyColumn,
-          searchType : clickBox
+          searchType : clickBox,
+          startVal: 0, 
+          pageSize: 20
         })
     }
 
@@ -73,7 +83,9 @@ const ElecAtrzManage = () => {
         setSearchParam({
             queryId : queryId,
             keyColumn : keyColumn,
-            searchType : keyNm
+            searchType : keyNm,
+            startVal: 0, 
+            pageSize: 20
         })
 
         keyNm !== "progress" ? setSearchSetVisivle(true) : setSearchSetVisivle(false);
@@ -145,6 +157,57 @@ const ElecAtrzManage = () => {
             </div>
         );
     }
+    
+    const onPageIndexChanged = (e) => {
+
+        setPageIndex (e.pageIndex + 1); 
+    };
+
+
+    const customStore = new CustomStore({
+        key: "elctrnAtrzDocNo",
+        load: async (loadOptions) => {
+            const { skip, take } = loadOptions;
+            const pageIndex = (skip / take) + 1;
+    
+            try {
+                const { data, totalCount } = await fetchData(pageIndex, take);
+                return {
+                    data,
+                    totalCount,
+                };
+            } catch (error) {
+                console.error('CustomStore 로드 중 에러:', error);
+                throw error;
+            }
+        }
+    });
+
+    const fetchData = async (pageIndex, pageSize) => {
+        try {
+
+            const response = await ApiRequest('/boot/common/queryIdSearch', {
+                ...searchParam,
+                startVal: (pageIndex - 1) * pageSize,
+                pageSize: pageSize,
+            });
+
+            console.log(totalItems)
+            return {
+                data: response,
+                totalCount:totalItems,
+            };
+
+        } catch (error) {
+            console.error('데이터를 가져오는 중 에러 발생:', error);
+            return {
+                data: [],
+                totalCount: 0,
+            };
+        }
+    };
+
+    const pagination = { pageSize: pageSize, pageIndex: pageIndex }
 
     return (
         <div>
@@ -162,26 +225,29 @@ const ElecAtrzManage = () => {
                 ))}
             </div>
 
-            <div style={{ marginTop: "20px"}}>
+            <div style={{ marginTop: "20px", marginBottom: "20px"}}>
                 <div style={{marginBottom: '15px'}}>
                     {searchSetVisible ? <SearchInfoSet callBack={searchHandle} props={searchInfo}/> : null}
                 </div>
                 <CustomTable
                   keyColumn={keyColumn}
                   pageSize={pageSize}
-                  values={searchList}
+                  dataSource={customStore}
                   columns={columnTitle}
+                  pagination={pagination}
                   paging={true}
                   onRowDblClick={onRowDblClick}
                   onClick={onBtnClick}
                   wordWrap={true}
+                  onOptionChanged={onPageIndexChanged}
+                  remoteOperations={true}
+                  showPageSizeSelector={false}
                 />
-            </div>
+                    
+                </div>
+                <ElecAtrzManageHistList
 
-            <ElecAtrzManageHistList
-
-            />
-
+                />
             {isAtchmnFlPopupVisible &&
                     <ElecAtrzManageAttchList
                         width={"500px"}

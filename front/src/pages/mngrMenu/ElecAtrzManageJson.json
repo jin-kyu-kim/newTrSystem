@@ -37,7 +37,7 @@
             },
             "selectBoxItem": [
                 {
-                  "placeholder": "[문서서식]",
+                  "placeholder": "[결재유형]",
                   "param":{
                     "tbNm": "CD",
                     "valueExpr": "cdValue",
