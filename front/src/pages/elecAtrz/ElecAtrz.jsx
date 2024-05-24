@@ -137,6 +137,10 @@ const ElecAtrz = () => {
     } else if(button.name === "docHist") {
       await onSetPopData(data);
       await onHistPopAppear();
+    } else if(button.name === "aprv") {
+      console.log(data);
+    } else if(button.name === "recall") {
+      console.log(data);
     }
   }
 
@@ -151,6 +155,7 @@ const ElecAtrz = () => {
   const onSetPopData = async (data) => {
     setSelectedData(data);
   }
+
 
   return (
     <div style={{marginBottom: '10%'}}>
