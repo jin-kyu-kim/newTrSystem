@@ -47,6 +47,16 @@ const ElecAtrzNewReq = () => {
     const [popVisible, setPopVisible] = useState(false);
     const column = { "dataField": "gnrlAtrzCn", "placeholder": "내용을 입력해주세요."};
 
+    useEffect(() => {
+        const getDetailData = async () => {
+            const res = await ApiRequest('/boot/common/queryIdSearch', { queryId: "elecAtrzMapper.elecAtrzDetail", elctrnAtrzId: formData.elctrnAtrzId })
+            if(res[0]) {
+                setData({...data, ...res[0]})
+            }
+        }
+        getDetailData();
+    }, []);
+
     /**
      * 계약 지급인 경우 계약코드 및 계약전자결재ID 조회
      */
@@ -128,7 +138,9 @@ const ElecAtrzNewReq = () => {
             }));
             
             // 첨부파일 조회
-            getAttachments();
+            if(data.atchmnflId){
+                getAttachments();
+            }
         }
     }, []);
 

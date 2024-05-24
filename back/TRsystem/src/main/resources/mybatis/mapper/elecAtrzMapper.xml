@@ -117,7 +117,7 @@
 			ea.ATRZ_DMND_EMP_ID,
 			ea.NOW_ATRZ_LN_SN,
 			COALESCE(ga.GNRL_ATRZ_CN, ca.CLM_ATRZ_CN, cta.CTRT_ATRZ_CN, cga.STLM_CN) AS CN,
-			COALESCE(ga.ATCHMNFL_ID, ca.ATCHMNFL_ID, cta.ATCHMNFL_ID, cga.ATCHMNFL_ID) AS ATCHMNFL_ID,
+			COALESCE(ga.ATCHMNFL_ID, ca.ATCHMNFL_ID, cta.ATCHMNFL_ID, cga.ATCHMNFL_ID, va.ATCHMNFL_ID) AS ATCHMNFL_ID,
 			ea.HIST_ELCTRN_ATRZ_ID,
 			ea.ATRZ_HIST_SE_CD,
 			va.VCATN_TY_CD
@@ -129,7 +129,6 @@
 		LEFT JOIN CTRT_ATRZ cta ON ea.ELCTRN_ATRZ_ID = cta.ELCTRN_ATRZ_ID -- 계약결재
 		LEFT JOIN CTRT_GIVE_ATRZ cga ON ea.ELCTRN_ATRZ_ID = cga.ELCTRN_ATRZ_ID
 		WHERE ea.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
-		AND ea.ATRZ_DMND_EMP_ID = #{empId}
 	</select>
 
 	<select id="elecAtrzMainCount" parameterType="String" resultType="com.trsystem.LowerHashMap">
