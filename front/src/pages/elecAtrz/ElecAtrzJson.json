@@ -55,7 +55,7 @@
       "terminatedMy": [
         {"key": "atrzSttsCd", "value": "결재상태", "width": "12%"},
         {"key": "docsHist", "value": "문서이력", "width": "12%", "button": { 
-          "text": "문서이력", "name": "atrzDmndSttsCd" }}
+          "text": "문서이력", "name": "docHist" }}
       ],
       "terminatedAprvrEmp": [
         {"key": "atrzSttsCd", "value": "결재상태", "width": "15%"}
@@ -75,7 +75,7 @@
               "dateRange": true,
               "startDtNm": "startDate",
               "endDtNm": "endDate"
-          },
+          }, 
           "selectBoxItem": [
             {
               "placeholder": "[문서서식]",

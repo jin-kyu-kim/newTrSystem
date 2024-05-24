@@ -158,7 +158,7 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
           </Item>
         }
         {searchParams.project &&
-          <Item ratio={1}>
+          <Item ratio={3}>
             <AutoCompleteProject 
               placeholderText="프로젝트 명"
               onValueChange={handleChgPrjct}

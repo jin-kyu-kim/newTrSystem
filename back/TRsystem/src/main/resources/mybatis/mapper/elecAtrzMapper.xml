@@ -28,33 +28,27 @@
 	<select id="elecAtrzMain" parameterType="String" resultType="com.trsystem.LowerHashMap">
 		SELECT DISTINCT
 			ea.ELCTRN_ATRZ_ID,
-			ea.ATRZ_DMND_EMP_ID,
-			ea.ATRZ_DMND_STTS_CD,
-			ea.PRJCT_ID,
-			ea.ELCTRN_ATRZ_TY_SE_CD,
-			ea.NOW_ATRZ_LN_SN,
+			ea.ELCTRN_ATRZ_TY_SE_CD, -- newReq
+			ea.ATRZ_FORM_DOC_ID, -- newReq
+			ea.PRJCT_ID, -- newReq
+			ea.ELCTRN_ATRZ_DOC_NO,
 			eadf.GNRL_ATRZ_TTL, -- 전자결재 유형
-			-- 			cad.CNPT_NM, -- 거래처명
 			(SELECT EMP_FLNM FROM EMP WHERE EMP_ID = ea.ATRZ_DMND_EMP_ID) ATRZ_DMND_EMP_NM, -- 기안자
-			(SELECT EMP_FLNM FROM EMP WHERE EMP_ID = al.APRVR_EMP_ID) APRVR_EMP_ID, -- 결재자
-			(SELECT CD_NM FROM CD WHERE CD_VALUE = al.ATRZ_STEP_CD) ATRZ_STEP_CD_NM, -- 현재 결재단계
-			ATRZ_STEP_CD, -- 현재 결재단계
-			(SELECT CD_NM FROM CD WHERE CD_VALUE = al.ATRZ_STTS_CD) ATRZ_STTS_CD, -- 결재상태
 			DATE_FORMAT(ea.REG_DT, '%Y-%m-%d %H:%i:%s') AS REG_DT,
 			CASE WHEN ea.ATRZ_HIST_SE_CD = 'VTW05405' THEN CONCAT('▶취소결재◀ ', COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cta.CTRT_ATRZ_TTL, cga.ATRZ_TTL, CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD), ' [',
-			DATE_FORMAT(va.VCATN_BGNG_YMD, '%Y-%m-%d'), ' ~ ', DATE_FORMAT(va.VCATN_END_YMD, '%Y-%m-%d'), ' (', va.VCATN_DE_CNT, '일)]'))) 
-				 WHEN ea.ATRZ_HIST_SE_CD = 'VTW05406' THEN CONCAT('▶결재변경◀ ', COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cta.CTRT_ATRZ_TTL, cga.ATRZ_TTL, CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD), ' [',
-			DATE_FORMAT(va.VCATN_BGNG_YMD, '%Y-%m-%d'), ' ~ ', DATE_FORMAT(va.VCATN_END_YMD, '%Y-%m-%d'), ' (', va.VCATN_DE_CNT, '일)]')))
-				 ELSE COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cta.CTRT_ATRZ_TTL, cga.ATRZ_TTL, CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD), ' [',
-			DATE_FORMAT(va.VCATN_BGNG_YMD, '%Y-%m-%d'), ' ~ ', DATE_FORMAT(va.VCATN_END_YMD, '%Y-%m-%d'), ' (', va.VCATN_DE_CNT, '일)]'))
+				DATE_FORMAT(va.VCATN_BGNG_YMD, '%Y-%m-%d'), ' ~ ', DATE_FORMAT(va.VCATN_END_YMD, '%Y-%m-%d'), ' (', va.VCATN_DE_CNT, '일)]')))
+				WHEN ea.ATRZ_HIST_SE_CD = 'VTW05406' THEN CONCAT('▶결재변경◀ ', COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cta.CTRT_ATRZ_TTL, cga.ATRZ_TTL, CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD), ' [',
+				DATE_FORMAT(va.VCATN_BGNG_YMD, '%Y-%m-%d'), ' ~ ', DATE_FORMAT(va.VCATN_END_YMD, '%Y-%m-%d'), ' (', va.VCATN_DE_CNT, '일)]')))
+				ELSE COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cta.CTRT_ATRZ_TTL, cga.ATRZ_TTL, CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD), ' [',
+				DATE_FORMAT(va.VCATN_BGNG_YMD, '%Y-%m-%d'), ' ~ ', DATE_FORMAT(va.VCATN_END_YMD, '%Y-%m-%d'), ' (', va.VCATN_DE_CNT, '일)]'))
 			END AS TITLE,
-			COALESCE(ga.GNRL_ATRZ_CN, ca.CLM_ATRZ_CN, cta.CTRT_ATRZ_CN, cga.STLM_CN) AS CN,
-			COALESCE(ga.ATCHMNFL_ID, ca.ATCHMNFL_ID, cta.ATCHMNFL_ID, cga.ATCHMNFL_ID) AS ATCHMNFL_ID,
-			al.ATRZ_OPNN_CN,
-			ea.ATRZ_FORM_DOC_ID,
-			ea.ELCTRN_ATRZ_DOC_NO,
-			ea.HIST_ELCTRN_ATRZ_ID,
-			ea.ATRZ_HIST_SE_CD
+			cad.CNPT_NM,
+			(SELECT EMP_FLNM FROM EMP WHERE EMP_ID = al.APRVR_EMP_ID) APRVR_EMP_ID, -- 결재자
+			al.ATRZ_STEP_CD, -- 현재 결재단계
+			(SELECT CD_NM FROM CD WHERE CD_VALUE = al.ATRZ_STEP_CD) ATRZ_STEP_CD_NM, -- 현재 결재단계명
+			ea.ATRZ_DMND_STTS_CD, -- 결재상태
+			(SELECT CD_NM FROM CD WHERE CD_VALUE = al.ATRZ_STTS_CD) ATRZ_STTS_CD, -- 결재상태명
+			al.ATRZ_OPNN_CN -- 결재의견
 		FROM ELCTRN_ATRZ ea
 		LEFT JOIN ATRZ_LN al ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID -- 현재 결재단계만
 		LEFT JOIN REFRN_MAN rm ON ea.ELCTRN_ATRZ_ID = rm.ELCTRN_ATRZ_ID -- 참조자의 경우
@@ -81,7 +75,7 @@
 				AND al.APRVR_EMP_ID = #{empId}
 				AND al.ATRZ_STTS_CD = #{sttsCd}
 				AND ea.NOW_ATRZ_LN_SN = al.ATRZ_LN_SN
-		  		AND ea.ATRZ_DMND_STTS_CD != 'VTW03701'
+				AND ea.ATRZ_DMND_STTS_CD != 'VTW03701'
 			</when>
 			<when test='sttsCd != null and sttsCd == "VTW00802"'>
 				AND al.APRVR_EMP_ID = #{empId}
@@ -116,6 +110,26 @@
 			</if>
 		</if>
 		ORDER BY REG_DT DESC
+	</select>
+
+	<select id="elecAtrzDetail" parameterType="String" resultType="com.trsystem.LowerHashMap">
+		SELECT
+			ea.ATRZ_DMND_EMP_ID,
+			ea.NOW_ATRZ_LN_SN,
+			COALESCE(ga.GNRL_ATRZ_CN, ca.CLM_ATRZ_CN, cta.CTRT_ATRZ_CN, cga.STLM_CN) AS CN,
+			COALESCE(ga.ATCHMNFL_ID, ca.ATCHMNFL_ID, cta.ATCHMNFL_ID, cga.ATCHMNFL_ID) AS ATCHMNFL_ID,
+			ea.HIST_ELCTRN_ATRZ_ID,
+			ea.ATRZ_HIST_SE_CD,
+			va.VCATN_TY_CD
+		FROM ELCTRN_ATRZ ea
+		LEFT JOIN ATRZ_LN al ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID AND ea.NOW_ATRZ_LN_SN = al.ATRZ_LN_SN
+		LEFT JOIN VCATN_ATRZ va ON ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID
+		LEFT JOIN GNRL_ATRZ ga ON ea.ELCTRN_ATRZ_ID = ga.ELCTRN_ATRZ_ID -- 일반결재
+		LEFT JOIN CLM_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID -- 청구결재
+		LEFT JOIN CTRT_ATRZ cta ON ea.ELCTRN_ATRZ_ID = cta.ELCTRN_ATRZ_ID -- 계약결재
+		LEFT JOIN CTRT_GIVE_ATRZ cga ON ea.ELCTRN_ATRZ_ID = cga.ELCTRN_ATRZ_ID
+		WHERE ea.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
+		AND ea.ATRZ_DMND_EMP_ID = #{empId}
 	</select>
 
 	<select id="elecAtrzMainCount" parameterType="String" resultType="com.trsystem.LowerHashMap">
@@ -616,6 +630,7 @@
 		 WHERE 1=1
 	  	   AND ln.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
 		   AND ln.ATRZ_STTS_CD = 'VTW00802'
+		   ORDER BY ln.ATRZ_LN_SN DESC
 	</select>
 		
 	<select id="retrieveRefrnAtrzLn" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -637,5 +652,26 @@
 		   AND (rm.REFRN_CNCRRNC_CL_CD LIKE '%VTW00706' OR rm.REFRN_CNCRRNC_CL_CD LIKE '%VTW00707') 
 	</select>
 	
-	
+	<select id="retrieveAtrzHist" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		WITH RECURSIVE CTE (ATRZ_HIST_SE_CD, ELCTRN_ATRZ_ID, HIST_ELCTRN_ATRZ_ID, ATRZ_DMND_EMP_ID, REG_DT) AS (
+		SELECT ea.ATRZ_HIST_SE_CD, ea.ELCTRN_ATRZ_ID, ea.HIST_ELCTRN_ATRZ_ID, ea.ATRZ_DMND_EMP_ID, ea.REG_DT
+		  FROM ELCTRN_ATRZ ea
+		 WHERE 1=1
+		   AND ea.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
+		UNION
+		SELECT cte.ATRZ_HIST_SE_CD, cte.ELCTRN_ATRZ_ID, cte.HIST_ELCTRN_ATRZ_ID, cte.ATRZ_DMND_EMP_ID, cte.REG_DT
+		  FROM CTE cte
+		  JOIN ELCTRN_ATRZ ea2 ON cte.HIST_ELCTRN_ATRZ_ID = ea2.ELCTRN_ATRZ_ID
+		) 
+		SELECT ATRZ_HIST_SE_CD
+			 , cd.CD_NM AS ATRZ_HIST_SE_CD_NM
+			 , DATE_FORMAT(cte.REG_DT, '%Y-%m-%d') AS REG_DT
+			 , e.EMPNO
+			 , e.EMP_FLNM
+			 , ELCTRN_ATRZ_ID
+			 , IFNULL(HIST_ELCTRN_ATRZ_ID, '') AS HIST_ELCTRN_ATRZ_ID
+			FROM CTE cte
+			JOIN EMP e ON e.EMP_ID = cte.ATRZ_DMND_EMP_ID
+			LEFT JOIN CD cd ON cd.CD_VALUE = cte.ATRZ_HIST_SE_CD
+	</select>
 </mapper>

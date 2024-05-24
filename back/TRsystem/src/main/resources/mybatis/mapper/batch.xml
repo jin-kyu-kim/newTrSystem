@@ -4,6 +4,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.trsystem.mybatis.mapper.batchMapper">
+	
+	<!-- MM 업데이트 -->
 	<insert id = "executeCostUpdateMM" >
 		INSERT INTO MMNY_LBRCO_EXCN (PRJCT_ID, EMP_ID, INPT_YM, MM, GIVE_CT)
 			SELECT IND.PRJCT_ID
@@ -14,12 +16,6 @@
 			FROM PRJCT_INDVDL_CT_MM IND
 			JOIN PRJCT_MM_APLY MP ON (IND.PRJCT_ID=MP.PRJCT_ID AND IND.EMP_ID = MP.EMP_ID AND IND.APLY_YM = MP.APLY_YM AND IND.APLY_ODR = MP.APLY_ODR)
 			JOIN PRJCT_MM_ATRZ MT ON (MP.PRJCT_ID=MT.PRJCT_ID AND MP.EMP_ID = MT.EMP_ID AND MP.APLY_YM = MT.APLY_YM AND MP.APLY_ODR = MT.APLY_ODR AND MP.APLY_YMD = MT.APLY_YMD)
-			JOIN (SELECT PRJCT_ID, EMP_ID, APLY_YM, MAX(APLY_ODR) AS MAX_ODR
-			     	FROM PRJCT_INDVDL_CT_MM
-			     	WHERE 1=1
-			     	GROUP BY PRJCT_ID, EMP_ID, APLY_YM
-			     ) AS MAX_ODR
-				ON (IND.PRJCT_ID = MAX_ODR.PRJCT_ID AND IND.EMP_ID = MAX_ODR.EMP_ID AND IND.APLY_YM = MAX_ODR.APLY_YM)
 			LEFT JOIN (SELECT SUBSTRING(CRTR_YMD, 1, 6) AS APLY_YM,
 					   		  COUNT(*) AS COUNT_DAYS
 					   	 FROM CRTR_DATE cd2 
@@ -28,12 +24,12 @@
 						)AS D
 					ON IND.APLY_YM = D.APLY_YM
 			WHERE 1=1 
-			AND IND.APLY_ODR >= (MAX_ODR.MAX_ODR -2)
 			AND MT.ATRZ_DMND_STTS_CD = "VTW03703"
 			GROUP BY IND.PRJCT_ID, IND.EMP_ID, IND.APLY_YM, D.COUNT_DAYS
 		ON DUPLICATE KEY UPDATE MM = VALUES(MM), GIVE_CT = VALUES(GIVE_CT)
 	</insert>
 	
+	<!-- CT(경비) 업데이트 -->
 	<insert id = "executeCostUpdateCT" >
 		INSERT INTO EXPENS_EXCN (PRJCT_ID, EXPENS_CD, INPT_YM, EXPENS_CT)
 			SELECT IND.PRJCT_ID
@@ -43,19 +39,162 @@
 			FROM PRJCT_INDVDL_CT_MM IND
 			JOIN PRJCT_CT_APLY CP ON (IND.PRJCT_ID=CP.PRJCT_ID AND IND.EMP_ID = CP.EMP_ID AND IND.APLY_YM = CP.APLY_YM AND IND.APLY_ODR = CP.APLY_ODR)
 			JOIN PRJCT_CT_ATRZ CT ON (CP.PRJCT_ID=CT.PRJCT_ID AND CP.EMP_ID = CT.EMP_ID AND CP.APLY_YM = CT.APLY_YM AND CP.APLY_ODR = CT.APLY_ODR AND CP.PRJCT_CT_APLY_SN = CT.PRJCT_CT_APLY_SN)
-			JOIN (SELECT PRJCT_ID, EMP_ID, APLY_YM, MAX(APLY_ODR) AS MAX_ODR
-			     	FROM PRJCT_INDVDL_CT_MM
-			     	WHERE 1=1
-			     	GROUP BY PRJCT_ID, EMP_ID, APLY_YM
-			     ) AS MAX_ODR
-				ON (IND.PRJCT_ID = MAX_ODR.PRJCT_ID AND IND.EMP_ID = MAX_ODR.EMP_ID AND IND.APLY_YM = MAX_ODR.APLY_YM)
 			WHERE 1=1
-			AND IND.APLY_ODR >= (MAX_ODR.MAX_ODR -2)
 			AND CT.ATRZ_DMND_STTS_CD = "VTW03703"
 			GROUP BY IND.PRJCT_ID, CP.EXPENS_CD, IND.APLY_YM
 		ON DUPLICATE KEY UPDATE EXPENS_CT = VALUES(EXPENS_CT)	
 	</insert>
-
+	
+	<!-- 재료비 업데이트 -->
+	<insert id = "executeCostUpdateMatralCt">
+		INSERT INTO MATRL_CT_EXCN (PRJCT_ID, MATRL_CT_SN, PRDUCT_NM, QY, USE_AMT)
+		SELECT 
+			   EA.PRJCT_ID,
+			   CTRT.ENTRPS_CTRT_DTL_SN AS MATRL_CT_SN,
+			   CTRT.PRDUCT_NM,
+			   CTRT.QY,
+			   CTRT.GIVE_AMT AS USE_AMT
+		FROM ELCTRN_ATRZ EA
+		JOIN (
+			SELECT CA.ELCTRN_ATRZ_ID, CA.CTRT_KND_CD, CD.PRDUCT_NM, CD.ENTRPS_CTRT_DTL_SN, CD.QY, AD.GIVE_AMT 
+			FROM CTRT_GIVE_ATRZ A
+			JOIN CTRT_GIVE_ATRZ_DTL AD ON A.ELCTRN_ATRZ_ID  = AD.ELCTRN_ATRZ_ID
+			JOIN CTRT_ATRZ CA ON A.CTRT_ELCTRN_ATRZ_ID  = CA.ELCTRN_ATRZ_ID 
+			LEFT JOIN ENTRPS_CTRT_DTL CD ON CA.ELCTRN_ATRZ_ID = CD.ELCTRN_ATRZ_ID  
+			WHERE 1=1
+			AND CA.CTRT_KND_CD = 'VTW04403'
+		) CTRT ON EA.ELCTRN_ATRZ_ID = CTRT.ELCTRN_ATRZ_ID
+		WHERE EA.ATRZ_DMND_STTS_CD ='VTW03703'
+	ON DUPLICATE KEY UPDATE USE_AMT = VALUES(USE_AMT), QY = VALUES(QY)
+	</insert>
+	
+	
+	<!-- MM -->
+	<!-- 임시 테이블 생성 -->
+    <update id="createTempTableMM">
+        CREATE TEMPORARY TABLE tmp_delete_keys_mm (PRJCT_ID VARCHAR(50), EMP_ID VARCHAR(50), INPT_YM VARCHAR(8))
+    </update>
+    
+    <!-- 임시 테이블에 데이터 삽입 -->
+    <insert id="insertIntoTempTableMM">
+        INSERT INTO tmp_delete_keys_mm (PRJCT_ID, EMP_ID, INPT_YM)
+        SELECT EXCN.PRJCT_ID, EXCN.EMP_ID, EXCN.INPT_YM
+        FROM MMNY_LBRCO_EXCN EXCN
+        LEFT JOIN (
+            SELECT IND.PRJCT_ID, IND.EMP_ID, IND.APLY_YM
+            FROM PRJCT_INDVDL_CT_MM IND
+            JOIN PRJCT_MM_APLY MP ON (IND.PRJCT_ID=MP.PRJCT_ID AND IND.EMP_ID = MP.EMP_ID AND IND.APLY_YM = MP.APLY_YM AND IND.APLY_ODR = MP.APLY_ODR)
+            JOIN PRJCT_MM_ATRZ MT ON (MP.PRJCT_ID=MT.PRJCT_ID AND MP.EMP_ID = MT.EMP_ID AND MP.APLY_YM = MT.APLY_YM AND MP.APLY_ODR = MT.APLY_ODR AND MP.APLY_YMD = MT.APLY_YMD)
+            LEFT JOIN (SELECT SUBSTRING(CRTR_YMD, 1, 6) AS APLY_YM,
+                              COUNT(*) AS COUNT_DAYS
+                         FROM CRTR_DATE cd2 
+                         WHERE HLDY_CL_CD ='VTW05001'
+                         GROUP BY SUBSTRING(CRTR_YMD, 1, 6)
+                        ) AS D
+            ON IND.APLY_YM = D.APLY_YM
+            WHERE 1=1
+            AND MT.ATRZ_DMND_STTS_CD = "VTW03703"
+        ) AS NEW_DATA
+        ON EXCN.PRJCT_ID = NEW_DATA.PRJCT_ID AND EXCN.EMP_ID = NEW_DATA.EMP_ID AND EXCN.INPT_YM = NEW_DATA.APLY_YM
+        WHERE NEW_DATA.PRJCT_ID IS NULL
+    </insert>
+    
+    <!-- 임시 테이블을 사용하여 삭제 -->
+    <delete id="deleteFromMainTableMM">
+        DELETE FROM MMNY_LBRCO_EXCN
+        WHERE (PRJCT_ID, EMP_ID, INPT_YM) IN (
+            SELECT PRJCT_ID, EMP_ID, INPT_YM FROM tmp_delete_keys_mm
+        )
+    </delete>
+    
+    <!-- 임시 테이블 삭제 -->
+    <update id="dropTempTableMM">
+        DROP TEMPORARY TABLE tmp_delete_keys_mm
+    </update>
+    
+    <!-- CT 경비 -->
+    <!-- 임시 테이블 생성 -->
+    <update id="createTempTableCT">
+        CREATE TEMPORARY TABLE tmp_delete_keys_ct (PRJCT_ID VARCHAR(50), EXPENS_CD VARCHAR(8), INPT_YM VARCHAR(8))
+    </update>
+    
+    <!-- 임시 테이블에 데이터 삽입 -->
+    <insert id="insertIntoTempTableCT">
+        INSERT INTO tmp_delete_keys_ct (PRJCT_ID, EXPENS_CD, INPT_YM)
+        SELECT EXCN.PRJCT_ID, EXCN.EXPENS_CD, EXCN.INPT_YM
+        FROM EXPENS_EXCN EXCN
+        LEFT JOIN (
+            SELECT IND.PRJCT_ID, CP.EXPENS_CD, IND.APLY_YM AS INPT_YM
+            FROM PRJCT_INDVDL_CT_MM IND
+            JOIN PRJCT_CT_APLY CP ON (IND.PRJCT_ID=CP.PRJCT_ID AND IND.EMP_ID = CP.EMP_ID AND IND.APLY_YM = CP.APLY_YM AND IND.APLY_ODR = CP.APLY_ODR)
+            JOIN PRJCT_CT_ATRZ CT ON (CP.PRJCT_ID=CT.PRJCT_ID AND CP.EMP_ID = CT.EMP_ID AND CP.APLY_YM = CT.APLY_YM AND CP.APLY_ODR = CT.APLY_ODR AND CP.PRJCT_CT_APLY_SN = CT.PRJCT_CT_APLY_SN)
+            WHERE 1=1
+            AND CT.ATRZ_DMND_STTS_CD = "VTW03703"
+            GROUP BY IND.PRJCT_ID, CP.EXPENS_CD, IND.APLY_YM
+        ) AS NEW_DATA
+        ON EXCN.PRJCT_ID = NEW_DATA.PRJCT_ID AND EXCN.EXPENS_CD = NEW_DATA.EXPENS_CD AND EXCN.INPT_YM = NEW_DATA.INPT_YM
+        WHERE NEW_DATA.PRJCT_ID IS NULL
+    </insert>
+    
+    <!-- 임시 테이블을 사용하여 삭제 -->
+    <delete id="deleteFromMainTableCT">
+        DELETE FROM EXPENS_EXCN
+        WHERE (PRJCT_ID, EXPENS_CD, INPT_YM) IN (
+            SELECT PRJCT_ID, EXPENS_CD, INPT_YM FROM tmp_delete_keys_ct
+        )
+    </delete>
+    
+    <!-- 임시 테이블 삭제 -->
+    <update id="dropTempTableCT">
+        DROP TEMPORARY TABLE tmp_delete_keys_ct
+    </update>
+    
+    
+    <!-- 재료비 -->
+    <!-- 임시 테이블 생성 -->
+    <update id="createTempTableMatrlCt">
+        CREATE TEMPORARY TABLE tmp_delete_keys_matralct (PRJCT_ID VARCHAR(50), MATRL_CT_SN INT, PRDUCT_NM VARCHAR(100), QY INT, USE_AMT INT)
+    </update>
+    
+    <!-- 임시 테이블에 데이터 삽입 -->
+    <insert id="insertIntoTempTableMatrlCt">
+		INSERT INTO tmp_delete_keys_matralct (PRJCT_ID, MATRL_CT_SN)
+        SELECT EXCN.PRJCT_ID, EXCN.MATRL_CT_SN
+		FROM MATRL_CT_EXCN EXCN
+		LEFT JOIN (
+		    SELECT EA.PRJCT_ID, CTRT.ENTRPS_CTRT_DTL_SN
+		    FROM ELCTRN_ATRZ EA
+		    JOIN (
+		        SELECT CA.ELCTRN_ATRZ_ID, CD.ENTRPS_CTRT_DTL_SN
+		        FROM CTRT_GIVE_ATRZ A
+		        JOIN CTRT_GIVE_ATRZ_DTL AD ON A.ELCTRN_ATRZ_ID = AD.ELCTRN_ATRZ_ID
+		        JOIN CTRT_ATRZ CA ON A.CTRT_ELCTRN_ATRZ_ID = CA.ELCTRN_ATRZ_ID
+		        LEFT JOIN ENTRPS_CTRT_DTL CD ON CA.ELCTRN_ATRZ_ID = CD.ELCTRN_ATRZ_ID
+		        WHERE CA.CTRT_KND_CD = 'VTW04403'
+		    ) CTRT ON EA.ELCTRN_ATRZ_ID = CTRT.ELCTRN_ATRZ_ID
+		    WHERE EA.ATRZ_DMND_STTS_CD = 'VTW03703'
+		) AS NEW_DATA ON EXCN.PRJCT_ID = NEW_DATA.PRJCT_ID AND EXCN.MATRL_CT_SN = NEW_DATA.ENTRPS_CTRT_DTL_SN
+		WHERE NEW_DATA.PRJCT_ID IS NULL
+    </insert>
+    
+    <!-- 임시 테이블을 사용하여 삭제 -->
+    <delete id="deleteFromMainTableMatrlCt">
+        DELETE FROM MATRL_CT_EXCN
+        WHERE (PRJCT_ID, MATRL_CT_SN) IN (
+            SELECT PRJCT_ID, MATRL_CT_SN FROM tmp_delete_keys_matralct
+        )
+    </delete>
+    
+    <!-- 임시 테이블 삭제 -->
+    <update id="dropTempTableMatrlCt">
+        DROP TEMPORARY TABLE tmp_delete_keys_matralct
+    </update>
+    
+    
+    
+    
+    
+    
 
 	<!-- 박지환_작업 -->
 	<insert id = "insertCtrtDate" >
