@@ -777,6 +777,10 @@ const EmpVacation = () => {
 
     // 휴가목록선택
     function onRowClick(e) {
+        if(e.event.target.className === "dx-button-content" || e.event.target.className === "dx-button-text") {
+            return;
+        }
+        
         navigate("/elecAtrz/ElecAtrzDetail", { state: { data: { 
             elctrnAtrzId: e.data.elctrnAtrzId, 
             gnrlAtrzTtl: e.data.gnrlAtrzTtl,
@@ -938,7 +942,8 @@ const EmpVacation = () => {
                                 columns={listTableColumns}
                                 values={selectVcatnListValue}
                                 wordWrap={true}
-                                onRowDblClick={onRowClick}
+                                // onRowDblClick={onRowClick}
+                                onRowClick={(e) => onRowClick(e)}
                                 onClick={onButtonClick}
                             />
                         </div>

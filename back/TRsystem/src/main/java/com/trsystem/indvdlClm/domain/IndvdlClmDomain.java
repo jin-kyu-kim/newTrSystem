@@ -964,11 +964,6 @@ public class IndvdlClmDomain {
         }});
         insertRefrnManList.add(1, insertRefrnManMap);
 
-        Map<String, Object> updateElctrnAtrz = new HashMap<>();
-        updateElctrnAtrz.put("queryId", "indvdlClmMapper.updateElctrnAtrzCncl");
-        updateElctrnAtrz.put("elctrnAtrzId", insertDataMapValue.get("histElctrnAtrzId"));
-
-        commonService.queryIdSearch(updateElctrnAtrz);
         commonService.insertData(insertElctrnAtrzList);
         commonService.insertData(insertVactnAtrzList);
         commonService.insertData(insertAtrzLnList);
@@ -1116,6 +1111,10 @@ public class IndvdlClmDomain {
         System.out.println("updateNewVcatnMngMap : " + updateNewVcatnMngMap);
         System.out.println("==========================");
 
+        Map<String, Object> updateElctrnAtrz = new HashMap<>();
+        updateElctrnAtrz.put("queryId", "indvdlClmMapper.updateElctrnAtrzCncl");
+        updateElctrnAtrz.put("elctrnAtrzId", histElctrnAtrzId);
+
         int atrzLnSn = 0;
         try {
             switch (caseFlag) {
@@ -1127,6 +1126,7 @@ public class IndvdlClmDomain {
                     if (String.valueOf(aprvResult.get("atrzStepCd")).equals("VTW00705")) {
 
                         commonService.queryIdDataControl(updateVcatnMngMap);
+                        commonService.queryIdSearch(updateElctrnAtrz);
                     }
                     atrzLnSn = Integer.parseInt(String.valueOf(aprvResult.get("atrzLnSn")));
 
@@ -1140,6 +1140,7 @@ public class IndvdlClmDomain {
                     if (String.valueOf(aprvResult.get("atrzStepCd")).equals("VTW00705")) {
 
                         commonService.queryIdDataControl(updateNewVcatnMngMap);
+                        commonService.queryIdSearch(updateElctrnAtrz);
                     }
                     atrzLnSn = Integer.parseInt(String.valueOf(aprvResult.get("atrzLnSn")));
 
@@ -1153,6 +1154,7 @@ public class IndvdlClmDomain {
                     if (String.valueOf(aprvResult.get("atrzStepCd")).equals("VTW00705")) {
 
                         commonService.queryIdDataControl(updateVcatnMngMap);
+                        commonService.queryIdSearch(updateElctrnAtrz);
                     }
                     atrzLnSn = Integer.parseInt(String.valueOf(aprvResult.get("atrzLnSn")));
 
@@ -1165,6 +1167,7 @@ public class IndvdlClmDomain {
                     if (String.valueOf(aprvResult.get("atrzStepCd")).equals("VTW00705")) {
                         commonService.queryIdDataControl(updateVcatnMngMap);
                         commonService.queryIdDataControl(updateNewVcatnMngMap);
+                        commonService.queryIdSearch(updateElctrnAtrz);
                     }
                     atrzLnSn = Integer.parseInt(String.valueOf(aprvResult.get("atrzLnSn")));
 
