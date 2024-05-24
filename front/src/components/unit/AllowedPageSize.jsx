@@ -9,7 +9,7 @@ const AllowedPageSize = (values) =>{
     }else if(values?.length  < 100){
         pageSizes =  [20, 50, 80, 'all']
     }else{
-        pageSizes =  [20, 50, 80, 100]
+        pageSizes =  [20, 50, 80, 100, values.length]
     }
     return pageSizes;
 }

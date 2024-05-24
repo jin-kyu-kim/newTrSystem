@@ -119,7 +119,9 @@ const EmpVacation = () => {
     let jbttlCd = location.state ? location.state.deptList[0].jbttlCd : deptInfo[0].jbttlCd
 
 
-
+    useEffect(() => {
+        console.log("loading : ", loading);
+    }, [loading])
 
 
     // 1. 월별 근무일_공휴일정보조회
@@ -1198,6 +1200,11 @@ const EmpVacation = () => {
                                 visible={popupVcatnAtrzCancleValue.visible}
                                 dataMap={popupVcatnAtrzCancleValue.data}
                                 empId={popupVcatnAtrzCancleValue.empId}
+                                loading={(e) => { 
+                                    setLoading(e)
+                                    setSearchVcatnListParam({ ...searchVcatnListParam, isSearch: true })
+                                    selectData(searchVcatnListParam);
+                                }}
                                 onHiding={(e) => {
                                     setPopupVcatnAtrzCancleValue({ visible: e })
                                     setSearchVcatnListParam({ ...searchVcatnListParam, isSearch: true })
