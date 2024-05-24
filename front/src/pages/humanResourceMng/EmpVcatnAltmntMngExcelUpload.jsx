@@ -21,7 +21,6 @@ const EmpVcatnAltmntMngExcelUpload = ({ onHiding, visible }) => {
 
     useEffect(() => {
         getEmpList();
-        getExcelAttachFile();
     }, [])
 
 
