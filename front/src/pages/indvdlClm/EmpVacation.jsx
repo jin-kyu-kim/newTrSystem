@@ -864,7 +864,7 @@ const EmpVacation = () => {
         <div>
             {loading && (
                 <div className="loading-overlay">
-                    <div style={{fontWeight: "bold", transform: "translate(0px, 150px)"}}> 요청 중입니다... </div>
+                    <div style={{fontWeight: "bold", transform: "translate(0px, 0px)"}}> 요청 중입니다... </div>
                 </div>
             )}
             <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
