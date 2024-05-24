@@ -120,7 +120,7 @@ const CultureHealthCostReg = (props) => {
 
                     if(!tmpList.includes(JSON.stringify(tmpElement))){
                         tmpList.push(JSON.stringify(tmpElement));
-                        tmpElement.month = getLastMonth(element.clmYmd);
+                        tmpElement.month = element.clmYmd.substring(0, 4)+"/"+element.clmYmd.substring(4, 6);
                         tmpElement.clmYmd = element.clmYmd;
                         tmpElement.clmAmt = element.clmAmt;
                         tmpElement.actIem = element.actIem;
