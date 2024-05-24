@@ -17,7 +17,6 @@ const ProjectHrCtAprvDetail = () => {
     const navigate = useNavigate();
     const prjctId = location.state.prjctId;
     const prjctNm = location.state.prjctNm;
-    const bgtMngOdr = location.state.bgtMngOdr;
     const { searchParams, mm, ct, detailMm, detailCt } = ProjectHrCtAprvDetailJson;
     
     const [param, setParam] = useState([]);
@@ -54,8 +53,7 @@ const ProjectHrCtAprvDetail = () => {
             queryId: ProjectHrCtAprvDetailJson.mm.queryId,
             prjctId: prjctId,
             aplyYm: day > 15 ? aplyYm : lastMonth.getFullYear()+lastMonthVal,
-            aplyOdr: day > 15 ? "1" : "2",
-            bgtMngOdr: bgtMngOdr
+            aplyOdr: day > 15 ? "1" : "2"
         })
         isHoliday();
     }, []);
@@ -107,8 +105,7 @@ const ProjectHrCtAprvDetail = () => {
                 prjctId: prjctId,
                 aplyYm: aplyYm,
                 aplyOdr: odrVal,
-                empId: initParam.empId,
-                bgtMngOdr: bgtMngOdr
+                empId: initParam.empId
             })
             return;
         };
@@ -119,8 +116,7 @@ const ProjectHrCtAprvDetail = () => {
             prjctId: prjctId,
             aplyYm: initParam.yearItem + initParam.monthItem,
             aplyOdr: initParam.aplyOdr,
-            empId: initParam.empId,
-            bgtMngOdr: bgtMngOdr
+            empId: initParam.empId
         })
     }
 
