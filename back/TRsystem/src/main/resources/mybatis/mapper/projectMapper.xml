@@ -231,10 +231,10 @@
              , A.PRDUCT_NM
              , A.QY
              , A.CTRT_AMT
-             , IFNULL(B.QY,0)  AS USE_AMT
-             , IFNULL(A.CTRT_AMT - B.QY, 0) AS AVAIL
+             , IFNULL(B.USE_AMT,0)  AS USE_AMT
+             , IFNULL(A.CTRT_AMT - B.USE_AMT, 0) AS AVAIL
         FROM MATRL_CT_PRMPC A
-                 LEFT JOIN MATRL_CT_EXCN B ON A.PRJCT_ID = B.PRJCT_ID
+                 LEFT JOIN MATRL_CT_EXCN B ON A.PRJCT_ID = B.PRJCT_ID AND A.MATRL_CT_SN  = B.MATRL_CT_SN 
         WHERE 1=1
           AND A.PRJCT_ID = #{prjctId}
           AND A.BGT_MNG_ODR = #{bgtMngOdr}
@@ -246,10 +246,10 @@
              , A.PRDUCT_NM
              , A.QY
              , A.CTRT_AMT
-             , B.QY  AS USE_AMT
-             , (A.CTRT_AMT - B.QY) AS AVAIL
+             , B.USE_AMT
+             , (A.CTRT_AMT - B.USE_AMT) AS AVAIL
         FROM MATRL_CT_PRMPC A
-                 RIGHT JOIN MATRL_CT_EXCN B ON A.PRJCT_ID = B.PRJCT_ID
+                 RIGHT JOIN MATRL_CT_EXCN B ON A.PRJCT_ID = B.PRJCT_ID AND A.MATRL_CT_SN  = B.MATRL_CT_SN 
         WHERE 1=1
           AND A.PRJCT_ID = #{prjctId}
           AND A.BGT_MNG_ODR = #{bgtMngOdr}
@@ -1223,7 +1223,7 @@
                          IFNULL(SUM(IFNULL(MIM.EXPECT_MM,0 ) * IFNULL(MIM.UNTPC, 0)),0) '예산',
                          IFNULL((
                                     SELECT
-                                        SUM(IFNULL(GIVE_CT * MM, 0))
+                                        SUM(IFNULL(GIVE_CT, 0))
                                     FROM MMNY_LBRCO_EXCN
                                     WHERE PRJCT_ID = #{prjctId}
                                 ),0) 사용
@@ -1253,7 +1253,7 @@
                       IFNULL(SUM(IFNULL(OLP.UNTPC,0) * IFNULL(OLPD.EXPECT_MM,0)),0) AS 예산,
                       IFNULL((
                                  SELECT
-                                     SUM(IFNULL(GIVE_CT * MM, 0))
+                                     SUM(IFNULL(GIVE_CT, 0))
                                  FROM OUTORD_LBRCO_EXCN
                                  WHERE PRJCT_ID = #{prjctId}
                              ),0) 사용

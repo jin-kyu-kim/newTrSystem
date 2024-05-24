@@ -119,6 +119,9 @@ const ProjectExpense = () => {
             if (mmAtrzCmptnYn === undefined || mmAtrzCmptnYn === null) {
                 handleOpen('경비청구 건수가 없을 경우 근무시간을 먼저 승인 요청 해주시기 바랍니다.')
                 return;
+            } else if(mmAtrzCmptnYn === 'Y' && ctAtrzCmptnYn === null){
+                console.log('청구건수는 없으나 근무시간은 승인 완료된 경우 체크')
+                handleOpen('경비청구 건수가 없을 경우 바로 승인이 완료되며 입력 및 수정이 불가능합니다.')
             }
             prjctCtAtrzUpdate(onClick);
         }
@@ -127,8 +130,9 @@ const ProjectExpense = () => {
 
     const getButtonsShow = () => {
         if (ctAply?.length === 0) { // 비용청구가 없으면서 근무시간은 존재하는 경우
-            if (ctAtrzCmptnYn === 'Y' && mmAtrzCmptnYn === 'N') return buttonsConfig.hasApprovals;
-            if (mmAtrzCmptnYn === 'Y') return buttonsConfig.completed;
+            if (ctAtrzCmptnYn === null) return buttonsConfig.default;
+            if (ctAtrzCmptnYn === 'N') return buttonsConfig.hasApprovals;
+            if (ctAtrzCmptnYn === 'Y' && mmAtrzCmptnYn === 'Y') return buttonsConfig.completed;
         } else {
             if (atrzDmndSttsCnt.rjct === 0 && atrzDmndSttsCnt.aprv > 0 && atrzDmndSttsCnt.inptDdln === 0 && atrzDmndSttsCnt.ctReg === 0) return buttonsConfig.completed;
             if (atrzDmndSttsCnt.aprvDmnd > 0 || atrzDmndSttsCnt.rjct > 0) return buttonsConfig.hasApprovals;

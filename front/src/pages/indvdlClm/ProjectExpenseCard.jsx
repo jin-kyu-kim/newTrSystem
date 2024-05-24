@@ -50,13 +50,14 @@ const ProjectExpenseCard = (props) => {
     const getSelectBoxList = async () => {
         const comBoInfo = ['prjctId', 'emp'];
         const comSelectParam = [
-            [{ tbNm: "PRJCT" }, { bizSttsCd: "VTW00402" }],
+            { queryId: "commonMapper.autoCompleteProject", bizSttsCd: "VTW00402" },
             [{ tbNm: "EMP" }]
         ];
         try {
             for (let i = 0; i < comSelectParam.length; i++) {
-                let response = await ApiRequest("/boot/common/commonSelect", comSelectParam[i]);
-                if (comSelectParam[i][0].tbNm === "EMP") {
+                let response = await ApiRequest(comBoInfo[i] === 'prjctId' ? "/boot/common/queryIdSearch"
+                    : "/boot/common/commonSelect", comSelectParam[i]);
+                if (comBoInfo[i] === "emp") {
                     response = response.map(({ empId, empno, empFlnm }) => ({
                         key: empId,
                         value: empFlnm,
@@ -77,7 +78,7 @@ const ProjectExpenseCard = (props) => {
         let queryId = prjct.prjctStleCd === 'VTW01802' ? prjctStleQueryId : prjctStlePdQueryId
         try {
             const response = await ApiRequest('/boot/common/queryIdSearch', {
-                queryId: queryId, prjctId: prjct.prjctId
+                queryId: queryId, prjctId: prjct.prjctId, multiType: true
             })
             setCdList(prevCdLists => ({
                 ...prevCdLists,

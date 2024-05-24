@@ -47,7 +47,7 @@
 		  AND pca.APLY_YM = #{aplyYm}
 		  AND pca.APLY_ODR = #{aplyOdr}
 		  AND pca.CT_ATRZ_SE_CD != 'VTW01901'
-		  AND pcaz.ATRZ_DMND_STTS_CD != 'VTW03705'
+		  AND (pcaz.ATRZ_DMND_STTS_CD IS NULL OR pcaz.ATRZ_DMND_STTS_CD != 'VTW03705')
 		<if test="aply != null">
 			AND pca.ELCTRN_ATRZ_ID IS NULL
 		</if>

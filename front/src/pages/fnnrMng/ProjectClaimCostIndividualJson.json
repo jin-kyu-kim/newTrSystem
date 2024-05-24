@@ -27,7 +27,7 @@
         { "key": "expectMm", "value": "배정", "type"  : "sum", "format": "{0} MM", "precision": "1" },
         { "key": "mm", "value": "누적사용", "type"  : "sum", "format": "{0} MM", "precision": "1" },
         { "key": "useMM", "value": "가용", "type"  : "sum", "format": "{0} MM", "precision": "1" },
-        { "key": "clmMd", "value": "당차수청구", "type"  : "sum", "format": "{0} MM", "precision": "0" }
+        { "key": "clmMd", "value": "당차수청구", "type"  : "sum", "format": "{0} hrs", "precision": "0" }
     ],
     "ctColumns":
 	[

@@ -6,6 +6,7 @@ import CustomTable from "components/unit/CustomTable";
 import SearchInfoSet from "components/composite/SearchInfoSet";
 import elecAtrzJson from "./ElecAtrzJson.json";
 import ApiRequest from 'utils/ApiRequest';
+import ElecAtrzHistPopup from "./common/ElecAtrzHistPopup";
 import "./ElecAtrz.css";
 
 const ElecAtrz = () => {
@@ -13,23 +14,28 @@ const ElecAtrz = () => {
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const empId = userInfo.empId;
   const { keyColumn, queryId, countQueryId, barList, searchInfo, baseColumns } = elecAtrzJson.elecMain;
-  const [ param, setParam ] = useState({});
+  const [ param, setParam ] = useState({
+    queryId: queryId,
+    empId: empId,
+    refer: null,
+    sttsCd: 'VTW00801'
+  });
   const [ clickBox, setClickBox ] = useState(null);
   const [ titleRow, setTitleRow ] = useState([]);
   const [ totalCount, setTotalCount ] = useState([]);
   const [ selectedList, setSelectedList ] = useState([]);
+
+  /**
+   * 이력 팝업 관련
+   */
+  const [ histPopVisible, setHistPopVisible ] = useState(false);
+  const [ selectedData, setSelectedData ] = useState([]);
 
   const onNewReq = async () => {
     navigate("../elecAtrz/ElecAtrzForm");
   };
 
   useEffect(() => {
-    setParam({
-      queryId: queryId,
-      empId: empId,
-      refer: null,
-      sttsCd: 'VTW00801'
-    })
     setTitleRow(baseColumns.concat(elecAtrzJson.elecMain['progressApproval']))
   }, []);
 
@@ -120,17 +126,30 @@ const ElecAtrz = () => {
         navigate('/elecAtrz/ElecAtrzDetail', { state: { data: e.data, sttsCd: param.sttsCd, prjctId: e.data.prjctId, refer: param.refer } });
       }
     }
-
   };
 
   const onClickBtn = async (button, data) => {
-    console.log('button', button)
     if(button.name === 'delete'){
       const res = await ApiRequest('/boot/elecAtrz/deleteTempAtrz', {
         elctrnAtrzId: data.elctrnAtrzId, atrzTySeCd: data.elctrnAtrzTySeCd
       });
       if(res >= 1) getList();
-    } 
+    } else if(button.name === "docHist") {
+      await onSetPopData(data);
+      await onHistPopAppear();
+    }
+  }
+
+  const onHistPopHiding = async () => {
+    setHistPopVisible(false);
+  }
+
+  const onHistPopAppear = async () => {
+    setHistPopVisible(true);
+  }
+
+  const onSetPopData = async (data) => {
+    setSelectedData(data);
   }
 
   return (
@@ -168,6 +187,12 @@ const ElecAtrz = () => {
           onRowClick={(e) => sendDetail(e, param)}
         />
       </div>
+      <ElecAtrzHistPopup
+        visible={histPopVisible}
+        onPopHiding={onHistPopHiding}
+        data={selectedData}
+        param={param}
+      />
     </div>
   );
 };

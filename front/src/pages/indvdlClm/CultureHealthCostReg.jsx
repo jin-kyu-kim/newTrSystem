@@ -7,6 +7,7 @@ import uuid from "react-uuid";
 import ApiRequest from "../../utils/ApiRequest";
 import axios from "axios";
 import CustomLabelValue from "../../components/unit/CustomLabelValue";
+import {useModal} from "../../components/unit/ModalContext";
 
 const empListContainerStyle = {
     width: "65%",
@@ -38,6 +39,7 @@ const CultureHealthCostReg = (props) => {
     const [selectedItem, setSelectedItem] = useState(null);
     let selectedClmAmt = useRef(0);
     let selectedClturPhstrnSeCd = useRef(null);
+    const { handleOpen } = useModal();
     let now = new Date();
     const Json = CultureHealthCostJson;
     const {labelValue} = Json;
@@ -163,7 +165,7 @@ const CultureHealthCostReg = (props) => {
     const validateUser = () => {
         const errors = [];
         if (userInfo.empTyCd !== 'VTW00201') {
-            alert('등록이 불가능한 사용자입니다.')
+            handleOpen('등록이 불가능한 사용자입니다.');
             errors.push('Invalid user');
         }
         return errors.length === 0;
@@ -178,7 +180,7 @@ const CultureHealthCostReg = (props) => {
         })
         const errors = [];
         if (maxSize !== 0 && maxSize > 1048576) {
-            alert('업로드 가능한 용량보다 큽니다')
+            handleOpen('업로드 가능한 용량보다 큽니다.');
             errors.push('Exceeded size limit');
         }
         return errors.length === 0;
@@ -193,7 +195,7 @@ const CultureHealthCostReg = (props) => {
 
         if (now.getDate() >5) {
             if(now.getFullYear() !== clmYmd.getFullYear() || now.getMonth() !== clmYmd.getMonth()){
-                alert('등록 불가능한 일자입니다.')
+                handleOpen('등록 불가능한 일자입니다.');
                 errors.push('Wrong Date');
             }
         }else{
@@ -201,20 +203,15 @@ const CultureHealthCostReg = (props) => {
             let lastMonth = new Date ( firstDayOfMonth.setDate( firstDayOfMonth.getDate() - 1 ) );
             if(!(now.getFullYear() === clmYmd.getFullYear() && now.getMonth() === clmYmd.getMonth()) &&
                 !(lastMonth.getFullYear() === clmYmd.getFullYear() && lastMonth.getMonth() === clmYmd.getMonth())){
-                alert('등록 불가능한 일자입니다.')
+                handleOpen('등록 불가능한 일자입니다.');
                 errors.push('Wrong Date');
             }
         }
 
         if (!initParam.clmYmd || !initParam.clmAmt || !initParam.clturPhstrnSeCd
             || !initParam.actIem || !initParam.frcsNm || !initParam.frcsNm) {
-            alert('입력되지 않은 항목이 있습니다.')
+            handleOpen('입력되지 않은 항목이 있습니다.');
             errors.push('Data required');
-        }
-
-        if (!initParam.atchmnflId) {
-            alert('파일이 첨부되지 않았습니다.')
-            errors.push('File required');
         }
 
         return errors.length === 0;
@@ -229,7 +226,7 @@ const CultureHealthCostReg = (props) => {
 
         if (now.getDate() >5) {
             if(now.getFullYear() !== clmYmd.getFullYear() || now.getMonth() !== clmYmd.getMonth()){
-                alert('수정/삭제 불가능한 일자입니다.')
+                handleOpen('수정/삭제 불가능한 일자입니다.');
                 errors.push('Wrong Date');
             }
         }else{
@@ -237,7 +234,7 @@ const CultureHealthCostReg = (props) => {
             let lastMonth = new Date ( firstDayOfMonth.setDate( firstDayOfMonth.getDate() - 1 ) );
             if(!(now.getFullYear() === clmYmd.getFullYear() && now.getMonth() === clmYmd.getMonth()) &&
                 !(lastMonth.getFullYear() === clmYmd.getFullYear() && lastMonth.getMonth() === clmYmd.getMonth())){
-                alert('수정/삭제 불가능한 일자입니다.')
+                handleOpen('수정/삭제 불가능한 일자입니다.');
                 errors.push('Wrong Date');
             }
         }
@@ -268,7 +265,7 @@ const CultureHealthCostReg = (props) => {
                             await ApiRequest('/boot/indvdlClm/plusClturPhstrnActCt', initParam);
                             onResetClick();
                             searchTable();
-                            window.alert("등록되었습니다.")
+                            handleOpen('등록되었습니다.');
                         }
                     }catch (error){
                         console.error("API 요청 에러:", error);
@@ -317,7 +314,7 @@ const CultureHealthCostReg = (props) => {
                         onResetClick();
                         searchTable();
                         setSelectedItem(null);
-                        window.alert("수정되었습니다.")
+                        handleOpen('수정되었습니다.');
                     }
                 }
                 props.searchGrid();
@@ -342,11 +339,14 @@ const CultureHealthCostReg = (props) => {
                         const responseMn = await ApiRequest('/boot/indvdlClm/minusClturPhstrnActCt', paramMn);
                         if (responseMn === 1) {
                             const paramAt = [{ tbNm: "ATCHMNFL" }, { atchmnflId: selectedItem.atchmnflId }]
-                            await ApiRequest("/boot/common/commonDelete", paramAt);
-                            searchTable();
+                            if(selectedItem.atchmnflId != null){
+                                await ApiRequest("/boot/common/commonDelete", paramAt);
+                                searchTable();
+                            }
                             props.searchGrid();
+                            searchTable();
                             setSelectedItem(null);
-                            window.alert("삭제되었습니다.");
+                            handleOpen('삭제되었습니다.');
                         }
                     }
                 } catch (error) {
