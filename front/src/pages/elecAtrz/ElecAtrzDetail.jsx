@@ -44,7 +44,7 @@ const ElecAtrzDetail = () => {
         }
         getDetailData();
     }, []);
-
+    
     const onBtnClick = (e) => {
         switch (e.element.id) {
             case "aprv": ; onAprvPopup();
@@ -571,7 +571,7 @@ const ElecAtrzDetail = () => {
                 }     
                 getCtrtInfo();       
             };
-    },[])
+    },[detailData])
 
     /**
      * 재기안: VTW05407
@@ -631,16 +631,16 @@ const ElecAtrzDetail = () => {
                 계약 지급품의   VTW04914
                 ... TODO  그 외 
                 의 경우에는 컴포넌트 렌더링 */}
-            {(['VTW04901', 'VTW04907', 'VTW04908', 'VTW04909', 'VTW04910', 'VTW04915'].includes(detailData.elctrnAtrzTySeCd)) && (
+            {(detailData&&['VTW04901', 'VTW04907', 'VTW04908', 'VTW04909', 'VTW04910', 'VTW04915'].includes(detailData.elctrnAtrzTySeCd)) && (
                 <ElecAtrzTabDetail
-                    dtlInfo={dtlInfo}
+                    dtlInfo={dtlInfo} 
                     detailData={detailData}
                     sttsCd={sttsCd}
                     prjctId={prjctId}
                     prjctData={prjctData}
                 />
             )}
-            {(['VTW04911','VTW04912','VTW04913','VTW04914'].includes(detailData.elctrnAtrzTySeCd)) && (data.ctrtElctrnAtrzId) &&(
+            {(detailData&&data&&['VTW04911','VTW04912','VTW04913','VTW04914'].includes(detailData.elctrnAtrzTySeCd)) && (data.ctrtElctrnAtrzId) &&(
                 <ElecAtrzTabDetail
                     dtlInfo={dtlInfo}
                     detailData={data}
