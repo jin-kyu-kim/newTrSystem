@@ -775,14 +775,14 @@
             (SELECT COUNT(CRTR_YMD) FROM CRTR_DATE WHERE HLDY_CL_CD = 'VTW05001' AND DATE_FORMAT(CRTR_YMD, '%Y%m') = #{aplyYm}) AS MM
         ) AS MM_QUERY,
          PRJCT_MM_APLY pma
-	      LEFT JOIN (SELECT mlp.PRJCT_ID, mlp.EMP_ID, mlp.MMNY_LBRCO_PRMPC_SN, mim.EXPECT_MM
+        JOIN (SELECT MAX(BGT_MNG_ODR) AS BGT_MNG_ODR FROM PRJCT_BGT_PRMPC pbp WHERE pbp.PRJCT_ID = #{prjctId} AND pbp.ATRZ_DMND_STTS_CD = 'VTW03703') odr
+	      LEFT JOIN (SELECT mlp.PRJCT_ID, mlp.EMP_ID, mlp.MMNY_LBRCO_PRMPC_SN, mim.EXPECT_MM, mlp.BGT_MNG_ODR
 			      FROM MMNY_LBRCO_PRMPC mlp
 			  	  JOIN MMNY_INPT_MM mim ON (mim.PRJCT_ID = mlp.PRJCT_ID AND mim.MMNY_LBRCO_PRMPC_SN = mlp.MMNY_LBRCO_PRMPC_SN AND mlp.BGT_MNG_ODR = mim.BGT_MNG_ODR)
 		     	 WHERE 1=1
 		       	   AND mim.INPT_YM = #{aplyYm}
-		       	   AND mim.PRJCT_ID = #{prjctId}
-                   AND mlp.BGT_MNG_ODR = #{bgtMngOdr})
-	            mmp ON (mmp.EMP_ID = pma.EMP_ID)
+		       	   AND mim.PRJCT_ID = #{prjctId})
+	            mmp ON (mmp.EMP_ID = pma.EMP_ID AND mmp.BGT_MNG_ODR = odr.BGT_MNG_ODR)
 		  JOIN EMP e ON (e.EMP_ID = pma.EMP_ID)
           LEFT JOIN PRJCT_MM_ATRZ pmat ON pmat.PRJCT_ID = pma.PRJCT_ID AND (pmat.EMP_ID = pma.EMP_ID OR (pmat.EMP_ID IS NULL AND pma.EMP_ID IS NULL)) AND pmat.APLY_YM = pma.APLY_YM AND pmat.APLY_ODR = pma.APLY_ODR AND pmat.APLY_YMD = pma.APLY_YMD
           JOIN (

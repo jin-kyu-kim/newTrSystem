@@ -300,6 +300,9 @@
 				    AND ATRZ_DMND_STTS_CD = 'VTW03703'
 				    AND PRJCT_ID = #{prjctId}) pbp ON (ep.BGT_MNG_ODR = pbp.BGT_MNG_ODR)
 		  JOIN CD cd ON (cd.CD_VALUE = ep.EXPENS_CD)
+			<if test="multiType == null and multiType.equals('')">
+				AND CD_VALUE != 'VTW04509'
+			</if>
 		 WHERE 1=1
 		   AND PRJCT_ID = #{prjctId}
 	</select>
@@ -310,6 +313,9 @@
 		  FROM CD cd
   		 WHERE 1=1
 		   AND cd.UP_CD_VALUE = 'VTW045'
+			<if test="multiType != null and !multiType.equals('')">
+				AND CD_VALUE != 'VTW04509'
+			</if>
 	</select>
 	
 	<select id="retrieveOutordEmpPlan" parameterType="map" resultType="com.trsystem.LowerHashMap">
