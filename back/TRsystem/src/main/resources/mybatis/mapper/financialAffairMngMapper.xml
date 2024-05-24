@@ -381,27 +381,34 @@
 <!--        ) a-->
 <!--        LEFT JOIN (-->
             SELECT
-            pca.ELCTRN_ATRZ_ID AS unique_id, 
-		    CONCAT(p.PRJCT_NM, ' (PM : ', (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = p.PRJCT_MNGR_EMP_ID), ')') AS PRJCT_NM, -- 프로젝트명
-		    (SELECT CD_NM FROM CD WHERE CD_VALUE = pca.EXPENS_CD) AS EXPENS_CD, -- 비용 코드
-		    e.EMP_FLNM as EMP_FLNM,
-		    CONCAT('성명 : ', e.EMP_FLNM, CHAR(10), ' | 상세내역 : ', pca.CT_PRPOS, ' | 용도 : ', pca.ATDRN) AS PRJCT_DETAIL,
-		    CONCAT('상세내역 : ', pca.CT_PRPOS, ' | 용도 : ', pca.ATDRN) AS EMP_DETAIL,
-		    pca.UTZTN_AMT as UTZTN_AMT,
-		    CONCAT(SUBSTR(pca.UTZTN_DT, 1, 4), '-', SUBSTR(pca.UTZTN_DT, 5, 2), '-', SUBSTR(pca.UTZTN_DT, 7, 2)) AS UTZTN_DT
-			FROM PRJCT_CT_APLY pca
-			JOIN PRJCT_CT_ATRZ pah
+            	pca.ELCTRN_ATRZ_ID AS unique_id, 
+		    	CONCAT(p.PRJCT_NM, ' (PM : ', (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = p.PRJCT_MNGR_EMP_ID), ')') AS PRJCT_NM, -- 프로젝트명
+		    	(SELECT CD_NM FROM CD WHERE CD_VALUE = pca.EXPENS_CD) AS EXPENS_CD, -- 비용 코드
+		    	e.EMP_FLNM as EMP_FLNM,
+		    	CONCAT('성명 : ', e.EMP_FLNM, CHAR(10), ' | 상세내역 : ', pca.CT_PRPOS, ' | 용도 : ', pca.ATDRN) AS PRJCT_DETAIL,
+		    	CONCAT('상세내역 : ', pca.CT_PRPOS, ' | 용도 : ', pca.ATDRN) AS EMP_DETAIL,
+		    	pca.UTZTN_AMT as UTZTN_AMT,
+		    	CONCAT(SUBSTR(pca.UTZTN_DT, 1, 4), '-', SUBSTR(pca.UTZTN_DT, 5, 2), '-', SUBSTR(pca.UTZTN_DT, 7, 2)) AS UTZTN_DT
+			FROM
+				 PRJCT_CT_APLY pca
+			JOIN
+				 PRJCT_CT_ATRZ pah
 		    ON pca.PRJCT_CT_APLY_SN = pah.PRJCT_CT_APLY_SN
-		    AND pca.EMP_ID = pah.EMP_ID
-		    AND pca.PRJCT_ID = pah.PRJCT_ID
-		    AND pca.APLY_YM = pah.APLY_YM
-		    AND pca.APLY_ODR = pah.APLY_ODR
-		    AND pah.ATRZ_DMND_STTS_CD = 'VTW03703' -- 결재요청상태코드 : 승인
-			JOIN EMP e ON pca.EMP_ID = e.EMP_ID		-- 
-			JOIN PRJCT p ON pca.PRJCT_ID = p.PRJCT_ID
-			LEFT JOIN ELCTRN_ATRZ ea ON pca.ELCTRN_ATRZ_ID = ea.ELCTRN_ATRZ_ID
-			LEFT JOIN CLM_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID
-			LEFT JOIN ELCTRN_ATRZ_DOC_FORM eadf ON ea.ATRZ_FORM_DOC_ID = eadf.ATRZ_FORM_DOC_ID
+		    	AND pca.EMP_ID = pah.EMP_ID
+		    	AND pca.PRJCT_ID = pah.PRJCT_ID
+		    	AND pca.APLY_YM = pah.APLY_YM
+		    	AND pca.APLY_ODR = pah.APLY_ODR
+		    	AND pah.ATRZ_DMND_STTS_CD = 'VTW03703' -- 결재요청상태코드 : 승인
+			JOIN
+				 EMP e ON pca.EMP_ID = e.EMP_ID		-- 
+			JOIN 
+				PRJCT p ON pca.PRJCT_ID = p.PRJCT_ID
+			LEFT JOIN
+				 ELCTRN_ATRZ ea ON pca.ELCTRN_ATRZ_ID = ea.ELCTRN_ATRZ_ID
+			LEFT JOIN
+				 CLM_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID
+			LEFT JOIN
+				 ELCTRN_ATRZ_DOC_FORM eadf ON ea.ATRZ_FORM_DOC_ID = eadf.ATRZ_FORM_DOC_ID
             WHERE 
             1 = 1
             <if test="prjctId != null and !prjctId.equals('')">
@@ -1125,7 +1132,12 @@
         <if test="hdofSttsNm != null and hdofSttsNm !=''">
             AND   W_EMP_TY_CD LIKE CONCAT('%', #{hdofSttsNm}, '%')
         </if>
-
+		<if test="aplyYm != null and !aplyYm.equals('')">
+            AND APLY_YM = #{aplyYm}
+        </if>
+        <if test="aplyOdr != null and !aplyOdr.equals('')">
+            AND APLY_ODR = #{aplyOdr}
+        </if>
 
 
 
