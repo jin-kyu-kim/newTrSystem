@@ -212,11 +212,6 @@ const CultureHealthCostReg = (props) => {
             errors.push('Data required');
         }
 
-        if (!initParam.atchmnflId) {
-            alert('파일이 첨부되지 않았습니다.')
-            errors.push('File required');
-        }
-
         return errors.length === 0;
     };
 
@@ -342,9 +337,12 @@ const CultureHealthCostReg = (props) => {
                         const responseMn = await ApiRequest('/boot/indvdlClm/minusClturPhstrnActCt', paramMn);
                         if (responseMn === 1) {
                             const paramAt = [{ tbNm: "ATCHMNFL" }, { atchmnflId: selectedItem.atchmnflId }]
-                            await ApiRequest("/boot/common/commonDelete", paramAt);
-                            searchTable();
+                            if(selectedItem.atchmnflId != null){
+                                await ApiRequest("/boot/common/commonDelete", paramAt);
+                                searchTable();
+                            }
                             props.searchGrid();
+                            searchTable();
                             setSelectedItem(null);
                             window.alert("삭제되었습니다.");
                         }
