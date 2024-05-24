@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { addMonths, subMonths } from 'date-fns';
 import PivotGrid, {
   FieldChooser,
   FieldPanel,
@@ -15,9 +16,14 @@ const ProjectControlBudgetCostSearch = ({prjctId}) => {
   const location = useLocation();
   // const prjctId = location.state.prjctId;
 
-  const ctrtYmd = location.state.ctrtYmd;
+  const ctrtYmdBefore= new Date(location.state.ctrtYmd);
+  const stbleEndYmdBefore = new Date(location.state.stbleEndYmd);
+
+  const ctrtYmd = subMonths(ctrtYmdBefore, 1);
+  const stbleEndYmd = addMonths(stbleEndYmdBefore, 1);
+
   const bgtMngOdr = location.state.bgtMngOdr;
-  const [stbleEndYmd,setStbleEndYmd] = useState(location.state.stbleEndYmd);
+
   const [pivotGridConfig, setPivotGridConfig] = useState({
     fields: ProjectGeneralBudgetCostSearchJson,
     store: [],
