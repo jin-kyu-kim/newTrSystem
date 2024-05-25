@@ -768,8 +768,26 @@ const ElecAtrzDetail = () => {
                     placeholder="승인 의견을 입력해주세요."
                 />
                 <br/>
-                <Button text="승인" onClick={aprvAtrz}/>
-                <Button text="취소" onClick={handleClose}/>
+                <div className="buttons" align="right" style={{ margin: "20px" }}>
+                    <Button 
+                        text="Contained"
+                        type="default"
+                        stylingMode="contained"
+                        style={{ margin: "2px" }}  
+                        onClick={aprvAtrz}
+                        >
+                        승인
+                        </Button>
+                    <Button 
+                        text="Contained"
+                        type="default"
+                        stylingMode="contained"
+                        style={{ margin: "2px" }}
+                        onClick={handleClose}
+                        >
+                        취소
+                    </Button>
+                </div>
             </Popup>
             <Popup
                 width={"80%"}
@@ -786,8 +804,25 @@ const ElecAtrzDetail = () => {
                     placeholder="반려 사유를 입력해주세요."
                 />
                 <br/>
-                <Button text="반려" onClick={rjctAtrz}/>
-                <Button text="취소" onClick={handleClose}/>
+                <div className="buttons" align="right" style={{ margin: "20px" }}>
+                    <Button 
+                        text="Contained"
+                        type="default"
+                        stylingMode="contained"
+                        style={{ margin: "2px" }} 
+                        onClick={rjctAtrz}
+                    >
+                        반려
+                    </Button>
+                    <Button                     
+                        text="Contained"
+                        type="default"
+                        stylingMode="contained"
+                        style={{ margin: "2px" }} onClick={handleClose}
+                        >
+                        취소
+                    </Button>
+                </div>
             </Popup>
                 <ElecAtrzHistPopup
                 visible={histPopVisible}
