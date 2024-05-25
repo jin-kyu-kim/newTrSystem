@@ -135,7 +135,7 @@ const ElecAtrzManage = () => {
     }
 
     //그리드 로우 클릭 이벤트
-    const onRowDblClick = (e) => {
+    const onRowClick = (e) => {
         navigate('/elecAtrz/ElecAtrzDetail', {state: {data: e.data}});
     }
     //===================================================//
@@ -236,7 +236,7 @@ const ElecAtrzManage = () => {
                   columns={columnTitle}
                   pagination={pagination}
                   paging={true}
-                  onRowDblClick={onRowDblClick}
+                  onRowClick={onRowDblClick}
                   onClick={onBtnClick}
                   wordWrap={true}
                   onOptionChanged={onPageIndexChanged}
