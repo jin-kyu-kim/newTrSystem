@@ -112,7 +112,7 @@ const ElecAtrzTitleInfo = ({ sttsCd, refer, atrzLnEmpList, getAtrzLn, contents, 
               style={{ width: "100%" }}
               value={atrzParam.title}
               onValueChanged={onHandleAtrzTitle}
-              readOnly={sttsCd === "VTW05405" || sttsCd === "VTW03702" || sttsCd === "VTW03703" || formData.atrzHistSeCd === "VTW05405" ||  sttsCd === "VTW00801" ? true : false}
+              readOnly={sttsCd === "VTW05405" || sttsCd === "VTW03702" || sttsCd === "VTW03703" || formData.atrzHistSeCd === "VTW05405" ||  sttsCd === "VTW00801" ? (sttsCd === "VTW05407" ? false : true) : false}
             />
           </div>
 
