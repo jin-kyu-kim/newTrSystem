@@ -30,7 +30,7 @@ const ElecAtrzManage = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [pageSize, setPageSize] = useState(20);
 
-    const [pageIndex, setPageIndex] = useState(1);   
+    const [pageIndex, setPageIndex] = useState(0);   
 
     useEffect(() => {
         pageHandle();
