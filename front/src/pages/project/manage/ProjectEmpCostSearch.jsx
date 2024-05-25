@@ -58,6 +58,9 @@ const ProjectEmpCostSearch = ({prjctId}) => {
 
   return (
     <div style={{ margin: "30px" }}>
+      <div style={{display: "inline-block", margin : "5px", padding: "5px 10px 5px 10px", color: "black", fontSize: "12px",  backgroundColor: "rgba(255, 182, 193, 0.5)", border: "1px solid red", borderRadius: "10px"}}>
+        * 하단의 컬럼속성을 드래그 하여, 표 좌측에 넣으면 해당 컬럼이 표현됩니다. 
+      </div>
       <PivotGrid
         dataSource={dataSource}
         allowSortingBySummary={true}

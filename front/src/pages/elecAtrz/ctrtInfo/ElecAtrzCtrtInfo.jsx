@@ -142,7 +142,7 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData, sttsCd }) => {
                             />
                         </div>
                         <div style={{display:"inline-block", marginLeft:"auto"}}>
-                            <NumberBox
+                            <TextBox
                                 placeholder="사업자등록번호 또는 주민등록번호"
                                 width="400px"
                                 onValueChanged={(e) => {
@@ -151,7 +151,7 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData, sttsCd }) => {
                                 value={infoData.cntrctrIdntfcNo}
                            >
                                 {/* <Validator><RequiredRule message={"필수값입니다."}/></Validator> */}
-                           </NumberBox>
+                           </TextBox>
                         </div>
                     </div>
                 </div>
@@ -198,7 +198,7 @@ const ElecAtrzCtrtInfo = ({data, prjctId, onSendData, sttsCd }) => {
                             />
                         </div>
                         <div style={{display:"inline-block", marginLeft:"auto", width: "30%"}}>
-                            <NumberBox
+                            <TextBox
                                 placeholder="계좌번호"
                                 onValueChanged={(e) => {
                                     handleChgState({name: "dpstActno", value: e.value})
