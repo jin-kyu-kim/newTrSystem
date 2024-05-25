@@ -660,7 +660,7 @@
 		   AND (rm.REFRN_CNCRRNC_CL_CD LIKE '%VTW00706' OR rm.REFRN_CNCRRNC_CL_CD LIKE '%VTW00707') 
 	</select>
 	
-	<select id="retrieveAtrzHist" parameterType="map" resultType="com.trsystem.LowerHashMap">
+	<select id="retrieveAtrzHistList" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		WITH RECURSIVE CTE (ATRZ_HIST_SE_CD, ELCTRN_ATRZ_ID, HIST_ELCTRN_ATRZ_ID, ATRZ_DMND_EMP_ID, REG_DT) AS (
 		SELECT ea.ATRZ_HIST_SE_CD, ea.ELCTRN_ATRZ_ID, ea.HIST_ELCTRN_ATRZ_ID, ea.ATRZ_DMND_EMP_ID, ea.REG_DT
 		  FROM ELCTRN_ATRZ ea
@@ -682,4 +682,41 @@
 			JOIN EMP e ON e.EMP_ID = cte.ATRZ_DMND_EMP_ID
 			LEFT JOIN CD cd ON cd.CD_VALUE = cte.ATRZ_HIST_SE_CD
 	</select>
+	
+	<select id="retrieveAtrzHist" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT DISTINCT
+			ea.ELCTRN_ATRZ_ID,
+			ea.ELCTRN_ATRZ_TY_SE_CD, -- newReq
+			ea.ATRZ_FORM_DOC_ID, -- newReq
+			ea.PRJCT_ID, -- newReq
+			ea.ELCTRN_ATRZ_DOC_NO,
+			eadf.GNRL_ATRZ_TTL, -- 전자결재 유형
+			(SELECT EMP_FLNM FROM EMP WHERE EMP_ID = ea.ATRZ_DMND_EMP_ID) ATRZ_DMND_EMP_NM, -- 기안자
+			DATE_FORMAT(ea.REG_DT, '%Y-%m-%d %H:%i:%s') AS REG_DT,
+			CASE WHEN ea.ATRZ_HIST_SE_CD = 'VTW05405' THEN CONCAT('▶취소결재◀ ', COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cta.CTRT_ATRZ_TTL, cga.ATRZ_TTL, CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD), ' [',
+				DATE_FORMAT(va.VCATN_BGNG_YMD, '%Y-%m-%d'), ' ~ ', DATE_FORMAT(va.VCATN_END_YMD, '%Y-%m-%d'), ' (', va.VCATN_DE_CNT, '일)]')))
+				WHEN ea.ATRZ_HIST_SE_CD = 'VTW05406' THEN CONCAT('▶결재변경◀ ', COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cta.CTRT_ATRZ_TTL, cga.ATRZ_TTL, CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD), ' [',
+				DATE_FORMAT(va.VCATN_BGNG_YMD, '%Y-%m-%d'), ' ~ ', DATE_FORMAT(va.VCATN_END_YMD, '%Y-%m-%d'), ' (', va.VCATN_DE_CNT, '일)]')))
+				ELSE COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cta.CTRT_ATRZ_TTL, cga.ATRZ_TTL, CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD), ' [',
+				DATE_FORMAT(va.VCATN_BGNG_YMD, '%Y-%m-%d'), ' ~ ', DATE_FORMAT(va.VCATN_END_YMD, '%Y-%m-%d'), ' (', va.VCATN_DE_CNT, '일)]'))
+			END AS TITLE,
+			cad.CNPT_NM,
+			CASE WHEN (SELECT al2.ATRZ_STTS_CD FROM ATRZ_LN al2 WHERE al2.ATRZ_LN_SN = 1 AND al2.ELCTRN_ATRZ_ID = ea.ELCTRN_ATRZ_ID) = 'VTW00801' THEN 'Y'
+				 ELSE 'N'
+			END AS RECALL -- 회수가능여부
+		FROM ELCTRN_ATRZ ea
+		LEFT JOIN REFRN_MAN rm ON ea.ELCTRN_ATRZ_ID = rm.ELCTRN_ATRZ_ID -- 참조자의 경우
+		LEFT JOIN GNRL_ATRZ ga ON ea.ELCTRN_ATRZ_ID = ga.ELCTRN_ATRZ_ID -- 일반결재
+		LEFT JOIN CLM_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID -- 청구결재
+		LEFT JOIN CLM_ATRZ_DTL cad ON ea.ELCTRN_ATRZ_ID = cad.ELCTRN_ATRZ_ID -- 청구결재 상세
+		LEFT JOIN CTRT_ATRZ cta ON ea.ELCTRN_ATRZ_ID = cta.ELCTRN_ATRZ_ID -- 계약결재
+		LEFT JOIN CTRT_GIVE_ATRZ cga ON ea.ELCTRN_ATRZ_ID = cga.ELCTRN_ATRZ_ID -- 계약지급결재
+		LEFT JOIN VCATN_ATRZ va ON ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID -- 휴가결재
+		LEFT JOIN ELCTRN_ATRZ_DOC_FORM eadf ON ea.ATRZ_FORM_DOC_ID = eadf.ATRZ_FORM_DOC_ID -- 서식 제목
+		WHERE 1=1
+		AND ATRZ_DMND_EMP_ID = #{empId}
+		AND (ea.ATRZ_DMND_STTS_CD = 'VTW03705' OR ea.ATRZ_DMND_STTS_CD = 'VTW03706')
+		AND ea.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
+	</select>
+	
 </mapper>

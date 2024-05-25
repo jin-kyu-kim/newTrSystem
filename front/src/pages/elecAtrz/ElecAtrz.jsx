@@ -233,8 +233,8 @@ const ElecAtrz = () => {
       <ElecAtrzHistPopup
         visible={histPopVisible}
         onPopHiding={onHistPopHiding}
-        data={selectedData}
-        param={param}
+        selectedData={selectedData}
+        selectedParam={param}
       />
     </div>
   );
