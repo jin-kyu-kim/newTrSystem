@@ -86,16 +86,16 @@
             JOIN PRJCT_MM_APLY pma ON (pma.EMP_ID = dh.EMP_ID)
             GROUP BY pma.EMP_ID
         ) dept ON dept.EMP_ID = e.EMP_ID
-        LEFT JOIN (SELECT mlp.PRJCT_ID, mlp.EMP_ID, mlp.MMNY_LBRCO_PRMPC_SN, mim.EXPECT_MM, MAX(mlp.BGT_MNG_ODR)
+        JOIN (SELECT MAX(BGT_MNG_ODR) AS BGT_MNG_ODR FROM PRJCT_BGT_PRMPC pbp WHERE pbp.PRJCT_ID = #{prjctId} AND pbp.ATRZ_DMND_STTS_CD = 'VTW03703') odr
+        LEFT JOIN (
+            SELECT mlp.EMP_ID, SUM(mim.EXPECT_MM) AS EXPECT_MM, mlp.BGT_MNG_ODR
             FROM MMNY_LBRCO_PRMPC mlp
             JOIN MMNY_INPT_MM mim ON (mim.PRJCT_ID = mlp.PRJCT_ID AND mim.MMNY_LBRCO_PRMPC_SN = mlp.MMNY_LBRCO_PRMPC_SN AND mlp.BGT_MNG_ODR = mim.BGT_MNG_ODR)
-            JOIN PRJCT_BGT_PRMPC pbp ON (mim.PRJCT_ID = pbp.PRJCT_ID AND mlp.BGT_MNG_ODR = pbp.BGT_MNG_ODR)
             WHERE 1=1
             AND mim.PRJCT_ID = #{prjctId}
             AND mim.INPT_YM BETWEEN SUBSTR(#{startYmOdr},1, 6) AND SUBSTR(#{endYmOdr},1, 6)
-            AND pbp.ATRZ_DMND_STTS_CD = 'VTW03703'
-            GROUP BY mlp.EMP_ID, mlp.MMNY_LBRCO_PRMPC_SN, mim.EXPECT_MM)
-            mmp ON (mmp.EMP_ID = pma.EMP_ID)
+            GROUP BY mlp.EMP_ID, mlp.BGT_MNG_ODR)
+            mmp ON (mmp.EMP_ID = pma.EMP_ID AND mmp.BGT_MNG_ODR = odr.BGT_MNG_ODR)
         WHERE 1 = 1
         <if test="prjctId != null and !prjctId.equals('')">
             AND pma.PRJCT_ID = #{prjctId}
@@ -381,28 +381,36 @@
 <!--        ) a-->
 <!--        LEFT JOIN (-->
             SELECT
-                CONCAT(p.PRJCT_NM, ' (PM : ', (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = p.PRJCT_MNGR_EMP_ID), ')') AS PRJCT_NM,
-                (SELECT CD_NM FROM CD WHERE CD_VALUE = pca.EXPENS_CD) AS EXPENS_CD,
-                e.EMP_FLNM,
-                CONCAT('성명 : ',e.EMP_FLNM, ' | 상세내역 : ', pca.CT_PRPOS, ' | 용도 : ', pca.ATDRN) AS PRJCT_DETAIL,
-                CONCAT('상세내역 : ', pca.CT_PRPOS, ' | 용도 : ', pca.ATDRN) AS EMP_DETAIL,
-                pca.UTZTN_AMT,
-                CONCAT(SUBSTR(pca.UTZTN_DT, 1, 4),'-',SUBSTR(pca.UTZTN_DT, 5, 2),'-',SUBSTR(pca.UTZTN_DT, 7, 2)) AS UTZTN_DT
-            FROM PRJCT_CT_APLY pca
-            JOIN PRJCT_CT_ATRZ pah
-                ON pca.PRJCT_ID = pah.PRJCT_ID
-                AND pca.EMP_ID = pah.EMP_ID
-                AND pca.APLY_YM = pah.APLY_YM
-                AND pca.APLY_ODR = pah.APLY_ODR
-                AND pca.PRJCT_CT_APLY_SN = pah.PRJCT_CT_APLY_SN 
-                AND pah.ATRZ_DMND_STTS_CD = 'VTW03703' -- 결재요청상태코드 : 승인
-            JOIN EMP e
-                ON pca.EMP_ID = e.EMP_ID
-            JOIN CD c
-                ON pah.ATRZ_DMND_STTS_CD = c.CD_VALUE
-            JOIN PRJCT p
-                ON pca.PRJCT_ID = p.PRJCT_ID
-            WHERE 1 = 1
+            	pca.ELCTRN_ATRZ_ID AS unique_id, 
+		    	CONCAT(p.PRJCT_NM, ' (PM : ', (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = p.PRJCT_MNGR_EMP_ID), ')') AS PRJCT_NM, -- 프로젝트명
+		    	(SELECT CD_NM FROM CD WHERE CD_VALUE = pca.EXPENS_CD) AS EXPENS_CD, -- 비용 코드
+		    	e.EMP_FLNM as EMP_FLNM,
+		    	CONCAT('성명 : ', e.EMP_FLNM, CHAR(10), ' | 상세내역 : ', pca.CT_PRPOS, ' | 용도 : ', pca.ATDRN) AS PRJCT_DETAIL,
+		    	CONCAT('상세내역 : ', pca.CT_PRPOS, ' | 용도 : ', pca.ATDRN) AS EMP_DETAIL,
+		    	pca.UTZTN_AMT as UTZTN_AMT,
+		    	CONCAT(SUBSTR(pca.UTZTN_DT, 1, 4), '-', SUBSTR(pca.UTZTN_DT, 5, 2), '-', SUBSTR(pca.UTZTN_DT, 7, 2)) AS UTZTN_DT
+			FROM
+				 PRJCT_CT_APLY pca
+			JOIN
+				 PRJCT_CT_ATRZ pah
+		    ON pca.PRJCT_CT_APLY_SN = pah.PRJCT_CT_APLY_SN
+		    	AND pca.EMP_ID = pah.EMP_ID
+		    	AND pca.PRJCT_ID = pah.PRJCT_ID
+		    	AND pca.APLY_YM = pah.APLY_YM
+		    	AND pca.APLY_ODR = pah.APLY_ODR
+		    	AND pah.ATRZ_DMND_STTS_CD = 'VTW03703' -- 결재요청상태코드 : 승인
+			JOIN
+				 EMP e ON pca.EMP_ID = e.EMP_ID		-- 
+			JOIN 
+				PRJCT p ON pca.PRJCT_ID = p.PRJCT_ID
+			LEFT JOIN
+				 ELCTRN_ATRZ ea ON pca.ELCTRN_ATRZ_ID = ea.ELCTRN_ATRZ_ID
+			LEFT JOIN
+				 CLM_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID
+			LEFT JOIN
+				 ELCTRN_ATRZ_DOC_FORM eadf ON ea.ATRZ_FORM_DOC_ID = eadf.ATRZ_FORM_DOC_ID
+            WHERE 
+            1 = 1
             <if test="prjctId != null and !prjctId.equals('')">
                 AND pca.PRJCT_ID = #{prjctId}
             </if>
@@ -1124,7 +1132,12 @@
         <if test="hdofSttsNm != null and hdofSttsNm !=''">
             AND   W_EMP_TY_CD LIKE CONCAT('%', #{hdofSttsNm}, '%')
         </if>
-
+		<if test="aplyYm != null and !aplyYm.equals('')">
+            AND APLY_YM = #{aplyYm}
+        </if>
+        <if test="aplyOdr != null and !aplyOdr.equals('')">
+            AND APLY_ODR = #{aplyOdr}
+        </if>
 
 
 

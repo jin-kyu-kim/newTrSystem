@@ -58,31 +58,35 @@ const EmpExpenseAprvProject = ({ prjctId, aplyYm, aplyOdr }) => {
 
     const combineData = (columnData, rowData) => {
         const combinedData = [];
-
+    
         const pivotDates = columnData.map(item => item.pivotDate);
-
+    
         for (const pivotDate of pivotDates) {
             const matchingRowData = rowData.filter(item => item.utztnDt === pivotDate);
-
-            for (const row of matchingRowData) {
+    
+            const hasExpenseData = matchingRowData.length > 0;
+            
+            if (!hasExpenseData) {
                 combinedData.push({
                     pivotDate: pivotDate,
-                    prjctNm: row.prjctNm,
-                    expensCd: row.expensCd,
-                    prjctDetail: row.prjctDetail,
-                    utztnAmt: row.utztnAmt
                 });
+            } else {
+                for (const row of matchingRowData) {
+                    combinedData.push({
+                        pivotDate: pivotDate,
+                        prjctNm: row.prjctNm,
+                        expensCd: row.expensCd,
+                        prjctDetail: row.prjctDetail,
+                        utztnAmt: row.utztnAmt
+                    });
+                }
             }
-
-            // if (matchingRowData.length === 0) {
-            //     combinedData.push({
-            //         pivotDate: pivotDate,
-            //     });
-            // }
+            console.log("어케들어감???",combinedData)
         }
-
+    
         return combinedData;
     };
+    
 
     const dataSource = new PivotGridDataSource({
         fields: [{
