@@ -12,6 +12,7 @@ import electAtrzJson from './ElecAtrzJson.json';
 import ApiRequest from 'utils/ApiRequest';
 import { useModal } from "../../components/unit/ModalContext";
 import './ElecAtrz.css'
+import ElecAtrzHistPopup from "./common/ElecAtrzHistPopup";
 
 const ElecAtrzDetail = () => {
     const navigate = useNavigate();
@@ -37,6 +38,12 @@ const ElecAtrzDetail = () => {
     const [ data, setData ] = useState(location.state.data);
     const { handleOpen } = useModal();
 
+    /**
+     * 이력 팝업 관련
+     */
+    const [ histPopVisible, setHistPopVisible ] = useState(false);
+    const [ selectedData, setSelectedData ] = useState([]);
+
     useEffect(() => {
         const getDetailData = async () => {
             const res = await ApiRequest('/boot/common/queryIdSearch', { queryId: "elecAtrzMapper.elecAtrzDetail", elctrnAtrzId: detailInfo.elctrnAtrzId })
@@ -54,10 +61,19 @@ const ElecAtrzDetail = () => {
             case "print": //console.log("출력 클릭"); 
                 break;
             case "docHist": //console.log("문서이력 클릭");
+                onHistPopAppear();
                 break;
             case "reAtrz": onReReq();
                 break;
-            case "cancel": onCancelReq();
+            case "cancel":
+                // 회수 가능 여부가 Y인 경우, 
+                if(detailData.recall == "Y") {
+
+                    handleOpen("회수 하시겠습니까?",  () => elctrnAtrzRecall(detailData), true);
+                } else {
+                    onCancelReq();
+                }
+
                 break;
             case "update": onUpdateReq();
             break;
@@ -364,11 +380,13 @@ const ElecAtrzDetail = () => {
 
                     // 1. 이력 컬럼에 있는 전자결재에 대한 처리 -> 
                     const response = await ApiRequest("/boot/elecAtrz/updateHistElctrnAtrz", param);
-                    const clmResult = handlePrcjtCost();
-                    if(clmResult < 0) {
-                        handleOpen("승인 처리에 실패하였습니다.");
-                    }
 
+                    if(detailData.elctrnAtrzTySeCd === "VTW04907") {
+                        const clmResult = handlePrcjtCost();
+                        if(clmResult < 0) {
+                            handleOpen("승인 처리에 실패하였습니다.");
+                        }
+                    }
                 }
 
 
@@ -403,6 +421,9 @@ const ElecAtrzDetail = () => {
         setOpnnCn(e.value);
     }, []);
 
+    /**
+     * 반려 실행
+     */
     const rjctAtrz = async () => {
         const isconfirm = window.confirm("요청을 반려하시겠습니까?");
         const date = getToday();
@@ -434,15 +455,19 @@ const ElecAtrzDetail = () => {
                     console.log(value);
                     if(value > 0) {
 
-                        // 취소결재를 반려한 경우
+                        // 취소결재를 반려한 경우 후속조치
                         if(detailData.atrzHistSeCd === "VTW05405") {
                             // HIST_ELCTRN_ATRZ_ID 의 값을 다시 결재중으로 변경
                             // HIST_ELCTRN_ATRZ_ID의 결재선을 다시 결재중으로 변경
                             
+                            const param = {
+                                elctrnAtrzId: detailData.histElctrnAtrzId,
+                                mdfcnDt: mdfcnDt,
+                                mdfcnEmpId: userInfo.empId
+                            }
 
+                            const response = rollbackElctrnAtrz(param);
                         }
-
-
                         handleOpen("반려 처리되었습니다.");
                         
                         navigate('/elecAtrz/ElecAtrz');
@@ -475,6 +500,16 @@ const ElecAtrzDetail = () => {
         ]
         const result = await ApiRequest("/boot/common/commonUpdate", param);
         return result;
+    }
+
+    /**
+     * 취소결재, 변경결재 반려로 인해 관련 전자결재를 원래대로 돌려준다.
+     * @param {} param 
+     * @returns 
+     */
+    const rollbackElctrnAtrz = async (param) => {
+
+        return await ApiRequest("/boot/elecAtrz/rollbackElctrnAtrz", param);
     }
 
     /**
@@ -539,7 +574,40 @@ const ElecAtrzDetail = () => {
         
         setAplyYmd(`${year}${monthString}`);
         setOdr(odr);
-    } 
+    }
+
+    /**
+     * 결재를 회수한다.
+     */
+    const elctrnAtrzRecall = async (data) => {
+        /**
+         * 1. 회수 가능: 결재선 1번라인이 심사중일 경우(회수가능여부 Y)
+         * 2. 
+         */
+        const param = [
+            { tbNm: "ELCTRN_ATRZ" },
+            {
+                atrzDmndSttsCd: "VTW03701"
+            },
+            {
+                elctrnAtrzId: data.elctrnAtrzId
+            }
+        ]
+
+        try {
+            const response = await ApiRequest("/boot/common/commonUpdate", param);
+        
+            if(response > 0) {
+                handleOpen("회수되었습니다. 임시저장 목록에서 확인가능합니다.");
+                navigate("/elecAtrz/ElecAtrz");
+            } else {
+                handleOpen("회수에 실패하였습니다. 관리자에게 문의해주세요");
+            }
+
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
 
     /**
@@ -584,6 +652,8 @@ const ElecAtrzDetail = () => {
      * 결재 취소: VTW05405
      */
     const onCancelReq = async () => {
+
+
         navigate('/elecAtrz/ElecAtrzNewReq', { state: { formData: detailData, sttsCd: "VTW05405", prjctId: detailData.prjctId, }});
     }
 
@@ -610,6 +680,15 @@ const ElecAtrzDetail = () => {
                   onClick={onBtnClick} style={{ marginRight: '3px' }} />
         ));
     };
+
+    // 팝업 관련
+    const onHistPopHiding = async () => {
+        setHistPopVisible(false);
+    }
+    
+    const onHistPopAppear = async () => {
+        setHistPopVisible(true);
+    }
 
     return (
         <div className="container" style={{ marginTop: "10px" }}>
@@ -689,8 +768,26 @@ const ElecAtrzDetail = () => {
                     placeholder="승인 의견을 입력해주세요."
                 />
                 <br/>
-                <Button text="승인" onClick={aprvAtrz}/>
-                <Button text="취소" onClick={handleClose}/>
+                <div className="buttons" align="right" style={{ margin: "20px" }}>
+                    <Button 
+                        text="Contained"
+                        type="default"
+                        stylingMode="contained"
+                        style={{ margin: "2px" }}  
+                        onClick={aprvAtrz}
+                        >
+                        승인
+                        </Button>
+                    <Button 
+                        text="Contained"
+                        type="default"
+                        stylingMode="contained"
+                        style={{ margin: "2px" }}
+                        onClick={handleClose}
+                        >
+                        취소
+                    </Button>
+                </div>
             </Popup>
             <Popup
                 width={"80%"}
@@ -707,9 +804,31 @@ const ElecAtrzDetail = () => {
                     placeholder="반려 사유를 입력해주세요."
                 />
                 <br/>
-                <Button text="반려" onClick={rjctAtrz}/>
-                <Button text="취소" onClick={handleClose}/>
+                <div className="buttons" align="right" style={{ margin: "20px" }}>
+                    <Button 
+                        text="Contained"
+                        type="default"
+                        stylingMode="contained"
+                        style={{ margin: "2px" }} 
+                        onClick={rjctAtrz}
+                    >
+                        반려
+                    </Button>
+                    <Button                     
+                        text="Contained"
+                        type="default"
+                        stylingMode="contained"
+                        style={{ margin: "2px" }} onClick={handleClose}
+                        >
+                        취소
+                    </Button>
+                </div>
             </Popup>
+                <ElecAtrzHistPopup
+                visible={histPopVisible}
+                onPopHiding={onHistPopHiding}
+                selectedData={detailInfo}
+                  /> 
         </div>
     );
 }
