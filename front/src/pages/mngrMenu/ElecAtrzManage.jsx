@@ -30,7 +30,7 @@ const ElecAtrzManage = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [pageSize, setPageSize] = useState(20);
 
-    const [pageIndex, setPageIndex] = useState(1);   
+    const [pageIndex, setPageIndex] = useState(0);   
 
     useEffect(() => {
         pageHandle();
@@ -135,7 +135,7 @@ const ElecAtrzManage = () => {
     }
 
     //그리드 로우 클릭 이벤트
-    const onRowDblClick = (e) => {
+    const onRowClick = (e) => {
         navigate('/elecAtrz/ElecAtrzDetail', {state: {data: e.data}});
     }
     //===================================================//
@@ -236,7 +236,7 @@ const ElecAtrzManage = () => {
                   columns={columnTitle}
                   pagination={pagination}
                   paging={true}
-                  onRowDblClick={onRowDblClick}
+                  onRowClick={onRowClick}
                   onClick={onBtnClick}
                   wordWrap={true}
                   onOptionChanged={onPageIndexChanged}
