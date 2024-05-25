@@ -136,6 +136,7 @@ const ElecAtrzManage = () => {
 
     //그리드 로우 클릭 이벤트
     const onRowClick = (e) => {
+    const onRowClick = (e) => {
         navigate('/elecAtrz/ElecAtrzDetail', {state: {data: e.data}});
     }
     //===================================================//
