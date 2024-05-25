@@ -77,4 +77,13 @@ public class ElecAtrzController {
 		return ElecAtrzDomain.updateHistElctrnAtrz(params);
 	}
 	
+	/**
+	 * 결재 취소 혹은 변경결재 반려 시 관련 문서 롤백
+	 * @param params
+	 * @return
+	 */
+	@PostMapping(value = "/boot/elecAtrz/rollbackElctrnAtrz")
+	public int rollbackElctrnAtrz(@RequestBody Map<String, Object> params) {
+		return ElecAtrzDomain.rollbackElctrnAtrz(params);
+	}
 }
