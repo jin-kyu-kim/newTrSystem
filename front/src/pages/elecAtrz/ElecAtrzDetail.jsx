@@ -12,6 +12,7 @@ import electAtrzJson from './ElecAtrzJson.json';
 import ApiRequest from 'utils/ApiRequest';
 import { useModal } from "../../components/unit/ModalContext";
 import './ElecAtrz.css'
+import ElecAtrzHistPopup from "./common/ElecAtrzHistPopup";
 
 const ElecAtrzDetail = () => {
     const navigate = useNavigate();
@@ -37,6 +38,12 @@ const ElecAtrzDetail = () => {
     const [ data, setData ] = useState(location.state.data);
     const { handleOpen } = useModal();
 
+    /**
+     * 이력 팝업 관련
+     */
+    const [ histPopVisible, setHistPopVisible ] = useState(false);
+    const [ selectedData, setSelectedData ] = useState([]);
+
     useEffect(() => {
         const getDetailData = async () => {
             const res = await ApiRequest('/boot/common/queryIdSearch', { queryId: "elecAtrzMapper.elecAtrzDetail", elctrnAtrzId: detailInfo.elctrnAtrzId })
@@ -54,6 +61,7 @@ const ElecAtrzDetail = () => {
             case "print": //console.log("출력 클릭"); 
                 break;
             case "docHist": //console.log("문서이력 클릭");
+                onHistPopAppear();
                 break;
             case "reAtrz": onReReq();
                 break;
@@ -673,6 +681,15 @@ const ElecAtrzDetail = () => {
         ));
     };
 
+    // 팝업 관련
+    const onHistPopHiding = async () => {
+        setHistPopVisible(false);
+    }
+    
+    const onHistPopAppear = async () => {
+        setHistPopVisible(true);
+    }
+
     return (
         <div className="container" style={{ marginTop: "10px" }}>
                 <ElecAtrzTitleInfo
@@ -772,6 +789,11 @@ const ElecAtrzDetail = () => {
                 <Button text="반려" onClick={rjctAtrz}/>
                 <Button text="취소" onClick={handleClose}/>
             </Popup>
+                <ElecAtrzHistPopup
+                visible={histPopVisible}
+                onPopHiding={onHistPopHiding}
+                selectedData={detailInfo}
+                  /> 
         </div>
     );
 }
