@@ -1198,6 +1198,11 @@ const EmpVacation = () => {
                                 visible={popupVcatnAtrzCancleValue.visible}
                                 dataMap={popupVcatnAtrzCancleValue.data}
                                 empId={popupVcatnAtrzCancleValue.empId}
+                                loading={(e) => { 
+                                    setLoading(e)
+                                    setSearchVcatnListParam({ ...searchVcatnListParam, isSearch: true })
+                                    selectData(searchVcatnListParam);
+                                }}
                                 onHiding={(e) => {
                                     setPopupVcatnAtrzCancleValue({ visible: e })
                                     setSearchVcatnListParam({ ...searchVcatnListParam, isSearch: true })
