@@ -55,7 +55,6 @@ const EmpTRCostTotal = () => {
 
 
   const pageHandle = async (initParam) => {
-
     const updateParam = {
       ...initParam,
       aplyYm : initParam?.year + initParam?.month,
@@ -65,7 +64,6 @@ const EmpTRCostTotal = () => {
    
     
     try {
-     
       const response = await ApiRequest("/boot/common/queryIdSearch", updateParam);
     
         setValues(response);
