@@ -91,6 +91,22 @@
             "label": "입사일",
             "required": false,
             "placeholder": "입사일"
+        }, "deptId": {
+            "name": "deptId",
+            "type": "ComboBox",
+            "required": true,
+            "label": "소속",
+            "placeholder": "소속",
+            "width":"300px",
+            "param":{ 
+                "queryId" : {
+                    "queryId" : "humanResourceMngMapper.retrieveUpDept"
+                    },
+                "valueExpr" : "deptId",
+                "displayExpr": "deptNmEmpFlnm",
+                "values" : ["deptId"],
+                "name" : "deptId"
+                }
         }
     }
     ,

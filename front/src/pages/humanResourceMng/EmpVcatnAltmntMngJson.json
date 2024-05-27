@@ -9,5 +9,10 @@
         {"key": "tableRemndrDaycnt", "value": "잔여", "width": "10%"},
         {"key": "hdofSttsNm", "value": "재직상태", "width": "10%"},
         {"key": "link", "value": "화면", "width": "10%", "button":{"text" : "이동"}}
+    ],
+    "empKeyColumn:": "empno",
+    "empTableColumns": [
+        {"key": "empno", "value": "사번"},
+        {"key": "empFlnm", "value": "성명"}
     ]
 }
