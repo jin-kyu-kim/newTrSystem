@@ -19,13 +19,14 @@ const BoardInputForm = ({ edit, editMode, editType, attachFileDelete, inputConfi
     };
 
     useEffect(() => {
-        if (data.noticeTtl !== undefined) {
+        if (data.noticeTtl !== undefined || data.errTtl !== undefined) {
             setIsDataLoaded(true);
         }
-    }, [data.noticeTtl]);
+    }, [data.noticeTtl,data.errTtl ]);
 
     useEffect(() => {
         if (editMode === 'update' && isDataLoaded) {
+            // console.log(attachments);
             setNewAttachments([...attachments]);
             setAttachments([]); // 수정시에는 새로 첨부한 파일만 받기
         }
@@ -35,7 +36,7 @@ const BoardInputForm = ({ edit, editMode, editType, attachFileDelete, inputConfi
         setData({ ...data, imprtncNtcBgngYmd: e.value[0], imprtncNtcEndYmd: e.value[1] });
     };
 
-    if (editMode === 'update' && data.noticeTtl === undefined) {
+    if (editMode === 'update' && (data.noticeTtl === undefined && data.errTtl === undefined)) {
         return null;
     }
 
@@ -55,7 +56,7 @@ const BoardInputForm = ({ edit, editMode, editType, attachFileDelete, inputConfi
                                 <TextBox
                                     id={column.dataField}
                                     name={column.dataField}
-                                    value={data.noticeTtl}
+                                    value={data.noticeTtl?data.noticeTtl:data.errTtl}
                                     placeholder={column.placeholder}
                                     showClearButton={true}
                                     onValueChanged={(e) => {
@@ -113,7 +114,7 @@ const BoardInputForm = ({ edit, editMode, editType, attachFileDelete, inputConfi
                                     column={column}
                                     data={data}
                                     setData={setData}
-                                    value={data.noticeCn}
+                                    value={data.noticeCn?data.noticeCn:data.errCn}
                                     validate={true}
                                     placeholder={column.placeholder}
                                 />
