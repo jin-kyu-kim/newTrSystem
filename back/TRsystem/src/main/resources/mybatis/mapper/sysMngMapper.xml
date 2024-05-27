@@ -545,7 +545,7 @@
 				, NULL AS ELCTRN_ATRZ_TY_SE_CD
 				, NULL AS ELCTRN_ATRZ_ID
 				, NULL AS ELCTRN_ATRZ_DOC_NO
-				, (select PRJCT_NM from PRJCT WHERE prjct_id = pca.prjct_id) AS ATRZ_DMND_STTS_CD
+				, (select PRJCT_NM from PRJCT WHERE prjct_id = pma.prjct_id) AS ATRZ_DMND_STTS_CD
 		 	FROM PRJCT_MM_APLY pma
 		 	JOIN PRJCT_MM_ATRZ pmaz ON pma.PRJCT_ID =pmaz.PRJCT_ID
 				AND pma.EMP_ID =pmaz.EMP_ID
@@ -585,8 +585,10 @@
 			LEFT JOIN CTRT_GIVE_ATRZ cga ON ea.ELCTRN_ATRZ_ID = cga.ELCTRN_ATRZ_ID -- 계약 지급
 			JOIN EMP e1 ON ea.ATRZ_DMND_EMP_ID = e1.EMP_ID
 			WHERE 1=1
-				AND ea.ATRZ_DMND_STTS_CD ="VTW03702"
 				AND al.APRVR_EMP_ID = #{empId}
+				AND al.ATRZ_STTS_CD = 'VTW00801'
+				AND ea.NOW_ATRZ_LN_SN = al.ATRZ_LN_SN
+				AND ea.ATRZ_DMND_STTS_CD != 'VTW03701'
 			UNION ALL
 			SELECT
 				pal.PRJCT_ID AS ID																	-- 프로젝트ID
