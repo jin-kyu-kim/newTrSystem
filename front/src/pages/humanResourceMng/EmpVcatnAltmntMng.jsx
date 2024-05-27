@@ -2,11 +2,16 @@ import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 
 import { NumberBox, SelectBox, TextBox, DateBox, Button, Box } from "devextreme-react";
+import DataGrid, { Column, Export } from "devextreme-react/data-grid";
 import { Item } from "devextreme-react/box"
 
 // 날짜관련
 // npm install moment
 import Moment from "moment"
+
+import { Workbook } from "exceljs";
+import { exportDataGrid } from "devextreme/excel_exporter";
+import { saveAs } from 'file-saver';
 
 import { useModal } from "components/unit/ModalContext";
 import CustomTable from "components/unit/CustomTable";
@@ -45,21 +50,40 @@ function getYearList(startYear, endYear) {
 const EmpVcatnAltmntMng = () => {
     const navigate = useNavigate();
 
+    const dataGirdRef = useRef();
     const cntrBgngYmdRef = useRef();
     const cntrEndYmdRef = useRef();
 
     const { handleOpen } = useModal();
 
-    // 1. 직원별휴가목록조회
-    // 2. 부서목록조회
-    // 3. 코드조회
-    // 4. 휴가등록불가기간조회
+    // 1. 직원목록조회
+    // 2. 직원별휴가목록조회
+    // 3. 부서목록조회
+    // 4. 코드조회
+    // 5. 휴가등록불가기간조회
     useEffect(() => {
+        getEmpList();
         getEmpVacList();
         getDeptList();
         getCodeList();
         getCrtrDateList();
     }, [])
+
+
+
+
+
+    // 직원목록조회
+    const [selectEmpList, setSelectEmpList] = useState();
+
+    // 직원목록조회
+    const getEmpList = async () =>{
+        try {
+            setSelectEmpList(await ApiRequest("/boot/common/commonSelect", [{ tbNm: "EMP" }, { hdofSttsCd: "VTW00301", empTyCd: "VTW00201" }]));
+        } catch (error) {
+            console.log("getEmpList_error : ", error);
+        }
+    }
 
 
 
@@ -305,6 +329,38 @@ const EmpVcatnAltmntMng = () => {
         getCrtrDateList();
     }
 
+
+
+
+
+    // 엑셀다운로드
+    const onClickDnd = (e) => {
+        let dataGrid = dataGirdRef.current.instance;
+        console.log("dataGrid : ", dataGrid);
+
+        dataGrid.on(onExcelDnd);
+    };
+
+    const onExcelDnd = (e) => {
+        const workbook = new Workbook();
+        const worksheet = workbook.addWorksheet('Main sheet');
+
+        console.log("e.component : ", e.component);
+
+        exportDataGrid({
+            component: e.component,
+            worksheet,
+            autoFilterEnabled: true,
+        }).then(() => {
+            workbook.xlsx.writeBuffer().then((buffer) => {
+                saveAs(new Blob([buffer], { type: 'application/octet-stream' }), '직원목록'+ Moment().format("YYYYMMDD") +'.xlsx');
+            });
+        });
+    }
+
+
+
+
     return (
         <div style={{ marginLeft: "1%", marginRight: "1%" }}>
             <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
@@ -381,14 +437,30 @@ const EmpVcatnAltmntMng = () => {
             <div style={{ display: "flex", marginTop: "30px" }}>
                 <div style={{ width: "60%", marginRight: "25px" }}>
                     <div style={divStyle}><h4>* 직원목록</h4></div>
-                    <div style={divStyle}>직원목록을 클릭시 휴가 배정 정보를 수정 할 수있습니다.</div>
+                    <div style={divStyle}>직원목록을 클릭시 휴가 배정 정보를 수정 할 수있습니다.
+                    </div>
+                    {/* <div style={{ display: "flex", alignItems: "center", marginTop: "20px" }}>
+                        <Button style={{ width: "140px", textAlign: "center"}} onClick={onClickDnd}>직원목록다운로드</Button>
+                    </div> */}
+                    <div style={{display: "none"}}>
+                    {/* <div> */}
+                        <DataGrid
+                            keyExpr="empno"
+                            dataSource={selectEmpList}
+                            defaultColumns={["empno", "empFlnm"]}
+                            onExporting={onExcelDnd}
+                            ref={dataGirdRef}
+                        />
+                        <Export 
+                            enabled={true} 
+                        />
+                    </div>
                     <div style={divStyle}>
                         <CustomTable
                             keyColumn={EmpVcatnAltmntMngJson.listKeyColumn}
                             columns={EmpVcatnAltmntMngJson.listTableColumns}
                             values={selectEmpVacListValue}
                             wordWrap={true}
-                            // onRowDblClick={onRowDblClick}
                             onRowClick={onRowDblClick}
                             onClick={onButtonClick}
                         />
