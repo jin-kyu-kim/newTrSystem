@@ -102,7 +102,7 @@ const EmpTRCostTotal = () => {
   const executeCostUpdate = async () => {
     try {
       const response = await ApiRequest("/boot/batchSkll/executeCostUpdate");
-      if (response >=1 ) {
+      if (response >=0 ) {
         handleOpen("실행원가 정산이 완료되었습니다.");
       } else {
         handleOpen("실행원가 정산이 실패하였습니다. 관리자에게 문의하세요.");
