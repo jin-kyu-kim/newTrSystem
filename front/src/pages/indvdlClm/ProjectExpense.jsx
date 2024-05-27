@@ -113,7 +113,7 @@ const ProjectExpense = () => {
         }
         const updateStts = ctAply.length === 0
             ? (data.name === 'onInptDdlnClick' ? 'Y' : (data.name === 'onAprvDmndRtrcnClick' ? null : undefined))
-            : (data.name === 'onInptDdlnClick' ? 'N' : (data.name === 'onAprvDmndRtrcnClick' ? 'N' : undefined));
+            : (data.name === 'onInptDdlnClick' ? 'N' : (data.name === 'onInptDdlnRtrcnClick' ? null : undefined));
         if (updateStts !== undefined) updateCtAtrzCmptnYn(updateStts);
         getData();
         handleOpen(data.completeMsg);
@@ -134,11 +134,10 @@ const ProjectExpense = () => {
             setHistYmOdr(null)
             setPopVisible(true);
         } else {
-            if (mmAtrzCmptnYn === undefined || mmAtrzCmptnYn === null) {
+            if (ctAtrzCmptnYn === undefined && mmAtrzCmptnYn === undefined) {
                 handleOpen('경비청구 건수가 없을 경우 근무시간을 먼저 승인 요청 해주시기 바랍니다.')
                 return;
-            } else if(mmAtrzCmptnYn === 'Y' && ctAtrzCmptnYn === null){
-                console.log('청구건수는 없으나 근무시간은 승인 완료된 경우 체크')
+            } else if(ctAtrzCmptnYn === null && mmAtrzCmptnYn === 'Y') {
                 handleOpen('경비청구 건수가 없을 경우 바로 승인이 완료되며 입력 및 수정이 불가능합니다.')
             }
             prjctCtAtrzUpdate(onClick);
