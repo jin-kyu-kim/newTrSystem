@@ -64,14 +64,7 @@
             SUM(pma.MD*8) AS CLM_MD
         FROM PRJCT_MM_APLY pma
         LEFT JOIN PRJCT_MM_ATRZ pmat ON pmat.PRJCT_ID = pma.PRJCT_ID AND (pmat.EMP_ID = pma.EMP_ID OR (pmat.EMP_ID IS NULL AND pma.EMP_ID IS NULL)) AND pmat.APLY_YM = pma.APLY_YM AND pmat.APLY_ODR = pma.APLY_ODR AND pmat.APLY_YMD = pma.APLY_YMD
-        JOIN PRJCT_INDVDL_CT_MM picm
-            ON pma.PRJCT_ID = picm.PRJCT_ID
-            AND pma.EMP_ID = picm.EMP_ID
-            AND pma.APLY_YM = picm.APLY_YM
-            AND pma.APLY_ODR = picm.APLY_ODR
-            AND picm.MM_ATRZ_CMPTN_YN = 'Y'
-        JOIN EMP e
-            ON e.EMP_ID = picm.EMP_ID
+        JOIN EMP e ON e.EMP_ID = pma.EMP_ID
         JOIN (
             SELECT DATE_FORMAT(CRTR_YMD, '%Y%m') AS YM,
             COUNT(*) AS COUNT
@@ -97,6 +90,7 @@
             GROUP BY mlp.EMP_ID, mlp.BGT_MNG_ODR)
             mmp ON (mmp.EMP_ID = pma.EMP_ID AND mmp.BGT_MNG_ODR = odr.BGT_MNG_ODR)
         WHERE 1 = 1
+        AND pmat.ATRZ_DMND_STTS_CD NOT IN ('VTW03701', 'VTW03708')
         <if test="prjctId != null and !prjctId.equals('')">
             AND pma.PRJCT_ID = #{prjctId}
         </if>
@@ -131,12 +125,10 @@
             ),0) AS TOTAL_AMT_SUM,
             SUM(pca.UTZTN_AMT) AS TOTAL_AMT
         FROM PRJCT_CT_APLY pca
-        JOIN PRJCT_INDVDL_CT_MM picm
-            ON pca.PRJCT_ID = picm.PRJCT_ID
-            AND pca.EMP_ID  = picm.EMP_ID
-            AND pca.APLY_YM = picm.APLY_YM
-            AND pca.APLY_ODR = picm.APLY_ODR
+        LEFT JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_ID = pca.PRJCT_ID AND (pcat.EMP_ID = pca.EMP_ID OR (pcat.EMP_ID IS NULL AND pca.EMP_ID IS NULL))
+        AND pcat.APLY_YM = pca.APLY_YM AND pcat.APLY_ODR = pca.APLY_ODR AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN)
         WHERE 1 = 1
+        AND pcat.ATRZ_DMND_STTS_CD NOT IN ('VTW03701', 'VTW03708')
         <if test="prjctId != null and !prjctId.equals('')">
             AND pca.PRJCT_ID = #{prjctId}
         </if>
