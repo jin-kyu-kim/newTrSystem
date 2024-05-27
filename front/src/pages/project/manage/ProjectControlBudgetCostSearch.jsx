@@ -68,7 +68,7 @@ const ProjectControlBudgetCostSearch = ({prjctId}) => {
         allowFiltering={false}
         allowSorting={false}
         allowExpandAll={false}
-
+        showTotalsPrior={'columns'} // "none", "rows", "columns", "both" 중 하나를 선택
       >
         <FieldPanel
           showRowFields={true}

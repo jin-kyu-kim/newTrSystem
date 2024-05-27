@@ -183,18 +183,24 @@ const ElecAtrzDetail = () => {
 
         /**
          * 휴가 결재일 경우 승인처리를 따로 해준다.
+         * 휴가 결재 중 휴직 분기처리가 존재한다. 
          */
         if(isconfirm) {
-            if(detailData.elctrnAtrzTySeCd === "VTW04901") {    
-                /** 
-                 * 휴가결재  승인처리 
-                 */
-                const param = {
+            if(detailData.elctrnAtrzTySeCd === "VTW04901") {
+
+                // 휴직 처리 분기
+                if(detailData.vcatnTyCd === "VTW05301" || detailData.vcatnTyCd === "VTW05302" || detailData.vcatnTyCd === "VTW05301" ) {
+                    /**
+                     * 휴직 승인 처리
+                     */
+                    const param = {
                         empId: detailData.atrzDmndEmpId,
+                        sessionEmpId: userInfo.empId,
                         elctrnAtrzId: detailData.elctrnAtrzId,
                         vcatnTyCd: dtlInfo.vcatnTyCd,
                         vcatnBgngYmd: dtlInfo.vcatnBgngYmd,
                         vcatnEndYmd: dtlInfo.vcatnEndYmd,
+                        vcatnDeCnt: dtlInfo.vcatnDeCnt,
                         mdfcnEmpId: userInfo.empId,
                         atrzStepCd: detailData.atrzStepCd,
                         aprvParam: [
@@ -212,15 +218,54 @@ const ElecAtrzDetail = () => {
                                 atrzLnSn: nowAtrzLnSn
                             }
                         ]
-                }
-                const response = vacAprvProcess(param).then((value) => {
-                    if(value[0].atrzLnSn > 0) {
-                        upNowAtrzLnSn(value[0].atrzLnSn);
-                    } else {
-                        handleOpen("승인 처리에 실패하였습니다.");
-                        return;
                     }
-                });
+
+                    const response = leaveAprvProcess(param).then((value) => {
+                        if(value[0].atrzLnSn > 0) {
+                            upNowAtrzLnSn(value[0].atrzLnSn);
+                        } else {
+                            handleOpen("승인 처리에 실패하였습니다.");
+                            return;
+                        }
+                    });
+                } else {
+                    /** 
+                     * 휴가결재  승인처리 
+                    */
+                   const param = {
+                       empId: detailData.atrzDmndEmpId,
+                       elctrnAtrzId: detailData.elctrnAtrzId,
+                       vcatnTyCd: dtlInfo.vcatnTyCd,
+                       vcatnBgngYmd: dtlInfo.vcatnBgngYmd,
+                       vcatnEndYmd: dtlInfo.vcatnEndYmd,
+                       mdfcnEmpId: userInfo.empId,
+                       atrzStepCd: detailData.atrzStepCd,
+                        aprvParam: [
+                            { tbNm: "ATRZ_LN" },
+                            { 
+                                atrzSttsCd: "VTW00802",
+                                aprvYmd: date,
+                                mdfcnDt: mdfcnDt,
+                                mdfcnEmpId: userInfo.empId,
+                                atrzOpnnCn: opnnCn,
+                            },
+                            { 
+                                elctrnAtrzId: detailData.elctrnAtrzId,
+                                aprvrEmpId: userInfo.empId,
+                                atrzLnSn: nowAtrzLnSn
+                            }
+                        ]
+                    }
+
+                    const response = vacAprvProcess(param).then((value) => {
+                        if(value[0].atrzLnSn > 0) {
+                            upNowAtrzLnSn(value[0].atrzLnSn);
+                        } else {
+                            handleOpen("승인 처리에 실패하였습니다.");
+                            return;
+                        }
+                    });
+                }
             } else if (detailData.elctrnAtrzTySeCd === "VTW04915") {
                 /**
                  * 휴가취소 결재 승인 처리
@@ -299,13 +344,33 @@ const ElecAtrzDetail = () => {
         return response;
     }
 
+    /**
+     * 휴가결재 승인 프로세스
+     * @param {} param 
+     * @returns 
+     */
     const vacAprvProcess = async (param) => {
         const response = await ApiRequest("/boot/indvdlClm/updateVcatnMng", param);
         return response;
     }
 
+    /**
+     * 휴가결재취소 승인 프로세스
+     * @param {*} param 
+     * @returns 
+     */
     const vacCancelAprvProcess = async (param) => {
         const response = await ApiRequest("/boot/indvdlClm/approvalReInsertVcatnAtrz", param);
+        return response;
+    }
+
+    /**
+     * 휴직 결재 승인 프로세스
+     * @param {} param 
+     * @returns 
+     */
+    const leaveAprvProcess = async (param) => {
+        const response = await ApiRequest("/boot/indvdlClm/updateEmpLeave", param);
         return response;
     }
 
@@ -768,7 +833,7 @@ const ElecAtrzDetail = () => {
                     placeholder="승인 의견을 입력해주세요."
                 />
                 <br/>
-                <div className="buttons" align="right" style={{ margin: "20px" }}>
+                <div className="buttons" align="right" style={{ marginTop: "20px" }}>
                     <Button 
                         text="Contained"
                         type="default"
@@ -804,7 +869,7 @@ const ElecAtrzDetail = () => {
                     placeholder="반려 사유를 입력해주세요."
                 />
                 <br/>
-                <div className="buttons" align="right" style={{ margin: "20px" }}>
+                <div className="buttons" align="right" style={{ marginTop: "20px" }}>
                     <Button 
                         text="Contained"
                         type="default"

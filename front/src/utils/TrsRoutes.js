@@ -299,6 +299,12 @@ const TreRoutes = [
     name: "EmpCultHealthCostManageDeadLine",
     element: React.lazy(() => import("../pages/fnnrMng/EmpCultHealthCostManageDeadLine")),
   },
+  // 시스템관리 > 휴일관리
+   {
+    path: "/sysMng/HolidayMng",
+    name: "HolidayMng",
+    element: React.lazy(() => import("../pages/sysMng/HolidayMng")),
+  },
 
 ];
 
