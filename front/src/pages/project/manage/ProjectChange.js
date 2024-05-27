@@ -499,8 +499,28 @@ const ProjectChange = () => {
           placeholder="승인 요청 사유를 입력해주세요."
         />
         <br/>
-        <Button text="승인요청" onClick={onSubmit}/>
-        <Button text="요청취소" onClick={handleClose}/>
+        <div className="buttons" align="right" style={{ marginTop: "20px" }}>
+          <Button           
+            width={110}
+            text="Contained"
+            type="default"
+            stylingMode="contained"
+            style={{ margin: "2px" }}
+            onClick={onSubmit}
+            >
+              승인요청
+          </Button>
+          <Button          
+            width={110}
+            text="Contained"
+            type="default"
+            stylingMode="contained"
+            style={{ margin: "2px" }} 
+            onClick={handleClose}
+            >
+            요청취소
+          </Button>
+        </div>
       </Popup>
     </div>
   );

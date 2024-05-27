@@ -556,8 +556,26 @@ const ProjectAprvDetail = () => {
                     placeholder="승인 의견을 입력해주세요."
                 />
                 <br/>
-                <Button text="승인" onClick={onClickAprv}/>
-                <Button text="취소" onClick={handleClose}/>
+                <div className="buttons" align="right" style={{ marginTop: "20px" }}>
+                    <Button 
+                        text="Contained"
+                        type="default"
+                        stylingMode="contained"
+                        style={{ margin: "2px" }} 
+                        onClick={onClickAprv}
+                        >
+                        승인
+                    </Button>
+                    <Button                 
+                        text="Contained"
+                        type="default"
+                        stylingMode="contained"
+                        style={{ margin: "2px" }} 
+                        onClick={handleClose}
+                        >
+                        취소
+                    </Button>
+                </div>
             </Popup>
             <Popup
                 width={ProjectAprvDetail.rjctPopup.width}
@@ -574,8 +592,26 @@ const ProjectAprvDetail = () => {
                     placeholder="반려 사유를 입력해주세요."
                 />
                 <br/>
-                <Button text="반려" onClick={onClickRjct}/>
-                <Button text="취소" onClick={handleClose}/>
+                <div className="buttons" align="right" style={{ marginTop: "20px" }}>
+                    <Button                 
+                        text="Contained"
+                        type="default"
+                        stylingMode="contained"
+                        style={{ margin: "2px" }}  
+                        onClick={onClickRjct}
+                        >
+                        반려
+                    </Button>
+                    <Button                 
+                        text="Contained"
+                        type="default"
+                        stylingMode="contained"
+                        style={{ margin: "2px" }}  
+                        onClick={handleClose}
+                        >
+                        취소
+                    </Button>
+                </div>
             </Popup>
         </div>
     )
