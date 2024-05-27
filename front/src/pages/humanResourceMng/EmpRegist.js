@@ -133,7 +133,6 @@ const EmpRegist = ({callBack, empInfo, read,callBackR,callBackF,reForm}) => {
     };
 
     const handleChgState = ({ name, value }) => {     //값변경시 이벤트
-      console.log(name,value)
       if(name === "jbpsCd"){
         setJbpsCd(value);
       }else if(name === "empFlnm"){
@@ -170,7 +169,6 @@ const EmpRegist = ({callBack, empInfo, read,callBackR,callBackF,reForm}) => {
    
     //기초정보 저장 
     const onClick = (e) => {
-      console.log("저장1")
       if(empFlnm === null){
         handleOpen("성명을 입력해주세요");
       }else if(jbpsCd === null){
