@@ -751,4 +751,15 @@
 		  LEFT JOIN CLM_ATRZ CA ON EA.ELCTRN_ATRZ_ID = CA.ELCTRN_ATRZ_ID
 		 WHERE EA.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
 	</select>
+
+	<!-- 월별정보수정 -->
+	<update id="updateCrtrYmd" parameterType="map">
+		/* sysMngMapper.updateCrtrYmd */
+		UPDATE CRTR_DATE
+		SET
+			HLDY_CL_CD				= #{hldyClCd}
+			,HLDY_NM				= #{hldyNm}
+			,PASSIV_INFO_INPT_YN 	= 'N'
+		WHERE CRTR_YMD = #{crtrYmd}
+	</update>
 </mapper>

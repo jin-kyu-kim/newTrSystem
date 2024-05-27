@@ -619,6 +619,7 @@
         /* indvdlClmMapper.retrieveMnbyYmdInq */
         SELECT
             CRTR_YMD		/* 일자 */
+            ,DATE_FORMAT(CRTR_YMD, '%Y-%m-%d') FORMAT_CRTR_YMD		/* 일자 */
             ,CRTR_ODR		/* 차수 */
             ,HLDY_CL_CD 	/* 일자종류코드 */
             ,(SELECT CD_NM FROM CD WHERE CD_VALUE = CRTR_DATE.HLDY_CL_CD)	HLDY_CL_NM	/* 일자종류명 */

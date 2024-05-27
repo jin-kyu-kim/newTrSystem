@@ -391,16 +391,26 @@
 			,SYSDATE()
 			,'BATCH'
 			,'BATCH'
+			,''
 		) ON DUPLICATE KEY UPDATE
-			CRTR_YMD 		= #{crtrYmd}
-			,CRTR_ODR 		= #{crtrOdr}
+			CRTR_YMD 		= 	#{crtrYmd}
+			,CRTR_ODR 		= 	#{crtrOdr}
 			<if test="hldyClCd != null and !hldyClCd.equals('')">
-				,HLDY_CL_CD = #{hldyClCd}
+				,HLDY_CL_CD = 	CASE WHEN (SELECT CRTR2.PASSIV_INFO_INPT_YN FROM CRTR_DATE CRTR2 WHERE CRTR2.CRTR_YMD = #{crtrYmd}) = 'N'
+								THEN (SELECT CRTR2.HLDY_CL_CD FROM CRTR_DATE CRTR2 WHERE CRTR2.CRTR_YMD = #{crtrYmd})
+								ELSE #{hldyClCd}
+								END
 			</if>
 			<if test="hldyClCd == null or hldyClCd.equals('')">
-				,HLDY_CL_CD = 'VTW05001'
+				,HLDY_CL_CD = 	CASE WHEN (SELECT CRTR2.PASSIV_INFO_INPT_YN FROM CRTR_DATE CRTR2 WHERE CRTR2.CRTR_YMD = #{crtrYmd}) = 'N'
+								THEN (SELECT CRTR2.HLDY_CL_CD FROM CRTR_DATE CRTR2 WHERE CRTR2.CRTR_YMD = #{crtrYmd})
+								ELSE 'VTW05001'
+								END
 			</if>
-			,HLDY_NM		= #{hldyNm}
-			,MDFCN_DT		= SYSDATE()
+			,HLDY_NM		= 	CASE WHEN (SELECT CRTR2.PASSIV_INFO_INPT_YN FROM CRTR_DATE CRTR2 WHERE CRTR2.CRTR_YMD = #{crtrYmd}) = 'N'
+								THEN (SELECT CRTR2.HLDY_NM FROM CRTR_DATE CRTR2 WHERE CRTR2.CRTR_YMD = #{crtrYmd})
+								ELSE #{hldyNm}
+								END
+			,MDFCN_DT		= 	SYSDATE()
 	</insert>
 </mapper>
