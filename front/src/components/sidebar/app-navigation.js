@@ -173,6 +173,10 @@ export const navigation = [
         text: '고객사관리',
         path: '/sysMng/CustomersList',
         auth: 'VTW04803'
+      },{
+        text: '휴일관리',
+        path: '/sysMng/HolidayMng',
+        auth: 'VTW04801'
       }
     ]
   }, {

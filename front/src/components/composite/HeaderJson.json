@@ -202,6 +202,11 @@
         "id": 4 ,
         "title": "고객사관리",
         "link": "sysMng/CustomersList"
+      },
+      {
+        "id": 5 ,
+        "title": "휴일관리",
+        "link": "sysMng/HolidayMng"
       }
     ]
   },

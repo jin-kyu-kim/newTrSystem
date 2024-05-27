@@ -64,14 +64,7 @@
             SUM(pma.MD*8) AS CLM_MD
         FROM PRJCT_MM_APLY pma
         LEFT JOIN PRJCT_MM_ATRZ pmat ON pmat.PRJCT_ID = pma.PRJCT_ID AND (pmat.EMP_ID = pma.EMP_ID OR (pmat.EMP_ID IS NULL AND pma.EMP_ID IS NULL)) AND pmat.APLY_YM = pma.APLY_YM AND pmat.APLY_ODR = pma.APLY_ODR AND pmat.APLY_YMD = pma.APLY_YMD
-        JOIN PRJCT_INDVDL_CT_MM picm
-            ON pma.PRJCT_ID = picm.PRJCT_ID
-            AND pma.EMP_ID = picm.EMP_ID
-            AND pma.APLY_YM = picm.APLY_YM
-            AND pma.APLY_ODR = picm.APLY_ODR
-            AND picm.MM_ATRZ_CMPTN_YN = 'Y'
-        JOIN EMP e
-            ON e.EMP_ID = picm.EMP_ID
+        JOIN EMP e ON e.EMP_ID = pma.EMP_ID
         JOIN (
             SELECT DATE_FORMAT(CRTR_YMD, '%Y%m') AS YM,
             COUNT(*) AS COUNT
@@ -97,6 +90,7 @@
             GROUP BY mlp.EMP_ID, mlp.BGT_MNG_ODR)
             mmp ON (mmp.EMP_ID = pma.EMP_ID AND mmp.BGT_MNG_ODR = odr.BGT_MNG_ODR)
         WHERE 1 = 1
+        AND pmat.ATRZ_DMND_STTS_CD NOT IN ('VTW03701', 'VTW03708')
         <if test="prjctId != null and !prjctId.equals('')">
             AND pma.PRJCT_ID = #{prjctId}
         </if>
@@ -131,12 +125,10 @@
             ),0) AS TOTAL_AMT_SUM,
             SUM(pca.UTZTN_AMT) AS TOTAL_AMT
         FROM PRJCT_CT_APLY pca
-        JOIN PRJCT_INDVDL_CT_MM picm
-            ON pca.PRJCT_ID = picm.PRJCT_ID
-            AND pca.EMP_ID  = picm.EMP_ID
-            AND pca.APLY_YM = picm.APLY_YM
-            AND pca.APLY_ODR = picm.APLY_ODR
+        LEFT JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_ID = pca.PRJCT_ID AND (pcat.EMP_ID = pca.EMP_ID OR (pcat.EMP_ID IS NULL AND pca.EMP_ID IS NULL))
+        AND pcat.APLY_YM = pca.APLY_YM AND pcat.APLY_ODR = pca.APLY_ODR AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN)
         WHERE 1 = 1
+        AND pcat.ATRZ_DMND_STTS_CD NOT IN ('VTW03701', 'VTW03708')
         <if test="prjctId != null and !prjctId.equals('')">
             AND pca.PRJCT_ID = #{prjctId}
         </if>
@@ -304,6 +296,8 @@
         ON PA.PRJCT_ID = PM.PRJCT_ID
         AND DATE_FORMAT(PA.UTZTN_DT, '%Y%m%d') = PM.APLY_YMD
         AND PA.EMP_ID = PM.EMP_ID
+        LEFT JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_ID = PA.PRJCT_ID AND (pcat.EMP_ID = PA.EMP_ID OR (pcat.EMP_ID IS NULL AND PA.EMP_ID IS NULL))
+        AND pcat.APLY_YM = PA.APLY_YM AND pcat.APLY_ODR = PA.APLY_ODR AND pcat.PRJCT_CT_APLY_SN = PA.PRJCT_CT_APLY_SN) AND pcat.ATRZ_DMND_STTS_CD NOT IN ('VTW03701', 'VTW03708')
         WHERE P.PRJCT_ID = #{prjctId}
         <if test="empId != null and !empId.equals('')">
         AND E.EMP_ID = #{empId}
@@ -323,6 +317,8 @@
         ON PM.PRJCT_ID = PA.PRJCT_ID
         AND DATE_FORMAT(PM.APLY_YMD, '%Y%m%d') = DATE_FORMAT(PA.UTZTN_DT, '%Y%m%d')
         AND PM.EMP_ID = PA.EMP_ID
+        LEFT JOIN PRJCT_MM_ATRZ pmat ON pmat.PRJCT_ID = PM.PRJCT_ID AND (pmat.EMP_ID = PM.EMP_ID OR (pmat.EMP_ID IS NULL AND PM.EMP_ID IS NULL))
+        AND pmat.APLY_YM = PM.APLY_YM AND pmat.APLY_ODR = PM.APLY_ODR AND pmat.APLY_YMD = PM.APLY_YMD AND pmat.ATRZ_DMND_STTS_CD NOT IN ('VTW03701', 'VTW03708')
         WHERE PA.PRJCT_ID IS NULL
           AND P.PRJCT_ID = #{prjctId}
         <if test="empId != null and !empId.equals('')">
@@ -1013,11 +1009,11 @@
 	    COALESCE(WORK_HOUR.W_EMP_ID, CT_LIST.C_EMP_ID) AS EMP_ID,                      -- 사원 ID
 	    COALESCE(WORK_HOUR.W_EMP_FLNM, CT_LIST.EMP_FLNM) AS EMP_FLNM,                    -- 사원명
 	    COALESCE(WORK_HOUR.PRJCT_NM, CT_LIST.PRJCT_NM) AS PRJCT_NM,                    -- 프로젝트명
-	    FORMAT(WORK_HOUR.PRJCT_NON_INSERT, 1) AS PRJCT_NON_INSERT,                     -- 프로젝트 미투입 근무시간
-	    FORMAT(WORK_HOUR.PRJCT_INSERT, 1) AS PRJCT_INSERT,                             -- 프로젝트 투입 근무시간
-	    FORMAT(WORK_HOUR.VACATION, 1) AS VACATION,                                     -- 휴가 사용 내역
-	    FORMAT(WORK_HOUR.TOTAL_PRJCT_NON_INSERT, 1) AS TOTAL_PRJCT_NON_INSERT,         -- 프로젝트 미투입 총 근무시간
-	    FORMAT(WORK_HOUR.TOTAL_PRJCT_INSERT, 1) AS TOTAL_PRJCT_INSERT,                 -- 프로젝트 투입 총 근무시간
+	    WORK_HOUR.PRJCT_NON_INSERT AS PRJCT_NON_INSERT,                     -- 프로젝트 미투입 근무시간
+	    WORK_HOUR.PRJCT_INSERT AS PRJCT_INSERT,                             -- 프로젝트 투입 근무시간
+	    WORK_HOUR.VACATION AS VACATION,                                     -- 휴가 사용 내역
+	    WORK_HOUR.TOTAL_PRJCT_NON_INSERT AS TOTAL_PRJCT_NON_INSERT,         -- 프로젝트 미투입 총 근무시간
+	    WORK_HOUR.TOTAL_PRJCT_INSERT AS TOTAL_PRJCT_INSERT,                 -- 프로젝트 투입 총 근무시간
 	    COALESCE(CT_LIST.PRJCT_NON_INSERT_EXPENSE,0)AS PRJCT_NON_INSERT_EXPENSE,       -- 프로젝트 미투입 비용
 	    COALESCE(CT_LIST.PRJCT_INSERT_EXPENSE,0) AS PRJCT_INSERT_EXPENSE               -- 프로젝트 투입 비용
 	FROM

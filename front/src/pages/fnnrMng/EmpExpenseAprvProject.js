@@ -81,7 +81,6 @@ const EmpExpenseAprvProject = ({ prjctId, aplyYm, aplyOdr }) => {
                     });
                 }
             }
-            console.log("어케들어감???",combinedData)
         }
     
         return combinedData;

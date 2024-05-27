@@ -751,7 +751,7 @@
 		  LEFT JOIN CLM_ATRZ CA ON EA.ELCTRN_ATRZ_ID = CA.ELCTRN_ATRZ_ID
 		 WHERE EA.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
 	</select>
-
+  
 	<select id="retrieveErrMng" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT rank() over (order by REG_DT) as num
 			 , M.ERR_ID
@@ -810,4 +810,14 @@
 		AND M.ERR_ID = #{errId}
 		ORDER BY M.ERR_DTL_SN
 	</select>
+	<!-- 월별정보수정 -->
+	<update id="updateCrtrYmd" parameterType="map">
+		/* sysMngMapper.updateCrtrYmd */
+		UPDATE CRTR_DATE
+		SET
+			HLDY_CL_CD				= #{hldyClCd}
+			,HLDY_NM				= #{hldyNm}
+			,PASSIV_INFO_INPT_YN 	= 'N'
+		WHERE CRTR_YMD = #{crtrYmd}
+	</update>
 </mapper>

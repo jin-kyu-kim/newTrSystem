@@ -225,6 +225,25 @@ const ProjectDetail = () => {
     }
   }
 
+  /**
+   * 사업종료로 수정해준다.
+   */
+  const onClickEnd = async () => {
+
+    const param = [
+      { tbNm: "PRJCT" },
+      { bizSttsCd: "VTW00404" },
+      { prjctId: prjctId }
+    ]
+    
+    handleOpen("프로젝트를 종료 하시겠습니까?",  () => endPrjct(param), true);
+
+    const endPrjct = async (param) => {
+      const response = await ApiRequest("/boot/common/commonUpdate", param);
+    }
+
+  }
+
   return (
     <div>
       <div
@@ -243,6 +262,7 @@ const ProjectDetail = () => {
           type="default"
           stylingMode="contained"
           style={{ margin: "2px" }}
+          visible={bizSttsCd === "VTW00404" ? false : true}
           onClick={onClikcChngBgt}
         >
           {bizSttsCd === "VTW00401" ? "원가등록" : "변경원가" }
@@ -253,6 +273,8 @@ const ProjectDetail = () => {
           type="default"
           stylingMode="contained"
           style={{ margin: "2px" }}
+          visible={bizSttsCd === "VTW00404" ? false : true}
+          onClick={onClickEnd}
         >
           프로젝트종료
         </Button>

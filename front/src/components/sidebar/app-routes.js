@@ -388,6 +388,12 @@ const routes = [
     element: React.lazy(() => import("../../pages/project/approval/ProjectAprv")),
     isPrivate:"VTW04801"
   },
+  {// 시스템관리 > 휴일관리
+    path: "/sysMng/HolidayMng",
+    name: "HolidayMng",
+    element: React.lazy(() => import("../../pages/sysMng/HolidayMng")),
+    isPrivate:"VTW04801"
+  },
   // 오류게시판
   {
     path: "/sysMng/CsServiceList",
