@@ -833,7 +833,7 @@ const ElecAtrzDetail = () => {
                     placeholder="승인 의견을 입력해주세요."
                 />
                 <br/>
-                <div className="buttons" align="right" style={{ margin: "20px" }}>
+                <div className="buttons" align="right" style={{ marginTop: "20px" }}>
                     <Button 
                         text="Contained"
                         type="default"
@@ -869,7 +869,7 @@ const ElecAtrzDetail = () => {
                     placeholder="반려 사유를 입력해주세요."
                 />
                 <br/>
-                <div className="buttons" align="right" style={{ margin: "20px" }}>
+                <div className="buttons" align="right" style={{ marginTop: "20px" }}>
                     <Button 
                         text="Contained"
                         type="default"
