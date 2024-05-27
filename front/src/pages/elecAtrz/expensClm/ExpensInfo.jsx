@@ -56,7 +56,6 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data, sttsCd}) => {
             "queryId": prjctData.prjctStleCd == "VTW01803" ? "elecAtrzMapper.retrieveExpensCdAll" : "elecAtrzMapper.retrieveExpensCdByPrmpc",
             prjctId: prjctId,
             prjctStleCd: prjctData.prjctStleCd,
-            multiType: false
         }
         try {
             const response = await ApiRequest("/boot/common/queryIdSearch", param);

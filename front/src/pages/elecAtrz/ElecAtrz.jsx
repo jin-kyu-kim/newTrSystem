@@ -296,7 +296,49 @@ const ElecAtrz = () => {
      * 휴가 결재일 경우 승인처리를 따로 해준다.
      */
     if(isconfirm) {
-        if(selectedData.elctrnAtrzTySeCd === "VTW04901") {    
+        if(selectedData.elctrnAtrzTySeCd === "VTW04901") {
+          
+          // 휴직 처리 분기
+          if(selectedData.vcatnTyCd === "VTW05301" || selectedData.vcatnTyCd === "VTW05302" || selectedData.vcatnTyCd === "VTW05301" ) {
+            /**
+             * 휴직 승인 처리
+             */
+            const param = {
+                empId: selectedData.atrzDmndEmpId,
+                sessionEmpId: userInfo.empId,
+                elctrnAtrzId: selectedData.elctrnAtrzId,
+                vcatnTyCd: dtlInfo.vcatnTyCd,
+                vcatnBgngYmd: dtlInfo.vcatnBgngYmd,
+                vcatnEndYmd: dtlInfo.vcatnEndYmd,
+                vcatnDeCnt: dtlInfo.vcatnDeCnt,
+                mdfcnEmpId: userInfo.empId,
+                atrzStepCd: selectedData.atrzStepCd,
+                aprvParam: [
+                    { tbNm: "ATRZ_LN" },
+                    { 
+                        atrzSttsCd: "VTW00802",
+                        aprvYmd: date,
+                        mdfcnDt: mdfcnDt,
+                        mdfcnEmpId: userInfo.empId,
+                        atrzOpnnCn: opnnCn,
+                    },
+                    { 
+                        elctrnAtrzId: selectedData.elctrnAtrzId,
+                        aprvrEmpId: userInfo.empId,
+                        atrzLnSn: nowAtrzLnSn
+                    }
+                ]
+            }
+
+            const response = leaveAprvProcess(param).then((value) => {
+                if(value[0].atrzLnSn > 0) {
+                    upNowAtrzLnSn(value[0].atrzLnSn);
+                } else {
+                    handleOpen("승인 처리에 실패하였습니다.");
+                    return;
+                }
+            });
+          } else {
             /** 
              * 휴가결재  승인처리 
              */
@@ -309,29 +351,31 @@ const ElecAtrz = () => {
                     mdfcnEmpId: userInfo.empId,
                     atrzStepCd: selectedData.atrzStepCd,
                     aprvParam: [
-                        { tbNm: "ATRZ_LN" },
-                        { 
-                            atrzSttsCd: "VTW00802",
-                            aprvYmd: date,
-                            mdfcnDt: mdfcnDt,
-                            mdfcnEmpId: userInfo.empId,
-                            atrzOpnnCn: opnnCn,
-                        },
-                        { 
-                            elctrnAtrzId: selectedData.elctrnAtrzId,
-                            aprvrEmpId: userInfo.empId,
+                      { tbNm: "ATRZ_LN" },
+                      { 
+                        atrzSttsCd: "VTW00802",
+                        aprvYmd: date,
+                        mdfcnDt: mdfcnDt,
+                        mdfcnEmpId: userInfo.empId,
+                        atrzOpnnCn: opnnCn,
+                      },
+                      { 
+                        elctrnAtrzId: selectedData.elctrnAtrzId,
+                        aprvrEmpId: userInfo.empId,
                             atrzLnSn: nowAtrzLnSn
-                        }
-                    ]
+                          }
+                        ]
             }
+            
             const response = vacAprvProcess(param).then((value) => {
                 if(value[0].atrzLnSn > 0) {
                     upNowAtrzLnSn(value[0].atrzLnSn);
-                } else {
+                  } else {
                     handleOpen("승인 처리에 실패하였습니다.");
                     return;
-                }
+                  }
             });
+          }
         } else if (selectedData.elctrnAtrzTySeCd === "VTW04915") {
             /**
              * 휴가취소 결재 승인 처리
@@ -410,15 +454,36 @@ const ElecAtrz = () => {
       return response;
   }
 
+  /**
+   * 휴가결재 승인 프로세스
+   * @param {} param 
+   * @returns 
+   */
   const vacAprvProcess = async (param) => {
       const response = await ApiRequest("/boot/indvdlClm/updateVcatnMng", param);
       return response;
   }
 
+  /**
+   * 휴가결재취소 승인 프로세스
+   * @param {*} param 
+   * @returns 
+   */
   const vacCancelAprvProcess = async (param) => {
       const response = await ApiRequest("/boot/indvdlClm/approvalReInsertVcatnAtrz", param);
       return response;
   }
+
+  /**
+   * 휴직 결재 승인 프로세스
+   * @param {} param 
+   * @returns 
+   */  
+  const leaveAprvProcess = async (param) => {
+    const response = await ApiRequest("/boot/indvdlClm/updateEmpLeave", param);
+    return response;
+  }
+
 
   /**
    * 결재가 완료된 후 결재선 순번에 따라 현재 결재선 순번을 높여준다. 
@@ -501,13 +566,13 @@ const ElecAtrz = () => {
             }
 
             handleOpen("승인 처리되었습니다.");
-            navigate('/elecAtrz/ElecAtrz');
             handleClose();
         } else {
             handleOpen("승인 처리에 실패하였습니다.");
             handleClose();
             return;
         }
+        navigate('/elecAtrz/ElecAtrz');
     } catch (error) {
         console.error(error)
     }
