@@ -35,7 +35,7 @@
     "caption": "투입예정일",
     "dataField": "inptPrnmntYmd",
     "width": 100,
-    "area": "row",
+    "area": "filter",
     "expanded": true,
     "showTotals": false
   },
@@ -43,7 +43,7 @@
     "caption": "철수예정일",
     "dataField": "withdrPrnmntYmd",
     "width": 100,
-    "area": "row",
+    "area": "filter",
     "expanded": true,
     "showTotals": false
   },

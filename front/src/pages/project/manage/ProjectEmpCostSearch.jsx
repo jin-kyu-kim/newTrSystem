@@ -29,8 +29,6 @@ const ProjectEmpCostSearch = ({prjctId}) => {
   });
 
   useEffect(() => {
-    // console.log(prjctId);
-    // console.log("bgtMngOdr",bgtMngOdr);
         Cnsrtm();
   }, []);
 
@@ -71,6 +69,7 @@ const ProjectEmpCostSearch = ({prjctId}) => {
         allowSorting={false}
         allowExpandAll={false}
         showRowTotals={false}
+        showTotalsPrior={'columns'} // "none", "rows", "columns", "both" 중 하나를 선택
       >
         <FieldPanel
           showRowFields={true}
