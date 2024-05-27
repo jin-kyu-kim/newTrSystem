@@ -1091,17 +1091,18 @@
             SELECT COALESCE(SUM(MD) * 8, 0) AS MD
             FROM PRJCT_MM_APLY pma
             JOIN (
-                SELECT pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR
+                SELECT pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR, pmrz.APLY_YMD
                 FROM PRJCT_MM_ATRZ pmrz
                 WHERE pmrz.EMP_ID = #{empId}
                     AND pmrz.APLY_YM = #{aplyYm}
                     AND pmrz.APLY_ODR = #{aplyOdr}
                     AND pmrz.ATRZ_DMND_STTS_CD = 'VTW03703'
-                GROUP BY pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR
+                GROUP BY pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR, pmrz.APLY_YMD
             ) filtered ON pma.PRJCT_ID = filtered.PRJCT_ID
                 AND pma.EMP_ID = filtered.EMP_ID
                 AND pma.APLY_YM = filtered.APLY_YM
                 AND pma.APLY_ODR = filtered.APLY_ODR
+                AND pma.APLY_YMD = filtered.APLY_YMD
             ) + COALESCE(( -- 공휴일 수
                 SELECT COUNT(*) * 8
                 FROM CRTR_DATE
@@ -1168,17 +1169,18 @@
         FROM PRJCT_MM_APLY pma
                  JOIN PRJCT p ON p.PRJCT_ID = pma.PRJCT_ID
                  JOIN (
-            SELECT pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR
+            SELECT pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR, pmrz.APLY_YMD
             FROM PRJCT_MM_ATRZ pmrz
             WHERE pmrz.EMP_ID = #{empId}
               AND pmrz.APLY_YM = #{aplyYm}
               AND pmrz.APLY_ODR = #{aplyOdr}
               AND pmrz.ATRZ_DMND_STTS_CD = 'VTW03703'
-            GROUP BY pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR
+            GROUP BY pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR, pmrz.APLY_YMD
         ) filtered ON pma.PRJCT_ID = filtered.PRJCT_ID
             AND pma.EMP_ID = filtered.EMP_ID
             AND pma.APLY_YM = filtered.APLY_YM
             AND pma.APLY_ODR = filtered.APLY_ODR
+            AND pma.APLY_YMD = filtered.APLY_YMD
     </select>
 
     <!-- 비용청구 팝업 공휴일 일자별 시간 -->

@@ -128,7 +128,7 @@ const ProjectExpense = () => {
         const response = await ApiRequest("/boot/common/commonUpdate", param);
         if (response >= 1) getData();
     };
-
+    
     const onClickAction = async (onClick) => {
         if (onClick.name === 'onPrintClick') {
             setHistYmOdr(null)
@@ -137,7 +137,7 @@ const ProjectExpense = () => {
             if (ctAtrzCmptnYn === undefined && mmAtrzCmptnYn === undefined) {
                 handleOpen('경비청구 건수가 없을 경우 근무시간을 먼저 승인 요청 해주시기 바랍니다.')
                 return;
-            } else if(ctAtrzCmptnYn === null && mmAtrzCmptnYn === 'Y') {
+            } else if(ctAtrzCmptnYn === null && (mmAtrzCmptnYn === 'Y' || mmAtrzCmptnYn === 'N')) {
                 handleOpen('경비청구 건수가 없을 경우 바로 승인이 완료되며 입력 및 수정이 불가능합니다.')
             }
             prjctCtAtrzUpdate(onClick);
@@ -149,7 +149,7 @@ const ProjectExpense = () => {
         if (ctAply?.length === 0) { // 비용청구가 없으면서 근무시간은 존재하는 경우
             if (ctAtrzCmptnYn === null) return buttonsConfig.default;
             if (ctAtrzCmptnYn === 'N') return buttonsConfig.hasApprovals;
-            if (ctAtrzCmptnYn === 'Y' && mmAtrzCmptnYn === 'Y') return buttonsConfig.completed;
+            if (ctAtrzCmptnYn === 'Y' && (mmAtrzCmptnYn === 'Y' || mmAtrzCmptnYn === 'N')) return buttonsConfig.completed;
         } else {
             if (atrzDmndSttsCnt.rjct === 0 && atrzDmndSttsCnt.aprv > 0 && atrzDmndSttsCnt.inptDdln === 0 && atrzDmndSttsCnt.ctReg === 0) return buttonsConfig.completed;
             if (atrzDmndSttsCnt.aprvDmnd > 0 || atrzDmndSttsCnt.rjct > 0) return buttonsConfig.hasApprovals;
