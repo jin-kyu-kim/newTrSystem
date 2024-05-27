@@ -19,12 +19,13 @@ const EmpTRCostTotal = () => {
   const [checkBox1Checked, setCheckBox1Checked] = useState(false);
   const [checkBox2Checked, setCheckBox2Checked] = useState(false);
   const { handleOpen } = useModal();
+  const [ searchIsVal, setSearchIsVal] = useState(false); //검색버튼 클릭시만 활성화용
   const location = useLocation();
+  const admin = location.state ? location.state.admin : undefined;
   const date = new Date();
   const year = date.getFullYear();
   const month = date.getDate() > 15 ? date.getMonth() + 1 : date.getMonth();
   const monthVal = month < 10 ? "0" + month : month;
-  const admin = location.state ? location.state.admin : undefined;
   const aplyYm = admin != undefined ? admin.aplyYm : year + monthVal;
   const aplyOdr = admin != undefined ? admin.aplyOdr : date.getDate() > 15 ? "1" : "2";
   const [loading, setLoading] = useState(false);
@@ -53,22 +54,44 @@ const EmpTRCostTotal = () => {
   }, []);
 
  
+  // useEffect(() => {
+  //   console.log("이거?????")
+  //   if (searchIsVal) { // 검색 버튼을 클릭했을 때만 pageHandle 함수 호출
+  //     pageHandle();
+  //     setSearchIsVal(false); // 상태를 다시 false로 변경하여 다음 검색을 위해 준비
+  //   }
+  // }, [searchIsVal]); // searchIsVal 상태가 변경될 때마다 실행
 
+  useEffect(()=> {
+  console.log("이거용",param)
+  if(searchIsVal){
+    if (Object.values(param).every(value => value !== undefined && !Number.isNaN(value))) {
+      pageHandle();
+      setSearchIsVal(false);
+    }
+  }
+  },[param])
 
-  const pageHandle = async (initParam) => {
-    const updateParam = {
+// 검색으로 조회할 때
+  const searchHandle = async (initParam) => {
+    console.log("이거?",initParam)
+    setParam({
       ...initParam,
       aplyYm : initParam?.year + initParam?.month,
       aplyOdr: initParam?.aplyOdr,
       queryId: queryId,
-    }
-   
-    
+    });
+    setSearchIsVal(true);
+  };
+
+
+  const pageHandle = async () => {
+   console.log("이거2?")
     try {
-      const response = await ApiRequest("/boot/common/queryIdSearch", updateParam);
-    
+      console.log("update입니다",param);
+      const response = await ApiRequest("/boot/common/queryIdSearch", param);
+        console.log("response입니다",response)
         setValues(response);
-     
     } catch (error) {
       console.log(error);
     }
@@ -130,7 +153,7 @@ const EmpTRCostTotal = () => {
 
     <div>
     <div  className="wrap_search" style={{marginBottom: "20px", width: 1100}}>
-      <SearchInfoSet  props={searchInfo}  callBack={pageHandle} /> 
+      <SearchInfoSet  props={searchInfo}  callBack={searchHandle} /> 
       </div>
       <CheckBox
               text="프로젝트 별"
