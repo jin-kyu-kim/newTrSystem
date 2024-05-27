@@ -1013,11 +1013,11 @@
 	    COALESCE(WORK_HOUR.W_EMP_ID, CT_LIST.C_EMP_ID) AS EMP_ID,                      -- 사원 ID
 	    COALESCE(WORK_HOUR.W_EMP_FLNM, CT_LIST.EMP_FLNM) AS EMP_FLNM,                    -- 사원명
 	    COALESCE(WORK_HOUR.PRJCT_NM, CT_LIST.PRJCT_NM) AS PRJCT_NM,                    -- 프로젝트명
-	    FORMAT(WORK_HOUR.PRJCT_NON_INSERT, 1) AS PRJCT_NON_INSERT,                     -- 프로젝트 미투입 근무시간
-	    FORMAT(WORK_HOUR.PRJCT_INSERT, 1) AS PRJCT_INSERT,                             -- 프로젝트 투입 근무시간
-	    FORMAT(WORK_HOUR.VACATION, 1) AS VACATION,                                     -- 휴가 사용 내역
-	    FORMAT(WORK_HOUR.TOTAL_PRJCT_NON_INSERT, 1) AS TOTAL_PRJCT_NON_INSERT,         -- 프로젝트 미투입 총 근무시간
-	    FORMAT(WORK_HOUR.TOTAL_PRJCT_INSERT, 1) AS TOTAL_PRJCT_INSERT,                 -- 프로젝트 투입 총 근무시간
+	    WORK_HOUR.PRJCT_NON_INSERT AS PRJCT_NON_INSERT,                     -- 프로젝트 미투입 근무시간
+	    WORK_HOUR.PRJCT_INSERT AS PRJCT_INSERT,                             -- 프로젝트 투입 근무시간
+	    WORK_HOUR.VACATION AS VACATION,                                     -- 휴가 사용 내역
+	    WORK_HOUR.TOTAL_PRJCT_NON_INSERT AS TOTAL_PRJCT_NON_INSERT,         -- 프로젝트 미투입 총 근무시간
+	    WORK_HOUR.TOTAL_PRJCT_INSERT AS TOTAL_PRJCT_INSERT,                 -- 프로젝트 투입 총 근무시간
 	    COALESCE(CT_LIST.PRJCT_NON_INSERT_EXPENSE,0)AS PRJCT_NON_INSERT_EXPENSE,       -- 프로젝트 미투입 비용
 	    COALESCE(CT_LIST.PRJCT_INSERT_EXPENSE,0) AS PRJCT_INSERT_EXPENSE               -- 프로젝트 투입 비용
 	FROM
