@@ -27,6 +27,7 @@ const EmpTRCostTotal = () => {
   const admin = location.state ? location.state.admin : undefined;
   const aplyYm = admin != undefined ? admin.aplyYm : year + monthVal;
   const aplyOdr = admin != undefined ? admin.aplyOdr : date.getDate() > 15 ? "1" : "2";
+  const [loading, setLoading] = useState(false);
 
 
   const handleCheckBox1Change = (e) => {
@@ -98,6 +99,7 @@ const EmpTRCostTotal = () => {
 
 
   const executeCostUpdate = async () => {
+    setLoading(true);
     try {
       const response = await ApiRequest("/boot/batchSkll/executeCostUpdate");
       if (response >=0 ) {
@@ -107,11 +109,18 @@ const EmpTRCostTotal = () => {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <div className="container">
+      {loading && (
+                    <div className="loading-overlay">
+                        요청 중입니다...
+                    </div>
+                )}
     <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }} >
       <h1 style={{ fontSize: "40px" }}>근무시간,경비 통합조회</h1>
     </div>

@@ -822,11 +822,11 @@ public class IndvdlClmDomain {
                         Map<String, Object> aprvResult = new HashMap<>();
                         aprvResult = ElecAtrzDomain.aprvElecAtrz(aprvParamList);
 
+                        atrzLnSn = Integer.parseInt(String.valueOf(aprvResult.get("atrzLnSn")));
+                        
                         if (String.valueOf(aprvResult.get("atrzStepCd")).equals("VTW00705")) {
                             commonService.queryIdDataControl(updateNewVcatnMng);
                         }
-
-                        atrzLnSn = Integer.parseInt(String.valueOf(aprvResult.get("atrzLnSn")));
 
                         break;
                     }
@@ -1328,8 +1328,15 @@ public class IndvdlClmDomain {
         String sessionEmpId = (String) params.get("sessionEmpId");
         String vcatnBgngYmd = (String) params.get("vcatnBgngYmd");
         String vcatnEndYmd = (String) params.get("vcatnEndYmd");
-        String vcatnDeCnt = (String) params.get("vcatnDeCnt");
+        int vcatnDeCnt = Integer.parseInt(String.valueOf(params.get("vcatnDeCnt")));
         String vcantYr = vcatnBgngYmd.substring(0, 4);
+        
+        // 결재 승인 paramList
+        List<Map<String, Object>> aprvParamList = new ArrayList<>();
+        aprvParamList = (List<Map<String, Object>>) params.get("aprvParam");
+        
+        List<Map<String, Object>> succMsgList = new ArrayList<>();
+        List<Map<String, Object>> errorMsgList = new ArrayList<>();
 
         // 프로젝트MM조회
         Map<String, Object> retrieveVcatnPrjctMmYnInqMap = new HashMap<>();
@@ -1382,14 +1389,46 @@ public class IndvdlClmDomain {
             insertEmpHistMap.put("vcatnBgngYmd", vcatnBgngYmd);
             insertEmpHistMap.put("vcatnEndYmd", vcatnEndYmd);
 
+            // 전자결재 승인
+            int atrzLnSn = 0;
+            try {
+            	Map<String, Object> aprvResult = new HashMap<>();
+            	
+	            aprvResult = ElecAtrzDomain.aprvElecAtrz(aprvParamList);
+	            
+	            atrzLnSn = Integer.parseInt(String.valueOf(aprvResult.get("atrzLnSn")));
+	
+	            if(atrzLnSn > 0) {
+		            if (String.valueOf(aprvResult.get("atrzStepCd")).equals("VTW00705")) {
+		            	// 전자결재 최종 승인 시
+		                commonService.updateData(updateEmpList);
+		                commonService.queryIdDataControl(updateVcatnMng);
+		                commonService.queryIdDataControl(insertEmpHistMap);
+		            }
+	            } else {
+	                Map<String, Object> errorResultMap = new HashMap<>();
+	                errorResultMap.put("succMsg", "SUCCESS");
+	                errorResultMap.put("atrzLnSn", atrzLnSn);
+	                errorMsgList.add(0, errorResultMap);
+	                
+	                return errorMsgList;
+	            }
+            } catch (Exception e) {
 
-            /**
-             * 전자결재 승인 후 아래주석 해제
-             * commonService.updateData(updateEmpList);
-             * commonService.queryIdDataControl(updateVcatnMng);
-             * commonService.queryIdDataControl(insertEmpHistMap);
-             */
+                Map<String, Object> errorResultMap = new HashMap<>();
+                errorResultMap.put("succMsg", "SUCCESS");
+                errorResultMap.put("atrzLnSn", atrzLnSn);
+                errorMsgList.add(0, errorResultMap);
+                
+                return errorMsgList;
+            }
 
+            Map<String, Object> succResultMap = new HashMap<>();
+            succResultMap.put("succMsg", "SUCCESS");
+            succResultMap.put("atrzLnSn", atrzLnSn);
+            succMsgList.add(0, succResultMap);
+
+            return succMsgList;
         }
 
         return null;
