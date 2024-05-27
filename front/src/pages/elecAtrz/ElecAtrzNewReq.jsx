@@ -136,13 +136,13 @@ const ElecAtrzNewReq = () => {
                 title: data.title,
                 atrzCn: data.cn
             }));
-            
+
             // 첨부파일 조회
             if(data.atchmnflId){
                 getAttachments();
             }
         }
-    }, []);
+    }, [data]);
 
     /**
      * 자식컴포넌트에서 받아온 데이터 set 
@@ -412,16 +412,19 @@ const ElecAtrzNewReq = () => {
                     Object.values(attachments)
                     .forEach((attachment) => formDataAttach.append("attachments", attachment));
 
-                    for (let [key, value] of formDataAttach.entries()) {
-
-                    }
-
                 const responseAttach = await axios.post("/boot/common/insertlongText", formDataAttach, {
                     headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
                 });
-
+    
                 if(responseAttach.status === 200){
                     if(stts === "VTW03701") {
+
+                        setData({
+                            ...data, 
+                            elctrnAtrzId: insertParam.elctrnAtrzId,
+                        });
+
+
                         handleOpen("임시저장이 완료되었습니다.");
                     } else {
                         handleOpen("전자결재 요청이 완료되었습니다.")

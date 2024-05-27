@@ -66,6 +66,24 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
 
     //우측 월 값 담기
     const handleInputChange = (e) => {
+        //입력 벨리데이션 
+        if(popupInfo.menuName==="ProjectEmpCostJson"){
+            if(!data.empId){
+                handleOpen("자사인력을 먼저 선택해 주세요.");
+                return;
+            }
+        }
+        if(popupInfo.menuName==="ProjectOutordEmpCostJson"){
+            if(!data.outordEmpId){
+                handleOpen("외주인력을 먼저 선택해 주세요.");
+                return;
+            }
+            if(!data.untpc){
+                handleOpen("단가를 먼저 입력해 주세요");
+                return;
+            }
+        }
+
         const id  = e.element.id;   //사용월
         const value  = e.component.option('value');
         const index = inputValue.findIndex(item => item.id === id); // 입력 값 객체의 인덱스 찾기
@@ -519,7 +537,7 @@ const onRowUpdateingMonthData = async() => {
                                         {Object.values(structuredData).map((months, colIndex) => (
                                         <>
                                         <td key={colIndex} style={{width:"10px", padding:"5px", textAlign: "center"}}>{months[rowIndex] ? `${months[rowIndex]}월` : ''}</td>
-                                        <td key={months} style={{width:"50px", padding:"5px"}}>
+                                        <td key={months} style={{width:"auto", padding:"5px"}}>
                                             {months[rowIndex] ? 
                                             (<NumberBox 
                                             key={months[rowIndex]}
@@ -536,7 +554,7 @@ const onRowUpdateingMonthData = async() => {
                                             min={popupInfo.popupMin}
                                             />): ''}</td>
                                             { (popupInfo.menuName === "ProjectEmpCostJson" || popupInfo.menuName === "ProjectOutordEmpCostJson") &&
-                                            <td style={{width:"20%", padding:"5px"}}>
+                                            <td style={{width:"25%", padding:"5px"}}>
                                                 {months[rowIndex] ? ( 
                                                 <NumberBox                      
                                                     value={(data.mmnyLbrcoPrmpcSn || data.outordLbrcoPrmpcSn) ? (
