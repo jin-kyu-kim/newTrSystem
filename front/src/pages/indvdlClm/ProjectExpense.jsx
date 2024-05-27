@@ -84,6 +84,24 @@ const ProjectExpense = () => {
     };
 
     const prjctCtAtrzUpdate = async (data) => {
+        if(data.name === 'onAprvDmndRtrcnClick'){
+            const requests = ctAply.map(async (item) => {
+                if (item.atrzDmndSttsCd === 'VTW03704') { // 반려일경우 반려사유, 결재자 NULL
+                    try {
+                        const response = await ApiRequest('/boot/common/commonUpdate', [
+                            { tbNm: "PRJCT_CT_ATRZ" }, 
+                            { aprvrEmpId: null, rjctPrvonsh: null, rjctYmd: null },
+                            { prjctId: item.prjctId, empId: item.empId, aplyYm: item.aplyYm, aplyOdr: item.aplyOdr, atrzDmndSttsCd: item.atrzDmndSttsCd }
+                        ]);
+                        return response;
+                    } catch (error) {
+                        return null;
+                    }
+                }
+            });
+            const responses = await Promise.all(requests);
+        };
+
         const param = {
             queryId: "indvdlClmMapper.updatePrjctCtAtrzStts",
             state: "UPDATE",

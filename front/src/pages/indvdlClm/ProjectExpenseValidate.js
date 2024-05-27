@@ -116,8 +116,8 @@ const checkSmartPhoneValidation = async (selectedItem) => {
 
     const param = {
         queryId: 'indvdlClmMapper.retrieveMoblphonDpcnYn',
-        aplyYm: selectedItem[0].aplyYm,
-        empId: selectedItem[0].empId,
+        aplyYm: selectedItem.aplyYm,
+        empId: selectedItem.empId,
     };
     try {
         const response = await ApiRequest('/boot/common/queryIdSearch', param);

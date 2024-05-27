@@ -500,6 +500,7 @@
 			JOIN EMP e1 ON ea.ATRZ_DMND_EMP_ID = e1.EMP_ID
 			WHERE 1=1
 				AND ea.ATRZ_DMND_EMP_ID = #{empId}
+				AND ea.ATRZ_DMND_STTS_CD !="VTW03701"
 			)
 		AS RESULT
 		ORDER BY REG_DT DESC
@@ -520,7 +521,7 @@
 				, NULL AS ELCTRN_ATRZ_TY_SE_CD
 				, NULL AS ELCTRN_ATRZ_ID
 				, NULL AS ELCTRN_ATRZ_DOC_NO
-				, NULL AS ATRZ_DMND_STTS_CD
+				, (select PRJCT_NM from PRJCT WHERE prjct_id = pca.prjct_id) AS ATRZ_DMND_STTS_CD
 			FROM PRJCT_CT_APLY pca JOIN PRJCT_CT_ATRZ pcaz ON pca.PRJCT_CT_APLY_SN = pcaz.PRJCT_CT_APLY_SN
 				AND pca.EMP_ID = pcaz.EMP_ID
 				AND pca.APLY_YM = pcaz.APLY_YM
@@ -544,7 +545,7 @@
 				, NULL AS ELCTRN_ATRZ_TY_SE_CD
 				, NULL AS ELCTRN_ATRZ_ID
 				, NULL AS ELCTRN_ATRZ_DOC_NO
-				, NULL AS ATRZ_DMND_STTS_CD
+				, (select PRJCT_NM from PRJCT WHERE prjct_id = pca.prjct_id) AS ATRZ_DMND_STTS_CD
 		 	FROM PRJCT_MM_APLY pma
 		 	JOIN PRJCT_MM_ATRZ pmaz ON pma.PRJCT_ID =pmaz.PRJCT_ID
 				AND pma.EMP_ID =pmaz.EMP_ID
@@ -615,74 +616,39 @@
 
 	<!-- 전자결재(관리자메뉴) 쿼리  -->
 	<select id="retrieveElecAtrzMng" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT M.ELCTRN_ATRZ_ID						-- 전자결재 ID
-			 , M.ELCTRN_ATRZ_DOC_NO
-		     , M.PRJCT_ID							-- 프로젝트 ID
-		     , M.ELCTRN_ATRZ_TY_SE_CD				-- 전자결재유형코드
-		     , M.TY_CD AS ELCTRN_ATRZ_TY_SE_CD_NM
-		     , M.ATRZ_DMND_STTS_CD					-- 결재요청상세코드
-		     , M.STEP_CD AS ATRZ_DMND_STTS_CD_NM
-		     , M.ATRZ_STTS_CD						-- 결재상태코드 
-		     , M.STTS_CD AS ATRZ_STTS_CD_NM
-		     , M.NOW_ATRZ_LN_SN						-- 현재결재선순번
-		     , C.CLM_ATRZ_DTL_SN					-- 청구결재상세순번
-		     , M.ATRZ_FORM_DOC_ID					-- 결재양식문서ID
-		     , M.APRVR_EMP_ID
-		     , M.ATRZ_DMND_EMP_NM					-- 기안자
-		     , M.APRVR_EMP_NM						-- 현재결재권자
-		     , DATE_FORMAT(M.REG_DT, '%Y-%m-%d') AS REG_DT 	-- 요청일자
-		     , M.GNRL_ATRZ_TTL
-		     , COALESCE(C.CLM_ATRZ_TTL, CA.CTRT_ATRZ_TTL, CGA.ATRZ_TTL, GA.GNRL_ATRZ_TTL,
-			   CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = VA.VCATN_TY_CD), ' [', VA.VCATN_BGNG_YMD, ' ~ ', VA.VCATN_END_YMD, ' (', VA.VCATN_DE_CNT, '일)]')) AS TITLE
-		     , C.CNPT_NM							-- 청구결재 거래처
-		     , COALESCE(GA.GNRL_ATRZ_CN, C.CLM_ATRZ_CN, CA.CTRT_ATRZ_CN, CGA.STLM_CN) AS CN
-		     , COUNT(*) OVER () AS TOTAL_ITEMS
-		  FROM (
-					SELECT EA.ELCTRN_ATRZ_ID
-						 , EA.ELCTRN_ATRZ_DOC_NO
-					     , EA.PRJCT_ID
-					     , EA.ELCTRN_ATRZ_TY_SE_CD
-					     , CD1.CD_NM AS TY_CD
-					     , EA.ATRZ_DMND_STTS_CD
-					     , CD2.CD_NM AS STEP_CD
-					     , EA.NOW_ATRZ_LN_SN
-					     , AL.ATRZ_STTS_CD
-					     , CD3.CD_NM AS STTS_CD
-					     , EA.ATRZ_FORM_DOC_ID
-					     , AL.APRVR_EMP_ID
-					     , E1.EMP_FLNM AS ATRZ_DMND_EMP_NM		-- 기안자
-					     , E2.EMP_FLNM AS APRVR_EMP_NM			-- 현재 결재권자
-					     , EADF.GNRL_ATRZ_TTL
-					     , EA.REG_DT
-					  FROM ELCTRN_ATRZ EA
-					  LEFT JOIN ATRZ_LN AL ON EA.ELCTRN_ATRZ_ID = AL.ELCTRN_ATRZ_ID AND EA.NOW_ATRZ_LN_SN = AL.ATRZ_LN_SN
-					  INNER JOIN EMP E1 ON EA.ATRZ_DMND_EMP_ID = E1.EMP_ID
-					  INNER JOIN EMP E2 ON AL.APRVR_EMP_ID = E2.EMP_ID
-					  LEFT JOIN ELCTRN_ATRZ_DOC_FORM EADF ON EA.ATRZ_FORM_DOC_ID = EADF.ATRZ_FORM_DOC_ID
-					  LEFT JOIN CD CD1 ON EA.ELCTRN_ATRZ_TY_SE_CD = CD1.CD_VALUE
-					  LEFT JOIN CD CD2 ON EA.ATRZ_DMND_STTS_CD = CD2.CD_VALUE
-					  LEFT JOIN CD CD3 ON AL.ATRZ_STTS_CD = CD3.CD_VALUE
-					  LEFT JOIN CD CD4 ON AL.APRVR_EMP_ID = CD4.CD_VALUE
-		        ) M
-		 LEFT JOIN (
-		 			 SELECT  CA.ELCTRN_ATRZ_ID
-					       , CAD.CLM_ATRZ_DTL_SN
-					       , CA.CLM_ATRZ_TTL
-					       , CAD.CNPT_NM
-					       , CA.ATCHMNFL_ID
-					       , CA.CLM_ATRZ_CN
-					   FROM CLM_ATRZ CA
-					  INNER JOIN CLM_ATRZ_DTL CAD ON CA.ELCTRN_ATRZ_ID = CAD.ELCTRN_ATRZ_ID
-				      WHERE CAD.CLM_ATRZ_DTL_SN = (
-				     							    SELECT MAX(CAD2.CLM_ATRZ_DTL_SN)
-				     							      FROM CLM_ATRZ_DTL CAD2
-				     							     INNER JOIN CLM_ATRZ CA ON CA.ELCTRN_ATRZ_ID = CAD.ELCTRN_ATRZ_ID 
-				     							   ) 
-		 		    ) C ON M.ELCTRN_ATRZ_ID = C.ELCTRN_ATRZ_ID
-		 LEFT JOIN VCATN_ATRZ VA ON M.ELCTRN_ATRZ_ID = VA.ELCTRN_ATRZ_ID
-		 LEFT JOIN CTRT_ATRZ CA ON M.ELCTRN_ATRZ_ID = CA.ELCTRN_ATRZ_ID
-		 LEFT JOIN CTRT_GIVE_ATRZ CGA ON M.ELCTRN_ATRZ_ID = CGA.ELCTRN_ATRZ_ID  
-		 LEFT JOIN GNRL_ATRZ GA ON M.ELCTRN_ATRZ_ID = GA.ELCTRN_ATRZ_ID 
+		SELECT DISTINCT
+			ea.ELCTRN_ATRZ_ID,
+			ea.ELCTRN_ATRZ_TY_SE_CD, -- newReq
+			ea.ATRZ_FORM_DOC_ID, -- newReq
+			ea.PRJCT_ID, -- newReq
+			ea.ELCTRN_ATRZ_DOC_NO,
+			eadf.GNRL_ATRZ_TTL, -- 전자결재 유형
+			(SELECT EMP_FLNM FROM EMP WHERE EMP_ID = ea.ATRZ_DMND_EMP_ID) ATRZ_DMND_EMP_NM, -- 기안자
+			DATE_FORMAT(ea.REG_DT, '%Y-%m-%d %H:%i:%s') AS REG_DT,
+			CASE WHEN ea.ATRZ_HIST_SE_CD = 'VTW05405' THEN CONCAT('▶취소결재◀ ', COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cta.CTRT_ATRZ_TTL, cga.ATRZ_TTL, CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD), ' [',
+				DATE_FORMAT(va.VCATN_BGNG_YMD, '%Y-%m-%d'), ' ~ ', DATE_FORMAT(va.VCATN_END_YMD, '%Y-%m-%d'), ' (', va.VCATN_DE_CNT, '일)]')))
+				WHEN ea.ATRZ_HIST_SE_CD = 'VTW05406' THEN CONCAT('▶결재변경◀ ', COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cta.CTRT_ATRZ_TTL, cga.ATRZ_TTL, CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD), ' [',
+				DATE_FORMAT(va.VCATN_BGNG_YMD, '%Y-%m-%d'), ' ~ ', DATE_FORMAT(va.VCATN_END_YMD, '%Y-%m-%d'), ' (', va.VCATN_DE_CNT, '일)]')))
+				ELSE COALESCE(ga.GNRL_ATRZ_TTL, ca.CLM_ATRZ_TTL, cta.CTRT_ATRZ_TTL, cga.ATRZ_TTL, CONCAT((SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD), ' [',
+				DATE_FORMAT(va.VCATN_BGNG_YMD, '%Y-%m-%d'), ' ~ ', DATE_FORMAT(va.VCATN_END_YMD, '%Y-%m-%d'), ' (', va.VCATN_DE_CNT, '일)]'))
+			END AS TITLE,
+			cad.CNPT_NM,
+			(SELECT EMP_FLNM FROM EMP WHERE EMP_ID = al.APRVR_EMP_ID) APRVR_EMP_ID, -- 결재자
+			al.ATRZ_STEP_CD, -- 현재 결재단계
+			(SELECT CD_NM FROM CD WHERE CD_VALUE = al.ATRZ_STEP_CD) ATRZ_STEP_CD_NM, -- 현재 결재단계명
+			ea.ATRZ_DMND_STTS_CD, -- 결재상태
+			(SELECT CD_NM FROM CD WHERE CD_VALUE = al.ATRZ_STTS_CD) ATRZ_STTS_CD, -- 결재상태명
+			al.ATRZ_OPNN_CN -- 결재의견
+		FROM ELCTRN_ATRZ ea
+		LEFT JOIN ATRZ_LN al ON ea.ELCTRN_ATRZ_ID = al.ELCTRN_ATRZ_ID -- 현재 결재단계만
+		LEFT JOIN REFRN_MAN rm ON ea.ELCTRN_ATRZ_ID = rm.ELCTRN_ATRZ_ID -- 참조자의 경우
+		LEFT JOIN GNRL_ATRZ ga ON ea.ELCTRN_ATRZ_ID = ga.ELCTRN_ATRZ_ID -- 일반결재
+		LEFT JOIN CLM_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID -- 청구결재
+		LEFT JOIN CLM_ATRZ_DTL cad ON ea.ELCTRN_ATRZ_ID = cad.ELCTRN_ATRZ_ID -- 청구결재 상세
+		LEFT JOIN CTRT_ATRZ cta ON ea.ELCTRN_ATRZ_ID = cta.ELCTRN_ATRZ_ID -- 계약결재
+		LEFT JOIN CTRT_GIVE_ATRZ cga ON ea.ELCTRN_ATRZ_ID = cga.ELCTRN_ATRZ_ID -- 계약지급결재
+		LEFT JOIN VCATN_ATRZ va ON ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID -- 휴가결재
+		LEFT JOIN ELCTRN_ATRZ_DOC_FORM eadf ON ea.ATRZ_FORM_DOC_ID = eadf.ATRZ_FORM_DOC_ID -- 서식 제목
 		 WHERE 1=1
 		<choose>
 			<when test="searchType != null and searchType == 'progress'">
@@ -710,13 +676,37 @@
 		</if>
 		<if test="title != null">
 			AND (
-			LOWER(GA.GNRL_ATRZ_TTL) LIKE CONCAT('%', LOWER(#{title}), '%') OR
-			LOWER(C.CLM_ATRZ_TTL) LIKE CONCAT('%', LOWER(#{title}), '%') OR
-			LOWER(CA.CTRT_ATRZ_CN) LIKE CONCAT('%', LOWER(#{title}), '%') OR
-			LOWER(CGA.ATRZ_TTL) LIKE CONCAT('%', LOWER(#{title}), '%') OR
-			LOWER(VA.VCATN_TY_CD) IN (SELECT CD_VALUE FROM CD WHERE LOWER(CD_NM) LIKE CONCAT('%', LOWER(#{title}), '%'))
-			)
+			LOWER(ga.GNRL_ATRZ_TTL) LIKE CONCAT('%', LOWER(#{title}), '%') OR
+			LOWER(ca.CLM_ATRZ_TTL) LIKE CONCAT('%', LOWER(#{title}), '%') OR
+			LOWER(cga.ATRZ_TTL) LIKE CONCAT('%', LOWER(#{title}), '%') OR
+			LOWER(va.VCATN_TY_CD) IN (SELECT CD_VALUE FROM CD WHERE LOWER(CD_NM) LIKE CONCAT('%', LOWER(#{title}), '%')) )
 		</if>
+		<if test="startDate != null and endDate == null">
+			<![CDATA[
+        	AND DATE_FORMAT(ea.REG_DT, '%Y%m%d') >= #{startDate}
+    		]]>
+		</if>
+		<if test="startDate == null and endDate != null">
+			<![CDATA[
+			AND DATE_FORMAT(ea.REG_DT, '%Y%m%d') <= #{endDate}
+			]]>
+		</if>
+		<if test="startDate != null and endDate != null">
+			<if test="!startDate.equals('') and !endDate.equals('')">
+				<![CDATA[
+				AND DATE_FORMAT(ea.REG_DT, '%Y%m%d') BETWEEN #{startDate} AND #{endDate}
+				]]>
+			</if>
+		</if>
+		ORDER BY REG_DT DESC
+		<choose>
+			<when test="startVal == null or startVal.equals('') or pageSize == null or pageSize.equals('')">
+				LIMIT 0, 20
+			</when>
+			<when test="startVal != null and !startVal.equals('') and pageSize != null and !pageSize.equals('')">
+				LIMIT #{startVal}, #{pageSize}
+			</when>
+		</choose>
 	</select>
 	
 	<!-- 전자결재(관리자메뉴) 카운트 쿼리  -->

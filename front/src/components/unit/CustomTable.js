@@ -5,7 +5,7 @@ import AllowedPageSize from "./AllowedPageSize";
 const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, onClick,
                        wordWrap, onRowClick, excel, onExcel,onCellClick, grouping, groupingData, groupingCustomizeText,
                        masterDetail, handleExpanding, focusedRowIndex, handleCheckBoxChange, checkBoxValue, prjctCmpr,
-                       noDataText, calculateCustomSummary, scrolling }) => {
+                       noDataText, calculateCustomSummary, scrolling, dataSource, pagination, onOptionChanged, remoteOperations }) => {
 
   const columnWidth = scrolling && { columnWidth: "auto" };
   return (
@@ -13,7 +13,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
       <DataGrid
         keyExpr={keyColumn}
         id={"dataGrid"}
-        dataSource={values}
+        dataSource={values != undefined ? values : dataSource}
         showBorders={true}
         showColumnLines={true}
         focusedRowEnabled={true}
@@ -43,9 +43,13 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
               e.cellElement.style.color = 'red'
             }
           }
+          
         }}
         wordWrapEnabled={wordWrap}
         columnMinWidth={40}
+        paging={pagination}
+        onOptionChanged={onOptionChanged}
+        remoteOperations={remoteOperations}
       >
         {GridRows({columns, onClick, handleCheckBoxChange, checkBoxValue })}
         <Paging defaultPageSize={pageSize} enabled={paging} />
@@ -54,7 +58,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
           showNavigationButtons={true}
           showInfo={false}
           showPageSizeSelector={true}
-          allowedPageSizes={AllowedPageSize(values)}
+          allowedPageSizes={AllowedPageSize(values != undefined ? values : [])}
         />
         
         {summary&&
@@ -62,7 +66,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
             {summaryColumn.map(item => (
               <TotalItem
                 key={item.key}
-                column={item.value}
+                column={item.value} 
                 summaryType={item.type}
                 displayFormat={item.format}
                 valueFormat={{ type: 'fixedPoint', precision: item.precision }} // 천 단위 구분자 설정

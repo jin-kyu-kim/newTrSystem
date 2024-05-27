@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import  EmpTRCostTotalJson from "./EmpTRCostTotalJson.json";
 import ApiRequest from "../../utils/ApiRequest";
 import CustomTable from "components/unit/CustomTable";
+import {useLocation} from "react-router-dom";
 import { Workbook } from "exceljs";
 import { exportDataGrid } from "devextreme/excel_exporter";
 import { saveAs } from 'file-saver';
@@ -18,6 +19,15 @@ const EmpTRCostTotal = () => {
   const [checkBox1Checked, setCheckBox1Checked] = useState(false);
   const [checkBox2Checked, setCheckBox2Checked] = useState(false);
   const { handleOpen } = useModal();
+  const location = useLocation();
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = date.getDate() > 15 ? date.getMonth() + 1 : date.getMonth();
+  const monthVal = month < 10 ? "0" + month : month;
+  const admin = location.state ? location.state.admin : undefined;
+  const aplyYm = admin != undefined ? admin.aplyYm : year + monthVal;
+  const aplyOdr = admin != undefined ? admin.aplyOdr : date.getDate() > 15 ? "1" : "2";
+
 
   const handleCheckBox1Change = (e) => {
     setCheckBox1Checked(e.value);
@@ -48,6 +58,8 @@ const EmpTRCostTotal = () => {
 
     const updateParam = {
       ...initParam,
+      aplyYm : initParam?.year + initParam?.month,
+      aplyOdr: initParam?.aplyOdr,
       queryId: queryId,
     }
    
@@ -92,6 +104,8 @@ const EmpTRCostTotal = () => {
       const response = await ApiRequest("/boot/batchSkll/executeCostUpdate");
       if (response >=1 ) {
         handleOpen("실행원가 정산이 완료되었습니다.");
+      } else {
+        handleOpen("실행원가 정산이 실패하였습니다. 관리자에게 문의하세요.");
       }
     } catch (error) {
       console.log(error);
@@ -100,10 +114,7 @@ const EmpTRCostTotal = () => {
 
   return (
     <div className="container">
-    <div
-      className="title p-1"
-      style={{ marginTop: "20px", marginBottom: "10px" }}
-    >
+    <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }} >
       <h1 style={{ fontSize: "40px" }}>근무시간,경비 통합조회</h1>
     </div>
     <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
@@ -111,11 +122,8 @@ const EmpTRCostTotal = () => {
     </div>
 
     <div>
-    <div style={{ marginBottom: "20px" }}>
-    <SearchInfoSet 
-                    props={searchInfo}
-                  callBack={pageHandle}
-                /> 
+    <div  className="wrap_search" style={{marginBottom: "20px", width: 1100}}>
+      <SearchInfoSet  props={searchInfo}  callBack={pageHandle} /> 
       </div>
       <CheckBox
               text="프로젝트 별"
@@ -131,6 +139,7 @@ const EmpTRCostTotal = () => {
       <Button style={{marginLeft:"20px"}}
               onClick={executeCostUpdate}
               > 실행원가 정산</Button>
+
       {checkBox1Checked && (
       <CustomTable
         keyColumn={keyColumn}
@@ -143,12 +152,9 @@ const EmpTRCostTotal = () => {
         wordWrap={true}
         onExcel={onExporting}
       />  
-      
-
       )}
     
      
-
 {checkBox2Checked && (
       <CustomTable
         keyColumn={keyColumn}

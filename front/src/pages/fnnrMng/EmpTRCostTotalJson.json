@@ -87,13 +87,20 @@
     "monthItem": true,
     "aplyOdr": true,
     "empNm" : false
-
   },
     "searchInfo": {
         "searchParams": {
-            "insertButton": false
+            "insertButton": false,
+            "yearList": [
+              { "name": "year", "visible": true, "placeholder": "[연도]", "displayExpr": "value", "valueExpr": "value" },
+              { "name": "month", "visible": true, "placeholder": "[월]", "displayExpr": "value", "valueExpr": "value" },
+              { "name": "aplyOdr", "visible": true, "placeholder": "[차수]", "displayExpr": "text", "valueExpr": "value" }
+            ],
+            "project": {}
         },
         "commonCd": "VTW001",
+       
+        "project" : {},
         "selectBoxItem": [
             {
                 "placeholder": "[재직 상태]",
@@ -107,19 +114,7 @@
                   },
                   "clearButton": true
                 }
-            },
-       
-            {
-                "placeholder": "[프로젝트 명]",
-                "param":{
-                  "tbNm": "PRJCT",
-                  "valueExpr": "prjctId",
-                  "displayExpr": "prjctNm",
-                  "name": "prjctId",
-                  "clearButton": true
-                }
             }
-           
         ],
         "textBoxItem": [
             {
