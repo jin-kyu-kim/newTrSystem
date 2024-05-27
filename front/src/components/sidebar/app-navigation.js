@@ -207,5 +207,10 @@ export const navigation = [
       //   auth: 'VTW04801'
       // },
     ]
-  }
+  },{
+    text: '오류게시판',
+    path: '/sysMng/CsServiceList',
+    icon: 'importselected',
+    auth: 'USER'
+  },
   ];
