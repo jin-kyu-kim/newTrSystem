@@ -238,6 +238,7 @@ const EmpManage = ({}) => {
       regDt: now,
     }
     ]
+
     try {
       const responseUpt = await ApiRequest("/boot/common/commonUpdate", paramUpd);
       const responseHist = await ApiRequest("/boot/common/commonInsert", paramHist);
@@ -293,11 +294,27 @@ const insertEmpFte = async () => {
     regDt: now,
   }
   ]
+
+  const updateDeptParam =[
+    { tbNm: "DEPT_HNF" },
+    {empno: empMax, mdfcnEmpId : empId, mdfcnDt: now,},
+    {empId: empDetailParam.empId}]
+
+  const updateDeptHistParam=[     //히스토리 정보
+    { tbNm: "DEPT_HNF_HIST"},
+    {
+       empno : empMax,
+       mdfcnEmpId : empId,
+       mdfcnDt: now  
+    },{ empId: empDetailParam.empId}]
+
   try {
     const responseUpt = await ApiRequest("/boot/common/commonUpdate", paramUpd);
     const responseUptUser = await ApiRequest("/boot/sysMng/resetPswd", paramUpdUser);
     const responseHist = await ApiRequest("/boot/common/commonInsert", paramHist);
-      if (responseUpt > 0 && responseHist > 0 && responseUptUser === "성공")  {
+    const responseUptDept = await ApiRequest("/boot/common/commonUpdate", updateDeptParam);
+    const responseUptDeptHist = await ApiRequest("/boot/common/commonUpdate", updateDeptHistParam);
+      if (responseUpt > 0 && responseHist > 0 && responseUptUser === "성공" && responseUptDept > 0 && responseUptDeptHist > 0 )  {
         handleOpen("저장되었습니다.");
         setEmpMax({});
         setEmpFteParam({});
