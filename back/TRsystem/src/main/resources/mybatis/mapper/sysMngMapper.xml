@@ -751,7 +751,65 @@
 		  LEFT JOIN CLM_ATRZ CA ON EA.ELCTRN_ATRZ_ID = CA.ELCTRN_ATRZ_ID
 		 WHERE EA.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
 	</select>
+  
+	<select id="retrieveErrMng" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT rank() over (order by REG_DT) as num
+			 , M.ERR_ID
+			 , M.ERR_TTL
+			 , DATE_FORMAT(M.REG_DT, '%Y-%m-%d') AS REG_DT
+			 , (SELECT EMP_FLNM FROM EMP E WHERE E.EMP_ID = M.REG_EMP_ID) AS REG_EMP_NM
+			 , (SELECT CD_NM FROM CD WHERE CD_VALUE = M.ERR_PRCS_STTS_CD ) AS ERR_PRCS_STTS_CD_NM
+			 , M.ERR_PRCS_STTS_CD
+		FROM ERR_MNG M
+		WHERE 1 = 1
+		<if test="searchCnd == 'VTW01701' and searchWrd != null">
+			AND ERR_TTL LIKE CONCAT('%',#{searchWrd},'%')
+		</if>
+		<if test="searchCnd == 'VTW01702' and searchWrd != null">
+			AND REGEXP_REPLACE(ERR_CN, '&lt;[^&gt;]*&gt;', '') LIKE CONCAT('%', #{searchWrd}, '%')
+		</if>
+		<if test="(searchCnd == null and searchWrd != null) or (searchCnd == 'VTW01703' and searchWrd != null)">
+			AND (
+			ERR_TTL LIKE CONCAT('%',#{searchWrd},'%')
+			OR REGEXP_REPLACE(ERR_CN, '&lt;[^&gt;]*&gt;', '') LIKE CONCAT('%', #{searchWrd}, '%')
+			)
+		</if>
+		<if test="errPrcsSttsCd != null and !errPrcsSttsCd.equals('')">
+			AND ERR_PRCS_STTS_CD = #{errPrcsSttsCd}
+		</if>
+		ORDER BY num DESC
+	</select>
 
+	<select id="retrieveErrMngDetail" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT
+			ERR_ID
+			 , ERR_TTL
+			 , ERR_PRCS_STTS_CD
+			 , ERR_CN
+			 , n.ATCHMNFL_ID
+			 , a.ATCHMNFL_SN
+			 , a.REAL_FILE_NM
+			 , a.STRG_FILE_NM
+			 , e.EMP_FLNM AS REG_EMP_NM
+			 , n.REG_EMP_ID
+			 , DATE_FORMAT(n.REG_DT, '%Y-%m-%d %H:%i') AS REG_DT
+		FROM ERR_MNG n
+				 LEFT JOIN EMP e ON n.REG_EMP_ID = e.EMP_ID
+				 LEFT JOIN  ATCHMNFL a ON n.ATCHMNFL_ID = a.ATCHMNFL_ID
+		WHERE ERR_ID = #{errId}
+	</select>
+	<select id="retrieveErrReply" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT M.ERR_ID
+			 , M.ERR_DTL_SN
+			 , M.DTL_ANSWER
+			 , DATE_FORMAT(M.REG_DT , '%Y-%m-%d %H:%I') AS REG_DT
+			 , (SELECT EMP_FLNM FROM EMP E WHERE E.EMP_ID = M.REG_EMP_ID) AS EMP_NM
+			 , M.REG_EMP_ID AS EMP_ID
+		FROM ERR_MNG_DTL M
+		WHERE 1=1
+		AND M.ERR_ID = #{errId}
+		ORDER BY M.ERR_DTL_SN
+	</select>
 	<!-- 월별정보수정 -->
 	<update id="updateCrtrYmd" parameterType="map">
 		/* sysMngMapper.updateCrtrYmd */
