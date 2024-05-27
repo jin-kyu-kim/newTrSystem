@@ -33,9 +33,11 @@ const EmpRegist = ({callBack, empInfo, read,callBackR,callBackF,reForm}) => {
     const [actno, setActno] = useState(); 
     const [empTyCd,setEmpTyCd] = useState();
     const [jncmpYmd,setJncmpYmd] = useState();
+    const [dept,setDept] = useState();
     const date = new Date();
     const now =  date.toISOString().split("T")[0] +" " +date.toTimeString().split(" ")[0];
     const startday = moment().format('YYYYMMDD'); //현재 년월일 (부서 시작일자 자동 세팅용)
+    const gnfdDate = moment().format('YYYYMM') //현재 년월
     //const emailRegEx = /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/i;
 //-----------------------------초기세팅 구간 -----------------------------------
   
@@ -50,6 +52,7 @@ const EmpRegist = ({callBack, empInfo, read,callBackR,callBackF,reForm}) => {
         setEml(null);
         setActno(null);
         setEmpTyCd(null);
+        setDept(null);
         setJncmpYmd(startday);
       }, []);
      
@@ -126,9 +129,11 @@ const EmpRegist = ({callBack, empInfo, read,callBackR,callBackF,reForm}) => {
       setEml(null);
       setActno(null);
       setJncmpYmd(startday);
+      setDept(null);
     };
 
     const handleChgState = ({ name, value }) => {     //값변경시 이벤트
+      console.log(name,value)
       if(name === "jbpsCd"){
         setJbpsCd(value);
       }else if(name === "empFlnm"){
@@ -149,6 +154,8 @@ const EmpRegist = ({callBack, empInfo, read,callBackR,callBackF,reForm}) => {
         setEml(value);  
       }else if(name === "jncmpYmd" ){
         setJncmpYmd(value);  
+      }else if(name === "deptId"){
+        setDept(value);
       }
       
     };
@@ -163,7 +170,7 @@ const EmpRegist = ({callBack, empInfo, read,callBackR,callBackF,reForm}) => {
    
     //기초정보 저장 
     const onClick = (e) => {
-
+      console.log("저장1")
       if(empFlnm === null){
         handleOpen("성명을 입력해주세요");
       }else if(jbpsCd === null){
@@ -175,6 +182,11 @@ const EmpRegist = ({callBack, empInfo, read,callBackR,callBackF,reForm}) => {
       }else if(actno === null){
         handleOpen("계좌번호를 입력해주세요");
       }else{
+        if(empIdd === null){
+          if(dept === null ){
+            handleOpen("소속을 선택해주세요");
+          }
+        }
         const isconfirm = window.confirm("기초정보를 저장 하시겠습니까?"); 
         if (isconfirm) {
           if(empIdd === null ){
@@ -220,7 +232,7 @@ const EmpRegist = ({callBack, empInfo, read,callBackR,callBackF,reForm}) => {
 
   //================기초정보 등록
     const insertEmp = async (paramIns) => {
-      const paramHist =[
+      const paramHist =[  //직원 히스토리 최초 저장
         { tbNm: "EMP_HIST"},
         {
         empId : paramIns[1].empId,
@@ -243,12 +255,37 @@ const EmpRegist = ({callBack, empInfo, read,callBackR,callBackF,reForm}) => {
         regEmpId : empId,
         regDt: now,
       }
-    
+      const InsertDept =[ //부서발령
+        { tbNm: "DEPT_HNF" },
+        {
+           deptId : dept,
+           empId : paramIns[1].empId,
+           jbttlCd : "VTW01003",
+           empno : paramIns[1].empno,
+           deptGnfdYmd : gnfdDate,
+           regDt : now,
+           regEmpId: empId,        
+        },
+      ]
+      const InsertDeptHistParam=[ //부서발령 히스토리 정보
+        { tbNm: "DEPT_HNF_HIST", snColumn: "DEPT_HNF_HIST_SN", snSearch: {deptId : dept, empId : paramIns.empId}},
+        {
+           deptId : dept,
+           empId : paramIns[1].empId,
+           jbttlCd : "VTW01003",
+           empno : paramIns[1].empno,
+           deptGnfdYmd : gnfdDate,
+           regDt : now,
+           regEmpId: empId,        
+        },
+      ]
       try {
         const response = await ApiRequest("/boot/common/commonInsert", paramIns);
         const responseHist = await ApiRequest("/boot/common/commonInsert", paramHist);
         const responseUser = await ApiRequest("/boot/sysMng/resetPswd", paramuUser);
-          if (response > 0 && responseHist > 0 && responseUser === "성공") {
+        const responseDept = await ApiRequest("/boot/common/commonInsert", InsertDept); //발령인서트
+        const histDeptResponse = await ApiRequest("/boot/common/commonInsert", InsertDeptHistParam); //발령 히스토리 인서트
+          if (response > 0 && responseHist > 0 && responseUser === "성공" && responseDept > 0 && histDeptResponse > 0) {
             handleOpen("저장되었습니다.");
             onReset();
             callBack(query);
@@ -258,7 +295,6 @@ const EmpRegist = ({callBack, empInfo, read,callBackR,callBackF,reForm}) => {
       }
     };
   
-
 
 
     const updateEmp = async () => {   //업데이트
@@ -312,6 +348,11 @@ const EmpRegist = ({callBack, empInfo, read,callBackR,callBackF,reForm}) => {
           <CustomLabelValue props={labelValue.eml} onSelect={handleChgState} value={eml} />
           <CustomLabelValue props={labelValue.actno} onSelect={handleChgState} value={actno} />          
           </div>
+          {empIdd === null ? ( 
+            <div className="dx-field" style={{display:"inline-block",marginTop:"30px", width: "100%"}}> 
+            <CustomLabelValue props={labelValue.deptId} onSelect={handleChgState} value={dept} readOnly={read}/>
+            </div>
+          ): null }
           </div>
         </div>
       <div className="buttonContainer" style={buttonContainerStyle}>

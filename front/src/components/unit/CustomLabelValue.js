@@ -38,6 +38,7 @@ const CustomLabelValue = ({props, onSelect, value, readOnly}) => {
                     value={value} 
                     readOnly={readOnly}
                     required={required}
+                    width={props.width}
                 />
             )
         } else if (props.type === "NumberBox") {

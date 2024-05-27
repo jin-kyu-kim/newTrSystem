@@ -158,7 +158,6 @@ const insertDeptEmp = async (InsertParam,InsertHistParam) => {
 
 //============================직책변경버튼 클릭 이벤트==========================================
   const deptAptUpd = () => {
-    console.log("직직직직책",deptHnfParam.jbttlCd)
     if(deptHnfParam.jbttlCd === undefined || deptHnfParam.jbttlCd === null){
       alert("직책을 선택해주세요");
       return;
