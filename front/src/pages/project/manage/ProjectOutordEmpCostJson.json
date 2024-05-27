@@ -22,8 +22,8 @@
 	],
     "summaryColumn":
     [
-        { "key": "gramt", "value": "총 금액", "type":"sum", "format":"Total: {0}원"},
-        { "key": "total", "value": "총 투입 MM", "type":"sum", "format":"Total: {0}MM"}
+        { "key": "gramt", "value": "총 금액", "type":"sum", "format":"총 {0}원"},
+        { "key": "total", "value": "총 투입 MM", "type":"sum", "format":"총 {0}MM"}
     ],
     "popup":
     {
@@ -80,7 +80,7 @@
             "label": "단가",
             "required": true,
             "placeholder": "단가",
-            "format" : "#,##0"
+            "format": "#,### 원"
         },
         "gramt": {
             "name": "gramt",
@@ -89,7 +89,7 @@
             "required": true,
             "placeholder": "총 금액",
             "readOnly": true,
-            "format" : "#,##0"
+            "format": "#,### 원"
         },
         "total": {
             "name": "total",
@@ -115,6 +115,6 @@
             "placeholder": "철수에정일"
         }
     },
-    "format" :"Total: {0}MM",
+    "format" :"총 {0}MM",
     "AddRowBtn": "인력 추가"
 }
