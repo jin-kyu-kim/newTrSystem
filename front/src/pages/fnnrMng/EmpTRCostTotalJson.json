@@ -28,7 +28,7 @@
     "nameColumns": [
       { "key": "empFlnm", "value": "성명", "width": "10%", "alignment": "center" ,"grouping" : true },
       {  "key": "prjctNm", "value": "프로젝트", "width": "15%", "alignment": "center"  },
-      { "value": "근무시간",  "subColumns": [
+      { "value": "근무시간", "width": "22%", "subColumns": [
         { "key" : "prjctNonInsert", "value": "프로젝트 미투입", "width": "12%", "alignment": "center" },
         {  "key": "prjctInsert","value": "프로젝트 투입", "width": "8%", "alignment": "center" }
       ]  
