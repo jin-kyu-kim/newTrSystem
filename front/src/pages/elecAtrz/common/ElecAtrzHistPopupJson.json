@@ -1,6 +1,6 @@
 {
     "menuName": "ElecAtrzHistPopup",
-    "queryId": "elecAtrzMapper.retrieveAtrzHist",
+    "queryId": "elecAtrzMapper.retrieveAtrzHistList",
     "keyColumn": "elctrnAtrzId",
     "columns": [
         { "key": "atrzHistSeCdNm", "value": "이력 구분", "width": "20%", "alignment": "center"},

@@ -425,8 +425,8 @@ const ElecAtrzNewReq = () => {
                         handleOpen("임시저장이 완료되었습니다.");
                     } else {
                         handleOpen("전자결재 요청이 완료되었습니다.")
+                        navigate("/elecAtrz/ElecAtrz");
                     }
-                    navigate("/elecAtrz/ElecAtrz");
                 }
 
             }else{
@@ -546,7 +546,7 @@ const ElecAtrzNewReq = () => {
                         <ElecAtrzCtrtOutordHnfDetail prjctId={prjctId} data={data} onSendData={handleChildData} prjctData={prjctData} sttsCd={sttsCd}/>
                     </>
                     }
-                    {["VTW04907"].includes(formData.elctrnAtrzTySeCd) &&    //VTW04907: 비용사용(청구,출장비청구)
+                    {["VTW04907"].includes(formData.elctrnAtrzTySeCd) &&  //VTW04907: 비용사용(청구,출장비청구)
                     <>
                         <ExpensInfo onSendData={handleChildData} prjctId={prjctId} data={data} prjctData={prjctData} sttsCd={sttsCd}/>
                     </>

@@ -1213,4 +1213,58 @@ public class ElecAtrzDomain {
     	
     	return 0;
     }
+    
+    /**
+     * 결재 취소 혹은 변경결재 반려 시 관련 문서를 롤백한다.
+     * @param params
+     * @return
+     */
+    public static int rollbackElctrnAtrz(Map<String, Object> params) {
+    	
+    	int result = 0;
+    	String elctrnAtrzId = String.valueOf(params.get("elctrnAtrzId"));
+    	String mdfcnDt = String.valueOf(params.get("mdfcnDt"));
+    	String mdfcnEmpId = String.valueOf(params.get("mdfcnEmpId"));
+    	
+    	try {
+	    	Map<String, Object> tbNm = new HashMap<>();
+	    	Map<String, Object> infoMap = new HashMap<>();
+	    	Map<String, Object> conditionMap = new HashMap<>();
+	    	List<Map<String, Object>> updateParams = new ArrayList<>();
+	    	
+	        // 1. HIST_ELCTRN_ATRZ_ID의 결재선 결재자 값을 다시 결재중으로 변경
+	    	List<Map<String, Object>> selectParams = new ArrayList<>();
+	    	List<Map<String, Object>> resultList = new ArrayList<>();
+	    	tbNm.put("tbNm", "ELCTRN_ATRZ");
+	    	
+	    	conditionMap.put("elctrnAtrzId", elctrnAtrzId);
+	    	
+	    	selectParams.add(0, tbNm);
+	    	selectParams.add(1, conditionMap);
+    	
+	    	resultList = commonService.commonSelect(selectParams);
+	    	
+	    	resultList.get(0).get("nowAtrzLnSn");
+	    	
+	    	// 조회해온 순번을 update 해준다.
+	    	tbNm.put("tbNm", "ATRZ_LN");
+	    	
+	    	infoMap.put("atrzSttsCd", "VTW00801");
+	    	infoMap.put("mdfcnDt", mdfcnDt);
+	    	infoMap.put("mdfcnEmpId", mdfcnEmpId);
+	    	
+	    	conditionMap.put("atrzLnSn", resultList.get(0).get("nowAtrzLnSn"));
+	    	conditionMap.put("atrzSttsCd", "VTW00806");
+	    	
+	    	updateParams.add(0, tbNm);
+	    	updateParams.add(1, infoMap);
+	    	updateParams.add(2, conditionMap);
+    	
+    		result = commonService.updateData(updateParams);
+    	} catch (Exception e) {
+    		return -1;
+    	}
+    	
+    	return result;
+    }
 }  
