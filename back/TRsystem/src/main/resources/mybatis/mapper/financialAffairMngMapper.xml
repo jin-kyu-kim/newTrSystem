@@ -119,7 +119,7 @@
             pca.EXPENS_CD,
             CONCAT(SUBSTR(#{startYmOdr},1, 6),'-',SUBSTR(#{startYmOdr}, 7, 1)) AS START_APLY_ODR,
             CONCAT(SUBSTR(#{endYmOdr},1, 6),'-',SUBSTR(#{endYmOdr}, 7, 1)) AS END_APLY_ODR,
-            (
+            IFNULL((
                 SELECT SUM(a.UTZTN_AMT)
                 FROM PRJCT_CT_APLY a
                 LEFT JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_ID = a.PRJCT_ID AND pcat.EMP_ID = a.EMP_ID
@@ -128,7 +128,7 @@
                 AND a.PRJCT_ID = pca.PRJCT_ID
                 AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703'
                 GROUP BY a.EXPENS_CD
-            ) AS TOTAL_AMT_SUM,
+            ),0) AS TOTAL_AMT_SUM,
             SUM(pca.UTZTN_AMT) AS TOTAL_AMT
         FROM PRJCT_CT_APLY pca
         JOIN PRJCT_INDVDL_CT_MM picm
