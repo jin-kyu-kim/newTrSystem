@@ -966,7 +966,7 @@
  		  	 , cd.CD_NM AS ATRZ_DMND_STTS_NM
 		FROM PRJCT_MM_APLY pma
 		JOIN PRJCT_MM_ATRZ pah ON (pma.PRJCT_ID = pah.PRJCT_ID
-								 	AND pma.EMP_ID = pah.EMP_ID 
+								 	AND pma.EMP_ID = pah.EMP_ID
 								 	AND pma.APLY_YM = pah.APLY_YM
                                     AND pma.APLY_YMD = pah.APLY_YMD
 								 	AND pma.APLY_ODR = pah.APLY_ODR)
@@ -980,11 +980,29 @@
                      JOIN PRJCT_MM_APLY pma ON (pma.EMP_ID = dh.EMP_ID)
             GROUP BY pma.EMP_ID
         ) dept ON dept.EMP_ID = pah.EMP_ID
-	   WHERE 1=1 
+	   WHERE 1=1
 	     AND pma.PRJCT_ID = #{prjctId}
 	     AND pma.EMP_ID = #{empId}
 	     AND pma.APLY_YM = #{aplyYm}
 	     AND pma.APLY_ODR = #{aplyOdr}
+	   UNION ALL
+       SELECT 2 AS ID
+            , ''
+            , CONCAT(TRUNCATE(8 * pma.YRYC_RATE, 0),' hrs | 휴가') AS TEXT
+            , ''
+            , DATE_FORMAT(pma.APLY_YMD, '%Y-%m-%d') AS START_DATE
+            , DATE_FORMAT(pma.APLY_YMD, '%Y-%m-%d') AS END_DATE
+            , ''
+            , ''
+            , ''
+            , ''
+       FROM PRJCT_MM_APLY pma
+       WHERE 1=1
+         AND pma.PRJCT_ID = #{prjctId}
+         AND pma.EMP_ID = #{empId}
+         AND pma.APLY_YM = #{aplyYm}
+         AND pma.APLY_ODR = #{aplyOdr}
+	     AND pma.YRYC_RATE != 0
 	</select>
 
     <!-- 프로젝트비용승인: 인력 세부리스트 조회 -->
@@ -1473,7 +1491,7 @@
         SELECT
             COUNT(*) AS TOTAL_COUNT
         FROM PRJCT_MM_ATRZ
-        WHERE ATRZ_DMND_STTS_CD NOT IN ('VTW03703', 'VTW03704')
+        WHERE ATRZ_DMND_STTS_CD NOT IN ('VTW03703')
           AND PRJCT_ID = #{prjctId}
           AND APLY_YM = #{aplyYm}
           AND APLY_ODR = #{aplyOdr}

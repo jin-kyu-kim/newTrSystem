@@ -28,24 +28,25 @@ const ProjectHrCtAprvMmPop = ({props, prjctNm, data, currentDate, setCurrentDate
         const results = [];
 
         props.map((data) => {
-            
-            results.push(
-                <>
-                <hr/>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>{data.startDate}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>{prjctNm} {data.md} hrs. | {data.deptNm} {data.aprvrEmpFlnm} ({data.atrzDmndSttsNm}) </td>
-                        </tr>
-                    </tbody>
-                </table>
-                </>
-            )
+            if(data.md){
+                results.push(
+                    <>
+                        <hr/>
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>{data.startDate}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>{prjctNm} {data.md} hrs. | {data.deptNm} {data.aprvrEmpFlnm} ({data.atrzDmndSttsNm}) </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </>
+                )
+            }
         });
             
         return results;

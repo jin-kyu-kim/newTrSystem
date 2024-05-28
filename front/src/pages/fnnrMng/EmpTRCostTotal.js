@@ -53,17 +53,7 @@ const EmpTRCostTotal = () => {
     setValues([])
   }, []);
 
- 
-  // useEffect(() => {
-  //   console.log("이거?????")
-  //   if (searchIsVal) { // 검색 버튼을 클릭했을 때만 pageHandle 함수 호출
-  //     pageHandle();
-  //     setSearchIsVal(false); // 상태를 다시 false로 변경하여 다음 검색을 위해 준비
-  //   }
-  // }, [searchIsVal]); // searchIsVal 상태가 변경될 때마다 실행
-
   useEffect(()=> {
-  console.log("이거용",param)
   if(searchIsVal){
     if (Object.values(param).every(value => value !== undefined && !Number.isNaN(value))) {
       pageHandle();
@@ -74,7 +64,6 @@ const EmpTRCostTotal = () => {
 
 // 검색으로 조회할 때
   const searchHandle = async (initParam) => {
-    console.log("이거?",initParam)
     setParam({
       ...initParam,
       aplyYm : initParam?.year + initParam?.month,
@@ -86,11 +75,8 @@ const EmpTRCostTotal = () => {
 
 
   const pageHandle = async () => {
-   console.log("이거2?")
     try {
-      console.log("update입니다",param);
       const response = await ApiRequest("/boot/common/queryIdSearch", param);
-        console.log("response입니다",response)
         setValues(response);
     } catch (error) {
       console.log(error);
