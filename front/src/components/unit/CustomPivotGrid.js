@@ -6,7 +6,7 @@ import { exportPivotGrid } from 'devextreme/excel_exporter';
 
 
 const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fileName, sorting, filtering, 
-    isExport, grandTotals, width }) => {
+    isExport, grandTotals, width, customColor }) => {
 
     const isDataCell = (cell) => (cell.area === 'data' && cell.rowType === 'D' && cell.columnType === 'D');
 
@@ -87,15 +87,15 @@ const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fi
 
                 if (dayOfWeek === 0) { // 일요일
                     if (colorFor === 'pivot') {
-                        data.cellElement.style.backgroundColor = '#F6CECE';
+                        data.cellElement.style.backgroundColor = customColor ? customColor : '#F6CECE';
                     } else {
-                        return { font: '9C0006', fill: '#F6CECE' };
+                        return { font: '9C0006', fill: customColor ? customColor : '#F6CECE' };
                     }
                 } else if (dayOfWeek === 6) { // 토요일
                     if (colorFor === 'pivot') {
-                        data.cellElement.style.backgroundColor = '#A9E2F3';
+                        data.cellElement.style.backgroundColor = customColor ? customColor : '#A9E2F3';
                     } else {
-                        return { font: '9C0006', fill: '#A9E2F3' };
+                        return { font: '9C0006', fill: customColor ? customColor : '#A9E2F3' };
                     }
                 } else {
                     if (colorFor === 'excel') {
@@ -108,15 +108,15 @@ const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fi
 
                 if (dayOfWeek === 0) { // 일요일
                     if (colorFor === 'pivot') {
-                        data.cellElement.style.backgroundColor = '#F6CECE';
+                        data.cellElement.style.backgroundColor = customColor ? customColor : '#F6CECE';
                     } else {
-                        return { font: '9C0006', fill: '#F6CECE' };
+                        return { font: '9C0006', fill: customColor ? customColor : '#F6CECE' };
                     }
                 } else if (dayOfWeek === 6) { // 토요일
                     if (colorFor === 'pivot') {
-                        data.cellElement.style.backgroundColor = '#A9E2F3';
+                        data.cellElement.style.backgroundColor = customColor ? customColor : '#A9E2F3';
                     } else {
-                        return { font: '9C0006', fill: '#A9E2F3' };
+                        return { font: '9C0006', fill: customColor ? customColor : '#A9E2F3' };
                     }
                 }
             }
@@ -146,7 +146,11 @@ const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fi
                     node.remove();
                 }
             });
-
+        }
+        // 날짜에서 일자만 추출하여 표시
+        if (e.area === 'column' && e.cell.text && !isNaN(Date.parse(e.cell.text)) && !e.cell.width) {
+            const date = new Date(e.cell.text);
+            e.cellElement.innerText = date.getDate().toString();
         }
         weekendCellColor(e, 'pivot');
     };
