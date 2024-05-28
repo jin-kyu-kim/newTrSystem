@@ -810,7 +810,7 @@ public class ElecAtrzDomain {
 						
 			/**
 			 * 휴가결재 에서 사용하기 위해서
-			 * 가장 높은 결재 순번을 찾아와서 마지막 결재인지 확인해주기.
+			 * 승인한 것 중에 가장 높은 결재 순번을 찾아와서 마지막 결재인지 확인해주기.
 			 */
 			HashMap<String, Object> maxQueryMap = new HashMap<>();
 			maxQueryMap.put("queryId", "elecAtrzMapper.retrieveMaxAtrzLnSn");
@@ -834,7 +834,8 @@ public class ElecAtrzDomain {
 				 */
 				infoParam.put("atrzLnSn", maxAtrzLnSn);
 			} else {
-				infoParam.put("atrzLnSn", atrzLnSn);
+				// 승인처리 한 sn을 통해 stepCd를 구해야하므로 -1을 해주어 구한다.(위에서 ++ 해서 비교했기 때문)
+				infoParam.put("atrzLnSn", atrzLnSn-1);
 			}
 
 			infoParam.put("elctrnAtrzId", elctrnAtrzId);
