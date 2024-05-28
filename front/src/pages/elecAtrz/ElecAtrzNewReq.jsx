@@ -26,7 +26,7 @@ const ElecAtrzNewReq = () => {
     const location = useLocation();
     const prjctId = location.state.prjctId;
     const formData = location.state.formData;
-    const sttsCd = location.state.sttsCd;
+    const [sttsCd, setSttsCd] = useState(location.state.sttsCd);
     const ctrtTyCd = location.state.ctrtTyCd;
 
     const { handleOpen } = useModal();
@@ -47,15 +47,18 @@ const ElecAtrzNewReq = () => {
     const [popVisible, setPopVisible] = useState(false);
     const column = { "dataField": "gnrlAtrzCn", "placeholder": "내용을 입력해주세요."};
 
+    // 임시저장 용 전자결재 아이디
+    const [elctrnAtrzId, setElctrnAtrzId] = useState();
+
     useEffect(() => {
         const getDetailData = async () => {
-            const res = await ApiRequest('/boot/common/queryIdSearch', { queryId: "elecAtrzMapper.elecAtrzDetail", elctrnAtrzId: formData.elctrnAtrzId })
+            const res = await ApiRequest('/boot/common/queryIdSearch', { queryId: "elecAtrzMapper.elecAtrzDetail", elctrnAtrzId: elctrnAtrzId != undefined ? elctrnAtrzId : formData.elctrnAtrzId })
             if(res[0]) {
                 setData({...data, ...res[0]})
             }
         }
         getDetailData();
-    }, []);
+    }, [elctrnAtrzId]);
 
     /**
      * 계약 지급인 경우 계약코드 및 계약전자결재ID 조회
@@ -88,7 +91,7 @@ const ElecAtrzNewReq = () => {
                 getCtrtInfo();       
             };      
         }
-    },[])
+    },[elctrnAtrzId])
     
 
     /*
@@ -343,7 +346,7 @@ const ElecAtrzNewReq = () => {
             atrzHistSeCd: sttsCd === "VTW05405" || sttsCd === "VTW05406" ? sttsCd : data.atrzHistSeCd != undefined ? data.atrzHistSeCd : "VTW05401"
         }
 
-        // console.log("insertParam", insertParam);
+        console.log("insertParam", insertParam);
 
         try {
             setLoading(true);
@@ -422,9 +425,11 @@ const ElecAtrzNewReq = () => {
                         setData({
                             ...data, 
                             elctrnAtrzId: insertParam.elctrnAtrzId,
+                            title: insertParam.param.title
                         });
 
-
+                        setElctrnAtrzId(response);
+                        setSttsCd("VTW03701");
                         handleOpen("임시저장이 완료되었습니다.");
                     } else {
                         handleOpen("전자결재 요청이 완료되었습니다.")
