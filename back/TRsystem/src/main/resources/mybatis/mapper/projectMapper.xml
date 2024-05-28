@@ -697,10 +697,11 @@
 				EXPECT_CT = #{expectCt}
 		</if>
 		<if test="outordLbrcoPrmpcSn != null">
-			INSERT INTO OUTORD_LBRCO_PRMPC_DTL (PRJCT_ID, BGT_MNG_ODR, OUTORD_LBRCO_PRMPC_SN, INPT_YM, EXPECT_MM)
-			VALUES(	#{prjctId}, #{bgtMngOdr}, #{outordLbrcoPrmpcSn}, #{inptYm}, #{expectMm})
+			INSERT INTO OUTORD_LBRCO_PRMPC_DTL (PRJCT_ID, BGT_MNG_ODR, OUTORD_LBRCO_PRMPC_SN, INPT_YM, EXPECT_MM, UNTPC)
+			VALUES(	#{prjctId}, #{bgtMngOdr}, #{outordLbrcoPrmpcSn}, #{inptYm}, #{expectMm}, #{untpc})
 			   ON DUPLICATE KEY UPDATE 
-			   EXPECT_MM = #{expectMm}
+			   EXPECT_MM = #{expectMm},
+			   UNTPC = #{untpc}
 		</if>
 		<if test="mmnyLbrcoPrmpcSn != null">
 			INSERT INTO MMNY_INPT_MM (PRJCT_ID, BGT_MNG_ODR, MMNY_LBRCO_PRMPC_SN, INPT_YM, EXPECT_MM, UNTPC)

@@ -64,8 +64,10 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
             }));
     };  
 
+
     //우측 월 값 담기
     const handleInputChange = (e) => {
+
         //입력 벨리데이션 
         if(popupInfo.menuName==="ProjectEmpCostJson"){
             if(!data.empId){
@@ -92,16 +94,16 @@ const ProjectChangePopup = ({selectedItem, period, popupInfo, prjctId, bgtMngOdr
         if (index >= 0 ) {   //변경해야하는 데이터
             if(e.event){
                 updatedValues[index] = { ...updatedValues[index],
-                                         value : value !== null ? value : 0 }; // 변경된 값 객체 업데이트                      
+                                         value : value ? value : 0 }
             }
 
-        } else {    //신규 데이터      
-                updatedValues.push({ id, value });    // 새로운 값 객체 추가        
+        } else {    //신규 데이터    
+            updatedValues.push({ id, value });
         }
 
         setInputValue(updatedValues); // 업데이트된 배열로 상태 설정
        
-
+    
         //총 투입 MM 값 구하기
         const sum = updatedValues.filter(item => typeof item.value === 'number')
         .map(item => item.value)
@@ -354,7 +356,6 @@ const onRowUpdateing = async() => {
 const onRowUpdateingMonthData = async() => {
 
     const pkColumns = pick(param, popupInfo.pkColumnsDtl);
-
     const transformedDataMap = transformedData.reduce((acc, cur) => {
         acc[cur.id] = cur.value; // 각 항목의 id를 키로, value를 값으로 설정
         return acc;
@@ -364,14 +365,15 @@ const onRowUpdateingMonthData = async() => {
     const makeParam = inputValue.map(item => {
         let untpcValue ;
         const untpc = data.userDfnValue ? data.userDfnValue : data.untpc;
-        if(popupInfo.table ==="MMNY_LBRCO_PRMPC"){
+
+        if((popupInfo.table ==="MMNY_LBRCO_PRMPC")||(popupInfo.table ==="OUTORD_LBRCO_PRMPC")){
             const idUnptc = `${item.id}_untpc`; // untpc용 ID 생성
-            untpcValue = transformedDataMap.hasOwnProperty(idUnptc) ? transformedDataMap[idUnptc] : data[untpc]; // transformedDataMap에 untpc ID가 있으면 그 값을, 없으면 data.userDfnValue를 사용
+            untpcValue = transformedDataMap.hasOwnProperty(idUnptc) ? transformedDataMap[idUnptc] : untpc; // transformedDataMap에 untpc ID가 있으면 그 값을, 없으면 data.userDfnValue를 사용
         }
         return {
             [popupInfo.nomalColumnsDtlYm]: item.id,
             [popupInfo.nomalColumnsDtlValue]: item.value,
-            ...(untpcValue ? {"untpc": untpcValue} : {}), // 조건에 따른 untpc 값 설정
+            ...(untpcValue ? {"untpc": untpcValue} : {}),
         };
     });
 
