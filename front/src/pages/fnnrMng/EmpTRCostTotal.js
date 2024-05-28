@@ -53,15 +53,6 @@ const EmpTRCostTotal = () => {
     setValues([])
   }, []);
 
- 
-  // useEffect(() => {
-  //   console.log("이거?????")
-  //   if (searchIsVal) { // 검색 버튼을 클릭했을 때만 pageHandle 함수 호출
-  //     pageHandle();
-  //     setSearchIsVal(false); // 상태를 다시 false로 변경하여 다음 검색을 위해 준비
-  //   }
-  // }, [searchIsVal]); // searchIsVal 상태가 변경될 때마다 실행
-
   useEffect(()=> {
   if(searchIsVal){
     if (Object.values(param).every(value => value !== undefined && !Number.isNaN(value))) {
