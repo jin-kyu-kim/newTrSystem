@@ -44,8 +44,8 @@
         {"key": "cnptNm", "value": "거래처", "width": "10%"},
         {"key": "aprvrEmpId", "value": "현재결재권자", "width": "7%"},
         {"key": "atrzStepCdNm" , "value": "현재결재단계", "width": "8%"},
-        {"key": "recall", "value": "결재 회수가능여부", "width": "7%", "button": { 
-          "text": "회수", "name": "recall", "visible": {"key": "recall", "value": "N"}}}
+        {"key": "recall", "value": "결재 회수가능여부", "width": "7%", 
+        "button": { "text": "회수", "name": "recall", "label": { "key": "recall", "value": "N", "text": "심사중"} } }
       ],
       "progressRefer": [
         {"key": "aprvrEmpId", "value": "현재 결재권자", "width": "13%"},
@@ -130,10 +130,10 @@
     "keyColumnClm" : "ctStlmSeCdNm",
     "clmColumns": [
       { "key": "ctStlmSeCdNm", "value": "구분"},
-      { "key": "rciptPblcnYmd", "value": "영수증발행일", "dateFormat": "true"},
+      { "key": "rciptPblcnYmd", "value": "영수증발행일"},
       { "key": "cnptNm", "value": "거래처명"},
-      { "key": "clmAmt", "value": "금액", "currency" : "true"},
-      { "key": "vatInclsAmt", "value": "금액(부가세포함/세금별도)", "currency" : "true"},
+      { "key": "clmAmt", "value": "금액"},
+      { "key": "vatInclsAmt", "value": "금액(부가세포함/세금별도)"},
       { "key": "expensCdNm", "value": "비용코드"},
       { "key": "dtlUseDtls", "value": "상세내역(목적)"},
       { "key": "clmPrpos", "value": "용도(참석자명단)"},

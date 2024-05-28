@@ -10,6 +10,7 @@ const GridRows = ({ columns, onClick, handleCheckBoxChange, checkBoxValue }) => 
     const ButtonRender = (button, data, onClick) => {
         let disabled = false;
         let visible = true;
+        let label = false
         if(button.able != null && data != null && button.able.value !== undefined && data[button.able.key] != button.able.value){
             disabled = true;
         } else if(button.able != null && data != null  && button.able.exceptValue !== undefined && data[button.able.key] == button.able.exceptValue){
@@ -32,6 +33,12 @@ const GridRows = ({ columns, onClick, handleCheckBoxChange, checkBoxValue }) => 
                     disabled = true;
                 }
             }
+        } else if(button.label != null && data != null && data[button.label.key] == button.label.value) {
+          return (
+            <div>
+              {button.label.text}
+            </div>
+          )
         } else if(button.visible != null && data != null && button.visible.value !== undefined && data[button.visible.key] == button.visible.value) {
           visible = false;
         }
