@@ -899,7 +899,7 @@ const EmpVacation = () => {
                     <span>※검색시 휴가신청에 작성한 내용은 삭제됩니다.</span>
                 </div>
                 <div style={{ display: "flex", marginTop: "30px" }}>
-                    <div style={{ width: "63%", marginRight: "25px" }}>
+                    <div style={{ width: "63%", marginRight: "25px", minWidth: "300px" }}>
                         <div style={{ marginTop: "30px" }}>
                             <h5>* 휴가 정보</h5>
                         </div>
@@ -942,13 +942,12 @@ const EmpVacation = () => {
                                 columns={listTableColumns}
                                 values={selectVcatnListValue}
                                 wordWrap={true}
-                                // onRowDblClick={onRowClick}
                                 onRowClick={(e) => onRowClick(e)}
                                 onClick={onButtonClick}
                             />
                         </div>
                     </div>
-                    <div style={{ width: "37%" }}>
+                    <div style={{ width: "37%" , minWidth: "300px", display: "flex", flexDirection: "column" }}>
                         <div style={{ marginTop: "30px" }}>
                             <h5>* 휴가신청</h5>
                         </div>

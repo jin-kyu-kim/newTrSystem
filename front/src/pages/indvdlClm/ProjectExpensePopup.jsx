@@ -13,6 +13,7 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
     const [ empInfo, setEmpInfo ] = useState({});
     const [ totalInfo, setTotalInfo ] = useState({});
     const [ data, setData ] = useState([]);
+    const [ loading, setLoading ] = useState(true);
     const contentRef = useRef(null);
     const commonParams = {
         aplyYm: basicInfo.aplyYm,
@@ -26,10 +27,17 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
     };
 
     useEffect(() => {
-        getEmpInfo();
-        getTotalWorkTime();
-        getExpenseTotalInfo();
-        getDailyWorkHours();
+        const fetchData = async () => {
+            setLoading(true);
+            const empInfoPromise = getEmpInfo();
+            const totalWorkTimePromise = getTotalWorkTime();
+            const expenseTotalInfoPromise = getExpenseTotalInfo();
+            const dailyWorkHoursPromise = getDailyWorkHours();
+            
+            await Promise.all([empInfoPromise, totalWorkTimePromise, expenseTotalInfoPromise, dailyWorkHoursPromise]);
+            setLoading(false);
+        };
+        fetchData();
     }, [basicInfo]);
 
     const getEmpInfo = async () => {
@@ -107,15 +115,18 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
                     store: data
                 })
                 return (
+                    loading ? <></> : (
                     <CustomPivotGrid
                         values={dataSource}
+                        customColor={'#f0f0f0'}
                         blockCollapse={true}
+                        weekendColor={true}
                         grandTotals={true}
                         width={'100%'}
-                    />
+                    />)
                 )
             default:
-                return( <ProjectExpenseCashCardReport basicInfo={basicInfo} /> )
+                return( loading ? <></> : (<ProjectExpenseCashCardReport basicInfo={basicInfo} />) )
         }
     };
 
@@ -150,8 +161,8 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
     return (
         <div style={{marginBottom: '100px'}}>
             <Popup
-                width={"95%"}
-                height={"95%"}
+                width={"70%"}
+                height={"90%"}
                 visible={visible}
                 onHiding={onPopHiding}
                 showCloseButton={true}
