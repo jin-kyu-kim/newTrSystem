@@ -898,8 +898,8 @@ const EmpVacation = () => {
                 <div style={{ marginTop: "10px" }}>
                     <span>※검색시 휴가신청에 작성한 내용은 삭제됩니다.</span>
                 </div>
-                <div style={{ display: "flex", marginTop: "30px" }}>
-                    <div style={{ width: "63%", marginRight: "25px", minWidth: "300px" }}>
+                <div style={mainContainerStyle}>
+                    <div style={mainLeftContainerStyle}>
                         <div style={{ marginTop: "30px" }}>
                             <h5>* 휴가 정보</h5>
                         </div>
@@ -947,7 +947,7 @@ const EmpVacation = () => {
                             />
                         </div>
                     </div>
-                    <div style={{ width: "37%" , minWidth: "300px", display: "flex", flexDirection: "column" }}>
+                    <div style={mainRightContainerStyle}>
                         <div style={{ marginTop: "30px" }}>
                             <h5>* 휴가신청</h5>
                         </div>
@@ -1488,3 +1488,24 @@ const textAlign = {
     alignItems: "center",
     fontSize: "14px"
 }
+
+const mainContainerStyle = {
+    display: "flex",
+    alignItems: "flex-start",
+    flexWrap: "wrap",
+    justifyContent: "center",
+};
+
+const mainLeftContainerStyle = {
+    width: "62%",
+    minWidth: "300px",
+    marginBottom: "20px",
+    marginRight: "20px"
+};
+
+const mainRightContainerStyle = {
+    width: "36%",
+    minWidth: "300px",
+    display: "flex",
+    flexDirection: "column",
+};

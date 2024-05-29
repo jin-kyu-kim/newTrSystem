@@ -470,14 +470,14 @@ const EmpWorkTime = () => {
     // 실 근무일수 구하기
     function getWorkDay(selectCrtrDateList) {
         if (selectCrtrDateList) {
-            return selectCrtrDateList.filter(item => item.crtrOdr == flagOrder && item.hldyClCd == "VTW05001").length;
+            return selectCrtrDateList.filter(item => item.aplyYm == searchPrjctIndvdlCtMmParam.aplyYm && item.crtrOdr == flagOrder && item.hldyClCd == "VTW05001").length;
         }
     }
 
     // 공휴일수 구하기
     function getHoliDay(selectCrtrDateList) {
         if (selectCrtrDateList) {
-            return selectCrtrDateList.filter(item => item.crtrOdr == flagOrder && item.hldyClCd == "VTW05003").length;
+            return selectCrtrDateList.filter(item => item.aplyYm == searchPrjctIndvdlCtMmParam.aplyYm && item.crtrOdr == flagOrder && item.hldyClCd == "VTW05003").length;
         }
     }
 
@@ -738,11 +738,6 @@ const EmpWorkTime = () => {
             if (param == "workBgngYmd" || param == "workEndYmd") e = Moment(e).format('YYYYMMDD');
 
             refInsertWorkHourValue[param] = e;
-        }
-
-        function onRefValuePrjctChange(e) {
-            refInsertWorkHourValue.prjctId = e[0].prjctId;
-            refInsertWorkHourValue.prjctNm = e[0].prjctNm;
         }
 
         return (

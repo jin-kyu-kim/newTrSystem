@@ -352,7 +352,7 @@
                 ,ATRZ.VCATN_TY_CD
                 ,(SELECT CD_NM FROM CD WHERE CD_VALUE = ATRZ.VCATN_TY_CD) AS VCATN_TY_NM
                 ,CASE
-                    WHEN ATRZ.VCATN_TY_CD IN ('VTW01201', 'VTW01204') THEN '8hrs'
+                    WHEN ATRZ.VCATN_TY_CD IN ('VTW01201', 'VTW01204', 'VTW01207', 'VTW01208', 'VTW05301', 'VTW05302', 'VTW05303') THEN '8hrs'
                     ELSE '4hrs'
                     END VCATN_TIME
                 ,ATRZ.VCATN_DE_CNT AS FLAG_CNT
@@ -361,10 +361,10 @@
                 ,EMP			EMP
             WHERE ATRZ.ELCTRN_ATRZ_ID = ELCTRN.ELCTRN_ATRZ_ID
             AND ELCTRN.ATRZ_DMND_EMP_ID = EMP.EMP_ID
-            AND ATRZ.VCATN_TY_CD != 'VTW01207'
+            AND ATRZ.VCATN_TY_CD != 'VTW01206'
             AND ELCTRN.ATRZ_DMND_STTS_CD = 'VTW03703'
             AND ELCTRN.ATRZ_DMND_EMP_ID = #{empId}
-            AND (SUBSTR(ATRZ.VCATN_BGNG_YMD, 1, 6) = #{aplyYm} OR SUBSTR(ATRZ.VCATN_END_YMD, 1, 6) = #{aplyYm})
+            AND #{aplyYm} BETWEEN (SUBSTR(ATRZ.VCATN_BGNG_YMD, 1, 6)) AND SUBSTR(ATRZ.VCATN_END_YMD, 1, 6)
         UNION ALL
             SELECT
                 ELCTRN_ATRZ_ID
@@ -423,7 +423,7 @@
             ,''
             ,''
             ,DATE_FORMAT(VCATN_BGNG_YMD, '%Y%m%d')
-            ,CASE WHEN VCATN_TY_CD IN ('VTW01201', 'VTW01204') THEN 1.0
+            ,CASE WHEN VCATN_TY_CD IN ('VTW01201', 'VTW01204', 'VTW01207', 'VTW01208', 'VTW05301', 'VTW05302', 'VTW05303') THEN 1.0
             ELSE 0.5
             END
             ,''
@@ -619,6 +619,7 @@
         /* indvdlClmMapper.retrieveMnbyYmdInq */
         SELECT
             CRTR_YMD		/* 일자 */
+            ,SUBSTR(CRTR_YMD, 1, 6)	APLY_YM		/* 차수 */
             ,DATE_FORMAT(CRTR_YMD, '%Y-%m-%d') FORMAT_CRTR_YMD		/* 일자 */
             ,CRTR_ODR		/* 차수 */
             ,HLDY_CL_CD 	/* 일자종류코드 */
@@ -626,7 +627,7 @@
             ,HLDY_NM 		/* 공휴일명 */
             ,RM				/* 내용 */
         FROM CRTR_DATE
-        WHERE SUBSTR(CRTR_YMD, 1, 6) = #{aplyYm}
+        WHERE SUBSTR(CRTR_YMD, 1, 6) BETWEEN #{aplyYm} - 1 AND #{aplyYm} + 1
     </select>
 
 
