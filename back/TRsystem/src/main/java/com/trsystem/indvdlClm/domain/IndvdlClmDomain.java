@@ -680,12 +680,8 @@ public class IndvdlClmDomain {
 
         List<Map<String, Object>> selectVcatnAtrz = new ArrayList<>();
 
-        selectVcatnAtrz.add(0, new HashMap<>() {{
-            put("tbNm", "VCATN_ATRZ");
-        }});
-        selectVcatnAtrz.add(1, new HashMap<>() {{
-            put("elctrnAtrzId", elctrnAtrzId);
-        }});
+        selectVcatnAtrz.add(0, new HashMap<>() {{ put("tbNm", "VCATN_ATRZ"); }});
+        selectVcatnAtrz.add(1, new HashMap<>() {{ put("elctrnAtrzId", elctrnAtrzId); }});
 
         // 사용휴가정보조회
         List<Map<String, Object>> selectVcatnAtrzResult = commonService.commonSelect(selectVcatnAtrz);
@@ -927,38 +923,31 @@ public class IndvdlClmDomain {
             {
                 put("elctrnAtrzId", elctrnAtrzId);
                 put("ccSn", 1);
-                put("empId", "1f36ec82-0d08-11ef-bf20-02a5fafa82da");
+                put("empId", "284fc940-1a83-11ef-9781-02a5fafa82da");
                 put("refrnCncrrncClCd", "VTW00707");
             }
         };
 
         List<Map<String, Object>> insertElctrnAtrzList = new ArrayList<>();
-        insertElctrnAtrzList.add(0, new HashMap<>() {{
-            put("tbNm", "ELCTRN_ATRZ");
-        }});
+        insertElctrnAtrzList.add(0, new HashMap<>() {{ put("tbNm", "ELCTRN_ATRZ"); }});
         insertElctrnAtrzList.add(1, insertElctrnAtrzMapValue);
 
 
         List<Map<String, Object>> insertVactnAtrzList = new ArrayList<>();
-        insertVactnAtrzList.add(0, new HashMap<>() {{
-            put("tbNm", "VCATN_ATRZ");
-        }});
+        insertVactnAtrzList.add(0, new HashMap<>() {{ put("tbNm", "VCATN_ATRZ"); }});
         insertVactnAtrzList.add(1, insertVactnAtrzMapValue);
 
 
         List<Map<String, Object>> insertAtrzLnList = new ArrayList<>();
-        insertAtrzLnList.add(0, new HashMap<>() {{
-            put("tbNm", "ATRZ_LN");
-        }});
+        insertAtrzLnList.add(0, new HashMap<>() {{ put("tbNm", "ATRZ_LN"); }});
+
         for (int i = 0; i < insertAtrzLnListValue.size(); i++) {
             insertAtrzLnList.add(i + 1, insertAtrzLnListValue.get(i));
         }
 
 
         List<Map<String, Object>> insertRefrnManList = new ArrayList<>();
-        insertRefrnManList.add(0, new HashMap<>() {{
-            put("tbNm", "REFRN_MAN");
-        }});
+        insertRefrnManList.add(0, new HashMap<>() {{ put("tbNm", "REFRN_MAN"); }});
         insertRefrnManList.add(1, insertRefrnManMap);
 
         commonService.insertData(insertElctrnAtrzList);
@@ -997,12 +986,8 @@ public class IndvdlClmDomain {
 
         // 휴가사용일수전자결재조회
         List<Map<String, Object>> selectElctrnAtrzList = new ArrayList<>();
-        selectElctrnAtrzList.add(0, new HashMap<>() {{
-            put("tbNm", "VCATN_ATRZ");
-        }});
-        selectElctrnAtrzList.add(1, new HashMap<>() {{
-            put("elctrnAtrzId", histElctrnAtrzId);
-        }});
+        selectElctrnAtrzList.add(0, new HashMap<>() {{ put("tbNm", "VCATN_ATRZ"); }});
+        selectElctrnAtrzList.add(1, new HashMap<>() {{ put("elctrnAtrzId", histElctrnAtrzId); }});
 
         List<Map<String, Object>> selectElctrnAtrzListResult = commonService.commonSelect(selectElctrnAtrzList);
 
@@ -1030,13 +1015,6 @@ public class IndvdlClmDomain {
             }
         }
 
-        /**
-         * date1.compareTo(date2)
-         * - 주어진 날짜가 매개변수로 전달받은 날짜와 같을 경우 0을 리턴
-         * - 주어진 날짜가 매개변수로 전달받은 날짜보다 클 경우 양수를 리턴
-         * - 주어진 날짜가 매개변수로 전달받은 날짜보다 작을 경우 음수를 리턴
-         */
-
         String vcatnYr = "";
 
         if (vcatnBgngYmd.compareTo(flagYmd) >= 0) {
@@ -1060,11 +1038,6 @@ public class IndvdlClmDomain {
         updateNewVcatnMngMap.put("empId", empId);
         updateNewVcatnMngMap.put("mdfcnEmpId", mdfcnEmpId);
         updateNewVcatnMngMap.put("state", "UPDATE");
-
-
-        System.out.println("=================================");
-        System.out.println("selectElctrnAtrzListResult : " + selectElctrnAtrzListResult);
-        System.out.println("=================================");
 
         // case_A
         // 공가인경우
@@ -1101,12 +1074,6 @@ public class IndvdlClmDomain {
                 updateNewVcatnMngMap.put("newDaycnt", newVcatnDeCnt);
             }
         }
-
-        System.out.println("==========================");
-        System.out.println("caseFlag : " + caseFlag);
-        System.out.println("updateVcatnMngMap : " + updateVcatnMngMap);
-        System.out.println("updateNewVcatnMngMap : " + updateNewVcatnMngMap);
-        System.out.println("==========================");
 
         Map<String, Object> updateElctrnAtrz = new HashMap<>();
         updateElctrnAtrz.put("queryId", "indvdlClmMapper.updateElctrnAtrzCncl");
@@ -1191,35 +1158,25 @@ public class IndvdlClmDomain {
     // 휴가신청취소
     public static int deleteVcatnAtrz(Map<String, Object> dataMap) {
         int queryResult = 0;
-        Map<String, Object> elctrnAtrzIdMap = new HashMap<>() {{
-            put("elctrnAtrzId", dataMap.get("elctrnAtrzId"));
-        }};
+        Map<String, Object> elctrnAtrzIdMap = new HashMap<>() {{ put("elctrnAtrzId", dataMap.get("elctrnAtrzId")); }};
 
         List<Map<String, Object>> deleteElctrnAtrzList = new ArrayList<>();
-        deleteElctrnAtrzList.add(0, new HashMap<>() {{
-            put("tbNm", "ELCTRN_ATRZ");
-        }});
+        deleteElctrnAtrzList.add(0, new HashMap<>() {{ put("tbNm", "ELCTRN_ATRZ"); }});
         deleteElctrnAtrzList.add(1, elctrnAtrzIdMap);
 
 
         List<Map<String, Object>> deletetVactnAtrzList = new ArrayList<>();
-        deletetVactnAtrzList.add(0, new HashMap<>() {{
-            put("tbNm", "VCATN_ATRZ");
-        }});
+        deletetVactnAtrzList.add(0, new HashMap<>() {{ put("tbNm", "VCATN_ATRZ"); }});
         deletetVactnAtrzList.add(1, elctrnAtrzIdMap);
 
 
         List<Map<String, Object>> deleteAtrzLnList = new ArrayList<>();
-        deleteAtrzLnList.add(0, new HashMap<>() {{
-            put("tbNm", "ATRZ_LN");
-        }});
+        deleteAtrzLnList.add(0, new HashMap<>() {{ put("tbNm", "ATRZ_LN"); }});
         deleteAtrzLnList.add(1, elctrnAtrzIdMap);
 
 
         List<Map<String, Object>> deleteRefrnManList = new ArrayList<>();
-        deleteRefrnManList.add(0, new HashMap<>() {{
-            put("tbNm", "REFRN_MAN");
-        }});
+        deleteRefrnManList.add(0, new HashMap<>() {{ put("tbNm", "REFRN_MAN"); }});
         deleteRefrnManList.add(1, elctrnAtrzIdMap);
 
         commonService.deleteData(deleteRefrnManList);
@@ -1369,15 +1326,9 @@ public class IndvdlClmDomain {
 
             List<Map<String, Object>> updateEmpList = new ArrayList<>();
 
-            updateEmpList.add(0, new HashMap<>() {{
-                put("tbNm", "EMP");
-            }});
-            updateEmpList.add(1, new HashMap<>() {{
-                put("hdofSttsCD", "VTW00303");
-            }});
-            updateEmpList.add(2, new HashMap<>() {{
-                put("empId", empId);
-            }});
+            updateEmpList.add(0, new HashMap<>() {{ put("tbNm", "EMP"); }});
+            updateEmpList.add(1, new HashMap<>() {{ put("hdofSttsCD", "VTW00303"); }});
+            updateEmpList.add(2, new HashMap<>() {{ put("empId", empId); }});
 
             Map<String, Object> insertEmpHistMap = new HashMap<>();
             insertEmpHistMap.put("queryId", "indvdlClmMapper.insertEmpHist");
