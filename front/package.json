@@ -51,7 +51,6 @@
     "react-tabs": "^6.0.2",
     "react-to-print": "^2.15.1",
     "react-uuid": "^2.0.0",
-    "resize-observer-polyfill": "^1.5.1",
     "sass": "^1.72.0",
     "styled-components": "^6.1.11",
     "web-vitals": "^2.1.4",
