@@ -9,6 +9,7 @@ import Box, { Item } from "devextreme-react/box";
 import CustomComboBox from 'components/unit/CustomComboBox';
 import CustomDateRangeBox from "components/unit/CustomDateRangeBox";
 import AutoCompleteProject from "components/unit/AutoCompleteProject";
+import './SearchInfoSet.css'
 
 const SearchInfoSet = ({ callBack, props, insertPage }) => {
   const navigate = useNavigate();
@@ -107,10 +108,10 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
   };
 
   return (
-    <div className="box_search" width="100%">
-      <Box direction="row" width="100%" height={40}>
+    <div className="box_search">
+      <Box direction="row" width="100%" height={40} wrap="wrap" className="dx-box">
         {searchParams.yearList && searchParams.yearList.map((item) => (
-          <Item key={item.name} ratio={0} baseSize={"120"} visible={item.visible}>
+          <Item key={item.name} ratio={0} baseSize={"120"} visible={item.visible} className="dx-box-item">
             <SelectBox
               dataSource={ymOdrData[item.name]}
               name={item.name}
@@ -125,7 +126,7 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
         ))}
 
         {selectBoxItem && selectBoxItem.map((item, index) => (
-          <Item key={index} ratio={1}>
+          <Item key={index} ratio={1} className="dx-box-item">
             <CustomComboBox
               props={item.param}
               onSelect={handleChgState}
@@ -136,7 +137,7 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
         ))}
 
         {textBoxItem && textBoxItem.map((item, index) => (
-          <Item key={index} ratio={1}>
+          <Item key={index} ratio={1} className="dx-box-item">
             <TextBox
               placeholder={item.placeholder}
               stylingMode="underlined"
@@ -150,7 +151,7 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
         ))}
 
         {searchParams.dateRange &&
-          <Item ratio={2}>
+          <Item ratio={2} className="dx-box-item">
             <CustomDateRangeBox
               onStartDateChange={handleStartDateChange}
               onEndDateChange={handleEndDateChange}
@@ -158,14 +159,14 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
           </Item>
         }
         {searchParams.project &&
-          <Item ratio={2}>
+          <Item ratio={2} className="dx-box-item">
             <AutoCompleteProject 
               placeholderText="프로젝트 명"
               onValueChange={handleChgPrjct}
             />
           </Item>
         }
-        <Item ratio={1}>
+        <Item ratio={1} className="dx-box-item">
           <Box>
             <Item ratio={1}>
               <Button onClick={handleSubmit} text={btnName} style={{ margin: "5px" }} />
