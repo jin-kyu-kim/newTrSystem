@@ -46,7 +46,8 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
           
         }}
         wordWrapEnabled={wordWrap}
-        columnMinWidth={40}
+        columnMinWidth={100}
+        scrolling={true}
         paging={pagination}
         onOptionChanged={onOptionChanged}
         remoteOperations={remoteOperations}

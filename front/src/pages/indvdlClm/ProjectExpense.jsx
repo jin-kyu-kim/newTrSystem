@@ -39,7 +39,19 @@ const ProjectExpense = () => {
             if (args.name === "selectedIndex") setIndex(args.value);
         }, [setIndex]
     );
-    useEffect(() => { getData(); }, []);
+    useEffect(() => { 
+        getData();  
+        const handleResize = () => {
+            setIsSmallScreen(window.innerWidth <= 768);
+          };
+      
+          window.addEventListener('resize', handleResize);
+          handleResize();
+      
+          return () => window.removeEventListener('resize', handleResize);
+
+
+    }, []);
 
     useEffect(() => { // 결재상태에 따른 컬럼 list변경
         const columns = atrzDmndSttsCnt.ctReg > 0 ? 'ctAplyBtnColumns' : (atrzDmndSttsCnt.rjct > 0 ? 'rjctCnColumns' : 'ctAplyStrColumns');
@@ -237,7 +249,7 @@ const ProjectExpense = () => {
         const mapping = { "VTW01902": "개인현금지급", "VTW01903": "개인법인카드" };
         return mapping[e.value] || "기업법인카드";
     }
-
+    const [isSmallScreen, setIsSmallScreen] = useState(false);
     const RenderTopTable = ({ title, keyColumn, columns, values }) => {
         return (
             <div style={{ marginBottom: '20px' }}>
@@ -261,6 +273,7 @@ const ProjectExpense = () => {
     return (
         <div>
             <div style={{ marginLeft: '2%', marginRight: '2%', marginBottom: '10%' }}>
+            <style>{mediaQueryStyle}</style>
                 <div className="mx-auto" style={{ display: 'flex', marginTop: "20px", marginBottom: "30px" }}>
                     <h1 style={{ fontSize: "30px", marginRight: "20px" }}>프로젝트비용</h1>
                     {getButtonsShow().map(({ onClick, text, type }, index) => (
@@ -288,6 +301,7 @@ const ProjectExpense = () => {
                         onOptionChanged={onSelectionChanged}
                         itemTitleRender={itemTitleRender}
                         animationEnabled={true}
+                        showNavButtons={isSmallScreen}
                         itemComponent={({ data }) => {
                             const Component = React.lazy(() => import(`${data.url}`));
                             return (
@@ -322,3 +336,25 @@ const ProjectExpense = () => {
     );
 };
 export default ProjectExpense;
+
+
+const mediaQueryStyle = 
+`
+@media screen and (max-width: 768px) {
+    .dx-tabpanel {
+      font-size: 14px; /* 탭 글꼴 크기 조정 */
+    }
+  
+    .dx-tabpanel .dx-item {
+      padding: 10px; /* 탭 패딩 조정 */
+    }
+    
+    .container{
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    
+  }
+  
+`;

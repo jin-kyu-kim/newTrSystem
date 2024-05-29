@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import React from 'react';
 import {useLocation} from "react-router-dom";
-import PivotGrid, { Export, FieldChooser } from 'devextreme-react/pivot-grid';
 import PivotGridDataSource from 'devextreme/ui/pivot_grid/data_source';
 import  EmpTimeAprvListJson from "./EmpTimeAprvListJson.json";
 import ApiRequest from "../../utils/ApiRequest";
@@ -61,12 +60,11 @@ const EmpTimeAprvList = () => {
     fields: [
       {
         caption: '직원명',
-        width: 120,
+        width: 60,
         dataField: 'empFlnm',
         area: 'row',
+        expanded: true,
       },
-    
-      
       {
          caption: '날짜',
         dataField: 'aplyYmd',
@@ -85,8 +83,10 @@ const EmpTimeAprvList = () => {
    
       {
         caption: '프로젝트명',
+        width: 150,
        dataField: 'prjctNm',
        area: 'row',
+       expanded: true,
      },
       {
         caption: 'Sales',
