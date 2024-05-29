@@ -64,14 +64,7 @@
             SUM(pma.MD*8) AS CLM_MD
         FROM PRJCT_MM_APLY pma
         LEFT JOIN PRJCT_MM_ATRZ pmat ON pmat.PRJCT_ID = pma.PRJCT_ID AND (pmat.EMP_ID = pma.EMP_ID OR (pmat.EMP_ID IS NULL AND pma.EMP_ID IS NULL)) AND pmat.APLY_YM = pma.APLY_YM AND pmat.APLY_ODR = pma.APLY_ODR AND pmat.APLY_YMD = pma.APLY_YMD
-        JOIN PRJCT_INDVDL_CT_MM picm
-            ON pma.PRJCT_ID = picm.PRJCT_ID
-            AND pma.EMP_ID = picm.EMP_ID
-            AND pma.APLY_YM = picm.APLY_YM
-            AND pma.APLY_ODR = picm.APLY_ODR
-            AND picm.MM_ATRZ_CMPTN_YN = 'Y'
-        JOIN EMP e
-            ON e.EMP_ID = picm.EMP_ID
+        JOIN EMP e ON e.EMP_ID = pma.EMP_ID
         JOIN (
             SELECT DATE_FORMAT(CRTR_YMD, '%Y%m') AS YM,
             COUNT(*) AS COUNT
@@ -86,17 +79,18 @@
             JOIN PRJCT_MM_APLY pma ON (pma.EMP_ID = dh.EMP_ID)
             GROUP BY pma.EMP_ID
         ) dept ON dept.EMP_ID = e.EMP_ID
-        LEFT JOIN (SELECT mlp.PRJCT_ID, mlp.EMP_ID, mlp.MMNY_LBRCO_PRMPC_SN, mim.EXPECT_MM, MAX(mlp.BGT_MNG_ODR)
+        JOIN (SELECT MAX(BGT_MNG_ODR) AS BGT_MNG_ODR FROM PRJCT_BGT_PRMPC pbp WHERE pbp.PRJCT_ID = #{prjctId} AND pbp.ATRZ_DMND_STTS_CD = 'VTW03703') odr
+        LEFT JOIN (
+            SELECT mlp.EMP_ID, SUM(mim.EXPECT_MM) AS EXPECT_MM, mlp.BGT_MNG_ODR
             FROM MMNY_LBRCO_PRMPC mlp
             JOIN MMNY_INPT_MM mim ON (mim.PRJCT_ID = mlp.PRJCT_ID AND mim.MMNY_LBRCO_PRMPC_SN = mlp.MMNY_LBRCO_PRMPC_SN AND mlp.BGT_MNG_ODR = mim.BGT_MNG_ODR)
-            JOIN PRJCT_BGT_PRMPC pbp ON (mim.PRJCT_ID = pbp.PRJCT_ID AND mlp.BGT_MNG_ODR = pbp.BGT_MNG_ODR)
             WHERE 1=1
             AND mim.PRJCT_ID = #{prjctId}
             AND mim.INPT_YM BETWEEN SUBSTR(#{startYmOdr},1, 6) AND SUBSTR(#{endYmOdr},1, 6)
-            AND pbp.ATRZ_DMND_STTS_CD = 'VTW03703'
-            GROUP BY mlp.EMP_ID, mlp.MMNY_LBRCO_PRMPC_SN, mim.EXPECT_MM)
-            mmp ON (mmp.EMP_ID = pma.EMP_ID)
+            GROUP BY mlp.EMP_ID, mlp.BGT_MNG_ODR)
+            mmp ON (mmp.EMP_ID = pma.EMP_ID AND mmp.BGT_MNG_ODR = odr.BGT_MNG_ODR)
         WHERE 1 = 1
+        AND pmat.ATRZ_DMND_STTS_CD NOT IN ('VTW03701', 'VTW03708')
         <if test="prjctId != null and !prjctId.equals('')">
             AND pma.PRJCT_ID = #{prjctId}
         </if>
@@ -119,7 +113,7 @@
             pca.EXPENS_CD,
             CONCAT(SUBSTR(#{startYmOdr},1, 6),'-',SUBSTR(#{startYmOdr}, 7, 1)) AS START_APLY_ODR,
             CONCAT(SUBSTR(#{endYmOdr},1, 6),'-',SUBSTR(#{endYmOdr}, 7, 1)) AS END_APLY_ODR,
-            (
+            IFNULL((
                 SELECT SUM(a.UTZTN_AMT)
                 FROM PRJCT_CT_APLY a
                 LEFT JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_ID = a.PRJCT_ID AND pcat.EMP_ID = a.EMP_ID
@@ -128,15 +122,13 @@
                 AND a.PRJCT_ID = pca.PRJCT_ID
                 AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703'
                 GROUP BY a.EXPENS_CD
-            ) AS TOTAL_AMT_SUM,
+            ),0) AS TOTAL_AMT_SUM,
             SUM(pca.UTZTN_AMT) AS TOTAL_AMT
         FROM PRJCT_CT_APLY pca
-        JOIN PRJCT_INDVDL_CT_MM picm
-            ON pca.PRJCT_ID = picm.PRJCT_ID
-            AND pca.EMP_ID  = picm.EMP_ID
-            AND pca.APLY_YM = picm.APLY_YM
-            AND pca.APLY_ODR = picm.APLY_ODR
+        LEFT JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_ID = pca.PRJCT_ID AND (pcat.EMP_ID = pca.EMP_ID OR (pcat.EMP_ID IS NULL AND pca.EMP_ID IS NULL))
+        AND pcat.APLY_YM = pca.APLY_YM AND pcat.APLY_ODR = pca.APLY_ODR AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN)
         WHERE 1 = 1
+        AND pcat.ATRZ_DMND_STTS_CD NOT IN ('VTW03701', 'VTW03708')
         <if test="prjctId != null and !prjctId.equals('')">
             AND pca.PRJCT_ID = #{prjctId}
         </if>
@@ -304,6 +296,8 @@
         ON PA.PRJCT_ID = PM.PRJCT_ID
         AND DATE_FORMAT(PA.UTZTN_DT, '%Y%m%d') = PM.APLY_YMD
         AND PA.EMP_ID = PM.EMP_ID
+        LEFT JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_ID = PA.PRJCT_ID AND (pcat.EMP_ID = PA.EMP_ID OR (pcat.EMP_ID IS NULL AND PA.EMP_ID IS NULL))
+        AND pcat.APLY_YM = PA.APLY_YM AND pcat.APLY_ODR = PA.APLY_ODR AND pcat.PRJCT_CT_APLY_SN = PA.PRJCT_CT_APLY_SN) AND pcat.ATRZ_DMND_STTS_CD NOT IN ('VTW03701', 'VTW03708')
         WHERE P.PRJCT_ID = #{prjctId}
         <if test="empId != null and !empId.equals('')">
         AND E.EMP_ID = #{empId}
@@ -323,6 +317,8 @@
         ON PM.PRJCT_ID = PA.PRJCT_ID
         AND DATE_FORMAT(PM.APLY_YMD, '%Y%m%d') = DATE_FORMAT(PA.UTZTN_DT, '%Y%m%d')
         AND PM.EMP_ID = PA.EMP_ID
+        LEFT JOIN PRJCT_MM_ATRZ pmat ON pmat.PRJCT_ID = PM.PRJCT_ID AND (pmat.EMP_ID = PM.EMP_ID OR (pmat.EMP_ID IS NULL AND PM.EMP_ID IS NULL))
+        AND pmat.APLY_YM = PM.APLY_YM AND pmat.APLY_ODR = PM.APLY_ODR AND pmat.APLY_YMD = PM.APLY_YMD AND pmat.ATRZ_DMND_STTS_CD NOT IN ('VTW03701', 'VTW03708')
         WHERE PA.PRJCT_ID IS NULL
           AND P.PRJCT_ID = #{prjctId}
         <if test="empId != null and !empId.equals('')">
@@ -381,28 +377,36 @@
 <!--        ) a-->
 <!--        LEFT JOIN (-->
             SELECT
-                CONCAT(p.PRJCT_NM, ' (PM : ', (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = p.PRJCT_MNGR_EMP_ID), ')') AS PRJCT_NM,
-                (SELECT CD_NM FROM CD WHERE CD_VALUE = pca.EXPENS_CD) AS EXPENS_CD,
-                e.EMP_FLNM,
-                CONCAT('성명 : ',e.EMP_FLNM, ' | 상세내역 : ', pca.CT_PRPOS, ' | 용도 : ', pca.ATDRN) AS PRJCT_DETAIL,
-                CONCAT('상세내역 : ', pca.CT_PRPOS, ' | 용도 : ', pca.ATDRN) AS EMP_DETAIL,
-                pca.UTZTN_AMT,
-                CONCAT(SUBSTR(pca.UTZTN_DT, 1, 4),'-',SUBSTR(pca.UTZTN_DT, 5, 2),'-',SUBSTR(pca.UTZTN_DT, 7, 2)) AS UTZTN_DT
-            FROM PRJCT_CT_APLY pca
-            JOIN PRJCT_CT_ATRZ pah
-                ON pca.PRJCT_ID = pah.PRJCT_ID
-                AND pca.EMP_ID = pah.EMP_ID
-                AND pca.APLY_YM = pah.APLY_YM
-                AND pca.APLY_ODR = pah.APLY_ODR
-                AND pca.PRJCT_CT_APLY_SN = pah.PRJCT_CT_APLY_SN 
-                AND pah.ATRZ_DMND_STTS_CD = 'VTW03703' -- 결재요청상태코드 : 승인
-            JOIN EMP e
-                ON pca.EMP_ID = e.EMP_ID
-            JOIN CD c
-                ON pah.ATRZ_DMND_STTS_CD = c.CD_VALUE
-            JOIN PRJCT p
-                ON pca.PRJCT_ID = p.PRJCT_ID
-            WHERE 1 = 1
+            	pca.ELCTRN_ATRZ_ID AS unique_id, 
+		    	CONCAT(p.PRJCT_NM, ' (PM : ', (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = p.PRJCT_MNGR_EMP_ID), ')') AS PRJCT_NM, -- 프로젝트명
+		    	(SELECT CD_NM FROM CD WHERE CD_VALUE = pca.EXPENS_CD) AS EXPENS_CD, -- 비용 코드
+		    	e.EMP_FLNM as EMP_FLNM,
+		    	CONCAT('성명 : ', e.EMP_FLNM, CHAR(10), ' | 상세내역 : ', pca.CT_PRPOS, ' | 용도 : ', pca.ATDRN) AS PRJCT_DETAIL,
+		    	CONCAT('상세내역 : ', pca.CT_PRPOS, ' | 용도 : ', pca.ATDRN) AS EMP_DETAIL,
+		    	pca.UTZTN_AMT as UTZTN_AMT,
+		    	CONCAT(SUBSTR(pca.UTZTN_DT, 1, 4), '-', SUBSTR(pca.UTZTN_DT, 5, 2), '-', SUBSTR(pca.UTZTN_DT, 7, 2)) AS UTZTN_DT
+			FROM
+				 PRJCT_CT_APLY pca
+			JOIN
+				 PRJCT_CT_ATRZ pah
+		    ON pca.PRJCT_CT_APLY_SN = pah.PRJCT_CT_APLY_SN
+		    	AND pca.EMP_ID = pah.EMP_ID
+		    	AND pca.PRJCT_ID = pah.PRJCT_ID
+		    	AND pca.APLY_YM = pah.APLY_YM
+		    	AND pca.APLY_ODR = pah.APLY_ODR
+		    	AND pah.ATRZ_DMND_STTS_CD = 'VTW03703' -- 결재요청상태코드 : 승인
+			JOIN
+				 EMP e ON pca.EMP_ID = e.EMP_ID		-- 
+			JOIN 
+				PRJCT p ON pca.PRJCT_ID = p.PRJCT_ID
+			LEFT JOIN
+				 ELCTRN_ATRZ ea ON pca.ELCTRN_ATRZ_ID = ea.ELCTRN_ATRZ_ID
+			LEFT JOIN
+				 CLM_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID
+			LEFT JOIN
+				 ELCTRN_ATRZ_DOC_FORM eadf ON ea.ATRZ_FORM_DOC_ID = eadf.ATRZ_FORM_DOC_ID
+            WHERE 
+            1 = 1
             <if test="prjctId != null and !prjctId.equals('')">
                 AND pca.PRJCT_ID = #{prjctId}
             </if>
@@ -1001,132 +1005,107 @@
 
     <!--근무시간, 경비 통합승인 내역 -->
     <select id="retrieveWorkHrAprvList" parameterType="map" resultType="com.trsystem.LowerHashMap">
-        SELECT
-            W_EMP_ID  AS EMP_ID,
-            EMP_FLNM ,
-            PRJCT_NM,
-            FORMAT(PRJCT_NON_INSERT, 1) AS PRJCT_NON_INSERT,
-            FORMAT(PRJCT_INSERT, 1) AS PRJCT_INSERT,
-            FORMAT(VACATION, 1) AS VACATION,
-            FORMAT(TOTAL_PRJCT_NON_INSERT, 1) AS TOTAL_PRJCT_NON_INSERT,
-            FORMAT(TOTAL_PRJCT_INSERT, 1) AS TOTAL_PRJCT_INSERT,
-            PRJCT_NON_INSERT_EXPENSE,
-            PRJCT_INSERT_EXPENSE AS PRJCT_INSERT_EXPENSE
+	SELECT
+	    COALESCE(WORK_HOUR.W_EMP_ID, CT_LIST.C_EMP_ID) AS EMP_ID,                      -- 사원 ID
+	    COALESCE(WORK_HOUR.W_EMP_FLNM, CT_LIST.EMP_FLNM) AS EMP_FLNM,                    -- 사원명
+	    COALESCE(WORK_HOUR.PRJCT_NM, CT_LIST.PRJCT_NM) AS PRJCT_NM,                    -- 프로젝트명
+	    WORK_HOUR.PRJCT_NON_INSERT AS PRJCT_NON_INSERT,                     -- 프로젝트 미투입 근무시간
+	    WORK_HOUR.PRJCT_INSERT AS PRJCT_INSERT,                             -- 프로젝트 투입 근무시간
+	    WORK_HOUR.VACATION AS VACATION,                                     -- 휴가 사용 내역
+	    WORK_HOUR.TOTAL_PRJCT_NON_INSERT AS TOTAL_PRJCT_NON_INSERT,         -- 프로젝트 미투입 총 근무시간
+	    WORK_HOUR.TOTAL_PRJCT_INSERT AS TOTAL_PRJCT_INSERT,                 -- 프로젝트 투입 총 근무시간
+	    COALESCE(CT_LIST.PRJCT_NON_INSERT_EXPENSE,0)AS PRJCT_NON_INSERT_EXPENSE,       -- 프로젝트 미투입 비용
+	    COALESCE(CT_LIST.PRJCT_INSERT_EXPENSE,0) AS PRJCT_INSERT_EXPENSE               -- 프로젝트 투입 비용
+	FROM
+    	(
+	        SELECT
+            E.EMP_ID AS W_EMP_ID,
+            E.EMP_FLNM AS W_EMP_FLNM,
+            P.PRJCT_NM AS PRJCT_NM,
+            P.PRJCT_ID AS W_PRJCT_ID,
+            E.EMPNO AS W_EMPNO,
+            E.EMP_TY_CD AS W_EMP_TY_CD,
+            SUM(CASE WHEN P.PRJCT_STLE_CD = 'VTW01803' THEN PMA.MD*8 ELSE 0 END) AS PRJCT_NON_INSERT,
+            SUM(CASE WHEN P.PRJCT_STLE_CD = 'VTW01802' THEN PMA.MD*8 ELSE 0 END) AS PRJCT_INSERT,
+            SUM(PMA.YRYC_RATE*8) AS VACATION,
+            (SUM(CASE WHEN P.PRJCT_STLE_CD = 'VTW01803' THEN PMA.MD*8 ELSE 0 END) +
+             SUM(CASE WHEN P.PRJCT_STLE_CD = 'VTW01803' THEN YRYC_RATE*8 ELSE 0 END)) AS TOTAL_PRJCT_NON_INSERT,
+            (SUM(CASE WHEN P.PRJCT_STLE_CD = 'VTW01802' THEN PMA.MD*8 ELSE 0 END) +
+             SUM(CASE WHEN P.PRJCT_STLE_CD = 'VTW01802' THEN YRYC_RATE*8 ELSE 0 END)) AS TOTAL_PRJCT_INSERT
         FROM
-            (
-                SELECT
-                    E.EMP_ID AS W_EMP_ID,
-                    E.EMP_FLNM AS EMP_FLNM,
-                    P.PRJCT_NM AS PRJCT_NM ,
-                    P.PRJCT_ID AS W_PRJCT_ID,
-                    E.EMPNO AS W_EMPNO,
-                    E.EMP_TY_CD AS W_EMP_TY_CD,
-                    SUM(CASE WHEN P.PRJCT_STLE_CD = 'VTW01801' THEN
-                                 CASE WHEN PMA.MD = 0 THEN 0
-                                      WHEN PMA.MD = 0.5 THEN 4
-                                      WHEN PMA.MD = 1 THEN 8
-                                      ELSE 0 END
-                             ELSE 0 END) AS PRJCT_NON_INSERT,
-                    SUM(CASE WHEN P.PRJCT_STLE_CD = 'VTW01802' THEN
-                                 CASE WHEN PMA.MD = 0 THEN 0
-                                      WHEN PMA.MD = 0.5 THEN 4
-                                      WHEN PMA.MD = 1 THEN 8
-                                      ELSE 0 END
-                             ELSE 0 END) AS PRJCT_INSERT,
-                    SUM(CASE WHEN PMA.YRYC_RATE = 0 THEN 0
-                             WHEN PMA.YRYC_RATE = 0.5 THEN 4
-                             WHEN PMA.YRYC_RATE = 1 THEN 8
-                             ELSE 0 END) AS VACATION ,
-                    (SUM(CASE WHEN P.PRJCT_STLE_CD = 'VTW01801' THEN
-                                  CASE WHEN PMA.MD = 0 THEN 0
-                                       WHEN PMA.MD = 0.5 THEN 4
-                                       WHEN PMA.MD = 1 THEN 8
-                                       ELSE 0 END
-                              ELSE 0 END) +
-                     SUM(CASE WHEN P.PRJCT_STLE_CD = 'VTW01801' THEN
-                                  CASE WHEN PMA.YRYC_RATE = 0 THEN 0
-                                       WHEN PMA.YRYC_RATE = 0.5 THEN 4
-                                       WHEN PMA.YRYC_RATE = 1 THEN 8
-                                       ELSE 0 END
-                              ELSE 0 END)
-                        ) AS TOTAL_PRJCT_NON_INSERT,
-                    (SUM(CASE WHEN P.PRJCT_STLE_CD = 'VTW01802' THEN
-                                  CASE WHEN PMA.MD = 0 THEN 0
-                                       WHEN PMA.MD = 0.5 THEN 4
-                                       WHEN PMA.MD = 1 THEN 8
-                                       ELSE 0 END
-                              ELSE 0 END) +
-                     SUM(CASE WHEN P.PRJCT_STLE_CD = 'VTW01802' THEN
-                                  CASE WHEN PMA.YRYC_RATE = 0 THEN 0
-                                       WHEN PMA.YRYC_RATE = 0.5 THEN 4
-                                       WHEN PMA.YRYC_RATE = 1 THEN 8
-                                       ELSE 0 END
-                              ELSE 0 END)
-                        ) AS TOTAL_PRJCT_INSERT
-                FROM
-                    PRJCT_INDVDL_CT_MM PICM ,
-                    PRJCT_MM_APLY PMA,
-                    PRJCT P,
-                    EMP E
-                WHERE
-                    PICM.PRJCT_ID = PMA.PRJCT_ID
-                  AND PICM.EMP_ID = PMA.EMP_ID
-                  AND PICM.APLY_YM = PMA.APLY_YM
-                  AND PICM.APLY_ODR = PMA.APLY_ODR
-                  AND P.PRJCT_ID = PICM.PRJCT_ID
-                  AND PMA.EMP_ID = E.EMP_ID
-                  AND PICM.MM_ATRZ_CMPTN_YN = 'Y'
-                GROUP BY
-                    E.EMP_ID,
-                    E.EMP_FLNM ,
-                    P.PRJCT_NM ,
-                    P.PRJCT_ID,
-                    PMA.YRYC_RATE
-            ) WORK_HOUR,
-            (
-                SELECT
-                    E.EMP_ID AS C_EMP_ID,
-                    P.PRJCT_ID AS C_PRJCT_ID,
-                    P.PRJCT_NM AS C_PRJCT_NM,
-                    SUM(CASE WHEN P.PRJCT_STLE_CD = 'VTW01801' THEN PCA.UTZTN_AMT ELSE 0 END ) PRJCT_NON_INSERT_EXPENSE
-                        ,
-                    SUM(CASE WHEN P.PRJCT_STLE_CD = 'VTW01802' THEN PCA.UTZTN_AMT ELSE 0 END ) PRJCT_INSERT_EXPENSE
-                FROM
-                    PRJCT_INDVDL_CT_MM PICM ,
-                    PRJCT P,
-                    EMP E,
-                    PRJCT_CT_APLY PCA
-                WHERE
-                    1 = 1
-                  AND E.EMP_ID = PICM.EMP_ID
-                  AND PICM.PRJCT_ID = P.PRJCT_ID
-                  AND PICM.PRJCT_ID = PCA.PRJCT_ID
-                  AND PICM.EMP_ID = PCA.EMP_ID
-                  AND PICM.APLY_YM = PCA.APLY_YM
-                  AND PICM.APLY_ODR = PCA.APLY_ODR
-                  AND PICM.CT_ATRZ_CMPTN_YN = 'Y'
-                GROUP BY
-                    E.EMP_ID,
-                    E.EMP_FLNM ,
-                    P.PRJCT_NM,
-                    P.PRJCT_ID) CT_LIST
-        WHERE WORK_HOUR.W_PRJCT_ID = CT_LIST.C_PRJCT_ID
-          AND   WORK_HOUR.W_EMP_ID = CT_LIST.C_EMP_ID
-        <if test="prjctId != null and prjctId !=''">
-            AND   W_PRJCT_ID = #{prjctId}
-        </if>
-        <if test="empFlnm != null and empFlnm !=''">
-            AND   EMP_FLNM LIKE CONCAT('%', #{empFlnm}, '%')
-        </if>
-        <if test="empno != null and empno !=''">
-            AND   W_EMPNO LIKE CONCAT('%', #{empno}, '%')
-        </if>
-        <if test="hdofSttsNm != null and hdofSttsNm !=''">
-            AND   W_EMP_TY_CD LIKE CONCAT('%', #{hdofSttsNm}, '%')
-        </if>
-
-
-
+            PRJCT_INDVDL_CT_MM PICM,
+            PRJCT_MM_APLY PMA,
+            PRJCT P,
+            EMP E
+        WHERE
+            PICM.PRJCT_ID = PMA.PRJCT_ID
+          AND PICM.EMP_ID = PMA.EMP_ID
+          AND PICM.APLY_YM = PMA.APLY_YM
+          AND PICM.APLY_ODR = PMA.APLY_ODR
+          AND P.PRJCT_ID = PICM.PRJCT_ID
+          AND PMA.EMP_ID = E.EMP_ID
+          AND PICM.MM_ATRZ_CMPTN_YN = 'Y'
+          <if test="aplyYm != null and !aplyYm.equals('')">
+           AND PMA.APLY_YM = #{aplyYm}
+	      </if>
+	      <if test="aplyOdr != null and !aplyOdr.equals('')">
+	       AND PMA.APLY_ODR = #{aplyOdr}
+	      </if>
+        GROUP BY
+            E.EMP_ID,
+            P.PRJCT_ID
+	   ) WORK_HOUR
+	   LEFT JOIN
+	    (
+	        SELECT
+	            E.EMP_ID AS C_EMP_ID,
+	            E.EMP_FLNM AS EMP_FLNM,             -- 사원명 추가
+	            P.PRJCT_ID AS C_PRJCT_ID,
+	            P.PRJCT_NM AS PRJCT_NM,
+	            SUM(CASE WHEN P.PRJCT_STLE_CD = 'VTW01803' THEN PCA.UTZTN_AMT ELSE 0 END) AS PRJCT_NON_INSERT_EXPENSE,
+	            SUM(CASE WHEN P.PRJCT_STLE_CD = 'VTW01802' THEN PCA.UTZTN_AMT ELSE 0 END) AS PRJCT_INSERT_EXPENSE
+	        FROM
+	            PRJCT_INDVDL_CT_MM PICM,
+	            PRJCT P,
+	            EMP E,
+	            PRJCT_CT_APLY PCA
+	        WHERE
+	            E.EMP_ID = PICM.EMP_ID
+	          AND PICM.PRJCT_ID = P.PRJCT_ID
+	          AND PICM.PRJCT_ID = PCA.PRJCT_ID
+	          AND PICM.EMP_ID = PCA.EMP_ID
+	          AND PICM.APLY_YM = PCA.APLY_YM
+	          AND PICM.APLY_ODR = PCA.APLY_ODR
+	          AND PICM.CT_ATRZ_CMPTN_YN = 'Y'
+	          <if test="aplyYm != null and !aplyYm.equals('')">
+           	  AND PCA.APLY_YM = #{aplyYm}
+	          </if>
+	          <if test="aplyOdr != null and !aplyOdr.equals('')">
+	          AND PCA.APLY_ODR = #{aplyOdr}
+	          </if>
+	         
+	        GROUP BY
+	            E.EMP_ID,
+	            E.EMP_FLNM,
+	            P.PRJCT_NM,
+	            P.PRJCT_ID
+	    ) CT_LIST
+	ON WORK_HOUR.W_EMP_ID = CT_LIST.C_EMP_ID AND WORK_HOUR.W_PRJCT_ID = CT_LIST.C_PRJCT_ID
+	WHERE 
+		1=1
+	<if test="prjctId != null and prjctId !=''">
+        AND   W_PRJCT_ID = #{prjctId}
+    </if>
+    <if test="empFlnm != null and empFlnm !=''">
+        AND   EMP_FLNM LIKE CONCAT('%', #{empFlnm}, '%')
+    </if>
+    <if test="empno != null and empno !=''">
+         AND   W_EMPNO LIKE CONCAT('%', #{empno}, '%')
+    </if>
+    <if test="hdofSttsNm != null and hdofSttsNm !=''">
+         AND   W_EMP_TY_CD LIKE CONCAT('%', #{hdofSttsNm}, '%')
+    </if>
+	ORDER BY EMP_ID, PRJCT_NM;
 
 
     </select>

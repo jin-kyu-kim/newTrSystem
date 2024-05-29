@@ -66,7 +66,12 @@ const EmpExpenseAprvIndividual = ({ empNo, aplyYm, aplyOdr, expensCd }) => {
 
         for (const pivotDate of pivotDates) {
             const matchingRowData = rowData.filter(item => item.utztnDt === pivotDate);
-
+            if (matchingRowData.length === 0) {
+                combinedData.push({
+                    pivotDate: pivotDate,
+                });
+            }
+            else{
             for (const row of matchingRowData) {
                 combinedData.push({
                     pivotDate: pivotDate,
@@ -77,12 +82,8 @@ const EmpExpenseAprvIndividual = ({ empNo, aplyYm, aplyOdr, expensCd }) => {
                     utztnAmt: row.utztnAmt
                 });
             }
-
-            // if (matchingRowData.length === 0) {
-            //     combinedData.push({
-            //         pivotDate: pivotDate,
-            //     });
-            // }
+            }
+          
         }
 
         return combinedData;

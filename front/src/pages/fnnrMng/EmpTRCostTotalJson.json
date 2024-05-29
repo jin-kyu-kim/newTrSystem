@@ -20,15 +20,15 @@
             {  "key": "totalPrjctInsert","value": "프로젝트  투입", "width": "10%", "alignment": "center" }
           ]   },
           {  "value": "비용", "width": "20%","subColumns": [
-            { "key":"prjctNonInsertExpense", "value": "프로젝트미투입", "width": "12%", "alignment": "center" },
-            { "key":"prjctInsertExpense", "value": "프로젝트투입", "width": "8%", "alignment": "center" }
+            { "key":"prjctNonInsertExpense", "value": "프로젝트미투입", "width": "12%", "alignment": "center","currency" : true  },
+            { "key":"prjctInsertExpense", "value": "프로젝트투입", "width": "8%", "alignment": "center","currency" : true   }
           ]   }
        
     ],
     "nameColumns": [
       { "key": "empFlnm", "value": "성명", "width": "10%", "alignment": "center" ,"grouping" : true },
       {  "key": "prjctNm", "value": "프로젝트", "width": "15%", "alignment": "center"  },
-      { "value": "근무시간",  "subColumns": [
+      { "value": "근무시간", "width": "22%", "subColumns": [
         { "key" : "prjctNonInsert", "value": "프로젝트 미투입", "width": "12%", "alignment": "center" },
         {  "key": "prjctInsert","value": "프로젝트 투입", "width": "8%", "alignment": "center" }
       ]  
@@ -39,8 +39,8 @@
           {  "key": "totalPrjctInsert","value": "프로젝트  투입", "width": "8%", "alignment": "center" }
         ]   },
         {  "value": "비용","width": "20%","subColumns": [
-          { "key":"prjctNonInsertExpense", "value": "프로젝트미투입", "width": "12%", "alignment": "center" },
-          { "key":"prjctInsertExpense", "value": "프로젝트투입", "width": "8%", "alignment": "center","format": "{0}" }
+          { "key":"prjctNonInsertExpense", "value": "프로젝트미투입", "width": "12%", "alignment": "center" ,"currency" : true },
+          { "key":"prjctInsertExpense", "value": "프로젝트투입", "width": "8%", "alignment": "center","currency" : true  }
         ]   }
      
   ],
@@ -52,7 +52,7 @@
     { "key": "totalPrjctNonInsert", "value": "프로젝트  미투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
     { "key": "totalPrjctInsert", "value": "프로젝트  투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
     { "key": "prjctNonInsertExpense", "value": "프로젝트미투입", "type"  : "sum", "format": "{0} 원"  ,"precision": "0"   },
-    { "key": "prjctInsertExpense", "value": "프로젝트투입", "type"  : "sum", "format": "{0} 원","precision": "" }
+    { "key": "prjctInsertExpense", "value": "프로젝트투입", "type"  : "sum", "format": "{0} 원","precision": "0" }
   ],
   
 
@@ -64,7 +64,7 @@
       { "key": "totalPrjctNonInsert", "value": "프로젝트  미투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
       { "key": "totalPrjctInsert", "value": "프로젝트  투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
       { "key": "prjctNonInsertExpense", "value": "프로젝트미투입", "type"  : "sum", "format": "{0} 원"  ,"precision": "0"   },
-      { "key": "prjctInsertExpense", "value": "프로젝트투입", "type"  : "sum", "format": "{0} 원","precision": "" }
+      { "key": "prjctInsertExpense", "value": "프로젝트투입", "type"  : "sum", "format": "{0} 원","precision": "0" }
     ],
 
     "summaryColumn2": [
@@ -75,23 +75,17 @@
       { "key": "totalPrjctNonInsert", "value": "프로젝트  미투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
       { "key": "totalPrjctInsert", "value": "프로젝트  투입", "type"  : "sum", "format": "{0} 시간", "precision": "1" },
       { "key": "prjctNonInsertExpense", "value": "프로젝트미투입", "type"  : "sum", "format": "{0} 원"  ,"precision": "0"   },
-      { "key": "prjctInsertExpense", "value": "프로젝트투입", "type"  : "sum", "format": "{0} 원","precision": "" }
+      { "key": "prjctInsertExpense", "value": "프로젝트투입", "type"  : "sum", "format": "{0} 원","precision": "0" }
     ],
-  
-
-   
-
-    "searchParams":
-  {
-    "yearItem": true,
-    "monthItem": true,
-    "aplyOdr": true,
-    "empNm" : false
-
-  },
     "searchInfo": {
         "searchParams": {
-            "insertButton": false
+          "btnName": "검색",
+            "yearList": [
+              { "name": "year", "visible": true, "placeholder": "[연도]", "displayExpr": "value", "valueExpr": "value" },
+              { "name": "month", "visible": true, "placeholder": "[월]", "displayExpr": "value", "valueExpr": "value" },
+              { "name": "aplyOdr", "visible": true, "placeholder": "[차수]", "displayExpr": "text", "valueExpr": "value" }
+            ],
+            "project": {}
         },
         "commonCd": "VTW001",
         "selectBoxItem": [
@@ -107,19 +101,7 @@
                   },
                   "clearButton": true
                 }
-            },
-       
-            {
-                "placeholder": "[프로젝트 명]",
-                "param":{
-                  "tbNm": "PRJCT",
-                  "valueExpr": "prjctId",
-                  "displayExpr": "prjctNm",
-                  "name": "prjctId",
-                  "clearButton": true
-                }
             }
-           
         ],
         "textBoxItem": [
             {
@@ -130,7 +112,6 @@
                 "placeholder": "성명",
                 "name": "empFlnm"
             }
-           
         ]
     }
 

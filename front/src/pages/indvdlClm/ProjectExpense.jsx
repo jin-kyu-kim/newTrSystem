@@ -75,7 +75,7 @@ const ProjectExpense = () => {
         if (data.length !== 0) {
             setIndivdlList(data);
             setCtAtrzCmptnYn(data?.every(item => item.ctAtrzCmptnYn === null) ? null : data.some(item => item.ctAtrzCmptnYn === 'N') ? 'N' : 'Y');
-            setMmAtrzCmptnYn(data?.every(item => item.mmAtrzCmptnYn === null) ? null : data.some(item => item.mmAtrzCmptnYn === 'Y') ? 'Y' : 'N');
+            setMmAtrzCmptnYn(data?.every(item => item.mmAtrzCmptnYn === null) ? null : data.some(item => item.mmAtrzCmptnYn === 'N') ? 'N' : 'Y');
         }
     };
 
@@ -84,6 +84,24 @@ const ProjectExpense = () => {
     };
 
     const prjctCtAtrzUpdate = async (data) => {
+        if(data.name === 'onAprvDmndRtrcnClick'){
+            const requests = ctAply.map(async (item) => {
+                if (item.atrzDmndSttsCd === 'VTW03704') { // 반려일경우 반려사유, 결재자 NULL
+                    try {
+                        const response = await ApiRequest('/boot/common/commonUpdate', [
+                            { tbNm: "PRJCT_CT_ATRZ" }, 
+                            { aprvrEmpId: null, rjctPrvonsh: null, rjctYmd: null },
+                            { prjctId: item.prjctId, empId: item.empId, aplyYm: item.aplyYm, aplyOdr: item.aplyOdr, atrzDmndSttsCd: item.atrzDmndSttsCd }
+                        ]);
+                        return response;
+                    } catch (error) {
+                        return null;
+                    }
+                }
+            });
+            const responses = await Promise.all(requests);
+        };
+
         const param = {
             queryId: "indvdlClmMapper.updatePrjctCtAtrzStts",
             state: "UPDATE",
@@ -95,7 +113,7 @@ const ProjectExpense = () => {
         }
         const updateStts = ctAply.length === 0
             ? (data.name === 'onInptDdlnClick' ? 'Y' : (data.name === 'onAprvDmndRtrcnClick' ? null : undefined))
-            : (data.name === 'onInptDdlnClick' ? 'N' : (data.name === 'onAprvDmndRtrcnClick' ? 'N' : undefined));
+            : (data.name === 'onInptDdlnClick' ? 'N' : (data.name === 'onInptDdlnRtrcnClick' ? null : undefined));
         if (updateStts !== undefined) updateCtAtrzCmptnYn(updateStts);
         getData();
         handleOpen(data.completeMsg);
@@ -110,17 +128,16 @@ const ProjectExpense = () => {
         const response = await ApiRequest("/boot/common/commonUpdate", param);
         if (response >= 1) getData();
     };
-
+    
     const onClickAction = async (onClick) => {
         if (onClick.name === 'onPrintClick') {
             setHistYmOdr(null)
             setPopVisible(true);
         } else {
-            if (mmAtrzCmptnYn === undefined || mmAtrzCmptnYn === null) {
+            if (ctAtrzCmptnYn === undefined && mmAtrzCmptnYn === undefined) {
                 handleOpen('경비청구 건수가 없을 경우 근무시간을 먼저 승인 요청 해주시기 바랍니다.')
                 return;
-            } else if(mmAtrzCmptnYn === 'Y' && ctAtrzCmptnYn === null){
-                console.log('청구건수는 없으나 근무시간은 승인 완료된 경우 체크')
+            } else if(ctAtrzCmptnYn === null && (mmAtrzCmptnYn === 'Y' || mmAtrzCmptnYn === 'N')) {
                 handleOpen('경비청구 건수가 없을 경우 바로 승인이 완료되며 입력 및 수정이 불가능합니다.')
             }
             prjctCtAtrzUpdate(onClick);
@@ -132,7 +149,7 @@ const ProjectExpense = () => {
         if (ctAply?.length === 0) { // 비용청구가 없으면서 근무시간은 존재하는 경우
             if (ctAtrzCmptnYn === null) return buttonsConfig.default;
             if (ctAtrzCmptnYn === 'N') return buttonsConfig.hasApprovals;
-            if (ctAtrzCmptnYn === 'Y' && mmAtrzCmptnYn === 'Y') return buttonsConfig.completed;
+            if (ctAtrzCmptnYn === 'Y' && (mmAtrzCmptnYn === 'Y' || mmAtrzCmptnYn === 'N')) return buttonsConfig.completed;
         } else {
             if (atrzDmndSttsCnt.rjct === 0 && atrzDmndSttsCnt.aprv > 0 && atrzDmndSttsCnt.inptDdln === 0 && atrzDmndSttsCnt.ctReg === 0) return buttonsConfig.completed;
             if (atrzDmndSttsCnt.aprvDmnd > 0 || atrzDmndSttsCnt.rjct > 0) return buttonsConfig.hasApprovals;

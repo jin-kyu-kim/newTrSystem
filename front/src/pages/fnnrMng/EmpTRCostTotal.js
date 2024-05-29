@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import  EmpTRCostTotalJson from "./EmpTRCostTotalJson.json";
 import ApiRequest from "../../utils/ApiRequest";
 import CustomTable from "components/unit/CustomTable";
+import {useLocation} from "react-router-dom";
 import { Workbook } from "exceljs";
 import { exportDataGrid } from "devextreme/excel_exporter";
 import { saveAs } from 'file-saver';
@@ -18,6 +19,17 @@ const EmpTRCostTotal = () => {
   const [checkBox1Checked, setCheckBox1Checked] = useState(false);
   const [checkBox2Checked, setCheckBox2Checked] = useState(false);
   const { handleOpen } = useModal();
+  const [ searchIsVal, setSearchIsVal] = useState(false); //검색버튼 클릭시만 활성화용
+  const location = useLocation();
+  const admin = location.state ? location.state.admin : undefined;
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = date.getDate() > 15 ? date.getMonth() + 1 : date.getMonth();
+  const monthVal = month < 10 ? "0" + month : month;
+  const aplyYm = admin != undefined ? admin.aplyYm : year + monthVal;
+  const aplyOdr = admin != undefined ? admin.aplyOdr : date.getDate() > 15 ? "1" : "2";
+  const [loading, setLoading] = useState(false);
+
 
   const handleCheckBox1Change = (e) => {
     setCheckBox1Checked(e.value);
@@ -42,22 +54,44 @@ const EmpTRCostTotal = () => {
   }, []);
 
  
+  // useEffect(() => {
+  //   console.log("이거?????")
+  //   if (searchIsVal) { // 검색 버튼을 클릭했을 때만 pageHandle 함수 호출
+  //     pageHandle();
+  //     setSearchIsVal(false); // 상태를 다시 false로 변경하여 다음 검색을 위해 준비
+  //   }
+  // }, [searchIsVal]); // searchIsVal 상태가 변경될 때마다 실행
 
-
-  const pageHandle = async (initParam) => {
-
-    const updateParam = {
-      ...initParam,
-      queryId: queryId,
+  useEffect(()=> {
+  console.log("이거용",param)
+  if(searchIsVal){
+    if (Object.values(param).every(value => value !== undefined && !Number.isNaN(value))) {
+      pageHandle();
+      setSearchIsVal(false);
     }
-   
-    
+  }
+  },[param])
+
+// 검색으로 조회할 때
+  const searchHandle = async (initParam) => {
+    console.log("이거?",initParam)
+    setParam({
+      ...initParam,
+      aplyYm : initParam?.year + initParam?.month,
+      aplyOdr: initParam?.aplyOdr,
+      queryId: queryId,
+    });
+    setSearchIsVal(true);
+  };
+
+
+  const pageHandle = async () => {
+   console.log("이거2?")
     try {
-     
-      const response = await ApiRequest("/boot/common/queryIdSearch", updateParam);
-    
+      console.log("update입니다",param);
+      const response = await ApiRequest("/boot/common/queryIdSearch", param);
+        console.log("response입니다",response)
         setValues(response);
-     
     } catch (error) {
       console.log(error);
     }
@@ -88,22 +122,29 @@ const EmpTRCostTotal = () => {
 
 
   const executeCostUpdate = async () => {
+    setLoading(true);
     try {
       const response = await ApiRequest("/boot/batchSkll/executeCostUpdate");
-      if (response >=1 ) {
+      if (response >=0 ) {
         handleOpen("실행원가 정산이 완료되었습니다.");
+      } else {
+        handleOpen("실행원가 정산이 실패하였습니다. 관리자에게 문의하세요.");
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <div className="container">
-    <div
-      className="title p-1"
-      style={{ marginTop: "20px", marginBottom: "10px" }}
-    >
+      {loading && (
+                    <div className="loading-overlay">
+                        요청 중입니다...
+                    </div>
+                )}
+    <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }} >
       <h1 style={{ fontSize: "40px" }}>근무시간,경비 통합조회</h1>
     </div>
     <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
@@ -111,11 +152,8 @@ const EmpTRCostTotal = () => {
     </div>
 
     <div>
-    <div style={{ marginBottom: "20px" }}>
-    <SearchInfoSet 
-                    props={searchInfo}
-                  callBack={pageHandle}
-                /> 
+    <div  className="wrap_search" style={{marginBottom: "20px", width: 1100}}>
+      <SearchInfoSet  props={searchInfo}  callBack={searchHandle} /> 
       </div>
       <CheckBox
               text="프로젝트 별"
@@ -131,6 +169,7 @@ const EmpTRCostTotal = () => {
       <Button style={{marginLeft:"20px"}}
               onClick={executeCostUpdate}
               > 실행원가 정산</Button>
+
       {checkBox1Checked && (
       <CustomTable
         keyColumn={keyColumn}
@@ -143,12 +182,9 @@ const EmpTRCostTotal = () => {
         wordWrap={true}
         onExcel={onExporting}
       />  
-      
-
       )}
     
      
-
 {checkBox2Checked && (
       <CustomTable
         keyColumn={keyColumn}

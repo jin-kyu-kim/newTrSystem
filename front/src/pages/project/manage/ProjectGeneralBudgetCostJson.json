@@ -18,7 +18,7 @@
 	],
     "summaryColumn":
     [
-        { "key": "total", "value": "총금액", "type":"sum", "format":"Total: {0}원"}
+        { "key": "total", "value": "총금액", "type":"sum", "format":"총 {0}원"}
     ],
     "popup":
     {
@@ -57,6 +57,6 @@
             "format": "#,### 원"
         }
     },
-    "format" :"Total: {0}원",
+    "format" :"총 {0}원",
     "AddRowBtn": "경비 추가"
 }

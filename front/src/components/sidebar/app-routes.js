@@ -387,7 +387,34 @@ const routes = [
     name: "ProjectAprvAdmin",
     element: React.lazy(() => import("../../pages/project/approval/ProjectAprv")),
     isPrivate:"VTW04801"
-  }
+  },
+  {// 시스템관리 > 휴일관리
+    path: "/sysMng/HolidayMng",
+    name: "HolidayMng",
+    element: React.lazy(() => import("../../pages/sysMng/HolidayMng")),
+    isPrivate:"VTW04801"
+  },
+  // 오류게시판
+  {
+    path: "/sysMng/CsServiceList",
+    name: "CsServiceList",
+    element: React.lazy(() => import("../../pages/sysMng/CsServiceList")),
+    isPrivate:"USER"
+  },
+  // 오류게시판 상세
+  {
+    path: "/sysMng/CsServiceDetail",
+    name: "CsServiceDetail",
+    element: React.lazy(() => import("../../pages/sysMng/CsServiceDetail")),
+    isPrivate:"USER"
+  },
+  // 오류게시판 등록
+  {
+    path: "/sysMng/CsServiceInput",
+    name: "CsServiceInput",
+    element: React.lazy(() => import("../../pages/sysMng/CsServiceInput")),
+    isPrivate:"USER"
+  },
 ];
 
 export default routes.map(route => {

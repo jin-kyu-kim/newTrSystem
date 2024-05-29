@@ -22,8 +22,8 @@
 	],
     "summaryColumn":
     [
-        { "key": "gramt", "value": "총 금액", "type":"sum", "format":"Total: {0}원"},
-        { "key": "total", "value": "총 투입 MM", "type":"sum", "format":"Total: {0}MM"}
+        { "key": "gramt", "value": "총 금액", "type":"sum", "format":"총 {0}원"},
+        { "key": "total", "value": "총 투입 MM", "type":"sum", "format":"총 {0}MM"}
     ],
     "popup":
     {
@@ -73,7 +73,8 @@
             "label": "현재단가",
             "required": true,
             "placeholder": "현재단가",
-            "readOnly": true
+            "readOnly": true,
+            "format": "#,### 원"
         },
         "gramt": {
             "name": "gramt",
@@ -81,7 +82,8 @@
             "label": "총 금액",
             "required": true,
             "placeholder": "총 금액",
-            "readOnly": true
+            "readOnly": true,
+            "format": "#,### 원"
         },
         "total": {
             "name": "total",
@@ -106,6 +108,6 @@
             "placeholder": "철수예정일"
         }
     },
-    "format" :"Total: {0}MM",
+    "format" :"총 {0}MM",
     "AddRowBtn": "인력 추가"
 }

@@ -225,7 +225,7 @@ const CustomCostTable = (props) => {
         showColumnLines={true}
         focusedRowEnabled={false}
         columnAutoWidth={true}
-        width="100%"
+        // width="100%"
         sorting={{ mode: "none" }}
         scrolling={{ mode: 'virtual' }} // 스크롤 모드 설정
         noDataText="No data"
@@ -235,6 +235,8 @@ const CustomCostTable = (props) => {
             e.cellElement.style.fontWeight = "bold";
           }
         }}
+        wordWrapEnabled={true}
+        
       >
         {gridRows()}
         <SearchPanel

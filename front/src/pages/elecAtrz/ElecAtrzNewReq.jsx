@@ -136,13 +136,13 @@ const ElecAtrzNewReq = () => {
                 title: data.title,
                 atrzCn: data.cn
             }));
-            
+
             // 첨부파일 조회
             if(data.atchmnflId){
                 getAttachments();
             }
         }
-    }, []);
+    }, [data]);
 
     /**
      * 자식컴포넌트에서 받아온 데이터 set 
@@ -412,21 +412,24 @@ const ElecAtrzNewReq = () => {
                     Object.values(attachments)
                     .forEach((attachment) => formDataAttach.append("attachments", attachment));
 
-                    for (let [key, value] of formDataAttach.entries()) {
-
-                    }
-
                 const responseAttach = await axios.post("/boot/common/insertlongText", formDataAttach, {
                     headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
                 });
-
+    
                 if(responseAttach.status === 200){
                     if(stts === "VTW03701") {
+
+                        setData({
+                            ...data, 
+                            elctrnAtrzId: insertParam.elctrnAtrzId,
+                        });
+
+
                         handleOpen("임시저장이 완료되었습니다.");
                     } else {
                         handleOpen("전자결재 요청이 완료되었습니다.")
+                        navigate("/elecAtrz/ElecAtrz");
                     }
-                    navigate("/elecAtrz/ElecAtrz");
                 }
 
             }else{
@@ -546,7 +549,7 @@ const ElecAtrzNewReq = () => {
                         <ElecAtrzCtrtOutordHnfDetail prjctId={prjctId} data={data} onSendData={handleChildData} prjctData={prjctData} sttsCd={sttsCd}/>
                     </>
                     }
-                    {["VTW04907"].includes(formData.elctrnAtrzTySeCd) &&    //VTW04907: 비용사용(청구,출장비청구)
+                    {["VTW04907"].includes(formData.elctrnAtrzTySeCd) &&  //VTW04907: 비용사용(청구,출장비청구)
                     <>
                         <ExpensInfo onSendData={handleChildData} prjctId={prjctId} data={data} prjctData={prjctData} sttsCd={sttsCd}/>
                     </>

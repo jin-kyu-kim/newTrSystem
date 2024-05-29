@@ -173,6 +173,10 @@ export const navigation = [
         text: '고객사관리',
         path: '/sysMng/CustomersList',
         auth: 'VTW04803'
+      },{
+        text: '휴일관리',
+        path: '/sysMng/HolidayMng',
+        auth: 'VTW04801'
       }
     ]
   }, {
@@ -205,7 +209,12 @@ export const navigation = [
       //   text: 'MM확인하기',
       //   path: '/76',
       //   auth: 'VTW04801'
-      // },
+      // }
     ]
-  }
+  },{
+    text: '오류게시판',
+    path: '/sysMng/CsServiceList',
+    icon: 'importselected',
+    auth: 'USER'
+  },
   ];

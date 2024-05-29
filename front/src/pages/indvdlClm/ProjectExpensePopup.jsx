@@ -13,6 +13,7 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
     const [ empInfo, setEmpInfo ] = useState({});
     const [ totalInfo, setTotalInfo ] = useState({});
     const [ data, setData ] = useState([]);
+    const [ loading, setLoading ] = useState(true);
     const contentRef = useRef(null);
     const commonParams = {
         aplyYm: basicInfo.aplyYm,
@@ -26,10 +27,17 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
     };
 
     useEffect(() => {
-        getEmpInfo();
-        getTotalWorkTime();
-        getExpenseTotalInfo();
-        getDailyWorkHours();
+        const fetchData = async () => {
+            setLoading(true);
+            const empInfoPromise = getEmpInfo();
+            const totalWorkTimePromise = getTotalWorkTime();
+            const expenseTotalInfoPromise = getExpenseTotalInfo();
+            const dailyWorkHoursPromise = getDailyWorkHours();
+            
+            await Promise.all([empInfoPromise, totalWorkTimePromise, expenseTotalInfoPromise, dailyWorkHoursPromise]);
+            setLoading(false);
+        };
+        fetchData();
     }, [basicInfo]);
 
     const getEmpInfo = async () => {
@@ -107,23 +115,25 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
                     store: data
                 })
                 return (
+                    loading ? <></> : (
                     <CustomPivotGrid
                         values={dataSource}
+                        customColor={'#f0f0f0'}
                         blockCollapse={true}
+                        weekendColor={true}
                         grandTotals={true}
                         width={'100%'}
-                    />
+                    />)
                 )
             default:
-                return( <ProjectExpenseCashCardReport basicInfo={basicInfo} /> )
+                return( loading ? <></> : (<ProjectExpenseCashCardReport basicInfo={basicInfo} />) )
         }
     };
 
     const contentArea = () => {
         return (
             <div>
-                {(aprvInfo.totCnt === aprvInfo.aprv && mmAtrzCmptnYn === 'Y' 
-                || (aprvInfo.totCnt === aprvInfo.aprv + aprvInfo.rjct) && mmAtrzCmptnYn === 'Y' || noDataCase.cnt === 0 && noDataCase.yn === 'Y') ? 
+                {((aprvInfo.totCnt === aprvInfo.aprv && mmAtrzCmptnYn === 'Y') || (noDataCase.cnt === 0 && noDataCase.yn === 'Y')) ? 
                     <div ref={contentRef} >
                         <div style={{ textAlign: 'right' }}>
                             <ReactToPrint 
@@ -141,9 +151,9 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
                             </div>
                         ))}
                     </div>
-                : mmAtrzCmptnYn === 'N' || noDataCase.yn === 'N' 
+                : mmAtrzCmptnYn === 'N'
                 ? <span>진행중인 근무시간 요청이 있습니다. 승인 완료 후 출력하시기 바랍니다.</span>
-                : <span>결재 진행중인 청구내역이 있습니다.</span> }
+                : (aprvInfo.aprvDmnd >= 1) ? <span>결재 진행중인 청구내역이 있습니다.</span> : <></>}
             </div>
         );
     };
@@ -151,8 +161,8 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
     return (
         <div style={{marginBottom: '100px'}}>
             <Popup
-                width={"95%"}
-                height={"95%"}
+                width={"70%"}
+                height={"90%"}
                 visible={visible}
                 onHiding={onPopHiding}
                 showCloseButton={true}

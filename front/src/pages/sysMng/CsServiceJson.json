@@ -1,0 +1,64 @@
+{
+  "menuName": "Notice",
+  "keyColumn": "errId",
+  "queryId": "sysMngMapper.retrieveErrMng",
+  "systemInsertPage": "/sysMng/CsServiceInput",
+  "insertUrl": "/boot/common/insertlongText",
+  "tableColumns": [
+    { "key": "num", "value": "번호" , "width": "10%"},
+    { "key": "errTtl", "value": "제목", "width": "45%"},
+    { "key": "regEmpNm", "value": "작성자", "width": "15%"},
+    { "key": "regDt", "value": "작성일", "width": "15%"},
+    { "key": "errPrcsSttsCdNm", "value": "진행상태", "width": "15%"}
+  ],
+  "edit": {
+    "columns": [
+      { "dataField": "noticeTtl", "name": "ttl", "label": "제목", "placeholder": "제목을 입력하세요" },
+      { "dataField": "noticeCn", "name": "cn", "label": "내용", "placeholder": "내용을 입력하세요" },
+      { "dataField": "uploadFile", "label": "첨부파일" }
+    ]
+  },
+  "detail": {
+    "detailQueryId": "sysMngMapper.retrieveErrMngDetail",
+    "sysButtonGroup": [
+      { "id": 1, "text": "목록", "onClick": "/sysMng/CsServiceList", "type": "normal", "btnAlways": true},
+      { "id": 2, "text": "수정", "onClick": "/sysMng/CsServiceInput", "state": { "editMode": "update" }, "type":"default" },
+      { "id": 3, "text": "삭제", "onClick": "deleteReference", "type":"danger" }
+    ]
+  },
+  "searchInfo": {
+    "searchParams": { "insertButton": true },
+    "selectBoxItem": [
+      {
+        "placeholder": "[전체]",
+        "param":{
+          "tbNm": "CD",
+          "valueExpr": "cdValue",
+          "displayExpr": "cdNm",
+          "name": "searchCnd",
+          "condition": {
+            "upCdValue": "VTW017"
+          },
+          "clearButton": true
+        }
+      },
+      {
+        "placeholder": "[전체]",
+        "param":{
+          "tbNm": "CD",
+          "valueExpr": "cdValue",
+          "displayExpr": "cdNm",
+          "name": "errPrcsSttsCd",
+          "condition": {
+            "upCdValue": "VTW055"
+          },
+          "clearButton": true
+        }
+      }
+    ],
+
+    "textBoxItem": [
+      { "placeholder": "검색어", "name": "searchWrd" }
+    ]
+  }
+}

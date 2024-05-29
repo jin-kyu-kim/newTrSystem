@@ -862,91 +862,140 @@ public class ElecAtrzDomain {
 	 * @return
 	 */
 	public static int insertPrjctCt(Map<String, Object> param) {
+		
 		int result = -1;
 		
-		Map<String, Object> selectParam = new HashMap<>();
-		selectParam.put("queryId", "elecAtrzMapper.retrieveClmAtrzInfo");
-		selectParam.put("elctrnAtrzId", param.get("elctrnAtrzId"));
+		// 1차적으로 PRJCT_INDVDL_CT_MM에 데이터가 있는지 확인하고, 없으면 생성한다.
+		int chkResult = chkIndvdlCtMm(param);
 		
-		try {
-			List<Map<String, Object>> list = commonService.queryIdSearch(selectParam);
+		if(chkResult > 0) {
+			Map<String, Object> selectParam = new HashMap<>();
+			selectParam.put("queryId", "elecAtrzMapper.retrieveClmAtrzInfo");
+			selectParam.put("elctrnAtrzId", param.get("elctrnAtrzId"));
 			
-			Map<String, Object> masterTbParam = new HashMap<>();
-			Map<String, Object> slaveTbParam = new HashMap<>();
-			masterTbParam.put("tbNm", "PRJCT_CT_APLY");
-			slaveTbParam.put("tbNm", "PRJCT_CT_ATRZ");
-			
-			// PRJCT_CT_APLY 테이블에 데이터 추가
-			for(int i = 0; i < list.size(); i++) {
-				List<Map<String, Object>> insertMasterParam = new ArrayList<>();
-				List<Map<String, Object>> insertSlaveParam = new ArrayList<>();
+			try {
+				List<Map<String, Object>> list = commonService.queryIdSearch(selectParam);
 				
-				insertMasterParam.add(0, masterTbParam);
-				insertSlaveParam.add(0, slaveTbParam);
+				Map<String, Object> masterTbParam = new HashMap<>();
+				Map<String, Object> slaveTbParam = new HashMap<>();
+				masterTbParam.put("tbNm", "PRJCT_CT_APLY");
+				slaveTbParam.put("tbNm", "PRJCT_CT_ATRZ");
 				
-				int masterResult = 0;
-				int slaveResult = 0;
-				
-				Map<String, Object> selectMaxParam = new HashMap<>();
-				selectMaxParam.put("queryId", "indvdlClmMapper.retrievePrjctCtAplySn");
-				
-				List<Map<String, Object>> selectMaxPrjctCtAplySn = commonService.queryIdSearch(selectMaxParam);
-				int prjctCtAplySn = 0;
-				
-				if(String.valueOf(selectMaxPrjctCtAplySn.get(0).get("prjctCtAplySn")).equals("null") ||
-				   String.valueOf(selectMaxPrjctCtAplySn.get(0).get("prjctCtAplySn")).equals(null)) {
-					prjctCtAplySn = 1;
-				} else {
-					prjctCtAplySn = Integer.parseInt(String.valueOf(selectMaxPrjctCtAplySn.get(0).get("prjctCtAplySn"))) + 1;
-				}
-				
-				Map<String, Object> masterInfoParam = new HashMap<>();
-				
-				masterInfoParam.put("prjctCtAplySn", prjctCtAplySn);
-				masterInfoParam.put("aplyYm", param.get("aplyYm"));
-				masterInfoParam.put("aplyOdr", param.get("aplyOdr"));
-				masterInfoParam.put("empId", param.get("empId"));
-				masterInfoParam.put("prjctId", param.get("prjctId"));
-				masterInfoParam.put("elctrnAtrzId", param.get("elctrnAtrzId"));
-				masterInfoParam.put("expensCd", list.get(i).get("expensCd"));
-				masterInfoParam.put("utztnDt", list.get(i).get("utztnDt"));
-				masterInfoParam.put("useOffic", list.get(i).get("useOffic"));
-				masterInfoParam.put("utztnAmt", list.get(i).get("utztnAmt"));
-				masterInfoParam.put("atdrn", list.get(i).get("atdrn"));
-				masterInfoParam.put("ctPrpos", list.get(i).get("ctPrpos"));
-				masterInfoParam.put("ctAtrzSeCd", list.get(i).get("ctAtrzSeCd"));
-				masterInfoParam.put("regDt", param.get("regDt"));
-				masterInfoParam.put("regEmpId", param.get("regEmpId"));
-				
-				insertMasterParam.add(1, masterInfoParam);
-				
-				Map<String, Object> slaveInfoParam = new HashMap<>();
-				slaveInfoParam.put("prjctCtAplySn", prjctCtAplySn);
-				slaveInfoParam.put("atrzDmndSttsCd", list.get(i).get("atrzDmndSttsCd"));
-				slaveInfoParam.put("aprvrEmpId", list.get(i).get("aprvrEmpId"));
-				slaveInfoParam.put("prjctId", param.get("prjctId"));
-				slaveInfoParam.put("empId", param.get("empId"));
-				slaveInfoParam.put("aplyYm", param.get("aplyYm"));
-				slaveInfoParam.put("aplyOdr", param.get("aplyOdr"));
-				slaveInfoParam.put("aprvYmd", list.get(i).get("aprvYmd"));
-				slaveInfoParam.put("regDt", param.get("regDt"));
-				slaveInfoParam.put("regEmpId", param.get("regEmpId"));
-				
-				insertSlaveParam.add(1, slaveInfoParam);
-				
-				masterResult = commonService.insertData(insertMasterParam);
-				slaveResult = commonService.insertData(insertSlaveParam);
+				// PRJCT_CT_APLY 테이블에 데이터 추가
+				for(int i = 0; i < list.size(); i++) {
+					List<Map<String, Object>> insertMasterParam = new ArrayList<>();
+					List<Map<String, Object>> insertSlaveParam = new ArrayList<>();
+					
+					insertMasterParam.add(0, masterTbParam);
+					insertSlaveParam.add(0, slaveTbParam);
+					
+					int masterResult = 0;
+					int slaveResult = 0;
+					
+					Map<String, Object> selectMaxParam = new HashMap<>();
+					selectMaxParam.put("queryId", "indvdlClmMapper.retrievePrjctCtAplySn");
+					
+					List<Map<String, Object>> selectMaxPrjctCtAplySn = commonService.queryIdSearch(selectMaxParam);
+					int prjctCtAplySn = 0;
+					
+					if(String.valueOf(selectMaxPrjctCtAplySn.get(0).get("prjctCtAplySn")).equals("null") ||
+					   String.valueOf(selectMaxPrjctCtAplySn.get(0).get("prjctCtAplySn")).equals(null)) {
+						prjctCtAplySn = 1;
+					} else {
+						prjctCtAplySn = Integer.parseInt(String.valueOf(selectMaxPrjctCtAplySn.get(0).get("prjctCtAplySn"))) + 1;
+					}
+					
+					Map<String, Object> masterInfoParam = new HashMap<>();
+					
+					masterInfoParam.put("prjctCtAplySn", prjctCtAplySn);
+					masterInfoParam.put("aplyYm", param.get("aplyYm"));
+					masterInfoParam.put("aplyOdr", param.get("aplyOdr"));
+					masterInfoParam.put("empId", param.get("empId"));
+					masterInfoParam.put("prjctId", param.get("prjctId"));
+					masterInfoParam.put("elctrnAtrzId", param.get("elctrnAtrzId"));
+					masterInfoParam.put("expensCd", list.get(i).get("expensCd"));
+					masterInfoParam.put("utztnDt", list.get(i).get("utztnDt"));
+					masterInfoParam.put("useOffic", list.get(i).get("useOffic"));
+					masterInfoParam.put("utztnAmt", list.get(i).get("utztnAmt"));
+					masterInfoParam.put("atdrn", list.get(i).get("atdrn"));
+					masterInfoParam.put("ctPrpos", list.get(i).get("ctPrpos"));
+					masterInfoParam.put("ctAtrzSeCd", list.get(i).get("ctAtrzSeCd"));
+					masterInfoParam.put("regDt", param.get("regDt"));
+					masterInfoParam.put("regEmpId", param.get("regEmpId"));
+					
+					insertMasterParam.add(1, masterInfoParam);
+					
+					Map<String, Object> slaveInfoParam = new HashMap<>();
+					slaveInfoParam.put("prjctCtAplySn", prjctCtAplySn);
+					slaveInfoParam.put("atrzDmndSttsCd", list.get(i).get("atrzDmndSttsCd"));
+					slaveInfoParam.put("aprvrEmpId", list.get(i).get("aprvrEmpId"));
+					slaveInfoParam.put("prjctId", param.get("prjctId"));
+					slaveInfoParam.put("empId", param.get("empId"));
+					slaveInfoParam.put("aplyYm", param.get("aplyYm"));
+					slaveInfoParam.put("aplyOdr", param.get("aplyOdr"));
+					slaveInfoParam.put("aprvYmd", list.get(i).get("aprvYmd"));
+					slaveInfoParam.put("regDt", param.get("regDt"));
+					slaveInfoParam.put("regEmpId", param.get("regEmpId"));
+					
+					insertSlaveParam.add(1, slaveInfoParam);
+					
+					masterResult = commonService.insertData(insertMasterParam);
+					slaveResult = commonService.insertData(insertSlaveParam);
 
-				if(masterResult > 0 && slaveResult > 0) {
-					result = 1;
+					if(masterResult > 0 && slaveResult > 0) {
+						result = 1;
+					}
 				}
+
+				return result;
+				
+			} catch (Exception e) {
+				return -1;
 			}
-
-			return result;
-			
-		} catch (Exception e) {
+		} else {
 			return -1;
 		}
+		
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public static int chkIndvdlCtMm(Map<String, Object> param) {
+		int result = 0;
+		
+		Map<String, Object> tbNm = new HashMap<>();
+		Map<String, Object> infoParam = new HashMap<>();
+		tbNm.put("tbNm", "PRJCT_INDVDL_CT_MM");
+		
+		infoParam.put("aplyYm", param.get("aplyYm"));
+		infoParam.put("aplyOdr", param.get("aplyOdr"));
+		infoParam.put("empId", param.get("empId"));
+		infoParam.put("prjctId", param.get("prjctId"));
+		
+		List<Map<String, Object>> selectParamList = new ArrayList<>();
+		selectParamList.add(0, tbNm);
+		selectParamList.add(1, infoParam);
+		
+		List<Map<String, Object>> resultList = new ArrayList<>();
+		resultList = commonService.commonSelect(selectParamList);
+		
+		result = resultList.size();
+		
+		if(resultList.size() < 1) {
+			// 존재하지 않으므로 insert 해준다.
+			List<Map<String, Object>> insertParamList = new ArrayList<>();
+			
+			insertParamList.add(0, tbNm);
+			
+			infoParam.put("mmAtrzCmptnYn", "N");
+			insertParamList.add(1, infoParam);
+			
+			result = commonService.insertData(insertParamList);
+		}
+		
+		return result;
 	}
 	
 
@@ -1212,5 +1261,59 @@ public class ElecAtrzDomain {
     	}
     	
     	return 0;
+    }
+    
+    /**
+     * 결재 취소 혹은 변경결재 반려 시 관련 문서를 롤백한다.
+     * @param params
+     * @return
+     */
+    public static int rollbackElctrnAtrz(Map<String, Object> params) {
+    	
+    	int result = 0;
+    	String elctrnAtrzId = String.valueOf(params.get("elctrnAtrzId"));
+    	String mdfcnDt = String.valueOf(params.get("mdfcnDt"));
+    	String mdfcnEmpId = String.valueOf(params.get("mdfcnEmpId"));
+    	
+    	try {
+	    	Map<String, Object> tbNm = new HashMap<>();
+	    	Map<String, Object> infoMap = new HashMap<>();
+	    	Map<String, Object> conditionMap = new HashMap<>();
+	    	List<Map<String, Object>> updateParams = new ArrayList<>();
+	    	
+	        // 1. HIST_ELCTRN_ATRZ_ID의 결재선 결재자 값을 다시 결재중으로 변경
+	    	List<Map<String, Object>> selectParams = new ArrayList<>();
+	    	List<Map<String, Object>> resultList = new ArrayList<>();
+	    	tbNm.put("tbNm", "ELCTRN_ATRZ");
+	    	
+	    	conditionMap.put("elctrnAtrzId", elctrnAtrzId);
+	    	
+	    	selectParams.add(0, tbNm);
+	    	selectParams.add(1, conditionMap);
+    	
+	    	resultList = commonService.commonSelect(selectParams);
+	    	
+	    	resultList.get(0).get("nowAtrzLnSn");
+	    	
+	    	// 조회해온 순번을 update 해준다.
+	    	tbNm.put("tbNm", "ATRZ_LN");
+	    	
+	    	infoMap.put("atrzSttsCd", "VTW00801");
+	    	infoMap.put("mdfcnDt", mdfcnDt);
+	    	infoMap.put("mdfcnEmpId", mdfcnEmpId);
+	    	
+	    	conditionMap.put("atrzLnSn", resultList.get(0).get("nowAtrzLnSn"));
+	    	conditionMap.put("atrzSttsCd", "VTW00806");
+	    	
+	    	updateParams.add(0, tbNm);
+	    	updateParams.add(1, infoMap);
+	    	updateParams.add(2, conditionMap);
+    	
+    		result = commonService.updateData(updateParams);
+    	} catch (Exception e) {
+    		return -1;
+    	}
+    	
+    	return result;
     }
 }  

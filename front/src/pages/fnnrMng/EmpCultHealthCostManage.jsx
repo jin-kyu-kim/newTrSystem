@@ -94,7 +94,7 @@ const EmpCultHealthCostManage = () => {
     let paramMonth = new Date(parseInt(param.clturPhstrnActMngYm.substring(0, 4), 10),
         parseInt(param.clturPhstrnActMngYm.substring(4, 6), 10) - 1, 1);
     if (paramMonth > now) {
-      alert('계산과 마감이 불가능한 월입니다.')
+      handleOpen("계산과 마감이 불가능한 월입니다.")
       errors.push('Invalid month');
     }
     return errors.length === 0;
@@ -194,7 +194,7 @@ const EmpCultHealthCostManage = () => {
   const validateNumberBox = (data, value) => {
     const errors = [];
     if (value > data.cyfdAmt + data.clmAmt || value > 200000) {
-      alert('지급 가능한 금액보다 큽니다.')
+      handleOpen('지급 가능한 금액보다 큽니다.');
       errors.push('Too large amount');
     }
     return errors.length === 0;
