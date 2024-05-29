@@ -723,7 +723,7 @@ const ElecAtrzDetail = () => {
     }
 
     /**
-     * 
+     * 결재 변경: VTW05406
      * @returns 
      */
     const onUpdateReq = async () => {
