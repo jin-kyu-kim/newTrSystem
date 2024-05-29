@@ -79,7 +79,7 @@ const EmpVcatnAltmntMng = () => {
     // 직원목록조회
     const getEmpList = async () =>{
         try {
-            setSelectEmpList(await ApiRequest("/boot/common/commonSelect", [{ tbNm: "EMP" }, { hdofSttsCd: "VTW00301", empTyCd: "VTW00201" }]));
+            setSelectEmpList(await ApiRequest("/boot/common/queryIdSearch", { queryId: "humanResourceMngMapper.retrieveEmpList" }));
         } catch (error) {
             console.log("getEmpList_error : ", error);
         }
@@ -336,19 +336,15 @@ const EmpVcatnAltmntMng = () => {
     // 엑셀다운로드
     const onClickDnd = (e) => {
         let dataGrid = dataGirdRef.current.instance;
-        console.log("dataGrid : ", dataGrid);
-
-        dataGrid.on(onExcelDnd);
+        dataGrid.on(onExcelDnd(dataGrid));
     };
 
     const onExcelDnd = (e) => {
         const workbook = new Workbook();
         const worksheet = workbook.addWorksheet('Main sheet');
 
-        console.log("e.component : ", e.component);
-
         exportDataGrid({
-            component: e.component,
+            component: e,
             worksheet,
             autoFilterEnabled: true,
         }).then(() => {
@@ -439,21 +435,42 @@ const EmpVcatnAltmntMng = () => {
                     <div style={divStyle}><h4>* 직원목록</h4></div>
                     <div style={divStyle}>직원목록을 클릭시 휴가 배정 정보를 수정 할 수있습니다.
                     </div>
-                    {/* <div style={{ display: "flex", alignItems: "center", marginTop: "20px" }}>
+                    <div style={{ display: "flex", alignItems: "center", marginTop: "20px" }}>
                         <Button style={{ width: "140px", textAlign: "center"}} onClick={onClickDnd}>직원목록다운로드</Button>
-                    </div> */}
-                    <div style={{display: "none"}}>
-                    {/* <div> */}
+                    </div>
+                    <div style={{height: "0%"}}>
                         <DataGrid
                             keyExpr="empno"
                             dataSource={selectEmpList}
-                            defaultColumns={["empno", "empFlnm"]}
                             onExporting={onExcelDnd}
                             ref={dataGirdRef}
-                        />
-                        <Export 
-                            enabled={true} 
-                        />
+                        >
+                            <Export enabled={true} />
+                            <Column
+                                key={"empno"}
+                                dataField={"empno"}
+                                caption={"사번"}
+                                width={"70px"}
+                            />
+                            <Column
+                                key={"empno"}
+                                dataField={"empFlnm"}
+                                caption={"성명"}
+                                width={"140px"}
+                            />
+                            <Column
+                                key={"empno"}
+                                dataField={"jbpsNm"}
+                                caption={"직급"}
+                                width={"140px"}
+                            />
+                            <Column
+                                key={"empno"}
+                                dataField={"deptNm"}
+                                caption={"부서"}
+                                width={"180px"}
+                            />
+                        </DataGrid>
                     </div>
                     <div style={divStyle}>
                         <CustomTable

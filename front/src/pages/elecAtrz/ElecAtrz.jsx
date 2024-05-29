@@ -159,12 +159,10 @@ const ElecAtrz = () => {
       await onHistPopAppear();
     } else if(button.name === "aprv") {
 
-      console.log(data);
-      
       await onSetPopData(data)
       await onAprvPopup();
     } else if(button.name === "rjct") {
-      console.log(data);
+
       await onSetPopData(data)
       await onRjctPopup();
 
@@ -445,6 +443,13 @@ const ElecAtrz = () => {
   }
 
   /**
+   * 페이지를 리로드 해준다.
+   */
+  const reloadPage = async () => {
+    navigate('/elecAtrz/ElecAtrz');
+  }
+
+  /**
    * 승인하는 프로세스
    * @param {*} param 
    * @returns 
@@ -572,7 +577,7 @@ const ElecAtrz = () => {
             handleClose();
             return;
         }
-        navigate('/elecAtrz/ElecAtrz');
+        
     } catch (error) {
         console.error(error)
     }
@@ -789,7 +794,10 @@ const ElecAtrz = () => {
                 type="default"
                 stylingMode="contained"
                 style={{ margin: "2px" }}  
-                onClick={aprvAtrz}
+                onClick={ () => {
+                  aprvAtrz()
+                  reloadPage()
+                }}
                 >
                 승인
                 </Button>
@@ -825,7 +833,10 @@ const ElecAtrz = () => {
                 type="default"
                 stylingMode="contained"
                 style={{ margin: "2px" }} 
-                onClick={rjctAtrz}
+                onClick={ () => {
+                  aprvAtrz()
+                  reloadPage()
+                }}
                 >
                 반려
             </Button>

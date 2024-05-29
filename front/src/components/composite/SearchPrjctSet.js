@@ -84,7 +84,7 @@ const SearchPrjctSet = ({ callBack, props, popup }) => {
     <div className="box_search" width="100%">
       <Box
         className="searchPrjctSet"
-        style={{display: "flex", alignItems: "center", height: 40}}
+        style={{width: "100%", display: "flex", flexDirection: "row"}}
       >
         <Item className="prmpcInptSeCdItem" ratio={1} visible={props.prmpcInptSeCdItem}>
           <CustomCdComboBox
