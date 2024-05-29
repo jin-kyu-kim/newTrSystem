@@ -483,3 +483,12 @@
 .dx-card .responsive-paddings{
   padding : 10px;
 }
+
+@media print {
+  .elecTopBtn {
+    display: none;
+  }
+}
+.elecTopBtn {
+  float: right;
+}
