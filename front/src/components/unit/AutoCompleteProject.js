@@ -20,12 +20,13 @@ const AutoCompleteProject = ({ placeholderText, onValueChange, sttsBoolean }) =>
     const fetchData = async () => {
       try {
         const response = await ApiRequest('/boot/common/queryIdSearch', {queryId: 'commonMapper.autoCompleteProject'});
-
-        const processedData = response.map(({ prjctId, prjctNm, prjctTag, prjctMngrEmpId, bizSttsCd }) => ({
+        console.log("잘가져오고게신가여??",response)
+        const processedData = response.map(({ prjctId, prjctNm, prjctTag, prjctMngrEmpId, bizSttsCd,mngrNm }) => ({
           key: prjctId,
           value: prjctNm,
           prjctTag: prjctTag,
           prjctMngrEmpId: prjctMngrEmpId,
+          mngrNm: mngrNm,
           bizSttsCd: bizSttsCd,
         }));
 
@@ -87,7 +88,7 @@ const AutoCompleteProject = ({ placeholderText, onValueChange, sttsBoolean }) =>
           selectItemValue.push({
             prjctId: "",
             prjctNm: "",
-            prjctMngrEmpId: ""
+            prjctMngrEmpId: "",
           });
         }
         handleSelectChange(selectItemValue)
@@ -97,6 +98,7 @@ const AutoCompleteProject = ({ placeholderText, onValueChange, sttsBoolean }) =>
       stylingMode="underlined"
       onBlur={handleBlur}
       itemRender={ItemTemplate}
+      searchExpr={['value', 'mngrNm']}
       dropDownOptions={{
         position: {
           collision: 'none',
