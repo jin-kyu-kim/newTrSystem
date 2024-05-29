@@ -184,68 +184,44 @@
 
     <!-- 프로젝트청구현황개인별 경비팝업 -->
     <select id="retrievePrjctCtClmSttusIndvdlCtAcctoDetail" parameterType="map" resultType="com.trsystem.LowerHashMap">
-        SELECT
-            PIVOT_DATE,
-            COALESCE(APLY_YMD, '') AS APLY_YMD,
-            COALESCE(PRJCT_NM, 'null_project') AS PRJCT_NM,
-            COALESCE(EMP_FLNM, 'null_flnm') AS EMP_FLNM,
-            COALESCE(EMP_DETAIL, 'null_detail') AS EMP_DETAIL,
-            COALESCE(CD_NM, 'null_cd') AS CD_NM,
-            COALESCE(UTZTN_AMT, '') AS UTZTN_AMT
-        FROM (
-            WITH RECURSIVE a AS (
-                SELECT CAST(CONCAT(SUBSTR(#{startYmOdr},1, 6), '01') AS DATE) AS PIVOT_DATE
-                UNION ALL
-                SELECT DATE_ADD(PIVOT_DATE, INTERVAL 1 DAY)
-                FROM a
-                WHERE DATE_ADD(PIVOT_DATE, INTERVAL 1 DAY) &lt; CAST(CONCAT(SUBSTR(#{endYmOdr}, 1, 6), '01') AS DATE) + INTERVAL 1 MONTH
-            ), b AS (
-                SELECT
-                    CONCAT(SUBSTR(b.UTZTN_DT, 1, 4),'-',SUBSTR(b.UTZTN_DT, 5, 2),'-',SUBSTR(b.UTZTN_DT, 7, 2)) AS APLY_YMD,
-                    p.PRJCT_NM,
-                    (SELECT EMP_FLNM FROM nwTr.EMP emp WHERE EMP_ID = b.EMP_ID) AS EMP_FLNM,
-                    CONCAT('상세내역 : ', b.CT_PRPOS, ' | 용도 : ', b.ATDRN) AS EMP_DETAIL,
-                    null AS MD,
-                    (SELECT CD_NM FROM nwTr.CD cd WHERE UP_CD_VALUE = 'VTW045' AND CD_VALUE = b.EXPENS_CD) AS CD_NM,
-                    b.UTZTN_AMT,
-                    b.USE_OFFIC,
-                    b.CT_PRPOS,
-                    b.ATDRN
-                FROM nwTr.PRJCT_INDVDL_CT_MM a, nwTr.PRJCT_CT_APLY b
-                JOIN PRJCT p
-                ON b.PRJCT_ID = p.PRJCT_ID
-                WHERE 1 = 1
+        WITH RECURSIVE DateRange AS (
+            SELECT CONCAT(SUBSTR(#{startYmOdr}, 1, 4), '-', SUBSTR(#{startYmOdr}, 5, 2), '-01') AS APLY_YMD
+            UNION ALL
+            SELECT DATE_ADD(APLY_YMD, INTERVAL 1 DAY)
+            FROM DateRange
+            WHERE APLY_YMD &lt; LAST_DAY(CONCAT(SUBSTR(#{endYmOdr}, 1, 4), '-', SUBSTR(#{endYmOdr}, 5, 2), '-01'))
+        ),
+        Value AS (
+            SELECT
+                CONCAT(SUBSTR(b.UTZTN_DT, 1, 4),'-',SUBSTR(b.UTZTN_DT, 5, 2),'-',SUBSTR(b.UTZTN_DT, 7, 2)) AS APLY_YMD,
+                (SELECT EMP_FLNM FROM nwTr.EMP emp WHERE EMP_ID = b.EMP_ID) AS EMP_FLNM,
+                CONCAT('상세내역 : ', b.CT_PRPOS, ' | 용도 : ', b.ATDRN) AS EMP_DETAIL,
+                (SELECT CD_NM FROM nwTr.CD cd WHERE UP_CD_VALUE = 'VTW045' AND CD_VALUE = b.EXPENS_CD) AS CD_NM,
+                b.UTZTN_AMT
+            FROM nwTr.PRJCT_INDVDL_CT_MM a, nwTr.PRJCT_CT_APLY b
+            WHERE 1 = 1
                 AND a.PRJCT_ID = b.PRJCT_ID
                 AND a.APLY_YM = b.APLY_YM
                 AND a.APLY_ODR = b.APLY_ODR
                 AND a.EMP_ID = b.EMP_ID
                 AND a.CT_ATRZ_CMPTN_YN = 'Y'
-                <if test="prjctId != null and !prjctId.equals('')">
-                    AND a.PRJCT_ID = #{prjctId}
-                </if>
-                <if test="(startYmOdr != null and !startYmOdr.equals('')) and (endYmOdr != null and !endYmOdr.equals(''))">
-                    AND CONCAT(a.APLY_YM, a.APLY_ODR) BETWEEN #{startYmOdr} AND #{endYmOdr}
-                </if>
-                <if test="expensCd != null and !expensCd.equals('')">
-                    AND b.EXPENS_CD = #{expensCd}
-                </if>
-            )
-            SELECT * FROM (
-                SELECT *
-                FROM a
-                WHERE (
-                    (SUBSTR(#{startYmOdr},7, 1) = 1 AND PIVOT_DATE >= CONCAT(SUBSTR(#{startYmOdr},1, 6), '01')) OR
-                    (SUBSTR(#{startYmOdr},7, 1) = 2 AND PIVOT_DATE >= CONCAT(SUBSTR(#{startYmOdr},1, 6), '16'))
-                ) AND (
-                    (SUBSTR(#{endYmOdr},7, 1) = 1 AND PIVOT_DATE &lt;= CONCAT(SUBSTR(#{endYmOdr},1, 6), '15')) OR
-                    (CONCAT(SUBSTR(#{endYmOdr}, 7, 1) = 2 AND PIVOT_DATE &lt;= LAST_DAY(CAST(CONCAT(SUBSTR(#{endYmOdr}, 1, 6), '01') AS DATE))))
-                )
-            ) c
-            LEFT JOIN b
-                ON c.PIVOT_DATE = b.APLY_YMD
-        ) a
-        ORDER BY PIVOT_DATE
+                AND a.PRJCT_ID = #{prjctId}
+                AND CONCAT(a.APLY_YM, a.APLY_ODR) BETWEEN #{startYmOdr} AND #{startYmOdr}
+                AND b.EXPENS_CD = #{expensCd}
+        )
+        SELECT
+            dt.APLY_YMD AS PIVOT_DATE
+            , p.PRJCT_NM
+            , v.EMP_FLNM
+            , v.EMP_DETAIL
+            , v.CD_NM
+            , IFNULL(v2.UTZTN_AMT, 0) AS UTZTN_AMT
+        FROM DateRange dt
+        JOIN Value v
+        LEFT JOIN Value v2 ON (v2.APLY_YMD = dt.APLY_YMD)
+        JOIN PRJCT p ON p.PRJCT_ID = #{prjctId}
     </select>
+
     <!-- 프로젝트청구현황일자별 -직원추출 -->
     <select id="retrievePrjctCtClmgetEmp" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT DISTINCT(EMP_ID) AS EMP_ID
@@ -467,14 +443,6 @@
                 AND pma.EMP_ID = pah.EMP_ID
                 AND pma.APLY_YM = pah.APLY_YM
                 AND pma.APLY_ODR = pah.APLY_ODR
---                 AND pah.PRJCT_ATRZ_HIST_SN = (
---                     SELECT MAX(PRJCT_ATRZ_HIST_SN)
---                     FROM PRJCT_ATRZ_HIST a
---                     WHERE a.PRJCT_ID = pah.PRJCT_ID
---                         AND a.EMP_ID = pah.EMP_ID
---                         AND a.APLY_YM = pah.APLY_YM
---                         AND a.APLY_ODR = pah.APLY_ODR
---             )
             WHERE 1 = 1
             <if test="aplyYm != null and !aplyYm.equals('')">
                 AND pma.APLY_YM = #{aplyYm}
@@ -499,18 +467,9 @@
                 AND pca.EMP_ID = pah.EMP_ID
                 AND pca.APLY_YM = pah.APLY_YM
                 AND pca.APLY_ODR = pah.APLY_ODR
-                <!--
-                AND pah.PRJCT_CT_APLY_SN = (
-                    SELECT MAX(PRJCT_CT_APLY_SN)
-                    FROM PRJCT_CT_ATRZ a
-                    WHERE a.PRJCT_ID = pah.PRJCT_ID
-                        AND a.EMP_ID = pah.EMP_ID
-                        AND a.APLY_YM = pah.APLY_YM
-                        AND a.APLY_ODR = pah.APLY_ODR
-            	)
-            	-->
             	AND pca.PRJCT_CT_APLY_SN = pah.PRJCT_CT_APLY_SN
             WHERE 1 = 1
+		      AND (pca.CT_ATRZ_SE_CD = 'VTW01902' OR pca.CT_ATRZ_SE_CD = 'VTW01903')
             <if test="aplyYm != null and !aplyYm.equals('')">
                 AND pca.APLY_YM = #{aplyYm}
             </if>
@@ -942,12 +901,14 @@
 		    IFNULL(T.MD, 0) AS MD
 		FROM
 		    (
-		        SELECT 
-		            DATE_FORMAT(cd.CRTR_YMD, '%Y-%m-%d') AS CRTR_YMD
-		        FROM 
-		            CRTR_DATE cd
-		        WHERE 
-		            cd.CRTR_YMD LIKE '202405%' AND cd.CRTR_ODR = '1'
+		    SELECT 
+            	DATE_FORMAT(cd.CRTR_YMD, '%Y-%m-%d') AS CRTR_YMD
+        	FROM 
+            	CRTR_DATE cd
+        	WHERE 
+	            DATE_FORMAT(cd.CRTR_YMD , '%Y') = #{yearItem} 
+	        	AND DATE_FORMAT(cd.CRTR_YMD , '%m') = #{monthItem}
+	        	AND cd.CRTR_ODR = #{aplyOdr}
 		    ) Z
 	JOIN (
 	    SELECT DISTINCT
@@ -961,15 +922,12 @@
 	        JOIN EMP E ON PMA.EMP_ID = E.EMP_ID
 	    WHERE 
 	        PICM.MM_ATRZ_CMPTN_YN = 'Y'
-	        <if test="aplyYmd != null and aplyYmd != ''">
-	            AND DATE_FORMAT(PMA.APLY_YMD , '%Y-%m-%d') = #{aplyYmd}
-	        </if>
-	        <if test="aplyOdr != null and aplyOdr != ''">
-	            AND PMA.APLY_ODR = #{aplyOdr}
-	        </if>
-	        <if test="prjctId != null and prjctId != ''">
-	            AND P.PRJCT_ID = #{prjctId}
-	        </if>
+	        AND DATE_FORMAT(PMA.APLY_YMD , '%Y') = #{yearItem}
+        	AND DATE_FORMAT(PMA.APLY_YMD , '%m') = #{monthItem}
+        	AND PMA.APLY_ODR = #{aplyOdr}
+	         <if test="prjctId != null and !prjctId.equals('')">
+	        AND P.PRJCT_ID = #{prjctId}
+	            </if>
 		) M ON 1=1
 		LEFT JOIN (
 		    SELECT
@@ -977,11 +935,7 @@
 		        DATE_FORMAT(PMA.APLY_YMD , '%Y-%m-%d') AS APLY_YMD,
 		        P.PRJCT_NM AS PRJCT_NM,
 		        E.EMP_FLNM AS EMP_FLNM,
-		        CASE
-		            WHEN PMA.MD = 1 THEN 8
-		            WHEN PMA.MD = 0.5 THEN 4
-		            ELSE 0
-		        END AS MD
+		        PMA.MD*8 AS MD 
 		    FROM 
 		        PRJCT_MM_APLY PMA
 		        JOIN PRJCT P ON P.PRJCT_ID = PMA.PRJCT_ID
@@ -989,15 +943,12 @@
 		        JOIN EMP E ON PMA.EMP_ID = E.EMP_ID
 		    WHERE 
 		        PICM.MM_ATRZ_CMPTN_YN = 'Y'
-		        <if test="aplyYmd != null and aplyYmd != ''">
-		            AND DATE_FORMAT(PMA.APLY_YMD , '%Y-%m-%d') = #{aplyYmd}
-		        </if>
-		        <if test="aplyOdr != null and aplyOdr != ''">
+		           	AND DATE_FORMAT(PMA.APLY_YMD , '%Y') = #{yearItem} 
+        			AND DATE_FORMAT(PMA.APLY_YMD , '%m') = #{monthItem}
 		            AND PMA.APLY_ODR = #{aplyOdr}
-		        </if>
-		        <if test="prjctId != null and prjctId != ''">
+		            <if test="prjctId != null and !prjctId.equals('')">
 		            AND P.PRJCT_ID = #{prjctId}
-		        </if>
+		            </if>
 		) T ON T.APLY_YMD = Z.CRTR_YMD AND M.PRJCT_ID = T.PRJCT_ID
 		ORDER BY M.EMP_FLNM, APLY_YMD;
 </select>
