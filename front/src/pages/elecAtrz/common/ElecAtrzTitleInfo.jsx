@@ -36,63 +36,63 @@ const ElecAtrzTitleInfo = ({ sttsCd, refer, atrzLnEmpList, getAtrzLn, contents, 
       buttonsToRender = contents.filter(item => currentButtons.includes(item.id));
     }
     return buttonsToRender.map((item, index) => (
-      <Button id={item.id} text={item.text} type={item.type} style={{ marginRight: '6px' }} 
-       key={index} onClick={item.id === 'onAtrzLnPopup' ? onAtrzLnPopup : onClick} />
+      <Button id={item.id} text={item.text} type={item.type} style={{ marginRight: '6px' }}
+        key={index} onClick={item.id === 'onAtrzLnPopup' ? onAtrzLnPopup : onClick} />
     ));
   };
 
   return (
-    <div style={{fontSize: '16px'}}>
+    <div style={{ fontSize: '16px' }}>
+      <div className='elecTopBtn'>{setButtons()}</div>
+
       <div style={{ display: "flex", justifyContent: "flex-start", marginBottom: '3%', marginLeft: '2%', marginRight: '2%' }}>
         <div style={{ float: "left", marginRight: "auto" }}><img src={logoImg} style={{ width: '50%', marginBottom: '20px' }} /></div>
-        <div style={{ display: "inline-block" }}>{setButtons()}</div>
       </div>
-
       {
         sttsCd === "VTW03705" ?
-        <>
-          <h3 style={{ textAlign: "center", textDecoration: "line-through"}}>{formData.gnrlAtrzTtl}</h3>
-          <h3 style={{ textAlign: "center", color: "red"}}>결재 취소된 문서</h3>
-        </>
-        :
-        sttsCd === "VTW03706" ?
-        <>
-          <h3 style={{ textAlign: "center", textDecoration: "line-through"}}>{formData.gnrlAtrzTtl}</h3>
-          <h3 style={{ textAlign: "center", color: "red"}}>결재 변경된 문서</h3>
-        </>
-        :
-        <h3 style={{ textAlign: "center" }}>{formData.gnrlAtrzTtl}{sttsCd === "VTW05405" || formData.atrzHistSeCd === "VTW05405" ? " - 결재취소" : ""}</h3>
+          <>
+            <h3 style={{ textAlign: "center", textDecoration: "line-through" }}>{formData.gnrlAtrzTtl}</h3>
+            <h3 style={{ textAlign: "center", color: "red" }}>결재 취소된 문서</h3>
+          </>
+          :
+          sttsCd === "VTW03706" ?
+            <>
+              <h3 style={{ textAlign: "center", textDecoration: "line-through" }}>{formData.gnrlAtrzTtl}</h3>
+              <h3 style={{ textAlign: "center", color: "red" }}>결재 변경된 문서</h3>
+            </>
+            :
+            <h3 style={{ textAlign: "center" }}>{formData.gnrlAtrzTtl}{sttsCd === "VTW05405" || formData.atrzHistSeCd === "VTW05405" ? " - 결재취소" : ""}</h3>
 
       }
       <div style={{ display: "flex", marginTop: "3%", marginLeft: '2%', marginRight: '2%' }}>
         <div style={{ flex: 4 }}>
           <table>
             <tr>
-              <td style={{fontWeight: 'bold'}}>문서번호</td>
+              <td style={{ fontWeight: 'bold' }}>문서번호</td>
               <td> : </td>
               <td>{formData.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407" || sttsCd === "VTW05405" ? "" : formData.elctrnAtrzDocNo}</td>
             </tr>
             <tr>
-              <td style={{fontWeight: 'bold'}}>프로젝트</td>
+              <td style={{ fontWeight: 'bold' }}>프로젝트</td>
               <td> : </td>
               <td>
                 [{prjctData.prjctCdIdntfr}] {prjctData.prjctNm}
               </td>
             </tr>
             <tr>
-              <td style={{fontWeight: 'bold'}}>기안자</td>
+              <td style={{ fontWeight: 'bold' }}>기안자</td>
               <td> : </td>
               <td>{formData.atrzDmndEmpNm == null ? userInfo.empNm : formData.atrzDmndEmpNm}</td>
             </tr>
             <tr>
-              <td style={{fontWeight: 'bold'}}>기안일자</td>
+              <td style={{ fontWeight: 'bold' }}>기안일자</td>
               <td> : </td>
               <td>{formData.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407" || sttsCd === "VTW05405" ? "" : formData.regDt}</td>
             </tr>
           </table>
         </div>
 
-        <div style={{ flex: 3.5 }}>
+        <div style={{ flex: 4 }}>
           <AtrzLnTable
             atrzLnEmpList={atrzLnEmpList}
             bottomNm={'합의'}
@@ -115,19 +115,19 @@ const ElecAtrzTitleInfo = ({ sttsCd, refer, atrzLnEmpList, getAtrzLn, contents, 
           <div className="dx-field">
             <div className="dx-field-label" style={{ width: "5%", fontWeight: 'bold' }}>제 목</div>
             {
-              sttsCd === "VTW05405" ? 
-              <div className="dx-field-label" style={{ width: "120px", fontWeight: 'bold' }}>▶취소결재◀</div>
-              : sttsCd === "VTW05406"?
-              <div className="dx-field-label" style={{ width: "120px", fontWeight: 'bold' }}>▶결재변경◀</div>
-              :
-              <></>
+              sttsCd === "VTW05405" ?
+                <div className="dx-field-label" style={{ width: "120px", fontWeight: 'bold' }}>▶취소결재◀</div>
+                : sttsCd === "VTW05406" ?
+                  <div className="dx-field-label" style={{ width: "120px", fontWeight: 'bold' }}>▶결재변경◀</div>
+                  :
+                  <></>
             }
             <TextBox
               className="dx-field-value"
               style={{ width: "100%" }}
               value={atrzParam.title}
               onValueChanged={onHandleAtrzTitle}
-              readOnly={sttsCd === "VTW05405" || sttsCd === "VTW03702" || sttsCd === "VTW03703" || formData.atrzHistSeCd === "VTW05405" ||  sttsCd === "VTW00801" || sttsCd === "VTW03705" ? (sttsCd === "VTW05407" ? false : true) : false}
+              readOnly={sttsCd === "VTW05405" || sttsCd === "VTW03702" || sttsCd === "VTW03703" || formData.atrzHistSeCd === "VTW05405" || sttsCd === "VTW00801" || sttsCd === "VTW03705" ? (sttsCd === "VTW05407" ? false : true) : false}
             />
           </div>
 
@@ -144,5 +144,4 @@ const ElecAtrzTitleInfo = ({ sttsCd, refer, atrzLnEmpList, getAtrzLn, contents, 
     </div>
   );
 };
-
 export default ElecAtrzTitleInfo;

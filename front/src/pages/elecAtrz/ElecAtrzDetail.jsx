@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useLocation } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import { Button } from 'devextreme-react/button';
@@ -11,8 +11,9 @@ import ElecAtrzTabDetail from './ElecAtrzTabDetail';
 import electAtrzJson from './ElecAtrzJson.json';
 import ApiRequest from 'utils/ApiRequest';
 import { useModal } from "../../components/unit/ModalContext";
-import './ElecAtrz.css'
 import ElecAtrzHistPopup from "./common/ElecAtrzHistPopup";
+import ReactToPrint from 'react-to-print';
+import './ElecAtrz.css'
 
 const ElecAtrzDetail = () => {
     const navigate = useNavigate();
@@ -36,6 +37,8 @@ const ElecAtrzDetail = () => {
     const [ aprvPopupVisible, setAprvPopupVisible ] = useState(false);
     const [ opnnCn, setOpnnCn ] = useState("");
     const [ data, setData ] = useState(location.state.data);
+    const contentRef = useRef(null);
+    const printRef = useRef();
     const { handleOpen } = useModal();
 
     /**
@@ -51,6 +54,12 @@ const ElecAtrzDetail = () => {
         }
         getDetailData();
     }, []);
+
+    const onPrint = () => {
+        if (printRef.current) {
+            printRef.current.handlePrint();
+        }
+    };
     
     const onBtnClick = (e) => {
         switch (e.element.id) {
@@ -58,7 +67,7 @@ const ElecAtrzDetail = () => {
                 break;
             case "rjct": ; onRjctPopup();
                 break;
-            case "print": //console.log("출력 클릭"); 
+            case "print": onPrint(); 
                 break;
             case "docHist": //console.log("문서이력 클릭");
                 onHistPopAppear();
@@ -757,6 +766,7 @@ const ElecAtrzDetail = () => {
 
     return (
         <div className="container" style={{ marginTop: "10px" }}>
+            <div ref={contentRef}>
                 <ElecAtrzTitleInfo
                     atrzLnEmpList={atrzOpnn}
                     contents={header}
@@ -767,50 +777,62 @@ const ElecAtrzDetail = () => {
                     atrzParam={detailData}
                     onClick={onBtnClick}
                 />
-            {/* 휴가           VTW04901, 
-                청구           VTW04907,
-                외주인력 계약   VTW04908,
-                외주업체 계약   VTW04909,
-                재료비 계약     VTW04910,
-                계약 지급품의   VTW04914
-                ... TODO  그 외 
-                의 경우에는 컴포넌트 렌더링 */}
-            {(detailData&&['VTW04901', 'VTW04907', 'VTW04908', 'VTW04909', 'VTW04910', 'VTW04915'].includes(detailData.elctrnAtrzTySeCd)) && (
-                <ElecAtrzTabDetail
-                    dtlInfo={dtlInfo} 
-                    detailData={detailData}
-                    sttsCd={sttsCd}
-                    prjctId={prjctId}
-                    prjctData={prjctData}
-                />
-            )}
-            {(detailData&&data&&['VTW04911','VTW04912','VTW04913','VTW04914'].includes(detailData.elctrnAtrzTySeCd)) && (data.ctrtElctrnAtrzId) &&(
-                <ElecAtrzTabDetail
-                    dtlInfo={dtlInfo}
-                    detailData={data}
-                    sttsCd={sttsCd}
-                    prjctId={prjctId}
-                    prjctData={prjctData}
-                />
-            )}
-            <div dangerouslySetInnerHTML={{ __html: detailData.cn }} />
+                {/* 휴가           VTW04901, 
+                    청구           VTW04907,
+                    외주인력 계약   VTW04908,
+                    외주업체 계약   VTW04909,
+                    재료비 계약     VTW04910,
+                    계약 지급품의   VTW04914
+                    ... TODO  그 외 
+                    의 경우에는 컴포넌트 렌더링 */}
+                {(detailData&&['VTW04901', 'VTW04907', 'VTW04908', 'VTW04909', 'VTW04910', 'VTW04915'].includes(detailData.elctrnAtrzTySeCd)) && (
+                    <ElecAtrzTabDetail
+                        dtlInfo={dtlInfo} 
+                        detailData={detailData}
+                        sttsCd={sttsCd}
+                        prjctId={prjctId}
+                        prjctData={prjctData}
+                    />
+                )}
+                {(detailData&&data&&['VTW04911','VTW04912','VTW04913','VTW04914'].includes(detailData.elctrnAtrzTySeCd)) && (data.ctrtElctrnAtrzId) &&(
+                    <ElecAtrzTabDetail
+                        dtlInfo={dtlInfo}
+                        detailData={data}
+                        sttsCd={sttsCd}
+                        prjctId={prjctId}
+                        prjctData={prjctData}
+                    />
+                )}
+                <div dangerouslySetInnerHTML={{ __html: detailData.cn }} />
 
-            <hr className='elecDtlLine' style={{marginTop: '100px'}}/>
-            <span>* 첨부파일</span>
-            {atachFileList.length !== 0 && atachFileList.map((file, index) => (
-                <div key={index}>
-                    <Button icon="save" stylingMode="text" disabled={true} />
-                    <a href={`/upload/${file.strgFileNm}`} download={file.realFileNm} style={{ fontSize: '18px', color: 'blue', fontWeight: 'bold' }}>{file.realFileNm}</a>
-                </div>
-            ))}
+                <hr className='elecDtlLine' style={{marginTop: '100px'}}/>
+                <span>* 첨부파일</span>
+                {atachFileList.length !== 0 && atachFileList.map((file, index) => (
+                    <div key={index}>
+                        <Button icon="save" stylingMode="text" disabled={true} />
+                        <a href={`/upload/${file.strgFileNm}`} download={file.realFileNm} style={{ fontSize: '18px', color: 'blue', fontWeight: 'bold' }}>{file.realFileNm}</a>
+                    </div>
+                ))}
 
-            <hr className='elecDtlLine'/>
-            <span style={{marginLeft: '8px'}}>결재 의견</span>
-            <CustomTable
-                keyColumn={keyColumn}
-                columns={columns}
-                values={atrzOpnnVal}
+                <hr className='elecDtlLine'/>
+                <span style={{marginLeft: '8px'}}>결재 의견</span>
+                <CustomTable
+                    keyColumn={keyColumn}
+                    columns={columns}
+                    values={atrzOpnnVal}
+                />
+            </div>
+            <ReactToPrint 
+                ref={printRef}
+                content={() => contentRef.current} 
+                pageStyle="@page { size: A3; } 
+                @media print { 
+                    body { -webkit-print-color-adjust: exact; } 
+                    .content { transform: scale(0.8); transform-origin: top left; }
+                    .elecTopBtn { display: none; }
+                }"
             />
+            
             <div style={{textAlign: 'center', marginBottom: '100px', marginTop: '20px'}}>
                 {renderButtons()}
                  <Button text='목록' type='normal' 
@@ -889,11 +911,11 @@ const ElecAtrzDetail = () => {
                     </Button>
                 </div>
             </Popup>
-                <ElecAtrzHistPopup
+            <ElecAtrzHistPopup
                 visible={histPopVisible}
                 onPopHiding={onHistPopHiding}
                 selectedData={detailInfo}
-                  /> 
+            /> 
         </div>
     );
 }

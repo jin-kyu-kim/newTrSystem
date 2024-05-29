@@ -20,7 +20,7 @@ const AtrzLnTable = ({atrzLnEmpList, bottomNm}) => {
   }
 
   return (
-    <Table>
+    <Table style={{transform: 'scale(0.9)'}}>
       <TableBody>
         <TableRow>
           <TableCell rowSpan={4} style={{ ...cellStyle, ...grayBackground }}>결재선</TableCell>
