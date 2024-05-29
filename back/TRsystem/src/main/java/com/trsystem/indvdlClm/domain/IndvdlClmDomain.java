@@ -585,7 +585,8 @@ public class IndvdlClmDomain {
             insertElctrnMap.put("elctrnAtrzId", elctrnAtrzValue);
             insertElctrnMap.put("atrzFormDocId", "2d90b8ef-132a-11ef-bf20-02a5fafa82da");
             insertElctrnMap.put("nowAtrzLnSn", "1");
-            insertElctrnMap.put("elctrnAtrzDocNo", refSolYear + "-01-" + (Integer.parseInt(String.valueOf(selectElctrnAtrzResult.size())) + 1));
+            insertElctrnMap.put("elctrnAtrzDocNo", refSolYear + "-01-" + (Integer.parseInt(String.valueOf(selectElctrnAtrzResult.get(0).get("rowCnt"))) + 1));
+            insertElctrnMap.put("atrzHistSeCd", "VTW05401");
             insertElctrnList.add(0, elctrnTbMap);
             insertElctrnList.add(1, insertElctrnMap);
             queryResult = commonService.insertData(insertElctrnList);
@@ -809,11 +810,6 @@ public class IndvdlClmDomain {
 
         int atrzLnSn = 0;
 
-        System.out.println("==========================");
-        System.out.println("caseFlag : " + caseFlag);
-        System.out.println("updateVcatnMng : " + updateVcatnMng);
-        System.out.println("==========================");
-
         if (errorMsg.isEmpty()) {
             try {
                 switch (caseFlag) {
@@ -905,8 +901,9 @@ public class IndvdlClmDomain {
         insertElctrnAtrzMapValue.put("mdfcnEmpId", insertDataMapValue.get("empId"));
         insertElctrnAtrzMapValue.put("elctrnAtrzTySeCd", "VTW04915");
         insertElctrnAtrzMapValue.put("atrzFormDocId", "901c0b88-21b9-d716-b2c2-c1f7c2b10fc4");
-        insertElctrnAtrzMapValue.put("elctrnAtrzDocNo", refSolYear + "-15-" + (Integer.parseInt(String.valueOf(selectElctrnAtrzResult.size())) + 1));
+        insertElctrnAtrzMapValue.put("elctrnAtrzDocNo", refSolYear + "-15-" + (Integer.parseInt(String.valueOf(selectElctrnAtrzResult.get(0).get("rowCnt"))) + 1));
         insertElctrnAtrzMapValue.put("histElctrnAtrzId", insertDataMapValue.get("histElctrnAtrzId"));
+        insertElctrnAtrzMapValue.put("atrzHistSeCd", "VTW05405");
 
         // VCATN_ATRZ(휴가결재저장)
         insertVactnAtrzMapValue.put("elctrnAtrzId", insertDataMapValue.get("elctrnAtrzId"));
@@ -1274,7 +1271,7 @@ public class IndvdlClmDomain {
         insertElctrnMap.put("elctrnAtrzId", elctrnAtrzValue);
         insertElctrnMap.put("atrzFormDocId", "2d91110f-132a-11ef-bf20-02a5fafa82da");
         insertElctrnMap.put("nowAtrzLnSn", "1");
-        insertElctrnMap.put("elctrnAtrzDocNo", refSolYear + "-01-" + (Integer.parseInt(String.valueOf(selectElctrnAtrzResult.size())) + 1));
+        insertElctrnMap.put("elctrnAtrzDocNo", refSolYear + "-01-" + (Integer.parseInt(String.valueOf(selectElctrnAtrzResult.get(0).get("rowCnt"))) + 1));
         insertElctrnList.add(0, elctrnTbMap);
         insertElctrnList.add(1, insertElctrnMap);
         queryResult = commonService.insertData(insertElctrnList);

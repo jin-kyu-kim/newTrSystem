@@ -826,7 +826,7 @@
     <!-- 전자결재 MAX ROW 조회-->
     <select id="retrieveElctrnAtrzCnt" parameterType="map" resultType="com.trsystem.LowerHashMap">
         /* indvdlClmMapper.retrieveElctrnAtrzCnt */
-        SELECT *
+        SELECT COUNT(ELCTRN_ATRZ_DOC_NO) ROW_CNT
         FROM ELCTRN_ATRZ
     </select>
 
@@ -1165,7 +1165,7 @@
     <select id="retrievePrjctWorkDay" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
             p.PRJCT_NM,
-            DATE_FORMAT(pma.APLY_YMD, '%Y-%m-%d') AS APLY_DAY,
+            SUBSTRING(DATE_FORMAT(pma.APLY_YMD, '%Y%m%d'), 7, 2) AS APLY_DAY,
             pma.MD * 8 AS MD
         FROM PRJCT_MM_APLY pma
                  JOIN PRJCT p ON p.PRJCT_ID = pma.PRJCT_ID
@@ -1182,37 +1182,13 @@
             AND pma.APLY_YM = filtered.APLY_YM
             AND pma.APLY_ODR = filtered.APLY_ODR
             AND pma.APLY_YMD = filtered.APLY_YMD
-        UNION ALL
-        SELECT
-            prj.PRJCT_NM,
-            DATE_FORMAT(c.CRTR_YMD, '%Y-%m-%d') AS APLY_DAY,
-            0 AS MD
-        FROM CRTR_DATE c
-                 JOIN (
-            SELECT DISTINCT p.PRJCT_ID, p.PRJCT_NM
-            FROM PRJCT p
-                     JOIN PRJCT_MM_APLY pma ON p.PRJCT_ID = pma.PRJCT_ID
-                     JOIN (
-                SELECT pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR, pmrz.APLY_YMD
-                FROM PRJCT_MM_ATRZ pmrz
-                WHERE pmrz.EMP_ID = #{empId}
-                  AND pmrz.APLY_YM = #{aplyYm}
-                  AND pmrz.APLY_ODR = #{aplyOdr}
-                  AND pmrz.ATRZ_DMND_STTS_CD = 'VTW03703'
-                GROUP BY pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR, pmrz.APLY_YMD
-            ) filtered ON pma.PRJCT_ID = filtered.PRJCT_ID
-        ) prj ON 1=1
-        WHERE c.HLDY_CL_CD = 'VTW05002'
-          AND c.CRTR_YMD LIKE CONCAT(#{aplyYm}, '%')
-          AND c.CRTR_ODR = #{aplyOdr}
-        ORDER BY APLY_DAY
     </select>
 
     <!-- 비용청구 팝업 공휴일 일자별 시간 -->
     <select id="retrieveCtrtDay" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
             (SELECT CD_NM FROM CD WHERE CD_VALUE = CRTR_DATE.HLDY_CL_CD) AS PRJCT_NM,
-            DATE_FORMAT(CRTR_YMD, '%Y-%m-%d') AS APLY_DAY,
+            SUBSTRING(DATE_FORMAT(CRTR_YMD, '%Y%m%d'), 7, 2) AS APLY_DAY,
             8 AS MD
         FROM CRTR_DATE
         WHERE SUBSTR(CRTR_YMD, 1, 6) = #{aplyYm}
@@ -1228,7 +1204,7 @@
     <select id="retrieveVcatnDay" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
             dv.PRJCT_NM
-            , DATE_FORMAT(APLY_YMD, '%Y-%m-%d') AS APLY_DAY
+            , SUBSTRING(DATE_FORMAT(APLY_YMD, '%Y%m%d'), 7, 2) AS APLY_DAY
             , CASE
                 WHEN dv.VCATN_TY_CD IN ('VTW01201', 'VTW01204') THEN 8
                 ELSE 4
