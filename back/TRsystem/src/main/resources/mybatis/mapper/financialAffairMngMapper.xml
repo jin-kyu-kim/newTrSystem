@@ -467,14 +467,6 @@
                 AND pma.EMP_ID = pah.EMP_ID
                 AND pma.APLY_YM = pah.APLY_YM
                 AND pma.APLY_ODR = pah.APLY_ODR
---                 AND pah.PRJCT_ATRZ_HIST_SN = (
---                     SELECT MAX(PRJCT_ATRZ_HIST_SN)
---                     FROM PRJCT_ATRZ_HIST a
---                     WHERE a.PRJCT_ID = pah.PRJCT_ID
---                         AND a.EMP_ID = pah.EMP_ID
---                         AND a.APLY_YM = pah.APLY_YM
---                         AND a.APLY_ODR = pah.APLY_ODR
---             )
             WHERE 1 = 1
             <if test="aplyYm != null and !aplyYm.equals('')">
                 AND pma.APLY_YM = #{aplyYm}
@@ -499,18 +491,9 @@
                 AND pca.EMP_ID = pah.EMP_ID
                 AND pca.APLY_YM = pah.APLY_YM
                 AND pca.APLY_ODR = pah.APLY_ODR
-                <!--
-                AND pah.PRJCT_CT_APLY_SN = (
-                    SELECT MAX(PRJCT_CT_APLY_SN)
-                    FROM PRJCT_CT_ATRZ a
-                    WHERE a.PRJCT_ID = pah.PRJCT_ID
-                        AND a.EMP_ID = pah.EMP_ID
-                        AND a.APLY_YM = pah.APLY_YM
-                        AND a.APLY_ODR = pah.APLY_ODR
-            	)
-            	-->
             	AND pca.PRJCT_CT_APLY_SN = pah.PRJCT_CT_APLY_SN
             WHERE 1 = 1
+		      AND (pca.CT_ATRZ_SE_CD = 'VTW01902' OR pca.CT_ATRZ_SE_CD = 'VTW01903')
             <if test="aplyYm != null and !aplyYm.equals('')">
                 AND pca.APLY_YM = #{aplyYm}
             </if>
