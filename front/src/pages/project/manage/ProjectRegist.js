@@ -138,7 +138,7 @@ const ProjectRegist = ({prjctId, onHide, revise, bgtMngOdr, bgtMngOdrTobe, targe
 
             setData({
                 ...data,
-                [name] : value
+                [name] : value == "" ? null : value
             });
         }
     };
