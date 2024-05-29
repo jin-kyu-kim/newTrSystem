@@ -431,7 +431,7 @@ const EmpVcatnAltmntMng = () => {
             </Box>
 
             <div style={{ display: "flex", marginTop: "30px" }}>
-                <div style={{ width: "60%", marginRight: "25px" }}>
+                <div style={{ width: "60%", marginRight: "25px", minWidth: "300px" }}>
                     <div style={divStyle}><h4>* 직원목록</h4></div>
                     <div style={divStyle}>직원목록을 클릭시 휴가 배정 정보를 수정 할 수있습니다.
                     </div>
@@ -483,7 +483,7 @@ const EmpVcatnAltmntMng = () => {
                         />
                     </div>
                 </div>
-                <div style={{ width: "40%" }}>
+                <div style={{ width: "40%", minWidth: "300px", display: "flex", flexDirection: "column" }}>
                     <div style={divStyle}><h4>* 개인별 휴가 배정 입력</h4></div>
                     <div style={divStyle}>휴가 배정일을 입력 시 사용일 및 잔여일은 자동 계산됩니다.</div>
                     <div style={{ marginTop: "10px", flexDirection: "row" }}>
