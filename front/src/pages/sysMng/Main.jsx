@@ -182,8 +182,7 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
 //============================화면그리는부분===================================
   return (
     <div style={{ marginLeft: "1%", marginRight: "1%" }}>
-      <div style={{ marginBottom: "20px" }}>
-      </div>
+    <style>{mediaQueryStyle}</style>
       <div className="mainContainer" style={mainContainerStyle}>
         <div className="container" style={mainLeftContainerStyle}>
 {/* --------------------------------사용자정보 --------------------------------------------------*/}
@@ -240,6 +239,7 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
 
 {/* ----------------------------------TR입력 현황 ------------------------------------------------*/}
         <div className="container" style={mainRightContainerStyle}>
+        
           <div className="container" style={tableDetailStyle}>
             <p><strong>{orderWorkBgngMm}-{flagOrder}차수 TR입력 현황 </strong></p>
             <CustomTable  keyColumn="mdSum"  columns={trAplyTableColumns}  values={trAplyValues}  onCellClick={onCellClick} />
@@ -332,7 +332,14 @@ const mainContainerStyle = {
         text-overflow: clip; // 텍스트가 잘리지 않도록 설정
       }
     }
-  
+
+    @media screen and (max-width: 768px) {
+      .container {
+        padding: 0 !important;
+        margin: 0 !important;
+        margin-bottom: 20px !important;
+      }
+    }
   `;
   
   export default Main;

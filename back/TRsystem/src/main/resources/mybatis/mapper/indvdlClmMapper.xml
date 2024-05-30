@@ -826,7 +826,7 @@
     <!-- 전자결재 MAX ROW 조회-->
     <select id="retrieveElctrnAtrzCnt" parameterType="map" resultType="com.trsystem.LowerHashMap">
         /* indvdlClmMapper.retrieveElctrnAtrzCnt */
-        SELECT *
+        SELECT COUNT(ELCTRN_ATRZ_DOC_NO) ROW_CNT
         FROM ELCTRN_ATRZ
     </select>
 
