@@ -525,7 +525,6 @@
         (
             #{rjctPrvonsh}
             ,#{atrzDmndSttsCd}
-<!--            ,"VTW03702"-->
             ,#{aprvrEmpId}
             ,#{prjctId}
             ,#{empId}
@@ -557,21 +556,6 @@
         AND PRJCT_ID = #{prjctId}
     </update>
 
-
-<!--    &lt;!&ndash; 프로젝트MM결재수정 &ndash;&gt;-->
-<!--    <update id="retrievePrjctMmSttsInq" parameterType="map">-->
-<!--        /* indvdlClmMapper.retrievePrjctMmSttsInq */-->
-<!--        UPDATE PRJCT_MM_ATRZ-->
-<!--        SET-->
-<!--            ATRZ_DMND_STTS_CD = ''-->
-<!--            ,MDFCN_DT = SYSDATE()-->
-<!--            ,MDFCN_EMP_ID = #{empId}-->
-<!--        WHERE EMP_ID = #{empId}-->
-<!--        AND APLY_YM = #{aplyYm}-->
-<!--        AND APLY_ODR = #{aplyOdr}-->
-<!--        AND APLY_YMD = #{aplyYmd}-->
-<!--        AND PRJCT_ID = #{prjctId}-->
-<!--    </update>-->
 
     <!-- 프로젝트개인비용MM수정 -->
     <update id="updatePrjctIndvdlCtMm" parameterType="map">
@@ -878,6 +862,47 @@
         )
     </insert>
 
+
+    <!-- 프로젝트개MM신청여부조회 -->
+    <select id="selectPrjctMmAplyRowCnt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        /* indvdlClmMapper.selectPrjctMmAplyRowCnt */
+        SELECT COUNT(APLY_YMD) ROW_COUNT
+        FROM PRJCT_MM_APLY
+        WHERE EMP_ID = #{empId}
+        AND APLY_YM = #{aplyYm}
+        AND APLY_ODR = #{aplyOdr}
+    </select>
+
+    <!-- 프로젝트개인비용MM신청여부조회 -->
+    <select id="selectPrjctIndvdlCtMmRowCnt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        /* indvdlClmMapper.selectPrjctIndvdlCtMmRowCnt */
+        SELECT *
+        FROM PRJCT_INDVDL_CT_MM
+        WHERE EMP_ID = #{empId}
+        AND APLY_YM = #{aplyYm}
+        AND APLY_ODR = #{aplyOdr}
+    </select>
+
+
+    <!-- 프로젝트개인비용MM수정 -->
+    <update id="updatePrjctIndvdlCtMmRowCnt" parameterType="map">
+        /* indvdlClmMapper.updatePrjctIndvdlCtMmRowCnt */
+        UPDATE PRJCT_INDVDL_CT_MM
+        SET MM_ATRZ_CMPTN_YN = NULL
+        WHERE EMP_ID = #{empId}
+        AND APLY_YM = #{aplyYm}
+        AND APLY_ODR = #{aplyOdr}
+    </update>
+
+
+    <!-- 프로젝트개인비용MM삭제 -->
+    <delete id="deletePrjctIndvdlCtMmRowCnt" parameterType="map">
+        /* indvdlClmMapper.deletePrjctIndvdlCtMmRowCnt */
+        DELETE FROM PRJCT_INDVDL_CT_MM
+        WHERE EMP_ID = #{empId}
+        AND APLY_YM = #{aplyYm}
+        AND APLY_ODR = #{aplyOdr}
+    </delete>
 
     <!-- =================================박지환_작업================================= -->
 

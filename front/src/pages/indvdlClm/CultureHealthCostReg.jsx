@@ -422,13 +422,14 @@ const CultureHealthCostReg = (props) => {
                         dataSource={values}
                         onFocusedRowChanged={onFocusedRowChanged}
                         focusedRowEnabled={true}
+                        wordWrapEnabled={true}
                     >
-                        <Column dataField='month' caption='대상월' alignment="center" wordWrap={true}/>
-                        <Column dataField='clmYmd' caption='청구일자' alignment="center" wordWrap={true}/>
-                        <Column dataField='clmAmt' caption='금액' alignment="center" wordWrap={true}/>
-                        <Column dataField='actIem' caption='항목' alignment="center" wordWrap={true}/>
-                        <Column dataField='rm' caption='비고' alignment="center" wordWrap={true}/>
-                        <Column dataField='frcsNm' caption='가맹점' alignment="center" wordWrap={true}/>
+                        <Column dataField='month' caption='대상월' alignment="center"/>
+                        <Column dataField='clmYmd' caption='청구일자' alignment="center"/>
+                        <Column dataField='clmAmt' caption='금액' alignment="center"/>
+                        <Column dataField='actIem' caption='항목' alignment="center"/>
+                        <Column dataField='rm' caption='비고' alignment="center"/>
+                        <Column dataField='frcsNm' caption='가맹점' alignment="center"/>
                         <Column caption='첨부' minWidth={150} cellRender={fileCell} alignment="center"/>
                     </DataGrid>
                     <div style={{display: "flex", justifyContent: "flex-end"}}>

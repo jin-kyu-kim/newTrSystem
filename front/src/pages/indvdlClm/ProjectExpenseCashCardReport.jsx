@@ -118,6 +118,7 @@ const ProjectExpenseCashCardReport = ({basicInfo}) => {
         <div style={{ marginBottom: "20px" }}>
             <PivotGrid
                 id="sales"
+                showTotalsPrior='columns'
                 dataSource={dataSource}
                 allowSortingBySummary={true}
                 allowSorting={false}
@@ -128,7 +129,8 @@ const ProjectExpenseCashCardReport = ({basicInfo}) => {
                 showRowTotals={true}
                 wordWrapEnabled={true}
                 onCellPrepared={onCellPrepared}
-                >
+                texts={{ grandTotal: "금액" }}
+            >
                 <FieldPanel
                     showRowFields={true}
                     visible={true}
