@@ -153,10 +153,14 @@
      		AND VCATN_BGNG_YMD BETWEEN #{vcatnBgngYmd} AND #{vcatnEndYmd}
            </if>
         </if>
+        <if test="!empFlnm.equals('') and !empFlnm.equals('')">
+     		AND EMP_FLNM LIKE CONCAT('%',#{empFlnm},'%')
+           </if>
       <if test="empno !=null and !empno.equals('')">
      	HAVING
         EMPNO = #{empno}
       </if>
+      
     </select>
 
 
