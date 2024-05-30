@@ -12,6 +12,7 @@ import Box, {Item} from "devextreme-react/box"
 import CustomDateRangeBox from "../../components/unit/CustomDateRangeBox";
 import AutoCompleteName from "../../components/unit/AutoCompleteName";
 import CustomTable from "components/unit/CustomTable";
+import SearchInfoSet from "components/composite/SearchInfoSet";
 
 const EmpVacUseList = (callBack,props) => {
 
@@ -28,8 +29,8 @@ const EmpVacUseList = (callBack,props) => {
     });
     
     //=============== JSON데이터 넣어두기=======================================
-    const {keyColumn, queryId, tableColumns, searchParams} = EmpVacUseListJson;
-
+    const {keyColumn, queryId, tableColumns, searchInfo} = EmpVacUseListJson;
+    
     //=============== 조회=======================================
     useEffect(() => {
       setParam ({
@@ -46,14 +47,10 @@ const EmpVacUseList = (callBack,props) => {
 
     //=============== 검색 조회=======================================
     const searchHandle = async (initParam) => {
-        setTotalPages(1);
-        setCurrentPage(1);
+      console.log(initParam);
         setParam({
             ...initParam,
             queryId: queryId,
-            currentPage: currentPage,
-            startVal: 0,
-            pageSize: pageSize,
         });
     }
 
@@ -177,32 +174,7 @@ const EmpVacUseList = (callBack,props) => {
             </div>
             {/*----------------서치셋 구간---------------------------------------------------------------- */}
             <div className="box_search" style={{ marginBottom: "20px" }} width="60%" >
-            <Box
-              direction="row"
-              width="100%"
-              height={30}
-            >
-              <Item className="prjctDatePickerItem" ratio={2} visible={props.prjctDatePickerItem}>
-                <CustomDateRangeBox
-                  onStartDateChange={handleStartDateChange}
-                  onEndDateChange={handleEndDateChange}
-                />
-              </Item>
-
-              <Item className="empnoItem" ratio={1} visible={props.empnoItem}>
-                <AutoCompleteName
-                  placeholderText="성명"
-                  onValueChange={handleChgEmp}
-                  value={initParam.empno}
-                />
-              </Item>
-            
-              <Item className="searchBtnItem" ratio={1} visible={props.searchBtnItem}>
-                <Button
-                  onClick={handleSubmit} text="검색"                 
-                />
-              </Item>
-            </Box>
+            <SearchInfoSet callBack={searchHandle} props={searchInfo} />
             </div>
             {/*----------------서치셋 구간---------------------------------------------------------------- */}
             <div>
