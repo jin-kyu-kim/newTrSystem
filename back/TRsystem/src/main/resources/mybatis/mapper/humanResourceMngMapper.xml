@@ -130,38 +130,36 @@
 
 	<!-- 휴가사용내역 -->
 	<select id="retrieveEmpVacUseList" parameterType="map" resultType="com.trsystem.LowerHashMap">
-    SELECT
-		 (SELECT CD_NM FROM CD WHERE CD_VALUE = va.VCATN_TY_CD) AS VCATN_TY_CD -- 휴가구분
- 		,(SELECT EMPNO FROM  EMP WHERE EMP_ID IN (SELECT ATRZ_DMND_EMP_ID  FROM ELCTRN_ATRZ ea WHERE ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID ) ) as EMPNO -- 사원번호
- 		,(SELECT EMP_FLNM FROM EMP WHERE EMP_ID IN (SELECT ATRZ_DMND_EMP_ID  FROM ELCTRN_ATRZ ea WHERE ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID  ) ) as EMP_FLNM -- 사원명
-		, STR_TO_DATE(VCATN_BGNG_YMD, '%Y%m%d')  VCATN_BGNG_YMD -- 시작일
-		, STR_TO_DATE(VCATN_END_YMD, '%Y%m%d')  VCATN_END_YMD -- 종료일
-		, VCATN_DE_CNT -- 휴가일수
-		, VCATN_PRVONSH -- 휴가사유
-        , COUNT(*) OVER () AS TOTAL_ITEMS
-     FROM
-     VCATN_ATRZ va     	   <!--휴가결재 테이블-->
- 	 WHERE 1=1
-        <if test="vcatnBgngYmd != null and vcatnEndYmd == null">
-      		AND VCATN_BGNG_YMD <![CDATA[>=]]> #{vcatnBgngYmd}
-        </if>
-        <if test="vcatnBgngYmd == null and vcatnEndYmd != null">
-      		AND VCATN_END_YMD <![CDATA[<=]]> #{vcatnEndYmd}
-        </if>
-        <if test="vcatnBgngYmd != null and vcatnEndYmd != null">
-           <if test="!vcatnBgngYmd.equals('') and !vcatnEndYmd.equals('')">
-     		AND VCATN_BGNG_YMD BETWEEN #{vcatnBgngYmd} AND #{vcatnEndYmd}
-           </if>
-        </if>
-        <if test="!empFlnm.equals('') and !empFlnm.equals('')">
-     		AND EMP_FLNM LIKE CONCAT('%',#{empFlnm},'%')
-           </if>
-      <if test="empno !=null and !empno.equals('')">
-     	HAVING
-        EMPNO = #{empno}
-      </if>
-      
-    </select>
+	    SELECT
+	        c.CD_NM AS VCATN_TY_CD,
+	        e.EMPNO as EMPNO,
+	        e.EMP_FLNM as EMP_FLNM,
+	        STR_TO_DATE(VCATN_BGNG_YMD, '%Y%m%d') AS VCATN_BGNG_YMD,
+	        STR_TO_DATE(VCATN_END_YMD, '%Y%m%d') AS VCATN_END_YMD,
+	        VCATN_DE_CNT,
+	        VCATN_PRVONSH,
+	        COUNT(*) OVER () AS TOTAL_ITEMS
+	    FROM
+	        VCATN_ATRZ va
+	        JOIN CD c ON c.CD_VALUE = va.VCATN_TY_CD
+	        JOIN ELCTRN_ATRZ ea ON ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID
+	        JOIN EMP e ON e.EMP_ID = ea.ATRZ_DMND_EMP_ID
+	    WHERE 1=1
+	    <if test="vcatnBgngYmd != null and vcatnBgngYmd != '' and (vcatnEndYmd == null or vcatnEndYmd == '')">
+	        AND VCATN_BGNG_YMD <![CDATA[>=]]> #{vcatnBgngYmd}
+	    </if>
+	    <if test="(vcatnBgngYmd == null or vcatnBgngYmd == '') and vcatnEndYmd != null and vcatnEndYmd != ''">
+	        AND VCATN_END_YMD <![CDATA[<=]]> #{vcatnEndYmd}
+	    </if>
+	    <if test="vcatnBgngYmd != null and vcatnBgngYmd != '' and vcatnEndYmd != null and vcatnEndYmd != ''">
+	        AND VCATN_BGNG_YMD BETWEEN #{vcatnBgngYmd} AND #{vcatnEndYmd}
+	    </if>
+	    <if test="empFlnm != null and empFlnm != ''">
+	        AND e.EMP_FLNM LIKE CONCAT('%', #{empFlnm}, '%')
+	    </if>
+	    ORDER BY ea.REG_DT DESC
+</select>
+
 
 
 	<!--사번max값 조회용 쿼리-->

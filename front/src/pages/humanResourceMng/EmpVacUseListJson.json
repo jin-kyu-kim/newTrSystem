@@ -22,8 +22,8 @@
         "searchParams": {
             "insertButton": false,
             "dateRange": true,
-            "startDtNm": "ctrtYmd",
-            "endDtNm": "bizEndYmd"
+            "startDtNm": "vcatnBgngYmd",
+            "endDtNm": "vcatnEndYmd"
         },
         "textBoxItem": [
             {
