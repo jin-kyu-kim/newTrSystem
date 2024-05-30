@@ -9,7 +9,6 @@ import Box, { Item } from "devextreme-react/box";
 import CustomComboBox from 'components/unit/CustomComboBox';
 import CustomDateRangeBox from "components/unit/CustomDateRangeBox";
 import AutoCompleteProject from "components/unit/AutoCompleteProject";
-import "./SearchSet.css"
 
 const SearchInfoSet = ({ callBack, props, insertPage }) => {
   const navigate = useNavigate();
