@@ -86,6 +86,7 @@ public class IndvdlClmDomain {
             String empId = String.valueOf(ctParams.get(i).get("empId"));
             String aplyYm = String.valueOf(ctParams.get(i).get("aplyYm"));
             String aplyOdr = String.valueOf(ctParams.get(i).get("aplyOdr"));
+            String aprvrEmpId = String.valueOf(ctParams.get(i).get("aprvrEmpId"));
 
             // 참석자가 있을 경우 직원명 데이터 재조합 후 sn과 함께 insert
             Object atdrnObj = ctParams.get(i).get("atdrn");
@@ -140,7 +141,7 @@ public class IndvdlClmDomain {
             }
             // atrz insert
             atrzParam.add(Map.of("tbNm", "PRJCT_CT_ATRZ"));
-            atrzParam.add(Map.of("prjctCtAplySn", maxSn, "prjctId", prjctId, "empId", empId, "aplyYm", aplyYm, "aplyOdr", aplyOdr));
+            atrzParam.add(Map.of("prjctCtAplySn", maxSn, "prjctId", prjctId, "empId", empId, "aplyYm", aplyYm, "aplyOdr", aplyOdr, "aprvrEmpId", aprvrEmpId));
             result += commonService.insertData(atrzParam);
         }
         return result;
