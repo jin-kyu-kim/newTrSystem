@@ -80,11 +80,11 @@ export const navigation = [
       // },{
         text: '파트너업체관리',
         path: '/project/ProjectOutordCompany',
-        auth: 'USER'
+        auth: 'VTW04807'
       },{
         text: '파트너직원관리',
         path: '/project/ProjectOutordEmp',
-        auth: 'USER'
+        auth: 'VTW04807'
       },
     ]
   }, {
