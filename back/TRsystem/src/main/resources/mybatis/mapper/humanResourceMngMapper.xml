@@ -145,6 +145,7 @@
 	        JOIN ELCTRN_ATRZ ea ON ea.ELCTRN_ATRZ_ID = va.ELCTRN_ATRZ_ID
 	        JOIN EMP e ON e.EMP_ID = ea.ATRZ_DMND_EMP_ID
 	    WHERE 1=1
+	    AND ea.ATRZ_DMND_STTS_CD ='VTW03703'
 	    <if test="vcatnBgngYmd != null and vcatnBgngYmd != '' and (vcatnEndYmd == null or vcatnEndYmd == '')">
 	        AND VCATN_BGNG_YMD <![CDATA[>=]]> #{vcatnBgngYmd}
 	    </if>
