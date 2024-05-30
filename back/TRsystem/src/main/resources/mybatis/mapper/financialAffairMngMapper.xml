@@ -495,8 +495,9 @@
 	          , AA.JBPS_CD
 	          , (
 	              SELECT DEPT_NM
-	              FROM DEPT
+	              FROM DEPT d
 	              WHERE DEPT_ID = (SELECT dh.DEPT_ID FROM DEPT_HNF dh WHERE dh.EMP_ID = AA.EMP_ID LIMIT 1)
+	                AND d.END_YN = 'N'
 	          ) AS DEPT_NM
 	          , (
 		         SELECT GROUP_CONCAT(DISTINCT DEPT_NM) DEPT_NM_ALL
@@ -504,6 +505,7 @@
 		         JOIN DEPT_HNF dh ON d.DEPT_ID = dh.DEPT_ID
 		         JOIN EMP e ON dh.EMP_ID = e.EMP_ID 
 		         WHERE e.EMP_ID = AA.EMP_ID
+		           AND d.END_YN = 'N'
 	          ) AS DEPT_NM_ALL
 	          , AA.TELNO
 	          , (SELECT CD_NM FROM CD WHERE CD_VALUE = AA.HDOF_STTS_CD) AS HDOF_STTS_NM

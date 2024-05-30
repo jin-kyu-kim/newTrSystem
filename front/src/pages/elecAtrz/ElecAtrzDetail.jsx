@@ -732,7 +732,7 @@ const ElecAtrzDetail = () => {
     }
 
     /**
-     * 
+     * 결재 변경: VTW05406
      * @returns 
      */
     const onUpdateReq = async () => {
@@ -911,11 +911,12 @@ const ElecAtrzDetail = () => {
                     </Button>
                 </div>
             </Popup>
-            <ElecAtrzHistPopup
-                visible={histPopVisible}
-                onPopHiding={onHistPopHiding}
-                selectedData={detailInfo}
-            /> 
+                <ElecAtrzHistPopup
+                    visible={histPopVisible}
+                    onPopHiding={onHistPopHiding}
+                    selectedData={detailInfo}
+                    sttsCd={sttsCd}
+                /> 
         </div>
     );
 }

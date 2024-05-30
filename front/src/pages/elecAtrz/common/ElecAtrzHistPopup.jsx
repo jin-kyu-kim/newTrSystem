@@ -6,7 +6,7 @@ import ApiRequest from "utils/ApiRequest";
 import ElecAtrzHistPopupJson from "./ElecAtrzHistPopupJson.json";
 import { useNavigate } from 'react-router-dom';
 
-const ElecAtrzHistPopup = ({ visible, onPopHiding, selectedData }) => {
+const ElecAtrzHistPopup = ({ visible, onPopHiding, selectedData, sttsCd }) => {
 
     const { queryId, keyColumn, columns } = ElecAtrzHistPopupJson;
     const [ values, setValues ] = useState([]);
@@ -38,8 +38,8 @@ const ElecAtrzHistPopup = ({ visible, onPopHiding, selectedData }) => {
         }
 
         let detailData = await ApiRequest("/boot/common/queryIdSearch", param);
+        navigate('/elecAtrz/ElecAtrzDetail', { state: { data: detailData[0], sttsCd: detailData[0].atrzDmndSttsCd === "VTW03705" || detailData[0].atrzDmndSttsCd === "VTW03706" ? detailData[0].atrzDmndSttsCd : sttsCd , prjctId:detailData[0].prjctId, refer: null}})
         onPopHiding();
-        navigate('/elecAtrz/ElecAtrzDetail', { state: { data: detailData[0], sttsCd: data.atrzHistSeCd === "VTW05405" ? "VTW03705" : "VTW03706", prjctId:detailData[0].prjctId, refer: null}})
         
     }
 

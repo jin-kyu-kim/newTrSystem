@@ -170,6 +170,9 @@
 					<when test="sttsCd != null and sttsCd.equals('VTW05407')">
 						NULL AS ATRZ_STTS_CD_NM,
 					</when>
+					<when test="sttsCd != null and sttsCd.equals('VTW05406')">
+						NULL AS ATRZ_STTS_CD_NM,
+					</when>
 					<otherwise>
 						cd2.CD_NM AS ATRZ_STTS_CD_NM,
 					</otherwise>
@@ -178,6 +181,7 @@
 				(SELECT CD_NM FROM CD WHERE CD_VALUE = e.JBPS_CD) JBPS_NM,
 				NULL AS LIST_EMP_FLNM,
 				CASE WHEN #{sttsCd} = 'VTW05407' THEN ''
+					 WHEN #{sttsCd} = 'VTW05406' THEN ''
 					 WHEN (ln.APRV_YMD IS NOT NULL OR ln.RJCT_YMD IS NOT NULL) THEN DATE_FORMAT(ln.MDFCN_DT, '%Y.%m.%d %H:%i:%s')
 					 ELSE ''
 				 END AS MDFCN_DT,
@@ -661,7 +665,7 @@
 		  LEFT JOIN EMP e ON rm.EMP_ID = e.EMP_ID
  		  LEFT JOIN DEPT_HNF dh ON e.EMP_ID = dh.EMP_ID
 	  	  LEFT JOIN DEPT d ON dh.DEPT_ID = d.DEPT_ID
-	     WHERE rm.ELCTRN_ATRZ_ID = 'dc59cbd0-7fbc-7282-e038-bb33873ce466'
+	     WHERE rm.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
 		   AND (rm.REFRN_CNCRRNC_CL_CD LIKE '%VTW00706' OR rm.REFRN_CNCRRNC_CL_CD LIKE '%VTW00707') 
 	</select>
 	
@@ -709,7 +713,8 @@
 			cad.CNPT_NM,
 			CASE WHEN (SELECT al2.ATRZ_STTS_CD FROM ATRZ_LN al2 WHERE al2.ATRZ_LN_SN = 1 AND al2.ELCTRN_ATRZ_ID = ea.ELCTRN_ATRZ_ID) = 'VTW00801' THEN 'Y'
 				 ELSE 'N'
-			END AS RECALL -- 회수가능여부
+			END AS RECALL, -- 회수가능여부
+			ea.ATRZ_DMND_STTS_CD
 		FROM ELCTRN_ATRZ ea
 		LEFT JOIN REFRN_MAN rm ON ea.ELCTRN_ATRZ_ID = rm.ELCTRN_ATRZ_ID -- 참조자의 경우
 		LEFT JOIN GNRL_ATRZ ga ON ea.ELCTRN_ATRZ_ID = ga.ELCTRN_ATRZ_ID -- 일반결재
@@ -721,7 +726,6 @@
 		LEFT JOIN ELCTRN_ATRZ_DOC_FORM eadf ON ea.ATRZ_FORM_DOC_ID = eadf.ATRZ_FORM_DOC_ID -- 서식 제목
 		WHERE 1=1
 		AND ATRZ_DMND_EMP_ID = #{empId}
-		AND (ea.ATRZ_DMND_STTS_CD = 'VTW03705' OR ea.ATRZ_DMND_STTS_CD = 'VTW03706')
 		AND ea.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
 	</select>
 	

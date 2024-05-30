@@ -1,38 +1,37 @@
 import React from 'react';
-import Scheduler from 'devextreme-react/scheduler';
 import CustomPivotGrid from "../../components/unit/CustomPivotGrid";
 import PivotGridDataSource from "devextreme/ui/pivot_grid/data_source";
 
-const ProjectClaimCostIndividualCtPop = ({props, prjctNm, startYmOdr, endYmOdr, data}) => {
+const ProjectClaimCostIndividualCtPop = ({props, prjctNm, startYmOdr, endYmOdr}) => {
 
     const dataSource = new PivotGridDataSource({
         fields: [{
             caption: '직원명',
             dataField: 'empFlnm',
-            width: 70,
+            width: "5%",
             area: 'row',
             expanded: true,
         }, {
             caption: '프로젝트명',
             dataField: 'prjctNm',
-            width: 250,
+            width: "5%",
             area: 'row',
             expanded: true,
             showTotals: false,
         }, {
             caption: '비용코드',
             dataField: 'cdNm',
-            width: 150,
+            width: "5%",
             area: 'row',
             expanded: true,
         },  {
             caption: '상세내역',
             dataField: 'empDetail',
-            width: 250,
+            width: "5%",
             area: 'row',
         }, {
             dataField: 'pivotDate',
-            width: 70,
+            width: "10%",
             area: 'column',
         }, {
             groupName: 'date',
