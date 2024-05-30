@@ -501,3 +501,19 @@
   padding-left: 22px;
   background-color: #FFE08C;
 }
+/* 프로젝트비용 tabpanel용 */
+@media (max-width: 768px) {
+  .dx-tabpanel {
+    font-size: 14px; /* 탭 글꼴 크기 조정 */
+  }
+
+  .dx-tabpanel .dx-item {
+    padding: 10px; /* 탭 패딩 조정 */
+  }
+  
+  .container{
+      padding: 0 !important;
+      margin: 0 !important;
+  }
+}
+

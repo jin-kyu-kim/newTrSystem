@@ -17,5 +17,19 @@
         "prjctMngrEmpIdItem": false,
         "insertBtnItem": false,
         "popupVisible" : false
+    },
+    "searchInfo": {
+        "searchParams": {
+            "insertButton": false,
+            "dateRange": true,
+            "startDtNm": "vcatnBgngYmd",
+            "endDtNm": "vcatnEndYmd"
+        },
+        "textBoxItem": [
+            {
+                "placeholder": "성명",
+                "name": "empFlnm"
+            }
+        ]
     }
 }

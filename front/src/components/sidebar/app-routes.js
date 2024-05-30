@@ -83,14 +83,14 @@ const routes = [
     path: "/project/ProjectOutordCompany",
     name: "ProjectOutordCompany",
     element: React.lazy(() => import("../../pages/project/manage/ProjectOutordCompany")),
-    isPrivate:true
+    isPrivate:'VTW04807'
   },
   // 프로젝트 외주업체 관리 - 직원목록
   {
     path: "/project/ProjectOutordEmp",
     name: "ProjectOutordEmp",
     element: React.lazy(() => import("../../pages/project/manage/ProjectOutordEmp")),
-    isPrivate:true
+    isPrivate:'VTW04807'
   },
   // 권한관리
   {

@@ -78,16 +78,18 @@ const ElecAtrz = () => {
   };
 
   useEffect(() => {
-    const getAllCount = async () => {
-      try {
-        const response = await ApiRequest('/boot/common/queryIdSearch', { queryId: countQueryId, empId: empId });
-        setTotalCount(response);
-      } catch (error) {
-        console.log('error', error);
-      }
-    }
+
     getAllCount();
   }, []);
+
+  const getAllCount = async () => {
+    try {
+      const response = await ApiRequest('/boot/common/queryIdSearch', { queryId: countQueryId, empId: empId });
+      setTotalCount(response);
+    } catch (error) {
+      console.log('error', error);
+    }
+  }
 
   const getList = async (keyNm, refer, sttsCd) => {
     setClickBox(keyNm); // 선택된 박스의 색상 변경
@@ -153,7 +155,7 @@ const ElecAtrz = () => {
       const res = await ApiRequest('/boot/elecAtrz/deleteTempAtrz', {
         elctrnAtrzId: data.elctrnAtrzId, atrzTySeCd: data.elctrnAtrzTySeCd
       });
-      if(res >= 1) getList();
+      if(res >= 1) searchHandle(); getAllCount();
     } else if(button.name === "docHist") {
       await onSetPopData(data);
       await onHistPopAppear();
@@ -207,6 +209,7 @@ const ElecAtrz = () => {
       if(response > 0) {
         handleOpen("회수되었습니다. 임시저장 목록에서 확인가능합니다.");
         searchHandle();
+        getAllCount();
       } else {
         handleOpen("회수에 실패하였습니다. 관리자에게 문의해주세요");
       }
@@ -572,6 +575,8 @@ const ElecAtrz = () => {
 
             handleOpen("승인 처리되었습니다.");
             handleClose();
+            searchHandle();
+            getAllCount();
         } else {
             handleOpen("승인 처리에 실패하였습니다.");
             handleClose();

@@ -7,7 +7,7 @@ import CustomTable from 'components/unit/CustomTable';
 import ApiRequest from "../../utils/ApiRequest";
 import SearchInfoSet from 'components/composite/SearchInfoSet';
 import { useModal } from "../../components/unit/ModalContext";
-
+import '../../assets/css/Style.css'
 const ProjectExpense = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -273,7 +273,6 @@ const ProjectExpense = () => {
     return (
         <div>
             <div style={{ marginLeft: '2%', marginRight: '2%', marginBottom: '10%' }}>
-            <style>{mediaQueryStyle}</style>
                 <div className="mx-auto" style={{ display: 'flex', marginTop: "20px", marginBottom: "30px" }}>
                     <h1 style={{ fontSize: "30px", marginRight: "20px" }}>프로젝트비용</h1>
                     {getButtonsShow().map(({ onClick, text, type }, index) => (
@@ -336,25 +335,3 @@ const ProjectExpense = () => {
     );
 };
 export default ProjectExpense;
-
-
-const mediaQueryStyle = 
-`
-@media screen and (max-width: 768px) {
-    .dx-tabpanel {
-      font-size: 14px; /* 탭 글꼴 크기 조정 */
-    }
-  
-    .dx-tabpanel .dx-item {
-      padding: 10px; /* 탭 패딩 조정 */
-    }
-    
-    .container{
-        padding: 0 !important;
-        margin: 0 !important;
-    }
-
-    
-  }
-  
-`;

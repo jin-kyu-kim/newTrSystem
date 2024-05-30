@@ -126,6 +126,8 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                 wordWrapEnabled={true}
                 repaintChangesOnly={true}
                 onRowClick={onRowClick}
+                columnMinWidth={100}
+                scrolling={true}
                 onExporting={onExcel}
                 onRowExpanding={handleExpanding}
                 onSelectionChanged={onSelection && ((e) => onSelection(e))}
