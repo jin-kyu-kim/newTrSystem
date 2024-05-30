@@ -68,7 +68,7 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data, sttsCd}) => {
     const [forms, setForms] = useState([]);
 
     useEffect(() => {
-        if (data.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407" || sttsCd === "VTW05405" ) {
+        if (data.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407" || sttsCd === "VTW05405" || sttsCd === "VTW05406" ) {
             getTempData();
 
         } else if (data.selectedData) {

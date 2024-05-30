@@ -50,7 +50,7 @@ const ElecAtrzDetail = () => {
             if (res) setDetailData({ ...detailInfo, ...res[0] })
         }
         getDetailData();
-    }, []);
+    }, [detailInfo]);
     
     const onBtnClick = (e) => {
         switch (e.element.id) {
@@ -723,7 +723,7 @@ const ElecAtrzDetail = () => {
     }
 
     /**
-     * 
+     * 결재 변경: VTW05406
      * @returns 
      */
     const onUpdateReq = async () => {
@@ -890,10 +890,11 @@ const ElecAtrzDetail = () => {
                 </div>
             </Popup>
                 <ElecAtrzHistPopup
-                visible={histPopVisible}
-                onPopHiding={onHistPopHiding}
-                selectedData={detailInfo}
-                  /> 
+                    visible={histPopVisible}
+                    onPopHiding={onHistPopHiding}
+                    selectedData={detailInfo}
+                    sttsCd={sttsCd}
+                /> 
         </div>
     );
 }

@@ -65,7 +65,7 @@ const ElecAtrzNewReq = () => {
      */
     useEffect(()=>{
         if(!ctrtTyCd){
-            if(formData.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407"  || sttsCd === "VTW05405"){   //임시저장
+            if(formData.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407" || sttsCd === "VTW05406" || sttsCd === "VTW05405"){   //임시저장
                 
                 const getCtrtInfo = async () => {
                     try {
@@ -132,7 +132,7 @@ const ElecAtrzNewReq = () => {
          * 상태 코드가 임시저장일 때 실행될 코드
          * 상태 코드가 재기안 일때 실행될 코드
          */
-        if(sttsCd === "VTW03701" || sttsCd === "VTW05407" || sttsCd === "VTW05405") {
+        if(sttsCd === "VTW03701" || sttsCd === "VTW05407" || sttsCd === "VTW05406" || sttsCd === "VTW05405") {
 
             setAtrzParam(atrzParam => ({
                 ...atrzParam,
@@ -259,7 +259,7 @@ const ElecAtrzNewReq = () => {
             setAtrzLnEmpList(response);
         }
 
-        if(sttsCd === "VTW03701" || sttsCd === "VTW05407") {
+        if(sttsCd === "VTW03701" || sttsCd === "VTW05407" || sttsCd === "VTW05406") {
             getTempAtrzLn();
         } else if(sttsCd === "VTW05405") {
             // 결재선을 가져오되, 승인한 사람들에게 취소요청을 하기 위해서 승인된 것만 가져오기.
