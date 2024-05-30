@@ -170,7 +170,7 @@ const CultureHealthCost = () => {
             >
                 <h1 style={{fontSize: "40px"}}>문화체련비</h1>
             </div>
-            <div className="col-md-2" style={{marginLeft: "2%", marginBottom: "2%"}}>
+            <div className="col-md-2" style={{marginBottom: "2%"}}>
                 <SelectBox
                     placeholder="[년도]"
                     defaultValue={now.getFullYear()}
@@ -179,7 +179,7 @@ const CultureHealthCost = () => {
                         setYear(e)
                     }}/>
             </div>
-            <div style={{margin: "2%"}}>
+            <div style={{marginBottom: "4%"}}>
                 <PivotGrid
                     dataSource={dataSource}
                     allowSortingBySummary={true}

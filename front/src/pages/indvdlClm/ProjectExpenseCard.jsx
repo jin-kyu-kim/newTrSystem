@@ -74,6 +74,33 @@ const ProjectExpenseCard = (props) => {
         }
     };
 
+    const setComboBox = (value, props) =>{
+        if(value){
+            if (value.prjctId) {
+                getCdList(value, props.data.cardUseSn);
+                props.data.prjctId = value.prjctId
+                props.data.aprvrEmpId = value.prjctMngrEmpId // 결재자 추가
+    
+                setIsPrjctIdSelected(prevStts => ({
+                    ...prevStts,
+                    [props.data.cardUseSn]: !!value
+                }))
+            } else {
+                props.data.expensCd = value.expensCd
+                setExpensCd(prevStts => ({
+                    ...prevStts,
+                    [props.data.cardUseSn]: value.expensCd
+                }));
+            }
+    
+        }else{
+            setIsPrjctIdSelected(prevStts => ({
+                ...prevStts,
+                [props.data.cardUseSn]: false
+            }))
+        }
+    }
+
     const getCdList = async (prjct, cardUseSn) => {
         let queryId = prjct.prjctStleCd === 'VTW01802' ? prjctStleQueryId : prjctStlePdQueryId
         try {
@@ -142,7 +169,7 @@ const ProjectExpenseCard = (props) => {
     const onPopHiding = () => { setPopVisible(false); };
 
     const cellRenderConfig = {
-        getCdList, isPrjctIdSelected, setIsPrjctIdSelected, chgPlaceholder, comboList, cdList,
+        getCdList, isPrjctIdSelected, setIsPrjctIdSelected, chgPlaceholder, comboList, cdList, setComboBox, 
         expensCd, setExpensCd, setValidationErrors, hasError: (cardUseSn, fieldName) => hasError(validationErrors, cardUseSn, fieldName)
     };
 
