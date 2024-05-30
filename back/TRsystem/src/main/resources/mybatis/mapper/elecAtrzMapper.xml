@@ -402,7 +402,8 @@
 			ea.ATRZ_DMND_STTS_CD,
 			ca.CTRT_ATRZ_TTL,
 			ca.CTRT_ATRZ_TTL AS TITLE,
-			ca.CTRT_ATRZ_CN AS CN
+			ca.CTRT_ATRZ_CN AS CN,
+			ea.ELCTRN_ATRZ_DOC_NO
 		FROM ELCTRN_ATRZ ea
 		    JOIN CTRT_ATRZ ca ON ea.ELCTRN_ATRZ_ID = ca.ELCTRN_ATRZ_ID
 		WHERE 1=1
@@ -727,6 +728,23 @@
 		WHERE 1=1
 		AND ATRZ_DMND_EMP_ID = #{empId}
 		AND ea.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
+	</select>
+	
+	<select id="retrieveAtrzGiveHistList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT ea.ELCTRN_ATRZ_DOC_NO
+	 		 , DATE_FORMAT(ea.REG_DT, '%Y-%m-%d %H:%i:%s') AS REG_DT
+			 , e.EMPNO
+			 , e.EMP_FLNM
+			 , ea.ATRZ_DMND_EMP_ID
+			 , cga.GIVE_YMD
+			 , c.CD_NM AS ATRZ_DMND_STTS_CD_NM
+			 , cga.ELCTRN_ATRZ_ID
+			 , ea.ATRZ_DMND_STTS_CD 
+		  FROM CTRT_GIVE_ATRZ cga
+		  JOIN ELCTRN_ATRZ ea ON cga.ELCTRN_ATRZ_ID = ea.ELCTRN_ATRZ_ID
+		  JOIN EMP e ON ea.ATRZ_DMND_EMP_ID = e.EMP_ID
+		  JOIN CD c ON ea.ATRZ_DMND_STTS_CD = c.CD_VALUE 
+		WHERE CTRT_ELCTRN_ATRZ_ID = #{elctrnAtrzId}
 	</select>
 	
 </mapper>
