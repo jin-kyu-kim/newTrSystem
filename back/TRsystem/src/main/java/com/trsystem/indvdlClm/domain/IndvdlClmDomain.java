@@ -373,7 +373,7 @@ public class IndvdlClmDomain {
 
     // 프로젝트근무시간삭제
     @Transactional
-    public static List<Map<String, Object>> deletePrjctMmAply(List<Map<String, Object>> deletePrjctMmListValue) {
+    public static List<Map<String, Object>> deletePrjctMmAply(List<Map<String, Object>> deletePrjctMmListValue, Map<String, Object> updatePrjctMmListValue) {
         for (Map<String, Object> deletePrjctMmAtrzParam : deletePrjctMmListValue) {
             Map<String, Object> deletePrjctMmAtrzMap = new HashMap<>();
             deletePrjctMmAtrzMap = deletePrjctMmAtrzParam;
@@ -381,11 +381,42 @@ public class IndvdlClmDomain {
             deletePrjctMmAtrzMap.put("state", "DELETE");
             commonService.queryIdDataControl(deletePrjctMmAtrzMap);
 
+        }
+
+        for (Map<String, Object> deletePrjctMmAtrzParam : deletePrjctMmListValue) {
             Map<String, Object> deletePrjctMmAplyMap = new HashMap<>();
             deletePrjctMmAplyMap = deletePrjctMmAtrzParam;
             deletePrjctMmAplyMap.put("queryId", "indvdlClmMapper.deletePrjctMmAply");
             deletePrjctMmAplyMap.put("state", "DELETE");
             commonService.queryIdDataControl(deletePrjctMmAplyMap);
+        }
+
+        Map<String, Object> selectPrjctMmAply = new HashMap<>();
+        selectPrjctMmAply.put("queryId", "indvdlClmMapper.selectPrjctMmAplyRowCnt");
+        selectPrjctMmAply.put("empId", updatePrjctMmListValue.get("empId"));
+        selectPrjctMmAply.put("aplyOdr", updatePrjctMmListValue.get("flagOrder"));
+        selectPrjctMmAply.put("aplyYm", updatePrjctMmListValue.get("orderWorkBgngMm"));
+
+        Map<String, Object> selectPrjctIndvdlCtMm = new HashMap<>();
+        selectPrjctIndvdlCtMm.put("queryId", "indvdlClmMapper.selectPrjctIndvdlCtMmRowCnt");
+        selectPrjctIndvdlCtMm.put("empId", updatePrjctMmListValue.get("empId"));
+        selectPrjctIndvdlCtMm.put("aplyOdr", updatePrjctMmListValue.get("flagOrder"));
+        selectPrjctIndvdlCtMm.put("aplyYm", updatePrjctMmListValue.get("orderWorkBgngMm"));
+
+        List<Map<String, Object>> selectPrjctMmAplyResult = commonService.queryIdSearch(selectPrjctMmAply);
+        List<Map<String, Object>> selectPrjctIndvdlCtMmResult = commonService.queryIdSearch(selectPrjctIndvdlCtMm);
+
+        Map<String, Object> updatePrjctIndvdlCtMm = new HashMap<>();
+        updatePrjctIndvdlCtMm.put("empId", updatePrjctMmListValue.get("empId"));
+        updatePrjctIndvdlCtMm.put("aplyOdr", updatePrjctMmListValue.get("flagOrder"));
+        updatePrjctIndvdlCtMm.put("aplyYm", updatePrjctMmListValue.get("orderWorkBgngMm"));
+
+        if ((Integer.parseInt(String.valueOf(selectPrjctMmAplyResult.get(0).get("rowCount"))) == 0) && selectPrjctIndvdlCtMmResult.get(0).get("ctAtrzCmptnYn") == null){
+            updatePrjctIndvdlCtMm.put("queryId", "indvdlClmMapper.deletePrjctIndvdlCtMmRowCnt");
+            commonService.queryIdSearch(updatePrjctIndvdlCtMm);
+        } else if ((Integer.parseInt(String.valueOf(selectPrjctMmAplyResult.get(0).get("rowCount"))) == 0) && selectPrjctIndvdlCtMmResult.get(0).get("ctAtrzCmptnYn").equals("N")){
+            updatePrjctIndvdlCtMm.put("queryId", "indvdlClmMapper.updatePrjctIndvdlCtMmRowCnt");
+            commonService.queryIdSearch(updatePrjctIndvdlCtMm);
         }
 
         return null;

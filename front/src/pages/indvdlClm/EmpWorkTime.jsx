@@ -454,6 +454,7 @@ const EmpWorkTime = () => {
         const formData = new FormData();
 
         formData.append("deletePrjctMmList", JSON.stringify(deleteWorkHourList));
+        formData.append("updatePrjctMmList", JSON.stringify({ empId: sessionEmpId, flagOrder: flagOrder, orderWorkBgngMm: orderWorkBgngMm }));
 
         try {
             const response = await axios.post("/boot/indvdlClm/deletePrjctMmAply", formData, { headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` }, });
