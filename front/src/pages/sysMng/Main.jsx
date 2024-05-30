@@ -261,55 +261,53 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
 };
 
 //화면 전체 배치
-const mainContainerStyle = {
-      display: "flex",
-      alignItems: "flex-start",
-      flexWrap: "wrap",
-      justifyContent: "center",
-  };
-  
+  const mainContainerStyle = {
+  display: "flex",
+  alignItems: "flex-start",
+  flexWrap: "wrap",
+  justifyContent: "center",
+    };
+    
   //메인 좌측 스타일
   const mainLeftContainerStyle = {
-      width: "40%", // 왼쪽 영역의 너비를 35%로 설정
-      minWidth: "300px", // 최소 너비 설정
-      marginBottom: "20px",
+  width: "40%", // 왼쪽 영역의 너비를 35%로 설정
+  minWidth: "300px", // 최소 너비 설정
+  marginBottom: "20px",
   };
   
   const empInfoStyle = {
-      minWidth: "480px",
-      margin: "0 auto",
+  minWidth: "480px",
+  margin: "0 auto",
   };
   
   //메인 우측 전체 배치
   const mainRightContainerStyle = {
-      width: "60%", // 오른쪽 영역의 너비를 65%로 설정
-      minWidth: "300px", // 최소 너비 설정
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
+  width: "60%", // 오른쪽 영역의 너비를 65%로 설정
+  minWidth: "300px", // 최소 너비 설정
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
   };
   
   //각 테이블 배치
   const tableDetailStyle = {
-      flex: "1",
-       // 각 div 사이의 간격을 조절합니다.
+    flex: "1",
+    // 각 div 사이의 간격을 조절합니다.
   };
   
   const buttonContainerStyle = {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: "20px",
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginTop: "20px",
   };
   
   const ButtonStyle = {
-    fontSize: "clamp(6px, 1vw, 10px)", // 폰트 크기를 화면 크기에 따라 조절하되, 최소 6px,
-    marginRight: "10px",
-    marginBottom: "10px",
-    whiteSpace: "nowrap", // 텍스트가 줄바꿈되지 않도록 설정
-    textOverflow: "clip", // 텍스트가 잘리지 않도록 설정
-    boxSizing: "border-box", // 버튼의 크기 계산에 패딩과 보더를 포함
-    width: "auto",
+  fontSize: "clamp(9px, 1vw, 11px)", // 폰트 크기를 화면 크기에 따라 조절하되, 최소 6px,
+  whiteSpace: "nowrap", // 텍스트가 줄바꿈되지 않도록 설정
+  textOverflow: "clip", // 텍스트가 잘리지 않도록 설정
+  boxSizing: "border-box", // 버튼의 크기 계산에 패딩과 보더를 포함
+  width: "auto",
   };
   
   // 미디어 쿼리를 사용해 작은 화면에서의 스타일을 정의
