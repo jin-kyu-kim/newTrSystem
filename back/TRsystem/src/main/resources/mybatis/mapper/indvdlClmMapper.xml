@@ -421,11 +421,15 @@
             ,''
             ,EMP_ID
             ,''
-            ,''
+            ,CASE
+                WHEN DATE_FORMAT(VCATN_BGNG_YMD, '%Y%m%d') <![CDATA[<]]> CONCAT(#{aplyYm}, 16) THEN 1
+                ELSE 2
+                END
             ,DATE_FORMAT(VCATN_BGNG_YMD, '%Y%m%d')
-            ,CASE WHEN VCATN_TY_CD IN ('VTW01201', 'VTW01204', 'VTW01207', 'VTW01208', 'VTW05301', 'VTW05302', 'VTW05303') THEN 1.0
-            ELSE 0.5
-            END
+            ,CASE
+                WHEN VCATN_TY_CD IN ('VTW01201', 'VTW01204', 'VTW01207', 'VTW01208', 'VTW05301', 'VTW05302', 'VTW05303') THEN 0.0
+                ELSE 0.5
+                END
             ,''
             ,''
             ,''
