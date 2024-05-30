@@ -8,6 +8,7 @@ import ApiRequest from "../../utils/ApiRequest";
 import axios from "axios";
 import CustomLabelValue from "../../components/unit/CustomLabelValue";
 import {useModal} from "../../components/unit/ModalContext";
+import "./CultureHealthCostReg.css";
 
 const fontSize = {
     fontSize: 14
@@ -390,8 +391,8 @@ const CultureHealthCostReg = (props) => {
 
     return (
         <div>
-            <div style={{display: "flex", flexDirection: "row", justifyContent: "space-between", marginBottom: "2%"}}>
-                <div style={{width: "63%"}}>
+            <div className="itemBox" style={{display: "flex", flexDirection: "row", justifyContent: "space-between", marginBottom: "2%"}}>
+                <div className="itemBottom" style={{width: "63%"}}>
                     <p><strong>* 청구 목록 </strong></p>
                     <span style={fontSize}>
                             1. 입력, 수정, 삭제 가능 조건 <br/>
@@ -403,7 +404,7 @@ const CultureHealthCostReg = (props) => {
                             * 입력, 수정 및 삭제 가능한 청구대상 월 : <span style={{color: "red"}}>{getTargetMonth(now)}</span><br/>
                         </span>
                 </div>
-                <div style={{width: "35%"}}>
+                <div className="itemTop" style={{width: "35%"}}>
                     <p><strong>* 문화 체련비 등록</strong></p>
                     <div style={fontSize}>
                         <p>1. 체력 향상과 문화 교육을 위해 지원하는 경비입니다.</p>
@@ -415,8 +416,8 @@ const CultureHealthCostReg = (props) => {
                     </div>
                 </div>
             </div>
-            <div style={{display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
-                <div style={{width: "63%"}}>
+            <div className="itemBox" style={{display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
+                <div className="itemBottom" style={{width: "63%"}}>
                     <DataGrid
                         keyExpr={'clturPhstrnActCtSn'}
                         dataSource={values}
@@ -437,7 +438,7 @@ const CultureHealthCostReg = (props) => {
                         <Button text="삭제" onClick={onDeleteClick} disabled={!selectedItem} type='danger' style={button}></Button>
                     </div>
                 </div>
-                <div style={{width: "35%"}}>
+                <div className="itemTop" style={{width: "35%"}}>
                     <span style={{color: "red", fontSize: 14, fontWeight: "bold"}}>*법인카드로 결제한 날짜를 입력해 주세요.</span>
                     <CustomLabelValue props={labelValue.clmYmd} onSelect={handleChgValue}
                                       value={initParam?.clmYmd}/>
