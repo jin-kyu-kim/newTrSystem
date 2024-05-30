@@ -79,10 +79,12 @@ export const navigation = [
       //   auth: 'VTW04807'
       // },{
         text: '파트너업체관리',
-        path: '/project/ProjectOutordCompany'
+        path: '/project/ProjectOutordCompany',
+        auth: 'USER'
       },{
         text: '파트너직원관리',
-        path: '/project/ProjectOutordEmp'
+        path: '/project/ProjectOutordEmp',
+        auth: 'USER'
       },
     ]
   }, {
