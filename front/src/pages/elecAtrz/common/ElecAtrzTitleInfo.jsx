@@ -70,7 +70,7 @@ const ElecAtrzTitleInfo = ({ sttsCd, refer, atrzLnEmpList, getAtrzLn, contents, 
             <tr>
               <td style={{ fontWeight: 'bold' }}>문서번호</td>
               <td> : </td>
-              <td>{formData.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407" || sttsCd === "VTW05405" ? "" : formData.elctrnAtrzDocNo}</td>
+              <td>{formData.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407" || sttsCd === "VTW05406" || sttsCd === "VTW05405" ? "" : formData.elctrnAtrzDocNo}</td>
             </tr>
             <tr>
               <td style={{ fontWeight: 'bold' }}>프로젝트</td>
@@ -87,7 +87,7 @@ const ElecAtrzTitleInfo = ({ sttsCd, refer, atrzLnEmpList, getAtrzLn, contents, 
             <tr>
               <td style={{ fontWeight: 'bold' }}>기안일자</td>
               <td> : </td>
-              <td>{formData.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407" || sttsCd === "VTW05405" ? "" : formData.regDt}</td>
+              <td>{formData.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407" || sttsCd === "VTW05406" || sttsCd === "VTW05405" ? "" : formData.regDt}</td>
             </tr>
           </table>
         </div>
@@ -127,7 +127,7 @@ const ElecAtrzTitleInfo = ({ sttsCd, refer, atrzLnEmpList, getAtrzLn, contents, 
               style={{ width: "100%" }}
               value={atrzParam.title}
               onValueChanged={onHandleAtrzTitle}
-              readOnly={sttsCd === "VTW05405" || sttsCd === "VTW03702" || sttsCd === "VTW03703" || formData.atrzHistSeCd === "VTW05405" || sttsCd === "VTW00801" || sttsCd === "VTW03705" ? (sttsCd === "VTW05407" ? false : true) : false}
+              readOnly={sttsCd === "VTW05405" || sttsCd === "VTW03702" || sttsCd === "VTW03703" || formData.atrzHistSeCd === "VTW05405" ||  sttsCd === "VTW00801" || sttsCd === "VTW03705" || sttsCd === "VTW00802"? (sttsCd === "VTW05407" ? false : true) : false}
             />
           </div>
 

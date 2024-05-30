@@ -855,7 +855,7 @@ const ElecAtrz = () => {
         visible={histPopVisible}
         onPopHiding={onHistPopHiding}
         selectedData={selectedData}
-        selectedParam={param}
+        sttsCd={param.sttsCd}
       />
     </div>
   );

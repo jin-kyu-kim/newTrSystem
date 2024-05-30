@@ -1198,10 +1198,10 @@ public class ElecAtrzDomain {
     	
     	tbNm.put("tbNm", "ELCTRN_ATRZ");
     	
-    	if(histElctrnAtrzId.equals("VTW05405")) {
+    	if(atrzHistSeCd.equals("VTW05405")) {
     		
     		infoMap.put("atrzDmndSttsCd", "VTW03705");	// 변경
-    	} else if(histElctrnAtrzId.equals("VTW05406")) {
+    	} else if(atrzHistSeCd.equals("VTW05406")) {
     		
     		infoMap.put("atrzDmndSttsCd", "VTW03706");	// 취소
     	}

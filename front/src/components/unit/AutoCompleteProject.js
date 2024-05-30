@@ -20,7 +20,6 @@ const AutoCompleteProject = ({ placeholderText, onValueChange, sttsBoolean }) =>
     const fetchData = async () => {
       try {
         const response = await ApiRequest('/boot/common/queryIdSearch', {queryId: 'commonMapper.autoCompleteProject'});
-        console.log("잘가져오고게신가여??",response)
         const processedData = response.map(({ prjctId, prjctNm, prjctTag, prjctMngrEmpId, bizSttsCd,mngrNm }) => ({
           key: prjctId,
           value: prjctNm,
