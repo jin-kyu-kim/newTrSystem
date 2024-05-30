@@ -603,7 +603,8 @@ public class IndvdlClmDomain {
                 insertAtrzLnMap.get(i).put("elctrnAtrzId", elctrnAtrzValue);
                 insertAtrzLnMap.get(i).put("atrzStepCd", insertAtrzLnMap.get(i).get("approvalCode"));
                 insertAtrzLnMap.get(i).put("aprvrEmpId", insertAtrzLnMap.get(i).get("empId"));
-                insertAtrzLnMap.get(i).put("atrzSttsCD", "VTW00801");
+                if (i == 0) insertAtrzLnMap.get(i).put("atrzSttsCD", "VTW00801");
+                else insertAtrzLnMap.get(i).put("atrzSttsCD", "VTW00806");
                 insertAtrzLnMap.get(i).put("atrzLnSn", i + 1);
                 insertAtrzLnList.add(i + 1, insertAtrzLnMap.get(i));
             }
