@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 
 import { SelectBox, TextBox, DateBox, Button } from "devextreme-react";
 
-import { useModal } from "components/unit/ModalContext";
-import ApiRequest from "utils/ApiRequest";
 import Moment from "moment"
+
+import ApiRequest from "utils/ApiRequest";
+import { useModal } from "components/unit/ModalContext";
 import CustomTable from "components/unit/CustomTable";
 
 
@@ -88,7 +89,8 @@ const HolidayMng = () => {
     // 월별정보조회
     const getCrtrDate = async (param) => {
         try {
-            setSelectCrtrDateList(await ApiRequest("/boot/common/queryIdSearch", param));
+            const response = await ApiRequest("/boot/common/queryIdSearch", param);
+            setSelectCrtrDateList(response.filter(item => item.aplyYm == searchParam.aplyYm))
         } catch (error) {
             console.log("getCrtrDate_error : ", error);
         }
