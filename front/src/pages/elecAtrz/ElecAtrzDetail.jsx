@@ -770,7 +770,7 @@ const ElecAtrzDetail = () => {
                 <ElecAtrzTitleInfo
                     atrzLnEmpList={atrzOpnn}
                     contents={header}
-                    sttsCd={sttsCd}
+                    sttsCd={sttsCd ? sttsCd : detailData.atrzDmndSttsCd}
                     refer={refer}
                     formData={detailData}
                     prjctData={prjctData}
