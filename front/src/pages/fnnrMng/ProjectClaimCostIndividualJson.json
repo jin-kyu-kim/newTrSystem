@@ -18,9 +18,7 @@
         { "key": "totalMdSum", "value": "누적사용", "alignment" : "right" },
         { "key": "useMm", "value": "가용", "alignment" : "right"  },
         { "key": "clmMd", "value": "당차수청구", "alignment" : "right"  },
-        { "key": "empId", "value": "상태", "width": "12%", "alignment" : "center", "button": { "text": "청구현황",
-                                                                                            "name": "empId"
-                                                                                        } }
+        { "key": "empId", "value": "상태", "width": "12%", "alignment" : "center", "button": {"text": "청구현황", "name": "empId"} }
     ],
     "mmSumColumns": [
         { "key": "deptNm", "value": "소속", "type"  : "sum", "format": "계" },
@@ -34,11 +32,9 @@
         { "key": "expensNm", "value": "비용코드", "alignment" : "left" },
         { "key": "startAplyOdr", "value": "시작차수", "alignment" : "center" },
         { "key": "endAplyOdr", "value": "종료차수", "alignment" : "center" },
-        { "key": "totalAmtSum", "value": "누적사용", "alignment" : "right", "dataType": "number" },
-        { "key": "totalAmt", "value": "당차수청구", "alignment" : "right" },
-        { "key": "expensCd", "value": "상태", "width": "12%", "alignment" : "center", "button": { "text": "청구현황",
-                                                                                            "name": "expenseAprv"
-                                                                                        } }
+        { "key": "totalAmtSum", "value": "누적사용", "alignment" : "right", "currency": true },
+        { "key": "totalAmt", "value": "당차수청구", "alignment" : "right", "currency": true },
+        { "key": "expensCd", "value": "상태", "width": "12%", "alignment" : "center", "button": {"text": "청구현황", "name": "expenseAprv"} }
     ],
     "ctSumColumns": [
         { "key": "deptNm", "value": "소속", "type"  : "sum", "format": "계" },
