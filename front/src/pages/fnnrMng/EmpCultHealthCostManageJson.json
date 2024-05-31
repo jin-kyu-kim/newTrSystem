@@ -11,7 +11,7 @@
     {  "key": "cyfdAmt", "width": "13%", "value": "이월금액", "format":"#,###", "alignment": "center" },
     {  "key": "clmAmt", "width": "13%", "value": "청구금액", "format":"#,###", "alignment": "center" },
     {  "key": "dpstAmt", "width": "13%", "value": "지급금액", "cellType": "numberBox", "alignment": "center" },
-    {  "key": "dpstYmd", "width": "13%", "value": "지급일자", "alignment": "center" },
+    {  "key": "dpstYmd", "width": "13%", "value": "지급일자", "alignment": "center", "type" : "date", "format": "yyyy-MM-dd" },
     {  "key": "balance", "width": "13%", "value": "잔액", "format":"#,###", "alignment": "center" },
     {  "value": "상세청구내역", "width": "12%", "alignment": "center", "cellType": "button", "button": { "text": "내역", "name": "detail" }}
   ],
