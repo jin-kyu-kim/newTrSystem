@@ -145,20 +145,22 @@ const ElecGiveAtrz = () => {
                     ))}
                 </div>
 
-                {selectedList.length !== 0 && 
-                <CustomTable
+                <div className="elecGiveAtrzTable">
+                    {selectedList.length !== 0 && 
+                    <CustomTable
                     keyColumn={keyColumn}
-                    values={selectedList}
-                    columns={tableColumns}
-                    wordWrap={true}
-                    onClick={onClickBtn}
-                    onRowClick={(e) => toGiveReq(e)}
-                />}
-                <ElecAtrzGiveHistPopup
-                    visible={histPopVisible}
-                    onPopHiding={onHistPopHiding}
-                    selectedData={selectedData}
-                />
+                        values={selectedList}
+                        columns={tableColumns}
+                        wordWrap={true}
+                        onClick={onClickBtn}
+                        onRowClick={(e) => toGiveReq(e)}
+                    />}
+                    <ElecAtrzGiveHistPopup
+                        visible={histPopVisible}
+                        onPopHiding={onHistPopHiding}
+                        selectedData={selectedData}
+                    />
+                </div>
             </div>
         </div>
     );

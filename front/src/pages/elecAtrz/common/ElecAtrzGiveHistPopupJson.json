@@ -9,6 +9,6 @@
         { "key": "empFlnm", "value": "성명", "width": "16%", "alignment": "center"},
         { "key": "giveYmd", "value": "청구연월", "width": "16%", "alignment": "center"},
         { "key": "atrzDmndSttsCdNm", "value": "결재상태", "width": "16%", "alignment": "center"},
-        { "key": "elctrnAtrzId", "value": "문서조회", "width": "16%", "alignment": "center", "button": { "text": "연결문서 확인", "name": "elctrnAtrzId"}}
+        { "key": "elctrnAtrzId", "value": "문서조회", "width": "16%", "alignment": "center", "button": { "text": "조회", "name": "elctrnAtrzId"}}
     ]
 }
