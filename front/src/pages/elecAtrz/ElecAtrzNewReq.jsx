@@ -108,7 +108,7 @@ const ElecAtrzNewReq = () => {
         insertTable = "CLM_ATRZ";
     }else if(["VTW04908","VTW04909","VTW04910"].includes(data.elctrnAtrzTySeCd)){
         insertTable = "CTRT_ATRZ";
-    }else if(["VTW04914"].includes(data.elctrnAtrzTySeCd)){
+    }else if(["VTW04911","VTW04912","VTW04913","VTW04914"].includes(data.elctrnAtrzTySeCd)){
         insertTable = "CTRT_GIVE_ATRZ";
     }else{
         insertTable = "GNRL_ATRZ";
@@ -159,7 +159,7 @@ const ElecAtrzNewReq = () => {
     useEffect(() => {
 
         // 일반 전자결재시 테이블 삽입. "GNRL_ATRZ"
-        if(!["VTW04908", "VTW04909", "VTW04910", "VTW04907", "VTW04914"].includes(data.elctrnAtrzTySeCd)){
+        if(!["VTW04908", "VTW04909", "VTW04910", "VTW04907","VTW04911","VTW04912","VTW04913","VTW04914"].includes(data.elctrnAtrzTySeCd)){
             setAtrzParam(atrzParam => ({
                 ...atrzParam,
                 ...childData,

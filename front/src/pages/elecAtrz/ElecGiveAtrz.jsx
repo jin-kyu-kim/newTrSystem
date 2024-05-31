@@ -4,6 +4,7 @@ import CustomTable from 'components/unit/CustomTable';
 import ElecAtrzJson from '../elecAtrz/ElecAtrzJson.json';
 import ApiRequest from 'utils/ApiRequest';
 import './ElecAtrz.css';
+import ElecAtrzGiveHistPopup from "./common/ElecAtrzGiveHistPopup";
 import { Button } from 'devextreme-react/button';
 
 const ElecGiveAtrz = () => {
@@ -17,6 +18,12 @@ const ElecGiveAtrz = () => {
     const location = useLocation();
     const prjctId = location.state.prjctId;
     const formData = location.state.formData;
+
+    /**
+     * 이력 팝업 관련
+     */
+    const [ histPopVisible, setHistPopVisible ] = useState(false);
+    const [ selectedData, setSelectedData ] = useState([]);
 
     useEffect(() => {
         getPrjct();
@@ -77,9 +84,18 @@ const ElecGiveAtrz = () => {
         );
     };
 
-    const onClickBtn = (btn, data) => {
+    const onClickBtn = async (btn, data) => {
 
         formData.ctrtElctrnAtrzId = data.elctrnAtrzId;
+
+        if(btn.name === "hist") {
+
+            console.log(data);
+            await onSetPopData(data);
+            await onHistPopAppear();
+
+            // window.open("/elecAtrz/ElecAtrz");
+        }
 
         if(btn.name === 'moveReq'){
             navigate('/elecAtrz/ElecAtrzNewReq', {state: {
@@ -92,8 +108,30 @@ const ElecGiveAtrz = () => {
         }
     }
 
+    const toGiveReq = (e) => {
+        if(e.event.target.className === "dx-button-content" || e.event.target.className === "dx-button-text") {
+            return;
+        } else {
+            navigate('/elecAtrz/ElecAtrzDetail', {
+                state: {data: e.data, prjctId: prjctId, sttsCd: e.data.atrzDmndSttsCd, docSeCd:formData.docSeCd, formData: formData}
+            })
+        }
+    }
+
+    const onHistPopHiding = async () => {
+        setHistPopVisible(false);
+    }
+
+    const onHistPopAppear = async () => {
+        setHistPopVisible(true);
+    }
+
+    const onSetPopData = async (data) => {
+        setSelectedData(data);
+    }
+
     return (
-        <div className="container">
+        <div className="">
             <div className="col-md-10 mx-auto" style={{marginTop: '30px'}}>
                 <div className="buttons" align="right" style={{ margin: "20px" }}>
                     <Button text="목록" style={{}} onClick={(e)=>{navigate('/elecAtrz/ElecAtrzForm', {state : {prjctId: prjctId}})}}/>
@@ -114,10 +152,13 @@ const ElecGiveAtrz = () => {
                     columns={tableColumns}
                     wordWrap={true}
                     onClick={onClickBtn}
-                    onRowDblClick={(e) => navigate('/elecAtrz/ElecAtrzDetail', {
-                        state: {data: e.data, prjctId: prjctId, sttsCd: e.data.atrzDmndSttsCd, docSeCd:formData.docSeCd, formData: formData}
-                    })}
+                    onRowClick={(e) => toGiveReq(e)}
                 />}
+                <ElecAtrzGiveHistPopup
+                    visible={histPopVisible}
+                    onPopHiding={onHistPopHiding}
+                    selectedData={selectedData}
+                />
             </div>
         </div>
     );

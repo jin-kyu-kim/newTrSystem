@@ -46,6 +46,22 @@ const ElecAtrzDetail = () => {
      */
     const [ histPopVisible, setHistPopVisible ] = useState(false);
     const [ selectedData, setSelectedData ] = useState([]);
+    // const [states, setStates] = useState({});
+
+    // useEffect(() => {
+    //         console.log(localStorage)
+    //         const stateKeys = ["data", "sttsCd", "prjctId"];
+    //         const newStates = {};
+    //         stateKeys.forEach(key => {
+    //         const storedState = localStorage.getItem(key);
+    //         if (storedState) {
+    //           newStates[key] = JSON.parse(storedState);
+    //         }
+    //       });
+    //       console.log(newStates.data)
+    //     //   setData(newStates.data);
+    //   }, [])
+    
 
     useEffect(() => {
         const getDetailData = async () => {
@@ -86,7 +102,9 @@ const ElecAtrzDetail = () => {
                 break;
             case "update": onUpdateReq();
             break;
-            case "list": navigate('/elecAtrz/ElecAtrz') ;
+            case "list": 
+            // navigate('/elecAtrz/ElecAtrz') ;
+            toList();
                 break;
             default:
                 break;
@@ -764,6 +782,14 @@ const ElecAtrzDetail = () => {
         setHistPopVisible(true);
     }
 
+    const toList = async () => {
+
+        location.state.give ? navigate(-1) :
+        location.state.docSeCd !=='VTW03405'
+                    ? navigate('/elecAtrz/ElecAtrz')
+                    : navigate('/elecAtrz/ElecGiveAtrz',{state :{prjctId: prjctId, formData: location.state.formData}})
+    }
+
     return (
         <div className="container" style={{ marginTop: "10px" }}>
             <div ref={contentRef}>
@@ -836,9 +862,7 @@ const ElecAtrzDetail = () => {
             <div style={{textAlign: 'center', marginBottom: '100px', marginTop: '20px'}}>
                 {renderButtons()}
                  <Button text='목록' type='normal' 
-                    onClick={() => {location.state.docSeCd !=='VTW03405'
-                                    ? navigate('/elecAtrz/ElecAtrz') 
-                                    : navigate('/elecAtrz/ElecGiveAtrz',{state :{prjctId: prjctId, formData: location.state.formData}}) }} />
+                    onClick={() => toList()} />
             </div>
             <Popup
                 width={"80%"}
