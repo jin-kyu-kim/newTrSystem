@@ -135,7 +135,7 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
         return (
             <div>
                 {((aprvInfo.totCnt === aprvInfo.aprv && mmAtrzCmptnYn === 'Y') || (noDataCase.cnt === 0 && noDataCase.yn === 'Y')
-                ||(aprvInfo.totCnt === (aprvInfo.aprv + aprvInfo.rjct) && mmAtrzCmptnYn === 'Y')) ? 
+                ||(aprvInfo.totCnt === (aprvInfo.aprv + aprvInfo.rjct) && mmAtrzCmptnYn === 'Y')) || basicInfo.isHist ? 
                     <div ref={contentRef} >
                         <div style={{ textAlign: 'right' }}>
                             <ReactToPrint 
