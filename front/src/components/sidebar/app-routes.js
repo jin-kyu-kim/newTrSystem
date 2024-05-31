@@ -101,10 +101,10 @@ const routes = [
   },
   // 고객사관리
   {
-    path: "/sysMng/CustomersList",
+    path: "/project/CustomersList",
     name: "CustomersList",
-    element: React.lazy(() => import("../../pages/sysMng/CustomersList")),
-    isPrivate:"VTW04803"
+    element: React.lazy(() => import("../../pages/project/CustomersList")),
+    isPrivate:"VTW04807"
   },
   // 코드 관리
   {
