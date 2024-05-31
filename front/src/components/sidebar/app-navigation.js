@@ -118,7 +118,7 @@ export const navigation = [
     ]
   }, {
     text: '재무관리',
-    icon: 'folder',
+    icon: 'dataarea',
     auth: 'VTW04804',
     items: [
       {
@@ -158,7 +158,7 @@ export const navigation = [
     auth: 'USER'
   }, {
     text: '시스템관리',
-    icon: 'folder',
+    icon: 'imgarlock',
     auth: 'VTW04803',
     items: [
       {
@@ -214,7 +214,7 @@ export const navigation = [
   },{
     text: '오류게시판',
     path: '/sysMng/CsServiceList',
-    icon: 'importselected',
+    icon: 'clearcircle',
     auth: 'USER'
   },
   ];
