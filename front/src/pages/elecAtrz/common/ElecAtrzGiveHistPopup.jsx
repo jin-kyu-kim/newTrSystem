@@ -38,26 +38,25 @@ const ElecAtrzGiveHistPopup = ({ visible, onPopHiding, selectedData }) => {
 
         let detailData = await ApiRequest("/boot/common/queryIdSearch", param);
 
-        // const data = "data"
-        // const sttsCd = "sttsCd"
-        // const prjctId = "prjctId"
+        // 새 창으로 열기
+        const data = "data";
+        const sttsCd = "sttsCd";
+        const prjctId = "prjctId";
 
-        // localStorage.setItem(data, JSON.stringify(detailData[0]));
-        // localStorage.setItem(sttsCd, JSON.stringify(detailData[0].atrzDmndSttsCd));
-        // localStorage.setItem(prjctId, JSON.stringify(detailData[0].prjctId));
+        localStorage.setItem(data, JSON.stringify(detailData[0]));
+        localStorage.setItem(sttsCd, JSON.stringify(detailData[0].atrzDmndSttsCd));
+        localStorage.setItem(prjctId, JSON.stringify(detailData[0].prjctId));
 
-        // const url = new URL(window.location.origin + "/elecAtrz/ElecAtrzDetail");
-        // window.open(url.toString(), "_blank");
+        const url = new URL(window.location.origin + "/elecAtrz/ElecAtrzDetail");
+        window.open(url.toString(), "_blank", "width=1200,height=1600");
         
-        navigate('/elecAtrz/ElecAtrzDetail', { state: { data: detailData[0], sttsCd: detailData[0].atrzDmndSttsCd, prjctId:detailData[0].prjctId, refer: null, docSeCd: "VTW03405", give: true}})
-
-        onPopHiding();
-        
+        // 페이지 이동의 경우
+        // navigate('/elecAtrz/ElecAtrzDetail', { state: { data: detailData[0], sttsCd: detailData[0].atrzDmndSttsCd, prjctId:detailData[0].prjctId, refer: null, docSeCd: "VTW03405", give: true}})
     }
 
     const renderDocHist = () => {
         return (
-            <div>
+            <div className="elecAtrzHistPopup">
                 <CustomTable
                     keyColumn={keyColumn}
                     values={values.length !== 0 ? values : []}

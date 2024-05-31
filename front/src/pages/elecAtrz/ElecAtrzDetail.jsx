@@ -17,10 +17,15 @@ import ElecAtrzHistPopup from "./common/ElecAtrzHistPopup";
 const ElecAtrzDetail = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const detailInfo = location.state.data;
-    const sttsCd = location.state.sttsCd;
-    const refer = location.state.refer;
-    const prjctId = location.state.prjctId;
+
+    const popData = JSON.parse(localStorage.getItem("data"));
+    const popSttsCd = JSON.parse(localStorage.getItem("sttsCd"));
+    const popPrjctId = JSON.parse(localStorage.getItem("prjctId"));
+
+    const detailInfo = location.state != undefined ? location.state.data : popData;
+    const sttsCd = location.state != undefined ? location.state.sttsCd : popSttsCd;
+    const refer =  location.state != undefined ? location.state.refer : true;
+    const prjctId =  location.state != undefined ? location.state.prjctId : popPrjctId;
     const [ detailData, setDetailData ] = useState({});
     const [ prjctData, setPrjctData ] = useState({});
     const [ atrzOpnn, setAtrzOpnn ] = useState([]);
@@ -35,38 +40,22 @@ const ElecAtrzDetail = () => {
     const [ rjctPopupVisible, setRjctPopupVisible ] = useState(false);
     const [ aprvPopupVisible, setAprvPopupVisible ] = useState(false);
     const [ opnnCn, setOpnnCn ] = useState("");
-    const [ data, setData ] = useState(location.state.data);
+    const [ data, setData ] = useState(location.state != undefined ? location.state.data : popData);
     const { handleOpen } = useModal();
 
-    /**
+      /**
      * 이력 팝업 관련
      */
     const [ histPopVisible, setHistPopVisible ] = useState(false);
-    const [ selectedData, setSelectedData ] = useState([]);
-    // const [states, setStates] = useState({});
-
-    // useEffect(() => {
-    //         console.log(localStorage)
-    //         const stateKeys = ["data", "sttsCd", "prjctId"];
-    //         const newStates = {};
-    //         stateKeys.forEach(key => {
-    //         const storedState = localStorage.getItem(key);
-    //         if (storedState) {
-    //           newStates[key] = JSON.parse(storedState);
-    //         }
-    //       });
-    //       console.log(newStates.data)
-    //     //   setData(newStates.data);
-    //   }, [])
-    
 
     useEffect(() => {
+
         const getDetailData = async () => {
             const res = await ApiRequest('/boot/common/queryIdSearch', { queryId: "elecAtrzMapper.elecAtrzDetail", elctrnAtrzId: detailInfo.elctrnAtrzId })
             if (res) setDetailData({ ...detailInfo, ...res[0] })
         }
         getDetailData();
-    }, [detailInfo]);
+    }, []);
     
     const onBtnClick = (e) => {
         switch (e.element.id) {
@@ -775,8 +764,8 @@ const ElecAtrzDetail = () => {
 
     const toList = async () => {
 
-        location.state.give ? navigate(-1) :
-        location.state.docSeCd !=='VTW03405'
+        location.state?.give ? navigate(-1) :
+        location.state?.docSeCd !=='VTW03405'
                     ? navigate('/elecAtrz/ElecAtrz')
                     : navigate('/elecAtrz/ElecGiveAtrz',{state :{prjctId: prjctId, formData: location.state.formData}})
     }

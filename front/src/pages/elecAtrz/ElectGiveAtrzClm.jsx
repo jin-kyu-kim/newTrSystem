@@ -7,7 +7,8 @@ import { Button } from "devextreme-react";
 
 const ElectGiveAtrzClm = ({ detailData, sttsCd, onSendData, ctrtTyCd}) => {
     const location = useLocation();
-    const formData = location.state.formData;
+    const formData = location.state?.formData;
+
     const [clmData, setClmData] = 
       useState({"ctrtElctrnAtrzId": formData ? formData.ctrtElctrnAtrzId : detailData.ctrtElctrnAtrzId
                 ,"tbNm": "CTRT_GIVE_ATRZ"});
