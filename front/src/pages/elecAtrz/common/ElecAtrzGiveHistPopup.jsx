@@ -91,7 +91,7 @@ const ElecAtrzGiveHistPopup = ({ visible, onPopHiding, selectedData }) => {
                     onHiding={onPopHiding}
                     showCloseButton={true}
                     contentRender={renderDocHist}
-                    title={"문서이력"}
+                    title={"지급요청내역"}
                 />
             </div>
         </>
