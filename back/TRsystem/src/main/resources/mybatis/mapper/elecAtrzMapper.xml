@@ -746,7 +746,7 @@
 		  JOIN CD c ON ea.ATRZ_DMND_STTS_CD = c.CD_VALUE 
 		 WHERE 1=1
 		   AND CTRT_ELCTRN_ATRZ_ID = #{elctrnAtrzId}
-		   AND ea.ATRZ_DMND_STTS_CD != 'VTW03701'
+		   AND ea.ATRZ_DMND_STTS_CD NOT IN ('VTW03701', 'VTW03702')
 	</select>
 	
 </mapper>
