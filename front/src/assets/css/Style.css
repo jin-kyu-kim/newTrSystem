@@ -483,3 +483,95 @@
 .dx-card .responsive-paddings{
   padding : 10px;
 }
+
+@media print {
+  .elecTopBtn {
+    display: none;
+  }
+}
+.elecTopBtn {
+  float: right;
+}
+
+/* pivotGrid 소계, 총계 */
+.dx-pivotgrid .dx-pivotgrid-area-data .dx-row-total, .dx-pivotgrid .dx-pivotgrid-vertical-headers .dx-row-total{
+  background-color: #FFE08C;
+}
+.dx-pivotgrid .dx-grandtotal.dx-last-cell, .dx-pivotgrid .dx-row-total.dx-last-cell {
+  padding-left: 22px;
+  background-color: #FFE08C;
+}
+/* 프로젝트비용 tabpanel용 */
+@media (max-width: 768px) {
+  .dx-tabpanel {
+    font-size: 14px; /* 탭 글꼴 크기 조정 */
+  }
+
+  .dx-tabpanel .dx-item {
+    padding: 10px; /* 탭 패딩 조정 */
+  }
+  
+  .container{
+      padding: 0 !important;
+      margin: 0 !important;
+  }
+}
+/* MeetingRoomManage.css */
+@media (max-width: 768px) {
+  .popup-content {
+      padding: 10px; /* 팝업 내용의 패딩 조정 */
+  }
+
+  .popup-content .row {
+      margin-top: 10px;
+      margin-bottom: 10px;
+  }
+
+  .popup-content .col-md-2 {
+      font-size: 12px; /* 레이블 폰트 크기 조정 */
+      padding: 5px 0;
+  }
+
+  .popup-content .col-md-10 {
+      padding: 5px 0;
+  }
+
+  .popup-content .dx-textbox,
+  .popup-content .dx-selectbox,
+  .popup-content .dx-datebox,
+  .popup-content .dx-textarea,
+  .popup-content .dx-tagbox {
+      font-size: 12px; /* 입력 필드 폰트 크기 조정 */
+  }
+
+  .popup-content .dx-button {
+      font-size: 12px; /* 버튼 폰트 크기 조정 */
+      height: 36px; /* 버튼 높이 조정 */
+      width: 80px; /* 버튼 너비 조정 */
+  }
+}
+
+/* MeetingRoomManage.css */
+@media (max-width: 768px) {
+  #scheduler {
+      height: 100vh; /* 화면 높이에 맞게 조정 */
+      width: 100vw; /* 화면 너비에 맞게 조정 */
+      overflow-x: auto; /* 가로 스크롤 활성화 */
+  }
+
+  .dx-scheduler-header-panel-cell,
+  .dx-scheduler-date-table-cell {
+      font-size: 12px; /* 폰트 크기 조정 */
+  }
+
+  .dx-scheduler-navigator .dx-button-text,
+  .dx-scheduler-view-switcher .dx-button-text {
+      font-size: 12px; /* 네비게이터와 뷰 셀렉션 버튼 텍스트 크기 조정 */
+  }
+
+  .dx-scheduler-navigator .dx-button,
+  .dx-scheduler-view-switcher .dx-button {
+      padding: 5px; /* 패딩 조정 */
+  }
+}
+

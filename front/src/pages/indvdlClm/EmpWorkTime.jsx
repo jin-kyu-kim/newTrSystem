@@ -454,6 +454,7 @@ const EmpWorkTime = () => {
         const formData = new FormData();
 
         formData.append("deletePrjctMmList", JSON.stringify(deleteWorkHourList));
+        formData.append("updatePrjctMmList", JSON.stringify({ empId: sessionEmpId, flagOrder: flagOrder, orderWorkBgngMm: orderWorkBgngMm }));
 
         try {
             const response = await axios.post("/boot/indvdlClm/deletePrjctMmAply", formData, { headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` }, });
@@ -467,18 +468,42 @@ const EmpWorkTime = () => {
 
 
 
-    // 실 근무일수 구하기
+    // 근무일수 구하기
     function getWorkDay(selectCrtrDateList) {
         if (selectCrtrDateList) {
-            return selectCrtrDateList.filter(item => item.crtrOdr == flagOrder && item.hldyClCd == "VTW05001").length;
+            return selectCrtrDateList.filter(item => item.aplyYm == searchPrjctIndvdlCtMmParam.aplyYm && item.crtrOdr == flagOrder && item.hldyClCd == "VTW05001").length;
         }
     }
 
     // 공휴일수 구하기
     function getHoliDay(selectCrtrDateList) {
         if (selectCrtrDateList) {
-            return selectCrtrDateList.filter(item => item.crtrOdr == flagOrder && item.hldyClCd == "VTW05003").length;
+            return selectCrtrDateList.filter(item => item.aplyYm == searchPrjctIndvdlCtMmParam.aplyYm && item.crtrOdr == flagOrder && item.hldyClCd == "VTW05003").length;
         }
+    }
+
+    // 실 근무일수 구하기
+    function getRealWorkDay(insertWorkHourList){
+        let cnt = 0;
+        if (insertWorkHourList) {
+            insertWorkHourList.map((item) => {
+                if(item.aplyType == "workAply" && item.aplyOdr == flagOrder) cnt += item.md * 8;
+                else if (item.aplyType == "vcatnAply" && item.aplyOdr == flagOrder && item.md != 0) cnt += item.md * 8;
+            })
+        }
+        return cnt;
+    }
+
+    // 휴가일수 구하기
+    function getVcatnDay(insertWorkHourList){
+        let cnt = 0;
+        if (insertWorkHourList) {
+            insertWorkHourList.map((item) => {
+                if (item.aplyType == "vcatnAply" && item.aplyOdr == flagOrder && item.md == 0) cnt += 8;
+                if (item.aplyType == "vcatnAply" && item.aplyOdr == flagOrder && item.md == 0.5) cnt += 4;
+            })
+        }
+        return cnt;
     }
 
 
@@ -678,24 +703,22 @@ const EmpWorkTime = () => {
     function createWorkHour(selectCrtrDateList, insertWorkHourList) {
         let workHour = getWorkDay(selectCrtrDateList) * 8;
         let holiHour = getHoliDay(selectCrtrDateList) * 8;
-        let vcatnCnt = 0;
-
-        if (insertWorkHourList) vcatnCnt = insertWorkHourList.filter(item => item.aplyType == "vcatnAply" && item.aplyOdr == flagOrder).length
-
+        let realWorkHour = getRealWorkDay(insertWorkHourList);
+        let vcatnHour = getVcatnDay(insertWorkHourList)
 
         return (
             <>
                 <div style={{ marginTop: "10px", border: "2px solid #CCCCCC" }}>
                     <div style={{ borderBottom: "2px solid #CCCCCC" }}>
                         <div style={{ display: "flex", alignItems: "center", height: "50px", marginLeft: "20px" }}>
-                            {orderWorkBgngMm} - {flagOrder}차수 근무시간 : {vcatnCnt != 0 ? workHour - vcatnCnt * 8 : workHour} / {workHour + holiHour} hrs.
+                            {orderWorkBgngMm} - {flagOrder}차수 근무시간 : {vcatnHour != 0 ? workHour - vcatnHour : workHour} / {workHour + holiHour} hrs.
                         </div>
                     </div>
                     {
-                        vcatnCnt != 0
+                        vcatnHour != 0
                             ?
                             <div style={{ display: "flex", alignItems: "center", height: "40px", marginLeft: "20px" }}>
-                                * 휴가 : {vcatnCnt * 8} / {workHour} hrs.
+                                * 휴가 : {vcatnHour} / {vcatnHour} hrs.
                             </div>
                             : <></>
                     }
@@ -724,7 +747,8 @@ const EmpWorkTime = () => {
                                     )
                                 }
                             })
-                        } : {vcatnCnt != 0 ? workHour - vcatnCnt * 8 : workHour}​ / {workHour} hrs.
+                        } : {realWorkHour}​ / {vcatnHour != 0 ? workHour - vcatnHour : workHour} hrs.
+                        {/* } : {vcatnCnt != 0 ? workHour - vcatnCnt * 8 : workHour}​ / {workHour} hrs. */}
                     </div>
                 </div>
             </>
@@ -738,11 +762,6 @@ const EmpWorkTime = () => {
             if (param == "workBgngYmd" || param == "workEndYmd") e = Moment(e).format('YYYYMMDD');
 
             refInsertWorkHourValue[param] = e;
-        }
-
-        function onRefValuePrjctChange(e) {
-            refInsertWorkHourValue.prjctId = e[0].prjctId;
-            refInsertWorkHourValue.prjctNm = e[0].prjctNm;
         }
 
         return (

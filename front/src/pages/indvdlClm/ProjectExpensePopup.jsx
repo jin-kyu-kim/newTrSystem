@@ -122,6 +122,7 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
                         blockCollapse={true}
                         weekendColor={true}
                         grandTotals={true}
+                        grandTotalText={'총 시간'}
                         width={'100%'}
                     />)
                 )
@@ -133,7 +134,8 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
     const contentArea = () => {
         return (
             <div>
-                {((aprvInfo.totCnt === aprvInfo.aprv && mmAtrzCmptnYn === 'Y') || (noDataCase.cnt === 0 && noDataCase.yn === 'Y')) ? 
+                {((aprvInfo.totCnt === aprvInfo.aprv && mmAtrzCmptnYn === 'Y') || (noDataCase.cnt === 0 && noDataCase.yn === 'Y')
+                ||(aprvInfo.totCnt === (aprvInfo.aprv + aprvInfo.rjct) && mmAtrzCmptnYn === 'Y')) ? 
                     <div ref={contentRef} >
                         <div style={{ textAlign: 'right' }}>
                             <ReactToPrint 
@@ -153,7 +155,11 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
                     </div>
                 : mmAtrzCmptnYn === 'N'
                 ? <span>진행중인 근무시간 요청이 있습니다. 승인 완료 후 출력하시기 바랍니다.</span>
-                : (aprvInfo.aprvDmnd >= 1) ? <span>결재 진행중인 청구내역이 있습니다.</span> : <></>}
+                : (aprvInfo.aprvDmnd >= 1) ? <span>결재 진행중인 청구내역이 있습니다.</span> 
+                : mmAtrzCmptnYn === null ? <>
+                    <span style={{color: 'red'}}>아직 근무시간 승인요청을 하지 않았습니다. </span>
+                    <span>요청한 뒤 승인 완료 후 출력하시기 바랍니다.</span>
+                </> : <></>}
             </div>
         );
     };

@@ -74,15 +74,18 @@ export const navigation = [
         path: '/project/ProjectHrCtAprv',
         auth: 'VTW04807'
       },{
-      //   text: '외주비용승인',
-      //   path: '/project/ProjectOutordAprv',
-      //   auth: 'VTW04807'
-      // },{
+        text: '고객사관리',
+        path: '/project/CustomersList',
+        auth: 'VTW04807'
+      },
+      {
         text: '파트너업체관리',
-        path: '/project/ProjectOutordCompany'
+        path: '/project/ProjectOutordCompany',
+        auth: 'VTW04807'
       },{
         text: '파트너직원관리',
-        path: '/project/ProjectOutordEmp'
+        path: '/project/ProjectOutordEmp',
+        auth: 'VTW04807'
       },
     ]
   }, {
@@ -169,10 +172,6 @@ export const navigation = [
         text: '코드관리',
         path: '/sysMng/TrsCode',
         auth: 'VTW04801'
-      },{
-        text: '고객사관리',
-        path: '/sysMng/CustomersList',
-        auth: 'VTW04803'
       },{
         text: '휴일관리',
         path: '/sysMng/HolidayMng',

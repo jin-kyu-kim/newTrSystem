@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import SearchInfoSet from 'components/composite/SearchInfoSet';
 import CustomEditTable from 'components/unit/CustomEditTable';
 import ApiRequest from '../../utils/ApiRequest';
-import SysMng from './SysMngJson.json';
+import SysMng from '../sysMng/SysMngJson.json';
 
 const CustomersList = () => {
     const [ values, setValues ] = useState([]);
@@ -51,7 +51,6 @@ const CustomersList = () => {
         ];
         try {
             const response = await ApiRequest('/boot/common/commonUpdate', ynParam);
-            if(response === 1) pageHandle();
         } catch (error) {
             console.log(error)
         }

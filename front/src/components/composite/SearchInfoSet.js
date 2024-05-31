@@ -109,10 +109,9 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
 
   return (
     <div className="box_search">
-      <Box className="searchSet"
-           style={{width: "100%", display: "flex", flexDirection: "row"}}>
+      <Box className="searchSet" style={{width: "100%", display: "flex", flexDirection: "row"}}>
         {searchParams.yearList && searchParams.yearList.map((item) => (
-          <Item key={item.name} ratio={0} baseSize={"15%"} visible={item.visible}>
+          <Item key={item.name} ratio={0} baseSize={"20%"} visible={item.visible}>
             <SelectBox
               dataSource={ymOdrData[item.name]}
               name={item.name}

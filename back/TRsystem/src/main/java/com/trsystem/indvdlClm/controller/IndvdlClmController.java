@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -83,14 +84,16 @@ public class IndvdlClmController {
     // 프로젝트근무시간삭제
     @Transactional
     @PostMapping(value = "/boot/indvdlClm/deletePrjctMmAply" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public List<Map<String, Object>> deletePrjctMmAply (@RequestPart(required = false) String deletePrjctMmList) throws JsonProcessingException {
+    public List<Map<String, Object>> deletePrjctMmAply (@RequestPart(required = false) String deletePrjctMmList, String updatePrjctMmList) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
 
         List<Map<String, Object>> deletePrjctMmListValue = new ArrayList<>();
-//
-        deletePrjctMmListValue = mapper.readValue(deletePrjctMmList,ArrayList.class);
+        Map<String, Object> updatePrjctMmListValue = new HashMap<>();
 
-        return IndvdlClmDomain.deletePrjctMmAply(deletePrjctMmListValue);
+        deletePrjctMmListValue = mapper.readValue(deletePrjctMmList,ArrayList.class);
+        updatePrjctMmListValue = mapper.readValue(updatePrjctMmList,Map.class);
+
+        return IndvdlClmDomain.deletePrjctMmAply(deletePrjctMmListValue, updatePrjctMmListValue);
     }
 
     // 프로젝트근무시간승인요청

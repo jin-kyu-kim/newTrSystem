@@ -12,7 +12,7 @@ import ApiRequest from "utils/ApiRequest";
 import MeetingRoomManagePopup from "pages/humanResourceMng/MeetingRoomManagePopup";
 import "pages/humanResourceMng/MeetingRoomManage.css"
 
-
+import "../../assets/css/Style.css"
 
 const MeetingRoomManage = () => {
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
@@ -232,6 +232,7 @@ const MeetingRoomManage = () => {
                     groupByDate={true}
                     maxAppointmentsPerCell={3}
                     crossScrollingEnabled={true}
+                    adaptivityEnabled={true}
                     allDayPanelMode="hidden"
                     customizeDateNavigatorText={customizeDateNavigatorText}
                     onAppointmentClick={onAppointmentFormOpening}

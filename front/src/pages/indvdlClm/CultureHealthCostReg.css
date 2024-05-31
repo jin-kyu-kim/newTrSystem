@@ -1,0 +1,14 @@
+@media (max-width: 600px) {
+    .itemBox {
+        flex-direction: column-reverse !important;
+    }
+
+    .itemTop {
+        width: 100% !important;
+        margin-bottom: 4%;
+    }
+
+    .itemBottom {
+        width: 100% !important;
+    }
+}
