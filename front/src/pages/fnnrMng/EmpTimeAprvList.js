@@ -120,7 +120,7 @@ return(
        
       </div>
       {/* <SearchPrjctCostSet callBack={searchHandle} props={searchParams} /> */}
-      <div className="wrap_search" style={{marginBottom: "20px", width: 700}}>
+      <div className="wrap_search" style={{marginBottom: "20px"}}>
                   <SearchInfoSet  callBack={searchHandle} props={searchInfo}/>
                   {/* <SearchOdrRange callBack={searchHandle} props={searchParams}/> */}
               </div>

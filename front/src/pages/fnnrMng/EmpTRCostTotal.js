@@ -138,7 +138,7 @@ const EmpTRCostTotal = () => {
     </div>
 
     <div>
-    <div  className="wrap_search" style={{marginBottom: "20px", width: 1100}}>
+    <div  className="wrap_search" style={{marginBottom: "20px"}}>
       <SearchInfoSet  props={searchInfo}  callBack={searchHandle} /> 
       </div>
       <CheckBox
