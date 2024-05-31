@@ -744,7 +744,9 @@
 		  JOIN ELCTRN_ATRZ ea ON cga.ELCTRN_ATRZ_ID = ea.ELCTRN_ATRZ_ID
 		  JOIN EMP e ON ea.ATRZ_DMND_EMP_ID = e.EMP_ID
 		  JOIN CD c ON ea.ATRZ_DMND_STTS_CD = c.CD_VALUE 
-		WHERE CTRT_ELCTRN_ATRZ_ID = #{elctrnAtrzId}
+		 WHERE 1=1
+		   AND CTRT_ELCTRN_ATRZ_ID = #{elctrnAtrzId}
+		   AND ea.ATRZ_DMND_STTS_CD != 'VTW03701'
 	</select>
 	
 </mapper>
