@@ -294,7 +294,7 @@
         )
         )
         SELECT
-               PIVOT_DATE
+             CONCAT(SUBSTR(PIVOT_DATE, 1, 4), '-', SUBSTR(PIVOT_DATE, 5, 2), '-', SUBSTR(PIVOT_DATE, 7, 2)) AS PIVOT_DATE
              , (SELECT PRJCT_NM FROM PRJCT P WHERE PRJCT_ID = #{prjctId}) AS PRJCT_NM
              , (SELECT EMP_FLNM FROM EMP EP WHERE EP.EMP_ID = #{empId}) AS  EMP_FLNM
              , EXPENS_CD
