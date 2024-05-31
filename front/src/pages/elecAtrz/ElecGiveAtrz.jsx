@@ -17,7 +17,7 @@ const ElecGiveAtrz = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const prjctId = location.state.prjctId;
-    const formData = location.state.formData;
+    let formData = location.state.formData;
 
     /**
      * 이력 팝업 관련
@@ -73,6 +73,35 @@ const ElecGiveAtrz = () => {
             console.log('error', error);
         }
     }
+
+    const getGiveAtrzForms = async (data) => {
+        const param = [
+            { tbNm: "ELCTRN_ATRZ_DOC_FORM"},
+            {
+                elctrnAtrzTySeCd: "VTW04911",
+                giveDocSeCd: data.ctrtKndCd
+            }
+        ]
+
+        let response
+        try {
+
+            response = await ApiRequest("/boot/common/commonSelect", param);
+            
+        } catch (error) {
+            
+        }
+        formData = response[0]
+        formData.ctrtElctrnAtrzId = data.elctrnAtrzId;
+
+        navigate('/elecAtrz/ElecAtrzNewReq', {state: {
+            prjctId: prjctId,
+            formData: formData,
+            sttsCd: "VTW03405",
+            ctrtTyCd: data.elctrnAtrzTySeCd,
+            prjctData : prjctData
+        }})
+    }
     
     const ElecGiveBox = ({title, keyNm, typeCd}) => {
         return (
@@ -86,25 +115,16 @@ const ElecGiveAtrz = () => {
 
     const onClickBtn = async (btn, data) => {
 
-        formData.ctrtElctrnAtrzId = data.elctrnAtrzId;
-
         if(btn.name === "hist") {
 
             console.log(data);
             await onSetPopData(data);
             await onHistPopAppear();
 
-            // window.open("/elecAtrz/ElecAtrz");
         }
 
         if(btn.name === 'moveReq'){
-            navigate('/elecAtrz/ElecAtrzNewReq', {state: {
-                prjctId: prjctId,
-                formData: formData,
-                sttsCd: formData.docSeCd,
-                ctrtTyCd: data.elctrnAtrzTySeCd,
-                prjctData : prjctData
-            }})
+            getGiveAtrzForms(data);
         }
     }
 

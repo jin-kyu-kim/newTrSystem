@@ -144,18 +144,21 @@ const ElecAtrz = () => {
       }
     }
   };
+  const deleteTempAtrz = async (data) => {
+    const res = await ApiRequest('/boot/elecAtrz/deleteTempAtrz', {
+      elctrnAtrzId: data.elctrnAtrzId, atrzTySeCd: data.elctrnAtrzTySeCd
+    });
+    if(res >= 1) searchHandle(); getAllCount();
+  }
 
   const onClickBtn = async (button, data) => {
-
     await getVacInfo(data);
     await getMaxAtrzLnSn(data);
     setAplyYmdOdr();
 
     if(button.name === 'delete'){
-      const res = await ApiRequest('/boot/elecAtrz/deleteTempAtrz', {
-        elctrnAtrzId: data.elctrnAtrzId, atrzTySeCd: data.elctrnAtrzTySeCd
-      });
-      if(res >= 1) searchHandle(); getAllCount();
+      handleOpen(button.msg, deleteTempAtrz(data), true);
+
     } else if(button.name === "docHist") {
       await onSetPopData(data);
       await onHistPopAppear();

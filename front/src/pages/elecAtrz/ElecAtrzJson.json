@@ -67,7 +67,7 @@
       ],
       "temp": [
         {"key": "delete", "value": "삭제", "width": "10%", "button": { 
-          "text": "삭제", "name": "delete" }}
+          "text": "삭제", "name": "delete", "msg": "삭제하시겠습니까?" }}
       ],
       "searchInfo": {
           "searchParams": { 

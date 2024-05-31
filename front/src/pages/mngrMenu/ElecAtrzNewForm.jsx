@@ -67,6 +67,7 @@ const ElecAtrzNewForm = ({}) => {
                         mdfcnDt: date.format('YYYY-MM-DD HH:mm:ss')};
                     delete modifiedData["elctrnAtrzTySeCdNm"];
                     delete modifiedData["docSeCdNm"];
+                    delete modifiedData["giveDocSeCdNm"];
                                             
                     param = [{tbNm: "ELCTRN_ATRZ_DOC_FORM"},
                             modifiedData,

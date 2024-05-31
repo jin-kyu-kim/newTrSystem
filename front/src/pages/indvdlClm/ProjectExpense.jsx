@@ -7,7 +7,7 @@ import CustomTable from 'components/unit/CustomTable';
 import ApiRequest from "../../utils/ApiRequest";
 import SearchInfoSet from 'components/composite/SearchInfoSet';
 import { useModal } from "../../components/unit/ModalContext";
-import '../../assets/css/Style.css'
+
 const ProjectExpense = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -146,7 +146,7 @@ const ProjectExpense = () => {
             setHistYmOdr(null)
             setPopVisible(true);
         } else {
-            if (ctAtrzCmptnYn === undefined && mmAtrzCmptnYn === undefined) {
+            if ((ctAtrzCmptnYn === undefined && mmAtrzCmptnYn === undefined) || ctAtrzCmptnYn === null && mmAtrzCmptnYn === null) {
                 handleOpen('경비청구 건수가 없을 경우 근무시간을 먼저 승인 요청 해주시기 바랍니다.')
                 return;
             } else if(ctAtrzCmptnYn === null && (mmAtrzCmptnYn === 'Y' || mmAtrzCmptnYn === 'N')) {
@@ -315,13 +315,7 @@ const ProjectExpense = () => {
                                 </React.Suspense>
                             );
                         }} />
-                    : <div style={{
-                        height: "250px",
-                        borderRadius: "5px",
-                        background: "#F2F2F2",
-                        display: "flex",
-                        alignItems: "center"
-                    }}><span style={{ marginLeft: '200px', fontSize: '16pt' }}>입력 마감되었습니다.</span></div>}
+                    : <div className='projectExpense-bottom-ddln-area'><span style={{ marginLeft: '200px', fontSize: '16pt' }}>입력 마감되었습니다.</span></div>}
             </div>
             <ProjectExpensePopup
                 visible={popVisible}
