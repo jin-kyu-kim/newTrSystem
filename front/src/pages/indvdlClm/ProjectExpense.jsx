@@ -281,7 +281,7 @@ const ProjectExpense = () => {
                                 : () => onClickAction(onClick)} />))}
                 </div>
 
-                <div style={{ marginBottom: '50px', width: 600 }}>
+                <div style={{ marginBottom: '50px'}}>
                     {admin != undefined ? <></> :
                         <SearchInfoSet
                             callBack={searchHandle}
