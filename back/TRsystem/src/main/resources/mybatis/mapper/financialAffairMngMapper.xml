@@ -143,6 +143,42 @@
 
     <!-- 프로젝트청구현황개인별 수행인력 팝업 -->
     <select id="retrievePrjctCtClmSttusIndvdlMMAcctoDetail" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        WITH RECURSIVE VCATN_CNT AS (
+            SELECT
+                ATRZ.ELCTRN_ATRZ_ID
+                ,EMP.EMP_ID
+                ,DATE(ATRZ.VCATN_BGNG_YMD) AS VCATN_BGNG_YMD
+                ,DATE(ATRZ.VCATN_END_YMD) AS VCATN_END_YMD
+                ,ATRZ.VCATN_TY_CD
+                ,(SELECT CD_NM FROM CD WHERE CD_VALUE = ATRZ.VCATN_TY_CD) AS VCATN_TY_NM
+                ,CASE
+                    WHEN ATRZ.VCATN_TY_CD IN ('VTW01201', 'VTW01204', 'VTW01207', 'VTW01208', 'VTW05301', 'VTW05302', 'VTW05303') THEN '8 hrs'
+                ELSE '4 hrs'
+                END VCATN_TIME
+                ,ATRZ.VCATN_DE_CNT AS FLAG_CNT
+                FROM VCATN_ATRZ 	ATRZ
+                ,ELCTRN_ATRZ	ELCTRN
+                ,EMP			EMP
+            WHERE ATRZ.ELCTRN_ATRZ_ID = ELCTRN.ELCTRN_ATRZ_ID
+                AND ELCTRN.ATRZ_DMND_EMP_ID = EMP.EMP_ID
+                AND ATRZ.VCATN_TY_CD != 'VTW01206'
+                AND ELCTRN.ATRZ_DMND_STTS_CD = 'VTW03703'
+                AND ELCTRN.ATRZ_DMND_EMP_ID = #{empId}
+                AND (SUBSTR(#{startYmOdr}, 1, 6) BETWEEN (SUBSTR(ATRZ.VCATN_BGNG_YMD, 1, 6)) AND SUBSTR(ATRZ.VCATN_END_YMD, 1, 6)
+                    OR SUBSTR(#{endYmOdr}, 1, 6) BETWEEN (SUBSTR(ATRZ.VCATN_BGNG_YMD, 1, 6)) AND SUBSTR(ATRZ.VCATN_END_YMD, 1, 6))
+            UNION ALL
+            SELECT
+                ELCTRN_ATRZ_ID
+                ,EMP_ID
+                ,DATE_ADD(VCATN_BGNG_YMD, INTERVAL 1 DAY) AS VCATN_BGNG_YMD
+                ,VCATN_END_YMD
+                ,VCATN_TY_CD
+                ,VCATN_TY_NM
+                ,VCATN_TIME
+                ,FLAG_CNT - 1
+            FROM VCATN_CNT
+            WHERE VCATN_BGNG_YMD <![CDATA[<]]> VCATN_END_YMD
+        )
         SELECT
             pma.MD*8 AS MD,
             CONCAT(pma.MD*8, 'hrs | ', e.EMP_FLNM, '(', c.CD_NM, ')') AS TEXT,
@@ -180,6 +216,19 @@
         <if test="empId != null and !empId.equals('')">
             AND pma.EMP_ID = #{empId}
         </if>
+        UNION ALL
+        SELECT
+            ''
+            , CONCAT(VCATN_TIME, ' | ', VCATN_TY_NM) AS TEXT
+            , ''
+            , DATE_FORMAT(VCATN_BGNG_YMD, '%Y-%m-%d') AS START_DATE
+            , DATE_FORMAT(VCATN_BGNG_YMD, '%Y-%m-%d') AS END_DATE
+            , ''
+            , ''
+        FROM VCATN_CNT	CNT, CRTR_DATE	CRTR
+        WHERE 1 = 1
+        AND DATE_FORMAT(VCATN_BGNG_YMD, '%Y%m%d') = CRTR.CRTR_YMD
+        AND CRTR.HLDY_CL_CD = 'VTW05001'
     </select>
 
     <!-- 프로젝트청구현황개인별 경비팝업 -->
@@ -199,6 +248,8 @@
                 (SELECT CD_NM FROM nwTr.CD cd WHERE UP_CD_VALUE = 'VTW045' AND CD_VALUE = b.EXPENS_CD) AS CD_NM,
                 b.UTZTN_AMT
             FROM nwTr.PRJCT_INDVDL_CT_MM a, nwTr.PRJCT_CT_APLY b
+            JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_ID = b.PRJCT_ID AND (pcat.EMP_ID = b.EMP_ID OR (pcat.EMP_ID IS NULL AND b.EMP_ID IS NULL))
+                AND pcat.APLY_YM = b.APLY_YM AND pcat.APLY_ODR = b.APLY_ODR AND pcat.PRJCT_CT_APLY_SN = b.PRJCT_CT_APLY_SN AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703')
             WHERE 1 = 1
                 AND a.PRJCT_ID = b.PRJCT_ID
                 AND a.APLY_YM = b.APLY_YM

@@ -787,9 +787,7 @@ const EmpVacation = () => {
             elctrnAtrzDocNo: e.data.elctrnAtrzDocNo,
             elctrnAtrzTySeCd: e.data.elctrnAtrzTySeCd, 
             prjctId: e.data.prjctId,
-            regDt: e.data.regDt,
-            atchmnflId: e.data.atchmnflId,
-            title: e.data.title
+            regDt: e.data.regDt
         } } })
     }
 

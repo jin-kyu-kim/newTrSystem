@@ -137,3 +137,8 @@
   border: solid 1px black;
   border-collapse: collapse;
 }
+
+.elecGiveAtrzTable .dx-datagrid .dx-row > td > .dx-button-has-text .dx-button-content {
+  font-size: 12px;
+  padding: 12px;
+}

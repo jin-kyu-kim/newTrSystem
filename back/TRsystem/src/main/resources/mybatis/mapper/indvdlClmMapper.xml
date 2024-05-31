@@ -421,11 +421,15 @@
             ,''
             ,EMP_ID
             ,''
-            ,''
+            ,CASE
+                WHEN DATE_FORMAT(VCATN_BGNG_YMD, '%Y%m%d') <![CDATA[<]]> CONCAT(#{aplyYm}, 16) THEN 1
+                ELSE 2
+                END
             ,DATE_FORMAT(VCATN_BGNG_YMD, '%Y%m%d')
-            ,CASE WHEN VCATN_TY_CD IN ('VTW01201', 'VTW01204', 'VTW01207', 'VTW01208', 'VTW05301', 'VTW05302', 'VTW05303') THEN 1.0
-            ELSE 0.5
-            END
+            ,CASE
+                WHEN VCATN_TY_CD IN ('VTW01201', 'VTW01204', 'VTW01207', 'VTW01208', 'VTW05301', 'VTW05302', 'VTW05303') THEN 0.0
+                ELSE 0.5
+                END
             ,''
             ,''
             ,''
@@ -521,7 +525,6 @@
         (
             #{rjctPrvonsh}
             ,#{atrzDmndSttsCd}
-<!--            ,"VTW03702"-->
             ,#{aprvrEmpId}
             ,#{prjctId}
             ,#{empId}
@@ -553,21 +556,6 @@
         AND PRJCT_ID = #{prjctId}
     </update>
 
-
-<!--    &lt;!&ndash; 프로젝트MM결재수정 &ndash;&gt;-->
-<!--    <update id="retrievePrjctMmSttsInq" parameterType="map">-->
-<!--        /* indvdlClmMapper.retrievePrjctMmSttsInq */-->
-<!--        UPDATE PRJCT_MM_ATRZ-->
-<!--        SET-->
-<!--            ATRZ_DMND_STTS_CD = ''-->
-<!--            ,MDFCN_DT = SYSDATE()-->
-<!--            ,MDFCN_EMP_ID = #{empId}-->
-<!--        WHERE EMP_ID = #{empId}-->
-<!--        AND APLY_YM = #{aplyYm}-->
-<!--        AND APLY_ODR = #{aplyOdr}-->
-<!--        AND APLY_YMD = #{aplyYmd}-->
-<!--        AND PRJCT_ID = #{prjctId}-->
-<!--    </update>-->
 
     <!-- 프로젝트개인비용MM수정 -->
     <update id="updatePrjctIndvdlCtMm" parameterType="map">
@@ -875,6 +863,47 @@
     </insert>
 
 
+    <!-- 프로젝트개MM신청여부조회 -->
+    <select id="selectPrjctMmAplyRowCnt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        /* indvdlClmMapper.selectPrjctMmAplyRowCnt */
+        SELECT COUNT(APLY_YMD) ROW_COUNT
+        FROM PRJCT_MM_APLY
+        WHERE EMP_ID = #{empId}
+        AND APLY_YM = #{aplyYm}
+        AND APLY_ODR = #{aplyOdr}
+    </select>
+
+    <!-- 프로젝트개인비용MM신청여부조회 -->
+    <select id="selectPrjctIndvdlCtMmRowCnt" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        /* indvdlClmMapper.selectPrjctIndvdlCtMmRowCnt */
+        SELECT *
+        FROM PRJCT_INDVDL_CT_MM
+        WHERE EMP_ID = #{empId}
+        AND APLY_YM = #{aplyYm}
+        AND APLY_ODR = #{aplyOdr}
+    </select>
+
+
+    <!-- 프로젝트개인비용MM수정 -->
+    <update id="updatePrjctIndvdlCtMmRowCnt" parameterType="map">
+        /* indvdlClmMapper.updatePrjctIndvdlCtMmRowCnt */
+        UPDATE PRJCT_INDVDL_CT_MM
+        SET MM_ATRZ_CMPTN_YN = NULL
+        WHERE EMP_ID = #{empId}
+        AND APLY_YM = #{aplyYm}
+        AND APLY_ODR = #{aplyOdr}
+    </update>
+
+
+    <!-- 프로젝트개인비용MM삭제 -->
+    <delete id="deletePrjctIndvdlCtMmRowCnt" parameterType="map">
+        /* indvdlClmMapper.deletePrjctIndvdlCtMmRowCnt */
+        DELETE FROM PRJCT_INDVDL_CT_MM
+        WHERE EMP_ID = #{empId}
+        AND APLY_YM = #{aplyYm}
+        AND APLY_ODR = #{aplyOdr}
+    </delete>
+
     <!-- =================================박지환_작업================================= -->
 
     <!-- 프로젝트비용 카드사용내역 조회 -->
@@ -1166,11 +1195,11 @@
     <select id="retrievePrjctWorkDay" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
             p.PRJCT_NM,
-            SUBSTRING(DATE_FORMAT(pma.APLY_YMD, '%Y%m%d'), 7, 2) AS APLY_DAY,
+            DATE_FORMAT(pma.APLY_YMD, '%Y-%m-%d') AS APLY_DAY,
             pma.MD * 8 AS MD
         FROM PRJCT_MM_APLY pma
-                 JOIN PRJCT p ON p.PRJCT_ID = pma.PRJCT_ID
-                 JOIN (
+        JOIN PRJCT p ON p.PRJCT_ID = pma.PRJCT_ID
+        JOIN (
             SELECT pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR, pmrz.APLY_YMD
             FROM PRJCT_MM_ATRZ pmrz
             WHERE pmrz.EMP_ID = #{empId}
@@ -1183,13 +1212,37 @@
             AND pma.APLY_YM = filtered.APLY_YM
             AND pma.APLY_ODR = filtered.APLY_ODR
             AND pma.APLY_YMD = filtered.APLY_YMD
+        UNION ALL
+        SELECT
+            prj.PRJCT_NM,
+            DATE_FORMAT(c.CRTR_YMD, '%Y-%m-%d') AS APLY_DAY,
+            ' ' AS MD
+        FROM CRTR_DATE c
+                 JOIN (
+            SELECT DISTINCT p.PRJCT_ID, p.PRJCT_NM
+            FROM PRJCT p
+                     JOIN PRJCT_MM_APLY pma ON p.PRJCT_ID = pma.PRJCT_ID
+                     JOIN (
+                SELECT pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR, pmrz.APLY_YMD
+                FROM PRJCT_MM_ATRZ pmrz
+                WHERE pmrz.EMP_ID = #{empId}
+                  AND pmrz.APLY_YM = #{aplyYm}
+                  AND pmrz.APLY_ODR = #{aplyOdr}
+                  AND pmrz.ATRZ_DMND_STTS_CD = 'VTW03703'
+                GROUP BY pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR, pmrz.APLY_YMD
+            ) filtered ON pma.PRJCT_ID = filtered.PRJCT_ID
+        ) prj ON 1=1
+        WHERE c.HLDY_CL_CD = 'VTW05002'
+          AND c.CRTR_YMD LIKE CONCAT(#{aplyYm}, '%')
+          AND c.CRTR_ODR = #{aplyOdr}
+        ORDER BY APLY_DAY
     </select>
 
     <!-- 비용청구 팝업 공휴일 일자별 시간 -->
     <select id="retrieveCtrtDay" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
             (SELECT CD_NM FROM CD WHERE CD_VALUE = CRTR_DATE.HLDY_CL_CD) AS PRJCT_NM,
-            SUBSTRING(DATE_FORMAT(CRTR_YMD, '%Y%m%d'), 7, 2) AS APLY_DAY,
+            DATE_FORMAT(CRTR_YMD, '%Y-%m-%d') AS APLY_DAY,
             8 AS MD
         FROM CRTR_DATE
         WHERE SUBSTR(CRTR_YMD, 1, 6) = #{aplyYm}
@@ -1205,7 +1258,7 @@
     <select id="retrieveVcatnDay" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
             dv.PRJCT_NM
-            , SUBSTRING(DATE_FORMAT(APLY_YMD, '%Y%m%d'), 7, 2) AS APLY_DAY
+            , DATE_FORMAT(APLY_YMD, '%Y-%m-%d') AS APLY_DAY
             , CASE
                 WHEN dv.VCATN_TY_CD IN ('VTW01201', 'VTW01204') THEN 8
                 ELSE 4

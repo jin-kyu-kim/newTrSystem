@@ -1,0 +1,14 @@
+{
+    "menuName": "ElecAtrzGiveHistPopup",
+    "queryId": "elecAtrzMapper.retrieveAtrzGiveHistList",
+    "keyColumn": "elctrnAtrzId",
+    "columns": [
+        { "key": "elctrnAtrzDocNo", "value": "문서번호", "width": "16%", "alignment": "center"},
+        { "key": "regDt", "value": "기안 날짜", "width": "20%", "alignment": "center"},
+        { "key": "empno", "value": "사번", "width": "16%", "alignment": "center"},
+        { "key": "empFlnm", "value": "성명", "width": "16%", "alignment": "center"},
+        { "key": "giveYmd", "value": "청구연월", "width": "16%", "alignment": "center"},
+        { "key": "atrzDmndSttsCdNm", "value": "결재상태", "width": "16%", "alignment": "center"},
+        { "key": "elctrnAtrzId", "value": "문서조회", "width": "16%", "alignment": "center", "button": { "text": "조회", "name": "elctrnAtrzId"}}
+    ]
+}

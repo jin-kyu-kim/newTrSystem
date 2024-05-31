@@ -7,10 +7,10 @@ import ToggleButton from 'pages/sysMng/ToggleButton';
 import { TextBox } from 'devextreme-react';
 
 const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, validateNumberBox }) => {
-    const [ isChangeData, setIsChangeData ] = useState(false);
+    const [isChangeData, setIsChangeData] = useState(false);
 
     const { getCdList, isPrjctIdSelected, setIsPrjctIdSelected, hasError, chgPlaceholder, comboList, cdList,
-        expensCd, setExpensCd, setValidationErrors } = cellRenderConfig ?? {};
+        expensCd, setExpensCd, setValidationErrors, setComboBox } = cellRenderConfig ?? {};
 
     if (col.cellType === 'button') {
         return (<Button text={col.button.text} name={col.button.name} type={col.button.type}
@@ -27,24 +27,9 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
                 keyExpr={col.valueExpr}
                 placeholder={col.placeholder}
                 searchEnabled={true}
-                onValueChanged={(newValue) => {
-                    props.data[col.key] = newValue.value[col.valueExpr]
-
-                    if (col.key === 'prjctId') {
-                        getCdList(newValue.value, props.data.cardUseSn);
-                        props.data['prjctMngrEmpId'] = newValue.value['prjctMngrEmpId'] // 결재자 추가
-
-                        setIsPrjctIdSelected(prevStts => ({
-                            ...prevStts,
-                            [props.data.cardUseSn]: !!newValue.value
-                        })); // 선택된 값이 없으면 falsy
-
-                    } else {
-                        setExpensCd(prevStts => ({
-                            ...prevStts,
-                            [props.data.cardUseSn]: newValue.value[col.valueExpr]
-                        }));
-                    }
+                showClearButton={true}
+                onValueChanged={(e) => {
+                    setComboBox(e.value, props);
                 }}
                 disabled={col.key === 'expensCd' && !isPrjctIdSelected[props.data.cardUseSn]}
             />
@@ -100,8 +85,8 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
                 style={{ backgroundColor: hasError && hasError(props.data.cardUseSn, col.key) ? '#FFCCCC' : '' }}
                 onValueChanged={(newValue) => {
                     hasError && setValidationErrors(prevErrors => prevErrors.filter(error => !(error.cardUseSn === props.data.cardUseSn && error.field === col.key)));
-                    if(validateNumberBox){
-                        if(validateNumberBox(props.data, newValue.value)){
+                    if (validateNumberBox) {
+                        if (validateNumberBox(props.data, newValue.value)) {
                             props.data[col.key] = newValue.value
                             setIsChangeData(!isChangeData)
                         }
@@ -110,7 +95,7 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
                         setIsChangeData(!isChangeData)
                     }
                 }}
-                
+
             />
         )
     }

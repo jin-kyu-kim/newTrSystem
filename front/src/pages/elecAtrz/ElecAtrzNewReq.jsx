@@ -51,48 +51,54 @@ const ElecAtrzNewReq = () => {
     const [elctrnAtrzId, setElctrnAtrzId] = useState();
 
     useEffect(() => {
-        const getDetailData = async () => {
-            const res = await ApiRequest('/boot/common/queryIdSearch', { queryId: "elecAtrzMapper.elecAtrzDetail", elctrnAtrzId: elctrnAtrzId != undefined ? elctrnAtrzId : formData.elctrnAtrzId })
-            if(res[0]) {
-                setData({...data, ...res[0]})
-            }
-        }
-        getDetailData();
-    }, [elctrnAtrzId]);
 
-    /**
-     * 계약 지급인 경우 계약코드 및 계약전자결재ID 조회
-     */
-    useEffect(()=>{
+        getDetailData();
+
+        /**
+         * 계약 지급인 경우 계약코드 및 계약전자결재ID 조회
+         */
         if(!ctrtTyCd){
             if(formData.atrzDmndSttsCd === "VTW03701" || sttsCd === "VTW05407" || sttsCd === "VTW05406" || sttsCd === "VTW05405"){   //임시저장
-                
-                const getCtrtInfo = async () => {
-                    try {
-                        const response = await ApiRequest('/boot/common/queryIdSearch', 
-                                {queryId: "elecAtrzMapper.retrieveElctrnAtrzId"
-                                ,elctrnAtrzId: formData.elctrnAtrzId}
-                        );
-                        
-                        if(response.length>0){
-                            setData(prev => {
-                                const newState = {
-                                    ...prev,
-                                    ctrtElctrnAtrzId: response[0].ctrtElctrnAtrzId,
-                                    ctrtTyCd: response[0].elctrnAtrzTySeCd
-                                };
-                                return newState;
-                            });
-                        }
-                    } catch (error) {
-                        console.log('error', error);
-                    } 
-                }     
                 getCtrtInfo();       
             };      
         }
-    },[elctrnAtrzId])
-    
+
+    }, [elctrnAtrzId]);
+
+    const getDetailData = async () => {
+        const res = await ApiRequest('/boot/common/queryIdSearch', { queryId: "elecAtrzMapper.elecAtrzDetail", elctrnAtrzId: elctrnAtrzId != undefined ? elctrnAtrzId : formData.elctrnAtrzId })
+        if(res[0]) {
+            setData(prev => {
+                const newState = {
+                    ...prev,
+                    ...res[0]
+                };
+                return newState;
+            });
+        }
+    }
+
+    const getCtrtInfo = async () => {
+        try {
+            const response = await ApiRequest('/boot/common/queryIdSearch', 
+                    {queryId: "elecAtrzMapper.retrieveElctrnAtrzId"
+                    ,elctrnAtrzId: formData.elctrnAtrzId}
+            );
+            
+            if(response.length>0){
+                setData(prev => {
+                    const newState = {
+                        ...prev,
+                        ctrtElctrnAtrzId: response[0].ctrtElctrnAtrzId,
+                        ctrtTyCd: response[0].elctrnAtrzTySeCd
+                    };
+                    return newState;
+                });
+            }
+        } catch (error) {
+            console.log('error', error);
+        } 
+    }
 
     /*
      * 첨부파일 저장 테이블 지정 
@@ -102,7 +108,7 @@ const ElecAtrzNewReq = () => {
         insertTable = "CLM_ATRZ";
     }else if(["VTW04908","VTW04909","VTW04910"].includes(data.elctrnAtrzTySeCd)){
         insertTable = "CTRT_ATRZ";
-    }else if(["VTW04914"].includes(data.elctrnAtrzTySeCd)){
+    }else if(["VTW04911","VTW04912","VTW04913","VTW04914"].includes(data.elctrnAtrzTySeCd)){
         insertTable = "CTRT_GIVE_ATRZ";
     }else{
         insertTable = "GNRL_ATRZ";
@@ -153,7 +159,7 @@ const ElecAtrzNewReq = () => {
     useEffect(() => {
 
         // 일반 전자결재시 테이블 삽입. "GNRL_ATRZ"
-        if(!["VTW04908", "VTW04909", "VTW04910", "VTW04907", "VTW04914"].includes(data.elctrnAtrzTySeCd)){
+        if(!["VTW04908", "VTW04909", "VTW04910", "VTW04907","VTW04911","VTW04912","VTW04913","VTW04914"].includes(data.elctrnAtrzTySeCd)){
             setAtrzParam(atrzParam => ({
                 ...atrzParam,
                 ...childData,
@@ -304,7 +310,7 @@ const ElecAtrzNewReq = () => {
      */
     const requestElecAtrz = async () => {
 
-        createAtrz(atrzParam, "VTW03702");
+        handleOpen("결재요청 하시겠습니까?",  () => createAtrz(atrzParam, "VTW03702"), true);
     }
 
     /**
@@ -561,7 +567,7 @@ const ElecAtrzNewReq = () => {
                     }
                     {["VTW04911","VTW04912","VTW04913","VTW04914"].includes(formData.elctrnAtrzTySeCd) && ["VTW04909","VTW04910","VTW04908"].includes(ctrtTyCd?ctrtTyCd:data.ctrtTyCd)&& prjctData && //VTW04914: 외주업체/재료비 지급
                     <>
-                        <ElecAtrzTabDetail detailData={data} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd?ctrtTyCd:data.ctrtTyCd} prjctData={prjctData} onSendData={handleChildData}/>
+                        <ElecAtrzTabDetail detailData={data} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd ? ctrtTyCd : data.ctrtTyCd} prjctData={prjctData} onSendData={handleChildData}/>
                     </>
                     }
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import PivotGrid, { FieldChooser, Export, PivotGridTypes, FieldPanel, } from 'devextreme-react/pivot-grid';
 import { Workbook } from 'exceljs';
 import { saveAs } from 'file-saver-es';
@@ -6,12 +6,10 @@ import { exportPivotGrid } from 'devextreme/excel_exporter';
 
 
 const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fileName, sorting, filtering, 
-    isExport, grandTotals, width, customColor }) => {
+    isExport, grandTotals, width, customColor, grandTotalText }) => {
 
     const isDataCell = (cell) => (cell.area === 'data' && cell.rowType === 'D' && cell.columnType === 'D');
-
     const isTotalCell = (cell) => (cell.type === 'T' || cell.type === 'GT' || cell.rowType === 'T' || cell.rowType === 'GT' || cell.columnType === 'T' || cell.columnType === 'GT');
-
     const getExcelCellFormat = ({ fill, font, bold }: ConditionalAppearance) =>
         ({
             fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: fill } },
@@ -158,6 +156,7 @@ const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fi
     return (
         <PivotGrid
             width={width}
+            showTotalsPrior='columns'
             allowSortingBySummary={true}
             allowSorting={sorting}
             allowFiltering={filtering}
@@ -168,8 +167,9 @@ const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fi
             dataSource={values}
             showBorders={true}
             onExporting={onExporting}
-            onCellPrepared={onCellPrepared}
             onCellClick={onCellClick}
+            onCellPrepared={onCellPrepared}
+            texts={{ grandTotal: grandTotalText }}
         >
             <FieldPanel
                 showRowFields={true}

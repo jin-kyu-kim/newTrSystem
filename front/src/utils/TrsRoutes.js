@@ -84,7 +84,7 @@ const TreRoutes = [
   {
     path: "/sysMng/CustomersList",
     name: "CustomersList",
-    element: React.lazy(() => import("../pages/sysMng/CustomersList")),
+    element: React.lazy(() => import("../pages/project/CustomersList")),
   },
   // 코드 관리
   {

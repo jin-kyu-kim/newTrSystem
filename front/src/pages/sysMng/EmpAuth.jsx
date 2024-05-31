@@ -29,17 +29,15 @@ const EmpAuth = () => {
     const handleYnVal = async (e) => {
         let param = [
             { tbNm: "USER_AUTHRT" },
-            { empId: e.key.empId, authrtCd: e.name }
+            { empId: e.key.empId, authrtCd: e.name.toUpperCase() }
         ]
         const response = ApiRequest(e.data.useYn === 'Y' ? '/boot/common/commonInsert' : '/boot/common/commonDelete', param);
-        console.log('response', response)
     };
 
     const pageHandle = async () => {
         setIsLoading(true);
         try {
             const response = await ApiRequest("/boot/common/queryIdSearch", param);
-            
             if (response.length !== 0) {
                 setValues(response);
                 setTotalItems(response[0].totalItems);

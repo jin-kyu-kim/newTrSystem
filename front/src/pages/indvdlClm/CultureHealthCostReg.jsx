@@ -8,17 +8,8 @@ import ApiRequest from "../../utils/ApiRequest";
 import axios from "axios";
 import CustomLabelValue from "../../components/unit/CustomLabelValue";
 import {useModal} from "../../components/unit/ModalContext";
+import "./CultureHealthCostReg.css";
 
-const empListContainerStyle = {
-    width: "65%",
-    marginTop: "20px",
-};
-const empDetailContainerStyle = {
-    width: "35%",
-    display: "flex",
-    flexDirection: "column",
-    marginTop: "20px",
-};
 const fontSize = {
     fontSize: 14
 }
@@ -399,12 +390,11 @@ const CultureHealthCostReg = (props) => {
     }
 
     return (
-        <div style={{display: "flex", margin: "2%"}}>
-            <div className="empListContainer" style={empListContainerStyle}>
-                <div className="empListTable" style={{minWidth: "480px"}}>
-                    <div style={{height: "310px"}}>
-                        <p><strong>* 청구 목록 </strong></p>
-                        <span style={fontSize}>
+        <div>
+            <div className="itemBox" style={{display: "flex", flexDirection: "row", justifyContent: "space-between", marginBottom: "2%"}}>
+                <div className="itemBottom" style={{width: "63%"}}>
+                    <p><strong>* 청구 목록 </strong></p>
+                    <span style={fontSize}>
                             1. 입력, 수정, 삭제 가능 조건 <br/>
                               <strong>매달 1일 부터 5일 : 이전달과 현재달 청구 건</strong><br/>
                               <strong>매달 6일부터 말일 : 현재 달 청구 건</strong><br/>
@@ -413,29 +403,8 @@ const CultureHealthCostReg = (props) => {
                                 style={{color: "red"}}>{getDate(now)}</span><br/>
                             * 입력, 수정 및 삭제 가능한 청구대상 월 : <span style={{color: "red"}}>{getTargetMonth(now)}</span><br/>
                         </span>
-                    </div>
-                    <DataGrid
-                        keyExpr={'clturPhstrnActCtSn'}
-                        dataSource={values}
-                        onFocusedRowChanged={onFocusedRowChanged}
-                        focusedRowEnabled={true}
-                    >
-                        <Column dataField='month' caption='대상월' alignment="center" wordWrap={true}/>
-                        <Column dataField='clmYmd' caption='청구일자' alignment="center" wordWrap={true}/>
-                        <Column dataField='clmAmt' caption='금액' alignment="center" wordWrap={true}/>
-                        <Column dataField='actIem' caption='항목' alignment="center" wordWrap={true}/>
-                        <Column dataField='rm' caption='비고' alignment="center" wordWrap={true}/>
-                        <Column dataField='frcsNm' caption='가맹점' alignment="center" wordWrap={true}/>
-                        <Column caption='첨부' minWidth={150} cellRender={fileCell} alignment="center"/>
-                    </DataGrid>
                 </div>
-                <div style={{display: "flex", justifyContent: "flex-end"}}>
-                    <Button text="수정" onClick={onUpdateClick} disabled={!selectedItem} style={button}></Button>
-                    <Button text="삭제" onClick={onDeleteClick} disabled={!selectedItem} type='danger' style={button}></Button>
-                </div>
-            </div>
-            <div style={empDetailContainerStyle}>
-                <div style={{height: "290px", marginLeft: "15px"}}>
+                <div className="itemTop" style={{width: "35%"}}>
                     <p><strong>* 문화 체련비 등록</strong></p>
                     <div style={fontSize}>
                         <p>1. 체력 향상과 문화 교육을 위해 지원하는 경비입니다.</p>
@@ -446,7 +415,30 @@ const CultureHealthCostReg = (props) => {
                             <strong>(문화비의 경우 매월 상여로 처리하며 연말정산 시 본인이 세금을 부담합니다.)</strong></p>
                     </div>
                 </div>
-                <div className="dx-fieldset">
+            </div>
+            <div className="itemBox" style={{display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
+                <div className="itemBottom" style={{width: "63%"}}>
+                    <DataGrid
+                        keyExpr={'clturPhstrnActCtSn'}
+                        dataSource={values}
+                        onFocusedRowChanged={onFocusedRowChanged}
+                        focusedRowEnabled={true}
+                        wordWrapEnabled={true}
+                    >
+                        <Column dataField='month' caption='대상월' alignment="center"/>
+                        <Column dataField='clmYmd' caption='청구일자' alignment="center"/>
+                        <Column dataField='clmAmt' caption='금액' alignment="center"/>
+                        <Column dataField='actIem' caption='항목' alignment="center"/>
+                        <Column dataField='rm' caption='비고' alignment="center"/>
+                        <Column dataField='frcsNm' caption='가맹점' alignment="center"/>
+                        <Column caption='첨부' minWidth={150} cellRender={fileCell} alignment="center"/>
+                    </DataGrid>
+                    <div style={{display: "flex", justifyContent: "flex-end"}}>
+                        <Button text="수정" onClick={onUpdateClick} disabled={!selectedItem} style={button}></Button>
+                        <Button text="삭제" onClick={onDeleteClick} disabled={!selectedItem} type='danger' style={button}></Button>
+                    </div>
+                </div>
+                <div className="itemTop" style={{width: "35%"}}>
                     <span style={{color: "red", fontSize: 14, fontWeight: "bold"}}>*법인카드로 결제한 날짜를 입력해 주세요.</span>
                     <CustomLabelValue props={labelValue.clmYmd} onSelect={handleChgValue}
                                       value={initParam?.clmYmd}/>
@@ -469,10 +461,10 @@ const CultureHealthCostReg = (props) => {
                         ref={fileUploaderRef}
                     >
                     </FileUploader>
-                </div>
-                <div style={{display: "flex", justifyContent: "flex-end"}}>
-                    <Button style={button} type='default' text="저장" onClick={handleSubmit}></Button>
-                    <Button style={button} text="초기화" onClick={onResetClick}></Button>
+                    <div style={{display: "flex", justifyContent: "flex-end"}}>
+                        <Button style={button} type='default' text="저장" onClick={handleSubmit}></Button>
+                        <Button style={button} text="초기화" onClick={onResetClick}></Button>
+                    </div>
                 </div>
             </div>
         </div>

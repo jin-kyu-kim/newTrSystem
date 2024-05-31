@@ -83,14 +83,14 @@ const routes = [
     path: "/project/ProjectOutordCompany",
     name: "ProjectOutordCompany",
     element: React.lazy(() => import("../../pages/project/manage/ProjectOutordCompany")),
-    isPrivate:true
+    isPrivate:'VTW04807'
   },
   // 프로젝트 외주업체 관리 - 직원목록
   {
     path: "/project/ProjectOutordEmp",
     name: "ProjectOutordEmp",
     element: React.lazy(() => import("../../pages/project/manage/ProjectOutordEmp")),
-    isPrivate:true
+    isPrivate:'VTW04807'
   },
   // 권한관리
   {
@@ -101,10 +101,10 @@ const routes = [
   },
   // 고객사관리
   {
-    path: "/sysMng/CustomersList",
+    path: "/project/CustomersList",
     name: "CustomersList",
-    element: React.lazy(() => import("../../pages/sysMng/CustomersList")),
-    isPrivate:"VTW04803"
+    element: React.lazy(() => import("../../pages/project/CustomersList")),
+    isPrivate:"VTW04807"
   },
   // 코드 관리
   {
