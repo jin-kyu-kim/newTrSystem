@@ -167,8 +167,8 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
         }
         <Item ratio={1}>
           <Box>
-            <Item ratio={1}>
-              <Button onClick={handleSubmit} text={btnName} style={{ margin: "5px" }} />
+            <Item ratio={searchParams.ratio ? searchParams.ratio : 1}>
+              <Button onClick={handleSubmit} text={btnName} style={{ margin: "5px" }} type={searchParams.btnType} />
             </Item>
 
             {searchParams.insertButton &&

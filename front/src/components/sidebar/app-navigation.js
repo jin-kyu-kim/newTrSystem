@@ -162,7 +162,7 @@ export const navigation = [
   }, {
     text: '시스템관리',
     icon: 'imgarlock',
-    auth: 'VTW04803',
+    auth: 'VTW04801',
     items: [
       {
         text: '권한관리',

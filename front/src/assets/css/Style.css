@@ -575,3 +575,10 @@
   }
 }
 
+.projectExpense-bottom-ddln-area {
+  height: 250px;
+  border-radius: 5px;
+  background: #F2F2F2;
+  display: flex;
+  align-items: center;
+}
