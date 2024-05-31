@@ -305,9 +305,9 @@
         FROM (SELECT DATE_FORMAT(PIVOT_DATE,'%Y%m%d') AS PIVOT_DATE
         FROM c
         WHERE PIVOT_DATE <![CDATA[<=]]> IF(
-        RIGHT('20240501', 1) = '1',
-        DATE(CONCAT(SUBSTR('20240501', 1, 6), '15')),
-        LAST_DAY(CAST(CONCAT(SUBSTR('20240501', 1, 6), '01') AS DATE)))) T
+        RIGHT(#{startYmOdr}, 1) = '1',
+        DATE(CONCAT(SUBSTR(#{startYmOdr}, 1, 6), '15')),
+        LAST_DAY(CAST(CONCAT(SUBSTR(#{endYmOdr}, 1, 6), '01') AS DATE)))) T
         LEFT JOIN (
         SELECT P.PRJCT_NM,
         E.EMP_FLNM,
