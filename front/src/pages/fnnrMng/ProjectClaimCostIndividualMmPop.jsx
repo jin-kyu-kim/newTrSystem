@@ -11,23 +11,25 @@ const ProjectClaimCostIndividualMmPop = ({props, prjctNm, startYmOdr, endYmOdr, 
         const results = [];
 
         props.map((data) => {
-            results.push(
-                <div>
-                    <hr/>
-                    <table>
-                        <thead>
+            if(data.md){
+                results.push(
+                    <div>
+                        <hr/>
+                        <table>
+                            <thead>
                             <tr>
                                 <th>{data.startDate}</th>
                             </tr>
-                        </thead>
-                        <tbody>
+                            </thead>
+                            <tbody>
                             <tr>
                                 <td>{prjctNm} {data.md} hrs. | {data.deptNm} {data.aprvrEmpFlnm} ({data.atrzDmndSttsNm}) </td>
                             </tr>
-                        </tbody>
-                    </table>
-                </div>
-            )
+                            </tbody>
+                        </table>
+                    </div>
+                )
+            }
         });
             
         return results;
