@@ -8,7 +8,7 @@
     "pkColumnsDtl": ["prjctId", "bgtMngOdr", "expensPrmpcSn", "expensCd"],
     "nomalColumnsDtlYm": "useYm",
     "nomalColumnsDtlValue": "expectCt",
-    "cdBetween": "VTW04501&VTW04528",
+    "cdBetween": "VTW04501&VTW04527",
     "CdComboboxColumnNm": ["expensCdNm"],
     "tableColumns": 
 	[
