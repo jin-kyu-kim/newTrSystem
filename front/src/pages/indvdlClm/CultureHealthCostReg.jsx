@@ -426,8 +426,8 @@ const CultureHealthCostReg = (props) => {
                         wordWrapEnabled={true}
                     >
                         <Column dataField='month' caption='대상월' alignment="center"/>
-                        <Column dataField='clmYmd' caption='청구일자' alignment="center"/>
-                        <Column dataField='clmAmt' caption='금액' alignment="center"/>
+                        <Column dataField='clmYmd' caption='청구일자' alignment="center" dataType="date" format="yyyy-MM-dd"/>
+                        <Column dataField='clmAmt' caption='금액' alignment="center" format={"#,###"}/>
                         <Column dataField='actIem' caption='항목' alignment="center"/>
                         <Column dataField='rm' caption='비고' alignment="center"/>
                         <Column dataField='frcsNm' caption='가맹점' alignment="center"/>
