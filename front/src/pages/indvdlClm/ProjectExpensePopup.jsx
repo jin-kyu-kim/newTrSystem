@@ -14,7 +14,6 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, ctAply
     const [ totalInfo, setTotalInfo ] = useState({});
     const [ data, setData ] = useState([]);
     const [ loading, setLoading ] = useState(true);
-    const [ ctAtrzCmptnYn, setCtAtrzCmptnYn ] = useState();
     const [ mmAtrzCmptnYn, setMmAtrzCmptnYn ] = useState(popMmYn);
     const contentRef = useRef(null);
     const commonParams = {
@@ -27,7 +26,6 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, ctAply
             ...commonParams,  queryId
         });
     };
-
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
@@ -53,8 +51,7 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, ctAply
         const response = await ApiRequest('/boot/common/commonSelect', [{ tbNm: "PRJCT_INDVDL_CT_MM" }, 
         { empId: basicInfo.empId, aplyYm: basicInfo.aplyYm, aplyOdr: basicInfo.aplyOdr }])
         if (response.length !== 0) {
-            setCtAtrzCmptnYn(data?.every(item => item.ctAtrzCmptnYn === null) ? null : data.some(item => item.ctAtrzCmptnYn === 'N') ? 'N' : 'Y');
-            setMmAtrzCmptnYn(data?.every(item => item.mmAtrzCmptnYn === null) ? null : data.some(item => item.mmAtrzCmptnYn === 'N') ? 'N' : 'Y');
+            setMmAtrzCmptnYn(response?.every(item => item.mmAtrzCmptnYn === null) ? null : response.some(item => item.mmAtrzCmptnYn === 'N') ? 'N' : 'Y');
         } else{
             setMmAtrzCmptnYn(undefined)
         }
@@ -144,12 +141,12 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, ctAply
                 return( loading ? <></> : (<ProjectExpenseCashCardReport basicInfo={basicInfo} />) )
         }
     };
-    
+
     const contentArea = () => {
         return (
             <div>
                 {((aprvInfo.totCnt === aprvInfo.aprv && mmAtrzCmptnYn === 'Y') || (ctAplyLen === 0 && mmAtrzCmptnYn === 'Y')
-                ||(aprvInfo.totCnt === (aprvInfo.aprv + aprvInfo.rjct) && mmAtrzCmptnYn === 'Y')) || (basicInfo.isHist && mmAtrzCmptnYn !== undefined) ? 
+                ||(aprvInfo.totCnt === (aprvInfo.aprv + aprvInfo.rjct) && mmAtrzCmptnYn === 'Y')) || (basicInfo.isHist && mmAtrzCmptnYn === 'Y') ? 
                     <div ref={contentRef} >
                         <div style={{ textAlign: 'right' }}>
                             <ReactToPrint 

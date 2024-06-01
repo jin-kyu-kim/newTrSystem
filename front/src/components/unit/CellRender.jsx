@@ -9,8 +9,8 @@ import { TextBox } from 'devextreme-react';
 const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, validateNumberBox }) => {
     const [isChangeData, setIsChangeData] = useState(false);
 
-    const { getCdList, isPrjctIdSelected, setIsPrjctIdSelected, hasError, chgPlaceholder, comboList, cdList,
-        expensCd, setExpensCd, setValidationErrors, setComboBox } = cellRenderConfig ?? {};
+    const { getCdList, isPrjctIdSelected, hasError, chgPlaceholder, comboList, cdList,
+        expensCd, setValidationErrors, setComboBox } = cellRenderConfig ?? {};
 
     if (col.cellType === 'button') {
         return (<Button text={col.button.text} name={col.button.name} type={col.button.type}
@@ -29,7 +29,7 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
                 searchEnabled={true}
                 showClearButton={true}
                 onValueChanged={(e) => {
-                    setComboBox(e.value, props);
+                    setComboBox(e.value, props, col);
                 }}
                 disabled={col.key === 'expensCd' && !isPrjctIdSelected[props.data.cardUseSn]}
             />
