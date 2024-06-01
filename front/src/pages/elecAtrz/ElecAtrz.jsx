@@ -7,10 +7,10 @@ import SearchInfoSet from "components/composite/SearchInfoSet";
 import elecAtrzJson from "./ElecAtrzJson.json";
 import ApiRequest from 'utils/ApiRequest';
 import ElecAtrzHistPopup from "./common/ElecAtrzHistPopup";
-import "./ElecAtrz.css";
 import { useModal } from "../../components/unit/ModalContext";
 import Popup from "devextreme-react/popup";
 import TextArea from "devextreme-react/text-area";
+import "./ElecAtrz.css";
 
 const ElecAtrz = () => {
   const navigate = useNavigate();
@@ -78,7 +78,6 @@ const ElecAtrz = () => {
   };
 
   useEffect(() => {
-
     getAllCount();
   }, []);
 
@@ -157,7 +156,7 @@ const ElecAtrz = () => {
     setAplyYmdOdr();
 
     if(button.name === 'delete'){
-      handleOpen(button.msg, deleteTempAtrz(data), true);
+      handleOpen(button.msg, () => deleteTempAtrz(data), true);
 
     } else if(button.name === "docHist") {
       await onSetPopData(data);
@@ -175,15 +174,12 @@ const ElecAtrz = () => {
       handleOpen("회수 하시겠습니까?",  () => elctrnAtrzRecall(data), true);
     }
   }
-
   const onHistPopHiding = async () => {
     setHistPopVisible(false);
   }
-
   const onHistPopAppear = async () => {
     setHistPopVisible(true);
   }
-
   const onSetPopData = async (data) => {
     setSelectedData(data);
   }
