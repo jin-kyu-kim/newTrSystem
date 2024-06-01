@@ -318,7 +318,7 @@ const ProjectExpense = () => {
                 onPopHiding={onPopHiding}
                 aprvInfo={atrzDmndSttsCnt}
                 ctAplyLen={ctAply.length}
-                mmAtrzCmptnYn={mmAtrzCmptnYn}
+                popMmYn={mmAtrzCmptnYn}
                 basicInfo={histYmOdr !== null ? histYmOdr : { aplyYm, aplyOdr, empId }}
             />
         </div>

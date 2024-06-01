@@ -1216,7 +1216,7 @@
         SELECT
             prj.PRJCT_NM,
             DATE_FORMAT(c.CRTR_YMD, '%Y-%m-%d') AS APLY_DAY,
-            ' ' AS MD
+            0 AS MD
         FROM CRTR_DATE c
                  JOIN (
             SELECT DISTINCT p.PRJCT_ID, p.PRJCT_NM

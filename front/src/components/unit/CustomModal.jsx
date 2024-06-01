@@ -12,11 +12,11 @@ const CustomModal = ({ open, close, message, onClick, isStepOne }) => {
 
     const handleOnClick = () => {
         if (isStepOne) {
-            onClick();
             close();
+            onClick();
         } else {
-            onClick();
             close();
+            onClick();
         }
     };
 
