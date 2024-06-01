@@ -17,7 +17,7 @@ const ProjectExpenseCashCardReport = ({basicInfo}) => {
             },
             {
                 caption: "지불수단",
-                dataField: "ctAtrzSeCdNm",
+                dataField: "ctStlmSeCdNm",
                 area: "row",
                 showTotals: false,
                 expanded: true,

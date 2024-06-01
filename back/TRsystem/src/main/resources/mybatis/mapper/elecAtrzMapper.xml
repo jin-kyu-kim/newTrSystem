@@ -304,7 +304,7 @@
 			 , cad.CLM_AMT AS UTZTN_AMT												-- 청구금액 -> 이용금액 (UTZTN_AMT)
 			 , cad.CLM_PRPOS AS ATDRN												-- 청구용도(참석자)
 			 , cad.DTL_USE_DTLS	AS CT_PRPOS 										-- 상세사용내용 -> 비용용도(CT_PRPOS)
-		 	 , cad.CT_STLM_SE_CD AS CT_ATRZ_SE_CD 									-- 비용결재구분코드 -> CT_ATRZ_SE_CD(비용결재구분코드)
+		 	 , cad.CT_STLM_SE_CD AS CT_STLM_SE_CD 									-- 비용결재구분코드 -> CT_STLM_SE_CD(비용결재구분코드)
 			 , al.APRVR_EMP_ID														-- 결재자직원ID
 		 	 , al.APRV_YMD															-- 승인일자
 		  FROM ELCTRN_ATRZ ea
