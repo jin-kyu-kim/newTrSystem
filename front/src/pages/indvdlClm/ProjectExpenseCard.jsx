@@ -13,7 +13,6 @@ const ProjectExpenseCard = (props) => {
     const userInfo = JSON.parse(localStorage.getItem("userInfo"))
     const deptInfo = JSON.parse(localStorage.getItem("deptInfo"))
     const empInfo = { jbttlCd: deptInfo[0].jbttlCd, empno: userInfo.empno };
-
     const [cdList, setCdList] = useState([]);
     const [expensCd, setExpensCd] = useState({});
     const [comboList, setComboList] = useState({});
@@ -74,8 +73,8 @@ const ProjectExpenseCard = (props) => {
         }
     };
 
-    const setComboBox = (value, props) =>{
-        if(value){
+    const setComboBox = (value, props, col) =>{
+        if(value) {
             if (value.prjctId) {
                 getCdList(value, props.data.cardUseSn);
                 props.data.prjctId = value.prjctId
@@ -92,8 +91,15 @@ const ProjectExpenseCard = (props) => {
                     [props.data.cardUseSn]: value.expensCd
                 }));
             }
-    
-        }else{
+        } else {
+            // showClearButton을 통해 지운 경우
+            if(col.key === 'prjctId'){
+                props.data.prjctId = null;
+                props.data.aprvrEmpId = null;
+                props.data.expensCd = null;
+            } else{
+                props.data.expensCd = null;
+            }
             setIsPrjctIdSelected(prevStts => ({
                 ...prevStts,
                 [props.data.cardUseSn]: false
