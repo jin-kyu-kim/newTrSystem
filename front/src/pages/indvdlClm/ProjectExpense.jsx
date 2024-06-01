@@ -146,9 +146,10 @@ const ProjectExpense = () => {
                 handleOpen('경비청구 건수가 없을 경우 근무시간을 먼저 승인 요청 해주시기 바랍니다.')
                 return;
             } else if(ctAtrzCmptnYn === null && (mmAtrzCmptnYn === 'Y' || mmAtrzCmptnYn === 'N')) {
-                handleOpen('경비청구 건수가 없을 경우 바로 승인이 완료되며 입력 및 수정이 불가능합니다.')
+                handleOpen('경비청구 건수가 없을 경우 바로 승인이 완료되며 입력 및 수정이 불가능합니다.', () => prjctCtAtrzUpdate(onClick), true)
+            } else{
+                prjctCtAtrzUpdate(onClick);
             }
-            prjctCtAtrzUpdate(onClick);
         }
     };
     const onPopHiding = async () => { setPopVisible(false); }
