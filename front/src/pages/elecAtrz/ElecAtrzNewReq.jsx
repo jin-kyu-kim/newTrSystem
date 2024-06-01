@@ -51,9 +51,7 @@ const ElecAtrzNewReq = () => {
     const [elctrnAtrzId, setElctrnAtrzId] = useState();
 
     useEffect(() => {
-
         getDetailData();
-
         /**
          * 계약 지급인 경우 계약코드 및 계약전자결재ID 조회
          */
@@ -62,7 +60,6 @@ const ElecAtrzNewReq = () => {
                 getCtrtInfo();       
             };      
         }
-
     }, [elctrnAtrzId]);
 
     const getDetailData = async () => {
@@ -81,10 +78,8 @@ const ElecAtrzNewReq = () => {
     const getCtrtInfo = async () => {
         try {
             const response = await ApiRequest('/boot/common/queryIdSearch', 
-                    {queryId: "elecAtrzMapper.retrieveElctrnAtrzId"
-                    ,elctrnAtrzId: formData.elctrnAtrzId}
+                { queryId: "elecAtrzMapper.retrieveElctrnAtrzId", elctrnAtrzId: formData.elctrnAtrzId }
             );
-            
             if(response.length>0){
                 setData(prev => {
                     const newState = {
@@ -145,7 +140,6 @@ const ElecAtrzNewReq = () => {
                 title: data.title,
                 atrzCn: data.cn
             }));
-
             // 첨부파일 조회
             if(data.atchmnflId){
                 getAttachments();
@@ -157,7 +151,6 @@ const ElecAtrzNewReq = () => {
      * 자식컴포넌트에서 받아온 데이터 set 
      */
     useEffect(() => {
-
         // 일반 전자결재시 테이블 삽입. "GNRL_ATRZ"
         if(!["VTW04908", "VTW04909", "VTW04910", "VTW04907","VTW04911","VTW04912","VTW04913","VTW04914"].includes(data.elctrnAtrzTySeCd)){
             setAtrzParam(atrzParam => ({
@@ -166,7 +159,6 @@ const ElecAtrzNewReq = () => {
                 tbNm : "GNRL_ATRZ"
             }));
         }
- 
         setAtrzParam(atrzParam => ({
             ...atrzParam,
             ...childData
@@ -188,16 +180,10 @@ const ElecAtrzNewReq = () => {
      * 첨부파일 조회
      */
     const getAttachments = async () => {
-
-        const param = [
-            { tbNm: "ATCHMNFL" },
-            {
-                atchmnflId: data.atchmnflId
-            }
-        ]
-
         try {
-            const response = await ApiRequest("/boot/common/commonSelect", param);
+            const response = await ApiRequest("/boot/common/commonSelect", [
+                { tbNm: "ATCHMNFL" }, { atchmnflId: data.atchmnflId }
+            ]);
             if(response.length > 0) {
                 const tmpFileList = response.map((item) => ({
                     realFileNm: item.realFileNm,
@@ -217,14 +203,12 @@ const ElecAtrzNewReq = () => {
      * @param {} deleteItem 
      */
     const attachFileDelete = (deleteItem) => {
-
         setDeleteFiles([...deleteFiles, { atchmnflId: sttsCd === "VTW05405" || sttsCd === "VTW05406" || sttsCd === "VTW05407" ? '' : data.atchmnflId ,atchmnflSn: deleteItem.atchmnflSn, strgFileNm: deleteItem.strgFileNm }]);
         setNewAttachments(newAttachments.filter(item => item !== deleteItem));
     }
 
     /** 결재선용 데이터 - 등록시에는 기본 참조자 리스트 조회 */
     useEffect(() => {
-
         /** 최초에는 참조 테이블의 데이터만 가져온다. */
         const getAtrzEmp = async () => {
             try{
@@ -309,7 +293,6 @@ const ElecAtrzNewReq = () => {
      * 결재요청 버튼 클릭시 결재요청 코드와 함께 전자결재 요청 함수 실행
      */
     const requestElecAtrz = async () => {
-
         handleOpen("결재요청 하시겠습니까?",  () => createAtrz(atrzParam, "VTW03702"), true);
     }
 
@@ -317,7 +300,6 @@ const ElecAtrzNewReq = () => {
      * 임시저장 버튼 클릭시 임시저장 코드와 함께 저장 함수 실행
      */
     const saveTemp = async () => {
-
         createAtrz(atrzParam, "VTW03701");
     }
 
@@ -332,11 +314,9 @@ const ElecAtrzNewReq = () => {
         const isValid = checkValidation(stts, param, atrzLnEmpList); 
         if(!isValid) return;
 
-
         /**
          * 전자결재 & 첨부파일 저장
          */
-        
         const insertParam = {
             param,
             atrzDmndSttsCd: stts,
@@ -351,9 +331,6 @@ const ElecAtrzNewReq = () => {
             histElctrnAtrzId: sttsCd === "VTW05405" || sttsCd === "VTW05406" ? data.elctrnAtrzId : data.histElctrnAtrzId,
             atrzHistSeCd: sttsCd === "VTW05405" || sttsCd === "VTW05406" ? sttsCd : data.atrzHistSeCd != undefined ? data.atrzHistSeCd : "VTW05401"
         }
-
-        console.log("insertParam", insertParam);
-
         try {
             setLoading(true);
             const response = await ApiRequest("/boot/elecAtrz/insertElecAtrz", insertParam);
@@ -389,18 +366,13 @@ const ElecAtrzNewReq = () => {
                             atrzSttsCd: "VTW00801"
                         }
                     ]
-                    
                     const updateResponse = await ApiRequest("/boot/common/commonUpdate", param);
-
                 }
 
                 const formDataAttach = new FormData();
-
                 formDataAttach.append("tbNm", JSON.stringify({tbNm : insertTable}));
 
-
                 // 1. 임시저장 -> 
-
                 if(data.atchmnflId !== undefined && sttsCd === "VTW03701") {
 
                     formDataAttach.append("data", JSON.stringify({atchmnflId : data.atchmnflId}));
@@ -442,7 +414,6 @@ const ElecAtrzNewReq = () => {
                         navigate("/elecAtrz/ElecAtrz");
                     }
                 }
-
             }else{
                 handleOpen("전자결재 요청에 실패하였습니다. 관리자에게 문의하세요. ")
             }
@@ -504,7 +475,6 @@ const ElecAtrzNewReq = () => {
         setAttachments(e.value);
     };
 
-
     /**
      * 결재요청 및 임시저장 벨리데이션 체크
      */
@@ -518,7 +488,6 @@ const ElecAtrzNewReq = () => {
                 return false;
             }
         }
-
         var atrzLn = atrzLnEmpList.find( ({ approvalCode }) => approvalCode == 'VTW00705');
 
         if(atrzLn === undefined){
@@ -622,5 +591,4 @@ const ElecAtrzNewReq = () => {
         </>
     );
 }
-
 export default ElecAtrzNewReq;

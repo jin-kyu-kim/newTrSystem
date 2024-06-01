@@ -8,12 +8,14 @@ import CustomPivotGrid from "../../components/unit/CustomPivotGrid";
 import ApiRequest from "../../utils/ApiRequest";
 import ReactToPrint from 'react-to-print';
 
-const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noDataCase, mmAtrzCmptnYn }) => {
+const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, ctAplyLen, popMmYn }) => {
     const { projectExpensePopup, projectExpensePopQueryIdList } = ProjectExpenseJson;
     const [ empInfo, setEmpInfo ] = useState({});
     const [ totalInfo, setTotalInfo ] = useState({});
     const [ data, setData ] = useState([]);
     const [ loading, setLoading ] = useState(true);
+    const [ ctAtrzCmptnYn, setCtAtrzCmptnYn ] = useState();
+    const [ mmAtrzCmptnYn, setMmAtrzCmptnYn ] = useState(popMmYn);
     const contentRef = useRef(null);
     const commonParams = {
         aplyYm: basicInfo.aplyYm,
@@ -30,14 +32,15 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
         const fetchData = async () => {
             setLoading(true);
             const empInfoPromise = getEmpInfo();
+            const indivdlYnPromise = getIndivdlYn();
             const totalWorkTimePromise = getTotalWorkTime();
             const expenseTotalInfoPromise = getExpenseTotalInfo();
             const dailyWorkHoursPromise = getDailyWorkHours();
             
-            await Promise.all([empInfoPromise, totalWorkTimePromise, expenseTotalInfoPromise, dailyWorkHoursPromise]);
+            await Promise.all([empInfoPromise, indivdlYnPromise, totalWorkTimePromise, expenseTotalInfoPromise, dailyWorkHoursPromise]);
             setLoading(false);
         };
-        fetchData();
+        if(basicInfo.empId) fetchData();
     }, [basicInfo]);
 
     const getEmpInfo = async () => {
@@ -45,7 +48,18 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
             queryId: "indvdlClmMapper.retrievePopEmpInfo", empId: basicInfo.empId})
         setEmpInfo(response[0]);
     }
-
+    
+    const getIndivdlYn = async () => {
+        const response = await ApiRequest('/boot/common/commonSelect', [{ tbNm: "PRJCT_INDVDL_CT_MM" }, 
+        { empId: basicInfo.empId, aplyYm: basicInfo.aplyYm, aplyOdr: basicInfo.aplyOdr }])
+        if (response.length !== 0) {
+            setCtAtrzCmptnYn(data?.every(item => item.ctAtrzCmptnYn === null) ? null : data.some(item => item.ctAtrzCmptnYn === 'N') ? 'N' : 'Y');
+            setMmAtrzCmptnYn(data?.every(item => item.mmAtrzCmptnYn === null) ? null : data.some(item => item.mmAtrzCmptnYn === 'N') ? 'N' : 'Y');
+        } else{
+            setMmAtrzCmptnYn(undefined)
+        }
+    }
+    
     const getTotalWorkTime = async () => {
         const res = await fetchApiData("indvdlClmMapper.retrieveTotalWorkTime");
         if (res[0] !== null) {
@@ -130,12 +144,12 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
                 return( loading ? <></> : (<ProjectExpenseCashCardReport basicInfo={basicInfo} />) )
         }
     };
-
+    
     const contentArea = () => {
         return (
             <div>
-                {((aprvInfo.totCnt === aprvInfo.aprv && mmAtrzCmptnYn === 'Y') || (noDataCase.cnt === 0 && noDataCase.yn === 'Y')
-                ||(aprvInfo.totCnt === (aprvInfo.aprv + aprvInfo.rjct) && mmAtrzCmptnYn === 'Y')) || basicInfo.isHist ? 
+                {((aprvInfo.totCnt === aprvInfo.aprv && mmAtrzCmptnYn === 'Y') || (ctAplyLen === 0 && mmAtrzCmptnYn === 'Y')
+                ||(aprvInfo.totCnt === (aprvInfo.aprv + aprvInfo.rjct) && mmAtrzCmptnYn === 'Y')) || (basicInfo.isHist && mmAtrzCmptnYn !== undefined) ? 
                     <div ref={contentRef} >
                         <div style={{ textAlign: 'right' }}>
                             <ReactToPrint 
@@ -158,8 +172,8 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
                 : (aprvInfo.aprvDmnd >= 1) ? <span>결재 진행중인 청구내역이 있습니다.</span> 
                 : mmAtrzCmptnYn === null ? <>
                     <span style={{color: 'red'}}>아직 근무시간 승인요청을 하지 않았습니다. </span>
-                    <span>요청한 뒤 승인 완료 후 출력하시기 바랍니다.</span>
-                </> : <></>}
+                    <span>요청한 뒤 승인 완료 후 출력하시기 바랍니다.</span></> 
+                : mmAtrzCmptnYn === undefined && <span>마감 정보가 없습니다.</span>}
             </div>
         );
     };

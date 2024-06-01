@@ -520,7 +520,7 @@
                 AND pca.APLY_ODR = pah.APLY_ODR
             	AND pca.PRJCT_CT_APLY_SN = pah.PRJCT_CT_APLY_SN
             WHERE 1 = 1
-		      AND (pca.CT_ATRZ_SE_CD = 'VTW01902' OR pca.CT_ATRZ_SE_CD = 'VTW01903')
+		      AND (pca.CT_STLM_SE_CD = 'VTW01902' OR pca.CT_STLM_SE_CD = 'VTW01903')
             <if test="aplyYm != null and !aplyYm.equals('')">
                 AND pca.APLY_YM = #{aplyYm}
             </if>
@@ -592,7 +592,7 @@
 				     AND pca.APLY_YM = #{aplyYm}
 				     AND pca.APLY_ODR = #{aplyOdr}
  				     AND pcat.ATRZ_DMND_STTS_CD IN ('VTW03701','VTW03702','VTW03703','VTW03704')
- 				     AND (pca.CT_ATRZ_SE_CD = 'VTW01902' OR pca.CT_ATRZ_SE_CD = 'VTW01903')
+ 				     AND (pca.CT_STLM_SE_CD = 'VTW01902' OR pca.CT_STLM_SE_CD = 'VTW01903')
 				  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR
 			  ) T1
 		  LEFT JOIN (
@@ -606,7 +606,7 @@
 				     AND pca.APLY_YM = #{aplyYm}
 				     AND pca.APLY_ODR = #{aplyOdr}
 				     AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703'
-				     AND (pca.CT_ATRZ_SE_CD = 'VTW01902' OR pca.CT_ATRZ_SE_CD = 'VTW01903')
+				     AND (pca.CT_STLM_SE_CD = 'VTW01902' OR pca.CT_STLM_SE_CD = 'VTW01903')
 				  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR
 			  ) T2 ON (T1.EMP_ID = T2.EMP_ID)
 		  LEFT JOIN (
@@ -620,7 +620,7 @@
 				     AND pca.APLY_YM = #{aplyYm}
 				     AND pca.APLY_ODR = #{aplyOdr}
 				     AND pcat.ATRZ_DMND_STTS_CD = 'VTW03704'
-				     AND (pca.CT_ATRZ_SE_CD = 'VTW01902' OR pca.CT_ATRZ_SE_CD = 'VTW01903')
+				     AND (pca.CT_STLM_SE_CD = 'VTW01902' OR pca.CT_STLM_SE_CD = 'VTW01903')
 				  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR
 			  ) T3 ON (T1.EMP_ID = T3.EMP_ID)
 		  LEFT JOIN (
@@ -634,7 +634,7 @@
 				     AND pca.APLY_YM = #{aplyYm}
 				     AND pca.APLY_ODR = #{aplyOdr}
 				     AND pcat.ATRZ_DMND_STTS_CD = 'VTW03702'
-				     AND (pca.CT_ATRZ_SE_CD = 'VTW01902' OR pca.CT_ATRZ_SE_CD = 'VTW01903')
+				     AND (pca.CT_STLM_SE_CD = 'VTW01902' OR pca.CT_STLM_SE_CD = 'VTW01903')
 				  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR
 			  ) T4 ON (T1.EMP_ID = T4.EMP_ID)
 	    ) BB ON BB.EMP_ID = AA.EMP_ID
@@ -1337,7 +1337,7 @@
 		  FROM PRJCT_CT_APLY pca
 		  JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
 		 WHERE 1=1
-	      AND (pca.CT_ATRZ_SE_CD = 'VTW01902' OR pca.CT_ATRZ_SE_CD = 'VTW01903')
+	      AND (pca.CT_STLM_SE_CD = 'VTW01902' OR pca.CT_STLM_SE_CD = 'VTW01903')
 		   AND pca.EMP_ID = #{empId}
 		   AND pca.APLY_YM = #{aplyYm}
 		   AND pca.APLY_ODR = #{aplyOdr}
@@ -1346,7 +1346,7 @@
     
     <select id="retrieveCtPivotData" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT CONCAT(p.PRJCT_NM, '(', p.PRJCT_CD_IDNTFR , ')') PRJCT_NM_CD
-			 , c1.CD_NM AS CT_ATRZ_SE_CD_NM
+			 , c1.CD_NM AS CT_STLM_SE_CD_NM
 			 , c2.CD_NM AS EXPENS_CD_NM
 			 , CONCAT(IFNULL(SUBSTRING(cd.CRTR_YMD, 7, 8), SUBSTRING(LEFT(pca.UTZTN_DT, 8), 7, 8)), pca.CT_PRPOS) AS CT_PRPOS
 			 , pca.ATDRN
@@ -1354,7 +1354,7 @@
 			 , IFNULL(SUBSTRING(cd.CRTR_YMD, 7, 8), '기타') AS DAY
 		  FROM PRJCT_CT_APLY pca
 		  JOIN PRJCT p ON (pca.PRJCT_ID = p.PRJCT_ID)
-		  JOIN CD c1 ON (c1.CD_VALUE = pca.CT_ATRZ_SE_CD)
+		  JOIN CD c1 ON (c1.CD_VALUE = pca.CT_STLM_SE_CD)
 		  JOIN CD c2 ON (c2.CD_VALUE = pca.EXPENS_CD)
 		  LEFT JOIN CRTR_DATE cd ON (cd.CRTR_YMD LIKE CONCAT(pca.APLY_YM, '%') AND cd.CRTR_ODR = pca.APLY_ODR AND LEFT(pca.UTZTN_DT, 8) = cd.CRTR_YMD)
   		  JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
@@ -1362,11 +1362,11 @@
 		   AND pca.EMP_ID = #{empId}
 		   AND pca.APLY_YM = #{aplyYm}
 		   AND pca.APLY_ODR = #{aplyOdr}
-		   AND (pca.CT_ATRZ_SE_CD = 'VTW01902' OR pca.CT_ATRZ_SE_CD = 'VTW01903')	-- 현금/개인법인카드
+		   AND (pca.CT_STLM_SE_CD = 'VTW01902' OR pca.CT_STLM_SE_CD = 'VTW01903')	-- 현금/개인법인카드
 		AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703' 
 		UNION
 		SELECT CONCAT(p.PRJCT_NM, '(', p.PRJCT_CD_IDNTFR , ')') PRJCT_NM_CD
-			 , c1.CD_NM AS CT_ATRZ_SE_CD_NM
+			 , c1.CD_NM AS CT_STLM_SE_CD_NM
 			 , c2.CD_NM AS EXPENS_CD_NM
 			 , CONCAT(SUBSTRING(LEFT(pca.UTZTN_DT, 8), 7, 8), pca.CT_PRPOS) AS CT_PRPOS
 			 , pca.ATDRN
@@ -1377,7 +1377,7 @@
 		  FROM CRTR_DATE cd
 		  JOIN PRJCT_CT_APLY pca
 		  JOIN PRJCT p ON p.PRJCT_ID = pca.PRJCT_ID
-		  JOIN CD c1 ON (c1.CD_VALUE = pca.CT_ATRZ_SE_CD)
+		  JOIN CD c1 ON (c1.CD_VALUE = pca.CT_STLM_SE_CD)
 		  JOIN CD c2 ON (c2.CD_VALUE = pca.EXPENS_CD)
 		 WHERE 1=1
 		   AND cd.CRTR_YMD LIKE CONCAT(#{aplyYm},'%')
@@ -1428,7 +1428,7 @@
 		 WHERE pca.APLY_YM = #{aplyYm}
 		   AND pca.APLY_ODR = #{aplyOdr}
 		   AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703'
-		   AND (pca.CT_ATRZ_SE_CD = 'VTW01902' OR pca.CT_ATRZ_SE_CD = 'VTW01903')
+		   AND (pca.CT_STLM_SE_CD = 'VTW01902' OR pca.CT_STLM_SE_CD = 'VTW01903')
 		GROUP BY e.EMP_ID, BANK_CD_NM, e.ACTNO, e.EMP_FLNM
 	</select>
 	
@@ -1486,7 +1486,7 @@
 		SELECT pca.PRJCT_ID
 			 , p.PRJCT_NM
 			 , cd1.CD_NM AS EXPENS_CD_NM
-			 , cd2.CD_NM AS CT_ATRZ_SE_CD_NM
+			 , cd2.CD_NM AS CT_STLM_SE_CD_NM
 			 , pca.CT_PRPOS
 			 , pca.USE_OFFIC 
 			 , DATE_FORMAT(pca.UTZTN_DT, '%Y-%m-%d') AS UTZTN_DT
@@ -1509,7 +1509,7 @@
 		  JOIN CD cd1
 		    ON cd1.CD_VALUE = pca.EXPENS_CD
 		  JOIN CD cd2
-		    ON cd2.CD_VALUE = pca.CT_ATRZ_SE_CD
+		    ON cd2.CD_VALUE = pca.CT_STLM_SE_CD
 		 WHERE 1=1
 		   AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703'
 		   AND pca.ELCTRN_ATRZ_ID IS NULL

@@ -1,6 +1,6 @@
 import ApiRequest from 'utils/ApiRequest';
 
-const CASH_FIELDS = ["ctAtrzSeCd", "utztnDt", "useOffic", "utztnAmt"];
+const CASH_FIELDS = ["ctStlmSeCd", "utztnDt", "useOffic", "utztnAmt"];
 
 export const validateFields = async (selectedItem, placeholderAndRequired, setValidationErrors, buttonGroup, empInfo) => {
     let newErrors = [];

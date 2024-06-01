@@ -33,7 +33,7 @@
     },
     "keyColumn": "prjctCtAplySn",
     "ctAplyTableColumns": [
-      { "key": "ctAtrzSeCdNm", "value": "구분", "width": "8%" },
+      { "key": "ctStlmSeCdNm", "value": "구분", "width": "8%" },
       { "key": "utztnDt", "value": "사용일시", "width": "8%" },
       { "key": "useOffic", "value": "사용처", "width": "8%" },
       { "key": "utztnAmt", "value": "금액", "currency": true, "width": "8%" },
@@ -55,7 +55,7 @@
     ],
     "elcKeyColumn": "elctrnAtrzId",
     "columnCharge": [
-      { "key": "ctAtrzSeCdNm", "value": "구분", "width": "8%" },
+      { "key": "ctStlmSeCdNm", "value": "구분", "width": "8%" },
       { "key": "utztnDt", "value": "사용일시", "width": "8%" }, 
       { "key": "useOffic", "value": "사용처", "width": "8%" },
       { "key": "utztnAmt", "value": "금액", "currency": true, "width": "8%" },
@@ -68,7 +68,7 @@
     "groupingColumn": [
       { "key": "utztnAmt", "value": "금액", "summaryType": "custom", "valueFormat": "#,##0", "displayFormat" : "{0} 원" }
     ],
-    "groupingData": {"caption":"구분", "dataField": "ctAtrzSeCd", "totalTextColumn": "utztnDt"},
+    "groupingData": {"caption":"구분", "dataField": "ctStlmSeCd", "totalTextColumn": "utztnDt"},
     "buttonsConfig": {
       "default": [
         { "text": "입력마감", "type": "success", "onClick": { "name": "onInptDdlnClick", "actionType": "INPUT",
@@ -152,7 +152,7 @@
   },
   "labelValue" : [
     {
-      "name": "ctAtrzSeCd",
+      "name": "ctStlmSeCd",
       "type": "ComboBox",
       "label": "구분",
       "placeholder": "구분",
@@ -160,10 +160,10 @@
         "queryId" : {
           "queryId": "indvdlClmMapper.retrieveProjectExpensCd"
         },
-        "valueExpr" : "ctAtrzSeCd",
+        "valueExpr" : "ctStlmSeCd",
         "displayExpr": "cdNm",
-        "name": "ctAtrzSeCd",
-        "values": ["ctAtrzSeCd"]
+        "name": "ctStlmSeCd",
+        "values": ["ctStlmSeCd"]
       },
       "required": true
     },

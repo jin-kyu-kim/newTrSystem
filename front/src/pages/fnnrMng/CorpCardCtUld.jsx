@@ -21,7 +21,7 @@ const CorpCardCtUld = () => {
         { name: "업로드 대상(사번)", type: "selectBox" },
         {
             name: "업로드 구분", type: "radio", info: [
-                { id: '0', text: '기업법인', ctAtrzSeCd: 'VTW01901' }
+                { id: '0', text: '기업법인', ctStlmSeCd: 'VTW01901' }
             ]
         },
         { name: "파일 업로드", type: "uploadBtn" },

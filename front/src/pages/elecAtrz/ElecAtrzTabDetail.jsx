@@ -1,12 +1,11 @@
-import React, { useEffect, useState, useRef  } from 'react';
+import React, { useEffect, useState } from 'react';
 import electAtrzJson from './ElecAtrzJson.json';
 import ApiRequest from 'utils/ApiRequest';
-import './ElecAtrz.css';
 import CustomTable from 'components/unit/CustomTable';
 import ElecAtrzCtrtInfoDetail from './ctrtInfo/ElecAtrzCtrtInfoDetail';
 import ElectGiveAtrzClm from './ElectGiveAtrzClm';
 import ElecAtrzCtrtOutordHnfDetail from './ctrtInfo/ElecAtrzCtrtOutordHnfDetail';
-
+import './ElecAtrz.css';
 
 const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prjctData, onSendData }) => {
     const { vacDtl, clmColumns,  groupingColumn, groupingData, ctrtInfo } = electAtrzJson.electAtrzDetail;
@@ -25,8 +24,6 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
                          ,elctrnAtrzId: detailData.elctrnAtrzId}
                     );
                     setData(response);
-                    console.log("response",response);
-    
                 } catch (error) {
                     console.log('error', error);
                 }
@@ -37,24 +34,19 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
         } else if(["VTW04908","VTW04909","VTW04910","VTW04911","VTW04912","VTW04913","VTW04914"].includes(detailData.elctrnAtrzTySeCd)){
 
             const getCtrtInfo = async () => {
-                
                 try {
                     const elctrnAtrzId = detailData.ctrtElctrnAtrzId ? detailData.ctrtElctrnAtrzId : detailData.elctrnAtrzId;
-
                     const response = await ApiRequest('/boot/common/commonSelect', 
                                      [{ tbNm: "CTRT_ATRZ" }, { elctrnAtrzId: elctrnAtrzId }]
                     );
                     setData(response);
-    
                 } catch (error) {
                     console.log('error', error);
                 }
             };
             getCtrtInfo();
         }
-        
     }, [detailData.ctrtElctrnAtrzId]);
- 
 
     /**
      *  경비청구 테이블의 그룹핑 컬럼 커스터마이징
@@ -76,7 +68,6 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
      */
     const ClmTab = ({columns, groupingColumn}) => {
         return(
-            <div>
             <CustomTable
                 columns={columns}
                 values={data}
@@ -86,14 +77,10 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
                 groupingCustomizeText={groupingCustomizeText}
                 wordWrap={true}
             />
-            </div>
         );
     };
 
     /* ===================================  휴가  ====================================*/
-    /**
-     *  휴가정보 화면 그리기
-     */
     const VacInfoTab = ({ vacDtl, dtlInfo }) => {
         return (
             <div className="dtl-table">
@@ -121,19 +108,13 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
     };
 
     /* ===================================  재료비, 외주업체 계약  ====================================*/
-    /**
-     *  재료비, 외주업체 화면 그리기
-     */
     const CtrtInfo = ({ctrtInfo, data, ctrtTyCd})=>{
 
-        if(data && (detailData.elctrnAtrzTySeCd === 'VTW04910' || ctrtTyCd === 'VTW04910' ))
-            { 
-                ctrtInfo = ctrtInfo.filter(item => item.value !== '계약기간');
-            }
-        
+        if(data && (detailData.elctrnAtrzTySeCd === 'VTW04910' || ctrtTyCd === 'VTW04910' )) { 
+            ctrtInfo = ctrtInfo.filter(item => item.value !== '계약기간');
+        }
         return(
             <div className="elecAtrzNewReq-ctrtInfo">
-                
                 {ctrtInfo.map((ctrt, index) => (
                     <div style={{ display: 'flex' }} key={index}>
                         <div className="dtl-first-col">{ctrt.value}</div>
@@ -141,9 +122,7 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
 
                         {data && data[0] && data[0][ctrt.key] ? (
                             <>{data[0][ctrt.key]}</>
-                        ) : (
-                            <div> </div>  
-                        )}
+                        ) : ( <div> </div> )}
 
                         {data && data[0] ? (                      
                         <div style={{display: 'flex'}}>
@@ -155,17 +134,13 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
                                         </div>
                             )))}
                         </div>     
-                         ) : (
-                             <div> </div>  
-                        )}
-          
+                         ) : ( <div> </div> )}
                         </div>
                     </div>
                 ))}
             </div>
         );
     }
-
 
     const handleCtrtData = (data) => {
         if(Array.isArray(data)){
@@ -202,7 +177,6 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
             let ctrtItems = [];
 
             if(ctrtData.arrayData.length>1){
-      
                 ctrtData.arrayData.forEach((child) => {
                     //외주인력
                     if (child.hnfCtrtDtlMm) {
@@ -231,12 +205,10 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
                 setClmData((prev) => ({
                     ...prev,
                     ctrt: ctrtItems,
-                    
                 }));
             }
         }
     }, [ctrtData, clmData.rate, clmData.giveYmd, setClmData]);
-
 
     useEffect(()=>{
         if(!!onSendData){
@@ -244,12 +216,8 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
         }
     },[clmData])
 
-
-
     /* ================  전자결재유형코드에 따른 특수 컴포넌트 렌더링  =================*/
-
     const renderSpecialComponent = () => {
-
         switch (detailData.elctrnAtrzTySeCd) {
             case 'VTW04901':
             case 'VTW04915':
@@ -264,13 +232,12 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
             case 'VTW04913':
             case 'VTW04914':
                 return  <>
-                        <h3>계약정보</h3>
-                        <CtrtInfo ctrtInfo={ctrtInfo} data={data} ctrtTyCd={ctrtTyCd}/>
-                        {((detailData.ctrtElctrnAtrzId && ["VTW04912","VTW04913","VTW04914"].includes(detailData.elctrnAtrzTySeCd) && (ctrtTyCd? ctrtTyCd !== "VTW04908" : detailData.ctrtTyCd !== "VTW04908")) || ["VTW04909","VTW04910"].includes(detailData.elctrnAtrzTySeCd))
-                        ? 
-                        <ElecAtrzCtrtInfoDetail data={detailData} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd } onSendData={handleCtrtData} /> 
+                    <h3>계약정보</h3>
+                    <CtrtInfo ctrtInfo={ctrtInfo} data={data} ctrtTyCd={ctrtTyCd}/>
+                    {((detailData.ctrtElctrnAtrzId && ["VTW04912","VTW04913","VTW04914"].includes(detailData.elctrnAtrzTySeCd) && (ctrtTyCd? ctrtTyCd !== "VTW04908" : detailData.ctrtTyCd !== "VTW04908")) || ["VTW04909","VTW04910"].includes(detailData.elctrnAtrzTySeCd))
+                        ? <ElecAtrzCtrtInfoDetail data={detailData} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd } onSendData={handleCtrtData} /> 
                         : <ElecAtrzCtrtOutordHnfDetail data={detailData} sttsCd={sttsCd} prjctData={prjctData} prjctId={prjctId} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd } onSendData={handleCtrtData}/>}                   
-                        </>
+                    </>
             default:
                 return null;
         }   
@@ -280,10 +247,7 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
         <div>
             {(["VTW03701","VTW03702","VTW03703","VTW03704","VTW03705","VTW03706","VTW03707","VTW03405","VTW00801","VTW00802", "VTW05405", "VTW05406", "VTW05407"].includes(sttsCd)) 
                 && (["VTW04911","VTW04912","VTW04913","VTW04914"].includes(detailData.elctrnAtrzTySeCd)) 
-                &&
-                 (
-                    <ElectGiveAtrzClm detailData={detailData} sttsCd={sttsCd} prjctId={prjctId} onSendData={handleData} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd }/>
-                )}
+                && ( <ElectGiveAtrzClm detailData={detailData} sttsCd={sttsCd} prjctId={prjctId} onSendData={handleData} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd }/> )}
             {renderSpecialComponent()}
         </div>
     );

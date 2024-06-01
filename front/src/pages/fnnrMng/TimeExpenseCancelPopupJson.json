@@ -12,7 +12,7 @@
     "ctColumns": [
         { "key": "prjctNm", "value": "프로젝트 명", "width": 300, "alignment": "center" },
         { "key": "expensCdNm", "value": "경비코드", "width": 120, "alignment": "center"},
-        { "key": "ctAtrzSeCdNm", "value": "결재구분", "width": 120, "alignment": "center" },
+        { "key": "ctStlmSeCdNm", "value": "결재구분", "width": 120, "alignment": "center" },
         { "key": "ctPrpos", "value": "용도", "width": 120, "alignment": "center" },
         { "key": "useOffic", "value": "사용처", "width": 120, "alignment": "center" },
         { "key": "utztnDt", "value": "이용일자", "width": 120, "alignment": "center" },

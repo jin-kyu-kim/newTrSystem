@@ -1216,7 +1216,7 @@
         SELECT
             prj.PRJCT_NM,
             DATE_FORMAT(c.CRTR_YMD, '%Y-%m-%d') AS APLY_DAY,
-            ' ' AS MD
+            0 AS MD
         FROM CRTR_DATE c
                  JOIN (
             SELECT DISTINCT p.PRJCT_ID, p.PRJCT_NM
@@ -1306,7 +1306,7 @@
 
     <select id="retrieveProjectExpensCd" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
-            CD_VALUE AS CT_ATRZ_SE_CD,
+            CD_VALUE AS CT_STLM_SE_CD,
             CD_NM
         FROM CD
         WHERE UP_CD_VALUE = 'VTW019'

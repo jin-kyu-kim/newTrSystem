@@ -188,7 +188,7 @@
 				     AND pca.APLY_YM = #{aplyYm}
 				     AND pca.APLY_ODR = #{aplyOdr}
  				     AND pcat.ATRZ_DMND_STTS_CD IS NOT NULL
- 				     AND (pca.CT_ATRZ_SE_CD = 'VTW01902' OR pca.CT_ATRZ_SE_CD = 'VTW01903')
+ 				     AND (pca.CT_STLM_SE_CD = 'VTW01902' OR pca.CT_STLM_SE_CD = 'VTW01903')
 				  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR
 			  ) T1
 		  LEFT JOIN (
@@ -202,7 +202,7 @@
 				     AND pca.APLY_YM = #{aplyYm}
 				     AND pca.APLY_ODR = #{aplyOdr}
 				     AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703'
-				     AND (pca.CT_ATRZ_SE_CD = 'VTW01902' OR pca.CT_ATRZ_SE_CD = 'VTW01903')
+				     AND (pca.CT_STLM_SE_CD = 'VTW01902' OR pca.CT_STLM_SE_CD = 'VTW01903')
 				  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR
 			  ) T2 ON (T1.EMP_ID = T2.EMP_ID)
 		  LEFT JOIN (
@@ -216,7 +216,7 @@
 				     AND pca.APLY_YM = #{aplyYm}
 				     AND pca.APLY_ODR = #{aplyOdr}
 				     AND pcat.ATRZ_DMND_STTS_CD = 'VTW03704'
-				     AND (pca.CT_ATRZ_SE_CD = 'VTW01902' OR pca.CT_ATRZ_SE_CD = 'VTW01903')
+				     AND (pca.CT_STLM_SE_CD = 'VTW01902' OR pca.CT_STLM_SE_CD = 'VTW01903')
 				  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR
 			  ) T3 ON (T1.EMP_ID = T3.EMP_ID)
 		  LEFT JOIN (
@@ -230,7 +230,7 @@
 				     AND pca.APLY_YM = #{aplyYm}
 				     AND pca.APLY_ODR = #{aplyOdr}
 				     AND pcat.ATRZ_DMND_STTS_CD = 'VTW03702'
-				     AND (pca.CT_ATRZ_SE_CD = 'VTW01902' OR pca.CT_ATRZ_SE_CD = 'VTW01903')
+				     AND (pca.CT_STLM_SE_CD = 'VTW01902' OR pca.CT_STLM_SE_CD = 'VTW01903')
 				  GROUP BY pca.EMP_ID, pca.APLY_YM, pca.APLY_ODR
 			  ) T4 ON (T1.EMP_ID = T4.EMP_ID)
 	    ) BB ON BB.EMP_ID = AA.EMP_ID
