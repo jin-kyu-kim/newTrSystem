@@ -3,13 +3,13 @@
     "queryId": "infoInqMapper.retrieveEmpList",
     "keyColumn": "empno",
     "tableColumns": [
-        { "key": "empno", "value": "사번", "width": "15%", "alignment": "center" },
-        { "key": "empFlnm", "value": "성명", "width": "15%", "alignment": "center" },
-        { "key": "jbpsNm", "value": "직위", "width": "15%", "alignment": "center" },
-        { "key": "deptId", "value": "소속", "width": "15%", "alignment": "center" },
-        { "key": "telno", "value": "전화번호", "width": "15%", "alignment": "center" },
-        { "key": "eml", "value": "이메일", "width": "15%", "alignment": "center" },
-        { "key": "hdofSttsNm", "value": "재직상태", "width": "15%", "alignment": "center", "border": "1px" }
+        { "key": "empno", "value": "사번", "width": "10%", "alignment": "center" },
+        { "key": "empFlnm", "value": "성명", "width": "10%", "alignment": "center" },
+        { "key": "jbpsNm", "value": "직위", "width": "10%", "alignment": "center" },
+        { "key": "deptId", "value": "소속", "width": "20%", "alignment": "center" },
+        { "key": "telno", "value": "전화번호", "width": "20%", "alignment": "center" },
+        { "key": "eml", "value": "이메일", "alignment": "center" },
+        { "key": "hdofSttsNm", "value": "재직상태", "width": "5%", "alignment": "center", "border": "1px" }
     ],
     "searchInfo": {
         "searchParams": {
