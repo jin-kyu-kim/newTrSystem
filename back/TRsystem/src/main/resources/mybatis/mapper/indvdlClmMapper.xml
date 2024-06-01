@@ -1256,19 +1256,15 @@
 
     <!-- 비용청구 팝업 휴가 일자별 시간 -->
     <select id="retrieveVcatnDay" parameterType="map" resultType="com.trsystem.LowerHashMap">
-        SELECT
-            dv.PRJCT_NM
-            , DATE_FORMAT(APLY_YMD, '%Y-%m-%d') AS APLY_DAY
-            , CASE
-                WHEN dv.VCATN_TY_CD IN ('VTW01201', 'VTW01204') THEN 8
-                ELSE 4
-            END AS MD
-        FROM (
-            <![CDATA[
-            WITH RECURSIVE DAILY_VACATION AS (
+        <![CDATA[
+        WITH RECURSIVE DAILY_VACATION AS (
             SELECT
                 VAC.VCATN_TY_CD,
-                (SELECT CD_NM FROM CD WHERE CD_VALUE = VAC.VCATN_TY_CD) AS PRJCT_NM,
+                CASE
+                    WHEN VAC.VCATN_TY_CD IN ('VTW01201', 'VTW01202', 'VTW01203') THEN '연차'
+                    WHEN VAC.VCATN_TY_CD IN ('VTW01204', 'VTW01205') THEN '공가'
+                    ELSE (SELECT CD_NM FROM CD WHERE CD_VALUE = VAC.VCATN_TY_CD)
+                END AS PRJCT_NM,
                 DATE(VAC.VCATN_BGNG_YMD) as dt,
                 DATE(VAC.VCATN_END_YMD) as end_dt,
                 ELC.ATRZ_DMND_EMP_ID
@@ -1289,19 +1285,27 @@
             WHERE dr.dt < dr.end_dt
         ) ]]>
         SELECT
-            VCATN_TY_CD,
-            PRJCT_NM
-            , dt
-            , DATE_FORMAT(dt, '%Y%m%d') AS APLY_YMD
-            , ATRZ_DMND_EMP_ID
-        FROM DAILY_VACATION
-        WHERE SUBSTR(DATE_FORMAT(dt, '%Y%m%d'), 1, 6) = #{aplyYm}
-            AND CASE
-                WHEN #{aplyOdr} = 1 THEN SUBSTR(DATE_FORMAT(dt, '%Y%m%d'), 7, 2) BETWEEN '01' AND '15'
-                ELSE SUBSTR(DATE_FORMAT(dt, '%Y%m%d'), 7, 2) BETWEEN '16' AND '31'
-            END
-        ) dv
-        JOIN CRTR_DATE crd ON crd.CRTR_YMD = dv.APLY_YMD AND crd.HLDY_CL_CD = 'VTW05001';
+            dv.PRJCT_NM,
+            DATE_FORMAT(dv.dt, '%Y-%m-%d') AS APLY_DAY,
+            CASE
+                WHEN dv.VCATN_TY_CD IN ('VTW01201', 'VTW01204') THEN 8
+                ELSE 4
+            END AS MD
+        FROM (
+            SELECT
+                VCATN_TY_CD,
+                PRJCT_NM,
+                dt,
+                DATE_FORMAT(dt, '%Y%m%d') AS APLY_YMD,
+                ATRZ_DMND_EMP_ID
+            FROM DAILY_VACATION
+            WHERE SUBSTR(DATE_FORMAT(dt, '%Y%m%d'), 1, 6) = #{aplyYm}
+                AND CASE
+                    WHEN #{aplyOdr} = 1 THEN SUBSTR(DATE_FORMAT(dt, '%Y%m%d'), 7, 2) BETWEEN '01' AND '15'
+                    ELSE SUBSTR(DATE_FORMAT(dt, '%Y%m%d'), 7, 2) BETWEEN '16' AND '31'
+                END
+            ) dv
+        JOIN CRTR_DATE crd ON crd.CRTR_YMD = dv.APLY_YMD AND crd.HLDY_CL_CD = 'VTW05001'
     </select>
 
     <select id="retrieveProjectExpensCd" parameterType="map" resultType="com.trsystem.LowerHashMap">

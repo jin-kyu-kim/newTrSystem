@@ -102,7 +102,7 @@ const ProjectExpenseCard = (props) => {
             }
             setIsPrjctIdSelected(prevStts => ({
                 ...prevStts,
-                [props.data.cardUseSn]: false
+                [props.data.cardUseSn]: true
             }))
         }
     }
