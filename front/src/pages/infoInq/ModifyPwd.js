@@ -127,7 +127,7 @@ if (empDtlData.newPwd != empDtlData.newPwdCheck ){
   }
   return (
     <div style={{ padding: "20px" ,backgroundColor: "#b5c1c7" }}>
-      <div className="container" style={{ width : "43%", padding: "20px" ,backgroundColor: "#fff" }}>
+      <div className="container" style={{ padding: "20px" ,backgroundColor: "#fff" }}>
           <p >
             <strong>* 비밀번호를 수정합니다. (8자리~20자리, 숫자/영문자/특수문자포함하여야 합니다.)</strong>
           </p>
