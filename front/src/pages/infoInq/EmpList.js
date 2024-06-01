@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import EmpListJson from "../infoInq/EmpListJson.json";
 import ApiRequest from "../../utils/ApiRequest";
 import SearchEmpSet from "components/composite/SearchInfoSet";
-import CustomTable from "components/unit/CustomTable";
+import CustomEditTable from "components/unit/CustomEditTable";
 
 function EmpList() {
   const [ values, setValues ] = useState([]);
@@ -59,13 +59,11 @@ function EmpList() {
       </div>
 
       <div>검색된 건 수 : {totalItems} 건</div>
-      <CustomTable
-        keyColumn={keyColumn}
-        columns={tableColumns}
+      <CustomEditTable
+        noEdit={true}
         values={values}
-        wordWrap={true}
-        paging={true}
-        pageSize={20}
+        columns={tableColumns}
+        keyColumn={keyColumn}
       />
     </div>
   );
