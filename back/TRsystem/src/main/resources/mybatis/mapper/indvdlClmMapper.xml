@@ -1306,7 +1306,7 @@
 
     <select id="retrieveProjectExpensCd" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
-            CD_VALUE AS CT_ATRZ_SE_CD,
+            CD_VALUE AS CT_STLM_SE_CD,
             CD_NM
         FROM CD
         WHERE UP_CD_VALUE = 'VTW019'

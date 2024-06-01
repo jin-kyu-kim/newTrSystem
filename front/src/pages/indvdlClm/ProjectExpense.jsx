@@ -44,13 +44,9 @@ const ProjectExpense = () => {
         const handleResize = () => {
             setIsSmallScreen(window.innerWidth <= 768);
           };
-      
           window.addEventListener('resize', handleResize);
           handleResize();
-      
           return () => window.removeEventListener('resize', handleResize);
-
-
     }, []);
 
     useEffect(() => { // 결재상태에 따른 컬럼 list변경
@@ -321,7 +317,7 @@ const ProjectExpense = () => {
                 visible={popVisible}
                 onPopHiding={onPopHiding}
                 aprvInfo={atrzDmndSttsCnt}
-                noDataCase={{ cnt: ctAply.length, yn: mmAtrzCmptnYn }}
+                ctAplyLen={ctAply.length}
                 mmAtrzCmptnYn={mmAtrzCmptnYn}
                 basicInfo={histYmOdr !== null ? histYmOdr : { aplyYm, aplyOdr, empId }}
             />

@@ -65,8 +65,8 @@ const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, butt
     }));
 
     const updatedData = selectedItem.map(({ utztnDtFormat, ...rest }) => {
-      const ctAtrzSeCd = rest.ctAtrzSeCd || "VTW01903";
-      return { ...rest, ctAtrzSeCd };
+      const ctStlmSeCd = rest.ctStlmSeCd || "VTW01903";
+      return { ...rest, ctStlmSeCd };
     });
     const allParam = [ {param}, {updatedData} ];
 

@@ -8,7 +8,7 @@ import CustomPivotGrid from "../../components/unit/CustomPivotGrid";
 import ApiRequest from "../../utils/ApiRequest";
 import ReactToPrint from 'react-to-print';
 
-const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noDataCase, mmAtrzCmptnYn }) => {
+const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, ctAplyLen, mmAtrzCmptnYn }) => {
     const { projectExpensePopup, projectExpensePopQueryIdList } = ProjectExpenseJson;
     const [ empInfo, setEmpInfo ] = useState({});
     const [ totalInfo, setTotalInfo ] = useState({});
@@ -20,6 +20,7 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
         aplyOdr: basicInfo.aplyOdr,
         empId: basicInfo.empId
     };
+
     const fetchApiData = async (queryId) => { // parameter 재조합
         return ApiRequest('/boot/common/queryIdSearch', {
             ...commonParams,  queryId
@@ -130,11 +131,11 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, noData
                 return( loading ? <></> : (<ProjectExpenseCashCardReport basicInfo={basicInfo} />) )
         }
     };
-
+    
     const contentArea = () => {
         return (
             <div>
-                {((aprvInfo.totCnt === aprvInfo.aprv && mmAtrzCmptnYn === 'Y') || (noDataCase.cnt === 0 && noDataCase.yn === 'Y')
+                {((aprvInfo.totCnt === aprvInfo.aprv && mmAtrzCmptnYn === 'Y') || (ctAplyLen === 0 && mmAtrzCmptnYn === 'Y')
                 ||(aprvInfo.totCnt === (aprvInfo.aprv + aprvInfo.rjct) && mmAtrzCmptnYn === 'Y')) || basicInfo.isHist ? 
                     <div ref={contentRef} >
                         <div style={{ textAlign: 'right' }}>
