@@ -198,24 +198,24 @@
                  (SELECT IFNULL(SUM( ${costCol} ),0)  FROM ${tbCostNm} A WHERE PRJCT_ID =#{prjctId} AND BGT_MNG_ODR = #{bgtMngOdr}
                 <if test="control != null">
                     <if test="!control.equals('')">
-                     AND EXPENS_CD BETWEEN 'VTW04529' AND 'VTW04539'
+                     AND EXPENS_CD BETWEEN 'VTW04528' AND 'VTW04539'
                     </if>
                 </if>
                 <if test="general != null">
                     <if test="!general.equals('')">
-                        AND EXPENS_CD BETWEEN 'VTW04501' AND 'VTW04528'
+                        AND EXPENS_CD BETWEEN 'VTW04501' AND 'VTW04527'
                     </if>
                 </if>
                  ) AS COST_AMT,
                  (SELECT IFNULL(SUM( ${excuteCol} ),0) FROM ${tbExcuteNm} A WHERE PRJCT_ID =#{prjctId}
                 <if test="control != null">
                     <if test="!control.equals('')">
-                        AND EXPENS_CD BETWEEN 'VTW04529' AND 'VTW04539'
+                        AND EXPENS_CD BETWEEN 'VTW04528' AND 'VTW04539'
                     </if>
                 </if>
                 <if test="general != null">
                     <if test="!general.equals('')">
-                        AND EXPENS_CD BETWEEN 'VTW04501' AND 'VTW04528'
+                        AND EXPENS_CD BETWEEN 'VTW04501' AND 'VTW04527'
                     </if>
                 </if>
                  ) AS USE_AMT
@@ -513,6 +513,7 @@
      WHERE PRJCT_ID = #{prjctId}
       AND BGT_MNG_ODR = #{bgtMngOdr}
       AND EXPENS_CD IN ((SELECT CD_VALUE FROM CD WHERE UP_CD_VALUE = 'VTW045' AND USER_DFN_VALUE = #{costFlag}))
+    ORDER BY EXPENS_CD
     </select>
 
     <select id="retrievedistinctEmpCost" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -520,6 +521,7 @@
             , PRJCT_ID
             , EMP_ID
             , (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = A.EMP_ID) AS EMP_NM
+            , (SELECT JBPS_CD FROM EMP WHERE EMP_ID = A.EMP_ID) AS JBPS_CD
             , HNF_ROLE_CD
             , (SELECT CD_NM FROM CD WHERE CD_VALUE = HNF_ROLE_CD) AS HNF_ROLE_NM
             , (SELECT CD_NM FROM CD WHERE CD_VALUE = (SELECT JBPS_CD FROM EMP WHERE EMP_ID = A.EMP_ID)) JBPS_NM
@@ -529,6 +531,7 @@
         FROM MMNY_LBRCO_PRMPC A
         WHERE PRJCT_ID = #{prjctId}
           AND BGT_MNG_ODR = #{bgtMngOdr}
+        ORDER BY JBPS_CD
     </select>
 
     <select id="retrievePjrctOutordEmpCost" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -547,6 +550,7 @@
         FROM OUTORD_LBRCO_PRMPC A
         WHERE PRJCT_ID = #{prjctId}
           AND BGT_MNG_ODR = #{bgtMngOdr}
+        ORDER BY HNF_GRAD_CD
     </select>
 
 	<select id="retrieveBgtMngOdr" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -1173,7 +1177,7 @@
 					ON M.PRJCT_ID = S.PRJCT_ID AND M.BGT_MNG_ODR = S.BGT_MNG_ODR AND M.EXPENS_PRMPC_SN = S.EXPENS_PRMPC_SN 
 					WHERE 1=1
 					<if test="control != null and control != ''">
-						AND M.EXPENS_CD BETWEEN 'VTW04529' AND 'VTW04535'
+						AND M.EXPENS_CD BETWEEN 'VTW04528' AND 'VTW04535'
 					</if>
 					<if test="general != null and general != ''">
 						AND M.EXPENS_CD BETWEEN 'VTW04501' AND 'VTW04528'
@@ -1302,7 +1306,7 @@
              FROM
                  (SELECT
                       '외주인력인건비',
-                      IFNULL(SUM(IFNULL(OLP.UNTPC,0) * IFNULL(OLPD.EXPECT_MM,0)),0) AS 예산,
+                      IFNULL(SUM(IFNULL(OLPD.UNTPC,0) * IFNULL(OLPD.EXPECT_MM,0)),0) AS 예산,
                       IFNULL((
                                  SELECT
                                      SUM(IFNULL(GIVE_CT, 0))
@@ -1337,7 +1341,7 @@
                                      SUM(EXPENS_CT)
                                  FROM EXPENS_EXCN EE
                                  WHERE PRJCT_ID = #{prjctId}
-                                 AND EXPENS_CD BETWEEN 'VTW04501' AND 'VTW04528'
+                                 AND EXPENS_CD BETWEEN 'VTW04501' AND 'VTW04527'
                              ),0) AS '사용'
                   FROM
                       EXPENS_MNBY_PRMPC_DTLS EMPD
@@ -1345,7 +1349,7 @@
                           AND PBP.BGT_MNG_ODR = EMPD.BGT_MNG_ODR
                   WHERE
                       EMPD.PRJCT_ID = #{prjctId}
-                    AND EMPD.EXPENS_CD  BETWEEN 'VTW04501' AND 'VTW04528'
+                    AND EMPD.EXPENS_CD  BETWEEN 'VTW04501' AND 'VTW04527'
                     AND  PBP.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
                     AND EMPD.BGT_MNG_ODR = #{bgtMngOdr}
                     ) A
@@ -1365,7 +1369,7 @@
                                      SUM(EXPENS_CT)
                                  FROM EXPENS_EXCN EE
                                  WHERE PRJCT_ID = #{prjctId}
-                                 AND EXPENS_CD BETWEEN 'VTW04529' AND 'VTW04535'
+                                 AND EXPENS_CD BETWEEN 'VTW04528' AND 'VTW04535'
                              ),0) AS '사용'
                   FROM
                       EXPENS_MNBY_PRMPC_DTLS EMPD
@@ -1373,7 +1377,7 @@
                           AND PBP.BGT_MNG_ODR = EMPD.BGT_MNG_ODR
                   WHERE
                       EMPD.PRJCT_ID = #{prjctId}
-                    AND EMPD.EXPENS_CD  BETWEEN 'VTW04529' AND 'VTW04535'
+                    AND EMPD.EXPENS_CD  BETWEEN 'VTW04528' AND 'VTW04535'
                     AND  PBP.ATRZ_DMND_STTS_CD = #{atrzDmndSttsCd}
                     AND EMPD.BGT_MNG_ODR = #{bgtMngOdr}
                     ) A
