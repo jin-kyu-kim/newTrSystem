@@ -9,6 +9,9 @@ import ApiRequest from "../../utils/ApiRequest";
 
 const CustomCdComboBox = ({ param, placeholderText, onSelect, name, value, readOnly, between, label, required, showClearValue }) => {
   const [cdVal, setCdVal] = useState([]);
+  CustomCdComboBox.defaultProps = {
+    showClearValue: true,
+  };
 
   useEffect(() => {
     setCdVal(cdJson);
@@ -60,7 +63,6 @@ const CustomCdComboBox = ({ param, placeholderText, onSelect, name, value, readO
 }
 
   return (
-    // <div className="dx-field-value">
       <SelectBox
         dataSource={cdVal}
         displayExpr="cdNm"
@@ -73,7 +75,7 @@ const CustomCdComboBox = ({ param, placeholderText, onSelect, name, value, readO
         width="100%"
         value={value}
         readOnly={readOnly}
-        showClearButton={true}
+        showClearButton={showClearValue}
       >
         <Validator>{validate()}</Validator>
       </SelectBox>

@@ -32,6 +32,12 @@
   font-weight: bold;
   color: black;
 }
+.CsServiceReplyGrid .dx-datagrid-addrow-button::before {
+  content: '댓글';
+  font-size: 20px;
+  font-weight: bold;
+  color: black;
+}
 .dx-toolbar-button.dx-toolbar-text-auto-hide .dx-button-has-icon.dx-button-has-text{
   height: 23px;
   border-radius: 0%;
