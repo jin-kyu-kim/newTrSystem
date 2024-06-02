@@ -136,17 +136,17 @@ const ProjectExpense = () => {
         const response = await ApiRequest("/boot/common/commonUpdate", param);
         if (response >= 1) getData();
     };
-    
+
     const onClickAction = async (onClick) => {
         if (onClick.name === 'onPrintClick') {
             setHistYmOdr(null)
             setPopVisible(true);
         } else {
-            if ((ctAtrzCmptnYn === undefined && mmAtrzCmptnYn === undefined) || ctAtrzCmptnYn === null && mmAtrzCmptnYn === null) {
+            if (ctAply.length === 0 && mmAtrzCmptnYn === undefined) {
                 handleOpen('경비청구 건수가 없을 경우 근무시간을 먼저 승인 요청 해주시기 바랍니다.')
                 return;
-            } else if(ctAtrzCmptnYn === null && (mmAtrzCmptnYn === 'Y' || mmAtrzCmptnYn === 'N')) {
-                handleOpen('경비청구 건수가 없을 경우 바로 승인이 완료되며 입력 및 수정이 불가능합니다.', () => prjctCtAtrzUpdate(onClick), true)
+            } else if(ctAply.length === 0 && (mmAtrzCmptnYn === 'Y' || mmAtrzCmptnYn === 'N')) {
+                handleOpen('경비청구 건수가 없을 경우 바로 승인이 완료되며 입력 및 수정이 불가능합니다. 입력마감 하시겠습니까?', () => prjctCtAtrzUpdate(onClick), true)
             } else{
                 prjctCtAtrzUpdate(onClick);
             }
@@ -208,7 +208,6 @@ const ProjectExpense = () => {
                             { prjctCtInptPsbltyYn: "Y" },
                             { lotteCardAprvNo: props.lotteCardAprvNo }
                         ]);
-            
                         if (cardResult) {
                             handleOpen("삭제되었습니다.");
                             getData();
@@ -223,21 +222,18 @@ const ProjectExpense = () => {
             navigate("/elecAtrz/ElecAtrzDetail", {state: {data: props}})
         }
     }
-
+    
     const calculateCustomSummary = (options) => {
         const storeInfo = options.component.getDataSource().store()._array
-        let utztnAmt = 0;
-
-        storeInfo.forEach((item) => {
-            if (item.atrzDmndSttsCd !== 'VTW03704') {
-                utztnAmt += item.utztnAmt;
-            }
-        });
-        const totalAmt = utztnAmt;
-
-        if (options.summaryProcess ==="finalize") {
-            if (options.name === "utztnAmt") {
-                options.totalValue = totalAmt;
+        
+        if (options.summaryProcess === 'start') {
+            options.totalValue = 0; // 초기화
+        }
+        if (options.summaryProcess === 'calculate') {
+            // 현재 처리 중인 값이 합산될 수 있는지 확인
+            const item = storeInfo.find(d => d.utztnAmt === options.value);
+            if (item && item.atrzDmndSttsCd !== 'VTW03704') {
+                options.totalValue += item.utztnAmt;
             }
         }
     }

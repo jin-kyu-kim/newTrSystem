@@ -66,9 +66,10 @@
       { "key": "elctrnAtrzId", "value": "문서 보기", "cellType": "button", "button": { "text": "선택", "name": "elctrnAtrzId", "width": "10%" }}
     ],
     "groupingColumn": [
-      { "key": "utztnAmt", "value": "금액", "summaryType": "custom", "valueFormat": "#,##0", "displayFormat" : "{0} 원" }
+      { "key": "utztnAmt", "value": "금액", "summaryType": "custom", "name": "customGroup", 
+        "valueFormat": "#,##0", "displayFormat" : "{0} 원" }
     ],
-    "groupingData": {"caption":"구분", "dataField": "ctStlmSeCd", "totalTextColumn": "utztnDt"},
+    "groupingData": { "name": "customTotal","caption":"구분", "dataField": "ctStlmSeCd", "totalTextColumn": "utztnDt" },
     "buttonsConfig": {
       "default": [
         { "text": "입력마감", "type": "success", "onClick": { "name": "onInptDdlnClick", "actionType": "INPUT",

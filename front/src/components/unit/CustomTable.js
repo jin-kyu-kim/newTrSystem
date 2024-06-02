@@ -1,6 +1,6 @@
 import DataGrid, { Column, Export, Pager, Paging, Summary, TotalItem, GroupItem, Grouping, MasterDetail, Scrolling, ColumnFixing } from "devextreme-react/data-grid";
-import GridRows from "./GridRows";
 import AllowedPageSize from "./AllowedPageSize";
+import GridRows from "./GridRows";
 
 const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, onClick,
                        wordWrap, onRowClick, excel, onExcel,onCellClick, grouping, groupingData, groupingCustomizeText,
@@ -43,10 +43,8 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
               e.cellElement.style.color = 'red'
             }
           }
-          
         }}
         wordWrapEnabled={wordWrap}
-        //columnMinWidth={100}
         scrolling={true}
         paging={paging ? pagination : paging}
         onOptionChanged={onOptionChanged}
@@ -95,15 +93,18 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
             <GroupItem
               key={item.key}
               column={item.key}
+              name={item.name}
               summaryType={item.summaryType}
               valueFormat={item.valueFormat}
               displayFormat={item.displayFormat}
               alignByColumn={true}
+              customizeText={item.totalText}
             />
-            ))}
+          ))}
         
           <TotalItem
             key={groupingData.dataField}
+            name={groupingData.name}
             column={groupingData.totalTextColumn}
             customizeText={() => {
               return "총 계";
@@ -122,25 +123,24 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
           </Summary>
         }
         
-      {excel &&
-      <Export enabled={true} >
-      </Export>
-      }
-      {masterDetail &&
-      <MasterDetail
-          style={{backgroundColor: 'lightBlue'}}
-          enabled={true}
-          component={masterDetail}
-      />}
-      {scrolling &&
-      <>
-      <ColumnFixing enabled={true} />
-      <Scrolling mode="virtual" />
-      </>
-      }
+        {excel &&
+        <Export enabled={true} >
+        </Export>
+        }
+        {masterDetail &&
+        <MasterDetail
+            style={{backgroundColor: 'lightBlue'}}
+            enabled={true}
+            component={masterDetail}
+        />}
+        {scrolling &&
+        <>
+          <ColumnFixing enabled={true} />
+          <Scrolling mode="virtual" />
+        </> }
+
       </DataGrid>
     </div>
   );
 };
-
 export default CustomTable;

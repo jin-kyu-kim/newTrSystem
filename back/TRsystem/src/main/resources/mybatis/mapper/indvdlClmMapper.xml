@@ -971,7 +971,7 @@
               AND pca.APLY_ODR = pcaz.APLY_ODR
         WHERE 1 = 1
             AND pca.EXPENS_CD = 'VTW04509' -- 스마트폰지원
-            AND pcaz.ATRZ_DMND_STTS_CD NOT IN ('VTW03701','VTW03702','VTW03703') -- 임시저장, 결재중, 승인
+            AND (pcaz.ATRZ_DMND_STTS_CD IS NULL OR pcaz.ATRZ_DMND_STTS_CD != 'VTW03704')
         <if test="empId != null and !empId.equals('')">
             AND pca.EMP_ID = #{empId}
         </if>

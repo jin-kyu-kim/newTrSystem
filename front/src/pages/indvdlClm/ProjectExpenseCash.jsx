@@ -11,11 +11,10 @@ const ProjectExpenseCash = (props) => {
     const userInfo = JSON.parse(localStorage.getItem("userInfo"))
     const deptInfo = JSON.parse(localStorage.getItem("deptInfo"))
     const empInfo = { jbttlCd: deptInfo[0].jbttlCd, empno: userInfo.empno };
-
     const { labelValue } = ProjectExpenseJson;
     const { placeholderAndRequired, btnInfo } = ProjectExpenseJson.ProjectExpenseTab;
-    const [validationErrors, setValidationErrors] = useState([]);
-    const [customParam, setCustomParam] = useState({});
+    const [ validationErrors, setValidationErrors ] = useState([]);
+    const [ customParam, setCustomParam ] = useState({});
     const atrzParam = {
         queryId: "projectExpenseMapper.retrieveElctrnAtrzClm",  
         empId: props.empId
@@ -49,7 +48,8 @@ const ProjectExpenseCash = (props) => {
         setCustomParam({
             ...customParam,
             prjctId: value[0].prjctId,
-            queryId: value[0].prjctStleCd === 'VTW01802' ? "elecAtrzMapper.retrieveExpensCdByPrmpc"
+            queryId: value[0].prjctStleCd === 'VTW01802' 
+                ? "elecAtrzMapper.retrieveExpensCdByPrmpc"
                 : "elecAtrzMapper.retrieveExpensCdAll"
         })
 
@@ -57,7 +57,7 @@ const ProjectExpenseCash = (props) => {
             if (index === 0) {
                 return {
                     ...item,
-                    prjctMngrEmpId: value[0].prjctMngrEmpId
+                    aprvrEmpId: value[0].prjctMngrEmpId
                 };
             }
             return item;
@@ -133,8 +133,7 @@ const ProjectExpenseCash = (props) => {
             </span>
 
             <div className="dx-fieldset">
-                {labelValue.map((item, index) =>
-                (!item.special ?
+                {labelValue.map((item, index) => ( !item.special ?
                     <CustomLabelValue props={item} onSelect={handleChgValue} value={item.name === 'utztnDt' ? dateVal[item.name] : value[0][item.name]} key={index} />
                     :
                     <div className="dx-field" key={index} >
@@ -143,14 +142,12 @@ const ProjectExpenseCash = (props) => {
                             <SpecialTypeRender item={item} />
                         </div>
                     </div>
-                )
-                )}
+                ))}
             </div>
 
             <div style={{ marginTop: '20px', textAlign: 'center' }}>
                 <ProjectExpenseSubmit getData={props.getData} selectedItem={value} buttonGroup={btnInfo} width={'1000px'}
-                    validateFields={() => validateFields(value, placeholderAndRequired, setValidationErrors,
-                        btnInfo, empInfo)} />
+                    validateFields={() => validateFields(value, placeholderAndRequired, setValidationErrors, btnInfo, empInfo)} />
             </div>
         </div>
     );
