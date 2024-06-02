@@ -3,7 +3,7 @@ import AllowedPageSize from "./AllowedPageSize";
 import GridRows from "./GridRows";
 
 const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, paging, summary, summaryColumn, onClick,
-                       wordWrap, onRowClick, excel, onExcel,onCellClick, grouping, groupingData, groupingCustomizeText,
+                       wordWrap, onRowClick, excel, onExcel,onCellClick, grouping, groupingData, groupingCustomizeText, onCellPrepared,
                        masterDetail, handleExpanding, focusedRowIndex, handleCheckBoxChange, checkBoxValue, prjctCmpr,
                        noDataText, calculateCustomSummary, scrolling, dataSource, pagination, onOptionChanged, remoteOperations }) => {
 
@@ -27,6 +27,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
         onCellClick={onCellClick}
         {...columnWidth}
         onCellPrepared={(e) => {
+          onCellPrepared && onCellPrepared(e);
 
           if (e.rowType === 'header') {
             e.cellElement.style.textAlign = 'center';
@@ -75,11 +76,11 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
         }
 
         {grouping &&
-          <Column
-            dataField={groupingData.dataField}
-            caption={groupingData.caption} 
-            customizeText={groupingCustomizeText}
+          <Column 
             groupIndex={0}
+            caption={groupingData.caption} 
+            dataField={groupingData.dataField}
+            customizeText={groupingCustomizeText}
         />
         }
 

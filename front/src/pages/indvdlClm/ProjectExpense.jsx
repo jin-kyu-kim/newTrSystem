@@ -222,6 +222,13 @@ const ProjectExpense = () => {
             navigate("/elecAtrz/ElecAtrzDetail", {state: {data: props}})
         }
     }
+    const onCellPrepared = (e) => {
+        if(e.value === '반려' || e.column.name === 'rjctPrvonsh'){
+            e.cellElement.style.color = 'red';
+            e.cellElement.style.fontWeight = 'bold';
+        }
+        e.cellElement.style.backgroundColor = e.rowType === 'group' ? '#f0f0f3' : e.rowType === 'totalFooter' && '#f0f0f0';
+    }
     
     const calculateCustomSummary = (options) => {
         const storeInfo = options.component.getDataSource().store()._array
@@ -255,6 +262,7 @@ const ProjectExpense = () => {
                     onClick={onBtnClick}
                     grouping={groupingColumn}
                     groupingData={groupingData}
+                    onCellPrepared={onCellPrepared}
                     noDataText={'등록된 청구내역이 없습니다.'}
                     groupingCustomizeText={groupingCustomizeText}
                     calculateCustomSummary={calculateCustomSummary}
