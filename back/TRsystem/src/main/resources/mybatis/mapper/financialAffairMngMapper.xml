@@ -1333,60 +1333,70 @@
     </select>
 
     <select id="retrieveCtData" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT pca.PRJCT_CT_APLY_SN, pca.PRJCT_ID
-		  FROM PRJCT_CT_APLY pca
-		  JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
-		 WHERE 1=1
-	      AND (pca.CT_STLM_SE_CD = 'VTW01902' OR pca.CT_STLM_SE_CD = 'VTW01903')
-		   AND pca.EMP_ID = #{empId}
-		   AND pca.APLY_YM = #{aplyYm}
-		   AND pca.APLY_ODR = #{aplyOdr}
-		   AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703'
+        SELECT
+            pca.PRJCT_CT_APLY_SN,
+            pca.PRJCT_ID
+        FROM PRJCT_CT_APLY pca
+        JOIN PRJCT_CT_ATRZ pcat ON pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN
+            AND pca.PRJCT_ID = pcat.PRJCT_ID
+            AND pca.EMP_ID = pcat.EMP_ID
+            AND pca.APLY_YM = pcat.APLY_YM
+            AND pca.APLY_ODR = pcat.APLY_ODR
+		WHERE 1=1
+	        AND (pca.CT_STLM_SE_CD = 'VTW01902' OR pca.CT_STLM_SE_CD = 'VTW01903')
+		    AND pca.EMP_ID = #{empId}
+		    AND pca.APLY_YM = #{aplyYm}
+		    AND pca.APLY_ODR = #{aplyOdr}
+		    AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703'
 	</select>
     
     <select id="retrieveCtPivotData" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT CONCAT(p.PRJCT_NM, '(', p.PRJCT_CD_IDNTFR , ')') PRJCT_NM_CD
-			 , c1.CD_NM AS CT_STLM_SE_CD_NM
-			 , c2.CD_NM AS EXPENS_CD_NM
-			 , CONCAT(IFNULL(SUBSTRING(cd.CRTR_YMD, 7, 8), SUBSTRING(LEFT(pca.UTZTN_DT, 8), 7, 8)), pca.CT_PRPOS) AS CT_PRPOS
-			 , pca.ATDRN
-			 , pca.UTZTN_AMT
-			 , IFNULL(SUBSTRING(cd.CRTR_YMD, 7, 8), '기타') AS DAY
-		  FROM PRJCT_CT_APLY pca
-		  JOIN PRJCT p ON (pca.PRJCT_ID = p.PRJCT_ID)
-		  JOIN CD c1 ON (c1.CD_VALUE = pca.CT_STLM_SE_CD)
-		  JOIN CD c2 ON (c2.CD_VALUE = pca.EXPENS_CD)
-		  LEFT JOIN CRTR_DATE cd ON (cd.CRTR_YMD LIKE CONCAT(pca.APLY_YM, '%') AND cd.CRTR_ODR = pca.APLY_ODR AND LEFT(pca.UTZTN_DT, 8) = cd.CRTR_YMD)
-  		  JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN AND pca.PRJCT_ID = pcat.PRJCT_ID AND pca.EMP_ID = pcat.EMP_ID AND pca.APLY_YM = pcat.APLY_YM)
-		 WHERE 1=1
-		   AND pca.EMP_ID = #{empId}
-		   AND pca.APLY_YM = #{aplyYm}
-		   AND pca.APLY_ODR = #{aplyOdr}
-		   AND (pca.CT_STLM_SE_CD = 'VTW01902' OR pca.CT_STLM_SE_CD = 'VTW01903')	-- 현금/개인법인카드
-		AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703' 
+            , c1.CD_NM AS CT_STLM_SE_CD_NM
+			, c2.CD_NM AS EXPENS_CD_NM
+			, CONCAT(IFNULL(SUBSTRING(cd.CRTR_YMD, 7, 8), SUBSTRING(LEFT(pca.UTZTN_DT, 8), 7, 8)), pca.CT_PRPOS) AS CT_PRPOS
+			, pca.ATDRN
+			, pca.UTZTN_AMT
+			, IFNULL(SUBSTRING(cd.CRTR_YMD, 7, 8), '기타') AS DAY
+		FROM PRJCT_CT_APLY pca
+		JOIN PRJCT p ON (pca.PRJCT_ID = p.PRJCT_ID)
+		JOIN CD c1 ON (c1.CD_VALUE = pca.CT_STLM_SE_CD)
+		JOIN CD c2 ON (c2.CD_VALUE = pca.EXPENS_CD)
+		LEFT JOIN CRTR_DATE cd ON (cd.CRTR_YMD LIKE CONCAT(pca.APLY_YM, '%') AND cd.CRTR_ODR = pca.APLY_ODR AND LEFT(pca.UTZTN_DT, 8) = cd.CRTR_YMD)
+        JOIN PRJCT_CT_ATRZ pcat ON pcat.PRJCT_CT_APLY_SN = pca.PRJCT_CT_APLY_SN
+            AND pca.PRJCT_ID = pcat.PRJCT_ID
+            AND pca.EMP_ID = pcat.EMP_ID
+            AND pca.APLY_YM = pcat.APLY_YM
+            AND pca.APLY_ODR = pcat.APLY_ODR
+		WHERE 1=1
+		    AND pca.EMP_ID = #{empId}
+		    AND pca.APLY_YM = #{aplyYm}
+		    AND pca.APLY_ODR = #{aplyOdr}
+		    AND (pca.CT_STLM_SE_CD = 'VTW01902' OR pca.CT_STLM_SE_CD = 'VTW01903')	-- 현금/개인법인카드
+		    AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703'
 		UNION
 		SELECT CONCAT(p.PRJCT_NM, '(', p.PRJCT_CD_IDNTFR , ')') PRJCT_NM_CD
-			 , c1.CD_NM AS CT_STLM_SE_CD_NM
-			 , c2.CD_NM AS EXPENS_CD_NM
-			 , CONCAT(SUBSTRING(LEFT(pca.UTZTN_DT, 8), 7, 8), pca.CT_PRPOS) AS CT_PRPOS
-			 , pca.ATDRN
-			 , CASE WHEN SUBSTRING(LEFT(pca.UTZTN_DT, 8), 7, 8) = SUBSTRING(cd.CRTR_YMD, 7, 8) THEN pca.UTZTN_AMT
-			   ELSE NULL
-			   END AS UTZTN_AMT
-		 	 , IFNULL(SUBSTRING(cd.CRTR_YMD, 7, 8), SUBSTRING(LEFT(pca.UTZTN_DT, 8), 7, 8)) AS DAY
-		  FROM CRTR_DATE cd
-		  JOIN PRJCT_CT_APLY pca
-		  JOIN PRJCT p ON p.PRJCT_ID = pca.PRJCT_ID
-		  JOIN CD c1 ON (c1.CD_VALUE = pca.CT_STLM_SE_CD)
-		  JOIN CD c2 ON (c2.CD_VALUE = pca.EXPENS_CD)
-		 WHERE 1=1
-		   AND cd.CRTR_YMD LIKE CONCAT(#{aplyYm},'%')
-		   AND cd.CRTR_ODR = #{aplyOdr}
-		   AND pca.PRJCT_CT_APLY_SN = #{prjctCtAplySn}
-   		   AND pca.EMP_ID = #{empId}
-		   AND pca.APLY_YM = #{aplyYm}
-		   AND pca.APLY_ODR = #{aplyOdr}
-		   AND pca.PRJCT_ID = #{prjctId}
+	        , c1.CD_NM AS CT_STLM_SE_CD_NM
+			, c2.CD_NM AS EXPENS_CD_NM
+			, CONCAT(SUBSTRING(LEFT(pca.UTZTN_DT, 8), 7, 8), pca.CT_PRPOS) AS CT_PRPOS
+			, pca.ATDRN
+			, CASE WHEN SUBSTRING(LEFT(pca.UTZTN_DT, 8), 7, 8) = SUBSTRING(cd.CRTR_YMD, 7, 8) THEN pca.UTZTN_AMT
+			    ELSE NULL
+			END AS UTZTN_AMT
+		 	, IFNULL(SUBSTRING(cd.CRTR_YMD, 7, 8), SUBSTRING(LEFT(pca.UTZTN_DT, 8), 7, 8)) AS DAY
+		FROM CRTR_DATE cd
+		JOIN PRJCT_CT_APLY pca
+		JOIN PRJCT p ON p.PRJCT_ID = pca.PRJCT_ID
+		JOIN CD c1 ON (c1.CD_VALUE = pca.CT_STLM_SE_CD)
+		JOIN CD c2 ON (c2.CD_VALUE = pca.EXPENS_CD)
+		WHERE 1=1
+		    AND cd.CRTR_YMD LIKE CONCAT(#{aplyYm},'%')
+		    AND cd.CRTR_ODR = #{aplyOdr}
+		    AND pca.PRJCT_CT_APLY_SN = #{prjctCtAplySn}
+   		    AND pca.EMP_ID = #{empId}
+		    AND pca.APLY_YM = #{aplyYm}
+		    AND pca.APLY_ODR = #{aplyOdr}
+		    AND pca.PRJCT_ID = #{prjctId}
 	</select>
 
     <select id="getWorkDay" parameterType="map" resultType="com.trsystem.LowerHashMap">

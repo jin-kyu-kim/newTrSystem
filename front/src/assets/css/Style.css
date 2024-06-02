@@ -495,11 +495,11 @@
 
 /* pivotGrid 소계, 총계 */
 .dx-pivotgrid .dx-pivotgrid-area-data .dx-row-total, .dx-pivotgrid .dx-pivotgrid-vertical-headers .dx-row-total{
-  background-color: #FFE08C;
+  background-color: #fff5c9;
 }
 .dx-pivotgrid .dx-grandtotal.dx-last-cell, .dx-pivotgrid .dx-row-total.dx-last-cell {
   padding-left: 22px;
-  background-color: #FFE08C;
+  background-color: #fff5c9;
 }
 /* 프로젝트비용 tabpanel용 */
 @media (max-width: 768px) {
