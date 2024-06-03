@@ -376,33 +376,6 @@
 
     <!-- 경비 승인내역 -->
     <select id="retrieveExpensAprvDtls" parameterType="map" resultType="com.trsystem.LowerHashMap">
-<!--        SELECT-->
-<!--            PIVOT_DATE,-->
-<!--            COALESCE(b.PRJCT_NM, 'null_project') AS PRJCT_NM,-->
-<!--            COALESCE(b.EXPENS_CD, 'null_Cd') AS EXPENS_CD,-->
-<!--            COALESCE(b.EMP_FLNM, 'null_flnm') AS EMP_FLNM,-->
-<!--            COALESCE(b.PRJCT_DETAIL, 'null_info') AS PRJCT_DETAIL,-->
-<!--            COALESCE(b.EMP_DETAIL, 'null_info') AS EMP_DETAIL,-->
-<!--            COALESCE(b.UTZTN_AMT, 'null_amt') AS UTZTN_AMT,-->
-<!--            COALESCE(b.UTZTN_DT, 'null_dt') AS UTZTN_DT-->
-<!--        FROM (-->
-<!--            WITH RECURSIVE a AS (-->
-<!--            SELECT CAST(CONCAT(#{aplyYm}, '01') AS DATE) AS PIVOT_DATE-->
-<!--            UNION ALL-->
-<!--            SELECT DATE_ADD(PIVOT_DATE, INTERVAL 1 DAY)-->
-<!--            FROM a-->
-<!--            WHERE DATE_ADD(PIVOT_DATE, INTERVAL 1 DAY) &lt; CAST(CONCAT(#{aplyYm}, '01') AS DATE) + INTERVAL 1 MONTH-->
-<!--        )-->
-<!--        SELECT *-->
-<!--        FROM a-->
-<!--        <if test="aplyOdr != null and !aplyOdr.equals('')">-->
-<!--            WHERE (-->
-<!--            #{aplyOdr} = 1 AND DAY(PIVOT_DATE) &lt;= 15-->
-<!--            ) OR (-->
-<!--            #{aplyOdr} = 2 AND DAY(PIVOT_DATE) > 15 AND DAY(PIVOT_DATE) &lt;= DAY(LAST_DAY(PIVOT_DATE)))-->
-<!--        </if>-->
-<!--        ) a-->
-<!--        LEFT JOIN (-->
             SELECT
             	pca.ELCTRN_ATRZ_ID AS unique_id, 
 		    	CONCAT(p.PRJCT_NM, ' (PM : ', (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = p.PRJCT_MNGR_EMP_ID), ')') AS PRJCT_NM, -- 프로젝트명
@@ -423,7 +396,7 @@
 		    	AND pca.APLY_ODR = pah.APLY_ODR
 		    	AND pah.ATRZ_DMND_STTS_CD = 'VTW03703' -- 결재요청상태코드 : 승인
 			JOIN
-				 EMP e ON pca.EMP_ID = e.EMP_ID		-- 
+				EMP e ON pca.EMP_ID = e.EMP_ID		--
 			JOIN 
 				PRJCT p ON pca.PRJCT_ID = p.PRJCT_ID
 			LEFT JOIN
@@ -449,9 +422,6 @@
             <if test="expensCd != null and !expensCd.equals('')">
                 AND pca.EXPENS_CD = #{expensCd}
             </if>
---         ) b
---         ON a.PIVOT_DATE = b.UTZTN_DT
---         ORDER BY PIVOT_DATE
     </select>
 
     <!--근무시간비용 입력현황 total조회-->

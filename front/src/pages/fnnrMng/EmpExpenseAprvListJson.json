@@ -1,10 +1,16 @@
 {
   "menuName": "EmpExpenseAprvList",
-  "searchParams":
-  {
-    "yearItem": true,
-    "monthItem": true,
-    "aplyOdr": true
+  "searchInfo": {
+    "searchParams": { 
+      "btnType": "success",
+      "yearList": [
+        { "name": "inqMthd", "visible": true, "placeholder": "[차수별]", "displayExpr": "text", "valueExpr": "value" },
+        { "name": "year", "visible": true, "placeholder": "[연도]", "displayExpr": "value", "valueExpr": "value" },
+        { "name": "month", "visible": true, "placeholder": "[월]", "displayExpr": "value", "valueExpr": "value" },
+        { "name": "aplyOdr", "visible": true, "placeholder": "[차수]", "displayExpr": "text", "valueExpr": "value" }
+      ],
+      "project": true
+    }
   },
   "tabMenu":
   [

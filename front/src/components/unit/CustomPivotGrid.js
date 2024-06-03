@@ -1,34 +1,11 @@
-import React, { useEffect, useRef } from 'react';
-import PivotGrid, { FieldChooser, Export, PivotGridTypes, FieldPanel, } from 'devextreme-react/pivot-grid';
-import { Workbook } from 'exceljs';
+import React from 'react';
 import { saveAs } from 'file-saver-es';
+import { Workbook } from 'exceljs';
 import { exportPivotGrid } from 'devextreme/excel_exporter';
-
+import PivotGrid, { FieldChooser, Export, PivotGridTypes, FieldPanel, } from 'devextreme-react/pivot-grid';
 
 const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fileName, sorting, filtering, 
     isExport, grandTotals, width, customColor, grandTotalText }) => {
-
-    const isDataCell = (cell) => (cell.area === 'data' && cell.rowType === 'D' && cell.columnType === 'D');
-    const isTotalCell = (cell) => (cell.type === 'T' || cell.type === 'GT' || cell.rowType === 'T' || cell.rowType === 'GT' || cell.columnType === 'T' || cell.columnType === 'GT');
-    const getExcelCellFormat = ({ fill, font, bold }: ConditionalAppearance) =>
-        ({
-            fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: fill } },
-            font: { color: { argb: font }, bold },
-        });
-
-    const getConditionalAppearance = (cell): ConditionalAppearance => {
-        if (isTotalCell(cell)) {
-            return { fill: 'F2F2F2', font: '3F3F3F', bold: true };
-        }
-        const { value } = cell;
-        if (value < 20000) {
-            return { font: '9C0006', fill: 'FFC7CE' };
-        }
-        if (value > 50000) {
-            return { font: '006100', fill: 'C6EFCE' };
-        }
-        return { font: '9C6500', fill: 'FFEB9C' };
-    };
 
     const makeFileName = () => {
         const currentDateTime = new Date();
@@ -40,7 +17,6 @@ const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fi
             `${padNumber(currentDateTime.getSeconds())}`;
 
         fileName = fileName+formattedDateTime;
-
         return fileName;
     }
 
@@ -130,14 +106,12 @@ const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fi
 
         // row collapse block 상태일 때 화살표 아이콘 삭제
         if(blockCollapse === true && e.area === 'row' && e.cell.expanded === true){
-
             const childNodes = e.cellElement.childNodes;
             Array.from(childNodes).forEach(node => {
                 if (node.classList.contains('dx-expand-icon-container')) {
                     node.remove();
                 }
             });
-
             const children = e.cellElement.childNodes;
             Array.from(children).forEach(node => {
                 if (node.classList.contains('dx-expand-icon-container')) {
@@ -146,7 +120,7 @@ const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fi
             });
         }
         // 날짜에서 일자만 추출하여 표시
-        if (e.area === 'column' && e.cell.text && !isNaN(Date.parse(e.cell.text)) && !e.cell.width) {
+        if (e.area === 'column' && e.cell.text && !isNaN(Date.parse(e.cell.text))) {
             const date = new Date(e.cell.text);
             e.cellElement.innerText = date.getDate().toString();
         }

@@ -17,7 +17,6 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
         showBorders={true}
         showColumnLines={true}
         focusedRowEnabled={true}
-        columnAutoWidth={false}
         noDataText={noDataText}
         onRowExpanding={handleExpanding}
         onRowDblClick={onRowDblClick}
@@ -46,7 +45,6 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
           }
         }}
         wordWrapEnabled={wordWrap}
-        scrolling={true}
         paging={paging ? pagination : paging}
         onOptionChanged={onOptionChanged}
         remoteOperations={remoteOperations}
@@ -134,12 +132,6 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
             enabled={true}
             component={masterDetail}
         />}
-        {scrolling &&
-        <>
-          <ColumnFixing enabled={true} />
-          <Scrolling mode="virtual" />
-        </> }
-
       </DataGrid>
     </div>
   );
