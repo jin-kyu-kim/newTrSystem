@@ -161,7 +161,16 @@
 	<!-- main 현차수 TR 입력사항-->
 	<select id="retrieveInptSttus" parameterType="map" resultType="com.trsystem.LowerHashMap">
 			     SELECT
-	             CONCAT((select COUNT(*)*8 FROM CRTR_DATE WHERE CRTR_YMD LIKE '202405%' AND CRTR_ODR = '1' AND HLDY_CL_CD ="VTW05001"),"시간") AS TOTAL 
+	             CONCAT(
+	             (select 
+	             	COUNT(*)*8 
+	              FROM 
+	              	CRTR_DATE 
+	              WHERE 
+	              	CRTR_YMD LIKE CONCAT(#{aplyYm},'%') 
+	              	AND CRTR_ODR = #{aplyOdr}
+	              	AND HLDY_CL_CD ="VTW05001"
+	              	),"시간") AS TOTAL 
 	          , CONCAT(IFNULL(CC.MD_SUM,0) * 8,"시간") AS MD_SUM
 	          , CONCAT(IFNULL(CC.MM_APRV, 0),"시간") AS MM_APRV 
 	          , CONCAT(IFNULL(CC.MM_REJECT, 0),"시간") AS MM_REJECT 
