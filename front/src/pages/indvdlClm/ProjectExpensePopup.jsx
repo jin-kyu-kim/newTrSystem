@@ -147,14 +147,18 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, ctAply
             <div>
                 {((aprvInfo.totCnt === aprvInfo.aprv && mmAtrzCmptnYn === 'Y') || (ctAplyLen === 0 && mmAtrzCmptnYn === 'Y')
                 ||(aprvInfo.totCnt === (aprvInfo.aprv + aprvInfo.rjct) && mmAtrzCmptnYn === 'Y')) || (basicInfo.isHist && mmAtrzCmptnYn === 'Y') ? 
-                    <div ref={contentRef} className='print-page'>
-                        <div style={{ textAlign: 'right' }}>
+                    <div ref={contentRef}>
+                        <div style={{ textAlign: 'right'}} className='printBtn' >
                             <ReactToPrint 
                                 trigger={() => ( <Button text='출력' type='success' icon='print' /> )}
                                 content={() => contentRef.current} 
-                                pageStyle="@page { size: A3; ratio:100%;}" 
+                                pageStyle="@page { size: A3; ratio:100%; }
+                                @media print { 
+                                    .printBtn { display: none; }
+                                }" 
                             />
                         </div>
+                        <h2 style={{marginBottom: '3%'}}>근무시간 비용 Report</h2>
                         {projectExpensePopup.map((pop) => (
                             <div key={pop.key}>
                                 <span>{pop.title}</span>
@@ -185,7 +189,7 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, ctAply
                 showCloseButton={true}
                 closeOnOutsideClick={true}
                 contentRender={contentArea}
-                title="근무시간 비용 Report"
+                showTitle={false}
             ></Popup>
         </div>
     );

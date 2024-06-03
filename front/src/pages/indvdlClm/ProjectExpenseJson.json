@@ -23,7 +23,7 @@
       "searchParams": { 
         "btnName": "과거비용승인이력(팝업)",
         "btnType": "success",
-        "ratio": 0.5,
+        "ratio": 0.3,
         "yearList": [
           { "name": "year", "visible": true, "placeholder": "[연도]", "displayExpr": "value", "valueExpr": "value" },
           { "name": "month", "visible": true, "placeholder": "[월]", "displayExpr": "value", "valueExpr": "value" },

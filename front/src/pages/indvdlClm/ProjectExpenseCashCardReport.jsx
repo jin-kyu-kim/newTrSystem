@@ -92,6 +92,11 @@ const ProjectExpenseCashCardReport = ({basicInfo}) => {
     const dataSource = new PivotGridDataSource(pivotGridConfig);
 
     const onCellPrepared = (e) => {
+        if(e.area === 'column'){
+            e.cellElement.style.fontWeight = 'bold'
+            e.cellElement.style.color = 'black'
+            e.cellElement.style.backgroundColor = '#f0f0f0'
+        }
         e.cellElement.style.fontSize = '12pt'
         // row collapse block 상태일 때 화살표 아이콘 삭제
         if(e.area === 'row' && e.cell.expanded === true){
