@@ -621,14 +621,14 @@
 }
 
 /* 버튼 컨테이너 스타일 */
-.button-container {
+.main-button-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-top: 20px;
 }
 
-.button-container button {
+.main-button-container button {
   font-size: clamp(9px, 1vw, 11px);
   white-space: nowrap;
   text-overflow: clip;
@@ -638,13 +638,13 @@
 
 /* 미디어 쿼리를 사용해 작은 화면에서의 스타일을 정의 */
 @media (max-width: 600px) {
-  .button-container {
+  .main-button-container {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: flex-start;
   }
 
-  .button-container button {
+  .main-button-container button {
     flex: 1 1 auto;
     margin-right: 0;
     margin-bottom: 10px;

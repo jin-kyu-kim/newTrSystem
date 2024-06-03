@@ -226,11 +226,11 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
             paging={true}
           />
           {/* 버튼 그룹 */}
-          <div className="button-container">
-            <Button className="Button" onClick={goReference} text="자료실" name="jaryu" type="default"/>
-            <Button className="Button" onClick={goNotice} text="공지사항" type="default"/>
-            <Button className="Button" onClick={goKms} text="지식관리시스템" type="default"/>
-            <Button className="Button" onClick={goConference} text="회의실예약" type="default"/>
+          <div className="main-button-container">
+            <Button className="button" onClick={goReference} text="자료실" name="jaryu" type="default"/>
+            <Button className="button" onClick={goNotice} text="공지사항" type="default"/>
+            <Button className="button" onClick={goKms} text="지식관리시스템" type="default"/>
+            <Button className="button" onClick={goConference} text="회의실예약" type="default"/>
           </div>
         </div>
       </div>
@@ -259,82 +259,4 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
 );
 };
 
-// //화면 전체 배치
-//   const mainContainerStyle = {
-//   display: "flex",
-//   alignItems: "flex-start",
-//   flexWrap: "wrap",
-//   justifyContent: "center",
-//     };
-    
-//   //메인 좌측 스타일
-//   const mainLeftContainerStyle = {
-//   width: "40%", // 왼쪽 영역의 너비를 35%로 설정
-//   minWidth: "300px", // 최소 너비 설정
-//   marginBottom: "20px",
-//   };
-  
-//   const empInfoStyle = {
-//   minWidth: "480px",
-//   margin: "0 auto",
-//   };
-  
-//   //메인 우측 전체 배치
-//   const mainRightContainerStyle = {
-//   width: "60%", // 오른쪽 영역의 너비를 65%로 설정
-//   minWidth: "300px", // 최소 너비 설정
-//   display: "flex",
-//   flexDirection: "column",
-//   alignItems: "center",
-//   };
-  
-//   //각 테이블 배치
-//   const tableDetailStyle = {
-//     flex: "1",
-//     // 각 div 사이의 간격을 조절합니다.
-//   };
-  
-//   const buttonContainerStyle = {
-//   display: "flex",
-//   justifyContent: "space-between",
-//   alignItems: "center",
-//   marginTop: "20px",
-//   };
-  
-//   const ButtonStyle = {
-//   fontSize: "clamp(9px, 1vw, 11px)", // 폰트 크기를 화면 크기에 따라 조절하되, 최소 6px,
-//   whiteSpace: "nowrap", // 텍스트가 줄바꿈되지 않도록 설정
-//   textOverflow: "clip", // 텍스트가 잘리지 않도록 설정
-//   boxSizing: "border-box", // 버튼의 크기 계산에 패딩과 보더를 포함
-//   width: "auto",
-//   };
-  
-//   // 미디어 쿼리를 사용해 작은 화면에서의 스타일을 정의
-//   const mediaQueryStyle = `
-  
-//     @media (max-width: 600px) {
-//       .button-container {
-//         flex-direction: row; // 여전히 일자로 배치되도록 설정
-//         flex-wrap: wrap; // 버튼이 줄바꿈되도록 설정
-//         justify-content: flex-start; // 버튼이 왼쪽부터 시작하도록 설정
-//       }
-//       .button-container button {
-//         flex: 1 1 auto; // 작은 화면에서 버튼의 너비를 자동 조절하고 줄바꿈되도록 설정
-//         margin-right: 0; // 작은 화면에서 오른쪽 마진 제거
-//         margin-bottom: 10px; // 작은 화면에서 아래쪽 마진 추가
-//         white-space: nowrap; // 텍스트가 줄바꿈되지 않도록 설정
-//         overflow: hidden; // 오버플로우를 숨김
-//         text-overflow: clip; // 텍스트가 잘리지 않도록 설정
-//       }
-//     }
-
-//     @media screen and (max-width: 768px) {
-//       .container {
-//         padding: 0 !important;
-//         margin: 0 !important;
-//         margin-bottom: 20px !important;
-//       }
-//     }
-//   `;
-  
   export default Main;
