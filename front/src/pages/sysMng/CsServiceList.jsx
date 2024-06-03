@@ -6,16 +6,17 @@ import SearchInfoSet from 'components/composite/SearchInfoSet';
 import CustomEditTable from "components/unit/CustomEditTable";
 
 const CsServiceList = () => {
+    const { keyColumn, queryId, tableColumns, searchInfo, systemInsertPage } = CsServiceJson;
     const [ values, setValues ] = useState([]);
     const [ totalItems, setTotalItems ] = useState(0);
     const [ isLoading, setIsLoading ] = useState(false);
-    const navigate = useNavigate();
-    const { keyColumn, queryId, tableColumns, searchInfo, systemInsertPage } = CsServiceJson;
     const [ param, setParam ] = useState({});
-
+    const navigate = useNavigate();
 
     useEffect(() => {
+        if(param.queryId){
             pageHandle();
+        }
     }, [param]);
 
     const searchHandle = async (initParam) => {
@@ -28,7 +29,6 @@ const CsServiceList = () => {
     const pageHandle = async () => {
         setIsLoading(true);
         try {
-
             const response = await ApiRequest("/boot/common/queryIdSearch", param);
 
             if (response.length !== 0) {
