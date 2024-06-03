@@ -141,18 +141,18 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, ctAply
                 return( loading ? <></> : (<ProjectExpenseCashCardReport basicInfo={basicInfo} />) )
         }
     };
-
+    
     const contentArea = () => {
         return (
             <div>
                 {((aprvInfo.totCnt === aprvInfo.aprv && mmAtrzCmptnYn === 'Y') || (ctAplyLen === 0 && mmAtrzCmptnYn === 'Y')
                 ||(aprvInfo.totCnt === (aprvInfo.aprv + aprvInfo.rjct) && mmAtrzCmptnYn === 'Y')) || (basicInfo.isHist && mmAtrzCmptnYn === 'Y') ? 
-                    <div ref={contentRef} >
+                    <div ref={contentRef} className='print-page'>
                         <div style={{ textAlign: 'right' }}>
                             <ReactToPrint 
                                 trigger={() => ( <Button text='출력' type='success' icon='print' /> )}
                                 content={() => contentRef.current} 
-                                pageStyle="@page { size: A4; ratio:100%; }" 
+                                pageStyle="@page { size: A3; ratio:100%;}" 
                             />
                         </div>
                         {projectExpensePopup.map((pop) => (
@@ -164,9 +164,9 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, ctAply
                             </div>
                         ))}
                     </div>
-                : mmAtrzCmptnYn === 'N'
-                ? <span>진행중인 근무시간 요청이 있습니다. 승인 완료 후 출력하시기 바랍니다.</span>
-                : (aprvInfo.aprvDmnd >= 1) ? <span>결재 진행중인 청구내역이 있습니다.</span> 
+                : (aprvInfo.aprvDmnd >= 1)
+                ? <span>결재 진행중인 청구내역이 있습니다.</span>
+                : mmAtrzCmptnYn === 'N' ? <span>진행중인 근무시간 요청이 있습니다. 승인 완료 후 출력하시기 바랍니다..</span> 
                 : mmAtrzCmptnYn === null ? <>
                     <span style={{color: 'red'}}>아직 근무시간 승인요청을 하지 않았습니다. </span>
                     <span>요청한 뒤 승인 완료 후 출력하시기 바랍니다.</span></> 
@@ -178,7 +178,7 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, ctAply
     return (
         <div style={{marginBottom: '100px'}}>
             <Popup
-                width={"70%"}
+                width={"100%"}
                 height={"90%"}
                 visible={visible}
                 onHiding={onPopHiding}

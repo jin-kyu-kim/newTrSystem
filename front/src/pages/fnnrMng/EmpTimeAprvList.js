@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import React from 'react';
-import {useLocation} from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import PivotGridDataSource from 'devextreme/ui/pivot_grid/data_source';
-import  EmpTimeAprvListJson from "./EmpTimeAprvListJson.json";
+import EmpTimeAprvListJson from "./EmpTimeAprvListJson.json";
 import ApiRequest from "../../utils/ApiRequest";
 import CustomPivotGrid from "components/unit/CustomPivotGrid";
 import SearchInfoSet from "components/composite/SearchInfoSet";
@@ -11,19 +11,9 @@ const EmpTimeAprvList = () => {
   const [values, setValues] = useState([]);
   const [param, setParam] = useState({});
   const location = useLocation();
-  const { keyColumn, queryId, tableColumns, searchParams ,searchInfo } = EmpTimeAprvListJson;
-  const [ searchIsVal, setSearchIsVal] = useState(false);
-  const date = new Date();
-  const year = date.getFullYear();
-  const month = date.getDate() > 15 ? date.getMonth() + 1 : date.getMonth();
-  const monthVal = month < 10 ? "0" + month : month;
+  const { keyColumn, queryId, tableColumns, searchParams, searchInfo } = EmpTimeAprvListJson;
+  const [searchIsVal, setSearchIsVal] = useState(false);
   const admin = location.state ? location.state.admin : undefined;
-  const aplyYm = admin != undefined ? admin.aplyYm : year + monthVal;
-  const aplyOdr = admin != undefined ? admin.aplyOdr : date.getDate() > 15 ? "1" : "2";
-  useEffect(() => {
-
-  }, []); 
-         
 
   useEffect(() => {
     if (searchIsVal) { // 검색 버튼을 클릭했을 때만 pageHandle 함수 호출
@@ -36,8 +26,8 @@ const EmpTimeAprvList = () => {
   const searchHandle = async (initParam) => {
     setParam({
       ...initParam,
-      yearItem : initParam?.year,
-      monthItem : initParam?.month,
+      yearItem: initParam?.year,
+      monthItem: initParam?.month,
       aplyOdr: initParam?.aplyOdr,
       queryId: queryId,
     });
@@ -47,16 +37,16 @@ const EmpTimeAprvList = () => {
   const pageHandle = async () => {
     try {
       const response = await ApiRequest("/boot/common/queryIdSearch", param);
-      setValues(response);
       if (response.length !== 0) {
+        setValues(response);
       } else {
+        setValues([]);
       }
     } catch (error) {
       console.log(error);
     }
   };
   const dataSource = new PivotGridDataSource({
-    
     fields: [
       {
         caption: '직원명',
@@ -66,28 +56,26 @@ const EmpTimeAprvList = () => {
         expanded: true,
       },
       {
-         caption: '날짜',
+        caption: '날짜',
         dataField: 'aplyYmd',
         area: 'column',
-      },   
-       
+      },
       {
         groupName: 'date',
         groupInterval: 'month',
-    },
-    {
-      groupName: 'date',
-      groupInterval: 'day',
-      expanded: true,
-  },
-   
+      },
+      {
+        groupName: 'date',
+        groupInterval: 'day',
+        expanded: true,
+      },
       {
         caption: '프로젝트명',
         width: 150,
-       dataField: 'prjctNm',
-       area: 'row',
-       expanded: true,
-     },
+        dataField: 'prjctNm',
+        area: 'row',
+        expanded: true,
+      },
       {
         caption: 'Sales',
         dataField: 'md',
@@ -100,42 +88,33 @@ const EmpTimeAprvList = () => {
       },
     ],
     store: values,
-  
   })
 
+  return (
+    <React.Fragment>
+      <div className="container">
+        <div
+          className="title p-1"
+          style={{ marginTop: "20px", marginBottom: "10px" }}
+        >
+          <h1 style={{ fontSize: "40px" }}>근무시간 승인내역 조회</h1>
+        </div>
+        <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
+          <span>* 근무시간 승인내역을 조회합니다.</span>
 
-
-return(
-  <React.Fragment>
-
-  <div className="container">
-      <div
-        className="title p-1"
-        style={{ marginTop: "20px", marginBottom: "10px" }}
-      >
-        <h1 style={{ fontSize: "40px" }}>근무시간 승인내역 조회</h1>
+        </div>
+        <div className="wrap_search" style={{ marginBottom: "20px" }}>
+          <SearchInfoSet callBack={searchHandle} props={searchInfo} />
+        </div>
+        <CustomPivotGrid
+          weekendColor={true}
+          isExport={true}
+          sorting={true}
+          grandTotals={false}
+          values={dataSource}
+        />
       </div>
-      <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
-        <span>* 근무시간 승인내역을 조회합니다.</span>
-       
-      </div>
-      {/* <SearchPrjctCostSet callBack={searchHandle} props={searchParams} /> */}
-      <div className="wrap_search" style={{marginBottom: "20px"}}>
-                  <SearchInfoSet  callBack={searchHandle} props={searchInfo}/>
-                  {/* <SearchOdrRange callBack={searchHandle} props={searchParams}/> */}
-              </div>
-              <CustomPivotGrid
-                    weekendColor={true}
-                    isExport={true}
-                    sorting={true}
-                    grandTotals={false}
-                    values={dataSource}
-                />
-     </div>
-
-     </React.Fragment>
-
-)
+    </React.Fragment>
+  )
 }
- 
 export default EmpTimeAprvList;

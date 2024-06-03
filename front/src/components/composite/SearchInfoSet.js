@@ -28,6 +28,11 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
     monthList: Array.from({ length: 12 }, (_, i) => ({ value: (i < 9 ? "0" : "") + (i + 1) })),
   });
 
+  const inqMthd = [
+    { "value": "odr", "text": "차수별" },
+    { "value": "month", "text": "월별" }
+  ]
+
   useEffect(() => {
     const { yearList, monthList } = getYmList(year - 10, year + 1);
     const odrVal = day > 15 ? "1" : "2";
@@ -51,6 +56,7 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
       });
     }
     setYmOdrData({
+      inqMthd: inqMthd,
       year: yearList,
       month: monthList,
       aplyOdr: [{ "id": "1", "value": "1", "text": "1회차" }, { "id": "2", "value": "2", "text": "2회차" }]
@@ -111,7 +117,7 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
     <div className="box_search">
       <Box className="searchSet" style={{width: "100%", display: "flex", flexDirection: "row"}}>
         {searchParams.yearList && searchParams.yearList.map((item) => (
-          <Item key={item.name} ratio={0} baseSize={"20%"} visible={item.visible}>
+          <Item key={item.name} ratio={0} baseSize={"12%"} visible={item.visible}>
             <SelectBox
               dataSource={ymOdrData[item.name]}
               name={item.name}
@@ -182,5 +188,4 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
     </div>
   );
 };
-
 export default SearchInfoSet;

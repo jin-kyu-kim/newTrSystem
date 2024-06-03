@@ -37,7 +37,7 @@
       { "key": "utztnDt", "value": "사용일시", "width": "8%" },
       { "key": "useOffic", "value": "사용처", "width": "8%" },
       { "key": "utztnAmt", "value": "금액", "currency": true, "width": "8%" },
-      { "key": "prjctNm", "value": "프로젝트", "width": "18%" },
+      { "key": "prjctNm", "value": "프로젝트", "width": "20%" },
       { "key": "expensCdNm", "value": "비용코드", "width": "10%" },
       { "key": "ctPrpos", "value": "상세내역(목적)", "width": "10%" },
       { "key": "atdrn", "value": "용도(참석자명단)", "width": "10%" }
