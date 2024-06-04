@@ -10,7 +10,6 @@
   overflow: auto; /* 내용이 넘칠 경우 스크롤 생성 */
 }
 .login-form {
-  /*display: flexbox;*/
   width: 500px;
   margin: 10px auto;
   align-self: auto;
@@ -42,20 +41,16 @@
 .input-container {
   margin-bottom: 15px;
 }
-
 .remember-me-container {
   display: flex;
   align-items: center;
   margin-bottom: 15px;
 }
-
 .button-container {
   text-align: center;
 }
-
 .login-addInfo {
   text-align: center;
-  /*font-size: "20px";*/
   color: white;
 }
 
@@ -63,21 +58,17 @@
   display: flex;
   justify-content: space-between;
 }
-
 .popup-content {
   margin-top: 20px;
   height: 100%;
   width: 100%;
 }
-
 .project-regist-content-inner {
   width: 50%;
 }
-
 .project-change-content-inner-left {
   width: 30%;
 }
-
 .project-change-content-inner-right {
   width: 70%;
 }
@@ -117,24 +108,18 @@
   margin-bottom: 100px;
 }
 
-
 .atrz-container {
   position: relative;
 }
-
 .atrz-container,
 .left-content {
   min-height: 530px;
 }
-
 .left-content {
   display: inline-block;
   width: 180px;
   padding: 0 10px 10px;
-  /* background-color: rgba(191, 191, 191, 0.15); */
-  /* box-shadow: -5px 0 14px -8px rgba(0, 0, 0, 0.25) inset; */
 }
-
 .right-content {
   position: absolute;
   right: 0;
@@ -148,19 +133,15 @@
   margin-bottom: 10px;
   min-height: 220px;
 }
-
 .title-aprvDetail {
   text-align: left;
-  /* font-size: 20px; */
   margin-bottom: 20px;
 }
-
 .title-aprvDetail-left {
   display: inline-block;
   width: 300px;
   min-height: 220px;
 }
-
 .title-aprvDetail-right {
   position: absolute;
   right: 0;
@@ -170,24 +151,20 @@
   height: 100%;
   display: flex;
 }
-
 .table-atrzLn-wrapper {
   flex: 1;
 }
-
 .table-atrzLn {
   border: 1px solid #ddd;
   margin-left: auto;
   text-align: center;
   font-size: 14px;
 }
-
 .table-atrzLn-th {
   border: 1px solid #ddd;
   padding: 10px;
   background-color: #f2f2f2;
 }
-
 .table-atrzLn-td {
   border: 1px solid #ddd;
   padding: 10px;
@@ -203,7 +180,6 @@
   color: rgba(0, 0, 0, .87);
   cursor: pointer;
 }
-
 .dx-widget.dx-button.dx-button-mode-contained.dx-button-normal.dx-button-has-icon.dx-pivotgrid-export-button {
   box-shadow: 0 1px 3px rgba(0,0,0,.24);
   border-radius: 5px;
@@ -212,7 +188,6 @@
   color: rgba(0, 0, 0, .87);
   cursor: pointer;
 }
-
 .dx-icon-xlsxfile:before{
   content: "엑셀 다운로드" !important;
   font-size: 14px;
@@ -225,28 +200,21 @@
   display: flex;
   flex-wrap: wrap;
 }
-
 .elecAtrz-from-container-box {
   width: 23%;
   margin: 10px;
 }
-
 .elecAtrzNewReq-ctrtInfo > .dx-fieldset > .dx-field > .dx-field-label{
   text-align: center;
   width: 20%
 }
-
 .elecAtrzNewReq-ctrtInfo > .dx-fieldset > .dx-field > .dx-field-value{
   width: 50%
 }
-
 .elecAtrzNewReq-ctrtInfo > .dx-fieldset > .dx-field > .dx-field-value > .dx-field-value-text{
   padding: 9px 0px 9px 0px;
   font-size: 16px;
 }
-
-
-
 
 .atrz-popup-header {
   display: flex;
@@ -255,32 +223,27 @@
   margin-top: 20px;
   font-weight: bold;
 }
-
 .atrz-popup-row {
   display: flex;
   border-bottom: 1px solid #e0e0e0;
   padding: 10px 0;
 }
-
 .atrz-popup-cell:nth-child(1) {
   text-align: center;
   flex: 0 0 15%;
   padding: 5px 0;
 }
-
 .atrz-popup-cell:nth-child(2) {
   text-align: center;
   flex: 0 0 30%;
   padding: 5px 0;
 }
-
 .atrz-popup-cell:nth-child(3) {
   text-align: center;
   flex: 0 0 55%;
   padding: 5px 0;
   display: flex;
 }
-
 .aprvrEmp {
   margin-right: 10px;
 }
@@ -292,7 +255,6 @@
   padding: 10px 0; 
   cursor: pointer;
 }
-
 .popup-delete-btn {
   background-color: transparent;
   color: red;
@@ -302,31 +264,11 @@
   margin-left: 10px;
 }
 
-.expense-popup-table {
-  border: 1px solid rgb(217, 215, 215);
-  width: 100%;
-  margin: 0 auto;
-}
-
-.expense-popup-first-col {
-  flex: 2;
-  border: 1px solid rgb(217, 215, 215);
-  padding: 8px;
-  background-color: #f0f0f0;
-  text-align: center;
-  font-weight: bold;
-}
-
-.expense-popup-val-col {
-  flex: 2;
-  border: 1px solid rgb(217, 215, 215);
-  padding: 8px;
-}
-
 .dx-htmleditor-toolbar {
   margin-bottom: 100px; /* HtmlEditor 툴바 높이 조절 */
 }
 
+/* DataGrid Header 배경색 */
 .dx-datagrid .dx-header-row {
   background-color: #f0f0f0;
 }
@@ -350,21 +292,19 @@
   }
 }
 
+/* DataGrid hover 속성 추가 */
 .dx-row:hover {
   background-color: #dde7f7;
   cursor: pointer; 
 }
-
 .dx-row:hover .dx-switch-container {
   background-color: #dde7f7;
 }
-
 /* MasterDetail에 hover 적용 X */
 .dx-master-detail-row:hover {
   background-color: transparent !important;
   cursor: default !important; 
 }
-
 /* MasterDetail 내부 Switch에 hover 적용 X */
 .dx-master-detail-row:hover .dx-switch-container {
   background-color: transparent !important;
@@ -378,7 +318,6 @@
     text-align: left;
   }
 }
-
 @media (min-width: 601px) and (max-width: 1850px) {
   .dx-datagrid .dx-header-row .dx-datagrid-text-content {
     font-size: 12px;
@@ -387,7 +326,6 @@
     text-align: left;
   }
 }
-
 @media (min-width: 1851px) {
   .dx-datagrid .dx-header-row .dx-datagrid-text-content {
     font-size: 14px;
@@ -403,20 +341,17 @@
   align-items: center;
   margin-top: 20px;
 }
-
 .link .image-group {
   display: flex;
   justify-content: center;
   gap: 10px; /* 이미지 간의 간격 */
 }
-
 .link .image-group .image-container {
   position: relative;
   width: 100px;
   height: 80px;
   overflow: hidden;
 }
-
 .link .image-group .image-container .image {
   position: absolute;
   top: 0;
@@ -425,7 +360,6 @@
   height: 100%;
   transition: opacity 0.3s ease-in-out;
 }
-
 .link .image-group .image-container .top-image1 {
   background-image: url('/src/assets/img/link3.png');
   background-position: -100px 0;
@@ -484,13 +418,37 @@
   padding : 10px;
 }
 
+/* 전자결재 상세 페이지 프린트 속성 */
 @media print {
-  .elecTopBtn {
-    display: none;
+  body {
+    -webkit-print-color-adjust: exact;
   }
+  .printBtn { display: none; }
+  .elecTopBtn { display: none; } /* 프린트 대상 - 버튼 제외 */
 }
 .elecTopBtn {
   float: right;
+}
+
+/* 프로젝트비용청구 팝업 내 테이블 */
+.expense-popup-table {
+  border: 1px solid rgb(217, 215, 215);
+  width: 100%;
+  margin: 0 auto;
+  overflow-x: hidden;
+}
+.expense-popup-first-col {
+  flex: 2;
+  border: 1px solid rgb(217, 215, 215);
+  padding: 8px;
+  background-color: #f0f0f0;
+  text-align: center;
+  font-weight: bold;
+}
+.expense-popup-val-col {
+  flex: 2;
+  border: 1px solid rgb(217, 215, 215);
+  padding: 8px;
 }
 
 /* pivotGrid 소계, 총계 */
@@ -501,16 +459,32 @@
   padding-left: 22px;
   background-color: #fff5c9;
 }
+/* pivotGrid 일자별 집계 숨기기 및 소계,총계만 폰트 bold */
+.dx-total.dx-row-total:not(.dx-grandtotal):not(.dx-last-cell) span {
+  visibility: hidden;
+}
+.dx-total.dx-grandtotal.dx-row-total span,
+.dx-grandtotal.dx-row-total span {
+    font-weight: bold;
+}
+.dx-grandtotal span {
+  font-weight: normal;
+}
+
+/* pivotGrid - FieldPanel 여백 제거 */
+.dx-pivotgrid .dx-pivotgrid-area td.dx-pivotgrid-collapsed, 
+.dx-pivotgrid .dx-pivotgrid-area td.dx-pivotgrid-expanded {
+  padding: 10px 0 10px 3px !important;
+}
+
 /* 프로젝트비용 tabpanel용 */
 @media (max-width: 768px) {
   .dx-tabpanel {
     font-size: 14px; /* 탭 글꼴 크기 조정 */
   }
-
   .dx-tabpanel .dx-item {
     padding: 10px; /* 탭 패딩 조정 */
   }
-  
   .container{
       padding: 0 !important;
       margin: 0 !important;
@@ -521,21 +495,17 @@
   .popup-content {
       padding: 10px; /* 팝업 내용의 패딩 조정 */
   }
-
   .popup-content .row {
       margin-top: 10px;
       margin-bottom: 10px;
   }
-
   .popup-content .col-md-2 {
       font-size: 12px; /* 레이블 폰트 크기 조정 */
       padding: 5px 0;
   }
-
   .popup-content .col-md-10 {
       padding: 5px 0;
   }
-
   .popup-content .dx-textbox,
   .popup-content .dx-selectbox,
   .popup-content .dx-datebox,
@@ -543,7 +513,6 @@
   .popup-content .dx-tagbox {
       font-size: 12px; /* 입력 필드 폰트 크기 조정 */
   }
-
   .popup-content .dx-button {
       font-size: 12px; /* 버튼 폰트 크기 조정 */
       height: 36px; /* 버튼 높이 조정 */
@@ -558,23 +527,21 @@
       width: 100vw; /* 화면 너비에 맞게 조정 */
       overflow-x: auto; /* 가로 스크롤 활성화 */
   }
-
   .dx-scheduler-header-panel-cell,
   .dx-scheduler-date-table-cell {
       font-size: 12px; /* 폰트 크기 조정 */
   }
-
   .dx-scheduler-navigator .dx-button-text,
   .dx-scheduler-view-switcher .dx-button-text {
       font-size: 12px; /* 네비게이터와 뷰 셀렉션 버튼 텍스트 크기 조정 */
   }
-
   .dx-scheduler-navigator .dx-button,
   .dx-scheduler-view-switcher .dx-button {
       padding: 5px; /* 패딩 조정 */
   }
 }
 
+/* 프로젝트비용청구 하단 입력마감 영역 */
 .projectExpense-bottom-ddln-area {
   height: 250px;
   border-radius: 5px;
@@ -583,9 +550,7 @@
   align-items: center;
 }
 
-
 /* MAIN.CSS */
-
 /* 화면 전체 배치 */
 .main-container {
   display: flex;
@@ -593,19 +558,16 @@
   flex-wrap: wrap;
   justify-content: center;
 }
-
 /* 메인 좌측 스타일 */
 .main-left-container {
   width: 40%;
   min-width: 300px;
   margin-bottom: 20px;
 }
-
 .emp-info {
   min-width: 480px;
   margin: 0 auto;
 }
-
 /* 메인 우측 전체 배치 */
 .main-right-container {
   width: 60%;
@@ -614,12 +576,10 @@
   flex-direction: column;
   align-items: center;
 }
-
 /* 각 테이블 배치 */
 .table-detail {
   flex: 1;
 }
-
 /* 버튼 컨테이너 스타일 */
 .main-button-container {
   display: flex;
@@ -627,7 +587,6 @@
   align-items: center;
   margin-top: 20px;
 }
-
 .main-button-container button {
   font-size: clamp(9px, 1vw, 11px);
   white-space: nowrap;
@@ -643,7 +602,6 @@
     flex-wrap: wrap;
     justify-content: flex-start;
   }
-
   .main-button-container button {
     flex: 1 1 auto;
     margin-right: 0;
@@ -653,7 +611,6 @@
     text-overflow: clip;
   }
 }
-
 @media (max-width: 768px) {
   .container {
     padding: 0 !important;

@@ -98,10 +98,16 @@ const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fi
     }
 
     const onCellPrepared = (e) => {
+        e.cellElement.style.fontSize = '11pt';
         // ColumnGrandTotals 명칭 변경
         if(columnGTName != null && e.area === 'column' && e.cell.type === 'GT' && e.cell.text === 'Grand Total'){
             e.cell.text = columnGTName;
             e.cellElement.innerText = columnGTName;
+        }
+        if(e.area === 'column'){
+            e.cellElement.style.fontWeight = 'bold'
+            e.cellElement.style.color = 'black'
+            e.cellElement.style.backgroundColor = '#f0f0f0'
         }
 
         // row collapse block 상태일 때 화살표 아이콘 삭제

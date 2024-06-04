@@ -55,13 +55,15 @@ const ProjectExpense = () => {
     }, [atrzDmndSttsCnt]);
 
     const searchHandle = async (initParam) => {
-        setHistYmOdr({
-            aplyYm: initParam?.year + initParam?.month,
-            aplyOdr: initParam?.aplyOdr,
-            empId: empId,
-            isHist: true
-        })
-        if (Object.keys(initParam).length !== 0) setPopVisible(true);
+        if (Object.keys(initParam).length !== 0){
+            setHistYmOdr({
+                aplyYm: initParam?.year + initParam?.month,
+                aplyOdr: initParam?.aplyOdr,
+                empId: empId,
+                isHist: true
+            })
+            setPopVisible(true);
+        }
     };
 
     const getData = async () => {
@@ -318,14 +320,15 @@ const ProjectExpense = () => {
                         }} />
                     : <div className='projectExpense-bottom-ddln-area'><span style={{ marginLeft: '200px', fontSize: '16pt' }}>입력 마감되었습니다.</span></div>}
             </div>
+            {Object.keys(histYmOdr).length !== 0 && 
             <ProjectExpensePopup
                 visible={popVisible}
                 onPopHiding={onPopHiding}
-                aprvInfo={atrzDmndSttsCnt}
+                aprvInfoProps={Object.keys(atrzDmndSttsCnt).length !== 0 && atrzDmndSttsCnt}
                 ctAplyLen={ctAply.length}
                 popMmYn={mmAtrzCmptnYn}
-                basicInfo={histYmOdr !== null ? histYmOdr : { aplyYm, aplyOdr, empId }}
-            />
+                basicInfo={Object.keys(histYmOdr).length !== 0 ? histYmOdr : { aplyYm, aplyOdr, empId }}
+            />}
         </div>
     );
 };
