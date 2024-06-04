@@ -17,6 +17,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
         showBorders={true}
         showColumnLines={true}
         focusedRowEnabled={true}
+        columnAutoWidth={true}
         noDataText={noDataText}
         onRowExpanding={handleExpanding}
         onRowDblClick={onRowDblClick}

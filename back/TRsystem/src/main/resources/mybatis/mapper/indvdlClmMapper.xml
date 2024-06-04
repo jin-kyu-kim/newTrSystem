@@ -1113,7 +1113,7 @@
           AND pcrz.EMP_ID = #{empId}
           AND pcrz.APLY_ODR  = #{aplyOdr}
           AND pcrz.ATRZ_DMND_STTS_CD = 'VTW03703'
-          AND pcrz.ATRZ_DMND_STTS_CD != 'VTW03704'
+          AND pca.CT_STLM_SE_CD IN ('VTW01902', 'VTW01903')
     </select>
 
     <!-- 개인비용청구 공휴일, 연차 포함 총 근무 시간 -->

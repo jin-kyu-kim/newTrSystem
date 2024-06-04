@@ -98,6 +98,7 @@ const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fi
     }
 
     const onCellPrepared = (e) => {
+        e.cellElement.style.fontSize = '11pt';
         // ColumnGrandTotals 명칭 변경
         if(columnGTName != null && e.area === 'column' && e.cell.type === 'GT' && e.cell.text === 'Grand Total'){
             e.cell.text = columnGTName;

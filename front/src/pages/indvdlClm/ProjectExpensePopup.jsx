@@ -8,12 +8,13 @@ import CustomPivotGrid from "../../components/unit/CustomPivotGrid";
 import ApiRequest from "../../utils/ApiRequest";
 import ReactToPrint from 'react-to-print';
 
-const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, ctAplyLen, popMmYn }) => {
+const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfoProps, ctAplyLen, popMmYn }) => {
     const { projectExpensePopup, projectExpensePopQueryIdList } = ProjectExpenseJson;
     const [ empInfo, setEmpInfo ] = useState({});
     const [ totalInfo, setTotalInfo ] = useState({});
     const [ data, setData ] = useState([]);
     const [ loading, setLoading ] = useState(true);
+    const [ aprvInfo, setAprvInfo ] = useState(aprvInfoProps);
     const [ mmAtrzCmptnYn, setMmAtrzCmptnYn ] = useState(popMmYn);
     const contentRef = useRef(null);
     const commonParams = {
@@ -31,11 +32,12 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, ctAply
             setLoading(true);
             const empInfoPromise = getEmpInfo();
             const indivdlYnPromise = getIndivdlYn();
+            const atrzCntPromise = getAtrzCnt();
             const totalWorkTimePromise = getTotalWorkTime();
             const expenseTotalInfoPromise = getExpenseTotalInfo();
             const dailyWorkHoursPromise = getDailyWorkHours();
             
-            await Promise.all([empInfoPromise, indivdlYnPromise, totalWorkTimePromise, expenseTotalInfoPromise, dailyWorkHoursPromise]);
+            await Promise.all([empInfoPromise, indivdlYnPromise, atrzCntPromise, totalWorkTimePromise, expenseTotalInfoPromise, dailyWorkHoursPromise]);
             setLoading(false);
         };
         if(basicInfo.empId) fetchData();
@@ -46,7 +48,10 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, ctAply
             queryId: "indvdlClmMapper.retrievePopEmpInfo", empId: basicInfo.empId})
         setEmpInfo(response[0]);
     }
-    
+    const getAtrzCnt = async () => {
+        const response = await fetchApiData("indvdlClmMapper.retrieveCtAtrzDmndStts");
+        setAprvInfo(response[0]);
+    }
     const getIndivdlYn = async () => {
         const response = await ApiRequest('/boot/common/commonSelect', [{ tbNm: "PRJCT_INDVDL_CT_MM" }, 
         { empId: basicInfo.empId, aplyYm: basicInfo.aplyYm, aplyOdr: basicInfo.aplyOdr }])
@@ -56,7 +61,6 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, ctAply
             setMmAtrzCmptnYn(undefined)
         }
     }
-    
     const getTotalWorkTime = async () => {
         const res = await fetchApiData("indvdlClmMapper.retrieveTotalWorkTime");
         if (res[0] !== null) {
@@ -66,7 +70,6 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, ctAply
             }));
         } else setTotalInfo({totTime: null})
     };
-
     const getExpenseTotalInfo = async () => {
         const res = await fetchApiData("indvdlClmMapper.retrieveExpenseTotal");
         if (res[0] !== null) {
@@ -77,7 +80,6 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, ctAply
             }));
         }
     };
-
     const getDailyWorkHours = async () => {
         const requests = projectExpensePopQueryIdList.map(queryId => fetchApiData(queryId));
         const results = await Promise.all(requests);
@@ -145,20 +147,19 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, ctAply
     const contentArea = () => {
         return (
             <div>
+                <div style={{textAlign: 'right', marginBottom: '2%'}}><Button icon="close" onClick={onPopHiding} /></div>
                 {((aprvInfo.totCnt === aprvInfo.aprv && mmAtrzCmptnYn === 'Y') || (ctAplyLen === 0 && mmAtrzCmptnYn === 'Y')
-                ||(aprvInfo.totCnt === (aprvInfo.aprv + aprvInfo.rjct) && mmAtrzCmptnYn === 'Y')) || (basicInfo.isHist && mmAtrzCmptnYn === 'Y') ? 
+                || (aprvInfo.totCnt === (aprvInfo.aprv + aprvInfo.rjct) && mmAtrzCmptnYn === 'Y')) 
+                || (basicInfo.isHist && mmAtrzCmptnYn === 'Y' && ((aprvInfo.totCnt === aprvInfo.aprv) || (aprvInfo.totCnt === (aprvInfo.aprv + aprvInfo.rjct)))) ? 
                     <div ref={contentRef}>
                         <div style={{ textAlign: 'right'}} className='printBtn' >
                             <ReactToPrint 
                                 trigger={() => ( <Button text='출력' type='success' icon='print' /> )}
                                 content={() => contentRef.current} 
-                                pageStyle="@page { size: A3; ratio:100%; }
-                                @media print { 
-                                    .printBtn { display: none; }
-                                }" 
+                                pageStyle="@page { size: A3; ratio:100%; }" 
                             />
                         </div>
-                        <h2 style={{marginBottom: '3%'}}>근무시간 비용 Report</h2>
+                        <h2 style={{marginBottom: '3%', marginTop: '3%'}}>근무시간 비용 Report</h2>
                         {projectExpensePopup.map((pop) => (
                             <div key={pop.key}>
                                 <span>{pop.title}</span>
@@ -174,7 +175,7 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, ctAply
                 : mmAtrzCmptnYn === null ? <>
                     <span style={{color: 'red'}}>아직 근무시간 승인요청을 하지 않았습니다. </span>
                     <span>요청한 뒤 승인 완료 후 출력하시기 바랍니다.</span></> 
-                : mmAtrzCmptnYn === undefined && <span>마감 정보가 없습니다.</span>}
+                : <span>마감 정보가 없습니다.</span>}
             </div>
         );
     };
@@ -182,7 +183,7 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfo, ctAply
     return (
         <div style={{marginBottom: '100px'}}>
             <Popup
-                width={"100%"}
+                width={"80%"}
                 height={"90%"}
                 visible={visible}
                 onHiding={onPopHiding}

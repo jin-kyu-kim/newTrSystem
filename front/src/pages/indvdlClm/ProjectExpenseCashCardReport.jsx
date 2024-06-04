@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
 import ApiRequest from "utils/ApiRequest";
-
 import PivotGrid, { FieldChooser, FieldPanel, Scrolling } from 'devextreme-react/pivot-grid';
 import PivotGridDataSource from 'devextreme/ui/pivot_grid/data_source';
-import { BackgroundColor } from 'devextreme-react/cjs/chart';
 
 const ProjectExpenseCashCardReport = ({basicInfo}) => {
 
@@ -68,7 +66,6 @@ const ProjectExpenseCashCardReport = ({basicInfo}) => {
 
     useEffect(() => {
         retrieveCtData(basicInfo);
-
     }, [basicInfo]);
 
     const retrieveCtData = async (basicInfo) => {
@@ -77,7 +74,6 @@ const ProjectExpenseCashCardReport = ({basicInfo}) => {
             aplyYm: basicInfo.aplyYm,
             aplyOdr: basicInfo.aplyOdr,
         }
-    
         try {
             const response = await ApiRequest("/boot/indvdlClm/retrieveCtData", param);
             setPivotGridConfig({
@@ -134,7 +130,6 @@ const ProjectExpenseCashCardReport = ({basicInfo}) => {
                 showColumnGrandTotals={true}
                 onCellPrepared={onCellPrepared}
                 texts={{ grandTotal: "총계" }}
-                style={{transform: 'scale(0.9)', maxWidth: '100px', fontWeight: 'bold'}}
             >
                 <FieldPanel
                     visible={true}
