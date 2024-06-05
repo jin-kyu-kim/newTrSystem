@@ -8,7 +8,7 @@
   "trAplyKeyColumn": "empId",
   "trAplyTableColumns": 
 	[
-        {"value": "근무시간",
+        {"value": "근무시간", 
         "subColumns": [
             { "key": "total", "value": "필수시간"},
             { "key": "mdSum", "value": "요청"},
