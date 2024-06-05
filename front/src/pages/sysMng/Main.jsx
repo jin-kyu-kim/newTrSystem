@@ -237,7 +237,7 @@ let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).f
 
       {/* TR입력 현황 */}
       <div className="main-right-container">
-        <div className="table-detail" style={{marginLeft:"10px"}}>
+        <div className="container" >
           <p><strong>{orderWorkBgngMm}-{flagOrder}차수 TR입력 현황 </strong></p>
           <CustomTable keyColumn="mdSum" columns={trAplyTableColumns} values={trAplyValues} onCellClick={onCellClick} />
         </div>
