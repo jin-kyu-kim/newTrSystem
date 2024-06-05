@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from "react";
-
 import TextBox from "devextreme-react/text-box";
 import Box, {Item} from "devextreme-react/box"
 import { Button } from "devextreme-react/button";
 import { Popup } from "devextreme-react/popup";
-
-import "./SearchSet.css";
 import CustomDateRangeBox from "../unit/CustomDateRangeBox";
 import CustomCdComboBox from "../unit/CustomCdComboBox";
 import AutoCompleteProject from "../unit/AutoCompleteProject";
-
 import ProjectRegist from "../../pages/project/manage/ProjectRegist";
 
 const SearchPrjctSet = ({ callBack, props, popup }) => {
@@ -181,5 +177,4 @@ const SearchPrjctSet = ({ callBack, props, popup }) => {
     </div>
   );
 };
-
 export default SearchPrjctSet;

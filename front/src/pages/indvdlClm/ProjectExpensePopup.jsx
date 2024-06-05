@@ -128,7 +128,6 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfoProps, c
                     store: data
                 })
                 return (
-                    loading ? <></> : (
                     <CustomPivotGrid
                         values={dataSource}
                         customColor={'#f0f0f0'}
@@ -137,45 +136,51 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfoProps, c
                         grandTotals={true}
                         grandTotalText={'총 시간'}
                         width={'100%'}
-                    />)
+                    />
                 )
             default:
-                return( loading ? <></> : (<ProjectExpenseCashCardReport basicInfo={basicInfo} />) )
+                return( <ProjectExpenseCashCardReport basicInfo={basicInfo} /> )
         }
     };
     
     const contentArea = () => {
         return (
             <div>
-                <div style={{textAlign: 'right', marginBottom: '2%'}}><Button icon="close" onClick={onPopHiding} /></div>
-                {((aprvInfo.totCnt === aprvInfo.aprv && mmAtrzCmptnYn === 'Y') || (ctAplyLen === 0 && mmAtrzCmptnYn === 'Y')
-                || (aprvInfo.totCnt === (aprvInfo.aprv + aprvInfo.rjct) && mmAtrzCmptnYn === 'Y')) 
-                || (basicInfo.isHist && mmAtrzCmptnYn === 'Y' && ((aprvInfo.totCnt === aprvInfo.aprv) || (aprvInfo.totCnt === (aprvInfo.aprv + aprvInfo.rjct)))) ? 
-                    <div ref={contentRef}>
-                        <div style={{ textAlign: 'right'}} className='printBtn' >
-                            <ReactToPrint 
-                                trigger={() => ( <Button text='출력' type='success' icon='print' /> )}
-                                content={() => contentRef.current} 
-                                pageStyle="@page { size: A3; ratio:100%; }" 
-                            />
-                        </div>
-                        <h2 style={{marginBottom: '3%', marginTop: '3%'}}>근무시간 비용 Report</h2>
-                        {projectExpensePopup.map((pop) => (
-                            <div key={pop.key}>
-                                <span>{pop.title}</span>
-                                <div style={{ marginTop: "10px", marginBottom: "20px" }}>
-                                    {renderTable(pop)}
+            {loading ? <></> : 
+                <div>
+                    <div style={{textAlign: 'right', marginBottom: '1%'}}><Button icon="close" onClick={onPopHiding} /></div>
+                    {((aprvInfo.totCnt === aprvInfo.aprv && mmAtrzCmptnYn === 'Y') || (ctAplyLen === 0 && mmAtrzCmptnYn === 'Y')
+                    || (aprvInfo.totCnt === (aprvInfo.aprv + aprvInfo.rjct) && mmAtrzCmptnYn === 'Y')) 
+                    || (basicInfo.isHist && mmAtrzCmptnYn === 'Y' && ((aprvInfo.totCnt === aprvInfo.aprv) || (aprvInfo.totCnt === (aprvInfo.aprv + aprvInfo.rjct)))) ? 
+                        <div ref={contentRef}>
+                            <div style={{ display: 'flex' }}>
+                                <h2 >근무시간 비용 Report</h2>
+                                <div style={{ flexGrow: 1 }}></div>
+                                <div className='printBtn'>
+                                    <ReactToPrint 
+                                        trigger={() => ( <Button text='출력' type='success' icon='print' /> )}
+                                        content={() => contentRef.current} 
+                                        pageStyle="@page { size: A3; ratio:100%; }" 
+                                    />
                                 </div>
                             </div>
-                        ))}
-                    </div>
-                : (aprvInfo.aprvDmnd >= 1)
-                ? <span>결재 진행중인 청구내역이 있습니다.</span>
-                : mmAtrzCmptnYn === 'N' ? <span>진행중인 근무시간 요청이 있습니다. 승인 완료 후 출력하시기 바랍니다..</span> 
-                : mmAtrzCmptnYn === null ? <>
-                    <span style={{color: 'red'}}>아직 근무시간 승인요청을 하지 않았습니다. </span>
-                    <span>요청한 뒤 승인 완료 후 출력하시기 바랍니다.</span></> 
-                : <span>마감 정보가 없습니다.</span>}
+                            {projectExpensePopup.map((pop) => (
+                                <div key={pop.key} style={{marginTop: '2%'}}>
+                                    <span>{pop.title}</span>
+                                    <div style={{ marginTop: "10px", marginBottom: "20px" }}>
+                                        {renderTable(pop)}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    : (aprvInfo.aprvDmnd >= 1)
+                    ? <span>결재 진행중인 청구내역이 있습니다.</span>
+                    : mmAtrzCmptnYn === 'N' ? <span>진행중인 근무시간 요청이 있습니다. 승인 완료 후 출력하시기 바랍니다..</span> 
+                    : mmAtrzCmptnYn === null ? <>
+                        <span style={{color: 'red'}}>아직 근무시간 승인요청을 하지 않았습니다. </span>
+                        <span>요청한 뒤 승인 완료 후 출력하시기 바랍니다.</span></> 
+                    : <span>마감 정보가 없습니다.</span>}
+                </div> }
             </div>
         );
     };
@@ -183,8 +188,7 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfoProps, c
     return (
         <div style={{marginBottom: '100px'}}>
             <Popup
-                width={"80%"}
-                height={"90%"}
+                width={'80%'}
                 visible={visible}
                 onHiding={onPopHiding}
                 showCloseButton={true}

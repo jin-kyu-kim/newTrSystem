@@ -31,18 +31,20 @@
   "detail": {
     "detailQueryId": "infoInqMapper.retrieveNtcMatterDtl",
     "noticeButtonGroup": [
-      { "id": 1, "text": "목록", "onClick": "/infoInq/NoticeList", "type": "normal" },
+      { "id": 1, "text": "목록", "onClick": "/infoInq/NoticeList", "type": "normal", "btnAlways": true },
       { "id": 2, "text": "수정", "onClick": "/infoInq/NoticeInput", "state": { "editMode": "update" }, "type":"default" },
       { "id": 3, "text": "삭제", "onClick": "deleteNotice", "type":"danger" }
     ],
     "referButtonGroup": [
-      { "id": 1, "text": "목록", "onClick": "/infoInq/ReferenceList", "type": "normal" },
+      { "id": 1, "text": "목록", "onClick": "/infoInq/ReferenceList", "type": "normal", "btnAlways": true },
       { "id": 2, "text": "수정", "onClick": "/infoInq/ReferenceInput", "state": { "editMode": "update" }, "type":"default" },
       { "id": 3, "text": "삭제", "onClick": "deleteReference", "type":"danger" }
     ]
   },
   "searchInfo": {
-    "searchParams": { "insertButton": true },
+    "searchParams": { 
+      "isInsertRestricted": true
+    },
     "selectBoxItem": [
       {
         "placeholder": "[전체]",

@@ -1,7 +1,8 @@
 import React from 'react';
 import DataGrid, { Column, Editing, Form } from 'devextreme-react/data-grid';
 import { useModal } from "./ModalContext";
-const CommentList = ({ comments, setComments , changeData})=>{
+
+const CommentList = ({ comments, changeData})=>{
     const { handleOpen } = useModal();
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const empId = userInfo.empId;
@@ -52,6 +53,7 @@ const CommentList = ({ comments, setComments , changeData})=>{
             onRowUpdated={onRowUpdated}
             onRowRemoved={onRowRemoved}
             onInitNewRow={onInitNewRow}
+            noDataText='등록된 댓글이 없습니다.'
         >
             <Editing
                 mode="row"
@@ -83,5 +85,4 @@ const CommentList = ({ comments, setComments , changeData})=>{
         </DataGrid>
     );
 }
-
 export default CommentList

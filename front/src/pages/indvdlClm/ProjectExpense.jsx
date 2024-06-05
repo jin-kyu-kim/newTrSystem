@@ -25,7 +25,8 @@ const ProjectExpense = () => {
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const empId = admin != undefined ? admin.empId : userInfo.empId;
     const [ popVisible, setPopVisible ] = useState(false);
-    const [ histYmOdr, setHistYmOdr ] = useState({});
+    const [ histYmOdr, setHistYmOdr ] = useState(null);
+    const [ isLoading, setIsLoading ] = useState(false);
     const date = new Date();
     const year = date.getFullYear();
     const month = date.getDate() > 15 ? date.getMonth() + 1 : date.getMonth();
@@ -67,6 +68,7 @@ const ProjectExpense = () => {
     };
 
     const getData = async () => {
+        setIsLoading(true);
         const apiInfo = [
             { url: "commonSelect", param: [{ tbNm: "PRJCT_INDVDL_CT_MM" }, { empId, aplyYm, aplyOdr }], setter: setCtAtrzCmptnData },
             { url: "queryIdSearch", param: { queryId: aplyAndAtrzCtQueryId, empId, aplyYm, aplyOdr, aply: 'aply' }, setter: setCtAply }, // 비용 청구내역
@@ -75,7 +77,7 @@ const ProjectExpense = () => {
         ];
         const promises = apiInfo.map(api => ApiRequest(`/boot/common/${api.url}`, api.param));
         const results = await Promise.all(promises);
-
+    
         results.forEach((result, index) => {
             apiInfo[index].setter(result);
         });
@@ -87,10 +89,12 @@ const ProjectExpense = () => {
             setCtAtrzCmptnYn(data?.every(item => item.ctAtrzCmptnYn === null) ? null : data.some(item => item.ctAtrzCmptnYn === 'N') ? 'N' : 'Y');
             setMmAtrzCmptnYn(data?.every(item => item.mmAtrzCmptnYn === null) ? null : data.some(item => item.mmAtrzCmptnYn === 'N') ? 'N' : 'Y');
         }
+        setIsLoading(false);
     };
 
     const setCtAtrzDmndSttsData = (data) => {
         setAtrzDmndSttsCnt(data[0]);
+        setIsLoading(false);
     };
 
     const prjctCtAtrzUpdate = async (data) => {
@@ -275,60 +279,62 @@ const ProjectExpense = () => {
 
     return (
         <div>
-            <div style={{ marginLeft: '2%', marginRight: '2%', marginBottom: '10%' }}>
-                <div className="mx-auto" style={{ display: 'flex', marginTop: "20px", marginBottom: "30px" }}>
-                    <h1 style={{ fontSize: "30px", marginRight: "20px" }}>프로젝트비용</h1>
-                    {getButtonsShow().map(({ onClick, text, type }, index) => (
-                        <Button key={index} text={text} type={type} style={{ marginRight: '5px' }}
-                            onClick={onClick.name !== 'onPrintClick' ? () => handleOpen(onClick.msg, () => onClickAction(onClick))
-                                : () => onClickAction(onClick)} />))}
-                </div>
+        {isLoading ? <></> : 
+            <div>
+                <div style={{ marginLeft: '2%', marginRight: '2%', marginBottom: '10%' }}>
+                    <div className="mx-auto" style={{ display: 'flex', marginTop: "20px", marginBottom: "30px" }}>
+                        <h1 style={{ fontSize: "30px", marginRight: "20px" }}>프로젝트비용</h1>
+                        {getButtonsShow().map(({ onClick, text, type }, index) => (
+                            <Button key={index} text={text} type={type} style={{ marginRight: '5px' }}
+                                onClick={onClick.name !== 'onPrintClick' ? () => handleOpen(onClick.msg, () => onClickAction(onClick))
+                                    : () => onClickAction(onClick)} />))}
+                    </div>
 
-                <div style={{ marginBottom: '50px'}}>
-                    {admin != undefined ? <></> :
-                        <SearchInfoSet
-                            callBack={searchHandle}
-                            props={searchInfo}
-                        />}
-                </div>
-                {admin != undefined ?
-                    <RenderTopTable title={`*${admin.empno} ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} /> :
-                    <RenderTopTable title={`* ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} />}
-                <RenderTopTable title='* 전자결재 청구 내역' keyColumn={elcKeyColumn} columns={columnCharge} values={ctAtrz} />
+                    <div style={{ marginBottom: '50px'}}>
+                        {admin != undefined ? <></> :
+                            <SearchInfoSet
+                                callBack={searchHandle}
+                                props={searchInfo}
+                            />}
+                    </div>
+                    {admin != undefined ?
+                        <RenderTopTable title={`*${admin.empno} ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} /> :
+                        <RenderTopTable title={`* ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} />}
+                    <RenderTopTable title='* 전자결재 청구 내역' keyColumn={elcKeyColumn} columns={columnCharge} values={ctAtrz} />
 
-                {atrzDmndSttsCnt.ctReg > 0 || ctAtrzCmptnYn === null || ctAtrzCmptnYn === undefined
-                    ? <TabPanel
-                        dataSource={ExpenseInfo}
-                        selectedIndex={index}
-                        onOptionChanged={onSelectionChanged}
-                        itemTitleRender={itemTitleRender}
-                        animationEnabled={true}
-                        showNavButtons={isSmallScreen}
-                        itemComponent={({ data }) => {
-                            const Component = React.lazy(() => import(`${data.url}`));
-                            return (
-                                <React.Suspense fallback={<div>Loading...</div>}>
-                                    <Component
-                                        empId={empId}
-                                        aplyYm={aplyYm}
-                                        aplyOdr={aplyOdr}
-                                        setIndex={setIndex}
-                                        getData={getData}
-                                    />
-                                </React.Suspense>
-                            );
-                        }} />
-                    : <div className='projectExpense-bottom-ddln-area'><span style={{ marginLeft: '200px', fontSize: '16pt' }}>입력 마감되었습니다.</span></div>}
-            </div>
-            {Object.keys(histYmOdr).length !== 0 && 
-            <ProjectExpensePopup
-                visible={popVisible}
-                onPopHiding={onPopHiding}
-                aprvInfoProps={Object.keys(atrzDmndSttsCnt).length !== 0 && atrzDmndSttsCnt}
-                ctAplyLen={ctAply.length}
-                popMmYn={mmAtrzCmptnYn}
-                basicInfo={Object.keys(histYmOdr).length !== 0 ? histYmOdr : { aplyYm, aplyOdr, empId }}
-            />}
+                    {atrzDmndSttsCnt.ctReg > 0 || ctAtrzCmptnYn === null || ctAtrzCmptnYn === undefined
+                        ? <TabPanel
+                            dataSource={ExpenseInfo}
+                            selectedIndex={index}
+                            onOptionChanged={onSelectionChanged}
+                            itemTitleRender={itemTitleRender}
+                            animationEnabled={true}
+                            showNavButtons={isSmallScreen}
+                            itemComponent={({ data }) => {
+                                const Component = React.lazy(() => import(`${data.url}`));
+                                return (
+                                    <React.Suspense fallback={<div>Loading...</div>}>
+                                        <Component
+                                            empId={empId}
+                                            aplyYm={aplyYm}
+                                            aplyOdr={aplyOdr}
+                                            setIndex={setIndex}
+                                            getData={getData}
+                                        />
+                                    </React.Suspense>
+                                );
+                            }} />
+                        : <div className='projectExpense-bottom-ddln-area'><span style={{ marginLeft: '200px', fontSize: '16pt' }}>입력 마감되었습니다.</span></div>}
+                </div>
+                <ProjectExpensePopup
+                    visible={popVisible}
+                    onPopHiding={onPopHiding}
+                    aprvInfoProps={Object.keys(atrzDmndSttsCnt).length !== 0 && atrzDmndSttsCnt}
+                    ctAplyLen={ctAply.length}
+                    popMmYn={mmAtrzCmptnYn}
+                    basicInfo={histYmOdr !== null ? histYmOdr : { aplyYm, aplyOdr, empId }}
+                />
+            </div>}
         </div>
     );
 };

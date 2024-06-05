@@ -418,14 +418,25 @@
   padding : 10px;
 }
 
-/* 전자결재 상세 페이지 프린트 속성 */
+/* 출력 페이지 프린트 속성 */
 @media print {
+  table {
+    break-inside: avoid;
+  }
+  tr {
+      page-break-inside: avoid;
+  }
+  td {
+      page-break-inside: avoid;
+      white-space: nowrap;
+  }
   body {
     -webkit-print-color-adjust: exact;
   }
   .printBtn { display: none; }
   .elecTopBtn { display: none; } /* 프린트 대상 - 버튼 제외 */
 }
+
 .elecTopBtn {
   float: right;
 }
@@ -475,6 +486,9 @@
 .dx-pivotgrid .dx-pivotgrid-area td.dx-pivotgrid-collapsed, 
 .dx-pivotgrid .dx-pivotgrid-area td.dx-pivotgrid-expanded {
   padding: 10px 0 10px 3px !important;
+}
+.dx-pivotgrid-expanded{
+  max-width: 10px;
 }
 
 /* 프로젝트비용 tabpanel용 */
@@ -616,5 +630,11 @@
     padding: 0 !important;
     margin: 0 !important;
     margin-bottom: 20px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .searchSet {
+      flex-direction: column !important;
   }
 }

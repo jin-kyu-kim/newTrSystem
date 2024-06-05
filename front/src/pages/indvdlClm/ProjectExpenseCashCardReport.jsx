@@ -112,38 +112,41 @@ const ProjectExpenseCashCardReport = ({basicInfo}) => {
     };
 
     return (
-        <div style={{ marginBottom: "20px" }}>
-            <PivotGrid
-                id="sales"
-                width={'100%'}
-                height={"60%"}
-                dataSource={dataSource}
-                allowSortingBySummary={true}
-                showTotalsPrior='columns'
-                showBorders={true}
-                allowSorting={false}
-                showRowTotals={true} 
-                showColumnTotals={false}
-                allowFiltering={false}
-                allowExpandAll={false}
-                wordWrapEnabled={true}
-                showColumnGrandTotals={true}
-                onCellPrepared={onCellPrepared}
-                texts={{ grandTotal: "총계" }}
-            >
-                <FieldPanel
-                    visible={true}
+        <div>
+        {pivotGridConfig.store.length === 0 
+        ? <div style={{textAlign: 'center', border: '1px solid lightGray', padding: '5px'}}>승인된 내역이 없습니다.</div> 
+        : <div style={{ marginBottom: "20px" }}>
+                <PivotGrid
+                    id="sales"
+                    width={'100%'}
+                    height={"60%"}
+                    dataSource={dataSource}
+                    allowSortingBySummary={true}
+                    showTotalsPrior='columns'
+                    showBorders={true}
                     allowSorting={false}
-                    showRowFields={true}
-                    showDataFields={false}
-                    wordWrapEnabled={true}
-                    showColumnFields={false}
-                    showFilterFields={false}
-                    allowFieldDragging={false}
-                />
-                <FieldChooser enabled={false} />
-                <Scrolling mode="virtual" />
-            </PivotGrid>
+                    showRowTotals={true} 
+                    showColumnTotals={false}
+                    allowFiltering={false}
+                    allowExpandAll={false}
+                    showColumnGrandTotals={true}
+                    onCellPrepared={onCellPrepared}
+                    texts={{ grandTotal: "총계" }}
+                    >
+                    <FieldPanel
+                        visible={true}
+                        allowSorting={false}
+                        showRowFields={true}
+                        showDataFields={false}
+                        wordWrapEnabled={true}
+                        showColumnFields={false}
+                        showFilterFields={false}
+                        allowFieldDragging={false}
+                    />
+                    <FieldChooser enabled={false} />
+                    <Scrolling mode="virtual" />
+                </PivotGrid>
+            </div>}
         </div>
     )
 }

@@ -1,5 +1,3 @@
-// SearchInfoSet.js
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SelectBox from "devextreme-react/select-box";
@@ -9,15 +7,14 @@ import Box, { Item } from "devextreme-react/box";
 import CustomComboBox from 'components/unit/CustomComboBox';
 import CustomDateRangeBox from "components/unit/CustomDateRangeBox";
 import AutoCompleteProject from "components/unit/AutoCompleteProject";
-import "./SearchSet.css"
 
 const SearchInfoSet = ({ callBack, props, insertPage }) => {
   const navigate = useNavigate();
-  const [initParam, setInitParam] = useState({});
-  const [ymOdrData, setYmOdrData] = useState({});
+  const [ initParam, setInitParam ] = useState({});
+  const [ ymOdrData, setYmOdrData ] = useState({});
   const { searchParams, textBoxItem, selectBoxItem } = props;
   let btnName = searchParams.btnName ? searchParams.btnName : '검색';
-
+  const userAuth = JSON.parse(localStorage.getItem("userAuth"));
   const date = new Date();
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
@@ -177,7 +174,7 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
               <Button onClick={handleSubmit} text={btnName} style={{ margin: "5px" }} type={searchParams.btnType} />
             </Item>
 
-            {searchParams.insertButton &&
+            {(searchParams.insertButton || (searchParams.isInsertRestricted && userAuth.includes("VTW04801"))) &&
               <Item ratio={1}>
                 <Button type='default' text="입력" onClick={onClickInsertBtn} style={{ margin: "5px" }} />
               </Item>

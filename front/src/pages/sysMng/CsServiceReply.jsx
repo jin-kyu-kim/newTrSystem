@@ -1,4 +1,3 @@
-import CustomEditTable from "../../components/unit/CustomEditTable";
 import React, {useEffect, useState} from "react";
 import CommentList from "../../components/unit/CommentList";
 import ApiRequest from "../../utils/ApiRequest";
@@ -9,7 +8,6 @@ const CsServiceReply = (gridId) => {
     const errId = gridId.errId
     const param = {queryId: 'sysMngMapper.retrieveErrReply' , errId : errId}
     useEffect(() => {
-        console.log(errId)
         getReply();
     }, []);
 
