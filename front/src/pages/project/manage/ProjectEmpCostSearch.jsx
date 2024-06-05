@@ -62,7 +62,7 @@ const ProjectEmpCostSearch = ({prjctId}) => {
       <PivotGrid
         dataSource={dataSource}
         allowSortingBySummary={true}
-        height={560}
+        height={620}
         showBorders={true}
         showColumnGrandTotals={true}
         allowFiltering={false}
