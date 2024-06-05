@@ -476,6 +476,9 @@
 .dx-pivotgrid .dx-pivotgrid-area td.dx-pivotgrid-expanded {
   padding: 10px 0 10px 3px !important;
 }
+.dx-pivotgrid-expanded{
+  max-width: 10px;
+}
 
 /* 프로젝트비용 tabpanel용 */
 @media (max-width: 768px) {
@@ -616,5 +619,11 @@
     padding: 0 !important;
     margin: 0 !important;
     margin-bottom: 20px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .searchSet {
+      flex-direction: column !important;
   }
 }

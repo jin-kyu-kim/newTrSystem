@@ -16,14 +16,14 @@ const CsServiceDetail = () => {
     const errPrcsSttsCd = location.state?.errPrcsSttsCd;
     const errPrcsSttsCdNm = location.state?.errPrcsSttsCdNm;
     const { detailQueryId, sysButtonGroup } = NoticeJson.detail;
-    const [oneData, setOneData] = useState({});
-    const [fileList, setFileList] = useState([]);
-    const [errorCd, setErrorCd] = useState(errPrcsSttsCd);
-    const [hasPermission, setPermission] = useState(false);
+    const [ oneData, setOneData ] = useState({});
+    const [ fileList, setFileList ] = useState([]);
+    const [ errorCd, setErrorCd ] = useState(errPrcsSttsCd);
+    const [ hasPermission, setPermission ] = useState(false);
+    const [ btnVisible , setBtnVisible ] = useState(false);
     const { handleOpen } = useModal();
     const userAuth = JSON.parse(localStorage.getItem("userAuth"));
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-    const [btnYn , setBtnYn] = useState(false);
 
     const getOneData = async () => {
         const params = {
@@ -42,7 +42,7 @@ const CsServiceDetail = () => {
                     setFileList(prevFileList => [...prevFileList, ...tmpFileList]);
                 }
                 if(response[0].regEmpId === userInfo.empId){
-                    setBtnYn(true);
+                    setBtnVisible(true);
                 }
             }
         } catch (error) {
@@ -54,7 +54,7 @@ const CsServiceDetail = () => {
         getOneData();
         if (userAuth && Array.isArray(userAuth) && userAuth.includes("VTW04801")) {
             setPermission(true);
-            setBtnYn(true);
+            setBtnVisible(true);
         } else {
             setPermission(false);
         }
@@ -134,12 +134,12 @@ const CsServiceDetail = () => {
                 {sysButtonGroup.map((button, index) => (
                     <Button
                         key={index}
+                        visible={button.btnAlways ? true : btnVisible}
                         style={{ marginRight: '3px' }}
                         text={button.text}
                         type={button.type}
                         onClick={button.onClick === "deleteReference" ? () => handleOpen('삭제하시겠습니까?', deleteReference, true) : () =>
                             navigate(button.onClick, { state: button.state ? { ...button.state, id: errId } : undefined })}
-                        visible={button.btnAlways?true: btnYn}
                     />
                 ))}
             </div>

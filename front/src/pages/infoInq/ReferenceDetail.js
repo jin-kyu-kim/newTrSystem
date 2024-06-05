@@ -11,10 +11,11 @@ const ReferenceDetail = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const noticeId = location.state.id;
+    const userAuth = JSON.parse(localStorage.getItem("userAuth"));
     const { detailQueryId, referButtonGroup } = NoticeJson.detail;
-    const [oneData, setOneData] = useState({});
-    const [fileList, setFileList] = useState([]);
-
+    const [ oneData, setOneData ] = useState({});
+    const [ fileList, setFileList ] = useState([]);
+    const [ btnVisible , setBtnVisible ] = useState(false);
     const { handleOpen } = useModal();
 
     const getOneData = async () => {
@@ -41,6 +42,9 @@ const ReferenceDetail = () => {
 
     useEffect(() => {
         getOneData();
+        if (userAuth && Array.isArray(userAuth) && userAuth.includes("VTW04801")) {
+            setBtnVisible(true);
+        }
     }, []);
 
     const deleteReference = async () => {
@@ -94,6 +98,7 @@ const ReferenceDetail = () => {
                 {referButtonGroup.map((button, index) => (
                     <Button
                         key={index}
+                        visible={button.btnAlways ? true : btnVisible}
                         style={{ marginRight: '3px' }}
                         text={button.text}
                         type={button.type}
