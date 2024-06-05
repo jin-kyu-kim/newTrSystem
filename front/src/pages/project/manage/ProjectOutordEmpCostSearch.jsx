@@ -64,6 +64,7 @@ const ProjectOutordEmpCostSearch = ({prjctId}) => {
       <PivotGrid
         dataSource={dataSource}
         allowSortingBySummary={true}
+        height={600}
         showBorders={true}
         showColumnGrandTotals={true}
         allowFiltering={false}
@@ -71,6 +72,7 @@ const ProjectOutordEmpCostSearch = ({prjctId}) => {
         allowExpandAll={false}
         showRowTotals={false}
         showTotalsPrior={'columns'} // "none", "rows", "columns", "both" 중 하나를 선택
+        // scrolling={Infinity}
       >
         <FieldPanel
           showRowFields={true}
@@ -84,7 +86,6 @@ const ProjectOutordEmpCostSearch = ({prjctId}) => {
 
         <FieldChooser enabled={false} />
         <Scrolling mode="virtual" />
-
       </PivotGrid>
     </div>
   );
