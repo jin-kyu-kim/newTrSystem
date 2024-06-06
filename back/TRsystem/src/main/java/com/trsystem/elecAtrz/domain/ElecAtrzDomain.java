@@ -505,7 +505,8 @@ public class ElecAtrzDomain {
 			
 			copiedParams.get(i).remove("pay");
 			infoParam.put("elctrnAtrzId", elctrnAtrzId);
-			infoParam.put("entrpsCtrtDtlSn", copiedParams.get(i).get("entrpsCtrtDtlSn"));
+			infoParam.put("entrpsCtrtDtlSn",i);
+			infoParam.put("entrpsCtPrmpcSn", copiedParams.get(i).get("entrpsCtrtDtlSn"));
 			infoParam.put("prductNm", copiedParams.get(i).get("prductNm"));
 			infoParam.put("dtlCn", copiedParams.get(i).get("dtlCn"));
 			infoParam.put("untpc", copiedParams.get(i).get("untpc"));
@@ -571,7 +572,8 @@ public class ElecAtrzDomain {
 			copiedParams.get(i).remove("pay");
 			infoParam.put("elctrnAtrzId", elctrnAtrzId);
 			infoParam.put("prductNm", copiedParams.get(i).get("prductNm"));
-			infoParam.put("entrpsCtrtDtlSn", copiedParams.get(i).get("entrpsCtrtDtlSn"));
+			infoParam.put("entrpsCtrtDtlSn", i);
+			infoParam.put("entrpsCtPrmpcSn", copiedParams.get(i).get("entrpsCtrtDtlSn"));
 			infoParam.put("tkcgJob", copiedParams.get(i).get("tkcgJob"));
 			infoParam.put("inptPrnmntHnfCnt", copiedParams.get(i).get("inptPrnmntHnfCnt"));
 			infoParam.put("inptBgngYmd", copiedParams.get(i).get("ctrtBgngYmd"));

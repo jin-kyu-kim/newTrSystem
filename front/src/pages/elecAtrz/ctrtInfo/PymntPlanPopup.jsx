@@ -133,14 +133,14 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
             return;
         }
 
-        const isExpectCtrtEntrps = tableData.some(item => {
-            if((item.expectCtrtEntrpsNm === matrlCtrtData.expectCtrtEntrpsNm)&&!(Object.keys(selectedData).length)) {
-                handleOpen(`이미 등록된 ${matrlPlanParam.label}입니다.`);
-                return true; // true를 반환하여 some 메서드 반복 중단
-            }
-            return false;
-        });
-        if (isExpectCtrtEntrps) return; // 등록된 사원이 있으면 함수 탈출
+        // const isExpectCtrtEntrps = tableData.some(item => {
+        //     if((item.expectCtrtEntrpsNm === matrlCtrtData.expectCtrtEntrpsNm)&&!(Object.keys(selectedData).length)) {
+        //         handleOpen(`이미 등록된 ${matrlPlanParam.label}입니다.`);
+        //         return true; // true를 반환하여 some 메서드 반복 중단
+        //     }
+        //     return false;
+        // });
+        // if (isExpectCtrtEntrps) return; // 등록된 사원이 있으면 함수 탈출
 
         handlePlanData(matrlCtrtData);
         handlePopupVisible();
@@ -184,8 +184,8 @@ const PymntPlanPopup = ({prjctId, handlePopupVisible, handlePlanData, selectedDa
                         }
                     </div>
                     <div className="project-change-content-inner-right">
-                        <CustomEditTable 
-                            keyColumn={keyColumn} 
+                        <CustomEditTable
+                            keyColumn={keyColumn}
                             columns={tableColumns} 
                             allowEdit={true}
                             values={pay}
