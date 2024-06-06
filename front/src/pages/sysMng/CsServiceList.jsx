@@ -31,7 +31,7 @@ const CsServiceList = () => {
         try {
             const response = await ApiRequest("/boot/common/queryIdSearch", param);
 
-            if (response.length !== 0) {
+            if (response) {
                 setValues(response);
                 setTotalItems(response.length);
             } else {

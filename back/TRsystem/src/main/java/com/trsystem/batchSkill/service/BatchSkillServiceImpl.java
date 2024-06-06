@@ -346,7 +346,7 @@ public class BatchSkillServiceImpl implements BatchSkillService {
             sqlSession.update("com.trsystem.mybatis.mapper." + queryIdDropTempTableOutordEntrpsCt);
             logger.info("TemporaryOutordEntrpsCt table dropped");			
 			
-			// 재료비 업데이트 쿼리 실행
+			// 외주업체 업데이트 쿼리 실행
 			int resultOutordEntrpsCt = sqlSession.insert("com.trsystem.mybatis.mapper." + queryIdOutordEntrpsCt);
 			logger.info("CT data updated: {} rows", resultOutordEntrpsCt);
 			
@@ -368,7 +368,7 @@ public class BatchSkillServiceImpl implements BatchSkillService {
             sqlSession.update("com.trsystem.mybatis.mapper." + queryIdDropTempTableOutordLbrcoCt);
             logger.info("TemporaryOutordLbrcoCt table dropped");			
 			
-			// 재료비 업데이트 쿼리 실행
+			// 외주인력 업데이트 쿼리 실행
 			int resultOutordLbrcoCt = sqlSession.insert("com.trsystem.mybatis.mapper." + queryIdOutordLbrcoCt);
 			logger.info("CT data updated: {} rows", resultOutordLbrcoCt);
 			
