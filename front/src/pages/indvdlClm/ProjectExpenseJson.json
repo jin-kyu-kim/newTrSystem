@@ -31,7 +31,7 @@
         ]
       }
     },
-    "keyColumn": "lotteCardAprvNo",
+    "keyColumn": "prjctCtAplySn",
     "ctAplyTableColumns": [
       { "key": "ctStlmSeCdNm", "value": "구분", "width": "8%" },
       { "key": "utztnDt", "value": "사용일시", "width": "8%" },
@@ -94,7 +94,7 @@
   },
   "ProjectExpenseTab": {
     "menuName": "ProjectExpenseCard",
-    "keyColumn": "cardUseSn",
+    "keyColumn": "lotteCardAprvNo",
     "queryId": "indvdlClmMapper.retrieveExpenseCardUseDtls",
     "prjctStleQueryId": "elecAtrzMapper.retrieveExpensCdByPrmpc",
     "prjctStlePdQueryId": "elecAtrzMapper.retrieveExpensCdAll",
