@@ -12,7 +12,7 @@ const NoticeDetail = () => {
     const location = useLocation();
     const noticeId = location.state.id;
     const userAuth = JSON.parse(localStorage.getItem("userAuth"));
-    const { detailQueryId, noticeButtonGroup } = NoticeJson.detail;
+    const { detailQueryId, noticeButtonGroup, dirType } = NoticeJson.detail;
     const [ oneData, setOneData ] = useState({});
     const [ fileList, setFileList ] = useState([]);
     const [ btnVisible , setBtnVisible ] = useState(false);
@@ -52,7 +52,7 @@ const NoticeDetail = () => {
         const fileParams = [{ tbNm: "ATCHMNFL" }, { atchmnflId: oneData.atchmnflId }];
         try {
             const response = await ApiRequest("/boot/common/deleteWithFile", {
-                params: params, fileParams: fileParams
+                params: params, fileParams: fileParams, dirType: dirType
             });
             if (response >= 1) {
                 navigate("/infoInq/NoticeList")

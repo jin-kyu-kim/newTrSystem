@@ -93,6 +93,10 @@ const CultureHealthCost = () => {
     }
 
     const onCellPrepared = (e) => {
+        if(e.area === "column"){
+            e.cellElement.style.backgroundColor = 'rgba(221,221,221,.2)'
+            e.cellElement.style.fontWeight = 'bold'
+        }
         if(e.area === "column" && e.cell.text === "01"){
             const textNode = e.cellElement.childNodes[0];
             textNode.textContent = "1월";

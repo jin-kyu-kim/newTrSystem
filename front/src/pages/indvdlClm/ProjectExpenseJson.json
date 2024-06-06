@@ -31,7 +31,7 @@
         ]
       }
     },
-    "keyColumn": "prjctCtAplySn",
+    "keyColumn": "lotteCardAprvNo",
     "ctAplyTableColumns": [
       { "key": "ctStlmSeCdNm", "value": "구분", "width": "8%" },
       { "key": "utztnDt", "value": "사용일시", "width": "8%" },

@@ -502,7 +502,8 @@ public class CommonServiceImpl implements CommonService {
 
         //2. 파일 내부 디렉토리에 업로드
 //        String uploadDir = "../../front/public/upload";
-        String uploadDir = "TRsystem/upload";
+        String dirType = String.valueOf(params.get("dirType"));
+        String uploadDir = "TRsystem/upload/" + dirType;
         // 2-1 파일일 디렉토리가 없으면 생성
         Path directory = Path.of(uploadDir);
 
@@ -604,9 +605,10 @@ public class CommonServiceImpl implements CommonService {
     public int deleteFile(Map<String, Object> deleteData) {
         List<Map<String, Object>> params = (List<Map<String, Object>>) deleteData.get("params");
         List<Map<String, Object>> fileParams = (List<Map<String, Object>>) deleteData.get("fileParams");
+        String dirType = String.valueOf(deleteData.get("dirType"));
 
         int result = 0;
-        String uploadDir = "TRsystem/upload";
+        String uploadDir = "TRsystem/upload/" + dirType;
         Path directory = Path.of(uploadDir);
 
         result += deleteData(params);

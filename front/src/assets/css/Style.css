@@ -418,6 +418,22 @@
   padding : 10px;
 }
 
+/* 문체비 등록 css */
+@media (max-width: 600px) {
+  .itemBox {
+      flex-direction: column-reverse !important;
+  }
+
+  .itemTop {
+      width: 100% !important;
+      margin-bottom: 4%;
+  }
+
+  .itemBottom {
+      width: 100% !important;
+  }
+}
+
 /* 출력 페이지 프린트 속성 */
 @media print {
   table {

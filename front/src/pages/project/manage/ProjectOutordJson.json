@@ -1,0 +1,71 @@
+{
+    "dirType": "partner",
+    "ProjectOutordCompnayJson": {
+        "menuName": "ProjectOutordCompnay",
+        "queryId": "projectMapper.retrieveOutordEntrpsList",
+        "keyColumn": "outordEntrpsId",
+        "tableColumns": [
+            { "key": "outordEntrpsNm", "value": "업체명", "alignment": "center" },
+            { "key": "brno", "value": "사업자등록번호", "alignment": "center", "width": "15%" },
+            { "key": "picFlnm", "value": "담당자", "alignment": "center", "width": "10%" },
+            { "key": "telno", "value": "전화번호", "alignment": "center", "width": "15%" },
+            { "key": "addr", "value": "주소", "alignment": "center" },
+            { "key": "fileNm", "value": "과거 참여프로젝트", "alignment": "center" },
+            { "value": "삭제",  "button": {"text" : "삭제"},"alignment": "center" , "width": "8%"}
+        ],
+        "searchInfo": {
+            "searchParams": {
+            },
+            "textBoxItem": [
+                { "placeholder": "업체명", "name": "outordEntrpsNm" },
+                { "placeholder": "전화번호", "name": "telno" },
+                {"placeholder": "담당자", "name": "picFlnm" }
+            ]
+        }
+    },
+    "ProjectOutordEmpJson": {
+        "menuName": "ProjectOutordEmp",
+        "queryId": "projectMapper.retrieveOutordEmpList",
+        "keyColumn": "empId",
+        "tableColumns": [
+          { "key": "empno", "value": "파트너번호", "alignment": "center", "width": "10%" },
+          { "key": "outordHnfOgdpNm", "value": "소속", "alignment": "center" },
+          { "key": "empFlnm", "value": "성명", "alignment": "center", "width": "8%"},
+          { "key": "brdt", "value": "생년월일", "alignment": "center" },
+          { "key": "gradNm", "value": "등급", "alignment": "center" },
+          { "key": "telno", "value": "전화번호", "alignment": "center" },
+          { "key": "eml", "value": "이메일", "alignment": "center", "width": "15%" },
+          { "key": "fileNm", "value": "첨부파일", "alignment": "center" },
+          { "value": "삭제",  "button": {"text" : "삭제"}, "width": "8%"}
+        ],
+        "searchInfo": {
+            "searchParams": {
+            },
+            "selectBoxItem": [
+                {
+                    "placeholder": "[등급]",
+                    "param":{
+                      "tbNm": "CD",
+                      "valueExpr": "cdValue",
+                      "displayExpr": "cdNm",
+                      "name": "outordHnfGradCd",
+                      "condition": {
+                        "upCdValue": "VTW005"
+                      },
+                      "clearButton": true
+                    }
+                }
+            ],
+            "textBoxItem": [
+                {
+                    "placeholder": "직원명",
+                    "name": "empFlnm"
+                },
+                {
+                    "placeholder": "전화번호",
+                    "name": "telNo"
+                }
+            ]
+        }
+    }
+}
