@@ -12,14 +12,15 @@ import BoardInputForm from 'components/composite/BoardInputForm';
 const NoticeInput = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { edit, insertUrl, detail } = NoticeJson;
+    const { edit, insertUrl, detail, dirType } = NoticeJson;
     const [ attachments, setAttachments ] = useState([]);
     const [ deleteFiles, setDeleteFiles ] = useState([{tbNm: "ATCHMNFL"}]);
     const [ newAttachments, setNewAttachments ] = useState(attachments);
     const [ prevData, setPrevData ] = useState({});
     const [ data, setData ] = useState({
         noticeId: uuid(),
-        useYn: "Y"
+        useYn: "Y",
+        dirType: dirType
     });
     const { handleOpen } = useModal();
 
@@ -32,7 +33,7 @@ const NoticeInput = () => {
             const response = await ApiRequest("/boot/common/queryIdSearch", param);
             if (response.length !== 0) {
                 const { atchmnflSn, realFileNm, strgFileNm, regDt, regEmpNm, ...resData } = response[0];
-                setData({ ...resData });
+                setData({ ...resData, dirType });
                 setPrevData({ ...resData });
                 const tmpFileList = response.map((data) => ({
                     realFileNm: data.realFileNm,
@@ -122,7 +123,8 @@ const NoticeInput = () => {
                     headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
                 })
                 if (response.data >= 1) {
-                    handleOpen('등록되었습니다.');
+                    const action = editMode === 'update' ? '수정' : '등록';
+                    handleOpen(`${action}되었습니다.`);
                     navigate("/infoInq/NoticeList");
                 }
             } else{

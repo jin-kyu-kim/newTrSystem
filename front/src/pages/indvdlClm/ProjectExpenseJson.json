@@ -94,7 +94,7 @@
   },
   "ProjectExpenseTab": {
     "menuName": "ProjectExpenseCard",
-    "keyColumn": "cardUseSn",
+    "keyColumn": "lotteCardAprvNo",
     "queryId": "indvdlClmMapper.retrieveExpenseCardUseDtls",
     "prjctStleQueryId": "elecAtrzMapper.retrieveExpensCdByPrmpc",
     "prjctStlePdQueryId": "elecAtrzMapper.retrieveExpensCdAll",

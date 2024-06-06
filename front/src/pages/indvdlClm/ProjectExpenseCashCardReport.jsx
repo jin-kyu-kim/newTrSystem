@@ -3,7 +3,7 @@ import ApiRequest from "utils/ApiRequest";
 import PivotGrid, { FieldChooser, FieldPanel, Scrolling } from 'devextreme-react/pivot-grid';
 import PivotGridDataSource from 'devextreme/ui/pivot_grid/data_source';
 
-const ProjectExpenseCashCardReport = ({basicInfo}) => {
+const ProjectExpenseCashCardReport = ({ basicInfo }) => {
 
     const [pivotGridConfig, setPivotGridConfig] = useState({
         fields: [
@@ -11,13 +11,6 @@ const ProjectExpenseCashCardReport = ({basicInfo}) => {
                 caption: "프로젝트",
                 dataField: "prjctNmCd",
                 area: "row",
-                expanded: true,
-            },
-            {
-                caption: "지불",
-                dataField: "ctStlmSeCdNm",
-                area: "row",
-                showTotals: false,
                 expanded: true,
             },
             {
@@ -31,7 +24,7 @@ const ProjectExpenseCashCardReport = ({basicInfo}) => {
                 caption: "상세내역",
                 dataField: "ctPrpos",
                 customizeText: function (cellInfo) {
-                    if(cellInfo.value != null) {
+                    if (cellInfo.value != null) {
                         return cellInfo.value.substring(2);
                     }
                 },
@@ -88,16 +81,16 @@ const ProjectExpenseCashCardReport = ({basicInfo}) => {
     const dataSource = new PivotGridDataSource(pivotGridConfig);
 
     const onCellPrepared = (e) => {
-        if(e.area === 'column'){
+        if (e.area === 'column') {
             e.cellElement.style.fontWeight = 'bold'
             e.cellElement.style.color = 'black'
             e.cellElement.style.backgroundColor = '#f0f0f0'
         }
-        e.cellElement.style.fontSize = '12pt'
+        e.cellElement.style.fontSize = '10pt'
         // row collapse block 상태일 때 화살표 아이콘 삭제
-        if(e.area === 'row' && e.cell.expanded === true){
+        if (e.area === 'row' && e.cell.expanded === true) {
             const childNodes = e.cellElement.childNodes;
-            Array.from(childNodes).forEach(node => {    
+            Array.from(childNodes).forEach(node => {
                 if (node.classList.contains('dx-expand-icon-container')) {
                     node.remove();
                 }
@@ -113,40 +106,40 @@ const ProjectExpenseCashCardReport = ({basicInfo}) => {
 
     return (
         <div>
-        {pivotGridConfig.store.length === 0 
-        ? <div style={{textAlign: 'center', border: '1px solid lightGray', padding: '5px'}}>승인된 내역이 없습니다.</div> 
-        : <div style={{ marginBottom: "20px" }}>
-                <PivotGrid
-                    id="sales"
-                    width={'100%'}
-                    height={"60%"}
-                    dataSource={dataSource}
-                    allowSortingBySummary={true}
-                    showTotalsPrior='columns'
-                    showBorders={true}
-                    allowSorting={false}
-                    showRowTotals={true} 
-                    showColumnTotals={false}
-                    allowFiltering={false}
-                    allowExpandAll={false}
-                    showColumnGrandTotals={true}
-                    onCellPrepared={onCellPrepared}
-                    texts={{ grandTotal: "총계" }}
-                    >
-                    <FieldPanel
-                        visible={true}
+            {pivotGridConfig.store.length === 0
+                ? <div style={{ textAlign: 'center', border: '1px solid lightGray', padding: '5px' }}>승인된 내역이 없습니다.</div>
+                : <div style={{ marginBottom: "20px" }}>
+                    <PivotGrid
+                        id="sales"
+                        width={'100%'}
+                        height={"60%"}
+                        dataSource={dataSource}
+                        allowSortingBySummary={true}
+                        showTotalsPrior='columns'
+                        showBorders={true}
                         allowSorting={false}
-                        showRowFields={true}
-                        showDataFields={false}
-                        wordWrapEnabled={true}
-                        showColumnFields={false}
-                        showFilterFields={false}
-                        allowFieldDragging={false}
-                    />
-                    <FieldChooser enabled={false} />
-                    <Scrolling mode="virtual" />
-                </PivotGrid>
-            </div>}
+                        showRowTotals={true}
+                        showColumnTotals={false}
+                        allowFiltering={false}
+                        allowExpandAll={false}
+                        showColumnGrandTotals={true}
+                        onCellPrepared={onCellPrepared}
+                        texts={{ grandTotal: "총계" }}
+                    >
+                        <FieldPanel
+                            visible={true}
+                            allowSorting={false}
+                            showRowFields={true}
+                            showDataFields={false}
+                            wordWrapEnabled={true}
+                            showColumnFields={false}
+                            showFilterFields={false}
+                            allowFieldDragging={false}
+                        />
+                        <FieldChooser enabled={false} />
+                        <Scrolling mode="virtual" />
+                    </PivotGrid>
+                </div>}
         </div>
     )
 }

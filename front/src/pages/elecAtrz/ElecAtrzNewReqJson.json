@@ -1,4 +1,5 @@
 {
+    "dirType": "elec",
     "menuName": "ElecAtrzNewReq",
     "header": [
         { "text": "결재요청", "id": "requestElecAtrz", "type": "danger" },

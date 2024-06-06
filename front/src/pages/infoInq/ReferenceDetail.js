@@ -12,7 +12,7 @@ const ReferenceDetail = () => {
     const location = useLocation();
     const noticeId = location.state.id;
     const userAuth = JSON.parse(localStorage.getItem("userAuth"));
-    const { detailQueryId, referButtonGroup } = NoticeJson.detail;
+    const { detailQueryId, referButtonGroup, dirType } = NoticeJson.detail;
     const [ oneData, setOneData ] = useState({});
     const [ fileList, setFileList ] = useState([]);
     const [ btnVisible , setBtnVisible ] = useState(false);
@@ -52,7 +52,7 @@ const ReferenceDetail = () => {
         const fileParams = [{ tbNm: "ATCHMNFL" }, { atchmnflId: oneData.atchmnflId }];
         try {
             const response = await ApiRequest("/boot/common/deleteWithFile", {
-                params: params, fileParams: fileParams
+                params: params, fileParams: fileParams, dirType: dirType
             });
             if (response >= 1) {
                 navigate("/infoInq/ReferenceList")

@@ -418,6 +418,22 @@
   padding : 10px;
 }
 
+/* 문체비 등록 css */
+@media (max-width: 600px) {
+  .itemBox {
+      flex-direction: column-reverse !important;
+  }
+
+  .itemTop {
+      width: 100% !important;
+      margin-bottom: 4%;
+  }
+
+  .itemBottom {
+      width: 100% !important;
+  }
+}
+
 /* 출력 페이지 프린트 속성 */
 @media print {
   table {
@@ -489,6 +505,33 @@
 }
 .dx-pivotgrid-expanded{
   max-width: 10px;
+}
+/* PivotGrid 컨테이너의 크기를 고정 */
+.dx-pivotgrid {
+  width: 100% !important;
+  height: auto !important;
+}
+
+/* PivotGrid의 셀 크기를 동적으로 조정 */
+.dx-pivotgrid .dx-area-cell {
+  font-size: 0.8vw; /* vw 단위를 사용하여 텍스트 크기를 동적으로 조정 */
+  white-space: normal; /* 텍스트 줄바꿈 허용 */
+  word-wrap: break-word; /* 단어 줄바꿈 허용 */
+}
+
+/* 모든 셀의 크기와 텍스트 크기를 비율에 맞게 조정 */
+.dx-pivotgrid .dx-pivotgrid-horizontal-headers .dx-header,
+.dx-pivotgrid .dx-area-data .dx-data-cell {
+  width: auto !important;
+  min-width: 50px; /* 최소 너비 설정 */
+  max-width: 100px; /* 최대 너비 설정 */
+}
+
+.dx-pivotgrid .dx-header-row .dx-header,
+.dx-pivotgrid .dx-data-row .dx-data-cell {
+  overflow: hidden; /* 오버플로우 숨기기 */
+  text-overflow: ellipsis; /* 텍스트 생략 기호 사용 */
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
 }
 
 /* 프로젝트비용 tabpanel용 */

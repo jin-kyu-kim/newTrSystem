@@ -4,7 +4,6 @@ import { DateBox, DateRangeBox, FileUploader, TextBox } from "devextreme-react";
 import { Validator, RequiredRule } from 'devextreme-react/validator'
 import HtmlEditBox from "components/unit/HtmlEditBox";
 import CheckBox from "devextreme-react/check-box";
-import "../../assets/css/Style.css";
 
 const BoardInputForm = ({ edit, editMode, editType, attachFileDelete, inputConfig }) => {
     const { data, setData, typeChk, setTypeChk, attachments, setAttachments, newAttachments, setNewAttachments } = inputConfig ?? {};
@@ -26,7 +25,6 @@ const BoardInputForm = ({ edit, editMode, editType, attachFileDelete, inputConfi
 
     useEffect(() => {
         if (editMode === 'update' && isDataLoaded) {
-            // console.log(attachments);
             setNewAttachments([...attachments]);
             setAttachments([]); // 수정시에는 새로 첨부한 파일만 받기
         }
@@ -127,6 +125,7 @@ const BoardInputForm = ({ edit, editMode, editType, attachFileDelete, inputConfi
                                     uploadMode="useButton"
                                     onValueChanged={handleAttachmentChange}
                                     maxFileSize={1.5 * 1024 * 1024 * 1024}
+                                    labelText='첨부할 파일을 선택해주세요.'
                                 />
                                 {newAttachments[0] !== null && newAttachments.map((item, index) => (
                                     <div key={index}>
