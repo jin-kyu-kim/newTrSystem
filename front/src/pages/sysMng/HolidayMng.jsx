@@ -1,13 +1,9 @@
 import { useEffect, useState } from "react";
-
 import { SelectBox, TextBox, DateBox, Button } from "devextreme-react";
-
 import Moment from "moment"
-
 import ApiRequest from "utils/ApiRequest";
-import { useModal } from "components/unit/ModalContext";
 import CustomTable from "components/unit/CustomTable";
-
+import { useModal } from "components/unit/ModalContext";
 
 function getYearList(startYear, endYear) {
     const yearList = [];
@@ -17,7 +13,6 @@ function getYearList(startYear, endYear) {
     for (startDate; startDate <= endDate; startDate++) {
         yearList.push(startDate);
     }
-
     return yearList;
 }
 
@@ -37,41 +32,26 @@ function getMonthList() {
             });
         }
     }
-
     return monthList;
 }
 
 const HolidayMng = () => {
     const { handleOpen } = useModal();
-
-
-
-
-
     // 검색조건
-    const [searchParam, setSearchParam] = useState({ 
-        queryId : "indvdlClmMapper.retrieveMnbyYmdInq", 
-        aplyYm: Moment().format("YYYYMM"), 
+    const [searchParam, setSearchParam] = useState({
+        queryId: "indvdlClmMapper.retrieveMnbyYmdInq",
+        aplyYm: Moment().format("YYYYMM"),
         searchYear: new Date().getFullYear(),
         searchMonth: String(new Date().getMonth() + 1).length == 1 ? "0" + String(new Date().getMonth() + 1) : String(new Date().getMonth() + 1)
     });
 
-
-
-
-
     // 저장정보
     const [insertParam, setInsertParam] = useState({ queryId: "sysMngMapper.updateCrtrYmd" });
-
-
-
-
-    
     // 월별정보조회
     const [selectCrtrDateList, setSelectCrtrDateList] = useState();
 
     // 월별정보조회
-    useEffect(() =>{
+    useEffect(() => {
         getCrtrDate(searchParam);
     }, [])
 
@@ -79,7 +59,7 @@ const HolidayMng = () => {
     const onSearch = async () => {
         let searchData = [];
         searchData.push({
-            queryId : "indvdlClmMapper.retrieveMnbyYmdInq", 
+            queryId: "indvdlClmMapper.retrieveMnbyYmdInq",
             aplyYm: String(searchParam.searchYear) + (String(searchParam.searchMonth).length == 1 ? "0" + String(searchParam.searchMonth) : String(searchParam.searchMonth))
         })
 
@@ -96,12 +76,8 @@ const HolidayMng = () => {
         }
     }
 
-
-
-
-
     const onSaveClick = async () => {
-        try{
+        try {
             await ApiRequest("/boot/common/queryIdSearch", insertParam);
             handleOpen("저장되었습니다.");
             getCrtrDate(searchParam);
@@ -110,25 +86,21 @@ const HolidayMng = () => {
         }
     }
 
-
-
-
-
     return (
         <div style={{ marginLeft: "15%", marginRight: "0%" }}>
-            <div className="col-md-12" style={{ marginTop: "20px", marginBottom: "10px" }}>
-                <h1 style={{ fontSize: "30px" }}>휴일관리</h1>
-            </div>
+            <div className="title">휴일관리</div>
 
             <div className="row">
                 <div style={{ marginRight: "-20px", width: "150px" }}>
                     <SelectBox
                         defaultValue={new Date().getFullYear()}
                         dataSource={getYearList(2, 0)}
-                        onValueChange={(e) => { setSearchParam({ 
-                            ...searchParam, "searchYear": e, 
-                            aplyYm: String(e) + (String(searchParam.searchMonth).length == 1 ? "0" + String(searchParam.searchMonth) : String(searchParam.searchMonth))
-                        })}}
+                        onValueChange={(e) => {
+                            setSearchParam({
+                                ...searchParam, "searchYear": e,
+                                aplyYm: String(e) + (String(searchParam.searchMonth).length == 1 ? "0" + String(searchParam.searchMonth) : String(searchParam.searchMonth))
+                            })
+                        }}
                     />
                 </div>
                 <div style={{ marginRight: "-20px", width: "120px" }}>
@@ -137,11 +109,13 @@ const HolidayMng = () => {
                         dataSource={getMonthList()}
                         valueExpr="key"
                         displayExpr="value"
-                        onValueChange={(e) => { setSearchParam({ 
-                            ...searchParam, 
-                            "searchMonth": e,
-                            aplyYm: String(searchParam.searchYear) + (String(e).length == 1 ? "0" + String(e) : String(e))
-                        })}}
+                        onValueChange={(e) => {
+                            setSearchParam({
+                                ...searchParam,
+                                "searchMonth": e,
+                                aplyYm: String(searchParam.searchYear) + (String(e).length == 1 ? "0" + String(e) : String(e))
+                            })
+                        }}
                     />
                 </div>
                 <div className="col-md-1">
@@ -151,7 +125,7 @@ const HolidayMng = () => {
 
             <div style={{ display: "flex", marginTop: "30px" }}>
                 <div style={{ width: "40%", marginRight: "25px" }}>
-                    <h6> * 월별정보를 조회합니다. </h6>
+                    <div className='title-desc' style={{color: 'navy'}}> * 월별정보를 조회합니다.</div>
                     <div style={{ marginTop: "20px" }}>
                         <CustomTable
                             keyColumn="crtrYmd"
@@ -162,42 +136,42 @@ const HolidayMng = () => {
                     </div>
                 </div>
                 <div style={{ width: "60%", marginRight: "25px", marginLeft: "50px" }}>
-                    <h6> * 공휴일을 추가합니다. </h6>
+                    <div className='title-desc'> * 공휴일을 추가합니다. </div>
                     <div className="row" style={{ marginTop: "20px" }}>
                         <div className="col-md-2" style={textAlign}>일자</div>
                         <div className="col-md-6">
                             <DateBox
                                 width={"200px"}
                                 displayFormat="yyyy-MM-dd"
-                                onValueChange={(e) => { setInsertParam ({ ...insertParam, crtrYmd: Moment(e).format("YYYYMMDD") }) }}
+                                onValueChange={(e) => { setInsertParam({ ...insertParam, crtrYmd: Moment(e).format("YYYYMMDD") }) }}
                             />
                         </div>
                     </div>
                     <div className="row" style={{ marginTop: "20px" }}>
-                    <div className="col-md-2" style={textAlign}>구분</div>
+                        <div className="col-md-2" style={textAlign}>구분</div>
                         <div className="col-md-6">
                             <SelectBox
                                 width={"200px"}
                                 placeholder=""
-                                dataSource={[{ id: "VTW05001", value: "근무일" }, { id: "VTW05002", value: "주말" }, { id: "VTW05003", value: "공휴일" } ]}
+                                dataSource={[{ id: "VTW05001", value: "근무일" }, { id: "VTW05002", value: "주말" }, { id: "VTW05003", value: "공휴일" }]}
                                 valueExpr="id"
                                 displayExpr="value"
-                                onValueChange={(e) => { setInsertParam ({ ...insertParam, hldyClCd: e }) }}
+                                onValueChange={(e) => { setInsertParam({ ...insertParam, hldyClCd: e }) }}
                             />
                         </div>
                     </div>
                     <div className="row" style={{ marginTop: "20px" }}>
-                    <div className="col-md-2" style={textAlign}>공휴일명</div>
+                        <div className="col-md-2" style={textAlign}>공휴일명</div>
                         <div className="col-md-6">
-                            <TextBox 
+                            <TextBox
                                 width={"200px"}
-                                onValueChange={(e) => { setInsertParam ({ ...insertParam, hldyNm: e }) }}
+                                onValueChange={(e) => { setInsertParam({ ...insertParam, hldyNm: e }) }}
                             />
                         </div>
                     </div>
                     <div className="col-md-6">
                         <div div className="row" style={{ display: "inline-block", marginTop: "25px", marginLeft: "20px" }}>
-                            <Button text="저장" style={{ height: "48px", width: "50px", marginTop: "20px" }} onClick={onSaveClick}/>
+                            <Button text="저장" style={{ height: "48px", width: "50px", marginTop: "20px" }} onClick={onSaveClick} type='success'/>
                         </div>
                     </div>
                 </div>
@@ -206,7 +180,6 @@ const HolidayMng = () => {
     )
 };
 export default HolidayMng;
-
 
 const textAlign = {
     textAlign: "center",

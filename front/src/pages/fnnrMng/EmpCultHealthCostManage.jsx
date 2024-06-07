@@ -1,23 +1,22 @@
 import React, { useState, useEffect } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import  EmpCultHealthCostManageJson from "./EmpCultHealthCostManageJson.json";
+import EmpCultHealthCostManageJson from "./EmpCultHealthCostManageJson.json";
 import ApiRequest from "../../utils/ApiRequest";
 import { Workbook } from "exceljs";
 import { exportDataGrid } from "devextreme/excel_exporter";
 import { saveAs } from 'file-saver';
-import SearchInfoSet from "components/composite/SearchInfoSet";
 import { Button } from "devextreme-react";
 import { useNavigate } from "react-router-dom";
 import { Popup } from "devextreme-react";
+import { useModal } from "../../components/unit/ModalContext";
+import SearchInfoSet from "components/composite/SearchInfoSet";
 import EmpCultHealthCostManagePop from "./EmpCultHealthCostManagePop";
 import EmpCultHealthCostDetailPop from "./EmpCultHealthCostDetailPop";
 import CustomEditTable from "components/unit/CustomEditTable";
-import { useModal } from "../../components/unit/ModalContext";
 
 const EmpCultHealthCostManage = () => {
+  const navigate = useNavigate();
   const [values, setValues] = useState([]);
   const { keyColumn, queryId, tableColumns, wordWrap, searchInfo } = EmpCultHealthCostManageJson;
-  const navigate = useNavigate();
   const [isManagePopupVisible, setIsManagePopupVisible] = useState(false);
   const [isDetailPopupVisible, setIsDetailPopupVisible] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState();
@@ -25,13 +24,13 @@ const EmpCultHealthCostManage = () => {
   const { handleOpen } = useModal();
 
   let now = new Date();
-  let firstDayOfMonth = new Date( now.getFullYear(), now.getMonth() , 1 );
-  let lastMonth = new Date(firstDayOfMonth.setDate( firstDayOfMonth.getDate() - 1 )); // 전월 말일
+  let firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  let lastMonth = new Date(firstDayOfMonth.setDate(firstDayOfMonth.getDate() - 1)); // 전월 말일
   const [param, setParam] = useState({
-        "empFlnm": null,
-        "empno": null,
-        "clturPhstrnActMngYm": lastMonth.getFullYear()+('0' + (lastMonth.getMonth() + 1)).slice(-2),
-        "queryId": queryId
+    "empFlnm": null,
+    "empno": null,
+    "clturPhstrnActMngYm": lastMonth.getFullYear() + ('0' + (lastMonth.getMonth() + 1)).slice(-2),
+    "queryId": queryId
   });
   const [disabled, setDisabled] = useState();
 
@@ -43,11 +42,11 @@ const EmpCultHealthCostManage = () => {
   }, [param]);
 
   const searchHandle = async (initParam) => {
-    if(initParam.year){
+    if (initParam.year) {
       setParam({
         ...param,
-        empFlnm: initParam.empFlnm !== undefined? initParam.empFlnm : null,
-        empno: initParam.empno!== undefined? initParam.empno : null,
+        empFlnm: initParam.empFlnm !== undefined ? initParam.empFlnm : null,
+        empno: initParam.empno !== undefined ? initParam.empno : null,
         clturPhstrnActMngYm: initParam.year + initParam.month,
       });
     }
@@ -76,13 +75,13 @@ const EmpCultHealthCostManage = () => {
   const handleDeadLine = async () => {
     const btnChk = window.confirm(param.clturPhstrnActMngYm + " 문화체련비를 마감하시겠습니까?")
     if (btnChk && validateMonth()) {
-      const updateParam =[
+      const updateParam = [
         { tbNm: "CLTUR_PHSTRN_ACT_MNG" },
         { ddlnYn: "Y" },
-        { clturPhstrnActMngYm: param.clturPhstrnActMngYm}
+        { clturPhstrnActMngYm: param.clturPhstrnActMngYm }
       ]
       const response = await ApiRequest("/boot/common/commonUpdate", updateParam);
-      if (response > 0 ) {
+      if (response > 0) {
         searchDdlnYn();
         handleOpen("마감되었습니다.")
       }
@@ -92,7 +91,7 @@ const EmpCultHealthCostManage = () => {
   const validateMonth = () => {
     const errors = [];
     let paramMonth = new Date(parseInt(param.clturPhstrnActMngYm.substring(0, 4), 10),
-        parseInt(param.clturPhstrnActMngYm.substring(4, 6), 10) - 1, 1);
+      parseInt(param.clturPhstrnActMngYm.substring(4, 6), 10) - 1, 1);
     if (paramMonth > now) {
       handleOpen("계산과 마감이 불가능한 월입니다.")
       errors.push('Invalid month');
@@ -104,9 +103,9 @@ const EmpCultHealthCostManage = () => {
     return num.toString().padStart(2, '0');
   };
 
-  const formattedDateTime = `${now.getFullYear()}_`+
-      `${padNumber(now.getMonth() + 1)}_`+
-      `${padNumber(now.getDate())}`
+  const formattedDateTime = `${now.getFullYear()}_` +
+    `${padNumber(now.getMonth() + 1)}_` +
+    `${padNumber(now.getDate())}`
 
   const onExporting = (e) => {
     const workbook = new Workbook();
@@ -117,7 +116,7 @@ const EmpCultHealthCostManage = () => {
       autoFilterEnabled: true,
     }).then(() => {
       workbook.xlsx.writeBuffer().then((buffer) => {
-        saveAs(new Blob([buffer], { type: 'application/octet-stream' }), '문화체련비 관리 목록'+formattedDateTime+'.xlsx');
+        saveAs(new Blob([buffer], { type: 'application/octet-stream' }), '문화체련비 관리 목록' + formattedDateTime + '.xlsx');
       });
     });
   };
@@ -162,7 +161,7 @@ const EmpCultHealthCostManage = () => {
         const response = await ApiRequest("/boot/financialAffairMng/updateDpstAmt", {
           "clturPhstrnActMngYm": param.clturPhstrnActMngYm
         });
-        if (response){
+        if (response) {
           handleOpen('저장되었습니다.');
           pageHandle();
         }
@@ -177,7 +176,7 @@ const EmpCultHealthCostManage = () => {
     if (btnChk && validateMonth()) {
       try {
         const response = await ApiRequest("/boot/financialAffairMng/saveDpstAmt", selectedItem);
-        if (response){
+        if (response) {
           handleOpen('저장되었습니다.');
           pageHandle();
         }
@@ -186,7 +185,7 @@ const EmpCultHealthCostManage = () => {
       }
     }
   }
-  
+
   const onSelection = (e) => {
     setSelectedItem(e.selectedRowsData);
   };
@@ -201,75 +200,69 @@ const EmpCultHealthCostManage = () => {
   };
 
   return (
-  <div>
-    <style>
-      {`
+    <div>
+      <style>
+        {`
         .dx-datagrid-group-opened {
           display: none !important;
         }
       `}
-    </style>
-
-    <div>
-      <div
-        className="title p-1"
-        style={{ marginTop: "20px", marginBottom: "10px",  display: "flex"}}
-      >
-        <h6 style={{ fontSize: "40px" }}>문화체련비 관리 목록</h6>
-        <div style={{marginTop: "7px", marginLeft: "20px"}}>
-          <Button onClick={handleCalculate} disabled={disabled} type='default'>지급 계산</Button>
-          <Button onClick={handleMove} style = {{marginLeft: "10px"}}>마감 목록</Button>
-          <Button onClick={handleDeadLine} disabled={disabled} style = {{marginLeft: "10px"}} type='danger'>전체 마감</Button>
-        </div>
-      </div>
-      <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
-        <span>* 직원의 문화체련비를 조회 합니다.</span>
-      </div>
+      </style>
 
       <div>
-        <div style={{ marginBottom: "20px" }}>
-          <SearchInfoSet props={searchInfo} callBack={searchHandle}/>
+        <div style={{display: 'flex'}}>
+          <div className='title'>문화체련비 관리 목록</div>
+          <div style={{ marginTop: "7px", marginLeft: "20px" }}>
+            <Button onClick={handleCalculate} disabled={disabled} type='default'>지급 계산</Button>
+            <Button onClick={handleMove} style={{ marginLeft: "10px" }}>마감 목록</Button>
+            <Button onClick={handleDeadLine} disabled={disabled} style={{ marginLeft: "10px" }} type='danger'>전체 마감</Button>
+          </div>
         </div>
+        <div className="title-desc">* 직원의 문화체련비를 조회 합니다.</div>
 
-        <CustomEditTable
-          keyColumn={keyColumn}
-          columns={tableColumns}
-          values={values}
-          paging={true}
-          excel={true}
-          onExcel={onExporting}
-          wordWrap={wordWrap}
-          onRowClick={onRowClick}
-          noEdit={true}
-          onBtnClick={onBtnClick}
-          onSelection={onSelection}
-          validateNumberBox={validateNumberBox}
-        />
+        <div>
+          <div style={{ marginBottom: "20px" }}>
+            <SearchInfoSet props={searchInfo} callBack={searchHandle} />
+          </div>
 
+          <CustomEditTable
+            keyColumn={keyColumn}
+            columns={tableColumns}
+            values={values}
+            paging={true}
+            excel={true}
+            onExcel={onExporting}
+            wordWrap={wordWrap}
+            onRowClick={onRowClick}
+            noEdit={true}
+            onBtnClick={onBtnClick}
+            onSelection={onSelection}
+            validateNumberBox={validateNumberBox}
+          />
+
+        </div>
+        <Button onClick={handleSave} disabled={disabled} type='default' style={{ width: "100px" }}>저장</Button>
       </div>
-      <Button onClick={handleSave} disabled={disabled} type='default' style={{width: "100px"}}>저장</Button>
-    </div>
 
-    <Popup
+      <Popup
         width={700}
         height={600}
         visible={isManagePopupVisible}
         onHiding={closeManagePopup}
         showCloseButton={true}
-    >
-      <EmpCultHealthCostManagePop value={selectedRowData} year={param.clturPhstrnActMngYm.substring(0,4)}/>
-    </Popup>
-    <Popup
+      >
+        <EmpCultHealthCostManagePop value={selectedRowData} year={param.clturPhstrnActMngYm.substring(0, 4)} />
+      </Popup>
+      <Popup
         width={1000}
         height={700}
         visible={isDetailPopupVisible}
         onHiding={closeDetailPopup}
         showCloseButton={true}
-    >
-      <EmpCultHealthCostDetailPop value={selectedRowData} ym={param.clturPhstrnActMngYm} disabled={disabled}/>
-    </Popup>
-  </div>
+      >
+        <EmpCultHealthCostDetailPop value={selectedRowData} ym={param.clturPhstrnActMngYm} disabled={disabled} />
+      </Popup>
+    </div>
   );
 };
-
 export default EmpCultHealthCostManage;

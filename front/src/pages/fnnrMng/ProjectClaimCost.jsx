@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-
 import ProjectCostClaimListJson from "./ProjectCostClaimListJson.json";
 import ApiRequest from "../../utils/ApiRequest";
 import SearchInfoSet from "../../components/composite/SearchInfoSet";
@@ -7,7 +6,7 @@ import CustomTable from "../../components/unit/CustomTable";
 
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
-import {Button} from "devextreme-react/button";
+import { Button } from "devextreme-react/button";
 
 const ProjectClaimCost = () => {
   const [values, setValues] = useState([]);
@@ -58,30 +57,25 @@ const ProjectClaimCost = () => {
 
   const onClick = (button, data) => {
     if (button.name === "prjctId") {
-      navigate("/fnnrMng/ProjectClaimCostDetail",{
-            state: {
-              prjctId: data.prjctId,
-              prjctNm: data.prjctNm,
-            }
+      navigate("/fnnrMng/ProjectClaimCostDetail", {
+        state: {
+          prjctId: data.prjctId,
+          prjctNm: data.prjctNm,
+        }
       });
     }
   };
 
   const buttonRender = (button, data) => {
-
-    return(
-        <Button name={button.name} text={button.text} onClick={(e) => onClick(button, data)} />
+    return (
+      <Button name={button.name} text={button.text} onClick={(e) => onClick(button, data)} />
     );
   }
-  
+
   return (
-    <div className="container">
-      <div className="col-md-10 mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
-            <h1 style={{ fontSize: "30px" }}>프로젝트비용청구현황</h1>
-      </div>
-      <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
-        <span>* 프로젝트를 조회합니다.</span>
-      </div>
+    <div>
+      <div className='title'>프로젝트비용청구현황</div>
+      <div className="title-desc">* 프로젝트를 조회합니다.</div>
       <div style={{ marginBottom: "20px" }}>
         <SearchInfoSet callBack={searchHandle} props={searchInfo} />
       </div>
@@ -95,10 +89,9 @@ const ProjectClaimCost = () => {
         buttonRender={buttonRender}
         onClick={onClick}
         paging={true}
-        wordWrap={wordWrap} 
+        wordWrap={wordWrap}
       />
     </div>
   );
 };
-
 export default ProjectClaimCost;

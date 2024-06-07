@@ -101,13 +101,9 @@ const TrsCode = () => {
   };
 
   return (
-    <div className="container" style={{ marginBottom: '100px' }}>
-      <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }} >
-        <h1 style={{ fontSize: "40px" }}>코드 관리</h1>
-      </div>
-      <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
-        <span>* 코드를 조회합니다.</span>
-      </div>
+    <div>
+      <div className="title">코드 관리</div>
+      <div className="title-desc">* 코드를 조회합니다.</div>
       <div style={{ marginBottom: "20px" }}>
         <SearchInfoSet callBack={searchHandle} props={searchInfo} />
       </div>

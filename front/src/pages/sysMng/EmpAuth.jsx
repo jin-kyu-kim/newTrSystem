@@ -54,14 +54,10 @@ const EmpAuth = () => {
 
     return (
         <div>
-            <div className="col-md-10 mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
-                <h1 style={{ fontSize: "30px" }}>접근권한관리</h1>
-            </div>
-            <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
-                <span>* 직원정보를 조회 합니다.</span>
-            </div>
+            <div className="title" >접근권한관리</div>
+            <div className="title-desc">* 직원정보를 조회 합니다.</div>
             <div style={{ marginBottom: "50px" }}>
-                <SearchInfoSet callBack={searchHandle} props={searchInfo} />
+                <SearchInfoSet callBack={searchHandle} props={searchInfo}/>
                 <div style={{marginTop: '20px', marginLeft: '20px'}}>검색된 건 수 : {totalItems} 건</div>
             </div>
 

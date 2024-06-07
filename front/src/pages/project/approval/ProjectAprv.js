@@ -1,34 +1,24 @@
 import { useState, useEffect } from "react";
-
 import ProjectJson from "./ProjectAprvJson.json"
 import ApiRequest from "../../../utils/ApiRequest";
 import SearchPrjctSet from "../../../components/composite/SearchPrjctSet";
 import CustomTable from "../../../components/unit/CustomTable";
-
 import "react-datepicker/dist/react-datepicker.css";
-import {useLocation, useNavigate} from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const ProjectAprv = () => {
   const [values, setValues] = useState([]);
   const [param, setParam] = useState({});
-
   const [totalItems, setTotalItems] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const location = useLocation();
-
-
-  /** 유저 정보 */  
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-  const userAuth = JSON.parse(localStorage.getItem("userAuth"));
   const deptInfo = JSON.parse(localStorage.getItem("deptInfo"));
-
   const empId = userInfo.empId;
   const deptId = deptInfo.length != 0 ? deptInfo[0].deptId : null;
-
-  const {keyColumn, queryId, tableColumns, searchParams} = ProjectJson; 
-
+  const { keyColumn, queryId, tableColumns, searchParams } = ProjectJson;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,7 +27,6 @@ const ProjectAprv = () => {
     }
   }, [param]);
 
-  // 검색으로 조회할 때
   const searchHandle = async (initParam) => {
     setTotalPages(1);
     setCurrentPage(1);
@@ -68,39 +57,35 @@ const ProjectAprv = () => {
   };
 
   const onRowClick = (e) => {
-    navigate("/project/ProjectAprvDetail", 
-      {state: { id: e.data.prjctId
-              , prjctNm: e.data.prjctNm
-              , bgtMngOdr: e.data.bgtMngOdr
-              , atrzLnSn: e.data.atrzLnSn
-              , atrzSttsCd: e.data.atrzSttsCd
-              , atrzStepCd: e.data.atrzStepCd
-              , nowAtrzStepCd: e.data.nowAtrzStepCd
-              , aprvrEmpId : e.data.aprvrEmpId
-              , ctrtYmd: e.data.ctrtYmd
-              , stbleEndYmd: e.data.stbleEndYmd
-              , path: location.pathname} }
+    navigate("/project/ProjectAprvDetail",
+      {
+        state: {
+          id: e.data.prjctId
+          , prjctNm: e.data.prjctNm
+          , bgtMngOdr: e.data.bgtMngOdr
+          , atrzLnSn: e.data.atrzLnSn
+          , atrzSttsCd: e.data.atrzSttsCd
+          , atrzStepCd: e.data.atrzStepCd
+          , nowAtrzStepCd: e.data.nowAtrzStepCd
+          , aprvrEmpId: e.data.aprvrEmpId
+          , ctrtYmd: e.data.ctrtYmd
+          , stbleEndYmd: e.data.stbleEndYmd
+          , path: location.pathname
+        }
+      }
     );
   }
 
   return (
     <div>
-      <div
-        className="title p-1"
-        style={{ marginTop: "20px", marginBottom: "10px" }}
-      >
-        <h1 style={{ fontSize: "40px" }}>프로젝트 승인</h1>
-      </div>
-      <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
-        <span>* 프로젝트 승인 내역을 조회 합니다.</span>
-      </div>
+      <div className="title">프로젝트 승인</div>
+      <div className="title-desc">* 프로젝트 승인 내역을 조회 합니다.</div>
       <div style={{ marginBottom: "20px" }}>
-        <SearchPrjctSet callBack={searchHandle} props={searchParams}/>
+        <SearchPrjctSet callBack={searchHandle} props={searchParams} />
       </div>
       <div>검색된 건 수 : {totalItems} 건</div>
-      <CustomTable  keyColumn={keyColumn} columns={tableColumns} values={values} onRowClick={onRowClick} paging={true}/>
+      <CustomTable keyColumn={keyColumn} columns={tableColumns} values={values} onRowClick={onRowClick} paging={true} />
     </div>
   );
 };
-
 export default ProjectAprv;
