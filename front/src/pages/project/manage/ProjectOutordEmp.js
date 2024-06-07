@@ -16,15 +16,11 @@ function ProjectOutordEmp() {
   const [outordEmpValue, setOutordEmpValue] = useState({}); //외주업체 insert 및 클릭이벤트 값설정용
   const [attachments, setAttachments] = useState([]);
   const [empMax, setEmpMax] = useState({});   //사번 MAX값
-  const { keyColumn, queryId, tableColumns, searchInfo } = ProjectOutordJson.ProjectOutordEmpJson;
   const [deleteFiles, setDeleteFiles] = useState([{ tbNm: "ATCHMNFL" }]);
+  const { keyColumn, queryId, tableColumns, searchInfo } = ProjectOutordJson.ProjectOutordEmpJson;
   const { handleOpen } = useModal();
   const fileUploaderRef = useRef(null); //파일 업로드용 ref
   const insertRef = useRef(null); //textbox focus용 ref
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-  const empId = userInfo.empId;
-  const date = new Date();
-  const now = date.toISOString().split("T")[0] + " " + date.toTimeString().split(" ")[0];
 
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
@@ -304,51 +300,52 @@ function ProjectOutordEmp() {
 
         <div style={{ padding: "20px",marginTop: "10px", border: "2px solid #CCCCCC",display : 'flex', height: "300px",flexDirection: 'column', justifyContent: "center" }}>
               <h5 style={{alignItems : 'left'}}>외주직원정보를 입력/수정 합니다.</h5>
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center',justifyContent: 'center', gap: '20px', marginLeft : '5px'}}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginLeft : '5px'}}>
           <TextBox
               ref={insertRef}
               onValueChange={(e) => { handleChgValue("outordHnfOgdpNm", e) }}
               value={outordEmpValue.outordHnfOgdpNm}
               placeholder="소속"
               showClearButton={true}
-              style={{ flex: 1, minWidth: '160px' }}
+              style={{flex: 1}}
           />
           <TextBox
               onValueChange={(e) => { handleChgValue("empFlnm", e) }}
               value={outordEmpValue.empFlnm}
               placeholder="성명"
               showClearButton={true}
-              style={{ flex: 1, minWidth: '160px' }}
+              style={{flex: 1}}
           />
           <DateBox
               onValueChange={(e) => { handleChgValue("brdt", e) }}
               value={outordEmpValue.brdt}
               placeholder="생년월일"
               showClearButton={true}
-              style={{ flex: 1, minWidth: '160px' }}
+              style={{flex: 1}}
           />
-          <CustomCdComboBox
-              param="VTW005"
-              placeholderText="등급"
-              name="outordHnfGradCd"
-              onSelect={handleChgCd}
-              value={outordEmpValue.outordHnfGradCd}
-              required={false}
-              style={{ flex: 1, minWidth: '160px' }}
-           />
+          <div style={{flex: 1}}>
+            <CustomCdComboBox
+                param="VTW005"
+                placeholderText="등급"
+                name="outordHnfGradCd"
+                onSelect={handleChgCd}
+                value={outordEmpValue.outordHnfGradCd}
+                required={false}
+            />
+          </div>
           <TextBox
               onValueChange={(e) => { handleChgValue("telno", e) }}
               value={outordEmpValue.telno}
               placeholder="전화번호"
               showClearButton={true}
-              style={{ flex: 1, minWidth: '160px' }}
+              style={{flex: 1}}
           />
            <TextBox
               onValueChange={(e) => { handleChgValue("eml", e) }}
               value={outordEmpValue.eml}
               placeholder="이메일"
               showClearButton={true}
-              style={{ flex: 1, minWidth: '160px' }}
+              style={{flex: 1}}
           />
           </div>
           <div>
