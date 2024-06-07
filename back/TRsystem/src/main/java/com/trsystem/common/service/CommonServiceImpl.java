@@ -589,6 +589,8 @@ public class CommonServiceImpl implements CommonService {
                 result = insertData(insertParam);
             } else {
                 //5. 사용하려는 테이블에 UPDATE
+                params.remove("dirType");
+
                 insertParam.add(tbData);
                 insertParam.add(params);
                 insertParam.add(idData);

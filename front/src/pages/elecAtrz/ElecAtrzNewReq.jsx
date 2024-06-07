@@ -37,6 +37,7 @@ const ElecAtrzNewReq = () => {
     const [attachments, setAttachments] = useState([]);
     const [deleteFiles, setDeleteFiles] = useState([{ tbNm: "ATCHMNFL" }]);
     const [newAttachments, setNewAttachments] = useState(attachments);
+    const fileDir = attachments[0]?.fileStrgCours.substring(8);
 
     const [data, setData] = useState(location.state.formData);
     const [atrzParam, setAtrzParam] = useState({});
@@ -188,7 +189,8 @@ const ElecAtrzNewReq = () => {
                 const tmpFileList = response.map((item) => ({
                     realFileNm: item.realFileNm,
                     strgFileNm: item.strgFileNm,
-                    atchmnflSn: item.atchmnflSn
+                    atchmnflSn: item.atchmnflSn,
+                    fileStrgCours: item.fileStrgCours
                 }));
                 setAttachments(tmpFileList);
                 setNewAttachments(tmpFileList);
@@ -368,6 +370,7 @@ const ElecAtrzNewReq = () => {
                     ]
                     const updateResponse = await ApiRequest("/boot/common/commonUpdate", param);
                 }
+
                 const formDataAttach = new FormData();
                 formDataAttach.append("tbNm", JSON.stringify({ tbNm: insertTable }));
                 // 1. 임시저장 -> 
@@ -560,7 +563,7 @@ const ElecAtrzNewReq = () => {
                     {newAttachments[0] !== null && newAttachments.map((item, index) => (
                         <div key={index}>
                             {item.realFileNm && (item.realFileNm.endsWith('.jpg') || item.realFileNm.endsWith('.jpeg') || item.realFileNm.endsWith('.png') || item.realFileNm.endsWith('.gif')) ?
-                                (<img src={`/upload/${item.strgFileNm}`} style={{ width: '50%', marginBottom: '20px' }} alt={item.realFileNm} />)
+                                (<img src={`${fileDir}/${item.strgFileNm}`} style={{ width: '50%', marginBottom: '20px' }} alt={item.realFileNm} />)
                                 : <span>{item.realFileNm}</span>}
                             {item.realFileNm && <span onClick={() => attachFileDelete(item)} style={{ fontWeight: 'bold', marginLeft: '10px', color: 'red', cursor: 'pointer' }}>X</span>}
                         </div>
