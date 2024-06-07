@@ -2,11 +2,11 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import uuid from "react-uuid";
 import Button from "devextreme-react/button";
-import { FileUploader } from "devextreme-react";
 import CultureHealthCostJson from "./CultureHealthCostJson.json";
-import DataGrid, { Column } from 'devextreme-react/data-grid';
 import CustomLabelValue from "../../components/unit/CustomLabelValue";
 import ApiRequest from "../../utils/ApiRequest";
+import DataGrid, { Column } from 'devextreme-react/data-grid';
+import { FileUploader } from "devextreme-react";
 import { useModal } from "../../components/unit/ModalContext";
 
 const button = {
@@ -19,18 +19,30 @@ const CultureHealthCostReg = (props) => {
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const token = localStorage.getItem("token");
     const { labelValue, queryId, dirType } = CultureHealthCostJson;
-    const [values, setValues] = useState([]);
-    const [attachments, setAttachments] = useState([]);
-    const [selectedItem, setSelectedItem] = useState(null);
+    const [ values, setValues ] = useState([]);
+    const [ attachments, setAttachments ] = useState([]);
+    const [ selectedItem, setSelectedItem ] = useState(null);
     const { handleOpen } = useModal();
     const fileUploaderRef = useRef(null);
     const deleteFiles = useRef([{ tbNm: "ATCHMNFL" }]);
+    const fileDir = (values) => {
+        const foundItem = values.find(item => item.atchmnfl && item.atchmnfl.length > 0);
+
+        if (foundItem) {
+          const fileStrgCours = foundItem.atchmnfl[0].fileStrgCours;
+          const fileDir = fileStrgCours.substring(8);
+          return fileDir;
+        }
+        return null;
+    };
     let selectedClmAmt = useRef(0);
     let selectedClturPhstrnSeCd = useRef(null);
     let now = new Date();
     const [initParam, setInitParam] = useState({
         clmAmt: 0,
         clmYmd: now.getFullYear() + ('0' + (now.getMonth() + 1)).slice(-2) + ('0' + now.getDate()).slice(-2),
+        empId: userInfo.empId,
+        regEmpId: userInfo.empId,
         dirType: dirType
     });
 
@@ -103,7 +115,6 @@ const CultureHealthCostReg = (props) => {
                         empId: element.empId,
                         clturPhstrnActCtSn: element.clturPhstrnActCtSn,
                     };
-
                     if (!tmpList.includes(JSON.stringify(tmpElement))) {
                         tmpList.push(JSON.stringify(tmpElement));
                         tmpElement.month = element.clmYmd.substring(0, 4) + "/" + element.clmYmd.substring(4, 6);
@@ -113,6 +124,7 @@ const CultureHealthCostReg = (props) => {
                         tmpElement.clturPhstrnSeCd = element.clturPhstrnSeCd;
                         tmpElement.frcsNm = element.frcsNm;
                         tmpElement.rm = element.rm;
+                        
                         if (element.atchmnflId !== null) {
                             tmpElement.atchmnflId = element.atchmnflId;
                             tmpElement.atchmnfl = [];
@@ -120,8 +132,8 @@ const CultureHealthCostReg = (props) => {
                                 atchmnflId: element.atchmnflId,
                                 atchmnflSn: element.atchmnflSn,
                                 realFileNm: element.realFileNm,
-                                strgFileNm: element.strgFileNm
-
+                                strgFileNm: element.strgFileNm,
+                                fileStrgCours: element.fileStrgCours
                             });
                         }
                         tmpValueList.push(tmpElement);
@@ -132,7 +144,8 @@ const CultureHealthCostReg = (props) => {
                             atchmnflId: element.atchmnflId,
                             atchmnflSn: element.atchmnflSn,
                             realFileNm: element.realFileNm,
-                            strgFileNm: element.strgFileNm
+                            strgFileNm: element.strgFileNm,
+                            fileStrgCours: element.fileStrgCours
                         });
                         tmpValueList[index] = copyIndex;
                     }
@@ -376,7 +389,7 @@ const CultureHealthCostReg = (props) => {
             return (<div>
                 {atchList.map((item, index) => (
                     <div key={index} style={{ whiteSpace: 'pre-wrap' }}>
-                        <a href={`/upload/${item.strgFileNm}`} download={item.realFileNm}>{item.realFileNm}</a>
+                        <a href={`${fileDir(values)}/${item.strgFileNm}`} download={item.realFileNm}>{item.realFileNm}</a>
                     </div>
                 ))}
             </div>);
@@ -387,8 +400,8 @@ const CultureHealthCostReg = (props) => {
         <div>
             <div className="itemBox" style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginBottom: "2%" }}>
                 <div className="itemBottom" style={{ width: "55%" }}>
-                    <p><strong>* 청구 목록 </strong></p>
-                    <span style={{ fontSize: 14 }}>
+                    <h6><strong>* 청구 목록 </strong></h6>
+                    <span style={{ fontSize: 15 }}>
                         1. 입력, 수정, 삭제 가능 조건 <br />
                         <strong>매달 1일 부터 5일 : 이전달과 현재달 청구 건</strong><br />
                         <strong>매달 6일부터 말일 : 현재 달 청구 건</strong><br />
@@ -400,7 +413,7 @@ const CultureHealthCostReg = (props) => {
                 </div>
                 <div className="itemTop" style={{ width: "43%" }}>
                     <p><strong>* 문화 체련비 등록</strong></p>
-                    <div style={{ fontSize: 14 }}>
+                    <div style={{ fontSize: 15 }}>
                         <p>1. 체력 향상과 문화 교육을 위해 지원하는 경비입니다.</p>
                         <p>2. 월 20만원 한도로 지급된 법인카드를 통해서만 이용 가능합니다.</p>
                         <p>3. <strong>체력단련비 : 헬스/요가/수영/필라테스</strong>와 같이 월단위 이상 수강/강습을 지원합니다.<br />

@@ -66,14 +66,12 @@ const ReferenceDetail = () => {
 
     return (
         <div className="container" style={{ width: '90%' }}>
-            <div style={{ marginRight: "20px", marginBottom: "40px" }}>
-                <h2>자료실</h2>
-            </div>
+            <div className='title'>자료실</div>
 
-            <Container style={{ margin: '0 auto' }}>
+            <Container style={{ margin: '50px auto' }}>
                 {oneData.length !== 0 ?
                     <>
-                        <h1 style={{ marginBottom: "20px" }}>{oneData.noticeTtl}</h1>
+                        <h2 style={{ marginBottom: "30px" }}>{oneData.noticeTtl}</h2>
                         <div>{oneData.regEmpNm} | {oneData.regDt}</div><hr className='elecDtlLine' />
                         <div dangerouslySetInnerHTML={{ __html: oneData.noticeCn }} />
 

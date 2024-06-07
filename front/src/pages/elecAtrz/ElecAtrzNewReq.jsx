@@ -37,7 +37,7 @@ const ElecAtrzNewReq = () => {
     const [attachments, setAttachments] = useState([]);
     const [deleteFiles, setDeleteFiles] = useState([{ tbNm: "ATCHMNFL" }]);
     const [newAttachments, setNewAttachments] = useState(attachments);
-    const fileDir = attachments[0]?.fileStrgCours.substring(8);
+    const fileDir = newAttachments[0]?.fileStrgCours.substring(8);
 
     const [data, setData] = useState(location.state.formData);
     const [atrzParam, setAtrzParam] = useState({});
@@ -65,7 +65,7 @@ const ElecAtrzNewReq = () => {
 
     const getDetailData = async () => {
         const res = await ApiRequest('/boot/common/queryIdSearch', { queryId: "elecAtrzMapper.elecAtrzDetail", elctrnAtrzId: elctrnAtrzId != undefined ? elctrnAtrzId : formData.elctrnAtrzId })
-        if (res[0]) {
+        if (res.length !== 0) {
             setData(prev => {
                 const newState = {
                     ...prev,
@@ -529,7 +529,7 @@ const ElecAtrzNewReq = () => {
                         <ExpensInfo onSendData={handleChildData} prjctId={prjctId} data={data} prjctData={prjctData} sttsCd={sttsCd} />
                     </>
                 }
-                {["VTW04911", "VTW04912", "VTW04913", "VTW04914"].includes(formData.elctrnAtrzTySeCd) && ["VTW04909", "VTW04910", "VTW04908"].includes(ctrtTyCd ? ctrtTyCd : data.ctrtTyCd) && prjctData && //VTW04914: 외주업체/재료비 지급
+                {["VTW04911"].includes(formData.elctrnAtrzTySeCd) && ["VTW04909", "VTW04910", "VTW04908"].includes(ctrtTyCd ? ctrtTyCd : data.ctrtTyCd) && prjctData &&
                     <>
                         <ElecAtrzTabDetail detailData={data} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd ? ctrtTyCd : data.ctrtTyCd} prjctData={prjctData} onSendData={handleChildData} />
                     </>
