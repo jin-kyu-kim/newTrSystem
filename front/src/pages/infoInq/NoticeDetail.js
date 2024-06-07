@@ -17,6 +17,7 @@ const NoticeDetail = () => {
     const [ fileList, setFileList ] = useState([]);
     const [ btnVisible , setBtnVisible ] = useState(false);
     const { handleOpen } = useModal();
+    const fileDir = fileList[0]?.fileStrgCours.substring(8);
 
     const getOneData = async () => {
         const params = {
@@ -29,7 +30,8 @@ const NoticeDetail = () => {
                 setOneData(response[0]);
                 const tmpFileList = response.map((data) => ({
                     realFileNm: data.realFileNm,
-                    strgFileNm: data.strgFileNm
+                    strgFileNm: data.strgFileNm,
+                    fileStrgCours: data.fileStrgCours
                 }));
                 if (fileList.length === 0) {
                     setFileList(prevFileList => [...prevFileList, ...tmpFileList]);
@@ -78,7 +80,7 @@ const NoticeDetail = () => {
 
                         {fileList.length !== 0 && fileList.filter(file => file.realFileNm !== null && file.realFileNm !== undefined).filter(file => file.realFileNm.endsWith('.jpg') || file.realFileNm.endsWith('.jpeg') || file.realFileNm.endsWith('.png') || file.realFileNm.endsWith('.gif')).map((file, index) => (
                             <div key={index} style={{ textAlign: 'center' }}>
-                                <img src={`/upload/${file.strgFileNm}`}
+                                <img src={`${fileDir}/${file.strgFileNm}`}
                                     style={{ width: '80%', marginBottom: '20px' }} alt={file.realFileNm} />
                             </div>
                         ))}<hr />
@@ -86,7 +88,7 @@ const NoticeDetail = () => {
                         <div style={{ fontWeight: 'bold' }}>* 첨부파일</div>
                         {fileList.length !== 0 && fileList.filter(file => file.realFileNm !== null && file.realFileNm !== undefined).filter(file => !(file.realFileNm.endsWith('.jpg') || file.realFileNm.endsWith('.jpeg') || file.realFileNm.endsWith('.png') || file.realFileNm.endsWith('.gif'))).map((file, index) => (
                             <div key={index}>
-                                <a href={`/upload/${file.strgFileNm}`} download={file.realFileNm} style={{ fontSize: '18px', color: 'blue', fontWeight: 'bold' }}>{file.realFileNm}</a>
+                                <a href={`${fileDir}/${file.strgFileNm}`} download={file.realFileNm} style={{ fontSize: '18px', color: 'blue', fontWeight: 'bold' }}>{file.realFileNm}</a>
                             </div>
                         ))}
                         <hr />

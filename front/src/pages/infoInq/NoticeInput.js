@@ -17,12 +17,12 @@ const NoticeInput = () => {
     const [ deleteFiles, setDeleteFiles ] = useState([{tbNm: "ATCHMNFL"}]);
     const [ newAttachments, setNewAttachments ] = useState(attachments);
     const [ prevData, setPrevData ] = useState({});
+    const { handleOpen } = useModal();
     const [ data, setData ] = useState({
         noticeId: uuid(),
         useYn: "Y",
         dirType: dirType
     });
-    const { handleOpen } = useModal();
 
     const editMode = location.state.editMode;
     const id = location.state.id;
@@ -32,7 +32,7 @@ const NoticeInput = () => {
         try {
             const response = await ApiRequest("/boot/common/queryIdSearch", param);
             if (response.length !== 0) {
-                const { atchmnflSn, realFileNm, strgFileNm, regDt, regEmpNm, ...resData } = response[0];
+                const { atchmnflSn, realFileNm, strgFileNm, regDt, regEmpNm, fileStrgCours, ...resData } = response[0];
                 setData({ ...resData, dirType });
                 setPrevData({ ...resData });
                 const tmpFileList = response.map((data) => ({
@@ -108,6 +108,7 @@ const NoticeInput = () => {
             })
         }
         const formData = new FormData();
+        
         formData.append("tbNm", JSON.stringify({tbNm: "NOTICE"}));
         formData.append("data", JSON.stringify(data));
         if(editMode === 'update') {
