@@ -203,7 +203,7 @@ function ProjectOutordEmp() {
       console.error("Error fetching data", error);
     }
   }
-  //================Update==================================================       
+  //================Update==================================================
   const updateEmpValue = async () => {
     const updateData =
       ({
@@ -252,8 +252,8 @@ function ProjectOutordEmp() {
     const deleteParam = [{ tbNm: "EMP" }, { empId: outordEmpValue.empId }];
     const fileParams = [{ tbNm: "ATCHMNFL" }, { atchmnflId: outordEmpValue.atchmnflId }];
     try {
-      const response = await ApiRequest("/boot/common/deleteWithFile", { 
-        params: deleteParam, fileParams: fileParams, dirType: ProjectOutordJson.dirType 
+      const response = await ApiRequest("/boot/common/deleteWithFile", {
+        params: deleteParam, fileParams: fileParams, dirType: ProjectOutordJson.dirType
       });
       if (response >= 1) {
         handleOpen("삭제되었습니다.");
@@ -302,71 +302,71 @@ function ProjectOutordEmp() {
         />
       </div>
 
-      <div style={{ marginTop: "10px", border: "2px solid #CCCCCC", display: 'flex', height: "300px", flexDirection: 'column', justifyContent: "center" }}>
-        <h5 style={{ alignItems: 'left' }}>외주직원정보를 입력/수정 합니다.</h5>
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '20px', marginLeft: '5px' }}>
+        <div style={{ padding: "20px",marginTop: "10px", border: "2px solid #CCCCCC",display : 'flex', height: "300px",flexDirection: 'column', justifyContent: "center" }}>
+              <h5 style={{alignItems : 'left'}}>외주직원정보를 입력/수정 합니다.</h5>
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center',justifyContent: 'center', gap: '20px', marginLeft : '5px'}}>
           <TextBox
-            ref={insertRef}
-            onValueChange={(e) => { handleChgValue("outordHnfOgdpNm", e) }}
-            value={outordEmpValue.outordHnfOgdpNm}
-            placeholder="소속"
-            showClearButton={true}
-            style={{ flex: 1, minWidth: '160px' }}
+              ref={insertRef}
+              onValueChange={(e) => { handleChgValue("outordHnfOgdpNm", e) }}
+              value={outordEmpValue.outordHnfOgdpNm}
+              placeholder="소속"
+              showClearButton={true}
+              style={{ flex: 1, minWidth: '160px' }}
           />
           <TextBox
-            onValueChange={(e) => { handleChgValue("empFlnm", e) }}
-            value={outordEmpValue.empFlnm}
-            placeholder="성명"
-            showClearButton={true}
-            style={{ flex: 1, minWidth: '160px' }}
+              onValueChange={(e) => { handleChgValue("empFlnm", e) }}
+              value={outordEmpValue.empFlnm}
+              placeholder="성명"
+              showClearButton={true}
+              style={{ flex: 1, minWidth: '160px' }}
           />
           <DateBox
-            onValueChange={(e) => { handleChgValue("brdt", e) }}
-            value={outordEmpValue.brdt}
-            placeholder="생년월일"
-            showClearButton={true}
-            style={{ flex: 1, minWidth: '160px' }}
+              onValueChange={(e) => { handleChgValue("brdt", e) }}
+              value={outordEmpValue.brdt}
+              placeholder="생년월일"
+              showClearButton={true}
+              style={{ flex: 1, minWidth: '160px' }}
           />
           <CustomCdComboBox
-            param="VTW005"
-            placeholderText="등급"
-            name="outordHnfGradCd"
-            onSelect={handleChgCd}
-            value={outordEmpValue.outordHnfGradCd}
-            required={false}
-            style={{ flex: 1, minWidth: '160px' }}
-          />
+              param="VTW005"
+              placeholderText="등급"
+              name="outordHnfGradCd"
+              onSelect={handleChgCd}
+              value={outordEmpValue.outordHnfGradCd}
+              required={false}
+              style={{ flex: 1, minWidth: '160px' }}
+           />
           <TextBox
-            onValueChange={(e) => { handleChgValue("telno", e) }}
-            value={outordEmpValue.telno}
-            placeholder="전화번호"
-            showClearButton={true}
-            style={{ flex: 1, minWidth: '160px' }}
+              onValueChange={(e) => { handleChgValue("telno", e) }}
+              value={outordEmpValue.telno}
+              placeholder="전화번호"
+              showClearButton={true}
+              style={{ flex: 1, minWidth: '160px' }}
           />
-          <TextBox
-            onValueChange={(e) => { handleChgValue("eml", e) }}
-            value={outordEmpValue.eml}
-            placeholder="이메일"
-            showClearButton={true}
-            style={{ flex: 1, minWidth: '160px' }}
+           <TextBox
+              onValueChange={(e) => { handleChgValue("eml", e) }}
+              value={outordEmpValue.eml}
+              placeholder="이메일"
+              showClearButton={true}
+              style={{ flex: 1, minWidth: '160px' }}
           />
-        </div>
-        <div>
-          <FileUploader
-            selectButtonText="첨부파일"
-            multiple={true}
-            labelText=""
-            uploadMode="useButton"
-            onValueChanged={changeAttchValue}
-            ref={fileUploaderRef}
-          />
-        </div>
-        <div className="buttonContainer" style={{ marginTop: '5px', marginLeft: '5px', alignItems: 'left' }}>
-          <Button type="default" style={{ height: "48px", width: "60px", marginRight: "15px" }} onClick={saveOutordEmp}>저장</Button>
-          <Button type="danger" style={{ height: "48px", width: "60px", marginRight: "15px" }} onClick={resetForm}>초기화</Button>
+          </div>
+          <div>
+              <FileUploader
+                  selectButtonText="첨부파일"
+                  multiple={true}
+                  labelText=""
+                  uploadMode="useButton"
+                  onValueChanged={changeAttchValue}
+                  ref={fileUploaderRef}
+              />
+          </div>
+          <div className="buttonContainer" style={{ marginTop: '5px',marginLeft : '5px' ,alignItems: 'left'}}>
+              <Button type = "default" style={{ height: "48px", width: "60px", marginRight: "15px" }} onClick={saveOutordEmp}>저장</Button>
+              <Button type = "danger" style={{ height: "48px", width: "60px", marginRight: "15px" }} onClick={resetForm}>초기화</Button>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
 };
 export default ProjectOutordEmp;
