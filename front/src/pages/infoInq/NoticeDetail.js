@@ -65,17 +65,16 @@ const NoticeDetail = () => {
     }
 
     return (
-        <div className="container">
-            <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }}></div>
-            <div style={{ marginRight: "20px", marginLeft: "20px", marginBottom: "50px" }}>
-                <h1 style={{ fontSize: "30px" }}>공지사항</h1>
+        <div className="container" style={{ width: '90%' }}>
+            <div style={{ marginRight: "20px", marginBottom: "40px" }}>
+                <h2>공지사항</h2>
             </div>
 
-            <Container style={{ width: '90%', margin: '0 auto' }}>
+            <Container style={{ margin: '0 auto' }}>
                 {oneData.length !== 0 ?
                     <>
                         <h1 style={{ marginBottom: "20px" }}>{oneData.noticeTtl}</h1>
-                        <div>{oneData.regEmpNm} | {oneData.regDt}</div><hr />
+                        <div>{oneData.regEmpNm} | {oneData.regDt}</div><hr className='elecDtlLine' />
                         <div dangerouslySetInnerHTML={{ __html: oneData.noticeCn }} />
 
                         {fileList.length !== 0 && fileList.filter(file => file.realFileNm !== null && file.realFileNm !== undefined).filter(file => file.realFileNm.endsWith('.jpg') || file.realFileNm.endsWith('.jpeg') || file.realFileNm.endsWith('.png') || file.realFileNm.endsWith('.gif')).map((file, index) => (
@@ -83,7 +82,7 @@ const NoticeDetail = () => {
                                 <img src={`${fileDir}/${file.strgFileNm}`}
                                     style={{ width: '80%', marginBottom: '20px' }} alt={file.realFileNm} />
                             </div>
-                        ))}<hr />
+                        ))}<hr className='elecDtlLine' />
 
                         <div style={{ fontWeight: 'bold' }}>* 첨부파일</div>
                         {fileList.length !== 0 && fileList.filter(file => file.realFileNm !== null && file.realFileNm !== undefined).filter(file => !(file.realFileNm.endsWith('.jpg') || file.realFileNm.endsWith('.jpeg') || file.realFileNm.endsWith('.png') || file.realFileNm.endsWith('.gif'))).map((file, index) => (
@@ -91,7 +90,7 @@ const NoticeDetail = () => {
                                 <a href={`${fileDir}/${file.strgFileNm}`} download={file.realFileNm} style={{ fontSize: '18px', color: 'blue', fontWeight: 'bold' }}>{file.realFileNm}</a>
                             </div>
                         ))}
-                        <hr />
+                        <hr className='elecDtlLine' />
                     </> : ''
                 }
             </Container>

@@ -11,7 +11,6 @@ const ReferenceList = () => {
     const [ totalItems, setTotalItems ] = useState(0);
     const [ isLoading, setIsLoading ] = useState(false);
     const navigate = useNavigate();
-    let noDataText = ""
 
     const { keyColumn, queryId, tableColumns, searchInfo, referInsertPage } = NoticeJson;
     
@@ -54,10 +53,10 @@ const ReferenceList = () => {
 
     return (
         <div className="container">
-            <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }} >
-                <h1 style={{ fontSize: "40px" }}>자료실</h1>
+            <div style={{textAlign: 'left' }} >
+                <h2>자료실</h2>
             </div>
-            <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
+            <div style={{ marginBottom: "2%", textAlign: 'left' }}>
                 <span>* 자료실을 조회합니다.</span>
             </div>
             <div style={{ marginBottom: "20px" }}>

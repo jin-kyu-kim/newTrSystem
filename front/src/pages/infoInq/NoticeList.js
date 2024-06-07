@@ -53,10 +53,10 @@ const NoticeList = () => {
 
     return (
         <div className="container">
-            <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }} >
-                <h1 style={{ fontSize: "40px" }}>공지사항</h1>
+            <div style={{ textAlign: 'left' }} >
+                <h2>공지사항</h2>
             </div>
-            <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
+            <div style={{ marginBottom: "2%", textAlign: 'left' }}>
                 <span>* 공지사항을 조회합니다.</span>
             </div>
             <div style={{ marginBottom: "20px" }}>
