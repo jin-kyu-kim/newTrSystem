@@ -302,7 +302,7 @@ function ProjectOutordEmp() {
         />
       </div>
 
-        <div style={{ marginTop: "10px", border: "2px solid #CCCCCC",display : 'flex', height: "300px",flexDirection: 'column', justifyContent: "center" }}>
+        <div style={{ padding: "20px",marginTop: "10px", border: "2px solid #CCCCCC",display : 'flex', height: "300px",flexDirection: 'column', justifyContent: "center" }}>
               <h5 style={{alignItems : 'left'}}>외주직원정보를 입력/수정 합니다.</h5>
         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center',justifyContent: 'center', gap: '20px', marginLeft : '5px'}}>
           <TextBox
