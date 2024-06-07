@@ -1,6 +1,5 @@
 {
     "menuName": "ElecAtrzMatrlCtDetailJson",
-    "queryId": "projectMapper.retrieveElctrnAtrzMatrlCtDetail",
     "keyColumn": "entrpsCtrtDtlSn",
     "insertButton" : "재료비 추가",
     "tableColumns": [
