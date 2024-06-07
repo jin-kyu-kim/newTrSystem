@@ -153,10 +153,10 @@ const SearchPrjctSet = ({ callBack, props, popup }) => {
         <Item ratio={1} >
           <Box>
             <Item className="searchBtnItem" ratio={1} visible={props.searchBtnItem}>
-              <Button onClick={handleSubmit} text="검색" style={{margin: "5px 0px 0px 5px"}} />
+              <Button onClick={handleSubmit} text="검색" style={{margin: "5px 0px 0px 5px"}} type='default' />
             </Item>
             <Item ratio={1} visible={props.insertBtnItem}>
-              <Button text="등록" type='default' onClick={onClickInsertBtn} style={{margin: "5px 0px 0px 5px"}} />
+              <Button text="등록" type='success' onClick={onClickInsertBtn} style={{margin: "5px 0px 0px 5px"}} />
             </Item>
           </Box>
         </Item>

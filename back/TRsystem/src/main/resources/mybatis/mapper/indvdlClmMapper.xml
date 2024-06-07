@@ -1332,6 +1332,7 @@
              , a.ATCHMNFL_SN
              , a.REAL_FILE_NM
              , a.STRG_FILE_NM
+             , a.FILE_STRG_COURS
         FROM CLTUR_PHSTRN_ACT_CT_REG c
                  LEFT JOIN  ATCHMNFL a ON c.ATCHMNFL_ID = a.ATCHMNFL_ID
         WHERE EMP_ID = #{empId}

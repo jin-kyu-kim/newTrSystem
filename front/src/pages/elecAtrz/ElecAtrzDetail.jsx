@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { useLocation } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import { Button } from 'devextreme-react/button';
+import { useModal } from "../../components/unit/ModalContext";
 import Popup from "devextreme-react/popup";
 import TextArea from "devextreme-react/text-area";
 
@@ -10,7 +11,6 @@ import CustomTable from 'components/unit/CustomTable';
 import ElecAtrzTabDetail from './ElecAtrzTabDetail';
 import electAtrzJson from './ElecAtrzJson.json';
 import ApiRequest from 'utils/ApiRequest';
-import { useModal } from "../../components/unit/ModalContext";
 import ElecAtrzHistPopup from "./common/ElecAtrzHistPopup";
 import ReactToPrint from 'react-to-print';
 import './ElecAtrz.css'
@@ -27,32 +27,28 @@ const ElecAtrzDetail = () => {
     const sttsCd = location.state != undefined ? location.state.sttsCd : popSttsCd;
     const refer =  location.state != undefined ? location.state.refer : true;
     const prjctId =  location.state != undefined ? location.state.prjctId : popPrjctId;
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const [ detailData, setDetailData ] = useState({});
     const [ prjctData, setPrjctData ] = useState({});
     const [ atrzOpnn, setAtrzOpnn ] = useState([]);
     const [ atrzOpnnVal, setAtrzOpnnVal ] = useState([]);
     const { header, keyColumn, columns, queryId, atchFlQueryId } = electAtrzJson.electAtrzDetail;
-    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const [ maxAtrzLnSn, setMaxAtrzLnSn ] = useState();
     const [ dtlInfo, setDtlInfo ] = useState({});
-    const [ atachFileList, setAtachFileList ] = useState([]);
+    const [ attachFileList, setAttachFileList ] = useState([]);
     const [ aplyYmd, setAplyYmd ] = useState();
     const [ odr, setOdr ] = useState();
     const [ rjctPopupVisible, setRjctPopupVisible ] = useState(false);
     const [ aprvPopupVisible, setAprvPopupVisible ] = useState(false);
     const [ opnnCn, setOpnnCn ] = useState("");
     const [ data, setData ] = useState(location.state != undefined ? location.state.data : popData);
+    const { handleOpen } = useModal();
+    const [ histPopVisible, setHistPopVisible ] = useState(false); // 이력 팝업
     const contentRef = useRef(null);
     const printRef = useRef();
-    const { handleOpen } = useModal();
-
-      /**
-     * 이력 팝업 관련
-     */
-    const [ histPopVisible, setHistPopVisible ] = useState(false);
+    const fileDir = attachFileList[0]?.fileStrgCours.substring(8);
 
     useEffect(() => {
-
         const getDetailData = async () => {
             const res = await ApiRequest('/boot/common/queryIdSearch', { queryId: "elecAtrzMapper.elecAtrzDetail", elctrnAtrzId: detailInfo.elctrnAtrzId })
             if (res) setDetailData({ ...detailInfo, ...res[0] })
@@ -74,26 +70,21 @@ const ElecAtrzDetail = () => {
                 break;
             case "print": onPrint(); 
                 break;
-            case "docHist": //console.log("문서이력 클릭");
-                onHistPopAppear();
+            case "docHist": onHistPopAppear();
                 break;
             case "reAtrz": onReReq();
                 break;
             case "cancel":
                 // 회수 가능 여부가 Y인 경우, 
                 if(detailData.recall == "Y") {
-
                     handleOpen("회수 하시겠습니까?",  () => elctrnAtrzRecall(detailData), true);
                 } else {
                     onCancelReq();
                 }
-
                 break;
             case "update": onUpdateReq();
-            break;
-            case "list": 
-            // navigate('/elecAtrz/ElecAtrz') ;
-            toList();
+                break;
+            case "list": toList();
                 break;
             default:
                 break;
@@ -116,7 +107,7 @@ const ElecAtrzDetail = () => {
             const response = await ApiRequest('/boot/common/queryIdSearch', {
                 queryId: atchFlQueryId, atchmnflId: detailData.atchmnflId
             });
-            setAtachFileList(response);
+            setAttachFileList(response);
         } catch(error) {
             console.log('error', error);
         }
@@ -535,29 +526,24 @@ const ElecAtrzDetail = () => {
                 handleDmndStts(nowAtrzLnSn).then((value) => {
                     console.log(value);
                     if(value > 0) {
-
                         // 취소결재를 반려한 경우 후속조치
                         if(detailData.atrzHistSeCd === "VTW05405") {
                             // HIST_ELCTRN_ATRZ_ID 의 값을 다시 결재중으로 변경
                             // HIST_ELCTRN_ATRZ_ID의 결재선을 다시 결재중으로 변경
-                            
                             const param = {
                                 elctrnAtrzId: detailData.histElctrnAtrzId,
                                 mdfcnDt: mdfcnDt,
                                 mdfcnEmpId: userInfo.empId
-                            }
-
+                            };
                             const response = rollbackElctrnAtrz(param);
                         }
                         handleOpen("반려 처리되었습니다.");
-                        
                         navigate('/elecAtrz/ElecAtrz');
                     } else {
                         handleOpen("반려 처리에 실패하였습니다.");
                         return;
                     }
                 });
-
             } else {
                 handleOpen("반려 처리에 실패하였습니다.");
             }
@@ -565,7 +551,6 @@ const ElecAtrzDetail = () => {
     }
 
     const handleDmndStts = async (nowAtrzLnSn) => {
-        const date = getToday();
         const mdfcnDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
         const param = [
             { tbNm: "ELCTRN_ATRZ" },
@@ -585,11 +570,8 @@ const ElecAtrzDetail = () => {
 
     /**
      * 취소결재, 변경결재 반려로 인해 관련 전자결재를 원래대로 돌려준다.
-     * @param {} param 
-     * @returns 
      */
     const rollbackElctrnAtrz = async (param) => {
-
         return await ApiRequest("/boot/elecAtrz/rollbackElctrnAtrz", param);
     }
 
@@ -597,7 +579,6 @@ const ElecAtrzDetail = () => {
      * 청구결재 최종 승인 시 프로젝트 비용청구 테이블에 
      */
     const handlePrcjtCost = async () => {
-
         const regDt = new Date().toISOString().split('T')[0]+' '+new Date().toTimeString().split(' ')[0];
         const regEmpId = userInfo.empId;
 
@@ -609,8 +590,7 @@ const ElecAtrzDetail = () => {
             empId: detailData.atrzDmndEmpId,
             regDt: regDt,
             regEmpId: regEmpId
-        }
-        
+        };
         try {
             const result = await ApiRequest("/boot/elecAtrz/insertPrjctCt", param);
             return result;
@@ -629,14 +609,12 @@ const ElecAtrzDetail = () => {
         let month = today.getMonth() + 1; 
         const day = today.getDate();
         let odr;
-        let nextOdr
 
         if (day <= 15) {
             odr = 2;
         } else {
             odr = 1;
         }
-        
         if (month === 1) {
             if(day <= 15) {
                 month = 12; // 1월인 경우 이전 연도 12월로 설정
@@ -652,29 +630,20 @@ const ElecAtrzDetail = () => {
     
         // 월을 두 자리 숫자로 표현합니다.
         const monthString = (month < 10 ? '0' : '') + month;
-        
         setAplyYmd(`${year}${monthString}`);
         setOdr(odr);
     }
 
-    /**
-     * 결재를 회수한다.
-     */
+    // 결재 회수
     const elctrnAtrzRecall = async (data) => {
         /**
          * 1. 회수 가능: 결재선 1번라인이 심사중일 경우(회수가능여부 Y)
-         * 2. 
          */
         const param = [
             { tbNm: "ELCTRN_ATRZ" },
-            {
-                atrzDmndSttsCd: "VTW03701"
-            },
-            {
-                elctrnAtrzId: data.elctrnAtrzId
-            }
-        ]
-
+            { atrzDmndSttsCd: "VTW03701" },
+            { elctrnAtrzId: data.elctrnAtrzId }
+        ];
         try {
             const response = await ApiRequest("/boot/common/commonUpdate", param);
         
@@ -689,7 +658,6 @@ const ElecAtrzDetail = () => {
             console.error(error);
         }
     }
-
 
     /**
      * 계약 지급인 경우 계약코드 select
@@ -733,8 +701,6 @@ const ElecAtrzDetail = () => {
      * 결재 취소: VTW05405
      */
     const onCancelReq = async () => {
-
-
         navigate('/elecAtrz/ElecAtrzNewReq', { state: { formData: detailData, sttsCd: "VTW05405", prjctId: detailData.prjctId, }});
     }
 
@@ -822,10 +788,10 @@ const ElecAtrzDetail = () => {
 
                 <hr className='elecDtlLine' style={{marginTop: '100px'}}/>
                 <span>* 첨부파일</span>
-                {atachFileList.length !== 0 && atachFileList.map((file, index) => (
+                {attachFileList.length !== 0 && attachFileList.map((file, index) => (
                     <div key={index}>
                         <Button icon="save" stylingMode="text" disabled={true} />
-                        <a href={`/upload/${file.strgFileNm}`} download={file.realFileNm} style={{ fontSize: '18px', color: 'blue', fontWeight: 'bold' }}>{file.realFileNm}</a>
+                        <a href={`${fileDir}/${file.strgFileNm}`} download={file.realFileNm} style={{ fontSize: '18px', color: 'blue', fontWeight: 'bold' }}>{file.realFileNm}</a>
                     </div>
                 ))}
 

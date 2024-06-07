@@ -30,20 +30,17 @@ public class ElecAtrzDomain {
 
     /**
      * 전자결재 저장 메소드
-     *
      * @param params
      * @return
      */
     @Transactional
     public static String insertElecAtrz(Map<String, Object> params) {
-
         // 공통
         String regDt = String.valueOf(params.get("regDt"));
         String regEmpId = String.valueOf(params.get("regEmpId"));
         String atrzTySeCd = String.valueOf(params.get("elctrnAtrzTySeCd"));
         String elctrnAtrzId = String.valueOf(params.get("elctrnAtrzId"));
         String atrzDmndSttsCd = String.valueOf(params.get("atrzDmndSttsCd"));
-
 
         Map<String, String> basicInfo = new HashMap<>();
         basicInfo.put("regDt", regDt);
@@ -52,7 +49,6 @@ public class ElecAtrzDomain {
 
         Map<String, Object> elecAtrzParam = new HashMap<>();
         Map<String, Object> tbParam = new HashMap<>();
-
 
         int electrnAtrzResult = -1;
         int atrzLnResult = -1;
@@ -88,16 +84,14 @@ public class ElecAtrzDomain {
             insertParams.add(elecAtrzParam);
 
             electrnAtrzResult = commonService.insertData(insertParams);
-//			}
+
 			if(electrnAtrzResult > 0) {
-				
 				// 전자결재 결재선 데이터 입력
 				atrzLnResult = insertAtrzLine((List<Map<String, Object>>)params.get("atrzLnEmpList"), basicInfo);
 				
 				if(atrzTySeCd.equals("VTW04908") || atrzTySeCd.equals("VTW04909") || atrzTySeCd.equals("VTW04910")) {
 					
 					Map<String, Object> map = new HashMap<>();
-					
 					map.putAll(((Map<String, Object>) params.get("param")));
 					
 					// 계약결재 데이터 입력
@@ -112,68 +106,79 @@ public class ElecAtrzDomain {
 					
 					// 청구결재(지급품의) INSERT 로직 추가
 					Map<String, Object> map = new HashMap<>();
-					
 					map.putAll(((Map<String, Object>) params.get("param")));
-					
-					atrzTyResult = insertGiveAtrz(map, elctrnAtrzId); 
+					atrzTyResult = insertGiveAtrz(map, elctrnAtrzId);
 							
 				} else {
 					/**
 					 * ToDo: 일반 결재
 					 */
 					Map<String, Object> map = new HashMap<>();
-					
 					map.putAll(((Map<String, Object>) params.get("param")));
-					
-					atrzTyResult = insertGnrlAtrz(map, elctrnAtrzId); 
+					atrzTyResult = insertGnrlAtrz(map, elctrnAtrzId);
 				}
-				
 				if(electrnAtrzResult < 0 || atrzTyResult < 0 || atrzLnResult < 0) return null;
-				
 			}
-			
-			
 		} catch (Exception e) {
 			return null;
 		}
+        return elctrnAtrzId;
+    }
 
-		
-		return elctrnAtrzId;
-	}
-	
-	/**
-	 * target이 되는 테이블 명과 전자결재 아이디를 받아서 데이터를 지운다
-	 * @param tbNm
-	 * @param elctrnAtrzId
-	 * @return
-	 */
-	public static int deleteData(String tbNm, String elctrnAtrzId) {
-		int result = 0;
-		
-		Map<String, Object> tbParam = new HashMap<>();
-		Map<String, Object> conditionParam = new HashMap<>();
-		tbParam.put("tbNm", tbNm);
-		conditionParam.put("elctrnAtrzId", elctrnAtrzId);
-		
-		ArrayList<Map<String, Object>> deleteParams = new ArrayList<>();
-		deleteParams.add(0, tbParam);
-		deleteParams.add(1, conditionParam);
-		
-		result = commonService.deleteData(deleteParams);
-		return result;
-	}
-  
-  
-  public static int deleteTempAtrz(String atrzTySeCd, String elctrnAtrzId) {
+    /**
+     * target이 되는 테이블 명과 전자결재 아이디를 받아서 데이터를 지운다
+     */
+    public static int deleteData(String tbNm, String elctrnAtrzId, String atchmnflId) {
+        int result = 0;
 
+        Map<String, Object> tbParam = new HashMap<>();
+        Map<String, Object> conditionParam = new HashMap<>();
+        tbParam.put("tbNm", tbNm);
+        conditionParam.put("elctrnAtrzId", elctrnAtrzId);
+
+        ArrayList<Map<String, Object>> deleteParams = new ArrayList<>();
+        deleteParams.add(0, tbParam);
+        deleteParams.add(1, conditionParam);
+
+        // 첨부파일이 존재하는 경우
+        if(atchmnflId != null){
+            Map<String, Object> params = new HashMap<>();
+            List<Map<String , Object>> athcParam = new ArrayList<>();
+            athcParam.add(Map.of("tbNm", "ATCHMNFL"));
+            athcParam.add(Map.of("atchmnflId", atchmnflId));
+
+            params.put("params", deleteParams);
+            params.put("fileParams", athcParam);
+            params.put("dirType", "elec");
+
+            commonService.deleteFile(params);
+        } else {
+            result = commonService.deleteData(deleteParams);
+        }
+        return result;
+    }
+
+
+    public static int deleteTempAtrz(String atrzTySeCd, String elctrnAtrzId) {
         // 기존에 저장된 전자결재 아이디에 해당하는 값을 제거한다.
         int result = 0;
 
-        // 1. 결재선 지우기
-        deleteData("ATRZ_LN", elctrnAtrzId);
+        // 첨부파일이 존재하는지 확인
+        Map<String, Object> atchParam = new HashMap<>();
+		String atchmnflId = null;
+        atchParam.put("queryId", "elecAtrzMapper.elecAtrzDetail");
+        atchParam.put("elctrnAtrzId", elctrnAtrzId);
+
+        List<Map<String, Object>> atch = commonService.queryIdSearch(atchParam);
+		if(atch != null && atch.size() != 0){
+			atchmnflId = String.valueOf(atch.get(0).get("atchmnflId"));
+		}
+
+		// 1. 결재선 지우기
+        deleteData("ATRZ_LN", elctrnAtrzId, null);
 
         // 2. 참조/합의 결재선 지우기
-        deleteData("REFRN_MAN", elctrnAtrzId);
+        deleteData("REFRN_MAN", elctrnAtrzId, null);
 
         // 계약결재
         if (atrzTySeCd.equals("VTW04908") || atrzTySeCd.equals("VTW04909") || atrzTySeCd.equals("VTW04910")) {
@@ -182,35 +187,38 @@ public class ElecAtrzDomain {
 
             if (atrzTySeCd.equals("VTW04909") || atrzTySeCd.equals("VTW04910")) {
                 // 업체 관련(재료비, 외주업체), target: ENTRPS_CTRT_DTL, ENTRPS_CTRT_DTL_CND
-                deleteData("ENTRPS_CTRT_DTL_CND", elctrnAtrzId);
-                deleteData("ENTRPS_CTRT_DTL", elctrnAtrzId);
+                deleteData("ENTRPS_CTRT_DTL_CND", elctrnAtrzId,  null);
+                deleteData("ENTRPS_CTRT_DTL", elctrnAtrzId,  null);
 
             } else if (atrzTySeCd.equals("VTW04908")) {
                 // 외주인력 관련(외주인력), target: HNF_CTRT_DTL, HNF_CTRT_DTL_CND
-                deleteData("HNF_CTRT_DTL_MM", elctrnAtrzId);
-                deleteData("HNF_CTRT_DTL", elctrnAtrzId);
+                deleteData("HNF_CTRT_DTL_MM", elctrnAtrzId,  null);
+                deleteData("HNF_CTRT_DTL", elctrnAtrzId,  null);
             }
 
             // 계약결재 테이블 제거, target: CTRT_ATRZ
-            deleteData("CTRT_ATRZ", elctrnAtrzId);
+            deleteData("CTRT_ATRZ", elctrnAtrzId, atchmnflId);
 
         } else if (atrzTySeCd.equals("VTW04907")) {
             // delete 청구결재와 관련된 내용 slave -> master, target: CLM_ATRZ, CLM_ATRZ_DTL
-            deleteData("CLM_ATRZ_DTL", elctrnAtrzId);
-            deleteData("CLM_ATRZ", elctrnAtrzId);
+            deleteData("CLM_ATRZ_DTL", elctrnAtrzId,  null);
+            deleteData("CLM_ATRZ", elctrnAtrzId, atchmnflId);
 
-        } else if (atrzTySeCd.equals("VTW04911") || atrzTySeCd.equals("VTW04912") || atrzTySeCd.equals("VTW04913") || atrzTySeCd.equals("VTW04914")){
+        } else if (atrzTySeCd.equals("VTW04911")) {
             // 계약청구(지급품의), target : CTRT_GIVE_ATRZ
-        	deleteData("CTRT_GIVE_ATRZ_DTL", elctrnAtrzId);
-            deleteData("CTRT_GIVE_ATRZ", elctrnAtrzId);     
+            deleteData("CTRT_GIVE_ATRZ_DTL", elctrnAtrzId, null);
+            deleteData("CTRT_GIVE_ATRZ", elctrnAtrzId, atchmnflId);
+
+        } else if (atrzTySeCd.equals("VTW04902")) {
+            // 일반결재
+            deleteData("GNRL_ATRZ", elctrnAtrzId, atchmnflId);
         }
         // 전자결재 테이블 데이터 삭제(최상위)
-        result += deleteData("ELCTRN_ATRZ", elctrnAtrzId);
+        result += deleteData("ELCTRN_ATRZ", elctrnAtrzId, null);
         return result;
     }
 	
 	/**
-	 * 
 	 * @param paramList
 	 * @param basicInfo	기초 정보(등록일자, 등록사랑, 전자결재ID)
 	 * @return
@@ -1119,6 +1127,7 @@ public class ElecAtrzDomain {
 
     /**
      * 취소결재용 결재선을 만든다.
+     *
      * @param params
      * @return 결재라인
      */
@@ -1173,9 +1182,10 @@ public class ElecAtrzDomain {
 		return resultList;    	
     	
     }
-    
+
     /**
      * 결재 취소 혹은 변경결재로 인한 후속조치를 실행하는 메소드
+     *
      * @param params
      * @return
      */
@@ -1265,9 +1275,10 @@ public class ElecAtrzDomain {
     	
     	return 0;
     }
-    
+
     /**
      * 결재 취소 혹은 변경결재 반려 시 관련 문서를 롤백한다.
+     *
      * @param params
      * @return
      */

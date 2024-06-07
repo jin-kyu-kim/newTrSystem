@@ -12,16 +12,17 @@ import BoardInputForm from 'components/composite/BoardInputForm';
 const ReferenceInput = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { edit, insertUrl, detail } = NoticeJson;
+    const { edit, insertUrl, detail, dirType } = NoticeJson;
     const [ attachments, setAttachments ] = useState([]);
     const [ deleteFiles, setDeleteFiles ] = useState([{tbNm: "ATCHMNFL"}]);
     const [ newAttachments, setNewAttachments ] = useState(attachments);
     const [ prevData, setPrevData ] = useState({});
+    const { handleOpen } = useModal();
     const [ data, setData ] = useState({
         noticeId: uuid(),
-        useYn: "Y"
+        useYn: "Y",
+        dirType: dirType
     });
-    const { handleOpen } = useModal();
 
     const editMode = location.state.editMode;
     const id = location.state.id;
@@ -31,8 +32,8 @@ const ReferenceInput = () => {
         try {
             const response = await ApiRequest("/boot/common/queryIdSearch", param);
             if (response.length !== 0) {
-                const { atchmnflSn, realFileNm, strgFileNm, regDt, regEmpNm, ...resData } = response[0];
-                setData({ ...resData });
+                const { atchmnflSn, realFileNm, strgFileNm, regDt, regEmpNm, fileStrgCours, ...resData } = response[0];
+                setData({ ...resData, dirType });
                 setPrevData({ ...resData });
                 const tmpFileList = response.map((data) => ({
                     realFileNm: data.realFileNm,
@@ -107,6 +108,7 @@ const ReferenceInput = () => {
             })
         }
         const formData = new FormData();
+        
         formData.append("tbNm", JSON.stringify({tbNm: "NOTICE"}));
         formData.append("data", JSON.stringify(data));
         if(editMode === 'update') {
@@ -122,7 +124,8 @@ const ReferenceInput = () => {
                     headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
                 })
                 if (response.data >= 1) {
-                    handleOpen('등록되었습니다.');
+                    const action = editMode === 'update' ? '수정' : '등록';
+                    handleOpen(`${action}되었습니다.`);
                     navigate("/infoInq/ReferenceList");
                 }
             } else{

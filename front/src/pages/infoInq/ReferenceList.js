@@ -6,14 +6,12 @@ import SearchInfoSet from 'components/composite/SearchInfoSet';
 import CustomEditTable from "components/unit/CustomEditTable";
 
 const ReferenceList = () => {
+    const { keyColumn, queryId, tableColumns, searchInfo, referInsertPage } = NoticeJson;
     const [ values, setValues ] = useState([]);
     const [ param, setParam ] = useState({});
     const [ totalItems, setTotalItems ] = useState(0);
     const [ isLoading, setIsLoading ] = useState(false);
     const navigate = useNavigate();
-    let noDataText = ""
-
-    const { keyColumn, queryId, tableColumns, searchInfo, referInsertPage } = NoticeJson;
     
     useEffect(() => {
         if (!Object.values(param).every((value) => value === "")) {
@@ -54,12 +52,8 @@ const ReferenceList = () => {
 
     return (
         <div className="container">
-            <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }} >
-                <h1 style={{ fontSize: "40px" }}>자료실</h1>
-            </div>
-            <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
-                <span>* 자료실을 조회합니다.</span>
-            </div>
+            <div className='title'>자료실</div>
+            <div className='title-desc'>* 자료실을 조회합니다.</div>
             <div style={{ marginBottom: "20px" }}>
                 <SearchInfoSet 
                     props={searchInfo}

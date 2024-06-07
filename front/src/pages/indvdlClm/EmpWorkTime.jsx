@@ -540,9 +540,7 @@ const EmpWorkTime = () => {
 
     return (
         <div className="">
-            <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
-                <h1 style={{ fontSize: "30px" }}>{admin != undefined ? "(관리자)" : ""} {orderWorkBgngMm} - {flagOrder}차수 근무시간</h1>
-            </div>
+            <div className="title" style={{fontWeight: "500"}}>{admin != undefined ? "(관리자)" : ""} {orderWorkBgngMm} - {flagOrder}차수 근무시간</div>
             <div className="mx-auto" style={{ marginBottom: "10px" }}>
                 <span>* 근무시간을 기간별로 조회 합니다.</span>
             </div>

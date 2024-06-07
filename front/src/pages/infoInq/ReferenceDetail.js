@@ -12,11 +12,12 @@ const ReferenceDetail = () => {
     const location = useLocation();
     const noticeId = location.state.id;
     const userAuth = JSON.parse(localStorage.getItem("userAuth"));
-    const { detailQueryId, referButtonGroup } = NoticeJson.detail;
+    const { detailQueryId, referButtonGroup, dirType } = NoticeJson.detail;
     const [ oneData, setOneData ] = useState({});
     const [ fileList, setFileList ] = useState([]);
     const [ btnVisible , setBtnVisible ] = useState(false);
     const { handleOpen } = useModal();
+    const fileDir = fileList[0]?.fileStrgCours.substring(8);
 
     const getOneData = async () => {
         const params = {
@@ -29,7 +30,8 @@ const ReferenceDetail = () => {
                 setOneData(response[0]);
                 const tmpFileList = response.map((data) => ({
                     realFileNm: data.realFileNm,
-                    strgFileNm: data.strgFileNm
+                    strgFileNm: data.strgFileNm,
+                    fileStrgCours: data.fileStrgCours
                 }));
                 if (fileList.length === 0) {
                     setFileList(prevFileList => [...prevFileList, ...tmpFileList]);
@@ -52,7 +54,7 @@ const ReferenceDetail = () => {
         const fileParams = [{ tbNm: "ATCHMNFL" }, { atchmnflId: oneData.atchmnflId }];
         try {
             const response = await ApiRequest("/boot/common/deleteWithFile", {
-                params: params, fileParams: fileParams
+                params: params, fileParams: fileParams, dirType: dirType
             });
             if (response >= 1) {
                 navigate("/infoInq/ReferenceList")
@@ -63,33 +65,30 @@ const ReferenceDetail = () => {
     }
 
     return (
-        <div className="container">
-            <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }}></div>
-            <div style={{ marginRight: "20px", marginLeft: "20px", marginBottom: "50px" }}>
-                <h1 style={{ fontSize: "30px" }}>자료실</h1>
-            </div>
+        <div className="container" style={{ width: '90%' }}>
+            <div className='title'>자료실</div>
 
-            <Container style={{ width: '90%', margin: '0 auto' }}>
+            <Container style={{ margin: '50px auto' }}>
                 {oneData.length !== 0 ?
                     <>
-                        <h1 style={{ marginBottom: "20px" }}>{oneData.noticeTtl}</h1>
-                        <div>{oneData.regEmpNm} | {oneData.regDt}</div><hr />
+                        <h2 style={{ marginBottom: "30px" }}>{oneData.noticeTtl}</h2>
+                        <div>{oneData.regEmpNm} | {oneData.regDt}</div><hr className='elecDtlLine' />
                         <div dangerouslySetInnerHTML={{ __html: oneData.noticeCn }} />
 
                         {fileList.length !== 0 && fileList.filter(file => file.realFileNm !== null && file.realFileNm !== undefined).filter(file => file.realFileNm.endsWith('.jpg') || file.realFileNm.endsWith('.jpeg') || file.realFileNm.endsWith('.png') || file.realFileNm.endsWith('.gif')).map((file, index) => (
                             <div key={index} style={{ textAlign: 'center' }}>
-                                <img src={`/upload/${file.strgFileNm}`}
+                                <img src={`${fileDir}/${file.strgFileNm}`}
                                     style={{ width: '80%', marginBottom: '20px' }} alt={file.realFileNm} />
                             </div>
-                        ))}<hr />
+                        ))}<hr className='elecDtlLine' />
 
                         <div style={{ fontWeight: 'bold' }}>* 첨부파일</div>
                         {fileList.length !== 0 && fileList.filter(file => file.realFileNm !== null && file.realFileNm !== undefined).filter(file => !(file.realFileNm.endsWith('.jpg') || file.realFileNm.endsWith('.jpeg') || file.realFileNm.endsWith('.png') || file.realFileNm.endsWith('.gif'))).map((file, index) => (
                             <div key={index}>
-                                <a href={`/upload/${file.strgFileNm}`} download={file.realFileNm} style={{ fontSize: '18px', color: 'blue', fontWeight: 'bold' }}>{file.realFileNm}</a>
+                                <a href={`${fileDir}/${file.strgFileNm}`} download={file.realFileNm} style={{ fontSize: '18px', color: 'blue', fontWeight: 'bold' }}>{file.realFileNm}</a>
                             </div>
                         ))}
-                        <hr />
+                        <hr className='elecDtlLine' />
                     </> : ''
                 }
             </Container>

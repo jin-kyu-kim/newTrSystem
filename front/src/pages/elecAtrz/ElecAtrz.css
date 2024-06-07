@@ -47,12 +47,6 @@
   white-space: normal;
 }
 
-.elecDtlLine{
-  border: 0;
-  height: 6px;
-  background: #a1a1a1;
-}
-
 /* 상세 */
 .dtl-table {
   border: 1px solid rgb(217, 215, 215);

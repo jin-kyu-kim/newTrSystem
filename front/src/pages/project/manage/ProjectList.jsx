@@ -1,31 +1,22 @@
 import { useState, useEffect } from "react";
-
 import ProjectJson from "../manage/ProjectListJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
 import SearchPrjctSet from "../../../components/composite/SearchPrjctSet";
 import CustomTable from "../../../components/unit/CustomTable";
-
 import "react-datepicker/dist/react-datepicker.css";
-import {useLocation, useNavigate} from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const ProjectList = () => {
   const [values, setValues] = useState([]);
   const [param, setParam] = useState({});
-
   const [totalItems, setTotalItems] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const location = useLocation();
-
-
-
-  /** 유저 정보 */
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const empId = userInfo.empId;
-
   const navigate = useNavigate();
-
   const { keyColumn, queryId, tableColumns, searchParams, popup } = ProjectJson;
 
   useEffect(() => {
@@ -34,7 +25,6 @@ const ProjectList = () => {
     }
   }, [param]);
 
-  // 검색으로 조회할 때
   const searchHandle = async (initParam) => {
     setTotalPages(1);
     setCurrentPage(1);
@@ -66,30 +56,27 @@ const ProjectList = () => {
 
   const onRowClick = (e) => {
 
-    navigate("/project/ProjectDetail", 
-              {state: { prjctId: e.key
-                      , prjctNm: e.data.prjctNm
-                      , totBgt: e.data.totBgt
-                      , bgtMngOdr: e.data.bgtMngOdr
-                      , ctrtYmd: e.data.ctrtYmd
-                      , stbleEndYmd: e.data.stbleEndYmd
-                      , bgtMngOdrTobe: e.data.bgtMngOdrTobe 
-                      , bizSttsCd: e.data.bizSttsCd
-                      , deptId : e.data.deptId
-                      , path: location.pathname}})
+    navigate("/project/ProjectDetail",
+      {
+        state: {
+          prjctId: e.key
+          , prjctNm: e.data.prjctNm
+          , totBgt: e.data.totBgt
+          , bgtMngOdr: e.data.bgtMngOdr
+          , ctrtYmd: e.data.ctrtYmd
+          , stbleEndYmd: e.data.stbleEndYmd
+          , bgtMngOdrTobe: e.data.bgtMngOdrTobe
+          , bizSttsCd: e.data.bizSttsCd
+          , deptId: e.data.deptId
+          , path: location.pathname
+        }
+      })
   };
 
   return (
     <div className="">
-      <div
-        className="title p-1"
-        style={{ marginTop: "20px", marginBottom: "10px" }}
-      >
-        <h1 style={{ fontSize: "40px" }}>프로젝트 관리</h1>
-      </div>
-      <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
-        <span>* 프로젝트를 조회합니다.</span>
-      </div>
+      <div className="title">프로젝트 관리</div>
+      <div className="title-desc">* 프로젝트를 조회합니다.</div>
       <div style={{ marginBottom: "20px" }}>
         <SearchPrjctSet
           callBack={searchHandle}

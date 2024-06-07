@@ -3,18 +3,10 @@ import EmpInfoJson from "./EmpInfoJson.json";
 import ApiRequest from "utils/ApiRequest";
 import CustomEditTable from "components/unit/CustomEditTable";
 
-const EmpProjectHist = ({naviEmpId}) => {
+const EmpProjectHist = ({ naviEmpId }) => {
   const { queryId, keyColumn, tableColumns, tbNm } = EmpInfoJson.prjctHist;
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-
-  let userEmpId;
-
-  if(naviEmpId.length !== 0){
-    userEmpId = naviEmpId;
-  } else {
-    userEmpId = userInfo.empId;
-  }
-
+  const userEmpId = naviEmpId.length !== 0 ? naviEmpId : userInfo.empId;
   const doublePk = { nm: "empId", val: userEmpId };
   const [values, setValues] = useState([]);
 
@@ -34,22 +26,19 @@ const EmpProjectHist = ({naviEmpId}) => {
   };
 
   return (
-    <div style={{ padding: "20px" ,backgroundColor: "#b5c1c7" }}>
-    <div className="container" style={{ padding: "20px" ,backgroundColor: "#fff" }}>
-      <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }}>
-        <h1 style={{ fontSize: "40px" }}>프로젝트 이력</h1>
+    <div style={{ padding: "20px" }}>
+      <div className="container">
+        <div style={{ marginBottom: "20px" }}>
+          <CustomEditTable
+            tbNm={tbNm}
+            values={values}
+            keyColumn={keyColumn}
+            columns={tableColumns}
+            doublePk={doublePk}
+            callback={pageHandle}
+          />
+        </div>
       </div>
-      <div style={{ marginBottom: "20px" }}>
-        <CustomEditTable
-          tbNm={tbNm}
-          values={values}
-          keyColumn={keyColumn}
-          columns={tableColumns}
-          doublePk={doublePk}
-          callback={pageHandle}
-        />
-      </div>
-    </div>
     </div>
   );
 };
