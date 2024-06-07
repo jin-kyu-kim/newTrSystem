@@ -23,6 +23,7 @@
         ],
         "searchInfo":{
             "searchParams": {
+                "btnType": "default"
             },
             "selectBoxItem": [
                 {
@@ -64,6 +65,8 @@
         ],
         "searchInfo":{
             "searchParams": {
+                "btnType": "default",
+                "ratio": 0.6
             },
             "selectBoxItem": [
                 {

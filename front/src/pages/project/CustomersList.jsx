@@ -58,12 +58,8 @@ const CustomersList = () => {
 
     return (
         <div className="container">
-            <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }} >
-                <h1 style={{ fontSize: "40px" }}>고객사 관리</h1>
-            </div>
-            <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
-                <span>* 고객사를 조회합니다.</span>
-            </div>
+            <div className="title">고객사 관리</div>
+            <div className="title-desc" style={{ marginBottom: "10px" }}>* 고객사를 조회합니다.</div>
             <div style={{ marginBottom: "20px" }}>
                 <SearchInfoSet callBack={searchHandle} props={searchInfo} />
             </div>

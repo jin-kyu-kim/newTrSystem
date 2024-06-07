@@ -70,16 +70,11 @@ const CorpCardCtUld = () => {
                 )
         }
     }
-    console.log('excel', excel)
 
     return (
-        <div className="container">
-            <div className="mx-auto" style={{ textAlign: 'left', marginTop: "20px", marginBottom: "10px" }}>
-                <h1 style={{ textAlign: 'left', fontSize: "30px", marginRight: "20px" }}>비용 엑셀 업로드</h1>
-            </div>
-            <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
-                <span>* 비용 엑셀파일을 업로드합니다.</span>
-            </div>
+        <div>
+            <div className="title">비용 엑셀 업로드</div>
+            <div className="title-desc">* 비용 엑셀파일을 업로드합니다.</div>
 
             <div className="dtl-table">
                 {uploadInfo.map((info, index) => (

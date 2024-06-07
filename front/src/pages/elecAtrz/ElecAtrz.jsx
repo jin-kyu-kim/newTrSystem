@@ -744,12 +744,9 @@ const ElecAtrz = () => {
 
   return (
     <div style={{marginBottom: '10%'}}>
-      <div className="title p-1" style={{ marginTop: "10px", marginBottom: "10px" }} ></div>
-      <div className="col-md-10 mx-auto" style={{ marginBottom: "15px", display: 'flex' }}>
-        <h3 style={{ marginRight: '50px' }}>전자결재</h3>
-        <div>
-          <Button text="신규 기안 작성" onClick={onNewReq} type='danger'></Button>
-        </div>
+      <div style={{ marginBottom: "15px", display: 'flex' }}>
+        <div className='title' style={{marginRight: '20px'}}>전자결재</div>
+        <Button text="신규 기안 작성" onClick={onNewReq} type='danger'></Button>
       </div>
 
       <div className="elec-container">

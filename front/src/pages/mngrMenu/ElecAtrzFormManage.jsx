@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import ScrollView from 'devextreme-react/scroll-view';
 import Sortable from 'devextreme-react/sortable';
-import "./ElecAtrzFormManageStyles.css";
 import { Button } from 'devextreme-react/button';
 import { Switch } from 'devextreme-react/switch';
 import { useNavigate } from 'react-router-dom';
 import ApiRequest from 'utils/ApiRequest';
-
+import "./ElecAtrzFormManageStyles.css";
 
 // 배열에서 아이템 삭제, 추가, 재배열하는 함수들
 function removeItem(array, removeIdx) {
@@ -49,7 +48,6 @@ const  ElecAtrzFormManage = ({}) => {
     setStatuses(sortedKeys);
   return sortedTasks;
   }
-
 
   //전자결재문서서식 리스트 가져오기
   useEffect(() => {
@@ -129,7 +127,6 @@ const  ElecAtrzFormManage = ({}) => {
       console.log(error);
     }
   }
-  
 
   //Card 컴포넌트
   const Card = ({ task, switchUseYn, switchEprssYn, onSwitchUseYnChange, onSwitchEprssYnChange }) => 
@@ -189,9 +186,9 @@ const  ElecAtrzFormManage = ({}) => {
   );
 
   return (
-    <div className="container" style={{ marginTop: "30px" }}>
+    <div>
       <div>
-          <h1>전자결재서식관리</h1>
+          <div className='title'>전자결재서식관리</div>
           <p> * '시스템관리 &gt; 코드관리' 메뉴에서 '전자결재 서식 구분'분류 추가로 입력 가능합니다.</p>
           <p> * '전자결재 서식 구분'코드에 추가 하였으나 화면에 나오지 않을 경우 신규폼 작성을통해 해당 코드에 신규 서식을 작성해 주시기 바랍니다.</p>
           <p> * 서식을 마우스로 그래그 앤 드롭으로 순서를 변경 할 수 있습니다.</p>
@@ -199,7 +196,6 @@ const  ElecAtrzFormManage = ({}) => {
       </div>
       <div style={{margin:'20px'}} className="buttons" align="right">
           <Button text="Contained" type="success" stylingMode="contained" onClick={(e)=>{navigate("/mngrMenu/ElecAtrzNewForm")}}>신규 서식 작성</Button>
-          {/* <Button text="Contained" type="default" stylingMode="contained">서식 위치 저장</Button> */}
       </div>
 
       <div id="kanban">

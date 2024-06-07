@@ -16,11 +16,11 @@ const CsServiceDetail = () => {
     const errPrcsSttsCd = location.state?.errPrcsSttsCd;
     const errPrcsSttsCdNm = location.state?.errPrcsSttsCdNm;
     const { detailQueryId, sysButtonGroup } = NoticeJson.detail;
-    const [ oneData, setOneData ] = useState({});
-    const [ fileList, setFileList ] = useState([]);
-    const [ errorCd, setErrorCd ] = useState(errPrcsSttsCd);
-    const [ hasPermission, setPermission ] = useState(false);
-    const [ btnVisible , setBtnVisible ] = useState(false);
+    const [oneData, setOneData] = useState({});
+    const [fileList, setFileList] = useState([]);
+    const [errorCd, setErrorCd] = useState(errPrcsSttsCd);
+    const [hasPermission, setPermission] = useState(false);
+    const [btnVisible, setBtnVisible] = useState(false);
     const { handleOpen } = useModal();
     const userAuth = JSON.parse(localStorage.getItem("userAuth"));
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
@@ -41,7 +41,7 @@ const CsServiceDetail = () => {
                 if (fileList.length === 0) {
                     setFileList(prevFileList => [...prevFileList, ...tmpFileList]);
                 }
-                if(response[0].regEmpId === userInfo.empId){
+                if (response[0].regEmpId === userInfo.empId) {
                     setBtnVisible(true);
                 }
             }
@@ -75,62 +75,59 @@ const CsServiceDetail = () => {
             console.log(error);
         }
     }
-    const test = ({name, value}) =>{
+    const test = ({ name, value }) => {
         setErrorCd(value);
     }
 
     return (
-        <div className="container">
-            <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }}></div>
-            <div style={{ marginRight: "20px", marginLeft: "20px", marginBottom: "50px" }}>
-                <h1 style={{ fontSize: "30px" }}>오류 게시판</h1>
-            </div>
+        <div className="container" style={{ width: '90%' }}>
+            <div className='title'>오류 게시판</div>
 
-            <Container style={{width: '90%', margin: '0 auto'}}>
+            <Container style={{ margin: '50px auto' }}>
                 {oneData.length !== 0 ?
                     <>
-                        <h1 style={{marginBottom: "20px"}}>{oneData.errTtl}</h1>
-                       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
-                        {oneData.regEmpNm} | {oneData.regDt}
-                           <div style={{ marginLeft:"30px"}}> 접수상태 :</div>
-                           {hasPermission ? (
-                               <div style={{ width: '200px' }}>
-                                   <CustomCdComboBox param="VTW055" value={errorCd} onSelect={test} showClearValue={false}/>
-                               </div>
-                           ) : (
-                               <div>
-                                   {errPrcsSttsCdNm}
-                               </div>
-                           )}
+                        <h2 style={{ marginBottom: "30px" }}>{oneData.errTtl}</h2>
+                        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+                            {oneData.regEmpNm} | {oneData.regDt}
+                            <div style={{ marginLeft: "30px", marginRight: '20px' }}> 접수상태 :</div>
+                            {hasPermission ? (
+                                <div style={{ width: '200px' }}>
+                                    <CustomCdComboBox param="VTW055" value={errorCd} onSelect={test} showClearValue={false} />
+                                </div>
+                            ) : (
+                                <div>
+                                    {errPrcsSttsCdNm}
+                                </div>
+                            )}
                         </div>
-                        <hr/>
-                        <div dangerouslySetInnerHTML={{__html: oneData.errCn}}/>
+                        <hr className='elecDtlLine' />
+                        <div dangerouslySetInnerHTML={{ __html: oneData.errCn }} />
 
                         {fileList.length !== 0 && fileList.filter(file => file.realFileNm !== null && file.realFileNm !== undefined).filter(file => file.realFileNm.endsWith('.jpg') || file.realFileNm.endsWith('.jpeg') || file.realFileNm.endsWith('.png') || file.realFileNm.endsWith('.gif')).map((file, index) => (
-                            <div key={index} style={{textAlign: 'center'}}>
+                            <div key={index} style={{ textAlign: 'center' }}>
                                 <img src={`/upload/${file.strgFileNm}`}
-                                     style={{width: '80%', marginBottom: '20px'}} alt={file.realFileNm}/>
+                                    style={{ width: '80%', marginBottom: '20px' }} alt={file.realFileNm} />
                             </div>
                         ))}
-                        <hr/>
+                        <hr className='elecDtlLine' />
 
-                        <div style={{fontWeight: 'bold'}}>* 첨부파일</div>
+                        <div style={{ fontWeight: 'bold' }}>* 첨부파일</div>
                         {fileList.length !== 0 && fileList.filter(file => file.realFileNm !== null && file.realFileNm !== undefined).filter(file => !(file.realFileNm.endsWith('.jpg') || file.realFileNm.endsWith('.jpeg') || file.realFileNm.endsWith('.png') || file.realFileNm.endsWith('.gif'))).map((file, index) => (
                             <div key={index}>
                                 <a href={`/upload/${file.strgFileNm}`} download={file.realFileNm}
-                                   style={{fontSize: '18px', color: 'blue', fontWeight: 'bold'}}>{file.realFileNm}</a>
+                                    style={{ fontSize: '18px', color: 'blue', fontWeight: 'bold' }}>{file.realFileNm}</a>
                             </div>
                         ))}
-                        <hr/>
+                        <hr className='elecDtlLine' />
                     </> : ''
                 }
-                <div className="CsServiceReplyGrid" style={{marginBottom: '100px'}}>
-                    <CsServiceReply errId={errId}/>
+                <div className="CsServiceReplyGrid" style={{ marginBottom: '100px' }}>
+                    <CsServiceReply errId={errId} />
                 </div>
             </Container>
 
 
-            <div style={{textAlign: 'center', marginBottom: '100px'}}>
+            <div style={{ textAlign: 'center', marginBottom: '100px' }}>
                 {sysButtonGroup.map((button, index) => (
                     <Button
                         key={index}

@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
 import React from 'react';
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import PivotGridDataSource from 'devextreme/ui/pivot_grid/data_source';
 import EmpTimeAprvListJson from "./EmpTimeAprvListJson.json";
@@ -22,7 +22,6 @@ const EmpTimeAprvList = () => {
     }
   }, [searchIsVal]); // searchIsVal 상태가 변경될 때마다 실행
 
-  // 검색으로 조회할 때
   const searchHandle = async (initParam) => {
     setParam({
       ...initParam,
@@ -92,17 +91,9 @@ const EmpTimeAprvList = () => {
 
   return (
     <React.Fragment>
-      <div className="container">
-        <div
-          className="title p-1"
-          style={{ marginTop: "20px", marginBottom: "10px" }}
-        >
-          <h1 style={{ fontSize: "40px" }}>근무시간 승인내역 조회</h1>
-        </div>
-        <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
-          <span>* 근무시간 승인내역을 조회합니다.</span>
-
-        </div>
+      <div>
+        <div className="title">근무시간 승인내역 조회</div>
+        <div className="title-desc">* 근무시간 승인내역을 조회합니다.</div>
         <div className="wrap_search" style={{ marginBottom: "20px" }}>
           <SearchInfoSet callBack={searchHandle} props={searchInfo} />
         </div>

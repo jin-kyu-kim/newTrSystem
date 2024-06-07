@@ -51,12 +51,8 @@ const CsServiceList = () => {
 
     return (
         <div className="container">
-            <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }} >
-                <h1 style={{ fontSize: "40px" }}>오류신고게시판</h1>
-            </div>
-            <div className="col-md-10 mx-auto" style={{ marginBottom: "10px" }}>
-                <span>* 오류신고를 조회합니다.</span>
-            </div>
+            <div className="title">오류신고게시판</div>
+            <div className="title-desc">* 오류신고를 조회합니다.</div>
             <div style={{ marginBottom: "20px" }}>
                 <SearchInfoSet 
                     props={searchInfo}
