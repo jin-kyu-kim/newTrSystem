@@ -168,12 +168,7 @@ const CultureHealthCost = () => {
 
     return (
         <div>
-            <div
-                className="title p-1"
-                style={{marginTop: "20px", marginBottom: "10px"}}
-            >
-                <h1 style={{fontSize: "40px"}}>문화체련비</h1>
-            </div>
+            <div className="title">문화체련비</div>
             <div className="col-md-2" style={{marginBottom: "2%"}}>
                 <SelectBox
                     placeholder="[년도]"

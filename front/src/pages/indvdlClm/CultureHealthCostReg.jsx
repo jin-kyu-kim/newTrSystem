@@ -400,8 +400,8 @@ const CultureHealthCostReg = (props) => {
         <div>
             <div className="itemBox" style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginBottom: "2%" }}>
                 <div className="itemBottom" style={{ width: "55%" }}>
-                    <p><strong>* 청구 목록 </strong></p>
-                    <span style={{ fontSize: 14 }}>
+                    <h6><strong>* 청구 목록 </strong></h6>
+                    <span style={{ fontSize: 15 }}>
                         1. 입력, 수정, 삭제 가능 조건 <br />
                         <strong>매달 1일 부터 5일 : 이전달과 현재달 청구 건</strong><br />
                         <strong>매달 6일부터 말일 : 현재 달 청구 건</strong><br />
@@ -413,7 +413,7 @@ const CultureHealthCostReg = (props) => {
                 </div>
                 <div className="itemTop" style={{ width: "43%" }}>
                     <p><strong>* 문화 체련비 등록</strong></p>
-                    <div style={{ fontSize: 14 }}>
+                    <div style={{ fontSize: 15 }}>
                         <p>1. 체력 향상과 문화 교육을 위해 지원하는 경비입니다.</p>
                         <p>2. 월 20만원 한도로 지급된 법인카드를 통해서만 이용 가능합니다.</p>
                         <p>3. <strong>체력단련비 : 헬스/요가/수영/필라테스</strong>와 같이 월단위 이상 수강/강습을 지원합니다.<br />
