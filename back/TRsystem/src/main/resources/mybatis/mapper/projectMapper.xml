@@ -1555,18 +1555,30 @@
     
     <!--파트너 업체관리 -->
      <select id="retrieveOutordEntrpsList" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT                                                                                          
-			  OUTORD_ENTRPS_ID					                                                        -- 외주업체ID
-			, OUTORD_ENTRPS_NM					                                                        -- 외주업체명
-			, BRNO 								                                                        -- 사업자등록번호
-			, TELNO 							                                                        -- 전화번호
-			, PIC_FLNM							                                                        -- 담당자명
-			, oe.ATCHMNFL_ID					                                                        -- 첨부파일ID
-			,GROUP_CONCAT(SUBSTR(a.REAL_FILE_NM, 1, INSTR(a.REAL_FILE_NM, '.') - 1)) AS FILE_NM			-- 첨부파일명
-			, COUNT(*) OVER () AS TOTAL_ITEMS
-		from 
-			OUTORD_ENTRPS oe																			-- 외주업체
-			LEFT JOIN  ATCHMNFL a ON oe.ATCHMNFL_ID = a.ATCHMNFL_ID
+         WITH RankedProjects AS (
+         SELECT
+         O.OUTORD_ENTRPS_ID,
+         P.PRJCT_ID,
+         P.PRJCT_NM,
+         ROW_NUMBER() OVER (PARTITION BY O.OUTORD_ENTRPS_ID ORDER BY P.PRJCT_NM) AS rn
+         FROM PRJCT P
+         JOIN OUTORD_ENTRPS_CT_PRMPC O ON P.PRJCT_ID = O.PRJCT_ID
+         WHERE BIZ_STTS_CD ='VTW00404'
+         )
+         SELECT
+         oe.OUTORD_ENTRPS_ID,                                                         -- 외주업체ID
+         OUTORD_ENTRPS_NM,                                                            -- 외주업체명
+         BRNO,                                                                        -- 사업자등록번호
+         TELNO,                                                                       -- 전화번호
+         PIC_FLNM,                                                                    -- 담당자명
+         oe.ATCHMNFL_ID,                                                              -- 첨부파일ID
+         oe.ADDR,
+         GROUP_CONCAT(SUBSTR(a.REAL_FILE_NM, 1, INSTR(a.REAL_FILE_NM, '.') - 1)) AS FILE_NM,  -- 첨부파일명
+         GROUP_CONCAT(CONCAT(RP.rn, '. ', RP.PRJCT_NM) SEPARATOR '\n') AS PRJCT_NM     -- 번호와 줄바꿈이 포함된 프로젝트명
+         FROM
+         OUTORD_ENTRPS oe                                                             -- 외주업체
+         LEFT JOIN ATCHMNFL a ON oe.ATCHMNFL_ID = a.ATCHMNFL_ID
+         LEFT JOIN RankedProjects RP ON RP.OUTORD_ENTRPS_ID = oe.OUTORD_ENTRPS_ID
 		WHERE 1=1
 		<if test="outordEntrpsNm != null and outordEntrpsNm !=''">
 	            AND oe.OUTORD_ENTRPS_NM LIKE CONCAT('%', #{outordEntrpsNm}, '%')
@@ -1577,7 +1589,8 @@
 	        <if test="picFlnm != null and picFlnm !=''">
 	            AND oe.PIC_FLNM LIKE CONCAT('%', #{picFlnm}, '%')
 	        </if>
-		GROUP BY OUTORD_ENTRPS_ID,OUTORD_ENTRPS_NM,BRNO,TELNO,PIC_FLNM,ATCHMNFL_ID
+		GROUP BY oe.OUTORD_ENTRPS_ID,OUTORD_ENTRPS_NM,BRNO,TELNO,PIC_FLNM,ATCHMNFL_ID
+        ORDER BY oe.REG_DT DESC
     </select>
     
     <!--파트너 직원관리 -->

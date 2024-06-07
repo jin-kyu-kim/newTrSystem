@@ -23,6 +23,7 @@ function ProjectOutordCompany () {
     const date = new Date();
     const now =  date.toISOString().split("T")[0] +" " +date.toTimeString().split(" ")[0];
     const { handleOpen } = useModal();
+    const rules = { X: /[02-9]/ };
 //============== 초기 조회할 때==========================================    
     useEffect(() => {
         if (!Object.values(param).every((value) => value === "")) {
@@ -64,10 +65,20 @@ function ProjectOutordCompany () {
       };
 //=================컴포넌트 내용 변경시=================================================
       const handleChgValue = ( name, value ) => {
-        setOutordCompanyValue({
-            ...outordCompanyValue,
-            [name]: value
-        });
+
+          if(name === 'telno'||name === 'brno'){
+              const numericValue = value.replace(/\D/g, '');
+              setOutordCompanyValue({
+                  ...outordCompanyValue,
+                  [name]: numericValue
+              });
+          }else{
+            setOutordCompanyValue({
+                ...outordCompanyValue,
+                [name]: value
+            });
+          }
+
       };
 
 //=================첨부파일=================================================
@@ -117,6 +128,8 @@ function ProjectOutordCompany () {
             });
             focusTextBox();
         };
+
+
 //================저장버튼 이벤트==================================================     
         const saveOutordC = () => {
            if(outordCompanyValue.outordEntrpsNm === null){
@@ -130,16 +143,11 @@ function ProjectOutordCompany () {
            }else if(outordCompanyValue.addr === null){
                 handleOpen("주소를 입력해주세요");
            }else{
-            const isconfirm = window.confirm("저장하시겠습니까?");
-        if (isconfirm) {
-           if(outordCompanyValue.outordEntrpsId === "" || outordCompanyValue.outordEntrpsId === null || outordCompanyValue.outordEntrpsId === undefined ){
-            insertCompanyValue();
-           }else{
-            updateCompanyValue();
-           }
-        } else {
-            return;
-        }
+               if(outordCompanyValue.outordEntrpsId === "" || outordCompanyValue.outordEntrpsId === null || outordCompanyValue.outordEntrpsId === undefined ){
+                   handleOpen("저장하시겠습니까?", insertCompanyValue, false);
+               }else{
+                   handleOpen("저장하시겠습니까?", updateCompanyValue, false);
+               }
            }
         };
 //================Insert==================================================    
@@ -212,13 +220,9 @@ function ProjectOutordCompany () {
                   }
         }
 //================Delete==================================================
-        const deleteCompany = () => {
-            const isconfirm = window.confirm("삭제하시겠습니까?");
-            if (isconfirm) {
-                deleteCompanyValue();
-                } else {
-                    return;
-                }
+        const deleteCompany = (e, data) => {
+            // console.log(e, data)
+            handleOpen("삭제하시겠습니까?", deleteCompanyValue);
         }
 
         const deleteCompanyValue = async() =>{
@@ -273,9 +277,9 @@ function ProjectOutordCompany () {
                     />
             </div>
                
-             <div style={{ marginTop: "10px", border: "2px solid #CCCCCC",display : 'flex', height: "300px",flexDirection: 'column', justifyContent: "center"  }}>
-                   <h5 style={{alignItems : 'left'}}>외주업체정보를 입력/수정 합니다.</h5>
-             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center',justifyContent: 'center', gap: '20px', marginLeft : '5px'}}>
+             <div style={{ padding : "20px" ,margin: "10px", border: "2px solid #CCCCCC",display : 'flex', height: "300px",flexDirection: 'column', justifyContent: "center"  }}>
+               <h5 style={{alignItems : 'left'}}>외주업체정보를 입력/수정 합니다.</h5>
+                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center',justifyContent: 'center', gap: '20px', marginLeft : '5px'}}>
                     <TextBox
                         ref={insertRef}
                         onValueChange={(e) => { handleChgValue("outordEntrpsNm", e) }}
@@ -284,12 +288,14 @@ function ProjectOutordCompany () {
                         showClearButton={true}
                         style={{ flex: 1, minWidth: '160px' }}
                     />
-                    <NumberBox
+                    <TextBox
                         onValueChange={(e) => { handleChgValue("brno", e) }}
                         value={outordCompanyValue.brno}
                         placeholder="사업자등록번호"
                         showClearButton={true}
                         style={{ flex: 1, minWidth: '160px' }}
+                        // mask="000-00-00000"
+                        maskRules={rules}
                     />
                     <TextBox
                         onValueChange={(e) => { handleChgValue("picFlnm", e) }}
@@ -298,12 +304,13 @@ function ProjectOutordCompany () {
                         showClearButton={true}
                         style={{ flex: 1, minWidth: '160px' }}
                     />
-                    <NumberBox
+                    <TextBox
                         onValueChange={(e) => { handleChgValue("telno", e) }}
                         value={outordCompanyValue.telno}
                         placeholder="전화번호"
                         showClearButton={true}
                         style={{ flex: 1, minWidth: '160px' }}
+                        maskRules={rules}
                     />
                     <TextBox
                         onValueChange={(e) => { handleChgValue("addr", e) }}
@@ -323,12 +330,12 @@ function ProjectOutordCompany () {
                             ref={fileUploaderRef}
                         />
                     </div>
-                    <div className="buttonContainer" style={{ marginTop: '5px',marginLeft : '5px' ,alignItems: 'left'}}>
+                    <div className="buttonContainer" style={{ marginTop: '5px',marginLeft : '5px' ,alignItems: 'end'}}>
                         <Button type = "default" style={{ height: "48px", width: "60px", marginRight: "15px" }} onClick={saveOutordC}>저장</Button>
                         <Button type = "danger" style={{ height: "48px", width: "60px", marginRight: "15px" }} onClick={resetForm}>초기화</Button>
                     </div>
-             </div>
-        </div>
+                </div>
+            </div>
     );
 };
 
