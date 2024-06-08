@@ -29,8 +29,8 @@ const CultureHealthCostReg = (props) => {
         const foundItem = values.find(item => item.atchmnfl && item.atchmnfl.length > 0);
 
         if (foundItem) {
-          const fileStrgCours = foundItem.atchmnfl[0].fileStrgCours;
-          const fileDir = fileStrgCours.substring(8);
+          const fileStrgCours = foundItem.atchmnfl[0]?.fileStrgCours;
+          const fileDir = fileStrgCours ? fileStrgCours.substring(8) : null;
           return fileDir;
         }
         return null;
@@ -176,7 +176,7 @@ const CultureHealthCostReg = (props) => {
             }
         })
         const errors = [];
-        if (maxSize !== 0 && maxSize > 1048576) {
+        if (maxSize !== 0 && maxSize > (1.5 * 1024 * 1024 * 1024)) {
             handleOpen('업로드 가능한 용량보다 큽니다.');
             errors.push('Exceeded size limit');
         }
@@ -257,8 +257,10 @@ const CultureHealthCostReg = (props) => {
                                 "Authorization": `Bearer ${token}`
                             },
                         })
+                        console.log('initParam', initParam)
                         if (response.status === 200) {
-                            await ApiRequest('/boot/indvdlClm/plusClturPhstrnActCt', initParam);
+                            const plucCltur = await ApiRequest('/boot/indvdlClm/plusClturPhstrnActCt', initParam);
+                            console.log('plucCltur', plucCltur)
                             onResetClick();
                             searchTable();
                             handleOpen('등록되었습니다.');
@@ -328,22 +330,20 @@ const CultureHealthCostReg = (props) => {
             if (confirmResult) {
                 onResetClick();
                 try {
-                    const paramCh = [{ tbNm: "CLTUR_PHSTRN_ACT_CT_REG" }, { empId: selectedItem.empId, clturPhstrnActCtSn: selectedItem.clturPhstrnActCtSn }]
-                    const responseCh = await ApiRequest("/boot/common/commonDelete", paramCh);
-                    if (responseCh === 1) {
+                    const params = [{ tbNm: "CLTUR_PHSTRN_ACT_CT_REG" }, { empId: selectedItem.empId, clturPhstrnActCtSn: selectedItem.clturPhstrnActCtSn }];
+                    const fileParams = [{ tbNm: "ATCHMNFL" }, { atchmnflId: selectedItem.atchmnflId }]; 
+                    const response = await ApiRequest("/boot/common/deleteWithFile", {
+                        params: params, fileParams: fileParams, dirType: dirType
+                    });
+                    console.log('response', response)
+                    if (response >= 1) {
                         const paramMn = { empId: selectedItem.empId, clmYmd: selectedItem.clmYmd, clturPhstrnSeCd: selectedItem.clturPhstrnSeCd, clmAmt: selectedItem.clmAmt }
                         const responseMn = await ApiRequest('/boot/indvdlClm/minusClturPhstrnActCt', paramMn);
-                        if (responseMn === 1) {
-                            const paramAt = [{ tbNm: "ATCHMNFL" }, { atchmnflId: selectedItem.atchmnflId }]
-                            if (selectedItem.atchmnflId != null) {
-                                await ApiRequest("/boot/common/commonDelete", paramAt);
-                                searchTable();
-                            }
-                            props.searchGrid();
-                            searchTable();
-                            setSelectedItem(null);
-                            handleOpen('삭제되었습니다.');
-                        }
+                        console.log('re', responseMn)
+                        props.searchGrid();
+                        searchTable();
+                        setSelectedItem(null);
+                        handleOpen('삭제되었습니다.');
                     }
                 } catch (error) {
                     console.error("API 요청 에러:", error);
