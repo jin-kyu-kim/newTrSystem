@@ -228,7 +228,8 @@ const EmpVacation = () => {
     // 휴가신청휴가결재저장정보
     const [insertVcatnValue, setInsertVcatnValue] = useState({
         empId: sessionEmpId,
-        flagYear: flagYear
+        flagYear: flagYear,
+        dirType: 'elec'
     });
 
     // 첨부파일팝업 첨부파일ID 정보

@@ -12,18 +12,19 @@ import BoardInputForm from 'components/composite/BoardInputForm';
 const CsServiceInput = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { edit, insertUrl, detail } = NoticeJson;
+    const { edit, insertUrl, detail, dirType } = NoticeJson;
     const [ attachments, setAttachments ] = useState([]);
     const [ deleteFiles, setDeleteFiles ] = useState([{tbNm: "ATCHMNFL"}]);
     const [ newAttachments, setNewAttachments ] = useState(attachments);
     const [ prevData, setPrevData ] = useState({});
+    const [ realData, setRealData ] = useState([])
+    const { handleOpen } = useModal();
     const [ data, setData ] = useState({
         errId: uuid(),
         useYn: "Y",
-        errPrcsSttsCd : "VTW05501"
+        errPrcsSttsCd : "VTW05501",
+        dirType: dirType
     });
-    const [realData, setRealData] = useState([])
-    const { handleOpen } = useModal();
 
     const editMode = location.state.editMode;
     const id = location.state.id;
@@ -36,13 +37,14 @@ const CsServiceInput = () => {
         try {
             const response = await ApiRequest("/boot/common/queryIdSearch", params);
             if (response.length !== 0) {
-                const { atchmnflSn, realFileNm, strgFileNm, regDt, regEmpNm, ...resData } = response[0];
-                setData({ ...resData });
+                const { atchmnflSn, realFileNm, strgFileNm, regDt, regEmpNm, fileStrgCours, ...resData } = response[0];
+                setData({ ...resData, dirType });
                 setPrevData({ ...resData });
                 const tmpFileList = response.map((data) => ({
                     realFileNm: data.realFileNm,
                     strgFileNm: data.strgFileNm,
-                    atchmnflSn: data.atchmnflSn
+                    atchmnflSn: data.atchmnflSn,
+                    fileStrgCours: data.fileStrgCours
                 }));
                 setAttachments(tmpFileList);
             }
@@ -60,12 +62,11 @@ const CsServiceInput = () => {
     }, [data]);
 
     const attachFileDelete = (deleteItem) => {
-        setDeleteFiles([...deleteFiles, { atchmnflId: data.atchmnflId , atchmnflSn: deleteItem.atchmnflSn }]);
+        setDeleteFiles([...deleteFiles, { atchmnflId: data.atchmnflId , atchmnflSn: deleteItem.atchmnflSn, strgFileNm: deleteItem.strgFileNm }]);
         setNewAttachments(newAttachments.filter(item => item !== deleteItem));
     }
 
     const validateData = () => {
-        console.log(realData)
         const errors = [];
         if (!realData.errTtl || !realData.errCn) {
           errors.push('required');
@@ -88,6 +89,7 @@ const CsServiceInput = () => {
             })
         }
         const formData = new FormData();
+        
         formData.append("tbNm", JSON.stringify({tbNm: "ERR_MNG"}));
         formData.append("data", JSON.stringify(realData));
         if(editMode === 'update') {
@@ -103,11 +105,8 @@ const CsServiceInput = () => {
                     headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
                 })
                 if (response.data >= 1) {
-                    if(editMode === 'update') {
-                    handleOpen('수정되었습니다.');
-                    }else{
-                    handleOpen('등록되었습니다.');
-                    }
+                    const action = editMode === 'update' ? '수정' : '등록';
+                    handleOpen(`${action}되었습니다.`);
                     navigate("/sysMng/CsServiceList");
                 }
             } else{
@@ -121,11 +120,8 @@ const CsServiceInput = () => {
 
     return (
         <div className="container">
-            <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }}></div>
-            <div className="col-md-10 mx-auto" style={{ marginBottom: "30px" }}>
-                <h1 style={{ fontSize: "40px" }}>오류게시판</h1>
-                <span>* 오류게시 자료를 {editMode === 'update' ? '수정합니다' : '입력합니다.'}</span>
-            </div>
+            <div className="title">오류게시판</div>
+            <div className='title-desc'>* 오류게시 자료를 {editMode === 'update' ? '수정합니다' : '입력합니다.'}</div>
 
             <BoardInputForm
                 edit={edit}

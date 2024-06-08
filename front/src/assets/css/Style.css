@@ -691,3 +691,12 @@
       flex-direction: column !important;
   }
 }
+
+.deleteIconBtn {
+  background-color: transparent;
+  font-weight: bold;
+  border: none;
+  margin-left: 10px;
+  color: red;
+  cursor: pointer;
+}
