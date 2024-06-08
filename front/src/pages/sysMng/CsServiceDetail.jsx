@@ -24,7 +24,7 @@ const CsServiceDetail = () => {
     const { handleOpen } = useModal();
     const userAuth = JSON.parse(localStorage.getItem("userAuth"));
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-    const fileDir = fileList[0]?.fileStrgCours.substring(8);
+    const fileDir = fileList[0]?.fileStrgCours ? fileList[0]?.fileStrgCours.substring(8) : null;
 
     const getOneData = async () => {
         const params = {

@@ -147,7 +147,11 @@ const ElecAtrz = () => {
     const res = await ApiRequest('/boot/elecAtrz/deleteTempAtrz', {
       elctrnAtrzId: data.elctrnAtrzId, atrzTySeCd: data.elctrnAtrzTySeCd
     });
-    if(res >= 1) searchHandle(); getAllCount();
+    if(res >= 1) {
+      searchHandle(); 
+      getAllCount();
+      handleOpen("삭제되었습니다.");
+    }
   }
 
   const onClickBtn = async (button, data) => {

@@ -46,7 +46,7 @@ const ElecAtrzDetail = () => {
     const [ histPopVisible, setHistPopVisible ] = useState(false); // 이력 팝업
     const contentRef = useRef(null);
     const printRef = useRef();
-    const fileDir = attachFileList[0]?.fileStrgCours.substring(8);
+    const fileDir = attachFileList[0]?.fileStrgCours ? attachFileList[0]?.fileStrgCours.substring(8) : null;
 
     useEffect(() => {
         const getDetailData = async () => {
