@@ -1,18 +1,10 @@
-import { useState, useEffect, useRef } from "react";
-import { Popup } from "devextreme-react";
-import ApiRequest from "utils/ApiRequest";
-import axios from "axios";
-
-// DevExtrme import
-import { TextBox, Button } from "devextreme-react";
-
-// 테이블 import
-// npm install @mui/material
-// npm install @emotion/styled
-import { Table, TableCell, TableHead, TableRow } from '@mui/material';
-
-// 랜덤채번 import
+import { useState, useEffect } from "react";
 import uuid from "react-uuid";
+import axios from "axios";
+import ApiRequest from "utils/ApiRequest";
+import { Popup } from "devextreme-react";
+import { TextBox, Button } from "devextreme-react";
+import { Table, TableCell, TableHead, TableRow } from '@mui/material';
 import { useModal } from "../../components/unit/ModalContext";
 
 const token = localStorage.getItem("token");
@@ -26,22 +18,13 @@ const EmpVacationCanclePopup = ({ width, height, visible, dataMap, empId, loadin
         getRefrnMan();
     }, [])
 
-
-
     // 휴가전자결재정보조회
     const [selectElctrnAtrzValue, setSelectElctrnAtrzValue] = useState();
     const [selectAtrzLnList, setSelectAtrzLnList] = useState();
     const [selectRefrnManList, setSelectRefrnManList] = useState();
 
-
-
-
     // 취소사유
     const [rtrcnPrvonsh, setRtrcnPrvonsh] = useState();
-
-
-
-
 
     const getElctrnAtrz = async () => {
         setSelectElctrnAtrzValue(await ApiRequest('/boot/common/commonSelect', [{ tbNm: "ELCTRN_ATRZ" }, { elctrnAtrzId: dataMap.elctrnAtrzId }]));

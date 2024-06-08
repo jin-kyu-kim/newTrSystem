@@ -5,9 +5,9 @@ import { Container } from 'react-bootstrap';
 import { useModal } from "../../components/unit/ModalContext";
 import { Button } from "devextreme-react";
 import ApiRequest from "utils/ApiRequest";
-import NoticeJson from "../sysMng/CsServiceJson.json";
-import CsServiceReply from "./CsServiceReply";
 import CustomCdComboBox from "../../components/unit/CustomCdComboBox";
+import CsServiceJson from "../sysMng/CsServiceJson.json";
+import CsServiceReply from "./CsServiceReply";
 
 const CsServiceDetail = () => {
     const navigate = useNavigate();
@@ -15,15 +15,16 @@ const CsServiceDetail = () => {
     const errId = location.state.id;
     const errPrcsSttsCd = location.state?.errPrcsSttsCd;
     const errPrcsSttsCdNm = location.state?.errPrcsSttsCdNm;
-    const { detailQueryId, sysButtonGroup } = NoticeJson.detail;
-    const [oneData, setOneData] = useState({});
-    const [fileList, setFileList] = useState([]);
-    const [errorCd, setErrorCd] = useState(errPrcsSttsCd);
-    const [hasPermission, setPermission] = useState(false);
-    const [btnVisible, setBtnVisible] = useState(false);
+    const { detailQueryId, sysButtonGroup, dirType } = CsServiceJson.detail;
+    const [ oneData, setOneData ] = useState({});
+    const [ fileList, setFileList ] = useState([]);
+    const [ errorCd, setErrorCd ] = useState(errPrcsSttsCd);
+    const [ hasPermission, setPermission ] = useState(false);
+    const [ btnVisible, setBtnVisible ] = useState(false);
     const { handleOpen } = useModal();
     const userAuth = JSON.parse(localStorage.getItem("userAuth"));
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    const fileDir = fileList[0]?.fileStrgCours.substring(8);
 
     const getOneData = async () => {
         const params = {
@@ -36,7 +37,8 @@ const CsServiceDetail = () => {
                 setOneData(response[0]);
                 const tmpFileList = response.map((data) => ({
                     realFileNm: data.realFileNm,
-                    strgFileNm: data.strgFileNm
+                    strgFileNm: data.strgFileNm,
+                    fileStrgCours: data.fileStrgCours
                 }));
                 if (fileList.length === 0) {
                     setFileList(prevFileList => [...prevFileList, ...tmpFileList]);
@@ -65,7 +67,7 @@ const CsServiceDetail = () => {
         const fileParams = [{ tbNm: "ATCHMNFL" }, { atchmnflId: oneData.atchmnflId }];
         try {
             const response = await ApiRequest("/boot/common/deleteWithFile", {
-                params: params, fileParams: fileParams
+                params: params, fileParams: fileParams, dirType: dirType
             });
             if (response >= 1) {
                 navigate("/sysMng/CsServiceList")
@@ -105,7 +107,7 @@ const CsServiceDetail = () => {
 
                         {fileList.length !== 0 && fileList.filter(file => file.realFileNm !== null && file.realFileNm !== undefined).filter(file => file.realFileNm.endsWith('.jpg') || file.realFileNm.endsWith('.jpeg') || file.realFileNm.endsWith('.png') || file.realFileNm.endsWith('.gif')).map((file, index) => (
                             <div key={index} style={{ textAlign: 'center' }}>
-                                <img src={`/upload/${file.strgFileNm}`}
+                                <img src={`${fileDir}/${file.strgFileNm}`}
                                     style={{ width: '80%', marginBottom: '20px' }} alt={file.realFileNm} />
                             </div>
                         ))}
@@ -114,7 +116,7 @@ const CsServiceDetail = () => {
                         <div style={{ fontWeight: 'bold' }}>* 첨부파일</div>
                         {fileList.length !== 0 && fileList.filter(file => file.realFileNm !== null && file.realFileNm !== undefined).filter(file => !(file.realFileNm.endsWith('.jpg') || file.realFileNm.endsWith('.jpeg') || file.realFileNm.endsWith('.png') || file.realFileNm.endsWith('.gif'))).map((file, index) => (
                             <div key={index}>
-                                <a href={`/upload/${file.strgFileNm}`} download={file.realFileNm}
+                                <a href={`${fileDir}/${file.strgFileNm}`} download={file.realFileNm}
                                     style={{ fontSize: '18px', color: 'blue', fontWeight: 'bold' }}>{file.realFileNm}</a>
                             </div>
                         ))}

@@ -1197,11 +1197,23 @@ public class IndvdlClmDomain {
         deleteElctrnAtrzList.add(0, new HashMap<>() {{ put("tbNm", "ELCTRN_ATRZ"); }});
         deleteElctrnAtrzList.add(1, elctrnAtrzIdMap);
 
+        // 첨부파일이 존재하는지 확인 - 첨부파일 포함 전체삭제
+        Map<String, Object> deleteParam = new HashMap<>();
 
         List<Map<String, Object>> deletetVactnAtrzList = new ArrayList<>();
+        List<Map<String, Object>> athcParam = new ArrayList<>();
+        String atchmnflId = String.valueOf(dataMap.get("atchmnflId"));
+
+        if(atchmnflId != null){
+            athcParam.add(Map.of("tbNm", "ATCHMNFL"));
+            athcParam.add(Map.of("atchmnflId", atchmnflId));
+        }
         deletetVactnAtrzList.add(0, new HashMap<>() {{ put("tbNm", "VCATN_ATRZ"); }});
         deletetVactnAtrzList.add(1, elctrnAtrzIdMap);
 
+        deleteParam.put("params", deletetVactnAtrzList);
+        deleteParam.put("fileParams", athcParam);
+        deleteParam.put("dirType", "elec");
 
         List<Map<String, Object>> deleteAtrzLnList = new ArrayList<>();
         deleteAtrzLnList.add(0, new HashMap<>() {{ put("tbNm", "ATRZ_LN"); }});
@@ -1214,7 +1226,7 @@ public class IndvdlClmDomain {
 
         commonService.deleteData(deleteRefrnManList);
         commonService.deleteData(deleteAtrzLnList);
-        commonService.deleteData(deletetVactnAtrzList);
+        commonService.deleteFile(deleteParam); // VCATN, ATCHMNFL 삭제
         commonService.deleteData(deleteElctrnAtrzList);
 
         return 0;

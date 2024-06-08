@@ -1,9 +1,10 @@
 {
   "menuName": "Notice",
-  "keyColumn": "errId",
   "queryId": "sysMngMapper.retrieveErrMng",
-  "systemInsertPage": "/sysMng/CsServiceInput",
+  "keyColumn": "errId",
+  "dirType": "notice",
   "insertUrl": "/boot/common/insertlongText",
+  "systemInsertPage": "/sysMng/CsServiceInput",
   "tableColumns": [
     { "key": "num", "value": "번호" , "width": "10%"},
     { "key": "errTtl", "value": "제목", "width": "45%"},
@@ -19,6 +20,7 @@
     ]
   },
   "detail": {
+    "dirType": "notice",
     "detailQueryId": "sysMngMapper.retrieveErrMngDetail",
     "sysButtonGroup": [
       { "id": 1, "text": "목록", "onClick": "/sysMng/CsServiceList", "type": "normal", "btnAlways": true},

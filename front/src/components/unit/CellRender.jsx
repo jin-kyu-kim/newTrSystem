@@ -64,13 +64,16 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
                 }} >
             </TextBox>
         );
+        
     } else if (col.cellType === 'fileCell') {
         let atchList = props?.data.atchmnfl;
+        const fileDir = atchList[0]?.fileStrgCours.substring(8);
+
         if (atchList != null) {
             return (<div>
                 {atchList.map((item, index) => (
                     <div key={index} style={{ whiteSpace: 'pre-wrap' }}>
-                        <a href={`/upload/${item.strgFileNm}`} download={item.realFileNm}>{item.realFileNm}</a>
+                        <a href={`${fileDir}/${item.strgFileNm}`} download={item.realFileNm}>{item.realFileNm}</a>
                     </div>
                 ))}
             </div>);
