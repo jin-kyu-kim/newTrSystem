@@ -10,21 +10,19 @@ import { useModal } from "../../../components/unit/ModalContext";
 import { Button, TextBox, FileUploader, DateBox } from "devextreme-react";
 
 function ProjectOutordEmp() {
-  const [values, setValues] = useState([]);
-  const [param, setParam] = useState({});
-  const [totalItems, setTotalItems] = useState(0);
-  const [outordEmpValue, setOutordEmpValue] = useState({}); //외주업체 insert 및 클릭이벤트 값설정용
-  const [attachments, setAttachments] = useState([]);
-  const [empMax, setEmpMax] = useState({});   //사번 MAX값
-  const { keyColumn, queryId, tableColumns, searchInfo } = ProjectOutordJson.ProjectOutordEmpJson;
-  const [deleteFiles, setDeleteFiles] = useState([{ tbNm: "ATCHMNFL" }]);
+  const [ values, setValues] = useState([]);
+  const [ param, setParam] = useState({});
+  const [ totalItems, setTotalItems] = useState(0);
+  const [ fileList, setFileList ] = useState([]);
+  const fileDir = fileList[0]?.fileStrgCours ? fileList[0]?.fileStrgCours.substring(8) : null;
+  const [ outordEmpValue, setOutordEmpValue] = useState({}); // 외주업체 insert 및 클릭이벤트 값설정용
+  const [ attachments, setAttachments] = useState([]);
+  const [ empMax, setEmpMax] = useState({});   // 사번 MAX값
+  const { keyColumn, queryId, tableColumns, searchInfo, inputList } = ProjectOutordJson.ProjectOutordEmpJson;
+  const [ deleteFiles, setDeleteFiles] = useState([{ tbNm: "ATCHMNFL" }]);
   const { handleOpen } = useModal();
-  const fileUploaderRef = useRef(null); //파일 업로드용 ref
-  const insertRef = useRef(null); //textbox focus용 ref
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-  const empId = userInfo.empId;
-  const date = new Date();
-  const now = date.toISOString().split("T")[0] + " " + date.toTimeString().split(" ")[0];
+  const fileUploaderRef = useRef(null); // 파일 업로드용 ref
+  const insertRef = useRef(null); // textbox focus용 ref
 
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
@@ -109,13 +107,35 @@ function ProjectOutordEmp() {
   };
 
   const focusTextBox = () => {
-    let focusTextBox = insertRef.current.instance;
-    focusTextBox.focus();
+    const element = document.querySelector('.partner-insert-area');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
   };
+  
+  useEffect(() => {
+    if(outordEmpValue.atchmnflId !== null){
+      getAttachment();
+    } else{
+      setFileList([]);
+    }
+  }, [outordEmpValue])
+
+  const getAttachment = async () => {
+    const res = await ApiRequest('/boot/common/commonSelect', [
+      { tbNm: "ATCHMNFL" }, { atchmnflId: outordEmpValue.atchmnflId }
+    ]);
+    if(res.length !== 0){
+      setFileList(res);
+    }
+  }
 
   const getDetail = (e) => {
+    if(e.event.target.className === "dx-button-content" || e.event.target.className === "dx-button-text") {
+      return;
+    }
+    setOutordEmpValue([])
     setOutordEmpValue({
-      ...outordEmpValue,
       empId: e.data.empId,
       empno: e.data.empno,
       outordHnfOgdpNm: e.data.outordHnfOgdpNm,
@@ -127,7 +147,6 @@ function ProjectOutordEmp() {
       telno: e.data.telno,
       eml: e.data.eml,
     });
-    focusTextBox();
   };
 
   const saveOutordEmp = () => {
@@ -154,7 +173,9 @@ function ProjectOutordEmp() {
   const empnoHandle = async () => { // max값 채번
     try {
       const response = await ApiRequest("/boot/common/queryIdSearch", { empnoChk: "VKP", queryId: "humanResourceMngMapper.retrieveEmpnoMax", });
-      setEmpMax(response[0].empnoChk);
+      if(response.length !== 0){
+        setEmpMax(response[0].empnoChk);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -166,25 +187,23 @@ function ProjectOutordEmp() {
     }
   }, [empMax])
 
-
   const insertEmpValue = async () => {
-    const insertData =
-      ({
-        empId: uuid(),
-        empno: empMax,
-        hdofSttsCd: 'VTW00301',
-        empTyCd: 'VTW00203',
-        empFlnm: outordEmpValue.empFlnm,
-        outordHnfOgdpNm: outordEmpValue.outordHnfOgdpNm,
-        outordHnfGradCd: outordEmpValue.outordHnfGradCd,
-        brdt: outordEmpValue.brdt,
-        telno: outordEmpValue.telno,
-        eml: outordEmpValue.eml,
-        atchmnflId: outordEmpValue.atchmnflId,
-        dirType: ProjectOutordJson.dirType
-      });
-
+    const insertData = ({
+      empId: uuid(),
+      empno: empMax,
+      hdofSttsCd: 'VTW00301',
+      empTyCd: 'VTW00203',
+      empFlnm: outordEmpValue.empFlnm,
+      outordHnfOgdpNm: outordEmpValue.outordHnfOgdpNm,
+      outordHnfGradCd: outordEmpValue.outordHnfGradCd,
+      brdt: outordEmpValue.brdt,
+      telno: outordEmpValue.telno,
+      eml: outordEmpValue.eml,
+      atchmnflId: outordEmpValue.atchmnflId,
+      dirType: ProjectOutordJson.dirType
+    });
     const formData = new FormData();
+    console.log('insertData', insertData)
     formData.append("tbNm", JSON.stringify({ tbNm: "EMP" }));
     formData.append("data", JSON.stringify(insertData));
     Object.values(attachments).forEach((attachment) => formData.append("attachments", attachment));
@@ -203,21 +222,20 @@ function ProjectOutordEmp() {
       console.error("Error fetching data", error);
     }
   }
-  //================Update==================================================
-  const updateEmpValue = async () => {
-    const updateData =
-      ({
-        empFlnm: outordEmpValue.empFlnm,
-        outordHnfOgdpNm: outordEmpValue.outordHnfOgdpNm,
-        outordHnfGradCd: outordEmpValue.outordHnfGradCd,
-        brdt: outordEmpValue.brdt,
-        telno: outordEmpValue.telno,
-        eml: outordEmpValue.eml,
-        atchmnflId: outordEmpValue.atchmnflId,
-        dirType: ProjectOutordJson.dirType
-      });
 
+  const updateEmpValue = async () => {
+    const updateData = ({
+      empFlnm: outordEmpValue.empFlnm,
+      outordHnfOgdpNm: outordEmpValue.outordHnfOgdpNm,
+      outordHnfGradCd: outordEmpValue.outordHnfGradCd,
+      brdt: outordEmpValue.brdt,
+      telno: outordEmpValue.telno,
+      eml: outordEmpValue.eml,
+      atchmnflId: outordEmpValue.atchmnflId,
+      dirType: ProjectOutordJson.dirType
+    });
     const formData = new FormData();
+
     formData.append("tbNm", JSON.stringify({ tbNm: "EMP" }));
     formData.append("data", JSON.stringify(updateData));
     formData.append("deleteFiles", JSON.stringify(deleteFiles));
@@ -230,7 +248,7 @@ function ProjectOutordEmp() {
         headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
       });
       if (response.data >= 1) {
-        handleOpen("저장되었습니다.");
+        handleOpen("수정되었습니다.");
         resetForm();
         pageHandle();
       }
@@ -264,16 +282,54 @@ function ProjectOutordEmp() {
       console.error("Error fetching data", error);
     }
   };
+  const inputAreaRender = (inputList) => {
+    return(
+      inputList.map(item => {
+        switch(item.type) {
+          case 'TextBox': 
+            return(
+              <TextBox
+                onValueChange={(e) => { handleChgValue(item.key, e) }}
+                value={outordEmpValue[item.key]}
+                placeholder={item.name}
+                showClearButton={true}
+                style={{ flex: 1 }}
+              />
+            )
+          case 'DateBox':
+            return(
+              <DateBox
+                onValueChange={(e) => { handleChgValue(item.key, e) }}
+                value={outordEmpValue[item.key]}
+                dateSerializationFormat="yyyyMMdd"
+                displayFormat="yyyy-MM-dd"
+                placeholder={item.name}
+                showClearButton={true}
+                style={{ flex: 1 }}
+              />
+            )
+          default: 
+            return(
+              <div style={{ flex: 1 }}>
+                <CustomCdComboBox
+                  param="VTW005"
+                  placeholderText={item.name}
+                  name={item.key}
+                  onSelect={handleChgCd}
+                  value={outordEmpValue[item.key]}
+                  required={false}
+                />
+              </div>
+            )
+        }
+      })
+    )
+  }
 
   return (
     <div style={{ marginLeft: "1%", marginRight: "1%" }}>
-      <div className="mx-auto" style={{ marginTop: "20px", marginBottom: "10px" }}>
-        <h1 style={{ fontSize: "30px" }}>파트너 직원관리</h1>
-      </div>
-      <div className="mx-auto" style={{ marginBottom: "10px" }}>
-        <span>* 파트너 직원을 조회합니다.</span>
-      </div>
-
+      <div className="title">파트너 직원 관리</div>
+      <div className="title-desc">* 파트너직원을 조회합니다.</div>
       <div style={{ marginBottom: "20px" }}>
         <SearchOutordSet callBack={searchHandle} props={searchInfo} />
       </div>
@@ -284,7 +340,7 @@ function ProjectOutordEmp() {
           type="default"
           stylingMode="contained"
           style={{ margin: "2px" }}
-          onClick={focusTextBox}
+          onClick={() => focusTextBox()}
         >
           입력화면이동
         </Button>
@@ -296,77 +352,38 @@ function ProjectOutordEmp() {
           columns={tableColumns}
           values={values}
           paging={true}
-          onRowClick={getDetail}
+          onRowClick={(e) => getDetail(e)}
           onClick={deleteOutEmp}
           wordWrap={true}
         />
       </div>
 
-        <div style={{ padding: "20px",marginTop: "10px", border: "2px solid #CCCCCC",display : 'flex', height: "300px",flexDirection: 'column', justifyContent: "center" }}>
-              <h5 style={{alignItems : 'left'}}>외주직원정보를 입력/수정 합니다.</h5>
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center',justifyContent: 'center', gap: '20px', marginLeft : '5px'}}>
-          <TextBox
-              ref={insertRef}
-              onValueChange={(e) => { handleChgValue("outordHnfOgdpNm", e) }}
-              value={outordEmpValue.outordHnfOgdpNm}
-              placeholder="소속"
-              showClearButton={true}
-              style={{ flex: 1, minWidth: '160px' }}
+      <div className='partner-insert-area' ref={insertRef}>
+        <h5 style={{ alignItems: 'left', marginBottom: '20px' }}>외주직원정보를 입력/수정 합니다.</h5>
+        <div className='partner-input-box'>
+          {inputAreaRender(inputList)}
+        </div>
+        <div style={{marginBottom: '30px'}}>
+          <FileUploader
+            selectButtonText="첨부파일"
+            multiple={true}
+            labelText=""
+            uploadMode="useButton"
+            onValueChanged={changeAttchValue}
+            ref={fileUploaderRef}
           />
-          <TextBox
-              onValueChange={(e) => { handleChgValue("empFlnm", e) }}
-              value={outordEmpValue.empFlnm}
-              placeholder="성명"
-              showClearButton={true}
-              style={{ flex: 1, minWidth: '160px' }}
-          />
-          <DateBox
-              onValueChange={(e) => { handleChgValue("brdt", e) }}
-              value={outordEmpValue.brdt}
-              placeholder="생년월일"
-              showClearButton={true}
-              style={{ flex: 1, minWidth: '160px' }}
-          />
-          <CustomCdComboBox
-              param="VTW005"
-              placeholderText="등급"
-              name="outordHnfGradCd"
-              onSelect={handleChgCd}
-              value={outordEmpValue.outordHnfGradCd}
-              required={false}
-              style={{ flex: 1, minWidth: '160px' }}
-           />
-          <TextBox
-              onValueChange={(e) => { handleChgValue("telno", e) }}
-              value={outordEmpValue.telno}
-              placeholder="전화번호"
-              showClearButton={true}
-              style={{ flex: 1, minWidth: '160px' }}
-          />
-           <TextBox
-              onValueChange={(e) => { handleChgValue("eml", e) }}
-              value={outordEmpValue.eml}
-              placeholder="이메일"
-              showClearButton={true}
-              style={{ flex: 1, minWidth: '160px' }}
-          />
-          </div>
-          <div>
-              <FileUploader
-                  selectButtonText="첨부파일"
-                  multiple={true}
-                  labelText=""
-                  uploadMode="useButton"
-                  onValueChanged={changeAttchValue}
-                  ref={fileUploaderRef}
-              />
-          </div>
-          <div className="buttonContainer" style={{ marginTop: '5px',marginLeft : '5px' ,alignItems: 'left'}}>
-              <Button type = "default" style={{ height: "48px", width: "60px", marginRight: "15px" }} onClick={saveOutordEmp}>저장</Button>
-              <Button type = "danger" style={{ height: "48px", width: "60px", marginRight: "15px" }} onClick={resetForm}>초기화</Button>
-          </div>
+          {fileList.length !== 0 && fileList.filter(file => file.realFileNm !== null && file.realFileNm !== undefined).filter(file => !(file.realFileNm.endsWith('.jpg') || file.realFileNm.endsWith('.jpeg') || file.realFileNm.endsWith('.png') || file.realFileNm.endsWith('.gif'))).map((file, index) => (
+            <div key={index}>
+              <a href={`${fileDir}/${file.strgFileNm}`} download={file.realFileNm} style={{ fontSize: '18px', color: 'blue', fontWeight: 'bold' }}>{file.realFileNm}</a>
+            </div>
+           ))}
+        </div>
+        <div className="buttonContainer" style={{ marginTop: '5px', marginLeft: '5px', alignItems: 'left' }}>
+          <Button type="default" style={{ height: "48px", width: "60px", marginRight: "15px" }} onClick={() => saveOutordEmp()}>저장</Button>
+          <Button type="danger" style={{ height: "48px", width: "60px", marginRight: "15px" }} onClick={resetForm}>초기화</Button>
         </div>
       </div>
-    );
+    </div>
+  );
 };
 export default ProjectOutordEmp;

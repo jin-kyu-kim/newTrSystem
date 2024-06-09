@@ -706,3 +706,23 @@
   color: red;
   cursor: pointer;
 }
+
+/* 프로젝트 - 파트너 css */
+.partner-insert-area {
+  padding: 20px;
+  margin: 10px;
+  border: 2px solid #CCCCCC;
+  display: flex;
+  height: auto;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.partner-input-box {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-left: 5px;
+}
