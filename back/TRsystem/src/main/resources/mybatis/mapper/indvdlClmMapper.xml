@@ -453,6 +453,7 @@
     <insert id="mergePrjctIndvdlCtMmStrg" parameterType="map">
         /* indvdlClmMapper.mergePrjctIndvdlCtMmStrg */
         INSERT INTO PRJCT_INDVDL_CT_MM
+        (PRJCT_ID, EMP_ID, APLY_YM, APLY_ODR, CT_ATRZ_CMPTN_YN, MM_ATRZ_CMPTN_YN)
         VALUES (
             #{prjctId}			/* 프로젝트ID */
             ,#{empId}			/* 직원ID */
@@ -460,7 +461,6 @@
             ,#{aplyOdr}			/* 신청차수 */
             ,NULL            	/* 비용결재완료여부 */
             ,'N'            	/* MM결재완료여부 */
-            ,#{expensCd}		/* 경비코드 */
         )
         ON DUPLICATE KEY UPDATE
             PRJCT_ID 			= #{prjctId}
