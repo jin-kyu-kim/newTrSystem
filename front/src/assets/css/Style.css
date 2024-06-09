@@ -446,19 +446,25 @@
 
 /* 출력 페이지 프린트 속성 */
 @media print {
-  table {
-    break-inside: avoid;
-  }
-  tr {
-      page-break-inside: avoid;
-  }
-  td {
-      page-break-inside: avoid;
-      white-space: nowrap;
-  }
   body {
     -webkit-print-color-adjust: exact;
+    font-size: 12pt;
   }
+  .dx-datagrid-content {
+    width: 100% !important;
+    overflow: visible !important;
+    transform-origin: top left !important;
+    max-width: 1900px !important; /* DataGrid의 최대 너비를 고정 */
+    height: auto !important;
+    page-break-inside: avoid !important;
+  }
+  
+  .dx-pivotgrid {
+    width: 100% !important;
+    overflow: visible !important;
+    font-size: 12px !important;
+  }
+
   .printBtn { display: none; }
   .elecTopBtn { display: none; } /* 프린트 대상 - 버튼 제외 */
 }

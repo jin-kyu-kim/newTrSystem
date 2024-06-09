@@ -160,20 +160,7 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfoProps, c
                                     <ReactToPrint 
                                         trigger={() => ( <Button text='출력' type='success' icon='print' /> )}
                                         content={() => contentRef.current} 
-                                        pageStyle="@page { size: A3; ratio:100%; }
-                                        @media print {
-                                            .dx-datagrid {
-                                                width: 100% !important;
-                                                overflow: visible !important;
-                                                font-size: 12px !important;
-                                            }
-                                            .dx-pivotgrid {
-                                                width: 100% !important;
-                                                overflow: visible !important;
-                                                font-size: 12px !important;
-                                            }
-                                            /* 추가적으로 필요한 스타일을 여기에 정의할 수 있습니다 */
-                                        }" 
+                                        pageStyle="@page { size: A3; ratio:100%; }" 
                                     />
                                 </div>
                             </div>
