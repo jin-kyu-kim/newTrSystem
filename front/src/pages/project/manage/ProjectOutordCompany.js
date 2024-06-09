@@ -9,15 +9,15 @@ import axios from "axios";
 import CustomTable from "components/unit/CustomTable";
 
 function ProjectOutordCompany() {
+    const { keyColumn, queryId, tableColumns, searchInfo, inputList } = ProjectOutordJson.ProjectOutordCompnayJson;
     const [ values, setValues ] = useState([]);
     const [ param, setParam ] = useState({});
     const [ totalItems, setTotalItems ] = useState(0);
-    const [ fileList, setFileList ] = useState([]);
-    const fileDir = fileList[0]?.fileStrgCours ? fileList[0]?.fileStrgCours.substring(8) : null;
-    const [ outordCompanyValue, setOutordCompanyValue ] = useState({}); //외주업체 insert 및 클릭이벤트 값설정용
-    const [ attachments, setAttachments ] = useState([]);
-    const { keyColumn, queryId, tableColumns, searchInfo, inputList } = ProjectOutordJson.ProjectOutordCompnayJson;
+    const [ fileList, setFileList ] = useState([]); // 기존
+    const [ attachments, setAttachments ] = useState(fileList); // new Attachment
     const [ deleteFiles, setDeleteFiles ] = useState([{ tbNm: "ATCHMNFL" }]);
+    const fileDir = fileList[0]?.fileStrgCours ? fileList[0]?.fileStrgCours.substring(8) : null;
+    const [ outordCompanyValue, setOutordCompanyValue ] = useState({}); // selected 데이터
     const { handleOpen } = useModal();
     const fileUploaderRef = useRef(null); //파일 업로드용 ref
     const rules = { X: /[02-9]/ };
@@ -29,10 +29,7 @@ function ProjectOutordCompany() {
     }, [param]);
 
     const searchHandle = async (initParam) => {
-        setParam({
-            ...initParam,
-            queryId: queryId,
-        });
+        setParam({ ...initParam, queryId: queryId });
     };
 
     const pageHandle = async () => {
@@ -43,11 +40,17 @@ function ProjectOutordCompany() {
                 setTotalItems(response[0].totalItems);
             } else {
                 setValues([]);
+                setTotalItems(0);
               }
         } catch (error) {
             console.log(error);
         }
     };
+
+    const attachFileDelete = (deleteItem) => {
+        setDeleteFiles([...deleteFiles, { atchmnflId: deleteItem.atchmnflId ,atchmnflSn: deleteItem.atchmnflSn, strgFileNm: deleteItem.strgFileNm }]);
+        setFileList(fileList.filter(item => item !== deleteItem));
+    }
 
     const handleChgValue = (name, value) => {
         if (name === 'telno' || name === 'brno') {
@@ -65,9 +68,9 @@ function ProjectOutordCompany() {
     };
 
     const changeAttchValue = (e) => {
-        setOutordCompanyValue({
-            ...outordCompanyValue,
-            atchmnflId: uuid()
+        setOutordCompanyValue({ 
+            ...outordCompanyValue, 
+            atchmnflId: (outordCompanyValue.atchmnflId !== null) ? outordCompanyValue.atchmnflId : uuid()
         });
         setAttachments(e.value)
     }
@@ -79,15 +82,12 @@ function ProjectOutordCompany() {
 
     const resetForm = () => {
         clearFiles();
-        setOutordCompanyValue({
-            outordEntrpsId: null,
-            outordEntrpsNm: null,
-            brno: "",
-            picFlnm: null,
-            telno: "",
-            addr: null,
-            atchmnflId: null
-        });
+        const nullifiedState = Object.keys(outordCompanyValue).reduce((acc, key) => {
+            acc[key] = null;
+            return acc;
+        }, {});
+        setOutordCompanyValue(nullifiedState);
+        setFileList([]);
     };
 
     const focusTextBox = () => {
@@ -111,15 +111,8 @@ function ProjectOutordCompany() {
             return;
         }
         setOutordCompanyValue([])
-        setOutordCompanyValue({
-            outordEntrpsId: e.data.outordEntrpsId,
-            outordEntrpsNm: e.data.outordEntrpsNm,
-            atchmnflId: e.data.atchmnflId,
-            brno: e.data.brno,
-            picFlnm: e.data.picFlnm,
-            telno: e.data.telno,
-            addr: e.data.addr,
-        });
+        setOutordCompanyValue(e.data);
+
         if(e.data.atchmnflId !== null){
             getAttachment(e.data.atchmnflId);
         } else{
@@ -140,28 +133,27 @@ function ProjectOutordCompany() {
             handleOpen("주소를 입력해주세요");
         } else {
             if (outordCompanyValue.outordEntrpsId === "" || outordCompanyValue.outordEntrpsId === null || outordCompanyValue.outordEntrpsId === undefined) {
-                handleOpen("저장하시겠습니까?", insertCompanyValue, false);
+                handleOpen("저장하시겠습니까?", () => insertCompanyValue('insert'), false);
             } else {
-                handleOpen("저장하시겠습니까?", updateCompanyValue, false);
+                handleOpen("수정하시겠습니까?", () => insertCompanyValue('update'), false);
             }
         }
     };
 
-    const insertCompanyValue = async () => {
-        const insertData = ({
-            outordEntrpsId: uuid(),
-            outordEntrpsNm: outordCompanyValue.outordEntrpsNm,
-            brno: outordCompanyValue.brno,
-            picFlnm: outordCompanyValue.picFlnm,
-            telno: outordCompanyValue.telno,
-            addr: outordCompanyValue.addr,
-            atchmnflId: outordCompanyValue.atchmnflId,
+    const insertCompanyValue = async (editMode) => {
+        const data = {
+            ...(editMode === 'insert' && { outordEntrpsId: uuid() }),
+            ...outordCompanyValue,
             dirType: ProjectOutordJson.dirType
-        });
+        };
         const formData = new FormData();
 
         formData.append("tbNm", JSON.stringify({ tbNm: "OUTORD_ENTRPS" }));
-        formData.append("data", JSON.stringify(insertData));
+        formData.append("data", JSON.stringify(data));
+        if(editMode === 'update') {
+            formData.append("idColumn", JSON.stringify({outordEntrpsId: outordCompanyValue.outordEntrpsId}));
+            formData.append("deleteFiles", JSON.stringify(deleteFiles));
+        }
         Object.values(attachments).forEach((attachment) => formData.append("attachments", attachment));
         try {
             const token = localStorage.getItem("token");
@@ -169,42 +161,12 @@ function ProjectOutordCompany() {
                 headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
             });
             if (response.data >= 1) {
-                handleOpen("저장되었습니다.");
+                const action = editMode === 'update' ? '수정' : '등록';
+                handleOpen(`${action}되었습니다.`);
                 resetForm();
                 pageHandle();
-            }
-        } catch (error) {
-            console.error("Error fetching data", error);
-        }
-    }
-
-    const updateCompanyValue = async () => {
-        const updateData = ({
-            outordEntrpsNm: outordCompanyValue.outordEntrpsNm,
-            brno: outordCompanyValue.brno,
-            picFlnm: outordCompanyValue.picFlnm,
-            telno: outordCompanyValue.telno,
-            addr: outordCompanyValue.addr,
-            atchmnflId: outordCompanyValue.atchmnflId,
-            dirType: ProjectOutordJson.dirType
-        });
-        const formData = new FormData();
-
-        formData.append("tbNm", JSON.stringify({ tbNm: "OUTORD_ENTRPS" }));
-        formData.append("data", JSON.stringify(updateData));
-        formData.append("deleteFiles", JSON.stringify(deleteFiles));
-        formData.append("idColumn", JSON.stringify({ outordEntrpsId: outordCompanyValue.outordEntrpsId }));
-        Object.values(attachments).forEach((attachment) => formData.append("attachments", attachment));
-
-        try {
-            const token = localStorage.getItem("token")
-            const response = await axios.post("/boot/common/insertlongText", formData, {
-                headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
-            });
-            if (response.data >= 1) {
-                handleOpen("저장되었습니다.");
-                resetForm();
-                pageHandle();
+            } else{
+                handleOpen('저장에 실패했습니다.')
             }
         } catch (error) {
             console.error("Error fetching data", error);
@@ -242,14 +204,10 @@ function ProjectOutordCompany() {
             <div className="buttons" align="right" style={{ margin: "20px" }}>
                 <Button
                     width={130}
-                    text="Contained"
+                    text="입력화면이동"
                     type="default"
-                    stylingMode="contained"
-                    style={{ margin: "2px" }}
                     onClick={() => focusTextBox()}
-                >
-                    입력화면이동
-                </Button>
+                />
             </div>
             <div>검색된 건 수 : {totalItems} 건</div>
             <div>
@@ -291,6 +249,7 @@ function ProjectOutordCompany() {
                     {fileList.length !== 0 && fileList.filter(file => file.realFileNm !== null && file.realFileNm !== undefined).map((file, index) => (
                       <div key={index}>
                         <a href={`${fileDir}/${file.strgFileNm}`} download={file.realFileNm} style={{ fontSize: '18px', color: 'blue', fontWeight: 'bold' }}>{file.realFileNm}</a>
+                        <span onClick={() => attachFileDelete(file)} className='deleteIconBtn'>X</span>
                       </div>
                     ))}
                 </div>

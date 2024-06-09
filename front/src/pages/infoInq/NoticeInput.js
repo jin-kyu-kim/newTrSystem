@@ -124,7 +124,7 @@ const NoticeInput = () => {
                 const response = await axios.post(insertUrl, formData, {
                     headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
                 })
-                if (response.data >= 1) {
+                if (response.status === 200) {
                     const action = editMode === 'update' ? '수정' : '등록';
                     handleOpen(`${action}되었습니다.`);
                     navigate("/infoInq/NoticeList");
