@@ -74,11 +74,9 @@ function atrzLnAprv(jbttlCd, searchResult) {
 }
 
 const EmpVacation = () => {
-    const { handleOpen } = useModal();
-
-    // 외부화면호출데이터
     const navigate = useNavigate();
     const location = useLocation();
+    const { handleOpen } = useModal();
 
     // 첨부파일데이터
     const fileUploaderRef = useRef(null);
@@ -228,8 +226,7 @@ const EmpVacation = () => {
     // 휴가신청휴가결재저장정보
     const [insertVcatnValue, setInsertVcatnValue] = useState({
         empId: sessionEmpId,
-        flagYear: flagYear,
-        dirType: 'elec'
+        flagYear: flagYear
     });
 
     // 첨부파일팝업 첨부파일ID 정보
@@ -498,7 +495,11 @@ const EmpVacation = () => {
     const insertVcatnAtrz = async (params) => {
         const formData = new FormData();
 
-        let insertData = insertVcatnValue;
+        let insertData = {
+            ...insertVcatnValue,
+            dirType: 'elec'
+        };
+
         if (insertVcatnValue.vcatnTyCd == "VTW01209") insertData["vcatnTyCd"] = insertVcatnValue.vcatnLeaveTyCd
 
         formData.append("elctrnAtrzId", JSON.stringify({ elctrnAtrzId: elctrnAtrzId }));
@@ -581,7 +582,6 @@ const EmpVacation = () => {
                     vcatnEndYmd: null,
                     [param]: e,
                 })
-
             }
             // 반차제외선택(연차, 공가, 경조휴가, 휴직)
             else {
@@ -603,7 +603,6 @@ const EmpVacation = () => {
                 // 경조휴가
                 else if (e == "VTW01207" || e == "VTW01208") {
                     setCondolenceAtrz();
-
                     setPopupCondolenceVisibleValue({ type: "condolence", visible: true })
                 }
 
@@ -619,7 +618,6 @@ const EmpVacation = () => {
         else {
             // 반차선택시 휴가종료일자 설정
             if (param == "vcatnBgngYmd" && ["VTW01202", "VTW01203", "VTW01205"].includes(insertVcatnValue.vcatnTyCd)) {
-                
                 // 주말 및 공휴일 확인
                 if (isSaturday(Moment(e).format("YYYY-MM-DD")) || isSunday(Moment(e).format("YYYY-MM-DD"))) {
                     handleOpen("주말입니다.")
@@ -668,7 +666,6 @@ const EmpVacation = () => {
         if(e.event.target.className === "dx-button-content" || e.event.target.className === "dx-button-text") {
             return;
         }
-        
         navigate("/elecAtrz/ElecAtrzDetail", { state: { data: { 
             elctrnAtrzId: e.data.elctrnAtrzId, 
             gnrlAtrzTtl: e.data.gnrlAtrzTtl,
@@ -709,9 +706,7 @@ const EmpVacation = () => {
     // 일반휴가 결재선설정
     function setNormalAtrz() {
         let pushData = popupAtrzValue.filter(item => (item.approvalCode != "VTW00705" && item.approvalCode != "VTW00702" && (item.empId != atrzLnAprvListValue.empId)))
-
         pushData.push(atrzLnAprvListValue);
-
         setPopupAtrzValue(pushData);
     }
 
@@ -1214,7 +1209,6 @@ function createBody(selectVcatnInfoValue) {
 }
 
 function elctrnLine(popupAtrzValue) {
-    // console.log("popupAtrzValue : ", popupAtrzValue);
     const atrzLnReviewValue = popupAtrzValue.find(item => item.approvalCode == "VTW00702")
     const atrzLnConfirmValue = popupAtrzValue.find(item => item.approvalCode == "VTW00703")
     const atrzLnSrngValue = popupAtrzValue.find(item => item.approvalCode == "VTW00704")

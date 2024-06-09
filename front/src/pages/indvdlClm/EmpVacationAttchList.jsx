@@ -6,15 +6,13 @@ import axios from "axios";
 import ApiRequest from "utils/ApiRequest";
 
 const EmpVacationAttchList = ({ visible, attachId, onHiding, elctrnAtrzId }) => {
+    const [ attachListValue, setAttachListValue ] = useState([]);
+    const [ insertAttachListValue, setInsertAttachListValue ] = useState(); // 첨부파일저장
+    const [ deleteAttachListValue, setDeleteAttachListValue ] = useState([{ tbNm: "ATCHMNFL" }]); // 첨부파일삭제
     const { handleOpen } = useModal();
 
-    useEffect(() => {
-        selectData();
-    }, [])
+    useEffect(() => { selectData(); }, [])
 
-    const [attachListValue, setAttachListValue] = useState([]);
-
-    // 첨부파일조회
     const selectData = async () => {
         try {
             const response = await ApiRequest('/boot/common/commonSelect', [{ tbNm: "ATCHMNFL" }, { atchmnflId: attachId }]);
@@ -23,11 +21,6 @@ const EmpVacationAttchList = ({ visible, attachId, onHiding, elctrnAtrzId }) => 
             console.log("selectData_error : ", error);
         }
     };
-
-    // 첨부파일저장
-    const [insertAttachListValue, setInsertAttachListValue] = useState();
-    // 첨부파일삭제
-    const [deleteAttachListValue, setDeleteAttachListValue] = useState([{ tbNm: "ATCHMNFL" }]);
 
     function changeAttchValue(e) {
         setInsertAttachListValue(e.value);
@@ -40,34 +33,11 @@ const EmpVacationAttchList = ({ visible, attachId, onHiding, elctrnAtrzId }) => 
         setAttachListValue(existAttachList);
         setInsertAttachListValue(existAttachList);
 
-        let deleteData = [
-            { tbNm: "ATCHMNFL" },
-            { atchmnflId: deleteAttachList.atchmnflId, atchmnflSn: deleteAttachList.atchmnflSn, strgFileNm: deleteAttachList.strgFileNm }
-        ];
-        onDeleteClick(deleteData);
+        setDeleteAttachListValue([...deleteAttachListValue, 
+            {atchmnflId: deleteAttachList.atchmnflId ,atchmnflSn: deleteAttachList.atchmnflSn, strgFileNm: deleteAttachList.strgFileNm}]);
     }
 
-    // 첨부파일(개별)삭제
-    const onDeleteClick = async (deleteData) => {
-        const formData = new FormData();
-
-        formData.append("tbNm", JSON.stringify({ tbNm: "VCATN_ATRZ" }));
-        formData.append("idColumn", JSON.stringify({ elctrnAtrzId: elctrnAtrzId }));
-        formData.append("deleteFiles", JSON.stringify(deleteData));
-
-        if (insertAttachListValue && insertAttachListValue.length > 0) Object.values(insertAttachListValue).forEach((insertAttachList) => formData.append("attachments", insertAttachList));
-
-        if (attachId) {
-            formData.append("data", JSON.stringify({ atchmnflId: attachId, dirType: 'elec' }));
-        } else {
-            formData.append("data", JSON.stringify({ atchmnflId: uuid(), dirType: 'elec' }));
-        }
-        const responseAttach = await axios.post("/boot/common/insertlongText", formData, {
-            headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${localStorage.getItem("token")}` },
-        });
-    }
-
-    // 첨부파일만 저장
+    // 첨부파일 수정 (저장/삭제)
     const onSaveClick = async () => {
         const formData = new FormData();
 
@@ -86,14 +56,15 @@ const EmpVacationAttchList = ({ visible, attachId, onHiding, elctrnAtrzId }) => 
             const responseAttach = await axios.post("/boot/common/insertlongText", formData, {
                 headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${localStorage.getItem("token")}` },
             });
-            handleOpen("저장되었습니다.")
-            onHiding(false)
+            if(responseAttach.status === 200){
+                handleOpen("저장되었습니다.")
+                onHiding(false)
+            }
         } catch {
             handleOpen("저장에 실패했습니다.")
         }
     }
 
-    // 화면렌더링
     function createRenderData() {
         const renderData = [];
         const fileDir = attachListValue[0]?.fileStrgCours ? attachListValue[0]?.fileStrgCours.substring(8) : null;
@@ -118,7 +89,7 @@ const EmpVacationAttchList = ({ visible, attachId, onHiding, elctrnAtrzId }) => 
                     onValueChanged={changeAttchValue}
                 />
                 <div style={{ display: "inline-block", float: "right", marginTop: "25px" }}>
-                    <Button type='success' style={{ height: "48px", width: "100px" }} onClick={onSaveClick}>저장</Button>
+                    <Button type='success' style={{ height: "48px", width: "100px" }} onClick={() => onSaveClick()}>저장</Button>
                 </div>
             </>
         )
