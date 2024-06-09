@@ -20,26 +20,13 @@ function ProjectOutordCompany() {
     const [ deleteFiles, setDeleteFiles ] = useState([{ tbNm: "ATCHMNFL" }]);
     const { handleOpen } = useModal();
     const fileUploaderRef = useRef(null); //파일 업로드용 ref
-    const insertRef = useRef(null); // textbox focus용 ref
     const rules = { X: /[02-9]/ };
-    
+
     useEffect(() => {
         if (!Object.values(param).every((value) => value === "")) {
             pageHandle();
         }
     }, [param]);
-
-    useEffect(() => {
-        setOutordCompanyValue({
-            outordEntrpsId: null,
-            outordEntrpsNm: null,
-            brno: "",
-            picFlnm: null,
-            telno: "",
-            addr: null,
-            atchmnflId: null
-        })
-    }, []);
 
     const searchHandle = async (initParam) => {
         setParam({
@@ -54,7 +41,9 @@ function ProjectOutordCompany() {
             if (response.length !== 0) {
                 setValues(response);
                 setTotalItems(response[0].totalItems);
-            }
+            } else {
+                setValues([]);
+              }
         } catch (error) {
             console.log(error);
         }
@@ -107,17 +96,10 @@ function ProjectOutordCompany() {
           element.scrollIntoView({ behavior: 'smooth' });
         }
     };
-    useEffect(() => {
-        if(outordCompanyValue.atchmnflId !== null){
-            getAttachment();
-        } else{
-            setFileList([]);
-        }
-    }, [outordCompanyValue])
     
-    const getAttachment = async () => {
+    const getAttachment = async (attachId) => {
         const res = await ApiRequest('/boot/common/commonSelect', [
-            { tbNm: "ATCHMNFL" }, { atchmnflId: outordCompanyValue.atchmnflId }
+            { tbNm: "ATCHMNFL" }, { atchmnflId: attachId }
         ]);
         if(res.length !== 0){
             setFileList(res);
@@ -138,9 +120,13 @@ function ProjectOutordCompany() {
             telno: e.data.telno,
             addr: e.data.addr,
         });
+        if(e.data.atchmnflId !== null){
+            getAttachment(e.data.atchmnflId);
+        } else{
+            setFileList([]);
+        }
     };
 
-    //================저장버튼 이벤트==================================================
     const saveOutordC = () => {
         if (outordCompanyValue.outordEntrpsNm === null) {
             handleOpen("업체명을 입력해주세요");
@@ -278,7 +264,7 @@ function ProjectOutordCompany() {
                 />
             </div>
 
-            <div className='partner-insert-area' ref={insertRef}>
+            <div className='partner-insert-area'>
                 <h5 style={{ alignItems: 'left', marginBottom: '20px' }}>외주업체정보를 입력/수정 합니다.</h5>
                 <div className='partner-input-box'>
                     {inputList.map(item => (
@@ -302,8 +288,7 @@ function ProjectOutordCompany() {
                         onValueChanged={changeAttchValue}
                         ref={fileUploaderRef}
                     />
-                    {outordCompanyValue.outordEntrpsId !== null && 
-                        fileList.length !== 0 && fileList.filter(file => file.realFileNm !== null && file.realFileNm !== undefined).filter(file => !(file.realFileNm.endsWith('.jpg') || file.realFileNm.endsWith('.jpeg') || file.realFileNm.endsWith('.png') || file.realFileNm.endsWith('.gif'))).map((file, index) => (
+                    {fileList.length !== 0 && fileList.filter(file => file.realFileNm !== null && file.realFileNm !== undefined).map((file, index) => (
                       <div key={index}>
                         <a href={`${fileDir}/${file.strgFileNm}`} download={file.realFileNm} style={{ fontSize: '18px', color: 'blue', fontWeight: 'bold' }}>{file.realFileNm}</a>
                       </div>

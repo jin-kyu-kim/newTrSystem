@@ -22,27 +22,12 @@ function ProjectOutordEmp() {
   const [ deleteFiles, setDeleteFiles] = useState([{ tbNm: "ATCHMNFL" }]);
   const { handleOpen } = useModal();
   const fileUploaderRef = useRef(null); // 파일 업로드용 ref
-  const insertRef = useRef(null); // textbox focus용 ref
-
+  
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
       pageHandle();
     }
   }, [param]);
-
-  useEffect(() => {
-    setOutordEmpValue({
-      empId: null,
-      empno: null,
-      outordHnfOgdpNm: null,
-      empFlnm: null,
-      brdt: null,
-      outordHnfGradCd: null,
-      telno: null,
-      eml: null,
-      atchmnflId: null
-    })
-  }, []);
 
   const searchHandle = async (initParam) => {
     setParam({
@@ -112,18 +97,10 @@ function ProjectOutordEmp() {
       element.scrollIntoView({ behavior: 'smooth' });
     }
   };
-  
-  useEffect(() => {
-    if(outordEmpValue.atchmnflId !== null){
-      getAttachment();
-    } else{
-      setFileList([]);
-    }
-  }, [outordEmpValue])
 
-  const getAttachment = async () => {
+  const getAttachment = async (attachId) => {
     const res = await ApiRequest('/boot/common/commonSelect', [
-      { tbNm: "ATCHMNFL" }, { atchmnflId: outordEmpValue.atchmnflId }
+      { tbNm: "ATCHMNFL" }, { atchmnflId: attachId }
     ]);
     if(res.length !== 0){
       setFileList(res);
@@ -147,6 +124,11 @@ function ProjectOutordEmp() {
       telno: e.data.telno,
       eml: e.data.eml,
     });
+    if(e.data.atchmnflId !== null){
+      getAttachment(e.data.atchmnflId);
+    } else{
+      setFileList([]);
+    }
   };
 
   const saveOutordEmp = () => {
@@ -358,7 +340,7 @@ function ProjectOutordEmp() {
         />
       </div>
 
-      <div className='partner-insert-area' ref={insertRef}>
+      <div className='partner-insert-area'>
         <h5 style={{ alignItems: 'left', marginBottom: '20px' }}>외주직원정보를 입력/수정 합니다.</h5>
         <div className='partner-input-box'>
           {inputAreaRender(inputList)}
