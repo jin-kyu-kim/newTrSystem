@@ -521,6 +521,20 @@
     <insert id="insertPrjctMmAtrzStrg" parameterType="map">
         /* indvdlClmMapper.insertPrjctMmAtrzStrg */
         INSERT INTO PRJCT_MM_ATRZ
+            (RJCT_PRVONSH,
+             ATRZ_DMND_STTS_CD,
+             APRVR_EMP_ID,
+             PRJCT_ID,
+             EMP_ID,
+             APLY_YM,
+             APLY_ODR,
+             APRV_YMD,
+             RJCT_YMD,
+             REG_DT,
+             REG_EMP_ID,
+             MDFCN_DT,
+             MDFCN_EMP_ID,
+             APLY_YMD)
         VALUES
         (
             #{rjctPrvonsh}
