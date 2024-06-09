@@ -46,7 +46,7 @@ const ElecAtrzDetail = () => {
     const [ histPopVisible, setHistPopVisible ] = useState(false); // 이력 팝업
     const contentRef = useRef(null);
     const printRef = useRef();
-    const fileDir = attachFileList[0]?.fileStrgCours.substring(8);
+    const fileDir = attachFileList[0]?.fileStrgCours ? attachFileList[0]?.fileStrgCours.substring(8) : null;
 
     useEffect(() => {
         const getDetailData = async () => {
@@ -746,7 +746,7 @@ const ElecAtrzDetail = () => {
     }
 
     return (
-        <div className="container" style={{ marginTop: "10px" }}>
+        <div style={{ marginTop: "10px" }}>
             <div ref={contentRef}>
                 <ElecAtrzTitleInfo
                     atrzLnEmpList={atrzOpnn}
@@ -784,7 +784,7 @@ const ElecAtrzDetail = () => {
                         prjctData={prjctData}
                     />
                 )}
-                <div dangerouslySetInnerHTML={{ __html: detailData.cn }} />
+                <div style={{width: '100%'}} dangerouslySetInnerHTML={{ __html: detailData.cn }} />
 
                 <hr className='elecDtlLine' style={{marginTop: '100px'}}/>
                 <span>* 첨부파일</span>
@@ -806,12 +806,7 @@ const ElecAtrzDetail = () => {
             <ReactToPrint 
                 ref={printRef}
                 content={() => contentRef.current} 
-                pageStyle="@page { size: A3; } 
-                @media print { 
-                    body { -webkit-print-color-adjust: exact; } 
-                    .content { transform: scale(0.8); transform-origin: top left; }
-                    .elecTopBtn { display: none; }
-                }"
+                pageStyle="@page { size: A3; ratio:100% }"
             />
             
             <div style={{textAlign: 'center', marginBottom: '100px', marginTop: '20px'}}>

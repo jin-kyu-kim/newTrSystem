@@ -67,7 +67,7 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
         
     } else if (col.cellType === 'fileCell') {
         let atchList = props?.data.atchmnfl;
-        const fileDir = atchList[0]?.fileStrgCours.substring(8);
+        const fileDir = atchList[0]?.fileStrgCours ? atchList[0]?.fileStrgCours.substring(8) : null;
 
         if (atchList != null) {
             return (<div>

@@ -96,7 +96,7 @@ const EmpVacationAttchList = ({ visible, attachId, onHiding, elctrnAtrzId }) => 
     // 화면렌더링
     function createRenderData() {
         const renderData = [];
-        const fileDir = attachListValue[0]?.fileStrgCours.substring(8);
+        const fileDir = attachListValue[0]?.fileStrgCours ? attachListValue[0]?.fileStrgCours.substring(8) : null;
 
         for (let i = 0; i < attachListValue.length; i++) {
             renderData.push(

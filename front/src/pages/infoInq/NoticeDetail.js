@@ -17,7 +17,7 @@ const NoticeDetail = () => {
     const [ fileList, setFileList ] = useState([]);
     const [ btnVisible , setBtnVisible ] = useState(false);
     const { handleOpen } = useModal();
-    const fileDir = fileList[0]?.fileStrgCours.substring(8);
+    const fileDir = fileList[0]?.fileStrgCours ? fileList[0]?.fileStrgCours.substring(8) : null;
 
     const getOneData = async () => {
         const params = {

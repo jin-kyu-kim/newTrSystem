@@ -8,7 +8,7 @@ import CheckBox from "devextreme-react/check-box";
 const BoardInputForm = ({ edit, editMode, editType, attachFileDelete, inputConfig }) => {
     const { data, setData, typeChk, setTypeChk, attachments, setAttachments, newAttachments, setNewAttachments } = inputConfig ?? {};
 
-    const fileDir = newAttachments[0]?.fileStrgCours.substring(8);
+    const fileDir = newAttachments[0]?.fileStrgCours ? newAttachments[0]?.fileStrgCours.substring(8) : null;
     const [isDataLoaded, setIsDataLoaded] = useState(false);
     const handleAttachmentChange = (e) => {
         setAttachments(e.value);
