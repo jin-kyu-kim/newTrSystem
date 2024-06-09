@@ -1556,39 +1556,39 @@
     <!--파트너 업체관리 -->
      <select id="retrieveOutordEntrpsList" parameterType="map" resultType="com.trsystem.LowerHashMap">
          WITH RankedProjects AS (
-         SELECT
-         O.OUTORD_ENTRPS_ID,
-         P.PRJCT_ID,
-         P.PRJCT_NM,
-         ROW_NUMBER() OVER (PARTITION BY O.OUTORD_ENTRPS_ID ORDER BY P.PRJCT_NM) AS rn
-         FROM PRJCT P
-         JOIN OUTORD_ENTRPS_CT_PRMPC O ON P.PRJCT_ID = O.PRJCT_ID
-         WHERE BIZ_STTS_CD ='VTW00404'
+             SELECT
+                 O.OUTORD_ENTRPS_ID,
+                 P.PRJCT_ID,
+                 P.PRJCT_NM,
+                 ROW_NUMBER() OVER (PARTITION BY O.OUTORD_ENTRPS_ID ORDER BY P.PRJCT_NM) AS rn
+             FROM PRJCT P
+             JOIN OUTORD_ENTRPS_CT_PRMPC O ON P.PRJCT_ID = O.PRJCT_ID
+             WHERE BIZ_STTS_CD ='VTW00404'
          )
          SELECT
-         oe.OUTORD_ENTRPS_ID,                                                         -- 외주업체ID
-         OUTORD_ENTRPS_NM,                                                            -- 외주업체명
-         BRNO,                                                                        -- 사업자등록번호
-         TELNO,                                                                       -- 전화번호
-         PIC_FLNM,                                                                    -- 담당자명
-         oe.ATCHMNFL_ID,                                                              -- 첨부파일ID
-         oe.ADDR,
-         GROUP_CONCAT(SUBSTR(a.REAL_FILE_NM, 1, INSTR(a.REAL_FILE_NM, '.') - 1)) AS FILE_NM,  -- 첨부파일명
-         GROUP_CONCAT(CONCAT(RP.rn, '. ', RP.PRJCT_NM) SEPARATOR '\n') AS PRJCT_NM     -- 번호와 줄바꿈이 포함된 프로젝트명
-         FROM
-         OUTORD_ENTRPS oe                                                             -- 외주업체
-         LEFT JOIN ATCHMNFL a ON oe.ATCHMNFL_ID = a.ATCHMNFL_ID
-         LEFT JOIN RankedProjects RP ON RP.OUTORD_ENTRPS_ID = oe.OUTORD_ENTRPS_ID
+             oe.OUTORD_ENTRPS_ID,                                                         -- 외주업체ID
+             OUTORD_ENTRPS_NM,                                                            -- 외주업체명
+             BRNO,                                                                        -- 사업자등록번호
+             TELNO,                                                                       -- 전화번호
+             PIC_FLNM,                                                                    -- 담당자명
+             oe.ATCHMNFL_ID,                                                              -- 첨부파일ID
+             oe.ADDR,
+             GROUP_CONCAT(SUBSTR(a.REAL_FILE_NM, 1, INSTR(a.REAL_FILE_NM, '.') - 1)) AS FILE_NM,  -- 첨부파일명
+             GROUP_CONCAT(CONCAT(RP.rn, '. ', RP.PRJCT_NM) SEPARATOR '\n') AS PRJCT_NM,     -- 번호와 줄바꿈이 포함된 프로젝트명
+             COUNT(*) OVER () AS TOTAL_ITEMS
+         FROM OUTORD_ENTRPS oe                                                             -- 외주업체
+             LEFT JOIN ATCHMNFL a ON oe.ATCHMNFL_ID = a.ATCHMNFL_ID
+             LEFT JOIN RankedProjects RP ON RP.OUTORD_ENTRPS_ID = oe.OUTORD_ENTRPS_ID
 		WHERE 1=1
-		<if test="outordEntrpsNm != null and outordEntrpsNm !=''">
-	            AND oe.OUTORD_ENTRPS_NM LIKE CONCAT('%', #{outordEntrpsNm}, '%')
-	        </if>
-	        <if test="telno != null and telno !=''">
-	            AND oe.TELNO LIKE CONCAT('%', #{telno}, '%')
-	        </if>
-	        <if test="picFlnm != null and picFlnm !=''">
-	            AND oe.PIC_FLNM LIKE CONCAT('%', #{picFlnm}, '%')
-	        </if>
+		<if test="outordEntrpsNm != null and !outordEntrpsNm.equals('')">
+	        AND oe.OUTORD_ENTRPS_NM LIKE CONCAT('%', #{outordEntrpsNm}, '%')
+	    </if>
+	    <if test="telno != null and !telno.equals('')">
+	        AND oe.TELNO LIKE CONCAT('%', #{telno}, '%')
+        </if>
+         <if test="picFlnm != null and !picFlnm.equals('')">
+	        AND oe.PIC_FLNM LIKE CONCAT('%', #{picFlnm}, '%')
+         </if>
 		GROUP BY oe.OUTORD_ENTRPS_ID,OUTORD_ENTRPS_NM,BRNO,TELNO,PIC_FLNM,ATCHMNFL_ID
         ORDER BY oe.REG_DT DESC
     </select>
@@ -1610,21 +1610,21 @@
 			, COUNT(*) OVER () AS TOTAL_ITEMS
 		FROM 
 			EMP e 
-			LEFT JOIN  ATCHMNFL a ON e.ATCHMNFL_ID = a.ATCHMNFL_ID
+			LEFT JOIN ATCHMNFL a ON e.ATCHMNFL_ID = a.ATCHMNFL_ID
 			LEFT OUTER JOIN CD C ON C.CD_VALUE = e.OUTORD_HNF_GRAD_CD
-		WHERE 
-			1=1
-			AND EMP_TY_CD  = 'VTW00203'
-		<if test="outordHnfGradCd != null and outordHnfGradCd !=''">
-	            AND e.OUTORD_HNF_GRAD_CD LIKE CONCAT('%', #{outordHnfGradCd}, '%')
-	        </if>
-	        <if test="telno != null and telno !=''">
-	            AND e.TELNO LIKE CONCAT('%', #{telno}, '%')
-	        </if>
-	        <if test="empFlnm != null and empFlnm !=''">
-	            AND e.emp_FLNM LIKE CONCAT('%', #{empFlnm}, '%')
-	        </if>
+		WHERE 1=1
+		    AND EMP_TY_CD  = 'VTW00203'
+		<if test="outordHnfGradCd != null and !outordHnfGradCd.equals('')">
+	        AND e.OUTORD_HNF_GRAD_CD LIKE CONCAT('%', #{outordHnfGradCd}, '%')
+        </if>
+         <if test="telno != null and !telno.equals('')">
+	        AND e.TELNO LIKE CONCAT('%', #{telno}, '%')
+         </if>
+         <if test="empFlnm != null and !empFlnm.equals('')">
+	        AND e.emp_FLNM LIKE CONCAT('%', #{empFlnm}, '%')
+         </if>
 		GROUP BY EMP_ID,EMPNO,EMP_FLNM,BRDT,TELNO,EML
+        ORDER BY e.REG_DT DESC
     </select>
 
     <!-- 프로젝트비용승인 : 지난 차수 데이터 승인: 개인비용MM 없으면 인서트 -->
