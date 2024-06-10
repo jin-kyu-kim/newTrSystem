@@ -24,7 +24,7 @@ export const navigation = [
       },{
         text: '회의실예약',
         path: '/humanResourceMng/MeetingRoomManage',
-        auth: 'VTW04805'
+        auth: 'USER'
       }
       // ,{
       //   text: '법제도',

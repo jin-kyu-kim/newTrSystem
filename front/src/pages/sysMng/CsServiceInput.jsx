@@ -17,7 +17,6 @@ const CsServiceInput = () => {
     const [ deleteFiles, setDeleteFiles ] = useState([{tbNm: "ATCHMNFL"}]);
     const [ newAttachments, setNewAttachments ] = useState(attachments);
     const [ prevData, setPrevData ] = useState({});
-    const [ realData, setRealData ] = useState([])
     const { handleOpen } = useModal();
     const [ data, setData ] = useState({
         errId: uuid(),
@@ -57,10 +56,6 @@ const CsServiceInput = () => {
         if (editMode === 'update') getOneData();
     }, []);
 
-    useEffect(() => {
-        setRealData({errId : data.errId, errTtl : data.errTtl? data.errTtl: data.noticeTtl, errCn : data.errCn?data.errCn:data.noticeCn, errPrcsSttsCd : 'VTW05501',atchmnflId: data.atchmnflId })
-    }, [data]);
-
     const attachFileDelete = (deleteItem) => {
         setDeleteFiles([...deleteFiles, { atchmnflId: data.atchmnflId , atchmnflSn: deleteItem.atchmnflSn, strgFileNm: deleteItem.strgFileNm }]);
         setNewAttachments(newAttachments.filter(item => item !== deleteItem));
@@ -68,7 +63,7 @@ const CsServiceInput = () => {
 
     const validateData = () => {
         const errors = [];
-        if (!realData.errTtl || !realData.errCn) {
+        if (!data.errTtl || !data.errCn) {
           errors.push('required');
         }
         return errors.length === 0;
@@ -83,7 +78,7 @@ const CsServiceInput = () => {
                     changedValues = { ...changedValues, [key]: data[key] }
                 }
             });
-            setRealData({
+            setData({
                 atchmnflId: data.atchmnflId,
                 changedValues
             })
@@ -91,7 +86,7 @@ const CsServiceInput = () => {
         const formData = new FormData();
         
         formData.append("tbNm", JSON.stringify({tbNm: "ERR_MNG"}));
-        formData.append("data", JSON.stringify(realData));
+        formData.append("data", JSON.stringify(data));
         if(editMode === 'update') {
             formData.append("idColumn", JSON.stringify({errId: data.errId}));
             formData.append("deleteFiles", JSON.stringify(deleteFiles));
@@ -133,7 +128,8 @@ const CsServiceInput = () => {
             
             <div className="wrap_btns inputFormBtn">
                 <Button text="목록" onClick={() => navigate("/sysMng/CsServiceList")} />
-                <Button text="저장" useSubmitBehavior={true} onClick={() => handleOpen(editMode !== 'update' ? "등록하시겠습니까?" : "수정하시겠습니까?", () => storeReference(editMode))} />
+                <Button text="저장" useSubmitBehavior={true} type='success'
+                    onClick={() => handleOpen(editMode !== 'update' ? "등록하시겠습니까?" : "수정하시겠습니까?", () => storeReference(editMode))} />
             </div>
         </div>
     );

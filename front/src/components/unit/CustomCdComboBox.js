@@ -1,14 +1,13 @@
 
 import React, { useEffect, useState, } from "react";
-
-import SelectBox from "devextreme-react/select-box";
 import { Validator, RequiredRule, } from "devextreme-react/validator";
-
-import cdJson from "./cd.json";
+import SelectBox from "devextreme-react/select-box";
 import ApiRequest from "../../utils/ApiRequest";
+import cdJson from "./cd.json";
 
 const CustomCdComboBox = ({ param, placeholderText, onSelect, name, value, readOnly, between, label, required, showClearValue }) => {
-  const [cdVal, setCdVal] = useState([]);
+  const [ cdVal, setCdVal ] = useState([]);
+
   CustomCdComboBox.defaultProps = {
     showClearValue: true,
   };
@@ -31,9 +30,8 @@ const CustomCdComboBox = ({ param, placeholderText, onSelect, name, value, readO
   }, [cdVal]);
 
   const getCode = async () => {
-
     //코드값 between이 필요한 경우
-    if(between){
+    if (between) {
       cdVal[1] = {
         ...cdVal[1],
         cdValue: between,
@@ -55,32 +53,30 @@ const CustomCdComboBox = ({ param, placeholderText, onSelect, name, value, readO
   };
 
   const validate = () => {
-    if(required) {
-        return (
-            <RequiredRule message={`${label}은(는) 필수 입력 값입니다.`}/>
-        )
+    if (required) {
+      return (
+        <RequiredRule message={`${label}은(는) 필수 입력 값입니다.`} />
+      )
     }
-}
+  }
 
   return (
-      <SelectBox
-        dataSource={cdVal}
-        displayExpr="cdNm"
-        valueExpr="cdValue"
-        placeholder={placeholderText}
-        onValueChanged={(e) => {
-          onSelect({ name, value: e.value });
-        }}
-        searchEnabled={true}
-        width="100%"
-        value={value}
-        readOnly={readOnly}
-        showClearButton={showClearValue}
-      >
-        <Validator>{validate()}</Validator>
-      </SelectBox>
-    // </div>
+    <SelectBox
+      dataSource={cdVal}
+      displayExpr="cdNm"
+      valueExpr="cdValue"
+      placeholder={placeholderText}
+      onValueChanged={(e) => {
+        onSelect({ name, value: e.value });
+      }}
+      searchEnabled={true}
+      width="100%"
+      value={value}
+      readOnly={readOnly}
+      showClearButton={showClearValue}
+    >
+      <Validator>{validate()}</Validator>
+    </SelectBox>
   );
 };
-
 export default React.memo(CustomCdComboBox);

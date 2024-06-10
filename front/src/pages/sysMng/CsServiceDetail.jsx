@@ -18,7 +18,7 @@ const CsServiceDetail = () => {
     const { detailQueryId, sysButtonGroup, dirType } = CsServiceJson.detail;
     const [ oneData, setOneData ] = useState({});
     const [ fileList, setFileList ] = useState([]);
-    const [ errorCd, setErrorCd ] = useState(errPrcsSttsCd);
+    const [ prcsSttsCd, setPrcsSttsCd ] = useState(errPrcsSttsCd);
     const [ hasPermission, setPermission ] = useState(false);
     const [ btnVisible, setBtnVisible ] = useState(false);
     const { handleOpen } = useModal();
@@ -59,6 +59,7 @@ const CsServiceDetail = () => {
             setBtnVisible(true);
         } else {
             setPermission(false);
+            setBtnVisible(false);
         }
     }, []);
 
@@ -77,8 +78,17 @@ const CsServiceDetail = () => {
             console.log(error);
         }
     }
-    const test = ({ name, value }) => {
-        setErrorCd(value);
+    const chgPrcsSttsCd = async ({ value }) => {
+        if(value !== prcsSttsCd){
+            const response = await ApiRequest('/boot/common/commonUpdate', [
+                { tbNm: "ERR_MNG" }, { errPrcsSttsCd: value }, { errId: errId }
+            ]);
+            if(response >= 1){
+                setPrcsSttsCd(value);
+                getOneData();
+                handleOpen("조지상태가 수정되었습니다.");
+            }
+        }
     }
 
     return (
@@ -92,15 +102,11 @@ const CsServiceDetail = () => {
                         <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
                             {oneData.regEmpNm} | {oneData.regDt}
                             <div style={{ marginLeft: "30px", marginRight: '20px' }}> 접수상태 :</div>
-                            {hasPermission ? (
-                                <div style={{ width: '200px' }}>
-                                    <CustomCdComboBox param="VTW055" value={errorCd} onSelect={test} showClearValue={false} />
-                                </div>
-                            ) : (
-                                <div>
-                                    {errPrcsSttsCdNm}
-                                </div>
-                            )}
+                            {hasPermission ? ( 
+                            <div style={{ width: '200px' }}>
+                                <CustomCdComboBox param="VTW055" value={prcsSttsCd} onSelect={chgPrcsSttsCd} showClearValue={false} />
+                            </div> 
+                            ) : ( <div>{errPrcsSttsCdNm}</div> )}
                         </div>
                         <hr className='elecDtlLine' />
                         <div dangerouslySetInnerHTML={{ __html: oneData.errCn }} />
@@ -127,7 +133,6 @@ const CsServiceDetail = () => {
                     <CsServiceReply errId={errId} />
                 </div>
             </Container>
-
 
             <div style={{ textAlign: 'center', marginBottom: '100px' }}>
                 {sysButtonGroup.map((button, index) => (
