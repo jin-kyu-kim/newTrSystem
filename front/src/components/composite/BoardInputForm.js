@@ -55,7 +55,7 @@ const BoardInputForm = ({ edit, editMode, editType, attachFileDelete, inputConfi
                                 <TextBox
                                     id={column.dataField}
                                     name={column.dataField}
-                                    value={data.noticeTtl?data.noticeTtl:data.errTtl}
+                                    value={data[column.dataField]}
                                     placeholder={column.placeholder}
                                     showClearButton={true}
                                     onValueChanged={(e) => {
@@ -112,9 +112,9 @@ const BoardInputForm = ({ edit, editMode, editType, attachFileDelete, inputConfi
                                 <HtmlEditBox
                                     column={column}
                                     data={data}
-                                    setData={setData}
-                                    value={data.noticeCn?data.noticeCn:data.errCn}
                                     validate={true}
+                                    setData={setData}
+                                    value={data[column.dataField]}
                                     placeholder={column.placeholder}
                                 />
                             </td>)

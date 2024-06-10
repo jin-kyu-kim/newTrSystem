@@ -49,6 +49,10 @@ const CommentList = ({ comments, changeData})=>{
             dataSource={comments}
             keyExpr="errDtlSn"
             showBorders={true}
+            wordWrapEnabled={true}
+            onCellPrepared={(e) => {
+                e.cellElement.style.wordBreak = 'break-all' // 줄바꿈 대상에 숫자 포함
+            }}
             onRowInserted={onRowInserted}
             onRowUpdated={onRowUpdated}
             onRowRemoved={onRowRemoved}
