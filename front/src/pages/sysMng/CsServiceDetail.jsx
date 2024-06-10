@@ -86,7 +86,7 @@ const CsServiceDetail = () => {
             if(response >= 1){
                 setPrcsSttsCd(value);
                 getOneData();
-                handleOpen("조지상태가 수정되었습니다.");
+                handleOpen("조치상태가 수정되었습니다.");
             }
         }
     }

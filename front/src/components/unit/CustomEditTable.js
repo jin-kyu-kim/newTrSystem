@@ -6,7 +6,7 @@ import { useModal } from "./ModalContext";
 
 const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal, masterDetail, doublePk, noDataText, noEdit,
     onSelection, onRowClick, callback, handleData, handleExpanding, cellRenderConfig, onBtnClick, excel, onExcel, upCdValue,
-    summary, summaryColumn, onlyUpdate, defaultPageSize, queryIdUrl, validateNumberBox }) => {
+    summary, summaryColumn, onlyUpdate, defaultPageSize, queryIdUrl, validateNumberBox, onCellPrepared }) => {
 
     const { handleOpen } = useModal();
     const [ cdValList, setCdValList ] = useState({});
@@ -129,6 +129,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                 columnMinWidth={100}
                 onExporting={onExcel}
                 onRowExpanding={handleExpanding}
+                onCellPrepared={onCellPrepared}
                 onSelectionChanged={onSelection && ((e) => onSelection(e))}
                 onRowUpdating={(e) => onEditRow('update', e)}
                 onRowRemoved={(e) => onEditRow('delete', e)}
