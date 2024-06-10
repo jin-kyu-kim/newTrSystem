@@ -1595,36 +1595,37 @@
     
     <!--파트너 직원관리 -->
      <select id="retrieveOutordEmpList" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT 
-			EMP_ID
-			, EMPNO
-			, OUTORD_HNF_OGDP_NM																		-- 외주인력 소속
-			, C.CD_NM AS GRAD_NM
-			, OUTORD_HNF_GRAD_CD																		-- 외주인력 등급코드
-			, e.ATCHMNFL_ID		
-			, EMP_FLNM
-			, BRDT
-			, TELNO 
-			, EML
-			,GROUP_CONCAT(SUBSTR(a.REAL_FILE_NM, 1, INSTR(a.REAL_FILE_NM, '.') - 1)) AS FILE_NM			-- 첨부파일명
-			, COUNT(*) OVER () AS TOTAL_ITEMS
-		FROM 
-			EMP e 
-			LEFT JOIN ATCHMNFL a ON e.ATCHMNFL_ID = a.ATCHMNFL_ID
-			LEFT OUTER JOIN CD C ON C.CD_VALUE = e.OUTORD_HNF_GRAD_CD
-		WHERE 1=1
-		    AND EMP_TY_CD  = 'VTW00203'
-		<if test="outordHnfGradCd != null and !outordHnfGradCd.equals('')">
-	        AND e.OUTORD_HNF_GRAD_CD LIKE CONCAT('%', #{outordHnfGradCd}, '%')
-        </if>
+         SELECT * FROM (
+         SELECT
+             EMP_ID
+             , EMPNO
+             , OUTORD_HNF_OGDP_NM	-- 외주인력 소속
+             , C.CD_NM AS GRAD_NM
+             , OUTORD_HNF_GRAD_CD	-- 외주인력 등급코드
+             , e.ATCHMNFL_ID
+             , EMP_FLNM
+             , BRDT
+             , TELNO
+             , EML
+             , e.REG_DT
+             , GROUP_CONCAT(SUBSTR(a.REAL_FILE_NM,1,INSTR(a.REAL_FILE_NM, '.') - 1)) AS FILE_NM	-- 첨부파일명
+             , COUNT(*) OVER () AS TOTAL_ITEMS
+         FROM EMP e
+         LEFT JOIN ATCHMNFL a ON e.ATCHMNFL_ID = a.ATCHMNFL_ID
+         LEFT OUTER JOIN CD C ON C.CD_VALUE = e.OUTORD_HNF_GRAD_CD
+         WHERE 1 = 1
+            AND EMP_TY_CD = 'VTW00203'
+         <if test="outordHnfGradCd != null and !outordHnfGradCd.equals('')">
+             AND e.OUTORD_HNF_GRAD_CD LIKE CONCAT('%', #{outordHnfGradCd}, '%')
+         </if>
          <if test="telno != null and !telno.equals('')">
-	        AND e.TELNO LIKE CONCAT('%', #{telno}, '%')
+             AND e.TELNO LIKE CONCAT('%', #{telno}, '%')
          </if>
          <if test="empFlnm != null and !empFlnm.equals('')">
-	        AND e.emp_FLNM LIKE CONCAT('%', #{empFlnm}, '%')
+             AND e.emp_FLNM LIKE CONCAT('%', #{empFlnm}, '%')
          </if>
-		GROUP BY EMP_ID,EMPNO,EMP_FLNM,BRDT,TELNO,EML
-        ORDER BY e.REG_DT DESC
+         GROUP BY EMP_ID, EMPNO, EMP_FLNM, BRDT, TELNO, EML, REG_DT
+         ) tab ORDER BY REG_DT DESC
     </select>
 
     <!-- 프로젝트비용승인 : 지난 차수 데이터 승인: 개인비용MM 없으면 인서트 -->
