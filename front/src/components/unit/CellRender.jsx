@@ -12,6 +12,12 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
     const { getCdList, isPrjctIdSelected, hasError, chgPlaceholder, comboList, cdList,
         expensCd, setValidationErrors, setComboBox } = cellRenderConfig ?? {};
 
+    const onKeyDownEvent = (e) => {
+        if(e.event.originalEvent.key === 'Enter'){
+            e.event.stopPropagation();
+        }
+    }
+
     if (col.cellType === 'button') {
         return (<Button text={col.button.text} name={col.button.name} type={col.button.type}
             onClick={() => onBtnClick(col.button, props)} />)
@@ -24,6 +30,7 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
             <SelectBox
                 dataSource={getCdList ? (col.key === 'prjctId' ? comboList[col.key] : cdList[props.data.cardUseSn]) : comboList[col.key]}
                 displayExpr={col.displayExpr}
+                onKeyDown={onKeyDownEvent}
                 keyExpr={col.valueExpr}
                 placeholder={col.placeholder}
                 searchEnabled={true}
@@ -39,6 +46,7 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
             <TagBox
                 dataSource={comboList['emp']}
                 placeholder={chgPlaceholder ? chgPlaceholder(col, props.data.cardUseSn) : col.placeholder}
+                onKeyDown={onKeyDownEvent}
                 searchEnabled={true}
                 showClearButton={true}
                 showSelectionControls={true}
@@ -55,6 +63,7 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
         return (
             <TextBox
                 name={col.key}
+                onKeyDown={onKeyDownEvent}
                 value={props.data[col.key]}
                 placeholder={chgPlaceholder ? chgPlaceholder(col, props.data.cardUseSn) : col.placeholder}
                 style={{ backgroundColor: hasError && hasError(props.data.cardUseSn, col.key) ? '#FFCCCC' : '' }}
@@ -83,6 +92,7 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
             <NumberBox
                 name={col.key}
                 format="#,##0"
+                onKeyDown={onKeyDownEvent}
                 value={props.data[col.key]}
                 placeholder={chgPlaceholder ? chgPlaceholder(col, props.data.cardUseSn) : col.placeholder}
                 style={{ backgroundColor: hasError && hasError(props.data.cardUseSn, col.key) ? '#FFCCCC' : '' }}

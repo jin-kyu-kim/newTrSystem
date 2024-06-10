@@ -1,4 +1,4 @@
-import { Column, DataGrid, Editing, Lookup, MasterDetail, Selection, RequiredRule, StringLengthRule, Pager, Paging, Export, Summary, TotalItem } from 'devextreme-react/data-grid';
+import { Column, DataGrid, Editing, Lookup, MasterDetail, Selection, RequiredRule, StringLengthRule, Pager, Paging, Export, Summary, TotalItem, KeyboardNavigation } from 'devextreme-react/data-grid';
 import { useCallback, useEffect, useState } from 'react';
 import ApiRequest from 'utils/ApiRequest';
 import CellRender from './CellRender';
@@ -132,6 +132,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                 onSelectionChanged={onSelection && ((e) => onSelection(e))}
                 onRowUpdating={(e) => onEditRow('update', e)}
                 onRowRemoved={(e) => onEditRow('delete', e)}
+                keyboardNavigation={false}
             >
                 {masterDetail &&
                     <MasterDetail
