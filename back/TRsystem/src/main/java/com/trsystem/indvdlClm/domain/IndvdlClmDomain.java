@@ -427,12 +427,10 @@ public class IndvdlClmDomain {
     @Transactional
     public static List<Map<String, Object>> insertPrjctMmAply (List<Map<String, Object>> insertWorkHourListValue) {
         for (Map<String, Object> updateWorkHourMap : insertWorkHourListValue) {
-            Map<String, Object> updatePrjctMmAtrzMap = new HashMap<>();
-            updatePrjctMmAtrzMap = updateWorkHourMap;
-            updatePrjctMmAtrzMap.put("queryId", "indvdlClmMapper.retrievePrjctMmSttsInq");
-            updatePrjctMmAtrzMap.put("atrzDmndSttsCd", "VTW03702");
-            updatePrjctMmAtrzMap.put("state", "UPDATE");
-            commonService.queryIdDataControl(updatePrjctMmAtrzMap);
+            updateWorkHourMap.put("queryId", "indvdlClmMapper.retrievePrjctMmSttsInq");
+            updateWorkHourMap.put("atrzDmndSttsCd", "VTW03702");
+            updateWorkHourMap.put("state", "UPDATE");
+            commonService.queryIdDataControl(updateWorkHourMap);
         }
 
         return null;

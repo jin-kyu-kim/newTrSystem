@@ -58,7 +58,7 @@ const CsServiceList = () => {
     }
 
     return (
-        <div className="container">
+        <div style={{marginBottom: '10%'}}>
             <div className="title">오류신고게시판</div>
             <div className="title-desc">* 오류신고를 조회합니다.</div>
             <div style={{ marginBottom: "20px" }}>

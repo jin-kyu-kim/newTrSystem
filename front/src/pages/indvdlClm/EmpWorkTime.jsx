@@ -1,17 +1,9 @@
 import { useEffect, useState, useRef } from "react"
 import { useLocation } from "react-router-dom";
-
 import { SelectBox, Button, DateBox, NumberBox, Scheduler, Form } from "devextreme-react";
 import { Resource, AppointmentDragging } from 'devextreme-react/scheduler';
-
-// 날짜관련
-// npm install date-fns
 import { isSaturday, isSunday, startOfMonth, endOfMonth } from 'date-fns'
-
-// 날짜관련
-// npm install moment
 import Moment from "moment"
-
 import axios from "axios";
 import ApiRequest from "utils/ApiRequest";
 import { useModal } from "components/unit/ModalContext";
@@ -21,7 +13,6 @@ const token = localStorage.getItem("token");
 
 const EmpWorkTime = () => {
     const { handleOpen } = useModal();
-
     const location = useLocation();
     const admin = location.state ? location.state.admin : undefined;
 
@@ -65,10 +56,6 @@ const EmpWorkTime = () => {
         getPrjctInfo();
     }, [])
 
-
-
-
-
     // 프로젝트 목록 조회
     const [selectPrjctList, setSelectPrjctList] = useState();
 
@@ -80,11 +67,6 @@ const EmpWorkTime = () => {
             console.error("getPrjctInfo_error : " + error);
         }
     }
-
-
-
-
-
 
     // 월별정보조회
     const [selectCrtrDateList, setSelectCrtrDateList] = useState();
@@ -105,10 +87,6 @@ const EmpWorkTime = () => {
             console.error("getDayList_error : " + error);
         }
     }
-
-
-
-
 
     // 프로젝트개인비용MM 조회
     const [selectPrjctIndvdlCtMmValue, setSelectPrjctIndvdlCtMmValue] = useState();
@@ -177,10 +155,6 @@ const EmpWorkTime = () => {
         }
     };
 
-
-
-
-
     // 검색버튼
     const searchHandle = () => {
         setSearchPrjctIndvdlCtMmParam({
@@ -191,10 +165,6 @@ const EmpWorkTime = () => {
             searchBoolean: true,
         });
     }
-
-
-
-
 
     // 날짜 변경 시 재조회
     function onOptionChanged(e) {
@@ -213,10 +183,6 @@ const EmpWorkTime = () => {
         }
     }
 
-
-
-
-
     // 근무시간저장정보
     const [insertWorkHourList, setInsertWorkHourList] = useState();
     const [insertWorkHourValue, setInsertWorkHourValue] = useState({
@@ -227,30 +193,17 @@ const EmpWorkTime = () => {
         prjctNm: "",
     });
 
-
-
-
-
     // 근무시간삭제정보
     const [deleteWorkHourList, setDeleteWorkHourList] = useState([]);
-
-
-
-
 
     // 승인요청버튼
     const onApprovalclick = async () => {
         let insertWorkHourListFilter = insertWorkHourList.filter(item => item.aplyType == "workAply" && item.aplyOdr == flagOrder && item.atrzDmndSttsCd == "VTW03701")
-        const formData = new FormData();
-
-        formData.append("insertWorkHourList", JSON.stringify(insertWorkHourListFilter));
 
         if (insertWorkHourListFilter.length > 0) {
             try {
-                const response = await axios.post("/boot/indvdlClm/insertPrjctMmAply", formData, {
-                    headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
-
-                });
+                const response = await ApiRequest("/boot/indvdlClm/insertPrjctMmAply", insertWorkHourListFilter);
+                console.log('res', response)
                 selectData(searchPrjctIndvdlCtMmParam);
                 handleOpen("승인요청되었습니다.");
             } catch (error) {
@@ -260,10 +213,6 @@ const EmpWorkTime = () => {
             handleOpen("승인요청 가능한 근무시간이 없습니다.");
         }
     }
-
-
-
-
 
     // 승인요청취소버튼
     const onApprovalCancleclick = async () => {
@@ -281,10 +230,6 @@ const EmpWorkTime = () => {
             handleOpen("승인취소 가능한 근무시간이 없습니다.");
         }
     }
-
-
-
-
 
     // 근무시간 임시저장
     function onSaveClick() {
@@ -306,14 +251,16 @@ const EmpWorkTime = () => {
 
             for (startDate; startDate <= endDate; startDate++) {
                 let vcatnData = insertWorkHourList.filter(item => item.aplyYmd == Moment(String(startDate)).format("YYYYMMDD"));
-
                 if (selectCrtrDateList.find((item) => item.crtrYmd == startDate && item.hldyClCd == "VTW05003")) {
-
+                    
                 } else if (isSaturday(Moment(String(startDate)).format("YYYY-MM-DD")) || isSunday(Moment(String(startDate)).format("YYYY-MM-DD"))) {
-
+                    
                 } else if (vcatnData.length > 0 && vcatnData[0].aplyType == 'vcatnAply') {
+                    console.log('vcant', vcatnData)
                     if (vcatnData[0].vcatnTyCd == "VTW01201" || vcatnData[0].vcatnTyCd == "VTW01204") {
-
+                        
+                    } else if (['VTW01202', 'VTW01203', 'VTW01205'].includes(vcatnData[0].vcatnTyCd) && vcatnData.length >= 2) {
+                        console.log('???')
                     } else {
                         parseData.push({
                             text: inputFormData.prjctNm + " " + (inputFormData.workHour > 4 ? 4 : inputFormData.workHour) + "시간",
@@ -398,13 +345,9 @@ const EmpWorkTime = () => {
 
     // 근무시간 임시저장
     const insertPrjctMmTemp = async (param) => {
-        const formData = new FormData();
-
-        formData.append("insertPrjctMmTempList", JSON.stringify(param));
-
         if (param.length > 0) {
             try {
-                const response = await axios.post("/boot/indvdlClm/insertPrjctMmAplyTemp", formData, { headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` }, });
+                const response = await ApiRequest("/boot/indvdlClm/insertPrjctMmAplyTemp", param);
                 selectData(searchPrjctIndvdlCtMmParam);
             } catch (error) {
                 handleOpen("저장에 실패했습니다.");
@@ -415,10 +358,6 @@ const EmpWorkTime = () => {
             return;
         }
     }
-
-
-
-
 
     // 단건삭제
     function onAppointmentDeleted(e) {
@@ -464,10 +403,6 @@ const EmpWorkTime = () => {
         }
     }
 
-
-
-
-
     // 근무일수 구하기
     function getWorkDay(selectCrtrDateList) {
         if (selectCrtrDateList) {
@@ -488,7 +423,6 @@ const EmpWorkTime = () => {
         if (insertWorkHourList) {
             insertWorkHourList.map((item) => {
                 if(item.aplyType == "workAply" && item.aplyOdr == flagOrder) cnt += item.md * 8;
-                else if (item.aplyType == "vcatnAply" && item.aplyOdr == flagOrder && item.md != 0) cnt += item.md * 8;
             })
         }
         return cnt;
@@ -518,22 +452,15 @@ const EmpWorkTime = () => {
         else e.cancel = false;
     }
 
-    /* devextreme 이벤트 컨트롤 */
     function onAppointmentDblClick(e) {
         e.cancel = true;
     }
-
-    /* devextreme 이벤트 컨트롤 */
     function onAppointmentFormOpening(e) {
         e.cancel = true;
     }
-
-    /* devextreme 이벤트 컨트롤 */
     function onCellClick(e) {
         e.cancel = true;
     }
-
-    /* devextreme 이벤트 컨트롤 */
     function onDragStart(e){
         e.cancel = true
     }
@@ -586,23 +513,16 @@ const EmpWorkTime = () => {
                     {
                         admin != undefined
                             ? <></>
-                            :
-                            <Button
-                                onClick={searchHandle} text="검색" style={{ height: "48px", width: "50px" }}
-                            />
+                            : <Button onClick={searchHandle} text="검색" style={{ height: "48px", width: "50px" }} />
                     }
                     {
                         selectPrjctIndvdlCtMmValue != undefined && selectPrjctIndvdlCtMmValue.mmAtrzCmptnYn == "use"
-                            ?
-                            <Button
-                                onClick={(e) => { handleOpen("승인요청하시겠습니까?", onApprovalclick) }} text="승인요청" style={{ marginLeft: "5px", height: "48px", width: "100px" }}
-                            />
+                            ? <Button onClick={(e) => { handleOpen("승인요청하시겠습니까?", onApprovalclick) }} text="승인요청" 
+                                style={{ marginLeft: "5px", height: "48px", width: "100px" }} type='default' />
                             : selectPrjctIndvdlCtMmValue != undefined && (selectPrjctIndvdlCtMmValue.mmAtrzCmptnYn == "audit" || selectPrjctIndvdlCtMmValue.mmAtrzCmptnYn == "composite")
-                                ?
-                                <Button
-                                    onClick={() => { handleOpen("승인요청을 취소하시겠습니까?", onApprovalCancleclick) }} text='승인요청취소' style={{ marginLeft: "5px", height: "48px", width: "140px" }}
-                                />
-                                : <></>
+                            ? <Button onClick={() => { handleOpen("승인요청을 취소하시겠습니까?", onApprovalCancleclick) }} text='승인요청취소' 
+                                style={{ marginLeft: "5px", height: "48px", width: "140px" }} type='danger'/>
+                            : <></>
                     }
                 </div>
             </div>
@@ -629,22 +549,10 @@ const EmpWorkTime = () => {
 
     function createScheduler(insertWorkHourList) {
         const resourcesData = [
-            {
-                id: "VTW03702",
-                color: '#6495ed',
-            },
-            {
-                id: "VTW03703",
-                color: '#008000',
-            },
-            {
-                id: "VTW03704",
-                color: '#ff4500',
-            },
-            {
-                id: "VTW03701",
-                color: '#999999',
-            },
+            { id: "VTW03702", color: '#6495ed' },
+            { id: "VTW03703", color: '#008000' },
+            { id: "VTW03704", color: '#ff4500' },
+            { id: "VTW03701", color: '#999999' }
         ];
 
         const customDateCell = (props) => {
@@ -709,7 +617,7 @@ const EmpWorkTime = () => {
                 <div style={{ marginTop: "10px", border: "2px solid #CCCCCC" }}>
                     <div style={{ borderBottom: "2px solid #CCCCCC" }}>
                         <div style={{ display: "flex", alignItems: "center", height: "50px", marginLeft: "20px" }}>
-                            {orderWorkBgngMm} - {flagOrder}차수 근무시간 : {vcatnHour != 0 ? workHour - vcatnHour : workHour} / {workHour + holiHour} hrs.
+                            {orderWorkBgngMm} - {flagOrder}차수 근무시간 : {realWorkHour + vcatnHour + holiHour} / {workHour + holiHour} hrs.
                         </div>
                     </div>
                     {
@@ -746,7 +654,6 @@ const EmpWorkTime = () => {
                                 }
                             })
                         } : {realWorkHour}​ / {vcatnHour != 0 ? workHour - vcatnHour : workHour} hrs.
-                        {/* } : {vcatnCnt != 0 ? workHour - vcatnCnt * 8 : workHour}​ / {workHour} hrs. */}
                     </div>
                 </div>
             </>
@@ -843,7 +750,6 @@ const EmpWorkTime = () => {
                             </div>
                             <div style={{ display: "inline-block", float: "right", marginTop: "25px" }}>
                                 <Button style={{ height: "48px", width: "60px", marginRight: "15px" }} onClick={onSaveClick}>저장</Button>
-                                {/* <Button style={{ height: "48px", width: "80px" }}>초기화</Button> */}
                             </div>
                         </div>
                         : selectPrjctIndvdlCtMmValue != undefined && (selectPrjctIndvdlCtMmValue.mmAtrzCmptnYn == "audit" || selectPrjctIndvdlCtMmValue.mmAtrzCmptnYn == "composite")
@@ -871,9 +777,7 @@ const EmpWorkTime = () => {
         )
     }
 }
-
 export default EmpWorkTime;
-
 
 /**
  * @param {number} startYear 현재년도 기준 화면에 보여줄 (현재년도 - startYear)
@@ -888,7 +792,6 @@ function getYearList(startYear, endYear) {
     for (startDate; startDate <= endDate; startDate++) {
         yearList.push(startDate);
     }
-
     return yearList;
 }
 

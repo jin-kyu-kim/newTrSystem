@@ -1305,9 +1305,6 @@ function elctrnLine(popupAtrzValue) {
         </>
     )
 }
-
-/* ========================= 화면 레이아웃 영역  =========================*/
-
 /* ========================= mergeTable css 영역  =========================*/
 const tableHeaderStyle = {
     borderBottom: "1.5px solid #CCCCCC",

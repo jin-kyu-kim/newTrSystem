@@ -64,6 +64,11 @@ const CommentList = ({ comments, changeData})=>{
                 allowUpdating={true}
                 allowAdding={true}
                 allowDeleting={true}
+                texts={{
+                    saveRowChanges: '저장',
+                    cancelRowChanges: '취소',
+                    confirmDeleteMessage: '삭제하시겠습니까?'
+                }}
             >
                 <Form>
                     <Form.OptionName dataField="empId" />
