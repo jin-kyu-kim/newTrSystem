@@ -78,6 +78,16 @@
           &:not(.dx-state-focused)>.dx-treeview-item.dx-state-hover {
             background-color: $base-accent;
           }
+
+
+          &.dx-state-selected > .dx-treeview-item * {
+            color: #3ab3eb;
+          }
+        
+          &.dx-state-selected:not(.dx-state-focused) > .dx-treeview-item.dx-state-hover * {
+            color: white;
+            font-weight: bold;
+          }
         }
       }
     }
