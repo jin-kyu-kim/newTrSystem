@@ -204,7 +204,7 @@ public class SysMngService {
     }
 
     private boolean isAccountLocked(String empno) {
-        return loginAttemptsMap.getOrDefault(empno, 0) >= 5;
+        return loginAttemptsMap.getOrDefault(empno, 0) >= 10;
     }
 }
       
