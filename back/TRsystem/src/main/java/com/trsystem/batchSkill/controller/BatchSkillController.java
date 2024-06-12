@@ -49,5 +49,13 @@ public class BatchSkillController {
 	public void executeInsertCrtrDate() throws IOException {
 		batchSkillService.executeInsertCrtrDate();
 	}
+	@PostMapping(value = "/boot/batchSkll/UserInfoTest")
+	public List<Map<String, Object>> executeSendKmsEmp() throws IOException {
+		return batchSkillService.executeSendKmsEmp();
+	}
+	@PostMapping(value = "/boot/batchSkll/UserLoginInfoTest")
+	public List<Map<String, Object>>  executeSendKmsLgnInfo() throws IOException {
+		return batchSkillService.executeSendKmsLgnInfo();
+	}
 
 }
