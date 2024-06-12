@@ -386,11 +386,6 @@
         DROP TEMPORARY TABLE tmp_delete_keys_outordlbrcoct
     </update>
     
-    
-    
-    
-    
-    
 
 	<!-- 박지환_작업 -->
 	<insert id = "insertCtrtDate" >
@@ -435,4 +430,29 @@
 								END
 			,MDFCN_DT		= 	SYSDATE()
 	</insert>
+
+	<select id="retrieveKmsEmp" resultType="com.trsystem.LowerHashMap">
+	SELECT EMPNO AS USER_ID -- 사번
+		 , EMP_FLNM AS NAME -- 이름
+		 , JBPS_CD AS POSITION -- 직위
+         , (SELECT CD_NM FROM CD WHERE CD_VALUE = JBPS_CD) AS POSITION_NM -- 직위명
+         , TELNO AS TEL -- 전화번호
+         , HDOF_STTS_CD AS WORKING_STATUS -- 재직현황
+         , (SELECT CD_NM FROM CD WHERE CD_VALUE = HDOF_STTS_CD) AS WORKING_STATUS_NM -- 재직현황
+	  FROM EMP
+     WHERE EMP_TY_CD != 'VTW00203'
+	  AND HDOF_STTS_CD = 'VTW00301'
+	  AND EMPNO NOT BETWEEN 'VK0101' AND 'VK0111'
+	</select>
+
+	<select id="retrieveKmsLgnUser" resultType="com.trsystem.LowerHashMap">
+	SELECT L.EMPNO AS USER_ID
+		 , PSWD AS PASSWORD
+	 FROM LGN_USER L
+     LEFT JOIN EMP E
+       ON L.EMP_ID = E.EMP_ID
+      AND EMP_TY_CD != 'VTW00203'
+      AND HDOF_STTS_CD = 'VTW00301'
+      AND L.EMPNO NOT BETWEEN 'VK0101' AND 'VK0111'
+	</select>
 </mapper>
