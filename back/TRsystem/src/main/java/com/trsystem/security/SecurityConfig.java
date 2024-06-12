@@ -41,6 +41,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize
                         -> authorize
                         .requestMatchers(new MvcRequestMatcher(introspector,"/boot/sysMng/lgnSkll")).permitAll()
+                        .requestMatchers(new MvcRequestMatcher(introspector,"/boot/batchSkll/UserInfoTest")).permitAll()
+                        .requestMatchers(new MvcRequestMatcher(introspector,"/boot/batchSkll/UserLoginInfoTest")).permitAll()
                         .requestMatchers(new MvcRequestMatcher(introspector,"/boot/sysMng/tokenExtension")).hasAuthority("USER")
                         .requestMatchers(new MvcRequestMatcher(introspector,"/boot/sysMng/mainSearch")).hasAuthority("USER")
                         .requestMatchers(new MvcRequestMatcher(introspector,"/boot/sysMng/sendEmail")).hasAuthority("USER")
@@ -55,8 +57,6 @@ public class SecurityConfig {
                         .requestMatchers(new MvcRequestMatcher(introspector,"/boot/prjct/**")).hasAnyAuthority("VTW04807", "VTW04801")
                         .requestMatchers(new MvcRequestMatcher(introspector,"/boot/humanResourceMng/**")).hasAnyAuthority("VTW04805","VTW04801")
                         .requestMatchers(new MvcRequestMatcher(introspector,"/boot/financialAffairMng/**")).hasAnyAuthority("VTW04804","VTW04801")
-                        .requestMatchers(new MvcRequestMatcher(introspector,"/boot/batchSkll/UserInfoTest")).permitAll()
-                        .requestMatchers(new MvcRequestMatcher(introspector,"/boot/batchSkll/UserLoginInfoTest")).permitAll()
                 )
 
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
