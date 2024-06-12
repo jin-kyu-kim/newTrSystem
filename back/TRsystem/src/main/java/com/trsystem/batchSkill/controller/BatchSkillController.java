@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,11 +50,11 @@ public class BatchSkillController {
 	public void executeInsertCrtrDate() throws IOException {
 		batchSkillService.executeInsertCrtrDate();
 	}
-	@PostMapping(value = "/boot/batchSkll/UserInfoTest")
+	@GetMapping(value = "/boot/batchSkll/UserInfoTest")
 	public List<Map<String, Object>> executeSendKmsEmp() throws IOException {
 		return batchSkillService.executeSendKmsEmp();
 	}
-	@PostMapping(value = "/boot/batchSkll/UserLoginInfoTest")
+	@GetMapping(value = "/boot/batchSkll/UserLoginInfoTest")
 	public List<Map<String, Object>>  executeSendKmsLgnInfo() throws IOException {
 		return batchSkillService.executeSendKmsLgnInfo();
 	}
