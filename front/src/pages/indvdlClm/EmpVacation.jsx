@@ -109,7 +109,7 @@ const EmpVacation = () => {
     // 월별 근무일_공휴일 조회
     const getVcatnInfo = async () => {
         try {
-            setSelectCrtrDateList(await ApiRequest("/boot/common/queryIdSearch", { queryId: "indvdlClmMapper.retrieveVcatnYearInfoInq" }));
+            setSelectCrtrDateList(await ApiRequest("/boot/common/queryIdSearch", { queryId: "indvdlClmMapper.retrieveVcatnYearInfoInq", searchYear:flagYear }));
         } catch (error) {
             console.error("getVcatnInfo_error : " + error);
         }
