@@ -27,22 +27,8 @@ export async function signIn(empno, password) {
 
 export async function signOut() {
     try {
-        // const response = await ApiRequest("/boot/sysMng/lgnOut");
-        // sessionStorage.clear();
         localStorage.clear();
         window.location.href = "/login";
-        //
-        // if(!response.fail){
-        //     return {
-        //         isOk: true,
-        //         data: response
-        //     };
-        // }else{
-        //     return {
-        //         isOk: false,
-        //         data: response
-        //     };
-        // }
     }
     catch {
         return {
@@ -53,20 +39,8 @@ export async function signOut() {
 }
 
 export async function changePassword(empId, oldPwd, newPwd) {
-    try {
-        // Send request
-        const param = {empId:empId, oldPwd: oldPwd, newPwd: newPwd};
-        const response = await ApiRequest("/boot/sysMng/changePwd", param);
-        return {
-            isOk: true
-        };
-    }
-    catch {
-        return {
-            isOk: false,
-            message: "Failed to change password"
-        }
-    }
+    const param = {empId:empId, oldPwd: oldPwd, newPwd: newPwd};
+    return await ApiRequest("/boot/sysMng/changePwd", param);
 }
 
 export async function resetPassword(empId, empno) {
