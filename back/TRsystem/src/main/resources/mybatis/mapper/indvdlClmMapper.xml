@@ -960,7 +960,7 @@
         <if test="useTime != null and !useTime.equals('')">
             AND TIME(UTZTN_DT) BETWEEN (SELECT SUBSTR(CD_NM,4,5) FROM CD WHERE CD_VALUE = #{useTime}) AND (SELECT SUBSTR(CD_NM,10,5) FROM CD WHERE CD_VALUE = #{useTime})
         </if>
-        ORDER BY cud.UTZTN_DT ASC
+        ORDER BY cud.UTZTN_DT DESC
     </select>
 
     <!-- 프로젝트비용 프로젝트별 배정 원가 비용코드 조회 -->
