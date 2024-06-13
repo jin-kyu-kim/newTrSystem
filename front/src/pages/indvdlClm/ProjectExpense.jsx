@@ -128,9 +128,12 @@ const ProjectExpense = () => {
         const updateStts = ctAply.length === 0
             ? (data.name === 'onInptDdlnClick' ? 'Y' : (data.name === 'onAprvDmndRtrcnClick' ? null : undefined))
             : (data.name === 'onInptDdlnClick' ? 'N' : (data.name === 'onInptDdlnRtrcnClick' ? null : undefined));
-        if (updateStts !== undefined) updateCtAtrzCmptnYn(updateStts);
-        getData();
-        handleOpen(data.completeMsg);
+        if (updateStts !== undefined) {
+            updateCtAtrzCmptnYn(updateStts);
+        } else{
+            getData();
+            handleOpen(data.completeMsg);
+        }
     };
 
     const updateCtAtrzCmptnYn = async (status) => {
@@ -151,7 +154,7 @@ const ProjectExpense = () => {
             if (ctAply.length === 0 && mmAtrzCmptnYn === undefined) {
                 handleOpen('경비청구 건수가 없을 경우 근무시간을 먼저 승인 요청 해주시기 바랍니다.')
                 return;
-            } else if(ctAply.length === 0 && (mmAtrzCmptnYn === 'Y' || mmAtrzCmptnYn === 'N')) {
+            } else if(ctAply.length === 0 && (mmAtrzCmptnYn === 'Y' || mmAtrzCmptnYn === 'N') && onClick.name === 'onInptDdlnClick') {
                 handleOpen('경비청구 건수가 없을 경우 바로 승인이 완료되며 입력 및 수정이 불가능합니다. 입력마감 하시겠습니까?', () => prjctCtAtrzUpdate(onClick), true)
             } else{
                 prjctCtAtrzUpdate(onClick);
@@ -164,7 +167,8 @@ const ProjectExpense = () => {
         if (ctAply?.length === 0) { // 비용청구가 없으면서 근무시간은 존재하는 경우
             if (ctAtrzCmptnYn === null) return buttonsConfig.default;
             if (ctAtrzCmptnYn === 'N') return buttonsConfig.hasApprovals;
-            if (ctAtrzCmptnYn === 'Y' && (mmAtrzCmptnYn === 'Y' || mmAtrzCmptnYn === 'N')) return buttonsConfig.completed;
+            if (ctAtrzCmptnYn === 'Y' && mmAtrzCmptnYn === 'N') return buttonsConfig.hasApprovals;
+            if (ctAtrzCmptnYn === 'Y' && mmAtrzCmptnYn === 'Y') return buttonsConfig.completed;
         } else {
             if (atrzDmndSttsCnt.rjct === 0 && atrzDmndSttsCnt.aprv > 0 && atrzDmndSttsCnt.inptDdln === 0 && atrzDmndSttsCnt.ctReg === 0) return buttonsConfig.completed;
             if (atrzDmndSttsCnt.aprvDmnd > 0 || atrzDmndSttsCnt.rjct > 0) return buttonsConfig.hasApprovals;
