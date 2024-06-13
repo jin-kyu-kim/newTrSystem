@@ -71,22 +71,25 @@ const ProjectExpenseExcel = (props) => {
                     let utztnAmt = excel[i].__EMPTY_7;
                     let useOffic = excel[i].__EMPTY_6.replace(/&/g, "_AND_");
 
-                    utztnAmt = typeof utztnAmt === 'string' ? utztnAmt.replace(/,/g, "") : utztnAmt;
-                    const date = excel[i].__EMPTY_4.replace(/\./g, "");
-                    const time = excel[i].__EMPTY_5.replace(/:/g, "");
-
-                    const data = {
-                        empId, aplyYm, aplyOdr,
-                        "utztnDt": date + time,
-                        "useOffic": useOffic,
-                        "utztnAmt": utztnAmt,
-                        "lotteCardAprvNo": excel[i].__EMPTY_20,
-                        "prjctCtInptPsbltyYn": "Y",
-                        "regEmpId": props.empId,
-                        "regDt": formattedDate,
-                        "ctStlmSeCd": "VTW01903"
-                    };
-                    param.push(data);
+                    utztnAmt = typeof utztnAmt === 'string' ? parseFloat(utztnAmt.replace(/,/g, "")) : utztnAmt;
+                    
+                    if(utztnAmt > 0){
+                        const date = excel[i].__EMPTY_4.replace(/\./g, "");
+                        const time = excel[i].__EMPTY_5.replace(/:/g, "");
+    
+                        const data = {
+                            empId, aplyYm, aplyOdr,
+                            "utztnDt": date + time,
+                            "useOffic": useOffic,
+                            "utztnAmt": utztnAmt,
+                            "lotteCardAprvNo": excel[i].__EMPTY_20,
+                            "prjctCtInptPsbltyYn": "Y",
+                            "regEmpId": props.empId,
+                            "regDt": formattedDate,
+                            "ctStlmSeCd": "VTW01903"
+                        };
+                        param.push(data);
+                    }
                 }
             }
             try {
