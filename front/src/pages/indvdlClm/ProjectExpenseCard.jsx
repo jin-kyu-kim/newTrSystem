@@ -138,11 +138,11 @@ const ProjectExpenseCard = (props) => {
                 console.error('error', error);
             }
         }))
-            .then(results => {
-                getCardUseDtls();
-                handleOpen('삭제되었습니다.');
-            })
-            .catch(error => { console.error('error', error); });
+        .then(results => {
+            getCardUseDtls();
+            handleOpen('삭제되었습니다.');
+        })
+        .catch(error => { console.error('error', error); });
     };
 
     const onSelection = (e) => {
