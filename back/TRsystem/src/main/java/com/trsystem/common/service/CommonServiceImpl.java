@@ -441,20 +441,26 @@ public class CommonServiceImpl implements CommonService {
                 }
 
                 if (params.get(i) instanceof String) {
-                    preparedStatement.setString(j+1, (String) params.get(i));
+                    String paramStr = (String) params.get(i);
+                    if(paramStr.contains("_AND_")){
+                        paramStr = paramStr.replaceAll("_AND_", "&");
+                        preparedStatement.setString(j+1, paramStr);
+                    } else {
+                        preparedStatement.setString(j+1, (String) params.get(i));
+                    }
                 } else if (params.get(i) instanceof Integer) {
                     preparedStatement.setInt(j+1, (Integer) params.get(i));
-                }  else if (params.get(i) instanceof Long) { // bigint (Long) 처리
+                } else if (params.get(i) instanceof Long) { // bigint (Long) 처리
                     preparedStatement.setLong(j+1, (Long) params.get(i));
-                }else if (params.get(i) instanceof Double) {
+                } else if (params.get(i) instanceof Double) {
                     preparedStatement.setDouble(j+1, (Double) params.get(i));
                 } else if (params.get(i) instanceof Timestamp) {
                     preparedStatement.setTimestamp(j+1, (Timestamp) params.get(i));
-                }  else if (params.get(i) instanceof Instant) {
+                } else if (params.get(i) instanceof Instant) {
                     preparedStatement.setTimestamp(j+1, Timestamp.from((Instant) params.get(i)));
-                }  else if (params.get(i) == null) {
+                } else if (params.get(i) == null) {
                     preparedStatement.setString(j+1, null);
-                }  else {
+                } else {
                     j++;
                     return null;
                 }

@@ -9,6 +9,7 @@ import { changePassword } from "utils/AuthMng";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { useModal } from "../../components/unit/ModalContext";
+import { signOut } from "../../utils/AuthMng";
 
 const ModifyPwd = ({ naviEmpId }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -43,7 +44,8 @@ const ModifyPwd = ({ naviEmpId }) => {
       [name]: value
     });
   };
-  const onClickChangePwd = async (e) => {
+
+  const onClickChangePwd = async () => {
 
     if (empDtlData.oldPwd === null || empDtlData.oldPwd === "") {
       handleOpen("현재 비밀번호를 입력하세요");
@@ -86,26 +88,27 @@ const ModifyPwd = ({ naviEmpId }) => {
       handleOpen(" 비밀번호 확인이 일치하지 않습니다 ");
       return;
     }
-    const isconfirm = window.confirm("비밀번호를 변경 하시겠습니까?");
+
     let empno;
-    if (isconfirm) {
-      const params = [{ tbNm: "LGN_USER" }, { empId: empId }];
-      try {
-        const response = await ApiRequest("/boot/common/commonSelect", params);
-        empno = response[0].empno
-      }
-      catch (error) {
-        console.log(error);
-      }
-      const response = await changePassword(empno, empDtlData.oldPwd, empDtlData.newPwd);
-      if (response.isOk) {
-        handleOpen("비밀번호가 변경 되었습니다");
-        navigate("/home");
-      } else {
-        handleOpen("기존 비밀번호를 확인하세요.");
-      }
+    const params = [{ tbNm: "LGN_USER" }, { empId: empId }];
+    try {
+      const response = await ApiRequest("/boot/common/commonSelect", params);
+      empno = response[0].empno
+    }
+    catch (error) {
+      console.log(error);
+    }
+    const response = await changePassword(empno, empDtlData.oldPwd, empDtlData.newPwd);
+
+    if (response === 'success') {
+      handleOpen("비밀번호 변경이 완료되었습니다.");
+      setTimeout(() => {
+        signOut();
+      }, 1000);
+    } else if (response === 'incorrect') {
+      handleOpen("기존 비밀번호를 확인하세요.");
     } else {
-      return;
+      handleOpen("비밀번호 변경에 실패했습니다.");
     }
   }
   return (
@@ -122,6 +125,7 @@ const ModifyPwd = ({ naviEmpId }) => {
                     name: e.component.option("name"),
                     value: e.value,
                   })}
+                  onEnterKey={onClickChangePwd}
               >
                 <Validator>
                   <RequiredRule message="현재 비밀번호를 입력해주세요." />
@@ -137,7 +141,8 @@ const ModifyPwd = ({ naviEmpId }) => {
                 handleChgState({
                   name: e.component.option("name"),
                   value: e.value,
-                })}>
+                })}
+                onEnterKey={onClickChangePwd}>
                 <Validator>
                   <RequiredRule message="새 비밀번호를 입력해주세요." />
                   <PatternRule
@@ -156,9 +161,10 @@ const ModifyPwd = ({ naviEmpId }) => {
                 handleChgState({
                   name: e.component.option("name"),
                   value: e.value,
-                })}>
+                })}
+                onEnterKey={onClickChangePwd}>
                 <Validator>
-                  <RequiredRule message="비밀번호 확인을  입력해주세요." />
+                  <RequiredRule message="비밀번호 확인을 입력해주세요." />
                   <PatternRule
                     message="8자리~20자리, 숫자/영문자/특수문자포함하여야 합니다."
                     pattern={/^(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,20}$/}
@@ -172,7 +178,8 @@ const ModifyPwd = ({ naviEmpId }) => {
           </GroupItem>
         </Form>
         <div style={{ marginTop: "10px", textAlign: 'center' }}>
-          <Button type="default" text="저장" onClick={onClickChangePwd} />
+          <Button type="default" text="저장"
+            onClick={() => handleOpen("비밀번호를 변경 하시겠습니까?", () => onClickChangePwd())} />
         </div>
       </div>
     </div>

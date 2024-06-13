@@ -5,8 +5,8 @@ import ApiRequest from "../../utils/ApiRequest";
 import { useModal } from "../../components/unit/ModalContext";
 
 const button = {
-    borderRadius: '5px',
     width: '95px',
+    borderRadius: '5px',
     marginLeft: '10px'
 }
 
@@ -25,8 +25,8 @@ const ProjectExpenseExcel = (props) => {
     const hours = String(currentDate.getHours()).padStart(2, "0");
     const minutes = String(currentDate.getMinutes()).padStart(2, "0");
     const seconds = String(currentDate.getSeconds()).padStart(2, "0");
-    const { handleOpen } = useModal();
     const formattedDate = `${year}${month}${day}${hours}${minutes}${seconds}`;
+    const { handleOpen } = useModal();
 
     useEffect(() => {
         const getCardUseDtl = async () => {
@@ -47,7 +47,7 @@ const ProjectExpenseExcel = (props) => {
         };
         getCardUseDtl();
     }, []);
-    
+
     const onClick = async () => {
         if (excel === undefined) {
             handleOpen("파일을 등록해주세요.");
@@ -62,22 +62,25 @@ const ProjectExpenseExcel = (props) => {
         });
 
         if (excel[0].__EMPTY_4 === "승인일자" && excel[0].__EMPTY_5 === "승인시간") {
+            
             for (let i = 1; i < excel?.length; i++) {
                 const lotteCardAprvNo = excel[i].__EMPTY_20; // aprvNo[승인번호] -> __EMPTY_20
-                
+
                 // 기존 aprvList에 승인번호가 포함되어 있지 않은 경우만 처리
                 if (!aprvNoList.includes(lotteCardAprvNo)) {
+                    let utztnAmt = excel[i].__EMPTY_7;
+                    let useOffic = excel[i].__EMPTY_6.replace(/&/g, "_AND_");
 
-                    if (!excel[i].__EMPTY_7.includes('-')) {
-
-                        const utztnAmt = excel[i].__EMPTY_7.replace(/,/g, "");
+                    utztnAmt = typeof utztnAmt === 'string' ? parseFloat(utztnAmt.replace(/,/g, "")) : utztnAmt;
+                    
+                    if(utztnAmt > 0){
                         const date = excel[i].__EMPTY_4.replace(/\./g, "");
                         const time = excel[i].__EMPTY_5.replace(/:/g, "");
-
+    
                         const data = {
                             empId, aplyYm, aplyOdr,
                             "utztnDt": date + time,
-                            "useOffic": excel[i].__EMPTY_6,
+                            "useOffic": useOffic,
                             "utztnAmt": utztnAmt,
                             "lotteCardAprvNo": excel[i].__EMPTY_20,
                             "prjctCtInptPsbltyYn": "Y",
@@ -95,7 +98,6 @@ const ProjectExpenseExcel = (props) => {
                     return;
                 }
                 const response = await ApiRequest("/boot/common/commonInsert", param);
-
                 if (response === 1) {
                     props.setIndex(1);
                     handleOpen("등록되었습니다.")
@@ -110,7 +112,7 @@ const ProjectExpenseExcel = (props) => {
     }
 
     return (
-        <div style={{marginLeft: '5%', marginTop: '7%'}}>
+        <div style={{ marginLeft: '5%', marginTop: '7%' }}>
             <span style={{ fontSize: 18 }}>롯데카드 법인카드 사용내역 엑셀을 업로드 합니다.<br />
                 <span style={{ fontSize: 14 }}>
                     <br />
