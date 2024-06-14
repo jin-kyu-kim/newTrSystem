@@ -321,7 +321,9 @@ const EmpWorkTime = () => {
 
                 if (workHourCheckList) {
                     workHourCheckList.map((item, index) => {
-                        workHourValue += parseFloat(workHourCheckList[index].md)
+                        if(item.atrzDmndSttsCd !== 'VTW03704'){
+                            workHourValue += parseFloat(workHourCheckList[index].md);
+                        }
                     })
 
                     if (workHourValue > 1) {
