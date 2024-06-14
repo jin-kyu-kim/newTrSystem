@@ -7,6 +7,7 @@ import ProjectExpenseJson from "./ProjectExpenseJson.json";
 import ProjectExpenseSendPop from './ProjectExpenseSendPop';
 import ApiRequest from "../../utils/ApiRequest";
 import { useModal } from "../../components/unit/ModalContext"
+import { Button } from 'devextreme-react';
 
 const ProjectExpenseCard = (props) => {
     const { keyColumn, queryId, prjctStleQueryId, prjctStlePdQueryId, tableColumns, searchInfo, placeholderAndRequired, buttonGroup } = ProjectExpenseJson.ProjectExpenseTab;
@@ -75,17 +76,21 @@ const ProjectExpenseCard = (props) => {
 
     const setComboBox = (value, props, col) =>{
         if(value) {
-            if (value.prjctId) {
+            if (col.key === 'prjctId') {
                 getCdList(value, props.data.cardUseSn);
-                props.data.prjctId = value.prjctId
-                props.data.aprvrEmpId = value.prjctMngrEmpId // 결재자 추가
+                props.data.prjctId = value.prjctId;
+                props.data.aprvrEmpId = value.prjctMngrEmpId; // 결재자 추가
+                props.data.prjctIdObject = value;
     
                 setIsPrjctIdSelected(prevStts => ({
                     ...prevStts,
                     [props.data.cardUseSn]: !!value
-                }))
-            } else {
-                props.data.expensCd = value.expensCd
+                }));
+
+            } else if (col.key === 'expensCd') {
+                props.data.expensCd = value.expensCd;
+                props.data.expensCdObject = value;
+
                 setExpensCd(prevStts => ({
                     ...prevStts,
                     [props.data.cardUseSn]: value.expensCd
@@ -97,29 +102,41 @@ const ProjectExpenseCard = (props) => {
                 props.data.prjctId = null;
                 props.data.aprvrEmpId = null;
                 props.data.expensCd = null;
-            } else{
+                props.data.prjctIdObject = null;
+            } else {
                 props.data.expensCd = null;
+                props.data.expensCdObject = null;
             }
             setIsPrjctIdSelected(prevStts => ({
                 ...prevStts,
                 [props.data.cardUseSn]: true
             }))
         }
+
+        // selectedItem 업데이트
+        const updatedSelectedItem = selectedItem.map(item => 
+            item.cardUseSn === props.data.cardUseSn ? { ...item, ...props.data } : item
+        );
+        setSelectedItem(updatedSelectedItem);
     }
 
     const getCdList = async (prjct, cardUseSn) => {
-        let queryId = prjct.prjctStleCd === 'VTW01802' ? prjctStleQueryId : prjctStlePdQueryId
-        try {
-            const response = await ApiRequest('/boot/common/queryIdSearch', {
-                queryId: queryId, prjctId: prjct.prjctId, multiType: true
-            })
-            setCdList(prevCdLists => ({
-                ...prevCdLists,
-                [cardUseSn]: response
-            }));
-
-        } catch (error) {
-            console.log('error', error);
+        if(prjct === null) {
+            return;
+        } else {
+            let queryId = prjct.prjctStleCd === 'VTW01802' ? prjctStleQueryId : prjctStlePdQueryId
+            try {
+                const response = await ApiRequest('/boot/common/queryIdSearch', {
+                    queryId: queryId, prjctId: prjct.prjctId, multiType: true
+                })
+                setCdList(prevCdLists => ({
+                    ...prevCdLists,
+                    [cardUseSn]: response
+                }));
+    
+            } catch (error) {
+                console.log('error', error);
+            }
         }
     }
 
@@ -174,6 +191,58 @@ const ProjectExpenseCard = (props) => {
     };
     const onPopHiding = () => { setPopVisible(false); };
 
+    const headerCellRender = ({ column }) => (
+        ['prjctId'].includes(column.dataField)
+        ? <div>
+            {column.caption}
+            <Button text='일괄적용' type='success' onClick={() => onBulkAply(column.dataField)}
+                style={{fontSize: '8pt', marginLeft: '10px'}}/>
+        </div>
+        : <div>{column.caption}</div>
+    );
+
+    const onBulkAply = (field) => {
+        if (selectedItem.length === 0) return;
+    
+        const firstSelectedRow = selectedItem[0];
+        const firstFieldValue = firstSelectedRow[field];
+        const firstFieldObject = firstSelectedRow[`${field}Object`]; // 객체 값도 가져옴
+
+        const updatedCardUseDtls = cardUseDtls.map(item => {
+            if (selectedItem.some(selected => selected.cardUseSn === item.cardUseSn)) {
+                if (field === 'prjctId') {
+                    getCdList(firstFieldObject, item.cardUseSn);
+                    setIsPrjctIdSelected(prevStts => ({
+                        ...prevStts,
+                        [item.cardUseSn]: !!firstFieldValue
+                    }));
+                    return {
+                        ...item,
+                        prjctId: firstFieldValue, // 문자열로 설정
+                        prjctIdObject: firstFieldObject // 객체로 설정
+                    };
+                } 
+                if (field === 'expensCd') {
+                    return {
+                        ...item,
+                        expensCd: firstFieldValue, // 문자열로 설정
+                        expensCdObject: firstFieldObject // 객체로 설정
+                    };
+                }
+            }
+            return item;
+        });
+        setCardUseDtls(updatedCardUseDtls);
+
+        // selectedItem 업데이트
+        const updatedSelectedItem = selectedItem.map(item => {
+            const updatedItem = updatedCardUseDtls.find(updated => updated.cardUseSn === item.cardUseSn);
+            return updatedItem ? { ...item, ...updatedItem } : item;
+        });
+
+        setSelectedItem(updatedSelectedItem);
+    };
+    
     const cellRenderConfig = {
         getCdList, isPrjctIdSelected, setIsPrjctIdSelected, chgPlaceholder, comboList, cdList, setComboBox, 
         expensCd, setExpensCd, setValidationErrors, hasError: (cardUseSn, fieldName) => hasError(validationErrors, cardUseSn, fieldName)
@@ -202,6 +271,7 @@ const ProjectExpenseCard = (props) => {
                     columns={tableColumns}
                     keyColumn={keyColumn}
                     onSelection={onSelection}
+                    headerCellRender={headerCellRender}
                     cellRenderConfig={cellRenderConfig}
                     defaultPageSize={10}
                 />
