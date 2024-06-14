@@ -9,7 +9,7 @@ import { TextBox } from 'devextreme-react';
 const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, validateNumberBox }) => {
     const [isChangeData, setIsChangeData] = useState(false);
 
-    const { getCdList, isPrjctIdSelected, hasError, chgPlaceholder, comboList, cdList,
+    const { getCdList, isPrjctIdSelected, hasError, chgPlaceholder, comboList, cdList, onTempInsert,
         expensCd, setValidationErrors, setComboBox } = cellRenderConfig ?? {};
 
     const onKeyDownEvent = (e) => {
@@ -26,6 +26,7 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
         return (<ToggleButton callback={handleYnVal} data={props} colData={col} />);
 
     } else if (col.cellType === 'selectBox') {
+        console.log(props.data.prjctIdObject)
         return (
             <SelectBox
                 dataSource={getCdList ? (col.key === 'prjctId' ? comboList[col.key] : cdList[props.data.cardUseSn]) : comboList[col.key]}
@@ -38,6 +39,7 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
                 onValueChanged={(e) => {
                     setComboBox(e.value, props, col);
                 }}
+                onFocusOut={onTempInsert && (() => onTempInsert(col, props.data[col.key], props))}
                 disabled={col.key === 'expensCd' && !isPrjctIdSelected[props.data.cardUseSn]}
             />
         );
@@ -52,6 +54,7 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
                 showSelectionControls={true}
                 displayExpr='displayValue'
                 applyValueMode="useButtons"
+                onFocusOut={onTempInsert && (() => onTempInsert(col, props.data[col.key], props))}
                 style={{ backgroundColor: hasError && hasError(props.data.cardUseSn, col.key) ? '#FFCCCC' : '' }}
                 onValueChanged={(newValue) => {
                     props.data[col.key] = newValue.value
@@ -65,6 +68,7 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
                 name={col.key}
                 onKeyDown={onKeyDownEvent}
                 value={props.data[col.key]}
+                onFocusOut={onTempInsert && (() => onTempInsert(col, props.data[col.key], props))}
                 placeholder={chgPlaceholder ? chgPlaceholder(col, props.data.cardUseSn) : col.placeholder}
                 style={{ backgroundColor: hasError && hasError(props.data.cardUseSn, col.key) ? '#FFCCCC' : '' }}
                 onValueChanged={(newValue) => {
@@ -94,6 +98,7 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
                 format="#,##0"
                 onKeyDown={onKeyDownEvent}
                 value={props.data[col.key]}
+                onFocusOut={onTempInsert && (() => onTempInsert(col, props.data[col.key], props))}
                 placeholder={chgPlaceholder ? chgPlaceholder(col, props.data.cardUseSn) : col.placeholder}
                 style={{ backgroundColor: hasError && hasError(props.data.cardUseSn, col.key) ? '#FFCCCC' : '' }}
                 onValueChanged={(newValue) => {
