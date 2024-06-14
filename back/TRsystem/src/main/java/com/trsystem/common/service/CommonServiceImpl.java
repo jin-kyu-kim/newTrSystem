@@ -313,8 +313,8 @@ public class CommonServiceImpl implements CommonService {
                     // 파라미터 값이 문자열이며 '%'를 포함하는 경우, LIKE 절을 사용
                     if (paramValue instanceof String && ((String) paramValue).contains("%")) {
                         queryBuilder.append(paramName.replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase()).append(" LIKE ?");
-                    } else if (paramValue instanceof String && ((String) paramValue).contains("&")) {
-                        String[] dateRange = ((String) paramValue).split("&");
+                    } else if (paramValue instanceof String && ((String) paramValue).contains("_BETWEEN_")) {
+                        String[] dateRange = ((String) paramValue).split("_BETWEEN_");
                         if (dateRange.length == 2) {
                             queryBuilder.append(paramName.replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase())
                                     .append(" BETWEEN ? AND ?");
@@ -427,26 +427,31 @@ public class CommonServiceImpl implements CommonService {
                     System.out.println(params.get(i));
                     continue;
                 }
+//                if (params.get(i) instanceof String && ((String) params.get(i)).contains("&") && !((String) params.get(i)).contains("<p>")) {
+//                    String[] dateRange = ((String) params.get(i)).split("&");
+//                    if (dateRange.length == 2) {
+//                        preparedStatement.setObject(j+1, dateRange[0]);
+//                        preparedStatement.setObject(j+2, dateRange[1]);
+//                        j += 2;
+//                        continue;
+//                    } else {
+//                        throw new IllegalArgumentException("Invalid date range format");
+//                    }
+//                }
 
-                if (params.get(i) instanceof String && ((String) params.get(i)).contains("&") && !((String) params.get(i)).contains("<p>")) {
-                    String[] dateRange = ((String) params.get(i)).split("&");
-                    if (dateRange.length == 2) {
-                        preparedStatement.setObject(j+1, dateRange[0]);
-                        preparedStatement.setObject(j+2, dateRange[1]);
-                        j += 2;
-                        continue;
+                if (params.get(i) instanceof String paramStr) {
+                    if(paramStr.contains("_BETWEEN_")){
+                        String[] dateRange = ((String) params.get(i)).split("_BETWEEN_");
+                        if (dateRange.length == 2) {
+                            preparedStatement.setObject(j+1, dateRange[0]);
+                            preparedStatement.setObject(j+2, dateRange[1]);
+                            j += 2;
+                            continue;
+                        } else {
+                            throw new IllegalArgumentException("Invalid date range format");
+                        }
                     } else {
-                        throw new IllegalArgumentException("Invalid date range format");
-                    }
-                }
-
-                if (params.get(i) instanceof String) {
-                    String paramStr = (String) params.get(i);
-                    if(paramStr.contains("_AND_")){
-                        paramStr = paramStr.replaceAll("_AND_", "&");
                         preparedStatement.setString(j+1, paramStr);
-                    } else {
-                        preparedStatement.setString(j+1, (String) params.get(i));
                     }
                 } else if (params.get(i) instanceof Integer) {
                     preparedStatement.setInt(j+1, (Integer) params.get(i));
