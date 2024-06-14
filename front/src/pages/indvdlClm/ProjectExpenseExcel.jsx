@@ -69,7 +69,6 @@ const ProjectExpenseExcel = (props) => {
                 // 기존 aprvList에 승인번호가 포함되어 있지 않은 경우만 처리
                 if (!aprvNoList.includes(lotteCardAprvNo)) {
                     let utztnAmt = excel[i].__EMPTY_7;
-                    let useOffic = excel[i].__EMPTY_6.replace(/&/g, "_AND_");
 
                     utztnAmt = typeof utztnAmt === 'string' ? parseFloat(utztnAmt.replace(/,/g, "")) : utztnAmt;
                     
@@ -80,7 +79,7 @@ const ProjectExpenseExcel = (props) => {
                         const data = {
                             empId, aplyYm, aplyOdr,
                             "utztnDt": date + time,
-                            "useOffic": useOffic,
+                            "useOffic": excel[i].__EMPTY_6,
                             "utztnAmt": utztnAmt,
                             "lotteCardAprvNo": excel[i].__EMPTY_20,
                             "prjctCtInptPsbltyYn": "Y",
