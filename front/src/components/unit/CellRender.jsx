@@ -30,8 +30,8 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
             <SelectBox
                 dataSource={getCdList ? (col.key === 'prjctId' ? comboList[col.key] : cdList[props.data.cardUseSn]) : comboList[col.key]}
                 displayExpr={col.displayExpr}
-                onKeyDown={onKeyDownEvent}
                 keyExpr={col.valueExpr}
+                value={col.key === 'prjctId' ? props.data.prjctIdObject : props.data.expensCdObject} // 객체 값 설정
                 placeholder={col.placeholder}
                 searchEnabled={true}
                 showClearButton={true}
