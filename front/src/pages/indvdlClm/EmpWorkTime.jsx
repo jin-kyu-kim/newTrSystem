@@ -303,7 +303,7 @@ const EmpWorkTime = () => {
             if (insertWorkHourList) {
                 for (let i = 0; i < insertWorkHourList.length; i++) {
                     if (parseData.find(item => item.aplyYmd == insertWorkHourList[i].aplyYmd)) {
-                        if (parseData.find(item => item.aplyYmd == insertWorkHourList[i].aplyYmd).md + insertWorkHourList[i].md > 1) {
+                        if (((parseData.find(item => item.aplyYmd == insertWorkHourList[i].aplyYmd).md) + (insertWorkHourList[i].atrzDmndSttsCd ==='VTW03704' ? 0: insertWorkHourList[i].md)) > 1) {
                             handleOpen("근무시간은 8시간을 초과할 수 없습니다.");
                             return;
                         }
@@ -318,10 +318,11 @@ const EmpWorkTime = () => {
                 let workHourValue = 0;
 
                 workHourCheckList = parseData.filter(item => item.aplyYmd == parseData[i].aplyYmd)
-
                 if (workHourCheckList) {
                     workHourCheckList.map((item, index) => {
-                        workHourValue += parseFloat(workHourCheckList[index].md)
+                        if(item.atrzDmndSttsCd !== 'VTW03704'){
+                            workHourValue += parseFloat(workHourCheckList[index].md);
+                        }
                     })
 
                     if (workHourValue > 1) {
