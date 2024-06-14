@@ -121,7 +121,7 @@ const ProjectExpenseCard = (props) => {
     }
 
     const getCdList = async (prjct, cardUseSn) => {
-        if(prjct === null) {
+        if(prjct === null || prjct === undefined) {
             return;
         } else {
             let queryId = prjct.prjctStleCd === 'VTW01802' ? prjctStleQueryId : prjctStlePdQueryId
@@ -141,7 +141,22 @@ const ProjectExpenseCard = (props) => {
     }
 
     const getCardUseDtls = async () => {
-        setCardUseDtls(await ApiRequest('/boot/common/queryIdSearch', param));
+        const response = await ApiRequest('/boot/common/queryIdSearch', param);
+
+        const updatedResponse = response.map(item => ({
+            ...item,
+            prjctIdObject: {
+                prjctTag: item.prjctTag,
+                prjctId: item.prjctId,
+                prjctMngrEmpId: item.prjctMngrEmpId,
+                prjctStleCd: item.prjctStleCd
+            },
+            expensCdObject: {
+                expensCd: item.expensCd,
+                cdNm: item.cdNm
+            }
+        }));
+        setCardUseDtls(updatedResponse);
     };
 
     const handleDelete = () => {
@@ -242,9 +257,18 @@ const ProjectExpenseCard = (props) => {
 
         setSelectedItem(updatedSelectedItem);
     };
+
+    const onTempInsert = async (col, value, props) => {
+        const updateRes = await ApiRequest('/boot/common/commonUpdate', [
+            {tbNm: "CARD_USE_DTLS"},
+            {[col.key]: value},
+            {lotteCardAprvNo: props.data.lotteCardAprvNo}
+        ])
+        console.log('updateRes', updateRes)
+    }
     
     const cellRenderConfig = {
-        getCdList, isPrjctIdSelected, setIsPrjctIdSelected, chgPlaceholder, comboList, cdList, setComboBox, 
+        getCdList, isPrjctIdSelected, setIsPrjctIdSelected, chgPlaceholder, comboList, cdList, setComboBox, onTempInsert, 
         expensCd, setExpensCd, setValidationErrors, hasError: (cardUseSn, fieldName) => hasError(validationErrors, cardUseSn, fieldName)
     };
 
