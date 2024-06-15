@@ -10,7 +10,6 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
     const [isChangeData, setIsChangeData] = useState(false);
     const [initialPrjctIdValue, setInitialPrjctIdValue] = useState(null);
     const [initialExpensCdValue, setInitialExpensCdValue] = useState(null);
-    const [initialAtdrnValue, setInitialAtdrnValue] = useState(null);
 
     const { getCdList, isPrjctIdSelected, hasError, chgPlaceholder, comboList, cdList, onTempInsert,
         expensCd, setValidationErrors, setComboBox, selectedItem, setSelectedItem } = cellRenderConfig ?? {};
@@ -36,15 +35,6 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
             setInitialExpensCdValue(value);
         }
     }, [cdList, props.data.expensCd, props.data.cardUseSn, col.key, col.cellType]);
-
-    useEffect(() => {
-        if (col.cellType === 'textBox' && col.key === 'atdrn' && expensCd[props.data.cardUseSn] === 'VTW04531') {
-            const value = Array.isArray(props.data.atdrn)
-                && props.data.atdrn
-            setInitialAtdrnValue(value);
-        }
-    }, [props.data.atdrn, col.key, col.cellType]);
-
 
     const updateSelectedItem = (updatedData) => {
         const updatedSelectedItem = selectedItem.map(item => 
@@ -92,8 +82,6 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
                 showSelectionControls={true}
                 displayExpr='displayValue'
                 applyValueMode="useButtons"
-                value={initialAtdrnValue}
-                onFocusOut={onTempInsert && (() => onTempInsert(col, props.data[col.key], props))}
                 style={{ backgroundColor: hasError && hasError(props.data.cardUseSn, col.key) ? '#FFCCCC' : '' }}
                 onValueChanged={(newValue) => {
                     props.data[col.key] = newValue.value;

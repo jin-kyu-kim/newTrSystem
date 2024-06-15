@@ -154,16 +154,6 @@ const ProjectExpenseCard = (props) => {
                 return acc;
             }, {});
 
-            // 야근식대 참석자의 경우 atdrn 값을 배열로 변환
-            if (item.atdrn && item.atdrn.includes(',')) {
-                const atdrnArray = item.atdrn.split(',').map(value => ({
-                    key: item.empId,
-                    value: item.empFlnm,
-                    displayValue: item.empno + ' ' + item.empFlnm,
-                }));
-                filteredItem.atdrn = atdrnArray;
-            }
-
             return {
                 ...filteredItem,
                 expensCdObject: {
@@ -194,15 +184,26 @@ const ProjectExpenseCard = (props) => {
         const param = [{ tbNm: "CARD_USE_DTLS" }];
 
         Promise.all(selectedItem.map(async (item) => {
-            const currentParam = [...param, { cardUseSn: item.cardUseSn }];
+            const currentParam = [...param, { 
+                empId: item.empId,
+                aplyYm: item.aplyYm,
+                aplyOdr: item.aplyOdr,
+                cardUseSn: item.cardUseSn
+            }];
             try {
                 const res = await ApiRequest('/boot/common/commonDelete', currentParam);
+                return res;
             } catch (error) {
                 console.error('error', error);
             }
         }))
         .then(results => {
-            getCardUseDtls();
+            // 삭제된 항목 selectedItem과 cardUseDtls에서 제거
+            const updatedCardUseDtls = cardUseDtls.filter(item => 
+                !selectedItem.some(selected => selected.cardUseSn === item.cardUseSn)
+            );
+            setCardUseDtls(updatedCardUseDtls);
+            setSelectedItem([]);
             handleOpen('삭제되었습니다.');
         })
         .catch(error => { console.error('error', error); });
@@ -292,9 +293,6 @@ const ProjectExpenseCard = (props) => {
     };
 
     const onTempInsert = async (col, value, props) => {
-        if (col.key === 'atdrn' && Array.isArray(value)) {
-            value = value.map(item => item.value).join(',');
-        }
         const param = [
             {tbNm: "CARD_USE_DTLS"},
             {[col.key]: value},
@@ -334,6 +332,7 @@ const ProjectExpenseCard = (props) => {
                     headerCellRender={headerCellRender}
                     cellRenderConfig={cellRenderConfig}
                     defaultPageSize={10}
+                    noDataText={'등록된 엑셀 사용내역이 없습니다.'}
                 />
             </div>
             <ProjectExpenseSendPop
