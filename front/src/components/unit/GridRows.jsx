@@ -43,7 +43,7 @@ const GridRows = ({ columns, onClick, handleCheckBoxChange, checkBoxValue }) => 
           visible = false;
         }
         return(
-            <Button name = {button.name} text={button.text} onClick={() => onClick(button, data)} disabled={disabled} visible={visible}/>
+            <Button name = {button.name} text={button.text} type={button.type} onClick={() => onClick(button, data)} disabled={disabled} visible={visible}/>
         )
     }
 
@@ -80,7 +80,7 @@ const GridRows = ({ columns, onClick, handleCheckBoxChange, checkBoxValue }) => 
         });
         if(button != null){
             return(
-                <Button name = {button.name} text={button.text} onClick={() => onClick(button, data)} disabled={disabled}/>
+                <Button name = {button.name} text={button.text} onClick={() => onClick(button, data)} disabled={disabled} type={button.type}/>
             )
         } else if(buttons[0].showAll){
           return(

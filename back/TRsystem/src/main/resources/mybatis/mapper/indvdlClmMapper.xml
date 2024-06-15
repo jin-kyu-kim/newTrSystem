@@ -925,7 +925,9 @@
     <select id="retrieveExpenseCardUseDtls" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
             CARD_USE_SN,
-            EMP_ID,
+            cud.EMP_ID,
+            e.EMP_FLNM,
+            e.EMPNO,
             cud.PRJCT_ID,
             PRJCT_MNGR_EMP_ID,
             BIZ_STTS_CD,
@@ -945,6 +947,7 @@
             LOTTE_CARD_APRV_NO
         FROM CARD_USE_DTLS cud
         LEFT JOIN PRJCT p ON cud.PRJCT_ID = p.PRJCT_ID
+        LEFT JOIN EMP e ON cud.EMP_ID = e.EMP_ID
         WHERE 1 = 1
             AND cud.PRJCT_CT_INPT_PSBLTY_YN = 'Y'
         <if test="empId != null and !empId.equals('')">

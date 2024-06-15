@@ -83,7 +83,6 @@ const ProjectExpenseCard = (props) => {
                 getCdList(value, props.data.cardUseSn);
                 props.data.prjctId = value.prjctId;
                 props.data.aprvrEmpId = value.prjctMngrEmpId; // 결재자 추가
-                props.data.prjctIdObject = value;
     
                 setIsPrjctIdSelected(prevStts => ({
                     ...prevStts,
@@ -105,7 +104,6 @@ const ProjectExpenseCard = (props) => {
                 props.data.prjctId = null;
                 props.data.aprvrEmpId = null;
                 props.data.expensCd = null;
-                props.data.prjctIdObject = null;
             } else {
                 props.data.expensCd = null;
                 props.data.expensCdObject = null;
@@ -155,25 +153,37 @@ const ProjectExpenseCard = (props) => {
                 }
                 return acc;
             }, {});
-    
+
+            // 야근식대 참석자의 경우 atdrn 값을 배열로 변환
+            if (item.atdrn && item.atdrn.includes(',')) {
+                const atdrnArray = item.atdrn.split(',').map(value => ({
+                    key: item.empId,
+                    value: item.empFlnm,
+                    displayValue: item.empno + ' ' + item.empFlnm,
+                }));
+                filteredItem.atdrn = atdrnArray;
+            }
+
             return {
                 ...filteredItem,
-                prjctIdObject: {
-                    prjctId: item.prjctId,
-                    prjctStleCd: item.prjctStleCd,
-                    bizSttsCd: item.bizSttsCd,
-                    prjctMngrEmpId: item.prjctMngrEmpId,
-                    prjctNm: item.prjctNm,
-                    prjctTag: item.prjctTag
-                },
                 expensCdObject: {
                     cdNm: item.cdNm,
-                    expensCd: item.expensCd
+                    expensCd: item.expensCd,
+                    cardUseSn: item.cardUseSn
                 },
                 aprvrEmpId: item.prjctMngrEmpId
             };
         });
         setCardUseDtls(updatedResponse);
+
+        // 임시저장된 비용코드가 있을경우 cdList setState
+        const initialCdList = updatedResponse.reduce((acc, item) => {
+            if (item.expensCdObject) {
+                acc[item.cardUseSn] = [item.expensCdObject];
+            }
+            return acc;
+        }, {});
+        setCdList(initialCdList)
     };
 
     const handleDelete = () => {
@@ -242,7 +252,7 @@ const ProjectExpenseCard = (props) => {
     
         const firstSelectedRow = selectedItem[0];
         const firstFieldValue = firstSelectedRow[field];
-        const firstFieldObject = firstSelectedRow[`${field}Object`]; // 객체 값도 가져옴
+        const firstFieldObject = firstSelectedRow[`${field}Object`];
 
         const updatedCardUseDtls = cardUseDtls.map(item => {
             if (selectedItem.some(selected => selected.cardUseSn === item.cardUseSn)) {
@@ -254,8 +264,7 @@ const ProjectExpenseCard = (props) => {
                     }));
                     return {
                         ...item,
-                        prjctId: firstFieldValue, // 문자열로 설정
-                        prjctIdObject: firstFieldObject // 객체로 설정
+                        prjctId: firstFieldValue
                     };
                 } 
                 if (field === 'expensCd') {
@@ -283,6 +292,9 @@ const ProjectExpenseCard = (props) => {
     };
 
     const onTempInsert = async (col, value, props) => {
+        if (col.key === 'atdrn' && Array.isArray(value)) {
+            value = value.map(item => item.value).join(',');
+        }
         const param = [
             {tbNm: "CARD_USE_DTLS"},
             {[col.key]: value},
@@ -292,7 +304,7 @@ const ProjectExpenseCard = (props) => {
     }
     
     const cellRenderConfig = {
-        getCdList, isPrjctIdSelected, setIsPrjctIdSelected, chgPlaceholder, comboList, cdList, setComboBox, onTempInsert, 
+        getCdList, isPrjctIdSelected, setIsPrjctIdSelected, chgPlaceholder, comboList, cdList, setComboBox, onTempInsert, selectedItem, setSelectedItem, 
         expensCd, setExpensCd, setValidationErrors, hasError: (cardUseSn, fieldName) => hasError(validationErrors, cardUseSn, fieldName)
     };
 
