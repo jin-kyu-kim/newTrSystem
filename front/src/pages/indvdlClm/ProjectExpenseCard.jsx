@@ -311,7 +311,7 @@ const ProjectExpenseCard = (props) => {
             <div className="wrap_search" style={{ margin: "20px" }}>
                 <SearchInfoSet callBack={searchHandle} props={searchInfo} />
             </div>
-            <ProjectExpenseSubmit selectedItem={selectedItem} getData={props.getData}
+            <ProjectExpenseSubmit selectedItem={selectedItem} getData={props.getData} ymOdrInfo={{aplyYm: props.aplyYm, aplyOdr: props.aplyOdr}}
                 validateFields={() => validateFields(selectedItem, placeholderAndRequired, setValidationErrors, buttonGroup, empInfo)}
                 handleDelete={handleDelete} buttonGroup={buttonGroup} sendAtrz={sendAtrz} />
 

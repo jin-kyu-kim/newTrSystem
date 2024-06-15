@@ -151,7 +151,8 @@ const ProjectExpenseCash = (props) => {
             </div>
 
             <div style={{ marginTop: '20px', textAlign: 'center' }}>
-                <ProjectExpenseSubmit getData={props.getData} selectedItem={value} buttonGroup={btnInfo} width={'1000px'}
+                <ProjectExpenseSubmit getData={props.getData} selectedItem={value} 
+                buttonGroup={btnInfo} width={'1000px'} ymOdrInfo={{aplyYm: props.aplyYm, aplyOdr: props.aplyOdr}}
                     validateFields={() => validateFields(value, placeholderAndRequired, setValidationErrors, btnInfo, empInfo)} />
             </div>
         </div>
