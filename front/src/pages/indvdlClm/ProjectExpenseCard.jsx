@@ -45,7 +45,10 @@ const ProjectExpenseCard = (props) => {
         }
     }, [param]);
 
-    useEffect(() => { getSelectBoxList(); }, []);
+    useEffect(() => { 
+        getSelectBoxList();
+        getCardUseDtls();
+    }, []);
 
     const getSelectBoxList = async () => {
         const comBoInfo = ['prjctId', 'emp'];
@@ -142,24 +145,42 @@ const ProjectExpenseCard = (props) => {
 
     const getCardUseDtls = async () => {
         const response = await ApiRequest('/boot/common/queryIdSearch', param);
-
-        const updatedResponse = response.map(item => ({
-            ...item,
-            prjctIdObject: {
-                prjctTag: item.prjctTag,
-                prjctId: item.prjctId,
-                prjctMngrEmpId: item.prjctMngrEmpId,
-                prjctStleCd: item.prjctStleCd
-            },
-            expensCdObject: {
-                expensCd: item.expensCd,
-                cdNm: item.cdNm
-            }
-        }));
+        
+        const updatedResponse = response.map(item => {
+            const excludeKeys = ['bizSttsCd', 'prjctMngrEmpId', 'prjctNm', 'prjctStleCd', 'prjctTag', 'cdNm'];
+            
+            const filteredItem = Object.keys(item).reduce((acc, key) => {
+                if (!excludeKeys.includes(key)) {
+                    acc[key] = item[key];
+                }
+                return acc;
+            }, {});
+    
+            return {
+                ...filteredItem,
+                prjctIdObject: {
+                    prjctId: item.prjctId,
+                    prjctStleCd: item.prjctStleCd,
+                    bizSttsCd: item.bizSttsCd,
+                    prjctMngrEmpId: item.prjctMngrEmpId,
+                    prjctNm: item.prjctNm,
+                    prjctTag: item.prjctTag
+                },
+                expensCdObject: {
+                    cdNm: item.cdNm,
+                    expensCd: item.expensCd
+                },
+                aprvrEmpId: item.prjctMngrEmpId
+            };
+        });
         setCardUseDtls(updatedResponse);
     };
 
     const handleDelete = () => {
+        if (selectedItem.length === 0) {
+            handleOpen('선택된 항목이 없습니다.');
+            return;
+        }
         const param = [{ tbNm: "CARD_USE_DTLS" }];
 
         Promise.all(selectedItem.map(async (item) => {
@@ -240,8 +261,8 @@ const ProjectExpenseCard = (props) => {
                 if (field === 'expensCd') {
                     return {
                         ...item,
-                        expensCd: firstFieldValue, // 문자열로 설정
-                        expensCdObject: firstFieldObject // 객체로 설정
+                        expensCd: firstFieldValue,
+                        expensCdObject: firstFieldObject
                     };
                 }
             }
@@ -252,6 +273,9 @@ const ProjectExpenseCard = (props) => {
         // selectedItem 업데이트
         const updatedSelectedItem = selectedItem.map(item => {
             const updatedItem = updatedCardUseDtls.find(updated => updated.cardUseSn === item.cardUseSn);
+            if (updatedItem) {
+                onTempInsert({ key: field }, updatedItem[field], { data: updatedItem });
+            }
             return updatedItem ? { ...item, ...updatedItem } : item;
         });
 
@@ -259,12 +283,12 @@ const ProjectExpenseCard = (props) => {
     };
 
     const onTempInsert = async (col, value, props) => {
-        const updateRes = await ApiRequest('/boot/common/commonUpdate', [
+        const param = [
             {tbNm: "CARD_USE_DTLS"},
             {[col.key]: value},
             {lotteCardAprvNo: props.data.lotteCardAprvNo}
-        ])
-        console.log('updateRes', updateRes)
+        ]
+        const updateRes = await ApiRequest('/boot/common/commonUpdate', param)
     }
     
     const cellRenderConfig = {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "devextreme-react/button";
 import TagBox from 'devextreme-react/tag-box';
 import SelectBox from "devextreme-react/select-box";
@@ -8,6 +8,8 @@ import { TextBox } from 'devextreme-react';
 
 const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, validateNumberBox }) => {
     const [isChangeData, setIsChangeData] = useState(false);
+    const [initialPrjctIdValue, setInitialPrjctIdValue] = useState(null);
+    const [initialExpensCdValue, setInitialExpensCdValue] = useState(null);
 
     const { getCdList, isPrjctIdSelected, hasError, chgPlaceholder, comboList, cdList, onTempInsert,
         expensCd, setValidationErrors, setComboBox } = cellRenderConfig ?? {};
@@ -18,6 +20,23 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
         }
     }
 
+    useEffect(() => {
+        if (col.cellType === 'selectBox' && col.key === 'prjctId') {
+            const dataSource = comboList[col.key] || [];
+            const value = dataSource.find(item => item.prjctId === props.data.prjctId);
+            setInitialPrjctIdValue(value);
+        }
+    }, [comboList, props.data.prjctId, col.key, col.cellType]);
+
+    useEffect(() => {
+        if (col.cellType === 'selectBox' && col.key === 'expensCd') {
+            const dataSource = cdList[props.data.cardUseSn] || [];
+            const value = dataSource.find(item => item.expensCd === props.data.expensCd);
+            setInitialExpensCdValue(value);
+        }
+    }, [cdList, props.data.expensCd, props.data.cardUseSn, col.key, col.cellType]);
+
+
     if (col.cellType === 'button') {
         return (<Button text={col.button.text} name={col.button.name} type={col.button.type}
             onClick={() => onBtnClick(col.button, props)} />)
@@ -26,13 +45,15 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
         return (<ToggleButton callback={handleYnVal} data={props} colData={col} />);
 
     } else if (col.cellType === 'selectBox') {
-        console.log(props.data.prjctIdObject)
+        const value = col.key === 'prjctId' ? initialPrjctIdValue : initialExpensCdValue;
+
         return (
             <SelectBox
                 dataSource={getCdList ? (col.key === 'prjctId' ? comboList[col.key] : cdList[props.data.cardUseSn]) : comboList[col.key]}
+                onKeyDown={onKeyDownEvent}
                 displayExpr={col.displayExpr}
                 keyExpr={col.valueExpr}
-                value={col.key === 'prjctId' ? props.data.prjctIdObject : props.data.expensCdObject} // 객체 값 설정
+                value={value} // 객체 값 설정
                 placeholder={col.placeholder}
                 searchEnabled={true}
                 showClearButton={true}

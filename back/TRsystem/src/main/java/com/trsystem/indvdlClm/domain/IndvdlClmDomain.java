@@ -100,6 +100,8 @@ public class IndvdlClmDomain {
                             .collect(Collectors.joining(","));
                     ctParams.get(i).put("atdrn", atdrnStr);
                 }
+            } else if (atdrnObj == null || atdrnObj.toString().trim().isEmpty()) {
+                ctParams.get(i).put("atdrn", null);
             }
 
             // aply insert

@@ -19,6 +19,15 @@ const CustomModal = ({ open, close, message, onClick, isStepOne }) => {
             onClick();
         }
     };
+    
+    const renderMessage = () => {
+        if (message.includes('\n')) {
+            return message.split('\n').map((line, index) => (
+                <div key={index} style={{ marginBottom: '5px' }}>{line}</div>
+            ));
+        }
+        return message;
+    };
 
     return (
         <Popup
@@ -35,7 +44,7 @@ const CustomModal = ({ open, close, message, onClick, isStepOne }) => {
                         marginBottom: '10px',
                         textAlign: 'center'
                     }}>
-                        {message}
+                        {renderMessage()}
                     </div>
 
                     <div style={buttonContainerStyle}>
