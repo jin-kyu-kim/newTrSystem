@@ -23,7 +23,7 @@ const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, butt
       validationResults.messages.length !== 0 && handleOpen(validationResults.messages.join('\n'));
       return;
     }
-
+    
     try {
       let result;
       const ynUpdated = await updateYn();
