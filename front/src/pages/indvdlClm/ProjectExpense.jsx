@@ -267,8 +267,8 @@ const ProjectExpense = () => {
     const [isSmallScreen, setIsSmallScreen] = useState(false);
     const RenderTopTable = ({ title, keyColumn, columns, values }) => {
         return (
-            <div style={{ marginBottom: '20px' }}>
-                <span>{title}</span>
+            <div style={{ marginBottom: '40px' }}>
+                <div style={{ marginBottom: '5px', fontSize: '12pt', fontWeight: 530 }}>{title}</div>
                 <CustomTable
                     keyColumn={keyColumn}
                     columns={columns}
@@ -285,6 +285,11 @@ const ProjectExpense = () => {
             </div>
         );
     };
+    useEffect(() => {
+        if (aplyYm && aplyOdr) {
+          getData();
+        }
+    }, [aplyYm, aplyOdr]);
 
     return (
         <div>
@@ -299,12 +304,12 @@ const ProjectExpense = () => {
                                     : () => onClickAction(onClick)} />))}
                     </div>
 
-                    {/* <span style={{fontWeight: 'bolder', fontSize: '12pt'}}>현재 6월 1차수에 대한 입력이 진행중입니다. </span><br/>
+                    <span style={{fontWeight: 'bolder', fontSize: '12pt'}}>현재 6월 1차수에 대한 입력이 진행중입니다. </span><br/>
                     <span style={{color: 'red', fontWeight: 'bolder', fontSize: '12pt'}}>전차수인 5월 2차수에 대해 아직 입력하지 않은 상태라면 아래의 선택항목에서 "5월 2회차"를 선택후 추가로 입력을 진행해주세요.</span>
                     <SelectBox
-                        style={{width: '30%', marginBottom: '40px', marginTop: '10px', backgroundColor: '#e6f6e4'}}
+                        style={{width: '25%', marginBottom: '40px', marginTop: '10px', backgroundColor: '#f0f8f1'}}
                         dataSource={[
-                            {text: "5월 1회차", value: {aplyYm: '202405', aplyOdr: 2}},
+                            {text: "5월 2회차", value: {aplyYm: '202405', aplyOdr: 2}},
                             {text: "6월 1회차", value: {aplyYm: '202406', aplyOdr: 1}}
                         ]}
                         displayExpr='text'
@@ -312,9 +317,8 @@ const ProjectExpense = () => {
                         onValueChanged={(e) => {
                             setAplyYm(e.value.value.aplyYm)
                             setAplyOdr(e.value.value.aplyOdr)
-                            getData(aplyYm, aplyOdr);
                         }}
-                    /><hr/> */}
+                    /><hr/>
 
                     <div style={{ marginBottom: '50px'}}>
                         {admin != undefined ? <></> :
