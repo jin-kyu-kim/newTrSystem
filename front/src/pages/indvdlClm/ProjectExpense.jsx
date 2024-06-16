@@ -287,6 +287,7 @@ const ProjectExpense = () => {
     };
     useEffect(() => {
         if (aplyYm && aplyOdr) {
+            setCtAtrzCmptnYn(null);
           getData();
         }
     }, [aplyYm, aplyOdr]);
@@ -331,6 +332,7 @@ const ProjectExpense = () => {
                         <RenderTopTable title={`*${admin.empno} ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} /> :
                         <RenderTopTable title={`* ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} />}
                     <RenderTopTable title='* 전자결재 청구 내역' keyColumn={elcKeyColumn} columns={columnCharge} values={ctAtrz} />
+
 
                     {atrzDmndSttsCnt.ctReg > 0 || ctAtrzCmptnYn === null || ctAtrzCmptnYn === undefined
                         ? <TabPanel
