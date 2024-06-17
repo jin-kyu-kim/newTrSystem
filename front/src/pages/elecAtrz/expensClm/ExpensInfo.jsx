@@ -75,7 +75,7 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data, sttsCd}) => {
             const tmpArr = data.selectedData.map(item => ({
                 ctStlmSeCd: 'VTW01903',
                 expensCd: item.expensCd,
-                dtlUseDtls: item.ctProps,
+                dtlUseDtls: item.ctPrpos,
                 clmAmt: item.utztnAmt,
                 cnptNm: item.useOffic,
                 clmPrpos: item.atdrn,

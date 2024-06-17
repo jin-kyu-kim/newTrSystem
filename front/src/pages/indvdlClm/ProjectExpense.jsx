@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Button, TabPanel } from "devextreme-react";
+import { Button, SelectBox, TabPanel } from "devextreme-react";
 import ProjectExpenseJson from "./ProjectExpenseJson.json"
 import ProjectExpensePopup from './ProjectExpensePopup';
 import CustomTable from 'components/unit/CustomTable';
@@ -31,8 +31,13 @@ const ProjectExpense = () => {
     const year = date.getFullYear();
     const month = date.getDate() > 15 ? date.getMonth() + 1 : date.getMonth();
     const monthVal = month < 10 ? "0" + month : month;
-    const aplyYm = admin != undefined ? admin.aplyYm : year + monthVal;
-    const aplyOdr = admin != undefined ? admin.aplyOdr : date.getDate() > 15 ? "1" : "2";
+
+    const [aplyYm, setAplyYm] = useState(
+        admin != undefined ? admin.aplyYm : year + monthVal
+    )
+    const [aplyOdr, setAplyOdr] = useState(
+        admin != undefined ? admin.aplyOdr : date.getDate() > 15 ? "1" : "2"
+    );
     const { handleOpen } = useModal();
     const itemTitleRender = (a) => <span>{a.TabName}</span>;
     const onSelectionChanged = useCallback(
@@ -262,8 +267,8 @@ const ProjectExpense = () => {
     const [isSmallScreen, setIsSmallScreen] = useState(false);
     const RenderTopTable = ({ title, keyColumn, columns, values }) => {
         return (
-            <div style={{ marginBottom: '20px' }}>
-                <span>{title}</span>
+            <div style={{ marginBottom: '40px' }}>
+                <div style={{ marginBottom: '5px', fontSize: '12pt', fontWeight: 530 }}>{title}</div>
                 <CustomTable
                     keyColumn={keyColumn}
                     columns={columns}
@@ -280,6 +285,12 @@ const ProjectExpense = () => {
             </div>
         );
     };
+    useEffect(() => {
+        if (aplyYm && aplyOdr) {
+            setCtAtrzCmptnYn(null);
+          getData();
+        }
+    }, [aplyYm, aplyOdr]);
 
     return (
         <div>
@@ -294,6 +305,22 @@ const ProjectExpense = () => {
                                     : () => onClickAction(onClick)} />))}
                     </div>
 
+                    <span style={{fontWeight: 'bolder', fontSize: '12pt'}}>현재 6월 1차수에 대한 입력이 진행중입니다. </span><br/>
+                    <span style={{color: 'red', fontWeight: 'bolder', fontSize: '12pt'}}>전차수인 5월 2차수에 대해 아직 입력하지 않은 상태라면 아래의 선택항목에서 "5월 2회차"를 선택후 추가로 입력을 진행해주세요.</span>
+                    <SelectBox
+                        style={{width: '25%', marginBottom: '40px', marginTop: '10px', backgroundColor: '#f0f8f1'}}
+                        dataSource={[
+                            {text: "5월 2회차", value: {aplyYm: '202405', aplyOdr: 2}},
+                            {text: "6월 1회차", value: {aplyYm: '202406', aplyOdr: 1}}
+                        ]}
+                        displayExpr='text'
+                        placeholder="차수를 선택해주세요"
+                        onValueChanged={(e) => {
+                            setAplyYm(e.value.value.aplyYm)
+                            setAplyOdr(e.value.value.aplyOdr)
+                        }}
+                    /><hr/>
+
                     <div style={{ marginBottom: '50px'}}>
                         {admin != undefined ? <></> :
                             <SearchInfoSet
@@ -305,6 +332,7 @@ const ProjectExpense = () => {
                         <RenderTopTable title={`*${admin.empno} ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} /> :
                         <RenderTopTable title={`* ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} />}
                     <RenderTopTable title='* 전자결재 청구 내역' keyColumn={elcKeyColumn} columns={columnCharge} values={ctAtrz} />
+
 
                     {atrzDmndSttsCnt.ctReg > 0 || ctAtrzCmptnYn === null || ctAtrzCmptnYn === undefined
                         ? <TabPanel

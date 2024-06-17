@@ -130,7 +130,7 @@
       { "key": "utztnAmt", "value": "이용금액", "width": "11%", "required": true, "cellType": "numberBox" },
       { "key": "prjctId", "value": "프로젝트", "cellType": "selectBox", "displayExpr": "prjctTag", "valueExpr": "prjctId",
             "placeholder": "프로젝트 조회 및 선택", "width": "26%", "required": true, "headerBtn": {"text": "일괄적용"}, "allowSort": false },
-      { "key": "expensCd", "value": "비용코드", "cellType": "selectBox", "displayExpr": "cdNm", "valueExpr": "expensCd", 
+      { "key": "expensCd", "value": "비용코드", "cellType": "selectBox", "displayExpr": "cdNm", "valueExpr": "expensCd",
             "placeholder": "[비용코드 선택]", "width": "15%", "headerBtn": {"text": "일괄적용"}, "allowSort": false},
       { "key": "ctPrpos", "value": "상세내역(목적)", "cellType": "textBox", "placeholder": "상세내역(목적)", "width": "12%" },
       { "key": "atdrn", "value": "용도(참석자명단)", "cellType": "textBox", "placeholder": "용도(참석자명단)","width": "20%" }

@@ -3,8 +3,7 @@ import { Button } from 'devextreme-react/button'
 import { useModal } from "../../components/unit/ModalContext";
 import ApiRequest from "utils/ApiRequest";
 
-const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, buttonGroup, getData, sendAtrz }) => {
-  
+const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, buttonGroup, getData, sendAtrz, ymOdrInfo }) => {
   const [ isComplete, setIsComplete ] = useState(false);
   const { handleOpen } = useModal();
 
@@ -23,13 +22,19 @@ const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, butt
       validationResults.messages.length !== 0 && handleOpen(validationResults.messages.join('\n'));
       return;
     }
-
+    
     try {
+      const updatedSelectedItem = selectedItem.map(item => ({
+        ...item,
+        aplyYm: ymOdrInfo.aplyYm,
+        aplyOdr: ymOdrInfo.aplyOdr,
+      }));
+
       let result;
-      const ynUpdated = await updateYn();
+      const ynUpdated = await updateYn(updatedSelectedItem);
 
       if (ynUpdated) {
-        result = await insertCtMm();
+        result = await insertCtMm(updatedSelectedItem);
       }
       if(result) setIsComplete(true);
 
@@ -39,10 +44,10 @@ const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, butt
   };
 
   // CARD_USE_DTLS - PRJCT_CT_INPT_PSBLTY_YN: "N"
-  const updateYn = async () => {
+  const updateYn = async (items) => {
     try {
-      if(selectedItem[0].cardUseSn){
-        const updates = selectedItem.map(item => ApiRequest("/boot/common/commonUpdate", [
+      if(items[0].cardUseSn){
+        const updates = items.map(item => ApiRequest("/boot/common/commonUpdate", [
           { tbNm: "CARD_USE_DTLS" },
           { prjctCtInptPsbltyYn: "N" },
           { lotteCardAprvNo: item.lotteCardAprvNo }
@@ -59,12 +64,12 @@ const ProjectExpenseSubmit = ({ selectedItem, validateFields, handleDelete, butt
   };
 
   // [PRJCT_INDVDL_CT_MM, PRJCT_CT_APLY, PRJCT_CT_ATRZ] - insert
-  const insertCtMm = async () => {
-    const param = selectedItem.map((item) => ({
+  const insertCtMm = async (items) => {
+    const param = items.map((item) => ({
       ...setParam(item)
     }));
 
-    const updatedData = selectedItem.map(({ utztnDtFormat, ...rest }) => {
+    const updatedData = items.map(({ utztnDtFormat, ...rest }) => {
       const ctStlmSeCd = rest.ctStlmSeCd || "VTW01903";
       return { ...rest, ctStlmSeCd };
     });

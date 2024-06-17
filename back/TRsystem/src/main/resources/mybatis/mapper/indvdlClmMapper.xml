@@ -925,9 +925,17 @@
     <select id="retrieveExpenseCardUseDtls" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
             CARD_USE_SN,
-            EMP_ID,
-            PRJCT_ID,
+            cud.EMP_ID,
+            e.EMP_FLNM,
+            e.EMPNO,
+            cud.PRJCT_ID,
+            PRJCT_MNGR_EMP_ID,
+            BIZ_STTS_CD,
+            CONCAT('[',PRJCT_CD_IDNTFR,'] ','[',(SELECT EMP_FLNM FROM EMP WHERE EMP_ID = PRJCT_MNGR_EMP_ID ), ' ', (SELECT cd.CD_NM FROM EMP e JOIN CD cd ON cd.CD_VALUE = e.JBPS_CD WHERE EMP_ID = PRJCT_MNGR_EMP_ID ),'] ',PRJCT_NM) AS PRJCT_TAG,
+            PRJCT_STLE_CD,
+            PRJCT_NM,
             EXPENS_CD,
+            (SELECT CD_NM FROM CD WHERE CD_VALUE = EXPENS_CD) AS CD_NM,
             ATDRN,
             CT_PRPOS,
             APLY_YM,
@@ -938,6 +946,8 @@
             UTZTN_AMT,
             LOTTE_CARD_APRV_NO
         FROM CARD_USE_DTLS cud
+        LEFT JOIN PRJCT p ON cud.PRJCT_ID = p.PRJCT_ID
+        LEFT JOIN EMP e ON cud.EMP_ID = e.EMP_ID
         WHERE 1 = 1
             AND cud.PRJCT_CT_INPT_PSBLTY_YN = 'Y'
         <if test="empId != null and !empId.equals('')">
@@ -959,6 +969,9 @@
         </if>
         <if test="useTime != null and !useTime.equals('')">
             AND TIME(UTZTN_DT) BETWEEN (SELECT SUBSTR(CD_NM,4,5) FROM CD WHERE CD_VALUE = #{useTime}) AND (SELECT SUBSTR(CD_NM,10,5) FROM CD WHERE CD_VALUE = #{useTime})
+        </if>
+        <if test="bizSttsCd != null and !bizSttsCd.equals('')">
+            WHERE p.BIZ_STTS_CD = 'VTW00402'
         </if>
         ORDER BY cud.UTZTN_DT DESC
     </select>

@@ -90,6 +90,11 @@ public class IndvdlClmDomain {
 
             // 참석자가 있을 경우 직원명 데이터 재조합 후 sn과 함께 insert
             Object atdrnObj = ctParams.get(i).get("atdrn");
+            Object ctPrpos = ctParams.get(i).get("ctPrpos");
+
+            if (ctPrpos == null || ctPrpos.toString().trim().isEmpty()) {
+                ctParams.get(i).put("ctPrpos", null);
+            }
 
             // atdrn이 리스트인지 문자열인지 확인하여 처리
             if (atdrnObj instanceof List) {
@@ -100,6 +105,8 @@ public class IndvdlClmDomain {
                             .collect(Collectors.joining(","));
                     ctParams.get(i).put("atdrn", atdrnStr);
                 }
+            } else if (atdrnObj == null || atdrnObj.toString().trim().isEmpty()) {
+                ctParams.get(i).put("atdrn", null);
             }
 
             // aply insert
