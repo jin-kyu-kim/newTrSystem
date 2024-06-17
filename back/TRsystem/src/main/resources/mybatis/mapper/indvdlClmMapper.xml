@@ -1851,6 +1851,7 @@
         JOIN CLTUR_PHSTRN_ACT_MNG mng ON ct.CLTUR_PHSTRN_ACT_MNG_YM = mng.CLTUR_PHSTRN_ACT_MNG_YM
         WHERE EMP_ID = #{empId}
           AND ct.CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '%')
+          AND mng.DDLN_YN = 'Y'
         UNION ALL
         SELECT
             '합계' AS CATEGORY
