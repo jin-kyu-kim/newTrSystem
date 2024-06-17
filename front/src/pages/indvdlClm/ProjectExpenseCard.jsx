@@ -245,12 +245,18 @@ const ProjectExpenseCard = (props) => {
             <Button text='일괄적용' type='success' onClick={() => onBulkAply(column.dataField)}
                 style={{fontSize: '8pt', marginLeft: '10px'}}/>
         </div>
-        : <div>{column.caption}</div>
-    );
+        : ['expensCd'].includes(column.dataField) ?<div>
+                {column.caption}
+                <Button text='일괄적용' type='success' onClick={() => onBulkAply(column.dataField)}
+                        style={{fontSize: '8pt', marginLeft: '10px'}}/>
+            </div>:
+            <div>{column.caption}</div>
+)
+    ;
 
     const onBulkAply = (field) => {
         if (selectedItem.length === 0) return;
-    
+
         const firstSelectedRow = selectedItem[0];
         const firstFieldValue = firstSelectedRow[field];
         const firstFieldObject = firstSelectedRow[`${field}Object`];

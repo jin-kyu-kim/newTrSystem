@@ -146,7 +146,7 @@ const EmpWorkTime = () => {
                 setInsertWorkHourList(await ApiRequest("/boot/common/queryIdSearch", initParam))
                 console.log(orderWorkBgngMm);
                 if (prjctIndvdlCtMmParamFilter.length > 0) {
-                    if (orderWorkBgngMm != searchPrjctIndvdlCtMmParam.aplyYm || orderWorkBgngMm !== '202405') {
+                    if (orderWorkBgngMm != searchPrjctIndvdlCtMmParam.aplyYm) {
                         atrzDmndSttsCdFlag = "another"
                     } else if (prjctIndvdlCtMmParamFilter.length == prjctIndvdlCtMmParamFilter.filter(item => item.atrzDmndSttsCd == "VTW03702").length) {
                         atrzDmndSttsCdFlag = "audit"
@@ -334,9 +334,12 @@ const EmpWorkTime = () => {
             if (insertWorkHourList) {
                 for (let i = 0; i < insertWorkHourList.length; i++) {
                     if (parseData.find(item => item.aplyYmd == insertWorkHourList[i].aplyYmd)) {
-                        if (parseData.find(item => item.aplyYmd == insertWorkHourList[i].aplyYmd).md + insertWorkHourList[i].md > 1) {
-                            handleOpen("근무시간은 8시간을 초과할 수 없습니다.");
-                            return;
+                        if(insertWorkHourList[i].atrzDmndSttsCd !== 'VTW03704'){
+                            if (parseData.find(item => item.aplyYmd == insertWorkHourList[i].aplyYmd).md + insertWorkHourList[i].md > 1) {
+                                alert(1)
+                                handleOpen("근무시간은 8시간을 초과할 수 없습니다.");
+                                return;
+                            }
                         }
                     }
                     parseData.push(insertWorkHourList[i]);
