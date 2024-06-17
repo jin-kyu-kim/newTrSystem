@@ -48,15 +48,16 @@ const GridRows = ({ columns, onClick, handleCheckBoxChange, checkBoxValue }) => 
     }
 
     const ButtonsRender = (buttons, data, onClick) => {
+        // TODO : 임시기능 disable 처리 재활성화 필요함
         let button = null;
         let disabled = false;
         buttons.forEach((item) => {
             if (data != null && data[item.visible.key] === item.visible.value ) {
                 button = item;
                 if(item.able != null && typeof item.able.value != "boolean" && data[item.able.key] !== item.able.value){
-                    disabled = true;
+                    // disabled = true;
                 } else if (item.able != null && item.able.value === true && data[item.able.key]){
-                    disabled = true;
+                    // disabled = true;
                 } else if (button.time){
                     const date = new Date();
                     const month = date.getMonth() + 1;
@@ -66,13 +67,13 @@ const GridRows = ({ columns, onClick, handleCheckBoxChange, checkBoxValue }) => 
                     let monthVal = month < 10 ? "0" + month : month;
                     let lastMonthVal = (lastMonth.getMonth() + 1) < 10 ? "0" + (lastMonth.getMonth() + 1) : lastMonth.getMonth() + 1;
 
-                    if(day > 15){
+                    if(day > 15 ){
                         if(data["aplyYm"] !== date.getFullYear()+monthVal || data["aplyOdr"] !== 1){
-                            disabled = true;
+                            // disabled = true;
                         }
                     } else {
                         if(data["aplyYm"] !== lastMonth.getFullYear()+lastMonthVal || data["aplyOdr"] !== 2){
-                            disabled = true;
+                            // disabled = true;
                         }
                     }
                 }

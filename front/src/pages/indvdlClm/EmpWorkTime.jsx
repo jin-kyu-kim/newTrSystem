@@ -26,11 +26,21 @@ const EmpWorkTime = () => {
     const SearchMonthValueRef = useRef();
     SearchMonthValueRef.current = new Date().getDate() < 15 ? new Date().getMonth() : new Date().getMonth() + 1;
 
+    //TODO : 임시작업
+    const [tmpDate,setTmpDate] = useState(new Date ());
+    // TODO : 임시기능  끝
+
     // 차수별 시작, 종료일자
-    let flagOrder = admin != undefined ? admin.aplyOdr : new Date().getDate() > 15 ? 1 : 2;
-    let orderWorkBgngYmd = admin != undefined ? admin.orderWorkBgngYmd : flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMMDD")) : String(Moment(new Date()).format("YYYYMM") - 1 + "16")
-    let orderWorkEndYmd = admin != undefined ? admin.orderWorkEndYmd : flagOrder == 1 ? String(Moment(new Date()).format("YYYYMM") + "15") : Moment(endOfMonth(new Date(Moment(Moment(new Date()).format("YYYYMM") - 1 + "15").format("YYYY-MM-DD")))).format("YYYYMMDD")
-    let orderWorkBgngMm = admin != undefined ? admin.aplyYm : flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMM")) : String(Moment(new Date()).format("YYYYMM") - 1)
+    // let flagOrder = admin != undefined ? admin.aplyOdr :  new Date().getDate() > 15 ? 1 : 2;
+    // let orderWorkBgngYmd = admin != undefined ? admin.orderWorkBgngYmd : flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMMDD")) : String(Moment(new Date()).format("YYYYMM") - 1 + "16")
+    // let orderWorkEndYmd = admin != undefined ? admin.orderWorkEndYmd : flagOrder == 1 ? String(Moment(new Date()).format("YYYYMM") + "15") : Moment(endOfMonth(new Date(Moment(Moment(new Date()).format("YYYYMM") - 1 + "15").format("YYYY-MM-DD")))).format("YYYYMMDD")
+    // let orderWorkBgngMm = admin != undefined ? admin.aplyYm : flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMM")) : String(Moment(new Date()).format("YYYYMM") - 1)
+// TODO : 임시기능
+    let flagOrder = admin != undefined ? admin.aplyOdr :  tmpDate.getDate() > 15 ? 1 : 2; //new Date().getDate() > 15 ? 1 : 2;
+    let orderWorkBgngYmd = admin != undefined ? admin.orderWorkBgngYmd : flagOrder == 1 ? String(Moment(startOfMonth(tmpDate)).format("YYYYMMDD")) : String(Moment(tmpDate).format("YYYYMM") - 1 + "16")
+    let orderWorkEndYmd = admin != undefined ? admin.orderWorkEndYmd : flagOrder == 1 ? String(Moment(tmpDate).format("YYYYMM") + "15") : Moment(endOfMonth(new Date(Moment(Moment(tmpDate).format("YYYYMM") - 1 + "15").format("YYYY-MM-DD")))).format("YYYYMMDD")
+    let orderWorkBgngMm = admin != undefined ? admin.aplyYm : flagOrder == 1 ? String(Moment(startOfMonth(tmpDate)).format("YYYYMM")) : String(Moment(tmpDate).format("YYYYMM") - 1)
+// TODO : 임시기능  끝
 
     // 세션설정
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
@@ -55,6 +65,16 @@ const EmpWorkTime = () => {
     useEffect(() => {
         getPrjctInfo();
     }, [])
+
+    // 프로젝트목록 조회
+    // TODO :임시기능
+    useEffect(() => {
+        flagOrder = admin != undefined ? admin.aplyOdr :  tmpDate.getDate() > 15 ? 1 : 2; //new Date().getDate() > 15 ? 1 : 2;
+        orderWorkBgngYmd = admin != undefined ? admin.orderWorkBgngYmd : flagOrder == 1 ? String(Moment(startOfMonth(tmpDate)).format("YYYYMMDD")) : String(Moment(tmpDate).format("YYYYMM") - 1 + "16")
+        orderWorkEndYmd = admin != undefined ? admin.orderWorkEndYmd : flagOrder == 1 ? String(Moment(tmpDate).format("YYYYMM") + "15") : Moment(endOfMonth(new Date(Moment(Moment(tmpDate).format("YYYYMM") - 1 + "15").format("YYYY-MM-DD")))).format("YYYYMMDD")
+        orderWorkBgngMm = admin != undefined ? admin.aplyYm : flagOrder == 1 ? String(Moment(startOfMonth(tmpDate)).format("YYYYMM")) : String(Moment(tmpDate).format("YYYYMM") - 1)
+    }, [tmpDate])
+    // TODO : 임시기능  끝
 
     // 프로젝트 목록 조회
     const [selectPrjctList, setSelectPrjctList] = useState();
@@ -124,9 +144,9 @@ const EmpWorkTime = () => {
                 const prjctIndvdlCtMmParamFilter = prjctIndvdlCtMmParamResult.filter(item => item.aplyType != "vcatnAply" && item.aplyOdr == flagOrder);
 
                 setInsertWorkHourList(await ApiRequest("/boot/common/queryIdSearch", initParam))
-
+                console.log(orderWorkBgngMm);
                 if (prjctIndvdlCtMmParamFilter.length > 0) {
-                    if (orderWorkBgngMm != searchPrjctIndvdlCtMmParam.aplyYm) {
+                    if (orderWorkBgngMm != searchPrjctIndvdlCtMmParam.aplyYm || orderWorkBgngMm !== '202405') {
                         atrzDmndSttsCdFlag = "another"
                     } else if (prjctIndvdlCtMmParamFilter.length == prjctIndvdlCtMmParamFilter.filter(item => item.atrzDmndSttsCd == "VTW03702").length) {
                         atrzDmndSttsCdFlag = "audit"
@@ -157,6 +177,17 @@ const EmpWorkTime = () => {
 
     // 검색버튼
     const searchHandle = () => {
+        //TODO : 임시기능
+            const newDate = new Date(tmpDate);
+        if(SearchMonthValueRef.current === 5 ){
+            newDate.setMonth(5, 1); // 5월 1일로 설정
+            setTmpDate(newDate);
+        }else{
+            newDate.setMonth(5, 17); // 5월 1일로 설정
+            setTmpDate(newDate);
+        }
+        // TODO : 임시기능  끝
+
         setSearchPrjctIndvdlCtMmParam({
             ...searchPrjctIndvdlCtMmParam,
             searchYear: SearchYearValueRef.current,
@@ -465,6 +496,10 @@ const EmpWorkTime = () => {
     }
     function onDragStart(e){
         e.cancel = true
+    }
+
+    const setTimeVal = (e)=>{ // TODO : 임시 작업
+        console.log(e);
     }
 
     return (
