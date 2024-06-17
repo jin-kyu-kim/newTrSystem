@@ -419,7 +419,7 @@ public class IndvdlClmDomain {
         updatePrjctIndvdlCtMm.put("aplyYm", updatePrjctMmListValue.get("orderWorkBgngMm"));
 
         if ((Integer.parseInt(String.valueOf(selectPrjctMmAplyResult.get(0).get("rowCount"))) == 0) && selectPrjctIndvdlCtMmResult.get(0).get("ctAtrzCmptnYn") == null){
-            updatePrjctIndvdlCtMm.put("queryId", "indvdlClmMapper.deletePrjctIndvdlCtMmRowCnt");
+            updatePrjctIndvdlCtMm.put("queryId", "indvdlClmMapper.updatePrjctIndvdlCtMmRowCnt");
             commonService.queryIdSearch(updatePrjctIndvdlCtMm);
         } else if ((Integer.parseInt(String.valueOf(selectPrjctMmAplyResult.get(0).get("rowCount"))) == 0) && selectPrjctIndvdlCtMmResult.get(0).get("ctAtrzCmptnYn").equals("N")){
             updatePrjctIndvdlCtMm.put("queryId", "indvdlClmMapper.updatePrjctIndvdlCtMmRowCnt");
