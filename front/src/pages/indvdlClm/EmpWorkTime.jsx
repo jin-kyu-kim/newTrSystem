@@ -67,7 +67,7 @@ const EmpWorkTime = () => {
     }, [])
 
     // 프로젝트목록 조회
-    // TODO : 임시기능
+    // TODO :임시기능
     useEffect(() => {
         flagOrder = admin != undefined ? admin.aplyOdr :  tmpDate.getDate() > 15 ? 1 : 2; //new Date().getDate() > 15 ? 1 : 2;
         orderWorkBgngYmd = admin != undefined ? admin.orderWorkBgngYmd : flagOrder == 1 ? String(Moment(startOfMonth(tmpDate)).format("YYYYMMDD")) : String(Moment(tmpDate).format("YYYYMM") - 1 + "16")
