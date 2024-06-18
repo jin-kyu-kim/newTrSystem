@@ -48,7 +48,7 @@ const GridRows = ({ columns, onClick, handleCheckBoxChange, checkBoxValue }) => 
     }
 
     const ButtonsRender = (buttons, data, onClick) => {
-        // TODO : 임시기능 disable 처리 재활성화 필요함
+        // TODO : 임시기능 disable 처리 재활성화 필요
         let button = null;
         let disabled = false;
         buttons.forEach((item) => {
