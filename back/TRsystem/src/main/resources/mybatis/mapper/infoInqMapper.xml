@@ -48,7 +48,6 @@
 		LEFT OUTER JOIN EMP_HIST EH ON EH.EMP_ID = E.EMP_ID
 		WHERE 1=1
 		AND EMP_TY_CD != 'VTW00203'
-		AND E.HDOF_STTS_CD = 'VTW00301'
 		AND E.EMPNO NOT BETWEEN 'VK0101' AND 'VK0111'
 		<if test="empno != null and empno !=''">
 			AND E.EMPNO LIKE CONCAT('%', #{empno}, '%')
