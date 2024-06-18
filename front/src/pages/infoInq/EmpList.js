@@ -19,7 +19,8 @@ function EmpList() {
   const searchHandle = async (initParam) => {
     setParam({
       ...initParam,
-      queryId: queryId
+      queryId: queryId,
+      hdofSttsCd : "VTW00301"
     });
   };
 
