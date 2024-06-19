@@ -223,10 +223,9 @@ const ProjectExpense = () => {
                             { prjctCtInptPsbltyYn: "Y" },
                             { lotteCardAprvNo: props.lotteCardAprvNo }
                         ]);
-                        if (cardResult) {
-                            handleOpen("삭제되었습니다.");
-                            getData();
-                        }
+                        handleOpen("삭제되었습니다.");
+                        getData();
+                        
                     } catch (error) {
                         console.error("Error:", error);
                     }
