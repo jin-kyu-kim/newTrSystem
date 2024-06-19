@@ -1,22 +1,21 @@
 import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import ProjectJson from "../manage/ProjectListJson.json";
 import ApiRequest from "../../../utils/ApiRequest";
 import SearchPrjctSet from "../../../components/composite/SearchPrjctSet";
 import CustomTable from "../../../components/unit/CustomTable";
-import "react-datepicker/dist/react-datepicker.css";
-import { useLocation, useNavigate } from "react-router-dom";
 
 const ProjectList = () => {
-  const [values, setValues] = useState([]);
-  const [param, setParam] = useState({});
-  const [totalItems, setTotalItems] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const navigate = useNavigate();
   const location = useLocation();
+  const [ values, setValues ] = useState([]);
+  const [ param, setParam ] = useState({});
+  const [ totalItems, setTotalItems ] = useState(0);
+  const [ currentPage, setCurrentPage ] = useState(1);
+  const [ totalPages, setTotalPages ] = useState(1);
+  const [ pageSize, setPageSize ] = useState(20);
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const empId = userInfo.empId;
-  const navigate = useNavigate();
   const { keyColumn, queryId, tableColumns, searchParams, popup } = ProjectJson;
 
   useEffect(() => {
@@ -38,7 +37,7 @@ const ProjectList = () => {
       path: location.pathname
     });
   };
-
+  
   const pageHandle = async () => {
     try {
       const response = await ApiRequest("/boot/common/queryIdSearch", param);

@@ -63,6 +63,19 @@ const CsServiceDetail = () => {
         }
     }, []);
 
+    useEffect(() => {
+        const resizeImages = () => {
+            const container = document.getElementById('notice-content');
+            if (container) {
+                const images = container.getElementsByTagName('img');
+                for (let img of images) {
+                    img.style.width = '90%';
+                }
+            }
+        };
+        resizeImages();
+    }, [oneData]);
+
     const deleteReference = async () => {
         const params = [{ tbNm: "ERR_MNG" }, { errId: errId }];
         const fileParams = [{ tbNm: "ATCHMNFL" }, { atchmnflId: oneData.atchmnflId }];
@@ -109,7 +122,7 @@ const CsServiceDetail = () => {
                             ) : ( <div>{errPrcsSttsCdNm}</div> )}
                         </div>
                         <hr className='elecDtlLine' />
-                        <div dangerouslySetInnerHTML={{ __html: oneData.errCn }} />
+                        <div id="notice-content" dangerouslySetInnerHTML={{ __html: oneData.errCn }} />
 
                         {fileList.length !== 0 && fileList.filter(file => file.realFileNm !== null && file.realFileNm !== undefined).filter(file => file.realFileNm.endsWith('.jpg') || file.realFileNm.endsWith('.jpeg') || file.realFileNm.endsWith('.png') || file.realFileNm.endsWith('.gif')).map((file, index) => (
                             <div key={index} style={{ textAlign: 'center' }}>

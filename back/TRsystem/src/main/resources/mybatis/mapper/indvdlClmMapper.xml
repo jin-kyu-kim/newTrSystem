@@ -973,7 +973,7 @@
         <if test="bizSttsCd != null and !bizSttsCd.equals('')">
             WHERE p.BIZ_STTS_CD = 'VTW00402'
         </if>
-        ORDER BY cud.UTZTN_DT DESC
+        ORDER BY cud.UTZTN_DT ASC
     </select>
 
     <!-- 프로젝트비용 프로젝트별 배정 원가 비용코드 조회 -->

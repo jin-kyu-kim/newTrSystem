@@ -931,6 +931,7 @@ public class ElecAtrzDomain {
 					masterInfoParam.put("atdrn", list.get(i).get("atdrn"));
 					masterInfoParam.put("ctPrpos", list.get(i).get("ctPrpos"));
 					masterInfoParam.put("ctAtrzSeCd", list.get(i).get("ctAtrzSeCd"));
+					masterInfoParam.put("ctStlmSeCd", list.get(i).get("ctStlmSeCd"));
 					masterInfoParam.put("regDt", param.get("regDt"));
 					masterInfoParam.put("regEmpId", param.get("regEmpId"));
 					
