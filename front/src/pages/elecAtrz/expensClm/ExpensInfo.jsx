@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FormControl, InputLabel, Select, MenuItem, TextField, Button, Grid, TableCell } from "@mui/material";
+import { FormControl, InputLabel, Select, MenuItem, TextField, Button, Grid } from "@mui/material";
 import { DateBox } from "devextreme-react/date-box";
 import ApiRequest from "utils/ApiRequest";
 
@@ -64,7 +64,6 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data, sttsCd}) => {
             console.error(error)
         }
     }
-
     const [forms, setForms] = useState([]);
 
     useEffect(() => {
@@ -122,7 +121,7 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data, sttsCd}) => {
         const response = await ApiRequest("/boot/common/queryIdSearch", param);
         setForms(response);
     }
-    
+
     const addForm = () => {
         const newClmAtrzDtlSn = forms[forms.length - 1].clmAtrzDtlSn + 1;
         setForms([...forms, {
