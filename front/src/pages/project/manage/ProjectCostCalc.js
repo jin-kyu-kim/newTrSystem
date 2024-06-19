@@ -199,7 +199,7 @@ const calculateCustomSummary = (options) => {
                 <TotalItem
                   column="costKind"
                   customizeText={() => {
-                    return "총 계 [매출액 - 원가별집계]";
+                    return "매출총이익(Gross Margin)[매출액-매출원가]";
                   }}
                 />
                 <TotalItem
