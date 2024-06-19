@@ -72,18 +72,20 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data, sttsCd}) => {
             getTempData();
 
         } else if (data.selectedData) {
+            let sn = 1;
             const tmpArr = data.selectedData.map(item => ({
+                clmAtrzDtlSn: sn++,
                 ctStlmSeCd: 'VTW01903',
-                expensCd: item.expensCd,
+                rciptPblcnYmd: String(item.utztnDt).substring(0, 8),
+                taxBillPblcnYmd: null,
                 dtlUseDtls: item.ctPrpos,
                 clmAmt: item.utztnAmt,
+                vat: 0,
+                vatInclsAmt: 0,
+                dpstDmndYmd: null,
+                expensCd: item.expensCd,
                 cnptNm: item.useOffic,
                 clmPrpos: item.atdrn,
-                rciptPblcnYmd: String(item.utztnDt).substring(0, 8),
-                vatInclsAmt: 0,
-                clmAtrzDtlSn: 1,
-                taxBillPblcnYmd: null,
-                dpstDmndYmd: null,
                 bankCd: null,
                 dpstrFlnm: null,
                 dpstActno: null
@@ -120,10 +122,9 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data, sttsCd}) => {
         const response = await ApiRequest("/boot/common/queryIdSearch", param);
         setForms(response);
     }
-
+    
     const addForm = () => {
         const newClmAtrzDtlSn = forms[forms.length - 1].clmAtrzDtlSn + 1;
-
         setForms([...forms, {
             clmAtrzDtlSn: newClmAtrzDtlSn,
             ctStlmSeCd: null,
@@ -144,9 +145,7 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data, sttsCd}) => {
     };
 
     useEffect(() => {
-
         let data = [{ tbNm: "CLM_ATRZ_DTL" }, ...forms]
-
         onSendData(data)
     }, [forms]);
 
