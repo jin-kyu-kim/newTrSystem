@@ -46,7 +46,8 @@ const CsServiceList = () => {
     };
 
     const onRowClick = (e) => {
-        navigate("/sysMng/CsServiceDetail", {state: { id: e.key, errPrcsSttsCd : e.data.errPrcsSttsCd, errPrcsSttsCdNm : e.data.errPrcsSttsCdNm }});
+        navigate("/sysMng/CsServiceDetail", {state: { id: e.key, errPrcsSttsCd : e.data.errPrcsSttsCd, 
+            errPrcsSttsCdNm : e.data.errPrcsSttsCdNm, num: e.data.num }});
     };
 
     const onCellPrepared = (e) => { // 진행상태 컬럼 색상 변경
