@@ -13,6 +13,7 @@ const CsServiceDetail = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const errId = location.state.id;
+    const num = location.state?.num;
     const errPrcsSttsCd = location.state?.errPrcsSttsCd;
     const errPrcsSttsCdNm = location.state?.errPrcsSttsCdNm;
     const { detailQueryId, sysButtonGroup, dirType } = CsServiceJson.detail;
@@ -113,7 +114,7 @@ const CsServiceDetail = () => {
                     <>
                         <h2 style={{ marginBottom: "30px" }}>{oneData.errTtl}</h2>
                         <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
-                            {oneData.regEmpNm} | {oneData.regDt}
+                            {oneData.regEmpNm} | {oneData.regDt} | 글번호: [ {num} ] 
                             <div style={{ marginLeft: "30px", marginRight: '20px' }}> 접수상태 :</div>
                             {hasPermission ? ( 
                             <div style={{ width: '200px' }}>
