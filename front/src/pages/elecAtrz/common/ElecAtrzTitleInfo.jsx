@@ -7,10 +7,15 @@ import logoImg from "../../../assets/img/vtwLogo.png";
 import '../ElecAtrz.css'
 
 const ElecAtrzTitleInfo = ({ sttsCd, refer, atrzLnEmpList, getAtrzLn, contents, onClick, formData, prjctData, onHandleAtrzTitle, atrzParam }) => {
-  const [popVisible, setPopVisible] = useState(false);
+  const [ popVisible, setPopVisible ] = useState(false);
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  
   const onAtrzLnPopup = async () => {
     setPopVisible(true);
+  }
+
+  if (!formData || Object.keys(formData).length === 0) {
+    return null; // formData가 비어 있을 때 렌더링 막음
   }
 
   const onPopHiding = async (aprvrEmpList) => {

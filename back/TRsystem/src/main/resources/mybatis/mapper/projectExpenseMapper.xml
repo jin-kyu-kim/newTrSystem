@@ -33,6 +33,8 @@
 			, ea.ELCTRN_ATRZ_DOC_NO
 			, eadf.GNRL_ATRZ_TTL
 			, LOTTE_CARD_APRV_NO
+			, (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = ea.ATRZ_DMND_EMP_ID) AS ATRZ_DMND_EMP_NM
+			, DATE_FORMAT(ea.REG_DT, '%Y-%m-%d') AS REG_DT
 		FROM PRJCT_CT_APLY pca
 		LEFT JOIN PRJCT_CT_ATRZ pcaz
 			ON pca.PRJCT_CT_APLY_SN = pcaz.PRJCT_CT_APLY_SN
@@ -47,7 +49,6 @@
 		  AND pca.EMP_ID = #{empId}
 		  AND pca.APLY_YM = #{aplyYm}
 		  AND pca.APLY_ODR = #{aplyOdr}
-		  AND CT_STLM_SE_CD IN ('VTW01902', 'VTW01903')
 		  AND (pcaz.ATRZ_DMND_STTS_CD IS NULL OR pcaz.ATRZ_DMND_STTS_CD != 'VTW03705')
 		<if test="aply != null">
 			AND pca.ELCTRN_ATRZ_ID IS NULL

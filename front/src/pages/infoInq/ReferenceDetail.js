@@ -55,7 +55,7 @@ const ReferenceDetail = () => {
             if (container) {
                 const images = container.getElementsByTagName('img');
                 for (let img of images) {
-                    img.style.width = '90%';
+                    img.style.width = '100%';
                 }
             }
         };
