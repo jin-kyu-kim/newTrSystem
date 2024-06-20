@@ -762,19 +762,20 @@
 	</select>
   
 	<select id="retrieveErrMng" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT rank() over (order by REG_DT) as num,
+		SELECT rank() over (order by M.REG_DT) as num,
 			M.ERR_ID,
 			CASE
-			WHEN COALESCE(C.CNT, 0) > 0 THEN CONCAT(M.ERR_TTL, ' [', C.CNT, ']')
-			ELSE M.ERR_TTL
+				WHEN COALESCE(C.CNT, 0) > 0 THEN CONCAT(M.ERR_TTL, ' [', C.CNT, ']')
+				ELSE M.ERR_TTL
 			END AS ERR_TTL,
 			DATE_FORMAT(M.REG_DT, '%Y-%m-%d') AS REG_DT,
-			(SELECT EMP_FLNM FROM EMP E WHERE E.EMP_ID = M.REG_EMP_ID) AS REG_EMP_NM,
+			e.EMP_FLNM AS REG_EMP_NM,
 			(SELECT CD_NM FROM CD WHERE CD_VALUE = M.ERR_PRCS_STTS_CD) AS ERR_PRCS_STTS_CD_NM,
 			M.ERR_PRCS_STTS_CD
 		FROM ERR_MNG M
 		LEFT JOIN (SELECT ERR_ID, COUNT(*) AS CNT FROM ERR_MNG_DTL GROUP BY ERR_ID) C
 		ON M.ERR_ID = C.ERR_ID
+		LEFT JOIN EMP e ON M.REG_EMP_ID = e.EMP_ID
 		WHERE 1 = 1
 		<if test="searchCnd == 'VTW01701' and searchWrd != null">
 			AND ERR_TTL LIKE CONCAT('%',#{searchWrd},'%')
@@ -786,6 +787,7 @@
 			AND (
 			ERR_TTL LIKE CONCAT('%',#{searchWrd},'%')
 			OR REGEXP_REPLACE(ERR_CN, '&lt;[^&gt;]*&gt;', '') LIKE CONCAT('%', #{searchWrd}, '%')
+			OR e.EMP_FLNM LIKE CONCAT('%',#{searchWrd},'%')
 			)
 		</if>
 		<if test="errPrcsSttsCd != null and !errPrcsSttsCd.equals('')">

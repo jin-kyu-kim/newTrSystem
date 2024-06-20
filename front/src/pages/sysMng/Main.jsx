@@ -12,6 +12,7 @@ import Moment from "moment"
 import "../../assets/css/Style.css"
 
 const Main = ({ }) => {
+  const [ isLoading, setIsLoading ]= useState(false);
   const [ noticeValues, setNoticeValues ] = useState([]);   //공지사항 데이터
   const [ trAplyValues, setTrAplyValues ] = useState([]);   //TR입력현황 데이터
   const [ aplyValues, setAplyValues ] = useState([]);       //결재 신청 현황 데이터
@@ -65,6 +66,7 @@ const Main = ({ }) => {
   let orderWorkBgngMm = flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMM")) : String(Moment(new Date()).format("YYYYMM") - 1)
 
   const pageHandle = async () => {
+    setIsLoading(true);
     const params = [
       { queryId: noticeQueryId, type: 'notice' },
       { queryId: trAplyTotQueryId, empId: empId, aplyYm: orderWorkBgngMm, aplyOdr: flagOrder },
@@ -74,10 +76,13 @@ const Main = ({ }) => {
 
     try {
       const response = await ApiRequest('/boot/sysMng/mainSearch', params)
-      setNoticeValues(response.retrieveNotice);
-      setTrAplyValues(response.retrieveInptSttus);
-      setAplyValues(response.retrieveAtrzAplySttus);
-      setAtrzValues(response.retiveAtrzList);
+      if (response && Object.keys(response).length > 0) {
+        setNoticeValues(response.retrieveNotice);
+        setTrAplyValues(response.retrieveInptSttus);
+        setAplyValues(response.retrieveAtrzAplySttus);
+        setAtrzValues(response.retiveAtrzList);
+        setIsLoading(false);
+      } 
     } catch (error) {
       console.log(error);
     }
@@ -135,7 +140,6 @@ const Main = ({ }) => {
     } else if (e.data.tySe === "프로젝트 승인") { //프로젝트 승인페이지(이동전 데이터 조회)
       projectSearch(e.data.id)
     } else if (e.data.elctrnAtrzTySeCd.startsWith("VTW049")) { //기타 전자결재 내역
-      console.log('e', e.data)
       navigate("/elecAtrz/ElecAtrzDetail", { state: { data: e.data, prjctId: e.data.prjctId, sttsCd: e.data.atrzDmndSttsCd } });
     }
   };
@@ -165,6 +169,7 @@ const Main = ({ }) => {
 
   return (
     <div style={{ marginLeft: "1%", marginRight: "1%", marginBottom: '5%' }}>
+      {isLoading ? <></> :
       <div className="main-container">
         <div className="main-left-container">
           <div className="emp-info">
@@ -195,7 +200,6 @@ const Main = ({ }) => {
             </Table>
           </TableContainer>
 
-          {/* 공지사항 */}
           <div className="notice-container" style={{ marginTop: "20px", marginBottom: "10px" }}>
             <div><p><strong> 공지사항 </strong></p></div>
             <CustomEditTable
@@ -236,7 +240,7 @@ const Main = ({ }) => {
             <CustomTable keyColumn="title" columns={atrzListTableColumns} values={atrzValues} onRowClick={onAtrzRowClick} noDataText="진행중인 결재가 없습니다." wordWrap={true} />
           </div>
         </div>
-      </div>
+      </div>}
     </div>
   );
 };
