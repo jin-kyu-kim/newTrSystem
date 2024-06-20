@@ -656,16 +656,20 @@
 /* 버튼 컨테이너 스타일 */
 .main-button-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   margin-top: 20px;
+  width: 100%;
+  gap: 3%; /* 버튼 사이 간격 조정 */
 }
-.main-button-container button {
+.main-button {
   font-size: clamp(9px, 1vw, 11px);
   white-space: nowrap;
   text-overflow: clip;
   box-sizing: border-box;
-  width: auto;
+  flex: 1; /* 버튼이 가변적으로 크기를 조절하도록 설정 */
+  min-width: 0; /* 버튼의 최소 너비를 0으로 설정 */
+  width: 100%;
 }
 
 /* 미디어 쿼리를 사용해 작은 화면에서의 스타일을 정의 */
