@@ -72,6 +72,7 @@ const CustomLabelValue = ({ props, onSelect, value, readOnly, onKeyDownEvent }) 
                     dateSerializationFormat="yyyyMMdd"
                     displayFormat="yyyy-MM-dd"
                     type="date"
+                    showClearButton={true}
                     onValueChanged={(e) => {
                         onSelect({name: props.name, value: e.value})
                     }}

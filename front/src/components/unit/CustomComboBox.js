@@ -29,12 +29,14 @@ const CustomComboBox = ({ props, onSelect, label, placeholder, value, readOnly, 
         let response;
 
         try {
-            if(props.queryId) {
-                response = await ApiRequest("/boot/common/queryIdSearch", param);
-            }else{
-                response = await ApiRequest("/boot/common/commonSelect", param);
+            if(Object.keys(param).length !== 0){
+                if(props.queryId) {
+                    response = await ApiRequest("/boot/common/queryIdSearch", param);
+                }else{
+                    response = await ApiRequest("/boot/common/commonSelect", param);
+                }
+                setValues(response);
             }
-            setValues(response);
         } catch(error) {
             console.error(error);
         }

@@ -18,7 +18,12 @@ export const validateFields = async (selectedItem, placeholderAndRequired, setVa
     // 전체 필수 항목 검사
     for (const item of selectedItem) {
 
-        const cashRequired = CASH_FIELDS.every(key => item[key] !== undefined);
+        const cashRequired = CASH_FIELDS.every(key => 
+            item[key] !== undefined && 
+            item[key] !== null && 
+            item[key] !== "" && 
+            item[key] !== "null000000"
+        );
 
         if (buttonGroup.length < 2 && !cashRequired) {
             newErrors.push('error');
