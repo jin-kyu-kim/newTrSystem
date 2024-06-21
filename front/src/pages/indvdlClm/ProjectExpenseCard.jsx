@@ -118,6 +118,7 @@ const ProjectExpenseCard = (props) => {
         const updatedSelectedItem = selectedItem.map(item => 
             item.cardUseSn === props.data.cardUseSn ? { ...item, ...props.data } : item
         );
+        updatedSelectedItem.sort((a, b) => b.cardUseSn - a.cardUseSn);
         setSelectedItem(updatedSelectedItem);
     }
 

@@ -260,7 +260,7 @@ const ProjectExpense = () => {
     }
 
     const groupingCustomizeText = (e) => {
-        const mapping = { "VTW01902": "개인현금지급", "VTW01903": "개인법인카드" };
+        const mapping = { "VTW01902": "개인현금지급", "VTW01903": "개인법인카드", "VTW01904": "세금계산서" };
         return mapping[e.value] || "기업법인카드";
     }
     const [isSmallScreen, setIsSmallScreen] = useState(false);
