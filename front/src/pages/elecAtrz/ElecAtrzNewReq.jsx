@@ -446,6 +446,11 @@ const ElecAtrzNewReq = () => {
             ...atrzParam,
             title: e.value
         }));
+
+        setData((prevData) => ({
+            ...prevData,
+            title: e.value
+        }));
     }
 
     const onBtnClick = (e) => {

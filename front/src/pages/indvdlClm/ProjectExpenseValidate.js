@@ -53,14 +53,14 @@ export const validateFields = async (selectedItem, placeholderAndRequired, setVa
 
             if (requiredFields.ctPrpos && !item.ctPrpos) {
                 newErrors.push({
-                    cardUseSn: item.cardUseSn || null, // 단건 입력에서는 cardUseSn이 없을 수 있으므로 null 처리
+                    lotteCardAprvNo: item.lotteCardAprvNo || null, // 단건 입력에서는 lotteCardAprvNo이 없을 수 있으므로 null 처리
                     field: 'ctPrpos'
                 });
                 errorMessages.add('필수항목을 모두 입력해주세요.');
             }
             if (requiredFields.atdrn && (!item.atdrn || item.atdrn.length === 0)) {
                 newErrors.push({
-                    cardUseSn: item.cardUseSn || null,
+                    lotteCardAprvNo: item.lotteCardAprvNo || null,
                     field: 'atdrn'
                 });
                 errorMessages.add('필수항목을 모두 입력해주세요.');
@@ -78,7 +78,7 @@ export const validateFields = async (selectedItem, placeholderAndRequired, setVa
                     const dinnerValidationResult = await checkDinnerValidation(item);
                     if (dinnerValidationResult) {
                         newErrors.push({
-                            cardUseSn: item.cardUseSn || null,
+                            lotteCardAprvNo: item.lotteCardAprvNo || null,
                             field: 'atdrn'
                         });
                         dinnerErrors = true;
@@ -91,7 +91,7 @@ export const validateFields = async (selectedItem, placeholderAndRequired, setVa
                 overAmtErrors = checkDinnerAmt(item)
                 if (overAmtErrors) {
                     newErrors.push({
-                        cardUseSn: item.cardUseSn || null,
+                        lotteCardAprvNo: item.lotteCardAprvNo || null,
                         field: 'atdrn'
                     });
                     errorMessages.add('야근식대는 1인 최대 15,000원까지 가능합니다.');
@@ -108,9 +108,9 @@ export const validateFields = async (selectedItem, placeholderAndRequired, setVa
 };
 
 // 화면 표시를 위한 검사
-export const hasError = (validationErrors, cardUseSn, fieldName) => {
-    if (cardUseSn !== null) {
-        return validationErrors.some(error => error.cardUseSn === cardUseSn && error.field === fieldName);
+export const hasError = (validationErrors, lotteCardAprvNo, fieldName) => {
+    if (lotteCardAprvNo !== null) {
+        return validationErrors.some(error => error.lotteCardAprvNo === lotteCardAprvNo && error.field === fieldName);
     } else {
         return validationErrors.some(error => error.field === fieldName);
     }

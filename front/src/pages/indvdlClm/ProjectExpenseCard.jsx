@@ -23,17 +23,14 @@ const ProjectExpenseCard = (props) => {
     const [isPrjctIdSelected, setIsPrjctIdSelected] = useState({}); // 비용코드 활성화 조건
     const [validationErrors, setValidationErrors] = useState([]);
     const { handleOpen } = useModal();
-    const [param, setParam] = useState({
-        queryId: queryId,
-        empId: props.empId
-    });
+    const [param, setParam] = useState({ queryId: queryId, empId: props.empId });
 
     const searchHandle = async (initParam) => {
         setParam({ ...param, ...initParam });
     };
 
-    const chgPlaceholder = (col, cardUseSn) => {
-        const currentExpensCd = expensCd[cardUseSn];
+    const chgPlaceholder = (col, lotteCardAprvNo) => {
+        const currentExpensCd = expensCd[lotteCardAprvNo];
         const matchedItem = placeholderAndRequired.find(item => item.expensCd === currentExpensCd);
         return matchedItem ? (col.key === 'atdrn' ? matchedItem.atdrnPlaceholder : matchedItem.ctPrposPlaceholder)
             : col.placeholder;
@@ -80,13 +77,13 @@ const ProjectExpenseCard = (props) => {
     const setComboBox = (value, props, col) =>{
         if(value) {
             if (col.key === 'prjctId') {
-                getCdList(value, props.data.cardUseSn);
+                getCdList(value, props.data.lotteCardAprvNo);
                 props.data.prjctId = value.prjctId;
                 props.data.aprvrEmpId = value.prjctMngrEmpId; // 결재자 추가
     
                 setIsPrjctIdSelected(prevStts => ({
                     ...prevStts,
-                    [props.data.cardUseSn]: !!value
+                    [props.data.lotteCardAprvNo]: !!value
                 }));
 
             } else if (col.key === 'expensCd') {
@@ -95,7 +92,7 @@ const ProjectExpenseCard = (props) => {
 
                 setExpensCd(prevStts => ({
                     ...prevStts,
-                    [props.data.cardUseSn]: value.expensCd
+                    [props.data.lotteCardAprvNo]: value.expensCd
                 }));
             }
         } else {
@@ -110,19 +107,26 @@ const ProjectExpenseCard = (props) => {
             }
             setIsPrjctIdSelected(prevStts => ({
                 ...prevStts,
-                [props.data.cardUseSn]: true
+                [props.data.lotteCardAprvNo]: true
             }))
         }
 
-        // selectedItem 업데이트
         const updatedSelectedItem = selectedItem.map(item => 
-            item.cardUseSn === props.data.cardUseSn ? { ...item, ...props.data } : item
+            item.lotteCardAprvNo === props.data.lotteCardAprvNo ? { ...item, ...props.data } : item
         );
-        updatedSelectedItem.sort((a, b) => b.cardUseSn - a.cardUseSn);
+        updatedSelectedItem.sort((a, b) => {
+            if (a.aplyYm !== b.aplyYm) {
+                return b.aplyYm - a.aplyYm;
+            }
+            if (a.aplyOdr !== b.aplyOdr) {
+                return a.aplyOdr - b.aplyOdr;
+            }
+            return a.cardUseSn - b.cardUseSn;
+        });
         setSelectedItem(updatedSelectedItem);
     }
 
-    const getCdList = async (prjct, cardUseSn) => {
+    const getCdList = async (prjct, lotteCardAprvNo) => {
         if(prjct === null || prjct === undefined) {
             return;
         } else {
@@ -133,7 +137,7 @@ const ProjectExpenseCard = (props) => {
                 })
                 setCdList(prevCdLists => ({
                     ...prevCdLists,
-                    [cardUseSn]: response
+                    [lotteCardAprvNo]: response
                 }));
     
             } catch (error) {
@@ -160,7 +164,7 @@ const ProjectExpenseCard = (props) => {
                 expensCdObject: {
                     cdNm: item.cdNm,
                     expensCd: item.expensCd,
-                    cardUseSn: item.cardUseSn
+                    lotteCardAprvNo: item.lotteCardAprvNo
                 },
                 aprvrEmpId: item.prjctMngrEmpId
             };
@@ -170,7 +174,7 @@ const ProjectExpenseCard = (props) => {
         // 임시저장된 비용코드가 있을경우 cdList setState
         const initialCdList = updatedResponse.reduce((acc, item) => {
             if (item.expensCdObject) {
-                acc[item.cardUseSn] = [item.expensCdObject];
+                acc[item.lotteCardAprvNo] = [item.expensCdObject];
             }
             return acc;
         }, {});
@@ -201,7 +205,7 @@ const ProjectExpenseCard = (props) => {
         .then(results => {
             // 삭제된 항목 selectedItem과 cardUseDtls에서 제거
             const updatedCardUseDtls = cardUseDtls.filter(item => 
-                !selectedItem.some(selected => selected.cardUseSn === item.cardUseSn)
+                !selectedItem.some(selected => selected.lotteCardAprvNo === item.lotteCardAprvNo)
             );
             setCardUseDtls(updatedCardUseDtls);
             setSelectedItem([]);
@@ -211,7 +215,19 @@ const ProjectExpenseCard = (props) => {
     };
 
     const onSelection = (e) => {
-        setSelectedItem(e.selectedRowsData);
+        const updatedSelectedRowsData = e.selectedRowsData.map(row => {
+            if (row.prjctId === null && row.expensCd === null) {
+                const originalRow = cardUseDtls.find(item => item.lotteCardAprvNo === row.lotteCardAprvNo);
+                return {
+                    ...row,
+                    prjctId: originalRow ? originalRow.prjctId : null,
+                    expensCd: originalRow ? originalRow.expensCd : null,
+                    expensCdObject: originalRow ? originalRow.expensCdObject : null
+                };
+            }
+            return row;
+        });
+        setSelectedItem(updatedSelectedRowsData);
     };
 
     const sendAtrz = (selectedItem) => {
@@ -252,23 +268,22 @@ const ProjectExpenseCard = (props) => {
                         style={{fontSize: '8pt', marginLeft: '10px'}}/>
             </div>:
             <div>{column.caption}</div>
-)
-    ;
+    );
 
     const onBulkAply = (field) => {
         if (selectedItem.length === 0) return;
-
+        
         const firstSelectedRow = selectedItem[0];
         const firstFieldValue = firstSelectedRow[field];
         const firstFieldObject = firstSelectedRow[`${field}Object`];
 
         const updatedCardUseDtls = cardUseDtls.map(item => {
-            if (selectedItem.some(selected => selected.cardUseSn === item.cardUseSn)) {
+            if (selectedItem.some(selected => selected.lotteCardAprvNo === item.lotteCardAprvNo)) {
                 if (field === 'prjctId') {
-                    getCdList(firstFieldObject, item.cardUseSn);
+                    getCdList(firstFieldObject, item.lotteCardAprvNo);
                     setIsPrjctIdSelected(prevStts => ({
                         ...prevStts,
-                        [item.cardUseSn]: !!firstFieldValue
+                        [item.lotteCardAprvNo]: !!firstFieldValue
                     }));
                     return {
                         ...item,
@@ -289,7 +304,7 @@ const ProjectExpenseCard = (props) => {
 
         // selectedItem 업데이트
         const updatedSelectedItem = selectedItem.map(item => {
-            const updatedItem = updatedCardUseDtls.find(updated => updated.cardUseSn === item.cardUseSn);
+            const updatedItem = updatedCardUseDtls.find(updated => updated.lotteCardAprvNo === item.lotteCardAprvNo);
             if (updatedItem) {
                 onTempInsert({ key: field }, updatedItem[field], { data: updatedItem });
             }
@@ -310,7 +325,7 @@ const ProjectExpenseCard = (props) => {
     
     const cellRenderConfig = {
         getCdList, isPrjctIdSelected, setIsPrjctIdSelected, chgPlaceholder, comboList, cdList, setComboBox, onTempInsert, selectedItem, setSelectedItem, 
-        expensCd, setExpensCd, setValidationErrors, hasError: (cardUseSn, fieldName) => hasError(validationErrors, cardUseSn, fieldName)
+        expensCd, setExpensCd, setValidationErrors, hasError: (lotteCardAprvNo, fieldName) => hasError(validationErrors, lotteCardAprvNo, fieldName)
     };
 
     return (
