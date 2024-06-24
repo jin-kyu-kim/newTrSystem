@@ -87,7 +87,7 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
           <Grouping autoExpandAll={true} />
         }
 
-        {grouping &&
+        {grouping && !summary&&
           <Summary calculateCustomSummary={calculateCustomSummary}> 
           {grouping.map(item => (
             <GroupItem
