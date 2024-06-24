@@ -17,7 +17,7 @@ const NoticeDetail = () => {
     const [ fileList, setFileList ] = useState([]);
     const [ btnVisible , setBtnVisible ] = useState(false);
     const { handleOpen } = useModal();
-    const fileDir = fileList[0]?.fileStrgCours.substring(8);
+    const fileDir = fileList[0]?.fileStrgCours ? fileList[0]?.fileStrgCours.substring(8) : null;
 
     const getOneData = async () => {
         const params = {
@@ -49,6 +49,19 @@ const NoticeDetail = () => {
         }
     }, []);
 
+    useEffect(() => {
+        const resizeImages = () => {
+            const container = document.getElementById('notice-content');
+            if (container) {
+                const images = container.getElementsByTagName('img');
+                for (let img of images) {
+                    img.style.width = '100%';
+                }
+            }
+        };
+        resizeImages();
+    }, [oneData]);
+
     const deleteNotice = async () => {
         const params = [{ tbNm: "NOTICE" }, { noticeId: noticeId }];
         const fileParams = [{ tbNm: "ATCHMNFL" }, { atchmnflId: oneData.atchmnflId }];
@@ -73,7 +86,7 @@ const NoticeDetail = () => {
                     <>
                         <h2 style={{ marginBottom: "30px" }}>{oneData.noticeTtl}</h2>
                         <div>{oneData.regEmpNm} | {oneData.regDt}</div><hr className='elecDtlLine' />
-                        <div dangerouslySetInnerHTML={{ __html: oneData.noticeCn }} />
+                        <div id="notice-content" dangerouslySetInnerHTML={{ __html: oneData.noticeCn }} />
 
                         {fileList.length !== 0 && fileList.filter(file => file.realFileNm !== null && file.realFileNm !== undefined).filter(file => file.realFileNm.endsWith('.jpg') || file.realFileNm.endsWith('.jpeg') || file.realFileNm.endsWith('.png') || file.realFileNm.endsWith('.gif')).map((file, index) => (
                             <div key={index} style={{ textAlign: 'center' }}>

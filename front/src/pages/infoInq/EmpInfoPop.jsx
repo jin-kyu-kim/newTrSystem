@@ -9,7 +9,7 @@ import printJS from "print-js";
 const EmpInfoPop = ({ naviEmpId }) => {
   /*유저세션*/
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-  const [degree, setDegree] = useState([]);
+  const [empInfo, setEmpInfo] = useState([]);
   const componentRef = useRef();
 
   const { EmpDegree, EmpLanguage, EmpLicense, EmpEduHist, EmpCareer, prjctHist } = EmpInfoJson;
@@ -46,19 +46,19 @@ const EmpInfoPop = ({ naviEmpId }) => {
     ]
     try {
       const response = await ApiRequest("/boot/informaiton/empInfo", params);
-      if (response.length !== 0) setDegree(response);
+      if (response) setEmpInfo(response);
     } catch (error) {
       console.log(error);
     }
   };
 
   const sections = [
-    { title: "* 학력", data: degree.EmpDegree, keyColumn: EmpDegreeData.keyColumn, columns: EmpDegreeData.tableColumns },
-    { title: "* 외국어능력", data: degree.EmpLanguage, keyColumn: EmpLanguageData.keyColumn, columns: EmpLanguageData.tableColumns },
-    { title: "* 자격면허", data: degree.EmpLicense, keyColumn: EmpLicenseData.keyColumn, columns: EmpLicenseData.tableColumns },
-    { title: "* 교육이력", data: degree.EmpEduHist, keyColumn: EmpEduHistData.keyColumn, columns: EmpEduHistData.tableColumns },
-    { title: "* 경력", data: degree.EmpCareer, keyColumn: EmpCareerData.keyColumn, columns: EmpCareerData.tableColumns },
-    { title: "* 프로젝트", data: degree.PrjctHist, keyColumn: prjctHistData.keyColumn, columns: prjctHistData.tableColumns }
+    { title: "* 학력", data: empInfo.EmpDegree, keyColumn: EmpDegreeData.keyColumn, columns: EmpDegreeData.tableColumns },
+    { title: "* 외국어능력", data: empInfo.EmpLanguage, keyColumn: EmpLanguageData.keyColumn, columns: EmpLanguageData.tableColumns },
+    { title: "* 자격면허", data: empInfo.EmpLicense, keyColumn: EmpLicenseData.keyColumn, columns: EmpLicenseData.tableColumns },
+    { title: "* 교육이력", data: empInfo.EmpEduHist, keyColumn: EmpEduHistData.keyColumn, columns: EmpEduHistData.tableColumns },
+    { title: "* 경력", data: empInfo.EmpCareer, keyColumn: EmpCareerData.keyColumn, columns: EmpCareerData.tableColumns },
+    { title: "* 프로젝트", data: empInfo.PrjctHist, keyColumn: prjctHistData.keyColumn, columns: prjctHistData.tableColumns }
   ];
 
   const printTable = () => {
@@ -106,12 +106,12 @@ const EmpInfoPop = ({ naviEmpId }) => {
             </p>
             <Form colCount={2} minColWidth={50}>
               <GroupItem>
-                <Item dataField="성명" editorType="dxTextBox" editorOptions={{ value: degree.BaseData?.empFlnm, readOnly: true, width: "80%" }} style={formItemStyle} />
-                <Item dataField="전화번호" editorType="dxTextBox" editorOptions={{ value: degree.BaseData?.telno, readOnly: true, width: "80%" }} style={formItemStyle} />
+                <Item dataField="성명" editorType="dxTextBox" editorOptions={{ value: empInfo.BaseData?.empFlnm, readOnly: true, width: "80%" }} style={formItemStyle} />
+                <Item dataField="전화번호" editorType="dxTextBox" editorOptions={{ value: empInfo.BaseData?.telno, readOnly: true, width: "80%" }} style={formItemStyle} />
               </GroupItem>
               <GroupItem>
-                <Item dataField="소속" editorType="dxTextBox" editorOptions={{ value: degree.BaseData?.deptNm, readOnly: true, width: "80%" }} style={formItemStyle} />
-                <Item dataField="이메일" editorType="dxTextBox" editorOptions={{ value: degree.BaseData?.eml, readOnly: true, width: "80%" }} style={formItemStyle} />
+                <Item dataField="소속" editorType="dxTextBox" editorOptions={{ value: empInfo.BaseData?.deptNm, readOnly: true, width: "80%" }} style={formItemStyle} />
+                <Item dataField="이메일" editorType="dxTextBox" editorOptions={{ value: empInfo.BaseData?.eml, readOnly: true, width: "80%" }} style={formItemStyle} />
               </GroupItem>
             </Form>
             {sections.map((section, index) => (

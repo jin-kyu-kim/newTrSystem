@@ -174,7 +174,7 @@ const routes = [
     path: "/humanResourceMng/MeetingRoomManage",
     name: "MeetingRoomManage",
     element: React.lazy(() => import("../../pages/humanResourceMng/MeetingRoomManage")),
-    isPrivate:"VTW04805"
+    isPrivate:"USER"
   },
   // 인사관리 휴가사용내역
   {
@@ -374,7 +374,7 @@ const routes = [
     path: "/humanResourceMng/MeetingRoomManageAdmin",
     name: "MeetingRoomManageAdmin",
     element: React.lazy(() => import("../../pages/humanResourceMng/MeetingRoomManage")),
-    isPrivate:"VTW04805"
+    isPrivate:"USER"
   },
   {// 관리자메뉴 > 프로젝트관리(관리자)
     path: "/mngrMenu/ProjectList",

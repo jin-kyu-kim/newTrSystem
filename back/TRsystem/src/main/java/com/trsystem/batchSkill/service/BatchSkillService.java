@@ -11,9 +11,8 @@ public interface BatchSkillService {
 	public void executeEmpPrmot(String empId, String jbpsCd);
 	public void executeEmpRetirePrcs();
 	public void executeAddPrjctBgtPrmpc(String prjctId, int bgtMngOdr, int bgtMngOdrTobe);
-	
-	
 	public int executeCostUpdate();
-
 	public void executeInsertCrtrDate() throws JSONException, IOException;
+	public List<Map<String, Object>> executeSendKmsEmp();
+	public List<Map<String, Object>>  executeSendKmsLgnInfo();
 }

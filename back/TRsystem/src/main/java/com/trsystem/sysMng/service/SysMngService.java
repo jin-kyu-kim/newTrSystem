@@ -155,15 +155,13 @@ public class SysMngService {
              }
         }
     }
-    
-    public ResponseEntity<String> changePwd(Map<String, Object> request) {
+
+    public ResponseEntity<?> changePwd(Map<String, Object> request) {
         String empId = (String) request.get("empId");
         String oldPwd = (String) request.get("oldPwd");
         String newPwd = (String) request.get("newPwd");
 
         UserDetails setInfo = userDetailsService.loadUserByUsername(empId);
-
-        ResponseEntity<String> result;
 
         // 입력된 비밀번호와 저장된 비밀번호 비교
         if (passwordEncoder.matches(oldPwd, setInfo.getPassword())) {
@@ -188,10 +186,14 @@ public class SysMngService {
 
             // 데이터 업데이트
             int contrastResult = commonService.updateData(param);
-            return   ResponseEntity.ok("성공");
-                
+
+            if(contrastResult > 0){
+                return ResponseEntity.ok("success");
+            } else {
+                return ResponseEntity.ok("fail");
+            }
         } else {
-           return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            return ResponseEntity.ok("incorrect");
         }
     }
 
@@ -204,7 +206,7 @@ public class SysMngService {
     }
 
     private boolean isAccountLocked(String empno) {
-        return loginAttemptsMap.getOrDefault(empno, 0) >= 5;
+        return loginAttemptsMap.getOrDefault(empno, 0) >= 10;
     }
 }
       

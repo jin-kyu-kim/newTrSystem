@@ -25,16 +25,6 @@ const CultureHealthCostReg = (props) => {
     const { handleOpen } = useModal();
     const fileUploaderRef = useRef(null);
     const deleteFiles = useRef([{ tbNm: "ATCHMNFL" }]);
-    const fileDir = (values) => {
-        const foundItem = values.find(item => item.atchmnfl && item.atchmnfl.length > 0);
-
-        if (foundItem) {
-          const fileStrgCours = foundItem.atchmnfl[0].fileStrgCours;
-          const fileDir = fileStrgCours.substring(8);
-          return fileDir;
-        }
-        return null;
-    };
     let selectedClmAmt = useRef(0);
     let selectedClturPhstrnSeCd = useRef(null);
     let now = new Date();
@@ -110,6 +100,7 @@ const CultureHealthCostReg = (props) => {
             if (response.length !== 0) {
                 const tmpList = [];
                 const tmpValueList = [];
+
                 response.forEach((element) => {
                     let tmpElement = {
                         empId: element.empId,
@@ -117,6 +108,7 @@ const CultureHealthCostReg = (props) => {
                     };
                     if (!tmpList.includes(JSON.stringify(tmpElement))) {
                         tmpList.push(JSON.stringify(tmpElement));
+
                         tmpElement.month = element.clmYmd.substring(0, 4) + "/" + element.clmYmd.substring(4, 6);
                         tmpElement.clmYmd = element.clmYmd;
                         tmpElement.clmAmt = element.clmAmt;
@@ -132,20 +124,19 @@ const CultureHealthCostReg = (props) => {
                                 atchmnflId: element.atchmnflId,
                                 atchmnflSn: element.atchmnflSn,
                                 realFileNm: element.realFileNm,
-                                strgFileNm: element.strgFileNm,
-                                fileStrgCours: element.fileStrgCours
+                                strgFileNm: element.strgFileNm
                             });
                         }
                         tmpValueList.push(tmpElement);
                     } else {
                         let index = tmpList.indexOf(JSON.stringify(tmpElement));
                         let copyIndex = tmpValueList[index];
+
                         copyIndex.atchmnfl.push({
                             atchmnflId: element.atchmnflId,
                             atchmnflSn: element.atchmnflSn,
                             realFileNm: element.realFileNm,
-                            strgFileNm: element.strgFileNm,
-                            fileStrgCours: element.fileStrgCours
+                            strgFileNm: element.strgFileNm
                         });
                         tmpValueList[index] = copyIndex;
                     }
@@ -176,7 +167,7 @@ const CultureHealthCostReg = (props) => {
             }
         })
         const errors = [];
-        if (maxSize !== 0 && maxSize > 1048576) {
+        if (maxSize !== 0 && maxSize > (1.5 * 1024 * 1024 * 1024)) {
             handleOpen('업로드 가능한 용량보다 큽니다.');
             errors.push('Exceeded size limit');
         }
@@ -258,7 +249,7 @@ const CultureHealthCostReg = (props) => {
                             },
                         })
                         if (response.status === 200) {
-                            await ApiRequest('/boot/indvdlClm/plusClturPhstrnActCt', initParam);
+                            const plucCltur = await ApiRequest('/boot/indvdlClm/plusClturPhstrnActCt', initParam);
                             onResetClick();
                             searchTable();
                             handleOpen('등록되었습니다.');
@@ -266,7 +257,7 @@ const CultureHealthCostReg = (props) => {
                     } catch (error) {
                         console.error("API 요청 에러:", error);
                     }
-                } else {
+                } else { // 수정
                     const formData = new FormData();
                     const tbData = { tbNm: "CLTUR_PHSTRN_ACT_CT_REG", snColumn: "clturPhstrnActCtSn", snSearch: { empId: userInfo.empId } }
                     formData.append("tbNm", JSON.stringify(tbData));
@@ -277,7 +268,8 @@ const CultureHealthCostReg = (props) => {
                             "clturPhstrnSeCd": initParam.clturPhstrnSeCd,
                             "actIem": initParam.actIem,
                             "frcsNm": initParam.frcsNm,
-                            "atchmnflId": initParam.atchmnflId
+                            "atchmnflId": initParam.atchmnflId,
+                            dirType: dirType
                         }));
                         formData.append("deleteFiles", JSON.stringify(deleteFiles.current));
                     } else {
@@ -287,6 +279,7 @@ const CultureHealthCostReg = (props) => {
                             "clturPhstrnSeCd": initParam.clturPhstrnSeCd,
                             "actIem": initParam.actIem,
                             "frcsNm": initParam.frcsNm,
+                            dirType: dirType
                         }));
                         formData.append("deleteFiles", JSON.stringify([{ tbNm: "ATCHMNFL" }]));
                     }
@@ -328,22 +321,19 @@ const CultureHealthCostReg = (props) => {
             if (confirmResult) {
                 onResetClick();
                 try {
-                    const paramCh = [{ tbNm: "CLTUR_PHSTRN_ACT_CT_REG" }, { empId: selectedItem.empId, clturPhstrnActCtSn: selectedItem.clturPhstrnActCtSn }]
-                    const responseCh = await ApiRequest("/boot/common/commonDelete", paramCh);
-                    if (responseCh === 1) {
+                    const params = [{ tbNm: "CLTUR_PHSTRN_ACT_CT_REG" }, { empId: selectedItem.empId, clturPhstrnActCtSn: selectedItem.clturPhstrnActCtSn }];
+                    const fileParams = [{ tbNm: "ATCHMNFL" }, { atchmnflId: selectedItem.atchmnflId }]; 
+                    const response = await ApiRequest("/boot/common/deleteWithFile", {
+                        params: params, fileParams: fileParams, dirType: dirType
+                    });
+                    console.log('response', response)
+                    if (response >= 1) {
                         const paramMn = { empId: selectedItem.empId, clmYmd: selectedItem.clmYmd, clturPhstrnSeCd: selectedItem.clturPhstrnSeCd, clmAmt: selectedItem.clmAmt }
                         const responseMn = await ApiRequest('/boot/indvdlClm/minusClturPhstrnActCt', paramMn);
-                        if (responseMn === 1) {
-                            const paramAt = [{ tbNm: "ATCHMNFL" }, { atchmnflId: selectedItem.atchmnflId }]
-                            if (selectedItem.atchmnflId != null) {
-                                await ApiRequest("/boot/common/commonDelete", paramAt);
-                                searchTable();
-                            }
-                            props.searchGrid();
-                            searchTable();
-                            setSelectedItem(null);
-                            handleOpen('삭제되었습니다.');
-                        }
+                        props.searchGrid();
+                        searchTable();
+                        setSelectedItem(null);
+                        handleOpen('삭제되었습니다.');
                     }
                 } catch (error) {
                     console.error("API 요청 에러:", error);
@@ -372,14 +362,15 @@ const CultureHealthCostReg = (props) => {
     const onResetClick = () => {
         clearFiles();
         setInitParam({
-            "clmAmt": 0,
-            "clmYmd": now.getFullYear() + ('0' + (now.getMonth() + 1)).slice(-2) + ('0' + now.getDate()).slice(-2),
-            "clturPhstrnSeCd": null,
-            "actIem": null,
-            "frcsNm": null,
-            "empId": userInfo.empId,
-            "regEmpId": userInfo.empId,
-            "atchmnflId": null
+            clmAmt: 0,
+            clmYmd: now.getFullYear() + ('0' + (now.getMonth() + 1)).slice(-2) + ('0' + now.getDate()).slice(-2),
+            clturPhstrnSeCd: null,
+            actIem: null,
+            frcsNm: null,
+            empId: userInfo.empId,
+            regEmpId: userInfo.empId,
+            atchmnflId: null,
+            dirType: dirType
         })
     }
 
@@ -389,7 +380,7 @@ const CultureHealthCostReg = (props) => {
             return (<div>
                 {atchList.map((item, index) => (
                     <div key={index} style={{ whiteSpace: 'pre-wrap' }}>
-                        <a href={`${fileDir(values)}/${item.strgFileNm}`} download={item.realFileNm}>{item.realFileNm}</a>
+                        <a href={`/upload/expenseCulture/${item.strgFileNm}`} download={item.realFileNm}>{item.realFileNm}</a>
                     </div>
                 ))}
             </div>);

@@ -38,7 +38,8 @@ const ReferenceInput = () => {
                 const tmpFileList = response.map((data) => ({
                     realFileNm: data.realFileNm,
                     strgFileNm: data.strgFileNm,
-                    atchmnflSn: data.atchmnflSn
+                    atchmnflSn: data.atchmnflSn,
+                    fileStrgCours: data.fileStrgCours
                 }));
                 setTypeChk(prev => ({
                     ...prev,
@@ -81,7 +82,7 @@ const ReferenceInput = () => {
     }, [typeChk.imprtnc, typeChk.move, typeChk.useYn])
     
     const attachFileDelete = (deleteItem) => {
-        setDeleteFiles([...deleteFiles, { atchmnflId: data.atchmnflId , atchmnflSn: deleteItem.atchmnflSn }]);
+        setDeleteFiles([...deleteFiles, { atchmnflId: data.atchmnflId , atchmnflSn: deleteItem.atchmnflSn, strgFileNm: deleteItem.strgFileNm }]);
         setNewAttachments(newAttachments.filter(item => item !== deleteItem));
     }
 
@@ -123,7 +124,7 @@ const ReferenceInput = () => {
                 const response = await axios.post(insertUrl, formData, {
                     headers: { 'Content-Type': 'multipart/form-data', "Authorization": `Bearer ${token}` },
                 })
-                if (response.data >= 1) {
+                if (response.status === 200) {
                     const action = editMode === 'update' ? '수정' : '등록';
                     handleOpen(`${action}되었습니다.`);
                     navigate("/infoInq/ReferenceList");
@@ -139,11 +140,8 @@ const ReferenceInput = () => {
 
     return (
         <div className="container">
-            <div className="title p-1" style={{ marginTop: "20px", marginBottom: "10px" }}></div>
-            <div className="col-md-10 mx-auto" style={{ marginBottom: "30px" }}>
-                <h1 style={{ fontSize: "40px" }}>자료실</h1>
-                <span>* 자료실을 {editMode === 'update' ? '수정합니다' : '입력합니다.'}</span>
-            </div>
+            <div className="title">자료실</div>
+            <div className='title-desc'>* 자료실을 {editMode === 'update' ? '수정합니다' : '입력합니다.'}</div>
 
             <BoardInputForm
                 edit={edit}
@@ -155,7 +153,8 @@ const ReferenceInput = () => {
             
             <div className="wrap_btns inputFormBtn">
                 <Button text="목록" onClick={() => navigate("/infoInq/ReferenceList")} />
-                <Button text="저장" useSubmitBehavior={true} onClick={() => handleOpen(editMode !== 'update' ? "등록하시겠습니까?" : "수정하시겠습니까?", () => storeReference(editMode))} />
+                <Button text="저장" useSubmitBehavior={true} type='success'
+                    onClick={() => handleOpen(editMode !== 'update' ? "등록하시겠습니까?" : "수정하시겠습니까?", () => storeReference(editMode))} />
             </div>
         </div>
     );

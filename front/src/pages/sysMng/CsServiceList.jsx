@@ -46,11 +46,20 @@ const CsServiceList = () => {
     };
 
     const onRowClick = (e) => {
-        navigate("/sysMng/CsServiceDetail", {state: { id: e.key, errPrcsSttsCd : e.data.errPrcsSttsCd, errPrcsSttsCdNm : e.data.errPrcsSttsCdNm }});
+        navigate("/sysMng/CsServiceDetail", {state: { id: e.key, errPrcsSttsCd : e.data.errPrcsSttsCd, 
+            errPrcsSttsCdNm : e.data.errPrcsSttsCdNm, num: e.data.num }});
     };
 
+    const onCellPrepared = (e) => { // 진행상태 컬럼 색상 변경
+        if(e.column.dataField === 'errPrcsSttsCdNm'){
+            e.cellElement.style.color = e.data?.errPrcsSttsCd === 'VTW05503' ? 'rgb(22, 22, 247)' 
+                : e.data?.errPrcsSttsCd === 'VTW05502' ? '#53a45f' : ''
+            e.cellElement.style.fontWeight = ['VTW05501', 'VTW05504'].includes(e.data?.errPrcsSttsCd) ? '' : 'bold'
+        }
+    }
+
     return (
-        <div className="container">
+        <div className='container' style={{marginBottom: '10%'}}>
             <div className="title">오류신고게시판</div>
             <div className="title-desc">* 오류신고를 조회합니다.</div>
             <div style={{ marginBottom: "20px" }}>
@@ -69,6 +78,7 @@ const CsServiceList = () => {
                 columns={tableColumns}
                 keyColumn={keyColumn}
                 onRowClick={onRowClick}
+                onCellPrepared={onCellPrepared}
                 noDataText={'등록된 게시글이 없습니다.'}
             /> }
         </div>

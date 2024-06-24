@@ -313,8 +313,8 @@ public class CommonServiceImpl implements CommonService {
                     // 파라미터 값이 문자열이며 '%'를 포함하는 경우, LIKE 절을 사용
                     if (paramValue instanceof String && ((String) paramValue).contains("%")) {
                         queryBuilder.append(paramName.replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase()).append(" LIKE ?");
-                    } else if (paramValue instanceof String && ((String) paramValue).contains("&")) {
-                        String[] dateRange = ((String) paramValue).split("&");
+                    } else if (paramValue instanceof String && ((String) paramValue).contains("_BETWEEN_")) {
+                        String[] dateRange = ((String) paramValue).split("_BETWEEN_");
                         if (dateRange.length == 2) {
                             queryBuilder.append(paramName.replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase())
                                     .append(" BETWEEN ? AND ?");
@@ -427,34 +427,45 @@ public class CommonServiceImpl implements CommonService {
                     System.out.println(params.get(i));
                     continue;
                 }
+//                if (params.get(i) instanceof String && ((String) params.get(i)).contains("&") && !((String) params.get(i)).contains("<p>")) {
+//                    String[] dateRange = ((String) params.get(i)).split("&");
+//                    if (dateRange.length == 2) {
+//                        preparedStatement.setObject(j+1, dateRange[0]);
+//                        preparedStatement.setObject(j+2, dateRange[1]);
+//                        j += 2;
+//                        continue;
+//                    } else {
+//                        throw new IllegalArgumentException("Invalid date range format");
+//                    }
+//                }
 
-                if (params.get(i) instanceof String && ((String) params.get(i)).contains("&") && !((String) params.get(i)).contains("<p>")) {
-                    String[] dateRange = ((String) params.get(i)).split("&");
-                    if (dateRange.length == 2) {
-                        preparedStatement.setObject(j+1, dateRange[0]);
-                        preparedStatement.setObject(j+2, dateRange[1]);
-                        j += 2;
-                        continue;
+                if (params.get(i) instanceof String paramStr) {
+                    if(paramStr.contains("_BETWEEN_")){
+                        String[] dateRange = ((String) params.get(i)).split("_BETWEEN_");
+                        if (dateRange.length == 2) {
+                            preparedStatement.setObject(j+1, dateRange[0]);
+                            preparedStatement.setObject(j+2, dateRange[1]);
+                            j += 2;
+                            continue;
+                        } else {
+                            throw new IllegalArgumentException("Invalid date range format");
+                        }
                     } else {
-                        throw new IllegalArgumentException("Invalid date range format");
+                        preparedStatement.setString(j+1, paramStr);
                     }
-                }
-
-                if (params.get(i) instanceof String) {
-                    preparedStatement.setString(j+1, (String) params.get(i));
                 } else if (params.get(i) instanceof Integer) {
                     preparedStatement.setInt(j+1, (Integer) params.get(i));
-                }  else if (params.get(i) instanceof Long) { // bigint (Long) 처리
+                } else if (params.get(i) instanceof Long) { // bigint (Long) 처리
                     preparedStatement.setLong(j+1, (Long) params.get(i));
-                }else if (params.get(i) instanceof Double) {
+                } else if (params.get(i) instanceof Double) {
                     preparedStatement.setDouble(j+1, (Double) params.get(i));
                 } else if (params.get(i) instanceof Timestamp) {
                     preparedStatement.setTimestamp(j+1, (Timestamp) params.get(i));
-                }  else if (params.get(i) instanceof Instant) {
+                } else if (params.get(i) instanceof Instant) {
                     preparedStatement.setTimestamp(j+1, Timestamp.from((Instant) params.get(i)));
-                }  else if (params.get(i) == null) {
+                } else if (params.get(i) == null) {
                     preparedStatement.setString(j+1, null);
-                }  else {
+                } else {
                     j++;
                     return null;
                 }

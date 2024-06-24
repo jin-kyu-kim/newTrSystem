@@ -1,4 +1,4 @@
-import { Column, DataGrid, Editing, Lookup, MasterDetail, Selection, RequiredRule, StringLengthRule, Pager, Paging, Export, Summary, TotalItem } from 'devextreme-react/data-grid';
+import { Column, DataGrid, Editing, Lookup, MasterDetail, Selection, RequiredRule, StringLengthRule, Pager, Paging, Export, Summary, TotalItem, KeyboardNavigation } from 'devextreme-react/data-grid';
 import { useCallback, useEffect, useState } from 'react';
 import ApiRequest from 'utils/ApiRequest';
 import CellRender from './CellRender';
@@ -6,7 +6,7 @@ import { useModal } from "./ModalContext";
 
 const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal, masterDetail, doublePk, noDataText, noEdit,
     onSelection, onRowClick, callback, handleData, handleExpanding, cellRenderConfig, onBtnClick, excel, onExcel, upCdValue,
-    summary, summaryColumn, onlyUpdate, defaultPageSize, queryIdUrl, validateNumberBox }) => {
+    summary, summaryColumn, onlyUpdate, defaultPageSize, queryIdUrl, validateNumberBox, onCellPrepared, headerCellRender }) => {
 
     const { handleOpen } = useModal();
     const [ cdValList, setCdValList ] = useState({});
@@ -117,6 +117,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                 {...otherDateFormat}
                 {...rowEventHandlers}
                 keyExpr={keyColumn}
+                sorting={{mode: 'none'}}
                 showBorders={true}
                 showColumnLines={true}
                 dataSource={values}
@@ -129,9 +130,11 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                 columnMinWidth={100}
                 onExporting={onExcel}
                 onRowExpanding={handleExpanding}
+                onCellPrepared={onCellPrepared}
                 onSelectionChanged={onSelection && ((e) => onSelection(e))}
                 onRowUpdating={(e) => onEditRow('update', e)}
                 onRowRemoved={(e) => onEditRow('delete', e)}
+                keyboardNavigation={false}
             >
                 {masterDetail &&
                     <MasterDetail
@@ -173,11 +176,10 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                 }
                 {columns.map((col) => (
                     <Column
-                        editorOptions={col.fixedPoint && {
-                            format: { type: 'fixedPoint', precision: 0 }
-                        }}         
-                        visible={col.visible}
                         key={col.key}
+                        editorOptions={col.fixedPoint && {format: { type: 'fixedPoint', precision: 0 }}}         
+                        headerCellRender={headerCellRender}
+                        visible={col.visible}
                         dataField={col.key}
                         caption={col.value}
                         dataType={col.type}
@@ -196,15 +198,6 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                             : null}
                         {col.isRequire && <RequiredRule message={`${col.value}는 필수항목입니다`} />}
                         {col.length && <StringLengthRule max={col.length} message={`최대입력 길이는 ${col.length}입니다`} />}
-                        {col.subColumn && col.subColumn.map(sub => (
-                            <Column
-                                key={sub.key}
-                                dataField={sub.key}
-                                caption={sub.value}
-                                alignment={'center'}
-                                cellRender={sub.cellType && ((props) => cellRender(sub, props))}
-                            ></Column>
-                        ))}
                     </Column>
                 ))}
                 <Paging defaultPageSize={defaultPageSize ? defaultPageSize : 20} />

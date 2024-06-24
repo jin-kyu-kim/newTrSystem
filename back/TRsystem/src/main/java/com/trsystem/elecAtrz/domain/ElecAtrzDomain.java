@@ -169,8 +169,8 @@ public class ElecAtrzDomain {
         atchParam.put("queryId", "elecAtrzMapper.elecAtrzDetail");
         atchParam.put("elctrnAtrzId", elctrnAtrzId);
 
-        List<Map<String, Object>> atch = commonService.queryIdSearch(atchParam);
-		if(atch != null && atch.size() != 0){
+		List<Map<String, Object>> atch = commonService.queryIdSearch(atchParam);
+		if(atch.size() != 0){
 			atchmnflId = String.valueOf(atch.get(0).get("atchmnflId"));
 		}
 
@@ -930,7 +930,7 @@ public class ElecAtrzDomain {
 					masterInfoParam.put("utztnAmt", list.get(i).get("utztnAmt"));
 					masterInfoParam.put("atdrn", list.get(i).get("atdrn"));
 					masterInfoParam.put("ctPrpos", list.get(i).get("ctPrpos"));
-					masterInfoParam.put("ctAtrzSeCd", list.get(i).get("ctAtrzSeCd"));
+					masterInfoParam.put("ctStlmSeCd", list.get(i).get("ctStlmSeCd"));
 					masterInfoParam.put("regDt", param.get("regDt"));
 					masterInfoParam.put("regEmpId", param.get("regEmpId"));
 					

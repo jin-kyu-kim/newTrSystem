@@ -43,7 +43,7 @@ const ProjectGeneralBudgetCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdr, bg
       { tbNm: "EXPENS_MNBY_PRMPC_DTLS" },
       { prjctId: prjctId,
         bgtMngOdr: bgtMngOdrTobe,
-        expensCd: "VTW04501&VTW04527",
+        expensCd: "VTW04501_BETWEEN_VTW04527",
         useYm : ctrtYmdPrarm.replace("-","")+"&"+stbleEndYmdPrarm.replace("-",""),  
       }, 
     ];

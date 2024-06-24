@@ -7,6 +7,7 @@ import ProjectExpenseJson from "./ProjectExpenseJson.json";
 import ProjectExpenseSendPop from './ProjectExpenseSendPop';
 import ApiRequest from "../../utils/ApiRequest";
 import { useModal } from "../../components/unit/ModalContext"
+import { Button } from 'devextreme-react';
 
 const ProjectExpenseCard = (props) => {
     const { keyColumn, queryId, prjctStleQueryId, prjctStlePdQueryId, tableColumns, searchInfo, placeholderAndRequired, buttonGroup } = ProjectExpenseJson.ProjectExpenseTab;
@@ -22,17 +23,14 @@ const ProjectExpenseCard = (props) => {
     const [isPrjctIdSelected, setIsPrjctIdSelected] = useState({}); // 비용코드 활성화 조건
     const [validationErrors, setValidationErrors] = useState([]);
     const { handleOpen } = useModal();
-    const [param, setParam] = useState({
-        queryId: queryId,
-        empId: props.empId
-    });
+    const [param, setParam] = useState({ queryId: queryId, empId: props.empId });
 
     const searchHandle = async (initParam) => {
         setParam({ ...param, ...initParam });
     };
 
-    const chgPlaceholder = (col, cardUseSn) => {
-        const currentExpensCd = expensCd[cardUseSn];
+    const chgPlaceholder = (col, lotteCardAprvNo) => {
+        const currentExpensCd = expensCd[lotteCardAprvNo];
         const matchedItem = placeholderAndRequired.find(item => item.expensCd === currentExpensCd);
         return matchedItem ? (col.key === 'atdrn' ? matchedItem.atdrnPlaceholder : matchedItem.ctPrposPlaceholder)
             : col.placeholder;
@@ -44,7 +42,10 @@ const ProjectExpenseCard = (props) => {
         }
     }, [param]);
 
-    useEffect(() => { getSelectBoxList(); }, []);
+    useEffect(() => { 
+        getSelectBoxList();
+        getCardUseDtls();
+    }, []);
 
     const getSelectBoxList = async () => {
         const comBoInfo = ['prjctId', 'emp'];
@@ -75,20 +76,23 @@ const ProjectExpenseCard = (props) => {
 
     const setComboBox = (value, props, col) =>{
         if(value) {
-            if (value.prjctId) {
-                getCdList(value, props.data.cardUseSn);
-                props.data.prjctId = value.prjctId
-                props.data.aprvrEmpId = value.prjctMngrEmpId // 결재자 추가
+            if (col.key === 'prjctId') {
+                getCdList(value, props.data.lotteCardAprvNo);
+                props.data.prjctId = value.prjctId;
+                props.data.aprvrEmpId = value.prjctMngrEmpId; // 결재자 추가
     
                 setIsPrjctIdSelected(prevStts => ({
                     ...prevStts,
-                    [props.data.cardUseSn]: !!value
-                }))
-            } else {
-                props.data.expensCd = value.expensCd
+                    [props.data.lotteCardAprvNo]: !!value
+                }));
+
+            } else if (col.key === 'expensCd') {
+                props.data.expensCd = value.expensCd;
+                props.data.expensCdObject = value;
+
                 setExpensCd(prevStts => ({
                     ...prevStts,
-                    [props.data.cardUseSn]: value.expensCd
+                    [props.data.lotteCardAprvNo]: value.expensCd
                 }));
             }
         } else {
@@ -97,56 +101,133 @@ const ProjectExpenseCard = (props) => {
                 props.data.prjctId = null;
                 props.data.aprvrEmpId = null;
                 props.data.expensCd = null;
-            } else{
+            } else {
                 props.data.expensCd = null;
+                props.data.expensCdObject = null;
             }
             setIsPrjctIdSelected(prevStts => ({
                 ...prevStts,
-                [props.data.cardUseSn]: true
+                [props.data.lotteCardAprvNo]: true
             }))
         }
+
+        const updatedSelectedItem = selectedItem.map(item => 
+            item.lotteCardAprvNo === props.data.lotteCardAprvNo ? { ...item, ...props.data } : item
+        );
+        updatedSelectedItem.sort((a, b) => {
+            if (a.aplyYm !== b.aplyYm) {
+                return b.aplyYm - a.aplyYm;
+            }
+            if (a.aplyOdr !== b.aplyOdr) {
+                return a.aplyOdr - b.aplyOdr;
+            }
+            return a.cardUseSn - b.cardUseSn;
+        });
+        setSelectedItem(updatedSelectedItem);
     }
 
-    const getCdList = async (prjct, cardUseSn) => {
-        let queryId = prjct.prjctStleCd === 'VTW01802' ? prjctStleQueryId : prjctStlePdQueryId
-        try {
-            const response = await ApiRequest('/boot/common/queryIdSearch', {
-                queryId: queryId, prjctId: prjct.prjctId, multiType: true
-            })
-            setCdList(prevCdLists => ({
-                ...prevCdLists,
-                [cardUseSn]: response
-            }));
-
-        } catch (error) {
-            console.log('error', error);
+    const getCdList = async (prjct, lotteCardAprvNo) => {
+        if(prjct === null || prjct === undefined) {
+            return;
+        } else {
+            let queryId = prjct.prjctStleCd === 'VTW01802' ? prjctStleQueryId : prjctStlePdQueryId
+            try {
+                const response = await ApiRequest('/boot/common/queryIdSearch', {
+                    queryId: queryId, prjctId: prjct.prjctId, multiType: true
+                })
+                setCdList(prevCdLists => ({
+                    ...prevCdLists,
+                    [lotteCardAprvNo]: response
+                }));
+    
+            } catch (error) {
+                console.log('error', error);
+            }
         }
     }
 
     const getCardUseDtls = async () => {
-        setCardUseDtls(await ApiRequest('/boot/common/queryIdSearch', param));
+        const response = await ApiRequest('/boot/common/queryIdSearch', param);
+        
+        const updatedResponse = response.map(item => {
+            const excludeKeys = ['bizSttsCd', 'prjctMngrEmpId', 'prjctNm', 'prjctStleCd', 'prjctTag', 'cdNm'];
+            
+            const filteredItem = Object.keys(item).reduce((acc, key) => {
+                if (!excludeKeys.includes(key)) {
+                    acc[key] = item[key];
+                }
+                return acc;
+            }, {});
+
+            return {
+                ...filteredItem,
+                expensCdObject: {
+                    cdNm: item.cdNm,
+                    expensCd: item.expensCd,
+                    lotteCardAprvNo: item.lotteCardAprvNo
+                },
+                aprvrEmpId: item.prjctMngrEmpId
+            };
+        });
+        setCardUseDtls(updatedResponse);
+
+        // 임시저장된 비용코드가 있을경우 cdList setState
+        const initialCdList = updatedResponse.reduce((acc, item) => {
+            if (item.expensCdObject) {
+                acc[item.lotteCardAprvNo] = [item.expensCdObject];
+            }
+            return acc;
+        }, {});
+        setCdList(initialCdList)
     };
 
     const handleDelete = () => {
+        if (selectedItem.length === 0) {
+            handleOpen('선택된 항목이 없습니다.');
+            return;
+        }
         const param = [{ tbNm: "CARD_USE_DTLS" }];
 
         Promise.all(selectedItem.map(async (item) => {
-            const currentParam = [...param, { cardUseSn: item.cardUseSn }];
+            const currentParam = [...param, { 
+                empId: item.empId,
+                aplyYm: item.aplyYm,
+                aplyOdr: item.aplyOdr,
+                cardUseSn: item.cardUseSn
+            }];
             try {
                 const res = await ApiRequest('/boot/common/commonDelete', currentParam);
+                return res;
             } catch (error) {
                 console.error('error', error);
             }
         }))
-            .then(results => {
-                getCardUseDtls();
-                handleOpen('삭제되었습니다.');
-            })
-            .catch(error => { console.error('error', error); });
+        .then(results => {
+            // 삭제된 항목 selectedItem과 cardUseDtls에서 제거
+            const updatedCardUseDtls = cardUseDtls.filter(item => 
+                !selectedItem.some(selected => selected.lotteCardAprvNo === item.lotteCardAprvNo)
+            );
+            setCardUseDtls(updatedCardUseDtls);
+            setSelectedItem([]);
+            handleOpen('삭제되었습니다.');
+        })
+        .catch(error => { console.error('error', error); });
     };
 
     const onSelection = (e) => {
-        setSelectedItem(e.selectedRowsData);
+        const updatedSelectedRowsData = e.selectedRowsData.map(row => {
+            if (row.prjctId === null && row.expensCd === null) {
+                const originalRow = cardUseDtls.find(item => item.lotteCardAprvNo === row.lotteCardAprvNo);
+                return {
+                    ...row,
+                    prjctId: originalRow ? originalRow.prjctId : null,
+                    expensCd: originalRow ? originalRow.expensCd : null,
+                    expensCdObject: originalRow ? originalRow.expensCdObject : null
+                };
+            }
+            return row;
+        });
+        setSelectedItem(updatedSelectedRowsData);
     };
 
     const sendAtrz = (selectedItem) => {
@@ -174,9 +255,77 @@ const ProjectExpenseCard = (props) => {
     };
     const onPopHiding = () => { setPopVisible(false); };
 
+    const headerCellRender = ({ column }) => (
+        ['prjctId'].includes(column.dataField)
+        ? <div>
+            {column.caption}
+            <Button text='일괄적용' type='success' onClick={() => onBulkAply(column.dataField)}
+                style={{fontSize: '8pt', marginLeft: '10px'}}/>
+        </div>
+        : ['expensCd'].includes(column.dataField) ?<div>
+                {column.caption}
+                <Button text='일괄적용' type='success' onClick={() => onBulkAply(column.dataField)}
+                        style={{fontSize: '8pt', marginLeft: '10px'}}/>
+            </div>:
+            <div>{column.caption}</div>
+    );
+
+    const onBulkAply = (field) => {
+        if (selectedItem.length === 0) return;
+        
+        const firstSelectedRow = selectedItem[0];
+        const firstFieldValue = firstSelectedRow[field];
+        const firstFieldObject = firstSelectedRow[`${field}Object`];
+
+        const updatedCardUseDtls = cardUseDtls.map(item => {
+            if (selectedItem.some(selected => selected.lotteCardAprvNo === item.lotteCardAprvNo)) {
+                if (field === 'prjctId') {
+                    getCdList(firstFieldObject, item.lotteCardAprvNo);
+                    setIsPrjctIdSelected(prevStts => ({
+                        ...prevStts,
+                        [item.lotteCardAprvNo]: !!firstFieldValue
+                    }));
+                    return {
+                        ...item,
+                        prjctId: firstFieldValue
+                    };
+                } 
+                if (field === 'expensCd') {
+                    return {
+                        ...item,
+                        expensCd: firstFieldValue,
+                        expensCdObject: firstFieldObject
+                    };
+                }
+            }
+            return item;
+        });
+        setCardUseDtls(updatedCardUseDtls);
+
+        // selectedItem 업데이트
+        const updatedSelectedItem = selectedItem.map(item => {
+            const updatedItem = updatedCardUseDtls.find(updated => updated.lotteCardAprvNo === item.lotteCardAprvNo);
+            if (updatedItem) {
+                onTempInsert({ key: field }, updatedItem[field], { data: updatedItem });
+            }
+            return updatedItem ? { ...item, ...updatedItem } : item;
+        });
+
+        setSelectedItem(updatedSelectedItem);
+    };
+
+    const onTempInsert = async (col, value, props) => {
+        const param = [
+            {tbNm: "CARD_USE_DTLS"},
+            {[col.key]: value},
+            {lotteCardAprvNo: props.data.lotteCardAprvNo}
+        ]
+        const updateRes = await ApiRequest('/boot/common/commonUpdate', param)
+    }
+    
     const cellRenderConfig = {
-        getCdList, isPrjctIdSelected, setIsPrjctIdSelected, chgPlaceholder, comboList, cdList, setComboBox, 
-        expensCd, setExpensCd, setValidationErrors, hasError: (cardUseSn, fieldName) => hasError(validationErrors, cardUseSn, fieldName)
+        getCdList, isPrjctIdSelected, setIsPrjctIdSelected, chgPlaceholder, comboList, cdList, setComboBox, onTempInsert, selectedItem, setSelectedItem, 
+        expensCd, setExpensCd, setValidationErrors, hasError: (lotteCardAprvNo, fieldName) => hasError(validationErrors, lotteCardAprvNo, fieldName)
     };
 
     return (
@@ -184,7 +333,7 @@ const ProjectExpenseCard = (props) => {
             <div className="wrap_search" style={{ margin: "20px" }}>
                 <SearchInfoSet callBack={searchHandle} props={searchInfo} />
             </div>
-            <ProjectExpenseSubmit selectedItem={selectedItem} getData={props.getData}
+            <ProjectExpenseSubmit selectedItem={selectedItem} getData={props.getData} ymOdrInfo={{aplyYm: props.aplyYm, aplyOdr: props.aplyOdr}}
                 validateFields={() => validateFields(selectedItem, placeholderAndRequired, setValidationErrors, buttonGroup, empInfo)}
                 handleDelete={handleDelete} buttonGroup={buttonGroup} sendAtrz={sendAtrz} />
 
@@ -202,8 +351,10 @@ const ProjectExpenseCard = (props) => {
                     columns={tableColumns}
                     keyColumn={keyColumn}
                     onSelection={onSelection}
+                    headerCellRender={headerCellRender}
                     cellRenderConfig={cellRenderConfig}
                     defaultPageSize={10}
+                    noDataText={'등록된 엑셀 사용내역이 없습니다.'}
                 />
             </div>
             <ProjectExpenseSendPop

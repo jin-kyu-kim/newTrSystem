@@ -56,26 +56,26 @@
 
     <select id="retrieveMyPrjctList" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT ROW_NUMBER()OVER ()ROWNUM
-        , (SELECT CD_NM FROM CD WHERE CD_VALUE = PRJCT_STLE_CD) AS PRJCT_STLE_CD
-        , p.PRJCT_ID
-        , PRJCT_NM
-        , (SELECT CD_NM FROM CD WHERE CD_VALUE = BIZ_STTS_CD) AS BIZ_STTS_CD_NM
-        , BIZ_STTS_CD
-        , (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = PRJCT_MNGR_EMP_ID ) AS PRJCT_MNGR_EMP_ID
-        , (SELECT CTMMNY_NM FROM CTMMNY_INFO ci WHERE ci.CTMMNY_ID = p.CTMMNY_ID) AS CTMMNY_NM
-        , DATE_FORMAT(CTRT_YMD, '%Y-%m-%d') AS CTRT_YMD
-        , DATE_FORMAT(BIZ_END_YMD, '%Y-%m-%d') AS BIZ_END_YMD
-        , DATE_FORMAT(STBLE_END_YMD, '%Y-%m-%d') AS STBLE_END_YMD
-        , TOT_BGT
-        , (SELECT MAX(BGT_MNG_ODR) FROM PRJCT_BGT_PRMPC pbp WHERE pbp.PRJCT_ID = p.PRJCT_ID AND pbp.ATRZ_DMND_STTS_CD = 'VTW03703') AS BGT_MNG_ODR
-        , (SELECT IFNULL(MAX(BGT_MNG_ODR), 1) FROM PRJCT_BGT_PRMPC pbp WHERE pbp.PRJCT_ID = p.PRJCT_ID) AS BGT_MNG_ODR_TOBE
-        , PRJCT_CD_IDNTFR
-        , DEPT_ID
-        , COUNT(*) OVER () AS TOTAL_ITEMS
+            , (SELECT CD_NM FROM CD WHERE CD_VALUE = PRJCT_STLE_CD) AS PRJCT_STLE_CD
+            , p.PRJCT_ID
+            , PRJCT_NM
+            , (SELECT CD_NM FROM CD WHERE CD_VALUE = BIZ_STTS_CD) AS BIZ_STTS_CD_NM
+            , BIZ_STTS_CD
+            , (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = PRJCT_MNGR_EMP_ID ) AS PRJCT_MNGR_EMP_ID
+            , (SELECT CTMMNY_NM FROM CTMMNY_INFO ci WHERE ci.CTMMNY_ID = p.CTMMNY_ID) AS CTMMNY_NM
+            , DATE_FORMAT(CTRT_YMD, '%Y-%m-%d') AS CTRT_YMD
+            , DATE_FORMAT(BIZ_END_YMD, '%Y-%m-%d') AS BIZ_END_YMD
+            , DATE_FORMAT(STBLE_END_YMD, '%Y-%m-%d') AS STBLE_END_YMD
+            , TOT_BGT
+            , (SELECT MAX(BGT_MNG_ODR) FROM PRJCT_BGT_PRMPC pbp WHERE pbp.PRJCT_ID = p.PRJCT_ID AND pbp.ATRZ_DMND_STTS_CD = 'VTW03703') AS BGT_MNG_ODR
+            , (SELECT IFNULL(MAX(BGT_MNG_ODR), 1) FROM PRJCT_BGT_PRMPC pbp WHERE pbp.PRJCT_ID = p.PRJCT_ID) AS BGT_MNG_ODR_TOBE
+            , PRJCT_CD_IDNTFR
+            , DEPT_ID
+            , COUNT(*) OVER () AS TOTAL_ITEMS
         FROM PRJCT p
         JOIN PRJCT_MNG_AUTHRT PMA ON (PMA.PRJCT_ID = p.PRJCT_ID AND PMA.EMP_ID = #{empId})
         WHERE 1 = 1
-            AND p.PRJCT_MNGR_EMP_ID = #{empId}
+            AND PMA.PRJCT_MNG_AUTHRT_CD = 'VTW05202'
         <if test="prjctStleCd != null and !prjctStleCd.equals('')">
             AND p.PRJCT_STLE_CD = #{prjctStleCd}
         </if>
@@ -1104,8 +1104,8 @@
 			#{group} AS BIND
 		FROM 
 			<if test="tbCostNm == 'PRJCT'">
-			    (SELECT 
-			        TOT_BGT AS CN
+			    (SELECT
+                MMNY_SLS_AM AS CN
 			     FROM 
 			        PRJCT M
 			     WHERE 
@@ -1186,9 +1186,9 @@
 				  ) A ,
             </if> 
 		    (
-			  SELECT (COALESCE(T.TOT_BGT, 0) + SUM(COALESCE(T.CMMN_EXPENS_AMT, 0))) AS TOTAL
+			  SELECT (COALESCE(T.MMNY_SLS_AM, 0) + SUM(COALESCE(T.CMMN_EXPENS_AMT, 0))) AS TOTAL
 				FROM
-				(SELECT M.TOT_BGT, M.PRJCT_ID,S.CNSRTM_CO_NM,S.CMMN_EXPENS_AMT FROM PRJCT M
+				(SELECT M.MMNY_SLS_AM, M.PRJCT_ID,S.CNSRTM_CO_NM,S.CMMN_EXPENS_AMT FROM PRJCT M
 				LEFT JOIN PRJCT_CNSRTM S
 				ON M.PRJCT_ID = S.PRJCT_ID AND S.SLS_AM_RFLT_YN  = 'Y'
 				WHERE 1=1
@@ -1556,75 +1556,76 @@
     <!--파트너 업체관리 -->
      <select id="retrieveOutordEntrpsList" parameterType="map" resultType="com.trsystem.LowerHashMap">
          WITH RankedProjects AS (
-         SELECT
-         O.OUTORD_ENTRPS_ID,
-         P.PRJCT_ID,
-         P.PRJCT_NM,
-         ROW_NUMBER() OVER (PARTITION BY O.OUTORD_ENTRPS_ID ORDER BY P.PRJCT_NM) AS rn
-         FROM PRJCT P
-         JOIN OUTORD_ENTRPS_CT_PRMPC O ON P.PRJCT_ID = O.PRJCT_ID
-         WHERE BIZ_STTS_CD ='VTW00404'
+             SELECT
+                 O.OUTORD_ENTRPS_ID,
+                 P.PRJCT_ID,
+                 P.PRJCT_NM,
+                 ROW_NUMBER() OVER (PARTITION BY O.OUTORD_ENTRPS_ID ORDER BY P.PRJCT_NM) AS rn
+             FROM PRJCT P
+             JOIN OUTORD_ENTRPS_CT_PRMPC O ON P.PRJCT_ID = O.PRJCT_ID
+             WHERE BIZ_STTS_CD ='VTW00404'
          )
          SELECT
-         oe.OUTORD_ENTRPS_ID,                                                         -- 외주업체ID
-         OUTORD_ENTRPS_NM,                                                            -- 외주업체명
-         BRNO,                                                                        -- 사업자등록번호
-         TELNO,                                                                       -- 전화번호
-         PIC_FLNM,                                                                    -- 담당자명
-         oe.ATCHMNFL_ID,                                                              -- 첨부파일ID
-         oe.ADDR,
-         GROUP_CONCAT(SUBSTR(a.REAL_FILE_NM, 1, INSTR(a.REAL_FILE_NM, '.') - 1)) AS FILE_NM,  -- 첨부파일명
-         GROUP_CONCAT(CONCAT(RP.rn, '. ', RP.PRJCT_NM) SEPARATOR '\n') AS PRJCT_NM     -- 번호와 줄바꿈이 포함된 프로젝트명
-         FROM
-         OUTORD_ENTRPS oe                                                             -- 외주업체
-         LEFT JOIN ATCHMNFL a ON oe.ATCHMNFL_ID = a.ATCHMNFL_ID
-         LEFT JOIN RankedProjects RP ON RP.OUTORD_ENTRPS_ID = oe.OUTORD_ENTRPS_ID
+             oe.OUTORD_ENTRPS_ID,                                                         -- 외주업체ID
+             OUTORD_ENTRPS_NM,                                                            -- 외주업체명
+             BRNO,                                                                        -- 사업자등록번호
+             TELNO,                                                                       -- 전화번호
+             PIC_FLNM,                                                                    -- 담당자명
+             oe.ATCHMNFL_ID,                                                              -- 첨부파일ID
+             oe.ADDR,
+             GROUP_CONCAT(SUBSTR(a.REAL_FILE_NM, 1, INSTR(a.REAL_FILE_NM, '.') - 1)) AS FILE_NM,  -- 첨부파일명
+             GROUP_CONCAT(CONCAT(RP.rn, '. ', RP.PRJCT_NM) SEPARATOR '\n') AS PRJCT_NM,     -- 번호와 줄바꿈이 포함된 프로젝트명
+             COUNT(*) OVER () AS TOTAL_ITEMS
+         FROM OUTORD_ENTRPS oe                                                             -- 외주업체
+             LEFT JOIN ATCHMNFL a ON oe.ATCHMNFL_ID = a.ATCHMNFL_ID
+             LEFT JOIN RankedProjects RP ON RP.OUTORD_ENTRPS_ID = oe.OUTORD_ENTRPS_ID
 		WHERE 1=1
-		<if test="outordEntrpsNm != null and outordEntrpsNm !=''">
-	            AND oe.OUTORD_ENTRPS_NM LIKE CONCAT('%', #{outordEntrpsNm}, '%')
-	        </if>
-	        <if test="telno != null and telno !=''">
-	            AND oe.TELNO LIKE CONCAT('%', #{telno}, '%')
-	        </if>
-	        <if test="picFlnm != null and picFlnm !=''">
-	            AND oe.PIC_FLNM LIKE CONCAT('%', #{picFlnm}, '%')
-	        </if>
+		<if test="outordEntrpsNm != null and !outordEntrpsNm.equals('')">
+	        AND oe.OUTORD_ENTRPS_NM LIKE CONCAT('%', #{outordEntrpsNm}, '%')
+	    </if>
+	    <if test="telno != null and !telno.equals('')">
+	        AND oe.TELNO LIKE CONCAT('%', #{telno}, '%')
+        </if>
+         <if test="picFlnm != null and !picFlnm.equals('')">
+	        AND oe.PIC_FLNM LIKE CONCAT('%', #{picFlnm}, '%')
+         </if>
 		GROUP BY oe.OUTORD_ENTRPS_ID,OUTORD_ENTRPS_NM,BRNO,TELNO,PIC_FLNM,ATCHMNFL_ID
         ORDER BY oe.REG_DT DESC
     </select>
     
     <!--파트너 직원관리 -->
      <select id="retrieveOutordEmpList" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT 
-			EMP_ID
-			, EMPNO
-			, OUTORD_HNF_OGDP_NM																		-- 외주인력 소속
-			, C.CD_NM AS GRAD_NM
-			, OUTORD_HNF_GRAD_CD																		-- 외주인력 등급코드
-			, e.ATCHMNFL_ID		
-			, EMP_FLNM
-			, BRDT
-			, TELNO 
-			, EML
-			,GROUP_CONCAT(SUBSTR(a.REAL_FILE_NM, 1, INSTR(a.REAL_FILE_NM, '.') - 1)) AS FILE_NM			-- 첨부파일명
-			, COUNT(*) OVER () AS TOTAL_ITEMS
-		FROM 
-			EMP e 
-			LEFT JOIN  ATCHMNFL a ON e.ATCHMNFL_ID = a.ATCHMNFL_ID
-			LEFT OUTER JOIN CD C ON C.CD_VALUE = e.OUTORD_HNF_GRAD_CD
-		WHERE 
-			1=1
-			AND EMP_TY_CD  = 'VTW00203'
-		<if test="outordHnfGradCd != null and outordHnfGradCd !=''">
-	            AND e.OUTORD_HNF_GRAD_CD LIKE CONCAT('%', #{outordHnfGradCd}, '%')
-	        </if>
-	        <if test="telno != null and telno !=''">
-	            AND e.TELNO LIKE CONCAT('%', #{telno}, '%')
-	        </if>
-	        <if test="empFlnm != null and empFlnm !=''">
-	            AND e.emp_FLNM LIKE CONCAT('%', #{empFlnm}, '%')
-	        </if>
-		GROUP BY EMP_ID,EMPNO,EMP_FLNM,BRDT,TELNO,EML
+         SELECT * FROM (
+         SELECT
+             EMP_ID
+             , EMPNO
+             , OUTORD_HNF_OGDP_NM	-- 외주인력 소속
+             , C.CD_NM AS GRAD_NM
+             , OUTORD_HNF_GRAD_CD	-- 외주인력 등급코드
+             , e.ATCHMNFL_ID
+             , EMP_FLNM
+             , BRDT
+             , TELNO
+             , EML
+             , e.REG_DT
+             , GROUP_CONCAT(SUBSTR(a.REAL_FILE_NM,1,INSTR(a.REAL_FILE_NM, '.') - 1)) AS FILE_NM	-- 첨부파일명
+             , COUNT(*) OVER () AS TOTAL_ITEMS
+         FROM EMP e
+         LEFT JOIN ATCHMNFL a ON e.ATCHMNFL_ID = a.ATCHMNFL_ID
+         LEFT OUTER JOIN CD C ON C.CD_VALUE = e.OUTORD_HNF_GRAD_CD
+         WHERE 1 = 1
+            AND EMP_TY_CD = 'VTW00203'
+         <if test="outordHnfGradCd != null and !outordHnfGradCd.equals('')">
+             AND e.OUTORD_HNF_GRAD_CD LIKE CONCAT('%', #{outordHnfGradCd}, '%')
+         </if>
+         <if test="telno != null and !telno.equals('')">
+             AND e.TELNO LIKE CONCAT('%', #{telno}, '%')
+         </if>
+         <if test="empFlnm != null and !empFlnm.equals('')">
+             AND e.emp_FLNM LIKE CONCAT('%', #{empFlnm}, '%')
+         </if>
+         GROUP BY EMP_ID, EMPNO, EMP_FLNM, BRDT, TELNO, EML, REG_DT
+         ) tab ORDER BY REG_DT DESC
     </select>
 
     <!-- 프로젝트비용승인 : 지난 차수 데이터 승인: 개인비용MM 없으면 인서트 -->

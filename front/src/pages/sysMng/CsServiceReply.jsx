@@ -4,19 +4,17 @@ import ApiRequest from "../../utils/ApiRequest";
 import notify from 'devextreme/ui/notify';
 
 const CsServiceReply = (gridId) => {
-    const [comments, setComments] = useState([]);
+    const [ comments, setComments ] = useState([]);
     const errId = gridId.errId
     const param = {queryId: 'sysMngMapper.retrieveErrReply' , errId : errId}
-    useEffect(() => {
-        getReply();
-    }, []);
+    
+    useEffect(() => { getReply(); }, []);
 
     const changeData = async (e, editMode) => {
         let response;
         let infoMsg = '동작실패';
 
         if (editMode === 'Insert') {
-            console.log(e.data)
             response = await ApiRequest("/boot/common/commonInsert", [{ tbNm: "ERR_MNG_DTL", snColumn:"ERR_DTL_SN",snSearch: {errId}}
                 , {errId : errId, dtlAnswer:e.data.dtlAnswer}]);
             infoMsg = '등록 성공!';
@@ -41,9 +39,10 @@ const CsServiceReply = (gridId) => {
         setComments(response)
     }
 
-    return (<div>
+    return (
+        <div>
             <CommentList comments={comments} setComments={setComments} changeData={changeData}/>
-    </div>)
+        </div>
+    );
 }
-
 export default CsServiceReply;

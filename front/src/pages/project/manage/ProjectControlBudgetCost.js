@@ -67,7 +67,7 @@ const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdr, bg
       { tbNm: "EXPENS_PRMPC" },
       { prjctId: prjctId,
         bgtMngOdr: bgtMngOdrTobe,
-        expensCd: "VTW04528&VTW04535"
+        expensCd: "VTW04528_BETWEEN_VTW04535"
       }, 
     ];
     try {

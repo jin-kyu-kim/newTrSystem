@@ -70,15 +70,9 @@ public class IndvdlClmController {
     /* =================================박지환_작업================================= */
     // 프로젝트근무시간임시저장
     @Transactional
-    @PostMapping(value = "/boot/indvdlClm/insertPrjctMmAplyTemp" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public String insertPrjctMmAplyTemp (@RequestPart(required = false) String insertPrjctMmTempList) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-
-        List<Map<String, Object>> insertPrjctMmTempListValue = new ArrayList<>();
-//
-        insertPrjctMmTempListValue = mapper.readValue(insertPrjctMmTempList,ArrayList.class);
-
-        return IndvdlClmDomain.insertPrjctMmAplyTemp(insertPrjctMmTempListValue);
+    @PostMapping(value = "/boot/indvdlClm/insertPrjctMmAplyTemp")
+    public String insertPrjctMmAplyTemp (@RequestBody List<Map<String, Object>> insertPrjctMmTempList) {
+        return IndvdlClmDomain.insertPrjctMmAplyTemp(insertPrjctMmTempList);
     }
 
     // 프로젝트근무시간삭제
@@ -98,15 +92,9 @@ public class IndvdlClmController {
 
     // 프로젝트근무시간승인요청
     @Transactional
-    @PostMapping(value = "/boot/indvdlClm/insertPrjctMmAply" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public List<Map<String, Object>> insertPrjctMmAply (@RequestPart(required = false) String insertWorkHourList) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-
-        List<Map<String, Object>> insertWorkHourListValue = new ArrayList<>();
-
-        insertWorkHourListValue = mapper.readValue(insertWorkHourList,ArrayList.class);
-
-        return IndvdlClmDomain.insertPrjctMmAply(insertWorkHourListValue);
+    @PostMapping(value = "/boot/indvdlClm/insertPrjctMmAply")
+    public List<Map<String, Object>> insertPrjctMmAply (@RequestBody List<Map<String, Object>> insertWorkHourList) {
+        return IndvdlClmDomain.insertPrjctMmAply(insertWorkHourList);
     }
 
     // 프로젝트근무시간요청취소

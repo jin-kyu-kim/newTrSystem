@@ -505,4 +505,12 @@ public class BatchSkillServiceImpl implements BatchSkillService {
             throw e;
         }
     }
+
+    public List<Map<String, Object>> executeSendKmsEmp(){
+        return sqlSession.selectList("com.trsystem.mybatis.mapper.batchMapper.retrieveKmsEmp");
+    }
+
+    public List<Map<String, Object>>  executeSendKmsLgnInfo(){
+        return sqlSession.selectList("com.trsystem.mybatis.mapper.batchMapper.retrieveKmsLgnUser");
+    }
 }

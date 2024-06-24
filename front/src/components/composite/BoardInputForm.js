@@ -8,6 +8,7 @@ import CheckBox from "devextreme-react/check-box";
 const BoardInputForm = ({ edit, editMode, editType, attachFileDelete, inputConfig }) => {
     const { data, setData, typeChk, setTypeChk, attachments, setAttachments, newAttachments, setNewAttachments } = inputConfig ?? {};
 
+    const fileDir = newAttachments[0]?.fileStrgCours ? newAttachments[0]?.fileStrgCours.substring(8) : null;
     const [isDataLoaded, setIsDataLoaded] = useState(false);
     const handleAttachmentChange = (e) => {
         setAttachments(e.value);
@@ -54,7 +55,7 @@ const BoardInputForm = ({ edit, editMode, editType, attachFileDelete, inputConfi
                                 <TextBox
                                     id={column.dataField}
                                     name={column.dataField}
-                                    value={data.noticeTtl?data.noticeTtl:data.errTtl}
+                                    value={data[column.dataField]}
                                     placeholder={column.placeholder}
                                     showClearButton={true}
                                     onValueChanged={(e) => {
@@ -111,9 +112,9 @@ const BoardInputForm = ({ edit, editMode, editType, attachFileDelete, inputConfi
                                 <HtmlEditBox
                                     column={column}
                                     data={data}
-                                    setData={setData}
-                                    value={data.noticeCn?data.noticeCn:data.errCn}
                                     validate={true}
+                                    setData={setData}
+                                    value={data[column.dataField]}
                                     placeholder={column.placeholder}
                                 />
                             </td>)
@@ -125,14 +126,15 @@ const BoardInputForm = ({ edit, editMode, editType, attachFileDelete, inputConfi
                                     uploadMode="useButton"
                                     onValueChanged={handleAttachmentChange}
                                     maxFileSize={1.5 * 1024 * 1024 * 1024}
-                                    labelText='첨부할 파일을 선택해주세요.'
+                                    selectButtonText="첨부파일 추가"
+                                    labelText=""
                                 />
                                 {newAttachments[0] !== null && newAttachments.map((item, index) => (
                                     <div key={index}>
                                         {item.realFileNm && (item.realFileNm.endsWith('.jpg') || item.realFileNm.endsWith('.jpeg') || item.realFileNm.endsWith('.png') || item.realFileNm.endsWith('.gif')) ?
-                                            (<img src={`/upload/${item.strgFileNm}`} style={{ width: '50%', marginBottom: '20px' }} alt={item.realFileNm} />)
+                                            (<img src={`${fileDir}/${item.strgFileNm}`} style={{ width: '50%', marginBottom: '20px' }} alt={item.realFileNm} />)
                                         : <span>{item.realFileNm}</span> }
-                                        {item.realFileNm && <span onClick={() => attachFileDelete(item)} style={{ fontWeight: 'bold', marginLeft: '10px', color: 'red', cursor: 'pointer' }}>X</span>}
+                                        {item.realFileNm && <span onClick={() => attachFileDelete(item)} className='deleteIconBtn'>X</span>}
                                     </div>
                                 ))}
                             </td> )}

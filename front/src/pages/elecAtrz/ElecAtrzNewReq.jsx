@@ -37,7 +37,7 @@ const ElecAtrzNewReq = () => {
     const [attachments, setAttachments] = useState([]);
     const [deleteFiles, setDeleteFiles] = useState([{ tbNm: "ATCHMNFL" }]);
     const [newAttachments, setNewAttachments] = useState(attachments);
-    const fileDir = newAttachments[0]?.fileStrgCours.substring(8);
+    const fileDir = newAttachments[0]?.fileStrgCours ? newAttachments[0]?.fileStrgCours.substring(8) : null;
 
     const [data, setData] = useState(location.state.formData);
     const [atrzParam, setAtrzParam] = useState({});
@@ -444,6 +444,11 @@ const ElecAtrzNewReq = () => {
     const handleElecAtrzTitle = (e) => {
         setAtrzParam((atrzParam) => ({
             ...atrzParam,
+            title: e.value
+        }));
+
+        setData((prevData) => ({
+            ...prevData,
             title: e.value
         }));
     }

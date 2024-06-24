@@ -90,6 +90,11 @@ public class IndvdlClmDomain {
 
             // 참석자가 있을 경우 직원명 데이터 재조합 후 sn과 함께 insert
             Object atdrnObj = ctParams.get(i).get("atdrn");
+            Object ctPrpos = ctParams.get(i).get("ctPrpos");
+
+            if (ctPrpos == null || ctPrpos.toString().trim().isEmpty()) {
+                ctParams.get(i).put("ctPrpos", null);
+            }
 
             // atdrn이 리스트인지 문자열인지 확인하여 처리
             if (atdrnObj instanceof List) {
@@ -100,6 +105,8 @@ public class IndvdlClmDomain {
                             .collect(Collectors.joining(","));
                     ctParams.get(i).put("atdrn", atdrnStr);
                 }
+            } else if (atdrnObj == null || atdrnObj.toString().trim().isEmpty()) {
+                ctParams.get(i).put("atdrn", null);
             }
 
             // aply insert
@@ -412,7 +419,7 @@ public class IndvdlClmDomain {
         updatePrjctIndvdlCtMm.put("aplyYm", updatePrjctMmListValue.get("orderWorkBgngMm"));
 
         if ((Integer.parseInt(String.valueOf(selectPrjctMmAplyResult.get(0).get("rowCount"))) == 0) && selectPrjctIndvdlCtMmResult.get(0).get("ctAtrzCmptnYn") == null){
-            updatePrjctIndvdlCtMm.put("queryId", "indvdlClmMapper.deletePrjctIndvdlCtMmRowCnt");
+            updatePrjctIndvdlCtMm.put("queryId", "indvdlClmMapper.updatePrjctIndvdlCtMmRowCnt");
             commonService.queryIdSearch(updatePrjctIndvdlCtMm);
         } else if ((Integer.parseInt(String.valueOf(selectPrjctMmAplyResult.get(0).get("rowCount"))) == 0) && selectPrjctIndvdlCtMmResult.get(0).get("ctAtrzCmptnYn").equals("N")){
             updatePrjctIndvdlCtMm.put("queryId", "indvdlClmMapper.updatePrjctIndvdlCtMmRowCnt");
@@ -427,12 +434,10 @@ public class IndvdlClmDomain {
     @Transactional
     public static List<Map<String, Object>> insertPrjctMmAply (List<Map<String, Object>> insertWorkHourListValue) {
         for (Map<String, Object> updateWorkHourMap : insertWorkHourListValue) {
-            Map<String, Object> updatePrjctMmAtrzMap = new HashMap<>();
-            updatePrjctMmAtrzMap = updateWorkHourMap;
-            updatePrjctMmAtrzMap.put("queryId", "indvdlClmMapper.retrievePrjctMmSttsInq");
-            updatePrjctMmAtrzMap.put("atrzDmndSttsCd", "VTW03702");
-            updatePrjctMmAtrzMap.put("state", "UPDATE");
-            commonService.queryIdDataControl(updatePrjctMmAtrzMap);
+            updateWorkHourMap.put("queryId", "indvdlClmMapper.retrievePrjctMmSttsInq");
+            updateWorkHourMap.put("atrzDmndSttsCd", "VTW03702");
+            updateWorkHourMap.put("state", "UPDATE");
+            commonService.queryIdDataControl(updateWorkHourMap);
         }
 
         return null;
@@ -1197,11 +1202,23 @@ public class IndvdlClmDomain {
         deleteElctrnAtrzList.add(0, new HashMap<>() {{ put("tbNm", "ELCTRN_ATRZ"); }});
         deleteElctrnAtrzList.add(1, elctrnAtrzIdMap);
 
+        // 첨부파일이 존재하는지 확인 - 첨부파일 포함 전체삭제
+        Map<String, Object> deleteParam = new HashMap<>();
 
         List<Map<String, Object>> deletetVactnAtrzList = new ArrayList<>();
+        List<Map<String, Object>> athcParam = new ArrayList<>();
+        String atchmnflId = String.valueOf(dataMap.get("atchmnflId"));
+
+        if(atchmnflId != null){
+            athcParam.add(Map.of("tbNm", "ATCHMNFL"));
+            athcParam.add(Map.of("atchmnflId", atchmnflId));
+        }
         deletetVactnAtrzList.add(0, new HashMap<>() {{ put("tbNm", "VCATN_ATRZ"); }});
         deletetVactnAtrzList.add(1, elctrnAtrzIdMap);
 
+        deleteParam.put("params", deletetVactnAtrzList);
+        deleteParam.put("fileParams", athcParam);
+        deleteParam.put("dirType", "elec");
 
         List<Map<String, Object>> deleteAtrzLnList = new ArrayList<>();
         deleteAtrzLnList.add(0, new HashMap<>() {{ put("tbNm", "ATRZ_LN"); }});
@@ -1214,7 +1231,7 @@ public class IndvdlClmDomain {
 
         commonService.deleteData(deleteRefrnManList);
         commonService.deleteData(deleteAtrzLnList);
-        commonService.deleteData(deletetVactnAtrzList);
+        commonService.deleteFile(deleteParam); // VCATN, ATCHMNFL 삭제
         commonService.deleteData(deleteElctrnAtrzList);
 
         return 0;

@@ -14,7 +14,7 @@ import SearchInfoSet from "components/composite/SearchInfoSet";
 const EmpTRCostTotal = () => {
   const [values, setValues] = useState([]);
   const [param, setParam] = useState({});
-  const { keyColumn, queryId, nameColumns, prjctColumns, summaryColumn, smallSummaryColumn, searchInfo } = EmpTRCostTotalJson;
+  const { keyColumn, queryId, nameColumns, prjctColumns, summaryColumn, smallSummaryColumn, searchInfo, groupDataProject, groupDataName } = EmpTRCostTotalJson;
   const [checkBox1Checked, setCheckBox1Checked] = useState(false);
   const [checkBox2Checked, setCheckBox2Checked] = useState(false);
   const { handleOpen } = useModal();
@@ -118,6 +118,11 @@ const EmpTRCostTotal = () => {
     }
   }
 
+  const groupingCustomizeText = (e) => {
+    let result = values?.filter( value => value.empId  === e.value );
+    return result[0].empFlnm;
+  }
+
   return (
     <div>
       {loading && (
@@ -154,6 +159,8 @@ const EmpTRCostTotal = () => {
             summary={true}
             summaryColumn={summaryColumn}
             smallSummaryColumn={smallSummaryColumn}
+            grouping={true}
+            groupingData={groupDataProject}
             excel={true}
             wordWrap={true}
             onExcel={onExporting}
@@ -171,6 +178,9 @@ const EmpTRCostTotal = () => {
             summaryColumn={summaryColumn}
             smallSummary={true}
             smallSummaryColumn={smallSummaryColumn}
+            grouping={true}
+            groupingData={groupDataName}
+            groupingCustomizeText={groupingCustomizeText}
             excel={true}
             onExcel={onExporting}
           />

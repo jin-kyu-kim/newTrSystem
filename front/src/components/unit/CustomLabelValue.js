@@ -1,12 +1,10 @@
 import { TextBox } from "devextreme-react/text-box";
 import CustomComboBox from "./CustomComboBox";
-import { useEffect } from "react";
 import { NumberBox } from "devextreme-react";
 import { DateBox } from "devextreme-react/date-box";
 import { Validator, RequiredRule, } from "devextreme-react/validator";
 
-const CustomLabelValue = ({props, onSelect, value, readOnly}) => {
-
+const CustomLabelValue = ({ props, onSelect, value, readOnly, onKeyDownEvent }) => {
     const placeholder = props.placeholder;
     const required = props.required;
 
@@ -16,9 +14,10 @@ const CustomLabelValue = ({props, onSelect, value, readOnly}) => {
             result.push(
                 <TextBox
                     key={props.name}
+                    value={value}
                     placeholder={placeholder}
                     showClearButton={true}
-                    value={value}
+                    onKeyDown={onKeyDownEvent}
                     readOnly={readOnly}
                     onValueChanged={(e) => {
                         onSelect({name: props.name, value: e.value})
@@ -34,6 +33,7 @@ const CustomLabelValue = ({props, onSelect, value, readOnly}) => {
                     label={props.label}
                     props={props.param} 
                     onSelect={onSelect} 
+                    onKeyDownEvent={onKeyDownEvent}
                     placeholder={placeholder} 
                     value={value} 
                     readOnly={readOnly}
@@ -49,6 +49,7 @@ const CustomLabelValue = ({props, onSelect, value, readOnly}) => {
                     placeholder={placeholder}
                     showClearButton={true}
                     value={value}
+                    onKeyDown={onKeyDownEvent}
                     readOnly={readOnly}
                     name={props.name}
                     onValueChanged={(e) => {
@@ -66,10 +67,12 @@ const CustomLabelValue = ({props, onSelect, value, readOnly}) => {
                 <DateBox 
                     key={props.name}
                     value={value}
+                    onKeyDown={onKeyDownEvent}
                     placeholder={props.placeholder}
                     dateSerializationFormat="yyyyMMdd"
                     displayFormat="yyyy-MM-dd"
                     type="date"
+                    showClearButton={true}
                     onValueChanged={(e) => {
                         onSelect({name: props.name, value: e.value})
                     }}
@@ -93,14 +96,11 @@ const CustomLabelValue = ({props, onSelect, value, readOnly}) => {
 
     return (
         <div className="dx-field">
-            {props.required ? 
-            <div className="dx-field-label asterisk">{props.label}</div>
-            :
-            <div className="dx-field-label">{props.label}</div>
+            {props.required 
+                ? <div className="dx-field-label asterisk">{props.label}</div>
+                : <div className="dx-field-label">{props.label}</div>
             }
-            <div className="dx-field-value">
-                {labelValue()}
-            </div>
+            <div className="dx-field-value">{labelValue()}</div>
         </div>
     );
 }

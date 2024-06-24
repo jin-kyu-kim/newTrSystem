@@ -446,19 +446,25 @@
 
 /* 출력 페이지 프린트 속성 */
 @media print {
-  table {
-    break-inside: avoid;
-  }
-  tr {
-      page-break-inside: avoid;
-  }
-  td {
-      page-break-inside: avoid;
-      white-space: nowrap;
-  }
   body {
     -webkit-print-color-adjust: exact;
+    font-size: 12pt;
   }
+  .dx-datagrid-content {
+    width: 100% !important;
+    overflow: visible !important;
+    transform-origin: top left !important;
+    max-width: 1900px !important; /* DataGrid의 최대 너비를 고정 */
+    height: auto !important;
+    page-break-inside: avoid !important;
+  }
+  
+  .dx-pivotgrid {
+    width: 100% !important;
+    overflow: visible !important;
+    font-size: 12px !important;
+  }
+
   .printBtn { display: none; }
   .elecTopBtn { display: none; } /* 프린트 대상 - 버튼 제외 */
 }
@@ -650,16 +656,20 @@
 /* 버튼 컨테이너 스타일 */
 .main-button-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   margin-top: 20px;
+  width: 100%;
+  gap: 3%; /* 버튼 사이 간격 조정 */
 }
-.main-button-container button {
+.main-button {
   font-size: clamp(9px, 1vw, 11px);
   white-space: nowrap;
   text-overflow: clip;
   box-sizing: border-box;
-  width: auto;
+  flex: 1; /* 버튼이 가변적으로 크기를 조절하도록 설정 */
+  min-width: 0; /* 버튼의 최소 너비를 0으로 설정 */
+  width: 100%;
 }
 
 /* 미디어 쿼리를 사용해 작은 화면에서의 스타일을 정의 */
@@ -690,4 +700,33 @@
   .searchSet {
       flex-direction: column !important;
   }
+}
+
+.deleteIconBtn {
+  background-color: transparent;
+  font-weight: bold;
+  border: none;
+  margin-left: 10px;
+  color: red;
+  cursor: pointer;
+}
+
+/* 프로젝트 - 파트너 css */
+.partner-insert-area {
+  padding: 20px;
+  margin: 10px;
+  border: 2px solid #CCCCCC;
+  display: flex;
+  height: auto;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.partner-input-box {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-left: 5px;
 }
