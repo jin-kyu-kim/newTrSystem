@@ -72,12 +72,10 @@
     "searchInfo": {
         "searchParams": {
           "btnName": "검색",
-            "yearList": [
-              { "name": "year", "visible": true, "placeholder": "[연도]", "displayExpr": "value", "valueExpr": "value" },
-              { "name": "month", "visible": true, "placeholder": "[월]", "displayExpr": "value", "valueExpr": "value" },
-              { "name": "aplyOdr", "visible": true, "placeholder": "[차수]", "displayExpr": "text", "valueExpr": "value" }
-            ],
-            "project": {}
+          "dateRange": true,
+          "startDtNm": "startYmOdr",
+          "endDtNm": "endYmOdr",
+          "project": {}
         },
         "commonCd": "VTW001",
         "selectBoxItem": [
