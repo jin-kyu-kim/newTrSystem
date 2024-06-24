@@ -736,12 +736,9 @@ const ElecAtrzDetail = () => {
     const onHistPopAppear = async () => {
         setHistPopVisible(true);
     }
-
     const toList = async () => {
-
-        location.state?.give ? navigate(-1) :
         location.state?.docSeCd !=='VTW03405'
-                    ? navigate('/elecAtrz/ElecAtrz')
+                    ? navigate(-1)
                     : navigate('/elecAtrz/ElecGiveAtrz',{state :{prjctId: prjctId, formData: location.state.formData}})
     }
 

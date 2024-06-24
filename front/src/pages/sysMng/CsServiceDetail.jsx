@@ -13,6 +13,7 @@ const CsServiceDetail = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const errId = location.state.id;
+    const num = location.state?.num;
     const errPrcsSttsCd = location.state?.errPrcsSttsCd;
     const errPrcsSttsCdNm = location.state?.errPrcsSttsCdNm;
     const { detailQueryId, sysButtonGroup, dirType } = CsServiceJson.detail;
@@ -63,6 +64,19 @@ const CsServiceDetail = () => {
         }
     }, []);
 
+    useEffect(() => {
+        const resizeImages = () => {
+            const container = document.getElementById('notice-content');
+            if (container) {
+                const images = container.getElementsByTagName('img');
+                for (let img of images) {
+                    img.style.width = '100%';
+                }
+            }
+        };
+        resizeImages();
+    }, [oneData]);
+
     const deleteReference = async () => {
         const params = [{ tbNm: "ERR_MNG" }, { errId: errId }];
         const fileParams = [{ tbNm: "ATCHMNFL" }, { atchmnflId: oneData.atchmnflId }];
@@ -100,7 +114,7 @@ const CsServiceDetail = () => {
                     <>
                         <h2 style={{ marginBottom: "30px" }}>{oneData.errTtl}</h2>
                         <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
-                            {oneData.regEmpNm} | {oneData.regDt}
+                            {oneData.regEmpNm} | {oneData.regDt} | 글번호: [ {num} ] 
                             <div style={{ marginLeft: "30px", marginRight: '20px' }}> 접수상태 :</div>
                             {hasPermission ? ( 
                             <div style={{ width: '200px' }}>
@@ -109,7 +123,7 @@ const CsServiceDetail = () => {
                             ) : ( <div>{errPrcsSttsCdNm}</div> )}
                         </div>
                         <hr className='elecDtlLine' />
-                        <div dangerouslySetInnerHTML={{ __html: oneData.errCn }} />
+                        <div id="notice-content" dangerouslySetInnerHTML={{ __html: oneData.errCn }} />
 
                         {fileList.length !== 0 && fileList.filter(file => file.realFileNm !== null && file.realFileNm !== undefined).filter(file => file.realFileNm.endsWith('.jpg') || file.realFileNm.endsWith('.jpeg') || file.realFileNm.endsWith('.png') || file.realFileNm.endsWith('.gif')).map((file, index) => (
                             <div key={index} style={{ textAlign: 'center' }}>

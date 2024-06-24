@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { TextBox } from 'devextreme-react';
 import Button from "devextreme-react/button";
 import TagBox from 'devextreme-react/tag-box';
 import SelectBox from "devextreme-react/select-box";
 import NumberBox from 'devextreme-react/number-box';
 import ToggleButton from 'pages/sysMng/ToggleButton';
-import { TextBox } from 'devextreme-react';
 
 const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, validateNumberBox }) => {
     const [isChangeData, setIsChangeData] = useState(false);
@@ -42,6 +42,14 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
         );
         setSelectedItem(updatedSelectedItem);
     };
+
+    useEffect(() => {
+        if (col.cellType === 'selectBox' && col.key === 'expensCd') {
+            // 비용코드가 변경될 때 용도 컬럼 초기화
+            props.data.atdrn = expensCd[props.data.cardUseSn] === 'VTW04531' ? [] : ''; // TagBox 저장완료되면 수정 필요
+            updateSelectedItem(props.data);
+        }
+    }, [props.data.expensCd]);
 
 
     if (col.cellType === 'button') {
