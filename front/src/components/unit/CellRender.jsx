@@ -14,12 +14,6 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
     const { getCdList, isPrjctIdSelected, hasError, chgPlaceholder, comboList, cdList, onTempInsert,
         expensCd, setValidationErrors, setComboBox, selectedItem, setSelectedItem } = cellRenderConfig ?? {};
 
-    const onKeyDownEvent = (e) => {
-        if(e.event.originalEvent.key === 'Enter'){
-            e.event.stopPropagation();
-        }
-    }
-
     useEffect(() => {
         if (col.cellType === 'selectBox' && col.key === 'prjctId') {
             const dataSource = comboList[col.key] || [];
@@ -65,7 +59,6 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
         return (
             <SelectBox
                 dataSource={getCdList ? (col.key === 'prjctId' ? comboList[col.key] : cdList[props.data.lotteCardAprvNo]) : comboList[col.key]}
-                onKeyDown={onKeyDownEvent}
                 displayExpr={col.displayExpr}
                 keyExpr={col.valueExpr}
                 value={value} // 객체 값 설정
@@ -84,7 +77,6 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
             <TagBox
                 dataSource={comboList['emp']}
                 placeholder={chgPlaceholder ? chgPlaceholder(col, props.data.lotteCardAprvNo) : col.placeholder}
-                onKeyDown={onKeyDownEvent}
                 searchEnabled={true}
                 showClearButton={true}
                 showSelectionControls={true}
@@ -102,7 +94,6 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
         return (
             <TextBox
                 name={col.key}
-                onKeyDown={onKeyDownEvent}
                 value={props.data[col.key]}
                 onFocusOut={onTempInsert && (() => onTempInsert(col, props.data[col.key], props))}
                 placeholder={chgPlaceholder ? chgPlaceholder(col, props.data.lotteCardAprvNo) : col.placeholder}
@@ -133,7 +124,6 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
             <NumberBox
                 name={col.key}
                 format="#,##0"
-                onKeyDown={onKeyDownEvent}
                 value={props.data[col.key]}
                 onFocusOut={onTempInsert && (() => onTempInsert(col, props.data[col.key], props))}
                 placeholder={chgPlaceholder ? chgPlaceholder(col, props.data.lotteCardAprvNo) : col.placeholder}

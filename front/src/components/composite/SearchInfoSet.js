@@ -63,7 +63,7 @@ const SearchInfoSet = ({ callBack, props, insertPage }) => {
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (event.key === 'Enter') {
+      if (event.key === 'Enter' && !searchParams.btnName) {
         callBack(initParam);
       }
     };
