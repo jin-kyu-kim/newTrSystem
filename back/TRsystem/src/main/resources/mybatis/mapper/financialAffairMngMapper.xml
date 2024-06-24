@@ -1019,12 +1019,9 @@
           AND P.PRJCT_ID = PICM.PRJCT_ID
           AND PMA.EMP_ID = E.EMP_ID
           AND PICM.MM_ATRZ_CMPTN_YN = 'Y'
-          <if test="aplyYm != null and !aplyYm.equals('')">
-           AND PMA.APLY_YM = #{aplyYm}
-	      </if>
-	      <if test="aplyOdr != null and !aplyOdr.equals('')">
-	       AND PMA.APLY_ODR = #{aplyOdr}
-	      </if>
+          <if test="(startYmOdr != null and !startYmOdr.equals('')) and (endYmOdr != null and !endYmOdr.equals(''))">
+              AND CONCAT(PMA.APLY_YM, PMA.APLY_ODR) BETWEEN #{startYmOdr} AND #{endYmOdr}
+          </if>
         GROUP BY
             E.EMP_ID,
             P.PRJCT_ID
@@ -1051,13 +1048,9 @@
 	          AND PICM.APLY_YM = PCA.APLY_YM
 	          AND PICM.APLY_ODR = PCA.APLY_ODR
 	          AND PICM.CT_ATRZ_CMPTN_YN = 'Y'
-	          <if test="aplyYm != null and !aplyYm.equals('')">
-           	  AND PCA.APLY_YM = #{aplyYm}
-	          </if>
-	          <if test="aplyOdr != null and !aplyOdr.equals('')">
-	          AND PCA.APLY_ODR = #{aplyOdr}
-	          </if>
-	         
+              <if test="(startYmOdr != null and !startYmOdr.equals('')) and (endYmOdr != null and !endYmOdr.equals(''))">
+                  AND CONCAT(PCA.APLY_YM, PCA.APLY_ODR) BETWEEN #{startYmOdr} AND #{endYmOdr}
+              </if>
 	        GROUP BY
 	            E.EMP_ID,
 	            E.EMP_FLNM,
