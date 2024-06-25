@@ -333,6 +333,7 @@ const ElecAtrzNewReq = () => {
             histElctrnAtrzId: sttsCd === "VTW05405" || sttsCd === "VTW05406" ? data.elctrnAtrzId : data.histElctrnAtrzId,
             atrzHistSeCd: sttsCd === "VTW05405" || sttsCd === "VTW05406" ? sttsCd : data.atrzHistSeCd != undefined ? data.atrzHistSeCd : "VTW05401"
         }
+        
         try {
             setLoading(true);
             const response = await ApiRequest("/boot/elecAtrz/insertElecAtrz", insertParam);
@@ -475,6 +476,35 @@ const ElecAtrzNewReq = () => {
         setAttachments(e.value);
     };
 
+    const validateFields = (fields) => {
+        for (const [field, message] of Object.entries(ElecAtrzNewReqJson.validationRules)) {
+            // 세금계산서의 경우 taxBillPblcnYmd는 필수값
+            if (fields.ctStlmSeCd === 'VTW01904' && field === 'taxBillPblcnYmd') {
+                if (fields.taxBillPblcnYmd === null || fields.taxBillPblcnYmd === "") {
+                    handleOpen(message);
+                    return false;
+                }
+            }
+
+             // taxBillPblcnYmd 값이 존재하는 경우 rciptPblcnYmd 검증 건너뛰기
+            if (field === 'rciptPblcnYmd') {
+                if (fields.taxBillPblcnYmd && fields.taxBillPblcnYmd !== null) {
+                    continue;
+                }
+            }
+            if (field === 'taxBillPblcnYmd') {
+                if (fields.rciptPblcnYmd && fields.rciptPblcnYmd !== null) {
+                    continue;
+                }
+            }
+
+            if (fields[field] === null || fields[field] === "" || fields[field] === 0) {
+                handleOpen(message);
+                return false;
+            }
+        }
+        return true;
+    };
     /**
      * 결재요청 및 임시저장 벨리데이션 체크
      */
@@ -493,6 +523,13 @@ const ElecAtrzNewReq = () => {
         if (atrzLn === undefined) {
             handleOpen("결재선의 승인자를 입력해주세요.");
             return false;
+        }
+
+        // 경비청구 필수 컬럼 validation
+        if (param?.arrayData[0].tbNm === ElecAtrzNewReqJson.validationTableNm) {
+            if (!validateFields(param?.arrayData[1])) {
+                return false;
+            }
         }
         return true;
     }

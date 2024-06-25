@@ -6,6 +6,15 @@
         { "text": "결재선지정", "id": "onAtrzLnPopup", "type": "default" },
         { "text": "임시저장", "id": "saveTemp", "type": "success" },
         { "text": "목록", "id": "toAtrzNewReq", "type": "normal" }
-    ]
-
+    ],
+    "validationTableNm": "CLM_ATRZ_DTL",
+    "validationRules": {
+        "ctStlmSeCd": "지출방법을 입력해주세요.",
+        "rciptPblcnYmd": "영수증발행일을 입력해주세요.",
+        "taxBillPblcnYmd": "세금계산서 발행일을 입력해주세요.",
+        "dtlUseDtls": "상세내역을 입력해주세요.",
+        "clmAmt": "금액을 입력해주세요.",
+        "expensCd": "비용코드를 입력해주세요.",
+        "cnptNm": "거래처를 입력해주세요."
+    }
 }

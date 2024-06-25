@@ -40,8 +40,9 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
     useEffect(() => {
         if (col.cellType === 'selectBox' && col.key === 'expensCd') {
             // 비용코드가 변경될 때 용도 컬럼 초기화
-            props.data.atdrn = expensCd[props.data.lotteCardAprvNo] === 'VTW04531' ? [] : ''; // TagBox 저장완료되면 수정 필요
+            props.data.atdrn = expensCd[props.data.lotteCardAprvNo] === 'VTW04531' ? [] : null; // TagBox 저장완료되면 수정 필요
             updateSelectedItem(props.data);
+            onTempInsert(col, props.data[col.key], props)
         }
     }, [props.data.expensCd]);
 
