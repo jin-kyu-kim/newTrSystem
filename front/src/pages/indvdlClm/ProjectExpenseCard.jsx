@@ -222,7 +222,9 @@ const ProjectExpenseCard = (props) => {
                     ...row,
                     prjctId: originalRow ? originalRow.prjctId : null,
                     expensCd: originalRow ? originalRow.expensCd : null,
-                    expensCdObject: originalRow ? originalRow.expensCdObject : null
+                    expensCdObject: originalRow ? originalRow.expensCdObject : null,
+                    ctprpos: originalRow ? originalRow.ctprpos : null,
+                    atdrn: originalRow ? originalRow.atdrn : null
                 };
             }
             return row;

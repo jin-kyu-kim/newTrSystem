@@ -999,13 +999,12 @@ public class ElecAtrzDomain {
 			List<Map<String, Object>> insertParamList = new ArrayList<>();
 			
 			insertParamList.add(0, tbNm);
-			
-			infoParam.put("mmAtrzCmptnYn", "N");
+
+			infoParam.put("mmAtrzCmptnYn", null); // N->null 변경
 			insertParamList.add(1, infoParam);
 			
 			result = commonService.insertData(insertParamList);
 		}
-		
 		return result;
 	}
 	
