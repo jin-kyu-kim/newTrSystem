@@ -86,28 +86,6 @@
 
     <!-- 휴가정보조회 -->
     <select id="retrieveVcatnInfoInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
-<!--        SELECT-->
-<!--            EMP.EMP_ID						/* 직원ID */-->
-<!--            ,EMP.EMP_FLNM					/* 직원명 */-->
-<!--            ,VMNG.VCATN_YR 					/* 휴가연도 */-->
-<!--            ,VMNG.VCATN_ALTMNT_DAYCNT 		/* 휴가배정일수 */-->
-<!--            ,VMNG.USE_DAYCNT 				/* 사용일수 */-->
-<!--            ,VMNG.VCATN_REMNDR_DAYCNT 		/* 휴가잔여일수 */-->
-<!--            ,VMNG.NEW_VCATN_ALTMNT_DAYCNT 	/* 신규휴가배정일수 */-->
-<!--            ,VMNG.NEW_USE_DAYCNT 			/* 신규사용일수 */-->
-<!--            ,VMNG.NEW_REMNDR_DAYCNT 		/* 신규잔여일수 */-->
-<!--            ,VMNG.PBLEN_VCATN_USE_DAYCNT 	/* 공적휴가사용일수 */-->
-<!--            ,VMNG.ALTMNT_BGNG_YMD 			/* 배정시작일자 */-->
-<!--            ,VMNG.ALTMNT_USE_END_YMD 		/* 배정사용종료일자 */-->
-<!--        FROM VCATN_MNG 	VMNG-->
-<!--            ,EMP 		EMP-->
-<!--        WHERE VMNG.EMP_ID = EMP.EMP_ID-->
-<!--        <if test="empId !=null and !empId.equals('')">-->
-<!--            AND EMP.EMP_ID = #{empId}-->
-<!--        </if>-->
-<!--        <if test="searchYear !=null and !searchYear.equals('')">-->
-<!--            AND VMNG.VCATN_YR = #{searchYear}-->
-<!--        </if>-->
         /* indvdlClmMapper.retrieveVcatnInfoInq */
         SELECT
             'ACCOUNT' VCATN_FLAG
@@ -266,9 +244,6 @@
         )
         SELECT
             DEPT_ID
-<!--            ,DEPT_NM,-->
-<!--            ,UP_DEPT_ID-->
-<!--            ,LEVEL-->
         FROM DEPT_LINE	DL
 <!--        ORDER BY DL.LEVEL DESC-->
     </select>
@@ -339,6 +314,105 @@
             AND EMP.EMPNO IN ('VK1434', 'VK1453', 'VK1021')
         </if>
         ORDER BY EMPNO
+    </select>
+
+    <!-- 프로젝트MM 프로젝트별 총 근무시간 조회 -->
+    <select id="retrievePrjctMMTotMd" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            p.PRJCT_NM,
+            SUM(pma.MD * 8) AS TOTAL_MD,
+            (SELECT SUM(pma_inner.MD * 8)
+             FROM PRJCT_MM_APLY pma_inner
+                      JOIN (
+                 SELECT pmrz_inner.PRJCT_ID, pmrz_inner.EMP_ID, pmrz_inner.APLY_YM, pmrz_inner.APLY_ODR, pmrz_inner.APLY_YMD
+                 FROM PRJCT_MM_ATRZ pmrz_inner
+                 WHERE pmrz_inner.EMP_ID = #{empId}
+                   AND pmrz_inner.APLY_YM = #{aplyYm}
+                   AND pmrz_inner.APLY_ODR = #{aplyOdr}
+                   AND pmrz_inner.ATRZ_DMND_STTS_CD != 'VTW03704'
+                 GROUP BY pmrz_inner.PRJCT_ID, pmrz_inner.EMP_ID, pmrz_inner.APLY_YM, pmrz_inner.APLY_ODR, pmrz_inner.APLY_YMD
+             ) filtered_inner ON pma_inner.PRJCT_ID = filtered_inner.PRJCT_ID
+                 AND pma_inner.EMP_ID = filtered_inner.EMP_ID
+                 AND pma_inner.APLY_YM = filtered_inner.APLY_YM
+                 AND pma_inner.APLY_ODR = filtered_inner.APLY_ODR
+                 AND pma_inner.APLY_YMD = filtered_inner.APLY_YMD
+            ) AS TOTAL_ALL_MD
+        FROM PRJCT_MM_APLY pma
+                 JOIN PRJCT p ON p.PRJCT_ID = pma.PRJCT_ID
+                 JOIN (
+            SELECT pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR, pmrz.APLY_YMD
+            FROM PRJCT_MM_ATRZ pmrz
+            WHERE pmrz.EMP_ID = #{empId}
+              AND pmrz.APLY_YM = #{aplyYm}
+              AND pmrz.APLY_ODR = #{aplyOdr}
+              AND pmrz.ATRZ_DMND_STTS_CD != 'VTW03704'
+            GROUP BY pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR, pmrz.APLY_YMD
+        ) filtered ON pma.PRJCT_ID = filtered.PRJCT_ID
+            AND pma.EMP_ID = filtered.EMP_ID
+            AND pma.APLY_YM = filtered.APLY_YM
+            AND pma.APLY_ODR = filtered.APLY_ODR
+            AND pma.APLY_YMD = filtered.APLY_YMD
+        GROUP BY p.PRJCT_NM
+    </select>
+
+    <!-- 근무시간 공휴일 시간 -->
+    <select id="retrieveHolidayHrs" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT COUNT(*) * 8 AS totHoli
+        FROM CRTR_DATE
+        WHERE SUBSTR(CRTR_YMD, 1, 6) = #{aplyYm}
+          AND HLDY_CL_CD = 'VTW05003'
+          AND CASE
+            WHEN #{aplyOdr} = 1 THEN SUBSTR(DATE_FORMAT(CRTR_YMD, '%Y%m%d'), 7, 2) BETWEEN '01' AND '15'
+            ELSE SUBSTR(DATE_FORMAT(CRTR_YMD, '%Y%m%d'), 7, 2) BETWEEN '16' AND '31'
+          END
+    </select>
+
+    <!-- 휴가 시간 -->
+    <select id="retrieveVcatTot" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            SUM(CASE
+                    WHEN dv.VCATN_TY_CD IN ('VTW01201', 'VTW01204') THEN 8
+                    ELSE 4
+                END) AS MD
+        FROM (
+            <![CDATA[
+                 WITH RECURSIVE DAILY_VACATION AS (
+                     SELECT
+                         VAC.VCATN_TY_CD,
+                         (SELECT CD_NM FROM CD WHERE CD_VALUE = VAC.VCATN_TY_CD) AS PRJCT_NM,
+                     DATE(VAC.VCATN_BGNG_YMD) as dt,
+             DATE(VAC.VCATN_END_YMD) as end_dt,
+             ELC.ATRZ_DMND_EMP_ID
+            FROM ELCTRN_ATRZ ELC
+            JOIN VCATN_ATRZ VAC ON ELC.ELCTRN_ATRZ_ID = VAC.ELCTRN_ATRZ_ID
+        WHERE 1=1
+          AND ELC.ATRZ_DMND_EMP_ID = #{empId}
+          AND ELC.ATRZ_DMND_STTS_CD = 'VTW03703'
+          AND VAC.VCATN_TY_CD != 'VTW01207'
+        UNION ALL
+        SELECT
+            dr.VCATN_TY_CD,
+            dr.PRJCT_NM,
+            DATE_ADD(dr.dt, INTERVAL 1 DAY) as dt,
+            dr.end_dt,
+            dr.ATRZ_DMND_EMP_ID
+        FROM DAILY_VACATION dr
+        WHERE dr.dt < dr.end_dt
+            ) ]]>
+            SELECT
+            VCATN_TY_CD,
+            PRJCT_NM
+             , dt
+             , DATE_FORMAT(dt, '%Y%m%d') AS APLY_YMD
+             , ATRZ_DMND_EMP_ID
+        FROM DAILY_VACATION
+        WHERE SUBSTR(DATE_FORMAT(dt, '%Y%m%d'), 1, 6) = #{aplyYm}
+          AND CASE
+                  WHEN #{aplyOdr} = 1 THEN SUBSTR(DATE_FORMAT(dt, '%Y%m%d'), 7, 2) BETWEEN '01' AND '15'
+                  ELSE SUBSTR(DATE_FORMAT(dt, '%Y%m%d'), 7, 2) BETWEEN '16' AND '31'
+            END
+        ) dv
+        JOIN CRTR_DATE crd ON crd.CRTR_YMD = dv.APLY_YMD AND crd.HLDY_CL_CD = 'VTW05001'
     </select>
 
     <!-- 프로젝트MM신청조회 -->
