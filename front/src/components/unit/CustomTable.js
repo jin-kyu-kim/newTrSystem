@@ -1,4 +1,4 @@
-import DataGrid, { Column, Export, Pager, Paging, Summary, TotalItem, GroupItem, Grouping, MasterDetail, Scrolling, ColumnFixing } from "devextreme-react/data-grid";
+import DataGrid, { Column, Export, Pager, Paging, Summary, TotalItem, GroupItem, Grouping, MasterDetail } from "devextreme-react/data-grid";
 import AllowedPageSize from "./AllowedPageSize";
 import GridRows from "./GridRows";
 
@@ -84,10 +84,10 @@ const CustomTable = ({ keyColumn, pageSize, columns, values, onRowDblClick, pagi
         }
 
         {grouping &&
-          <Grouping autoExpandAll={true} />
+          <Grouping autoExpandAll={groupingData.autoExpandAll} />
         }
 
-        {grouping && !summary&&
+        {grouping &&
           <Summary calculateCustomSummary={calculateCustomSummary}> 
           {grouping.map(item => (
             <GroupItem
