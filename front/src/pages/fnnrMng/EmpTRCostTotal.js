@@ -13,7 +13,7 @@ import SearchInfoSet from "components/composite/SearchInfoSet";
 const EmpTRCostTotal = () => {
   const [values, setValues] = useState([]);
   const [param, setParam] = useState({});
-  const { keyColumn, queryId, nameColumns, prjctColumns, summaryColumn, smallSummaryColumn, searchInfo, groupDataProject, groupDataName } = EmpTRCostTotalJson;
+  const { keyColumn, queryId, nameColumns, prjctColumns, summaryColumn, searchInfo, groupDataProject, groupDataName } = EmpTRCostTotalJson;
   const [checkBox1Checked, setCheckBox1Checked] = useState(false);
   const [checkBox2Checked, setCheckBox2Checked] = useState(false);
   const { handleOpen } = useModal();
@@ -179,7 +179,7 @@ const EmpTRCostTotal = () => {
       <div className="title-desc">* 근무시간, 경비 통합내역을 조회합니다.</div>
       <div>
         <div className="wrap_search" style={{marginBottom: "20px"}}>
-          <span>* ({startYmd}-{startOdr}~{endYmd}-{endOdr})</span>
+          <span style={{fontSize: "1.1rem"}}>* ({startYmd} - {startOdr} ~ {endYmd} - {endOdr})</span>
           <SearchInfoSet props={searchInfo} callBack={searchHandle}/>
         </div>
         <CheckBox
@@ -202,10 +202,7 @@ const EmpTRCostTotal = () => {
             keyColumn={keyColumn}
             columns={prjctColumns}
             values={values}
-            summary={true}
-            summaryColumn={summaryColumn}
-            smallSummaryColumn={smallSummaryColumn}
-            grouping={true}
+            grouping={summaryColumn}
             groupingData={groupDataProject}
             excel={true}
             wordWrap={true}
@@ -220,13 +217,10 @@ const EmpTRCostTotal = () => {
             columns={nameColumns}
             values={values}
             paging={true}
-            summary={true}
-            summaryColumn={summaryColumn}
-            smallSummary={true}
-            smallSummaryColumn={smallSummaryColumn}
-            grouping={true}
+            grouping={summaryColumn}
             groupingData={groupDataName}
             groupingCustomizeText={groupingCustomizeText}
+            wordWrap={true}
             excel={true}
             onExcel={onExporting}
           />
