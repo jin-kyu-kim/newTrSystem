@@ -729,15 +729,18 @@
     <select id="retrieveVcatnPrjctMmYnInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
         /* indvdlClmMapper.retrieveVcatnPrjctMmYnInq */
         SELECT
-            DATE_FORMAT(APLY_YMD, '%Y-%m-%d')	APLY_YMD		                            /* 신청일자 */
-            ,ATRZ_DMND_STTS_CD		                                                        /* 결재요청상태코드 */
-            ,(SELECT CD_NM FROM CD WHERE CD_VALUE = ATRZ_DMND_STTS_CD) ATRZ_DMND_STTS_NM	/* 결재요청상태코드명 */
-            ,MM_ATRZ_CMPTN_YN		                                                        /* MM결재완료여부 */
-        FROM PRJCT_MM_ATRZ			ATRZ
-            ,PRJCT_INDVDL_CT_MM		INDVDL
-        WHERE ATRZ.EMP_ID = INDVDL.EMP_ID
-        AND ATRZ.EMP_ID = #{empId}
-        AND APLY_YMD BETWEEN #{vcatnBgngYmd} AND #{vcatnEndYmd}
+            ATRZ.APLY_YMD		                            /* 신청일자 */
+             , ATRZ_DMND_STTS_CD		                                                        /* 결재요청상태코드 */
+             , (SELECT CD_NM FROM CD WHERE CD_VALUE = ATRZ.ATRZ_DMND_STTS_CD) ATRZ_DMND_STTS_NM	/* 결재요청상태코드명 */
+             , SUM(APLY.MD) AS MD
+        FROM PRJCT_MM_ATRZ	ATRZ
+                 JOIN PRJCT_MM_APLY			APLY
+                      ON ATRZ.PRJCT_ID  = ATRZ.PRJCT_ID
+                          AND ATRZ.EMP_ID = APLY.EMP_ID AND ATRZ.APLY_YM = APLY.APLY_YM
+                          AND ATRZ.APLY_ODR = APLY.APLY_ODR AND ATRZ.APLY_YMD = APLY.APLY_YMD
+        WHERE ATRZ.EMP_ID = #{empId}
+          AND ATRZ.APLY_YMD BETWEEN #{vcatnBgngYmd} AND #{vcatnEndYmd}
+        GROUP BY ATRZ.APLY_YMD, ATRZ_DMND_STTS_CD;
     </select>
 
 
