@@ -3,6 +3,7 @@ import { saveAs } from 'file-saver-es';
 import { Workbook } from 'exceljs';
 import { exportPivotGrid } from 'devextreme/excel_exporter';
 import PivotGrid, { FieldChooser, Export, PivotGridTypes, FieldPanel, } from 'devextreme-react/pivot-grid';
+import './CustomPivotGrid.css';
 
 const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fileName, sorting, filtering, 
     isExport, grandTotals, width, customColor, grandTotalText }) => {
