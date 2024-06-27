@@ -102,7 +102,7 @@ const LoginForm = () => {
             전략/기술 컨설팅을 기반으로 정보시스템 구축 및 운영에 이르는 Total
             IT Service의 미래 비전을 제시하는 기업, vtw
           </p>
-          <h6>copyright@2019 vtw.co.ltd all rights reserved</h6>
+          <h6>copyright@2024 vtw.co.ltd all rights reserved</h6>
           </div>
         </div>
       </div>
