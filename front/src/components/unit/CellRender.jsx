@@ -14,12 +14,6 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
     const { getCdList, isPrjctIdSelected, hasError, chgPlaceholder, comboList, cdList, onTempInsert,
         expensCd, setValidationErrors, setComboBox, selectedItem, setSelectedItem } = cellRenderConfig ?? {};
 
-    const onKeyDownEvent = (e) => {
-        if(e.event.originalEvent.key === 'Enter'){
-            e.event.stopPropagation();
-        }
-    }
-
     useEffect(() => {
         if (col.cellType === 'selectBox' && col.key === 'prjctId') {
             const dataSource = comboList[col.key] || [];
@@ -30,11 +24,11 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
 
     useEffect(() => {
         if (col.cellType === 'selectBox' && col.key === 'expensCd') {
-            const dataSource = cdList[props.data.cardUseSn] || [];
+            const dataSource = cdList[props.data.lotteCardAprvNo] || [];
             const value = dataSource.find(item => item.expensCd === props.data.expensCd);
             setInitialExpensCdValue(value);
         }
-    }, [cdList, props.data.expensCd, props.data.cardUseSn, col.key, col.cellType]);
+    }, [cdList, props.data.expensCd, props.data.lotteCardAprvNo, col.key, col.cellType]);
 
     const updateSelectedItem = (updatedData) => {
         const updatedSelectedItem = selectedItem.map(item => 
@@ -46,8 +40,9 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
     useEffect(() => {
         if (col.cellType === 'selectBox' && col.key === 'expensCd') {
             // 비용코드가 변경될 때 용도 컬럼 초기화
-            props.data.atdrn = expensCd[props.data.cardUseSn] === 'VTW04531' ? [] : ''; // TagBox 저장완료되면 수정 필요
+            props.data.atdrn = expensCd[props.data.lotteCardAprvNo] === 'VTW04531' ? [] : null; // TagBox 저장완료되면 수정 필요
             updateSelectedItem(props.data);
+            onTempInsert(col, props.data[col.key], props)
         }
     }, [props.data.expensCd]);
 
@@ -64,8 +59,7 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
 
         return (
             <SelectBox
-                dataSource={getCdList ? (col.key === 'prjctId' ? comboList[col.key] : cdList[props.data.cardUseSn]) : comboList[col.key]}
-                onKeyDown={onKeyDownEvent}
+                dataSource={getCdList ? (col.key === 'prjctId' ? comboList[col.key] : cdList[props.data.lotteCardAprvNo]) : comboList[col.key]}
                 displayExpr={col.displayExpr}
                 keyExpr={col.valueExpr}
                 value={value} // 객체 값 설정
@@ -76,25 +70,24 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
                     setComboBox(e.value, props, col);
                 }}
                 onFocusOut={onTempInsert && (() => onTempInsert(col, props.data[col.key], props))}
-                disabled={col.key === 'expensCd' && !isPrjctIdSelected[props.data.cardUseSn]}
+                disabled={col.key === 'expensCd' && !isPrjctIdSelected[props.data.lotteCardAprvNo]}
             />
         );
-    } else if (col.cellType === 'textBox' && col.key === 'atdrn' && expensCd[props.data.cardUseSn] === 'VTW04531') {
+    } else if (col.cellType === 'textBox' && col.key === 'atdrn' && expensCd[props.data.lotteCardAprvNo] === 'VTW04531') {
         return (
             <TagBox
                 dataSource={comboList['emp']}
-                placeholder={chgPlaceholder ? chgPlaceholder(col, props.data.cardUseSn) : col.placeholder}
-                onKeyDown={onKeyDownEvent}
+                placeholder={chgPlaceholder ? chgPlaceholder(col, props.data.lotteCardAprvNo) : col.placeholder}
                 searchEnabled={true}
                 showClearButton={true}
                 showSelectionControls={true}
                 displayExpr='displayValue'
                 applyValueMode="useButtons"
-                style={{ backgroundColor: hasError && hasError(props.data.cardUseSn, col.key) ? '#FFCCCC' : '' }}
+                style={{ backgroundColor: hasError && hasError(props.data.lotteCardAprvNo, col.key) ? '#FFCCCC' : '' }}
                 onValueChanged={(newValue) => {
                     props.data[col.key] = newValue.value;
                     updateSelectedItem(props.data);
-                    hasError && setValidationErrors(prevErrors => prevErrors.filter(error => !(error.cardUseSn === props.data.cardUseSn && error.field === col.key)));
+                    hasError && setValidationErrors(prevErrors => prevErrors.filter(error => !(error.lotteCardAprvNo === props.data.lotteCardAprvNo && error.field === col.key)));
                 }}
             />
         );
@@ -102,15 +95,14 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
         return (
             <TextBox
                 name={col.key}
-                onKeyDown={onKeyDownEvent}
                 value={props.data[col.key]}
                 onFocusOut={onTempInsert && (() => onTempInsert(col, props.data[col.key], props))}
-                placeholder={chgPlaceholder ? chgPlaceholder(col, props.data.cardUseSn) : col.placeholder}
-                style={{ backgroundColor: hasError && hasError(props.data.cardUseSn, col.key) ? '#FFCCCC' : '' }}
+                placeholder={chgPlaceholder ? chgPlaceholder(col, props.data.lotteCardAprvNo) : col.placeholder}
+                style={{ backgroundColor: hasError && hasError(props.data.lotteCardAprvNo, col.key) ? '#FFCCCC' : '' }}
                 onValueChanged={(newValue) => {
                     props.data[col.key] = newValue.value;
                     updateSelectedItem(props.data);
-                    hasError && setValidationErrors(prevErrors => prevErrors.filter(error => !(error.cardUseSn === props.data.cardUseSn && error.field === col.key)));
+                    hasError && setValidationErrors(prevErrors => prevErrors.filter(error => !(error.lotteCardAprvNo === props.data.lotteCardAprvNo && error.field === col.key)));
                 }} >
             </TextBox>
         );
@@ -133,13 +125,12 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
             <NumberBox
                 name={col.key}
                 format="#,##0"
-                onKeyDown={onKeyDownEvent}
                 value={props.data[col.key]}
                 onFocusOut={onTempInsert && (() => onTempInsert(col, props.data[col.key], props))}
-                placeholder={chgPlaceholder ? chgPlaceholder(col, props.data.cardUseSn) : col.placeholder}
-                style={{ backgroundColor: hasError && hasError(props.data.cardUseSn, col.key) ? '#FFCCCC' : '' }}
+                placeholder={chgPlaceholder ? chgPlaceholder(col, props.data.lotteCardAprvNo) : col.placeholder}
+                style={{ backgroundColor: hasError && hasError(props.data.lotteCardAprvNo, col.key) ? '#FFCCCC' : '' }}
                 onValueChanged={(newValue) => {
-                    hasError && setValidationErrors(prevErrors => prevErrors.filter(error => !(error.cardUseSn === props.data.cardUseSn && error.field === col.key)));
+                    hasError && setValidationErrors(prevErrors => prevErrors.filter(error => !(error.lotteCardAprvNo === props.data.lotteCardAprvNo && error.field === col.key)));
                     if (validateNumberBox) {
                         if (validateNumberBox(props.data, newValue.value)) {
                             props.data[col.key] = newValue.value

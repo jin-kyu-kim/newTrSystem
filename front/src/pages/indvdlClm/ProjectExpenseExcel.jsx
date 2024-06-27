@@ -63,7 +63,7 @@ const ProjectExpenseExcel = (props) => {
 
         if (excel[0].__EMPTY_4 === "승인일자" && excel[0].__EMPTY_5 === "승인시간") {
             
-            for (let i = 1; i < excel?.length; i++) {
+            for (let i = excel.length -1; i > 0; i--) {
                 const lotteCardAprvNo = excel[i].__EMPTY_20; // aprvNo[승인번호] -> __EMPTY_20
 
                 // 기존 aprvList에 승인번호가 포함되어 있지 않은 경우만 처리

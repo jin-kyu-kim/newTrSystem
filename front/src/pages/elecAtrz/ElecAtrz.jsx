@@ -165,12 +165,12 @@ const ElecAtrz = () => {
     } else if(button.name === "docHist") {
       await onSetPopData(data);
       await onHistPopAppear();
-    } else if(button.name === "aprv") {
 
+    } else if(button.name === "aprv") {
       await onSetPopData(data)
       await onAprvPopup();
-    } else if(button.name === "rjct") {
 
+    } else if(button.name === "rjct") {
       await onSetPopData(data)
       await onRjctPopup();
 
@@ -178,6 +178,7 @@ const ElecAtrz = () => {
       handleOpen("회수 하시겠습니까?",  () => elctrnAtrzRecall(data), true);
     }
   }
+
   const onHistPopHiding = async () => {
     setHistPopVisible(false);
   }
@@ -839,7 +840,7 @@ const ElecAtrz = () => {
                 stylingMode="contained"
                 style={{ margin: "2px" }} 
                 onClick={ () => {
-                  aprvAtrz()
+                  rjctAtrz()
                   reloadPage()
                 }}
                 >

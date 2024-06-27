@@ -22,7 +22,7 @@ function ProjectOutordEmp() {
   const [ empMax, setEmpMax] = useState({});   // 사번 MAX값
   const { handleOpen } = useModal();
   const fileUploaderRef = useRef(null); // 파일 업로드용 ref
-  
+
   useEffect(() => {
     if (!Object.values(param).every((value) => value === "")) {
       pageHandle();
@@ -282,6 +282,7 @@ function ProjectOutordEmp() {
         />
       </div>
 
+
       <div className='partner-insert-area'>
         <h5 style={{ alignItems: 'left', marginBottom: '20px' }}>외주직원정보를 입력/수정 합니다.</h5>
         <div className='partner-input-box'>
@@ -295,6 +296,7 @@ function ProjectOutordEmp() {
             uploadMode="useButton"
             onValueChanged={changeAttchValue}
             ref={fileUploaderRef}
+
           />
           {fileList.length !== 0 && fileList.filter(file => file.realFileNm !== null && file.realFileNm !== undefined).filter(file => !(file.realFileNm.endsWith('.jpg') || file.realFileNm.endsWith('.jpeg') || file.realFileNm.endsWith('.png') || file.realFileNm.endsWith('.gif'))).map((file, index) => (
             <div key={index}>
