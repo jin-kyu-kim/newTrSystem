@@ -378,13 +378,14 @@
     <select id="retrieveExpensAprvDtls" parameterType="map" resultType="com.trsystem.LowerHashMap">
             SELECT
             	pca.ELCTRN_ATRZ_ID AS unique_id, 
-		    	CONCAT(p.PRJCT_NM, ' (PM : ', (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = p.PRJCT_MNGR_EMP_ID), ')') AS PRJCT_NM, -- 프로젝트명
+		    	CONCAT(p.PRJCT_NM, ' (', (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = p.PRJCT_MNGR_EMP_ID), ' ', (SELECT EMPNO FROM EMP WHERE EMP_ID = p.PRJCT_MNGR_EMP_ID), ')') AS PRJCT_NM, -- 프로젝트명
 		    	(SELECT CD_NM FROM CD WHERE CD_VALUE = pca.EXPENS_CD) AS EXPENS_CD, -- 비용 코드
 		    	e.EMP_FLNM as EMP_FLNM,
-		    	CONCAT('성명 : ', e.EMP_FLNM, CHAR(10), ' | 상세내역 : ', pca.CT_PRPOS, ' | 용도 : ', pca.ATDRN) AS PRJCT_DETAIL,
+		    	CONCAT(e.EMP_FLNM, ' ', e.EMPNO, ' | 상세내역 : ', pca.CT_PRPOS, ' | 용도 : ', pca.ATDRN) AS PRJCT_DETAIL,
 		    	CONCAT('상세내역 : ', pca.CT_PRPOS, ' | 용도 : ', pca.ATDRN) AS EMP_DETAIL,
 		    	pca.UTZTN_AMT as UTZTN_AMT,
-		    	CONCAT(SUBSTR(pca.UTZTN_DT, 1, 4), '-', SUBSTR(pca.UTZTN_DT, 5, 2), '-', SUBSTR(pca.UTZTN_DT, 7, 2)) AS UTZTN_DT
+		    	CONCAT(SUBSTR(pca.UTZTN_DT, 1, 4), '-', SUBSTR(pca.UTZTN_DT, 5, 2), '-', SUBSTR(pca.UTZTN_DT, 7, 2)) AS UTZTN_DT,
+                p.PRJCT_CD_IDNTFR
 			FROM
 				 PRJCT_CT_APLY pca
 			JOIN
@@ -909,18 +910,13 @@
 		ORDER BY AA.EMPNO
     </select>
 
-    <!--/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
-    <!--/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
-    <!--/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
-
-
     <!--근무시간 승인 내역 -->
     <select id="retrievePrjctMmAplyList" parameterType="map" resultType="com.trsystem.LowerHashMap">
        SELECT DISTINCT
 		    Z.CRTR_YMD AS APLY_YMD,
 		    M.PRJCT_ID AS PRJCT_ID,
 		    M.PRJCT_NM AS PRJCT_NM,
-		    M.EMP_FLNM AS EMP_FLNM,
+		    CONCAT(M.EMP_FLNM, ' ', M.EMPNO) AS EMP_FLNM,
 		    IFNULL(T.MD, 0) AS MD
 		FROM
 		    (
@@ -937,7 +933,8 @@
 	    SELECT DISTINCT
 	        P.PRJCT_ID,
 	        P.PRJCT_NM,
-	        E.EMP_FLNM
+	        E.EMP_FLNM,
+	        E.EMPNO
 	    FROM 
 	        PRJCT P
 	        JOIN PRJCT_MM_APLY PMA ON P.PRJCT_ID = PMA.PRJCT_ID
@@ -972,8 +969,7 @@
 		            <if test="prjctId != null and !prjctId.equals('')">
 		            AND P.PRJCT_ID = #{prjctId}
 		            </if>
-		) T ON T.APLY_YMD = Z.CRTR_YMD AND M.PRJCT_ID = T.PRJCT_ID
-		ORDER BY M.EMP_FLNM, APLY_YMD;
+		) T ON T.APLY_YMD = Z.CRTR_YMD AND M.PRJCT_ID = T.PRJCT_ID;
 </select>
 
 

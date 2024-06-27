@@ -1,6 +1,5 @@
 import React from 'react';
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
 import PivotGridDataSource from 'devextreme/ui/pivot_grid/data_source';
 import EmpTimeAprvListJson from "./EmpTimeAprvListJson.json";
 import ApiRequest from "../../utils/ApiRequest";
@@ -10,10 +9,8 @@ import SearchInfoSet from "components/composite/SearchInfoSet";
 const EmpTimeAprvList = () => {
   const [values, setValues] = useState([]);
   const [param, setParam] = useState({});
-  const location = useLocation();
-  const { keyColumn, queryId, tableColumns, searchParams, searchInfo } = EmpTimeAprvListJson;
+  const { keyColumn, queryId, tableColumns, searchInfo } = EmpTimeAprvListJson;
   const [searchIsVal, setSearchIsVal] = useState(false);
-  const admin = location.state ? location.state.admin : undefined;
 
   useEffect(() => {
     if (searchIsVal) { // 검색 버튼을 클릭했을 때만 pageHandle 함수 호출
@@ -49,7 +46,7 @@ const EmpTimeAprvList = () => {
     fields: [
       {
         caption: '직원명',
-        width: 60,
+        width: 90,
         dataField: 'empFlnm',
         area: 'row',
         expanded: true,
@@ -70,7 +67,7 @@ const EmpTimeAprvList = () => {
       },
       {
         caption: '프로젝트명',
-        width: 150,
+        width: 180,
         dataField: 'prjctNm',
         area: 'row',
         expanded: true,
