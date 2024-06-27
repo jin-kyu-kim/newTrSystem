@@ -43,7 +43,7 @@ const ProjectControlBudgetCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdr, bg
       { prjctId: prjctId,
         bgtMngOdr: bgtMngOdrTobe,
         expensCd: ProjectControlBudgetCostJson.cdBetween,
-        useYm : ctrtYmdPrarm.replace("-","")+"&"+stbleEndYmdPrarm.replace("-",""),
+        useYm : ctrtYmdPrarm.replace("-","")+"_BETWEEN_"+stbleEndYmdPrarm.replace("-",""),
       }, 
     ];
 
