@@ -147,7 +147,7 @@ const EmpExpenseAprvProject = ({ prjctId, aplyYm, aplyOdr }) => {
     }
 
     return (
-        <div style={{padding: '20px'}}>
+        <div className='singleStickyTotal' style={{padding: '20px'}}>
             <CustomPivotGrid
                 values={dataSource}
                 columnGTName={'소계'}

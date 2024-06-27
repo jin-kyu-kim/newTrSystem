@@ -3,7 +3,6 @@ import { saveAs } from 'file-saver-es';
 import { Workbook } from 'exceljs';
 import { exportPivotGrid } from 'devextreme/excel_exporter';
 import PivotGrid, { FieldChooser, Export, PivotGridTypes, FieldPanel, } from 'devextreme-react/pivot-grid';
-import './CustomPivotGrid.css';
 
 const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fileName, sorting, filtering, 
     isExport, grandTotals, width, customColor, grandTotalText }) => {
@@ -142,9 +141,10 @@ const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fi
             allowSorting={sorting}
             allowFiltering={filtering}
             allowExpandAll={true}
-            showColumnTotals={false}
-            showColumnGrandTotals={true}
-            showRowGrandTotals={grandTotals}
+            showColumnTotals={false} // 컬럼별 세로계
+            showRowTotals={true} // 로우별 가로계
+            showColumnGrandTotals={true} // 좌측 소계
+            showRowGrandTotals={grandTotals} // 최하단 총계
             dataSource={values}
             showBorders={true}
             onExporting={onExporting}
@@ -153,7 +153,7 @@ const CustomPivotGrid = ({ values, columnGTName, blockCollapse, weekendColor, fi
             texts={{ grandTotal: grandTotalText }}
         >
             <FieldPanel
-                showRowFields={true}
+                showRowFields={false}
                 visible={true}
                 showTotals={false}
                 showColumnFields={false}

@@ -91,7 +91,7 @@ const EmpTimeAprvList = () => {
 
   return (
     <React.Fragment>
-      <div>
+      <div className='singleStickyTotal'>
         <div className="title">근무시간 승인내역 조회</div>
         <div className="title-desc">* 근무시간 승인내역을 조회합니다.</div>
         <div className="wrap_search" style={{ marginBottom: "20px" }}>
