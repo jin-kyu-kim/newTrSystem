@@ -22,6 +22,12 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
         }
     }, [comboList, props.data.prjctId, col.key, col.cellType]);
 
+    const handleKeyDown = (e) => {
+        if (e.event.originalEvent.key === 'ArrowUp' || e.event.originalEvent.key === 'ArrowDown') {
+            e.event.stopPropagation();
+        }
+    };
+
     useEffect(() => {
         if (col.cellType === 'selectBox' && col.key === 'expensCd') {
             const dataSource = cdList[props.data.lotteCardAprvNo] || [];
@@ -31,7 +37,7 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
     }, [cdList, props.data.expensCd, props.data.lotteCardAprvNo, col.key, col.cellType]);
 
     const updateSelectedItem = (updatedData) => {
-        const updatedSelectedItem = selectedItem.map(item => 
+        const updatedSelectedItem = selectedItem.map(item =>
             item.lotteCardAprvNo === updatedData.lotteCardAprvNo ? { ...item, ...updatedData } : item
         );
         setSelectedItem(updatedSelectedItem);
@@ -45,7 +51,6 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
             onTempInsert(col, props.data[col.key], props)
         }
     }, [props.data.expensCd]);
-
 
     if (col.cellType === 'button') {
         return (<Button text={col.button.text} name={col.button.name} type={col.button.type}
@@ -106,7 +111,7 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
                 }} >
             </TextBox>
         );
-        
+
     } else if (col.cellType === 'fileCell') {
         let atchList = props?.data.atchmnfl;
         const fileDir = atchList[0]?.fileStrgCours ? atchList[0]?.fileStrgCours.substring(8) : null;
@@ -123,6 +128,7 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
     } else if (col.cellType === 'numberBox') {
         return (
             <NumberBox
+                onKeyDown={handleKeyDown}
                 name={col.key}
                 format="#,##0"
                 value={props.data[col.key]}
@@ -130,6 +136,10 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
                 placeholder={chgPlaceholder ? chgPlaceholder(col, props.data.lotteCardAprvNo) : col.placeholder}
                 style={{ backgroundColor: hasError && hasError(props.data.lotteCardAprvNo, col.key) ? '#FFCCCC' : '' }}
                 onValueChanged={(newValue) => {
+                    if(newValue.event && newValue.event.type === 'dxmousewheel'){
+                        newValue.event.stopPropagation();
+                        return;
+                    }
                     hasError && setValidationErrors(prevErrors => prevErrors.filter(error => !(error.lotteCardAprvNo === props.data.lotteCardAprvNo && error.field === col.key)));
                     if (validateNumberBox) {
                         if (validateNumberBox(props.data, newValue.value)) {
@@ -141,7 +151,6 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
                         setIsChangeData(!isChangeData)
                     }
                 }}
-
             />
         )
     }
