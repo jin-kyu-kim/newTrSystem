@@ -380,7 +380,7 @@
             	pca.ELCTRN_ATRZ_ID AS unique_id, 
 		    	CONCAT(p.PRJCT_NM, ' (', (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = p.PRJCT_MNGR_EMP_ID), ' ', (SELECT EMPNO FROM EMP WHERE EMP_ID = p.PRJCT_MNGR_EMP_ID), ')') AS PRJCT_NM, -- 프로젝트명
 		    	(SELECT CD_NM FROM CD WHERE CD_VALUE = pca.EXPENS_CD) AS EXPENS_CD, -- 비용 코드
-		    	e.EMP_FLNM as EMP_FLNM,
+                CONCAT(e.EMP_FLNM, ' ', e.EMPNO) as EMP_FLNM,
 		    	CONCAT(e.EMP_FLNM, ' ', e.EMPNO, ' | 상세내역 : ', pca.CT_PRPOS, ' | 용도 : ', pca.ATDRN) AS PRJCT_DETAIL,
 		    	CONCAT('상세내역 : ', pca.CT_PRPOS, ' | 용도 : ', pca.ATDRN) AS EMP_DETAIL,
 		    	pca.UTZTN_AMT as UTZTN_AMT,

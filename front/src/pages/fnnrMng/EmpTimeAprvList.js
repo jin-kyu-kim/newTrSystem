@@ -95,6 +95,7 @@ const EmpTimeAprvList = () => {
           <SearchInfoSet callBack={searchHandle} props={searchInfo} />
         </div>
         <CustomPivotGrid
+          columnGTName={'소계'}
           weekendColor={true}
           isExport={true}
           sorting={true}
