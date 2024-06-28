@@ -494,6 +494,13 @@
   padding: 8px;
 }
 
+/* pivotGrid 단일 소계일 경우 좌측으로 고정 */
+.singleStickyTotal .dx-pivotgrid .dx-grandtotal {
+  position: sticky;
+  left: 0;
+  background-color: rgb(240, 240, 240);
+}
+
 /* pivotGrid 소계, 총계 */
 .dx-pivotgrid .dx-pivotgrid-area-data .dx-row-total, .dx-pivotgrid .dx-pivotgrid-vertical-headers .dx-row-total{
   background-color: #fff5c9;
@@ -502,8 +509,8 @@
   padding-left: 22px;
   background-color: #fff5c9;
 }
-/* pivotGrid 일자별 집계 숨기기 및 소계,총계만 폰트 bold */
-.dx-total.dx-row-total:not(.dx-grandtotal):not(.dx-last-cell) span {
+/* 프로젝트비용: 과거비용승인이력 팝업: 현금 및 개인법인카드: pivotGrid 일자별 집계 숨기기 및 소계,총계만 폰트 bold */
+#sales .dx-total.dx-row-total:not(.dx-grandtotal):not(.dx-last-cell) span {
   visibility: hidden;
 }
 .dx-total.dx-grandtotal.dx-row-total span,

@@ -77,7 +77,8 @@ const EmpExpenseAprvProject = ({ prjctId, aplyYm, aplyOdr }) => {
                         prjctNm: row.prjctNm,
                         expensCd: row.expensCd,
                         prjctDetail: row.prjctDetail,
-                        utztnAmt: row.utztnAmt
+                        utztnAmt: row.utztnAmt,
+                        prjctCdIdntfr: row.prjctCdIdntfr
                     });
                 }
             }
@@ -86,14 +87,21 @@ const EmpExpenseAprvProject = ({ prjctId, aplyYm, aplyOdr }) => {
         return combinedData;
     };
     
+    function getProjectName (e){
+        let selectedData = data.find(item => item.prjctCdIdntfr === e);
+        return selectedData.prjctNm ? selectedData.prjctNm : ""
+    }
 
     const dataSource = new PivotGridDataSource({
         fields: [{
             caption: '프로젝트명',
-            dataField: 'prjctNm',
+            dataField: 'prjctCdIdntfr',
             width: 120,
             area: 'row',
             expanded: true,
+            customizeText: function(e) {
+                return getProjectName(e.value);
+            }
         }, {
             caption: '비용코드',
             dataField: 'expensCd',
@@ -147,7 +155,7 @@ const EmpExpenseAprvProject = ({ prjctId, aplyYm, aplyOdr }) => {
     }
 
     return (
-        <div style={{padding: '20px'}}>
+        <div className='singleStickyTotal' style={{padding: '20px'}}>
             <CustomPivotGrid
                 values={dataSource}
                 columnGTName={'소계'}
