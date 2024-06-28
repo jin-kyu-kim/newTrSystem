@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import EmpTRCostTotalJson from "./EmpTRCostTotalJson.json";
 import ApiRequest from "../../utils/ApiRequest";
 import CustomTable from "components/unit/CustomTable";
-import { useLocation } from "react-router-dom";
 import { Workbook } from "exceljs";
 import { exportDataGrid } from "devextreme/excel_exporter";
 import { saveAs } from 'file-saver';
@@ -14,21 +13,24 @@ import SearchInfoSet from "components/composite/SearchInfoSet";
 const EmpTRCostTotal = () => {
   const [values, setValues] = useState([]);
   const [param, setParam] = useState({});
-  const { keyColumn, queryId, nameColumns, prjctColumns, summaryColumn, smallSummaryColumn, searchInfo, groupDataProject, groupDataName } = EmpTRCostTotalJson;
+  const { keyColumn, queryId, nameColumns, prjctColumns, summaryColumn, searchInfo, groupDataProject, groupDataName } = EmpTRCostTotalJson;
   const [checkBox1Checked, setCheckBox1Checked] = useState(false);
   const [checkBox2Checked, setCheckBox2Checked] = useState(false);
   const { handleOpen } = useModal();
   const [searchIsVal, setSearchIsVal] = useState(false); //검색버튼 클릭시만 활성화용
-  const location = useLocation();
-  const admin = location.state ? location.state.admin : undefined;
   const date = new Date();
   const year = date.getFullYear();
   const month = date.getDate() > 15 ? date.getMonth() + 1 : date.getMonth();
   const monthVal = month < 10 ? "0" + month : month;
-  const aplyYm = admin != undefined ? admin.aplyYm : year + monthVal;
-  const aplyOdr = admin != undefined ? admin.aplyOdr : date.getDate() > 15 ? "1" : "2";
+  let odrVal = date.getDate() > 15 ? "1" : "2";
   const [loading, setLoading] = useState(false);
 
+  const [startYmd, setStartYmd] = useState('');
+  const [startOdr, setStartOdr] = useState('');
+  const [endYmd, setEndYmd] = useState('');
+  const [endOdr, setEndOdr] = useState('');
+
+  let newStartYmd, newStartOdr, newEndYmd, newEndOdr;
 
   const handleCheckBox1Change = (e) => {
     setCheckBox1Checked(e.value);
@@ -47,6 +49,11 @@ const EmpTRCostTotal = () => {
   };
 
   useEffect(() => {
+    setStartYmd(year + monthVal);
+    setStartOdr(odrVal);
+    setEndYmd(year + monthVal);
+    setEndOdr(odrVal);
+
     setCheckBox1Checked(true)
     setValues([])
   }, []);
@@ -62,10 +69,48 @@ const EmpTRCostTotal = () => {
 
   // 검색으로 조회할 때
   const searchHandle = async (initParam) => {
+    if(initParam.startYmOdr == null && initParam.endYmOdr == null) {
+
+      setParam({
+        ...initParam,
+        startYmOdr: year+monthVal+odrVal,
+        endYmOdr: year+monthVal+odrVal,
+        queryId: queryId,
+      })
+
+      return;
+    } else if(initParam.startYmOdr !== null && initParam.endYmOdr == null) {
+
+      newStartYmd = initParam.startYmOdr.substr(0, 6);
+      newStartOdr = initParam.startYmOdr.substr(6, 2) > 15 ? "2" : "1";
+      newEndYmd = initParam.startYmOdr.substr(0, 6);
+      newEndOdr = initParam.startYmOdr.substr(6, 2) > 15 ? "2" : "1";
+
+    } else if(initParam.startYmOdr == null && initParam.endYmOdr !== null) {
+
+      newStartYmd = initParam.endYmOdr.substr(0, 6);
+      newStartOdr = initParam.endYmOdr.substr(6, 2) > 15 ? "2" : "1";
+      newEndYmd = initParam.endYmOdr.substr(0, 6);
+      newEndOdr = initParam.endYmOdr.substr(6, 2) > 15 ? "2" : "1";
+
+    } else if(initParam.startYmOdr !== null && initParam.endYmOdr !== null) {
+
+      newStartYmd = initParam.startYmOdr.substr(0, 6);
+      newStartOdr = initParam.startYmOdr.substr(6, 2) > 15 ? "2" : "1";
+      newEndYmd = initParam.endYmOdr.substr(0, 6);
+      newEndOdr = initParam.endYmOdr.substr(6, 2) > 15 ? "2" : "1";
+
+    };
+
+    setStartYmd(newStartYmd);
+    setStartOdr(newStartOdr);
+    setEndYmd(newEndYmd);
+    setEndOdr(newEndOdr);
+
     setParam({
       ...initParam,
-      aplyYm: initParam?.year + initParam?.month,
-      aplyOdr: initParam?.aplyOdr,
+      startYmOdr: newStartYmd+newStartOdr,
+      endYmOdr: newEndYmd+newEndOdr,
       queryId: queryId,
     });
     setSearchIsVal(true);
@@ -133,8 +178,9 @@ const EmpTRCostTotal = () => {
       <div className="title">근무시간,경비 통합조회</div>
       <div className="title-desc">* 근무시간, 경비 통합내역을 조회합니다.</div>
       <div>
-        <div className="wrap_search" style={{ marginBottom: "20px" }}>
-          <SearchInfoSet props={searchInfo} callBack={searchHandle} />
+        <div className="wrap_search" style={{marginBottom: "20px"}}>
+          <span style={{fontSize: "1.1rem"}}>* ({startYmd} - {startOdr} ~ {endYmd} - {endOdr})</span>
+          <SearchInfoSet props={searchInfo} callBack={searchHandle}/>
         </div>
         <CheckBox
           text="프로젝트 별"
@@ -156,10 +202,7 @@ const EmpTRCostTotal = () => {
             keyColumn={keyColumn}
             columns={prjctColumns}
             values={values}
-            summary={true}
-            summaryColumn={summaryColumn}
-            smallSummaryColumn={smallSummaryColumn}
-            grouping={true}
+            grouping={summaryColumn}
             groupingData={groupDataProject}
             excel={true}
             wordWrap={true}
@@ -174,13 +217,10 @@ const EmpTRCostTotal = () => {
             columns={nameColumns}
             values={values}
             paging={true}
-            summary={true}
-            summaryColumn={summaryColumn}
-            smallSummary={true}
-            smallSummaryColumn={smallSummaryColumn}
-            grouping={true}
+            grouping={summaryColumn}
             groupingData={groupDataName}
             groupingCustomizeText={groupingCustomizeText}
+            wordWrap={true}
             excel={true}
             onExcel={onExporting}
           />

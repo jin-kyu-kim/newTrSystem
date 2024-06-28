@@ -505,15 +505,24 @@ public class IndvdlClmDomain {
         }
 
         int cnt = 0;
-        while (cnt < retrieveVcatnPrjctMmYnInqResult.size()) {
-            if (retrieveVcatnPrjctMmYnInqResult.get(cnt).get("atrzDmndSttsCd").equals("VTW03702")) {
-                errorMsg = retrieveVcatnPrjctMmYnInqResult.get(cnt).get("aplyYmd") + "일의 근무시간이 결재중입니다.";
+//        while (cnt < retrieveVcatnPrjctMmYnInqResult.size()) {
+//            if (retrieveVcatnPrjctMmYnInqResult.get(cnt).get("atrzDmndSttsCd").equals("VTW03702")) {
+//                errorMsg = retrieveVcatnPrjctMmYnInqResult.get(cnt).get("aplyYmd") + "일의 근무시간이 결재중입니다.";
+//                break;
+//            } else if (retrieveVcatnPrjctMmYnInqResult.get(cnt).get("mmAtrzCmptnYn").equals("Y")) {
+//                errorMsg = retrieveVcatnPrjctMmYnInqResult.get(cnt).get("aplyYmd") + "일의 근무시간이 마감되었습니다.";
+//                break;
+//            }
+//            cnt++;
+//        }
+        for(int i=0; i<retrieveVcatnPrjctMmYnInqResult.size() ; i++){
+            if (retrieveVcatnPrjctMmYnInqResult.get(i).get("atrzDmndSttsCd").equals("VTW03702")) {
+                errorMsg = retrieveVcatnPrjctMmYnInqResult.get(i).get("aplyYmd") + "일의 근무시간이 결재중입니다.";
                 break;
-            } else if (retrieveVcatnPrjctMmYnInqResult.get(cnt).get("mmAtrzCmptnYn").equals("Y")) {
-                errorMsg = retrieveVcatnPrjctMmYnInqResult.get(cnt).get("aplyYmd") + "일의 근무시간이 마감되었습니다.";
+            } else if (retrieveVcatnPrjctMmYnInqResult.get(i).get("atrzDmndSttsCd").equals("VTW03703") && retrieveVcatnPrjctMmYnInqResult.get(i).get("md").equals(1)) {
+                errorMsg = retrieveVcatnPrjctMmYnInqResult.get(i).get("aplyYmd") + "일의 근무시간이 마감되었습니다.";
                 break;
             }
-            cnt++;
         }
 
         if (vcatnFlag.equals("account")) {
@@ -705,15 +714,24 @@ public class IndvdlClmDomain {
         // case_common
         // 결재중인 근무시간이 있거나 승인된 근무시간이 있는 경우
         int cnt = 0;
-        while (cnt < retrieveVcatnPrjctMmYnInqResult.size()) {
-            if (retrieveVcatnPrjctMmYnInqResult.get(cnt).get("atrzDmndSttsCd").equals("VTW03702")) {
-                errorMsg = retrieveVcatnPrjctMmYnInqResult.get(cnt).get("aplyYmd") + "일의 근무시간이 결재중입니다.";
+//        while (cnt < retrieveVcatnPrjctMmYnInqResult.size()) {
+//            if (retrieveVcatnPrjctMmYnInqResult.get(cnt).get("atrzDmndSttsCd").equals("VTW03702")) {
+//                errorMsg = retrieveVcatnPrjctMmYnInqResult.get(cnt).get("aplyYmd") + "일의 근무시간이 결재중입니다.";
+//                break;
+//            } else if (retrieveVcatnPrjctMmYnInqResult.get(cnt).get("mmAtrzCmptnYn").equals("Y")) {
+//                errorMsg = retrieveVcatnPrjctMmYnInqResult.get(cnt).get("aplyYmd") + "일의 근무시간이 마감되었습니다.";
+//                break;
+//            }
+//            cnt++;
+//        }
+        for(int i=0; i<retrieveVcatnPrjctMmYnInqResult.size() ; i++){
+            if (retrieveVcatnPrjctMmYnInqResult.get(i).get("atrzDmndSttsCd").equals("VTW03702")) {
+                errorMsg = retrieveVcatnPrjctMmYnInqResult.get(i).get("aplyYmd") + "일의 근무시간이 결재중입니다.";
                 break;
-            } else if (retrieveVcatnPrjctMmYnInqResult.get(cnt).get("mmAtrzCmptnYn").equals("Y")) {
-                errorMsg = retrieveVcatnPrjctMmYnInqResult.get(cnt).get("aplyYmd") + "일의 근무시간이 마감되었습니다.";
+            } else if (retrieveVcatnPrjctMmYnInqResult.get(i).get("atrzDmndSttsCd").equals("VTW03703") && retrieveVcatnPrjctMmYnInqResult.get(i).get("md").equals(1)) {
+                errorMsg = retrieveVcatnPrjctMmYnInqResult.get(i).get("aplyYmd") + "일의 근무시간이 마감되었습니다.";
                 break;
             }
-            cnt++;
         }
 
         List<Map<String, Object>> selectVcatnAtrz = new ArrayList<>();
@@ -1353,15 +1371,24 @@ public class IndvdlClmDomain {
         // case_common
         // 결재중인 근무시간이 있거나 승인된 근무시간이 있는 경우
         int cnt = 0;
-        while (cnt < retrieveVcatnPrjctMmYnInqResult.size()) {
-            if (retrieveVcatnPrjctMmYnInqResult.get(cnt).get("atrzDmndSttsCd").equals("VTW03702")) {
-                errorMsg = retrieveVcatnPrjctMmYnInqResult.get(cnt).get("aplyYmd") + "일의 근무시간이 결재중입니다.";
+//        while (cnt < retrieveVcatnPrjctMmYnInqResult.size()) {
+//            if (retrieveVcatnPrjctMmYnInqResult.get(cnt).get("atrzDmndSttsCd").equals("VTW03702")) {
+//                errorMsg = retrieveVcatnPrjctMmYnInqResult.get(cnt).get("aplyYmd") + "일의 근무시간이 결재중입니다.";
+//                break;
+//            } else if (retrieveVcatnPrjctMmYnInqResult.get(cnt).get("mmAtrzCmptnYn").equals("Y")) {
+//                errorMsg = retrieveVcatnPrjctMmYnInqResult.get(cnt).get("aplyYmd") + "일의 근무시간이 마감되었습니다.";
+//                break;
+//            }
+//            cnt++;
+//        }
+        for(int i=0; i<retrieveVcatnPrjctMmYnInqResult.size() ; i++){
+            if (retrieveVcatnPrjctMmYnInqResult.get(i).get("atrzDmndSttsCd").equals("VTW03702")) {
+                errorMsg = retrieveVcatnPrjctMmYnInqResult.get(i).get("aplyYmd") + "일의 근무시간이 결재중입니다.";
                 break;
-            } else if (retrieveVcatnPrjctMmYnInqResult.get(cnt).get("mmAtrzCmptnYn").equals("Y")) {
-                errorMsg = retrieveVcatnPrjctMmYnInqResult.get(cnt).get("aplyYmd") + "일의 근무시간이 마감되었습니다.";
+            } else if (retrieveVcatnPrjctMmYnInqResult.get(i).get("atrzDmndSttsCd").equals("VTW03703") && retrieveVcatnPrjctMmYnInqResult.get(i).get("md").equals(1)) {
+                errorMsg = retrieveVcatnPrjctMmYnInqResult.get(i).get("aplyYmd") + "일의 근무시간이 마감되었습니다.";
                 break;
             }
-            cnt++;
         }
 
         if(errorMsg.equals("")){

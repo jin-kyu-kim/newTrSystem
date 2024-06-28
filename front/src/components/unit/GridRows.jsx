@@ -10,7 +10,6 @@ const GridRows = ({ columns, onClick, handleCheckBoxChange, checkBoxValue }) => 
     const ButtonRender = (button, data, onClick) => {
         let disabled = false;
         let visible = true;
-        let label = false
         if(button.able != null && data != null && button.able.value !== undefined && data[button.able.key] != button.able.value){
             disabled = true;
         } else if(button.able != null && data != null  && button.able.exceptValue !== undefined && data[button.able.key] == button.able.exceptValue){
@@ -106,7 +105,7 @@ const GridRows = ({ columns, onClick, handleCheckBoxChange, checkBoxValue }) => 
     };
 
     for (let i = 0; i < columns.length; i++) {
-      const { key, value, width, alignment, button, buttons, visible, toggle, subColumns, chkBox , grouping, currency, unit, dateFormat, rate } = columns[i];
+      const { key, value, width, alignment, button, buttons, subColumns, chkBox, currency, unit, dateFormat, rate, format } = columns[i];
 
       if(subColumns){
         /*===============헤더 하위 뎁스 컬럼 설정===================*/
@@ -241,6 +240,7 @@ const GridRows = ({ columns, onClick, handleCheckBoxChange, checkBoxValue }) => 
               caption={value}
               width={width}
               alignment={alignment || 'center'}
+              format={format}
             >
             </Column>
           );
