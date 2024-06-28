@@ -526,7 +526,7 @@ const ElecAtrzNewReq = () => {
         }
 
         // 경비청구 필수 컬럼 validation
-        if (param?.arrayData[0].tbNm === ElecAtrzNewReqJson.validationTableNm) {
+        if (param.arrayData && param.arrayData[0].tbNm === ElecAtrzNewReqJson.validationTableNmx) {
             if (!validateFields(param?.arrayData[1])) {
                 return false;
             }
