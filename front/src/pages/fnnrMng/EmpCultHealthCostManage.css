@@ -1,0 +1,8 @@
+.EmpCultHealthCostManage .dx-datagrid .dx-row-lines > td {
+    padding: 0px 15px 0px 15px;
+    margin: 0px;
+}
+
+.EmpCultHealthCostManage .dx-datagrid-rowsview .dx-row.dx-group-row td {
+    padding: 10px;
+}
