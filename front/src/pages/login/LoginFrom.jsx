@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import { Button, TextBox } from "devextreme-react";
 import Vtw from "../../assets/img/logo.png";
 import Slogan from "../../assets/img/slogan.png";
-import link from "../../assets/img/link3.png";
 import {useAuth} from "../../components/sidebar/contexts/auth";
-import "../../App.css"
 import { useModal } from "../../components/unit/ModalContext";
+import "../../App.css"
 
 const LoginForm = () => {
   const [empno, setEmpno] = useState("");
@@ -43,6 +42,11 @@ const LoginForm = () => {
     handleOpen('복사는 허용되지 않습니다.');
   }
 
+  const [showLoginForm, setShowLoginForm] = useState(false);
+  const toggleLoginForm = () => {
+    setShowLoginForm(!showLoginForm);
+  }
+
   return (
       <div>
         <div className="login">
@@ -56,34 +60,40 @@ const LoginForm = () => {
             {/* <div style={{marginTop: '5%', marginBottom: '5%'}}>
               <div style={{color: 'red', fontWeight: 'bold', marginBottom: '5%', textDecoration: 'underline'}}>* 운영 전환 예정으로 인한 시스템 사용 제한</div>
               <div>사용 제한 일시 : 2024.06.28(금) 13:00 ~ 2024.07.01(월) 13:00</div>
-            </div> */}
-            <div className="input-container">
-              <TextBox
-                  value={empno}
-                  onValueChanged={(e) => setEmpno(e.value)}
-                  placeholder="사번"
-                  onEnterKey={handleClick}
-              />
-              {validationErrors.empno && (
-                  <div style={{color: 'red'}}>{validationErrors.empno}</div>
-              )}
+
             </div>
-            <div className="input-container">
-              <TextBox
-                  mode="password"
-                  value={pswd}
-                  onValueChanged={(e) => setPassword(e.value)}
-                  placeholder="비밀번호"
-                  onEnterKey={handleClick}
-                  onCopy={preventCopy}
-              />
-              {validationErrors.pswd && (
-                  <div style={{color: 'red'}}>{validationErrors.pswd}</div>
-              )}
-            </div>
-            <div className="button-container">
-              <Button text="Login" type="success" onClick={handleClick}/>
-            </div>
+            {showLoginForm && (
+              <>
+                <div className="input-container">
+                  <TextBox
+                      value={empno}
+                      onValueChanged={(e) => setEmpno(e.value)}
+                      placeholder="사번"
+                      onEnterKey={handleClick}
+                  />
+                  {validationErrors.empno && (
+                      <div style={{color: 'red'}}>{validationErrors.empno}</div>
+                  )}
+                </div>
+                <div className="input-container">
+                  <TextBox
+                      mode="password"
+                      value={pswd}
+                      onValueChanged={(e) => setPassword(e.value)}
+                      placeholder="비밀번호"
+                      onEnterKey={handleClick}
+                      onCopy={preventCopy}
+                  />
+                  {validationErrors.pswd && (
+                      <div style={{color: 'red'}}>{validationErrors.pswd}</div>
+                  )}
+                </div>
+                <div className="button-container">
+                  <Button text="Login" type="success" onClick={handleClick}/>
+                </div>
+              </>
+            )}
+
 
           </div>
           <div className="link">
@@ -105,7 +115,7 @@ const LoginForm = () => {
           <div style={{alignSelf:"center", textAlign:"center", color:"white", marginTop:"20px"}}>
           <p>
             전략/기술 컨설팅을 기반으로 정보시스템 구축 및 운영에 이르는 Total
-            IT Service의 미래 비전을 제시하는 기업, vtw
+            IT Service의 미래 비전을 제시하는 기업, <span onClick={toggleLoginForm}>vtw</span>
           </p>
           <h6>copyright@2024 vtw.co.ltd all rights reserved</h6>
           </div>
