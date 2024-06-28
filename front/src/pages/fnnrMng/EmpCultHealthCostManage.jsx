@@ -12,11 +12,12 @@ import SearchInfoSet from "components/composite/SearchInfoSet";
 import EmpCultHealthCostManagePop from "./EmpCultHealthCostManagePop";
 import EmpCultHealthCostDetailPop from "./EmpCultHealthCostDetailPop";
 import CustomEditTable from "components/unit/CustomEditTable";
+import "./EmpCultHealthCostManage.css";
 
 const EmpCultHealthCostManage = () => {
   const navigate = useNavigate();
   const [values, setValues] = useState([]);
-  const { keyColumn, queryId, tableColumns, wordWrap, searchInfo } = EmpCultHealthCostManageJson;
+  const { keyColumn, queryId, tableColumns, wordWrap, searchInfo, groupingColumn } = EmpCultHealthCostManageJson;
   const [isManagePopupVisible, setIsManagePopupVisible] = useState(false);
   const [isDetailPopupVisible, setIsDetailPopupVisible] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState();
@@ -220,7 +221,7 @@ const EmpCultHealthCostManage = () => {
         </div>
         <div className="title-desc">* 직원의 문화체련비를 조회 합니다.</div>
 
-        <div>
+        <div className='EmpCultHealthCostManage'>
           <div style={{ marginBottom: "20px" }}>
             <SearchInfoSet props={searchInfo} callBack={searchHandle} />
           </div>
@@ -229,7 +230,9 @@ const EmpCultHealthCostManage = () => {
             keyColumn={keyColumn}
             columns={tableColumns}
             values={values}
-            paging={true}
+            paging={false}
+            summary={true}
+            groupingColumn={groupingColumn}
             excel={true}
             onExcel={onExporting}
             wordWrap={wordWrap}
@@ -239,7 +242,6 @@ const EmpCultHealthCostManage = () => {
             onSelection={onSelection}
             validateNumberBox={validateNumberBox}
           />
-
         </div>
         <Button onClick={handleSave} disabled={disabled} type='default' style={{ width: "100px" }}>저장</Button>
       </div>

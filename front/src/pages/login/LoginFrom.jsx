@@ -57,9 +57,10 @@ const LoginForm = () => {
             <img src={Slogan} alt="VTW" style={{width: "593px", marginBottom: "5%"}}/>
           </div>
           <div className="login-form">
-            <div style={{marginTop: '5%', marginBottom: '5%'}}>
+            {/* <div style={{marginTop: '5%', marginBottom: '5%'}}>
               <div style={{color: 'red', fontWeight: 'bold', marginBottom: '5%', textDecoration: 'underline'}}>* 운영 전환 예정으로 인한 시스템 사용 제한</div>
               <div>사용 제한 일시 : 2024.06.28(금) 13:00 ~ 2024.07.01(월) 13:00</div>
+
             </div>
             {showLoginForm && (
               <>
@@ -92,6 +93,7 @@ const LoginForm = () => {
                 </div>
               </>
             )}
+
 
           </div>
           <div className="link">

@@ -1,4 +1,4 @@
-import { Column, DataGrid, Editing, Lookup, MasterDetail, Selection, RequiredRule, StringLengthRule, Pager, Paging, Export, Summary, TotalItem, KeyboardNavigation } from 'devextreme-react/data-grid';
+import { Column, DataGrid, Editing, Lookup, MasterDetail, Selection, RequiredRule, StringLengthRule, Pager, Paging, Export, Summary, TotalItem, GroupItem } from 'devextreme-react/data-grid';
 import { useCallback, useEffect, useState } from 'react';
 import ApiRequest from 'utils/ApiRequest';
 import CellRender from './CellRender';
@@ -6,7 +6,7 @@ import { useModal } from "./ModalContext";
 
 const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal, masterDetail, doublePk, noDataText, noEdit,
     onSelection, onRowClick, callback, handleData, handleExpanding, cellRenderConfig, onBtnClick, excel, onExcel, upCdValue,
-    summary, summaryColumn, onlyUpdate, defaultPageSize, queryIdUrl, validateNumberBox, onCellPrepared, headerCellRender }) => {
+    summary, summaryColumn, onlyUpdate, defaultPageSize, queryIdUrl, validateNumberBox, onCellPrepared, headerCellRender, paging, groupingColumn }) => {
 
     const { handleOpen } = useModal();
     const [ cdValList, setCdValList ] = useState({});
@@ -163,13 +163,26 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                 {onSelection && <Selection mode="multiple" selectAllMode="page" />}
                 {summary&&
                     <Summary>
-                        {summaryColumn.map(item => (
+                        {summaryColumn?.map(item => (
                             <TotalItem
                                 key={item.key}
                                 column={item.value}
                                 summaryType={item.type}
                                 displayFormat={item.format}
                                 valueFormat={{ type: 'fixedPoint', precision: item.precision }}
+                            />
+                        ))}
+
+                        {groupingColumn?.map(item => (
+                            <GroupItem
+                                key={item.key}
+                                column={item.key}
+                                name={item.name}
+                                summaryType={item.summaryType}
+                                valueFormat={item.valueFormat}
+                                displayFormat={item.displayFormat}
+                                alignByColumn={true}
+                                customizeText={item.totalText}
                             />
                         ))}
                     </Summary>
@@ -200,7 +213,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                         {col.length && <StringLengthRule max={col.length} message={`최대입력 길이는 ${col.length}입니다`} />}
                     </Column>
                 ))}
-                <Paging defaultPageSize={defaultPageSize ? defaultPageSize : 20} />
+                <Paging enabled={paging} defaultPageSize={defaultPageSize ? defaultPageSize : 20} />
                 <Pager
                     displayMode="full"
                     showNavigationButtons={true}
