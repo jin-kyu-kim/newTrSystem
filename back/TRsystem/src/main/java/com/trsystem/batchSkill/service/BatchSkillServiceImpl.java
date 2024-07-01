@@ -143,7 +143,7 @@ public class BatchSkillServiceImpl implements BatchSkillService {
             // 트랜잭션 시작
             connection.setAutoCommit(false);
             
-            String callProcedure = "CALL nwTr.P_GET_PRJCT_ID(?, ?)";
+            String callProcedure = "CALL P_GET_PRJCT_ID(?, ?)";
             
             try (CallableStatement callableStatement = connection.prepareCall(callProcedure)){
             	
@@ -173,7 +173,7 @@ public class BatchSkillServiceImpl implements BatchSkillService {
             // 트랜잭션 시작
             connection.setAutoCommit(false);
             
-            String callProcedure = "CALL nwTr.P_EMP_RETIRE_PRCS()";
+            String callProcedure = "CALL P_EMP_RETIRE_PRCS()";
             
             try (CallableStatement callableStatement = connection.prepareCall(callProcedure)){
             	
@@ -204,7 +204,7 @@ public class BatchSkillServiceImpl implements BatchSkillService {
             // 트랜잭션 시작
             connection.setAutoCommit(false);
             
-            String callProcedure = "CALL nwTr.P_ADD_PRJCT_BGT_PRMPC(?, ?, ?)";
+            String callProcedure = "CALL P_ADD_PRJCT_BGT_PRMPC(?, ?, ?)";
             
             try (CallableStatement callableStatement = connection.prepareCall(callProcedure)) {
             	
