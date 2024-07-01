@@ -1092,12 +1092,12 @@
     <select id="retrieveDinnrDpcnYn" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
             pcatd.ATND_EMP_ID
-        FROM nwTr.PRJCT_CT_APLY pca
-            JOIN nwTr.PRJCT_CT_ATRZ pcaz ON pca.PRJCT_CT_APLY_SN = pcaz.PRJCT_CT_APLY_SN
+        FROM PRJCT_CT_APLY pca
+            JOIN PRJCT_CT_ATRZ pcaz ON pca.PRJCT_CT_APLY_SN = pcaz.PRJCT_CT_APLY_SN
                 AND pca.EMP_ID = pcaz.EMP_ID
                 AND pca.APLY_YM = pcaz.APLY_YM
                 AND pca.APLY_ODR = pcaz.APLY_ODR
-            JOIN nwTr.PRJCT_CT_ATDRN pcatd  ON pca.PRJCT_CT_APLY_SN = pcatd.PRJCT_CT_APLY_SN
+            JOIN PRJCT_CT_ATDRN pcatd  ON pca.PRJCT_CT_APLY_SN = pcatd.PRJCT_CT_APLY_SN
         WHERE 1 = 1
           AND pca.EXPENS_CD = 'VTW04531'
           AND SUBSTR(pca.UTZTN_DT, 1, 8) = SUBSTR(#{utztnDt}, 1, 8);
