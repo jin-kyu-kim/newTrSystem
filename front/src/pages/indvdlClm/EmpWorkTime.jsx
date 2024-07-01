@@ -29,16 +29,10 @@ const EmpWorkTime = () => {
     // TODO : 임시기능  끝
 
     // 차수별 시작, 종료일자
-    // let flagOrder = admin != undefined ? admin.aplyOdr :  new Date().getDate() > 15 ? 1 : 2;
-    // let orderWorkBgngYmd = admin != undefined ? admin.orderWorkBgngYmd : flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMMDD")) : String(Moment(new Date()).format("YYYYMM") - 1 + "16")
-    // let orderWorkEndYmd = admin != undefined ? admin.orderWorkEndYmd : flagOrder == 1 ? String(Moment(new Date()).format("YYYYMM") + "15") : Moment(endOfMonth(new Date(Moment(Moment(new Date()).format("YYYYMM") - 1 + "15").format("YYYY-MM-DD")))).format("YYYYMMDD")
-    // let orderWorkBgngMm = admin != undefined ? admin.aplyYm : flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMM")) : String(Moment(new Date()).format("YYYYMM") - 1)
-// TODO : 임시기능
-    let flagOrder = admin != undefined ? admin.aplyOdr :  tmpDate.getDate() > 15 ? 1 : 2; //new Date().getDate() > 15 ? 1 : 2;
-    let orderWorkBgngYmd = admin != undefined ? admin.orderWorkBgngYmd : flagOrder == 1 ? String(Moment(startOfMonth(tmpDate)).format("YYYYMMDD")) : String(Moment(tmpDate).format("YYYYMM") - 1 + "16")
-    let orderWorkEndYmd = admin != undefined ? admin.orderWorkEndYmd : flagOrder == 1 ? String(Moment(tmpDate).format("YYYYMM") + "15") : Moment(endOfMonth(new Date(Moment(Moment(tmpDate).format("YYYYMM") - 1 + "15").format("YYYY-MM-DD")))).format("YYYYMMDD")
-    let orderWorkBgngMm = admin != undefined ? admin.aplyYm : flagOrder == 1 ? String(Moment(startOfMonth(tmpDate)).format("YYYYMM")) : String(Moment(tmpDate).format("YYYYMM") - 1)
-// TODO : 임시기능  끝
+    let flagOrder = admin != undefined ? admin.aplyOdr :  new Date().getDate() > 15 ? 1 : 2;
+    let orderWorkBgngYmd = admin != undefined ? admin.orderWorkBgngYmd : flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMMDD")) : String(Moment(new Date()).format("YYYYMM") - 1 + "16")
+    let orderWorkEndYmd = admin != undefined ? admin.orderWorkEndYmd : flagOrder == 1 ? String(Moment(new Date()).format("YYYYMM") + "15") : Moment(endOfMonth(new Date(Moment(Moment(new Date()).format("YYYYMM") - 1 + "15").format("YYYY-MM-DD")))).format("YYYYMMDD")
+    let orderWorkBgngMm = admin != undefined ? admin.aplyYm : flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMM")) : String(Moment(new Date()).format("YYYYMM") - 1)
 
     // 세션설정
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
@@ -52,16 +46,6 @@ const EmpWorkTime = () => {
         getTotHoliday();
         getVcatnTotHrs();
     }, [])
-
-    // 프로젝트목록 조회
-    // TODO :임시기능
-    useEffect(() => {
-        flagOrder = admin != undefined ? admin.aplyOdr :  tmpDate.getDate() > 15 ? 1 : 2; //new Date().getDate() > 15 ? 1 : 2;
-        orderWorkBgngYmd = admin != undefined ? admin.orderWorkBgngYmd : flagOrder == 1 ? String(Moment(startOfMonth(tmpDate)).format("YYYYMMDD")) : String(Moment(tmpDate).format("YYYYMM") - 1 + "16")
-        orderWorkEndYmd = admin != undefined ? admin.orderWorkEndYmd : flagOrder == 1 ? String(Moment(tmpDate).format("YYYYMM") + "15") : Moment(endOfMonth(new Date(Moment(Moment(tmpDate).format("YYYYMM") - 1 + "15").format("YYYY-MM-DD")))).format("YYYYMMDD")
-        orderWorkBgngMm = admin != undefined ? admin.aplyYm : flagOrder == 1 ? String(Moment(startOfMonth(tmpDate)).format("YYYYMM")) : String(Moment(tmpDate).format("YYYYMM") - 1)
-    }, [tmpDate])
-    // TODO : 임시기능  끝
 
     // 프로젝트 목록 조회
     const [ selectPrjctList, setSelectPrjctList ] = useState();

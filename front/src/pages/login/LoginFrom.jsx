@@ -41,11 +41,11 @@ const LoginForm = () => {
     e.event.preventDefault(); // DevExtreme의 이벤트 객체에서 원래의 이벤트를 참조
     handleOpen('복사는 허용되지 않습니다.');
   }
-
-  const [showLoginForm, setShowLoginForm] = useState(false);
-  const toggleLoginForm = () => {
-    setShowLoginForm(!showLoginForm);
-  }
+  // 임시 제한
+  // const [showLoginForm, setShowLoginForm] = useState(false);
+  // const toggleLoginForm = () => {
+  //   setShowLoginForm(!showLoginForm);
+  // }
 
   return (
       <div>
@@ -58,11 +58,12 @@ const LoginForm = () => {
           </div>
           <div className="login-form">
             <div style={{marginTop: '5%', marginBottom: '5%'}}>
-              <div style={{color: 'red', fontWeight: 'bold', marginBottom: '5%', textDecoration: 'underline'}}>* 운영 전환 예정으로 인한 시스템 사용 제한</div>
-              <div>사용 제한 일시 : 2024.06.28(금) 13:00 ~ 2024.07.01(월) 13:00</div>
+              {/* 임시 제한 */}
+              {/*<div style={{color: 'red', fontWeight: 'bold', marginBottom: '5%', textDecoration: 'underline'}}>* 운영 전환 예정으로 인한 시스템 사용 제한</div>*/}
+              {/*<div>사용 제한 일시 : 2024.06.28(금) 13:00 ~ 2024.07.01(월) 13:00</div>*/}
             </div>
 
-            {showLoginForm && (
+            {/*{showLoginForm && (*/}
               <>
                 <div className="input-container">
                   <TextBox
@@ -92,7 +93,7 @@ const LoginForm = () => {
                   <Button text="Login" type="success" onClick={handleClick}/>
                 </div>
               </>
-            )}
+            {/*)}*/}
           </div>
           
           <div className="link">
@@ -114,7 +115,7 @@ const LoginForm = () => {
           <div style={{alignSelf:"center", textAlign:"center", color:"white", marginTop:"20px"}}>
           <p>
             전략/기술 컨설팅을 기반으로 정보시스템 구축 및 운영에 이르는 Total
-            IT Service의 미래 비전을 제시하는 기업, <span onClick={toggleLoginForm}>vtw</span>
+            IT Service의 미래 비전을 제시하는 기업,vtw {/* <span onClick={toggleLoginForm}>vtw</span> */}
           </p>
           <h6>copyright@2024 vtw.co.ltd all rights reserved</h6>
           </div>
