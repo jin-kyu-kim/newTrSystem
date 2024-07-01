@@ -12,8 +12,6 @@ const button = {
 
 const ProjectExpenseExcel = (props) => {
     const empId = props.empId;
-    const aplyYm = props.aplyYm;
-    const aplyOdr = props.aplyOdr;
 
     const [excel, setExcel] = useState();
     const [aprvNoList, setAprvNoList] = useState([]);
@@ -58,7 +56,7 @@ const ProjectExpenseExcel = (props) => {
         param.push({
             tbNm: "CARD_USE_DTLS",
             snColumn: "CARD_USE_SN",
-            snSearch: { empId, aplyYm, aplyOdr }
+            snSearch: { empId }
         });
 
         if (excel[0].__EMPTY_4 === "승인일자" && excel[0].__EMPTY_5 === "승인시간") {
@@ -77,7 +75,7 @@ const ProjectExpenseExcel = (props) => {
                         const time = excel[i].__EMPTY_5.replace(/:/g, "");
     
                         const data = {
-                            empId, aplyYm, aplyOdr,
+                            empId,
                             "utztnDt": date + time,
                             "useOffic": excel[i].__EMPTY_6,
                             "utztnAmt": utztnAmt,

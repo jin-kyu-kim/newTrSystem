@@ -468,12 +468,12 @@
 				JOIN ELCTRN_ATRZ B ON A.ELCTRN_ATRZ_ID = B.ELCTRN_ATRZ_ID
 				WHERE B.ELCTRN_ATRZ_ID = #{elctrnAtrzId}
 				) Y ON X.PRJCT_ID = Y.PRJCT_ID
-				<if test="elctrnAtrzTySeCd == 'VTW04909'">
-				 	AND X.OUTORD_ENTRPS_NM = Y.EXPECT_CTRT_ENTRPS_NM
-				</if>
-				<if test="elctrnAtrzTySeCd == 'VTW04910'">
-					AND X.PRDUCT_NM = Y.PRDUCT_NM
-				</if>
+<!--				<if test="elctrnAtrzTySeCd == 'VTW04909'">-->
+<!--				 	AND X.OUTORD_ENTRPS_NM = Y.EXPECT_CTRT_ENTRPS_NM-->
+<!--				</if>-->
+<!--				<if test="elctrnAtrzTySeCd == 'VTW04910'">-->
+<!--					AND X.PRDUCT_NM = Y.PRDUCT_NM-->
+<!--				</if>-->
 	</select>
 	
 	<select id="retrieveOutorHnfDtl" parameterType="map" resultType="com.trsystem.LowerHashMap">
