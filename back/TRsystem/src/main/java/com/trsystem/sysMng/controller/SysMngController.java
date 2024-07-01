@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 import javax.security.auth.login.FailedLoginException;
@@ -66,22 +65,31 @@ public class SysMngController {
     @PostMapping(value = "/boot/sysMng/sendEmail")
     public void sendEmail(@RequestBody Map<String, Object> details) {
     	 String type = (String) details.get("type");
+        String content;
     	 	
     	 switch (type) {
          case "roomRes":	//회의실예약
-        	// emailSendService.roomReserveEmailSend(resEmp, toEmailList,state, startDate, "approval", content, code);
+             String resEmp = (String) details.get("reportEmpId");
+             List<String> toEmailList = (List<String>) details.get("toEmpId");
+             String state = (String) details.get("state");
+             String startDate = (String) details.get("startDate");
+             String endTime = (String) details.get("endTime");
+             content =(String) details.get("content");
+             String code =(String) details.get("code");
+
+        	 emailSendService.roomReserveEmailSend(resEmp, toEmailList, state, startDate, endTime , code, code);
         	 break;
         	 
          case "project": 	// 프로젝트
-        	// emailSendService.projectEmailSend(toEmpId,reportEmpId,projectCode,title,content,submitType,state);
+//        	 emailSendService.projectEmailSend(toEmpId,reportEmpId,projectCode,title,content,submitType,state);
         	 break;
              
          case "vacation":	// 휴가
-        	// emailSendService.vacationEmail(details);
+//        	 emailSendService.vacationEmail(details);
         	 break;
         	 
          case "elecAtrz":	//전자결재
-        	 //emailSendService.elecAtrzEmailSend(toEmpId,reportEmpId,documentNumber,title,content,pageMove,moveUrl);
+//        	 emailSendService.elecAtrzEmailSend(toEmpId,reportEmpId,documentNumber,title,content,pageMove,moveUrl);
         	 break;
          
          case "expenseExl":	//비용업로드
@@ -89,8 +97,8 @@ public class SysMngController {
         	 String reportEmpId = (String) details.get("reportEmpId");
         	 String fileName = (String) details.get("fileName");
         	 String title = (String) details.get("title");
-        	 String content =(String) details.get("content");
-        	 
+        	 content =(String) details.get("content");
+
         	 emailSendService.emailSendExpenseExcelForm(toEmpId,reportEmpId,fileName,title,content);
         	 break;
      }
