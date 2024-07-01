@@ -667,15 +667,15 @@ public class IndvdlClmDomain {
             }
             queryResult = commonService.insertData(insertRefrnManList);
 
-//            emailSendService.elecAtrzEmailSend(
-//                    String.valueOf(insertAtrzLnMap.get(0).get("empId"))
-//                    ,String.valueOf(insertElctrnMap.get("atrzDmndEmpId"))
-//                    ,"1"
-//                    ,"[" + insertVcatnMap.get("vcatnBgngYmd") + "~" + insertVcatnMap.get("vcatnEndYmd") + "] 휴가결재 결재 요청 완료."
-//                    ,"[" + insertVcatnMap.get("vcatnBgngYmd") + "~" + insertVcatnMap.get("vcatnEndYmd") + "] 휴가결재에 대한 결재가 요청되었습니다."
-//                    ,false
-//                    ,""
-//            );
+            emailSendService.elecAtrzEmailSend(
+                    String.valueOf(insertAtrzLnMap.get(0).get("empId"))
+                    ,String.valueOf(insertElctrnMap.get("atrzDmndEmpId"))
+                    ,"1"
+                    ,"[" + insertVcatnMap.get("vcatnBgngYmd") + "~" + insertVcatnMap.get("vcatnEndYmd") + "] 휴가결재 결재 요청 완료."
+                    ,"[" + insertVcatnMap.get("vcatnBgngYmd") + "~" + insertVcatnMap.get("vcatnEndYmd") + "] 휴가결재에 대한 결재가 요청되었습니다."
+                    ,false
+                    ,""
+            );
 
             return "성공";
         } else {
@@ -1011,15 +1011,15 @@ public class IndvdlClmDomain {
         commonService.insertData(insertAtrzLnList);
         commonService.insertData(insertRefrnManList);
 
-//        emailSendService.elecAtrzEmailSend(
-//                String.valueOf(insertAtrzLnListValue.get(0).get("empId"))
-//                ,String.valueOf(insertDataMapValue.get("empId"))
-//                ,elctrnAtrzId
-//                ,"[" + insertVactnAtrzMapValue.get("vcatnBgngYmd") + "~" + insertVactnAtrzMapValue.get("vcatnEndYmd") + "] 휴가취소결재 결재 요청 완료."
-//                ,"[" + insertVactnAtrzMapValue.get("vcatnBgngYmd") + "~" + insertVactnAtrzMapValue.get("vcatnEndYmd") + "] 휴가취소결재에 대한 결재가 요청되었습니다."
-//                ,false
-//                ,""
-//        );
+        emailSendService.elecAtrzEmailSend(
+                String.valueOf(insertAtrzLnListValue.get(0).get("empId"))
+                ,String.valueOf(insertDataMapValue.get("empId"))
+                ,elctrnAtrzId
+                ,"[" + insertVactnAtrzMapValue.get("vcatnBgngYmd") + "~" + insertVactnAtrzMapValue.get("vcatnEndYmd") + "] 휴가취소결재 결재 요청 완료."
+                ,"[" + insertVactnAtrzMapValue.get("vcatnBgngYmd") + "~" + insertVactnAtrzMapValue.get("vcatnEndYmd") + "] 휴가취소결재에 대한 결재가 요청되었습니다."
+                ,false
+                ,""
+        );
 
         return null;
     }
@@ -1330,15 +1330,15 @@ public class IndvdlClmDomain {
         }
         queryResult = commonService.insertData(insertRefrnManList);
 
-//            emailSendService.elecAtrzEmailSend(
-//                    String.valueOf(insertAtrzLnMap.get(0).get("empId"))
-//                    ,String.valueOf(insertElctrnMap.get("atrzDmndEmpId"))
-//                    ,"1"
-//                    ,"[" + insertVcatnMap.get("vcatnBgngYmd") + "~" + insertVcatnMap.get("vcatnEndYmd") + "] 휴가결재 결재 요청 완료."
-//                    ,"[" + insertVcatnMap.get("vcatnBgngYmd") + "~" + insertVcatnMap.get("vcatnEndYmd") + "] 휴가결재에 대한 결재가 요청되었습니다."
-//                    ,false
-//                    ,""
-//            );
+            emailSendService.elecAtrzEmailSend(
+                    String.valueOf(insertAtrzLnMap.get(0).get("empId"))
+                    ,String.valueOf(insertElctrnMap.get("atrzDmndEmpId"))
+                    ,"1"
+                    ,"[" + insertVcatnMap.get("vcatnBgngYmd") + "~" + insertVcatnMap.get("vcatnEndYmd") + "] 휴가결재 결재 요청 완료."
+                    ,"[" + insertVcatnMap.get("vcatnBgngYmd") + "~" + insertVcatnMap.get("vcatnEndYmd") + "] 휴가결재에 대한 결재가 요청되었습니다."
+                    ,false
+                    ,""
+            );
 
         return "성공";
     }

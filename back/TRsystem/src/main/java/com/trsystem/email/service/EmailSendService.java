@@ -1,6 +1,7 @@
 package com.trsystem.email.service;
 
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -9,10 +10,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import jakarta.mail.Authenticator;
 import jakarta.mail.Message;
@@ -26,18 +23,13 @@ import jakarta.mail.internet.MimeMessage;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import com.trsystem.common.service.CommonService;
-import com.trsystem.common.service.CommonServiceImpl;
-import com.trsystem.security.jwt.CustomUserDetailsService;
-import com.trsystem.security.jwt.JwtTokenUtil;
-import com.trsystem.sysMng.service.SysMngService;
 import com.trsystem.common.service.CommonServiceImpl;
 
 @Service
@@ -142,8 +134,7 @@ public class EmailSendService {
 			List<Map<String, Object>> reportEmp = DataFind(reportEmpId,"EMP"); // 프로젝트 결재 기안자 email
 			Map<String, Object> reportEmpData = reportEmp.get(0);
 			String reportEmpEmail = extractEmail(reportEmpData);
-			//============================URL 세팅=========================================
-			String detailMoveUrl = getCompleteUrl(moveUrl,documentNumber);
+
 			 
 			
 			String subject = "[VTW 전자결재] '"+title; 
@@ -157,6 +148,8 @@ public class EmailSendService {
 					+ "| 작성자 : ("+(String)reportEmpData.get("empno")+") "+(String)reportEmpData.get("empFlnm");
 			
 			if(pageMove) {
+				//============================URL 세팅=========================================
+				String detailMoveUrl = getCompleteUrl(moveUrl,documentNumber);
 				emailContent = emailContent 
 						+ "<span style='margin: 0px; padding: 0px; border: 0px; font: inherit; vertical-align: baseline; color: inherit;'>&nbsp;</span></span></div><div style='margin: 0px; padding: 0px 0px 0px 15px; border: 0px; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 12px; line-height: 1.2em; font-family: verdana; vertical-align: baseline; color: rgb(208, 233, 255); height: 23px;'><span style='margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: bold; font-stretch: inherit; font-size: inherit; line-height: inherit; font-family: inherit; vertical-align: baseline; color: inherit;'><span style='margin: 0px; padding: 0px; border: 0px; font: inherit; vertical-align: baseline; color: inherit;'><br></span></span></div><div style='margin: 0px; padding: 0px 0px 0px 15px; border: 0px; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 12px; line-height: 1.2em; font-family: verdana; vertical-align: baseline; color: rgb(208, 233, 255); height: 23px;'><span style='margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: bold; font-stretch: inherit; font-size: inherit; line-height: inherit; font-family: inherit; vertical-align: baseline; color: inherit;'><span style='margin: 0px; padding: 0px; border: 0px; font: inherit; vertical-align: baseline; color: inherit;'>[바로가기] 를 클릭하면 해당문서로 이동합니다.</span></span></div><div style='margin: 0px; padding: 0px 0px 0px 15px; border: 0px; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 12px; line-height: 1.2em; font-family: verdana; vertical-align: baseline; color: rgb(208, 233, 255); height: 23px;'><span style='margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: bold; font-stretch: inherit; font-size: inherit; line-height: inherit; font-family: inherit; vertical-align: baseline; color: inherit;'><span style='margin: 0px; padding: 0px; border: 0px; font: inherit; vertical-align: baseline; color: inherit;'>(TR 시스템에 로그인되어 있어야 합니다.)</span></span></div></div><div style='margin: 6px 0px 0px 15px; padding: 0px; border: 0px; font-variant-numeric: normal; font-variant-east-asian: normal; font-weight: bold; font-stretch: normal; font-size: 12px; line-height: 1em; font-family: dotum; vertical-align: baseline; color: rgb(85, 85, 85);'><br></div>\r\n"
 						+ "<span style=\"color: rgb(85, 85, 85); font-family: dotum; font-size: 12px; font-weight: 700;\">&nbsp;"
@@ -358,7 +351,7 @@ public class EmailSendService {
 	private String getCompleteUrl(String moveUrl, String detailId) {
 	        try {
 	        	 // 기본 URI 설정
-	            URI baseUri = new URI("http://localhost:3000");
+	            URI baseUri = new URI("http://trs.vtw.co.kr");
 
 	            // 받은 moveUrl을 URI로 변환하고 기본 URI와 결합
 	            URI moveUri = new URI(moveUrl);
@@ -388,13 +381,13 @@ public class EmailSendService {
 	 * 
 	 * @param emailSend
 	 */
-	public void emailSendCC(String to, String subject, String content) {
+	public void emailSendCC(String to, String emailSend, String content) {
 		// 운영 서버에서 요청시 또는 개발자에게만 이메일전송
 		InetAddress local;
 		String ip = "XX";
 
-		String cc =  "honggu.kim@vtw.co.kr";            //"jinwon.lee@vtw.co.kr";
-		String cc2 =    "honggu.kim@vtw.co.kr";         //"joori.an@vtw.co.kr";
+		String cc =  "jinwon.lee@vtw.co.kr";
+		String cc2 =  "joori.an@vtw.co.kr";
 
 		try {
 			local = InetAddress.getLocalHost();
@@ -422,7 +415,7 @@ public class EmailSendService {
 			Session session = Session.getInstance(props, new Authenticator() {
 				@Override
 				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication("admin@vtw.co.kr","!!!vkvk5600"); //id 
+					return new PasswordAuthentication("admin@vtw.co.kr","qmdlxl4291!@"); //id
 				}
 			});
 
@@ -432,7 +425,7 @@ public class EmailSendService {
 				msg.setRecipients(Message.RecipientType.TO, to); // 받는이
 				InternetAddress[] addresscc = { new InternetAddress(cc), new InternetAddress(cc2) };// 인사팀 참조
 				msg.setRecipients(Message.RecipientType.CC, addresscc); // 참조자
-				msg.setSubject(subject, charSet); // 제목
+				msg.setSubject(emailSend, charSet); // 제목
 				msg.setSentDate(new Date()); // 전송시간
 				msg.setText(content, charSet); // 내용
 				msg.setHeader("content-Type", "text/html"); // html type
@@ -450,7 +443,7 @@ public class EmailSendService {
 	 * 
 	 * @param emailSend
 	 */
-	public void emailSend(String to, String subject, String content) throws MessagingException {
+	public void emailSend(String to, String emailSend, String content) throws MessagingException {
 		// 운영 서버에서 요청시 또는 개발자에게만 이메일전송
 		InetAddress local;
 		String ip = "XX";
@@ -481,18 +474,18 @@ public class EmailSendService {
 		Session session = Session.getInstance(props, new Authenticator() {
 			@Override
 			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication("admin@vtw.co.kr","!!!vkvk5600"); // id , pwd
+				return new PasswordAuthentication("admin@vtw.co.kr","qmdlxl4291!@"); // id , pwd
 			}
 		});
-		//MimeMessage message = emailSender.createMimeMessage();
-		//MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,StandardCharsets.UTF_8.name());
-		//helper.setFrom("admin@vtw.co.kr");
+		MimeMessage message = emailSender.createMimeMessage();
+		MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+		helper.setFrom("admin@vtw.co.kr");
 		try {
 
 			MimeMessage msg = new MimeMessage(session);
 			msg.setFrom("admin@vtw.co.kr"); // 보내는이 *관리자*
 			msg.setRecipients(Message.RecipientType.TO, to); // 받는이
-			msg.setSubject(subject, charSet); // 제목
+			msg.setSubject(emailSend, charSet); // 제목
 			msg.setSentDate(new Date()); // 전송시간
 			msg.setText(content, charSet); // 내용
 			msg.setHeader("content-Type", "text/html"); // html type
