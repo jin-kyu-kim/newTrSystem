@@ -24,9 +24,9 @@ const EmpWorkTime = () => {
     const SearchMonthValueRef = useRef();
     SearchMonthValueRef.current = new Date().getDate() < 15 ? new Date().getMonth() : new Date().getMonth() + 1;
 
-    //TODO : 임시작업
-    const [tmpDate,setTmpDate] = useState(new Date ());
-    // TODO : 임시기능  끝
+    // //TODO : 임시작업
+    // const [tmpDate,setTmpDate] = useState(new Date ());
+    // // TODO : 임시기능  끝
 
     // 차수별 시작, 종료일자
     let flagOrder = admin != undefined ? admin.aplyOdr :  new Date().getDate() > 15 ? 1 : 2;
@@ -193,15 +193,15 @@ const EmpWorkTime = () => {
 
     // 검색버튼
     const searchHandle = () => {
-        //TODO : 임시기능
-            const newDate = new Date(tmpDate);
-        if(SearchMonthValueRef.current === 5 ){
-            newDate.setMonth(5, 1); // 5월 1일로 설정
-            setTmpDate(newDate);
-        }else{
-            newDate.setMonth(5, 17); // 5월 1일로 설정
-            setTmpDate(newDate);
-        }
+        // //TODO : 임시기능
+        //     const newDate = new Date(tmpDate);
+        // if(SearchMonthValueRef.current === 5 ){
+        //     newDate.setMonth(5, 1); // 5월 1일로 설정
+        //     setTmpDate(newDate);
+        // }else{
+        //     newDate.setMonth(5, 17); // 5월 1일로 설정
+        //     setTmpDate(newDate);
+        // }
         // TODO : 임시기능  끝
 
         setSearchPrjctIndvdlCtMmParam({
