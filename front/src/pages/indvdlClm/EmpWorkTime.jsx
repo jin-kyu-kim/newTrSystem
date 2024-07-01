@@ -453,43 +453,6 @@ const EmpWorkTime = () => {
         }
     }
 
-    // 근무일수 구하기
-    function getWorkDay(selectCrtrDateList) {
-        if (selectCrtrDateList) {
-            return selectCrtrDateList.filter(item => item.aplyYm == searchPrjctIndvdlCtMmParam.aplyYm && item.crtrOdr == flagOrder && item.hldyClCd == "VTW05001").length;
-        }
-    }
-
-    // 공휴일수 구하기
-    function getHoliDay(selectCrtrDateList) {
-        if (selectCrtrDateList) {
-            return selectCrtrDateList.filter(item => item.aplyYm == searchPrjctIndvdlCtMmParam.aplyYm && item.crtrOdr == flagOrder && item.hldyClCd == "VTW05003").length;
-        }
-    }
-
-    // 실 근무일수 구하기
-    function getRealWorkDay(insertWorkHourList){
-        let cnt = 0;
-        if (insertWorkHourList) {
-            insertWorkHourList.map((item) => {
-                if(item.aplyType == "workAply" && item.aplyOdr == flagOrder) cnt += item.md * 8;
-            })
-        }
-        return cnt;
-    }
-
-    // 휴가일수 구하기
-    function getVcatnDay(insertWorkHourList){
-        let cnt = 0;
-        if (insertWorkHourList) {
-            insertWorkHourList.map((item) => {
-                if (item.aplyType == "vcatnAply" && item.aplyOdr == flagOrder && item.md == 0) cnt += 8;
-                if (item.aplyType == "vcatnAply" && item.aplyOdr == flagOrder && item.md == 0.5) cnt += 4;
-            })
-        }
-        return cnt;
-    }
-
     /* devextreme 이벤트 컨트롤 */
     function onAppointmentClick(e) {
         if (e.appointmentData.isInsertBoolean == false) e.cancel = true;

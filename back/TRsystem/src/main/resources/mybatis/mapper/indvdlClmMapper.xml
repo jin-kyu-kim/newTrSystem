@@ -461,7 +461,7 @@
             ,ATRZ.APLY_YM	            /* 신청연월 */
             ,ATRZ.APLY_ODR	            /* 신청차수 */
             ,ATRZ.APLY_YMD              /* 신청일자 */
-            ,ROUND(APLY.MD, 1)	MD		/* 근무시간비율 */
+            ,ROUND(APLY.MD, 3)	MD		/* 근무시간비율 */
             ,ATRZ.RJCT_PRVONSH			/* 반려사유 */
             ,ATRZ.ATRZ_DMND_STTS_CD	    /* 결재요청상태코드 */
             ,(SELECT CD_NM FROM CD WHERE CD_VALUE = ATRZ_DMND_STTS_CD)	ATRZ_DMND_STTS_CD_NM		/* 결재요청상태코드명 */
