@@ -1105,7 +1105,14 @@ public class IndvdlClmDomain {
         // 공가가아닌경우
         else {
             Double vcatnDeCnt = Double.parseDouble(String.valueOf(selectElctrnAtrzListResult.get(0).get("vcatnDeCnt")));
-            Double newVcatnDeCnt = Double.parseDouble(String.valueOf(selectElctrnAtrzListResult.get(0).get("newVcatnUseDaycnt")));
+            Object newVcatnUseDaycnt = selectElctrnAtrzListResult.get(0).get("newVcatnUseDaycnt");
+            Double newVcatnDeCnt = 0.0;
+            if (newVcatnUseDaycnt != null) {
+                newVcatnDeCnt = Double.parseDouble(String.valueOf(newVcatnUseDaycnt));
+                // newVcatnDeCnt를 사용하는 코드 여기에 작성
+            } else {
+                // newVcatnUseDaycnt가 null일 경우의 처리 코드 여기에 작성
+            }
 
             // case_B1
             // 신규휴가만 사용한 경우
