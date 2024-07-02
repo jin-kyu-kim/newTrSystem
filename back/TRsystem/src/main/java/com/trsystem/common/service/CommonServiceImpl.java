@@ -523,18 +523,21 @@ public class CommonServiceImpl implements CommonService {
             List<Map<String, Object>> deleteParam = new ArrayList<>();
             Map<String, Object> directoryFile = new HashMap<>();
 
-            tableMap.put("tbNm", "ATCHMNFL");
-            tableMap.put("snColumn", "atchmnflSn");
-            deleteParam.add(tableMap);
-            atchmnflSn = commonGetMax(deleteParam) + 1;
-            tableMap.clear();
-
             if(deleteFiles.size() > 1){
+                tableMap.put("tbNm", "ATCHMNFL");
+                tableMap.put("snColumn", "atchmnflSn");
+                deleteParam.add(tableMap);
+                deleteParam.add(Map.of("atchmnflId", deleteFiles.get(1).get("atchmnflId")));
+
+                atchmnflSn = commonGetMax(deleteParam) + 1;
+                tableMap.clear();
+
                 for (int i=1; i<deleteFiles.size(); i++) {
                     deleteParam.clear();
                     directoryFile.clear();
 
                     deleteParam.add(deleteFiles.get(0));
+                    directoryFile.put("atchmnflId", deleteFiles.get(i).get("atchmnflId"));
                     directoryFile.put("atchmnflSn", deleteFiles.get(i).get("atchmnflSn"));
                     deleteParam.add(directoryFile);
                     deleteData(deleteParam);
