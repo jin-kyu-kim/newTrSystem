@@ -766,7 +766,13 @@ public class IndvdlClmDomain {
 
         // 휴가신청사용일수
         Double vcatnDeCnt = Double.parseDouble(String.valueOf(selectVcatnAtrzResult.get(0).get("vcatnDeCnt")));
-        Double newVcatnUseDaycnt = Double.parseDouble(String.valueOf(selectVcatnAtrzResult.get(0).get("newVcatnUseDaycnt")));
+        Double newVcatnUseDaycnt = 0.0;
+        if (newVcatnUseDaycnt != null) {
+            newVcatnUseDaycnt = Double.parseDouble(String.valueOf(newVcatnUseDaycnt));
+            // newVcatnDeCnt를 사용하는 코드 여기에 작성
+        } else {
+            // newVcatnUseDaycnt가 null일 경우의 처리 코드 여기에 작성
+        }
 
         Double useVcatnDeCnt = 0.0;
         Double useNewVcatnUseDaycnt = 0.0;
