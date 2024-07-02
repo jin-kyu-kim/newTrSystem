@@ -87,6 +87,10 @@ const ProjectExpenseExcel = (props) => {
                         };
                         param.push(data);
                     }
+                } else{
+                    const response = await ApiRequest("/boot/common/commonUpdate", [
+                        { tbNm: "CARD_USE_DTLS" }, { prjctCtInptPsbltyYn: "Y" }, { lotteCardAprvNo: lotteCardAprvNo }
+                    ]);
                 }
             }
             try {
