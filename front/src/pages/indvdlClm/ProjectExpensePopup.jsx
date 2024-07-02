@@ -160,7 +160,7 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfoProps, c
                                     <ReactToPrint 
                                         trigger={() => ( <Button text='출력' type='success' icon='print' /> )}
                                         content={() => contentRef.current} 
-                                        pageStyle="@page { size: A3; ratio:100%; }" 
+                                        pageStyle="@page { size: A3; ratio: 100%; }" 
                                     />
                                 </div>
                             </div>
