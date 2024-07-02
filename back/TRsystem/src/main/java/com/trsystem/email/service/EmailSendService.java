@@ -246,7 +246,7 @@ public class EmailSendService {
 	    
 	  //============================분기에 따른 제목 설정===========================================
 		String subject = "[VTW 회의실 예약]";
-		String moveUrl =  getCompleteUrl("/infoInq/MeetingRoomReserv","");
+		String moveUrl =  getCompleteUrl("/humanResourceMng/MeetingRoomManage","");
 		
 		String title = "";
 		switch (state) { // 회의실 예약 상태에 따른 분기 처리
