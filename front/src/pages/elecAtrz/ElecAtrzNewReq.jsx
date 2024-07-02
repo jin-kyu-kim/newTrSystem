@@ -374,18 +374,27 @@ const ElecAtrzNewReq = () => {
 
                 const formDataAttach = new FormData();
                 formDataAttach.append("tbNm", JSON.stringify({ tbNm: insertTable }));
+
                 // 1. 임시저장 -> 
                 if (data.atchmnflId !== undefined && sttsCd === "VTW03701") {
                     formDataAttach.append("data", JSON.stringify({ atchmnflId: data.atchmnflId, dirType: ElecAtrzNewReqJson.dirType }));
+
+                } else if (data.atchmnflId !== undefined && stts === "VTW03701" && sttsCd === "VTW05407") {
+                    formDataAttach.append("data", JSON.stringify({ atchmnflId: data.atchmnflId, dirType: ElecAtrzNewReqJson.dirType }));
+                
                 } else if (sttsCd === "VTW05405" || sttsCd === "VTW05406" || sttsCd === "VTW05407") {
                     formDataAttach.append("data", JSON.stringify({ atchmnflId: uuid(), dirType: ElecAtrzNewReqJson.dirType }));
+
                 } else {
                     formDataAttach.append("data", JSON.stringify({ atchmnflId: uuid(), dirType: ElecAtrzNewReqJson.dirType }));
+
                 }
                 if (data.elctrnAtrzId !== undefined && sttsCd === "VTW03701") {
                     formDataAttach.append("idColumn", JSON.stringify({ elctrnAtrzId: data.elctrnAtrzId })); //결재ID
+
                 } else {
                     formDataAttach.append("idColumn", JSON.stringify({ elctrnAtrzId: response })); //결재ID
+
                 }
                 formDataAttach.append("deleteFiles", JSON.stringify(deleteFiles));
                 Object.values(attachments)

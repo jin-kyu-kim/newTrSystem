@@ -207,6 +207,8 @@ const ProjectExpenseCard = (props) => {
             setCardUseDtls(updatedCardUseDtls);
             setSelectedItem([]);
             handleOpen('삭제되었습니다.');
+
+            props.getData();
         })
         .catch(error => { console.error('error', error); });
     };
