@@ -141,20 +141,21 @@ public class ElecAtrzDomain {
         deleteParams.add(1, conditionParam);
 
         // 첨부파일이 존재하는 경우
-        if(atchmnflId != null){
-            Map<String, Object> params = new HashMap<>();
-            List<Map<String , Object>> athcParam = new ArrayList<>();
-            athcParam.add(Map.of("tbNm", "ATCHMNFL"));
-            athcParam.add(Map.of("atchmnflId", atchmnflId));
-
-            params.put("params", deleteParams);
-            params.put("fileParams", athcParam);
-            params.put("dirType", "elec");
-
-            commonService.deleteFile(params);
-        } else {
-            result = commonService.deleteData(deleteParams);
-        }
+//        if(atchmnflId != null){
+//            Map<String, Object> params = new HashMap<>();
+//            List<Map<String , Object>> athcParam = new ArrayList<>();
+//            athcParam.add(Map.of("tbNm", "ATCHMNFL"));
+//            athcParam.add(Map.of("atchmnflId", atchmnflId));
+//
+//            params.put("params", deleteParams);
+//            params.put("fileParams", athcParam);
+//            params.put("dirType", "elec");
+//
+//            commonService.deleteFile(params);
+//        } else {
+//
+//        }
+		result = commonService.deleteData(deleteParams);
         return result;
     }
 
