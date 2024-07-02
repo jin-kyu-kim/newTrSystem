@@ -549,11 +549,12 @@ const onRowUpdateingMonthData = async() => {
                                             onValueChanged={handleInputChange}
                                             style={{ textAlign: 'right' }}
                                             defaultValue={0}
-                                            showSpinButtons={true}
+                                            showSpinButtons={false}
                                             step={popupInfo.popupStep}
                                             showClearButton={false}
                                             max={popupInfo.popupMax}
                                             min={popupInfo.popupMin}
+                                            width={popupInfo.popupWidth}
                                             />): ''}</td>
                                             { (popupInfo.menuName === "ProjectEmpCostJson" || popupInfo.menuName === "ProjectOutordEmpCostJson") &&
                                             <td style={{width:"25%", padding:"5px"}}>
@@ -565,7 +566,8 @@ const onRowUpdateingMonthData = async() => {
                                                         data.untpc
                                                     ) : 0}
                                                     readOnly={true}
-                                                    format={"#,### 원"}                                                  
+                                                    format={"#,### 원"}
+                                                    width={200}
                                                     />): ''}
                                             </td>
                                             }
