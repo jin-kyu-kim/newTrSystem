@@ -133,7 +133,7 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfoProps, c
                     store: data
                 })
                 return (
-                    <div style={{width:"90%"}}>
+                    <div className="expensPopUpGetValue">
                     <CustomPivotGrid
                         values={dataSource}
                         customColor={'#f0f0f0'}
@@ -147,7 +147,7 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfoProps, c
                 )
             default:
 
-                return( <div style={{width:"90%"}}><ProjectExpenseCashCardReport basicInfo={basicInfo}/> </div>)
+                return( <div className="expensPopUpGetValue"><ProjectExpenseCashCardReport basicInfo={basicInfo}/> </div>)
 
                     }
     };

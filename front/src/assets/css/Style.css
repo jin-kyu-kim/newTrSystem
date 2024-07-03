@@ -327,6 +327,9 @@
     color: black;
     text-align: left;
   }
+  .expensPopUpGetValue {
+    width: 100%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
+  }
 }
 @media (min-width: 601px) and (max-width: 1850px) {
   .dx-datagrid .dx-header-row .dx-datagrid-text-content {
@@ -335,6 +338,9 @@
     color: black;
     text-align: left;
   }
+  .expensPopUpGetValue {
+    width: 90%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
+  }
 }
 @media (min-width: 1851px) {
   .dx-datagrid .dx-header-row .dx-datagrid-text-content {
@@ -342,6 +348,9 @@
     font-weight: bold;
     color: black;
     text-align: left;
+  }
+  .expensPopUpGetValue {
+    width: 80%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
   }
 }
 
