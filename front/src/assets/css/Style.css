@@ -340,7 +340,7 @@
     text-align: left;
   }
   .expensPopUpGetValue {
-    width: 90%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
+    width: 110%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
   }
 }
 @media (min-width: 1850px) and (max-width: 2300px)  {
