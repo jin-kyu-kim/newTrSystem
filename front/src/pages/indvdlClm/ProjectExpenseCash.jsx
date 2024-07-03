@@ -66,6 +66,15 @@ const ProjectExpenseCash = (props) => {
         }));
     }, [value[0].prjctId]);
 
+    useEffect(() => {
+        if (value[0].expensCd !== 'VTW04531') { // expensCd가 변경될 때 atdrn 초기화
+            setValue(prevValue => [{
+                ...prevValue[0],
+                atdrn: ''
+            }]);
+        }
+    }, [value[0].expensCd]);
+
     const handleChgValue = (data) => {
         let newValue = data.value;
 
@@ -151,7 +160,8 @@ const ProjectExpenseCash = (props) => {
             </div>
 
             <div style={{ marginTop: '20px', textAlign: 'center' }}>
-                <ProjectExpenseSubmit getData={props.getData} selectedItem={value} buttonGroup={btnInfo} width={'1000px'}
+                <ProjectExpenseSubmit getData={props.getData} selectedItem={value} 
+                buttonGroup={btnInfo} width={'1000px'} ymOdrInfo={{aplyYm: props.aplyYm, aplyOdr: props.aplyOdr}}
                     validateFields={() => validateFields(value, placeholderAndRequired, setValidationErrors, btnInfo, empInfo)} />
             </div>
         </div>

@@ -26,7 +26,7 @@ function TokenTimer() {
                     clearInterval(timer);
                     handleOpen("로그인이 만료되었습니다.")
                     signOut();
-                } else if(remainingTime <= 600000 && remainingTime > 599000) {
+                } else if(remainingTime <= 600000 && remainingTime > 596400) {
                         handleOpen("로그인을 연장하시겠습니까?",tokenExtension, true);
                 }else{
                     // 남은 시간을 업데이트합니다.

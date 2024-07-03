@@ -12,8 +12,6 @@ const button = {
 
 const ProjectExpenseExcel = (props) => {
     const empId = props.empId;
-    const aplyYm = props.aplyYm;
-    const aplyOdr = props.aplyOdr;
 
     const [excel, setExcel] = useState();
     const [aprvNoList, setAprvNoList] = useState([]);
@@ -58,12 +56,12 @@ const ProjectExpenseExcel = (props) => {
         param.push({
             tbNm: "CARD_USE_DTLS",
             snColumn: "CARD_USE_SN",
-            snSearch: { empId, aplyYm, aplyOdr }
+            snSearch: { empId }
         });
 
         if (excel[0].__EMPTY_4 === "승인일자" && excel[0].__EMPTY_5 === "승인시간") {
             
-            for (let i = 1; i < excel?.length; i++) {
+            for (let i = excel.length -1; i > 0; i--) {
                 const lotteCardAprvNo = excel[i].__EMPTY_20; // aprvNo[승인번호] -> __EMPTY_20
 
                 // 기존 aprvList에 승인번호가 포함되어 있지 않은 경우만 처리
@@ -77,7 +75,7 @@ const ProjectExpenseExcel = (props) => {
                         const time = excel[i].__EMPTY_5.replace(/:/g, "");
     
                         const data = {
-                            empId, aplyYm, aplyOdr,
+                            empId,
                             "utztnDt": date + time,
                             "useOffic": excel[i].__EMPTY_6,
                             "utztnAmt": utztnAmt,
@@ -89,6 +87,10 @@ const ProjectExpenseExcel = (props) => {
                         };
                         param.push(data);
                     }
+                } else{
+                    const response = await ApiRequest("/boot/common/commonUpdate", [
+                        { tbNm: "CARD_USE_DTLS" }, { prjctCtInptPsbltyYn: "Y" }, { lotteCardAprvNo: lotteCardAprvNo }
+                    ]);
                 }
             }
             try {

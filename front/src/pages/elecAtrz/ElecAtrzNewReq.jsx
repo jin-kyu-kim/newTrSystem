@@ -333,6 +333,7 @@ const ElecAtrzNewReq = () => {
             histElctrnAtrzId: sttsCd === "VTW05405" || sttsCd === "VTW05406" ? data.elctrnAtrzId : data.histElctrnAtrzId,
             atrzHistSeCd: sttsCd === "VTW05405" || sttsCd === "VTW05406" ? sttsCd : data.atrzHistSeCd != undefined ? data.atrzHistSeCd : "VTW05401"
         }
+        
         try {
             setLoading(true);
             const response = await ApiRequest("/boot/elecAtrz/insertElecAtrz", insertParam);
@@ -373,18 +374,27 @@ const ElecAtrzNewReq = () => {
 
                 const formDataAttach = new FormData();
                 formDataAttach.append("tbNm", JSON.stringify({ tbNm: insertTable }));
+
                 // 1. 임시저장 -> 
                 if (data.atchmnflId !== undefined && sttsCd === "VTW03701") {
                     formDataAttach.append("data", JSON.stringify({ atchmnflId: data.atchmnflId, dirType: ElecAtrzNewReqJson.dirType }));
+
+                } else if (data.atchmnflId !== undefined && stts === "VTW03701" && sttsCd === "VTW05407") {
+                    formDataAttach.append("data", JSON.stringify({ atchmnflId: data.atchmnflId, dirType: ElecAtrzNewReqJson.dirType }));
+                
                 } else if (sttsCd === "VTW05405" || sttsCd === "VTW05406" || sttsCd === "VTW05407") {
                     formDataAttach.append("data", JSON.stringify({ atchmnflId: uuid(), dirType: ElecAtrzNewReqJson.dirType }));
+
                 } else {
                     formDataAttach.append("data", JSON.stringify({ atchmnflId: uuid(), dirType: ElecAtrzNewReqJson.dirType }));
+
                 }
                 if (data.elctrnAtrzId !== undefined && sttsCd === "VTW03701") {
                     formDataAttach.append("idColumn", JSON.stringify({ elctrnAtrzId: data.elctrnAtrzId })); //결재ID
+
                 } else {
                     formDataAttach.append("idColumn", JSON.stringify({ elctrnAtrzId: response })); //결재ID
+
                 }
                 formDataAttach.append("deleteFiles", JSON.stringify(deleteFiles));
                 Object.values(attachments)
@@ -446,6 +456,11 @@ const ElecAtrzNewReq = () => {
             ...atrzParam,
             title: e.value
         }));
+
+        setData((prevData) => ({
+            ...prevData,
+            title: e.value
+        }));
     }
 
     const onBtnClick = (e) => {
@@ -470,6 +485,35 @@ const ElecAtrzNewReq = () => {
         setAttachments(e.value);
     };
 
+    const validateFields = (fields) => {
+        for (const [field, message] of Object.entries(ElecAtrzNewReqJson.validationRules)) {
+            // 세금계산서의 경우 taxBillPblcnYmd는 필수값
+            if (fields.ctStlmSeCd === 'VTW01904' && field === 'taxBillPblcnYmd') {
+                if (fields.taxBillPblcnYmd === null || fields.taxBillPblcnYmd === "") {
+                    handleOpen(message);
+                    return false;
+                }
+            }
+
+             // taxBillPblcnYmd 값이 존재하는 경우 rciptPblcnYmd 검증 건너뛰기
+            if (field === 'rciptPblcnYmd') {
+                if (fields.taxBillPblcnYmd && fields.taxBillPblcnYmd !== null) {
+                    continue;
+                }
+            }
+            if (field === 'taxBillPblcnYmd') {
+                if (fields.rciptPblcnYmd && fields.rciptPblcnYmd !== null) {
+                    continue;
+                }
+            }
+
+            if (fields[field] === null || fields[field] === "" || fields[field] === 0) {
+                handleOpen(message);
+                return false;
+            }
+        }
+        return true;
+    };
     /**
      * 결재요청 및 임시저장 벨리데이션 체크
      */
@@ -488,6 +532,13 @@ const ElecAtrzNewReq = () => {
         if (atrzLn === undefined) {
             handleOpen("결재선의 승인자를 입력해주세요.");
             return false;
+        }
+
+        // 경비청구 필수 컬럼 validation
+        if (param.arrayData && param.arrayData[0].tbNm === ElecAtrzNewReqJson.validationTableNmx) {
+            if (!validateFields(param?.arrayData[1])) {
+                return false;
+            }
         }
         return true;
     }

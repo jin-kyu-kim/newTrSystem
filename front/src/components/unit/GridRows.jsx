@@ -10,7 +10,6 @@ const GridRows = ({ columns, onClick, handleCheckBoxChange, checkBoxValue }) => 
     const ButtonRender = (button, data, onClick) => {
         let disabled = false;
         let visible = true;
-        let label = false
         if(button.able != null && data != null && button.able.value !== undefined && data[button.able.key] != button.able.value){
             disabled = true;
         } else if(button.able != null && data != null  && button.able.exceptValue !== undefined && data[button.able.key] == button.able.exceptValue){
@@ -43,20 +42,21 @@ const GridRows = ({ columns, onClick, handleCheckBoxChange, checkBoxValue }) => 
           visible = false;
         }
         return(
-            <Button name = {button.name} text={button.text} onClick={() => onClick(button, data)} disabled={disabled} visible={visible}/>
+            <Button name = {button.name} text={button.text} type={button.type} onClick={() => onClick(button, data)} disabled={disabled} visible={visible}/>
         )
     }
 
     const ButtonsRender = (buttons, data, onClick) => {
+        // TODO : 임시기능 disable 처리 재활성화 필요
         let button = null;
         let disabled = false;
         buttons.forEach((item) => {
             if (data != null && data[item.visible.key] === item.visible.value ) {
                 button = item;
                 if(item.able != null && typeof item.able.value != "boolean" && data[item.able.key] !== item.able.value){
-                    disabled = true;
+                    // disabled = true;
                 } else if (item.able != null && item.able.value === true && data[item.able.key]){
-                    disabled = true;
+                    // disabled = true;
                 } else if (button.time){
                     const date = new Date();
                     const month = date.getMonth() + 1;
@@ -66,13 +66,13 @@ const GridRows = ({ columns, onClick, handleCheckBoxChange, checkBoxValue }) => 
                     let monthVal = month < 10 ? "0" + month : month;
                     let lastMonthVal = (lastMonth.getMonth() + 1) < 10 ? "0" + (lastMonth.getMonth() + 1) : lastMonth.getMonth() + 1;
 
-                    if(day > 15){
+                    if(day > 15 ){
                         if(data["aplyYm"] !== date.getFullYear()+monthVal || data["aplyOdr"] !== 1){
-                            disabled = true;
+                            // disabled = true;
                         }
                     } else {
                         if(data["aplyYm"] !== lastMonth.getFullYear()+lastMonthVal || data["aplyOdr"] !== 2){
-                            disabled = true;
+                            // disabled = true;
                         }
                     }
                 }
@@ -80,7 +80,7 @@ const GridRows = ({ columns, onClick, handleCheckBoxChange, checkBoxValue }) => 
         });
         if(button != null){
             return(
-                <Button name = {button.name} text={button.text} onClick={() => onClick(button, data)} disabled={disabled}/>
+                <Button name = {button.name} text={button.text} onClick={() => onClick(button, data)} disabled={disabled} type={button.type}/>
             )
         } else if(buttons[0].showAll){
           return(
@@ -105,7 +105,7 @@ const GridRows = ({ columns, onClick, handleCheckBoxChange, checkBoxValue }) => 
     };
 
     for (let i = 0; i < columns.length; i++) {
-      const { key, value, width, alignment, button, buttons, visible, toggle, subColumns, chkBox , grouping, currency, unit, dateFormat, rate } = columns[i];
+      const { key, value, width, alignment, button, buttons, subColumns, chkBox, currency, unit, dateFormat, rate, format } = columns[i];
 
       if(subColumns){
         /*===============헤더 하위 뎁스 컬럼 설정===================*/
@@ -240,6 +240,7 @@ const GridRows = ({ columns, onClick, handleCheckBoxChange, checkBoxValue }) => 
               caption={value}
               width={width}
               alignment={alignment || 'center'}
+              format={format}
             >
             </Column>
           );

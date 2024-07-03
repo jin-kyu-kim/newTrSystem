@@ -174,7 +174,7 @@ const routes = [
     path: "/humanResourceMng/MeetingRoomManage",
     name: "MeetingRoomManage",
     element: React.lazy(() => import("../../pages/humanResourceMng/MeetingRoomManage")),
-    isPrivate:"VTW04805"
+    isPrivate:"USER"
   },
   // 인사관리 휴가사용내역
   {

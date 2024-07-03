@@ -69,7 +69,7 @@ function MeetingRoomReserv() {
               text="내 예약만 보기"
             />   
       </div>
-      
+
       <div style={{ marginTop: "20px" }}>
       <Calandar
        // values={calendarData}
@@ -88,8 +88,8 @@ function MeetingRoomReserv() {
       />
       </div>
 
-      
-     
+
+
     </div>
   );
 };

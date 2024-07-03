@@ -41,6 +41,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize
                         -> authorize
                         .requestMatchers(new MvcRequestMatcher(introspector,"/boot/sysMng/lgnSkll")).permitAll()
+                        .requestMatchers(new MvcRequestMatcher(introspector,"/boot/batchSkll/UserInfo")).permitAll()
+                        .requestMatchers(new MvcRequestMatcher(introspector,"/boot/batchSkll/UserLoginInfo")).permitAll()
+                        .requestMatchers(new MvcRequestMatcher(introspector,"/boot/humanResourceMng/insertMtgRoomRsvt")).hasAuthority("USER")
+                        .requestMatchers(new MvcRequestMatcher(introspector,"/boot/humanResourceMng/deleteMtgRoomRsvt")).hasAuthority("USER")
                         .requestMatchers(new MvcRequestMatcher(introspector,"/boot/sysMng/tokenExtension")).hasAuthority("USER")
                         .requestMatchers(new MvcRequestMatcher(introspector,"/boot/sysMng/mainSearch")).hasAuthority("USER")
                         .requestMatchers(new MvcRequestMatcher(introspector,"/boot/sysMng/sendEmail")).hasAuthority("USER")

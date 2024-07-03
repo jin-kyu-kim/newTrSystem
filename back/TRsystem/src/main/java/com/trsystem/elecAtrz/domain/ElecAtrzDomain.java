@@ -141,20 +141,21 @@ public class ElecAtrzDomain {
         deleteParams.add(1, conditionParam);
 
         // 첨부파일이 존재하는 경우
-        if(atchmnflId != null){
-            Map<String, Object> params = new HashMap<>();
-            List<Map<String , Object>> athcParam = new ArrayList<>();
-            athcParam.add(Map.of("tbNm", "ATCHMNFL"));
-            athcParam.add(Map.of("atchmnflId", atchmnflId));
-
-            params.put("params", deleteParams);
-            params.put("fileParams", athcParam);
-            params.put("dirType", "elec");
-
-            commonService.deleteFile(params);
-        } else {
-            result = commonService.deleteData(deleteParams);
-        }
+//        if(atchmnflId != null){
+//            Map<String, Object> params = new HashMap<>();
+//            List<Map<String , Object>> athcParam = new ArrayList<>();
+//            athcParam.add(Map.of("tbNm", "ATCHMNFL"));
+//            athcParam.add(Map.of("atchmnflId", atchmnflId));
+//
+//            params.put("params", deleteParams);
+//            params.put("fileParams", athcParam);
+//            params.put("dirType", "elec");
+//
+//            commonService.deleteFile(params);
+//        } else {
+//
+//        }
+		result = commonService.deleteData(deleteParams);
         return result;
     }
 
@@ -930,7 +931,7 @@ public class ElecAtrzDomain {
 					masterInfoParam.put("utztnAmt", list.get(i).get("utztnAmt"));
 					masterInfoParam.put("atdrn", list.get(i).get("atdrn"));
 					masterInfoParam.put("ctPrpos", list.get(i).get("ctPrpos"));
-					masterInfoParam.put("ctAtrzSeCd", list.get(i).get("ctAtrzSeCd"));
+					masterInfoParam.put("ctStlmSeCd", list.get(i).get("ctStlmSeCd"));
 					masterInfoParam.put("regDt", param.get("regDt"));
 					masterInfoParam.put("regEmpId", param.get("regEmpId"));
 					
@@ -999,13 +1000,12 @@ public class ElecAtrzDomain {
 			List<Map<String, Object>> insertParamList = new ArrayList<>();
 			
 			insertParamList.add(0, tbNm);
-			
-			infoParam.put("mmAtrzCmptnYn", "N");
+
+			infoParam.put("mmAtrzCmptnYn", null); // N->null 변경
 			insertParamList.add(1, infoParam);
 			
 			result = commonService.insertData(insertParamList);
 		}
-		
 		return result;
 	}
 	

@@ -38,7 +38,7 @@
         "keyColumn": "id",
         "tableColumns": [
           { "key": "costKind", "value": "원가항목" },
-          { "key": "costAmt", "value": "배정예산(원)" },
+          { "key": "costAmt", "value": "실행예산(원)" },
           { "key": "rate", "value": "비율(%)" }
         ],
         "searchParams": {

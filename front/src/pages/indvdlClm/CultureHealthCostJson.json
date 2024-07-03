@@ -16,7 +16,8 @@
       "type": "NumberBox",
       "label": "청구금액",
       "placeholder": "청구금액",
-      "required": true
+      "required": true,
+      "format": "#,##0"
     },
     "clturPhstrnSeCd": {
       "name": "clturPhstrnSeCd",

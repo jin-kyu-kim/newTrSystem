@@ -34,7 +34,7 @@
   "atrzListTableColumns": [
     { "key": "tySe", "value": "결재구분",  "alignment": "center", "width" : "20%" },
     { "key": "title", "value": "결재명",  "alignment": "center", "width" : "35%" },
-    { "key": "atrzEmpNm", "value": "기안자",  "alignment": "center" , "width" : "15%"},
+    { "key": "atrzDmndEmpNm", "value": "기안자",  "alignment": "center" , "width" : "15%"},
     { "key": "regDt", "value": "기안일자",  "alignment": "center", "width" : "15%" },
     { "key": "atrzSttsCdNm", "value": "결재상태",  "alignment": "center", "width" : "15%"}
   ]

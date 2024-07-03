@@ -3,10 +3,10 @@ import { useLocation } from "react-router-dom";
 import { SelectBox, Button, DateBox, NumberBox, Scheduler, Form } from "devextreme-react";
 import { Resource, AppointmentDragging } from 'devextreme-react/scheduler';
 import { isSaturday, isSunday, startOfMonth, endOfMonth } from 'date-fns'
+import { useModal } from "components/unit/ModalContext";
+import ApiRequest from "utils/ApiRequest";
 import Moment from "moment"
 import axios from "axios";
-import ApiRequest from "utils/ApiRequest";
-import { useModal } from "components/unit/ModalContext";
 import '../project/approval/ProjectHtCtAprvPop.css';
 
 const token = localStorage.getItem("token");
@@ -18,46 +18,40 @@ const EmpWorkTime = () => {
 
     // 근무시간데이터
     const insertValueRef = useRef(null);
-
     // 검색조건
     const SearchYearValueRef = useRef();
     SearchYearValueRef.current = new Date().getFullYear();
-
     const SearchMonthValueRef = useRef();
     SearchMonthValueRef.current = new Date().getDate() < 15 ? new Date().getMonth() : new Date().getMonth() + 1;
 
+    // //TODO : 임시작업
+    // const [tmpDate,setTmpDate] = useState(new Date ());
+    // // TODO : 임시기능  끝
+
     // 차수별 시작, 종료일자
-    let flagOrder = admin != undefined ? admin.aplyOdr : new Date().getDate() > 15 ? 1 : 2;
+    let flagOrder = admin != undefined ? admin.aplyOdr :  new Date().getDate() > 15 ? 1 : 2;
     let orderWorkBgngYmd = admin != undefined ? admin.orderWorkBgngYmd : flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMMDD")) : String(Moment(new Date()).format("YYYYMM") - 1 + "16")
     let orderWorkEndYmd = admin != undefined ? admin.orderWorkEndYmd : flagOrder == 1 ? String(Moment(new Date()).format("YYYYMM") + "15") : Moment(endOfMonth(new Date(Moment(Moment(new Date()).format("YYYYMM") - 1 + "15").format("YYYY-MM-DD")))).format("YYYYMMDD")
     let orderWorkBgngMm = admin != undefined ? admin.aplyYm : flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMM")) : String(Moment(new Date()).format("YYYYMM") - 1)
 
     // 세션설정
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-    const deptInfo = JSON.parse(localStorage.getItem("deptInfo"));
     const sessionEmpId = admin != undefined ? admin.empId : userInfo.empId
     const sessionJbpsCd = admin != undefined ? admin.jbpsCd : userInfo.jbpsCd
-    const sessionDeptIdList = [];
-    const sessionDeptNmList = admin != undefined ? [admin.deptNmAll] : [];
-
-    if (sessionDeptNmList.length == 0) {
-        for (let i = 0; i < deptInfo.length; i++) {
-            sessionDeptIdList.push(
-                deptInfo[i].deptId
-            )
-            sessionDeptNmList.push(
-                deptInfo[i].deptNm
-            )
-        }
-    }
 
     // 프로젝트목록 조회
     useEffect(() => {
         getPrjctInfo();
+        getTotWorkHour();
+        getTotHoliday();
+        getVcatnTotHrs();
     }, [])
 
     // 프로젝트 목록 조회
-    const [selectPrjctList, setSelectPrjctList] = useState();
+    const [ selectPrjctList, setSelectPrjctList ] = useState();
+    const [ selectWorkTotHrsList, setSelectWorkTotHrsList ] = useState(); // 프로젝트별 총 시간 데이터
+    const [ holidayHrs, setHolidayHrs ] = useState(); // 공휴일 총 시간
+    const [ vcatnTotHrs, setVcatnTotHrs ] = useState(); // 휴가 총 시간
 
     // 프로젝트 목록 조회
     const getPrjctInfo = async () => {
@@ -65,6 +59,48 @@ const EmpWorkTime = () => {
             setSelectPrjctList(await ApiRequest("/boot/common/queryIdSearch", { queryId: "indvdlClmMapper.retrievePrjctList" }));
         } catch (error) {
             console.error("getPrjctInfo_error : " + error);
+        }
+    }
+
+    const getTotHoliday = async () => {
+        const param = {
+            queryId: "indvdlClmMapper.retrieveHolidayHrs",
+            aplyYm: orderWorkBgngMm,
+            aplyOdr: flagOrder
+        }
+        const response = await ApiRequest('/boot/common/queryIdSearch', param);
+        console.log('공휴일 response', response)
+        if(response.length !== 0){
+            setHolidayHrs(response[0].totholi);
+        }
+    }
+
+    const getVcatnTotHrs = async () => {
+        const param = {
+            queryId: "indvdlClmMapper.retrieveVcatTot",
+            empId: sessionEmpId,
+            aplyYm: orderWorkBgngMm,
+            aplyOdr: flagOrder
+        }
+        const response = await ApiRequest('/boot/common/queryIdSearch', param);
+        console.log('휴가 response', response)
+        if(response[0] !== null){
+            setVcatnTotHrs(response[0].md);
+        } else{
+            setVcatnTotHrs(0);
+        }
+    }
+
+    const getTotWorkHour = async () => {
+        const param = {
+            queryId: "indvdlClmMapper.retrievePrjctMMTotMd",
+            empId: sessionEmpId,
+            aplyYm: orderWorkBgngMm,
+            aplyOdr: flagOrder
+        }
+        const response = await ApiRequest('/boot/common/queryIdSearch', param)
+        if(response.length !== 0){
+            setSelectWorkTotHrsList(response);
         }
     }
 
@@ -123,7 +159,7 @@ const EmpWorkTime = () => {
                 const prjctIndvdlCtMmParamResult = await ApiRequest("/boot/common/queryIdSearch", initParam);
                 const prjctIndvdlCtMmParamFilter = prjctIndvdlCtMmParamResult.filter(item => item.aplyType != "vcatnAply" && item.aplyOdr == flagOrder);
 
-                setInsertWorkHourList(await ApiRequest("/boot/common/queryIdSearch", initParam))
+                setInsertWorkHourList(await ApiRequest("/boot/common/queryIdSearch", initParam));
 
                 if (prjctIndvdlCtMmParamFilter.length > 0) {
                     if (orderWorkBgngMm != searchPrjctIndvdlCtMmParam.aplyYm) {
@@ -157,6 +193,17 @@ const EmpWorkTime = () => {
 
     // 검색버튼
     const searchHandle = () => {
+        // //TODO : 임시기능
+        //     const newDate = new Date(tmpDate);
+        // if(SearchMonthValueRef.current === 5 ){
+        //     newDate.setMonth(5, 1); // 5월 1일로 설정
+        //     setTmpDate(newDate);
+        // }else{
+        //     newDate.setMonth(5, 17); // 5월 1일로 설정
+        //     setTmpDate(newDate);
+        // }
+        // TODO : 임시기능  끝
+
         setSearchPrjctIndvdlCtMmParam({
             ...searchPrjctIndvdlCtMmParam,
             searchYear: SearchYearValueRef.current,
@@ -203,7 +250,6 @@ const EmpWorkTime = () => {
         if (insertWorkHourListFilter.length > 0) {
             try {
                 const response = await ApiRequest("/boot/indvdlClm/insertPrjctMmAply", insertWorkHourListFilter);
-                console.log('res', response)
                 selectData(searchPrjctIndvdlCtMmParam);
                 handleOpen("승인요청되었습니다.");
             } catch (error) {
@@ -256,11 +302,10 @@ const EmpWorkTime = () => {
                 } else if (isSaturday(Moment(String(startDate)).format("YYYY-MM-DD")) || isSunday(Moment(String(startDate)).format("YYYY-MM-DD"))) {
                     
                 } else if (vcatnData.length > 0 && vcatnData[0].aplyType == 'vcatnAply') {
-                    console.log('vcant', vcatnData)
                     if (vcatnData[0].vcatnTyCd == "VTW01201" || vcatnData[0].vcatnTyCd == "VTW01204") {
                         
                     } else if (['VTW01202', 'VTW01203', 'VTW01205'].includes(vcatnData[0].vcatnTyCd) && vcatnData.length >= 2) {
-                        console.log('???')
+                    
                     } else {
                         parseData.push({
                             text: inputFormData.prjctNm + " " + (inputFormData.workHour > 4 ? 4 : inputFormData.workHour) + "시간",
@@ -303,9 +348,12 @@ const EmpWorkTime = () => {
             if (insertWorkHourList) {
                 for (let i = 0; i < insertWorkHourList.length; i++) {
                     if (parseData.find(item => item.aplyYmd == insertWorkHourList[i].aplyYmd)) {
-                        if (((parseData.find(item => item.aplyYmd == insertWorkHourList[i].aplyYmd).md) + (insertWorkHourList[i].atrzDmndSttsCd ==='VTW03704' ? 0: insertWorkHourList[i].md)) > 1) {
-                            handleOpen("근무시간은 8시간을 초과할 수 없습니다.");
-                            return;
+                        if(insertWorkHourList[i].atrzDmndSttsCd !== 'VTW03704'){
+                            if (parseData.find(item => item.aplyYmd == insertWorkHourList[i].aplyYmd).md + insertWorkHourList[i].md > 1) {
+                                alert(1)
+                                handleOpen("근무시간은 8시간을 초과할 수 없습니다.");
+                                return;
+                            }
                         }
                     }
                     parseData.push(insertWorkHourList[i]);
@@ -318,6 +366,7 @@ const EmpWorkTime = () => {
                 let workHourValue = 0;
 
                 workHourCheckList = parseData.filter(item => item.aplyYmd == parseData[i].aplyYmd)
+
                 if (workHourCheckList) {
                     workHourCheckList.map((item, index) => {
                         if(item.atrzDmndSttsCd !== 'VTW03704'){
@@ -404,47 +453,6 @@ const EmpWorkTime = () => {
         }
     }
 
-    // 근무일수 구하기
-    function getWorkDay(selectCrtrDateList) {
-        if (selectCrtrDateList) {
-            return selectCrtrDateList.filter(item => item.aplyYm == searchPrjctIndvdlCtMmParam.aplyYm && item.crtrOdr == flagOrder && item.hldyClCd == "VTW05001").length;
-        }
-    }
-
-    // 공휴일수 구하기
-    function getHoliDay(selectCrtrDateList) {
-        if (selectCrtrDateList) {
-            return selectCrtrDateList.filter(item => item.aplyYm == searchPrjctIndvdlCtMmParam.aplyYm && item.crtrOdr == flagOrder && item.hldyClCd == "VTW05003").length;
-        }
-    }
-
-    // 실 근무일수 구하기
-    function getRealWorkDay(insertWorkHourList){
-        let cnt = 0;
-        if (insertWorkHourList) {
-            insertWorkHourList.map((item) => {
-                if(item.aplyType == "workAply" && item.aplyOdr == flagOrder) cnt += item.md * 8;
-            })
-        }
-        return cnt;
-    }
-
-    // 휴가일수 구하기
-    function getVcatnDay(insertWorkHourList){
-        let cnt = 0;
-        if (insertWorkHourList) {
-            insertWorkHourList.map((item) => {
-                if (item.aplyType == "vcatnAply" && item.aplyOdr == flagOrder && item.md == 0) cnt += 8;
-                if (item.aplyType == "vcatnAply" && item.aplyOdr == flagOrder && item.md == 0.5) cnt += 4;
-            })
-        }
-        return cnt;
-    }
-
-
-
-
-
     /* devextreme 이벤트 컨트롤 */
     function onAppointmentClick(e) {
         if (e.appointmentData.isInsertBoolean == false) e.cancel = true;
@@ -464,6 +472,9 @@ const EmpWorkTime = () => {
     }
     function onDragStart(e){
         e.cancel = true
+    }
+    const setTimeVal = (e)=>{ // TODO : 임시 작업
+        console.log(e);
     }
 
     return (
@@ -607,55 +618,36 @@ const EmpWorkTime = () => {
         )
     }
 
-    function createWorkHour(selectCrtrDateList, insertWorkHourList) {
-        let workHour = getWorkDay(selectCrtrDateList) * 8;
-        let holiHour = getHoliDay(selectCrtrDateList) * 8;
-        let realWorkHour = getRealWorkDay(insertWorkHourList);
-        let vcatnHour = getVcatnDay(insertWorkHourList)
-
+    function createWorkHour() {
         return (
             <>
                 <div style={{ marginTop: "10px", border: "2px solid #CCCCCC" }}>
                     <div style={{ borderBottom: "2px solid #CCCCCC" }}>
                         <div style={{ display: "flex", alignItems: "center", height: "50px", marginLeft: "20px" }}>
-                            {orderWorkBgngMm} - {flagOrder}차수 근무시간 : {realWorkHour + vcatnHour + holiHour} / {workHour + holiHour} hrs.
+                            {orderWorkBgngMm} - {flagOrder}차수 근무시간 : {selectWorkTotHrsList && selectWorkTotHrsList[0].totalAllMd + holidayHrs} / {selectWorkTotHrsList && selectWorkTotHrsList[0].totalAllMd + holidayHrs} hrs.
                         </div>
                     </div>
                     {
-                        vcatnHour != 0
+                        vcatnTotHrs != 0
                             ?
                             <div style={{ display: "flex", alignItems: "center", height: "40px", marginLeft: "20px" }}>
-                                * 휴가 : {vcatnHour} / {vcatnHour} hrs.
+                                * 휴가 : {vcatnTotHrs} / {vcatnTotHrs} hrs.
                             </div>
                             : <></>
                     }
                     {
-                        holiHour != 0
+                        holidayHrs != 0
                             ?
                             <div style={{ display: "flex", alignItems: "center", height: "40px", marginLeft: "20px" }}>
-                                * 공휴일 : {holiHour} / {holiHour} hrs.
+                                * 공휴일 : {holidayHrs} / {holidayHrs} hrs.
                             </div>
                             : <></>
                     }
-                    <div style={{ display: "flex", alignItems: "center", height: "50px", marginLeft: "20px" }}>
-                        * {"\u00A0"}{
-                            sessionDeptNmList.map((item, index) => {
-                                if (sessionDeptNmList.length == index + 1) {
-                                    return (
-                                        <div key={index}>
-                                            {sessionDeptNmList[index] + "\u00A0"}
-                                        </div>
-                                    )
-                                } else {
-                                    return (
-                                        <div key={index}>
-                                            {sessionDeptNmList[index] + ", \u00A0 "}
-                                        </div>
-                                    )
-                                }
-                            })
-                        } : {realWorkHour}​ / {vcatnHour != 0 ? workHour - vcatnHour : workHour} hrs.
-                    </div>
+                    {selectWorkTotHrsList && selectWorkTotHrsList.map(item => (
+                        <div style={{ display: "flex", alignItems: "center", height: "40px", marginLeft: "20px" }}>
+                            * {item.prjctNm} : {item.totalMd} / {item.totalAllMd} hrs.
+                        </div>
+                    ))}
                 </div>
             </>
         )

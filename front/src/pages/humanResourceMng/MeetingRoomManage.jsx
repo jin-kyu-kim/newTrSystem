@@ -1,26 +1,15 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-
 import { Scheduler } from 'devextreme-react';
 import { Resource, View, AppointmentDragging } from 'devextreme-react/scheduler';
 
-// 날짜관련
-// npm install moment
 import Moment from "moment"
-
 import ApiRequest from "utils/ApiRequest";
-
 import MeetingRoomManagePopup from "pages/humanResourceMng/MeetingRoomManagePopup";
 import "pages/humanResourceMng/MeetingRoomManage.css"
-
-import "../../assets/css/Style.css"
 
 const MeetingRoomManage = () => {
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const userAuth = JSON.parse(localStorage.getItem("userAuth"));
-
-
-
-
 
     // 회의실종류코드조회
     const [selectMtgRoomCodeList, setSelectMtgRoomCodeList] = useState();
@@ -34,10 +23,6 @@ const MeetingRoomManage = () => {
     const getMtgRoomCode = async () => {
         setSelectMtgRoomCodeList(await ApiRequest('/boot/common/commonSelect', [{ tbNm: "CD" }, { upCdValue: "VTW042" }]));
     }
-
-
-
-
 
     // 회의실예약정보조회
     const [selectMtgRoomValue, setSelectMtgRoomValue] = useState();
@@ -61,30 +46,12 @@ const MeetingRoomManage = () => {
         }
     };
 
-
-
-
-
     // 권한정보
     const [authValue, setAuthValue] = useState();
-
-
-    // 팝업 visible처리정보
-    const [popupMeetingRoomValue, setPopupMeetingRoomValue] = useState({ visible: false, state: "" });
-
-
-
-
-
-    // 팝업전달 회의실정보
-    const popupMtgRoomRsvt = useRef(null);
-
-    // 팝업전달 회의참석자정보
-    const popupMtgRoomRsvtAtdrn = useRef(null);
-
-
-
-
+    
+    const [popupMeetingRoomValue, setPopupMeetingRoomValue] = useState({ visible: false, state: "" }); // 팝업 visible처리정보
+    const popupMtgRoomRsvt = useRef(null); // 팝업전달 회의실정보
+    const popupMtgRoomRsvtAtdrn = useRef(null); // 팝업전달 회의참석자정보
 
     // 날짜변경이벤트
     function onOptionChanged(e) {
@@ -95,9 +62,6 @@ const MeetingRoomManage = () => {
             searchBoolean: true,        // 재조회여부
         })
     }
-
-
-
 
     // 신규회의실정보
     function onCellClick(e) {
@@ -118,9 +82,6 @@ const MeetingRoomManage = () => {
         e.cancel = true;
     }
 
-
-
-
     // 기존회의실정보조회
     function onAppointmentFormOpening(e) {
         popupMtgRoomRsvt.current = selectMtgRoomValue.filter(item => item.mtgRoomRsvtSn == e.appointmentData.mtgRoomRsvtSn);
@@ -139,12 +100,9 @@ const MeetingRoomManage = () => {
         setPopupMeetingRoomValue({ visible: true, state: "update" })
     }
 
-    /* devextreme 이벤트 컨트롤 */
     function onAppointmentDblClick(e) {
         e.cancel = true;
     }
-
-    /* devextreme 이벤트 컨트롤 */
     function onDragStart(e){
         e.cancel = true
     }
@@ -152,14 +110,14 @@ const MeetingRoomManage = () => {
     // grouping 설정
     const groupData = [
         {
-            text: '중회의실',
-            id: "VTW04201",
-            color: '#1e90ff',
-        },
-        {
             text: '소회의실',
             id: "VTW04202",
             color: '#ff9747',
+        },
+        {
+            text: '중회의실',
+            id: "VTW04201",
+            color: '#1e90ff',
         },
         {
             text: '대회의실',
@@ -180,7 +138,6 @@ const MeetingRoomManage = () => {
             month: 'numeric', 
             day: 'numeric' 
         };
-
         const formattedStartDate = e.startDate.toLocaleString('kr', formatOptions);
         const formattedEndDate = e.endDate.toLocaleString('kr', formatOptions);
 
@@ -290,5 +247,4 @@ const MeetingRoomManage = () => {
         </div>
     );
 }
-
 export default MeetingRoomManage;

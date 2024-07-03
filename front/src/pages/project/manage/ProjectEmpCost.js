@@ -43,7 +43,7 @@ const ProjectEmpCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdr, bgtMngOdrTob
       { tbNm: "MMNY_INPT_MM" },
       { prjctId: prjctId,
         bgtMngOdr: bgtMngOdrTobe,
-        inptYm : ctrtYmdPrarm.replace("-","")+"&"+stbleEndYmdPrarm.replace("-",""),
+        inptYm : ctrtYmdPrarm.replace("-","")+"_BETWEEN_"+stbleEndYmdPrarm.replace("-",""),
       },    
     ];
 

@@ -86,28 +86,6 @@
 
     <!-- 휴가정보조회 -->
     <select id="retrieveVcatnInfoInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
-<!--        SELECT-->
-<!--            EMP.EMP_ID						/* 직원ID */-->
-<!--            ,EMP.EMP_FLNM					/* 직원명 */-->
-<!--            ,VMNG.VCATN_YR 					/* 휴가연도 */-->
-<!--            ,VMNG.VCATN_ALTMNT_DAYCNT 		/* 휴가배정일수 */-->
-<!--            ,VMNG.USE_DAYCNT 				/* 사용일수 */-->
-<!--            ,VMNG.VCATN_REMNDR_DAYCNT 		/* 휴가잔여일수 */-->
-<!--            ,VMNG.NEW_VCATN_ALTMNT_DAYCNT 	/* 신규휴가배정일수 */-->
-<!--            ,VMNG.NEW_USE_DAYCNT 			/* 신규사용일수 */-->
-<!--            ,VMNG.NEW_REMNDR_DAYCNT 		/* 신규잔여일수 */-->
-<!--            ,VMNG.PBLEN_VCATN_USE_DAYCNT 	/* 공적휴가사용일수 */-->
-<!--            ,VMNG.ALTMNT_BGNG_YMD 			/* 배정시작일자 */-->
-<!--            ,VMNG.ALTMNT_USE_END_YMD 		/* 배정사용종료일자 */-->
-<!--        FROM VCATN_MNG 	VMNG-->
-<!--            ,EMP 		EMP-->
-<!--        WHERE VMNG.EMP_ID = EMP.EMP_ID-->
-<!--        <if test="empId !=null and !empId.equals('')">-->
-<!--            AND EMP.EMP_ID = #{empId}-->
-<!--        </if>-->
-<!--        <if test="searchYear !=null and !searchYear.equals('')">-->
-<!--            AND VMNG.VCATN_YR = #{searchYear}-->
-<!--        </if>-->
         /* indvdlClmMapper.retrieveVcatnInfoInq */
         SELECT
             'ACCOUNT' VCATN_FLAG
@@ -156,11 +134,12 @@
             AND DATE_FORMAT(SYSDATE(), '%Y%m%d') BETWEEN ALTMNT_BGNG_YMD AND ALTMNT_USE_END_YMD
         </if>
         <if test="searchYear != null and !searchYear.equals('')">
-            AND #{searchYear} BETWEEN SUBSTR(ALTMNT_BGNG_YMD, 1, 4) AND SUBSTR(ALTMNT_USE_END_YMD, 1, 4)
+            AND VMNG.VCATN_YR = #{searchYear}
         </if>
         <if test="empId !=null and !empId.equals('')">
             AND EMP.EMP_ID = #{empId}
         </if>
+        ORDER BY VCATN_YR DESC
     </select>
 
     <!-- 휴가저장정보조회 -->
@@ -265,9 +244,6 @@
         )
         SELECT
             DEPT_ID
-<!--            ,DEPT_NM,-->
-<!--            ,UP_DEPT_ID-->
-<!--            ,LEVEL-->
         FROM DEPT_LINE	DL
 <!--        ORDER BY DL.LEVEL DESC-->
     </select>
@@ -340,6 +316,105 @@
         ORDER BY EMPNO
     </select>
 
+    <!-- 프로젝트MM 프로젝트별 총 근무시간 조회 -->
+    <select id="retrievePrjctMMTotMd" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            p.PRJCT_NM,
+            SUM(pma.MD * 8) AS TOTAL_MD,
+            (SELECT SUM(pma_inner.MD * 8)
+             FROM PRJCT_MM_APLY pma_inner
+                      JOIN (
+                 SELECT pmrz_inner.PRJCT_ID, pmrz_inner.EMP_ID, pmrz_inner.APLY_YM, pmrz_inner.APLY_ODR, pmrz_inner.APLY_YMD
+                 FROM PRJCT_MM_ATRZ pmrz_inner
+                 WHERE pmrz_inner.EMP_ID = #{empId}
+                   AND pmrz_inner.APLY_YM = #{aplyYm}
+                   AND pmrz_inner.APLY_ODR = #{aplyOdr}
+                   AND pmrz_inner.ATRZ_DMND_STTS_CD != 'VTW03704'
+                 GROUP BY pmrz_inner.PRJCT_ID, pmrz_inner.EMP_ID, pmrz_inner.APLY_YM, pmrz_inner.APLY_ODR, pmrz_inner.APLY_YMD
+             ) filtered_inner ON pma_inner.PRJCT_ID = filtered_inner.PRJCT_ID
+                 AND pma_inner.EMP_ID = filtered_inner.EMP_ID
+                 AND pma_inner.APLY_YM = filtered_inner.APLY_YM
+                 AND pma_inner.APLY_ODR = filtered_inner.APLY_ODR
+                 AND pma_inner.APLY_YMD = filtered_inner.APLY_YMD
+            ) AS TOTAL_ALL_MD
+        FROM PRJCT_MM_APLY pma
+                 JOIN PRJCT p ON p.PRJCT_ID = pma.PRJCT_ID
+                 JOIN (
+            SELECT pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR, pmrz.APLY_YMD
+            FROM PRJCT_MM_ATRZ pmrz
+            WHERE pmrz.EMP_ID = #{empId}
+              AND pmrz.APLY_YM = #{aplyYm}
+              AND pmrz.APLY_ODR = #{aplyOdr}
+              AND pmrz.ATRZ_DMND_STTS_CD != 'VTW03704'
+            GROUP BY pmrz.PRJCT_ID, pmrz.EMP_ID, pmrz.APLY_YM, pmrz.APLY_ODR, pmrz.APLY_YMD
+        ) filtered ON pma.PRJCT_ID = filtered.PRJCT_ID
+            AND pma.EMP_ID = filtered.EMP_ID
+            AND pma.APLY_YM = filtered.APLY_YM
+            AND pma.APLY_ODR = filtered.APLY_ODR
+            AND pma.APLY_YMD = filtered.APLY_YMD
+        GROUP BY p.PRJCT_NM
+    </select>
+
+    <!-- 근무시간 공휴일 시간 -->
+    <select id="retrieveHolidayHrs" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT COUNT(*) * 8 AS totHoli
+        FROM CRTR_DATE
+        WHERE SUBSTR(CRTR_YMD, 1, 6) = #{aplyYm}
+          AND HLDY_CL_CD = 'VTW05003'
+          AND CASE
+            WHEN #{aplyOdr} = 1 THEN SUBSTR(DATE_FORMAT(CRTR_YMD, '%Y%m%d'), 7, 2) BETWEEN '01' AND '15'
+            ELSE SUBSTR(DATE_FORMAT(CRTR_YMD, '%Y%m%d'), 7, 2) BETWEEN '16' AND '31'
+          END
+    </select>
+
+    <!-- 휴가 시간 -->
+    <select id="retrieveVcatTot" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            SUM(CASE
+                    WHEN dv.VCATN_TY_CD IN ('VTW01201', 'VTW01204') THEN 8
+                    ELSE 4
+                END) AS MD
+        FROM (
+            <![CDATA[
+                 WITH RECURSIVE DAILY_VACATION AS (
+                     SELECT
+                         VAC.VCATN_TY_CD,
+                         (SELECT CD_NM FROM CD WHERE CD_VALUE = VAC.VCATN_TY_CD) AS PRJCT_NM,
+                     DATE(VAC.VCATN_BGNG_YMD) as dt,
+             DATE(VAC.VCATN_END_YMD) as end_dt,
+             ELC.ATRZ_DMND_EMP_ID
+            FROM ELCTRN_ATRZ ELC
+            JOIN VCATN_ATRZ VAC ON ELC.ELCTRN_ATRZ_ID = VAC.ELCTRN_ATRZ_ID
+        WHERE 1=1
+          AND ELC.ATRZ_DMND_EMP_ID = #{empId}
+          AND ELC.ATRZ_DMND_STTS_CD = 'VTW03703'
+          AND VAC.VCATN_TY_CD != 'VTW01207'
+        UNION ALL
+        SELECT
+            dr.VCATN_TY_CD,
+            dr.PRJCT_NM,
+            DATE_ADD(dr.dt, INTERVAL 1 DAY) as dt,
+            dr.end_dt,
+            dr.ATRZ_DMND_EMP_ID
+        FROM DAILY_VACATION dr
+        WHERE dr.dt < dr.end_dt
+            ) ]]>
+            SELECT
+            VCATN_TY_CD,
+            PRJCT_NM
+             , dt
+             , DATE_FORMAT(dt, '%Y%m%d') AS APLY_YMD
+             , ATRZ_DMND_EMP_ID
+        FROM DAILY_VACATION
+        WHERE SUBSTR(DATE_FORMAT(dt, '%Y%m%d'), 1, 6) = #{aplyYm}
+          AND CASE
+                  WHEN #{aplyOdr} = 1 THEN SUBSTR(DATE_FORMAT(dt, '%Y%m%d'), 7, 2) BETWEEN '01' AND '15'
+                  ELSE SUBSTR(DATE_FORMAT(dt, '%Y%m%d'), 7, 2) BETWEEN '16' AND '31'
+            END
+        ) dv
+        JOIN CRTR_DATE crd ON crd.CRTR_YMD = dv.APLY_YMD AND crd.HLDY_CL_CD = 'VTW05001'
+    </select>
+
     <!-- 프로젝트MM신청조회 -->
     <select id="retrievePrjctIndvdlCtAply" parameterType="map" resultType="com.trsystem.LowerHashMap">
         /* indvdlClmMapper.retrievePrjctIndvdlCtAply */
@@ -386,7 +461,7 @@
             ,ATRZ.APLY_YM	            /* 신청연월 */
             ,ATRZ.APLY_ODR	            /* 신청차수 */
             ,ATRZ.APLY_YMD              /* 신청일자 */
-            ,ROUND(APLY.MD, 1)	MD		/* 근무시간비율 */
+            ,ROUND(APLY.MD, 3)	MD		/* 근무시간비율 */
             ,ATRZ.RJCT_PRVONSH			/* 반려사유 */
             ,ATRZ.ATRZ_DMND_STTS_CD	    /* 결재요청상태코드 */
             ,(SELECT CD_NM FROM CD WHERE CD_VALUE = ATRZ_DMND_STTS_CD)	ATRZ_DMND_STTS_CD_NM		/* 결재요청상태코드명 */
@@ -654,15 +729,18 @@
     <select id="retrieveVcatnPrjctMmYnInq" parameterType="map" resultType="com.trsystem.LowerHashMap">
         /* indvdlClmMapper.retrieveVcatnPrjctMmYnInq */
         SELECT
-            DATE_FORMAT(APLY_YMD, '%Y-%m-%d')	APLY_YMD		                            /* 신청일자 */
-            ,ATRZ_DMND_STTS_CD		                                                        /* 결재요청상태코드 */
-            ,(SELECT CD_NM FROM CD WHERE CD_VALUE = ATRZ_DMND_STTS_CD) ATRZ_DMND_STTS_NM	/* 결재요청상태코드명 */
-            ,MM_ATRZ_CMPTN_YN		                                                        /* MM결재완료여부 */
-        FROM PRJCT_MM_ATRZ			ATRZ
-            ,PRJCT_INDVDL_CT_MM		INDVDL
-        WHERE ATRZ.EMP_ID = INDVDL.EMP_ID
-        AND ATRZ.EMP_ID = #{empId}
-        AND APLY_YMD BETWEEN #{vcatnBgngYmd} AND #{vcatnEndYmd}
+            ATRZ.APLY_YMD		                            /* 신청일자 */
+             , ATRZ_DMND_STTS_CD		                                                        /* 결재요청상태코드 */
+             , (SELECT CD_NM FROM CD WHERE CD_VALUE = ATRZ.ATRZ_DMND_STTS_CD) ATRZ_DMND_STTS_NM	/* 결재요청상태코드명 */
+             , SUM(APLY.MD) AS MD
+        FROM PRJCT_MM_ATRZ	ATRZ
+                 JOIN PRJCT_MM_APLY			APLY
+                      ON ATRZ.PRJCT_ID  = ATRZ.PRJCT_ID
+                          AND ATRZ.EMP_ID = APLY.EMP_ID AND ATRZ.APLY_YM = APLY.APLY_YM
+                          AND ATRZ.APLY_ODR = APLY.APLY_ODR AND ATRZ.APLY_YMD = APLY.APLY_YMD
+        WHERE ATRZ.EMP_ID = #{empId}
+          AND ATRZ.APLY_YMD BETWEEN #{vcatnBgngYmd} AND #{vcatnEndYmd}
+        GROUP BY ATRZ.APLY_YMD, ATRZ_DMND_STTS_CD;
     </select>
 
 
@@ -924,9 +1002,17 @@
     <select id="retrieveExpenseCardUseDtls" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
             CARD_USE_SN,
-            EMP_ID,
-            PRJCT_ID,
+            cud.EMP_ID,
+            e.EMP_FLNM,
+            e.EMPNO,
+            cud.PRJCT_ID,
+            PRJCT_MNGR_EMP_ID,
+            BIZ_STTS_CD,
+            CONCAT('[',PRJCT_CD_IDNTFR,'] ','[',(SELECT EMP_FLNM FROM EMP WHERE EMP_ID = PRJCT_MNGR_EMP_ID ), ' ', (SELECT cd.CD_NM FROM EMP e JOIN CD cd ON cd.CD_VALUE = e.JBPS_CD WHERE EMP_ID = PRJCT_MNGR_EMP_ID ),'] ',PRJCT_NM) AS PRJCT_TAG,
+            PRJCT_STLE_CD,
+            PRJCT_NM,
             EXPENS_CD,
+            (SELECT CD_NM FROM CD WHERE CD_VALUE = EXPENS_CD) AS CD_NM,
             ATDRN,
             CT_PRPOS,
             APLY_YM,
@@ -937,6 +1023,8 @@
             UTZTN_AMT,
             LOTTE_CARD_APRV_NO
         FROM CARD_USE_DTLS cud
+        LEFT JOIN PRJCT p ON cud.PRJCT_ID = p.PRJCT_ID
+        LEFT JOIN EMP e ON cud.EMP_ID = e.EMP_ID
         WHERE 1 = 1
             AND cud.PRJCT_CT_INPT_PSBLTY_YN = 'Y'
         <if test="empId != null and !empId.equals('')">
@@ -959,7 +1047,13 @@
         <if test="useTime != null and !useTime.equals('')">
             AND TIME(UTZTN_DT) BETWEEN (SELECT SUBSTR(CD_NM,4,5) FROM CD WHERE CD_VALUE = #{useTime}) AND (SELECT SUBSTR(CD_NM,10,5) FROM CD WHERE CD_VALUE = #{useTime})
         </if>
-        ORDER BY cud.UTZTN_DT DESC
+        <if test="bizSttsCd != null and !bizSttsCd.equals('')">
+            WHERE p.BIZ_STTS_CD = 'VTW00402'
+        </if>
+        ORDER BY
+        APLY_YM DESC,
+        APLY_ODR DESC,
+        CARD_USE_SN
     </select>
 
     <!-- 프로젝트비용 프로젝트별 배정 원가 비용코드 조회 -->
@@ -998,12 +1092,15 @@
     <select id="retrieveDinnrDpcnYn" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
             pcatd.ATND_EMP_ID
-        FROM nwTr.PRJCT_CT_APLY pca
-            JOIN nwTr.PRJCT_CT_ATRZ pcaz ON pca.PRJCT_CT_APLY_SN = pcaz.PRJCT_CT_APLY_SN
+        FROM PRJCT_CT_APLY pca
+            JOIN PRJCT_CT_ATRZ pcaz ON pca.PRJCT_CT_APLY_SN = pcaz.PRJCT_CT_APLY_SN
                 AND pca.EMP_ID = pcaz.EMP_ID
                 AND pca.APLY_YM = pcaz.APLY_YM
                 AND pca.APLY_ODR = pcaz.APLY_ODR
-            JOIN nwTr.PRJCT_CT_ATDRN pcatd  ON pca.PRJCT_CT_APLY_SN = pcatd.PRJCT_CT_APLY_SN
+            JOIN PRJCT_CT_ATDRN pcatd ON pca.PRJCT_CT_APLY_SN = pcatd.PRJCT_CT_APLY_SN
+                AND pca.APLY_YM = pcatd.APLY_YM
+                AND pca.EMP_ID = pcatd.EMP_ID
+                AND pca.APLY_ODR = pcatd.APLY_ODR
         WHERE 1 = 1
           AND pca.EXPENS_CD = 'VTW04531'
           AND SUBSTR(pca.UTZTN_DT, 1, 8) = SUBSTR(#{utztnDt}, 1, 8);

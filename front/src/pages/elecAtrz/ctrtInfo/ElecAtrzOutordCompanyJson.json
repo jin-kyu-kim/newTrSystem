@@ -1,6 +1,5 @@
 {
     "menuName": "ElecAtrzOutordCompanyJson",
-    "queryId": "projectMapper.retrieveElctrnAtrzMatrlCtDetail",
     "keyColumn": "entrpsCtrtDtlSn",
     "insertButton" : "담당업무 추가",
     "tableColumns": [
