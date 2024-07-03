@@ -114,7 +114,7 @@ const CsServiceDetail = () => {
                     <>
                         <h2 style={{ marginBottom: "30px" }}>{oneData.errTtl}</h2>
                         <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
-                            {oneData.regEmpNm} | {oneData.regDt} | 글번호: [ {num} ] 
+                            {oneData.regEmpNm} [ {oneData.empno} ] | {oneData.regDt} | 글번호: [ {num} ] 
                             <div style={{ marginLeft: "30px", marginRight: '20px' }}> 접수상태 :</div>
                             {hasPermission ? ( 
                             <div style={{ width: '200px' }}>

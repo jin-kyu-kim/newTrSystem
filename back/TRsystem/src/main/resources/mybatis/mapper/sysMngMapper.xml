@@ -809,6 +809,7 @@
 			 , a.STRG_FILE_NM
 			 , a.FILE_STRG_COURS
 			 , e.EMP_FLNM AS REG_EMP_NM
+		     , e.EMPNO
 			 , n.REG_EMP_ID
 			 , DATE_FORMAT(n.REG_DT, '%Y-%m-%d %H:%i') AS REG_DT
 		FROM ERR_MNG n
@@ -816,6 +817,7 @@
 				 LEFT JOIN  ATCHMNFL a ON n.ATCHMNFL_ID = a.ATCHMNFL_ID
 		WHERE ERR_ID = #{errId}
 	</select>
+
 	<select id="retrieveErrReply" parameterType="map" resultType="com.trsystem.LowerHashMap">
 		SELECT M.ERR_ID
 			 , M.ERR_DTL_SN
