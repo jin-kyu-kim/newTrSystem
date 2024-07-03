@@ -329,6 +329,7 @@
   }
   .expensPopUpGetValue {
     width: 100%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
+
   }
 }
 @media (min-width: 601px) and (max-width: 1850px) {
@@ -339,10 +340,10 @@
     text-align: left;
   }
   .expensPopUpGetValue {
-    width: 90%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
+    width: 110%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
   }
 }
-@media (min-width: 1851px) {
+@media (min-width: 1850px) and (max-width: 2300px)  {
   .dx-datagrid .dx-header-row .dx-datagrid-text-content {
     font-size: 14px;
     font-weight: bold;
@@ -350,7 +351,11 @@
     text-align: left;
   }
   .expensPopUpGetValue {
-    width: 80%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
+    width: 85%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
+  }
+}@media (min-width: 2300px) {
+  .expensPopUpGetValue {
+    width: 65%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
   }
 }
 

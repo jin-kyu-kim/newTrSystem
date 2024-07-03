@@ -9,7 +9,7 @@ import ApiRequest from "../../utils/ApiRequest";
 import ReactToPrint from 'react-to-print';
 
 const pageStyles = `
-  @page { size: A3 landscape; margin: 5mm;}
+  @page { size: A3; margin: 5mm;}
   }
 `;
 
