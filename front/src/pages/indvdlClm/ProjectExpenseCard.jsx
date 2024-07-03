@@ -190,10 +190,7 @@ const ProjectExpenseCard = (props) => {
 
         Promise.all(selectedItem.map(async (item) => {
             const currentParam = [...param, { 
-                empId: item.empId,
-                aplyYm: item.aplyYm,
-                aplyOdr: item.aplyOdr,
-                cardUseSn: item.cardUseSn
+                lotteCardAprvNo: item.lotteCardAprvNo
             }];
             try {
                 const res = await ApiRequest('/boot/common/commonDelete', currentParam);
@@ -210,6 +207,8 @@ const ProjectExpenseCard = (props) => {
             setCardUseDtls(updatedCardUseDtls);
             setSelectedItem([]);
             handleOpen('삭제되었습니다.');
+
+            props.getData();
         })
         .catch(error => { console.error('error', error); });
     };

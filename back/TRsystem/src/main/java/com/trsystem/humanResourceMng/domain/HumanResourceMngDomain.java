@@ -20,8 +20,6 @@ public class HumanResourceMngDomain {
         HumanResourceMngDomain.commonService = commonService;
     }
 
-
-    /* =================================박지환_작업================================= */
     // 회의실예약정보저장
     public static int insertMtgRoomRsvt (List<Map<String, Object>> params){
         List<Map<String, Object>> selectMtgRoomMaxSnResult = commonService.queryIdSearch(new HashMap<>(){{ put("queryId", "humanResourceMngMapper.retrieveMtgRoomSnInq"); }});
@@ -53,12 +51,6 @@ public class HumanResourceMngDomain {
             }
         }
 
-//        insertMtgRoomRsvt.add(0, new HashMap<>(){{ put("tbNm", "MTG_ROOM_RSVT"); }});
-//        insertMtgRoomRsvtAtdrn.add(0, new HashMap<>(){{
-//            put("snColumn", "MTG_ATDRN_SN");
-//            put("tbNm", "MTG_ROOM_RSVT_ATDRN");
-//        }});
-
         String[] splitstr = insertRefMtgRoomRsvtAtdrn.toString().substring(1, insertRefMtgRoomRsvtAtdrn.toString().length() - 1).split(", ");
         for(int i = 0; i < splitstr.length; i++){
             int cnt = i;
@@ -70,16 +62,12 @@ public class HumanResourceMngDomain {
                 put("mtgAtdrnSn", cnt + 1);
             }});
         }
-
         commonService.queryIdSearch(insertRefMtgRoomRsvt);
+
         for(int i = 0; i < insertMtgRoomRsvtAtdrn.size(); i++){
             commonService.queryIdSearch(insertMtgRoomRsvtAtdrn.get(i));
         }
-
-//        commonService.insertData(insertMtgRoomRsvt);
-//        commonService.insertData(insertMtgRoomRsvtAtdrn);
-
-        return 0;
+        return 1;
     }
 
     public static int deleteMtgRoomRsvt (String params){

@@ -79,7 +79,7 @@
             CTMMNY_ENG_NM,
             INDUST_CD,
             USE_YN
-        FROM nwTr.CTMMNY_INFO
+        FROM CTMMNY_INFO
         WHERE 1=1
             <if test="ctmmnyNm != null and !ctmmnyNm.equals('')">
                 AND CTMMNY_NM LIKE CONCAT('%', #{ctmmnyNm}, '%')
@@ -456,6 +456,8 @@
 				LEFT JOIN EMP e on e.EMP_ID =pca.EMP_ID
 			WHERE 1=1
 				AND pca.EMP_ID = #{empId}
+				AND pca.ELCTRN_ATRZ_ID IS NULL
+				AND pcaz.ATRZ_DMND_STTS_CD != 'VTW03701'
 			GROUP BY PRJCT_ID, pca.APLY_YM, pca.APLY_ODR
 			UNION ALL
 			SELECT DISTINCT

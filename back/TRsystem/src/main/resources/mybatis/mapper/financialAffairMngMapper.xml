@@ -109,7 +109,7 @@
     <!--프로젝트청구현황개인별 경비-->
     <select id="retrievePrjctCtClmSttusIndvdlCtAccto" parameterType="map" resultType="com.trsystem.LowerHashMap">
         SELECT
-            (SELECT CD_NM FROM nwTr.CD cd WHERE UP_CD_VALUE = 'VTW045' AND CD_VALUE = pca.EXPENS_CD) AS EXPENS_NM,
+            (SELECT CD_NM FROM CD cd WHERE UP_CD_VALUE = 'VTW045' AND CD_VALUE = pca.EXPENS_CD) AS EXPENS_NM,
             pca.EXPENS_CD,
             CONCAT(SUBSTR(#{startYmOdr},1, 6),'-',SUBSTR(#{startYmOdr}, 7, 1)) AS START_APLY_ODR,
             CONCAT(SUBSTR(#{endYmOdr},1, 6),'-',SUBSTR(#{endYmOdr}, 7, 1)) AS END_APLY_ODR,
@@ -243,11 +243,11 @@
         Value AS (
             SELECT
                 CONCAT(SUBSTR(b.UTZTN_DT, 1, 4),'-',SUBSTR(b.UTZTN_DT, 5, 2),'-',SUBSTR(b.UTZTN_DT, 7, 2)) AS APLY_YMD,
-                (SELECT EMP_FLNM FROM nwTr.EMP emp WHERE EMP_ID = b.EMP_ID) AS EMP_FLNM,
+                (SELECT EMP_FLNM FROM EMP emp WHERE EMP_ID = b.EMP_ID) AS EMP_FLNM,
                 CONCAT('상세내역 : ', b.CT_PRPOS, ' | 용도 : ', b.ATDRN) AS EMP_DETAIL,
-                (SELECT CD_NM FROM nwTr.CD cd WHERE UP_CD_VALUE = 'VTW045' AND CD_VALUE = b.EXPENS_CD) AS CD_NM,
+                (SELECT CD_NM FROM CD cd WHERE UP_CD_VALUE = 'VTW045' AND CD_VALUE = b.EXPENS_CD) AS CD_NM,
                 b.UTZTN_AMT
-            FROM nwTr.PRJCT_INDVDL_CT_MM a, nwTr.PRJCT_CT_APLY b
+            FROM PRJCT_INDVDL_CT_MM a, PRJCT_CT_APLY b
             JOIN PRJCT_CT_ATRZ pcat ON (pcat.PRJCT_ID = b.PRJCT_ID AND (pcat.EMP_ID = b.EMP_ID OR (pcat.EMP_ID IS NULL AND b.EMP_ID IS NULL))
                 AND pcat.APLY_YM = b.APLY_YM AND pcat.APLY_ODR = b.APLY_ODR AND pcat.PRJCT_CT_APLY_SN = b.PRJCT_CT_APLY_SN AND pcat.ATRZ_DMND_STTS_CD = 'VTW03703')
             WHERE 1 = 1

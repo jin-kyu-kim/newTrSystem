@@ -24,21 +24,15 @@ const EmpWorkTime = () => {
     const SearchMonthValueRef = useRef();
     SearchMonthValueRef.current = new Date().getDate() < 15 ? new Date().getMonth() : new Date().getMonth() + 1;
 
-    //TODO : 임시작업
-    const [tmpDate,setTmpDate] = useState(new Date ());
-    // TODO : 임시기능  끝
+    // //TODO : 임시작업
+    // const [tmpDate,setTmpDate] = useState(new Date ());
+    // // TODO : 임시기능  끝
 
     // 차수별 시작, 종료일자
-    // let flagOrder = admin != undefined ? admin.aplyOdr :  new Date().getDate() > 15 ? 1 : 2;
-    // let orderWorkBgngYmd = admin != undefined ? admin.orderWorkBgngYmd : flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMMDD")) : String(Moment(new Date()).format("YYYYMM") - 1 + "16")
-    // let orderWorkEndYmd = admin != undefined ? admin.orderWorkEndYmd : flagOrder == 1 ? String(Moment(new Date()).format("YYYYMM") + "15") : Moment(endOfMonth(new Date(Moment(Moment(new Date()).format("YYYYMM") - 1 + "15").format("YYYY-MM-DD")))).format("YYYYMMDD")
-    // let orderWorkBgngMm = admin != undefined ? admin.aplyYm : flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMM")) : String(Moment(new Date()).format("YYYYMM") - 1)
-// TODO : 임시기능
-    let flagOrder = admin != undefined ? admin.aplyOdr :  tmpDate.getDate() > 15 ? 1 : 2; //new Date().getDate() > 15 ? 1 : 2;
-    let orderWorkBgngYmd = admin != undefined ? admin.orderWorkBgngYmd : flagOrder == 1 ? String(Moment(startOfMonth(tmpDate)).format("YYYYMMDD")) : String(Moment(tmpDate).format("YYYYMM") - 1 + "16")
-    let orderWorkEndYmd = admin != undefined ? admin.orderWorkEndYmd : flagOrder == 1 ? String(Moment(tmpDate).format("YYYYMM") + "15") : Moment(endOfMonth(new Date(Moment(Moment(tmpDate).format("YYYYMM") - 1 + "15").format("YYYY-MM-DD")))).format("YYYYMMDD")
-    let orderWorkBgngMm = admin != undefined ? admin.aplyYm : flagOrder == 1 ? String(Moment(startOfMonth(tmpDate)).format("YYYYMM")) : String(Moment(tmpDate).format("YYYYMM") - 1)
-// TODO : 임시기능  끝
+    let flagOrder = admin != undefined ? admin.aplyOdr :  new Date().getDate() > 15 ? 1 : 2;
+    let orderWorkBgngYmd = admin != undefined ? admin.orderWorkBgngYmd : flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMMDD")) : String(Moment(new Date()).format("YYYYMM") - 1 + "16")
+    let orderWorkEndYmd = admin != undefined ? admin.orderWorkEndYmd : flagOrder == 1 ? String(Moment(new Date()).format("YYYYMM") + "15") : Moment(endOfMonth(new Date(Moment(Moment(new Date()).format("YYYYMM") - 1 + "15").format("YYYY-MM-DD")))).format("YYYYMMDD")
+    let orderWorkBgngMm = admin != undefined ? admin.aplyYm : flagOrder == 1 ? String(Moment(startOfMonth(new Date())).format("YYYYMM")) : String(Moment(new Date()).format("YYYYMM") - 1)
 
     // 세션설정
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
@@ -52,16 +46,6 @@ const EmpWorkTime = () => {
         getTotHoliday();
         getVcatnTotHrs();
     }, [])
-
-    // 프로젝트목록 조회
-    // TODO :임시기능
-    useEffect(() => {
-        flagOrder = admin != undefined ? admin.aplyOdr :  tmpDate.getDate() > 15 ? 1 : 2; //new Date().getDate() > 15 ? 1 : 2;
-        orderWorkBgngYmd = admin != undefined ? admin.orderWorkBgngYmd : flagOrder == 1 ? String(Moment(startOfMonth(tmpDate)).format("YYYYMMDD")) : String(Moment(tmpDate).format("YYYYMM") - 1 + "16")
-        orderWorkEndYmd = admin != undefined ? admin.orderWorkEndYmd : flagOrder == 1 ? String(Moment(tmpDate).format("YYYYMM") + "15") : Moment(endOfMonth(new Date(Moment(Moment(tmpDate).format("YYYYMM") - 1 + "15").format("YYYY-MM-DD")))).format("YYYYMMDD")
-        orderWorkBgngMm = admin != undefined ? admin.aplyYm : flagOrder == 1 ? String(Moment(startOfMonth(tmpDate)).format("YYYYMM")) : String(Moment(tmpDate).format("YYYYMM") - 1)
-    }, [tmpDate])
-    // TODO : 임시기능  끝
 
     // 프로젝트 목록 조회
     const [ selectPrjctList, setSelectPrjctList ] = useState();
@@ -209,15 +193,15 @@ const EmpWorkTime = () => {
 
     // 검색버튼
     const searchHandle = () => {
-        //TODO : 임시기능
-            const newDate = new Date(tmpDate);
-        if(SearchMonthValueRef.current === 5 ){
-            newDate.setMonth(5, 1); // 5월 1일로 설정
-            setTmpDate(newDate);
-        }else{
-            newDate.setMonth(5, 17); // 5월 1일로 설정
-            setTmpDate(newDate);
-        }
+        // //TODO : 임시기능
+        //     const newDate = new Date(tmpDate);
+        // if(SearchMonthValueRef.current === 5 ){
+        //     newDate.setMonth(5, 1); // 5월 1일로 설정
+        //     setTmpDate(newDate);
+        // }else{
+        //     newDate.setMonth(5, 17); // 5월 1일로 설정
+        //     setTmpDate(newDate);
+        // }
         // TODO : 임시기능  끝
 
         setSearchPrjctIndvdlCtMmParam({
@@ -467,43 +451,6 @@ const EmpWorkTime = () => {
         } catch (error) {
             handleOpen("삭제에 실패했습니다.")
         }
-    }
-
-    // 근무일수 구하기
-    function getWorkDay(selectCrtrDateList) {
-        if (selectCrtrDateList) {
-            return selectCrtrDateList.filter(item => item.aplyYm == searchPrjctIndvdlCtMmParam.aplyYm && item.crtrOdr == flagOrder && item.hldyClCd == "VTW05001").length;
-        }
-    }
-
-    // 공휴일수 구하기
-    function getHoliDay(selectCrtrDateList) {
-        if (selectCrtrDateList) {
-            return selectCrtrDateList.filter(item => item.aplyYm == searchPrjctIndvdlCtMmParam.aplyYm && item.crtrOdr == flagOrder && item.hldyClCd == "VTW05003").length;
-        }
-    }
-
-    // 실 근무일수 구하기
-    function getRealWorkDay(insertWorkHourList){
-        let cnt = 0;
-        if (insertWorkHourList) {
-            insertWorkHourList.map((item) => {
-                if(item.aplyType == "workAply" && item.aplyOdr == flagOrder) cnt += item.md * 8;
-            })
-        }
-        return cnt;
-    }
-
-    // 휴가일수 구하기
-    function getVcatnDay(insertWorkHourList){
-        let cnt = 0;
-        if (insertWorkHourList) {
-            insertWorkHourList.map((item) => {
-                if (item.aplyType == "vcatnAply" && item.aplyOdr == flagOrder && item.md == 0) cnt += 8;
-                if (item.aplyType == "vcatnAply" && item.aplyOdr == flagOrder && item.md == 0.5) cnt += 4;
-            })
-        }
-        return cnt;
     }
 
     /* devextreme 이벤트 컨트롤 */

@@ -36,6 +36,7 @@
     "popupStep": 0.01,
     "popupMax" : 1,
     "popupMin" : 0,
+    "popupWidth" : 80,
     "precision": 2,
     "labelValue" : {
         "outordEmpId": {

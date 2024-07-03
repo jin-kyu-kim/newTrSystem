@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import ApiRequest from "utils/ApiRequest";
-import Moment from "moment";
 import { DateBox, SelectBox, Popup, TagBox, TextArea, Button } from "devextreme-react";
 import { useModal } from "../../components/unit/ModalContext";
-import "./MeetingRoomManage.css"; // 추가한 CSS 파일을 import
+import ApiRequest from "utils/ApiRequest";
+import Moment from "moment";
+import "./MeetingRoomManage.css";
 
 const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgRoomRsvtAtdrnValue, mtgRoomRsvtListValue, onHiding, title, state, authState }) => {
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
@@ -20,7 +20,6 @@ const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgR
         const handleResize = () => {
             setIsMobileView(window.innerWidth <= 768);
         };
-
         window.addEventListener('resize', handleResize);
         handleResize(); // 초기 실행 시에도 호출
 
@@ -37,7 +36,6 @@ const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgR
                 mtgRoomRsvtAtdrnValueArray.push(item.empId);
             });
         }
-
         getMtgRoomCode();
         getEmpList();
 
@@ -99,25 +97,27 @@ const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgR
 
         let mtgRoomRsvtValueFilter = mtgRoomRsvtListValue.filter(item =>
             (item.useYmd === insertMtgRoomRsvtValue.useYmd && item.mtgRoomCd === insertMtgRoomRsvtValue.mtgRoomCd && insertMtgRoomRsvtValue.mtgRoomRsvtSn !== item.mtgRoomRsvtSn) &&
-            ((item.useBgngHm === insertMtgRoomRsvtValue.useBgngHm)
-                || (item.useBgngHm <= insertMtgRoomRsvtValue.useBgngHm && item.useEndHm >= insertMtgRoomRsvtValue.useBgngHm)
-                || (item.useBgngHm < insertMtgRoomRsvtValue.useEndHm && item.useEndHm >= insertMtgRoomRsvtValue.useEndHm)
-                || (item.useBgngHm >= insertMtgRoomRsvtValue.useBgngHm && item.useBgngHm <= insertMtgRoomRsvtValue.useEndHm))
+            (
+                (item.useBgngHm < insertMtgRoomRsvtValue.useEndHm && item.useEndHm > insertMtgRoomRsvtValue.useBgngHm) ||
+                (item.useEndHm > insertMtgRoomRsvtValue.useBgngHm && item.useBgngHm < insertMtgRoomRsvtValue.useEndHm)
+            )
         );
-
         if (mtgRoomRsvtValueFilter && mtgRoomRsvtValueFilter.length > 0) {
             handleOpen("선택하신 시간에 예약된 회의가 있습니다.\n예약현황을 확인하신 후 예약하시기 바랍니다.");
             return;
+
         } else {
             const insertData = [
                 { insertMtgRoomRsvtValue },
                 { atndEmpIdList: changeEmpList }
             ];
-
             try {
-                await ApiRequest("/boot/humanResourceMng/insertMtgRoomRsvt", insertData);
-                handleOpen("예약되었습니다.");
-                onHiding(false, true);
+                const response = await ApiRequest("/boot/humanResourceMng/insertMtgRoomRsvt", insertData);
+
+                if(response === 1) {
+                    handleOpen("예약되었습니다.");
+                    onHiding(false, true);
+                }
             } catch (error) {
                 console.log("insertMtgRoomRsvt_error : ", error);
             }
@@ -252,5 +252,4 @@ const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgR
         />
     );
 };
-
 export default MeetingRoomManagePopup;

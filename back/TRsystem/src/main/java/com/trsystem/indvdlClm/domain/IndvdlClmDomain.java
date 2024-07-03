@@ -667,15 +667,15 @@ public class IndvdlClmDomain {
             }
             queryResult = commonService.insertData(insertRefrnManList);
 
-//            emailSendService.elecAtrzEmailSend(
-//                    String.valueOf(insertAtrzLnMap.get(0).get("empId"))
-//                    ,String.valueOf(insertElctrnMap.get("atrzDmndEmpId"))
-//                    ,"1"
-//                    ,"[" + insertVcatnMap.get("vcatnBgngYmd") + "~" + insertVcatnMap.get("vcatnEndYmd") + "] 휴가결재 결재 요청 완료."
-//                    ,"[" + insertVcatnMap.get("vcatnBgngYmd") + "~" + insertVcatnMap.get("vcatnEndYmd") + "] 휴가결재에 대한 결재가 요청되었습니다."
-//                    ,false
-//                    ,""
-//            );
+            emailSendService.elecAtrzEmailSend(
+                    String.valueOf(insertAtrzLnMap.get(0).get("empId"))
+                    ,String.valueOf(insertElctrnMap.get("atrzDmndEmpId"))
+                    ,"1"
+                    ,"[" + insertVcatnMap.get("vcatnBgngYmd") + "~" + insertVcatnMap.get("vcatnEndYmd") + "] 휴가결재 결재 요청 완료."
+                    ,"[" + insertVcatnMap.get("vcatnBgngYmd") + "~" + insertVcatnMap.get("vcatnEndYmd") + "] 휴가결재에 대한 결재가 요청되었습니다."
+                    ,false
+                    ,""
+            );
 
             return "성공";
         } else {
@@ -766,7 +766,13 @@ public class IndvdlClmDomain {
 
         // 휴가신청사용일수
         Double vcatnDeCnt = Double.parseDouble(String.valueOf(selectVcatnAtrzResult.get(0).get("vcatnDeCnt")));
-        Double newVcatnUseDaycnt = Double.parseDouble(String.valueOf(selectVcatnAtrzResult.get(0).get("newVcatnUseDaycnt")));
+        Double newVcatnUseDaycnt = 0.0;
+        if (newVcatnUseDaycnt != null) {
+            newVcatnUseDaycnt = Double.parseDouble(String.valueOf(newVcatnUseDaycnt));
+            // newVcatnDeCnt를 사용하는 코드 여기에 작성
+        } else {
+            // newVcatnUseDaycnt가 null일 경우의 처리 코드 여기에 작성
+        }
 
         Double useVcatnDeCnt = 0.0;
         Double useNewVcatnUseDaycnt = 0.0;
@@ -1011,15 +1017,15 @@ public class IndvdlClmDomain {
         commonService.insertData(insertAtrzLnList);
         commonService.insertData(insertRefrnManList);
 
-//        emailSendService.elecAtrzEmailSend(
-//                String.valueOf(insertAtrzLnListValue.get(0).get("empId"))
-//                ,String.valueOf(insertDataMapValue.get("empId"))
-//                ,elctrnAtrzId
-//                ,"[" + insertVactnAtrzMapValue.get("vcatnBgngYmd") + "~" + insertVactnAtrzMapValue.get("vcatnEndYmd") + "] 휴가취소결재 결재 요청 완료."
-//                ,"[" + insertVactnAtrzMapValue.get("vcatnBgngYmd") + "~" + insertVactnAtrzMapValue.get("vcatnEndYmd") + "] 휴가취소결재에 대한 결재가 요청되었습니다."
-//                ,false
-//                ,""
-//        );
+        emailSendService.elecAtrzEmailSend(
+                String.valueOf(insertAtrzLnListValue.get(0).get("empId"))
+                ,String.valueOf(insertDataMapValue.get("empId"))
+                ,elctrnAtrzId
+                ,"[" + insertVactnAtrzMapValue.get("vcatnBgngYmd") + "~" + insertVactnAtrzMapValue.get("vcatnEndYmd") + "] 휴가취소결재 결재 요청 완료."
+                ,"[" + insertVactnAtrzMapValue.get("vcatnBgngYmd") + "~" + insertVactnAtrzMapValue.get("vcatnEndYmd") + "] 휴가취소결재에 대한 결재가 요청되었습니다."
+                ,false
+                ,""
+        );
 
         return null;
     }
@@ -1105,7 +1111,14 @@ public class IndvdlClmDomain {
         // 공가가아닌경우
         else {
             Double vcatnDeCnt = Double.parseDouble(String.valueOf(selectElctrnAtrzListResult.get(0).get("vcatnDeCnt")));
-            Double newVcatnDeCnt = Double.parseDouble(String.valueOf(selectElctrnAtrzListResult.get(0).get("newVcatnUseDaycnt")));
+            Object newVcatnUseDaycnt = selectElctrnAtrzListResult.get(0).get("newVcatnUseDaycnt");
+            Double newVcatnDeCnt = 0.0;
+            if (newVcatnUseDaycnt != null) {
+                newVcatnDeCnt = Double.parseDouble(String.valueOf(newVcatnUseDaycnt));
+                // newVcatnDeCnt를 사용하는 코드 여기에 작성
+            } else {
+                // newVcatnUseDaycnt가 null일 경우의 처리 코드 여기에 작성
+            }
 
             // case_B1
             // 신규휴가만 사용한 경우
@@ -1330,15 +1343,15 @@ public class IndvdlClmDomain {
         }
         queryResult = commonService.insertData(insertRefrnManList);
 
-//            emailSendService.elecAtrzEmailSend(
-//                    String.valueOf(insertAtrzLnMap.get(0).get("empId"))
-//                    ,String.valueOf(insertElctrnMap.get("atrzDmndEmpId"))
-//                    ,"1"
-//                    ,"[" + insertVcatnMap.get("vcatnBgngYmd") + "~" + insertVcatnMap.get("vcatnEndYmd") + "] 휴가결재 결재 요청 완료."
-//                    ,"[" + insertVcatnMap.get("vcatnBgngYmd") + "~" + insertVcatnMap.get("vcatnEndYmd") + "] 휴가결재에 대한 결재가 요청되었습니다."
-//                    ,false
-//                    ,""
-//            );
+            emailSendService.elecAtrzEmailSend(
+                    String.valueOf(insertAtrzLnMap.get(0).get("empId"))
+                    ,String.valueOf(insertElctrnMap.get("atrzDmndEmpId"))
+                    ,"1"
+                    ,"[" + insertVcatnMap.get("vcatnBgngYmd") + "~" + insertVcatnMap.get("vcatnEndYmd") + "] 휴가결재 결재 요청 완료."
+                    ,"[" + insertVcatnMap.get("vcatnBgngYmd") + "~" + insertVcatnMap.get("vcatnEndYmd") + "] 휴가결재에 대한 결재가 요청되었습니다."
+                    ,false
+                    ,""
+            );
 
         return "성공";
     }
