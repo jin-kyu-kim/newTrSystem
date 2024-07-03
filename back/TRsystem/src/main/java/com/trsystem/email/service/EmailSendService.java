@@ -301,7 +301,6 @@ public class EmailSendService {
 		
 		//예약자 이메일전송 (예약자 + 참조자 추가)
 		if((reservEmpEmail == "" ? null : reservEmpEmail) != null) {
-			System.out.println("여기오고있나요????3");
 			emailSendCC(reservEmpEmail, subject, emailContent);
 		}
 	}
