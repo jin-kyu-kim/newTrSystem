@@ -1097,7 +1097,10 @@
                 AND pca.EMP_ID = pcaz.EMP_ID
                 AND pca.APLY_YM = pcaz.APLY_YM
                 AND pca.APLY_ODR = pcaz.APLY_ODR
-            JOIN PRJCT_CT_ATDRN pcatd  ON pca.PRJCT_CT_APLY_SN = pcatd.PRJCT_CT_APLY_SN
+            JOIN PRJCT_CT_ATDRN pcatd ON pca.PRJCT_CT_APLY_SN = pcatd.PRJCT_CT_APLY_SN
+                AND pca.APLY_YM = pcatd.APLY_YM
+                AND pca.EMP_ID = pcatd.EMP_ID
+                AND pca.APLY_ODR = pcatd.APLY_ODR
         WHERE 1 = 1
           AND pca.EXPENS_CD = 'VTW04531'
           AND SUBSTR(pca.UTZTN_DT, 1, 8) = SUBSTR(#{utztnDt}, 1, 8);
