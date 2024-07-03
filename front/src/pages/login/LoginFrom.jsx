@@ -98,18 +98,24 @@ const LoginForm = () => {
           
           <div className="link">
             <div className="image-group">
-              <div className="image-container">
-                <div className="image top-image1"></div>
-                <div className="image bottom-image1"></div>
-              </div>
-              <div className="image-container">
-                <div className="image top-image2"></div>
-                <div className="image bottom-image2"></div>
-              </div>
-              <div className="image-container">
-                <div className="image top-image3"></div>
-                <div className="image bottom-image3"></div>
-              </div>
+              <a href="http://kms.vtw.co.kr">
+                <div className="image-container">
+                  <div className="image top-image1"></div>
+                  <div className="image bottom-image1"></div>
+                </div>
+              </a>
+                <a href="https://www.office.com">
+                  <div className="image-container">
+                    <div className="image top-image2"></div>
+                    <div className="image bottom-image2"></div>
+                  </div>
+                </a>
+                <a href="https://outlook.office.com">
+                  <div className="image-container">
+                    <div className="image top-image3"></div>
+                    <div className="image bottom-image3"></div>
+                  </div>
+                </a>
             </div>
           </div>
           <div style={{alignSelf:"center", textAlign:"center", color:"white", marginTop:"20px"}}>
