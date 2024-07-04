@@ -238,7 +238,10 @@
       { "dataField": "aplyDay", "area": "column" },
       { "dataField": "md", "area": "data", "summaryType": "sum" }
     ]},
-    { "title": "* 현금 및 개인법인카드 사용비용", "key": "expense" }
+    { "title": "* 현금 및 개인법인카드 사용비용", "key": "expense" },
+    {  "key": "totalCost", "info": [
+      { "key": "totalUtztnAmt", "value": "총 지급금액" }
+    ]}
   ],
   "projectExpensePopQueryIdList": [
     "indvdlClmMapper.retrieveVcatnDay",
