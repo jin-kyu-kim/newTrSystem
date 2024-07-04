@@ -1453,8 +1453,14 @@
     <!-- 문체비: 합계컬럼 없으면 추가 -->
     <insert id="insertClPh" parameterType="map">
         INSERT IGNORE INTO CLTUR_PHSTRN_ACT_CT (EMP_ID, CLTUR_PHSTRN_ACT_MNG_YM, CLM_AMT, FTNESS_TRNG_CT_CLM_AMT, CLTUR_CT_CLM_AMT,
-               DPST_AMT, FTNESS_TRNG_CT_DPST_AMT, CLTUR_CT_DPST_AMT, CYFD_AMT, FTNESS_TRNG_CT_CYFD_AMT, CLTUR_CT_CYFD_AMT)
-        VALUES(	#{empId}, #{clturPhstrnActMngYm}, 0, 0, 0, 0, 0, 0, 0, 0 ,0)
+            DPST_AMT, FTNESS_TRNG_CT_DPST_AMT, CLTUR_CT_DPST_AMT, CYFD_AMT, FTNESS_TRNG_CT_CYFD_AMT, CLTUR_CT_CYFD_AMT)
+        SELECT #{empId}, #{clturPhstrnActMngYm}, 0, 0, 0, 0, 0, 0,
+               IFNULL((CYFD_AMT + CLM_AMT - DPST_AMT), 0),
+               IFNULL((FTNESS_TRNG_CT_CYFD_AMT + FTNESS_TRNG_CT_CLM_AMT - FTNESS_TRNG_CT_DPST_AMT), 0),
+               IFNULL((CLTUR_CT_CYFD_AMT + CLTUR_CT_CLM_AMT - CLTUR_CT_DPST_AMT), 0)
+        FROM CLTUR_PHSTRN_ACT_CT
+        WHERE EMP_ID = #{empId}
+          AND CLTUR_PHSTRN_ACT_MNG_YM = #{lastMonth}
     </insert>
 
     <!-- 문체비 합계테이블: 체력단련비 청구 조회 -->
