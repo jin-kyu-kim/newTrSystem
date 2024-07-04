@@ -8,6 +8,11 @@ import CustomPivotGrid from "../../components/unit/CustomPivotGrid";
 import ApiRequest from "../../utils/ApiRequest";
 import ReactToPrint from 'react-to-print';
 
+const pageStyles = `
+  @page { size: A3; margin: 5mm;}
+  }
+`;
+
 const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfoProps, ctAplyLen, popMmYn }) => {
     const { projectExpensePopup, projectExpensePopQueryIdList } = ProjectExpenseJson;
     const [ empInfo, setEmpInfo ] = useState({});
@@ -128,6 +133,7 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfoProps, c
                     store: data
                 })
                 return (
+                    <div className="expensPopUpGetValue">
                     <CustomPivotGrid
                         values={dataSource}
                         customColor={'#f0f0f0'}
@@ -137,10 +143,13 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfoProps, c
                         grandTotalText={'총 시간'}
                         width={'100%'}
                     />
+                    </div>
                 )
             default:
-                return( <ProjectExpenseCashCardReport basicInfo={basicInfo} /> )
-        }
+
+                return( <div className="expensPopUpGetValue"><ProjectExpenseCashCardReport basicInfo={basicInfo}/> </div>)
+
+                    }
     };
     
     const contentArea = () => {
@@ -157,17 +166,17 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfoProps, c
                                 <h2 >근무시간 비용 Report</h2>
                                 <div style={{ flexGrow: 1 }}></div>
                                 <div className='printBtn'>
-                                    <ReactToPrint 
-                                        trigger={() => ( <Button text='출력' type='success' icon='print' /> )}
-                                        content={() => contentRef.current} 
-                                        pageStyle="@page { size: A3; ratio: 100%; }" 
+                                    <ReactToPrint
+                                        trigger={() => <Button text='출력' type='success' icon='print' />}
+                                        content={() => contentRef.current}
+                                        pageStyle={pageStyles}
                                     />
                                 </div>
                             </div>
                             {projectExpensePopup.map((pop) => (
-                                <div key={pop.key} style={{marginTop: '2%'}}>
+                                <div key={pop.key} >
                                     <span>{pop.title}</span>
-                                    <div style={{ marginTop: "10px", marginBottom: "20px" }}>
+                                    <div style={{ marginTop: "5px", marginBottom: "10px" }}>
                                         {renderTable(pop)}
                                     </div>
                                 </div>
