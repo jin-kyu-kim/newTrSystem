@@ -354,17 +354,17 @@
     text-align: left;
   }
   .expensPopUpGetValue {
-    width: 88%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
+    width: 100%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
   }
   .expensPopUpPivotValue {
-    width: 88%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
+    width: 100%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
   }
 }@media (min-width: 2300px) {
   .expensPopUpGetValue {
-    width: 65%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
+    width: 100%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
   }
   .expensPopUpPivotValue {
-    width: 65%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
+    width: 100%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
   }
 }
 
