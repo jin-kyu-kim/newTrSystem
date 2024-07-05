@@ -351,17 +351,17 @@
     text-align: left;
   }
   .expensPopUpGetValue {
-    width: 88%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
+    width: 100%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
   }
   .expensPopUpPivotValue {
-    width: 88%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
+    width: 100%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
   }
 }@media (min-width: 2300px) {
   .expensPopUpGetValue {
-    width: 65%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
+    width: 100%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
   }
   .expensPopUpPivotValue {
-    width: 65%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
+    width: 100%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
   }
 }
 
@@ -764,7 +764,7 @@
 }
 
 .expensPopUpGetValue .dx-pivotgrid .dx-row-total.dx-last-cell{
-  font-size: 20px !important; /* 원하는 폰트 크기로 조정 */
+  font-size: 15px !important; /* 원하는 폰트 크기로 조정 */
   font-weight: bold; /* 더 강조되게 굵은 글씨로 */
 }
 
@@ -781,5 +781,8 @@
 .expensPopUpPivotValue .dx-pivotgrid .dx-pivotgrid-area td{
   margin: 0;
   padding: 0;
-  padding-top : 2px;
+  padding-top : 3px;
+  padding-bottom : 3px;
+  font-size: 15px !important;
+  vertical-align: middle;
 }

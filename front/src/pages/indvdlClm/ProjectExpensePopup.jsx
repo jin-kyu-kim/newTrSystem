@@ -96,14 +96,14 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfoProps, c
             case "basic":
                 return (
                     <div className="expense-popup-table">
-                        <div style={{display: "flex", textAlign: "right", fontWeight: "bold", fontSize: "20px"}}>
+                        <div style={{display: "flex", textAlign: "left", fontWeight: "bold", fontSize: "20px"}}>
                             <div className="expense-popup-first-col">{pop.info[0].value}</div>
                             <div className="expense-popup-val-col">{basicInfo['aplyYm']}-{basicInfo['aplyOdr']}</div>
                         </div>
                         {[1, 3].map((index) => (
                             <div style={{
                                 display: "flex",
-                                textAlign: "right",
+                                textAlign: "left",
                                 fontWeight: "bold",
                                 fontSize: "20px"
                             }} key={index}>
