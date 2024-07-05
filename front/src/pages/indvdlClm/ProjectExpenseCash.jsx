@@ -147,8 +147,8 @@ const ProjectExpenseCash = (props) => {
 
             <div className="dx-fieldset">
                 {labelValue.map((item, index) => ( !item.special ?
-                    <CustomLabelValue props={item} onSelect={handleChgValue} onKeyDownEvent={onKeyDownEvent} 
-                    value={item.name === 'utztnDt' ? dateVal[item.name] : value[0][item.name]} key={index} />
+                    <CustomLabelValue props={item} onSelect={handleChgValue} onKeyDownEvent={onKeyDownEvent} defaultDateValue={props.defaultValue}
+                        value={item.name === 'utztnDt' ? dateVal[item.name] : value[0][item.name]} key={index} />
                     :
                     <div className="dx-field" key={index} >
                         <div className={`dx-field-label ${item.required ? 'asterisk' : ''}`}>{item.label}</div>

@@ -164,8 +164,11 @@ public class IndvdlClmDomain {
         paramClPh.put("empId", param.get("empId"));
         paramClPh.put("state", "INSERT");
         paramClPh.put("clturPhstrnActMngYm", param.get("clmYmd").toString().substring(0, 6));
-        commonService.queryIdDataControl(paramClPh);
         YearMonth yearMonth = YearMonth.parse((String) paramClPh.get("clturPhstrnActMngYm"), DateTimeFormatter.ofPattern("yyyyMM"));
+        LocalDate lastMonth = yearMonth.atDay(1).minusMonths(1);
+        paramClPh.put("lastMonth", lastMonth.format(DateTimeFormatter.ofPattern("yyyyMM")));
+        commonService.queryIdDataControl(paramClPh);
+        paramClPh.put("lastMonth", param.get("clmYmd").toString().substring(0, 6));
         LocalDate nextMonth = yearMonth.atDay(1).plusMonths(1);
         paramClPh.put("clturPhstrnActMngYm", nextMonth.format(DateTimeFormatter.ofPattern("yyyyMM")));
         commonService.queryIdDataControl(paramClPh);

@@ -4,7 +4,7 @@ import { NumberBox } from "devextreme-react";
 import { DateBox } from "devextreme-react/date-box";
 import { Validator, RequiredRule, } from "devextreme-react/validator";
 
-const CustomLabelValue = ({ props, onSelect, value, readOnly, onKeyDownEvent }) => {
+const CustomLabelValue = ({ props, onSelect, value, readOnly, onKeyDownEvent, defaultDateValue }) => {
     const placeholder = props.placeholder;
     const required = props.required;
 
@@ -53,6 +53,10 @@ const CustomLabelValue = ({ props, onSelect, value, readOnly, onKeyDownEvent }) 
                     readOnly={readOnly}
                     name={props.name}
                     onValueChanged={(e) => {
+                        if(e.event && e.event.type === 'dxmousewheel'){
+                            e.event.stopPropagation();
+                            return;
+                        }
                         onSelect({name: props.name, value: e.value})
                     }}
                     format={props.format}
@@ -66,7 +70,7 @@ const CustomLabelValue = ({ props, onSelect, value, readOnly, onKeyDownEvent }) 
             result.push(
                 <DateBox 
                     key={props.name}
-                    value={value}
+                    value={value ? value : defaultDateValue}
                     onKeyDown={onKeyDownEvent}
                     placeholder={props.placeholder}
                     dateSerializationFormat="yyyyMMdd"

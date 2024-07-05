@@ -170,7 +170,7 @@
     },
     { "name": "utztnDt", "type": "DateBox", "label": "사용일시", "placeholder": "사용일시", "required": true },
     { "name": "useOffic", "type": "TextBox", "label": "사용처", "placeholder": "사용처", "required": true },
-    { "name": "utztnAmt", "type": "NumberBox", "label": "금액", "placeholder": "금액", "required": true },
+    { "name": "utztnAmt", "type": "NumberBox", "label": "금액", "placeholder": "금액", "required": true, "format": "#,##0" },
     {
       "name": "prjctId",
       "type": "ComboBox",

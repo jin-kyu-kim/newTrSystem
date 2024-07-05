@@ -184,6 +184,11 @@ private static CommonService commonService;
 		commonService.queryIdDataControl(param);
 		param.put("queryId", "financialAffairMngMapper.updateDpstAmtNextMonth");
 		commonService.queryIdDataControl(param);
+		param.put("clturPhstrnActMngYm", nextMonth.format(DateTimeFormatter.ofPattern("yyyyMM")));
+		LocalDate nextNextMonth = yearMonth.atDay(1).plusMonths(2);
+		param.put("nextMonth", nextNextMonth.format(DateTimeFormatter.ofPattern("yyyyMM")));
+		param.put("queryId", "financialAffairMngMapper.updateDpstNextNextMonth");
+		commonService.queryIdDataControl(param);
 		return 1;
 	}
 
@@ -199,6 +204,16 @@ private static CommonService commonService;
 			param.get(i).put("queryId", "financialAffairMngMapper.saveDpstAmtNextMonth");
 			commonService.queryIdDataControl(param.get(i));
 		}
+
+		Map<String, Object> nextNextParam = new HashMap<>();
+		nextNextParam.put("queryId", "financialAffairMngMapper.updateDpstNextNextMonth");
+		nextNextParam.put("state", "UPDATE");
+		YearMonth yearMonth = YearMonth.parse((String)param.get(0).get("ym"), DateTimeFormatter.ofPattern("yyyyMM"));
+		LocalDate nextMonth = yearMonth.atDay(1).plusMonths(1);
+		nextNextParam.put("clturPhstrnActMngYm", nextMonth.format(DateTimeFormatter.ofPattern("yyyyMM")));
+		LocalDate nextNextMonth = yearMonth.atDay(1).plusMonths(2);
+		nextNextParam.put("nextMonth", nextNextMonth.format(DateTimeFormatter.ofPattern("yyyyMM")));
+		commonService.queryIdDataControl(nextNextParam);
 		return 1;
 	}
 

@@ -510,6 +510,18 @@ public class CommonServiceImpl implements CommonService {
 
         String atchmnflId = null;
         int atchmnflSn = 1;
+        List<Map<String, Object>> deleteParam = new ArrayList<>();
+
+        if(params.get("atchmnflId") != null){
+            tableMap.put("tbNm", "ATCHMNFL");
+            tableMap.put("snColumn", "atchmnflSn");
+            deleteParam.add(tableMap);
+            deleteParam.add(Map.of("atchmnflId", String.valueOf(params.get("atchmnflId"))));
+
+            atchmnflSn = commonGetMax(deleteParam) + 1;
+            tableMap.clear();
+            deleteParam.clear();
+        }
 
         //2. 파일 내부 디렉토리에 업로드
 //        String uploadDir = "../../front/public/upload";
@@ -520,7 +532,6 @@ public class CommonServiceImpl implements CommonService {
 
         // 수정 - 첨부파일 개별 삭제
         if(idData != null){
-            List<Map<String, Object>> deleteParam = new ArrayList<>();
             Map<String, Object> directoryFile = new HashMap<>();
 
             if(deleteFiles.size() > 1){

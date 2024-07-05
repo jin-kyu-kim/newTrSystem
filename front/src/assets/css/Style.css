@@ -342,9 +342,6 @@
   .expensPopUpGetValue {
     width: 110%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
   }
-  .expensPopUpPivotValue {
-    width: 110%;  /* 더 큰 화면에서는 넓이를 줄입니다. */
-  }
 }
 @media (min-width: 1850px) and (max-width: 2300px)  {
   .dx-datagrid .dx-header-row .dx-datagrid-text-content {
