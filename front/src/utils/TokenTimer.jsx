@@ -9,7 +9,6 @@ function TokenTimer() {
     const { handleOpen } = useModal();
     let tokenTime = localStorage.getItem("expirationTime");
 
-
     // 토큰 만료 시간 설정 및 타이머 시작
     useEffect(() => {
         // 토큰의 만료 시간을 가져와서 설정합니다.
