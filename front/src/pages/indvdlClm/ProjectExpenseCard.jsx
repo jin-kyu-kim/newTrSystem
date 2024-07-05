@@ -51,19 +51,19 @@ const ProjectExpenseCard = (props) => {
         const comBoInfo = ['prjctId', 'emp'];
         const comSelectParam = [
             { queryId: "commonMapper.autoCompleteProject", bizSttsCd: "VTW00402" },
-            [{ tbNm: "EMP" }]
+            { queryId: "infoInqMapper.selectEmpList" }
         ];
         try {
             for (let i = 0; i < comSelectParam.length; i++) {
-                let response = await ApiRequest(comBoInfo[i] === 'prjctId' ? "/boot/common/queryIdSearch"
-                    : "/boot/common/commonSelect", comSelectParam[i]);
+                let response = await ApiRequest("/boot/common/queryIdSearch", comSelectParam[i]);
+
                 if (comBoInfo[i] === "emp") {
                     response = response.map(({ empId, empno, empFlnm }) => ({
                         key: empId,
                         value: empFlnm,
                         displayValue: empno + ' ' + empFlnm,
                     }));
-                }
+                };
                 setComboList(prevComboList => ({
                     ...prevComboList,
                     [comBoInfo[i]]: response
@@ -159,6 +159,12 @@ const ProjectExpenseCard = (props) => {
                 return acc;
             }, {});
 
+            // 야근식대 참석자의 경우 type 변환
+            const atdrn = (item.expensCd === 'VTW04531' && item.atdrn !== null) ? item.atdrn.split(',').map(item => {
+                const [ key, value, displayValue ] = item.split('/');
+                return { key, value, displayValue };
+            }) : item.atdrn;
+
             return {
                 ...filteredItem,
                 expensCdObject: {
@@ -166,7 +172,8 @@ const ProjectExpenseCard = (props) => {
                     expensCd: item.expensCd,
                     lotteCardAprvNo: item.lotteCardAprvNo
                 },
-                aprvrEmpId: item.prjctMngrEmpId
+                aprvrEmpId: item.prjctMngrEmpId,
+                atdrn: atdrn
             };
         });
         setCardUseDtls(updatedResponse);
@@ -257,18 +264,13 @@ const ProjectExpenseCard = (props) => {
     const onPopHiding = () => { setPopVisible(false); };
 
     const headerCellRender = ({ column }) => (
-        ['prjctId'].includes(column.dataField)
-        ? <div>
+        ['prjctId', 'expensCd'].includes(column.dataField) ? 
+        <div>
             {column.caption}
             <Button text='일괄적용' type='success' onClick={() => onBulkAply(column.dataField)}
                 style={{fontSize: '8pt', marginLeft: '10px'}}/>
         </div>
-        : ['expensCd'].includes(column.dataField) ?<div>
-                {column.caption}
-                <Button text='일괄적용' type='success' onClick={() => onBulkAply(column.dataField)}
-                        style={{fontSize: '8pt', marginLeft: '10px'}}/>
-            </div>:
-            <div>{column.caption}</div>
+        : <div>{column.caption}</div>
     );
 
     const onBulkAply = (field) => {
@@ -311,17 +313,23 @@ const ProjectExpenseCard = (props) => {
             }
             return updatedItem ? { ...item, ...updatedItem } : item;
         });
-
         setSelectedItem(updatedSelectedItem);
     };
 
     const onTempInsert = async (col, value, props) => {
+        if(Array.isArray(value)){
+            if(value.length === 0){
+                value = null;
+            } else{
+                value = value.map(item => `${item.key}/${item.value}/${item.displayValue}`).join(',');
+            }
+        };
         const param = [
             {tbNm: "CARD_USE_DTLS"},
             {[col.key]: value},
             {lotteCardAprvNo: props.data.lotteCardAprvNo}
         ]
-        const updateRes = await ApiRequest('/boot/common/commonUpdate', param)
+        const updateRes = await ApiRequest('/boot/common/commonUpdate', param);
     }
     
     const cellRenderConfig = {

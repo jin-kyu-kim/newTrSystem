@@ -10,10 +10,10 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
     const [isChangeData, setIsChangeData] = useState(false);
     const [initialPrjctIdValue, setInitialPrjctIdValue] = useState(null);
     const [initialExpensCdValue, setInitialExpensCdValue] = useState(null);
-
+    const [prevExpensCd, setPrevExpensCd] = useState(null);
     const { getCdList, isPrjctIdSelected, hasError, chgPlaceholder, comboList, cdList, onTempInsert,
         expensCd, setValidationErrors, setComboBox, selectedItem, setSelectedItem } = cellRenderConfig ?? {};
-
+        
     useEffect(() => {
         if (col.cellType === 'selectBox' && col.key === 'prjctId') {
             const dataSource = comboList[col.key] || [];
@@ -33,6 +33,7 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
             const dataSource = cdList[props.data.lotteCardAprvNo] || [];
             const value = dataSource.find(item => item.expensCd === props.data.expensCd);
             setInitialExpensCdValue(value);
+            setPrevExpensCd(props.data.expensCd)
         }
     }, [cdList, props.data.expensCd, props.data.lotteCardAprvNo, col.key, col.cellType]);
 
@@ -45,12 +46,20 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
 
     useEffect(() => {
         if (col.cellType === 'selectBox' && col.key === 'expensCd') {
-            // 비용코드가 변경될 때 용도 컬럼 초기화
-            props.data.atdrn = expensCd[props.data.lotteCardAprvNo] === 'VTW04531' ? [] : null; // TagBox 저장완료되면 수정 필요
+            const newCd = expensCd[props.data.lotteCardAprvNo] // 변경값
+
+            if(prevExpensCd !== newCd){ // 비용코드값 변경이 있을때
+                if(newCd === 'VTW04531') { // TagBox로 변경될 경우
+                    props.data.atdrn = [];
+                } else if(prevExpensCd === 'VTW04531'){ // TagBox -> TextBox로 변경될 경우
+                    props.data.atdrn = null;
+                }
+            }
             updateSelectedItem(props.data);
-            onTempInsert(col, props.data[col.key], props)
+            onTempInsert({key: 'atdrn'}, props.data.atdrn, props)
         }
     }, [props.data.expensCd]);
+
 
     if (col.cellType === 'button') {
         return (<Button text={col.button.text} name={col.button.name} type={col.button.type}
@@ -61,7 +70,6 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
 
     } else if (col.cellType === 'selectBox') {
         const value = col.key === 'prjctId' ? initialPrjctIdValue : initialExpensCdValue;
-
         return (
             <SelectBox
                 dataSource={getCdList ? (col.key === 'prjctId' ? comboList[col.key] : cdList[props.data.lotteCardAprvNo]) : comboList[col.key]}
@@ -87,8 +95,9 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
                 showClearButton={true}
                 showSelectionControls={true}
                 displayExpr='displayValue'
-                applyValueMode="useButtons"
-                style={{ backgroundColor: hasError && hasError(props.data.lotteCardAprvNo, col.key) ? '#FFCCCC' : '' }}
+                value={Array.isArray(props.data[col.key]) && props.data[col.key]}
+                onFocusOut={onTempInsert && (() => onTempInsert(col, props.data[col.key], props))}
+                style={{ backgroundColor: hasError && hasError(props.data.lotteCardAprvNo, col.key) ? '#FFCCCC' : '', minWidth: '190px' }}
                 onValueChanged={(newValue) => {
                     props.data[col.key] = newValue.value;
                     updateSelectedItem(props.data);
@@ -111,7 +120,6 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
                 }} >
             </TextBox>
         );
-
     } else if (col.cellType === 'fileCell') {
         let atchList = props?.data.atchmnfl;
         const fileDir = atchList && atchList[0]?.fileStrgCours ? atchList[0]?.fileStrgCours.substring(8) : null;
@@ -134,7 +142,7 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
                 value={props.data[col.key]}
                 onFocusOut={onTempInsert && (() => onTempInsert(col, props.data[col.key], props))}
                 placeholder={chgPlaceholder ? chgPlaceholder(col, props.data.lotteCardAprvNo) : col.placeholder}
-                style={{ backgroundColor: hasError && hasError(props.data.lotteCardAprvNo, col.key) ? '#FFCCCC' : '' }}
+                style={{ backgroundColor: hasError && hasError(props.data.lotteCardAprvNo, col.key) ? '#FFCCCC' : '', minWidth: '100px' }}
                 onValueChanged={(newValue) => {
                     if(newValue.event && newValue.event.type === 'dxmousewheel'){
                         newValue.event.stopPropagation();

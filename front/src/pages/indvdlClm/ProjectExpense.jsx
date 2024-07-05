@@ -34,6 +34,7 @@ const ProjectExpense = () => {
 
     const aplyYm = admin != undefined ? admin.aplyYm : year + monthVal;
     const aplyOdr = admin != undefined ? admin.aplyOdr : date.getDate() > 15 ? "1" : "2";
+    const defaultValue = `${aplyYm}${aplyOdr === "1" ? "01" : "15"}`;
 
     const { handleOpen } = useModal();
     const itemTitleRender = (a) => <span>{a.TabName}</span>;
@@ -294,7 +295,6 @@ const ProjectExpense = () => {
                                 onClick={onClick.name !== 'onPrintClick' ? () => handleOpen(onClick.msg, () => onClickAction(onClick))
                                     : () => onClickAction(onClick)} />))}
                     </div>
-
                     <div style={{ marginBottom: '50px'}}>
                         {admin != undefined ? <></> :
                             <SearchInfoSet
@@ -306,7 +306,6 @@ const ProjectExpense = () => {
                         <RenderTopTable title={`*${admin.empno} ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} /> :
                         <RenderTopTable title={`* ${aplyYm}-${aplyOdr} 차수 TR 청구 내역`} keyColumn={keyColumn} columns={changeColumn} values={ctAply} />}
                     <RenderTopTable title='* 전자결재 청구 내역' keyColumn={elcKeyColumn} columns={columnCharge} values={ctAtrz} />
-
 
                     {atrzDmndSttsCnt.ctReg > 0 || ctAtrzCmptnYn === null || ctAtrzCmptnYn === undefined
                         ? <TabPanel
@@ -326,6 +325,7 @@ const ProjectExpense = () => {
                                             aplyOdr={aplyOdr}
                                             setIndex={setIndex}
                                             getData={getData}
+                                            defaultValue={defaultValue}
                                         />
                                     </React.Suspense>
                                 );

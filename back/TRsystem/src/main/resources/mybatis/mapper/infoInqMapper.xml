@@ -283,5 +283,13 @@
 		SELECT COUNT(*) AS CNT FROM EMP_DTL WHERE EMP_ID = #{empId}
 	</select>
 
+	<select id="selectEmpList" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT EMP_ID , EMP_FLNM, EMPNO
+		FROM EMP
+		WHERE EMP.HDOF_STTS_CD = 'VTW00301'
+		  AND EMP_TY_CD = 'VTW00201'
+		  AND EMPNO NOT BETWEEN 'VK0101'AND 'VK0110'
+	</select>
+
 </mapper>
 
