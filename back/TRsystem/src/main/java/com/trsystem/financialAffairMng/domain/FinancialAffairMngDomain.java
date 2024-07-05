@@ -184,6 +184,11 @@ private static CommonService commonService;
 		commonService.queryIdDataControl(param);
 		param.put("queryId", "financialAffairMngMapper.updateDpstAmtNextMonth");
 		commonService.queryIdDataControl(param);
+		param.put("clturPhstrnActMngYm", nextMonth.format(DateTimeFormatter.ofPattern("yyyyMM")));
+		LocalDate nextNextMonth = yearMonth.atDay(1).plusMonths(2);
+		param.put("nextMonth", nextNextMonth.format(DateTimeFormatter.ofPattern("yyyyMM")));
+		param.put("queryId", "financialAffairMngMapper.updateDpstNextNextMonth");
+		commonService.queryIdDataControl(param);
 		return 1;
 	}
 
