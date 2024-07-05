@@ -1100,7 +1100,7 @@
              ,CLTUR_PHSTRN_ACT_MNG_YM
              ,CLM_AMT
              ,DPST_AMT
-             ,CYFD_AMT + CLM_AMT - DPST_AMT AS BALANCE
+             ,IFNULL(CYFD_AMT,0) + IFNULL(CLM_AMT,0) - IFNULL(DPST_AMT,0) AS BALANCE
         FROM CLTUR_PHSTRN_ACT_CT
         WHERE 1=1
             AND CLTUR_PHSTRN_ACT_MNG_YM LIKE CONCAT(#{year}, '%')
