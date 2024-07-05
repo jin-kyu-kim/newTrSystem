@@ -214,7 +214,7 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfoProps, c
     return (
         <div style={{marginBottom: '100px'}}>
             <Popup
-                width={'100%'}
+                width={'1450px'}
                 height={'90%'}
                 visible={visible}
                 onHiding={onPopHiding}
