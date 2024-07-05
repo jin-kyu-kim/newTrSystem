@@ -37,6 +37,7 @@ const ElecAtrzNewReq = () => {
     const [attachments, setAttachments] = useState([]);
     const [deleteFiles, setDeleteFiles] = useState([{ tbNm: "ATCHMNFL" }]);
     const [newAttachments, setNewAttachments] = useState(attachments);
+    const [copyAttachment, setCopyAttachments] = useState(attachments);
     const fileDir = newAttachments[0]?.fileStrgCours ? newAttachments[0]?.fileStrgCours.substring(8) : null;
 
     const [data, setData] = useState(location.state.formData);
@@ -193,6 +194,7 @@ const ElecAtrzNewReq = () => {
                     fileStrgCours: item.fileStrgCours
                 }));
                 setAttachments(tmpFileList);
+                setCopyAttachments(tmpFileList);
                 setNewAttachments(tmpFileList);
             }
         } catch (error) {
@@ -207,6 +209,7 @@ const ElecAtrzNewReq = () => {
     const attachFileDelete = (deleteItem) => {
         setDeleteFiles([...deleteFiles, { atchmnflId: sttsCd === "VTW05405" || sttsCd === "VTW05406" || sttsCd === "VTW05407" ? '' : data.atchmnflId, atchmnflSn: deleteItem.atchmnflSn, strgFileNm: deleteItem.strgFileNm }]);
         setNewAttachments(newAttachments.filter(item => item !== deleteItem));
+        setCopyAttachments(newAttachments.filter(item => item !== deleteItem));
     }
 
     /** 결재선용 데이터 - 등록시에는 기본 참조자 리스트 조회 */
@@ -305,6 +308,32 @@ const ElecAtrzNewReq = () => {
         createAtrz(atrzParam, "VTW03701");
     }
 
+    const oldFileInsert = async (insertTable, newAtchmntId, newElctrnATrzId) => {
+        // 기존 파일이 있으면
+        const res = await ApiRequest('/boot/common/commonUpdate', [
+            { tbNm: insertTable }, { atchmnflId: newAtchmntId }, { elctrnAtrzId: newElctrnATrzId }
+        ]);
+        const existAttachInsert = async () => {
+            const promises = copyAttachment.map(item => {
+                return ApiRequest('/boot/common/commonInsert', [
+                    {tbNm: "ATCHMNFL"}, {
+                        atchmnflId: newAtchmntId,
+                        realFileNm: item.realFileNm,
+                        strgFileNm: item.strgFileNm,
+                        atchmnflSn: item.atchmnflSn,
+                        fileStrgCours: item.fileStrgCours
+                    }
+                ]);
+            });
+            try {
+                await Promise.all(promises);
+            } catch (error) {
+                console.error('error', error);
+            }
+        };
+        await existAttachInsert();
+    }
+    
     /**
      * 승인 요청 및 임시저장 시 실행되는 함수
      * @param {} param 
@@ -319,10 +348,11 @@ const ElecAtrzNewReq = () => {
         /**
          * 전자결재 & 첨부파일 저장
          */
+        const newElctrnATrzId = uuid();
         const insertParam = {
             param,
             atrzDmndSttsCd: stts,
-            elctrnAtrzId: data.elctrnAtrzId !== undefined && sttsCd === "VTW03701" ? data.elctrnAtrzId : uuid(),
+            elctrnAtrzId: data.elctrnAtrzId !== undefined && sttsCd === "VTW03701" ? data.elctrnAtrzId : newElctrnATrzId,
             prjctId: prjctId,
             elctrnAtrzTySeCd: data.elctrnAtrzTySeCd,
             regDt: date.toISOString().split('T')[0] + ' ' + date.toTimeString().split(' ')[0],
@@ -373,22 +403,19 @@ const ElecAtrzNewReq = () => {
                 }
 
                 const formDataAttach = new FormData();
+                const newAtchmntId = uuid();
+
                 formDataAttach.append("tbNm", JSON.stringify({ tbNm: insertTable }));
 
-                // 1. 임시저장 -> 
-                if (data.atchmnflId !== undefined && sttsCd === "VTW03701") {
-                    formDataAttach.append("data", JSON.stringify({ atchmnflId: data.atchmnflId, dirType: ElecAtrzNewReqJson.dirType }));
-
-                } else if (data.atchmnflId !== undefined && stts === "VTW03701" && sttsCd === "VTW05407") {
-                    formDataAttach.append("data", JSON.stringify({ atchmnflId: data.atchmnflId, dirType: ElecAtrzNewReqJson.dirType }));
-                
-                } else if (sttsCd === "VTW05405" || sttsCd === "VTW05406" || sttsCd === "VTW05407") {
-                    formDataAttach.append("data", JSON.stringify({ atchmnflId: uuid(), dirType: ElecAtrzNewReqJson.dirType }));
+                // 1. 임시저장 -> 임시저장/결재요청
+                if (['VTW03701', 'VTW03702'].includes(stts) && ['VTW05405', 'VTW05406', 'VTW05407', 'VTW03701'].includes(sttsCd)) {
+                    if(copyAttachment && newElctrnATrzId !== undefined) await oldFileInsert(insertTable, newAtchmntId, newElctrnATrzId);
+                    formDataAttach.append("data", JSON.stringify({ atchmnflId: newAtchmntId, dirType: ElecAtrzNewReqJson.dirType }));
 
                 } else {
-                    formDataAttach.append("data", JSON.stringify({ atchmnflId: uuid(), dirType: ElecAtrzNewReqJson.dirType }));
-
+                    formDataAttach.append("data", JSON.stringify({ atchmnflId: newAtchmntId, dirType: ElecAtrzNewReqJson.dirType }));
                 }
+
                 if (data.elctrnAtrzId !== undefined && sttsCd === "VTW03701") {
                     formDataAttach.append("idColumn", JSON.stringify({ elctrnAtrzId: data.elctrnAtrzId })); //결재ID
 
@@ -397,6 +424,7 @@ const ElecAtrzNewReq = () => {
 
                 }
                 formDataAttach.append("deleteFiles", JSON.stringify(deleteFiles));
+
                 Object.values(attachments)
                     .forEach((attachment) => formDataAttach.append("attachments", attachment));
 
@@ -411,7 +439,6 @@ const ElecAtrzNewReq = () => {
                             elctrnAtrzId: insertParam.elctrnAtrzId,
                             title: insertParam.param.title
                         });
-
                         setElctrnAtrzId(response);
                         setSttsCd("VTW03701");
                         handleOpen("임시저장이 완료되었습니다.");
@@ -535,7 +562,7 @@ const ElecAtrzNewReq = () => {
         }
 
         // 경비청구 필수 컬럼 validation
-        if (param.arrayData && param.arrayData[0].tbNm === ElecAtrzNewReqJson.validationTableNmx) {
+        if (param.arrayData && param.arrayData[0].tbNm === ElecAtrzNewReqJson.validationTableNm) {
             if (!validateFields(param?.arrayData[1])) {
                 return false;
             }

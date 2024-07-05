@@ -96,12 +96,17 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfoProps, c
             case "basic":
                 return (
                     <div className="expense-popup-table">
-                        <div style={{ display: "flex" }}>
+                        <div style={{display: "flex", textAlign: "right", fontWeight: "bold", fontSize: "20px"}}>
                             <div className="expense-popup-first-col">{pop.info[0].value}</div>
                             <div className="expense-popup-val-col">{basicInfo['aplyYm']}-{basicInfo['aplyOdr']}</div>
                         </div>
                         {[1, 3].map((index) => (
-                            <div style={{ display: "flex" }} key={index}>
+                            <div style={{
+                                display: "flex",
+                                textAlign: "right",
+                                fontWeight: "bold",
+                                fontSize: "20px"
+                            }} key={index}>
                                 <div className="expense-popup-first-col">{pop.info[index].value}</div>
                                 <div className="expense-popup-val-col">{empInfo[pop.info[index].key]}</div>
                                 {pop.info[index + 1] && (
@@ -117,7 +122,7 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfoProps, c
             case "total":
                 return (
                     <div className="expense-popup-table">
-                        <div style={{ display: "flex" }}>
+                        <div style={{display: "flex", textAlign: "right", fontWeight: "bold", fontSize: "20px"}}>
                             {pop.info.map((item, index) => (
                                 <React.Fragment key={index}>
                                     <div className="expense-popup-first-col">{item.value}</div>
@@ -145,10 +150,22 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfoProps, c
                     />
                     </div>
                 )
-            default:
+            case "expense":
+                return( <div className="expensPopUpPivotValue"><ProjectExpenseCashCardReport basicInfo={basicInfo}/> </div>)
 
-                return( <div className="expensPopUpGetValue"><ProjectExpenseCashCardReport basicInfo={basicInfo}/> </div>)
-
+            default :
+                return (
+                    <div className="expense-popup-table">
+                        <div style={{ display: "flex", textAlign:"right", fontWeight:"bold", fontSize:"20px"}}>
+                            {pop.info.map((item, index) => (
+                                <React.Fragment key={index}>
+                                    <div className="expense-popup-first-col">{item.value}</div>
+                                    <div className="expense-popup-val-col">{totalInfo[item.key]}</div>
+                                </React.Fragment>
+                            ))}
+                        </div>
+                    </div>
+                );
                     }
     };
     
@@ -175,7 +192,7 @@ const ProjectExpensePopup = ({ visible, onPopHiding, basicInfo, aprvInfoProps, c
                             </div>
                             {projectExpensePopup.map((pop) => (
                                 <div key={pop.key} >
-                                    <span>{pop.title}</span>
+                                    <span>{pop.title ? pop.title : ""}</span>
                                     <div style={{ marginTop: "5px", marginBottom: "10px" }}>
                                         {renderTable(pop)}
                                     </div>
