@@ -300,9 +300,9 @@ public class EmailSendService {
 		}
 		
 		//예약자 이메일전송 (예약자 + 참조자 추가)
-		if((reservEmpEmail == "" ? null : reservEmpEmail) != null) {
-			emailSendCC(reservEmpEmail, subject, emailContent);
-		}
+//		if((reservEmpEmail == "" ? null : reservEmpEmail) != null) {
+//			emailSendCC(reservEmpEmail, subject, emailContent);
+//		}
 	}
 
 

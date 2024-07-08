@@ -490,7 +490,18 @@
 		</if>
 	</select>
 
-
+	<select id="retrieveMtgRoomInfo" parameterType="map" resultType="com.trsystem.LowerHashMap">
+		SELECT
+			mrr.MTG_ROOM_CD,
+			mrr.RSVT_EMP_ID,
+			CONCAT(USE_YMD, USE_BGNG_HM) AS START_TIME,
+			CONCAT(USE_YMD, USE_END_HM) AS END_TIME,
+			MTG_TTL,
+			ATND_EMP_ID
+		FROM MTG_ROOM_RSVT mrr
+			JOIN MTG_ROOM_RSVT_ATDRN mrra ON mrr.MTG_ROOM_RSVT_SN = mrra.MTG_ROOM_RSVT_SN
+		WHERE mrr.MTG_ROOM_RSVT_SN = #{mtgRoomRsvtSn}
+	</select>
 
 	<!-- 코드조회 -->
 	<select id="retrieveCodeList" parameterType="map" resultType="com.trsystem.LowerHashMap">
@@ -524,8 +535,9 @@
 		JOIN DEPT_HNF HNF ON DEPT.DEPT_ID = HNF.DEPT_ID
 		JOIN EMP EMP ON EMP.EMP_ID = HNF.EMP_ID
 		WHERE HDOF_STTS_CD = 'VTW00301'
-		AND EMP_TY_CD = 'VTW00201'
-		AND DEPT.END_YN = 'N'
+			AND EMP_TY_CD = 'VTW00201'
+			AND EMP.EMPNO NOT BETWEEN 'VK0101'AND 'VK0110'
+			AND DEPT.END_YN = 'N'
 		GROUP BY EMP.EMP_ID
 		ORDER BY EMP.EMP_ID
 	</select>

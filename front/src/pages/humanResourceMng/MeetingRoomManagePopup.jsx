@@ -57,6 +57,7 @@ const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgR
                     mtgTtl: mtgRoomRsvtValue[0].mtgTtl,
                     startDate: new Date(Moment(mtgRoomRsvtValue[0].useYmd + " " + mtgRoomRsvtValue[0].useBgngHm).format("yyyy-MM-DD HH:mm")),
                     endDate: new Date(Moment(mtgRoomRsvtValue[0].useYmd + " " + mtgRoomRsvtValue[0].useEndHm).format("yyyy-MM-DD HH:mm")),
+                    state: state
                 });
             } else if (state === "insert") {
                 setInsertMtgRoomRsvtValue({
@@ -64,6 +65,7 @@ const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgR
                     ...commonValues,
                     startDate: mtgRoomRsvtValue[0].startDate,
                     endDate: mtgRoomRsvtValue[0].endDate,
+                    state: state
                 });
             }
         }
