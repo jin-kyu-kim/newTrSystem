@@ -7,13 +7,13 @@ import NumberBox from 'devextreme-react/number-box';
 import ToggleButton from 'pages/sysMng/ToggleButton';
 
 const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, validateNumberBox }) => {
-    const [isChangeData, setIsChangeData] = useState(false);
-    const [initialPrjctIdValue, setInitialPrjctIdValue] = useState(null);
-    const [initialExpensCdValue, setInitialExpensCdValue] = useState(null);
-    const [prevExpensCd, setPrevExpensCd] = useState(null);
+    const [ isChangeData, setIsChangeData ] = useState(false);
+    const [ initialPrjctIdValue, setInitialPrjctIdValue ] = useState(null);
+    const [ initialExpensCdValue, setInitialExpensCdValue ] = useState(null);
     const { getCdList, isPrjctIdSelected, hasError, chgPlaceholder, comboList, cdList, onTempInsert,
         expensCd, setValidationErrors, setComboBox, selectedItem, setSelectedItem } = cellRenderConfig ?? {};
-        
+    const [ prevExpensCd, setPrevExpensCd ] = useState(expensCd);
+
     useEffect(() => {
         if (col.cellType === 'selectBox' && col.key === 'prjctId') {
             const dataSource = comboList[col.key] || [];
@@ -22,18 +22,12 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
         }
     }, [comboList, props.data.prjctId, col.key, col.cellType]);
 
-    const handleKeyDown = (e) => {
-        if (e.event.originalEvent.key === 'ArrowUp' || e.event.originalEvent.key === 'ArrowDown') {
-            e.event.stopPropagation();
-        }
-    };
-
     useEffect(() => {
         if (col.cellType === 'selectBox' && col.key === 'expensCd') {
             const dataSource = cdList[props.data.lotteCardAprvNo] || [];
             const value = dataSource.find(item => item.expensCd === props.data.expensCd);
             setInitialExpensCdValue(value);
-            setPrevExpensCd(props.data.expensCd)
+            setPrevExpensCd(expensCd)
         }
     }, [cdList, props.data.expensCd, props.data.lotteCardAprvNo, col.key, col.cellType]);
 
@@ -43,15 +37,20 @@ const CellRender = ({ col, props, handleYnVal, onBtnClick, cellRenderConfig, val
         );
         setSelectedItem(updatedSelectedItem);
     };
+    
+    const handleKeyDown = (e) => {
+        if(['ArrowUp', 'ArrowDown'].includes(e.event.originalEvent.key)) e.event.stopPropagation();
+    };
 
     useEffect(() => {
         if (col.cellType === 'selectBox' && col.key === 'expensCd') {
+            const prevCd = prevExpensCd[props.data.lotteCardAprvNo]; // 기존값
             const newCd = expensCd[props.data.lotteCardAprvNo] // 변경값
 
-            if(prevExpensCd !== newCd){ // 비용코드값 변경이 있을때
+            if(prevCd !== newCd){ // 비용코드값 변경이 있을때
                 if(newCd === 'VTW04531') { // TagBox로 변경될 경우
                     props.data.atdrn = [];
-                } else if(prevExpensCd === 'VTW04531'){ // TagBox -> TextBox로 변경될 경우
+                } else if(prevCd === 'VTW04531'){ // TagBox -> TextBox로 변경될 경우
                     props.data.atdrn = null;
                 }
             }

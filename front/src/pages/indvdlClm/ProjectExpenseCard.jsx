@@ -169,23 +169,25 @@ const ProjectExpenseCard = (props) => {
                 ...filteredItem,
                 expensCdObject: {
                     cdNm: item.cdNm,
-                    expensCd: item.expensCd,
-                    lotteCardAprvNo: item.lotteCardAprvNo
+                    expensCd: item.expensCd
                 },
                 aprvrEmpId: item.prjctMngrEmpId,
                 atdrn: atdrn
             };
         });
         setCardUseDtls(updatedResponse);
-
-        // 임시저장된 비용코드가 있을경우 cdList setState
+        
+        // 임시저장된 비용코드가 있을경우 cdList 불러오기
         const initialCdList = updatedResponse.reduce((acc, item) => {
             if (item.expensCdObject) {
                 acc[item.lotteCardAprvNo] = [item.expensCdObject];
             }
             return acc;
         }, {});
-        setCdList(initialCdList)
+        setCdList(prevCdList => ({
+            ...prevCdList,
+            ...initialCdList
+        }));
     };
 
     const handleDelete = () => {

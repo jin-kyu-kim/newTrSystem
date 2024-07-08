@@ -154,7 +154,7 @@ const ProjectExpense = () => {
             setHistYmOdr(null)
             setPopVisible(true);
         } else {
-            if (ctAply.length === 0 && mmAtrzCmptnYn === undefined) {
+            if (ctAply.length === 0 && (mmAtrzCmptnYn === undefined || mmAtrzCmptnYn === null)) {
                 handleOpen('경비청구 건수가 없을 경우 근무시간을 먼저 승인 요청 해주시기 바랍니다.')
                 return;
             } else if(ctAply.length === 0 && (mmAtrzCmptnYn === 'Y' || mmAtrzCmptnYn === 'N') && onClick.name === 'onInptDdlnClick') {
