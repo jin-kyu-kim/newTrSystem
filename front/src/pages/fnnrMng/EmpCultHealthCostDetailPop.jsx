@@ -53,8 +53,8 @@ function EmpCultHealthCostDetailPop({value, ym, disabled}) {
                             atchmnflId: element.atchmnflId,
                             atchmnflSn: element.atchmnflSn,
                             realFileNm: element.realFileNm,
-                            strgFileNm: element.strgFileNm
-
+                            strgFileNm: element.strgFileNm,
+                            fileStrgCours: element.fileStrgCours
                         });
                     }
                     tmpValueList.push(tmpElement);
@@ -65,7 +65,8 @@ function EmpCultHealthCostDetailPop({value, ym, disabled}) {
                         atchmnflId: element.atchmnflId,
                         atchmnflSn: element.atchmnflSn,
                         realFileNm: element.realFileNm,
-                        strgFileNm: element.strgFileNm
+                        strgFileNm: element.strgFileNm,
+                        fileStrgCours: element.fileStrgCours
                     });
                     tmpValueList[index] = copyIndex;
                 }
