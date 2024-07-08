@@ -390,7 +390,6 @@ public class IndvdlClmDomain {
             deletePrjctMmAtrzMap.put("queryId", "indvdlClmMapper.deletePrjctMmAtrz");
             deletePrjctMmAtrzMap.put("state", "DELETE");
             commonService.queryIdDataControl(deletePrjctMmAtrzMap);
-
         }
 
         for (Map<String, Object> deletePrjctMmAtrzParam : deletePrjctMmListValue) {
@@ -407,26 +406,17 @@ public class IndvdlClmDomain {
         selectPrjctMmAply.put("aplyOdr", updatePrjctMmListValue.get("flagOrder"));
         selectPrjctMmAply.put("aplyYm", updatePrjctMmListValue.get("orderWorkBgngMm"));
 
-        Map<String, Object> selectPrjctIndvdlCtMm = new HashMap<>();
-        selectPrjctIndvdlCtMm.put("queryId", "indvdlClmMapper.selectPrjctIndvdlCtMmRowCnt");
-        selectPrjctIndvdlCtMm.put("empId", updatePrjctMmListValue.get("empId"));
-        selectPrjctIndvdlCtMm.put("aplyOdr", updatePrjctMmListValue.get("flagOrder"));
-        selectPrjctIndvdlCtMm.put("aplyYm", updatePrjctMmListValue.get("orderWorkBgngMm"));
-
         List<Map<String, Object>> selectPrjctMmAplyResult = commonService.queryIdSearch(selectPrjctMmAply);
-        List<Map<String, Object>> selectPrjctIndvdlCtMmResult = commonService.queryIdSearch(selectPrjctIndvdlCtMm);
 
         Map<String, Object> updatePrjctIndvdlCtMm = new HashMap<>();
         updatePrjctIndvdlCtMm.put("empId", updatePrjctMmListValue.get("empId"));
         updatePrjctIndvdlCtMm.put("aplyOdr", updatePrjctMmListValue.get("flagOrder"));
         updatePrjctIndvdlCtMm.put("aplyYm", updatePrjctMmListValue.get("orderWorkBgngMm"));
 
-        if ((Integer.parseInt(String.valueOf(selectPrjctMmAplyResult.get(0).get("rowCount"))) == 0) && selectPrjctIndvdlCtMmResult.get(0).get("ctAtrzCmptnYn") == null){
+        if ((Integer.parseInt(String.valueOf(selectPrjctMmAplyResult.get(0).get("rowCount"))) == 0)){
             updatePrjctIndvdlCtMm.put("queryId", "indvdlClmMapper.updatePrjctIndvdlCtMmRowCnt");
-            commonService.queryIdSearch(updatePrjctIndvdlCtMm);
-        } else if ((Integer.parseInt(String.valueOf(selectPrjctMmAplyResult.get(0).get("rowCount"))) == 0) && selectPrjctIndvdlCtMmResult.get(0).get("ctAtrzCmptnYn").equals("N")){
-            updatePrjctIndvdlCtMm.put("queryId", "indvdlClmMapper.updatePrjctIndvdlCtMmRowCnt");
-            commonService.queryIdSearch(updatePrjctIndvdlCtMm);
+            updatePrjctIndvdlCtMm.put("state", "UPDATE");
+            commonService.queryIdDataControl(updatePrjctIndvdlCtMm);
         }
 
         return null;
