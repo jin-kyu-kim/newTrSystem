@@ -642,6 +642,8 @@ const ElecAtrz = () => {
                     handleOpen("반려 처리되었습니다.");
                     navigate('/elecAtrz/ElecAtrz');
                     handleClose();
+                    searchHandle();
+                    getAllCount();
                 } else {
                     handleOpen("반려 처리에 실패하였습니다.");
                     return;

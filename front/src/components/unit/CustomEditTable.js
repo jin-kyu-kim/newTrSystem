@@ -134,7 +134,7 @@ const CustomEditTable = ({ keyColumn, columns, values, tbNm, handleYnVal, ynVal,
                 onSelectionChanged={onSelection && ((e) => onSelection(e))}
                 onRowUpdating={(e) => onEditRow('update', e)}
                 onRowRemoved={(e) => onEditRow('delete', e)}
-                keyboardNavigation={false}
+                keyboardNavigation={{ enabled: false }}
             >
                 {masterDetail &&
                     <MasterDetail
