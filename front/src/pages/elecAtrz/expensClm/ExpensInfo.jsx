@@ -159,12 +159,15 @@ const ExpensInfo = ({ onSendData, prjctId, prjctData, data, sttsCd}) => {
         const newForms = [...forms];
         if (fieldName === "ctStlmSeCd") {
             if (e.target.value !== "VTW01904") {
+                newForms[index]["taxBillPblcnYmd"] = null
                 newForms[index]["dpstDmndYmd"] = null
                 newForms[index]["vatInclsAmt"] = 0;
                 newForms[index]["vat"] = 0;
                 newForms[index]["dpstActno"] = null;
                 newForms[index]["dpstrFlnm"] = null;
                 newForms[index]["bankCd"] = null;
+            }else{
+                newForms[index]["rciptPblcnYmd"] = null
             }
         }
         newForms[index][fieldName] = e.target.value;
