@@ -1,9 +1,9 @@
 {
     "elecManageMain" : {
         "atrzSquareList" : [
-            {"key": "progress", "text" : "진행문서", "squareColor": "rgb(216, 237, 246)", "toolTip" : "진행중인 문서를 조회합니다."},
-            {"key" : "terminatedAprvrEmp", "text" : "완료문서", "squareColor": "rgb(216, 237, 246)", "toolTip" : "완료된 문서를 조회합니다."},
-            {"key" : "deny", "text" : "반려문서", "squareColor": "rgb(255, 218, 218)", "toolTip" : "반려문서를 조회합니다."}
+            {"key": "progress", "text" : "진행문서", "squareColor": "rgb(216, 237, 246)", "toolTip" : "진행중인 문서를 조회합니다.", "sttsCd": "VTW03702"},
+            {"key" : "terminatedAprvrEmp", "text" : "완료문서", "squareColor": "rgb(216, 237, 246)", "toolTip" : "완료된 문서를 조회합니다.", "sttsCd": "VTW03703"},
+            {"key" : "deny", "text" : "반려문서", "squareColor": "rgb(255, 218, 218)", "toolTip" : "반려문서를 조회합니다.", "sttsCd": "VTW03704"}
         ],
         "keyColumn": "elctrnAtrzId",
         "queryId": "sysMngMapper.retrieveElecAtrzMng",
@@ -17,9 +17,9 @@
         ],
         "progress" : [
           {"key": "cnptNm", "value": "거래처", "width": "13%"},
-          {"key": "aprvrEmpNm", "value": "결재권자", "width": "7%"},
-          {"key": "atrzDmndSttsCdNm" , "value": "결재단계", "width": "7%"},
-          {"key": "yn", "value": "회수가능여부", "width": "9%"}
+          {"key": "aprvrEmpId", "value": "결재권자", "width": "7%"},
+          {"key": "atrzStepCdNm" , "value": "결재단계", "width": "7%"},
+          {"key": "recall", "value": "회수가능여부", "width": "9%"}
         ],
         "terminatedAprvrEmp" : [
             {"key" : "cnptNm", "value":"거래처", "width": "15%"},
@@ -27,7 +27,7 @@
             {"key" : "docHist", "value":"문서이력", "button":{"text":"문서이력", "name" : "docHist"}, "width": "10%"}
         ],
         "deny" : [
-          {"key": "CN", "value": "결재", "width": "30%"}
+          {"key": "atrzOpnnCn", "value": "결재의견", "width": "30%"}
         ],
         "searchInfo" : {
             "searchParams": {

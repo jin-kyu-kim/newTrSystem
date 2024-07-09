@@ -234,7 +234,7 @@ const ElecAtrzTabDetail = ({ dtlInfo, detailData, sttsCd, prjctId, ctrtTyCd, prj
                 return  <>
                     <h3>계약정보</h3>
                     <CtrtInfo ctrtInfo={ctrtInfo} data={data} ctrtTyCd={ctrtTyCd}/>
-                    {(((ctrtTyCd? ctrtTyCd !== "VTW04908" : detailData.ctrtTyCd !== "VTW04908")) || ["VTW04909","VTW04910"].includes(detailData.elctrnAtrzTySeCd))
+                    {(((ctrtTyCd ? ctrtTyCd !== "VTW04908" : detailData.ctrtTyCd !== "VTW04908")) && ["VTW04909","VTW04910"].includes(detailData.elctrnAtrzTySeCd))
                         ? <ElecAtrzCtrtInfoDetail data={detailData} sttsCd={sttsCd} prjctId={prjctId} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd } onSendData={handleCtrtData} /> 
                         : <ElecAtrzCtrtOutordHnfDetail data={detailData} sttsCd={sttsCd} prjctData={prjctData} prjctId={prjctId} ctrtTyCd={ctrtTyCd? ctrtTyCd : detailData.ctrtTyCd } onSendData={handleCtrtData}/>}                   
                     </>
