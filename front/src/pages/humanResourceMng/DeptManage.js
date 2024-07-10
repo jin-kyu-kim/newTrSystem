@@ -1,42 +1,40 @@
 import { useState, useEffect } from "react";
-import ApiRequest from "utils/ApiRequest";
 import { Button } from "devextreme-react";
+import { Popup } from "devextreme-react";
+import { useModal } from "../../components/unit/ModalContext";
+import DeptManagePop from './DeptManagePop';
 import CustomTable from "components/unit/CustomTable";
 import DeptManageJson from  "./DeptManageJson.json";
-import moment from "moment";
 import TreeView from 'devextreme-react/tree-view';
-import { Popup } from "devextreme-react";
-import DeptManagePop from './DeptManagePop';
+import ApiRequest from "utils/ApiRequest";
 import CustomLabelValue from "components/unit/CustomLabelValue";
+import moment from "moment";
 import uuid from "react-uuid";
-import { useModal } from "../../components/unit/ModalContext";
 
-const DeptManage = ({callBack}) => {
-  const [param, setParam] = useState({});
-  const [values, setValues] = useState([]);                         //부서목록트리
-  const [hnfValues, setHnfValues] = useState([]);                   //부서인력정보 목록
+const DeptManage = () => {
+  const [ param, setParam ] = useState({});
+  const [ values, setValues ] = useState([]); //부서목록트리
+  const [ hnfValues, setHnfValues ] = useState([]); //부서인력정보 목록
   const { listQueryId, hnfQueryId, hnfKeyColumn, hafTableColumns, labelValue } = DeptManageJson; //부서인력목록용 json data
-  const [deptHnfParam, setDeptHnfParam] = useState({});             //부서인력정보 검색용 세팅
-  const [deptInfo, setDeptInfo] = useState({});                     //팝업 및 상세정보에 넘길 정보 셋팅용
-  const [empPopup, setEmpPop] = useState(false);                     //부서내 직원관리 팝업 세팅
-  const [totalItems, setTotalItems] = useState(0);
+  const [ deptHnfParam, setDeptHnfParam ] = useState({}); //부서인력정보 검색용 세팅
+  const [ deptInfo, setDeptInfo ] = useState({}); //팝업 및 상세정보에 넘길 정보 셋팅용
+  const [ empPopup, setEmpPop ] = useState(false); //부서내 직원관리 팝업 세팅
+  const [ totalItems, setTotalItems ] = useState(0);
+  const [ value, setValue ] = useState('contains');
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-  const userAuth = JSON.parse(localStorage.getItem("userAuth"));
-  const [value, setValue] = useState('contains');
   const empId = userInfo.empId;
   const date = new Date();
   const now = date.toISOString().split("T")[0] + " " + date.toTimeString().split(" ")[0];
   const gnfdDate = moment().format('YYYYMMDD'); //현재 년월일
-  const [deptId, setDeptId] = useState();        //부서id
-  const [deptNm, setDeptNm] = useState();       //부서명 설정용
-  const [upDeptId, setUpDeptId] = useState({});   //상위부서 설정용
-  const [deptMngrEmpFlnm, setDeptMngrEmpFlnm] = useState({});   //부서장네임 설정용
-  const [deptBgngYmd, setDeptBgngYmd] = useState();     //부서시작일자
-  const [deptEndYmd, setDeptEndYmd] = useState();       //부서종료일자
-  const [deptHnfSet, setDeptHnfSet] = useState({}); //부서장 등록시 설정용
+  const [ deptId, setDeptId ] = useState(); //부서id
+  const [ deptNm, setDeptNm ] = useState(); //부서명 설정용
+  const [ upDeptId, setUpDeptId ] = useState({}); //상위부서 설정용
+  const [ deptMngrEmpFlnm, setDeptMngrEmpFlnm ] = useState({}); //부서장네임 설정용
+  const [ deptBgngYmd, setDeptBgngYmd ] = useState(); //부서시작일자
+  const [ deptEndYmd, setDeptEndYmd ] = useState(); //부서종료일자
+  const [ deptHnfSet, setDeptHnfSet ] = useState({}); //부서장 등록시 설정용
   const { handleOpen } = useModal();
   
-  //-------------------------- 초기 설정 ----------------
   useEffect(() => {
     setParam({
       ...param,
@@ -61,9 +59,6 @@ const DeptManage = ({callBack}) => {
       deptHnfListHandle();
     }
   }, [deptHnfParam]);
-  
-
-  //-------------------------- 이벤트 영역 -----------
 
   const pageHandle = async () => { //부서 목록 조회
     try {
@@ -95,8 +90,10 @@ const DeptManage = ({callBack}) => {
   //========================부서인력 목록=====================================
   const deptHnfListHandle = async () => {
     try {
-      const response = await ApiRequest("/boot/common/queryIdSearch", deptHnfParam );
-      setHnfValues(response);
+      const response = await ApiRequest("/boot/common/queryIdSearch", deptHnfParam);
+      if(response.length != 0){
+        setHnfValues(response);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -118,7 +115,6 @@ const DeptManage = ({callBack}) => {
   };
   //==================상위부서 변경시==================
   const handleUpDeptChgState = ({ name, value }) => {
-    console.log(name,value)
     setUpDeptId({
       ...upDeptId,
       [name]: value,
@@ -126,14 +122,13 @@ const DeptManage = ({callBack}) => {
   };
   //==================부서장명 변경시==================
   const handleMngrChgState = ({ name, value }) => {
-    console.log(name,value)
     setDeptMngrEmpFlnm({
       ...deptMngrEmpFlnm,
       [name]: value,
     });
   };
 
-  const newDept = () => {               //신규등록버튼 이벤트
+  const newDept = () => { //신규등록버튼 이벤트
     reset();
     setDeptHnfParam({});
   };
@@ -306,8 +301,6 @@ const DeptManage = ({callBack}) => {
   };
   //=================부서 사용종료 버튼 이벤트======================================
   const deptEndOfUse = async () => {
-    console.log("부서정보",values)
-
     for (const value of values) {
       if (value.upDeptId === deptId) {
         handleOpen("하위부서가 존재합니다. \n 하위부서 해제 후 사용종료 바랍니다.")
@@ -392,7 +385,6 @@ const DeptManage = ({callBack}) => {
   const deptProject = async () => {
     try{
       const response = await ApiRequest("/boot/common/commonSelect",[{ tbNm: "PRJCT" }, { deptId : deptId}]);
-      console.log("이거뭐임???",response.length)
       if (response.length > 0 ) {
         handleOpen("특정 프로젝트에 부서가 속해있습니다.\n수정이나 삭제 후 시도하십시요.");
         return;
@@ -552,5 +544,4 @@ const addButtonStyle = {
   marginRight: "10px",
   marginBottom: "10px",
 }
-
 export default DeptManage;

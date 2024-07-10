@@ -281,6 +281,9 @@ public class EmailSendService {
 
 		}
 		//============================Email 전송부분====================================
+		if(!attendEmpId.contains(reserveEmpId)){
+			attendEmpId.add(reserveEmpId); // 예약자 전송대상에 추가
+		}
 		// 참석자 이메일 전송
 		if (attendEmpId != null) {
 			for (String empId : attendEmpId) {

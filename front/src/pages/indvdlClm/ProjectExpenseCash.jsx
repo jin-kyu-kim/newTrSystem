@@ -23,11 +23,6 @@ const ProjectExpenseCash = (props) => {
         aplyYm: props.aplyYm,
         aplyOdr: props.aplyOdr
     }]);
-    const onKeyDownEvent = (e) => {
-        if(e.event.originalEvent.key === 'Enter'){
-            e.event.stopPropagation();
-        }
-    }
 
     useEffect(() => {
         const getEmpList = async () => { // TagBox
@@ -97,7 +92,6 @@ const ProjectExpenseCash = (props) => {
                         props={item.param}
                         customParam={item.name === 'expensCd' ? customParam : atrzParam}
                         onSelect={handleChgValue}
-                        onKeyDownEvent={onKeyDownEvent}
                         placeholder={item.placeholder}
                         value={value[0][item.name]}
                         required={item.required}
@@ -110,7 +104,6 @@ const ProjectExpenseCash = (props) => {
                         dataSource={empList}
                         placeholder={item.placeholder}
                         searchEnabled={true}
-                        onKeyDown={onKeyDownEvent}
                         style={{ backgroundColor: hasError(validationErrors, null, item.name) ? '#FFCCCC' : '' }}
                         showClearButton={true}
                         value={value[0][item.name]}
@@ -126,7 +119,6 @@ const ProjectExpenseCash = (props) => {
                         value={value[0][item.name]}
                         style={{ backgroundColor: hasError(validationErrors, null, item.name) ? '#FFCCCC' : '' }}
                         placeholder={item.placeholder}
-                        onKeyDown={onKeyDownEvent}
                         onValueChanged={(e) => {
                             handleChgValue({ name: item.name, value: e.value })
                             setValidationErrors(prevErrors => prevErrors.filter(error => !(error.field === item.name)))
@@ -147,7 +139,7 @@ const ProjectExpenseCash = (props) => {
 
             <div className="dx-fieldset">
                 {labelValue.map((item, index) => ( !item.special ?
-                    <CustomLabelValue props={item} onSelect={handleChgValue} onKeyDownEvent={onKeyDownEvent} defaultDateValue={props.defaultValue}
+                    <CustomLabelValue props={item} onSelect={handleChgValue} defaultDateValue={props.defaultValue}
                         value={item.name === 'utztnDt' ? dateVal[item.name] : value[0][item.name]} key={index} />
                     :
                     <div className="dx-field" key={index} >

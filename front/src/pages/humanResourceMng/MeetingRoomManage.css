@@ -19,3 +19,9 @@
 .dx-scheduler-appointment-content-date{
   margin-top: 3px;
 }
+
+.dx-texteditor.dx-editor-filled.dx-state-disabled .dx-texteditor-input, .dx-texteditor.dx-editor-filled.dx-state-readonly .dx-texteditor-input, .dx-texteditor.dx-editor-filled.dx-state-readonly.dx-state-hover .dx-texteditor-input {
+  color: blue;
+  font-weight: bold;
+  background-color: inherit;
+}

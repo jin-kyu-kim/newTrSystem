@@ -166,11 +166,12 @@ const MeetingRoomManagePopup = ({ width, height, visible, mtgRoomRsvtValue, mtgR
                     <div className="col-md-10">
                         <SelectBox
                             dataSource={selectEmpList}
-                            displayExpr="listEmpFlnm"
+                            value={insertMtgRoomRsvtValue.rsvtEmpId}
                             valueExpr="empId"
+                            displayExpr="listEmpFlnm"
                             placeholder="예약자를 선택하세요."
                             searchEnabled={true}
-                            value={insertMtgRoomRsvtValue.rsvtEmpId}
+                            disabled={["new", "none", "self"].includes(authState) && true}
                             onValueChange={(e) => setInsertMtgRoomRsvtValue({ ...insertMtgRoomRsvtValue, rsvtEmpId: e })}
                         />
                     </div>

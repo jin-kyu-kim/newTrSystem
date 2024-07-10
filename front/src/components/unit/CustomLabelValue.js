@@ -1,15 +1,23 @@
+import { useEffect } from 'react';
 import { TextBox } from "devextreme-react/text-box";
-import CustomComboBox from "./CustomComboBox";
-import { NumberBox } from "devextreme-react";
 import { DateBox } from "devextreme-react/date-box";
+import { NumberBox } from "devextreme-react";
 import { Validator, RequiredRule, } from "devextreme-react/validator";
+import CustomComboBox from "./CustomComboBox";
 
-const CustomLabelValue = ({ props, onSelect, value, readOnly, onKeyDownEvent, defaultDateValue }) => {
+const CustomLabelValue = ({ props, onSelect, value, readOnly, defaultDateValue }) => {
     const placeholder = props.placeholder;
     const required = props.required;
 
+    useEffect(() => { // 날짜일 경우 default값이 있으면 setState
+        if (props.type === "DateBox" && defaultDateValue) {
+            onSelect({ name: props.name, value: defaultDateValue });
+        }
+    }, [defaultDateValue]);
+
     const labelValue = () => {
         const result = [];
+
         if(props.type === "TextBox") {
             result.push(
                 <TextBox
@@ -17,11 +25,10 @@ const CustomLabelValue = ({ props, onSelect, value, readOnly, onKeyDownEvent, de
                     value={value}
                     placeholder={placeholder}
                     showClearButton={true}
-                    onKeyDown={onKeyDownEvent}
-                    readOnly={readOnly}
                     onValueChanged={(e) => {
                         onSelect({name: props.name, value: e.value})
-                    }}
+                    }} 
+                    readOnly={readOnly}
                 >
                     <Validator>{validate()}</Validator>
                 </TextBox>
@@ -33,7 +40,6 @@ const CustomLabelValue = ({ props, onSelect, value, readOnly, onKeyDownEvent, de
                     label={props.label}
                     props={props.param} 
                     onSelect={onSelect} 
-                    onKeyDownEvent={onKeyDownEvent}
                     placeholder={placeholder} 
                     value={value} 
                     readOnly={readOnly}
@@ -44,17 +50,15 @@ const CustomLabelValue = ({ props, onSelect, value, readOnly, onKeyDownEvent, de
         } else if (props.type === "NumberBox") {
             result.push(
                 <NumberBox
+                    value={value}
                     key={props.name}
                     defaultValue={0}
                     placeholder={placeholder}
                     showClearButton={true}
-                    value={value}
-                    onKeyDown={onKeyDownEvent}
                     readOnly={readOnly}
                     name={props.name}
                     onValueChanged={(e) => {
                         if(e.event && e.event.type === 'dxmousewheel'){
-                            e.event.stopPropagation();
                             return;
                         }
                         onSelect({name: props.name, value: e.value})
@@ -71,7 +75,6 @@ const CustomLabelValue = ({ props, onSelect, value, readOnly, onKeyDownEvent, de
                 <DateBox 
                     key={props.name}
                     value={value ? value : defaultDateValue}
-                    onKeyDown={onKeyDownEvent}
                     placeholder={props.placeholder}
                     dateSerializationFormat="yyyyMMdd"
                     displayFormat="yyyy-MM-dd"
