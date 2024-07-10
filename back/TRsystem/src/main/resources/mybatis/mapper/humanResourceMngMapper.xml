@@ -9,7 +9,7 @@
     <!--부서 목록 조회-->
 	<!--트리구조 부서조회-->
 	   <select id="retrieveDeptList" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		WITH RECURSIVE DEPT_PATH(DEPT_ID,DEPT_NM,UP_DEPT_ID,EMP_FLNM,DEPT_BGNG_YMD,DEPT_END_YMD,DEPTH)  AS (
+		WITH RECURSIVE DEPT_PATH(DEPT_ID,DEPT_NM,UP_DEPT_ID,EMP_FLNM,DEPT_BGNG_YMD,DEPT_END_YMD,DEPTH) AS (
 			    SELECT 
 			        DEPT_ID
 			        ,DEPT_NM
@@ -124,6 +124,7 @@
 		      FROM EMP e
 		     INNER JOIN DEPT_HNF h ON e.EMP_ID = h.EMP_ID
 		     WHERE h.DEPT_ID = #{deptId}
+            	AND e.HDOF_STTS_CD != 'VTW00302'
 		     ORDER BY h.JBTTL_CD 
 		</select>
 
