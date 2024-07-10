@@ -70,7 +70,7 @@ public class HumanResourceMngDomain {
             commonService.queryIdSearch(insertMtgRoomRsvtAtdrn.get(i));
         }
         emailSendService.roomReserveEmailSend(
-                String.valueOf(insertRefMtgRoomRsvt.get("regEmpId"))
+                String.valueOf(insertRefMtgRoomRsvt.get("rsvtEmpId"))
                 , (ArrayList<String>) params.get(1).get("atndEmpIdList")
                 , String.valueOf(insertRefMtgRoomRsvt.get("state"))
                 , insertRefMtgRoomRsvt.get("useYmd") + String.valueOf(insertRefMtgRoomRsvt.get("useBgngHm"))
