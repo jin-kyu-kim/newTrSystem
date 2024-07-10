@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-
+import { Validator, RequiredRule, } from "devextreme-react/validator";
 import SelectBox from "devextreme-react/select-box"
 import ApiRequest from "../../utils/ApiRequest";
-import { Validator, RequiredRule, } from "devextreme-react/validator";
 
-const CustomComboBox = ({ props, onSelect, label, placeholder, value, readOnly, required, customParam, width, onKeyDownEvent }) => {
+const CustomComboBox = ({ props, onSelect, label, placeholder, value, readOnly, required, customParam, width }) => {
     const [values, setValues] = useState([]);
 
     useEffect(() => {
@@ -57,7 +56,6 @@ const CustomComboBox = ({ props, onSelect, label, placeholder, value, readOnly, 
             valueExpr={props.valueExpr}
             displayExpr={props.displayExpr}
             placeholder={placeholder}
-            onKeyDown={onKeyDownEvent}
             onValueChanged={(e)=> {
                 const selectedItem = values.find(item => item[props.name] === e.value);
 
@@ -96,6 +94,5 @@ const CustomComboBox = ({ props, onSelect, label, placeholder, value, readOnly, 
             <Validator>{validate()}</Validator>
         </SelectBox>
     );
-
 }
 export default CustomComboBox;
