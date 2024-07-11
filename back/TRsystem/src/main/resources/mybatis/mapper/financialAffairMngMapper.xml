@@ -1320,7 +1320,10 @@
     SELECT CONCAT(p.PRJCT_NM, '(', p.PRJCT_CD_IDNTFR , ')') PRJCT_NM_CD
             , c1.CD_NM AS CT_STLM_SE_CD_NM
 			, c2.CD_NM AS EXPENS_CD_NM
-            , CONCAT(pca.PRJCT_CT_APLY_SN, pca.CT_PRPOS) AS CT_PRPOS
+            , CASE
+                WHEN UTZTN_AMT IS NULL THEN NULL
+                ELSE CONCAT(SUBSTRING(cd.CRTR_YMD, 7, 8),LPAD(pca.PRJCT_CT_APLY_SN, 2, 0), pca.CT_PRPOS)
+              END AS CT_PRPOS
 			, pca.ATDRN
 			, pca.UTZTN_AMT
 			, IFNULL(SUBSTRING(cd.CRTR_YMD, 7, 8), '기타') AS DAY
@@ -1344,7 +1347,10 @@
 		SELECT CONCAT(p.PRJCT_NM, '(', p.PRJCT_CD_IDNTFR , ')') PRJCT_NM_CD
 	        , c1.CD_NM AS CT_STLM_SE_CD_NM
 			, c2.CD_NM AS EXPENS_CD_NM
-			, CONCAT(pca.PRJCT_CT_APLY_SN, pca.CT_PRPOS) AS CT_PRPOS
+            , CASE
+                  WHEN LEFT(pca.UTZTN_DT, 8) != cd.CRTR_YMD THEN NULL
+                  ELSE CONCAT(SUBSTRING(cd.CRTR_YMD, 7, 8),LPAD(pca.PRJCT_CT_APLY_SN, 2, 0), pca.CT_PRPOS)
+              END AS CT_PRPOS
 			, pca.ATDRN
             , CASE WHEN LEFT(pca.UTZTN_DT, 8) = cd.CRTR_YMD THEN pca.UTZTN_AMT
 			    ELSE NULL
