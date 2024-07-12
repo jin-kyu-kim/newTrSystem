@@ -1,5 +1,12 @@
 [
   {
+    "caption": "직급",
+    "dataField": "jbpsCd",
+    "visible" : "true",
+    "area": "row",
+    "expanded": true
+  },
+  {
     "caption": "직원명",
     "width": 120,
     "dataField": "empNm",
@@ -11,14 +18,6 @@
     "dataField": "hnfRoleNm",
     "width": 100,
     "area": "row",
-    "expanded": true,
-    "showTotals": false
-  },
-  {
-    "caption": "직급명",
-    "dataField": "jbpsNm",
-    "width": 100,
-    "area": "filter",
     "expanded": true,
     "showTotals": false
   },

@@ -57,7 +57,9 @@ const ProjectEmpCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdr, bgtMngOdrTob
       groupingDtl = acc;
       return acc;
     }, {});
-        
+    console.log(groupingDtl);
+    console.log(response);
+
   } catch (error) {
     console.error(error);
   }
@@ -83,7 +85,7 @@ const ProjectEmpCost = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdr, bgtMngOdrTob
             response[j][format(parse(Object.values(groupingDtl)[j][k].inptYm, 'yyyyMM', new Date()), 'yyyy년 MM월') + '_untpc'] = Object.values(groupingDtl)[j][k].untpc;
             total += Object.values(groupingDtl)[j][k].expectMm;
             gramt += (Object.values(groupingDtl)[j][k].untpc)*(Object.values(groupingDtl)[j][k].expectMm);
-          }    
+          }
           const fixedSum = Number(total.toFixed(2)); //js의 부동소수 이슈로 인한 자릿수 조정.
           response[j].total = fixedSum;     
           response[j].gramt = gramt;

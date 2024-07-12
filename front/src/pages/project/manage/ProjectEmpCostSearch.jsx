@@ -43,11 +43,37 @@ const ProjectEmpCostSearch = ({prjctId}) => {
   const Cnsrtm = async () => {
     try {
       const response = await ApiRequest("/boot/prjct/retrievePjrctEmpCost", param);
-      console.log(response)
+
+      const updatedFields = pivotGridConfig.fields.map(field => {
+        if (field.dataField === 'empNm') {
+          return {
+            ...field,
+            customizeText: function (cellInfo) {
+              if (cellInfo.value != null) {
+                return cellInfo.value.substring(3);
+              }
+            }
+          };
+        }
+        if (field.dataField === 'jbpsCd') {
+          return {
+            ...field,
+            customizeText: function (cellInfo) {
+              if (cellInfo.value != null) {
+                return cellInfo.value.substring(8);
+              }
+            }
+          };
+        }
+        return field;
+      });
+
       setPivotGridConfig({
         ...pivotGridConfig,
+        fields: updatedFields,
         store: response,
       });
+      // addCustomizeText();
     } catch (error) {
       console.error(error);
     }

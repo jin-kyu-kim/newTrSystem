@@ -473,6 +473,7 @@ public class ProjectBaseDomain {
 		List<Map<String, Object>> getData;
 		for(Map<String, Object> data : getCost){
 			param.put("empId", data.get("empId").toString());
+			param.put("mmnyLbrcoPrmpcSn", data.get("mmnyLbrcoPrmpcSn").toString());
 			getData = commonService.queryIdSearch(param);
 			for(Map<String, Object> cdVal: getData){
 				cdVal.putAll(data);

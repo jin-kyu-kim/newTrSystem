@@ -362,7 +362,7 @@
                 , T2.GIVE_CT
         FROM (SELECT A.PRJCT_ID
                 , A.MMNY_LBRCO_PRMPC_SN
-                , A.EMP_ID
+                , CONCAT(A.EMP_ID, A.MMNY_LBRCO_PRMPC_SN) AS EMP_ID
                 , A.HNF_ROLE_CD
                 , A.TKCG_JOB
                 , B.EXPECT_MM
@@ -377,7 +377,7 @@
             AND A.MMNY_LBRCO_PRMPC_SN = B.MMNY_LBRCO_PRMPC_SN
             WHERE A.PRJCT_ID = #{prjctId}
             AND A.BGT_MNG_ODR = #{bgtMngOdr}
-            AND A.EMP_ID = #{empId}) T1
+            AND A.MMNY_LBRCO_PRMPC_SN = #{mmnyLbrcoPrmpcSn}) T1
             LEFT OUTER JOIN MMNY_LBRCO_EXCN T2
         ON T1.PRJCT_ID = T2.PRJCT_ID
             AND T1.EMP_ID = T2.EMP_ID
@@ -395,7 +395,7 @@
             SELECT
                   A.PRJCT_ID
                 , A.MMNY_LBRCO_PRMPC_SN
-                , A.EMP_ID
+                , CONCAT(A.EMP_ID, A.MMNY_LBRCO_PRMPC_SN) AS EMP_ID
                 , B.EXPECT_MM
                 , B.UNTPC
                 , IF(CHAR_LENGTH (B.INPT_YM) = 6
@@ -520,8 +520,8 @@
         SELECT DISTINCT(MMNY_LBRCO_PRMPC_SN) AS MMNY_LBRCO_PRMPC_SN
             , PRJCT_ID
             , EMP_ID
-            , (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = A.EMP_ID) AS EMP_NM
-            , (SELECT JBPS_CD FROM EMP WHERE EMP_ID = A.EMP_ID) AS JBPS_CD
+            , CONCAT(LPAD(MMNY_LBRCO_PRMPC_SN, 3, 0), (SELECT EMP_FLNM FROM EMP WHERE EMP_ID = A.EMP_ID)) AS EMP_NM
+            , CONCAT((SELECT JBPS_CD FROM EMP WHERE EMP_ID = A.EMP_ID),(SELECT CD_NM FROM CD WHERE CD_VALUE = (SELECT JBPS_CD FROM EMP WHERE EMP_ID = A.EMP_ID)))  AS JBPS_CD
             , HNF_ROLE_CD
             , (SELECT CD_NM FROM CD WHERE CD_VALUE = HNF_ROLE_CD) AS HNF_ROLE_NM
             , (SELECT CD_NM FROM CD WHERE CD_VALUE = (SELECT JBPS_CD FROM EMP WHERE EMP_ID = A.EMP_ID)) JBPS_NM
