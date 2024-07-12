@@ -25,12 +25,13 @@ const ProjectExpenseCashCardReport = ({ basicInfo }) => {
                 dataField: "ctPrpos",
                 customizeText: function (cellInfo) {
                     if (cellInfo.value != null) {
-                        return cellInfo.value.substring(2);
+                        return cellInfo.value.substring(4);
                     }
                 },
                 area: "row",
                 showTotals: false,
                 expanded: true,
+                sortOrder :false
             },
             {
                 caption: "용도",
@@ -69,14 +70,19 @@ const ProjectExpenseCashCardReport = ({ basicInfo }) => {
         }
         try {
             const response = await ApiRequest("/boot/indvdlClm/retrieveCtData", param);
+
+
+            const filteredData = response.filter(item => item.ctPrpos !== null && item.utztnAmt !== null);
+
             setPivotGridConfig({
                 ...pivotGridConfig,
-                store: response,
+                store: filteredData,
             });
         } catch (error) {
             console.error(error);
         }
     }
+
 
     const dataSource = new PivotGridDataSource(pivotGridConfig);
 
