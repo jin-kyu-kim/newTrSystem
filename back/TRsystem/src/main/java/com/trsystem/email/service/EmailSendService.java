@@ -123,7 +123,8 @@ public class EmailSendService {
 	 * @param moveUrl
 	 **/
 	public void elecAtrzEmailSend(String toEmpId, String reportEmpId, String documentNumber, String title, String content, boolean pageMove, String moveUrl) {
-		
+		String oldContent = content;
+
 		if(!toEmpId.isEmpty() && !toEmpId.equals(null)) {
 			// 전자 결재 이메일 전송폼
 			//============================결재자 email 세팅===================================
@@ -135,8 +136,10 @@ public class EmailSendService {
 			Map<String, Object> reportEmpData = reportEmp.get(0);
 			String reportEmpEmail = extractEmail(reportEmpData);
 
-			 
-			
+			if(content == null){
+				content = "[" + title + "]에 대한 결재 요청이 들어왔습니다.";
+			}
+
 			String subject = "[VTW 전자결재] '"+title; 
 			String emailContent = "<div style='margin: 0px; padding: 0px; border: 0px; font-variant-numeric: inherit; font-variant-east-asian: inherit; font-stretch: inherit; font-size: 15px; line-height: inherit; font-family: &quot;Segoe UI&quot;, &quot;Segoe UI Web (West European)&quot;, &quot;Segoe UI&quot;, -apple-system, BlinkMacSystemFont, Roboto, &quot;Helvetica Neue&quot;, sans-serif; vertical-align: baseline; color: rgb(32, 31, 30); background-color: rgb(67, 108, 153);'>"
 					+ "<h2 style='padding: 15px 0px 0px 15px; font-variant-numeric: normal; font-variant-east-asian: normal; font-weight: bold; font-stretch: normal; font-size: 14px; line-height: 1em; font-family: dotum; color: rgb(255, 255, 255);'>"
@@ -159,17 +162,18 @@ public class EmailSendService {
 			//이메일전송
 			if((toEmpEmail == "" ? null : toEmpEmail) != null) {
 				try {
-					emailSend(toEmpEmail, subject, emailContent);
+					if(oldContent == null){
+						emailSendCC(toEmpEmail, subject, emailContent);
+					} else {
+						emailSend(toEmpEmail, subject, emailContent);
+					}
 				} catch (MessagingException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
-			
-			
 		}
 	}
-	
 	
 	
 	/**
@@ -379,7 +383,7 @@ public class EmailSendService {
 	    }
 	
 	/**
-	 * 회의실 예약 이메일 전송 (인사팀 참조)
+	 * (인사팀 참조)
 	 * 
 	 * @param emailSend
 	 */
@@ -390,6 +394,8 @@ public class EmailSendService {
 
 		String cc =  "jinwon.lee@vtw.co.kr";
 		String cc2 =  "joori.an@vtw.co.kr";
+		String cc3 =  "sumin.an@vtw.co.kr";
+		String cc4 =  "hyunseok.oh@vtw.co.kr";
 
 		try {
 			local = InetAddress.getLocalHost();
@@ -405,7 +411,6 @@ public class EmailSendService {
 //				break;
 //			}
 //		}
-
 			String charSet = "UTF-8";
 
 			Properties props = new Properties();
@@ -425,7 +430,7 @@ public class EmailSendService {
 				MimeMessage msg = new MimeMessage(session);
 				msg.setFrom("admin@vtw.co.kr"); // 보내는이(관리자)
 				msg.setRecipients(Message.RecipientType.TO, to); // 받는이
-				InternetAddress[] addresscc = { new InternetAddress(cc), new InternetAddress(cc2) };// 인사팀 참조
+				InternetAddress[] addresscc = { new InternetAddress(cc), new InternetAddress(cc2), new InternetAddress(cc3), new InternetAddress(cc4)};// 인사팀 참조
 				msg.setRecipients(Message.RecipientType.CC, addresscc); // 참조자
 				msg.setSubject(emailSend, charSet); // 제목
 				msg.setSentDate(new Date()); // 전송시간

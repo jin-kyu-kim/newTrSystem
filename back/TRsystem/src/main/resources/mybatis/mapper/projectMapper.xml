@@ -22,32 +22,31 @@
             , PRJCT_CD_IDNTFR
             , DEPT_ID
             , COUNT(*) OVER () AS TOTAL_ITEMS
-            FROM PRJCT p
-            <if test="!path.equals('/mngrMenu/ProjectList')">
+        FROM PRJCT p
+        <if test="!path.equals('/mngrMenu/ProjectList')">
             JOIN PRJCT_MNG_AUTHRT PMA ON (PMA.PRJCT_ID = p.PRJCT_ID AND PMA.EMP_ID = #{empId})
-            </if>
-            WHERE 1 = 1
+        </if>
+        WHERE 1 = 1
         <if test="prjctStleCd != null and !prjctStleCd.equals('')">
-      AND p.PRJCT_STLE_CD = #{prjctStleCd}
+            AND p.PRJCT_STLE_CD = #{prjctStleCd}
         </if>
         <if test="prjctId != null and !prjctId.equals('')">
-      AND p.PRJCT_ID = #{prjctId}
+            AND p.PRJCT_ID = #{prjctId}
         </if>
         <if test="bizFlfmtTyCd != null and !bizFlfmtTyCd.equals('')">
-      AND p.BIZ_STTS_CD = #{bizFlfmtTyCd}
+            AND p.BIZ_STTS_CD = #{bizFlfmtTyCd}
         </if>
         <if test="ctrtYmd != null and bizEndYmd == '' and ctrtYmd !=''">
-      AND p.CTRT_YMD >= #{ctrtYmd}
+            AND p.CTRT_YMD >= #{ctrtYmd}
         </if>
         <if test="ctrtYmd == '' and bizEndYmd != null and bizEndYmd !='' " >
-      AND p.BIZ_END_YMD &lt;= #{bizEndYmd}
+            AND p.BIZ_END_YMD &lt;= #{bizEndYmd}
         </if>
         <if test="ctrtYmd != null and bizEndYmd != null and ctrtYmd != '' and bizEndYmd != '' ">
             <if test="!ctrtYmd.equals('') and !bizEndYmd.equals('')">
-      AND p.CTRT_YMD BETWEEN #{ctrtYmd} AND #{bizEndYmd}
+                AND p.CTRT_YMD BETWEEN #{ctrtYmd} AND #{bizEndYmd}
             </if>
         </if>
-     
         <if test="ctmmnyNm != null and !ctmmnyNm.equals('')">
             AND CTMMNY_ID IN (SELECT CTMMNY_ID FROM CTMMNY_INFO WHERE CTMMNY_NM LIKE CONCAT('%',#{ctmmnyNm},'%'))
         </if>
@@ -185,7 +184,6 @@
 		          <if test=" prjctMngrEmpId != null and ! prjctMngrEmpId.equals('')">
 		       AND e.EMP_FLNM LIKE CONCAT('%', #{prjctMngrEmpId}, '%') 
 		        </if>
-		       
     		   AND pald.ATRZ_STTS_CD != 'VTW00805'
 			   ORDER BY pal.REG_DT DESC
 	  ) A
@@ -1104,14 +1102,26 @@
 			#{group} AS BIND
 		FROM 
 			<if test="tbCostNm == 'PRJCT'">
-			    (SELECT
-                MMNY_SLS_AM AS CN
-			     FROM 
-			        PRJCT M
-			     WHERE 
-			        M.PRJCT_ID = #{prjctId}
-			    ) A,
-
+                <choose>
+                    <when test="change != null and change == true">
+                    (SELECT
+                        MMNY_SLS_AM AS CN
+                    FROM PRJCT_HIST M
+                    WHERE M.PRJCT_ID = #{prjctId}
+                        AND M.PRJCT_HIST_SN = (
+                            SELECT MAX(PH.PRJCT_HIST_SN)
+                            FROM PRJCT_HIST PH
+                            WHERE PH.PRJCT_ID = M.PRJCT_ID
+                            )
+                        ) A,
+                    </when>
+                    <otherwise>
+                        (SELECT MMNY_SLS_AM AS CN
+                        FROM PRJCT M
+                        WHERE M.PRJCT_ID = #{prjctId}
+                        ) A,
+                    </otherwise>
+                </choose>
             </if>
             <if test="tbCostNm == 'PRJCT_CNSRTM'">
 			    (SELECT 
@@ -1198,21 +1208,47 @@
     </select>
     
     <select id="retrieveExcnPrmpcBizSumry" parameterType="map" resultType="com.trsystem.LowerHashMap">
-		SELECT P.PRJCT_NM, 
-			   C.CTMMNY_NM, 
-			   P.PIC_FLNM, 
-			   E2.EMP_FLNM AS PRJCT_MNGR_EMP_NM,
-			   E.EMP_FLNM,
-               FORMAT(P.TOT_BGT,0) AS TOT_BGT,
-               FORMAT(P.BDDPR_PC,0)AS BDDPR_PC,
-               FORMAT(P.MMNY_SLS_AM,0) AS MMNY_SLS_AM,
-               CONCAT(DATE_FORMAT(P.CTRT_YMD, '%Y-%m-%d'), ' ~ ', DATE_FORMAT(P.BIZ_END_YMD, '%Y-%m-%d')) AS PRJCT_PERIOD
+		SELECT
+		    P.PRJCT_NM,
+			C.CTMMNY_NM,
+			P.PIC_FLNM,
+			E2.EMP_FLNM AS PRJCT_MNGR_EMP_NM,
+			E.EMP_FLNM,
+            FORMAT(P.TOT_BGT,0) AS TOT_BGT,
+            FORMAT(P.BDDPR_PC,0)AS BDDPR_PC,
+            FORMAT(P.MMNY_SLS_AM,0) AS MMNY_SLS_AM,
+            CONCAT(DATE_FORMAT(P.CTRT_YMD, '%Y-%m-%d'), ' ~ ', DATE_FORMAT(P.BIZ_END_YMD, '%Y-%m-%d')) AS PRJCT_PERIOD
 		from PRJCT P
 		LEFT JOIN CTMMNY_INFO C ON P.CTMMNY_ID = C.CTMMNY_ID 
 		LEFT JOIN EMP E ON P.REG_EMP_ID = E.EMP_ID 
 		LEFT JOIN EMP E2 ON P.PRJCT_MNGR_EMP_ID = E2.EMP_ID 
 		WHERE 1=1 
-		AND PRJCT_ID = #{prjctId}
+		    AND PRJCT_ID = #{prjctId}
+    </select>
+
+    <select id="retrieveExcnPrmpcBizSumryHist" parameterType="map" resultType="com.trsystem.LowerHashMap">
+        SELECT
+            P.PRJCT_NM,
+            C.CTMMNY_NM,
+            P.PIC_FLNM,
+            E2.EMP_FLNM AS PRJCT_MNGR_EMP_NM,
+            E.EMP_FLNM,
+            FORMAT(P.TOT_BGT,0) AS TOT_BGT,
+            FORMAT(P.BDDPR_PC,0)AS BDDPR_PC,
+            FORMAT(P.MMNY_SLS_AM,0) AS MMNY_SLS_AM,
+            CONCAT(DATE_FORMAT(P.CTRT_YMD, '%Y-%m-%d'), ' ~ ', DATE_FORMAT(P.BIZ_END_YMD, '%Y-%m-%d')) AS PRJCT_PERIOD
+        from PRJCT_HIST P
+                 LEFT JOIN CTMMNY_INFO C ON P.CTMMNY_ID = C.CTMMNY_ID
+                 LEFT JOIN EMP E ON P.REG_EMP_ID = E.EMP_ID
+                 LEFT JOIN EMP E2 ON P.PRJCT_MNGR_EMP_ID = E2.EMP_ID
+        WHERE 1=1
+          AND PRJCT_ID = #{prjctId}
+          AND P.PRJCT_HIST_SN = (
+            SELECT
+                MAX(PH.PRJCT_HIST_SN)
+            FROM PRJCT_HIST PH
+            WHERE PH.PRJCT_ID = P.PRJCT_ID
+        )
     </select>
 
     <select id="retrievePrjctOutordEntrpsCt" parameterType="map" resultType="com.trsystem.LowerHashMap">

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Button, SelectBox, TabPanel } from "devextreme-react";
+import { Button, TabPanel } from "devextreme-react";
 import ProjectExpenseJson from "./ProjectExpenseJson.json"
 import ProjectExpensePopup from './ProjectExpensePopup';
 import CustomTable from 'components/unit/CustomTable';
@@ -23,10 +23,12 @@ const ProjectExpense = () => {
     const [ mmAtrzCmptnYn, setMmAtrzCmptnYn ] = useState(); // 근무시간여부
     const admin = location.state ? location.state.admin : undefined;
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    const userAuth = JSON.parse(localStorage.getItem("userAuth"));
     const empId = admin != undefined ? admin.empId : userInfo.empId;
     const [ popVisible, setPopVisible ] = useState(false);
     const [ histYmOdr, setHistYmOdr ] = useState(null);
     const [ isLoading, setIsLoading ] = useState(false);
+    const [ filterExpenseInfo, setFilterExpenseInfo ] = useState(null);
     const date = new Date();
     const year = date.getFullYear();
     const month = date.getDate() > 15 ? date.getMonth() + 1 : date.getMonth();
@@ -37,7 +39,7 @@ const ProjectExpense = () => {
     const defaultValue = `${aplyYm}${aplyOdr === "1" ? "01" : "15"}`;
 
     const { handleOpen } = useModal();
-    const itemTitleRender = (a) => <span>{a.TabName}</span>;
+    const itemTitleRender = (a) => <span style={{ color: a.tabId === 'companyExpense' && 'blue', fontWeight: 550 }}>{a.TabName}</span>;
     const onSelectionChanged = useCallback(
         (args) => {
             if (args.name === "selectedIndex") setIndex(args.value);
@@ -45,6 +47,7 @@ const ProjectExpense = () => {
     );
     useEffect(() => { 
         getData();  
+        setFilterExpenseInfo(filteredTab(ExpenseInfo, userAuth))
         const handleResize = () => {
             setIsSmallScreen(window.innerWidth <= 768);
           };
@@ -283,6 +286,14 @@ const ProjectExpense = () => {
         );
     };
 
+    const filteredTab = (ExpenseInfo, userAuth) => {
+        const isAdmin = userAuth.some(auth => ["VTW04801", "VTW04804"].includes(auth));
+        if(isAdmin){
+            return ExpenseInfo;
+        }
+        return ExpenseInfo.filter(tab => tab.tabId !== 'companyExpense');
+    }
+
     return (
         <div>
         {isLoading ? <></> : 
@@ -309,6 +320,7 @@ const ProjectExpense = () => {
 
                     {atrzDmndSttsCnt.ctReg > 0 || ctAtrzCmptnYn === null || ctAtrzCmptnYn === undefined
                         ? <TabPanel
+                            // dataSource={filterExpenseInfo}
                             dataSource={ExpenseInfo}
                             selectedIndex={index}
                             onOptionChanged={onSelectionChanged}

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.trsystem.email.service.EmailSendService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,10 +23,12 @@ import lombok.NoArgsConstructor;
 public class ElecAtrzDomain {
 
     private static CommonService commonService;
+	private static EmailSendService emailSendService;
 
     @Autowired
-    public ElecAtrzDomain(CommonService commonService) {
+    public ElecAtrzDomain(CommonService commonService, EmailSendService emailSendService) {
         ElecAtrzDomain.commonService = commonService;
+        ElecAtrzDomain.emailSendService = emailSendService;
     }
 
     /**
@@ -42,7 +45,9 @@ public class ElecAtrzDomain {
         String elctrnAtrzId = String.valueOf(params.get("elctrnAtrzId"));
         String atrzDmndSttsCd = String.valueOf(params.get("atrzDmndSttsCd"));
 
-        Map<String, String> basicInfo = new HashMap<>();
+		Map<String, Object> param = (Map<String, Object>) params.get("param");
+
+		Map<String, String> basicInfo = new HashMap<>();
         basicInfo.put("regDt", regDt);
         basicInfo.put("regEmpId", regEmpId);
         basicInfo.put("elctrnAtrzId", elctrnAtrzId);
@@ -51,7 +56,7 @@ public class ElecAtrzDomain {
         Map<String, Object> tbParam = new HashMap<>();
 
         int electrnAtrzResult = -1;
-        int atrzLnResult = -1;
+        String atrzLnResult = null;
         int atrzTyResult = -1;
 
         try {
@@ -92,7 +97,7 @@ public class ElecAtrzDomain {
 				if(atrzTySeCd.equals("VTW04908") || atrzTySeCd.equals("VTW04909") || atrzTySeCd.equals("VTW04910")) {
 					
 					Map<String, Object> map = new HashMap<>();
-					map.putAll(((Map<String, Object>) params.get("param")));
+					map.putAll(param);
 					
 					// 계약결재 데이터 입력
 					atrzTyResult = insertCtrtAtrz(map, atrzTySeCd, elctrnAtrzId);
@@ -100,13 +105,13 @@ public class ElecAtrzDomain {
 				} else if(atrzTySeCd.equals("VTW04907")) {
 					Map<String, Object> map = new HashMap<>();
 					
-					map.putAll(((Map<String, Object>) params.get("param")));
+					map.putAll(param);
 					atrzTyResult = insertClmAtrz(map, elctrnAtrzId);
 				} else if(atrzTySeCd.equals("VTW04911") || atrzTySeCd.equals("VTW04912") || atrzTySeCd.equals("VTW04913") || atrzTySeCd.equals("VTW04914")) {
 					
 					// 청구결재(지급품의) INSERT 로직 추가
 					Map<String, Object> map = new HashMap<>();
-					map.putAll(((Map<String, Object>) params.get("param")));
+					map.putAll(param);
 					atrzTyResult = insertGiveAtrz(map, elctrnAtrzId);
 							
 				} else {
@@ -114,10 +119,21 @@ public class ElecAtrzDomain {
 					 * ToDo: 일반 결재
 					 */
 					Map<String, Object> map = new HashMap<>();
-					map.putAll(((Map<String, Object>) params.get("param")));
+					map.putAll(param);
 					atrzTyResult = insertGnrlAtrz(map, elctrnAtrzId);
 				}
-				if(electrnAtrzResult < 0 || atrzTyResult < 0 || atrzLnResult < 0) return null;
+				if(electrnAtrzResult < 0 || atrzTyResult < 0 || atrzLnResult == null) {
+					return null;
+				}
+				emailSendService.elecAtrzEmailSend(
+						atrzLnResult // 첫번째 결재자
+						, regEmpId // 기안자
+						, elctrnAtrzDocNo // 문서 번호
+						, "[" + param.get("title") + "] 결재 진행 안내"
+						, null
+						, false
+						, ""
+				);
 			}
 		} catch (Exception e) {
 			return null;
@@ -222,9 +238,9 @@ public class ElecAtrzDomain {
 	 * @param basicInfo	기초 정보(등록일자, 등록사랑, 전자결재ID)
 	 * @return
 	 */
-	public static int insertAtrzLine(List<Map<String, Object>> paramList, Map<String, String> basicInfo) {
-	
-		System.out.println("결재선");
+	public static String insertAtrzLine(List<Map<String, Object>> paramList, Map<String, String> basicInfo) {
+		String firstApprovalEmpId = null;
+
 		int atrzLnResult = -1;
 		int refrnResult = -1;
 		
@@ -269,13 +285,11 @@ public class ElecAtrzDomain {
 			infoParam.put("atrzLnSn", i+1);
 			
 			if(i == 0) {
-				
+				firstApprovalEmpId = String.valueOf(paramList.get(i).get("empId"));
 				infoParam.put("atrzSttsCd", atrzSttsCd);
 			} else {
 				infoParam.put("atrzSttsCd", "VTW00806");
 			}
-			
-			
 			infoParam.put("aprvrEmpId", paramList.get(i).get("empId"));
 			infoParam.put("regDt", basicInfo.get("regDt"));
 			infoParam.put("regEmpId", basicInfo.get("regEmpId"));
@@ -288,12 +302,10 @@ public class ElecAtrzDomain {
 			if(atrzLnResult > 0) {
 				refrnResult = insertRefrnMan(refrnParams, basicInfo);
 			}
-			
 		} catch (Exception e) {
-			return -1;
+			return null;
 		}
-		
-		return atrzLnResult; 
+		return firstApprovalEmpId;
 	}
 	
 	/**
@@ -716,10 +728,7 @@ public class ElecAtrzDomain {
 	 */
 	public static int insertHnfCtrtDetailMm(List<Map<String, Object>> paramList, String inptHnfId, String elctrnAtrzId) {
 		int result = -1;
-		
-		System.out.println("Last Table");
-		System.out.println(paramList);
-		
+
 		ArrayList<Map<String, Object>> insertParams = new ArrayList<>();
 		insertParams.add(0, paramList.get(0));
 		for(int i = 1; i < paramList.size(); i++) {
