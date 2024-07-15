@@ -530,7 +530,7 @@ const ProjectAprvDetail = () => {
                                             ctrtYmd={ctrtYmd} 
                                             stbleEndYmd={stbleEndYmd} 
                                             bgtMngOdr={bgtMngOdr} 
-                                            atrzDmndSttsCd={atrzDmndSttsCd}
+                                            change={true}
                                             nowAtrzStepCd={nowAtrzStepCd}
                                             atrzLnSn={atrzLnSn}
                                         />

@@ -3,7 +3,6 @@ import ProjectJson from "./ProjectAprvJson.json"
 import ApiRequest from "../../../utils/ApiRequest";
 import SearchPrjctSet from "../../../components/composite/SearchPrjctSet";
 import CustomTable from "../../../components/unit/CustomTable";
-import "react-datepicker/dist/react-datepicker.css";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const ProjectAprv = () => {

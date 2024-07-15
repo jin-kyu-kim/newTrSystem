@@ -1,17 +1,11 @@
-import React, { useEffect, useState, useRef } from 'react';
-
-import ApiRequest from '../../../utils/ApiRequest';
+import DataGrid, { Column, Summary, GroupItem, Grouping, TotalItem } from "devextreme-react/data-grid";
+import React, { useEffect, useState } from 'react';
 import CustomHorizontalTable from '../../../components/unit/CustomHorizontalTable';
-import CostCalc from './ProjectCostCalcJson.json';
 import CustombudgetTable from '../../../components/unit/CustombudgetTable';
-import DataGrid, {
-  Column,
-  Summary,
-  GroupItem,
-  Grouping,
-  TotalItem,
-} from "devextreme-react/data-grid";
-const ProjectCostCalc = ({prjctId, ctrtYmd, stbleEndYmd, bgtMngOdr, bgtMngOdrTobe, change, targetOdr}) => {
+import ApiRequest from '../../../utils/ApiRequest';
+import CostCalc from './ProjectCostCalcJson.json';
+
+const ProjectCostCalc = ({ prjctId, ctrtYmd, stbleEndYmd, bgtMngOdr, bgtMngOdrTobe, change }) => {
 const [baseInfoData, setBaseInfoData] = useState([]);
 const [cnsrtmData, setCnsrtmData] = useState([]);
 const [data, setData] = useState([]);
@@ -29,8 +23,8 @@ useEffect(() => {
 //사업개요 정보
 const BaseInfoData = async () => {
   const param = {
-    queryId: "projectMapper.retrieveExcnPrmpcBizSumry",
-    prjctId: prjctId,
+    queryId: change ? "projectMapper.retrieveExcnPrmpcBizSumryHist" : "projectMapper.retrieveExcnPrmpcBizSumry",
+    prjctId: prjctId
   }
 
   try {
@@ -67,7 +61,7 @@ const handelGetData = async () => {
       }else{
         order = bgtMngOdr
       }
-      const modifiedItem = { ...item, prjctId: prjctId, bgtMngOdr: order, ctrtYmd:ctrtYmdPrarm, stbleEndYmd:stbleEndYmdPrarm};   
+      const modifiedItem = { ...item, prjctId: prjctId, bgtMngOdr: order, ctrtYmd:ctrtYmdPrarm, stbleEndYmd:stbleEndYmdPrarm, change: change };   
       const response = await ApiRequest(
         "/boot/common/queryIdSearch",
         modifiedItem
