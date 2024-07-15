@@ -72,11 +72,11 @@ const ProjectExpenseCashCardReport = ({ basicInfo }) => {
             const response = await ApiRequest("/boot/indvdlClm/retrieveCtData", param);
 
 
-            const filteredData = response.filter(item => item.ctPrpos !== null && item.utztnAmt !== null);
+            // const filteredData = response.filter(item => item.utztnAmt !== null);
 
             setPivotGridConfig({
                 ...pivotGridConfig,
-                store: filteredData,
+                store: response,
             });
         } catch (error) {
             console.error(error);
