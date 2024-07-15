@@ -233,11 +233,13 @@
 			<if test="deptId != null and !deptId.equals('')">
 				AND DEPT.DEPT_ID = #{deptId}
 			</if>
+		    AND EMP.HDOF_STTS_CD = 'VTW00301'
+		    AND EMP.EMP_TY_CD != 'VTW00203'
 		)
 		SELECT DISTINCT
-			VCATN.EMP_ID 						/* 사원ID */
-			,VCATN.EMPNO						/* 사원번호 */
-			,VCATN.EMP_FLNM 					/* 사원명 */
+		     E.EMP_ID 						/* 사원ID */
+			,E.EMPNO						/* 사원번호 */
+			,E.EMP_FLNM 					/* 사원명 */
 			,VCATN.JOB_CD						/* 직급코드 */
 			,VCATN.JOB_NM						/* 직급명 */
 			,VCATN.HDOF_STTS_NM					/* 재직상태명 */
@@ -255,13 +257,16 @@
 			,VCATN.TABLE_ALTMNT_DAYCNT 			/* 배정일수 */
 			,VCATN.TABLE_USE_DAYCNT 			/* 사용일수 */
 			,VCATN.TABLE_REMNDR_DAYCNT 			/* 잔여일수 */
-		FROM VCANT_LIST		VCATN
+		FROM EMP E
+		LEFT JOIN VCANT_LIST VCATN ON E.EMP_ID = VCATN.EMP_ID
 		WHERE 1 = 1
+		AND E.HDOF_STTS_CD = 'VTW00301'
+		AND E.EMP_TY_CD != 'VTW00203'
 		<if test="vcatnYr == null or vcatnYr.equals('')">
-			AND VCATN_YR = FLAG_YEAR
+			AND ( VCATN_YR = FLAG_YEAR OR VCATN_YR IS NULL)
 		</if>
 		<if test="vcatnYr != null and !vcatnYr.equals('')">
-			AND VCATN_YR = #{vcatnYr}
+			AND ( VCATN_YR =  #{vcatnYr} OR VCATN_YR IS NULL)
 		</if>
 		<if test="empId != null and !empId.equals('')">
 			AND EMP_ID = #{empId}
