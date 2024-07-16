@@ -269,22 +269,22 @@
 			AND ( VCATN_YR =  #{vcatnYr} OR VCATN_YR IS NULL)
 		</if>
 		<if test="empId != null and !empId.equals('')">
-			AND EMP_ID = #{empId}
+			AND E.EMP_ID = #{empId}
 		</if>
 		<if test="newVcatnYn != null and !newVcatnYn.equals('')">
 			AND NEW_VCATN_YN = #{newVcatnYn}
 		</if>
 		<if test="empno != null and !empno.equals('')">
-			AND EMPNO LIKE CONCAT('%', #{empno}, '%')
+			AND E.EMPNO LIKE CONCAT('%', #{empno}, '%')
 		</if>
 		<if test="empFlnm != null and !empFlnm.equals('')">
-			AND EMP_FLNM LIKE CONCAT('%', #{empFlnm}, '%')
+			AND E.EMP_FLNM LIKE CONCAT('%', #{empFlnm}, '%')
 		</if>
 		<if test="jobCd != null and !jobCd.equals('')">
-			AND JOB_CD  = #{jobCd}
+			AND E.JOB_CD  = #{jobCd}
 		</if>
 		<if test="hdofSttsCd != null and !hdofSttsCd.equals('')">
-			AND HDOF_STTS_CD = #{hdofSttsCd}
+			AND E.HDOF_STTS_CD = #{hdofSttsCd}
 		</if>
 		ORDER BY JOB_CD
 	</select>
@@ -541,7 +541,7 @@
 		JOIN DEPT_HNF HNF ON DEPT.DEPT_ID = HNF.DEPT_ID
 		JOIN EMP EMP ON EMP.EMP_ID = HNF.EMP_ID
 		WHERE HDOF_STTS_CD = 'VTW00301'
-			AND EMP_TY_CD = 'VTW00201'
+			AND EMP_TY_CD IN ('VTW00201','VTW00202')
 			AND EMP.EMPNO NOT BETWEEN 'VK0101'AND 'VK0110'
 			AND DEPT.END_YN = 'N'
 		GROUP BY EMP.EMP_ID
