@@ -438,40 +438,40 @@ const EmpVcatnAltmntMng = () => {
                     <div style={{ display: "flex", alignItems: "center", marginTop: "20px" }}>
                         <Button style={{ width: "140px", textAlign: "center"}} onClick={onClickDnd}>직원목록다운로드</Button>
                     </div>
-                    <div style={{height: "0%"}}>
-                        <DataGrid
-                            keyExpr="empno"
-                            dataSource={selectEmpList}
-                            onExporting={onExcelDnd}
-                            ref={dataGirdRef}
-                        >
-                            <Export enabled={true} />
-                            <Column
-                                key={"empno"}
-                                dataField={"empno"}
-                                caption={"사번"}
-                                width={"70px"}
-                            />
-                            <Column
-                                key={"empno"}
-                                dataField={"empFlnm"}
-                                caption={"성명"}
-                                width={"140px"}
-                            />
-                            <Column
-                                key={"empno"}
-                                dataField={"jbpsNm"}
-                                caption={"직급"}
-                                width={"140px"}
-                            />
-                            <Column
-                                key={"empno"}
-                                dataField={"deptNm"}
-                                caption={"부서"}
-                                width={"180px"}
-                            />
-                        </DataGrid>
-                    </div>
+                    {/*<div style={{height: "0%"}}>*/}
+                    {/*    <DataGrid*/}
+                    {/*        keyExpr="empno"*/}
+                    {/*        dataSource={selectEmpList}*/}
+                    {/*        onExporting={onExcelDnd}*/}
+                    {/*        ref={dataGirdRef}*/}
+                    {/*    >*/}
+                    {/*        <Export enabled={true} />*/}
+                    {/*        <Column*/}
+                    {/*            key={"empno"}*/}
+                    {/*            dataField={"empno"}*/}
+                    {/*            caption={"사번"}*/}
+                    {/*            width={"70px"}*/}
+                    {/*        />*/}
+                    {/*        <Column*/}
+                    {/*            key={"empno"}*/}
+                    {/*            dataField={"empFlnm"}*/}
+                    {/*            caption={"성명"}*/}
+                    {/*            width={"140px"}*/}
+                    {/*        />*/}
+                    {/*        <Column*/}
+                    {/*            key={"empno"}*/}
+                    {/*            dataField={"jbpsNm"}*/}
+                    {/*            caption={"직급"}*/}
+                    {/*            width={"140px"}*/}
+                    {/*        />*/}
+                    {/*        <Column*/}
+                    {/*            key={"empno"}*/}
+                    {/*            dataField={"deptNm"}*/}
+                    {/*            caption={"부서"}*/}
+                    {/*            width={"180px"}*/}
+                    {/*        />*/}
+                    {/*    </DataGrid>*/}
+                    {/*</div>*/}
                     <div style={divStyle}>
                         <CustomTable
                             keyColumn={EmpVcatnAltmntMngJson.listKeyColumn}
